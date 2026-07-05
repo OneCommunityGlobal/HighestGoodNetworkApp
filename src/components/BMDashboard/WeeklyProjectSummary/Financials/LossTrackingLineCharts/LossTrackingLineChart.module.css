@@ -77,11 +77,9 @@
 /* ---------- Filters (grid: one lane when space allows) ---------- */
 .lossTrackingChartFilters {
   display: grid;
-
-  /* Each item gets at least 220px; if space allows, they all sit on one row */
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 0.85rem var(--space);
-  align-items: end; /* align baselines for inputs and button */
+  align-items: end;
   background-color: var(--surface-muted);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
@@ -95,12 +93,11 @@
   font-size: 0.95rem;
   color: var(--text-color);
   gap: 0.35rem;
-  min-width: 0; /* allow shrinking to column width */
+  min-width: 0;
 }
 
-/* Inputs */
 .lossTrackingChartFilters select,
-.lossTrackingChartFilters input[type="month"] {
+.lossTrackingChartFilters [type="date"] {
   padding: 0.55rem 0.7rem;
   border: 1px solid var(--border-color);
   border-radius: 8px;
@@ -122,16 +119,21 @@
   padding-right: 2.45rem !important;
 }
 
-.lossTrackingChartFilters input[type="month"] {
+.lossTrackingChartFilters [type="date"] {
   color-scheme: light;
 }
 
-.darkMode .lossTrackingChartFilters input[type="month"] {
+.darkMode .lossTrackingChartFilters [type="date"] {
   color-scheme: dark;
 }
 
-.lossTrackingChartFilters input[type="month"]::-webkit-calendar-picker-indicator {
+.lossTrackingChartFilters input[type="date"]::-webkit-calendar-picker-indicator {
   opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   cursor: pointer;
 }
 
@@ -156,13 +158,12 @@
 }
 
 .lossTrackingChartFilters select:focus-visible,
-.lossTrackingChartFilters input[type="month"]:focus-visible {
+.lossTrackingChartFilters [type="date"]:focus-visible {
   outline: none;
   border-color: var(--ring);
   box-shadow: 0 0 0 2px var(--ring), 0 0 0 4px var(--ring-offset);
 }
 
-/* Reset button — behaves like any grid item so it aligns in the same lane */
 .resetBtn {
   padding: 0.6rem 1rem;
   font-size: 0.95rem;
@@ -176,13 +177,16 @@
   letter-spacing: 0.2px;
   transition: background-color 0.15s ease, transform 0.02s ease, box-shadow 0.15s ease, color 0.15s ease;
   box-shadow: 0 1px 0 rgb(0 0 0 / 4%), 0 2px 8px rgb(0 0 0 / 8%);
-
-  /* IMPORTANT: no margin-left/auto and no order hacks */
-  place-self: end start; /* align start like labels */     /* baseline alignment with inputs */
+  place-self: end start;
 }
 
-.resetBtn:hover { background-color: var(--reset-btn-hover); }
-.resetBtn:active { transform: translateY(1px); }
+.resetBtn:hover {
+  background-color: var(--reset-btn-hover);
+}
+
+.resetBtn:active {
+  transform: translateY(1px);
+}
 
 .resetBtn:focus-visible {
   outline: none;
@@ -195,7 +199,6 @@
   box-shadow: none;
 }
 
-/* Date range validation error — spans full grid width */
 .dateRangeError {
   grid-column: 1 / -1;
   color: #e53935;
@@ -204,9 +207,10 @@
   padding: 0.15rem 0.1rem;
 }
 
-/* Optional: on very narrow screens, make the button full width to match stacked inputs */
-@media (width <= 768px) {
-  .resetBtn { justify-self: stretch; }
+@media (width <=768px) {
+  .resetBtn {
+    justify-self: stretch;
+  }
 
   .customLegend {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -217,7 +221,6 @@
 .chartWrapper {
   width: 100%;
 
-  /* Responsive, predictable height for ResponsiveContainer (height="100%") */
   --chart-height: clamp(320px, 42vh, 680px);
 
   height: var(--chart-height);
@@ -225,15 +228,18 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   padding: 1rem;
-  min-width: 0; /* let SVG measure correctly in flex/grid */
+  min-width: 0;
 }
 
-@media screen and (width >= 1440px) {
-  .chartWrapper { --chart-height: clamp(340px, 40vh, 720px); }
+@media screen and (width >=1440px) {
+  .chartWrapper {
+    --chart-height: clamp(340px, 40vh, 720px);
+  }
 }
 
-/* Recharts tweaks */
-.recharts-cartesian-grid line { stroke: var(--grid-color); }
+.recharts-cartesian-grid line {
+  stroke: var(--grid-color);
+}
 
 .customLegend {
   display: grid;
@@ -260,11 +266,10 @@
   flex: 0 0 auto;
 }
 
-.legendItem > span:last-child {
+.legendItem>span:last-child {
   white-space: nowrap;
 }
 
-/* ---------- No data state ---------- */
 .noDataMessage {
   display: flex;
   justify-content: center;
@@ -281,27 +286,26 @@
   transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
 }
 
-/* --- Ultra-narrow phones: <= 400px --- */
-@media (width <= 400px) {
+@media (width <=400px) {
   .lossTrackingChartFilters {
-    grid-template-columns: 1fr;     /* force single column */
-    gap: 0.6rem;                     /* slightly tighter spacing */
-    padding: 0.75rem;                /* reduce inner padding */
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+    padding: 0.75rem;
   }
 
   .lossTrackingChartFilters label {
-    min-width: 0;                    /* allow shrink */
+    min-width: 0;
   }
 
   .lossTrackingChartFilters select,
-  .lossTrackingChartFilters input[type="month"],
+  .lossTrackingChartFilters [type="date"],
   .resetBtn {
-    width: 100%;                     /* full width controls */
-    box-sizing: border-box;          /* respect padding/border */
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .resetBtn {
-    justify-self: stretch;           /* no overflow due to intrinsic width */
+    justify-self: stretch;
   }
 
   .customLegend {

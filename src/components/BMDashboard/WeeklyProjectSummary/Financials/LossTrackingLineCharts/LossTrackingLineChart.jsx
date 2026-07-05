@@ -1,4 +1,3 @@
-// LossTrackingLineChart.jsx
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import {
@@ -140,16 +139,13 @@ export default function LossTrackingLineChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const hostRef = useRef(null);
 
-  // --- Promote parent wrapper (no parent code changes needed) ---
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
 
-    // Find the wrapper the page uses around our component
     const wrapper = host.closest('.weekly-project-summary-card.financial-big');
     if (!wrapper) return;
 
-    // Save previous inline styles to restore on unmount
     const prev = {
       gridColumn: wrapper.style.gridColumn,
       flex: wrapper.style.flex,
@@ -158,7 +154,6 @@ export default function LossTrackingLineChart() {
       minWidth: wrapper.style.minWidth,
     };
 
-    // Make the wrapper span the full grid row & fill flex rows
     wrapper.style.gridColumn = '1 / -1';
     wrapper.style.flex = '1 1 100%';
     wrapper.style.width = '100%';
@@ -201,9 +196,15 @@ export default function LossTrackingLineChart() {
 
   const chartData = useMemo(() => {
     const merged = {};
+
+    const filterStart = startDate ? startDate.substring(0, 7) : '';
+    const filterEnd = endDate ? endDate.substring(0, 7) : '';
+
     filteredLines.forEach(line => {
       line.data.forEach(({ date, month, value }) => {
-        const withinRange = (!startDate || date >= startDate) && (!endDate || date <= endDate);
+        const withinRange =
+          (!filterStart || date >= filterStart) && (!filterEnd || date <= filterEnd);
+
         if (withinRange) {
           if (!merged[month]) merged[month] = { month };
           merged[month][`${line.year}-${line.material}`] = value;
@@ -272,7 +273,7 @@ export default function LossTrackingLineChart() {
             <div className={styles.monthInputWrapper}>
               <input
                 className={styles.monthInput}
-                type="month"
+                type="date"
                 value={startDate}
                 onChange={e => setStartDate(e.target.value)}
               />
@@ -289,7 +290,7 @@ export default function LossTrackingLineChart() {
             <div className={styles.monthInputWrapper}>
               <input
                 className={styles.monthInput}
-                type="month"
+                type="date"
                 value={endDate}
                 onChange={e => setEndDate(e.target.value)}
               />
