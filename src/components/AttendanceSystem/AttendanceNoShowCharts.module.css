@@ -224,6 +224,28 @@
   font-weight: 500;
   color: #111827;
   margin-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.tableStatus {
+  display: inline-flex;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.attendedStatus {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.noShowStatus {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.noRows {
   text-align: center;
 }
 

@@ -128,6 +128,7 @@ import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowChar
 import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
 import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
 import InjuriesDonutChart from './components/InjuriesAnalytics/InjuriesDonutChart';
+import CostPredictionPage from './components/BMDashboard/CostPrediction/CostPredictionPage';
 import ProjectRiskProfileOverview from './components/BMDashboard/WeeklyProjectSummary/ProjectRiskProfileOverview';
 import JobsHitsApplicationsChart from './components/JobAnalytics/JobsHitsApplicationsChart/JobsHitsApplicationsChart';
 import BMDashboard from './components/BMDashboard';
@@ -906,6 +907,7 @@ export default (
           fallback
           component={PurchaseConsumable}
         />
+        <BMProtectedRoute path="/bmdashboard/cost-prediction" component={CostPredictionPage} />
         <BMProtectedRoute path="/bmdashboard/rentalchart" component={RentalChart} />
         <BMProtectedRoute path="/bmdashboard/returned-late-chart" component={ReturnedLateChart} />
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
+import { Form, FormGroup, Label, Input, Button, Table } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -86,7 +86,23 @@ export default function EquipmentUpdateForm() {
     setFormData(initialFormState);
   };
 
-  // Submit form
+  const selectedItem = useMemo(() => {
+    if (!formData.toolOrEquipment || !formData.name) return null;
+
+    const sourceList = formData.toolOrEquipment === 'Tool' ? toolList : equipmentList;
+
+    return (
+      sourceList.find(
+        item =>
+          item.name === formData.name &&
+          (!formData.project || String(item.projectId) === String(formData.project)),
+      ) || null
+    );
+  }, [formData.toolOrEquipment, formData.name, formData.project, toolList, equipmentList]);
+
+  const currentCount = selectedItem?.count ?? 0;
+  const newCount = formData.number === '' ? null : Number(formData.number);
+
   const handleSubmit = e => {
     e.preventDefault();
 
@@ -97,6 +113,13 @@ export default function EquipmentUpdateForm() {
     setFormData(initialFormState);
     toast.success('Tool/Equipment updated successfully!');
   };
+
+  let filteredNames = [];
+  if (formData.toolOrEquipment === 'Tool') {
+    filteredNames = uniqueToolList;
+  } else if (formData.toolOrEquipment === 'Equipment') {
+    filteredNames = uniqueEquipmentList;
+  }
 
   return (
     <div className={styles.addToolForm}>
@@ -196,6 +219,36 @@ export default function EquipmentUpdateForm() {
               <div className="toolFormError">Please select a name</div>
             ))}
         </FormGroup>
+
+        {formData.project && formData.toolOrEquipment && formData.name && (
+          <div className={styles.currentCountBox}>
+            <p className={styles.currentCountText}>
+              Current number of selected {formData.toolOrEquipment.toLowerCase()}s:{' '}
+              <strong>{currentCount}</strong>
+            </p>
+
+            <Table bordered responsive className={styles.currentCountTable}>
+              <thead>
+                <tr>
+                  <th>Project</th>
+                  <th>Type</th>
+                  <th>Name</th>
+                  <th>Current Count</th>
+                  <th>New Count</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{projects.find(proj => proj._id === formData.project)?.name || '-'}</td>
+                  <td>{formData.toolOrEquipment}</td>
+                  <td>{formData.name}</td>
+                  <td>{currentCount}</td>
+                  <td>{newCount === null ? '-' : newCount}</td>
+                </tr>
+              </tbody>
+            </Table>
+          </div>
+        )}
 
         <FormGroup>
           <Label for="number">
