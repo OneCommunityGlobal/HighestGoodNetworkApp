@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   Button,
   Modal,
@@ -25,16 +26,350 @@ import httpService from '../../services/httpService';
 import { ApiEndpoint } from '~/utils/URL';
 import hasPermission from '~/utils/permissions';
 
+// ─── Module-level utilities (no component dependency) ───────────────────────
+
+const sanitizer = dompurify.sanitize;
+
+const REVIEWER_ROLES = new Set(['Owner', 'Administrator', 'Mentor', 'Manager']);
+
+const INVALID_DOMAIN_DEFAULT_MESSAGE =
+  'Nice try, but that link is about as useful as a chocolate teapot! We need a GitHub PR link, Google Doc, Dropbox folder, Figma design, or One Community webpage.';
+
+const INVALID_DROPBOX_MESSAGE =
+  'Oops! That link\'s about as helpful as a screen door on a submarine. Please use the "Share" or "Copy link to" option to create a DropBox link that works for people other than just you.';
+
+const sanitizeUrl = url => {
+  if (!url) return '';
+  return sanitizer(url.trim(), { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+};
+
+const sanitizeText = text => {
+  if (!text) return '';
+  return sanitizer(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+};
+
+const validURL = url => {
+  try {
+    if (!url || url.trim() === '') return false;
+    if (url.length < 20) return false;
+
+    const protocolPattern = /^https?:\/\//;
+    const domainPattern = /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
+    const pathPattern = /^[/\w\-._~:?#[\]@!$&'()*+,;=%]*$/;
+
+    const urlToTest = url.startsWith('http') ? url : `https://${url}`;
+
+    if (!protocolPattern.test(urlToTest)) return false;
+
+    const urlWithoutProtocol = urlToTest.replace(protocolPattern, '');
+    const slashIndex = urlWithoutProtocol.indexOf('/');
+    const domain =
+      slashIndex === -1 ? urlWithoutProtocol : urlWithoutProtocol.substring(0, slashIndex);
+    const path = slashIndex === -1 ? '' : urlWithoutProtocol.substring(slashIndex);
+
+    if (!domainPattern.test(domain)) return false;
+    if (path && !pathPattern.test(path)) return false;
+
+    try {
+      new URL(urlToTest);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  } catch (err) {
+    return false;
+  }
+};
+
+const validateGoogleDoc = normalizedUrl => {
+  const isDocType =
+    normalizedUrl.includes('/document/d/') ||
+    normalizedUrl.includes('/spreadsheets/d/') ||
+    normalizedUrl.includes('/presentation/d/') ||
+    normalizedUrl.includes('/forms/d/');
+  return isDocType
+    ? { isValid: true, errorType: null }
+    : { isValid: false, errorType: 'general_invalid' };
+};
+
+const validateDropbox = normalizedUrl => {
+  const isShared =
+    normalizedUrl.includes('dropbox.com/s/') || normalizedUrl.includes('dropbox.com/scl/');
+  return isShared
+    ? { isValid: true, errorType: null }
+    : { isValid: false, errorType: 'invalid_dropbox_link' };
+};
+
+const validateGitHub = normalizedUrl =>
+  normalizedUrl.includes('/pull/')
+    ? { isValid: true, errorType: null }
+    : { isValid: false, errorType: 'general_invalid' };
+
+const validateFigma = normalizedUrl =>
+  normalizedUrl.includes('/design/')
+    ? { isValid: true, errorType: null }
+    : { isValid: false, errorType: 'general_invalid' };
+
+const validateAllowedDomainTypes = url => {
+  if (!url) return { isValid: false, errorType: 'missing_url' };
+
+  const normalizedUrl = url.toLowerCase();
+
+  if (normalizedUrl.includes('docs.google.com')) return validateGoogleDoc(normalizedUrl);
+  if (normalizedUrl.includes('dropbox.com')) return validateDropbox(normalizedUrl);
+  if (normalizedUrl.includes('github.com')) return validateGitHub(normalizedUrl);
+  if (
+    normalizedUrl.includes('onecommunityglobal.org') ||
+    normalizedUrl.includes('onecommunityglobal.com') ||
+    normalizedUrl.includes('onecommunity.org') ||
+    normalizedUrl.includes('onecommunity.com')
+  ) {
+    return { isValid: true, errorType: null };
+  }
+  if (normalizedUrl.includes('figma.com')) return validateFigma(normalizedUrl);
+
+  return { isValid: false, errorType: 'general_invalid' };
+};
+
+const handleSafeLink = url => {
+  const sanitizedUrl = sanitizeUrl(url);
+  const validationResult = validateAllowedDomainTypes(sanitizedUrl);
+  return validationResult.isValid && validURL(sanitizedUrl) ? sanitizedUrl : '#';
+};
+
+const getInvalidDomainErrorMessage = errorType =>
+  errorType === 'invalid_dropbox_link' ? INVALID_DROPBOX_MESSAGE : INVALID_DOMAIN_DEFAULT_MESSAGE;
+
+const getReviewStatus = (task, user) => {
+  const resource = task.resources.find(r => r.userID === user.personId);
+  return resource ? resource.reviewStatus || 'Unsubmitted' : 'Unsubmitted';
+};
+
+const buildResourcesWithStatus = (resources, newStatus) =>
+  resources.map(resource => ({
+    ...resource,
+    reviewStatus: newStatus,
+    completedTask: newStatus === 'Reviewed',
+  }));
+
+const canActAsReviewer = (myRole, canReview) => REVIEWER_ROLES.has(myRole) || canReview;
+
+const validateLinkInput = sanitizedLink => {
+  if (!validURL(sanitizedLink)) {
+    return {
+      isValid: false,
+      error:
+        'Please enter a valid URL (must start with http:// or https:// and be at least 20 characters)',
+    };
+  }
+  const domainResult = validateAllowedDomainTypes(sanitizedLink);
+  if (!domainResult.isValid) {
+    return { isValid: false, errorType: domainResult.errorType };
+  }
+  return { isValid: true };
+};
+
+const sendReviewNotification = (myUserId, user, task, isLinkUpdate = false) => {
+  const data = {
+    myUserId: sanitizeText(myUserId),
+    name: sanitizeText(user.name),
+    taskName: sanitizeText(task.taskName),
+  };
+  if (isLinkUpdate) data.isLinkUpdate = true;
+  httpService.post(`${ApiEndpoint}/tasks/reviewreq/${sanitizeText(myUserId)}`, data);
+};
+
+// ─── Small presentational sub-components ────────────────────────────────────
+
+function UpdateButtonContent({ isEditing, isSuccess }) {
+  if (isEditing) {
+    return (
+      <>
+        <Spinner size="sm" className="mr-2" /> Updating…
+      </>
+    );
+  }
+  if (isSuccess) {
+    return (
+      <>
+        <FontAwesomeIcon icon={faCheck} className="mr-2" /> Updated!
+      </>
+    );
+  }
+  return 'Update Link';
+}
+
+UpdateButtonContent.propTypes = {
+  isEditing: PropTypes.bool.isRequired,
+  isSuccess: PropTypes.bool.isRequired,
+};
+
+function WorkLinkItems({ relatedWorkLinks, darkMode }) {
+  if (!relatedWorkLinks) return null;
+  return relatedWorkLinks.map(workLink => (
+    <DropdownItem
+      key={sanitizeText(workLink)}
+      href={handleSafeLink(workLink)}
+      target="_blank"
+      className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
+    >
+      <FontAwesomeIcon icon={faExternalLinkAlt} /> View Link
+    </DropdownItem>
+  ));
+}
+
+WorkLinkItems.propTypes = {
+  relatedWorkLinks: PropTypes.arrayOf(PropTypes.string),
+  darkMode: PropTypes.bool.isRequired,
+};
+
+WorkLinkItems.defaultProps = {
+  relatedWorkLinks: null,
+};
+
+// ─── Button display (pure rendering, no state) ───────────────────────────────
+
+function ReviewButtonDisplay({
+  user,
+  task,
+  myUserId,
+  myRole,
+  canReview,
+  reviewStatus,
+  darkMode,
+  isSubmitting,
+  onToggleModal,
+  onToggleEditLinkModal,
+  onSelectAction,
+  onToggleVerify,
+}) {
+  if (user.personId === myUserId && reviewStatus === 'Unsubmitted') {
+    return (
+      <button
+        className={`${style.reviewBtn} btn btn-primary`}
+        onClick={onToggleModal}
+        type="button"
+        style={darkMode ? boxStyleDark : boxStyle}
+        disabled={isSubmitting}
+      >
+        Submit for Review
+      </button>
+    );
+  }
+
+  if (reviewStatus !== 'Submitted') return null;
+
+  if (user.personId === myUserId) {
+    return (
+      <UncontrolledDropdown>
+        <DropdownToggle
+          className={`${styles['btn--dark-sea-green']} ${style.reviewBtn} ${style['reviewBtn-dropdown-wrapper']}`}
+          caret
+          style={{
+            backgroundColor: '#E5F4E8',
+            color: '#326749',
+            borderColor: '#C3E6CB',
+            ...(darkMode ? boxStyleDark : boxStyle),
+          }}
+        >
+          Ready for Review
+        </DropdownToggle>
+        <DropdownMenu container="body" strategy="fixed" className={style['review-button-dropdown']}>
+          <WorkLinkItems relatedWorkLinks={task.relatedWorkLinks} darkMode={darkMode} />
+          <DropdownItem
+            onClick={onToggleEditLinkModal}
+            className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
+          >
+            <FontAwesomeIcon icon={faPencilAlt} /> Edit Link
+          </DropdownItem>
+        </DropdownMenu>
+      </UncontrolledDropdown>
+    );
+  }
+
+  if (canActAsReviewer(myRole, canReview)) {
+    return (
+      <UncontrolledDropdown>
+        <DropdownToggle
+          className={`${styles['btn--dark-sea-green']} ${style.reviewBtn}`}
+          caret
+          style={darkMode ? boxStyleDark : boxStyle}
+        >
+          Ready for Review
+        </DropdownToggle>
+        <DropdownMenu container="body" strategy="fixed" className={style['review-button-dropdown']}>
+          <WorkLinkItems relatedWorkLinks={task.relatedWorkLinks} darkMode={darkMode} />
+          <DropdownItem
+            onClick={onToggleEditLinkModal}
+            className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
+          >
+            <FontAwesomeIcon icon={faPencilAlt} /> Edit Link
+          </DropdownItem>
+          <DropdownItem
+            onClick={() => {
+              onSelectAction('Complete and Remove');
+              onToggleVerify();
+            }}
+            className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
+          >
+            <div className={styles['review-dropdown-item']}>
+              <FontAwesomeIcon className={styles['team-member-tasks-done']} icon={faCheck} />
+              <span>as complete and remove task</span>
+            </div>
+          </DropdownItem>
+          <DropdownItem
+            onClick={() => {
+              onSelectAction('More Work Needed');
+              onToggleVerify();
+            }}
+            className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
+          >
+            More work needed, reset this button
+          </DropdownItem>
+        </DropdownMenu>
+      </UncontrolledDropdown>
+    );
+  }
+
+  return (
+    <Button className={style.reviewBtn} color="success" disabled>
+      Ready for Review
+    </Button>
+  );
+}
+
+ReviewButtonDisplay.propTypes = {
+  user: PropTypes.shape({
+    personId: PropTypes.string.isRequired,
+  }).isRequired,
+  task: PropTypes.shape({
+    relatedWorkLinks: PropTypes.arrayOf(PropTypes.string),
+  }).isRequired,
+  myUserId: PropTypes.string.isRequired,
+  myRole: PropTypes.string.isRequired,
+  canReview: PropTypes.bool.isRequired,
+  reviewStatus: PropTypes.string.isRequired,
+  darkMode: PropTypes.bool.isRequired,
+  isSubmitting: PropTypes.bool.isRequired,
+  onToggleModal: PropTypes.func.isRequired,
+  onToggleEditLinkModal: PropTypes.func.isRequired,
+  onSelectAction: PropTypes.func.isRequired,
+  onToggleVerify: PropTypes.func.isRequired,
+};
+
+// ─── Main component ──────────────────────────────────────────────────────────
+
 function ReviewButton({ user, task, updateTask }) {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
   const myUserId = useSelector(state => state.auth.user.userid);
   const myRole = useSelector(state => state.auth.user.role);
+  const canReview = dispatch(hasPermission('putReviewStatus'));
+
   const [modal, setModal] = useState(false);
   const [link, setLink] = useState('');
   const [verifyModal, setVerifyModal] = useState(false);
   const [selectedAction, setSelectedAction] = useState(null);
-  const canReview = dispatch(hasPermission('putReviewStatus'));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmSubmitModal, setConfirmSubmitModal] = useState(false);
   const [editLinkState, setEditLinkState] = useState({
@@ -50,250 +385,43 @@ function ReviewButton({ user, task, updateTask }) {
     errorMessage: '',
   });
 
-  // XSS Protection sanitizer
-  const sanitizer = dompurify.sanitize;
+  const reviewStatus = useMemo(() => getReviewStatus(task, user), [task, user]);
 
-  // Utility function to sanitize URLs
-  const sanitizeUrl = url => {
-    if (!url) return '';
-    return sanitizer(url.trim(), { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
-  };
-
-  // Utility function to sanitize text content
-  const sanitizeText = text => {
-    if (!text) return '';
-    return sanitizer(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
-  };
-
-  // Safe link handler to prevent XSS in href attributes
-  const handleSafeLink = url => {
-    // Sanitize the URL and validate it's safe to use as href
-    const sanitizedUrl = sanitizeUrl(url);
-    const validationResult = validateAllowedDomainTypes(sanitizedUrl);
-
-    if (validationResult.isValid && validURL(sanitizedUrl)) {
-      return sanitizedUrl;
-    }
-    return '#'; // Fallback to safe href
-  };
+  // ── Toggles ───────────────────────────────────────────────────────────────
 
   const toggleModal = () => {
-    setModal(!modal);
-    if (!modal) {
-      setEditLinkState(prev => ({ ...prev, error: null }));
-    }
-  };
-
-  const modalCancelButtonHandler = () => {
-    toggleModal();
-    setIsSubmitting(false);
-  };
-
-  const toggleVerify = () => {
-    setVerifyModal(!verifyModal);
-  };
-
-  const toggleConfirmSubmitModal = () => {
-    setConfirmSubmitModal(!confirmSubmitModal); // Toggle for second confirmation modal
+    setModal(prev => {
+      if (!prev) setEditLinkState(s => ({ ...s, error: null }));
+      return !prev;
+    });
   };
 
   const toggleEditLinkModal = () => {
-    setEditLinkState(prev => ({
-      ...prev,
-      isOpen: !prev.isOpen,
-      isEditing: false,
-    }));
-    if (!editLinkState.isOpen) {
-      // When opening the modal, find the link associated with this user
+    setEditLinkState(prev => {
+      if (prev.isOpen) return { ...prev, isOpen: false, isEditing: false };
       const userLink = task.relatedWorkLinks?.[task.relatedWorkLinks.length - 1] || '';
-      const sanitizedUserLink = sanitizeUrl(userLink);
-      setEditLinkState(prev => ({ ...prev, link: sanitizedUserLink, error: null }));
-    }
+      return { ...prev, isOpen: true, isEditing: false, link: sanitizeUrl(userLink), error: null };
+    });
   };
 
   const toggleInvalidDomainModal = (errorType = null) => {
     if (!invalidDomainModal.isOpen && errorType) {
-      let errorMessage =
-        'Nice try, but that link is about as useful as a chocolate teapot! We need a GitHub PR link, Google Doc, Dropbox folder, Figma design, or One Community webpage.';
-
-      if (errorType === 'invalid_dropbox_link') {
-        errorMessage =
-          'Oops! That link\'s about as helpful as a screen door on a submarine. Please use the "Share" or "Copy link to" option to create a DropBox link that works for people other than just you.';
-      }
-
       setInvalidDomainModal({
         isOpen: true,
         errorType,
-        errorMessage,
+        errorMessage: getInvalidDomainErrorMessage(errorType),
       });
     } else {
-      setInvalidDomainModal({
-        isOpen: false,
-        errorType: null,
-        errorMessage: '',
-      });
+      setInvalidDomainModal({ isOpen: false, errorType: null, errorMessage: '' });
     }
   };
 
-  // helper right above the return (or inline if you prefer)
-  const renderUpdateButtonContent = () => {
-    if (editLinkState.isEditing) {
-      return (
-        <>
-          <Spinner size="sm" className="mr-2" /> Updating…
-        </>
-      );
-    }
-
-    if (editLinkState.isSuccess) {
-      return (
-        <>
-          <FontAwesomeIcon icon={faCheck} className="mr-2" /> Updated!
-        </>
-      );
-    }
-
-    return 'Update Link';
-  };
-
-  const validURL = url => {
-    try {
-      if (!url || url.trim() === '') return false;
-
-      // Check minimum length requirement
-      if (url.length < 20) return false;
-
-      // Secure URL validation pattern that prevents catastrophic backtracking
-      // Split validation into parts to avoid nested quantifiers
-      const protocolPattern = /^https?:\/\//;
-      const domainPattern = /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
-      const pathPattern = /^[\/\w\-._~:?#[\]@!$&'()*+,;=%]*$/;
-
-      // If URL doesn't start with http/https, add https:// for validation
-      const urlToTest = url.startsWith('http') ? url : `https://${url}`;
-
-      // Test protocol
-      if (!protocolPattern.test(urlToTest)) return false;
-
-      // Extract domain and path parts
-      const urlWithoutProtocol = urlToTest.replace(protocolPattern, '');
-      const slashIndex = urlWithoutProtocol.indexOf('/');
-      const domain =
-        slashIndex === -1 ? urlWithoutProtocol : urlWithoutProtocol.substring(0, slashIndex);
-      const path = slashIndex === -1 ? '' : urlWithoutProtocol.substring(slashIndex);
-
-      // Validate domain and path separately
-      if (!domainPattern.test(domain)) return false;
-      if (path && !pathPattern.test(path)) return false;
-
-      // Additional validation using URL constructor
-      try {
-        new URL(urlToTest);
-        return true;
-      } catch (e) {
-        return false;
-      }
-    } catch (err) {
-      return false;
-    }
-  };
-
-  const handleLink = e => {
-    const url = sanitizeUrl(e.target.value);
-    setLink(url);
-    if (!url) {
-      setEditLinkState(prev => ({ ...prev, error: 'A valid URL is required for review' }));
-    } else if (!validURL(url)) {
-      setEditLinkState(prev => ({
-        ...prev,
-        error: "Please enter a valid URL starting with 'https://'.",
-      }));
-    } else {
-      setEditLinkState(prev => ({ ...prev, error: null }));
-    }
-  };
-
-  /**
-   * Validates if the provided URL is one of the accepted domain types
-   * @param {string} url - The URL to validate
-   * @returns {object} - { isValid: boolean, errorType: string|null }
-   */
-  const validateAllowedDomainTypes = url => {
-    if (!url) {
-      return { isValid: false, errorType: 'missing_url' };
-    }
-
-    // Normalize the URL
-    const normalizedUrl = url.toLowerCase();
-
-    // 1. Google Doc check
-    if (normalizedUrl.includes('docs.google.com')) {
-      if (
-        normalizedUrl.includes('/document/d/') ||
-        normalizedUrl.includes('/spreadsheets/d/') ||
-        normalizedUrl.includes('/presentation/d/') ||
-        normalizedUrl.includes('/forms/d/')
-      ) {
-        return { isValid: true, errorType: null };
-      }
-      return { isValid: false, errorType: 'general_invalid' };
-    }
-
-    // 2. Dropbox check
-    if (normalizedUrl.includes('dropbox.com')) {
-      if (normalizedUrl.includes('dropbox.com/s/') || normalizedUrl.includes('dropbox.com/scl/')) {
-        return { isValid: true, errorType: null };
-      }
-      return { isValid: false, errorType: 'invalid_dropbox_link' };
-    }
-
-    // 3. GitHub PR check
-    if (normalizedUrl.includes('github.com')) {
-      if (normalizedUrl.includes('/pull/')) {
-        return { isValid: true, errorType: null };
-      }
-      return { isValid: false, errorType: 'general_invalid' };
-    }
-
-    // 4. One Community check
-    if (
-      normalizedUrl.includes('onecommunityglobal.org') ||
-      normalizedUrl.includes('onecommunityglobal.com') ||
-      normalizedUrl.includes('onecommunity.org') ||
-      normalizedUrl.includes('onecommunity.com')
-    ) {
-      return { isValid: true, errorType: null };
-    }
-    // 5. Figma design file check
-    if (normalizedUrl.includes('figma.com')) {
-      if (normalizedUrl.includes('/design/')) {
-        return { isValid: true, errorType: null };
-      }
-      return { isValid: false, errorType: 'general_invalid' };
-    }
-
-    // Generic invalid domain
-    return { isValid: false, errorType: 'general_invalid' };
-  };
-
-  const reviewStatus = useMemo(() => {
-    const resource = task.resources.find(r => r.userID === user.personId);
-    return resource ? resource.reviewStatus || 'Unsubmitted' : 'Unsubmitted';
-  }, [task, user]);
+  // ── Core actions ──────────────────────────────────────────────────────────
 
   const updReviewStat = newStatus => {
-    const resources = [...task.resources];
-    const newResources = resources.map(resource => {
-      const newResource = { ...resource, reviewStatus: newStatus };
-      newResource.completedTask = newStatus === 'Reviewed';
-      return newResource;
-    });
+    const newResources = buildResourcesWithStatus(task.resources, newStatus);
     let updatedTask = { ...task, resources: newResources };
-    let taskRelatedWorkLinks = task.relatedWorkLinks;
-    // Add relatedWorkLinks to existing tasks
-    if (!Array.isArray(task.relatedWorkLinks)) {
-      taskRelatedWorkLinks = [];
-    }
+    const taskRelatedWorkLinks = Array.isArray(task.relatedWorkLinks) ? task.relatedWorkLinks : [];
 
     if (newStatus === 'Submitted' && link) {
       const sanitizedLink = sanitizeUrl(link);
@@ -315,103 +443,59 @@ function ReviewButton({ user, task, updateTask }) {
 
   const submitReviewRequest = event => {
     event.preventDefault();
-
-    const sanitizedLink = sanitizeUrl(link);
-    if (!validURL(sanitizedLink)) {
-      setEditLinkState(prev => ({
-        ...prev,
-        error:
-          'Please enter a valid URL (must start with http:// or https:// and be at least 20 characters)',
-      }));
+    const validation = validateLinkInput(sanitizeUrl(link));
+    if (!validation.isValid) {
+      if (validation.error) {
+        setEditLinkState(prev => ({ ...prev, error: validation.error }));
+      } else {
+        toggleInvalidDomainModal(validation.errorType);
+      }
       return;
     }
-
-    const validationResult = validateAllowedDomainTypes(sanitizedLink);
-    if (!validationResult.isValid) {
-      toggleInvalidDomainModal(validationResult.errorType);
-      return;
-    }
-
-    toggleConfirmSubmitModal();
-  };
-
-  const sendReviewReq = () => {
-    const data = {};
-    data.myUserId = sanitizeText(myUserId);
-    data.name = sanitizeText(user.name);
-    data.taskName = sanitizeText(task.taskName);
-    httpService.post(`${ApiEndpoint}/tasks/reviewreq/${sanitizeText(myUserId)}`, data);
+    setConfirmSubmitModal(prev => !prev);
   };
 
   const handleFinalSubmit = () => {
-    // Submit the review and link after confirming in the second modal
     updReviewStat('Submitted');
-    toggleConfirmSubmitModal();
-    sendReviewReq();
-  };
-
-  const sendEditLinkNotification = () => {
-    const data = {};
-    data.myUserId = sanitizeText(myUserId);
-    data.name = sanitizeText(user.name);
-    data.taskName = sanitizeText(task.taskName);
-    data.isLinkUpdate = true;
-    httpService.post(`${ApiEndpoint}/tasks/reviewreq/${sanitizeText(myUserId)}`, data);
+    setConfirmSubmitModal(prev => !prev);
+    sendReviewNotification(myUserId, user, task);
   };
 
   const handleEditLink = () => {
     const sanitizedLink = sanitizeUrl(editLinkState.link);
+    const validation = validateLinkInput(sanitizedLink);
 
-    if (!validURL(sanitizedLink)) {
-      setEditLinkState(prev => ({
-        ...prev,
-        error:
-          'Please enter a valid URL (must start with http:// or https:// and be at least 20 characters)',
-      }));
+    if (!validation.isValid) {
+      if (validation.error) {
+        setEditLinkState(prev => ({ ...prev, error: validation.error }));
+      } else {
+        toggleInvalidDomainModal(validation.errorType);
+      }
       return;
     }
 
-    const validationResult = validateAllowedDomainTypes(sanitizedLink);
-    if (!validationResult.isValid) {
-      toggleInvalidDomainModal(validationResult.errorType);
-      return;
-    }
-
-    // Set loading state
     setEditLinkState(prev => ({ ...prev, isEditing: true }));
 
-    // Update the task with the new link
     const updatedTask = { ...task };
-
-    // If there are related work links, replace the last one (assuming it's the one for this user)
     if (Array.isArray(updatedTask.relatedWorkLinks) && updatedTask.relatedWorkLinks.length > 0) {
       updatedTask.relatedWorkLinks[updatedTask.relatedWorkLinks.length - 1] = sanitizedLink;
     } else {
-      // If no related work links exist yet, add this one
       updatedTask.relatedWorkLinks = [sanitizedLink];
     }
 
-    // Call the update function from props
+    const onSuccess = () => {
+      sendReviewNotification(myUserId, user, task, true);
+      setEditLinkState(prev => ({ ...prev, isSuccess: true }));
+      setTimeout(() => {
+        setEditLinkState(prev => ({ ...prev, isSuccess: false, isOpen: false }));
+      }, 1500);
+    };
+
     const result = updateTask(task._id, updatedTask);
 
-    // Handle both Promise and non-Promise return types
     if (result && typeof result.then === 'function') {
-      // It's a Promise
       result
-        .then(() => {
-          // Notify that the link has been updated
-          sendEditLinkNotification();
-
-          // Show success indicator
-          setEditLinkState(prev => ({ ...prev, isSuccess: true }));
-          setTimeout(() => {
-            setEditLinkState(prev => ({
-              ...prev,
-              isSuccess: false,
-              isOpen: false,
-            }));
-          }, 1500);
-        })
+        .then(onSuccess)
         .catch(error => {
           toast.error('Error updating link:', error);
           setEditLinkState(prev => ({
@@ -423,208 +507,118 @@ function ReviewButton({ user, task, updateTask }) {
           setEditLinkState(prev => ({ ...prev, isEditing: false }));
         });
     } else {
-      // It's not a Promise
-      // Notify that the link has been updated
-      sendEditLinkNotification();
+      onSuccess();
+      setEditLinkState(prev => ({ ...prev, isEditing: false }));
+    }
+  };
 
-      // Show success indicator
-      setEditLinkState(prev => ({ ...prev, isSuccess: true }));
-      setTimeout(() => {
-        setEditLinkState(prev => ({
-          ...prev,
-          isEditing: false,
-          isSuccess: false,
-          isOpen: false,
-        }));
-      }, 1500);
+  // ── Input handlers ────────────────────────────────────────────────────────
+
+  const handleLink = e => {
+    const url = sanitizeUrl(e.target.value);
+    setLink(url);
+    if (!url) {
+      setEditLinkState(prev => ({ ...prev, error: 'A valid URL is required for review' }));
+    } else if (!validURL(url)) {
+      setEditLinkState(prev => ({
+        ...prev,
+        error: "Please enter a valid URL starting with 'https://'.",
+      }));
+    } else {
+      setEditLinkState(prev => ({ ...prev, error: null }));
     }
   };
 
   const handleEditLinkChange = e => {
-    // Safely extract and sanitize the value first
-    const rawValue = e && e.target && e.target.value !== undefined ? e.target.value : '';
-    const sanitizedValue = sanitizeUrl(rawValue);
-    // Then use the sanitized value in the state update
-    setEditLinkState(prev => ({ ...prev, link: sanitizedValue }));
+    const rawValue = e?.target?.value ?? '';
+    setEditLinkState(prev => ({ ...prev, link: sanitizeUrl(rawValue) }));
   };
 
-  const buttonFormat = () => {
-    if (user.personId === myUserId && reviewStatus === 'Unsubmitted') {
-      return (
-        <button
-          className={`${style.reviewBtn} btn btn-primary`}
-          onClick={toggleModal}
-          type="button"
-          style={darkMode ? boxStyleDark : boxStyle}
-          disabled={isSubmitting}
-        >
-          Submit for Review
-        </button>
-      );
+  const handleVerifyConfirm = e => {
+    setVerifyModal(false);
+    if (selectedAction === 'More Work Needed') {
+      updReviewStat('Unsubmitted');
+      setIsSubmitting(false);
+    } else if (reviewStatus === 'Unsubmitted') {
+      submitReviewRequest(e);
+    } else {
+      updReviewStat('Reviewed');
     }
-    if (reviewStatus === 'Submitted') {
-      // First check if it's the user's own task
-      if (user.personId === myUserId) {
-        return (
-          <UncontrolledDropdown>
-            <DropdownToggle
-              className={`${styles['btn--dark-sea-green']} ${style.reviewBtn} ${style['reviewBtn-dropdown-wrapper']}`}
-              caret
-              style={{
-                // Use inline styles to match the desired light green pill look
-                backgroundColor: '#E5F4E8' /* Light Green background */,
-                color: '#326749' /* Dark Green Text */,
-                borderColor: '#C3E6CB' /* Light Green Border */,
-
-                ...(darkMode ? boxStyleDark : boxStyle),
-              }}
-            >
-              Ready for Review
-            </DropdownToggle>
-
-            <DropdownMenu
-              container="body"
-              strategy="fixed"
-              className={style['review-button-dropdown']}
-            >
-              {task.relatedWorkLinks &&
-                // eslint-disable-next-line no-shadow
-                task.relatedWorkLinks.map(link => (
-                  <DropdownItem
-                    key={sanitizeText(link)}
-                    href={handleSafeLink(link)}
-                    target="_blank"
-                    className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
-                  >
-                    <FontAwesomeIcon icon={faExternalLinkAlt} /> View Link
-                  </DropdownItem>
-                ))}
-              <DropdownItem
-                onClick={toggleEditLinkModal}
-                className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
-              >
-                <FontAwesomeIcon icon={faPencilAlt} /> Edit Link
-              </DropdownItem>
-            </DropdownMenu>
-          </UncontrolledDropdown>
-        );
-      }
-      if (
-        myRole === 'Owner' ||
-        myRole === 'Administrator' ||
-        myRole === 'Mentor' ||
-        myRole === 'Manager' ||
-        canReview
-      ) {
-        return (
-          <UncontrolledDropdown>
-            <DropdownToggle
-              className={`${styles['btn--dark-sea-green']} ${style['reviewBtn']}`}
-              caret
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              Ready for Review
-            </DropdownToggle>
-            <DropdownMenu
-              container="body"
-              strategy="fixed"
-              className={style['review-button-dropdown']}
-            >
-              {task.relatedWorkLinks &&
-                task.relatedWorkLinks.map(dropLink => (
-                  <DropdownItem
-                    key={sanitizeText(dropLink)}
-                    href={handleSafeLink(dropLink)}
-                    target="_blank"
-                    className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
-                  >
-                    <FontAwesomeIcon icon={faExternalLinkAlt} /> View Link
-                  </DropdownItem>
-                ))}
-              <DropdownItem
-                onClick={toggleEditLinkModal}
-                className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
-              >
-                <FontAwesomeIcon icon={faPencilAlt} /> Edit Link
-              </DropdownItem>
-              <DropdownItem
-                onClick={() => {
-                  setSelectedAction('Complete and Remove');
-                  toggleVerify();
-                }}
-                className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
-              >
-                <div className={styles['review-dropdown-item']}>
-                  <FontAwesomeIcon className={styles['team-member-tasks-done']} icon={faCheck} />
-                  <span>as complete and remove task</span>
-                </div>
-              </DropdownItem>
-              <DropdownItem
-                onClick={() => {
-                  setSelectedAction('More Work Needed');
-                  toggleVerify();
-                }}
-                className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
-              >
-                More work needed, reset this button
-              </DropdownItem>
-            </DropdownMenu>
-          </UncontrolledDropdown>
-        );
-      }
-      return (
-        <Button className={style.reviewBtn} color="success" disabled>
-          Ready for Review
-        </Button>
-      );
-    }
-    return null;
   };
+
+  const handleSubmissionModalSubmit = e => {
+    e.preventDefault();
+    const sanitizedLink = sanitizeUrl(link);
+    if (!sanitizedLink || !validURL(sanitizedLink)) {
+      setEditLinkState(prev => ({
+        ...prev,
+        error: "Please enter a valid URL starting with 'https://'.",
+      }));
+      return;
+    }
+    const validationResult = validateAllowedDomainTypes(sanitizedLink);
+    if (!validationResult.isValid) {
+      toggleInvalidDomainModal(validationResult.errorType);
+      return;
+    }
+    if (reviewStatus === 'Unsubmitted') {
+      submitReviewRequest(e);
+    } else {
+      updReviewStat('Reviewed');
+    }
+  };
+
+  const modalCancelButtonHandler = () => {
+    toggleModal();
+    setIsSubmitting(false);
+  };
+
+  // ── Render ────────────────────────────────────────────────────────────────
 
   return (
     <>
       {/* Verification Modal */}
       <Modal
         isOpen={verifyModal}
-        toggle={toggleVerify}
+        toggle={() => setVerifyModal(prev => !prev)}
         className={darkMode ? 'text-light dark-mode' : ''}
       >
-        <ModalHeader toggle={toggleVerify} className={darkMode ? 'bg-space-cadet' : ''}>
+        <ModalHeader
+          toggle={() => setVerifyModal(prev => !prev)}
+          className={darkMode ? 'bg-space-cadet' : ''}
+        >
           {selectedAction === 'Complete and Remove' &&
             'Are you sure you have completed the review?'}
           {selectedAction === 'More Work Needed' && 'Are you sure?'}
         </ModalHeader>
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button
-            onClick={e => {
-              toggleVerify();
-              if (selectedAction === 'More Work Needed') {
-                updReviewStat('Unsubmitted');
-                setIsSubmitting(false);
-              } else if (reviewStatus === 'Unsubmitted') {
-                submitReviewRequest(e);
-              } else {
-                updReviewStat('Reviewed');
-              }
-            }}
+            onClick={handleVerifyConfirm}
             color="primary"
             className="float-left"
             style={darkMode ? boxStyleDark : boxStyle}
           >
             {reviewStatus === 'Unsubmitted' ? `Submit` : `Complete`}
           </Button>
-          <Button onClick={toggleVerify} style={darkMode ? boxStyleDark : boxStyle}>
+          <Button
+            onClick={() => setVerifyModal(prev => !prev)}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
             Cancel
           </Button>
         </ModalFooter>
       </Modal>
+
       {/* Second Confirmation Modal */}
       <Modal
         isOpen={confirmSubmitModal}
-        toggle={toggleConfirmSubmitModal}
+        toggle={() => setConfirmSubmitModal(prev => !prev)}
         className={darkMode ? 'text-light dark-mode' : ''}
       >
-        <ModalHeader toggle={toggleConfirmSubmitModal} className={darkMode ? 'bg-space-cadet' : ''}>
+        <ModalHeader
+          toggle={() => setConfirmSubmitModal(prev => !prev)}
+          className={darkMode ? 'bg-space-cadet' : ''}
+        >
           Confirm Submission
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -642,7 +636,10 @@ function ReviewButton({ user, task, updateTask }) {
           >
             Confirm and Submit
           </Button>
-          <Button onClick={toggleConfirmSubmitModal} style={darkMode ? boxStyleDark : boxStyle}>
+          <Button
+            onClick={() => setConfirmSubmitModal(prev => !prev)}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
             Cancel
           </Button>
         </ModalFooter>
@@ -667,29 +664,7 @@ function ReviewButton({ user, task, updateTask }) {
         </ModalBody>
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button
-            onClick={e => {
-              e.preventDefault();
-              const sanitizedLink = sanitizeUrl(link);
-              if (!sanitizedLink || !validURL(sanitizedLink)) {
-                setEditLinkState(prev => ({
-                  ...prev,
-                  error: "Please enter a valid URL starting with 'https://'.",
-                }));
-                return;
-              }
-
-              const validationResult = validateAllowedDomainTypes(sanitizedLink);
-              if (!validationResult.isValid) {
-                toggleInvalidDomainModal(validationResult.errorType);
-                return;
-              }
-
-              if (reviewStatus === 'Unsubmitted') {
-                submitReviewRequest(e);
-              } else {
-                updReviewStat('Reviewed');
-              }
-            }}
+            onClick={handleSubmissionModalSubmit}
             color="primary"
             className="float-left"
             style={darkMode ? boxStyleDark : boxStyle}
@@ -726,9 +701,11 @@ function ReviewButton({ user, task, updateTask }) {
             style={darkMode ? boxStyleDark : boxStyle}
             disabled={editLinkState.isEditing}
           >
-            {renderUpdateButtonContent()}
+            <UpdateButtonContent
+              isEditing={editLinkState.isEditing}
+              isSuccess={editLinkState.isSuccess}
+            />
           </Button>
-
           <Button
             onClick={toggleEditLinkModal}
             style={darkMode ? boxStyleDark : boxStyle}
@@ -788,8 +765,42 @@ function ReviewButton({ user, task, updateTask }) {
         </ModalFooter>
       </Modal>
 
-      {buttonFormat()}
+      <ReviewButtonDisplay
+        user={user}
+        task={task}
+        myUserId={myUserId}
+        myRole={myRole}
+        canReview={canReview}
+        reviewStatus={reviewStatus}
+        darkMode={darkMode}
+        isSubmitting={isSubmitting}
+        onToggleModal={toggleModal}
+        onToggleEditLinkModal={toggleEditLinkModal}
+        onSelectAction={setSelectedAction}
+        onToggleVerify={() => setVerifyModal(prev => !prev)}
+      />
     </>
   );
 }
+
+ReviewButton.propTypes = {
+  user: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    personId: PropTypes.string.isRequired,
+  }).isRequired,
+  task: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    taskName: PropTypes.string.isRequired,
+    resources: PropTypes.arrayOf(
+      PropTypes.shape({
+        userID: PropTypes.string.isRequired,
+        reviewStatus: PropTypes.string,
+        completedTask: PropTypes.bool,
+      }),
+    ).isRequired,
+    relatedWorkLinks: PropTypes.arrayOf(PropTypes.string),
+  }).isRequired,
+  updateTask: PropTypes.func.isRequired,
+};
+
 export default ReviewButton;

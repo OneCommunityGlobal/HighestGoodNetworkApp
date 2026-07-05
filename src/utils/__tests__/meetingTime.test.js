@@ -4,6 +4,7 @@ import {
   formatMeetingDateTimeShort,
   getParticipantLocalTime,
   resolveUserTimeZone,
+  stripHtmlToPlainText,
 } from '../meetingTime';
 
 describe('meetingTime utils', () => {
@@ -37,5 +38,9 @@ describe('meetingTime utils', () => {
   it('falls back to browser time zone when profile time zone is missing', () => {
     const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     expect(resolveUserTimeZone('')).toBe(browserTimeZone);
+  });
+
+  it('strips html tags and normalizes whitespace from notes', () => {
+    expect(stripHtmlToPlainText('<p>Hello&nbsp; <strong>team</strong></p>')).toBe('Hello team');
   });
 });

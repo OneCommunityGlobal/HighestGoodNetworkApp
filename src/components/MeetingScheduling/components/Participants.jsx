@@ -9,6 +9,71 @@ import {
   resolveUserTimeZone,
 } from '../../../utils/meetingTime';
 
+const getProfileFullName = profile => `${profile.firstName} ${profile.lastName}`;
+
+const isEligibleProfile = (userProfile, authUserId, participantList, keyword) =>
+  userProfile._id !== authUserId &&
+  !participantList.some(participant => participant.name === getProfileFullName(userProfile)) &&
+  getProfileFullName(userProfile)
+    .toLowerCase()
+    .includes(keyword.toLowerCase());
+
+const compareNamePrefix = (firstNameA, firstNameB, keywordLower) => {
+  const aStarts = firstNameA.toLowerCase().startsWith(keywordLower);
+  const bStarts = firstNameB.toLowerCase().startsWith(keywordLower);
+
+  if (aStarts !== bStarts) {
+    return aStarts ? -1 : 1;
+  }
+
+  if (aStarts) {
+    return firstNameA.toLowerCase().localeCompare(firstNameB.toLowerCase());
+  }
+
+  return 0;
+};
+
+const compareProfilesByKeyword = (profileA, profileB, keywordLower) => {
+  const firstNameComparison = compareNamePrefix(
+    `${profileA.firstName}`,
+    `${profileB.firstName}`,
+    keywordLower,
+  );
+  if (firstNameComparison !== 0) {
+    return firstNameComparison;
+  }
+
+  const lastNameComparison = compareNamePrefix(
+    `${profileA.lastName}`,
+    `${profileB.lastName}`,
+    keywordLower,
+  );
+  if (lastNameComparison !== 0) {
+    return lastNameComparison;
+  }
+
+  return getProfileFullName(profileA)
+    .toLowerCase()
+    .localeCompare(getProfileFullName(profileB).toLowerCase());
+};
+
+const filterAndSortProfiles = (userProfiles, keyword, authUserId, participantList) => {
+  const keywordLower = keyword.toLowerCase();
+  const filteredProfiles = userProfiles.filter(userProfile =>
+    isEligibleProfile(userProfile, authUserId, participantList, keyword),
+  );
+
+  return filteredProfiles.sort((profileA, profileB) =>
+    compareProfilesByKeyword(profileA, profileB, keywordLower),
+  );
+};
+
+const getFieldClassName = darkMode =>
+  darkMode ? `${styles.field} ${styles.fieldDark}` : styles.field;
+
+const getDropdownClassName = darkMode =>
+  darkMode ? `${styles.dropdownMenu} ${styles.dropdownMenuDark}` : styles.dropdownMenu;
+
 function Participants({
   userProfiles,
   participantList,
@@ -23,44 +88,14 @@ function Participants({
   const searchInputRef = useRef(null);
   const showLocalTimes = hasValidMeetingSchedule(formValues);
 
-  const sortByStartingWith = keyword => {
-    const newFilterList = userProfiles.filter(
-      userProfile =>
-        userProfile._id !== authUserId &&
-        !participantList.some(
-          participant => participant.name === `${userProfile.firstName} ${userProfile.lastName}`,
-        ) &&
-        `${userProfile.firstName} ${userProfile.lastName}`
-          .toLowerCase()
-          .includes(keyword.toLowerCase()),
-    );
-
-    const finalList = newFilterList.sort((a, b) => {
-      const aStarts = `${a.firstName}`.toLowerCase().startsWith(keyword.toLowerCase());
-      const bStarts = `${b.firstName}`.toLowerCase().startsWith(keyword.toLowerCase());
-      if (aStarts && bStarts)
-        return `${a.firstName}`.toLowerCase().localeCompare(`${b.firstName}`.toLowerCase());
-      if (aStarts && !bStarts) return -1;
-      if (!aStarts && bStarts) return 1;
-      if (!aStarts && !bStarts) {
-        const aLastName = `${a.lastName}`.toLowerCase().startsWith(keyword.toLowerCase());
-        const bLastName = `${b.lastName}`.toLowerCase().startsWith(keyword.toLowerCase());
-        if (aLastName && bLastName)
-          return `${a.lastName}`.toLowerCase().localeCompare(`${b.lastName}`.toLowerCase());
-        if (aLastName && !bLastName) return -1;
-        if (!aLastName && bLastName) return 1;
-      }
-      return `${a.firstName} ${a.lastName}`
-        .toLowerCase()
-        .localeCompare(`${b.firstName} ${b.lastName}`.toLowerCase());
-    });
-
-    return finalList;
-  };
-
   const handleFilter = event => {
     const wordToSearch = event.target.value;
-    const newFilter = sortByStartingWith(wordToSearch);
+    const newFilter = filterAndSortProfiles(
+      userProfiles,
+      wordToSearch,
+      authUserId,
+      participantList,
+    );
     setFilteredData(newFilter);
   };
 
@@ -92,9 +127,10 @@ function Participants({
   };
 
   const showDropdown = filteredData.length > 0 && isFocused;
+  const localTimeClassName = darkMode ? styles.localTime : `${styles.localTime} text-muted`;
 
   return (
-    <div className={`${styles.field}${darkMode ? ` ${styles.fieldDark}` : ''}`}>
+    <div className={getFieldClassName(darkMode)}>
       <div className={styles.searchWrap}>
         <input
           ref={searchInputRef}
@@ -106,20 +142,16 @@ function Participants({
           onBlur={handleBlur}
         />
         {showDropdown && (
-          <ul
-            className={`${styles.dropdownMenu}${darkMode ? ` ${styles.dropdownMenuDark}` : ''}`}
-            role="listbox"
-            aria-label="Participant suggestions"
-          >
+          <ul className={getDropdownClassName(darkMode)} aria-label="Participant suggestions">
             {filteredData.map(userProfile => (
-              <li key={userProfile._id} role="option" aria-selected={false}>
+              <li key={userProfile._id}>
                 <button
                   type="button"
                   className={styles.dropdownItem}
                   onMouseDown={event => event.preventDefault()}
                   onClick={() => handleClick(userProfile)}
                 >
-                  {`${userProfile.firstName} ${userProfile.lastName}`}
+                  {getProfileFullName(userProfile)}
                 </button>
               </li>
             ))}
@@ -143,7 +175,7 @@ function Participants({
               <FontAwesomeIcon icon={faTimesCircle} className="m-1" />
             </button>
             {showLocalTimes && (
-              <div className={`${styles.localTime}${darkMode ? '' : ' text-muted'}`}>
+              <div className={localTimeClassName}>
                 <small>Their local time: {getLocalTimeLabel(participant)}</small>
               </div>
             )}

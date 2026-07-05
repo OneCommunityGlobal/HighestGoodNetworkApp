@@ -11,27 +11,16 @@ const constructErrorPayload = error => {
       message: error.message || 'Network error. Please try again later.',
     };
   }
-  let message = 'Unexpected Error';
-  switch (response.status) {
-    case 401:
-      message = 'You are unauthorized to access the resource.';
-      break;
-    case 403:
-      message = 'You are forbidden to access the resource.';
-      break;
-    case 404:
-      message = 'The resource you are trying to access is not found.';
-      break;
-    case 500:
-      message = 'Internal server error. Please try again later.';
-      break;
-    default:
-      message = 'Fetch unread notifications: Unexpected Error.';
-  }
+  const statusMessages = {
+    401: 'You are unauthorized to access the resource.',
+    403: 'You are forbidden to access the resource.',
+    404: 'The resource you are trying to access is not found.',
+    500: 'Internal server error. Please try again later.',
+  };
 
   return {
     status: response.status,
-    message: message,
+    message: statusMessages[response.status] || 'Fetch unread notifications: Unexpected Error.',
   };
 };
 

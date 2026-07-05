@@ -27,13 +27,17 @@ import {
   getParticipantLocalTime,
   hasValidMeetingSchedule,
   resolveUserTimeZone,
+  stripHtmlToPlainText,
 } from '../../utils/meetingTime';
 import '../../App.module.css';
 import styles from './MeetingScheduling.module.css';
 import { useHistory } from 'react-router-dom';
 
-const customImageUploadHandler = () =>
-  Promise.reject({ message: 'Pictures are not allowed here!', remove: true });
+const customImageUploadHandler = () => {
+  const uploadError = new Error('Pictures are not allowed here!');
+  uploadError.remove = true;
+  return Promise.reject(uploadError);
+};
 
 function MeetingModalHeader({ children, onClose }) {
   return (
@@ -78,14 +82,93 @@ const TINY_MCE_INIT_OPTIONS = {
   images_upload_handler: customImageUploadHandler,
 };
 
-const getNotesPlainText = html => {
-  if (!html) return '';
-  return html
-    .replace(/<[^>]*>/g, '')
-    .replace(/&nbsp;/gi, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+const LOCATION_TYPES_REQUIRING_DETAILS = ['Zoom', 'Phone call', 'On-site'];
+const HOUR_OPTIONS = Array.from({ length: 13 }, (_, hour) => hour);
+const MINUTE_OPTIONS = ['00', '15', '30', '45'];
+
+const getMeetingPageClassName = darkMode =>
+  darkMode ? `${styles.page} ${styles.pageDark} bg-oxford-blue text-light` : styles.page;
+
+const validateMeetingForm = (formValues, notesPlainText) => {
+  const validationErrors = {};
+
+  if (!formValues.dateOfMeeting) {
+    validationErrors.dateOfMeeting = 'Date is required.';
+  }
+  if (!formValues.startHour || !formValues.startMinute || !formValues.startTimePeriod) {
+    validationErrors.time = 'Start time is required.';
+  }
+  if (!formValues.timeZone) {
+    validationErrors.timeZone = 'Time zone is required.';
+  }
+  if (!formValues.duration) {
+    validationErrors.duration = 'Duration is required.';
+  }
+  if (formValues.participantList.length === 0) {
+    validationErrors.participantList = 'At least one participant is required.';
+  }
+  if (!formValues.location) {
+    validationErrors.location = 'Location is required.';
+  }
+  if (
+    LOCATION_TYPES_REQUIRING_DETAILS.includes(formValues.location) &&
+    !formValues.locationDetails
+  ) {
+    validationErrors.locationDetails = 'Location details are required.';
+  }
+  if (!notesPlainText) {
+    validationErrors.notes = 'Notes are required.';
+  }
+
+  const meetingMoment = buildMeetingMoment(formValues);
+  if (!meetingMoment.isValid()) {
+    validationErrors.time = 'Please enter a valid meeting date and time.';
+  }
+
+  return validationErrors;
 };
+
+const buildMeetingPayload = (formValues, notesHtml, allUserProfiles) => {
+  const notesPlainText = stripHtmlToPlainText(notesHtml);
+  const validationErrors = validateMeetingForm(formValues, notesPlainText);
+
+  if (Object.keys(validationErrors).length > 0) {
+    return { validationErrors };
+  }
+
+  const meetingMoment = buildMeetingMoment(formValues);
+  const meeting = {
+    ...formValues,
+    notes: notesHtml,
+    dateTime: meetingMoment.toISOString(),
+    participantList: formValues.participantList.map(participant => participant.userProfileId),
+  };
+
+  const participantSummaries = formValues.participantList.map(participant => {
+    const profile = allUserProfiles.find(user => user._id === participant.userProfileId);
+    const localTime = getParticipantLocalTime(formValues, profile?.timeZone);
+    return `${participant.name}: ${localTime || 'time unavailable'}`;
+  });
+
+  const participantNames = formValues.participantList
+    .map(participant => participant.name)
+    .join(', ');
+
+  return {
+    meeting,
+    confirmationDetails: {
+      participants: participantNames,
+      organizerTime: formatMeetingDateTimeShort(meeting.dateTime, formValues.timeZone),
+      participantTimes: participantSummaries,
+      duration: `${meeting.duration} minutes`,
+      location: meeting.location,
+      locationDetails: meeting.locationDetails,
+      notes: meeting.notes,
+    },
+  };
+};
+
+const getNotesPlainText = stripHtmlToPlainText;
 
 const getFormControlClassName = darkMode =>
   darkMode ? 'bg-darkmode-liblack text-light border-0 calendar-icon-dark' : '';
@@ -147,12 +230,16 @@ function MeetingScheduling(props) {
     window.addEventListener('resize', syncPageScrollArea);
 
     const resizeObserver =
-      typeof ResizeObserver !== 'undefined' ? new ResizeObserver(syncPageScrollArea) : null;
-    resizeObserver?.observe(headerEl);
+      typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(syncPageScrollArea);
+    if (resizeObserver) {
+      resizeObserver.observe(headerEl);
+    }
 
     return () => {
       window.removeEventListener('resize', syncPageScrollArea);
-      resizeObserver?.disconnect();
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
     };
   }, []);
 
@@ -212,13 +299,12 @@ function MeetingScheduling(props) {
   const handleInputChange = event => {
     const { target } = event;
 
-    switch (target.name) {
-      case 'duration':
-        setFormValues(prevValues => ({ ...prevValues, duration: +target.value }));
-        break;
-      default:
-        setFormValues(prevValues => ({ ...prevValues, [target.name]: target.value }));
+    if (target.name === 'duration') {
+      setFormValues(prevValues => ({ ...prevValues, duration: +target.value }));
+      return;
     }
+
+    setFormValues(prevValues => ({ ...prevValues, [target.name]: target.value }));
   };
 
   const handleTimeZoneChange = event => {
@@ -237,84 +323,14 @@ function MeetingScheduling(props) {
     setEditorInstanceKey(key => key + 1);
   }, [authUser, userProfile]);
 
-  const buildMeetingPayload = () => {
-    const validationErrors = {};
-
-    if (!formValues.dateOfMeeting) {
-      validationErrors.dateOfMeeting = 'Date is required.';
-    }
-    if (!formValues.startHour || !formValues.startMinute || !formValues.startTimePeriod) {
-      validationErrors.time = 'Start time is required.';
-    }
-    if (!formValues.timeZone) {
-      validationErrors.timeZone = 'Time zone is required.';
-    }
-    if (!formValues.duration) {
-      validationErrors.duration = 'Duration is required.';
-    }
-    if (formValues.participantList.length === 0) {
-      validationErrors.participantList = 'At least one participant is required.';
-    }
-    if (!formValues.location) {
-      validationErrors.location = 'Location is required.';
-    }
-    if (
-      (formValues.location === 'Zoom' ||
-        formValues.location === 'Phone call' ||
-        formValues.location === 'On-site') &&
-      !formValues.locationDetails
-    ) {
-      validationErrors.locationDetails = 'Location details are required.';
-    }
-    if (!getNotesPlainText(lastNotesRef.current)) {
-      validationErrors.notes = 'Notes are required.';
-    }
-
-    const meetingMoment = buildMeetingMoment(formValues);
-    if (!meetingMoment.isValid()) {
-      validationErrors.time = 'Please enter a valid meeting date and time.';
-    }
-
-    if (Object.keys(validationErrors).length > 0) {
-      return { validationErrors };
-    }
-
-    const meeting = {
-      ...formValues,
-      notes: lastNotesRef.current,
-      dateTime: meetingMoment.toISOString(),
-      participantList: formValues.participantList.map(participant => participant.userProfileId),
-    };
-
-    const participantSummaries = formValues.participantList.map(participant => {
-      const profile = allUserProfiles.find(user => user._id === participant.userProfileId);
-      const localTime = getParticipantLocalTime(formValues, profile?.timeZone);
-      return `${participant.name}: ${localTime || 'time unavailable'}`;
-    });
-
-    const participantNames = formValues.participantList
-      .map(participant => participant.name)
-      .join(', ');
-
-    return {
-      meeting,
-      confirmationDetails: {
-        participants: participantNames,
-        organizerTime: formatMeetingDateTimeShort(meeting.dateTime, formValues.timeZone),
-        participantTimes: participantSummaries,
-        duration: `${meeting.duration} minutes`,
-        location: meeting.location,
-        locationDetails: meeting.locationDetails,
-        notes: meeting.notes,
-      },
-    };
-  };
+  const buildMeetingPayloadForSubmit = () =>
+    buildMeetingPayload(formValues, lastNotesRef.current, allUserProfiles);
 
   const handleSubmit = async event => {
     event.preventDefault();
     setErrors({});
 
-    const payload = buildMeetingPayload();
+    const payload = buildMeetingPayloadForSubmit();
     if (payload.validationErrors) {
       setErrors(payload.validationErrors);
       return;
@@ -413,10 +429,7 @@ function MeetingScheduling(props) {
   );
 
   return (
-    <div
-      ref={pageRef}
-      className={`${styles.page}${darkMode ? ` ${styles.pageDark} bg-oxford-blue text-light` : ''}`}
-    >
+    <div ref={pageRef} className={getMeetingPageClassName(darkMode)}>
       <div className="meeting-scheduling-container">
         <div className="meeting-scheduling-form-card">
           <h3 className="meeting-scheduling-title">Schedule a New Meeting</h3>
@@ -504,7 +517,7 @@ function MeetingScheduling(props) {
                     value={formValues.startHour}
                     onChange={handleInputChange}
                   >
-                    {[...Array(13).keys()].map(hour => (
+                    {HOUR_OPTIONS.map(hour => (
                       <option key={hour} value={hour.toString().padStart(2, '0')}>
                         {hour.toString().padStart(2, '0')}
                       </option>
@@ -520,7 +533,7 @@ function MeetingScheduling(props) {
                     value={formValues.startMinute}
                     onChange={handleInputChange}
                   >
-                    {['00', '15', '30', '45'].map(minute => (
+                    {MINUTE_OPTIONS.map(minute => (
                       <option key={minute} value={minute}>
                         {minute}
                       </option>

@@ -81,7 +81,34 @@ import styles from './Header.module.css';
 import {
   formatMeetingDateTime,
   resolveUserTimeZone,
+  stripHtmlToPlainText,
 } from '../../utils/meetingTime';
+
+const buildMeetingDetailsMessageHtml = (
+  currMeeting,
+  organizerName,
+  totalMeetings,
+  meetingIndex,
+  viewerTimeZone,
+  getMeetingCountLabel,
+) => {
+  const cleanNotes = stripHtmlToPlainText(currMeeting.notes);
+  const countLabel = getMeetingCountLabel(totalMeetings, meetingIndex);
+  const messageParts = [
+    `Reminder: You have an upcoming meeting${countLabel}! Please check the details and be prepared.<br>`,
+    `<strong>Time:</strong> ${formatMeetingDateTime(currMeeting.dateTime, viewerTimeZone)}<br>`,
+    `<strong>Organizer:</strong> ${organizerName}<br>`,
+  ];
+
+  if (currMeeting.location) {
+    messageParts.push(`<strong>Location:</strong> ${currMeeting.location}<br>`);
+  }
+  if (cleanNotes) {
+    messageParts.push(`<strong>Notes:</strong> ${cleanNotes}<br>`);
+  }
+
+  return messageParts.join('');
+};
 
 function MeetingNotificationModalHeader({ children, onClose }) {
   return (
@@ -412,21 +439,15 @@ export function Header(props) {
   );
 
   const buildMeetingDetailsMessage = useCallback(
-    (currMeeting, organizerName, totalMeetings = 1, meetingIndex = 1) => {
-      const cleanNotes = currMeeting.notes
-        ?.replace(/<[^>]*>/g, '')
-        .replace(/&nbsp;/gi, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-
-      const countLabel = getMeetingCountLabel(totalMeetings, meetingIndex);
-
-      return `Reminder: You have an upcoming meeting${countLabel}! Please check the details and be prepared.<br>
-        <strong>Time:</strong> ${formatMeetingDateTime(currMeeting.dateTime, viewerTimeZone)}<br>
-        <strong>Organizer:</strong> ${organizerName}<br>
-        ${currMeeting.location ? `<strong>Location:</strong> ${currMeeting.location}<br>` : ''}
-        ${cleanNotes ? `<strong>Notes:</strong> ${cleanNotes}<br>` : ''}`;
-    },
+    (currMeeting, organizerName, totalMeetings = 1, meetingIndex = 1) =>
+      buildMeetingDetailsMessageHtml(
+        currMeeting,
+        organizerName,
+        totalMeetings,
+        meetingIndex,
+        viewerTimeZone,
+        getMeetingCountLabel,
+      ),
     [viewerTimeZone, getMeetingCountLabel],
   );
 
@@ -439,12 +460,7 @@ export function Header(props) {
       const totalMeetings = userUnreadMeetings.length;
       const meetingPosition = index + 1;
 
-      if (!meetingAudioUnlocked) {
-        setMeetingModalMessage(
-          `You have an upcoming meeting scheduled within the next 3 days${getMeetingCountLabel(totalMeetings, meetingPosition)}.<br>
-        Click "Enable Alerts &amp; View Meeting" to enable notification sounds and see meeting details.`,
-        );
-      } else {
+      if (meetingAudioUnlocked) {
         setMeetingModalMessage(
           buildMeetingDetailsMessage(meeting, organizerName, totalMeetings, meetingPosition),
         );
@@ -452,6 +468,11 @@ export function Header(props) {
         if (playSound) {
           playMeetingAudio();
         }
+      } else {
+        setMeetingModalMessage(
+          `You have an upcoming meeting scheduled within the next 3 days${getMeetingCountLabel(totalMeetings, meetingPosition)}.<br>
+        Click "Enable Alerts &amp; View Meeting" to enable notification sounds and see meeting details.`,
+        );
       }
 
       setActiveMeetingModalIndex(index);

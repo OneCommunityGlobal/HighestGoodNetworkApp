@@ -55,3 +55,29 @@ export const getParticipantLocalTime = (formValues, participantTimeZone) => {
 };
 
 export const hasValidMeetingSchedule = formValues => buildMeetingMoment(formValues).isValid();
+
+export const stripHtmlToPlainText = html => {
+  if (!html) return '';
+
+  let plainText = '';
+  let insideTag = false;
+
+  for (const character of html) {
+    if (character === '<') {
+      insideTag = true;
+      continue;
+    }
+    if (character === '>') {
+      insideTag = false;
+      continue;
+    }
+    if (!insideTag) {
+      plainText += character;
+    }
+  }
+
+  return plainText
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+};
