@@ -1,0 +1,14 @@
+/* stylelint-disable declaration-property-value-keyword-no-deprecated */
+.teamNameCol {
+  width: 55%;
+  white-space: normal;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+}
+
+/* Media queries for responsive design */
+@media (width <= 575px) {
+  .teamNameCol {
+    font-size: 12px;
+  }
+}
