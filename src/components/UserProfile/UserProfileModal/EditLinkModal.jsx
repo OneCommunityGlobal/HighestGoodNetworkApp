@@ -142,6 +142,24 @@ const EditLinkModal = props => {
     }
   };
 
+  // Checks edited rows before saving, since plus-button validation does not cover existing links.
+  const hasDuplicateEditedLinks = (links, includeReservedNames = false) => {
+    const names = new Set();
+    const urls = new Set();
+    const linksToCheck = includeReservedNames ? [googleLink, mediaFolderLink, ...links] : links;
+
+    return linksToCheck.some(link => {
+      const name = link.Name.trim().toLowerCase();
+      const url = link.Link.trim().toLowerCase();
+
+      if ((name && names.has(name)) || (url && urls.has(url))) return true;
+
+      if (name) names.add(name);
+      if (url) urls.add(url);
+      return false;
+    });
+  };
+
   const isValidUrl = url => {
     try {
       const pattern = /^(?:https?:\/\/)?[\w.-]+\.[a-zA-Z]{2,}(?:\/\S*)?$/;
@@ -157,8 +175,14 @@ const EditLinkModal = props => {
     // Validate the Google Doc and Media Folder links
     const isGoogleDocsValid = googleLink.Link === '' || isValidGoogleDocsUrl(googleLink.Link);
     const isMediaFolderValid = mediaFolderLink.Link === '' || isValidMediaUrl(mediaFolderLink.Link);
+    const hasDuplicateLinks =
+      hasDuplicateEditedLinks(adminLinks, true) || hasDuplicateEditedLinks(personalLinks);
 
-    if (isGoogleDocsValid && isMediaFolderValid) {
+    // Stop update when an edited existing link duplicates another visible link.
+    if (hasDuplicateLinks) {
+      setDuplicateNameError(true);
+      setIsValidLink(true);
+    } else if (isGoogleDocsValid && isMediaFolderValid) {
       const linksToUpdate = [googleLink, mediaFolderLink, ...adminLinks];
       await updateLink(personalLinks, linksToUpdate, mediaFolderLink.Link);
       handleSubmit();
