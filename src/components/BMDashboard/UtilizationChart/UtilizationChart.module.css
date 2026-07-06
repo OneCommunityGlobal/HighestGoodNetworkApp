@@ -68,6 +68,15 @@
   color: #999;
 }
 
+:global(.react-datepicker__navigation) {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+:global(.react-datepicker__navigation:hover) {
+  opacity: 0.6;
+  transform: scale(1.15);
+}
+
 :global(body:not(.dark-mode)) :global(.react-datepicker) {
   background-color: #fff;
   color: #333;
@@ -94,6 +103,12 @@
 :global(body:not(.dark-mode)) :global(.react-datepicker__day--in-range) {
   background-color: #3b82f6;
   color: #1a1a1a !important;
+}
+
+:global(body:not(.dark-mode)) :global(.react-datepicker__day--disabled) {
+  color: #ccc !important;
+  cursor: not-allowed !important;
+  background-color: transparent !important;
 }
 
 .button {
@@ -299,6 +314,35 @@
   gap: 1rem;
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
+}
+
+.summaryCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-width: 120px;
+  padding: 1rem;
+  background-color: var(--card-bg, #f9fafb);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+  text-align: center;
+}
+
+.summaryValue {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-color, #333);
+  line-height: 1.2;
+}
+
+.summaryLabel {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #6b7280);
+  margin-top: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .summaryCardGreen {
@@ -591,6 +635,16 @@
 .utilizationChartContainer.darkMode :global(.react-datepicker__day--in-range) {
   background-color: #e8a71c;
   color: #000;
+}
+
+.utilizationChartContainer.darkMode :global(.react-datepicker__day--disabled) {
+  color: #6b7280 !important;
+  cursor: not-allowed !important;
+  background-color: transparent !important;
+}
+
+.darkMode .forecastToggle {
+  border: none;
 }
 
 .darkMode .warningBanner {
