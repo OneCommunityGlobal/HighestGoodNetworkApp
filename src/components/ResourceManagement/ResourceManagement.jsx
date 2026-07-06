@@ -8,7 +8,7 @@ import * as XLSX from 'xlsx';
 import styles from './ResourceManagement.module.css';
 import { MOCK_RESOURCES } from './MockData';
 
-function SearchBar({ onSortToggle, darkMode, searchTerm, onSearchTermChange }) {
+function SearchBar({ onSortToggle, darkMode, searchTerm, onSearchTermChange, onClearSearch }) {
   return (
     <div
       className={`${styles.searchBarContainer} ${
@@ -36,6 +36,12 @@ function SearchBar({ onSortToggle, darkMode, searchTerm, onSearchTermChange }) {
           value={searchTerm}
           onChange={onSearchTermChange}
         />
+        <button type="button" className={styles.searchButton} onClick={() => {}}>
+          Search
+        </button>
+        <button type="button" className={styles.clearButton} onClick={onClearSearch}>
+          Clear
+        </button>
       </div>
     </div>
   );
@@ -249,6 +255,11 @@ function ResourceManagement() {
     setCurrentPage(1);
   };
 
+  const handleClearSearch = () => {
+    setSearchTerm('');
+    setCurrentPage(1);
+  };
+
   const filteredResources = useMemo(() => {
     const term = searchTerm.toLowerCase().trim();
 
@@ -417,6 +428,7 @@ function ResourceManagement() {
         darkMode={darkMode}
         searchTerm={searchTerm}
         onSearchTermChange={onSearchTermChange}
+        onClearSearch={handleClearSearch}
       />
 
       <div className={styles.resourceList}>
@@ -532,6 +544,7 @@ SearchBar.propTypes = {
   darkMode: PropTypes.bool,
   searchTerm: PropTypes.string.isRequired,
   onSearchTermChange: PropTypes.func.isRequired,
+  onClearSearch: PropTypes.func.isRequired,
 };
 
 SearchBar.defaultProps = {
