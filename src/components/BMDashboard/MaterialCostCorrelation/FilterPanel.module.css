@@ -334,6 +334,18 @@
   border-radius: 4px !important;
 }
 
+:global(.react-datepicker__day--keyboard-selected) {
+  background-color: var(--preset-button-hover-bg) !important;
+  color: var(--input-text) !important;
+  border-radius: 4px !important;
+}
+
+:global(.select__input-container),
+:global(.select__input-container input),
+:global(.select__input) {
+  color: var(--input-text) !important;
+}
+
 :global(.react-datepicker__close-icon::after) {
   background-color: var(--input-text) !important;
   color: var(--input-text) !important;

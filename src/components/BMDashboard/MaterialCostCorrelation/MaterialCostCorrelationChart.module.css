@@ -269,8 +269,15 @@
   color: var(--chart-text);
 }
 
-.retryButton {
+.errorActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
   margin-top: 12px;
+}
+
+.retryButton {
   padding: 10px 20px;
   background: var(--button-bg);
   color: var(--button-text);

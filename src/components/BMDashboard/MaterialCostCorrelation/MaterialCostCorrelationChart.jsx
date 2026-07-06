@@ -51,20 +51,26 @@ function CustomTooltip({ active, payload, darkMode }) {
       }`}
     >
       <div className={styles.tooltipTitle}>{data.materialTypeName}</div>
-      {costPayload && (
-        <div className={styles.tooltipRow}>
-          <strong>Total Material Cost:</strong> ${(costPayload.value * 1000).toFixed(2)}
-        </div>
+      {data.hasData === false ? (
+        <div className={styles.tooltipRow}>No data available for this material</div>
+      ) : (
+        <>
+          {costPayload && (
+            <div className={styles.tooltipRow}>
+              <strong>Total Material Cost:</strong> ${(costPayload.value * 1000).toFixed(2)}
+            </div>
+          )}
+          {quantityPayload && (
+            <div className={styles.tooltipRow}>
+              <strong>Quantity Used:</strong> {Math.round(quantityPayload.value)}
+            </div>
+          )}
+          <div className={styles.tooltipHint}>
+            <strong>Cost per Unit:</strong> $
+            {data.costPerUnit == null ? '0.00' : data.costPerUnit.toFixed(2)}
+          </div>
+        </>
       )}
-      {quantityPayload && (
-        <div className={styles.tooltipRow}>
-          <strong>Quantity Used:</strong> {Math.round(quantityPayload.value)}
-        </div>
-      )}
-      <div className={styles.tooltipHint}>
-        <strong>Cost per Unit:</strong> $
-        {data.costPerUnit == null ? '0.00' : data.costPerUnit.toFixed(2)}
-      </div>
     </div>
   );
 }
@@ -102,7 +108,12 @@ const getErrorType = errorMessage => {
   if (message.includes('network') || message.includes('connect')) {
     return 'network';
   }
-  if (message.includes('start date') || message.includes('end date')) {
+  if (
+    message.includes('start date') ||
+    message.includes('end date') ||
+    message.includes('startdate') ||
+    message.includes('enddate')
+  ) {
     return 'validation';
   }
   return 'general';
@@ -190,8 +201,9 @@ function getYAxisProps(shortYAxisLabels, textColor, yAxisWidth) {
   };
 }
 
-function ErrorDisplay({ error, errorType, darkMode, onRetry }) {
+function ErrorDisplay({ error, errorType, darkMode, onRetry, onResetFilters }) {
   const shouldShowRetry = errorType !== 'permission' && errorType !== 'authentication';
+  const shouldShowReset = errorType !== 'permission' && errorType !== 'authentication';
   return (
     <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
       <div className={styles.errorContainer}>
@@ -215,12 +227,19 @@ function ErrorDisplay({ error, errorType, darkMode, onRetry }) {
             </p>
           )}
         </div>
-        {shouldShowRetry && (
-          <button type="button" onClick={onRetry} className={styles.retryButton}>
-            <BiRefresh className={styles.retryIcon} />
-            Retry
-          </button>
-        )}
+        <div className={styles.errorActions}>
+          {shouldShowRetry && (
+            <button type="button" onClick={onRetry} className={styles.retryButton}>
+              <BiRefresh className={styles.retryIcon} />
+              Retry
+            </button>
+          )}
+          {shouldShowReset && (
+            <button type="button" onClick={onResetFilters} className={styles.resetFiltersButton}>
+              Reset Filters
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -231,6 +250,7 @@ ErrorDisplay.propTypes = {
   errorType: PropTypes.string.isRequired,
   darkMode: PropTypes.bool,
   onRetry: PropTypes.func.isRequired,
+  onResetFilters: PropTypes.func.isRequired,
 };
 
 ErrorDisplay.defaultProps = {
@@ -243,6 +263,12 @@ function MaterialCostCorrelationChart() {
   const { loading, data, error, filters } = useSelector(
     state => state.materialCostCorrelation || {},
   );
+  const materialTypesList = useSelector(state => state.bmInvTypes?.list || []);
+  const materialTypesById = useMemo(() => {
+    const map = new Map();
+    materialTypesList.forEach(mat => map.set(mat._id, mat.name));
+    return map;
+  }, [materialTypesList]);
 
   const chartContainerRef = useRef(null);
   const [containerWidth, setContainerWidth] = useState(400);
@@ -275,27 +301,46 @@ function MaterialCostCorrelationChart() {
 
   const barChartData = useMemo(() => {
     try {
-      if (!data || !Array.isArray(data) || data.length === 0) {
-        return null;
-      }
-      // Flatten byMaterialType across all projects
       const materialMap = new Map();
-      data.forEach(project => {
-        (project.byMaterialType || []).forEach(mat => {
-          const key = mat.materialTypeName || mat.materialTypeId;
-          if (!materialMap.has(key)) {
-            materialMap.set(key, {
-              materialTypeName: key,
-              quantityUsed: 0,
-              totalCostK: 0,
-              costPerUnit: mat.costPerUnit || 0,
-            });
-          }
-          const existing = materialMap.get(key);
-          existing.quantityUsed += mat.quantityUsed || 0;
-          existing.totalCostK += mat.totalCostK || 0;
+
+      // Seed the chart with every explicitly selected material type so all of
+      // them appear as categories, even if the backend returned no data for some.
+      (filters.selectedMaterialTypes || []).forEach(materialTypeId => {
+        const name = materialTypesById.get(materialTypeId) || materialTypeId;
+        materialMap.set(materialTypeId, {
+          materialTypeName: name,
+          quantityUsed: 0,
+          totalCostK: 0,
+          costPerUnit: 0,
+          hasData: false,
         });
       });
+
+      if (data && Array.isArray(data) && data.length > 0) {
+        // Flatten byMaterialType across all projects
+        data.forEach(project => {
+          (project.byMaterialType || []).forEach(mat => {
+            const key = mat.materialTypeId || mat.materialTypeName;
+            if (!materialMap.has(key)) {
+              materialMap.set(key, {
+                materialTypeName: mat.materialTypeName || key,
+                quantityUsed: 0,
+                totalCostK: 0,
+                costPerUnit: mat.costPerUnit || 0,
+                hasData: false,
+              });
+            }
+            const existing = materialMap.get(key);
+            existing.quantityUsed += mat.quantityUsed || 0;
+            existing.totalCostK += mat.totalCostK || 0;
+            existing.hasData = true;
+          });
+        });
+      }
+
+      if (materialMap.size === 0) {
+        return null;
+      }
       return Array.from(materialMap.values());
     } catch (transformError) {
       logger.logError(
@@ -306,7 +351,7 @@ function MaterialCostCorrelationChart() {
       );
       return null;
     }
-  }, [data]);
+  }, [data, filters.selectedMaterialTypes, materialTypesById]);
 
   const chartConfig = useMemo(() => {
     const textColor = darkMode ? '#f7fafc' : '#1a202c';
@@ -383,6 +428,7 @@ function MaterialCostCorrelationChart() {
             ),
           )
         }
+        onResetFilters={handleResetFilters}
       />
     );
   }

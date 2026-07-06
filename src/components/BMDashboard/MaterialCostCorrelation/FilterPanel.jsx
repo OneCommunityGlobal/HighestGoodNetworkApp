@@ -82,16 +82,19 @@ function FilterPanel({
 
     const hasAll = selected.some(option => option.value === 'all');
     const realSelections = selected.filter(option => option.value !== 'all');
+    const wasAllSelectedBefore = selectedProjects.length === 0;
 
-    // If the user just picked "All Projects" alongside existing real selections,
-    // treat it as resetting to "all" (clear filter). If they picked a real
-    // project while "all" was already selected, drop "all" and keep the real one.
-    if (hasAll && realSelections.length === selected.length - 1 && realSelections.length > 0) {
-      onProjectChange(realSelections.map(option => option.value));
-    } else if (hasAll) {
+    // If "All Projects" was just added on top of an existing real selection,
+    // the user wants to reset to "all" (clear the filter). If a real project
+    // was just added while "all" was showing, drop "all" and keep the real one.
+    if (hasAll && !wasAllSelectedBefore) {
       onProjectChange([]);
-    } else {
+    } else if (hasAll && wasAllSelectedBefore && realSelections.length > 0) {
       onProjectChange(realSelections.map(option => option.value));
+    } else if (!hasAll) {
+      onProjectChange(realSelections.map(option => option.value));
+    } else {
+      onProjectChange([]);
     }
   };
 
@@ -103,13 +106,19 @@ function FilterPanel({
 
     const hasAll = selected.some(option => option.value === 'all');
     const realSelections = selected.filter(option => option.value !== 'all');
+    const wasAllSelectedBefore = selectedMaterialTypes.length === 0;
 
-    if (hasAll && realSelections.length === selected.length - 1 && realSelections.length > 0) {
-      onMaterialTypeChange(realSelections.map(option => option.value));
-    } else if (hasAll) {
+    // If "All Materials" was just added on top of an existing real selection,
+    // the user wants to reset to "all" (clear the filter). If a real material
+    // was just added while "all" was showing, drop "all" and keep the real one.
+    if (hasAll && !wasAllSelectedBefore) {
       onMaterialTypeChange([]);
-    } else {
+    } else if (hasAll && wasAllSelectedBefore && realSelections.length > 0) {
       onMaterialTypeChange(realSelections.map(option => option.value));
+    } else if (!hasAll) {
+      onMaterialTypeChange(realSelections.map(option => option.value));
+    } else {
+      onMaterialTypeChange([]);
     }
   };
 
@@ -208,6 +217,7 @@ function FilterPanel({
               selectsStart
               startDate={startDate}
               endDate={endDate}
+              maxDate={endDate}
               placeholderText="Start Date"
               dateFormat="yyyy-MM-dd"
               className={darkMode ? styles.datePickerDark : styles.datePickerLight}
