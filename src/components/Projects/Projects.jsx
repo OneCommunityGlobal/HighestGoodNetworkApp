@@ -15,7 +15,7 @@ import ProjectTableHeader from './ProjectTableHeader';
 import Project from './Project';
 import ModalTemplate from './../common/Modal';
 import { CONFIRM_ARCHIVE, PROJECT_INACTIVE_CONFIRMATION, PROJECT_ACTIVE_CONFIRMATION } from './../../languages/en/messages';
-import './projects.module.css';
+import styles from './projects.module.css';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
@@ -387,7 +387,7 @@ const Projects = function(props) {
           <div className="input-group" style={{ maxWidth: '260px', maxHeight: '38px' }}>
             <div className="input-group-prepend">
               <span
-              className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+                  className={`input-group-text ${darkMode ? styles.searchLabelDark + ' text-light' : ''}`}
               >
                 Filter by
               </span>
