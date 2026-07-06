@@ -35,20 +35,31 @@ const normalizeStatus = status => {
   return 'New';
 };
 
-export default function CommunityCalendar() {
+function CommunityCalendar() {
   const [events, setEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filter, setFilter] = useState({ type: 'all', location: 'all', status: 'all' });
+
+  const [filter, setFilter] = useState({
+    type: 'all',
+    location: 'all',
+    status: 'all',
+  });
+
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEventModal, setShowEventModal] = useState(false);
+  const [overflowDate, setOverflowDate] = useState(null);
+
+  const popupRef = useRef(null);
+
   const [tooltip, setTooltip] = useState(null);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
     const fetchEvents = async () => {
       setIsLoading(true);
+
       try {
         const response = await axios.get(ENDPOINTS.EVENTS);
         const apiEvents = response.data?.events || response.data || [];
@@ -141,37 +152,33 @@ export default function CommunityCalendar() {
     [mappedEvents, filter],
   );
 
-  // Enhanced event caching by date - memoized for performance
   const eventCache = useMemo(() => {
     const map = new Map();
+
     filteredEvents.forEach(e => {
       const key = e.date.toDateString();
-      if (!map.has(key)) map.set(key, []);
+
+      if (!map.has(key)) {
+        map.set(key, []);
+      }
+
       map.get(key).push(e);
     });
+
     return map;
   }, [filteredEvents]);
 
   const eventCountByDate = useMemo(() => {
     const map = new Map();
+
     filteredEvents.forEach(e => {
       const key = e.date.toDateString();
       map.set(key, (map.get(key) || 0) + 1);
     });
+
     return map;
   }, [filteredEvents]);
 
-  const handleFilterChange = useCallback(
-    filterType => e => {
-      setFilter(prev => ({
-        ...prev,
-        [filterType]: e.target.value,
-      }));
-    },
-    [],
-  );
-
-  const [overflowDate, setOverflowDate] = useState(null);
   const getEventsForDate = useCallback(
     date => {
       if (!date) return [];
@@ -182,9 +189,11 @@ export default function CommunityCalendar() {
 
   const selectedDateEvents = useMemo(() => {
     const dateKey = selectedDate?.toDateString();
+
     if (!dateKey) {
       return [];
     }
+
     return filteredEvents.filter(event => event.date.toDateString() === dateKey);
   }, [filteredEvents, selectedDate]);
 
@@ -192,6 +201,7 @@ export default function CommunityCalendar() {
     if (!selectedDate) {
       return '';
     }
+
     return selectedDate.toLocaleDateString(undefined, {
       weekday: 'long',
       month: 'long',
@@ -199,6 +209,16 @@ export default function CommunityCalendar() {
       year: 'numeric',
     });
   }, [selectedDate]);
+
+  const handleFilterChange = useCallback(
+    filterType => e => {
+      setFilter(prev => ({
+        ...prev,
+        [filterType]: e.target.value,
+      }));
+    },
+    [],
+  );
 
   const [registeredEventIds, setRegisteredEventIds] = useState(new Set());
   const [isRegistering, setIsRegistering] = useState(false);
@@ -346,21 +366,23 @@ export default function CommunityCalendar() {
   const handleDateSelect = useCallback(
     date => {
       setSelectedDate(date);
+
       const eventsForDate = getEventsForDate(date);
+
       if (eventsForDate.length > 0) {
         setSelectedEvent(eventsForDate[0]);
       } else {
         setSelectedEvent(null);
       }
+
       setShowEventModal(false);
     },
     [getEventsForDate],
   );
+
   const handleEventClick = useCallback(event => {
     setSelectedDate(new Date(event.date));
-
     setSelectedEvent(event);
-
     setShowEventModal(true);
   }, []);
 
@@ -380,7 +402,6 @@ export default function CommunityCalendar() {
     return 'Register for Event';
   }, [eventHasEnded, registeredEventIds, selectedEvent, isRegistering]);
 
-  // Close on ESC
   useEffect(() => {
     const esc = e => {
       if (e.key === 'Escape') {
@@ -388,20 +409,21 @@ export default function CommunityCalendar() {
         setOverflowDate(null);
       }
     };
+
     document.addEventListener('keydown', esc);
+
     return () => document.removeEventListener('keydown', esc);
   }, [closeEventModal]);
 
-  // Close overflow popup on outside click
-
-  const popupRef = useRef(null);
   useEffect(() => {
     const handleClickOutside = e => {
       if (popupRef.current && !popupRef.current.contains(e.target)) {
         setOverflowDate(null);
       }
     };
+
     document.addEventListener('mousedown', handleClickOutside);
+
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
@@ -412,6 +434,7 @@ export default function CommunityCalendar() {
       if (selectedEvent !== null) {
         setSelectedEvent(null);
       }
+
       return;
     }
 
@@ -420,7 +443,7 @@ export default function CommunityCalendar() {
     if (!hasSelectedEvent) {
       setSelectedEvent(eventsForDate[0]);
     }
-  }, [getEventsForDate, selectedDate]);
+  }, [getEventsForDate, selectedDate, selectedEvent]);
 
   const statusMap = {
     New: 'statusNew',
@@ -539,28 +562,51 @@ export default function CommunityCalendar() {
     );
   }
 
+  const getEventLabel = useCallback(count => {
+    return count === 1 ? 'event' : 'events';
+  }, []);
+
+  const renderSelectedDateSummary = useCallback(() => {
+    const count = selectedDateEvents.length;
+
+    if (count === 0) {
+      return 'No events scheduled for this date';
+    }
+
+    return `${count} ${getEventLabel(count)} scheduled`;
+  }, [selectedDateEvents.length, getEventLabel]);
+
+  const getEventStatusKey = useCallback(status => {
+    return statusMap[status] || 'statusNew';
+  }, []);
+
+  const getHiddenCount = (eventsForDate, limit = 3) => Math.max(0, eventsForDate.length - limit);
+
+  const getVisibleEvents = (eventsForDate, limit = 3) => eventsForDate.slice(0, limit);
+
   // Render event tiles
   const tileContent = useCallback(
     ({ date, view }) => {
       if (view !== 'month') return null;
-      const events = getEventsForDate(date);
-      if (!events.length) return null;
 
-      const visible = events.slice(0, 3);
-      const hiddenCount = events.length - 3;
+      const eventsForDate = getEventsForDate(date);
+      if (!eventsForDate.length) return null;
+
+      const visible = getVisibleEvents(eventsForDate);
+      const hiddenCount = getHiddenCount(eventsForDate);
 
       return (
         <div className={styles.tileEvents}>
           {visible.map(e => {
-            const statusKey = statusMap[e.status] || 'statusNew';
+            const statusKey = getEventStatusKey(e.status);
 
             return (
               <button
                 key={e.id}
                 type="button"
                 className={`${styles.eventItem} ${styles[statusKey] || ''}`}
-                onClick={e_obj => {
-                  e_obj.stopPropagation();
+                onClick={eventObject => {
+                  eventObject.stopPropagation();
                   handleEventClick(e);
                 }}
                 onMouseEnter={ev => {
@@ -568,17 +614,15 @@ export default function CommunityCalendar() {
                   setTooltip({ event: e, x: r.right + 8, y: r.top });
                 }}
                 onMouseLeave={() => setTooltip(null)}
-                aria-label={`Click to view details for ${e.title}`}
               >
                 <span className={styles.eventContent}>
-                  <span className={styles.eventIcon} aria-label={e.status} title={e.status}>
-                    {statusIconMap[e.status] || '⭐'}
-                  </span>
+                  <span className={styles.eventIcon}>{statusIconMap[e.status] || '⭐'}</span>
                   <span className={styles.eventTitleText}>{e.title}</span>
                 </span>
               </button>
             );
           })}
+
           {hiddenCount > 0 && (
             <button
               type="button"
@@ -589,7 +633,6 @@ export default function CommunityCalendar() {
                 setOverflowDate({ date, x: r.right + 8, y: r.top });
                 handleDateSelect(date);
               }}
-              title="View all events for this day"
             >
               +{hiddenCount} more
             </button>
@@ -597,28 +640,25 @@ export default function CommunityCalendar() {
         </div>
       );
     },
-    [getEventsForDate, handleEventClick, darkMode],
+    [getEventsForDate, handleEventClick, handleDateSelect, statusIconMap],
   );
 
-  // Memoized tile class name function
   const tileClassName = useCallback(
     ({ date, view }) => {
       const classNames = [];
+
       if (view === 'month' && eventCountByDate.has(date.toDateString())) {
         classNames.push(styles.hasEvents);
       }
+
       if (view === 'month' && selectedDate && date.toDateString() === selectedDate.toDateString()) {
         classNames.push(styles.selectedDate);
       }
+
       return classNames.join(' ') || null;
     },
     [eventCountByDate, selectedDate],
   );
-
-  // Memoized filter change handlers
-  /*   const handleTypeFilterChange = useCallback(e => {
-    setFilter(prev => ({ ...prev, type: e.target.value }));
-  }, []); */
 
   const uniqueFilterValues = useMemo(
     () => ({
@@ -629,7 +669,6 @@ export default function CommunityCalendar() {
     [mappedEvents],
   );
 
-  // Memoized CSS classes
   const calendarClasses = useMemo(
     () => ({
       container: `${styles.communityCalendar} ${darkMode ? styles.communityCalendarDarkMode : ''}`,
@@ -655,16 +694,28 @@ export default function CommunityCalendar() {
     switch (type) {
       case 'Workshop':
         return <GrWorkshop />;
+
       case 'Webinar':
         return <FaVideo />;
+
       case 'Meeting':
         return <FaUsers />;
+
       case 'Social Gathering':
         return <FaGlassCheers />;
+
       default:
         return null;
     }
   };
+
+  if (isLoading) {
+    return <div className={styles.loadingState}>Loading events...</div>;
+  }
+
+  if (error) {
+    return <div className={styles.errorState}>{error}</div>;
+  }
 
   return (
     <div className={calendarClasses.container}>
@@ -733,6 +784,7 @@ export default function CommunityCalendar() {
       )}
       <header className={calendarClasses.header}>
         <h1>Community Calendar</h1>
+
         <div className={calendarClasses.filters}>
           <select
             className={calendarClasses.select}
@@ -740,6 +792,7 @@ export default function CommunityCalendar() {
             onChange={handleFilterChange('type')}
           >
             <option value="all">All Types</option>
+
             {uniqueFilterValues.types.map(t => (
               <option key={t}>{t}</option>
             ))}
@@ -751,6 +804,7 @@ export default function CommunityCalendar() {
             onChange={handleFilterChange('location')}
           >
             <option value="all">All Locations</option>
+
             {uniqueFilterValues.locations.map(l => (
               <option key={l}>{l}</option>
             ))}
@@ -762,6 +816,7 @@ export default function CommunityCalendar() {
             onChange={handleFilterChange('status')}
           >
             <option value="all">All Statuses</option>
+
             {uniqueFilterValues.statuses.map(s => (
               <option key={s}>{s}</option>
             ))}
@@ -773,11 +828,12 @@ export default function CommunityCalendar() {
         <div className={calendarClasses.calendarContainer}>
           <div className={calendarClasses.activitySection}>
             <CalendarActivitySection
-              selectedDate={selectedDate}
+              selectedDate={selectedDateEvents.length > 0 ? selectedDate : null}
               events={selectedDateEvents}
               onEventClick={handleEventClick}
             />
           </div>
+
           <div className={calendarClasses.calendarSection}>
             <ReactCalendar
               className={calendarClasses.reactCalendar}
@@ -786,6 +842,7 @@ export default function CommunityCalendar() {
               onClickDay={handleDateSelect}
               value={selectedDate}
             />
+
             <section
               className={`${styles.selectedDatePanel} ${
                 darkMode ? styles.selectedDatePanelDarkMode : ''
@@ -795,15 +852,8 @@ export default function CommunityCalendar() {
               <div className={styles.selectedDateHeader}>
                 <div>
                   <h2>{formattedSelectedDate || 'Select a date'}</h2>
-                  <p className={styles.selectedDateSummary}>
-                    {(() => {
-                      if (selectedDateEvents.length === 0) {
-                        return 'No events scheduled for this date';
-                      }
-                      const eventText = selectedDateEvents.length === 1 ? 'event' : 'events';
-                      return `${selectedDateEvents.length} ${eventText} scheduled`;
-                    })()}
-                  </p>
+
+                  <p className={styles.selectedDateSummary}>{renderSelectedDateSummary()}</p>
                 </div>
               </div>
 
@@ -811,6 +861,7 @@ export default function CommunityCalendar() {
                 <ul className={styles.selectedEventList}>
                   {selectedDateEvents.map(event => {
                     const isActive = selectedEvent?.id === event.id;
+
                     return (
                       <li key={event.id}>
                         <article
@@ -821,40 +872,44 @@ export default function CommunityCalendar() {
                           <header className={styles.selectedEventHeader}>
                             <div>
                               <h3>{event.title}</h3>
-                              <div className={styles.selectedEventMeta}>
-                                <ul className={styles.selectedEventMeta}>
-                                  <li className={styles.metaItem}>
-                                    <FontAwesomeIcon icon={faClock} className={styles.metaIcon} />
-                                    <span>
-                                      {event.time} - {event.endTime}
-                                    </span>
-                                  </li>
 
-                                  <li className={styles.metaItem}>
-                                    <FontAwesomeIcon
-                                      icon={faLocationDot}
-                                      className={styles.metaIcon}
-                                    />
-                                    <span>{event.location}</span>
-                                  </li>
+                              <ul className={styles.selectedEventMeta}>
+                                <li className={styles.metaItem}>
+                                  <FontAwesomeIcon icon={faClock} className={styles.metaIcon} />
 
-                                  <li className={styles.metaItem}>
-                                    <FontAwesomeIcon icon={faTag} className={styles.metaIcon} />
-                                    <span>{event.type}</span>
-                                  </li>
+                                  <span>
+                                    {event.time} - {event.endTime}
+                                  </span>
+                                </li>
 
-                                  <li className={styles.metaItem}>
-                                    <FontAwesomeIcon
-                                      icon={faCircleCheck}
-                                      className={styles.metaIcon}
-                                    />
-                                    <span className={styles.statusInline}>
-                                      {statusIconMap[event.status] || ''} {event.status}
-                                    </span>
-                                  </li>
-                                </ul>
-                              </div>
+                                <li className={styles.metaItem}>
+                                  <FontAwesomeIcon
+                                    icon={faLocationDot}
+                                    className={styles.metaIcon}
+                                  />
+
+                                  <span>{event.location}</span>
+                                </li>
+
+                                <li className={styles.metaItem}>
+                                  <FontAwesomeIcon icon={faTag} className={styles.metaIcon} />
+
+                                  <span>{event.type}</span>
+                                </li>
+
+                                <li className={styles.metaItem}>
+                                  <FontAwesomeIcon
+                                    icon={faCircleCheck}
+                                    className={styles.metaIcon}
+                                  />
+
+                                  <span className={styles.statusInline}>
+                                    {statusIconMap[event.status] || ''} {event.status}
+                                  </span>
+                                </li>
+                              </ul>
                             </div>
+
                             <button
                               type="button"
                               className={styles.eventDetailButton}
@@ -927,7 +982,9 @@ export default function CommunityCalendar() {
                 }}
               >
                 <span className={styles.overflowEventTime}>{e.time}</span>
+
                 <span className={styles.overflowEventTitle}>{e.title}</span>
+
                 <span
                   className={`${styles.overflowEventBadge} ${styles[statusMap[e.status]] ||
                     styles.statusNew}`}
@@ -974,6 +1031,7 @@ export default function CommunityCalendar() {
           >
             <div className={styles.modalHeader}>
               <h2>{selectedEvent.title}</h2>
+
               <button
                 type="button"
                 className={styles.modalClose}
@@ -994,6 +1052,7 @@ export default function CommunityCalendar() {
                   {statusIconMap[selectedEvent.status] || ''} {selectedEvent.status}
                 </span>
               </div>
+
               <div className={styles.eventDetailsGrid}>
                 {[
                   [FaTag, 'Type', selectedEvent.type],
@@ -1046,3 +1105,5 @@ export default function CommunityCalendar() {
     </div>
   );
 }
+
+export default CommunityCalendar;
