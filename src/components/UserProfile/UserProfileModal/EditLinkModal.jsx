@@ -197,7 +197,8 @@ const EditLinkModal = props => {
   return (
     <React.Fragment>
       <Modal isOpen={isOpen} toggle={closeModal} className={darkMode ? 'text-light dark-mode' : ''}>
-        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closeModal}>Edit Links</ModalHeader>
+        {/* <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closeModal}>Edit Links</ModalHeader> */}
+        <ModalHeader className={`${darkMode ? 'bg-space-cadet text-white' : ''}`} toggle={closeModal}><span className="modal-title">Edit Links</span></ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div>
             {canManageAdminLinks && (
