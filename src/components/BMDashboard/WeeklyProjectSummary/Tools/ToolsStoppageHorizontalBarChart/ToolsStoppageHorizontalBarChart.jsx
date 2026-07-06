@@ -65,7 +65,7 @@ const processResponseData = responseData => {
 const fetchStoppageDataForProject = async (projectId, startDate, endDate) => {
   const url = ENDPOINTS.BM_TOOLS_STOPPAGE_BY_PROJECT(projectId, startDate, endDate);
   const response = await axios.get(url);
-  return processResponseData(response.data);
+  return processResponseData(response.data.data);
 };
 
 const formatDatesForAPI = (startDate, endDate) => ({
@@ -253,7 +253,7 @@ export default function ToolsStoppageHorizontalBarChart() {
       setError(null);
       try {
         const response = await axios.get(ENDPOINTS.BM_TOOL_PROJECTS);
-        setProjects(response.data);
+        setProjects(response.data.data);
       } catch (err) {
         const errorMessage = err?.response?.data?.message || err?.message || 'Please try again.';
         setError(`Failed to load projects. ${errorMessage}`);

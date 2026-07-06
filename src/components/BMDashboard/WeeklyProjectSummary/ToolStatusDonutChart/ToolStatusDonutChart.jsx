@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
+import { getStandardSelectStyles } from '../../../../utils/reactSelectUtils';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { fetchToolAvailability, fetchTools } from '../../../../actions/bmdashboard/toolActions';
 import styles from './ToolStatusDonutChart.module.css';
@@ -134,6 +135,7 @@ export default function ToolStatusDonutChart() {
   const toolslist = useSelector(state => state.tools.toolslist);
   const availabilityData = useSelector(state => state.toolAvailability.availabilityData);
   const darkMode = useSelector(state => state.theme.darkMode);
+  const projects = useSelector(state => state.bmProjects || state.allProjects?.projects || []);
 
   const [toolId, setToolId] = useState('');
   const [projectId, setProjectId] = useState('');
@@ -165,6 +167,8 @@ export default function ToolStatusDonutChart() {
 
   const chartData = availabilityData?.data || [];
   const total = availabilityData?.total || 0;
+  const hasNoToolsMatch = total === 0 && !toolId;
+  const hasNoData = total === 0 && !!toolId;
 
   // Extract unique projects from fetched projects list
   const uniqueProjects = useMemo(
@@ -218,6 +222,7 @@ export default function ToolStatusDonutChart() {
     [uniqueTools],
   );
 
+  const toolName = toolOptions.find(option => option.value === toolId)?.label ?? '';
   // Use shared react-select styles to reduce duplication
   const selectStyles = useMemo(() => getStandardSelectStyles(darkMode), [darkMode]);
 
@@ -258,6 +263,7 @@ export default function ToolStatusDonutChart() {
     chartHeight = 300;
   }
 
+  const isXS = windowWidth <= 480;
   const wrapperClass = `${styles.toolDonutWrapper} ${darkMode ? styles.toolDonutWrapperDark : ''}`;
 
   return (
