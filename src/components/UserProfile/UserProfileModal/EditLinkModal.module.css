@@ -34,19 +34,4 @@
 
 .modal-label-dark.modal-label-dark {
   color: black !important;
-} 
-
-:global(body.bm-dashboard-dark) .edit-links-modal-header {
-  filter: none !important;
-  color: #fff !important;
-} 
-
-body.bm-dashboard-dark .edit-links-modal-header input,
-body.bm-dashboard-dark .edit-links-modal-header select,
-body.bm-dashboard-dark .edit-links-modal-header textarea {
-  color: #000 !important;
-  background-color: #fff !important;
-}
-body.bm-dashboard-dark .edit-links-modal-header .modal-title {
-  color: #fff !important;
 }
