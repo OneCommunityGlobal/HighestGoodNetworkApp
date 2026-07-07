@@ -352,7 +352,7 @@ export const updateInvType = (type, invtypeId, payload) => {
   return async dispatch => {
     const toastId = `update-${type}-${Date.now()}`;
     try {
-      await axios.put(`${ENDPOINTS.BM_INVTYPE_TYPE(type)}/${invtypeId}`, payload);
+      await axios.put(`${ENDPOINTS.BM_INVTYPE_TYPE(type.toLowerCase())}/${invtypeId}`, payload);
       // Refresh the data after successful update
       dispatch(fetchInvTypeByType(type));
       toast.success(`${type.slice(0, -1)} updated successfully!`, { toastId });
