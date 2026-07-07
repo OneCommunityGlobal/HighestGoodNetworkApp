@@ -1,0 +1,343 @@
+.card {
+  background: white;
+  border: 2px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 18px;
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+}
+
+.card:hover {
+  border-color: #D1D5DB;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  transform: translateY(-3px);
+}
+
+.lateCard {
+  border-color: #EF4444;
+  border-width: 2px;
+  background: linear-gradient(to bottom, white 0%, #FEF2F2 100%);
+}
+
+.lateCard:hover {
+  border-color: #DC2626;
+}
+
+.gradedCard {
+  background: linear-gradient(to bottom, white 0%, #F0FDF4 100%);
+  border-color: #BBF7D0;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.studentInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  flex-shrink: 0;
+  letter-spacing: 0.5px;
+  transition: transform 0.2s;
+}
+
+.card:hover .avatar {
+  transform: scale(1.05);
+}
+
+.studentDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.studentName {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.taskType {
+  font-size: 12px;
+  color: #6B7280;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.statusArea {
+  display: flex;
+  align-items: flex-start;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.gradedBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: white;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.infoIconWrapper {
+  position: relative;
+  z-index: 10;
+}
+
+.infoIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #374151 0%, #1F2937 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.infoIcon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+}
+
+.tooltip {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  z-index: 50;
+  animation: tooltipFadeIn 0.2s ease-out;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tooltipContent {
+  background: #FFFFFF;
+  color: #1F2937;
+  padding: 12px 14px;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  min-width: 200px;
+  max-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tooltipTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #DC2626;
+  letter-spacing: 0.3px;
+  display: block;
+}
+
+.tooltipText {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #4B5563;
+  font-weight: 400;
+}
+
+.tooltipArrow {
+  position: absolute;
+  bottom: 100%;
+  right: 8px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #FFFFFF;
+  filter: drop-shadow(0 -2px 2px rgba(0, 0, 0, 0.05));
+}
+
+.spacer {
+  flex: 1;
+}
+
+.gradeSection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+  border-radius: 8px;
+  border: 1px solid #A7F3D0;
+  margin-top: auto;
+}
+
+.gradeLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #065F46;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.gradeValue {
+  font-size: 24px;
+  font-weight: 800;
+  color: #059669;
+  letter-spacing: 0.5px;
+}
+
+.lateSection {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
+  border: 1.5px solid #FECACA;
+  border-radius: 8px;
+  margin-top: auto;
+}
+
+.lateLabel {
+  font-size: 11px;
+  font-weight: 800;
+  color: #DC2626;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.lateDate {
+  font-size: 13px;
+  color: #991B1B;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+@media (max-width: 1024px) {
+  .card {
+    height: 145px;
+    padding: 16px;
+  }
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+  }
+
+  .studentName {
+    font-size: 14px;
+  }
+
+  .taskType {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 768px) {
+  .card {
+    height: auto;
+    min-height: 140px;
+    padding: 14px;
+  }
+
+  .avatar {
+    width: 38px;
+    height: 38px;
+    font-size: 13px;
+  }
+
+  .studentName {
+    font-size: 13px;
+  }
+
+  .taskType {
+    font-size: 11px;
+  }
+
+  .gradedBadge {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+
+  .infoIcon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .tooltip {
+    right: -10px;
+  }
+
+  .tooltipContent {
+    min-width: 180px;
+    padding: 10px 12px;
+  }
+
+  .gradeSection {
+    padding: 8px 12px;
+  }
+
+  .gradeValue {
+    font-size: 20px;
+  }
+}
+
+@media print {
+  .card {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #D1D5DB;
+  }
+
+  .card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .tooltip {
+    display: none;
+  }
+}

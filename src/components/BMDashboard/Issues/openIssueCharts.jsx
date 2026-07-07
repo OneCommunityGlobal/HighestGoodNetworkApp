@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,6 +18,7 @@ import {
   fetchLongestOpenIssues,
   setProjectFilter,
 } from '../../../actions/bmdashboard/issueChartActions';
+import { CustomDateComponent } from './CustomDateComponent';
 import styles from './issueCharts.module.css';
 
 /* ---------- helpers ---------- */
@@ -92,7 +93,7 @@ const createSelectStyles = (isDark, textColor) => ({
 
 function IssueCharts() {
   const dispatch = useDispatch();
-  const darkMode = useSelector(state => state.theme.darkMode);
+  const darkMode = useSelector(state => state.theme?.darkMode);
   const { issues, loading, error, selectedProjects } = useSelector(state => state.bmissuechart);
   const projects = useSelector(state => state.bmProjects);
 
@@ -124,6 +125,86 @@ function IssueCharts() {
     textAlign: 'center',
     padding: '20px',
   };
+
+  // Normalize issues for chart
+  // Number issues per project to avoid conflicts when multiple projects are selected
+  // Prefix with project name when multiple projects are selected to distinguish them
+  const normalizedIssues = useMemo(() => {
+    if (!issues || issues.length === 0) return [];
+
+    // Check if multiple projects are selected
+    const uniqueProjectIds = new Set((issues || []).map(item => item.projectId).filter(Boolean));
+    const multipleProjects = uniqueProjectIds.size > 1;
+
+    // Group issues by projectId
+    const issuesByProject = new Map();
+    (issues || []).forEach(item => {
+      const projectId = item.projectId || 'unknown';
+      if (!issuesByProject.has(projectId)) {
+        issuesByProject.set(projectId, []);
+      }
+      issuesByProject.get(projectId).push(item);
+    });
+
+    // Create per-project numbering maps
+    const projectNumberMaps = new Map();
+
+    issuesByProject.forEach((projectIssues, projectId) => {
+      const issueIdToNumber = new Map();
+      let counter = 1;
+
+      // Sort issues by issueId within each project for consistent ordering
+      const sortedById = [...projectIssues].sort((a, b) => {
+        const idA = a.issueId || '';
+        const idB = b.issueId || '';
+        return idA.localeCompare(idB);
+      });
+
+      // Assign numbers to issues without names within this project
+      sortedById.forEach(item => {
+        if (!item.issueName && item.issueId && !issueIdToNumber.has(item.issueId)) {
+          issueIdToNumber.set(item.issueId, counter++);
+        }
+      });
+
+      projectNumberMaps.set(projectId, issueIdToNumber);
+    });
+
+    // Map back to original order (sorted by duration) but use per-project numbers
+    return (issues || []).map(item => {
+      const projectId = item.projectId || 'unknown';
+      const projectNumberMap = projectNumberMaps.get(projectId);
+
+      // Generate the base issue name
+      let baseIssueName = item.issueName;
+      let isGeneratedName = false;
+
+      if (!baseIssueName) {
+        // If no name, generate Issue #X based on project numbering
+        if (item.issueId && projectNumberMap?.has(item.issueId)) {
+          baseIssueName = `Issue #${projectNumberMap.get(item.issueId)}`;
+          isGeneratedName = true;
+        } else {
+          baseIssueName = 'Untitled Issue';
+          isGeneratedName = true;
+        }
+      }
+
+      // Only prefix with project name if:
+      // 1. Multiple projects are selected AND
+      // 2. The issue name was generated (Issue #X), not a real name
+      // This keeps the display clean for named issues while distinguishing unnamed issues
+      const finalIssueName =
+        multipleProjects && isGeneratedName && item.projectName
+          ? `${item.projectName} - ${baseIssueName}`
+          : baseIssueName;
+
+      return {
+        issueName: finalIssueName,
+        durationOpen: item.durationOpen ?? 0,
+      };
+    });
+  }, [issues]);
 
   useEffect(() => {
     dispatch(fetchBMProjects());
@@ -185,7 +266,7 @@ function IssueCharts() {
     chartContent = <div style={errorMessageStyle}>Error: {error}</div>;
   } else if (loading) {
     chartContent = <div style={loadingMessageStyle}>Loading chart data...</div>;
-  } else if (!issues || issues.length === 0) {
+  } else if (!normalizedIssues || normalizedIssues.length === 0) {
     chartContent = (
       <div className={noDataMessageClass}>
         <div className={noDataContentClass}>
@@ -198,7 +279,7 @@ function IssueCharts() {
   } else {
     chartContent = (
       <ResponsiveContainer width="100%" height={400}>
-        <BarChart data={issues} layout="vertical" margin={margin}>
+        <BarChart data={normalizedIssues} layout="vertical" margin={margin}>
           <CartesianGrid stroke={gridColor} />
           <XAxis
             type="number"
@@ -243,7 +324,7 @@ function IssueCharts() {
   /* --------------------------- render --------------------------- */
 
   return (
-    <div className={containerClass}>
+    <div className={containerClass} style={{ width: '100%' }}>
       <h2>Longest Open Issues</h2>
 
       <div className={styles.filtersContainer}>
@@ -254,6 +335,9 @@ function IssueCharts() {
           <div className={styles.dateRangePicker}>
             <div className={styles.dateRangePickerStart}>
               <DatePicker
+                renderCustomHeader={props => (
+                  <CustomDateComponent {...props} darkMode={darkMode} isStartDate={true} />
+                )}
                 id="start-date"
                 selected={startDate}
                 onChange={date => setStartDate(date)}
@@ -270,6 +354,9 @@ function IssueCharts() {
             <span className={styles.dateRangeSeparator}>to</span>
             <div className={styles.dateRangePickerEnd}>
               <DatePicker
+                renderCustomHeader={props => (
+                  <CustomDateComponent {...props} darkMode={darkMode} isStartDate={false} />
+                )}
                 selected={endDate}
                 onChange={date => setEndDate(date)}
                 selectsEnd
@@ -297,7 +384,49 @@ function IssueCharts() {
             onChange={handleProjectChange}
             value={projectOptions.filter(option => (selectedProjects ?? []).includes(option.value))}
             classNamePrefix="select"
-            styles={selectStyles}
+            styles={{
+              control: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#2D3748' : '#ffffff',
+                borderColor: darkMode ? '#4a5568' : '#ccc',
+                color: darkMode ? '#cfd7e3' : '#333',
+                boxShadow: 'none',
+                '&:hover': {
+                  borderColor: '#4caf50',
+                },
+              }),
+              menu: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#2D3748' : '#ffffff',
+                color: darkMode ? '#4a5568' : '#333',
+              }),
+              option: (base, state) => ({
+                ...base,
+                backgroundColor: state.isFocused
+                  ? darkMode
+                    ? '#334155'
+                    : '#e5e5e5'
+                  : 'transparent',
+                color: darkMode ? '#fff' : '#333',
+              }),
+              multiValue: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#334155' : '#e2e8f0',
+                color: darkMode ? '#fff' : '#333',
+              }),
+              multiValueLabel: base => ({
+                ...base,
+                color: darkMode ? '#fff' : '#333',
+              }),
+              multiValueRemove: base => ({
+                ...base,
+                color: darkMode ? '#fff' : '#333',
+                ':hover': {
+                  backgroundColor: '#4caf50',
+                  color: '#fff',
+                },
+              }),
+            }}
           />
         </div>
       </div>
