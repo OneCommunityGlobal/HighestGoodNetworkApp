@@ -22,7 +22,7 @@ function TypeRow(props) {
     dispatch(deleteInvType(category, itemType._id));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (editType.name.trim() && (!requiresUnit || editType.unit.trim())) {
       let payload;
       if (category === 'Equipments') {
@@ -36,8 +36,17 @@ function TypeRow(props) {
       } else {
         payload = { name: editType.name, description: editType.description };
       }
-      dispatch(updateInvType(category, itemType._id, payload));
-      setIsEditing(false);
+      const result = await dispatch(updateInvType(category, itemType._id, payload));
+
+      if (!result.success) {
+        setIsEditing(false);
+        setEditType({
+          name: itemType.name,
+          description: itemType.description,
+          unit: itemType.unit || '',
+          fuel: itemType.fuelType || '',
+        });
+      }
     }
   };
 

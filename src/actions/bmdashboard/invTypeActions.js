@@ -356,9 +356,11 @@ export const updateInvType = (type, invtypeId, payload) => {
       // Refresh the data after successful update
       dispatch(fetchInvTypeByType(type));
       toast.success(`${type.slice(0, -1)} updated successfully!`, { toastId });
+      return { success: true };
     } catch (err) {
       const errorMessage = err.response?.data?.error || err.response?.data?.message || 'Failed to update item. Please try again.';
       toast.error(errorMessage, { toastId: `update-error-${type}-${Date.now()}` });
+      return { success: false, error: errorMessage };
     }
   };
 };
