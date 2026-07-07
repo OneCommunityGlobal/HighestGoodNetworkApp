@@ -4,7 +4,7 @@ import DatePicker from 'react-datepicker';
 import { Button } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
 import 'react-datepicker/dist/react-datepicker.css';
-import '../../Header/index.css';
+import '../../Header/index.module.css';
 
 class ViewReportByDate extends Component {
   constructor(props) {
