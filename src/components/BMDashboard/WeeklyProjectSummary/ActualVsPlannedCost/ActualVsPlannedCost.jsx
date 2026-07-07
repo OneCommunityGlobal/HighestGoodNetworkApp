@@ -294,8 +294,12 @@ function ActualVsPlannedCost() {
       chartDataWithVariance[0].plannedCost === 0
     );
 
-  const totalVariance = totals.actual - totals.planned;
-  const totalVariancePct = totals.planned > 0 ? (totalVariance / totals.planned) * 100 : null;
+  // Badge reflects the currently selected view (Overall or a specific
+  // category), so it stays consistent with the breakdown cards below it.
+  const displayedPlanned = chartDataWithVariance.reduce((sum, d) => sum + d.plannedCost, 0);
+  const displayedActual = chartDataWithVariance.reduce((sum, d) => sum + d.actualCost, 0);
+  const totalVariance = displayedActual - displayedPlanned;
+  const totalVariancePct = displayedPlanned > 0 ? (totalVariance / displayedPlanned) * 100 : null;
   const isTotalOverrun = totalVariance > 0;
 
   const chartContent = buildChartContent({
@@ -359,7 +363,8 @@ function ActualVsPlannedCost() {
           <div className={styles.varianceSummaryHeader}>
             <h3 className={styles.varianceSummaryTitle}>Variance and Budget Indicators</h3>
             <div className={isTotalOverrun ? styles.totalOverrunBadge : styles.totalOnTrackBadge}>
-              Total Variance: {isTotalOverrun ? '+' : ''}
+              {selectedCategory === 'Overall' ? 'Total Variance' : `${selectedCategory} Variance`}:{' '}
+              {isTotalOverrun ? '+' : ''}
               {totalVariance.toLocaleString()}
               {totalVariancePct !== null &&
                 ` (${isTotalOverrun ? '+' : ''}${totalVariancePct.toFixed(1)}%)`}
