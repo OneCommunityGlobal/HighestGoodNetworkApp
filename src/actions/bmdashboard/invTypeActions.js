@@ -337,7 +337,7 @@ export const deleteInvType = (type, invtypeId) => {
   return async dispatch => {
     const toastId = `delete-${type}-${Date.now()}`;
     try {
-      await axios.delete(`${ENDPOINTS.BM_INVTYPE_TYPE(type)}/${invtypeId}`);
+      await axios.delete(`${ENDPOINTS.BM_INVTYPE_TYPE(type.toLowerCase())}/${invtypeId}`);
       // Refresh the data after successful deletion
       dispatch(fetchInvTypeByType(type));
       toast.success(`${type.slice(0, -1)} deleted successfully!`, { toastId });
