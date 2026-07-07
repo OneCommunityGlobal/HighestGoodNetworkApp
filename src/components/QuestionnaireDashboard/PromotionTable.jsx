@@ -16,16 +16,18 @@ function MemberSection({ title, members, onPromoteChange, styles: sectionStyles,
       {members.map(user => {
         const isDisabled = !canModify;
         return (
-          <tr key={user.id}>
+          <tr key={user.reviewerId}>
             <td />
-            <td>{user.reviewer}</td>
+            <td>{user.reviewerName}</td>
             <td
               className={
                 user.hasMetWeekly ? sectionStyles['statusMet'] : sectionStyles['statusNotMet']
               }
             >
-              <span className={sectionStyles['statusIcon']}>{user.hasMetWeekly ? '✓' : '✗'}</span>
-              {user.hasMetWeekly ? 'Has Met' : 'Has not Met'}
+              <span className={sectionStyles['statusIcon']}>
+                {user.weeklyRequirementsMet ? '✓' : '✗'}
+              </span>
+              {user.weeklyRequirementsMet ? 'Has Met' : 'Has not Met'}
             </td>
             <td>{user.requiredPRs}</td>
             <td>{user.totalReviews}</td>
@@ -35,7 +37,7 @@ function MemberSection({ title, members, onPromoteChange, styles: sectionStyles,
                 className={sectionStyles['promoteCheckbox']}
                 type="checkbox"
                 checked={user.promote}
-                onChange={() => onPromoteChange(user.id)}
+                onChange={() => onPromoteChange(user.reviewerId)}
                 disabled={isDisabled}
                 title={!canModify ? 'Only Administrators and Owners can modify selections' : ''}
               />
@@ -98,7 +100,7 @@ function PromotionTable() {
       }
       setEligibilityData(prevData =>
         prevData.map(member =>
-          member.id === memberId ? { ...member, promote: !member.promote } : member,
+          member.reviewerId === memberId ? { ...member, promote: !member.promote } : member,
         ),
       );
     },
@@ -112,8 +114,9 @@ function PromotionTable() {
     }
     setReviewLoading(true);
     try {
+      toast.success('Weekly review initiated. This may take a few moments. Please wait...');
       await fetchEligibilityData();
-      toast.success('Weekly review initiated. Table data refreshed.');
+      toast.success('Weekly review initiated and Table data refreshed.');
     } catch {
       toast.error('Failed to initiate weekly review.');
     } finally {
@@ -128,8 +131,10 @@ function PromotionTable() {
     }
     setProcessingLoading(true);
     try {
-      const selectedMemberIds = eligibilityData.filter(m => m.promote).map(m => m.id);
-
+      const selectedMemberIds = eligibilityData.filter(m => m.promote).map(m => m.reviewerId);
+      toast.success(
+        `Processing promotions for ${selectedMemberIds.length} member(s). This may take a few moments. Please wait...`,
+      );
       if (selectedMemberIds.length === 0) {
         toast.warning('No members selected for promotion.');
         setProcessingLoading(false);
@@ -140,15 +145,16 @@ function PromotionTable() {
       await fetchEligibilityData();
 
       toast.success(`Promotions processed successfully for ${selectedMemberIds.length} member(s).`);
-    } catch {
+    } catch (e) {
+      console.error('Error processing promotions:', e);
       toast.error('Failed to process promotions.');
     } finally {
       setProcessingLoading(false);
     }
   }, [canModifyPromotion, eligibilityData, requestor?.userid, fetchEligibilityData]);
 
-  const newMembers = eligibilityData.filter(u => u.isNew);
-  const existingMembers = eligibilityData.filter(u => !u.isNew);
+  const newMembers = eligibilityData.filter(u => u.isNewMember);
+  const existingMembers = eligibilityData.filter(u => !u.isNewMember);
 
   if (loading) return <div>Loading promotions...</div>;
 
