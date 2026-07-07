@@ -227,3 +227,6 @@ tr:hover {
     width: 50%;
   }
 }
+.searchLabelDark {
+  background-color: #1f3b63 !important;
+}

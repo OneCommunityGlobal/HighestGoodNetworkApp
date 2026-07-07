@@ -11,6 +11,7 @@ import {
   Legend,
   CartesianGrid,
   LabelList,
+  Cell,
 } from 'recharts';
 import { Spinner } from 'reactstrap';
 import { fetchBMProjects } from '../../../../actions/bmdashboard/projectActions';
@@ -103,6 +104,19 @@ function ActualVsPlannedCost() {
       ? [{ category: 'Overall', actualCost: totals.actual, plannedCost: totals.planned }]
       : breakdown.filter(d => d.category === selectedCategory);
 
+  // Detect over-budget items
+  const isOverBudget = chartData.some(d => d.actualCost > d.plannedCost && d.plannedCost > 0);
+  const overBudgetPct =
+    totals.planned > 0 ? ((totals.actual - totals.planned) / totals.planned) * 100 : 0;
+
+  // Dynamic bar color: flash red when actual exceeds planned
+  const getActualBarColor = entry => {
+    if (entry.plannedCost > 0 && entry.actualCost > entry.plannedCost) {
+      return '#dc2626'; // bright red for over-budget
+    }
+    return darkMode ? '#c0392b' : '#e74a3b';
+  };
+
   const filterSummary = `${selectedProjectName || 'Loading...'} - ${selectedCategory}`;
 
   let chartContent;
@@ -141,49 +155,68 @@ function ActualVsPlannedCost() {
     );
   } else {
     chartContent = (
-      <div style={{ width: '100%', height: 200 }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData} margin={{ top: 20, right: 5, left: 5, bottom: 0 }} barGap={20}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="category"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: 'var(--text-color)' }}
-            />
-            <YAxis tick={{ fill: 'var(--text-color)', fontSize: '12px' }} />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: 'var(--card-bg)',
-                borderColor: 'var(--button-hover)',
-              }}
-              labelStyle={{ color: 'var(--text-color)', fontSize: '12px' }}
-            />
-            <Legend
-              verticalAlign="top"
-              height={36}
-              iconSize={8}
-              wrapperStyle={{ color: 'var(--text-color)' }}
-            />
-            <Bar
-              dataKey="actualCost"
-              name="Actual"
-              fill={darkMode ? '#c0392b' : '#e74a3b'}
-              barSize={40}
+      <>
+        <div style={{ width: '100%', height: 200 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={chartData}
+              margin={{ top: 20, right: 5, left: 5, bottom: 0 }}
+              barGap={20}
             >
-              <LabelList dataKey="actualCost" position="top" fill="var(--text-color)" />
-            </Bar>
-            <Bar
-              dataKey="plannedCost"
-              name="Planned"
-              fill={!darkMode ? '#17a272' : '#1cc88a'}
-              barSize={40}
-            >
-              <LabelList dataKey="plannedCost" position="top" fill="var(--text-color)" />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="category"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: 'var(--text-color)' }}
+              />
+              <YAxis tick={{ fill: 'var(--text-color)', fontSize: '12px' }} />
+              <Tooltip
+                cursor={false}
+                contentStyle={{
+                  backgroundColor: 'var(--card-bg)',
+                  borderColor: 'var(--button-hover)',
+                }}
+                labelStyle={{ color: 'var(--text-color)', fontSize: '12px' }}
+              />
+              <Legend
+                verticalAlign="top"
+                height={36}
+                iconSize={8}
+                wrapperStyle={{ color: 'var(--text-color)' }}
+              />
+              <Bar
+                dataKey="actualCost"
+                name="Actual"
+                fill={darkMode ? '#c0392b' : '#e74a3b'}
+                barSize={40}
+              >
+                {chartData.map(entry => (
+                  <Cell key={`actual-cell-${entry.category}`} fill={getActualBarColor(entry)} />
+                ))}
+                <LabelList dataKey="actualCost" position="top" fill="var(--text-color)" />
+              </Bar>
+              <Bar
+                dataKey="plannedCost"
+                name="Planned"
+                fill={!darkMode ? '#17a272' : '#1cc88a'}
+                barSize={40}
+              >
+                <LabelList dataKey="plannedCost" position="top" fill="var(--text-color)" />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+        <div className={styles.chartCaption}>{selectedProjectName}</div>
+        {isOverBudget && (
+          <div className={styles.overBudgetWarning}>
+            ⚠️ Actual cost exceeds planned budget
+            {selectedCategory === 'Overall' && overBudgetPct > 0
+              ? ` by ${overBudgetPct.toFixed(1)}%`
+              : ''}
+          </div>
+        )}
+      </>
     );
   }
 
