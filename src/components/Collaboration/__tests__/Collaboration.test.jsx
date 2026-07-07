@@ -6,13 +6,6 @@ import { vi } from 'vitest';
 // Mock Redux
 vi.mock('react-redux', () => ({
   useSelector: vi.fn(fn => fn({ theme: { darkMode: false } })),
-  useDispatch: () => vi.fn(),
-}));
-
-// Mock permissions
-vi.mock('~/utils/permissions', () => ({
-  __esModule: true,
-  default: () => true,
 }));
 
 // Mock toast
@@ -21,7 +14,10 @@ vi.mock('react-toastify', () => ({
 }));
 
 // Mock fetch globally
-global.fetch = vi.fn();
+globalThis.fetch = vi.fn();
+
+// Mock window.scrollTo
+globalThis.window.scrollTo = vi.fn();
 
 // Helper mock responses
 const mockCategories = {
@@ -77,16 +73,30 @@ describe('Collaboration Component', () => {
     render(<Collaboration />);
 
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith(`${ApiEndpoint}/jobs/categories`);
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining(`${ApiEndpoint}/jobs?page=1&limit=`),
+        expect.objectContaining({ method: 'GET' }),
+      );
     });
 
-    expect(fetch).toHaveBeenCalledTimes(2);
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledWith(
+        `${ApiEndpoint}/jobs/categories`,
+        expect.objectContaining({ method: 'GET' }),
+      );
+    });
+
+    // Component calls fetchJobAds() and fetchCategories() on mount
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining(`${ApiEndpoint}/jobs/categories`),
+      expect.objectContaining({ method: 'GET' }),
+    );
   });
 
   test('search input updates state and triggers tooltip if no categories selected', async () => {
     render(<Collaboration />);
 
-    const input = screen.getByPlaceholderText('Search by title...');
+    const input = screen.getByPlaceholderText('Enter Job Title');
     fireEvent.change(input, { target: { value: 'engineer' } });
 
     expect(input.value).toBe('engineer');
@@ -95,20 +105,29 @@ describe('Collaboration Component', () => {
   test('submitting search triggers fetchJobAds()', async () => {
     render(<Collaboration />);
 
-    const input = screen.getByPlaceholderText('Search by title...');
+    const input = screen.getByPlaceholderText('Enter Job Title');
     const button = screen.getByText('Go');
 
     fireEvent.change(input, { target: { value: 'engineer' } });
     fireEvent.click(button);
 
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledTimes(3);
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining(`${ApiEndpoint}/jobs?page=1&limit=`),
+        expect.objectContaining({ method: 'GET' }),
+      );
     });
   });
 
   test('dropdown toggles open when clicking category button', async () => {
     render(<Collaboration />);
-    fireEvent.click(screen.getByText('Select Categories ▼'));
+    // Wait for categories to load
+    await waitFor(() => {
+      expect(screen.getByText('Select From Positions')).toBeInTheDocument();
+    });
+    // The component uses a select dropdown, not a custom dropdown button
+    const select = screen.getByRole('combobox');
+    expect(select).toBeInTheDocument();
   });
 
   // ✅ FIXED PAGINATION TEST
@@ -116,7 +135,7 @@ describe('Collaboration Component', () => {
     render(<Collaboration />);
 
     // Trigger search so results section becomes active
-    fireEvent.change(screen.getByPlaceholderText('Search by title...'), {
+    fireEvent.change(screen.getByPlaceholderText('Enter Job Title'), {
       target: { value: 'test' },
     });
 
@@ -133,20 +152,21 @@ describe('Collaboration Component', () => {
   test('category chips appear when category selected', async () => {
     render(<Collaboration />);
 
-    // Dropdown appears after initial fetch completes
+    // Wait for categories to load and select dropdown to appear
     await waitFor(() => {
-      expect(screen.getByText(/Select Categories/i)).toBeInTheDocument();
+      expect(screen.getByText('Select From Positions')).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText('Select Categories ▼'));
+    // Select a category from the dropdown
+    const select = screen.getByRole('combobox');
+    fireEvent.change(select, { target: { value: 'Engineering' } });
 
-    // Click Engineering checkbox
-    fireEvent.click(screen.getByLabelText('Engineering'));
-
-    // Both occur: dropdown label + chip, so use getAllByText
+    // Wait for the category to be selected and jobs to be filtered
     await waitFor(() => {
-      const matches = screen.getAllByText('Engineering');
-      expect(matches.length).toBeGreaterThan(1); // dropdown + chip
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining('category=Engineering'),
+        expect.objectContaining({ method: 'GET' }),
+      );
     });
   });
 
@@ -157,7 +177,10 @@ describe('Collaboration Component', () => {
     fireEvent.click(screen.getByText('Show Summaries'));
 
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalled();
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/jobs/summaries'),
+        expect.objectContaining({ method: 'GET' }),
+      );
     });
   });
 });

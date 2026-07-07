@@ -9,7 +9,7 @@ const TOKEN_LIFETIME_BUFFER = 86400 * 2; // two days in seconds
 
 export default function initAuth() {
   const token = localStorage.getItem(config.tokenKey);
-  if (!token) return;
+  if (!token || typeof token !== 'string' || token.trim() === '') return;
 
   try {
     const decoded = jwtDecode(token);
@@ -23,7 +23,7 @@ export default function initAuth() {
       store.dispatch(setCurrentUser(decoded));
     }
   } catch (error) {
-    // Handle invalid or malformed token
+    // Token is invalid, expired, or malformed - clear it and log out
     console.error('Invalid token detected, clearing authentication:', error);
     localStorage.removeItem(config.tokenKey);
     store.dispatch(logoutUser());

@@ -3,11 +3,9 @@ import { Table, Button } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { useSelector } from 'react-redux'; // 1. Import useSelector
 import ToolRecordsModal from './ToolRecordsModal';
 import styles from './ToolItemListView.module.css';
-
-const okColor = '#16a34a';
-const badColor = '#dc2626';
 
 export default function ToolItemsTable({
   selectedProject,
@@ -16,6 +14,9 @@ export default function ToolItemsTable({
   UpdateItemModal,
   dynamicColumns,
 }) {
+  // 2. Fetch the current theme state
+  const darkMode = useSelector(state => state.theme?.darkMode || false);
+
   const [sortedData, setData] = useState(filteredItems);
   const [modal, setModal] = useState(false);
   const [record, setRecord] = useState(null);
@@ -83,11 +84,9 @@ export default function ToolItemsTable({
         inventoryItemTypeCol.sortOrder === 'desc'
       ) {
         newSortedData.sort((a, b) =>
-          (a.itemType?.name || '').localeCompare(
-            b.itemType?.name || '',
-            undefined,
-            { sensitivity: 'base' }, // 👈 case-insensitive
-          ),
+          (a.itemType?.name || '').localeCompare(b.itemType?.name || '', undefined, {
+            sensitivity: 'base',
+          }),
         );
         setInventoryItemTypeCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
       } else if (inventoryItemTypeCol.sortOrder === 'asc') {
@@ -102,9 +101,13 @@ export default function ToolItemsTable({
       setConditionCol({ iconsToDisplay: faSort, sortOrder: 'default' });
       setToolStatusCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     } else if (columnName === 'ToolStatusColumn') {
-      // Add logic for sorting by Status if needed
-      const usingRows = newSortedData.filter(item => item.itemType?.using?.includes(item._id));
-      const notUsingRows = newSortedData.filter(item => !item.itemType?.using?.includes(item._id));
+      const usingRows = newSortedData.filter(item =>
+        item.itemType?.using?.some(id => id.toString() === item._id.toString()),
+      );
+      const notUsingRows = newSortedData.filter(
+        item => !item.itemType?.using?.some(id => id.toString() === item._id.toString()),
+      );
+
       if (toolStatusCol.sortOrder === 'default' || toolStatusCol.sortOrder === 'desc') {
         newSortedData.splice(0, newSortedData.length, ...notUsingRows, ...usingRows);
         setToolStatusCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
@@ -116,7 +119,6 @@ export default function ToolItemsTable({
       setInventoryItemTypeCol({ iconsToDisplay: faSort, sortOrder: 'default' });
       setConditionCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     } else if (columnName === 'ConditionColumn') {
-      // Add logic for sorting by Condition if needed
       if (conditionCol.sortOrder === 'default' || conditionCol.sortOrder === 'desc') {
         newSortedData.sort((a, b) => (a.condition || '').localeCompare(b.condition || ''));
         setConditionCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
@@ -142,9 +144,11 @@ export default function ToolItemsTable({
         recordType={recordType}
       />
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
-      <div className={`${styles.itemsTableContainer}`}>
-        <Table className={`${styles.itemsTable}`}>
-          <thead>
+
+      {/* 3. Conditionally append the dark mode container class */}
+      <div className={`${styles.itemsTableContainer} ${darkMode ? styles.darkModeTable : ''}`}>
+        <Table>
+          <thead className={styles.tableHeader}>
             <tr>
               {selectedProject === 'all' ? (
                 <th onClick={() => sortData('ProjectName')}>
@@ -162,12 +166,12 @@ export default function ToolItemsTable({
               )}
               {dynamicColumns.map(
                 ({ label }) =>
-                  (label == 'Condition' && (
+                  (label === 'Condition' && (
                     <th onClick={() => sortData('ConditionColumn')} key={label}>
                       {label} <FontAwesomeIcon icon={conditionCol.iconsToDisplay} size="lg" />
                     </th>
                   )) ||
-                  (label == 'Using' && (
+                  (label === 'Using' && (
                     <th onClick={() => sortData('ToolStatusColumn')} key={label}>
                       {label} <FontAwesomeIcon icon={toolStatusCol.iconsToDisplay} size="lg" />
                     </th>
@@ -181,27 +185,31 @@ export default function ToolItemsTable({
           <tbody>
             {sortedData && sortedData.length > 0 ? (
               sortedData.map(el => {
+                const isInUsing = el.itemType?.using?.some(
+                  id => id.toString() === el._id.toString(),
+                );
+                const isInAvailable = el.itemType?.available?.some(
+                  id => id.toString() === el._id.toString(),
+                );
+
                 return (
                   <tr key={el._id}>
                     <td>{el.project?.name}</td>
                     <td>{el.itemType?.name ?? el.name}</td>
                     <td>{el.purchaseStatus === 'Purchased' ? 'Yes' : 'No'}</td>
+
                     <td>
                       <FontAwesomeIcon
-                        icon={el.itemType?.using?.includes(el._id) ? faCheck : faTimes}
+                        icon={isInUsing ? faCheck : faTimes}
                         size="lg"
-                        className={
-                          el.itemType?.using?.includes(el._id)
-                            ? styles.statusIconOk
-                            : styles.statusIconBad
-                        }
+                        className={isInUsing ? styles.statusIconOk : styles.statusIconBad}
                       />
                     </td>
 
                     <td>
                       <FontAwesomeIcon
                         icon={
-                          el.itemType?.available?.includes(el._id) &&
+                          isInAvailable &&
                           el.condition !== 'Lost' &&
                           el.condition !== 'Needs Replacing'
                             ? faCheck
@@ -209,7 +217,7 @@ export default function ToolItemsTable({
                         }
                         size="lg"
                         className={
-                          el.itemType?.available?.includes(el._id) &&
+                          isInAvailable &&
                           el.condition !== 'Lost' &&
                           el.condition !== 'Needs Replacing'
                             ? styles.statusIconOk
@@ -244,6 +252,7 @@ export default function ToolItemsTable({
                     </td>
 
                     <td>{el.code}</td>
+
                     <td className={`${styles.itemsCell}`}>
                       <button
                         type="button"
