@@ -1,8 +1,15 @@
+/* stylelint-disable no-descending-specificity */
 :global(body) {
   font-family: Poppins, sans-serif;
   background: #fff;
   margin: 0;
   padding: 0;
+}
+
+/* In dark mode the page body is darkened (class toggled from the component) so
+   the area around the dashboard matches the app's dark theme instead of white. */
+:global(body.dark-mode-body) {
+  background: #1b2a41;
 }
 
 .dashboardContainer {
@@ -20,6 +27,8 @@
 .darkContainer {
   background: #2b3e59 !important;
   color: #fff;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .dashboardHeader {
@@ -31,13 +40,13 @@
   padding: 16px 24px;
   background: linear-gradient(120deg, #fff, #f8f9fa);
   border-radius: 12px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 10px rgb(0 0 0 / 10%);
   flex-wrap: nowrap;
 }
 
-
 .darkHeader{
-  background: #1B2A41;
+  background: #1b2a41;
+  color: #fff;
 }
 
 .dashboardHeader h1 {
@@ -47,11 +56,6 @@
   color: #2c3e50;
   white-space: nowrap; 
   flex-shrink: 0;
-}
-
-.darkHeader {
-  background: #1b2a41;
-  color: #fff;
 }
 
 .dashboardControls {
@@ -99,6 +103,7 @@
   color: #1b3c55;
   font-size: 0.9rem;
 }
+
 .cp_dashboard_header {
   display: flex;
   align-items: center;
@@ -122,7 +127,25 @@
   overflow: hidden;
   border: 2px solid #1b3c55;
   background: #fff;
+}
+
+.darkHeader .dashboardSearchContainer {   /* white when NOT focused */
   outline: none;
+  border-color: #fff;
+  background: #1b2a41;
+}
+
+.dashboardSearchContainer {
+  position: relative;
+  border-radius: 8px;
+  border: 1.5px solid #c8d4e0;
+  background: #fff;
+  overflow: hidden;
+}
+
+.sidebarSearchWrapper {
+  position: relative;
+  margin-top: 8px;
 }
 
 .dashboardSearchContainer input {
@@ -145,11 +168,6 @@
   box-shadow: none;
 }
 
-.darkHeader .dashboardSearchContainer {
-  border-color: #fff;
-  background: #1b2a41;
-}
-
 .dashboardSearchContainer:focus-within:not(:focus-visible) {
   outline: none;
 }
@@ -166,7 +184,7 @@
   min-height: 36px;
   max-height: 120px;
   box-sizing: border-box;
-  overflow: hidden auto;
+  overflow: hidden auto;      /* ✅ Brave-like wrapping */      /* ✅ prevents overflow */
   white-space: pre-wrap;
   overflow-wrap: break-word;
   word-break: normal;
@@ -179,6 +197,7 @@
 .darkHeader .dashboardSearchTextarea::placeholder {
   color: #cbd5e1;
 }
+
 
 @media (width <= 850px) {
   .dashboardSearchContainer {
@@ -208,17 +227,15 @@
   gap: 6px;
 }
 
-/* Hide browser's built-in clear icon for search inputs */
-.dashboardSearchInput::-webkit-search-cancel-button,
-.dashboardSearchInput::-webkit-search-decoration,
-.dashboardSearchInput::-webkit-search-results-button,
-.dashboardSearchInput::-webkit-search-results-decoration {
-  appearance: none;
-}
-
 .darkSearchContainer {
   background: #1b2a41;
   border-color: #4da3ff;
+}
+
+.dashboardSearchContainer,
+.dashboardSearchContainer:focus,
+.dashboardSearchContainer:focus-visible {
+  outline: none;
 }
 
 .darkSearchTextarea {
@@ -248,8 +265,42 @@
 }
 
 .darkSidebar {
+  background: #1b2a41;
+}
+
+.darkSidebar .filterItem input:not([type='checkbox'], [type='radio']),
+.darkSidebar .filterItem select {
+  background-color: #34495e;
+  color: #fff;
+  border: 1px solid #4a6572;
+}
+
+.darkSidebar .filterItem label {
+  background: transparent;
+  color: #ecf0f1;
+}
+
+.darkSidebar input[type="date"] {
+  color-scheme: dark;
+}
+
+.darkSidebar .inputGroup {
+  background-color: #34495e;
+  border-color: #4da3ff;
+}
+
+.darkSidebar .inputGroup input {
+  color: #fff;
+}
+
+.darkSidebar .inputGroup input::placeholder {
+  color: #cbd5e1;
+}
+
+.darkSidebar .inputGroupText {
   background: #2b3e59;
   border-right: 1px solid #1b2a41;
+  color: #cbd5e1;
 }
 
 .filterSection h4 {
@@ -259,10 +310,13 @@
 }
 
 .filterSectionDivider {
-  margin-top: 20px;
   display: flex;
   flex-direction: column;
   gap: 24px;
+}
+
+.filterSectionHeader{
+  margin-bottom: 40px;
 }
 
 .filterItem {
@@ -300,17 +354,35 @@
 .radioRow {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   margin-top: 10px;
-  padding: 0;
+  align-items: center;
+}
+
+.radioOption,
+.checkboxOption {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  cursor: pointer;
+  font-weight: 500;
+  background: transparent !important;
+}
+
+.radioOption input[type='radio'],
+.checkboxOption input[type='checkbox'] {
+  margin: 0;
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
 .filterItem input[type='radio'],
 .filterItem input[type='checkbox'] {
-  display: inline-block;
+  display: inline-block; /* <– keeps input on same line as text */
   width: auto;
   padding: 0;
-  margin: 5px 0 0 120px;
+  margin: 0;
   vertical-align: middle;
 }
 
@@ -321,64 +393,45 @@
   outline: none;
 }
 
-.darkSidebar .filterItem label {
-  color: #ecf0f1;
-}
-
-.darkSidebar .radioLabel {
-  color: #ecf0f1;
-}
-
-.darkSidebar .inputGroup input {
-  color: #fff;
-}
-
-.darkSidebar .filterItem input:not([type='checkbox'], [type='radio'], [type='date']),
-.darkSidebar .filterItem select {
-  background-color: #34495e;
-  color: #fff;
-  border: 1px solid #4a6572;
-}
-
-.darkSidebar input[type="date"] {
-  color-scheme: dark;
-}
-
-.darkSidebar .radioInput,
-.darkSidebar .filterItem input[type='checkbox'] {
-  accent-color: #4da3ff;
-}
-
 .radioGroup {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0;
+  margin-right: 8px;
 }
 
 .radioInput {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  accent-color: #1b3c55;
-  flex-shrink: 0;
-  margin: 0;
+  margin-right: 6px;
 }
 
 .radioLabel {
   margin-bottom: 0;
   vertical-align: middle;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 400;
-  color: #34495e;
-  display: inline;
 }
 
-.radioGroup label.radioLabel {
-  display: inline;
-  font-weight: 400;
-  margin-bottom: 0;
+.filterItem input:not([type="checkbox"], [type="radio"]),
+.filterItem select {
+  padding: 12px 15px;
+  margin-top: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: 100%;
+  font-size: 1rem;
+  background: #fff;
+  transition: all 0.3s ease;
+}
+
+/* Render a single dropdown chevron: hide the browser's native arrow and draw
+   one custom chevron so the selects don't show a doubled-up arrow. */
+.filterItem select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232c3e50' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 36px;
+}
+
+/* In the dark sidebar the select text is white, so use a white chevron. */
+.darkSidebar .filterItem select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
 }
 
 .dateFilter {
@@ -411,19 +464,6 @@
   margin-bottom: 1.5rem;
 }
 
-.filterItem input[type='radio'],
-.filterItem input[type='checkbox'] {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  margin: 0;
-  padding: 0;
-  accent-color: #1b3c55;
-  flex-shrink: 0;
-  vertical-align: middle;
-  display: inline-block;
-}
-
 /* Search Input Container */
 .inputGroup {
   display: flex;
@@ -444,19 +484,6 @@
   font-size: 1.1rem;
 }
 
-.darkSidebar .inputGroup {
-  background-color: #34495e;
-  border-color: #4da3ff;
-}
-
-.darkSidebar .inputGroup input::placeholder {
-  color: #cbd5e1;
-}
-
-.darkSidebar .inputGroupText {
-  color: #cbd5e1;
-}
-
 .dashboardMain {
   width: 65%;
   padding: 30px;
@@ -467,12 +494,34 @@
   background: #2b3e59;
 }
 
+.eventsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
 .sectionTitle {
   font-size: 2.2rem;
   color: #2c3e50;
-  margin-bottom: 30px;
+  margin-bottom: 0;
   font-weight: bold;
-  text-align: center;
+}
+
+.showPastEventsBtn {
+  flex-shrink: 0;
+  background-color: #2c3e50 !important;
+  border-color: #2c3e50 !important;
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 8px 18px;
+  transition: background-color 0.2s ease;
+}
+
+.showPastEventsBtn:hover {
+  background-color: #34495e !important;
+  border-color: #34495e !important;
 }
 
 .sidebarTitle {
@@ -480,9 +529,18 @@
   margin-bottom: 30px;
 }
 
+.clearDateFilterBtn{
+  margin-top: 10px;
+}
+
 .eventCardCol {
   display: flex;
   margin-bottom: 1.5rem;
+}
+
+.eventCard:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 20%);
 }
 
 .eventCardImgContainer img {
@@ -493,20 +551,15 @@
 .eventCard {
   width: 100%;
   height: 100%;
-  border-radius: 12px;
-  overflow: hidden;
   box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
   display: flex;
   flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
   border: none;
   background: #fff;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
-}
-
-.eventCard:hover {
-  transform: scale(1.02);
-  box-shadow: 0 8px 20px rgb(0 0 0 / 20%);
 }
 
 .darkEventCard {
@@ -589,12 +642,12 @@
 .noEvents {
   text-align: center;
   padding: 40px;
-  color: #888;
+  color: #595959; /* darker gray to meet AA contrast on the white background */
   font-size: 1.2rem;
 }
 
 .darkMain .noEvents {
-  color: #9ca3af;
+  color: #e4e6eb; /* lighter gray to meet AA contrast on the dark background */
 }
 
 .dashboardActions {
@@ -631,14 +684,8 @@
   border-color: #6c757d !important;
   color: #fff !important;
 }
+
 /* Hide browser's built-in clear icon for search inputs */
-.dashboardSearchInput::-webkit-search-cancel-button,
-.dashboardSearchInput::-webkit-search-decoration,
-.dashboardSearchInput::-webkit-search-results-button,
-.dashboardSearchInput::-webkit-search-results-decoration {
-  -webkit-appearance: none;
-  appearance: none;
-}
 
 .filterActions {
   display: flex;
@@ -646,13 +693,12 @@
   gap: 10px;
   margin-top: 20px;
   padding-top: 15px;
-  border-top: 1px solid #e0e0e0;
   width: 100%; 
 }
 
 .applyBtn {
-  flex: 1; 
-  background-color: #27ae60 !important;
+  flex: 1;
+  background-color: #198754 !important; /* darker success green: white text meets AA contrast */
   border: none;
   color: white;
   padding: 10px 5px; 
@@ -664,13 +710,13 @@
 }
 
 .applyBtn:hover {
-  background-color: #229954 !important;
-  box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+  background-color: #146c43 !important;
+  box-shadow: 0 4px 8px rgb(39 174 96 / 30%);
 }
 
 .clearBtn {
-  flex: 1; 
-  background-color: #95a5a6 !important;
+  flex: 1;
+  background-color: #6c757d !important; /* darker secondary gray: white text meets AA contrast */
   border: none;
   color: white;
   padding: 10px 5px; 
@@ -682,15 +728,15 @@
 }
 
 .clearBtn:hover {
-  background-color: #7f8c8d !important;
-  box-shadow: 0 4px 8px rgba(149, 165, 166, 0.3);
+  background-color: #565e64 !important;
+  box-shadow: 0 4px 8px rgb(149 165 166 / 30%);
 }
 
 .darkSidebar .filterActions {
   border-top-color: #3a4e6a;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .dashboardHeader {
     flex-wrap: wrap;
   }
@@ -698,10 +744,6 @@
   .cp_dashboard_search_container {
     width: 100%;
   }
-}
-.darkSearchContainer {
-  background: #1b2a41;
-  border-color: #4da3ff;
 }
 
 .paginationBtn:disabled {

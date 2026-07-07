@@ -35,7 +35,7 @@ const UserTableSearchHeader = React.memo(function UserTableSeacrhHeader(props) {
   };
 
   return (
-    <tr className={darkMode ? 'bg-yinmn-blue text-light' : ''}
+    <tr className={darkMode ? styles.darkSearchRow : ''}
         style={{fontSize: isMobile ? mobileFontSize : 'initial'}}
     >
       <td id="user_active" />
