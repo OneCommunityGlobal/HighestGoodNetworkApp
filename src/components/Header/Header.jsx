@@ -417,8 +417,14 @@ export function Header(props) {
               {isAuthenticated && <OwnerMessage />}
             </div>
             <div className={styles.rightSection}>
-            <Collapse isOpen={isOpen} navbar ref={collapseRef}>
-            <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>
+              <NavbarToggler
+                onClick={toggle}
+                className={styles.navbarToggler}
+                innerRef={toggleRef}
+                aria-label="Toggle navigation"
+              />
+              <Collapse isOpen={isOpen} navbar ref={collapseRef}>
+              <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>
                 <NavItem className={styles.showInMobile}>
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                     <img

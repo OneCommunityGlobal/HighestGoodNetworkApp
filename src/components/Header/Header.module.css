@@ -1,12 +1,12 @@
 /* General Styling */
 .headerWrapper {
   height: fit-content;
-  width: clamp(100vw, 0.1rem + 1vw, 100%);
+  width: 100%;
 }
 
 .headerRow {
   display: grid;
-  grid-template-columns: auto 1fr auto; 
+  grid-template-columns: auto minmax(0, 1fr) auto; 
   align-items: center;
   width: 100%;
 }
@@ -23,12 +23,17 @@
   align-items: center;
   justify-content: center;
   text-align: center;
+  min-width: 0;
 }
 
 .rightSection {
   justify-self: end;
   display: flex;
   align-items: center;
+}
+
+.navbarToggler {
+  display: none;
 }
 
 @media (max-width: 768px) {
@@ -84,9 +89,9 @@
 .headerCard {
   margin-left: 0; /* Remove left margin */
   margin-right: 0; /* Remove right margin */
-  /* Use full viewport width */
-  width: 100vw;
-  max-width: 100vw;
+  /* Keep the card inside the page width */
+  width: 100%;
+  max-width: 100%;
   box-sizing: border-box;
   overflow: hidden;
   position: relative;
@@ -109,6 +114,58 @@
 .navbar {
   z-index: 100;
   white-space: nowrap;
+}
+
+@media (max-width: 916px) {
+  .navbar {
+    white-space: normal;
+  }
+
+  .headerRow {
+    grid-template-columns: 1fr;
+    row-gap: 0.5rem;
+  }
+
+  .leftSection,
+  .centerSection,
+  .rightSection {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .rightSection {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .menuContainer {
+    padding-left: 0;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .navbarOwnerMessage {
+    padding-left: 0;
+    padding-right: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 1199px) {
+  .rightSection {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .navbarToggler {
+    display: block;
+    margin-left: auto;
+  }
+
+  .rightSection :global(.navbar-collapse) {
+    flex-basis: 100%;
+    width: 100%;
+  }
 }
 
 
@@ -227,6 +284,33 @@
   }
   .showInMobile {
     display: block;
+  }
+}
+
+@media (max-width: 916px) {
+  .navbarToggler {
+    display: none;
+  }
+
+  .rightSection :global(.collapse:not(.show)),
+  .rightSection :global(.collapsing),
+  .rightSection :global(.navbar-collapse) {
+    display: flex !important;
+    flex-basis: 100%;
+    width: 100%;
+    height: auto !important;
+    overflow: visible !important;
+    visibility: visible !important;
+  }
+
+  .menuContainer {
+    align-items: center;
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-right: 0 !important;
+    padding-left: 0;
+    width: 100%;
   }
 }
 

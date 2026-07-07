@@ -1,9 +1,10 @@
-.message-container {
-  /* display: flex; */
+.messageContainer {
+  display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   min-width: 0;
+  overflow: hidden;
   z-index: 10;
   gap: 8px;
 }
@@ -24,6 +25,8 @@
 }
 
 .message {
+  display: block;
+  flex: 1 1 auto;
   font-style: italic;
   color: white;
   margin: 0;
