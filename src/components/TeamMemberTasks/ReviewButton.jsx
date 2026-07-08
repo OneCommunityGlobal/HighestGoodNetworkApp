@@ -426,6 +426,238 @@ ReviewButtonDisplay.propTypes = {
   onToggleVerify: PropTypes.func.isRequired,
 };
 
+const reviewModalClass = darkMode => (darkMode ? 'text-light dark-mode' : '');
+const reviewHeaderClass = darkMode => (darkMode ? 'bg-space-cadet' : '');
+const reviewSectionClass = darkMode => (darkMode ? 'bg-yinmn-blue' : '');
+const reviewButtonStyle = darkMode => (darkMode ? boxStyleDark : boxStyle);
+
+function ReviewVerifyModal({
+  darkMode,
+  isOpen,
+  onToggle,
+  selectedAction,
+  onConfirm,
+  reviewStatus,
+}) {
+  return (
+    <Modal isOpen={isOpen} toggle={onToggle} className={reviewModalClass(darkMode)}>
+      <ModalHeader toggle={onToggle} className={reviewHeaderClass(darkMode)}>
+        {selectedAction === 'Complete and Remove' && 'Are you sure you have completed the review?'}
+        {selectedAction === 'More Work Needed' && 'Are you sure?'}
+      </ModalHeader>
+      <ModalFooter className={reviewSectionClass(darkMode)}>
+        <Button
+          onClick={onConfirm}
+          color="primary"
+          className="float-left"
+          style={reviewButtonStyle(darkMode)}
+        >
+          {reviewStatus === 'Unsubmitted' ? `Submit` : `Complete`}
+        </Button>
+        <Button onClick={onToggle} style={reviewButtonStyle(darkMode)}>
+          Cancel
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+}
+
+ReviewVerifyModal.propTypes = {
+  darkMode: PropTypes.bool.isRequired,
+  isOpen: PropTypes.bool.isRequired,
+  onToggle: PropTypes.func.isRequired,
+  selectedAction: PropTypes.string,
+  onConfirm: PropTypes.func.isRequired,
+  reviewStatus: PropTypes.string.isRequired,
+};
+
+function ReviewConfirmSubmitModal({ darkMode, isOpen, onToggle, link, onConfirm }) {
+  return (
+    <Modal isOpen={isOpen} toggle={onToggle} className={reviewModalClass(darkMode)}>
+      <ModalHeader toggle={onToggle} className={reviewHeaderClass(darkMode)}>
+        Confirm Submission
+      </ModalHeader>
+      <ModalBody className={reviewSectionClass(darkMode)}>
+        You are about to submit the following link for review:
+        <div className="mt-2" style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>
+          <span>{sanitizeText(link)}</span>
+        </div>
+        Please confirm if this is the correct link.
+      </ModalBody>
+      <ModalFooter className={reviewSectionClass(darkMode)}>
+        <Button color="primary" onClick={onConfirm} style={reviewButtonStyle(darkMode)}>
+          Confirm and Submit
+        </Button>
+        <Button onClick={onToggle} style={reviewButtonStyle(darkMode)}>
+          Cancel
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+}
+
+ReviewConfirmSubmitModal.propTypes = {
+  darkMode: PropTypes.bool.isRequired,
+  isOpen: PropTypes.bool.isRequired,
+  onToggle: PropTypes.func.isRequired,
+  link: PropTypes.string.isRequired,
+  onConfirm: PropTypes.func.isRequired,
+};
+
+function ReviewSubmissionModal({
+  darkMode,
+  isOpen,
+  onToggle,
+  reviewStatus,
+  link,
+  onLinkChange,
+  linkError,
+  onSubmit,
+  onCancel,
+}) {
+  return (
+    <Modal isOpen={isOpen} toggle={onToggle} className={reviewModalClass(darkMode)}>
+      <ModalHeader toggle={onToggle} className={reviewHeaderClass(darkMode)}>
+        Change Review Status
+      </ModalHeader>
+      <ModalBody className={reviewSectionClass(darkMode)}>
+        {reviewStatus === 'Unsubmitted'
+          ? `Are you sure you want to submit for review?`
+          : `Are you sure you have completed the review?`}
+      </ModalBody>
+      <ModalBody className={reviewSectionClass(darkMode)}>
+        Please add link to related work:
+        <Input type="text" required value={link} onChange={onLinkChange} />
+        {linkError && <div className="text-danger">{sanitizeText(linkError)}</div>}
+      </ModalBody>
+      <ModalFooter className={reviewSectionClass(darkMode)}>
+        <Button
+          onClick={onSubmit}
+          color="primary"
+          className="float-left"
+          style={reviewButtonStyle(darkMode)}
+        >
+          {reviewStatus === 'Unsubmitted' ? `Submit` : `Complete`}
+        </Button>
+        <Button onClick={onCancel} style={reviewButtonStyle(darkMode)}>
+          Cancel
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+}
+
+ReviewSubmissionModal.propTypes = {
+  darkMode: PropTypes.bool.isRequired,
+  isOpen: PropTypes.bool.isRequired,
+  onToggle: PropTypes.func.isRequired,
+  reviewStatus: PropTypes.string.isRequired,
+  link: PropTypes.string.isRequired,
+  onLinkChange: PropTypes.func.isRequired,
+  linkError: PropTypes.string,
+  onSubmit: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+};
+
+function ReviewEditLinkModal({
+  darkMode,
+  isOpen,
+  onToggle,
+  link,
+  onLinkChange,
+  linkError,
+  onSubmit,
+  isEditing,
+  isSuccess,
+}) {
+  return (
+    <Modal isOpen={isOpen} toggle={onToggle} className={reviewModalClass(darkMode)}>
+      <ModalHeader toggle={onToggle} className={reviewHeaderClass(darkMode)}>
+        Edit Submitted Link
+      </ModalHeader>
+      <ModalBody className={reviewSectionClass(darkMode)}>
+        <p>Update the link to your submitted work:</p>
+        <Input type="text" required value={link} onChange={onLinkChange} />
+        {linkError && <div className="text-danger">{sanitizeText(linkError)}</div>}
+      </ModalBody>
+      <ModalFooter className={reviewSectionClass(darkMode)}>
+        <Button
+          onClick={onSubmit}
+          color="primary"
+          className="float-left"
+          style={reviewButtonStyle(darkMode)}
+          disabled={isEditing}
+        >
+          <UpdateButtonContent isEditing={isEditing} isSuccess={isSuccess} />
+        </Button>
+        <Button onClick={onToggle} style={reviewButtonStyle(darkMode)} disabled={isEditing}>
+          Cancel
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+}
+
+ReviewEditLinkModal.propTypes = {
+  darkMode: PropTypes.bool.isRequired,
+  isOpen: PropTypes.bool.isRequired,
+  onToggle: PropTypes.func.isRequired,
+  link: PropTypes.string.isRequired,
+  onLinkChange: PropTypes.func.isRequired,
+  linkError: PropTypes.string,
+  onSubmit: PropTypes.func.isRequired,
+  isEditing: PropTypes.bool.isRequired,
+  isSuccess: PropTypes.bool.isRequired,
+};
+
+function ReviewInvalidDomainModal({ darkMode, isOpen, onToggle, errorMessage }) {
+  return (
+    <Modal isOpen={isOpen} toggle={onToggle} className={reviewModalClass(darkMode)}>
+      <ModalHeader toggle={onToggle} className={reviewHeaderClass(darkMode)}>
+        Invalid Domain Type
+      </ModalHeader>
+      <ModalBody className={reviewSectionClass(darkMode)}>
+        <div className="text-center mb-3">
+          <span role="img" aria-label="warning" style={{ fontSize: '2rem' }}>
+            ⚠️
+          </span>
+        </div>
+        <p>{sanitizeText(errorMessage)}</p>
+        <div className="mt-3">
+          <strong>Acceptable link types:</strong>
+          <ul className="mt-2" style={{ paddingLeft: '25px' }}>
+            <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>
+              Google Doc (docs.google.com)
+            </li>
+            <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>
+              Dropbox shared link (must contain /s/ or /scl/)
+            </li>
+            <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>
+              GitHub PR link (must contain /pull/)
+            </li>
+            <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>
+              One Community webpage (onecommunityglobal.org)
+            </li>
+            <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>Figma design (figma.com)</li>
+          </ul>
+        </div>
+      </ModalBody>
+      <ModalFooter className={reviewSectionClass(darkMode)}>
+        <Button color="primary" onClick={onToggle} style={reviewButtonStyle(darkMode)}>
+          Got it!
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+}
+
+ReviewInvalidDomainModal.propTypes = {
+  darkMode: PropTypes.bool.isRequired,
+  isOpen: PropTypes.bool.isRequired,
+  onToggle: PropTypes.func.isRequired,
+  errorMessage: PropTypes.string.isRequired,
+};
+
 function ReviewButtonModals({
   darkMode,
   verifyModal,
@@ -451,183 +683,49 @@ function ReviewButtonModals({
 }) {
   return (
     <>
-      <Modal
+      <ReviewVerifyModal
+        darkMode={darkMode}
         isOpen={verifyModal}
-        toggle={onToggleVerifyModal}
-        className={darkMode ? 'text-light dark-mode' : ''}
-      >
-        <ModalHeader toggle={onToggleVerifyModal} className={darkMode ? 'bg-space-cadet' : ''}>
-          {selectedAction === 'Complete and Remove' &&
-            'Are you sure you have completed the review?'}
-          {selectedAction === 'More Work Needed' && 'Are you sure?'}
-        </ModalHeader>
-        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <Button
-            onClick={onVerifyConfirm}
-            color="primary"
-            className="float-left"
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            {reviewStatus === 'Unsubmitted' ? `Submit` : `Complete`}
-          </Button>
-          <Button onClick={onToggleVerifyModal} style={darkMode ? boxStyleDark : boxStyle}>
-            Cancel
-          </Button>
-        </ModalFooter>
-      </Modal>
-
-      <Modal
+        onToggle={onToggleVerifyModal}
+        selectedAction={selectedAction}
+        onConfirm={onVerifyConfirm}
+        reviewStatus={reviewStatus}
+      />
+      <ReviewConfirmSubmitModal
+        darkMode={darkMode}
         isOpen={confirmSubmitModal}
-        toggle={onToggleConfirmSubmitModal}
-        className={darkMode ? 'text-light dark-mode' : ''}
-      >
-        <ModalHeader
-          toggle={onToggleConfirmSubmitModal}
-          className={darkMode ? 'bg-space-cadet' : ''}
-        >
-          Confirm Submission
-        </ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-          You are about to submit the following link for review:
-          <div className="mt-2" style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>
-            <span>{sanitizeText(link)}</span>
-          </div>
-          Please confirm if this is the correct link.
-        </ModalBody>
-        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <Button
-            color="primary"
-            onClick={onFinalSubmit}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Confirm and Submit
-          </Button>
-          <Button onClick={onToggleConfirmSubmitModal} style={darkMode ? boxStyleDark : boxStyle}>
-            Cancel
-          </Button>
-        </ModalFooter>
-      </Modal>
-
-      <Modal
+        onToggle={onToggleConfirmSubmitModal}
+        link={link}
+        onConfirm={onFinalSubmit}
+      />
+      <ReviewSubmissionModal
+        darkMode={darkMode}
         isOpen={modal}
-        toggle={onToggleModal}
-        className={darkMode ? 'text-light dark-mode' : ''}
-      >
-        <ModalHeader toggle={onToggleModal} className={darkMode ? 'bg-space-cadet' : ''}>
-          Change Review Status
-        </ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-          {reviewStatus === 'Unsubmitted'
-            ? `Are you sure you want to submit for review?`
-            : `Are you sure you have completed the review?`}
-        </ModalBody>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-          Please add link to related work:
-          <Input type="text" required value={link} onChange={onLinkChange} />
-          {editLinkState.error && (
-            <div className="text-danger">{sanitizeText(editLinkState.error)}</div>
-          )}
-        </ModalBody>
-        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <Button
-            onClick={onSubmissionModalSubmit}
-            color="primary"
-            className="float-left"
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            {reviewStatus === 'Unsubmitted' ? `Submit` : `Complete`}
-          </Button>
-          <Button onClick={onModalCancel} style={darkMode ? boxStyleDark : boxStyle}>
-            Cancel
-          </Button>
-        </ModalFooter>
-      </Modal>
-
-      <Modal
+        onToggle={onToggleModal}
+        reviewStatus={reviewStatus}
+        link={link}
+        onLinkChange={onLinkChange}
+        linkError={editLinkState.error}
+        onSubmit={onSubmissionModalSubmit}
+        onCancel={onModalCancel}
+      />
+      <ReviewEditLinkModal
+        darkMode={darkMode}
         isOpen={editLinkState.isOpen}
-        toggle={onToggleEditLinkModal}
-        className={darkMode ? 'text-light dark-mode' : ''}
-      >
-        <ModalHeader toggle={onToggleEditLinkModal} className={darkMode ? 'bg-space-cadet' : ''}>
-          Edit Submitted Link
-        </ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <p>Update the link to your submitted work:</p>
-          <Input type="text" required value={editLinkState.link} onChange={onEditLinkChange} />
-          {editLinkState.error && (
-            <div className="text-danger">{sanitizeText(editLinkState.error)}</div>
-          )}
-        </ModalBody>
-        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <Button
-            onClick={onEditLink}
-            color="primary"
-            className="float-left"
-            style={darkMode ? boxStyleDark : boxStyle}
-            disabled={editLinkState.isEditing}
-          >
-            <UpdateButtonContent
-              isEditing={editLinkState.isEditing}
-              isSuccess={editLinkState.isSuccess}
-            />
-          </Button>
-          <Button
-            onClick={onToggleEditLinkModal}
-            style={darkMode ? boxStyleDark : boxStyle}
-            disabled={editLinkState.isEditing}
-          >
-            Cancel
-          </Button>
-        </ModalFooter>
-      </Modal>
-
-      <Modal
+        onToggle={onToggleEditLinkModal}
+        link={editLinkState.link}
+        onLinkChange={onEditLinkChange}
+        linkError={editLinkState.error}
+        onSubmit={onEditLink}
+        isEditing={editLinkState.isEditing}
+        isSuccess={editLinkState.isSuccess}
+      />
+      <ReviewInvalidDomainModal
+        darkMode={darkMode}
         isOpen={invalidDomainModal.isOpen}
-        toggle={onToggleInvalidDomainModal}
-        className={darkMode ? 'text-light dark-mode' : ''}
-      >
-        <ModalHeader
-          toggle={onToggleInvalidDomainModal}
-          className={darkMode ? 'bg-space-cadet' : ''}
-        >
-          Invalid Domain Type
-        </ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <div className="text-center mb-3">
-            <span role="img" aria-label="warning" style={{ fontSize: '2rem' }}>
-              ⚠️
-            </span>
-          </div>
-          <p>{sanitizeText(invalidDomainModal.errorMessage)}</p>
-          <div className="mt-3">
-            <strong>Acceptable link types:</strong>
-            <ul className="mt-2" style={{ paddingLeft: '25px' }}>
-              <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>
-                Google Doc (docs.google.com)
-              </li>
-              <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>
-                Dropbox shared link (must contain /s/ or /scl/)
-              </li>
-              <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>
-                GitHub PR link (must contain /pull/)
-              </li>
-              <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>
-                One Community webpage (onecommunityglobal.org)
-              </li>
-              <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>Figma design (figma.com)</li>
-            </ul>
-          </div>
-        </ModalBody>
-        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <Button
-            color="primary"
-            onClick={onToggleInvalidDomainModal}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Got it!
-          </Button>
-        </ModalFooter>
-      </Modal>
+        onToggle={onToggleInvalidDomainModal}
+        errorMessage={invalidDomainModal.errorMessage}
+      />
     </>
   );
 }

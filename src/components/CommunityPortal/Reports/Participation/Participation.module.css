@@ -920,7 +920,7 @@
 
   :global(.event-badge-global)[data-type='Dance Class'] {
     background-color: #fff5e6 !important;
-    color: #c87f0a !important;
+    color: #92400e !important;
   }
 
   :global(.event-badge-global)[data-type='Fitness Bootcamp'] {

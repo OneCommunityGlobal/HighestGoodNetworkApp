@@ -68,9 +68,9 @@
 }
 
 .clearTemplateButton {
-  background-color: rgb(100 100 100 / 30%);
-  color: #3d4349;
-  border: 2px solid #757575;
+  background-color: #e0e0e0;
+  color: #212121;
+  border: 2px solid #616161;
 }
 
 .clearTemplateButton:hover:not(:disabled) {
@@ -79,19 +79,19 @@
 }
 
 .clearTemplateButton:disabled {
-  background-color: rgb(200 200 200 / 30%);
-  color: #5a6268;
-  border: 2px solid #bdbdbd;
+  background-color: #eee;
+  color: #424242;
+  border: 2px solid #9e9e9e;
   cursor: not-allowed;
 }
 
 .appendTemplateButton {
-  background-color: #e65100;
+  background-color: #bf360c;
   color: white;
 }
 
 .appendTemplateButton:hover {
-  background-color: #e65100;
+  background-color: #a5270d;
 }
 
 .deleteTemplateButton {
