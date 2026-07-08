@@ -1,6 +1,7 @@
 // src/components/EducationPortal/Tasks/WriteTaskUpload.jsx
 import React, { useEffect, useRef, useState } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { useLocation } from 'react-router-dom';
 import styles from './WriteTaskUpload.module.css';
 import UploadPanel from './UploadPanel';
 
@@ -120,6 +121,10 @@ const Icon = ({ name, className }) => {
       return null;
   }
 };
+Icon.propTypes = {
+  name: PropTypes.string.isRequired,
+  className: PropTypes.string,
+};
 const BellIcon = () => (
   <svg className={styles.bellIcon} width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
     <path
@@ -225,7 +230,6 @@ const isValidUrl = v => /^https?:\/\/\S+/i.test(v?.trim() || '');
 
 /* ---------- Component ---------- */
 export default function WriteTaskUpload() {
-  const { taskId } = useParams();
   const location = useLocation();
 
   // Name

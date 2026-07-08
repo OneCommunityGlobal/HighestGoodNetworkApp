@@ -114,13 +114,6 @@ export default function EquipmentUpdateForm() {
     toast.success('Tool/Equipment updated successfully!');
   };
 
-  let filteredNames = [];
-  if (formData.toolOrEquipment === 'Tool') {
-    filteredNames = uniqueToolList;
-  } else if (formData.toolOrEquipment === 'Equipment') {
-    filteredNames = uniqueEquipmentList;
-  }
-
   return (
     <div className={styles.addToolForm}>
       <Form onSubmit={handleSubmit}>

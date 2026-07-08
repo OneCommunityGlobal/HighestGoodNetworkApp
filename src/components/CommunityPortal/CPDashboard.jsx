@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { Container, Row, Alert, Col, Card, CardBody, Button, Input } from 'reactstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
@@ -33,6 +34,12 @@ const FixedRatioImage = ({ src, alt, fallback }) => (
   </div>
 );
 
+FixedRatioImage.propTypes = {
+  src: PropTypes.string,
+  alt: PropTypes.string.isRequired,
+  fallback: PropTypes.string.isRequired,
+};
+
 // Default filter values
 const DEFAULT_FILTERS = {
   dateFilter: '',
@@ -47,7 +54,6 @@ export function CPDashboard() {
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
-  const [onlineOnly, setOnlineOnly] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showPastEvents, setShowPastEvents] = useState(false);
@@ -242,7 +248,13 @@ export function CPDashboard() {
   // Reset pagination to page 1 when filters change
   useEffect(() => {
     setPagination(prev => ({ ...prev, currentPage: 1 }));
-  }, [searchQuery, selectedDate, onlineOnly, appliedFilters.dateFilter, showPastEvents]);
+  }, [
+    searchQuery,
+    selectedDate,
+    appliedFilters.onlineOnly,
+    appliedFilters.dateFilter,
+    showPastEvents,
+  ]);
 
   const totalPages = Math.ceil(filteredEvents.length / pagination.limit) || 1;
   const displayedEvents = filteredEvents.slice(

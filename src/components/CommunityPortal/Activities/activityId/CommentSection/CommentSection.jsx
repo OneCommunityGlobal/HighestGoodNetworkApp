@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import styles from './CommentSection.module.css';
 
 function CommentSection({ comments }) {
@@ -26,5 +27,16 @@ function CommentSection({ comments }) {
     </div>
   );
 }
+
+CommentSection.propTypes = {
+  comments: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      name: PropTypes.string.isRequired,
+      comment: PropTypes.string.isRequired,
+      time: PropTypes.string,
+    }),
+  ).isRequired,
+};
 
 export default CommentSection;

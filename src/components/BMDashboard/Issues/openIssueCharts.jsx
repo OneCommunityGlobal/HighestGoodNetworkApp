@@ -11,7 +11,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  LabelList,
 } from 'recharts';
 import Select from 'react-select';
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
@@ -32,15 +31,6 @@ const getThemeColors = isDark => ({
   hoverBg: isDark ? '#2d3748' : '#e2e8f0',
 });
 
-const getErrorColor = isDark => (isDark ? '#fca5a5' : '#dc2626');
-
-const getOptionBackground = (isDark, isFocused) => {
-  if (isFocused) {
-    return isDark ? '#2d3748' : '#e2e8f0';
-  }
-  return isDark ? '#1a202c' : '#ffffff';
-};
-
 const getChartClasses = (css, isDark) => ({
   containerClass: `${css.issueChartContainer} ${isDark ? css.issueChartContainerDark : ''}`,
   labelClass: `${css.issueChartLabel} ${isDark ? css.issueChartLabelDark : ''}`,
@@ -50,53 +40,13 @@ const getChartClasses = (css, isDark) => ({
   noDataContentClass: `${css.noDataContent} ${isDark ? css.noDataContentDark : ''}`,
 });
 
-const createSelectStyles = (isDark, textColor) => ({
-  control: (base, state) => ({
-    ...base,
-    backgroundColor: isDark ? '#2d3748' : '#ffffff',
-    borderColor: isDark ? '#4a5568' : '#cbd5e0',
-    boxShadow: state.isFocused ? '0 0 0 1px #4caf50' : 'none',
-    '&:hover': {
-      borderColor: '#4caf50',
-    },
-    color: textColor,
-  }),
-  menu: base => ({
-    ...base,
-    backgroundColor: isDark ? '#1a202c' : '#ffffff',
-    color: textColor,
-  }),
-  option: (base, state) => ({
-    ...base,
-    backgroundColor: getOptionBackground(isDark, state.isFocused),
-    color: textColor,
-    cursor: 'pointer',
-  }),
-  singleValue: base => ({
-    ...base,
-    color: textColor,
-  }),
-  multiValue: base => ({
-    ...base,
-    backgroundColor: isDark ? '#4a5568' : '#e2e8f0',
-  }),
-  multiValueLabel: base => ({
-    ...base,
-    color: textColor,
-  }),
-  placeholder: base => ({
-    ...base,
-    color: isDark ? '#a0aec0' : '#718096',
-  }),
-});
-
 // Deterministic, collision-resistant color per projectId
 const getStableProjectColor = projectId => {
   if (!projectId) return '#94a3b8';
 
   let hash = 0;
   for (let i = 0; i < projectId.length; i++) {
-    hash = projectId.charCodeAt(i) + ((hash << 5) - hash);
+    hash = projectId.codePointAt(i) + ((hash << 5) - hash);
   }
 
   const hue = Math.abs(hash) % 360;
@@ -123,7 +73,7 @@ const getProjectColorMap = issues => {
 function IssueCharts() {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
-  const { issues, loading, error, selectedProjects } = useSelector(state => state.bmissuechart);
+  const { issues, selectedProjects } = useSelector(state => state.bmissuechart);
   const projects = useSelector(state => state.bmProjects);
 
   const [startDate, setStartDate] = useState(null);
@@ -131,8 +81,7 @@ function IssueCharts() {
   const chartContainerRef = useRef(null);
   const [containerWidth, setContainerWidth] = useState(window.innerWidth);
 
-  const { textColor, gridColor, tooltipBg, tooltipBorder, hoverBg } = getThemeColors(darkMode);
-  const errorColor = getErrorColor(darkMode);
+  const { textColor } = getThemeColors(darkMode);
   const {
     containerClass,
     labelClass,
@@ -141,19 +90,6 @@ function IssueCharts() {
     noDataMessageClass,
     noDataContentClass,
   } = getChartClasses(styles, darkMode);
-  const selectStyles = createSelectStyles(darkMode, textColor);
-
-  const loadingMessageStyle = {
-    color: textColor,
-    textAlign: 'center',
-    padding: '20px',
-  };
-
-  const errorMessageStyle = {
-    color: errorColor,
-    textAlign: 'center',
-    padding: '20px',
-  };
 
   useEffect(() => {
     dispatch(fetchBMProjects());
@@ -439,8 +375,11 @@ function IssueCharts() {
                 labelFormatter={label => `Issue: ${label}`}
               />
               <Bar dataKey="durationOpen" barSize={22} isAnimationActive={false}>
-                {chartData.map((entry, index) => (
-                  <Cell key={index} fill={projectColorMap[entry.projectId] || '#94a3b8'} />
+                {chartData.map(entry => (
+                  <Cell
+                    key={`${entry.issueName}-${entry.projectId}`}
+                    fill={projectColorMap[entry.projectId] || '#94a3b8'}
+                  />
                 ))}
               </Bar>
             </BarChart>

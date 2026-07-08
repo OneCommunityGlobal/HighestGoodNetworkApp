@@ -20,6 +20,82 @@ const DropdownIndicator = props => (
   </selectComponents.DropdownIndicator>
 );
 
+const LIGHT_PALETTE = {
+  controlBg: '#ffffff',
+  controlBorder: '#d1d5db',
+  controlBorderHover: '#3b82f6',
+  text: '#0f172a',
+  mutedText: '#64748b',
+  indicator: '#475569',
+  menuBg: '#ffffff',
+  optionBg: '#ffffff',
+  optionHoverBg: '#e2e8f0',
+  optionSelectedBg: '#dbeafe',
+  groupHeading: '#475569',
+  shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+};
+
+const DARK_PALETTE = {
+  controlBg: '#243447',
+  controlBorder: '#475569',
+  controlBorderHover: '#64748b',
+  text: '#f8fafc',
+  mutedText: '#cbd5e1',
+  indicator: '#e2e8f0',
+  menuBg: '#243447',
+  optionBg: '#243447',
+  optionHoverBg: '#31465f',
+  optionSelectedBg: '#3b82f6',
+  groupHeading: '#94a3b8',
+  shadow: '0 10px 24px rgba(2, 6, 23, 0.45)',
+};
+
+const getPalette = darkMode => (darkMode ? DARK_PALETTE : LIGHT_PALETTE);
+
+const normalizeDate = date => {
+  const normalized = new Date(date);
+  normalized.setHours(0, 0, 0, 0);
+  return normalized;
+};
+
+const isTagWithinDateRange = (itemDate, startDate, endDate) => {
+  if (startDate && endDate) {
+    const start = normalizeDate(startDate);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+    return itemDate >= start && itemDate <= end;
+  }
+  if (startDate) {
+    return itemDate >= normalizeDate(startDate);
+  }
+  if (endDate) {
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+    return itemDate <= end;
+  }
+  return true;
+};
+
+const getLatestUniqueTags = (data, maxItems) => {
+  const sorted = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
+  if (sorted.length < maxItems) {
+    return sorted;
+  }
+
+  const latestItems = [];
+  const usedTags = new Set();
+
+  for (const item of sorted) {
+    if (!usedTags.has(item.tag)) {
+      latestItems.push(item);
+      usedTags.add(item.tag);
+      if (latestItems.length >= maxItems) break;
+    }
+  }
+
+  return latestItems;
+};
+
 function MostFrequentKeywords({ darkMode: propDarkMode }) {
   const svgRef = useRef();
   const containerRef = useRef();
@@ -37,35 +113,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
   const API_BASE = process.env.REACT_APP_APIENDPOINT;
   const reduxDarkMode = useSelector(state => state.theme.darkMode);
   const darkMode = propDarkMode !== undefined ? propDarkMode : reduxDarkMode;
-  const palette = darkMode
-    ? {
-        controlBg: '#243447',
-        controlBorder: '#475569',
-        controlBorderHover: '#64748b',
-        text: '#f8fafc',
-        mutedText: '#cbd5e1',
-        indicator: '#e2e8f0',
-        menuBg: '#243447',
-        optionBg: '#243447',
-        optionHoverBg: '#31465f',
-        optionSelectedBg: '#3b82f6',
-        groupHeading: '#94a3b8',
-        shadow: '0 10px 24px rgba(2, 6, 23, 0.45)',
-      }
-    : {
-        controlBg: '#ffffff',
-        controlBorder: '#d1d5db',
-        controlBorderHover: '#3b82f6',
-        text: '#0f172a',
-        mutedText: '#64748b',
-        indicator: '#475569',
-        menuBg: '#ffffff',
-        optionBg: '#ffffff',
-        optionHoverBg: '#e2e8f0',
-        optionSelectedBg: '#dbeafe',
-        groupHeading: '#475569',
-        shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-      };
+  const palette = getPalette(darkMode);
 
   // Get today's date for max date restriction
   const today = new Date();
@@ -283,26 +331,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
   const getLatestData = useCallback(
     data => {
       if (!data || data.length === 0) return [];
-
-      const sorted = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
-      const maxItems = isMobile ? 6 : 8;
-
-      if (sorted.length >= maxItems) {
-        const latestItems = [];
-        const usedTags = new Set();
-
-        for (const item of sorted) {
-          if (!usedTags.has(item.tag)) {
-            latestItems.push(item);
-            usedTags.add(item.tag);
-            if (latestItems.length >= maxItems) break;
-          }
-        }
-
-        return latestItems;
-      }
-
-      return sorted;
+      return getLatestUniqueTags(data, isMobile ? 6 : 8);
     },
     [isMobile],
   );
@@ -316,28 +345,8 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       }
 
       const filtered = tagsToFilter.filter(item => {
-        const itemDate = new Date(item.date);
-        itemDate.setHours(0, 0, 0, 0);
-
-        if (startDate && endDate) {
-          const start = new Date(startDate);
-          start.setHours(0, 0, 0, 0);
-          const end = new Date(endDate);
-          end.setHours(23, 59, 59, 999);
-          return itemDate >= start && itemDate <= end;
-        }
-        if (startDate) {
-          const start = new Date(startDate);
-          start.setHours(0, 0, 0, 0);
-          return itemDate >= start;
-        }
-        if (endDate) {
-          const end = new Date(endDate);
-          end.setHours(23, 59, 59, 999);
-          return itemDate <= end;
-        }
-
-        return true;
+        const itemDate = normalizeDate(item.date);
+        return isTagWithinDateRange(itemDate, startDate, endDate);
       });
 
       const sorted = [...filtered].sort((a, b) => b.count - a.count);

@@ -30,6 +30,10 @@ import hasPermission from '~/utils/permissions';
 
 const sanitizer = dompurify.sanitize;
 
+const DOMAIN_LABEL = '[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?';
+const DOMAIN_PATTERN = new RegExp(`^${DOMAIN_LABEL}(?:\\.${DOMAIN_LABEL})*\\.[a-zA-Z]{2,}$`);
+const PATH_PATTERN = /^[/\w.\-~:?#[\]@!$&'()*+,;=%]*$/;
+
 const REVIEWER_ROLES = new Set(['Owner', 'Administrator', 'Mentor', 'Manager']);
 
 const INVALID_DOMAIN_DEFAULT_MESSAGE =
@@ -54,8 +58,6 @@ const validURL = url => {
     if (url.length < 20) return false;
 
     const protocolPattern = /^https?:\/\//;
-    const domainPattern = /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
-    const pathPattern = /^[/\w\-._~:?#[\]@!$&'()*+,;=%]*$/;
 
     const urlToTest = url.startsWith('http') ? url : `https://${url}`;
 
@@ -67,8 +69,8 @@ const validURL = url => {
       slashIndex === -1 ? urlWithoutProtocol : urlWithoutProtocol.substring(0, slashIndex);
     const path = slashIndex === -1 ? '' : urlWithoutProtocol.substring(slashIndex);
 
-    if (!domainPattern.test(domain)) return false;
-    if (path && !pathPattern.test(path)) return false;
+    if (!DOMAIN_PATTERN.test(domain)) return false;
+    if (path && !PATH_PATTERN.test(path)) return false;
 
     try {
       new URL(urlToTest);
@@ -179,6 +181,121 @@ const sendReviewNotification = (myUserId, user, task, isLinkUpdate = false) => {
   httpService.post(`${ApiEndpoint}/tasks/reviewreq/${sanitizeText(myUserId)}`, data);
 };
 
+const applyLinkValidationError = (validation, setEditLinkState, toggleInvalidDomainModal) => {
+  if (validation.error) {
+    setEditLinkState(prev => ({ ...prev, error: validation.error }));
+    return;
+  }
+  toggleInvalidDomainModal(validation.errorType);
+};
+
+const updateTaskRelatedWorkLink = (task, sanitizedLink) => {
+  const updatedTask = { ...task };
+  if (Array.isArray(updatedTask.relatedWorkLinks) && updatedTask.relatedWorkLinks.length > 0) {
+    updatedTask.relatedWorkLinks[updatedTask.relatedWorkLinks.length - 1] = sanitizedLink;
+  } else {
+    updatedTask.relatedWorkLinks = [sanitizedLink];
+  }
+  return updatedTask;
+};
+
+const getReadyForReviewDropdownStyle = darkMode => ({
+  backgroundColor: '#E5F4E8',
+  color: '#326749',
+  borderColor: '#C3E6CB',
+  ...(darkMode ? boxStyleDark : boxStyle),
+});
+
+const getReviewActionHandler = (action, onSelectAction, onToggleVerify) => () => {
+  onSelectAction(action);
+  onToggleVerify();
+};
+
+function OwnerSubmittedDropdown({ task, darkMode, onToggleEditLinkModal }) {
+  return (
+    <UncontrolledDropdown>
+      <DropdownToggle
+        className={`${styles['btn--dark-sea-green']} ${style.reviewBtn} ${style['reviewBtn-dropdown-wrapper']}`}
+        caret
+        style={getReadyForReviewDropdownStyle(darkMode)}
+      >
+        Ready for Review
+      </DropdownToggle>
+      <DropdownMenu container="body" strategy="fixed" className={style['review-button-dropdown']}>
+        <WorkLinkItems relatedWorkLinks={task.relatedWorkLinks} darkMode={darkMode} />
+        <DropdownItem
+          onClick={onToggleEditLinkModal}
+          className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
+        >
+          <FontAwesomeIcon icon={faPencilAlt} /> Edit Link
+        </DropdownItem>
+      </DropdownMenu>
+    </UncontrolledDropdown>
+  );
+}
+
+OwnerSubmittedDropdown.propTypes = {
+  task: PropTypes.shape({
+    relatedWorkLinks: PropTypes.arrayOf(PropTypes.string),
+  }).isRequired,
+  darkMode: PropTypes.bool.isRequired,
+  onToggleEditLinkModal: PropTypes.func.isRequired,
+};
+
+function ReviewerSubmittedDropdown({
+  task,
+  darkMode,
+  onToggleEditLinkModal,
+  onSelectAction,
+  onToggleVerify,
+}) {
+  return (
+    <UncontrolledDropdown>
+      <DropdownToggle
+        className={`${styles['btn--dark-sea-green']} ${style.reviewBtn}`}
+        caret
+        style={darkMode ? boxStyleDark : boxStyle}
+      >
+        Ready for Review
+      </DropdownToggle>
+      <DropdownMenu container="body" strategy="fixed" className={style['review-button-dropdown']}>
+        <WorkLinkItems relatedWorkLinks={task.relatedWorkLinks} darkMode={darkMode} />
+        <DropdownItem
+          onClick={onToggleEditLinkModal}
+          className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
+        >
+          <FontAwesomeIcon icon={faPencilAlt} /> Edit Link
+        </DropdownItem>
+        <DropdownItem
+          onClick={getReviewActionHandler('Complete and Remove', onSelectAction, onToggleVerify)}
+          className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
+        >
+          <div className={styles['review-dropdown-item']}>
+            <FontAwesomeIcon className={styles['team-member-tasks-done']} icon={faCheck} />
+            <span>as complete and remove task</span>
+          </div>
+        </DropdownItem>
+        <DropdownItem
+          onClick={getReviewActionHandler('More Work Needed', onSelectAction, onToggleVerify)}
+          className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
+        >
+          More work needed, reset this button
+        </DropdownItem>
+      </DropdownMenu>
+    </UncontrolledDropdown>
+  );
+}
+
+ReviewerSubmittedDropdown.propTypes = {
+  task: PropTypes.shape({
+    relatedWorkLinks: PropTypes.arrayOf(PropTypes.string),
+  }).isRequired,
+  darkMode: PropTypes.bool.isRequired,
+  onToggleEditLinkModal: PropTypes.func.isRequired,
+  onSelectAction: PropTypes.func.isRequired,
+  onToggleVerify: PropTypes.func.isRequired,
+};
+
 // ─── Small presentational sub-components ────────────────────────────────────
 
 function UpdateButtonContent({ isEditing, isSuccess }) {
@@ -261,73 +378,23 @@ function ReviewButtonDisplay({
 
   if (user.personId === myUserId) {
     return (
-      <UncontrolledDropdown>
-        <DropdownToggle
-          className={`${styles['btn--dark-sea-green']} ${style.reviewBtn} ${style['reviewBtn-dropdown-wrapper']}`}
-          caret
-          style={{
-            backgroundColor: '#E5F4E8',
-            color: '#326749',
-            borderColor: '#C3E6CB',
-            ...(darkMode ? boxStyleDark : boxStyle),
-          }}
-        >
-          Ready for Review
-        </DropdownToggle>
-        <DropdownMenu container="body" strategy="fixed" className={style['review-button-dropdown']}>
-          <WorkLinkItems relatedWorkLinks={task.relatedWorkLinks} darkMode={darkMode} />
-          <DropdownItem
-            onClick={onToggleEditLinkModal}
-            className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
-          >
-            <FontAwesomeIcon icon={faPencilAlt} /> Edit Link
-          </DropdownItem>
-        </DropdownMenu>
-      </UncontrolledDropdown>
+      <OwnerSubmittedDropdown
+        task={task}
+        darkMode={darkMode}
+        onToggleEditLinkModal={onToggleEditLinkModal}
+      />
     );
   }
 
   if (canActAsReviewer(myRole, canReview)) {
     return (
-      <UncontrolledDropdown>
-        <DropdownToggle
-          className={`${styles['btn--dark-sea-green']} ${style.reviewBtn}`}
-          caret
-          style={darkMode ? boxStyleDark : boxStyle}
-        >
-          Ready for Review
-        </DropdownToggle>
-        <DropdownMenu container="body" strategy="fixed" className={style['review-button-dropdown']}>
-          <WorkLinkItems relatedWorkLinks={task.relatedWorkLinks} darkMode={darkMode} />
-          <DropdownItem
-            onClick={onToggleEditLinkModal}
-            className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
-          >
-            <FontAwesomeIcon icon={faPencilAlt} /> Edit Link
-          </DropdownItem>
-          <DropdownItem
-            onClick={() => {
-              onSelectAction('Complete and Remove');
-              onToggleVerify();
-            }}
-            className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
-          >
-            <div className={styles['review-dropdown-item']}>
-              <FontAwesomeIcon className={styles['team-member-tasks-done']} icon={faCheck} />
-              <span>as complete and remove task</span>
-            </div>
-          </DropdownItem>
-          <DropdownItem
-            onClick={() => {
-              onSelectAction('More Work Needed');
-              onToggleVerify();
-            }}
-            className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
-          >
-            More work needed, reset this button
-          </DropdownItem>
-        </DropdownMenu>
-      </UncontrolledDropdown>
+      <ReviewerSubmittedDropdown
+        task={task}
+        darkMode={darkMode}
+        onToggleEditLinkModal={onToggleEditLinkModal}
+        onSelectAction={onSelectAction}
+        onToggleVerify={onToggleVerify}
+      />
     );
   }
 
@@ -445,11 +512,7 @@ function ReviewButton({ user, task, updateTask }) {
     event.preventDefault();
     const validation = validateLinkInput(sanitizeUrl(link));
     if (!validation.isValid) {
-      if (validation.error) {
-        setEditLinkState(prev => ({ ...prev, error: validation.error }));
-      } else {
-        toggleInvalidDomainModal(validation.errorType);
-      }
+      applyLinkValidationError(validation, setEditLinkState, toggleInvalidDomainModal);
       return;
     }
     setConfirmSubmitModal(prev => !prev);
@@ -461,41 +524,21 @@ function ReviewButton({ user, task, updateTask }) {
     sendReviewNotification(myUserId, user, task);
   };
 
-  const handleEditLink = () => {
-    const sanitizedLink = sanitizeUrl(editLinkState.link);
-    const validation = validateLinkInput(sanitizedLink);
+  const completeEditLinkUpdate = sanitizedLink => {
+    sendReviewNotification(myUserId, user, task, true);
+    setEditLinkState(prev => ({ ...prev, isSuccess: true }));
+    setTimeout(() => {
+      setEditLinkState(prev => ({ ...prev, isSuccess: false, isOpen: false }));
+    }, 1500);
+  };
 
-    if (!validation.isValid) {
-      if (validation.error) {
-        setEditLinkState(prev => ({ ...prev, error: validation.error }));
-      } else {
-        toggleInvalidDomainModal(validation.errorType);
-      }
-      return;
-    }
-
-    setEditLinkState(prev => ({ ...prev, isEditing: true }));
-
-    const updatedTask = { ...task };
-    if (Array.isArray(updatedTask.relatedWorkLinks) && updatedTask.relatedWorkLinks.length > 0) {
-      updatedTask.relatedWorkLinks[updatedTask.relatedWorkLinks.length - 1] = sanitizedLink;
-    } else {
-      updatedTask.relatedWorkLinks = [sanitizedLink];
-    }
-
-    const onSuccess = () => {
-      sendReviewNotification(myUserId, user, task, true);
-      setEditLinkState(prev => ({ ...prev, isSuccess: true }));
-      setTimeout(() => {
-        setEditLinkState(prev => ({ ...prev, isSuccess: false, isOpen: false }));
-      }, 1500);
-    };
-
+  const runEditLinkUpdate = sanitizedLink => {
+    const updatedTask = updateTaskRelatedWorkLink(task, sanitizedLink);
     const result = updateTask(task._id, updatedTask);
 
     if (result && typeof result.then === 'function') {
       result
-        .then(onSuccess)
+        .then(() => completeEditLinkUpdate(sanitizedLink))
         .catch(error => {
           toast.error('Error updating link:', error);
           setEditLinkState(prev => ({
@@ -506,10 +549,24 @@ function ReviewButton({ user, task, updateTask }) {
         .finally(() => {
           setEditLinkState(prev => ({ ...prev, isEditing: false }));
         });
-    } else {
-      onSuccess();
-      setEditLinkState(prev => ({ ...prev, isEditing: false }));
+      return;
     }
+
+    completeEditLinkUpdate(sanitizedLink);
+    setEditLinkState(prev => ({ ...prev, isEditing: false }));
+  };
+
+  const handleEditLink = () => {
+    const sanitizedLink = sanitizeUrl(editLinkState.link);
+    const validation = validateLinkInput(sanitizedLink);
+
+    if (!validation.isValid) {
+      applyLinkValidationError(validation, setEditLinkState, toggleInvalidDomainModal);
+      return;
+    }
+
+    setEditLinkState(prev => ({ ...prev, isEditing: true }));
+    runEditLinkUpdate(sanitizedLink);
   };
 
   // ── Input handlers ────────────────────────────────────────────────────────

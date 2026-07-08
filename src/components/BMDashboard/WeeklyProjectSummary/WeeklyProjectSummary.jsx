@@ -20,7 +20,6 @@ import ExpenseBarChart from './Financials/ExpenseBarChart';
 import CostBreakDown from './Financials/CostBreakDown/CostBreakDown';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
-import EmbedInteractiveMap from '../InteractiveMap/EmbedInteractiveMap';
 import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
 import LossTrackingLineChart from './Financials/LossTrackingLineCharts/LossTrackingLineChart';
@@ -485,9 +484,7 @@ function WeeklyProjectSummary() {
           'button, .weekly-project-summary-dropdown-icon, .no-print, .weekly-summary-header-controls',
         )
         .forEach(el => {
-          if (el.parentNode) {
-            el.parentNode.removeChild(el);
-          }
+          el.remove();
         });
 
       // Add styles for PDF
@@ -558,7 +555,7 @@ function WeeklyProjectSummary() {
 
       // Clean up
       if (document.body.contains(pdfContainer)) {
-        document.body.removeChild(pdfContainer);
+        pdfContainer.remove();
       }
 
       // Dismiss loading toast and show success

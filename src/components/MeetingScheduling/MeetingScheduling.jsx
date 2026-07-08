@@ -82,7 +82,7 @@ const TINY_MCE_INIT_OPTIONS = {
   images_upload_handler: customImageUploadHandler,
 };
 
-const LOCATION_TYPES_REQUIRING_DETAILS = ['Zoom', 'Phone call', 'On-site'];
+const LOCATION_TYPES_REQUIRING_DETAILS = new Set(['Zoom', 'Phone call', 'On-site']);
 const HOUR_OPTIONS = Array.from({ length: 13 }, (_, hour) => hour);
 const MINUTE_OPTIONS = ['00', '15', '30', '45'];
 
@@ -110,10 +110,7 @@ const validateMeetingForm = (formValues, notesPlainText) => {
   if (!formValues.location) {
     validationErrors.location = 'Location is required.';
   }
-  if (
-    LOCATION_TYPES_REQUIRING_DETAILS.includes(formValues.location) &&
-    !formValues.locationDetails
-  ) {
+  if (LOCATION_TYPES_REQUIRING_DETAILS.has(formValues.location) && !formValues.locationDetails) {
     validationErrors.locationDetails = 'Location details are required.';
   }
   if (!notesPlainText) {
@@ -175,6 +172,78 @@ const getFormControlClassName = darkMode =>
 
 const millisecondsForOneDay = 24 * 60 * 60 * 1000;
 
+const LOCATION_RADIO_OPTIONS = [
+  { id: 'locationZoom', value: 'Zoom', label: 'Zoom' },
+  { id: 'locationPhone', value: 'Phone call', label: 'Phone call' },
+  { id: 'locationOnSite', value: 'On-site', label: 'On-site' },
+];
+
+const getMeetingModalClasses = darkMode => ({
+  meetingModalClass: darkMode
+    ? 'meeting-scheduling-modal meeting-scheduling-modal--dark'
+    : 'meeting-scheduling-modal',
+  meetingModalContentClass: darkMode ? 'meeting-scheduling-modal-panel--dark' : '',
+  meetingModalSectionClass: darkMode ? 'bg-yinmn-blue text-white border-0' : '',
+});
+
+const renderModalHeader = (title, onClose, darkMode) =>
+  darkMode ? (
+    <MeetingModalHeader onClose={onClose}>{title}</MeetingModalHeader>
+  ) : (
+    <ModalHeader toggle={onClose}>{title}</ModalHeader>
+  );
+
+const renderMeetingSummary = (details, introText) => (
+  <div className="meeting-scheduling-modal-content">
+    <p className="meeting-modal-intro">{introText}</p>
+    <p>
+      <strong>{details.participants}</strong>
+    </p>
+    <p>Your time: {details.organizerTime}</p>
+    {details.participantTimes?.length > 0 && (
+      <div>
+        <p>Participant local times:</p>
+        <ul>
+          {details.participantTimes.map(entry => (
+            <li key={entry}>{entry}</li>
+          ))}
+        </ul>
+      </div>
+    )}
+    <p>Duration: {details.duration}</p>
+    {details.location && <p>Location: {details.location}</p>}
+    {details.locationDetails && <p>Location Details: {details.locationDetails}</p>}
+    {details.notes && <p>Notes: {getNotesPlainText(details.notes)}</p>}
+  </div>
+);
+
+const setupPageHeaderSync = pageRef => {
+  const headerEl = document.querySelector('[data-testid="header"]');
+  const pageEl = pageRef.current;
+  if (!headerEl || !pageEl) return undefined;
+
+  const syncPageScrollArea = () => {
+    const headerHeight = headerEl.getBoundingClientRect().height;
+    pageEl.style.setProperty('--meeting-page-header-offset', `${Math.ceil(headerHeight)}px`);
+  };
+
+  syncPageScrollArea();
+  globalThis.addEventListener('resize', syncPageScrollArea);
+
+  const resizeObserver =
+    typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(syncPageScrollArea);
+  if (resizeObserver) {
+    resizeObserver.observe(headerEl);
+  }
+
+  return () => {
+    globalThis.removeEventListener('resize', syncPageScrollArea);
+    if (resizeObserver) {
+      resizeObserver.disconnect();
+    }
+  };
+};
+
 const createInitialFormValues = (authUser, userProfile) => {
   const timeZone = resolveUserTimeZone(userProfile?.timeZone);
   return {
@@ -216,32 +285,7 @@ function MeetingScheduling(props) {
     props.getAllUserProfile();
   }, []);
 
-  useEffect(() => {
-    const headerEl = document.querySelector('[data-testid="header"]');
-    const pageEl = pageRef.current;
-    if (!headerEl || !pageEl) return undefined;
-
-    const syncPageScrollArea = () => {
-      const headerHeight = headerEl.getBoundingClientRect().height;
-      pageEl.style.setProperty('--meeting-page-header-offset', `${Math.ceil(headerHeight)}px`);
-    };
-
-    syncPageScrollArea();
-    window.addEventListener('resize', syncPageScrollArea);
-
-    const resizeObserver =
-      typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(syncPageScrollArea);
-    if (resizeObserver) {
-      resizeObserver.observe(headerEl);
-    }
-
-    return () => {
-      window.removeEventListener('resize', syncPageScrollArea);
-      if (resizeObserver) {
-        resizeObserver.disconnect();
-      }
-    };
-  }, []);
+  useEffect(() => setupPageHeaderSync(pageRef), []);
 
   useEffect(() => {
     if (userProfile?.timeZone) {
@@ -391,42 +435,11 @@ function MeetingScheduling(props) {
     history.push('/dashboard');
   };
 
-  const meetingModalClass = darkMode
-    ? 'meeting-scheduling-modal meeting-scheduling-modal--dark'
-    : 'meeting-scheduling-modal';
-  const meetingModalContentClass = darkMode ? 'meeting-scheduling-modal-panel--dark' : '';
-  const meetingModalSectionClass = darkMode ? 'bg-yinmn-blue text-white border-0' : '';
-
-  const renderModalHeader = (title, onClose) =>
-    darkMode ? (
-      <MeetingModalHeader onClose={onClose}>{title}</MeetingModalHeader>
-    ) : (
-      <ModalHeader toggle={onClose}>{title}</ModalHeader>
-    );
-
-  const renderMeetingSummary = (details, introText) => (
-    <div className="meeting-scheduling-modal-content">
-      <p className="meeting-modal-intro">{introText}</p>
-      <p>
-        <strong>{details.participants}</strong>
-      </p>
-      <p>Your time: {details.organizerTime}</p>
-      {details.participantTimes?.length > 0 && (
-        <div>
-          <p>Participant local times:</p>
-          <ul>
-            {details.participantTimes.map(entry => (
-              <li key={entry}>{entry}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-      <p>Duration: {details.duration}</p>
-      {details.location && <p>Location: {details.location}</p>}
-      {details.locationDetails && <p>Location Details: {details.locationDetails}</p>}
-      {details.notes && <p>Notes: {getNotesPlainText(details.notes)}</p>}
-    </div>
-  );
+  const {
+    meetingModalClass,
+    meetingModalContentClass,
+    meetingModalSectionClass,
+  } = getMeetingModalClasses(darkMode);
 
   return (
     <div ref={pageRef} className={getMeetingPageClassName(darkMode)}>
@@ -618,11 +631,7 @@ function MeetingScheduling(props) {
                 Location
               </Label>
               <div className="meeting-location-options">
-                {[
-                  { id: 'locationZoom', value: 'Zoom', label: 'Zoom' },
-                  { id: 'locationPhone', value: 'Phone call', label: 'Phone call' },
-                  { id: 'locationOnSite', value: 'On-site', label: 'On-site' },
-                ].map(option => (
+                {LOCATION_RADIO_OPTIONS.map(option => (
                   <div key={option.id} className="meeting-location-group">
                     <label
                       htmlFor={option.id}
@@ -720,7 +729,11 @@ function MeetingScheduling(props) {
             className={meetingModalClass}
             contentClassName={meetingModalContentClass}
           >
-            {renderModalHeader('Confirm Meeting Schedule', () => setConfirmModalOpen(false))}
+            {renderModalHeader(
+              'Confirm Meeting Schedule',
+              () => setConfirmModalOpen(false),
+              darkMode,
+            )}
             <ModalBody className={meetingModalSectionClass}>
               {pendingMeetingDetails?.confirmationDetails && (
                 <>
@@ -767,7 +780,7 @@ function MeetingScheduling(props) {
             className={meetingModalClass}
             contentClassName={meetingModalContentClass}
           >
-            {renderModalHeader(modalTitle, toggleModal)}
+            {renderModalHeader(modalTitle, toggleModal, darkMode)}
             <ModalBody className={meetingModalSectionClass}>
               {isSuccessModal && modalMessage ? (
                 <>

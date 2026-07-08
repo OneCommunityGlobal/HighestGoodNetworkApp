@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
 import '../Header/index.module.css';
@@ -67,5 +68,16 @@ export const DeleteTeamPopup = React.memo(props => {
 });
 
 DeleteTeamPopup.displayName = 'DeleteTeamPopup';
+
+DeleteTeamPopup.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onDeleteClick: PropTypes.func.isRequired,
+  onSetInactiveClick: PropTypes.func.isRequired,
+  selectedTeamName: PropTypes.string,
+  selectedTeamId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  selectedTeamCode: PropTypes.string,
+  hasPermission: PropTypes.func.isRequired,
+};
 
 export default connect(null, { hasPermission })(DeleteTeamPopup);

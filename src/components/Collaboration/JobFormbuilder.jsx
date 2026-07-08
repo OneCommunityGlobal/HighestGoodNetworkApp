@@ -140,31 +140,6 @@ function JobFormBuilder() {
   }, [formFields, newField, templateName, selectedTemplate, initialFormFields]);
 
   // CRUD Functions with Dynamic Form ID
-  const cloneField = async (field, index) => {
-    const clonedField = JSON.parse(JSON.stringify(field));
-
-    // Update local state immediately
-    const newFields = [
-      ...formFields.slice(0, index + 1),
-      clonedField,
-      ...formFields.slice(index + 1),
-    ];
-    setFormFields(newFields);
-
-    // Sync with backend if form exists
-    if (currentFormId) {
-      try {
-        await axios.post(ENDPOINTS.ADD_QUESTION(currentFormId), {
-          question: clonedField,
-          position: index + 1,
-        });
-        markAsSaved(newFields);
-      } catch (error) {
-        console.error('Error cloning question on server:', error);
-      }
-    }
-  };
-
   const moveField = async (index, direction) => {
     const newIndex = direction === 'up' ? index - 1 : index + 1;
 

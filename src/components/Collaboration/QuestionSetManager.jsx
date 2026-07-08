@@ -115,7 +115,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions }) {
           fields: formFields.map(field => ({
             questionText: field.questionText,
             questionType: field.questionType,
-            visible: field.visible !== undefined ? field.visible : true,
+            visible: field.visible === undefined ? true : field.visible,
             isRequired: field.required || false,
             options: field.options || [],
             placeholder: field.placeholder || '',
@@ -132,7 +132,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions }) {
           fields: formFields.map(field => ({
             questionText: field.questionText || field.label,
             questionType: field.questionType || field.type,
-            visible: field.visible !== undefined ? field.visible : true,
+            visible: field.visible === undefined ? true : field.visible,
             isRequired: field.required || field.isRequired || false,
             options: field.options || [],
             placeholder: field.placeholder || '',

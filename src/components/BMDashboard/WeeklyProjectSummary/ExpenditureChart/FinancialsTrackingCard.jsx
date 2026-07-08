@@ -41,7 +41,7 @@ function FinancialsTrackingCard() {
         const projectIds = getProjectIds();
         const labeledProjects = projectIds.map((id, index) => ({
           id,
-          name: `Project ${String.fromCharCode(65 + index)}`,
+          name: `Project ${String.fromCodePoint(65 + index)}`,
         }));
 
         setProjectList(labeledProjects);
@@ -50,7 +50,7 @@ function FinancialsTrackingCard() {
           setSelectedProject(labeledProjects[0].id);
         }
       } catch (err) {
-        setError('Failed to load projects');
+        setError(err instanceof Error ? err.message : 'Failed to load projects');
       } finally {
         setLoading(false);
       }

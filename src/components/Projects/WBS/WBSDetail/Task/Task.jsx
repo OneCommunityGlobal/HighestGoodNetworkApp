@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Modal, ModalBody, Button, ModalHeader } from 'reactstrap';
 import { BsFillCaretDownFill, BsFillCaretUpFill, BsFillCaretLeftFill } from 'react-icons/bs';
@@ -471,6 +472,11 @@ function Task(props) {
     </>
   );
 }
+
+Task.propTypes = {
+  taskId: PropTypes.string,
+  name: PropTypes.string,
+};
 
 const mapStateToProps = state => ({
   // tasks: state.tasks.taskItems,

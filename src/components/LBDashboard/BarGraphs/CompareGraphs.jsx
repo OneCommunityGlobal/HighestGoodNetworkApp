@@ -147,8 +147,8 @@ export function CompareBarGraph({
 
           {/* chips on the right */}
           <div style={{ display: 'flex', gap: 16 }}>
-            {headerChips.map((c, i) => (
-              <div key={i} style={{ textAlign: 'center', lineHeight: 1.1 }}>
+            {headerChips.map(c => (
+              <div key={c.label} style={{ textAlign: 'center', lineHeight: 1.1 }}>
                 <div
                   style={{ fontSize: 12, fontWeight: 600, color: darkMode ? '#e1e1e1' : undefined }}
                 >

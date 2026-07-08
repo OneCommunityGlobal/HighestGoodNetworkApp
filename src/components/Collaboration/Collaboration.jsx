@@ -8,6 +8,100 @@ import OneCommunityImage from '../../assets/images/logo2.png';
 
 const ADS_PER_PAGE = 18;
 
+const slugify = s =>
+  (s || '')
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+
+const getListingQueryText = (searchTerm, selectedPosition, selectedCategory) => {
+  if (searchTerm) {
+    return `Listing results for '${searchTerm}'`;
+  }
+  if (selectedPosition) {
+    return `Listing results for '${selectedPosition}' in '${selectedCategory}'`;
+  }
+  if (selectedCategory) {
+    return `Listing results for '${selectedCategory}'`;
+  }
+  return 'Listing all job ads.';
+};
+
+const fetchJobsFromApi = async (searchTerm, selectedCategory) => {
+  const url =
+    `${ApiEndpoint}/jobs` +
+    `?search=${encodeURIComponent(searchTerm || '')}` +
+    `&category=${encodeURIComponent(selectedCategory || '')}`;
+
+  const res = await fetch(url);
+  const data = await res.json();
+  return data.jobs || [];
+};
+
+const fetchCategoriesFromApi = async () => {
+  const res = await fetch(`${ApiEndpoint}/jobs/categories`);
+  const data = await res.json();
+  return (data.categories || []).sort((a, b) => a.localeCompare(b));
+};
+
+const filterJobsByPosition = (jobs, selectedPosition) => {
+  if (!selectedPosition) return jobs;
+
+  return jobs.filter(job =>
+    (job.position || job.title || '').toLowerCase().includes(selectedPosition.toLowerCase()),
+  );
+};
+
+const getUniquePositions = (jobs, selectedCategory) => {
+  const uniquePositions = [
+    ...new Set(
+      jobs
+        .filter(
+          job =>
+            !selectedCategory || job.category?.toLowerCase() === selectedCategory.toLowerCase(),
+        )
+        .map(job => job.position || job.title)
+        .filter(Boolean),
+    ),
+  ];
+
+  return uniquePositions.sort((a, b) => a.localeCompare(b));
+};
+
+function JobSummariesView({ summaries, darkMode, onBack }) {
+  return (
+    <div className={`${styles.jobLanding} ${darkMode ? styles.dark : ''}`}>
+      <div className={styles.jobHeader}>
+        <a href="https://www.onecommunityglobal.org/collaboration/">
+          <img src={OneCommunityImage} alt="One Community Logo" />
+        </a>
+      </div>
+
+      <div className={`${styles.userCollaborationContainer} ${darkMode ? styles.dark : ''}`}>
+        <h2>Job Summaries</h2>
+
+        {summaries.jobs?.length ? (
+          summaries.jobs.map(job => (
+            <div key={job._id} className="job-summary-item">
+              <h4>
+                <a href={job.jobDetailsLink}>{job.title}</a>
+              </h4>
+              <p>{job.description}</p>
+            </div>
+          ))
+        ) : (
+          <p>No summaries found.</p>
+        )}
+
+        <button className="btn btn-secondary" onClick={onBack}>
+          ← Back to Job Listings
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function Collaboration() {
   const [query, setQuery] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -20,7 +114,6 @@ function Collaboration() {
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [showPositionDropdown, setShowPositionDropdown] = useState(false);
   const [summaries, setSummaries] = useState(null);
-  // const [positions, setPositions] = useState([]);
   const [selectedPosition, setSelectedPosition] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const categoryRef = useRef(null);
@@ -28,24 +121,9 @@ function Collaboration() {
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const slugify = s =>
-    (s || '')
-      .toLowerCase()
-      .replace(/&/g, 'and')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
-
-  /* ================= FETCH JOBS ================= */
   const fetchJobs = async () => {
     try {
-      const url =
-        `${ApiEndpoint}/jobs` +
-        `?search=${encodeURIComponent(searchTerm || '')}` +
-        `&category=${encodeURIComponent(selectedCategory || '')}`;
-
-      const res = await fetch(url);
-      const data = await res.json();
-      setAllJobs(data.jobs || []);
+      setAllJobs(await fetchJobsFromApi(searchTerm, selectedCategory));
     } catch {
       toast.error('Error fetching jobs');
     }
@@ -53,15 +131,12 @@ function Collaboration() {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch(`${ApiEndpoint}/jobs/categories`);
-      const data = await res.json();
-      setCategories((data.categories || []).sort((a, b) => a.localeCompare(b)));
+      setCategories(await fetchCategoriesFromApi());
     } catch {
       toast.error('Error fetching categories');
     }
   };
 
-  /* ================= EFFECTS ================= */
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -71,29 +146,15 @@ function Collaboration() {
     fetchJobs();
   }, [searchTerm, selectedCategory]);
 
-  const filteredJobs = useMemo(() => {
-    if (!selectedPosition) return allJobs;
+  const filteredJobs = useMemo(() => filterJobsByPosition(allJobs, selectedPosition), [
+    allJobs,
+    selectedPosition,
+  ]);
 
-    return allJobs.filter(job =>
-      (job.position || job.title || '').toLowerCase().includes(selectedPosition.toLowerCase()),
-    );
-  }, [allJobs, selectedPosition]);
-
-  const positions = useMemo(() => {
-    const uniquePositions = [
-      ...new Set(
-        allJobs
-          .filter(
-            job =>
-              !selectedCategory || job.category?.toLowerCase() === selectedCategory.toLowerCase(),
-          )
-          .map(job => job.position || job.title)
-          .filter(Boolean),
-      ),
-    ];
-
-    return uniquePositions.sort((a, b) => a.localeCompare(b));
-  }, [allJobs, selectedCategory]);
+  const positions = useMemo(() => getUniquePositions(allJobs, selectedCategory), [
+    allJobs,
+    selectedCategory,
+  ]);
 
   useEffect(() => {
     const start = (currentPage - 1) * ADS_PER_PAGE;
@@ -102,10 +163,6 @@ function Collaboration() {
     const calculatedPages = Math.ceil(filteredJobs.length / ADS_PER_PAGE);
     setTotalPages(Math.max(calculatedPages, 1));
   }, [filteredJobs, currentPage]);
-
-  useEffect(() => {
-    // no-op placeholder; keep hook list stable if needed in future
-  }, []);
 
   useEffect(() => {
     const handleClickOutside = event => {
@@ -125,7 +182,6 @@ function Collaboration() {
     };
   }, []);
 
-  /* ================= HANDLERS ================= */
   const handleSubmit = e => {
     e.preventDefault();
     setSearchTerm(query);
@@ -150,41 +206,18 @@ function Collaboration() {
     }
   };
 
-  /* ================= SUMMARIES VIEW ================= */
+  const listingQueryText = getListingQueryText(searchTerm, selectedPosition, selectedCategory);
+
   if (summaries) {
     return (
-      <div className={`${styles.jobLanding} ${darkMode ? styles.dark : ''}`}>
-        <div className={styles.jobHeader}>
-          <a href="https://www.onecommunityglobal.org/collaboration/">
-            <img src={OneCommunityImage} alt="One Community Logo" />
-          </a>
-        </div>
-
-        <div className={`${styles.userCollaborationContainer} ${darkMode ? styles.dark : ''}`}>
-          <h2>Job Summaries</h2>
-
-          {summaries.jobs?.length ? (
-            summaries.jobs.map(job => (
-              <div key={job._id} className="job-summary-item">
-                <h4>
-                  <a href={job.jobDetailsLink}>{job.title}</a>
-                </h4>
-                <p>{job.description}</p>
-              </div>
-            ))
-          ) : (
-            <p>No summaries found.</p>
-          )}
-
-          <button className="btn btn-secondary" onClick={() => setSummaries(null)}>
-            ← Back to Job Listings
-          </button>
-        </div>
-      </div>
+      <JobSummariesView
+        summaries={summaries}
+        darkMode={darkMode}
+        onBack={() => setSummaries(null)}
+      />
     );
   }
 
-  /* ================= MAIN VIEW ================= */
   return (
     <div className={`${styles.jobLanding} ${darkMode ? styles.dark : ''}`}>
       <div className={styles.jobHeader}>
@@ -194,7 +227,6 @@ function Collaboration() {
       </div>
 
       <div className={styles.userCollaborationContainer}>
-        {/* NAVBAR */}
         <nav className={styles.navbar}>
           <form className={styles.searchForm} onSubmit={handleSubmit}>
             <input
@@ -278,7 +310,6 @@ function Collaboration() {
           </div>
         </nav>
 
-        {/* HEADINGS */}
         <div className={styles.headings}>
           <h1 className={styles.jobHead}>LIKE TO WORK WITH US? APPLY NOW!</h1>
           <a className="btn" href="https://www.onecommunityglobal.org/collaboration/">
@@ -286,23 +317,13 @@ function Collaboration() {
           </a>
         </div>
 
-        {/* QUERY TEXT */}
         <div className="job-queries">
-          <p>
-            {searchTerm
-              ? `Listing results for '${searchTerm}'`
-              : selectedPosition
-              ? `Listing results for '${selectedPosition}' in '${selectedCategory}'`
-              : selectedCategory
-              ? `Listing results for '${selectedCategory}'`
-              : 'Listing all job ads.'}
-          </p>
+          <p>{listingQueryText}</p>
           <button className="btn btn-secondary" onClick={handleShowSummaries}>
             Show Summaries
           </button>
         </div>
 
-        {/* FILTER CHIPS */}
         {(selectedCategory || selectedPosition) && (
           <div className={styles.jobQueries}>
             {selectedCategory && <span className={styles.chip}>{selectedCategory}</span>}
@@ -313,7 +334,6 @@ function Collaboration() {
           </div>
         )}
 
-        {/* JOB GRID */}
         <div className={styles.jobList}>
           {jobAds.length > 0 ? (
             jobAds.map(ad => (
@@ -344,7 +364,6 @@ function Collaboration() {
           )}
         </div>
 
-        {/* PAGINATION */}
         <div className={styles.pagination}>
           {Array.from({ length: totalPages }, (_, i) => (
             <button

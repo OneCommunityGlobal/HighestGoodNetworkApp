@@ -1,6 +1,6 @@
 // Activity List Component
 import { useState, useEffect, useMemo } from 'react';
-import { useSelector, useStore } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import styles from './ActivityList.module.css';
 // import { useHistory } from 'react-router-dom';
@@ -134,6 +134,41 @@ function ActivityList() {
       return sortOrder === 'earliest' ? dateA - dateB : dateB - dateA;
     });
 
+  const renderActivityListContent = () => {
+    if (loading) {
+      return <p className={darkMode ? 'text-light' : ''}>Loading activities...</p>;
+    }
+    if (filteredActivities.length > 0) {
+      return (
+        <ul>
+          {filteredActivities.map(activity => (
+            <div
+              key={activity.id}
+              style={{ cursor: 'pointer' }}
+              onClick={() => handleActivityClick(activity)}
+              tabIndex={0}
+              role="button"
+              aria-label={`View details for ${activity.name}`}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  handleActivityClick(activity);
+                }
+              }}
+            >
+              <li className={`${styles.activityItem} ${darkMode ? styles.darkModeItem : ''}`}>
+                <strong>{activity.name}</strong>
+                <span>
+                  {activity.type} – {activity.date} – {activity.location}
+                </span>
+              </li>
+            </div>
+          ))}
+        </ul>
+      );
+    }
+    return <p className={darkMode ? 'text-light' : ''}>No activities found</p>;
+  };
+
   return (
     <div
       className={`${styles.activityListContainer} ${
@@ -254,39 +289,7 @@ function ActivityList() {
       </div>
 
       <div className={`${styles.activityList} ${darkMode ? styles.darkModeList : ''}`}>
-        {loading ? (
-          <p className={darkMode ? 'text-light' : ''}>Loading activities...</p>
-        ) : filteredActivities.length > 0 ? (
-          <ul>
-            {filteredActivities.map(activity => (
-              <div
-                key={activity.id}
-                style={{ cursor: 'pointer' }}
-                onClick={() => handleActivityClick(activity)}
-                tabIndex={0}
-                role="button"
-                aria-label={`View details for ${activity.name}`}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    handleActivityClick(activity);
-                  }
-                }}
-              >
-                <li
-                  key={activity.id}
-                  className={`${styles.activityItem} ${darkMode ? styles.darkModeItem : ''}`}
-                >
-                  <strong>{activity.name}</strong>
-                  <span>
-                    {activity.type} – {activity.date} – {activity.location}
-                  </span>
-                </li>
-              </div>
-            ))}
-          </ul>
-        ) : (
-          <p className={darkMode ? 'text-light' : ''}>No activities found</p>
-        )}
+        {renderActivityListContent()}
       </div>
 
       {/* Modal for activity details */}

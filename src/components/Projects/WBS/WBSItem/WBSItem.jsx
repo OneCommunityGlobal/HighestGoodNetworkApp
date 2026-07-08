@@ -4,6 +4,7 @@
  * Display member of the members list
  ********************************************************************************/
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { connect, useSelector } from 'react-redux';
 import ModalDelete from './../../../common/Modal';
 import { deleteWbs } from './../../../../actions/wbs';
@@ -67,6 +68,23 @@ const WBSItem = ({ darkMode, index, name, wbsId, projectId, getPopupById, delete
     </React.Fragment>
   );
 };
+
+WBSItem.propTypes = {
+  darkMode: PropTypes.bool,
+  index: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  name: PropTypes.string.isRequired,
+  wbsId: PropTypes.string.isRequired,
+  projectId: PropTypes.string.isRequired,
+  getPopupById: PropTypes.func.isRequired,
+  deleteWbs: PropTypes.func.isRequired,
+  hasPermission: PropTypes.func.isRequired,
+  popupEditor: PropTypes.shape({
+    currPopup: PropTypes.shape({
+      popupContent: PropTypes.string,
+    }),
+  }),
+};
+
 const mapStateToProps = (state) => state;
 export default connect(mapStateToProps, {
   deleteWbs,

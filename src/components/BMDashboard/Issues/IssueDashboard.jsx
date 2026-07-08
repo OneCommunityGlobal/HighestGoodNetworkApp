@@ -170,7 +170,6 @@ export default function IssueDashboard() {
       return;
     }
     const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
-    const pageWidth = doc.internal.pageSize.getWidth();
     const startX = 40;
     const startY = 50;
     const rowHeight = 18;

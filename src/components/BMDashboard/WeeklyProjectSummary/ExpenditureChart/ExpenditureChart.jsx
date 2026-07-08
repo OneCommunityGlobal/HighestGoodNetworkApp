@@ -62,7 +62,7 @@ function ExpenditureChart({ projectId }) {
         // setActual(res.data.actual);
         // setPlanned(res.data.planned);
       } catch (err) {
-        setError('Failed to load expenditure data');
+        setError(err instanceof Error ? err.message : 'Failed to load expenditure data');
       } finally {
         setLoading(false);
       }
@@ -85,8 +85,11 @@ function ExpenditureChart({ projectId }) {
           labelLine={false}
           stroke="none"
         >
-          {data.map((entry, index) => (
-            <Cell key={entry.category || index} fill={COLORS[index % COLORS.length]} />
+          {data.map(entry => (
+            <Cell
+              key={entry.category}
+              fill={COLORS[CATEGORIES.indexOf(entry.category) % COLORS.length]}
+            />
           ))}
         </Pie>
         <Tooltip

@@ -631,7 +631,7 @@ export class WeeklySummary extends Component {
       autoClose: 3000,
     });
     this.updateUserData(displayUserId || currentUser.userid);
-    window.location.reload();
+    globalThis.location.reload();
   };
 
   // Handler for error scenario after save
@@ -1175,6 +1175,7 @@ WeeklySummary.propTypes = {
   currentUser: PropTypes.shape({
     userid: PropTypes.string.isRequired,
   }).isRequired,
+  displayUserId: PropTypes.string,
   // eslint-disable-next-line react/forbid-prop-types, react/require-default-props
   fetchError: PropTypes.any,
   getWeeklySummaries: PropTypes.func.isRequired,

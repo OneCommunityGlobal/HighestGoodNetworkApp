@@ -116,7 +116,7 @@
 .button:disabled {
   opacity: 0.8;
   cursor: not-allowed;
-  color: #6b7280;
+  color: #4b5563;
   background-color: #d1d5db;
 }
 

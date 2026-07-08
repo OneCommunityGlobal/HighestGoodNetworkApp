@@ -20,14 +20,14 @@
   }
 
   .addTeamButtons button#submit-button {
-    background-color: #4CAF50; 
-    border-color: #4CAF50;
+    background-color: #388e3c; 
+    border-color: #388e3c;
     color: white;
   }
   
   .addTeamButtons button#submit-button:hover {
-    background-color: #45a049;
-    border-color: #45a049;
+    background-color: #2e7d32;
+    border-color: #2e7d32;
   }
   
   .addTeamButtons button:hover {
@@ -85,7 +85,7 @@
   .addTeamHeader h2{
    font-size: clamp(1.5rem, 2.5vw, 2.5rem);
    margin-left: 1rem;
-   color:#f49441;
+   color:#c96a22;
    text-align: center;
   }
 
@@ -117,7 +117,7 @@
     font-size: 1rem;
     cursor: pointer;
     color: white;
-    background-color: #f49441;
+    background-color: #c96a22;
     transition: background-color 0.3s ease, transform 0.2s ease;
     border-radius: 10px; 
     padding: 0.5rem; 
@@ -126,13 +126,13 @@
   }
   
   .addTeamContainer button:hover {
-    background-color: #d97a32;
+    background-color: #b35c00;
     transform: scale(1.05);
   }
   
   .addTeamContainer button:disabled {
     background-color: #ccc;
-    color: #666;
+    color: #4d4d4d;
     cursor: not-allowed;
   }
 

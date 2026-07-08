@@ -3,8 +3,8 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { ENDPOINTS } from '~/utils/URL';
 import { events } from './mockData';
 import styles from './AttendanceNoShowCharts.module.css';
 import { useSelector } from 'react-redux';
@@ -40,7 +40,7 @@ const parseEventDateTime = (dateStr, timeStr) => {
 
         // Convert to 24-hour format
         const convertTo24Hour = (hour, period) => {
-          let h = parseInt(hour, 10);
+          let h = Number.parseInt(hour, 10);
           if (period.toUpperCase() === 'PM' && h !== 12) h += 12;
           if (period.toUpperCase() === 'AM' && h === 12) h = 0;
           return h;
@@ -50,10 +50,10 @@ const parseEventDateTime = (dateStr, timeStr) => {
         const endHour24 = convertTo24Hour(endHour, endPeriod);
 
         const startDateTime = new Date(date);
-        startDateTime.setHours(startHour24, parseInt(startMin, 10), 0, 0);
+        startDateTime.setHours(startHour24, Number.parseInt(startMin, 10), 0, 0);
 
         const endDateTime = new Date(date);
-        endDateTime.setHours(endHour24, parseInt(endMin, 10), 0, 0);
+        endDateTime.setHours(endHour24, Number.parseInt(endMin, 10), 0, 0);
 
         return { startDateTime, endDateTime };
       }
@@ -144,9 +144,7 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
 };
 
 const CustomTooltip = ({ active, payload }) => {
-  console.log(active, payload);
-  if (active && payload && payload.length) {
-    console.log('Tooltip payload:', payload);
+  if (active && payload?.length) {
     return (
       <div className={styles.chartTooltip}>
         <p className={styles.chartTooltipItem}>{`${payload[0].name} : ${payload[0].value}`}</p>
@@ -156,10 +154,20 @@ const CustomTooltip = ({ active, payload }) => {
   return null;
 };
 
+CustomTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string,
+      value: PropTypes.number,
+    }),
+  ),
+};
+
 function AttendanceNoShowCharts() {
   const [selectedId, setSelectedId] = useState(events[0].id);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [loading] = useState(false);
+  const [error] = useState(null);
   const darkMode = useSelector(state => state.theme.darkMode);
   const selectedEvent = useMemo(() => events.find(e => e.id === selectedId), [selectedId]);
 

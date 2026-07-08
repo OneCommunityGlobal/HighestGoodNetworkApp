@@ -204,9 +204,9 @@ function EditTaskModal(props) {
   };
 
   const calHoursEstimate = (isOn = null) => {
-    let currHoursMost = parseInt(hoursMost);
-    let currHoursWorst = parseInt(hoursWorst);
-    const currHoursBest = parseInt(hoursBest);
+    let currHoursMost = Number.parseInt(hoursMost, 10);
+    let currHoursWorst = Number.parseInt(hoursWorst, 10);
+    const currHoursBest = Number.parseInt(hoursBest, 10);
     if (isOn !== 'hoursMost') {
       currHoursMost = Math.round((currHoursWorst - currHoursBest) / 2 + currHoursBest);
       setHoursMost(currHoursMost);
@@ -218,7 +218,7 @@ function EditTaskModal(props) {
       }
     }
 
-    setHoursEstimate(parseInt((currHoursMost + currHoursBest + currHoursWorst) / 3));
+    setHoursEstimate(Number.parseInt((currHoursMost + currHoursBest + currHoursWorst) / 3, 10));
 
     if (!(currHoursBest <= currHoursMost && currHoursMost <= currHoursWorst)) {
       setHoursWarning(true);

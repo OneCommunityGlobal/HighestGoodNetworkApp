@@ -60,7 +60,7 @@
   padding: 11px 13px;
   margin: 8px 10px;
   border: none;
-  background-color: #ccc;
+  background-color: #757575;
   color: white;
   font-size: 16px;
   border-radius: 5px;
@@ -186,7 +186,7 @@
 
 .addFieldButton,
 .addOptionButton {
-  background-color: #4caf50;
+  background-color: #388e3c;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -198,7 +198,7 @@
 
 .addFieldButton:hover,
 .addOptionButton:hover {
-  background-color: #45a049;
+  background-color: #2e7d32;
 }
 
 /* Submit Button */
@@ -210,7 +210,7 @@
   margin-top: 20px;
   margin-left: auto;
   margin-right: auto;
-  background-color: #4caf50;
+  background-color: #388e3c;
   color: white;
   border: none;
   font-size: 18px;
@@ -220,7 +220,7 @@
 }
 
 .jobSubmitButton:hover {
-  background-color: #45a049;
+  background-color: #2e7d32;
 }
 
 .saveSection {
@@ -354,7 +354,7 @@
 
 .previewTextButton {
   display: inline-block;
-  background-color: #4caf50;
+  background-color: #388e3c;
   color: white;
   border: none;
   padding: 10px 16px;
@@ -367,7 +367,7 @@
 }
 
 .previewTextButton:hover {
-  background-color: #45a049;
+  background-color: #2e7d32;
   text-decoration: none;
 }
 

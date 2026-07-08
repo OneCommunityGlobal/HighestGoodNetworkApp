@@ -332,8 +332,11 @@ function ActivityComments() {
   useEffect(() => {
     try {
       localStorage.setItem('activityComments', JSON.stringify(comments));
-    } catch (error) {
-      // Failed to save to localStorage - continue without persistence
+    } catch (saveError) {
+      if (process.env.NODE_ENV !== 'production') {
+        // eslint-disable-next-line no-console
+        console.error('Failed to save comments to localStorage:', saveError);
+      }
     }
   }, [comments]);
 
@@ -341,8 +344,11 @@ function ActivityComments() {
   useEffect(() => {
     try {
       localStorage.setItem('activityFeedbacks', JSON.stringify(feedbacks));
-    } catch (error) {
-      // Failed to save to localStorage - continue without persistence
+    } catch (saveError) {
+      if (process.env.NODE_ENV !== 'production') {
+        // eslint-disable-next-line no-console
+        console.error('Failed to save feedbacks to localStorage:', saveError);
+      }
     }
   }, [feedbacks]);
 

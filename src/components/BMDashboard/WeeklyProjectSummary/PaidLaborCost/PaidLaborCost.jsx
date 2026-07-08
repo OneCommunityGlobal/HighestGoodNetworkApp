@@ -56,7 +56,7 @@ const isValidISODate = dateString => {
  * @returns {boolean} True if running in development environment
  */
 const isDevelopmentEnvironment = () => {
-  const hostname = window.location.hostname;
+  const hostname = globalThis.location.hostname;
   // Check if hostname contains 'dev' or 'localhost' or '127.0.0.1'
   return (
     hostname.includes('dev') ||
@@ -87,7 +87,7 @@ function aggregateData(data, taskFilter, projectFilter) {
   const validData = data.filter(item => {
     if (!item || typeof item !== 'object') return false;
     if (typeof item.project !== 'string' || typeof item.task !== 'string') return false;
-    if (typeof item.cost !== 'number' || isNaN(item.cost)) return false;
+    if (typeof item.cost !== 'number' || Number.isNaN(item.cost)) return false;
     if (!item.date) return false;
     return true;
   });
@@ -100,19 +100,17 @@ function aggregateData(data, taskFilter, projectFilter) {
     );
   }
 
-  const filtered = validData;
-
   if (projectFilter === 'All Projects') {
     const label = 'All Projects';
     const aggregation = { [label]: { totalCost: 0 } };
     // Get unique tasks from filtered data
-    const tasks = [...new Set(filtered.map(d => d.task))];
+    const tasks = [...new Set(validData.map(d => d.task))];
     tasks.forEach(task => {
       aggregation[label][task] = 0;
     });
 
     // Sum up totals
-    filtered.forEach(item => {
+    validData.forEach(item => {
       aggregation[label].totalCost += item.cost;
       if (aggregation[label][item.task] !== undefined) {
         aggregation[label][item.task] += item.cost;
@@ -123,7 +121,7 @@ function aggregateData(data, taskFilter, projectFilter) {
     // Handle both array and 'ALL' string for backward compatibility
     if (taskFilter === 'ALL' || (Array.isArray(taskFilter) && taskFilter.length === 0)) {
       // Pick the two most expensive tasks by cost
-      tasksToInclude = tasks
+      tasksToInclude = [...tasks]
         .sort((a, b) => aggregation[label][b] - aggregation[label][a])
         .slice(0, 2);
     } else if (Array.isArray(taskFilter)) {
@@ -139,7 +137,7 @@ function aggregateData(data, taskFilter, projectFilter) {
   // Specific project selected – display that project name along x-axis.
   const projectsToInclude = [projectFilter];
   const distinctTasks = [
-    ...new Set(filtered.filter(d => d.project === projectFilter).map(d => d.task)),
+    ...new Set(validData.filter(d => d.project === projectFilter).map(d => d.task)),
   ];
   let tasksToInclude;
   // Handle both array and 'ALL' string for backward compatibility
@@ -161,7 +159,7 @@ function aggregateData(data, taskFilter, projectFilter) {
     });
   });
 
-  filtered.forEach(item => {
+  validData.forEach(item => {
     if (item.project === projectFilter) {
       aggregation[projectFilter].totalCost += item.cost;
       if (tasksToInclude.includes(item.task)) {
@@ -286,7 +284,7 @@ export default function PaidLaborCost() {
   const isValidDataItem = useCallback(item => {
     if (!item || typeof item !== 'object') return false;
     if (typeof item.project !== 'string' || typeof item.task !== 'string') return false;
-    if (typeof item.cost !== 'number' || isNaN(item.cost)) return false;
+    if (typeof item.cost !== 'number' || Number.isNaN(item.cost)) return false;
     if (!item.date || !isValidISODate(item.date)) return false;
     return true;
   }, []);
@@ -297,7 +295,7 @@ export default function PaidLaborCost() {
   const processApiResponse = useCallback(
     apiData => {
       if (!apiData || typeof apiData !== 'object') {
-        throw new Error('Invalid response structure: expected an object');
+        throw new TypeError('Invalid response structure: expected an object');
       }
 
       if (!Array.isArray(apiData.data)) {
@@ -487,24 +485,8 @@ export default function PaidLaborCost() {
     fetchAllProjects();
   }, [fetchLaborCostData]);
 
-  // Use API data only
-  const currentData = data;
-
-  // Derive unique filter values from current data
-  const distinctProjects = useMemo(() => [...new Set(currentData.map(d => d.project))], [
-    currentData,
-  ]);
-
-  // distinctTasks is still used in aggregateData function for filtering logic
-  // Keep it for aggregation, but use allAvailableTasks for dropdown options
-  const distinctTasks = useMemo(() => [...new Set(currentData.map(d => d.task))], [currentData]);
-
   // Aggregate data based on filters (backend handles date filtering)
-  const { labels, aggregation, tasksToInclude } = aggregateData(
-    currentData,
-    taskFilter,
-    projectFilter,
-  );
+  const { labels, aggregation, tasksToInclude } = aggregateData(data, taskFilter, projectFilter);
 
   /**
    * Get background color for select option based on state

@@ -79,7 +79,7 @@
   justify-content: center;
   align-items: center;
   height: 200px;
-  color: #666;
+  color: #595959;
   font-size: 12px;
 }
 
@@ -129,14 +129,7 @@
 }
 
 .paid-labor-cost-date-range-input {
-  /* display: flex; */
-
-  /* justify-content: space-between; */
   margin-top: 3px;
-
-  /* padding: 2px 4px; */
-
-  /* border: 1px solid #ddd; */
   transition: border-color 0.2s;
   flex: 1;
   padding: 0.2rem 2.5rem 0.2rem 0.2rem;
@@ -222,7 +215,7 @@
 
 .paid-labor-cost-weekday {
   font-size: 12px;
-  color: #666;
+  color: #595959;
   padding: 4px 0;
 }
 
@@ -251,7 +244,7 @@
 }
 
 .paid-labor-cost-day.paid-labor-cost-other-month {
-  color: #ccc;
+  color: #a0a0a0;
 }
 
 .paid-labor-cost-day:hover:not(.disabled) {
@@ -261,7 +254,7 @@
 .paid-labor-cost-day.paid-labor-cost-start-date,
 .paid-labor-cost-day.paid-labor-cost-end-date {
   background-color: #3498db;
-  color: var(--button-bg);
+  color: #fff;
 }
 
 .paid-labor-cost-day.in-range {
@@ -296,7 +289,7 @@
 
 .paid-labor-cost-selection-text {
   font-size: 13px;
-  color: #666;
+  color: #595959;
 }
 
 @media screen and (width <= 1130px) {
@@ -449,14 +442,14 @@
 
 /* Disabled dates outside current month */
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--disabled.react-datepicker__day--outside-month) {
-  color: #888 !important;
+  color: #b0b0b0 !important;
   cursor: not-allowed;
   opacity: 0.4;
 }
 
 /* Outside month dates (not disabled) */
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--outside-month:not(.react-datepicker__day--disabled)) {
-  color: #aaa !important;
+  color: #c5c5c5 !important;
   opacity: 0.6;
 }
 
@@ -569,19 +562,6 @@
   display: flex;
   align-items: center;
 }
-
-/* .paid-labor-cost-date-range-input {
-  flex: 1;
-  padding: 0.2rem 2.5rem 0.2rem 0.2rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 0.9rem;
-} */
 
 .paid-labor-cost-info-wrapper {
   position: absolute;

@@ -20,7 +20,7 @@ const CustomTooltip = ({ active, payload, total, darkMode }) => {
       >
         <p>{name}</p>
         <p>{`Hours: ${value} hrs`}</p>
-        <p>{`Percentage: ${percent}%`}</p>
+        <p>{`Percentage: ${percent} %`}</p>
       </div>
     );
   }
@@ -111,7 +111,7 @@ export default function DistributionLaborHours() {
       <div className={styles.chartWrapper}>
         <div className={styles.legend}>
           {filteredData.map((entry, index) => (
-            <div key={index} className={styles.legendItem}>
+            <div key={entry.name} className={styles.legendItem}>
               <span
                 className={styles.colorBox}
                 style={{ backgroundColor: COLORS[index % COLORS.length] }}
@@ -144,12 +144,12 @@ export default function DistributionLaborHours() {
                     fontSize={12}
                     fontWeight="600"
                   >
-                    {`${((value / totalHours) * 100).toFixed(1)}%`}
+                    {`${((value / totalHours) * 100).toFixed(1)} %`}
                   </text>
                 )}
               >
                 {filteredData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
               <Tooltip content={<CustomTooltip total={totalHours} darkMode={darkMode} />} />
