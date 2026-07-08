@@ -30,6 +30,7 @@ const getMappedOption = (map, index, fallback) => {
 
 const clampValue = (value, min, max) => Math.min(Math.max(value, min), max);
 
+// Ensure box stays within chart area vertically
 const clampLabelBoxY = (boxY, boxHeight, chartArea) => {
   if (!chartArea) {
     return boxY;
