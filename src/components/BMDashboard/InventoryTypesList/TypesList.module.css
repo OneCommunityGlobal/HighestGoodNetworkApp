@@ -623,3 +623,18 @@
   color: #fff !important;
   border-color: #3a506b !important;
 }
+
+.typeRowDeleteModalTitle {
+  filter: none !important;  
+}
+
+:global(.bm-dashboard-dark) .typeRowCancelButton:global(.btn.btn-secondary) {
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+}
+
+:global(.bm-dashboard-dark) .typeRowCancelButton:hover:global(.btn.btn-secondary) {
+  background-color: #5c636a !important;
+  border-color: #565e64 !important;
+}
+
