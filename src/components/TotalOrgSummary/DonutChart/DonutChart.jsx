@@ -13,6 +13,7 @@ function DonutChart(props) {
   const labelBoxBackground = darkMode ? 'rgba(15, 23, 42, 0.96)' : 'rgba(255, 255, 255, 0.96)';
   const labelBoxBorder = darkMode ? 'rgba(148, 163, 184, 0.35)' : '#d0d0d0';
   const chartSliceBorder = darkMode ? '#1c2541' : '#ffffff';
+  const titleLines = title === 'TOTAL BLUE SQUARES' ? ['TOTAL', 'BLUE SQUARES'] : [title];
 
   const chartData = {
     labels: data.map(item => item.label),
@@ -52,7 +53,7 @@ function DonutChart(props) {
       },
     },
     maintainAspectRatio: false,
-    cutout: '55%',
+    cutout: '62%',
     layout: {
       padding: 56,
     },
@@ -73,7 +74,11 @@ function DonutChart(props) {
                 darkMode && styles.donutHeadingDark,
               )}
             >
-              {title}
+              {titleLines.map(line => (
+                <span key={line} className={styles.donutHeadingLine}>
+                  {line}
+                </span>
+              ))}
             </h5>
             <h4
               className={clsx('donut-count', styles.donutCount, darkMode && styles.donutCountDark)}
