@@ -11,6 +11,12 @@ import {
   KI_INVENTORY_ADD_REQUEST,
   KI_INVENTORY_ADD_SUCCESS,
   KI_INVENTORY_ADD_FAILURE,
+  KI_INVENTORY_UPDATE_REQUEST,
+  KI_INVENTORY_UPDATE_SUCCESS,
+  KI_INVENTORY_UPDATE_FAILURE,
+  KI_INVENTORY_DELETE_REQUEST,
+  KI_INVENTORY_DELETE_SUCCESS,
+  KI_INVENTORY_DELETE_FAILURE,
 } from '../constants/KIInventoryConstants';
 
 const initialState = {
@@ -22,6 +28,10 @@ const initialState = {
   preservedLoading: false,
   addItemLoading: false,
   addItemError: null,
+  updateItemLoading: false,
+  updateItemError: null,
+  deleteItemLoading: false,
+  deleteItemError: null,
   error: null,
 };
 
@@ -58,6 +68,22 @@ const KIInventoryReducer = (state = initialState, action) => {
       return { ...state, addItemLoading: false, addItemError: null };
     case KI_INVENTORY_ADD_FAILURE:
       return { ...state, addItemLoading: false, addItemError: action.payload };
+
+    // ── Update Item ───────────────────────────────────────────────────────
+    case KI_INVENTORY_UPDATE_REQUEST:
+      return { ...state, updateItemLoading: true, updateItemError: null };
+    case KI_INVENTORY_UPDATE_SUCCESS:
+      return { ...state, updateItemLoading: false, updateItemError: null };
+    case KI_INVENTORY_UPDATE_FAILURE:
+      return { ...state, updateItemLoading: false, updateItemError: action.payload };
+
+    // ── Delete Item ───────────────────────────────────────────────────────
+    case KI_INVENTORY_DELETE_REQUEST:
+      return { ...state, deleteItemLoading: true, deleteItemError: null };
+    case KI_INVENTORY_DELETE_SUCCESS:
+      return { ...state, deleteItemLoading: false, deleteItemError: null };
+    case KI_INVENTORY_DELETE_FAILURE:
+      return { ...state, deleteItemLoading: false, deleteItemError: action.payload };
 
     default:
       return state;

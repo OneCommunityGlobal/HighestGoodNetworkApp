@@ -13,6 +13,12 @@ import {
   KI_INVENTORY_ADD_REQUEST,
   KI_INVENTORY_ADD_SUCCESS,
   KI_INVENTORY_ADD_FAILURE,
+  KI_INVENTORY_UPDATE_REQUEST,
+  KI_INVENTORY_UPDATE_SUCCESS,
+  KI_INVENTORY_UPDATE_FAILURE,
+  KI_INVENTORY_DELETE_REQUEST,
+  KI_INVENTORY_DELETE_SUCCESS,
+  KI_INVENTORY_DELETE_FAILURE,
 } from '../constants/KIInventoryConstants';
 
 const createFetchAction = (
@@ -98,6 +104,76 @@ export const addInventoryItem = payload => async dispatch => {
 
     dispatch({
       type: KI_INVENTORY_ADD_FAILURE,
+      payload: errorMessage,
+    });
+
+    throw new Error(errorMessage);
+  }
+};
+
+/**
+ * Update an inventory item.
+ * PUT /api/kitchenandinventory/inventory/items/:itemId
+ */
+export const updateInventoryItem = (itemId, payload) => async dispatch => {
+  dispatch({ type: KI_INVENTORY_UPDATE_REQUEST });
+
+  try {
+    const res = await axios.put(ENDPOINTS.KI_INVENTORY_ITEM(itemId), payload);
+    dispatch({ type: KI_INVENTORY_UPDATE_SUCCESS, payload: res.data?.data || res.data });
+
+    await Promise.all([
+      dispatch(fetchInventoryItems()),
+      dispatch(fetchInventoryStats()),
+      dispatch(fetchPreservedItems()),
+    ]);
+
+    return res.data;
+  } catch (err) {
+    const notFoundMessage =
+      'Inventory update route was not found. Please confirm the backend is running with the item update route.';
+    const errorMessage =
+      err.response?.status === 404
+        ? notFoundMessage
+        : err.response?.data?.message || err.message || 'Failed to update inventory item.';
+
+    dispatch({
+      type: KI_INVENTORY_UPDATE_FAILURE,
+      payload: errorMessage,
+    });
+
+    throw new Error(errorMessage);
+  }
+};
+
+/**
+ * Delete an inventory item.
+ * DELETE /api/kitchenandinventory/inventory/items/:itemId
+ */
+export const deleteInventoryItem = itemId => async dispatch => {
+  dispatch({ type: KI_INVENTORY_DELETE_REQUEST });
+
+  try {
+    const res = await axios.delete(ENDPOINTS.KI_INVENTORY_ITEM(itemId));
+    dispatch({ type: KI_INVENTORY_DELETE_SUCCESS, payload: itemId });
+
+    await Promise.all([
+      dispatch(fetchInventoryItems()),
+      dispatch(fetchInventoryStats()),
+      dispatch(fetchPreservedItems()),
+    ]);
+
+    return res.data;
+  } catch (err) {
+    const notFoundMessage =
+      'Inventory delete route was not found. Please confirm the backend is running with the item delete route.';
+    const errorMessage =
+      err.response?.status === 404
+        ? notFoundMessage
+        : err.response?.data?.message || err.message || 'Failed to delete inventory item.';
+
+    dispatch({
+      type: KI_INVENTORY_DELETE_FAILURE,
       payload: errorMessage,
     });
 

@@ -2,10 +2,10 @@ import { RiLeafLine } from 'react-icons/ri';
 import { TbCircleCheck } from 'react-icons/tb';
 import { FiAlertCircle, FiAlertTriangle, FiCalendar, FiShoppingCart } from 'react-icons/fi';
 import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 import styles from './KIItemCard.module.css';
 
-function KIItemCard(props) {
-  const item = props.item;
+function KIItemCard({ item, onUpdateItem }) {
   const healthyStock = item.presentQuantity > item.reorderAt;
   const lowStock =
     item.presentQuantity <= item.reorderAt && item.presentQuantity >= item.reorderAt * 0.75;
@@ -173,12 +173,15 @@ function KIItemCard(props) {
       </div>
       <div className={styles.cardButtonContainer}>
         <button
+          type="button"
           className={styles.cardButton}
           style={darkMode ? { backgroundColor: '#3a3a3a', color: '#ffffff' } : {}}
+          onClick={() => onUpdateItem(item)}
         >
           Update Item
         </button>
         <button
+          type="button"
           className={styles.cardButton}
           style={darkMode ? { backgroundColor: '#3a3a3a', color: '#ffffff' } : {}}
         >
@@ -188,5 +191,30 @@ function KIItemCard(props) {
     </div>
   );
 }
+
+KIItemCard.propTypes = {
+  item: PropTypes.shape({
+    _id: PropTypes.string,
+    name: PropTypes.string,
+    type: PropTypes.string,
+    unit: PropTypes.string,
+    location: PropTypes.string,
+    category: PropTypes.string,
+    presentQuantity: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    storedQuantity: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    reorderAt: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    monthlyUsage: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    onsite: PropTypes.bool,
+    expiryDate: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
+    lastHarvestDate: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
+    nextHarvestDate: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
+    nextHarvestQuantity: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  }).isRequired,
+  onUpdateItem: PropTypes.func,
+};
+
+KIItemCard.defaultProps = {
+  onUpdateItem: () => {},
+};
 
 export default KIItemCard;

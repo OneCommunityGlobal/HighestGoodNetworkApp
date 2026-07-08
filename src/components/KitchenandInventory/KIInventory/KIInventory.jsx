@@ -20,11 +20,14 @@ import {
 import { RiLeafLine } from 'react-icons/ri';
 import KIItemCard from './KIItemCard';
 import KIAddItemModal from './KIAddItemModal/KIAddItemModal';
+import KIUpdateItemModal from './KIUpdateItemModal/KIUpdateItemModal';
 import {
   addInventoryItem,
+  deleteInventoryItem,
   fetchInventoryItems,
   fetchInventoryStats,
   fetchPreservedItems,
+  updateInventoryItem,
 } from '../../../actions/KIInventoryActions';
 
 // Category enum values — must match backend model enum exactly
@@ -36,12 +39,26 @@ const CATEGORY_MAP = {
   'animal supplies': 'ANIMALSUPPLIES',
 };
 
+const CATEGORY_LABEL_MAP = Object.entries(CATEGORY_MAP).reduce(
+  (labels, [label, value]) => ({ ...labels, [value]: label }),
+  {},
+);
+
 const KIInventory = () => {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
-  const { items, preservedItems, stats, loading, addItemLoading, addItemError } = useSelector(
-    state => state.kiInventory,
-  );
+  const {
+    items,
+    preservedItems,
+    stats,
+    loading,
+    addItemLoading,
+    addItemError,
+    updateItemLoading,
+    updateItemError,
+    deleteItemLoading,
+    deleteItemError,
+  } = useSelector(state => state.kiInventory);
 
   const tabs = [
     'ingredients',
@@ -53,6 +70,7 @@ const KIInventory = () => {
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
+  const [selectedInventoryItem, setSelectedInventoryItem] = useState(null);
 
   const toggleTab = tab => {
     if (activeTab !== tabs[tab]) {
@@ -88,6 +106,12 @@ const KIInventory = () => {
   const tabItems = filterItems(categoryItems);
 
   const handleAddItem = payload => dispatch(addInventoryItem(payload));
+  const handleUpdateItem = (itemId, payload) => dispatch(updateInventoryItem(itemId, payload));
+  const handleDeleteItem = itemId => dispatch(deleteInventoryItem(itemId));
+  const handleOpenUpdateItemModal = item => setSelectedInventoryItem(item);
+  const handleCloseUpdateItemModal = () => setSelectedInventoryItem(null);
+  const selectedItemCategoryValue = selectedInventoryItem?.category || activeCategory;
+  const selectedItemCategoryLabel = CATEGORY_LABEL_MAP[selectedItemCategoryValue] || activeTab;
 
   // Preserved items description for notification banner
   const preservedDesc =
@@ -102,7 +126,7 @@ const KIInventory = () => {
     if (tabItems.length > 0) {
       return tabItems.map(item => (
         <div key={item._id}>
-          <KIItemCard item={item} />
+          <KIItemCard item={item} onUpdateItem={handleOpenUpdateItemModal} />
         </div>
       ));
     }
@@ -289,6 +313,20 @@ const KIInventory = () => {
         categoryValue={activeCategory}
         isSubmitting={addItemLoading}
         submitError={addItemError}
+        darkMode={darkMode}
+      />
+      <KIUpdateItemModal
+        isOpen={Boolean(selectedInventoryItem)}
+        item={selectedInventoryItem}
+        onClose={handleCloseUpdateItemModal}
+        onSubmit={handleUpdateItem}
+        onDelete={handleDeleteItem}
+        categoryLabel={selectedItemCategoryLabel}
+        categoryValue={selectedItemCategoryValue}
+        isSubmitting={updateItemLoading}
+        isDeleting={deleteItemLoading}
+        submitError={updateItemError}
+        deleteError={deleteItemError}
         darkMode={darkMode}
       />
     </div>
