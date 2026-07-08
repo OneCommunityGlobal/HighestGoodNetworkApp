@@ -12,13 +12,6 @@
    ====================================================== */
 
 .popup {
-<<<<<<< HEAD
-  /* background-color: rgb(187, 185, 185); */
-  padding: 24px;
-  border-radius: 8px;
-  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); */
-  max-width: 800px;
-=======
   padding: 24px;
   width: 90%;
   max-width: 900px;
@@ -56,8 +49,8 @@
    ====================================================== */
 
 .popupTable {
->>>>>>> origin/development
   width: 100%;
+
   /* border: 6px solid black; */
 }
 
@@ -121,6 +114,7 @@
 .buttonRow {
   display: flex;
   justify-content: space-between;
+  margin-top: 32px;
 }
 
 .button {
@@ -128,39 +122,8 @@
   border-radius: 4px;
   border: none;
   cursor: pointer;
-<<<<<<< HEAD
-  background-color: #f0f0f0;
-  color: white;
-}
-
-.promoteButton {
-  padding: 8px 16px;
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
-  background-color: #f0f0f0;
-  color: black;
-  font-weight: bold;
-}
-
-.button-row .button:last-child:not(:disabled):hover {
-  background-color: #2563eb;
-  color: white;
-=======
+  color: #fff;
   font-weight: 600;
-  transition: background-color 0.2s ease;
->>>>>>> origin/development
-}
-
-.button-row .button:first-child:hover {
-  background-color: #fc2d2d;
-  color: white;
-}
-
-.button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-  opacity: 0.6;
 }
 
 /* DARK BUTTONS — must come before .button:hover:not(:disabled) */
@@ -171,9 +134,18 @@
   color: #f9fafb;
 }
 
-.popup-dark .button {
-  background-color: #374151;
-  color: #e5e7eb;
+.button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.cancelButton {
+  background-color: #f00;
+}
+
+.confirmButton:not(:disabled) {
+  background-color: #00f;
 }
 
 /* LIGHT HOVER — after dark base button rules */
@@ -184,22 +156,17 @@
 
 /* DARK DISABLED AND HOVER — must come after .button:hover:not(:disabled) */
 
-.popupDark .button:disabled {
-  border: 1px solid #4b5563;
-  background-color: #2d3748;
-  color: #9ca3af;
-}
-
-
-.popup-dark .button:disabled {
-  background-color: #4b5563;
-}
-
 .popupDark .button:hover:not(:disabled) {
   background-color: #4b5563;
 }
 
+.cancelButton:hover:not(:disabled) {
+  background-color: #d60000;
+}
 
+.confirmButton:hover:not(:disabled) {
+  background-color: #00c;
+}
 
 /* ======================================================
    CHECKBOXES
@@ -357,4 +324,16 @@
 :global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-6 {
   color: #fff !important;
   background-color: #b00000 !important;
+}
+
+.popupTable {
+  border-collapse: collapse;
+}
+
+.prBadgeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  min-width: 0;
 }

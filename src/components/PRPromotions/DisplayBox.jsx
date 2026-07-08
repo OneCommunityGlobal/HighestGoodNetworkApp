@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import styles from './DisplayBox.module.css';
-import { useSelector } from 'react-redux';
 
 export default function DisplayBox({ onClose, darkMode = false }) {
   const mockPromotionData = [
@@ -53,6 +52,23 @@ export default function DisplayBox({ onClose, darkMode = false }) {
     onClose();
   };
 
+  const tableClassName = [
+    styles.popupTable,
+    darkMode ? styles.popupTableDark : '',
+    darkMode ? styles['popup-table-dark'] : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const getBadgeClassName = index =>
+    [
+      styles.prCountBadge,
+      styles['pr-count-badge'],
+      styles[`color-${index}`] || styles[`color${index}`],
+    ]
+      .filter(Boolean)
+      .join(' ');
+
   return (
     <div className={styles.overlay}>
       <div className={`${styles.popup} ${darkMode ? styles.popupDark : ''}`}>
@@ -60,10 +76,10 @@ export default function DisplayBox({ onClose, darkMode = false }) {
           Are you sure you want to promote these PR reviewers?
         </h2>
 
-        <table className={`${styles.popupTable} ${darkMode ? styles.popupTableDark : ''}`}>
+        <table className={tableClassName}>
           <thead>
             <tr>
-              <th style={{ backgroundColor: darkMode ? '#0d1521' : 'white' }}>
+              <th>
                 <input
                   type="checkbox"
                   checked={allChecked}
@@ -81,7 +97,7 @@ export default function DisplayBox({ onClose, darkMode = false }) {
           <tbody>
             {mockPromotionData.map((promotion, index) => (
               <tr key={`${promotion.prReviewer}-${promotion.teamCode}`}>
-                <td style={{ backgroundColor: darkMode ? '#0d1521' : 'white' }}>
+                <td>
                   <input
                     type="checkbox"
                     checked={checkedItems[index]}
@@ -89,37 +105,37 @@ export default function DisplayBox({ onClose, darkMode = false }) {
                     aria-label={`Select reviewer ${promotion.prReviewer}`}
                   />
                 </td>
-                <td style={{ backgroundColor: darkMode ? '#0d1521' : 'white' }}>
-                  {promotion.prReviewer}
-                </td>
-                <td style={{ backgroundColor: darkMode ? '#0d1521' : 'white' }}>
-                  {promotion.teamCode}
-                </td>
-                <td style={{ backgroundColor: darkMode ? '#0d1521' : 'white' }}>
-                  {promotion.teamReviewerName}
-                </td>
-                <td style={{ backgroundColor: darkMode ? '#0d1521' : 'white' }}>
-                  {promotion.weeklyPRs.map((pr, prIndex) => (
-                    <span
-                      key={`${promotion.prReviewer}-${pr.week}`}
-                      className={`${styles.prCountBadge} ${styles[`color${prIndex}`] || ''}`}
-                    >
-                      {pr.prCount}
-                    </span>
-                  ))}
+                <td>{promotion.prReviewer}</td>
+                <td>{promotion.teamCode}</td>
+                <td>{promotion.teamReviewerName}</td>
+                <td>
+                  <div className={styles.prBadgeRow}>
+                    {promotion.weeklyPRs.map((pr, prIndex) => (
+                      <span
+                        key={`${promotion.prReviewer}-${pr.week}`}
+                        className={getBadgeClassName(prIndex)}
+                      >
+                        {pr.prCount}
+                      </span>
+                    ))}
+                  </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
         <div className={styles.buttonRow}>
-          <button type="button" className={styles.button} onClick={onClose}>
+          <button
+            type="button"
+            className={`${styles.button} ${styles.cancelButton}`}
+            onClick={onClose}
+          >
             Cancel
           </button>
 
           <button
             type="button"
-            className={styles.button}
+            className={`${styles.button} ${styles.confirmButton}`}
             disabled={!checkedItems.some(Boolean)}
             onClick={handleConfirm}
           >
