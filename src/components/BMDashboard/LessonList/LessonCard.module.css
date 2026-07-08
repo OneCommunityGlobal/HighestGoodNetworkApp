@@ -151,9 +151,9 @@
 }
 
 .darkCard .lessonCardHeader {
-  background-color: #1C2541 !important;
+  background-color: #3A506B !important;
   color: #fff !important;
-  border-bottom: 1px solid #333 !important;
+  border-bottom: 1px solid #1C2541 !important;
 }
 
 .darkCard .scrollableCardBody {
