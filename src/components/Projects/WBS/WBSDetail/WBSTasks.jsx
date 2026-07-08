@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { connect, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useHistory } from 'react-router-dom';
 import { NavItem, Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import hasPermission from '~/utils/permissions';
@@ -16,6 +16,27 @@ import styles from './wbs.module.css';
 import { useFetchWbsTasks } from './hook';
 import { FilterBar } from './FilterBar';
 
+const filterTasks = (tasks, filterState) => {
+  switch (filterState) {
+    case 'all':
+      return tasks;
+    case 'assigned':
+      return tasks.filter(task => task.isAssigned === true);
+    case 'unassigned':
+      return tasks.filter(task => task.isAssigned === false);
+    case 'active':
+      return tasks.filter(task => ['Active', 'Started'].includes(task.status));
+    case 'inactive':
+      return tasks.filter(task => ['Not Started', 'Paused'].includes(task.status));
+    case 'complete':
+      return tasks.filter(task => task.status === 'Complete');
+    case 'paused':
+      return tasks.filter(task => task.status === 'Paused');
+    default:
+      return tasks;
+  }
+};
+
 function WBSTasks(props) {
   // const { tasks, fetched, darkMode } = props;
   const { fetched, darkMode } = props;
@@ -28,7 +49,6 @@ function WBSTasks(props) {
   // states from hooks
   const [filterState, setFilterState] = useState('all');
   const [openAll, setOpenAll] = useState(false);
-  const [showImport, setShowImport] = useState(false);
   // const [isLoading, setIsLoading] = useState(true);
   const [isDeleted, setIsDeleted] = useState(false);
   const [levelOneTasks, setLevelOneTasks] = useState([]);
@@ -36,6 +56,24 @@ function WBSTasks(props) {
   const [pageLoadTime, setPageLoadTime] = useState(Date.now());
   const [copiedTask, setCopiedTask] = useState(null);
   const myRef = useRef(null);
+
+  const location = useLocation();
+  const history = useHistory();
+  const taskSelectionMode = location.state?.taskSelectionMode || false;
+  const selectionReturnPath = location.state?.returnPath || '/bmdashboard/AddNewTeam';
+
+  const handleSelectTask = task => {
+    history.push(selectionReturnPath, {
+      selectedTask: {
+        id: task._id,
+        name: task.taskName,
+        projectId,
+        projectName,
+        wbsId,
+        wbsName: decodeURIComponent(wbsName),
+      },
+    });
+  };
 
   // Pass projectId to the hook so it can watch for category changes
   const { tasks, isLoading, refresh } = useFetchWbsTasks(wbsId, projectId);
@@ -58,26 +96,6 @@ function WBSTasks(props) {
 
   // permissions
   const canPostTask = props.hasPermission('postTask');
-  const filterTasks = (tasks, filterState) => {
-    switch (filterState) {
-      case 'all':
-        return tasks;
-      case 'assigned':
-        return tasks.filter(task => task.isAssigned === true);
-      case 'unassigned':
-        return tasks.filter(task => task.isAssigned === false);
-      case 'active':
-        return tasks.filter(task => ['Active', 'Started'].includes(task.status));
-      case 'inactive':
-        return tasks.filter(task => ['Not Started', 'Paused'].includes(task.status));
-      case 'complete':
-        return tasks.filter(task => task.status === 'Complete');
-      case 'paused':
-        return tasks.filter(task => task.status === 'Paused');
-    }
-  };
-
-  
 
   const deleteWBSTask = (taskId, mother) => {
     props.deleteTask(taskId, mother);
@@ -154,7 +172,7 @@ function WBSTasks(props) {
         />
       )}
 
-      {!isLoading && showImport && (
+      {!isLoading && (
         <ImportTask
           wbsId={wbsId}
           projectId={projectId}
@@ -176,6 +194,7 @@ function WBSTasks(props) {
       
       <Button
         color="light"
+        outline={darkMode}
         size="sm"
         className="ml-2"
         onClick={() => setOpenAll(!openAll)}
@@ -184,19 +203,13 @@ function WBSTasks(props) {
       >
         {openAll ? 'Fold All' : 'Unfold All'}
       </Button>
-      
-      <Button
-        color="info"
-        size="sm"
-        className="ml-2"
-        onClick={() => setShowImport(!showImport)}
-        style={darkMode ? boxStyleDark : boxStyle}
-        disabled={isLoading}
-      >
-        <i className="fa fa-upload" aria-hidden="true" /> {showImport ? 'Hide Import' : 'Import Tasks'}
-      </Button>
-      
-      <FilterBar currentFilter={filterState} onChange={setFilterState} isLoading={isLoading} />
+
+      <FilterBar
+        currentFilter={filterState}
+        onChange={setFilterState}
+        isLoading={isLoading}
+        darkMode={darkMode}
+      />
     </div>
   );
 
@@ -258,6 +271,11 @@ function WBSTasks(props) {
       <ReactTooltip delayShow={300} />
       <div className={`${styles['container-tasks']} m-0 p-4`}>
         {renderBreadcrumb()}
+        {taskSelectionMode && (
+          <div className="alert alert-success mb-2" role="alert">
+            <strong>Task Selection Mode:</strong> Click <strong>Select</strong> next to any task to add it to your team.
+          </div>
+        )}
         {renderButtonGroup()}
         <div className={`${styles['tasks-table']} mb-5`}>
           <table
@@ -311,6 +329,8 @@ function WBSTasks(props) {
                   pageLoadTime={pageLoadTime}
                   setIsLoading={() => {}}
                   darkMode={darkMode}
+                  taskSelectionMode={taskSelectionMode}
+                  onSelectTask={handleSelectTask}
                 />
               ))}
             </tbody>
