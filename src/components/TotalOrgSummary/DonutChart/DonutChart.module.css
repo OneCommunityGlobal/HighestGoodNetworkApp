@@ -38,21 +38,25 @@
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
-  font-size: 0.6em;
-  width: 52%;
-  max-width: 8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.18rem;
+  width: 46%;
+  max-width: 7rem;
 }
 
 .donutCenter > * {
-  margin: 0.2rem;
+  margin: 0;
 }
 
 .donutHeading {
   color: var(--text-secondary);
-  font-size: 0.8rem;
+  font-size: 0.61rem;
   font-weight: 700;
   letter-spacing: 0.03em;
-  line-height: 1.2;
+  line-height: 1.15;
   text-transform: uppercase;
   white-space: normal;
   overflow-wrap: anywhere;
@@ -64,7 +68,7 @@
 
 .donutCount {
   color: var(--text-primary);
-  font-size: 2rem;
+  font-size: 1.85rem;
   line-height: 1;
 }
 
@@ -73,11 +77,8 @@
 }
 
 .donutComparisonPercent {
-  font-size: 0.7rem;
-}
-
-.donutCenter div {
-  margin: 2px 0;
+  font-size: 0.58rem;
+  line-height: 1.1;
 }
 
 .donutLabels {
