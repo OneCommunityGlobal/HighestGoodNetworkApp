@@ -263,6 +263,138 @@ const createInitialFormValues = (authUser, userProfile) => {
   };
 };
 
+function MeetingSchedulingModals({
+  confirmModalOpen,
+  onCloseConfirmModal,
+  pendingMeetingDetails,
+  onConfirmSchedule,
+  submitting,
+  modalOpen,
+  onToggleResultModal,
+  onCloseResultModal,
+  modalTitle,
+  isSuccessModal,
+  modalMessage,
+  darkMode,
+  meetingModalClass,
+  meetingModalContentClass,
+  meetingModalSectionClass,
+}) {
+  return (
+    <>
+      <Modal
+        isOpen={confirmModalOpen}
+        toggle={onCloseConfirmModal}
+        className={meetingModalClass}
+        contentClassName={meetingModalContentClass}
+      >
+        {renderModalHeader('Confirm Meeting Schedule', onCloseConfirmModal, darkMode)}
+        <ModalBody className={meetingModalSectionClass}>
+          {pendingMeetingDetails?.confirmationDetails && (
+            <>
+              {renderMeetingSummary(
+                pendingMeetingDetails.confirmationDetails,
+                'You are about to schedule a meeting with:',
+              )}
+              <div className="meeting-scheduling-modal-content meeting-modal-notify-block">
+                <p>
+                  <strong>Who gets notified:</strong>{' '}
+                  {pendingMeetingDetails.confirmationDetails.participants}
+                </p>
+                <p>
+                  Each listed participant will receive an in-app notification and calendar options
+                  when they log in. If the meeting is within 3 days, their bell icon will alert them
+                  until they view and dismiss the reminder.
+                </p>
+              </div>
+            </>
+          )}
+        </ModalBody>
+        <ModalFooter className={meetingModalSectionClass}>
+          <Button
+            color="secondary"
+            onClick={onCloseConfirmModal}
+            style={darkMode ? boxStyleDark : boxStyle}
+            disabled={submitting}
+          >
+            Cancel
+          </Button>
+          <Button
+            color="primary"
+            onClick={onConfirmSchedule}
+            style={darkMode ? boxStyleDark : boxStyle}
+            disabled={submitting}
+          >
+            {submitting ? 'Scheduling...' : 'Confirm & Schedule'}
+          </Button>
+        </ModalFooter>
+      </Modal>
+      <Modal
+        isOpen={modalOpen}
+        toggle={onToggleResultModal}
+        className={meetingModalClass}
+        contentClassName={meetingModalContentClass}
+      >
+        {renderModalHeader(modalTitle, onToggleResultModal, darkMode)}
+        <ModalBody className={meetingModalSectionClass}>
+          {isSuccessModal && modalMessage ? (
+            <>
+              {renderMeetingSummary(
+                modalMessage,
+                'You have scheduled a meeting with the following details:',
+              )}
+              <div className="meeting-scheduling-modal-content meeting-modal-notify-block">
+                <p>
+                  Meeting scheduled successfully. Calendar options and in-app notifications have
+                  been prepared for: <strong>{modalMessage.participants}</strong>.
+                </p>
+                <p>
+                  Recipients will see a bell alert, reminder bar, and calendar download links when
+                  they log in if the meeting is within the next 3 days. The alert resets after they
+                  view it, and will appear again for any new upcoming meeting.
+                </p>
+              </div>
+            </>
+          ) : (
+            <div className="meeting-scheduling-modal-content">
+              <p>{modalMessage}</p>
+            </div>
+          )}
+        </ModalBody>
+        <ModalFooter className={meetingModalSectionClass}>
+          <Button
+            color="primary"
+            onClick={isSuccessModal ? onToggleResultModal : onCloseResultModal}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            Close
+          </Button>
+        </ModalFooter>
+      </Modal>
+    </>
+  );
+}
+
+MeetingSchedulingModals.propTypes = {
+  confirmModalOpen: PropTypes.bool.isRequired,
+  onCloseConfirmModal: PropTypes.func.isRequired,
+  pendingMeetingDetails: PropTypes.shape({
+    confirmationDetails: PropTypes.object,
+  }),
+  onConfirmSchedule: PropTypes.func.isRequired,
+  submitting: PropTypes.bool.isRequired,
+  modalOpen: PropTypes.bool.isRequired,
+  onToggleResultModal: PropTypes.func.isRequired,
+  onCloseResultModal: PropTypes.func.isRequired,
+  modalTitle: PropTypes.string.isRequired,
+  isSuccessModal: PropTypes.bool.isRequired,
+  modalMessage: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+  darkMode: PropTypes.bool.isRequired,
+  meetingModalClass: PropTypes.string.isRequired,
+  meetingModalContentClass: PropTypes.string.isRequired,
+  meetingModalSectionClass: PropTypes.string.isRequired,
+};
+
 function MeetingScheduling(props) {
   const dispatch = useDispatch();
   const { authUser, allUserProfiles, darkMode, userProfile } = props;
@@ -723,99 +855,23 @@ function MeetingScheduling(props) {
               {submitting ? 'Saving...' : 'Save'}
             </Button>
           </div>
-          <Modal
-            isOpen={confirmModalOpen}
-            toggle={() => setConfirmModalOpen(false)}
-            className={meetingModalClass}
-            contentClassName={meetingModalContentClass}
-          >
-            {renderModalHeader(
-              'Confirm Meeting Schedule',
-              () => setConfirmModalOpen(false),
-              darkMode,
-            )}
-            <ModalBody className={meetingModalSectionClass}>
-              {pendingMeetingDetails?.confirmationDetails && (
-                <>
-                  {renderMeetingSummary(
-                    pendingMeetingDetails.confirmationDetails,
-                    'You are about to schedule a meeting with:',
-                  )}
-                  <div className="meeting-scheduling-modal-content meeting-modal-notify-block">
-                    <p>
-                      <strong>Who gets notified:</strong>{' '}
-                      {pendingMeetingDetails.confirmationDetails.participants}
-                    </p>
-                    <p>
-                      Each listed participant will receive an in-app notification and calendar
-                      options when they log in. If the meeting is within 3 days, their bell icon
-                      will alert them until they view and dismiss the reminder.
-                    </p>
-                  </div>
-                </>
-              )}
-            </ModalBody>
-            <ModalFooter className={meetingModalSectionClass}>
-              <Button
-                color="secondary"
-                onClick={() => setConfirmModalOpen(false)}
-                style={darkMode ? boxStyleDark : boxStyle}
-                disabled={submitting}
-              >
-                Cancel
-              </Button>
-              <Button
-                color="primary"
-                onClick={confirmScheduleMeeting}
-                style={darkMode ? boxStyleDark : boxStyle}
-                disabled={submitting}
-              >
-                {submitting ? 'Scheduling...' : 'Confirm & Schedule'}
-              </Button>
-            </ModalFooter>
-          </Modal>
-          <Modal
-            isOpen={modalOpen}
-            toggle={toggleModal}
-            className={meetingModalClass}
-            contentClassName={meetingModalContentClass}
-          >
-            {renderModalHeader(modalTitle, toggleModal, darkMode)}
-            <ModalBody className={meetingModalSectionClass}>
-              {isSuccessModal && modalMessage ? (
-                <>
-                  {renderMeetingSummary(
-                    modalMessage,
-                    'You have scheduled a meeting with the following details:',
-                  )}
-                  <div className="meeting-scheduling-modal-content meeting-modal-notify-block">
-                    <p>
-                      Meeting scheduled successfully. Calendar options and in-app notifications have
-                      been prepared for: <strong>{modalMessage.participants}</strong>.
-                    </p>
-                    <p>
-                      Recipients will see a bell alert, reminder bar, and calendar download links
-                      when they log in if the meeting is within the next 3 days. The alert resets
-                      after they view it, and will appear again for any new upcoming meeting.
-                    </p>
-                  </div>
-                </>
-              ) : (
-                <div className="meeting-scheduling-modal-content">
-                  <p>{modalMessage}</p>
-                </div>
-              )}
-            </ModalBody>
-            <ModalFooter className={meetingModalSectionClass}>
-              <Button
-                color="primary"
-                onClick={isSuccessModal ? toggleModal : () => setModalOpen(false)}
-                style={darkMode ? boxStyleDark : boxStyle}
-              >
-                Close
-              </Button>
-            </ModalFooter>
-          </Modal>
+          <MeetingSchedulingModals
+            confirmModalOpen={confirmModalOpen}
+            onCloseConfirmModal={() => setConfirmModalOpen(false)}
+            pendingMeetingDetails={pendingMeetingDetails}
+            onConfirmSchedule={confirmScheduleMeeting}
+            submitting={submitting}
+            modalOpen={modalOpen}
+            onToggleResultModal={toggleModal}
+            onCloseResultModal={() => setModalOpen(false)}
+            modalTitle={modalTitle}
+            isSuccessModal={isSuccessModal}
+            modalMessage={modalMessage}
+            darkMode={darkMode}
+            meetingModalClass={meetingModalClass}
+            meetingModalContentClass={meetingModalContentClass}
+            meetingModalSectionClass={meetingModalSectionClass}
+          />
         </div>
       </div>
     </div>

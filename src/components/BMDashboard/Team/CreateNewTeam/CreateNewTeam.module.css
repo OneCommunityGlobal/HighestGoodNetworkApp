@@ -20,8 +20,8 @@
   }
 
   .addTeamButtons button#submit-button {
-    background-color: #388e3c; 
-    border-color: #388e3c;
+    background-color: #2e7d32; 
+    border-color: #2e7d32;
     color: white;
   }
   
@@ -50,8 +50,8 @@
   }
   
   .addTeamButtons button#cancel-button {
-    background-color: #f44336; 
-    border-color: #f44336; 
+    background-color: #d32f2f; 
+    border-color: #d32f2f; 
     color: white; 
   }
   
@@ -117,7 +117,7 @@
     font-size: 1rem;
     cursor: pointer;
     color: white;
-    background-color: #c96a22;
+    background-color: #a85819;
     transition: background-color 0.3s ease, transform 0.2s ease;
     border-radius: 10px; 
     padding: 0.5rem; 

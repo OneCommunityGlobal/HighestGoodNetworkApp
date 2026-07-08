@@ -253,7 +253,7 @@
 
 .paid-labor-cost-day.paid-labor-cost-start-date,
 .paid-labor-cost-day.paid-labor-cost-end-date {
-  background-color: #3498db;
+  background-color: #1f6dad;
   color: #fff;
 }
 
@@ -577,7 +577,7 @@
   height: 20px;
   border: none;
   border-radius: 50%;
-  background-color: #007bff;
+  background-color: #0056b3;
   color: #fff;
   display: flex;
   align-items: center;

@@ -11,9 +11,9 @@ const ADS_PER_PAGE = 18;
 const slugify = s =>
   (s || '')
     .toLowerCase()
-    .replace(/&/g, 'and')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
+    .replaceAll('&', 'and')
+    .replaceAll(/[^a-z0-9]+/g, '-')
+    .replaceAll(/(^-|-$)/g, '');
 
 const getListingQueryText = (searchTerm, selectedPosition, selectedCategory) => {
   if (searchTerm) {
@@ -105,7 +105,6 @@ function JobSummariesView({ summaries, darkMode, onBack }) {
 function Collaboration() {
   const [query, setQuery] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [categoriesSelected, setCategoriesSelected] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [jobAds, setJobAds] = useState([]);
   const [allJobs, setAllJobs] = useState([]);

@@ -87,7 +87,7 @@ export default function DistributionLaborHours() {
           />
         </label>
         <label>
-          Project:
+          Project:{' '}
           <select onChange={e => setProjectFilter(e.target.value)} value={projectFilter}>
             <option value="">All</option>
             <option value="Project A">Project A</option>
@@ -95,7 +95,7 @@ export default function DistributionLaborHours() {
           </select>
         </label>
         <label>
-          Member:
+          Member:{' '}
           <select onChange={e => setMemberFilter(e.target.value)} value={memberFilter}>
             <option value="">All</option>
             <option value="Member 1">Member 1</option>

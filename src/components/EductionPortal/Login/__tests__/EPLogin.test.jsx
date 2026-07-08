@@ -59,9 +59,13 @@ describe('EPLogin component', () => {
   it('renders without crashing', () => {
     renderComponent(store);
   });
-  it('check if login elements get displayed when isAuthenticated is true', () => {
+  it.each([
+    [/log in to good education portal/i, 'Log In To Good Education Portal'],
+    [/email/i, 'Email'],
+    [/password/i, 'Password'],
+  ])('displays %s label when authenticated', (matcher, _label) => {
     renderComponent(store);
-    expect(screen.getByText('Log In To Good Education Portal')).toBeInTheDocument();
+    expect(screen.getByText(matcher)).toBeInTheDocument();
   });
   it('check if login elements does not get displayed when isAuthenticated is false', () => {
     const testStore = mockStore({
@@ -94,14 +98,6 @@ describe('EPLogin component', () => {
     expect(
       screen.getByText('Note: You must use your Production/Main credentials for this login.'),
     ).toBeInTheDocument();
-  });
-  it('check if email label is displaying as expected', () => {
-    renderComponent(store);
-    expect(screen.getByText('Email')).toBeInTheDocument();
-  });
-  it('check if password label is displaying as expected', () => {
-    renderComponent(store);
-    expect(screen.getByText('Password')).toBeInTheDocument();
   });
   it('check if submit button is disabled when either email or password is not entered', () => {
     renderComponent(store);

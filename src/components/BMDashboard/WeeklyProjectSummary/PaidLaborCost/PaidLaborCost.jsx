@@ -299,7 +299,7 @@ export default function PaidLaborCost() {
       }
 
       if (!Array.isArray(apiData.data)) {
-        throw new Error('Invalid response structure: data property is not an array');
+        throw new TypeError('Invalid response structure: data property is not an array');
       }
 
       const validatedData = apiData.data.filter(isValidDataItem);
@@ -360,7 +360,7 @@ export default function PaidLaborCost() {
     }
 
     const contentType = response.headers.get('Content-Type');
-    if (!contentType || !contentType.includes('application/json')) {
+    if (!contentType?.includes('application/json')) {
       const responseText = await response.text();
       logger.logError(
         new Error(

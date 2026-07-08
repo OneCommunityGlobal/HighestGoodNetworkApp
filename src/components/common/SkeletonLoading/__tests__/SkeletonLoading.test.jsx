@@ -17,24 +17,18 @@ describe('SkeletonLoading Component', () => {
     consoleErrorMock.mockRestore();
   });
 
-  it('renders Timelog template', () => {
+  it.each([
+    ['Timelog', 'timelog'],
+    ['TimelogFilter', 'timelog-filter'],
+    ['WeeklySummary', 'weekly-summary'],
+  ])('renders %s template', (template, testId) => {
     const store = mockStore({ theme: themeMock });
     render(
       <Provider store={store}>
-        <SkeletonLoading template="Timelog" />
+        <SkeletonLoading template={template} />
       </Provider>,
     );
-    expect(screen.getByTestId('timelog')).toBeInTheDocument();
-  });
-
-  it('renders TimelogFilter template', () => {
-    const store = mockStore({ theme: themeMock });
-    render(
-      <Provider store={store}>
-        <SkeletonLoading template="TimelogFilter" />
-      </Provider>,
-    );
-    expect(screen.getByTestId('timelog-filter')).toBeInTheDocument();
+    expect(screen.getByTestId(testId)).toBeInTheDocument();
   });
 
   it('renders TeamMemberTasks template', () => {
@@ -45,16 +39,6 @@ describe('SkeletonLoading Component', () => {
       </Provider>,
     );
     expect(screen.getAllByTestId('team-member-tasks-row')).toHaveLength(15);
-  });
-
-  it('renders WeeklySummary template', () => {
-    const store = mockStore({ theme: themeMock });
-    render(
-      <Provider store={store}>
-        <SkeletonLoading template="WeeklySummary" />
-      </Provider>,
-    );
-    expect(screen.getByTestId('weekly-summary')).toBeInTheDocument();
   });
 
   it('renders WeeklySummariesReport template', () => {

@@ -910,22 +910,22 @@
   /* Event badge colors for print */
   :global(.event-badge-global)[data-type='Yoga Class'] {
     background-color: #e9f7ef !important;
-    color: #28a745 !important;
+    color: #1e7e34 !important;
   }
 
   :global(.event-badge-global)[data-type='Cooking Workshop'] {
     background-color: #fdecea !important;
-    color: #e74c3c !important;
+    color: #c0392b !important;
   }
 
   :global(.event-badge-global)[data-type='Dance Class'] {
     background-color: #fff5e6 !important;
-    color: #f39c12 !important;
+    color: #c87f0a !important;
   }
 
   :global(.event-badge-global)[data-type='Fitness Bootcamp'] {
     background-color: #f5e6ff !important;
-    color: #9b59b6 !important;
+    color: #7d3c98 !important;
   }
 
   .trackingRateGreen {
@@ -1080,7 +1080,7 @@
   padding: 8px 14px;
   border-radius: 6px;
   border: none;
-  background: #007bff;
+  background: #0056b3;
   color: white;
   cursor: pointer;
 }

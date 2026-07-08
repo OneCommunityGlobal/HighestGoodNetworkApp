@@ -1144,6 +1144,70 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
   );
 
   return (
+    <MostFrequentKeywordsView
+      darkMode={darkMode}
+      isMobile={isMobile}
+      selectedOption={selectedOption}
+      onOptionChange={handleOptionChange}
+      dropdownOptions={getDropdownOptions()}
+      selectStyles={{
+        control: getControlStyles,
+        valueContainer: getValueContainerStyles,
+        input: getInputStyles,
+        placeholder: getPlaceholderStyles,
+        singleValue: getSingleValueStyles,
+        indicatorSeparator: getIndicatorSeparatorStyles,
+        indicatorsContainer: getIndicatorsContainerStyles,
+        dropdownIndicator: getIndicatorStyles,
+        clearIndicator: getIndicatorStyles,
+        menu: getMenuStyles,
+        menuList: getMenuListStyles,
+        option: getOptionStyles,
+        groupHeading: getGroupHeadingStyles,
+        noOptionsMessage: getNoOptionsMessageStyles,
+        loadingMessage: getNoOptionsMessageStyles,
+      }}
+      startDate={startDate}
+      endDate={endDate}
+      onStartDateChange={handleStartDateChange}
+      onEndDateChange={handleEndDateChange}
+      today={today}
+      onClearDates={handleClearDates}
+      renderCalendarContainer={renderCalendarContainer}
+      onCalendarOpen={applyDarkCalendarTheme}
+      renderCalendarHeader={darkMode ? renderCalendarHeader : undefined}
+      containerRef={containerRef}
+      isLoading={isLoading}
+      error={error}
+      tags={tags}
+      svgRef={svgRef}
+    />
+  );
+}
+
+function MostFrequentKeywordsView({
+  darkMode,
+  isMobile,
+  selectedOption,
+  onOptionChange,
+  dropdownOptions,
+  selectStyles,
+  startDate,
+  endDate,
+  onStartDateChange,
+  onEndDateChange,
+  today,
+  onClearDates,
+  renderCalendarContainer,
+  onCalendarOpen,
+  renderCalendarHeader,
+  containerRef,
+  isLoading,
+  error,
+  tags,
+  svgRef,
+}) {
+  return (
     <div
       className={`${styles.mfkContainer} ${darkMode ? styles.darkMode : ''} ${
         isMobile ? styles.mobile : ''
@@ -1161,30 +1225,14 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
             inputId="data-select"
             className={styles.mfkSelect}
             classNamePrefix="data-select"
-            options={getDropdownOptions()}
+            options={dropdownOptions}
             value={selectedOption}
-            onChange={handleOptionChange}
+            onChange={onOptionChange}
             placeholder={isMobile ? 'Select' : 'Choose'}
             isClearable
             isSearchable
             components={{ DropdownIndicator }}
-            styles={{
-              control: getControlStyles,
-              valueContainer: getValueContainerStyles,
-              input: getInputStyles,
-              placeholder: getPlaceholderStyles,
-              singleValue: getSingleValueStyles,
-              indicatorSeparator: getIndicatorSeparatorStyles,
-              indicatorsContainer: getIndicatorsContainerStyles,
-              dropdownIndicator: getIndicatorStyles,
-              clearIndicator: getIndicatorStyles,
-              menu: getMenuStyles,
-              menuList: getMenuListStyles,
-              option: getOptionStyles,
-              groupHeading: getGroupHeadingStyles,
-              noOptionsMessage: getNoOptionsMessageStyles,
-              loadingMessage: getNoOptionsMessageStyles,
-            }}
+            styles={selectStyles}
           />
         </div>
         <div className={styles.controlGroup}>
@@ -1194,7 +1242,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
           <DatePicker
             id="start-date"
             selected={startDate}
-            onChange={handleStartDateChange}
+            onChange={onStartDateChange}
             className={`${styles.mfkDatepicker} ${darkMode ? styles.mfkDatepickerDark : ''}`}
             calendarClassName={darkMode ? 'mfk-dark-calendar' : ''}
             popperClassName={darkMode ? 'mfk-dark-popper' : ''}
@@ -1203,8 +1251,8 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
             maxDate={endDate || today}
             minDate={new Date('2023-01-01')}
             calendarContainer={renderCalendarContainer}
-            onCalendarOpen={applyDarkCalendarTheme}
-            renderCustomHeader={darkMode ? renderCalendarHeader : undefined}
+            onCalendarOpen={onCalendarOpen}
+            renderCustomHeader={renderCalendarHeader}
           />
         </div>
         <div className={styles.controlGroup}>
@@ -1214,7 +1262,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
           <DatePicker
             id="end-date"
             selected={endDate}
-            onChange={handleEndDateChange}
+            onChange={onEndDateChange}
             className={`${styles.mfkDatepicker} ${darkMode ? styles.mfkDatepickerDark : ''}`}
             calendarClassName={darkMode ? 'mfk-dark-calendar' : ''}
             popperClassName={darkMode ? 'mfk-dark-popper' : ''}
@@ -1223,12 +1271,12 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
             minDate={startDate || new Date('2023-01-01')}
             maxDate={today}
             calendarContainer={renderCalendarContainer}
-            onCalendarOpen={applyDarkCalendarTheme}
-            renderCustomHeader={darkMode ? renderCalendarHeader : undefined}
+            onCalendarOpen={onCalendarOpen}
+            renderCustomHeader={renderCalendarHeader}
           />
         </div>
         {(startDate || endDate) && (
-          <button className={styles.clearButton} onClick={handleClearDates} title="Clear">
+          <button className={styles.clearButton} onClick={onClearDates} title="Clear">
             ✕
           </button>
         )}
@@ -1247,6 +1295,35 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     </div>
   );
 }
+
+MostFrequentKeywordsView.propTypes = {
+  darkMode: PropTypes.bool.isRequired,
+  isMobile: PropTypes.bool.isRequired,
+  selectedOption: PropTypes.object,
+  onOptionChange: PropTypes.func.isRequired,
+  dropdownOptions: PropTypes.arrayOf(PropTypes.object).isRequired,
+  selectStyles: PropTypes.object.isRequired,
+  startDate: PropTypes.instanceOf(Date),
+  endDate: PropTypes.instanceOf(Date),
+  onStartDateChange: PropTypes.func.isRequired,
+  onEndDateChange: PropTypes.func.isRequired,
+  today: PropTypes.instanceOf(Date).isRequired,
+  onClearDates: PropTypes.func.isRequired,
+  renderCalendarContainer: PropTypes.func.isRequired,
+  onCalendarOpen: PropTypes.func.isRequired,
+  renderCalendarHeader: PropTypes.func,
+  containerRef: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
+  ]).isRequired,
+  isLoading: PropTypes.bool.isRequired,
+  error: PropTypes.string.isRequired,
+  tags: PropTypes.arrayOf(PropTypes.object).isRequired,
+  svgRef: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
+  ]).isRequired,
+};
 
 MostFrequentKeywords.propTypes = {
   darkMode: PropTypes.bool,
