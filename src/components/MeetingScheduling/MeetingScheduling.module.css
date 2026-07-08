@@ -32,6 +32,11 @@
   scrollbar-color: #5a6268 #1b2a41;
 }
 
+.pageDark :global(.text-danger),
+.pageDark :global(.text-danger small) {
+  color: #f87171 !important;
+}
+
 .pageDark::-webkit-scrollbar-track {
   background: rgb(255 255 255 / 8%);
 }

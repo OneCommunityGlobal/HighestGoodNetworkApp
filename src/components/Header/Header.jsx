@@ -80,6 +80,7 @@ import DarkModeButton from './DarkModeButton';
 import styles from './Header.module.css';
 import {
   formatMeetingDateTime,
+  formatMeetingDuration,
   resolveUserTimeZone,
   stripHtmlToPlainText,
 } from '../../utils/meetingTime';
@@ -94,11 +95,17 @@ const buildMeetingDetailsMessageHtml = (
 ) => {
   const cleanNotes = stripHtmlToPlainText(currMeeting.notes);
   const countLabel = getMeetingCountLabel(totalMeetings, meetingIndex);
+  const durationLabel = formatMeetingDuration(currMeeting.duration);
   const messageParts = [
     `Reminder: You have an upcoming meeting${countLabel}! Please check the details and be prepared.<br>`,
     `<strong>Time:</strong> ${formatMeetingDateTime(currMeeting.dateTime, viewerTimeZone)}<br>`,
-    `<strong>Organizer:</strong> ${organizerName}<br>`,
   ];
+
+  if (durationLabel) {
+    messageParts.push(`<strong>Duration:</strong> ${durationLabel}<br>`);
+  }
+
+  messageParts.push(`<strong>Organizer:</strong> ${organizerName}<br>`);
 
   if (currMeeting.location) {
     messageParts.push(`<strong>Location:</strong> ${currMeeting.location}<br>`);

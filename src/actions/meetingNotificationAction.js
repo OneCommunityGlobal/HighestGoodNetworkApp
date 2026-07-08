@@ -64,6 +64,7 @@ export function getUnreadMeetingNotification(explicitUserId) {
           isRead: meeting.isRead,
           dateTime: meeting.dateTime,
           timeZone: meeting.timeZone || viewerTimeZone,
+          duration: meeting.duration,
           location: meeting.location,
           notes: meeting.notes,
         }));

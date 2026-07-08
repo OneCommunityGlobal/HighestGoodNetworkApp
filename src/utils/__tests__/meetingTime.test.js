@@ -2,6 +2,7 @@ import moment from 'moment-timezone';
 import {
   buildMeetingMoment,
   formatMeetingDateTimeShort,
+  formatMeetingDuration,
   getParticipantLocalTime,
   resolveUserTimeZone,
   stripHtmlToPlainText,
@@ -42,5 +43,12 @@ describe('meetingTime utils', () => {
 
   it('strips html tags and normalizes whitespace from notes', () => {
     expect(stripHtmlToPlainText('<p>Hello&nbsp; <strong>team</strong></p>')).toBe('Hello team');
+  });
+
+  it('formats meeting duration in minutes and hours', () => {
+    expect(formatMeetingDuration(30)).toBe('30 minutes');
+    expect(formatMeetingDuration(60)).toBe('1 hour');
+    expect(formatMeetingDuration(120)).toBe('2 hours');
+    expect(formatMeetingDuration(0)).toBe('');
   });
 });

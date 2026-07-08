@@ -44,6 +44,20 @@ export const formatMeetingDateTimeShort = (dateTime, timeZone) => {
   return moment(dateTime).tz(tz).format('MMM D, YYYY h:mm A z');
 };
 
+export const formatMeetingDuration = durationMinutes => {
+  const minutes = Number(durationMinutes);
+  if (!minutes || Number.isNaN(minutes) || minutes <= 0) {
+    return '';
+  }
+
+  if (minutes % 60 === 0) {
+    const hours = minutes / 60;
+    return hours === 1 ? '1 hour' : `${hours} hours`;
+  }
+
+  return `${minutes} minutes`;
+};
+
 export const getParticipantLocalTime = (formValues, participantTimeZone) => {
   const meetingMoment = buildMeetingMoment(formValues);
   if (!meetingMoment.isValid()) return null;
