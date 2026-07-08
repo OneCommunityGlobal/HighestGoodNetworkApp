@@ -69,7 +69,7 @@
   max-width: 100%;
 }
 .permission-label {
-  word-break: break-word;
+  overflow-wrap: break-word;
   white-space: normal;
   max-width: calc(100% - 60px);
   margin-right: 10px;

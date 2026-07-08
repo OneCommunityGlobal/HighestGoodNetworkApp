@@ -55,18 +55,11 @@
   }
 }
 
-/*
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 12px;
-} */
 /* Timer Message Section */
 .timer-message-section {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* flex-wrap: wrap; */
   width: 100%;
   gap: 1rem;
 }
@@ -254,7 +247,6 @@
   .menuContainer {
     align-items: start;
     flex-direction: column !important;
-    /* width: 100%; */
     padding-left: 50px;
   }
   .mobileMenuDropdown {
@@ -334,7 +326,6 @@
   @page {
     size: auto;
     margin: 0;
-    scale: 100%;
   }
 
   /* Ensure navbar is compact and font size is correct */
