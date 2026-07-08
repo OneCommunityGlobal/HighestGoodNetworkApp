@@ -133,6 +133,7 @@
   font-size: 0.78rem;
   font-weight: 700;
   color: var(--text-color);
+  text-align: right;
 }
 
 .varianceCardStatus {
