@@ -47,7 +47,24 @@ import WorkDistributionBarChart from './VolunteerRolesTeamDynamics/WorkDistribut
 import VolunteerStatus from './VolunteerStatus/VolunteerStatus';
 import VolunteerStatusChart from './VolunteerStatus/VolunteerStatusChart';
 import VolunteerTrendsLineChart from './VolunteerTrendsLineChart/VolunteerTrendsLineChart';
-import { formatLocalDateForApi, getCurrentWeekDates, getPreviousWeekDates } from './dateRangeUtils';
+
+function calculateStartDate() {
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+  const dayOfWeek = currentDate.getDay();
+  const daysToSubtract = dayOfWeek === 0 ? 0 : dayOfWeek;
+  currentDate.setDate(currentDate.getDate() - daysToSubtract - 7);
+  return currentDate.toISOString().split('T')[0];
+}
+
+function calculateEndDate() {
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+  const dayOfWeek = currentDate.getDay();
+  const daysToAdd = dayOfWeek === 6 ? 0 : -1 - dayOfWeek;
+  currentDate.setDate(currentDate.getDate() + daysToAdd);
+  return currentDate.toISOString().split('T')[0];
+}
 
 function shiftDate(date, diffDays, type) {
   if (type === 'Week Over Week') return new Date(date.setDate(date.getDate() - diffDays));
@@ -278,6 +295,17 @@ async function fetchOrgStats(props, selectedComparison, currentFromDate, current
   return { ...volunteerStatsResponse.data, taskAndProjectStats: taskAndProjectStatsResponse };
 }
 
+function getPreviousWeekDates(fromDate, toDate) {
+  const prevWeekStart = new Date(fromDate);
+  const prevWeekEnd = new Date(toDate);
+  prevWeekStart.setDate(prevWeekStart.getDate() - 7);
+  prevWeekEnd.setDate(prevWeekEnd.getDate() - 7);
+  return {
+    start: prevWeekStart.toISOString().split('T')[0],
+    end: prevWeekEnd.toISOString().split('T')[0],
+  };
+}
+
 async function generateTotalOrgPdf({ rootRef, darkMode, volunteerStats, isLoading }) {
   if (!validatePDFPrerequisites(volunteerStats, isLoading)) return;
   await new Promise(resolve => setTimeout(resolve, 5000));
@@ -427,7 +455,8 @@ function DateRangeModal({
   );
 }
 
-const { start: fromDate, end: toDate } = getPreviousWeekDates();
+const fromDate = calculateStartDate();
+const toDate = calculateEndDate();
 
 function TotalOrgSummary(props) {
   const { darkMode, error } = props;
@@ -527,11 +556,10 @@ function TotalOrgSummary(props) {
     setShowDatePicker(false);
     setSelectedComparison('No Comparison');
     if (option === 'Current Week') {
-      const { start, end } = getCurrentWeekDates();
-      setCurrentFromDate(start);
-      setCurrentToDate(end);
+      setCurrentFromDate(fromDate);
+      setCurrentToDate(toDate);
     } else if (option === 'Previous Week') {
-      const { start, end } = getPreviousWeekDates();
+      const { start, end } = getPreviousWeekDates(fromDate, toDate);
       setCurrentFromDate(start);
       setCurrentToDate(end);
     }
@@ -542,8 +570,8 @@ function TotalOrgSummary(props) {
       setSelectedDateRange(`${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`);
       setShowDatePicker(false);
       setSelectedComparison('No Comparison');
-      setCurrentFromDate(formatLocalDateForApi(startDate));
-      setCurrentToDate(formatLocalDateForApi(endDate));
+      setCurrentFromDate(startDate.toISOString().split('T')[0]);
+      setCurrentToDate(endDate.toISOString().split('T')[0]);
     }
   };
 
@@ -879,7 +907,6 @@ function TotalOrgSummary(props) {
                   usersInTeamStats={volunteerStats?.usersInTeamStats}
                   endDate={currentToDate}
                   comparisonType={selectedComparison}
-                  darkMode={darkMode}
                 />
               </div>
             </Col>
