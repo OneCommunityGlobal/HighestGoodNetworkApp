@@ -106,11 +106,13 @@ function buildChartData(hoursData, totalHoursData) {
   const userData = hoursByBucket.map(range => {
     const value = totalHoursWorked > 0 ? range.allocatedHours || 0 : range.count || 0;
     const denominator = totalHoursWorked > 0 ? totalAllocatedHours : totalVolunteers;
+    const valueType = totalHoursWorked > 0 ? 'hours' : 'volunteers';
 
     return {
       name: formatRangeLabel(range._id),
       value,
       percentage: denominator ? Math.round((value / denominator) * 100) : 0,
+      valueType,
     };
   });
 
