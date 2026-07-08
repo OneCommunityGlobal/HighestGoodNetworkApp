@@ -45,10 +45,11 @@ describe('VolunteerHoursDistribution wrapper', () => {
     const computed = computeDistribution(hoursData, totalHoursData);
 
     // FIXED: Assert that names in userData match the updated formatRangeLabel output
+    // valueType is 'hours' here since totalHoursWorked (1234) > 0
     expect(computed).toEqual({
       userData: [
-        { name: '10-19 hrs', value: 494, percentage: 40 },
-        { name: '20-29 hrs', value: 740, percentage: 60 },
+        { name: '10-19 hrs', value: 494, percentage: 40, valueType: 'hours' },
+        { name: '20-29 hrs', value: 740, percentage: 60, valueType: 'hours' },
       ],
       totalVolunteers: 5,
       totalHoursWorked: 1234,
