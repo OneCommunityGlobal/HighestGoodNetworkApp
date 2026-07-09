@@ -3,9 +3,17 @@
 }
 
 /* This background color on hover property below is taking precedence over reactstrap and affecting multiple components. */
+
 /* .btn:hover {
   background-color: #0f8292;
 } */
+
+.filtering-message {
+  height: calc(100dvh - 17rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 .userManagementActiveCell {
   position: relative;
@@ -45,12 +53,11 @@
 
 .activeCellGrid {
   display: grid;
-  grid-template-columns: 18px 34px 18px; 
-  grid-template-rows: 1fr 1fr;           
-  align-items: center;
-  justify-items: center;
+  grid-template-columns: 18px 34px 18px;
+  grid-template-rows: 1fr 1fr;
+  place-items: center;
   position: relative;
-  min-height: 42px; 
+  min-height: 42px;
 }
 
 .activeCellLeftTop {
@@ -164,6 +171,21 @@
   font-size: 14px;
 }
 
+.darkUsermanagementData td,
+.darkUsermanagementData a,
+.darkUsermanagementData span,
+.darkUsermanagementData input {
+  color: #fff !important;
+}
+
+.darkSearchBox input,
+.darkSearchBox .form-control,
+.darkSearchRow input {
+  background-color: #2b2b2b !important;
+  color: #fff !important;
+  border: 1px solid #4a4a4a !important;
+}
+
 .emailCell {
   position: relative;
 }
@@ -171,6 +193,7 @@
 .emailCell a:hover {
   text-decoration: none;
 }
+
 .titleCell {
   width: 180px;
   min-width: 180px;
@@ -272,6 +295,7 @@
 
 .addUserModal {
   min-width: 50vw;
+
   /* Occupy the 90% of the screen width */
   max-width: 90vw !important;
 }
@@ -295,7 +319,7 @@
 }
 
 .setupNewUserPopupLabel {
-  margin: 0px;
+  margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
     'Noto Sans', 'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
     'Segoe UI Symbol', 'Noto Color Emoji';
@@ -327,7 +351,7 @@
 .requestedTimeOffClockSvg {
   width: 100%;
   height: 100%;
-  fill: currentColor;
+  fill: currentcolor;
 }
 
 .requestedTimeOffClockSvg path {
@@ -395,7 +419,7 @@
   border-radius: 4px;
   background-color: #e7e7e7;
   border: 1px solid #cacaca;
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0 0 6px rgb(0 0 0 / 30%);
 }
 
 .loggedTimeOffCardsContainer::-webkit-scrollbar-thumb {
@@ -429,7 +453,7 @@
   background-color: #fff;
   border-color: #80bdff;
   outline: 0;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
 }
 
 .editbutton {
@@ -445,12 +469,16 @@
 }
 
 .darkUsermanagementData {
-  background-color: #3a506b;
+  background-color: #3a506b !important;
+  color: #fff !important;
 }
 
+.userManagementTable tbody tr.darkUsermanagementData:hover,
 .darkUsermanagementData:hover {
-  background-color: #111831;
+  background-color: #111831 !important;
+  color: #fff !important;
 }
+
 
 .lightUsermanagementData {
   background-color: white;
@@ -458,6 +486,12 @@
 
 .lightUsermanagementData:hover {
   background-color: #f0f8ff;
+}
+
+.tooltipContainer::after {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
 }
 
 .tooltipContainer {
@@ -472,7 +506,7 @@
 .tooltipContainer:hover::after {
   content: attr(data-title); /* Show full text when hovered */
   position: absolute;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgb(0 0 0 / 80%);
   color: white;
   padding: 5px;
   border-radius: 4px;
@@ -487,12 +521,6 @@
   opacity: 1;
 }
 
-.tooltipContainer::after {
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity 0.2s ease-in-out;
-}
-
 .infringementCount {
   cursor: pointer;
   position: absolute;
@@ -505,4 +533,97 @@
 
 .infringementCount a:hover {
   text-decoration: none;
+}
+
+.darkSearchRow td {
+  background-color: #3a506b !important;
+  color: #fff !important;
+}
+
+
+
+
+.darkSearchBox input::placeholder,
+.darkSearchBox .form-control::placeholder,
+.darkSearchRow input::placeholder {
+  color: #bdbdbd !important;
+}
+
+.darkSearchBox input:focus,
+.darkSearchBox .form-control:focus,
+.darkSearchRow input:focus {
+  background-color: #2b2b2b !important;
+  color: #fff !important;
+  border-color: #6ea8fe !important;
+  box-shadow: 0 0 0 0.15rem rgb(110 168 254 / 25%) !important;
+}
+
+.darkSearchBox select,
+.darkSearchBox .form-select,
+.darkSearchRow select,
+.darkSearchRow .form-select,
+.darkUsermanagementData select {
+  background-color: #2b2b2b !important;
+  color: #fff !important;
+  border: 1px solid #4a4a4a !important;
+}
+
+.darkSearchBox select option,
+.darkSearchRow select option,
+.darkUsermanagementData select option {
+  background-color: #2b2b2b !important;
+  color: #fff !important;
+}
+
+.darkSearchBox button,
+.darkSearchBox .btn,
+.darkSearchRow button,
+.darkSearchRow .btn,
+.darkUsermanagementData button,
+.darkUsermanagementData .btn {
+  background-color: #1d62f0 !important; /* Standout blue background color */
+  color: #fff !important;            /* Pure white visible text */
+  border: 1px solid #0056b3 !important;
+}
+
+/* Ensures crisp visibility when hovering over those specific buttons */
+.darkSearchBox .btn:hover,
+.darkSearchRow .btn:hover,
+.darkUsermanagementData .btn:hover {
+  background-color: #0b49c4 !important;
+  color: #fff !important;
+}
+
+/* ===================================================
+   DARK MODE TEXT VISIBILITY & CONTRAST FIXES
+   =================================================== */
+
+/* Ensures the text inside the inputs/dropdowns stands out clearly */
+#user-profiles-wild-card-search.text-light,
+#active-filter-dropdown.text-light {
+  color: #fff !important;
+  background-color: #2b2b2b !important;
+  border: 1px solid #4a4a4a !important;
+}
+
+/* Fixes the select menu options container visibility when expanded */
+#active-filter-dropdown.text-light option {
+  background-color: #2b2b2b !important;
+  color: #fff !important;
+}
+
+/* Overrides the browser's dark native dropdown arrow so a clear white one is rendered instead */
+#active-filter-dropdown.text-light {
+  padding-right: 1.75rem !important;
+  appearance: none !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.5rem center !important;
+  background-size: 10px 10px !important;
+}
+
+/* Ensures the placeholder text inside the search bar is legible but distinct */
+#user-profiles-wild-card-search.text-light::placeholder {
+  color: #b0b0b0 !important;
+  opacity: 1;
 }

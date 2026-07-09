@@ -142,19 +142,67 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
     );
   };
 
+  // for top right positioning of the projects box
+  const projectsBoxPosition =
+    cardSize.height === '300px'
+      ? { top: '28%', right: '10%' }
+      : cardSize.height === '548px'
+      ? { top: '30%', right: '8%' }
+      : { top: '30%', right: '6%' };
+
+  const projectsTextStyle = {
+    color: darkMode ? '#ffffff' : '#222222',
+  };
+
+  const projectsMutedTextStyle = {
+    color: darkMode ? '#d1d5db' : '#666666',
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div
         style={{
-          height: '380px',
-          minHeight: '300px',
-          maxHeight: '548px',
-          display: 'flex',
-          flexDirection: 'column',
-          position: 'relative',
+          position: 'absolute',
+          ...projectsBoxPosition,
+          left: 'auto',
+          transform: 'translateY(-50%)',
+          zIndex: 10,
+          background: darkMode ? '#1f2937' : '#ffffff',
+          borderRadius: 4,
+          padding: 4,
+          boxShadow: darkMode ? '0 2px 6px rgba(0,0,0,0.35)' : '0 2px 6px rgba(0,0,0,0.15)',
+          border: darkMode ? '1px solid rgba(255,255,255,0.15)' : '1px solid #eee',
+          minWidth: 105,
+          minHeight: 45,
+          display: 'grid',
+          justifyItems: 'center',
+          gap: 2,
+          isolation: 'isolate',
         }}
       >
-        {/* Projects box positioned in the right side middle area */}
+        <div style={{ ...projectsTextStyle, fontWeight: 'bold', fontSize: 15 }}>Projects</div>
+        <div style={{ ...projectsTextStyle, fontWeight: 'bold', fontSize: 14 }}>
+          {projectBarInfo.amount}
+        </div>
+
+        <div style={{ ...projectsMutedTextStyle, fontSize: 10 }}>({projectBarInfo.percentage})</div>
+
+        {projectBarInfo.ifcompare && (
+          <div
+            style={{
+              ...projectsTextStyle,
+              color: darkMode ? 'lightgreen' : 'green',
+
+              fontSize: 10,
+              fontWeight: 'bold',
+            }}
+          >
+            {projectBarInfo.change}
+          </div>
+        )}
+      </div>
+
+      <div style={{ textAlign: 'center', marginBottom: 0 }}>
         <div
           style={{
             position: 'absolute',
@@ -234,49 +282,14 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
           />
         </div>
       </div>
-
-      {/* Distribution Label — outside the fixed-height area so it never gets clipped */}
-      <div style={{ textAlign: 'center', padding: '8px 12px 4px' }}>
-        {(() => {
-          const taskCount = taskHours.count || 0;
-          const projectCount = projectHours.count || 0;
-          const totalCount = taskCount + projectCount;
-
-          if (totalCount === 0) {
-            return (
-              <div style={{ fontSize: '12px', color: darkMode ? '#ffffff' : '#555' }}>
-                No data available
-              </div>
-            );
-          }
-
-          const taskPercent = ((taskCount / totalCount) * 100).toFixed(1);
-          const projectPercent = ((projectCount / totalCount) * 100).toFixed(1);
-
-          return (
-            <>
-              <div
-                style={{
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  color: darkMode ? '#ffffff' : '#333',
-                  letterSpacing: '0.3px',
-                }}
-              >
-                {taskPercent}% Tasks ({taskCount}) | {projectPercent}% Projects ({projectCount})
-              </div>
-              <div
-                style={{
-                  fontSize: '11px',
-                  fontWeight: 500,
-                  color: darkMode ? '#cccccc' : '#555',
-                }}
-              >
-                (Total = 100%)
-              </div>
-            </>
-          );
-        })()}
+      <div style={{ flex: 1, minHeight: 0 }}>
+        <TinyBarChart
+          chartData={chartData.filter(item => item.name === 'Tasks')}
+          maxY={maxY}
+          tickInterval={tickInterval}
+          darkMode={darkMode}
+          yAxisLabel="Hours"
+        />
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import { themeMock } from '__tests__/mockStates';
 import { Provider } from 'react-redux';
 import axios from 'axios';
@@ -301,7 +301,7 @@ describe('SameFolderTasks', () => {
     });
   });
 
-  describe.skip('Render Table tests', () => {
+  describe('Render Table tests', () => {
     let props;
 
     it('Before loading tasks, there is a Loading... span', () => {

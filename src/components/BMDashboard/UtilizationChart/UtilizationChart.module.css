@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .utilizationChartContainer {
   padding: 2rem;
   max-width: 1000px;
@@ -15,12 +16,75 @@
   color: var(--title-color, #333);
 }
 
+/* ============ SUMMARY BANNER ============ */
+.summaryBanner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.summaryCard {
+  flex: 1;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 1rem 1.25rem;
+  background-color: var(--card-bg, #f5f5f5);
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #e0e0e0);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 6%);
+  text-align: center;
+}
+
+.summaryLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--label-color, #888);
+}
+
+.summaryValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-color, #333);
+  line-height: 1.2;
+}
+
+.summaryTopTool {
+  font-size: 1rem;
+  word-break: break-all;
+}
+
+.summarySubtext {
+  font-size: 0.78rem;
+  color: var(--label-color, #888);
+}
+
+.summaryChangeUp {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4caf50;
+}
+
+.summaryChangeDown {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #f44336;
+}
+
+/* ============ FILTERS ============ */
 .filters {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
   justify-content: center;
   margin-bottom: 1.5rem;
+  align-items: center;
 }
 
 .select,
@@ -44,7 +108,6 @@
   border-color: var(--focus-border-color, #3b82f6);
 }
 
-/* Force light dropdown in light mode (override any global dark select/option styles) */
 .utilizationChartContainer:not(.darkMode) .select {
   background-color: #fff !important;
   color: #000 !important;
@@ -60,7 +123,6 @@
   color: #999;
 }
 
-/* Force light calendar when app is in light mode (datepicker renders in portal, so scope by body) */
 :global(body:not(.dark-mode)) :global(.react-datepicker) {
   background-color: #fff;
   color: #333;
@@ -90,7 +152,7 @@
 }
 
 .button {
-  background-color: var(--button-bg, #000);
+  background-color: #2563eb;
   color: var(--button-text, #fff);
   border: none;
   cursor: pointer;
@@ -99,7 +161,92 @@
 }
 
 .button:hover {
-  background-color: var(--button-hover, #333);
+  background-color: #1d4ed8;
+}
+
+.activeButton {
+  background-color: #4caf50 !important;
+  color: #fff !important;
+  border: none;
+}
+
+.activeButton:hover {
+  background-color: #43a047 !important;
+}
+
+.inactiveButton {
+  background-color: var(--button-bg, #000);
+  color: var(--button-text, #fff);
+}
+
+/* ============ DOWNLOAD DROPDOWN ============ */
+.downloadWrapper {
+  position: relative;
+}
+
+.downloadMenu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background-color: var(--input-bg, #fff);
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 12%);
+  z-index: 100;
+  min-width: 150px;
+  overflow: hidden;
+}
+
+.downloadMenuItem {
+  display: block;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 0.95rem;
+  color: var(--text-color, #333);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.downloadMenuItem:hover {
+  background-color: var(--hover-bg, #f0f0f0);
+}
+
+/* ============ COMPARISON NOTE ============ */
+.comparisonNote {
+  text-align: center;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  color: var(--text-color, #555);
+}
+
+.legendUp {
+  color: #4caf50;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.legendDown {
+  color: #f44336;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+/* ============ TREND SECTION ============ */
+.trendSection {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color, #e0e0e0);
+}
+
+.trendTitle {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--title-color, #333);
 }
 
 .utilizationChartError {
@@ -120,13 +267,32 @@
   --button-hover: #f5b13a;
   --shadow: 0 2px 10px rgb(255 255 255 / 10%);
   --error-color: #ff6b6b;
+  --card-bg: #243b55;
+  --label-color: #a0b4c8;
+  --hover-bg: #4a5a77;
 }
 
 .utilizationChartContainer.darkMode .datepickerWrapper::placeholder {
   color: #fff;
 }
 
-/* React-DatePicker Dark Mode Dropdown Styling */
+.utilizationChartContainer.darkMode .comparisonNote {
+  color: #ccc;
+}
+
+.utilizationChartContainer.darkMode .summaryCard {
+  border-color: #4a5a77;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 20%);
+}
+
+.utilizationChartContainer.darkMode .downloadMenu {
+  box-shadow: 0 4px 12px rgb(0 0 0 / 40%);
+}
+
+.utilizationChartContainer.darkMode .trendSection {
+  border-top-color: #4a5a77;
+}
+
 .utilizationChartContainer.darkMode :global(.react-datepicker) {
   background-color: #333;
   color: #e0e0e0;
