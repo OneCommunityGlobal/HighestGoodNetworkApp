@@ -3,52 +3,9 @@ import { Doughnut } from 'react-chartjs-2';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Chart, ArcElement } from 'chart.js';
 import styles from './DonutChart.module.css';
+import { getReadableTextColor } from '../HoursWorkedPieChart/HoursWorkedPieChart';
 
 Chart.register(ArcElement);
-
-function parseHexColor(color) {
-  if (!color || typeof color !== 'string' || !color.startsWith('#')) return null;
-  const hex = color.replace('#', '');
-  const normalizedHex =
-    hex.length === 3
-      ? `${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`
-      : hex.padEnd(6, '0').slice(0, 6);
-
-  const r = parseInt(normalizedHex.slice(0, 2), 16);
-  const g = parseInt(normalizedHex.slice(2, 4), 16);
-  const b = parseInt(normalizedHex.slice(4, 6), 16);
-
-  if ([r, g, b].some(Number.isNaN)) return null;
-  return { r, g, b };
-}
-
-function channelToLinear(c) {
-  const normalized = c / 255;
-  return normalized <= 0.03928 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
-}
-
-function relativeLuminance({ r, g, b }) {
-  return 0.2126 * channelToLinear(r) + 0.7152 * channelToLinear(g) + 0.0722 * channelToLinear(b);
-}
-
-function contrastRatio(l1, l2) {
-  const brightest = Math.max(l1, l2);
-  const darkest = Math.min(l1, l2);
-  return (brightest + 0.05) / (darkest + 0.05);
-}
-
-// Picks black or white text depending on which gives better contrast
-// against the given background color. Falls back to a darkMode-based
-// default if the background color can't be parsed.
-function getReadableTextColor(bgColor, fallbackDarkMode) {
-  const rgb = parseHexColor(bgColor);
-  if (!rgb) return fallbackDarkMode ? '#F8FAFC' : '#111827';
-
-  const bgL = relativeLuminance(rgb);
-  const whiteContrast = contrastRatio(bgL, 1);
-  const blackContrast = contrastRatio(bgL, 0);
-  return whiteContrast >= blackContrast ? '#FFFFFF' : '#111111';
-}
 
 function DonutChart(props) {
   const { title, totalCount, percentageChange, data, colors, comparisonType, darkMode } = props;
