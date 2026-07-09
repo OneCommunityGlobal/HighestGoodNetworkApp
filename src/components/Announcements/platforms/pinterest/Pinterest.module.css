@@ -1,0 +1,411 @@
+/* ─── Pinterest Pin Composer ─────────────────────────────────────────────────── */
+
+.pin-composer {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #111827;
+  background: #f9fafb;
+  min-height: 100vh;
+  padding: 24px 16px;
+  box-sizing: border-box;
+}
+
+.pin-composer.dark {
+  color: #f9fafb;
+  background: #111827;
+}
+
+/* ─── Pane tabs ─────────────────────────────────────────────────────────────── */
+
+.pin-panetabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.pin-panetabs.dark {
+  border-bottom-color: #374151;
+}
+
+.pin-panetab {
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #6b7280;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.pin-panetab:hover {
+  color: #e60023;
+}
+
+.pin-panetab.active {
+  color: #e60023;
+  border-bottom-color: #e60023;
+  font-weight: 600;
+}
+
+/* ─── Cards ─────────────────────────────────────────────────────────────────── */
+
+.pin-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 6%);
+}
+
+.dark .pin-card {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+.pin-card.invalid {
+  border-color: #f87171;
+}
+
+.dark .pin-card.invalid {
+  border-color: #dc2626;
+}
+
+.pin-card h3 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.pin-card h4 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.pin-card p {
+  margin: 0 0 10px;
+  font-size: 13.5px;
+  color: #6b7280;
+}
+
+.dark .pin-card p {
+  color: #9ca3af;
+}
+
+/* ─── Grid ───────────────────────────────────────────────────────────────────── */
+
+.pin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.pin-card--wide {
+  grid-column: 1 / -1;
+}
+
+/* ─── Field header ───────────────────────────────────────────────────────────── */
+
+.pin-field__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.pin-field__header label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.pin-scheduler__field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.pin-card--queue-editor label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.dark .pin-field__header label {
+  color: #d1d5db;
+}
+
+.dark .pin-card--queue-editor label {
+  color: #d1d5db;
+}
+
+.pin-field__meta {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.pin-field__meta.invalid {
+  color: #ef4444;
+}
+
+.pin-field__required {
+  color: #e60023;
+  margin-left: 2px;
+}
+
+/* ─── Inputs ─────────────────────────────────────────────────────────────────── */
+
+.pin-field__input {
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+  background: #fff;
+  color: #111827;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.pin-field__input:focus {
+  border-color: #e60023;
+  box-shadow: 0 0 0 3px rgb(230 0 35 / 12%);
+}
+
+.dark .pin-field__input {
+  background: #111827;
+  border-color: #4b5563;
+  color: #f9fafb;
+}
+
+.dark .pin-field__input:focus {
+  border-color: #e60023;
+}
+
+.pin-field__input--invalid {
+  border-color: #f87171 !important;
+}
+
+.pin-field__textarea {
+  resize: vertical;
+  min-height: 110px;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+/* ─── Hints & errors ─────────────────────────────────────────────────────────── */
+
+.pin-field__hint {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.pin-field__error {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: #ef4444;
+  font-weight: 500;
+}
+
+/* ─── Preview ────────────────────────────────────────────────────────────────── */
+
+.pin-preview__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pin-preview__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pin-preview__body {
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 13px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  color: #374151;
+  min-height: 72px;
+  font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+.dark .pin-preview__body {
+  background: #111827;
+  border-color: #374151;
+  color: #d1d5db;
+}
+
+.pin-preview__hint {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* ─── Queue layout ───────────────────────────────────────────────────────────── */
+
+.pin-queue__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (width <= 768px) {
+  .pin-queue__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── Scheduler field ────────────────────────────────────────────────────────── */
+
+.pin-scheduler__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 140px;
+}
+
+.pin-queue__datetime-row {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.pin-queue__textarea {
+  margin-top: 4px;
+  margin-bottom: 14px;
+  min-height: 140px;
+  resize: vertical;
+}
+
+.pin-queue__action-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.pin-queue__edit-note {
+  font-size: 12.5px;
+  color: #6b7280;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 14px !important;
+}
+
+.dark .pin-queue__edit-note {
+  background: #1c1408;
+  border-color: #92400e;
+  color: #fcd34d;
+}
+
+.pin-queue__loading {
+  font-size: 13px;
+  color: #9ca3af;
+  padding: 20px 0;
+  text-align: center;
+}
+
+.pin-queue__empty {
+  font-size: 13px;
+  color: #9ca3af;
+  padding: 20px 0;
+  text-align: center;
+}
+
+/* ─── Queue list ─────────────────────────────────────────────────────────────── */
+
+.pin-queue__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 520px;
+  overflow-y: auto;
+}
+
+/* ─── Queue entry items ──────────────────────────────────────────────────────── */
+
+.pin-entry__item {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 14px;
+  background: #f9fafb;
+  transition: border-color 0.15s;
+}
+
+.dark .pin-entry__item {
+  background: #111827;
+  border-color: #374151;
+}
+
+.pin-entry__item--active {
+  border-color: #e60023;
+  background: #fff5f5;
+}
+
+.dark .pin-entry__item--active {
+  border-color: #e60023;
+  background: #1a0a0a;
+}
+
+.pin-entry__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.pin-entry__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.dark .pin-entry__title {
+  color: #f9fafb;
+}
+
+.pin-entry__meta {
+  font-size: 11.5px;
+  color: #9ca3af;
+  white-space: nowrap;
+}
+
+.pin-entry__excerpt {
+  font-size: 12.5px;
+  color: #6b7280;
+  margin: 0 0 10px;
+  line-height: 1.5;
+}
+
+.dark .pin-entry__excerpt {
+  color: #9ca3af;
+}
+
+.pin-entry__actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
