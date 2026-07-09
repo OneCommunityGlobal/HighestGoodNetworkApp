@@ -219,15 +219,20 @@ export function PieChart({
                     />
                   </td>
                   <td>{project.projectName}</td>
-                  <td>{project.totalTime.toFixed(2)} </td>
+                  <td>{project.totalTime.toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-
-        <div className={styles['data-total-value']} style={{ marginTop: 8 }}>
-          <strong className={styles['strong-text']}>Total Hours:</strong> {totalHours.toFixed(2)}
+        <div
+          className={`${styles['data-total-value']} ${darkMode ? styles['text-light'] : ''}`}
+          style={{ marginTop: 8, color: darkMode ? '#f5f5f5' : 'inherit' }}
+        >
+          <strong className={`${styles['strong-text']} ${darkMode ? styles['text-light'] : ''}`}>
+            Total Hours:
+          </strong>{' '}
+          {totalHours.toFixed(2)}
         </div>
       </div>
     </div>

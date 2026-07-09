@@ -5,7 +5,7 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect';
 import thunk from 'redux-thunk';
 import mockAdminState from '__tests__/mockAdminState';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import axios from 'axios';
 import { Router } from 'react-router-dom';
@@ -135,5 +135,5 @@ describe('UserRoleTab component when the role does exist', () => {
     const backButtonElement = screen.getByText('Back');
     fireEvent.click(backButtonElement);
     expect(history.location.pathname).toBe('/permissionsmanagement');
-  }, 15000); // Increased timeout to 15 seconds
+  });
 });

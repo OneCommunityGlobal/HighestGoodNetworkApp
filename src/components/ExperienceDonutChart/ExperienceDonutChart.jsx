@@ -1,7 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { PieChart, Pie, Cell, ResponsiveContainer, LabelList } from 'recharts';
-import { fetchExperienceBreakdown } from '../../actions/jobAnalytics/jobExperienceBreakdownActions';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import styles from './ExperienceDonutChart.module.css';
 
 const EXPERIENCE_LABELS = ['0-1 years', '1-3 years', '3-5 years', '5+ years'];
@@ -50,16 +49,65 @@ export default function ExperienceDonutChart() {
     [appliedFilters],
   );
 
-  const fetchData = () => {
-    const queryParams = new URLSearchParams();
-    if (appliedFilters.startDate) queryParams.append('startDate', appliedFilters.startDate);
-    if (appliedFilters.endDate) queryParams.append('endDate', appliedFilters.endDate);
-    if (appliedFilters.roles.length) queryParams.append('roles', appliedFilters.roles.join(','));
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    setActiveIndex(null);
 
-    const token = localStorage.getItem('token');
-    if (!token) return;
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('No token found. Please log in.');
 
-    dispatch(fetchExperienceBreakdown(queryParams.toString(), token));
+      const url = `${process.env.REACT_APP_APIENDPOINT}/experience-breakdown`;
+      const params = {};
+
+      if (filterStartDate && filterEndDate) {
+        params.startDate = filterStartDate;
+        params.endDate = filterEndDate;
+      } else if (filterRoles && filterRoles.length > 0) {
+        params.roles = filterRoles.join(',');
+      }
+
+      // const response = await axios.get(url, { params });
+      const response = await axios.get(url, {
+        headers: { Authorization: token },
+        params,
+      });
+
+      const { data } = response;
+
+      if (!data || data.length === 0) {
+        setChartData(null);
+        setLoading(false);
+        return;
+      }
+
+      const counts = experienceLabels.map(label => {
+        const found = data.find(d => d.experience === label);
+        return found ? found.count : 0;
+      });
+
+      const totalCount = counts.reduce((a, b) => a + b, 0);
+
+      const chart = {
+        labels: experienceLabels,
+        datasets: [
+          {
+            data: counts,
+            backgroundColor: segmentColors,
+            hoverOffset: 20,
+          },
+        ],
+      };
+
+      setChartData({ chart, totalCount });
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || 'Error fetching data.');
+      setChartData(null);
+      setTotal(0);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -127,40 +175,40 @@ export default function ExperienceDonutChart() {
     const labelText = `${EXPERIENCE_LABELS[index]} (${percentValue}%)`;
 
     return (
-      <text
-        x={x}
-        y={y}
-        fill={darkMode ? '#fff' : '#000'}
-        textAnchor={x > cx ? 'start' : 'end'}
-        dominantBaseline="central"
-        fontSize={12}
-        fontWeight={600}
-      >
-        {labelText}
-      </text>
+      <div className={styles['chart-details']}>
+        {chartData.map((d, idx) => {
+          const pct = ((d.value / total) * 100).toFixed(1);
+          return (
+            <div
+              key={d.name}
+              className={`${styles['detail-item']} ${activeIndex === idx ? styles.active : ''}`}
+              onMouseEnter={() => setActiveIndex(idx)}
+              onMouseLeave={() => setActiveIndex(null)}
+            >
+              <span className={styles['detail-dot']} style={{ backgroundColor: d.color }} />
+              <span className={styles['detail-name']}>{d.name}</span>
+              <span className={styles['detail-count']}>{d.value.toLocaleString()}</span>
+              <span className={styles['detail-pct']}>{pct}%</span>
+            </div>
+          );
+        })}
+      </div>
     );
   };
 
-  const renderInsideLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, index, value }) => {
-    if (value === 0) return null;
-
-    const RADIAN = Math.PI / 180;
-    const radius = innerRadius + (outerRadius - innerRadius) / 2;
-    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+  const CustomTooltip = ({ active, payload }) => {
+    if (!active || !payload?.length) return null;
+    const d = payload[0]?.payload;
+    const pct = ((d.value / total) * 100).toFixed(1);
 
     return (
-      <text
-        x={x}
-        y={y}
-        fill={darkMode ? '#fff' : '#111010'}
-        textAnchor="middle"
-        dominantBaseline="central"
-        fontSize={14}
-        fontWeight={600}
-      >
-        {value}
-      </text>
+      <div className={styles['custom-tooltip']}>
+        <strong>{d.name}</strong>
+        <br />
+        Count: {d.value}
+        <br />
+        {pct}% of applicants
+      </div>
     );
   };
 

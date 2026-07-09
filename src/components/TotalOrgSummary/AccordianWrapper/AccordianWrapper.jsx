@@ -1,6 +1,6 @@
 import Collapsible from 'react-collapsible';
-import './AccordianWrapper.module.css';
 import { useSelector } from 'react-redux';
+import './AccordianWrapper.module.css';
 
 export default function AccordianWrapper({ children, title }) {
   const darkMode = useSelector(state => state.theme.darkMode);

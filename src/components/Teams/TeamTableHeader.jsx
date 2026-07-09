@@ -29,27 +29,34 @@ function TeamTableHeaderComponent({
 
   return (
     <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
-      <th scope="col" id="teams__order">
+      <th scope="col" id="teams__order" style={{ textAlign: 'center', verticalAlign: 'middle' }}>
         #
       </th>
-      <th scope="col" className={styles.teamNameCol}>
-        <button type="button" onClick={onTeamNameSort} className={darkMode ? 'text-light' : ''}>
-          <span aria-hidden="true">{getSortIcon(sortTeamNameState)}</span>
-          {TEAM_NAME} <span aria-hidden="true">(All | Active | In Active)</span>
-        </button>
+      <th
+        scope="col"
+        className={styles.teamNameCol}
+        onClick={onTeamNameSort}
+        style={{ cursor: 'pointer' }}
+      >
+        {TEAM_NAME} <span aria-hidden="true">(All | Active | In Active)</span>
+        <span aria-hidden="true" style={{ float: 'right' }}>
+          {getSortIcon(sortTeamNameState)}
+        </span>
       </th>
-      <th scope="col" id="teams__active">
-        <button
-          type="button"
-          onClick={onTeamActiveSort}
-          className={darkMode ? 'text-light' : ''}
-          aria-label="Active"
-        >
-          <span aria-hidden="true">{getSortIcon(sortTeamActiveState)}</span>
-          {ACTIVE}
-        </button>
+
+      <th
+        scope="col"
+        id="teams__active"
+        onClick={onTeamActiveSort}
+        style={{ cursor: 'pointer', textAlign: 'center', verticalAlign: 'middle' }}
+        aria-label="Active"
+      >
+        {ACTIVE}
+        <span aria-hidden="true" style={{ float: 'right' }}>
+          {getSortIcon(sortTeamActiveState)}
+        </span>
       </th>
-      <th scope="col" id="teams__members">
+      <th scope="col" id="teams__members" style={{ textAlign: 'center', verticalAlign: 'middle' }}>
         {MEMBERS}
       </th>
       {(canDeleteTeam || canPutTeam) && (

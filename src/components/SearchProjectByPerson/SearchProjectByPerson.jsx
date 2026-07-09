@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import styles from '../Projects/projects.module.css';
 
 export default function SearchProjectByPerson({
   onSearch,
@@ -38,36 +39,20 @@ export default function SearchProjectByPerson({
       <form className="input-group mb-2" onSubmit={e => e.preventDefault()}>
         <div className="input-group-prepend">
           <span
-            className={`input-group-text search-field-container ${darkMode ? 'bg-light-grey' : ''}`}
+            className={`input-group-text search-field-container ${
+              darkMode ? `${styles.searchLabelDark} text-light` : ''
+            }`}
           >
             Search
           </span>
         </div>
         <input
           type="text"
-          className={`form-control ${darkMode ? 'bg-white' : ''}`}
+          className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
           placeholder={searchMode === 'person' ? 'Search by Person Name' : 'Search by Project Name'}
           value={inputValue}
           onChange={handleInputChange} // Trigger input change
         />
-        <div>
-          {/* <button type="submit" className="archived-button" onClick={handleFetchArchivedProjects}>
-            {showArchived ? 'Hide Archived' : 'Show Archived'}
-          </button> */}
-          <button
-            type="button"
-            onClick={handleFetchArchivedProjects}
-            className={`btn ${
-              showArchived
-                ? 'btn-warning'
-                : darkMode
-                ? 'btn-outline-light'
-                : 'btn-outline-secondary'
-            }`}
-          >
-            {showArchived ? 'Hide Archived' : 'Show Archived'}
-          </button>
-        </div>
       </form>
 
       {showSuggestions && suggestions?.length > 0 && (
