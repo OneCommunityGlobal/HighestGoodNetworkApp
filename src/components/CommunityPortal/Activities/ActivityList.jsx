@@ -216,7 +216,8 @@ function ActivityList() {
       <div className={`${styles.activityList} ${darkMode ? styles.darkModeList : ''}`}>
         {loading ? (
           <p className={darkMode ? 'text-light' : ''}>Loading activities...</p>
-        ) : filteredActivities.length > 0 ? (
+        ) : null}
+        {!loading && filteredActivities.length > 0 ? (
           <ul>
             {filteredActivities.map(activity => (
               <div
@@ -249,9 +250,10 @@ function ActivityList() {
               </div>
             ))}
           </ul>
-        ) : (
+        ) : null}
+        {!loading && filteredActivities.length === 0 ? (
           <p className={darkMode ? 'text-light' : ''}>No activities found</p>
-        )}
+        ) : null}
       </div>
 
       <Modal isOpen={modalOpen} toggle={handleCloseModal}>

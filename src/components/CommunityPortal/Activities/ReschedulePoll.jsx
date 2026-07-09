@@ -9,7 +9,7 @@ function getApiOrigin() {
     const u = new URL(ApiEndpoint);
     return u.origin;
   } catch {
-    return window.location.origin.replace(':5173', ':4500');
+    return globalThis.location.origin.replace(':5173', ':4500');
   }
 }
 

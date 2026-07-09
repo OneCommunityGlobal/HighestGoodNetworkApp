@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import styles from './RescheduleEvent.module.css';
@@ -225,7 +226,25 @@ function RescheduleModal(props) {
             &times;
           </button>
 
-          {!confirmStep ? (
+          {confirmStep ? (
+            <div className={styles.modalFooter}>
+              <button
+                type="button"
+                className={styles.primaryBtn}
+                onClick={handleCreateAndNotify}
+                disabled={loading}
+              >
+                {loading ? 'Sending…' : 'Create & Notify'}
+              </button>
+              <button
+                type="button"
+                className={styles.secondaryBtn}
+                onClick={() => setConfirmStep(false)}
+              >
+                Back
+              </button>
+            </div>
+          ) : (
             <>
               <div className={styles.modalHeader}>
                 <h3 id="reschedule-title" className={styles.modalTitle}>
@@ -309,29 +328,51 @@ function RescheduleModal(props) {
                 </button>
               </div>
             </>
-          ) : (
-            <div className={styles.modalFooter}>
-              <button
-                type="button"
-                className={styles.primaryBtn}
-                onClick={handleCreateAndNotify}
-                disabled={loading}
-              >
-                {loading ? 'Sending…' : 'Create & Notify'}
-              </button>
-              <button
-                type="button"
-                className={styles.secondaryBtn}
-                onClick={() => setConfirmStep(false)}
-              >
-                Back
-              </button>
-            </div>
           )}
         </div>
       </div>
     </div>
   );
 }
+
+RescheduleEvent.propTypes = {
+  activity: PropTypes.shape({
+    _id: PropTypes.string,
+    name: PropTypes.string,
+    location: PropTypes.string,
+    link: PropTypes.string,
+  }),
+};
+
+RescheduleModal.propTypes = {
+  darkMode: PropTypes.bool,
+  eventInfo: PropTypes.shape({
+    _id: PropTypes.string,
+    name: PropTypes.string,
+    location: PropTypes.string,
+    link: PropTypes.string,
+  }),
+  confirmStep: PropTypes.bool,
+  setConfirmStep: PropTypes.func,
+  closeModal: PropTypes.func,
+  selectedDate: PropTypes.instanceOf(Date),
+  setSelectedDate: PropTypes.func,
+  selectedTime: PropTypes.string,
+  setSelectedTime: PropTypes.func,
+  reason: PropTypes.string,
+  setReason: PropTypes.func,
+  options: PropTypes.arrayOf(
+    PropTypes.shape({
+      dateISO: PropTypes.string,
+      dateLabel: PropTypes.string,
+      timeSlot: PropTypes.string,
+    }),
+  ),
+  addOption: PropTypes.func,
+  removeOption: PropTypes.func,
+  getTimeSlots: PropTypes.func,
+  handleCreateAndNotify: PropTypes.func,
+  loading: PropTypes.bool,
+};
 
 export default RescheduleEvent;
