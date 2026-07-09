@@ -1,6 +1,7 @@
 // Activity List Component
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import styles from './ActivityList.module.css';
 import {
@@ -23,6 +24,7 @@ function ActivityList() {
   const [modalOpen, setModalOpen] = useState(false);
 
   const darkMode = useSelector(state => state.theme.darkMode);
+  const history = useHistory();
 
   const [filter, setFilter] = useState({
     type: '',
@@ -133,6 +135,14 @@ function ActivityList() {
   const handleCloseModal = () => {
     setModalOpen(false);
   };
+
+  const goToReschedule = useCallback(
+    (event, id) => {
+      event.stopPropagation();
+      history.push(`/communityportal/activities/${id}/manage`);
+    },
+    [history],
+  );
 
   const getTypeIcon = type => {
     switch (type) {
@@ -350,6 +360,15 @@ function ActivityList() {
                       <span>{activity.date}</span>
                     </div>
                   </div>
+
+                  <button
+                    type="button"
+                    onClick={event => goToReschedule(event, activity.id)}
+                    className="btn btn-primary btn-sm mt-2"
+                    aria-label={`Reschedule ${activity.name}`}
+                  >
+                    Reschedule
+                  </button>
                 </li>
               </div>
             ))}
