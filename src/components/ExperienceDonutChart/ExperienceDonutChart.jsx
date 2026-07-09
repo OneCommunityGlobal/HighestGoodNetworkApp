@@ -3,6 +3,9 @@ import { useSelector } from 'react-redux';
 import axios from 'axios'; // Added axios import to fix network request errors
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import Select, { components } from 'react-select';
+import DatePicker from 'react-datepicker';
+import clsx from 'clsx';
+import 'react-datepicker/dist/react-datepicker.css';
 import styles from './ExperienceDonutChart.module.css';
 
 const SEGMENT_COLORS = [
@@ -44,6 +47,10 @@ function Spinner() {
 export default function ExperienceDonutChart() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [dateRange, setDateRange] = useState({
+    start: null,
+    end: null,
+  });
   const [selectedRoles, setSelectedRoles] = useState([]);
 
   const [appliedFilters, setAppliedFilters] = useState({ startDate: '', endDate: '', roles: [] });
@@ -124,11 +131,6 @@ export default function ExperienceDonutChart() {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [appliedFilters]);
-
   const handleRoleChange = selectedOptions => {
     setSelectedRoles(selectedOptions || []);
   };
@@ -197,6 +199,11 @@ export default function ExperienceDonutChart() {
     );
   };
 
+  useEffect(() => {
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appliedFilters]);
+
   return (
     <div
       className={`${styles['experience-donut-chart']} ${darkMode &&
@@ -213,12 +220,37 @@ export default function ExperienceDonutChart() {
               <label className={styles['filter-label']} htmlFor="startDate">
                 Start Date
               </label>
-              <input
+              {/* <input
                 id="startDate"
                 type="date"
                 className={styles['filter-input']}
                 value={startDate}
                 onChange={e => setStartDate(e.target.value)}
+              />` */}
+              <DatePicker
+                selected={dateRange?.start ? new Date(dateRange.start) : null}
+                onChange={date => {
+                  const newEnd =
+                    dateRange.end && date && new Date(date) > new Date(dateRange.end)
+                      ? null
+                      : dateRange.end;
+                  setDateRange({
+                    ...dateRange,
+                    start: date,
+                    end: newEnd,
+                  });
+                }}
+                selectsStart
+                startDate={dateRange.start}
+                endDate={dateRange.end}
+                dateFormat="yyyy-MM-dd"
+                isClearable
+                placeholderText="Start date"
+                className={styles.experienceDateInput}
+                calendarClassName={clsx(
+                  'experience-datepicker',
+                  darkMode ? 'experience-datepicker-dark' : 'experience-datepicker-light',
+                )}
               />
             </div>
 
@@ -226,12 +258,33 @@ export default function ExperienceDonutChart() {
               <label className={styles['filter-label']} htmlFor="endDate">
                 End Date
               </label>
-              <input
+              {/* <input
                 id="endDate"
                 type="date"
                 className={styles['filter-input']}
                 value={endDate}
                 onChange={e => setEndDate(e.target.value)}
+              /> */}
+              <DatePicker
+                selected={dateRange?.end ? new Date(dateRange.end) : null}
+                onChange={date => {
+                  setDateRange({
+                    ...dateRange,
+                    end: date,
+                  });
+                }}
+                selectsEnd
+                startDate={dateRange.start}
+                endDate={dateRange.end}
+                dateFormat="yyyy-MM-dd"
+                minDate={dateRange?.start ? new Date(dateRange.start) : undefined}
+                isClearable
+                placeholderText="End date"
+                className={styles.experienceDateInput}
+                calendarClassName={clsx(
+                  'experience-datepicker',
+                  darkMode ? 'experience-datepicker-dark' : 'experience-datepicker-light',
+                )}
               />
             </div>
 
