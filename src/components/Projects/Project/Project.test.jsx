@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, waitFor,screen } from '@testing-library/react';
+import { render, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
@@ -33,6 +33,7 @@ describe('Project Component', () => {
     projectName: 'Sample Project',
     category: 'Unspecified',
     isActive: true,
+    isArchived: false,
   };
 
   const sampleProps = {
@@ -89,20 +90,62 @@ describe('Project Component', () => {
       expect(activeStatus).toHaveClass('fa-circle');
     });
   });
-
-  it('triggers delete action on button click', () => {
+  // test which was failing
+  // it('triggers delete action on button click', () => {
+  //   const mockOnClickArchiveBtn = vi.fn();
+  //   const { getByTestId } = renderProject({
+  //     ...sampleProps,
+  //     onClickArchiveBtn: mockOnClickArchiveBtn,
+  //   });
+  
+  //   // eslint-disable-next-line testing-library/prefer-screen-queries
+  //   const deleteButton = getByTestId('delete-button');
+  //   fireEvent.click(deleteButton);
+  
+  //   expect(mockOnClickArchiveBtn).toHaveBeenCalledWith(expect.objectContaining({
+  //     _id: sampleProjectData._id,
+  //   }));
+  // });
+  it('calls archive handler when delete button is clicked', () => {
     const mockOnClickArchiveBtn = vi.fn();
     const { getByTestId } = renderProject({
       ...sampleProps,
       onClickArchiveBtn: mockOnClickArchiveBtn,
     });
-  
+
     // eslint-disable-next-line testing-library/prefer-screen-queries
     const deleteButton = getByTestId('delete-button');
     fireEvent.click(deleteButton);
-  
-    expect(mockOnClickArchiveBtn).toHaveBeenCalledWith(expect.objectContaining({
-      _id: sampleProjectData._id,
-    }));
+
+    expect(mockOnClickArchiveBtn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        _id: sampleProjectData._id,
+      }),
+    );
+  });
+
+  it('calls archive handler for archived projects as well', () => {
+    const archivedProjectData = {
+      ...sampleProjectData,
+      isArchived: true,
+    };
+    const mockOnClickArchiveBtn = vi.fn();
+
+    const { getByTestId } = renderProject({
+      ...sampleProps,
+      projectData: archivedProjectData,
+      onClickArchiveBtn: mockOnClickArchiveBtn,
+    });
+
+    // eslint-disable-next-line testing-library/prefer-screen-queries
+    const deleteButton = getByTestId('delete-button');
+    fireEvent.click(deleteButton);
+
+    expect(mockOnClickArchiveBtn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        _id: sampleProjectData._id,
+        isArchived: true,
+      }),
+    );
   });
 });
