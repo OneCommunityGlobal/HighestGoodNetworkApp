@@ -413,3 +413,7 @@
 .darkCard .iconGhost:hover {
   background: #1e293b;
 }
+
+.darkCard .colon {
+  color: #f8fafc;
+}
