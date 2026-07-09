@@ -149,8 +149,6 @@ import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 import FaqSection from './components/CommunityPortal/Activities/FaqSection';
-import RescheduleEvent from './components/CommunityPortal/Activities/RescheduleEvent';
-import ReschedulePoll from './components/CommunityPortal/Activities/ReschedulePoll';
 import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
 import ActivityComments from './components/CommunityPortal/Activities/activityId/ActivityComments';
 
@@ -1005,12 +1003,6 @@ export default (
         />
         <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
-        <CPProtectedRoute
-          path="/communityportal/activities/:activityId/manage"
-          component={RescheduleEvent}
-          routePermissions={['rescheduleEvent']}
-        />
-        <Route path="/communityportal/ReschedulePoll" component={ReschedulePoll} />
         {/* ----- Community Calendar Routing ----- */}
         <CPProtectedRoute path="/communityportal/calendar" exact component={CommunityCalendar} />
         <CPProtectedRoute path="/communityportal/database/design" exact component={EventList} />

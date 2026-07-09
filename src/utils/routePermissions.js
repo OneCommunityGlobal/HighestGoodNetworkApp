@@ -24,7 +24,6 @@ const RoutePermissions = {
     'postTask',
     'updateTask',
     'deleteTask',
-    'rescheduleEvent',
   ],
   teams: ['postTeam', 'putTeam', 'deleteTeam', 'assignTeamToUsers'],
   permissionsManagement: ['postRole', 'putRole', 'deleteRole'],
