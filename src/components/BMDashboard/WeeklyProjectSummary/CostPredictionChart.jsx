@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -14,7 +14,35 @@ import {
 } from 'recharts';
 import styles from './CostPredictionChart.module.css';
 import projectCostService from '../../../services/projectCostService';
-import { getTooltipStyles } from '../../../utils/bmChartStyles';
+
+const THEME = {
+  light: {
+    pageBg: '#ffffff',
+    cardBg: '#f9fafb',
+    itemBg: '#f3f4f6',
+    itemBgHover: '#e5e7eb',
+    border: '#d1d5db',
+    text: '#111827',
+    mutedText: '#374151',
+    axisText: '#9ca3af',
+    accent: '#2563eb',
+  },
+  dark: {
+    pageBg: '#1B2A41', // Oxford blue
+    cardBg: '#1C2541', // space cadet
+    itemBg: '#3A506B', // yinmn blue
+    itemBgHover: '#4a6285',
+    border: '#3A506B',
+    text: '#f3f4f6',
+    mutedText: '#d1d5db',
+    axisText: '#c7ccd6',
+    accent: '#6FFFE9',
+  },
+};
+
+function getTheme(darkMode) {
+  return darkMode ? THEME.dark : THEME.light;
+}
 
 // Fallback sample data so the chart always renders, even when the backend has
 // no cost/prediction records for this project (e.g. on a reviewer's machine).
@@ -56,7 +84,7 @@ function renderDotTopOrBottom(lineKey, color) {
           x={cx + dx}
           y={cy - 20}
           fill={color}
-          fontSize={10}
+          fontSize={14}
           fontWeight="bold"
           textAnchor="middle"
           alignmentBaseline="middle"
@@ -71,7 +99,7 @@ function renderDotTopOrBottom(lineKey, color) {
           x={cx + dx}
           y={cy + 18}
           fill={color}
-          fontSize={10}
+          fontSize={14}
           fontWeight="bold"
           textAnchor="middle"
           alignmentBaseline="middle"
@@ -84,24 +112,31 @@ function renderDotTopOrBottom(lineKey, color) {
   };
 }
 
-function CostPredictionChart({ projectId }) {
+function CostPredictionChart({ projectId, projects }) {
   const dispatch = useDispatch();
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const darkMode = useSelector(state => state.theme.darkMode);
+  const theme = getTheme(darkMode);
+
+  // Filter state (project + full date range: day/month/year)
+  const [selectedProjectId, setSelectedProjectId] = useState(projectId);
+  const [dateRange, setDateRange] = useState({ start: '', end: '' }); // 'YYYY-MM-DD'
+
   const legendItems = [
     { label: 'Planned Cost', color: '#7acba6', type: 'circle' },
     { label: 'Actual Cost', color: '#9aa6ff', type: 'circle' },
     { label: 'Predicted Cost', color: '#ff8c2a', type: 'dash' },
   ];
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         const [costsResponse, predictionsResponse] = await Promise.all([
-          projectCostService.getProjectCosts(projectId),
-          projectCostService.getProjectPredictions(projectId),
+          projectCostService.getProjectCosts(selectedProjectId),
+          projectCostService.getProjectPredictions(selectedProjectId),
         ]);
 
         const costsData = costsResponse.data.costs;
@@ -129,79 +164,237 @@ function CostPredictionChart({ projectId }) {
       }
     };
 
-    if (projectId) fetchData();
-  }, [projectId]);
+    if (selectedProjectId) fetchData();
+  }, [selectedProjectId]);
 
-  if (loading) return <div>Loading chart data...</div>;
-  if (error) return <div>Error: {error}</div>;
+  // date range filter logic
+
+  const filteredData = useMemo(() => {
+    if (!dateRange.start && !dateRange.end) return chartData;
+    return chartData.filter(d => {
+      const pointDate = new Date(d.month);
+      if (dateRange.start && pointDate < new Date(dateRange.start)) return false;
+      if (dateRange.end && pointDate > new Date(dateRange.end)) return false;
+      return true;
+    });
+  }, [chartData, dateRange]);
+
+  // Reset handler
+  const handleReset = () => {
+    setSelectedProjectId(projectId);
+    setDateRange({ start: '', end: '' });
+  };
+
+  const hasActiveFilters =
+    selectedProjectId !== projectId || dateRange.start !== '' || dateRange.end !== '';
+
+  const filterStyles = {
+    bar: {
+      background: theme.cardBg,
+      border: `1px solid ${theme.border}`,
+    },
+    label: {
+      color: theme.mutedText,
+    },
+    control: {
+      background: theme.itemBg,
+      border: `1px solid ${theme.border}`,
+      color: theme.text,
+    },
+    resetButton: {
+      background: theme.itemBg,
+      border: `1px solid ${theme.border}`,
+      color: theme.text,
+      opacity: hasActiveFilters ? 1 : 0.5,
+      cursor: hasActiveFilters ? 'pointer' : 'not-allowed',
+    },
+  };
+
+  // Custom tooltip showing Predicted + Actual clearly, using card-layer background
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (!active || !payload || !payload.length) return null;
+    const point = payload[0].payload;
+    const variance =
+      point.actualCost != null && point.predictedCost != null
+        ? point.actualCost - point.predictedCost
+        : null;
+
+    return (
+      <div
+        style={{
+          background: theme.cardBg,
+          border: `1px solid ${theme.border}`,
+          borderRadius: 6,
+          padding: '10px 14px',
+          fontSize: 13,
+          color: theme.text,
+        }}
+      >
+        <p style={{ margin: 0, fontWeight: 'bold', marginBottom: 6 }}>{label}</p>
+        <p style={{ margin: '2px 0', color: '#9aa6ff' }}>
+          Actual: <strong>{point.actualCost ?? 'N/A'}</strong>
+        </p>
+        <p style={{ margin: '2px 0', color: '#ff8c2a' }}>
+          Predicted: <strong>{point.predictedCost ?? 'N/A'}</strong>
+        </p>
+        <p style={{ margin: '2px 0', color: '#7acba6' }}>
+          Planned: <strong>{point.plannedCost ?? 'N/A'}</strong>
+        </p>
+        {variance != null && (
+          <p
+            style={{
+              margin: '6px 0 0',
+              borderTop: `1px solid ${theme.border}`,
+              paddingTop: 4,
+            }}
+          >
+            Variance (Actual - Predicted): <strong>{variance.toFixed(0)}</strong>
+          </p>
+        )}
+      </div>
+    );
+  };
+
+  if (loading) {
+    return (
+      <div
+        className={styles.titleContainer}
+        style={{ background: theme.pageBg, color: theme.text }}
+      >
+        Loading chart data...
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div
+        className={styles.titleContainer}
+        style={{ background: theme.pageBg, color: theme.text }}
+      >
+        Error: {error}
+      </div>
+    );
+  }
 
   const currentMonth = new Date().toLocaleString('default', {
     month: 'long',
     year: 'numeric',
   });
 
-  // THEME COLORS — only for grid, axis ticks/lines, legend
-  const gridColor = darkMode ? '#e5e7eb' : '#9ca3af'; // grid lines
-  const tickColor = darkMode ? '#e5e7eb' : '#9ca3af'; // tick text
-  const axisLineCol = darkMode ? '#e5e7eb' : '#9ca3af'; // axis baseline & tick marks
-  const legendColor = darkMode ? '#e5e7eb' : '#9ca3af'; // legend text
+  const projectOptions =
+    projects && projects.length ? projects : [{ id: projectId, name: `Project ${projectId}` }];
+
   return (
-    <div className={styles.titleContainer}>
-      <h2 className={styles.title}>Planned Vs Actual costs tracking</h2>
+    <div className={styles.titleContainer} style={{ background: theme.pageBg, color: theme.text }}>
+      <h2 className={styles.title} style={{ color: theme.text }}>
+        Planned Vs Actual costs tracking
+      </h2>
+
+      {/* Filter bar — "card" layer */}
+      <div className={styles.filterBar} style={filterStyles.bar}>
+        <div className={styles.filterGroup}>
+          <label htmlFor="project-filter" style={filterStyles.label}>
+            Project
+          </label>
+          <select
+            id="project-filter"
+            className={styles.control}
+            style={filterStyles.control}
+            value={selectedProjectId}
+            onChange={e => setSelectedProjectId(e.target.value)}
+          >
+            {projectOptions.map(p => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className={styles.filterGroup}>
+          <label htmlFor="start-date" style={filterStyles.label}>
+            Start Date
+          </label>
+          <input
+            id="start-date"
+            type="date"
+            className={`${styles.control} ${styles.dateInput} ${
+              darkMode ? styles.dateInputDark : ''
+            }`}
+            style={filterStyles.control}
+            value={dateRange.start}
+            max={dateRange.end || undefined}
+            onChange={e => setDateRange(prev => ({ ...prev, start: e.target.value }))}
+          />
+        </div>
+
+        <div className={styles.filterGroup}>
+          <label htmlFor="end-date" style={filterStyles.label}>
+            End Date
+          </label>
+          <input
+            id="end-date"
+            type="date"
+            className={`${styles.control} ${styles.dateInput} ${
+              darkMode ? styles.dateInputDark : ''
+            }`}
+            style={filterStyles.control}
+            value={dateRange.end}
+            min={dateRange.start || undefined}
+            onChange={e => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+          />
+        </div>
+
+        {/* Reset button */}
+        <button
+          type="button"
+          className={styles.resetButton}
+          style={filterStyles.resetButton}
+          onClick={handleReset}
+          disabled={!hasActiveFilters}
+        >
+          Reset Filters
+        </button>
+      </div>
+
       <ResponsiveContainer width="100%" height={400}>
-        <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
-          {/* Grid */}
+        <LineChart data={filteredData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
           <CartesianGrid
             strokeDasharray="3 3"
-            stroke={gridColor}
+            stroke={theme.border}
             vertical
             horizontal
             verticalFill={[]}
             horizontalFill={[]}
           />
-          {/* Axes: tick text, tick marks, baseline lines */}
           <XAxis
             dataKey="month"
             tick={({ x, y, payload }) => (
-              <text
-                x={x}
-                y={y + 15} // push text down so it doesn’t overlap axis line
-                textAnchor="middle"
-                fill={darkMode ? '#e5e7eb' : '#9ca3af'}
-                fontSize={12}
-              >
+              <text x={x} y={y + 15} textAnchor="middle" fill={theme.axisText} fontSize={13}>
                 {payload.value}
               </text>
             )}
-            tickMargin={0} // apply margin at XAxis level, not inside <text>
+            tickMargin={0}
           />
           <YAxis
             tick={({ x, y, payload }) => (
-              <text
-                x={x}
-                y={y}
-                textAnchor="end"
-                fill={darkMode ? '#e5e7eb' : '#9ca3af'}
-                fontSize={12}
-              >
+              <text x={x} y={y} textAnchor="end" fill={theme.axisText} fontSize={13}>
                 {payload.value}
               </text>
             )}
           />
-          {/* Tooltip & Legend */}
-          <Tooltip
-            {...getTooltipStyles(darkMode)}
-            cursor={{ stroke: darkMode ? '#e0e0e0' : '#999' }}
-          />
+          <Tooltip content={<CustomTooltip />} cursor={{ stroke: theme.accent }} />
           <Legend
             verticalAlign="bottom"
             height={48}
             wrapperStyle={{ paddingTop: 10 }}
             content={() => (
-              <ul className={styles.legendList}>
+              <ul
+                className={styles.legendList}
+                style={{ background: theme.itemBg, borderRadius: 6 }}
+              >
                 {legendItems.map(item => (
                   <li key={item.label} className={styles.legendListItem}>
-                    {/* icon */}
                     {item.type === 'circle' ? (
                       <span className={styles.legendItem} style={{ backgroundColor: item.color }} />
                     ) : (
@@ -217,21 +410,18 @@ function CostPredictionChart({ projectId }) {
                         />
                       </svg>
                     )}
-                    {/* label */}
-                    <span style={{ color: darkMode ? '#e5e7eb' : '#374151' }}>{item.label}</span>
+                    <span style={{ color: theme.text }}>{item.label}</span>
                   </li>
                 ))}
               </ul>
             )}
           />
-          {/* Reference line (kept fixed color) */}
           <ReferenceLine
             x={currentMonth}
             stroke="#ff0000"
             strokeDasharray="3 3"
             label={{ value: 'Current Month', position: 'top', fill: '#fc07cfff' }}
           />
-          {/* Series (kept fixed colors) */}
           <Line
             type="monotone"
             dataKey="plannedCost"
@@ -265,6 +455,16 @@ function CostPredictionChart({ projectId }) {
 
 CostPredictionChart.propTypes = {
   projectId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  projects: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      name: PropTypes.string.isRequired,
+    }),
+  ),
+};
+
+CostPredictionChart.defaultProps = {
+  projects: [],
 };
 
 export default CostPredictionChart;
