@@ -11,8 +11,7 @@ import AccessAlarmRoundedIcon from '@mui/icons-material/AccessAlarmRounded';
 
 const pad2 = n => String(n).padStart(2, '0');
 
-const BASE_URL =
-  import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') || 'http://localhost:4500';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') || 'http://localhost:4500';
 
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
@@ -51,37 +50,40 @@ export default function TaskTimer({ userid }) {
     setSeconds(clamp(Number(v || 0), 0, 59));
   }, []);
 
-  const callTimerApi = useCallback(async (path, method = 'GET', body = null) => {
-    setError('');
+  const callTimerApi = useCallback(
+    async (path, method = 'GET', body = null) => {
+      setError('');
 
-    try {
-      const url = `${BASE_URL}${path}`;
-      const options = {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: token,
-          'x-user-id': userid,
-        },
-      };
+      try {
+        const url = `${BASE_URL}${path}`;
+        const options = {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: token,
+            'x-user-id': userid,
+          },
+        };
 
-      if (body) options.body = JSON.stringify(body);
+        if (body) options.body = JSON.stringify(body);
 
-      const response = await fetch(url, options);
-      const contentType = response.headers.get('content-type') || '';
-      const text = await response.text();
-      const data = contentType.includes('application/json') && text ? JSON.parse(text) : {};
+        const response = await fetch(url, options);
+        const contentType = response.headers.get('content-type') || '';
+        const text = await response.text();
+        const data = contentType.includes('application/json') && text ? JSON.parse(text) : {};
 
-      if (!response.ok) {
-        throw new Error(data.error || data.message || 'Request failed');
+        if (!response.ok) {
+          throw new Error(data.error || data.message || 'Request failed');
+        }
+
+        return data;
+      } catch (err) {
+        setError(err.message);
+        throw err;
       }
-
-      return data;
-    } catch (err) {
-      setError(err.message);
-      throw err;
-    }
-  }, [token, userid]);
+    },
+    [token, userid],
+  );
 
   const handleTogglePlay = useCallback(async () => {
     const status = timerInfo?.status || 'idle';
@@ -133,20 +135,23 @@ export default function TaskTimer({ userid }) {
     setDisplayRemaining(null);
   }, [callTimerApi]);
 
-  const handleMiniAdjust = useCallback(deltaMinutes => {
-    if (timerInfo && (timerInfo.status === 'running' || timerInfo.status === 'paused')) {
-      callTimerApi('/api/student/timer/adjust', 'POST', { deltaMinutes }).then(res =>
-        setTimerInfo(res.data),
-      );
-      return;
-    }
+  const handleMiniAdjust = useCallback(
+    deltaMinutes => {
+      if (timerInfo && (timerInfo.status === 'running' || timerInfo.status === 'paused')) {
+        callTimerApi('/api/student/timer/adjust', 'POST', { deltaMinutes }).then(res =>
+          setTimerInfo(res.data),
+        );
+        return;
+      }
 
-    let total = hours * 60 + minutes + deltaMinutes;
-    if (total < 1) total = 1;
+      let total = hours * 60 + minutes + deltaMinutes;
+      if (total < 1) total = 1;
 
-    setHours(Math.floor(total / 60) % 24);
-    setMinutes(total % 60);
-  }, [timerInfo, callTimerApi, hours, minutes]);
+      setHours(Math.floor(total / 60) % 24);
+      setMinutes(total % 60);
+    },
+    [timerInfo, callTimerApi, hours, minutes],
+  );
 
   useEffect(() => {
     if (timerInfo?.remainingMs) setDisplayRemaining(timerInfo.remainingMs);
@@ -166,14 +171,17 @@ export default function TaskTimer({ userid }) {
   const currentStatus = timerInfo?.status || 'idle';
   const isActive = currentStatus === 'running' || currentStatus === 'paused';
 
-  const totalMs = timerInfo?.durationMs || (hours * 60 + minutes + (seconds > 0 ? 1 : 0)) * 60 * 1000 || 0;
+  const totalMs =
+    timerInfo?.durationMs || (hours * 60 + minutes + (seconds > 0 ? 1 : 0)) * 60 * 1000 || 0;
   const elapsedMs = timerInfo?.elapsedMs || Math.max(0, totalMs - (displayRemaining || 0));
 
   const progressPct = totalMs ? Math.min(100, (elapsedMs / totalMs) * 100) : 0;
 
   const displayH = displayRemaining != null ? Math.floor(displayRemaining / 3600000) : hours;
-  const displayM = displayRemaining != null ? Math.floor((displayRemaining % 3600000) / 60000) : minutes;
-  const displayS = displayRemaining != null ? Math.floor((displayRemaining % 60000) / 1000) : seconds;
+  const displayM =
+    displayRemaining != null ? Math.floor((displayRemaining % 3600000) / 60000) : minutes;
+  const displayS =
+    displayRemaining != null ? Math.floor((displayRemaining % 60000) / 1000) : seconds;
 
   const primaryIcon =
     currentStatus === 'running' ? (
@@ -219,10 +227,19 @@ export default function TaskTimer({ userid }) {
           >
             +
           </button>
-          <button className={styles.compactCtrlBtn} onClick={handleTogglePlay} aria-label="Play/Pause">
+          <button
+            className={styles.compactCtrlBtn}
+            onClick={handleTogglePlay}
+            aria-label="Play/Pause"
+          >
             {primaryIcon}
           </button>
-          <button className={styles.compactCtrlBtn} onClick={handleStop} disabled={!isActive} aria-label="Stop">
+          <button
+            className={styles.compactCtrlBtn}
+            onClick={handleStop}
+            disabled={!isActive}
+            aria-label="Stop"
+          >
             <StopRoundedIcon fontSize="small" />
           </button>
           <button className={styles.compactCtrlBtn} onClick={handleReset} aria-label="Reset">
@@ -232,15 +249,31 @@ export default function TaskTimer({ userid }) {
       </div>
 
       {open && (
-        <div className={styles.backdrop} onClick={() => setOpen(false)} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') setOpen(false); }}>
+        <div
+          role="button"
+          tabIndex={0}
+          className={styles.backdrop}
+          onClick={() => setOpen(false)}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') setOpen(false);
+          }}
+        >
           <div
+            role="button"
+            tabIndex={-1}
             className={`${styles.card} ${darkMode ? styles.darkCard : ''}`}
             onClick={e => e.stopPropagation()}
-            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') e.stopPropagation(); }}
+            onKeyDown={e => {
+              if (e.key === 'Enter' || e.key === ' ') e.stopPropagation();
+            }}
           >
             <div className={styles.cardHeader}>
               <span className={styles.headerTitle}>Timer</span>
-              <button className={styles.iconGhost} onClick={() => setOpen(false)} aria-label="Close">
+              <button
+                className={styles.iconGhost}
+                onClick={() => setOpen(false)}
+                aria-label="Close"
+              >
                 <CloseRoundedIcon fontSize="small" />
               </button>
             </div>
@@ -249,7 +282,9 @@ export default function TaskTimer({ userid }) {
               <div className={styles.timeGrid}>
                 <div className={styles.slot}>
                   <button className={styles.stepBtn} onClick={incH} aria-label="Increase hours">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M7 14l5-5 5 5z"/></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M7 14l5-5 5 5z" />
+                    </svg>
                   </button>
                   <input
                     className={styles.digitBox}
@@ -260,13 +295,17 @@ export default function TaskTimer({ userid }) {
                     aria-label="Hours"
                   />
                   <button className={styles.stepBtn} onClick={decH} aria-label="Decrease hours">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M7 10l5 5 5-5z" />
+                    </svg>
                   </button>
                 </div>
                 <span className={styles.colon}>:</span>
                 <div className={styles.slot}>
                   <button className={styles.stepBtn} onClick={incM} aria-label="Increase minutes">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M7 14l5-5 5 5z"/></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M7 14l5-5 5 5z" />
+                    </svg>
                   </button>
                   <input
                     className={styles.digitBox}
@@ -277,13 +316,17 @@ export default function TaskTimer({ userid }) {
                     aria-label="Minutes"
                   />
                   <button className={styles.stepBtn} onClick={decM} aria-label="Decrease minutes">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M7 10l5 5 5-5z" />
+                    </svg>
                   </button>
                 </div>
                 <span className={styles.colon}>:</span>
                 <div className={styles.slot}>
                   <button className={styles.stepBtn} onClick={incS} aria-label="Increase seconds">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M7 14l5-5 5 5z"/></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M7 14l5-5 5 5z" />
+                    </svg>
                   </button>
                   <input
                     className={styles.digitBox}
@@ -294,7 +337,9 @@ export default function TaskTimer({ userid }) {
                     aria-label="Seconds"
                   />
                   <button className={styles.stepBtn} onClick={decS} aria-label="Decrease seconds">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M7 10l5 5 5-5z" />
+                    </svg>
                   </button>
                 </div>
               </div>
@@ -302,11 +347,56 @@ export default function TaskTimer({ userid }) {
 
             {isIdle && (
               <div className={styles.quickRow}>
-                <button className={styles.quickBtn} onClick={() => { setHours(0); setMinutes(5); setSeconds(0); }}>5 min</button>
-                <button className={styles.quickBtn} onClick={() => { setHours(0); setMinutes(15); setSeconds(0); }}>15 min</button>
-                <button className={styles.quickBtn} onClick={() => { setHours(0); setMinutes(30); setSeconds(0); }}>30 min</button>
-                <button className={styles.quickBtn} onClick={() => { setHours(1); setMinutes(0); setSeconds(0); }}>1 hr</button>
-                <button className={styles.quickBtn} onClick={() => { setHours(2); setMinutes(0); setSeconds(0); }}>2 hr</button>
+                <button
+                  className={styles.quickBtn}
+                  onClick={() => {
+                    setHours(0);
+                    setMinutes(5);
+                    setSeconds(0);
+                  }}
+                >
+                  5 min
+                </button>
+                <button
+                  className={styles.quickBtn}
+                  onClick={() => {
+                    setHours(0);
+                    setMinutes(15);
+                    setSeconds(0);
+                  }}
+                >
+                  15 min
+                </button>
+                <button
+                  className={styles.quickBtn}
+                  onClick={() => {
+                    setHours(0);
+                    setMinutes(30);
+                    setSeconds(0);
+                  }}
+                >
+                  30 min
+                </button>
+                <button
+                  className={styles.quickBtn}
+                  onClick={() => {
+                    setHours(1);
+                    setMinutes(0);
+                    setSeconds(0);
+                  }}
+                >
+                  1 hr
+                </button>
+                <button
+                  className={styles.quickBtn}
+                  onClick={() => {
+                    setHours(2);
+                    setMinutes(0);
+                    setSeconds(0);
+                  }}
+                >
+                  2 hr
+                </button>
               </div>
             )}
 
@@ -340,10 +430,19 @@ export default function TaskTimer({ userid }) {
 
             {!isIdle && (
               <div className={styles.circleControls}>
-                <button className={styles.circleCtrlBtn} onClick={handleTogglePlay} aria-label="Play/Pause">
+                <button
+                  className={styles.circleCtrlBtn}
+                  onClick={handleTogglePlay}
+                  aria-label="Play/Pause"
+                >
                   {primaryIcon}
                 </button>
-                <button className={styles.circleCtrlBtn} onClick={handleStop} disabled={!isActive} aria-label="Stop">
+                <button
+                  className={styles.circleCtrlBtn}
+                  onClick={handleStop}
+                  disabled={!isActive}
+                  aria-label="Stop"
+                >
                   <StopRoundedIcon fontSize="small" />
                 </button>
                 <button className={styles.circleCtrlBtn} onClick={handleReset} aria-label="Reset">
@@ -353,7 +452,9 @@ export default function TaskTimer({ userid }) {
             )}
 
             <div className={styles.footer}>
-              <button className={styles.okBtn} onClick={() => setOpen(false)}>OK</button>
+              <button className={styles.okBtn} onClick={() => setOpen(false)}>
+                OK
+              </button>
             </div>
           </div>
         </div>

@@ -111,6 +111,7 @@ const StudentDashboard = () => {
         [parentTaskId]: updatedTasks || [],
       }));
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Failed to mark intermediate task as done:', error);
     }
   };
