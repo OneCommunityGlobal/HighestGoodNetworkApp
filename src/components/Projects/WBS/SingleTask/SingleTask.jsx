@@ -5,6 +5,7 @@ import { connect, useSelector } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
 import { NavItem, Button, Modal, ModalBody } from 'reactstrap';
+import styles from './SingleTask.module.css';
 
 import { Editor } from '@tinymce/tinymce-react';
 import { Link, useHistory } from 'react-router-dom';
@@ -71,7 +72,7 @@ function SingleTask(props) {
 
   return (
     <>
-      <div className={`${darkMode ? 'bg-oxford-blue' : 'bg-white'} h-100`}>
+      <div className={`${darkMode ? 'bg-oxford-blue' : 'bg-white'} h-100`} style={{ minHeight: '400px' }}>
         <ReactTooltip />
         <div className="container-single-task">
           {canPostProject && (
@@ -94,109 +95,111 @@ function SingleTask(props) {
             <table className={`table table-bordered ${darkMode ? 'dark-mode text-light' : ''}`}>
               <thead className={darkMode ? 'bg-space-cadet' : ''}>
                 <tr>
-                  <th scope="col" data-tip="Action" colSpan="1">
+                  <th scope="col" data-tip="Action" colSpan="1" style={{ textAlign: 'center' }}>
                     Action
                   </th>
-                  <th scope="col" data-tip="task-num" colSpan="1">
+                  <th scope="col" data-tip="task-num" colSpan="1" style={{ textAlign: 'center' }}>
                     #
                   </th>
-                  <th scope="col" data-tip="Task Name" style={{ minWidth: '200px' }}>
+                  <th scope="col" data-tip="Task Name" style={{ minWidth: '200px' }} >
                     Task Name
                   </th>
-                  <th scope="col" data-tip="Priority">
+                  <th scope="col" data-tip="Priority" style={{ textAlign: 'center' }}>
                     <i className="fa fa-star" aria-hidden="true" />
                   </th>
-                  <th scope="col" data-tip="Resources">
+                  <th scope="col" data-tip="Resources" style={{ textAlign: 'center' }}>
                     <i className="fa fa-users" aria-hidden="true" />
                   </th>
-                  <th scope="col" data-tip="Assigned">
+                  <th scope="col" data-tip="Assigned" style={{ textAlign: 'center' }}>
                     <i className="fa fa-user-circle-o" aria-hidden="true" />
                   </th>
-                  <th scope="col" data-tip="Status">
+                  <th scope="col" data-tip="Status" style={{ textAlign: 'center' }}>
                     <i className="fa fa-tasks" aria-hidden="true" />
                   </th>
-                  <th scope="col" data-tip="Hours-Best">
+                  <th scope="col" data-tip="Hours-Best" style={{ textAlign: 'center' }}>
                     <i className="fa fa-hourglass-start" aria-hidden="true" />
                   </th>
-                  <th scope="col" data-tip="Hours-Worst">
+                  <th scope="col" data-tip="Hours-Worst" style={{ textAlign: 'center' }}>
                     <i className="fa fa-hourglass" aria-hidden="true" />
                   </th>
-                  <th scope="col" data-tip="Hours-Most">
+                  <th scope="col" data-tip="Hours-Most" style={{ textAlign: 'center' }}>
                     <i className="fa fa-hourglass-half" aria-hidden="true" />
                   </th>
-                  <th scope="col" data-tip="Estimated Hours">
+                  <th scope="col" data-tip="Estimated Hours" style={{ textAlign: 'center' }}>
                     <i className="fa fa-clock-o" aria-hidden="true" />
                   </th>
-                  <th scope="col" data-tip="Hours-Logged">
+                  <th scope="col" data-tip="Hours-Logged" style={{ textAlign: 'center' }}>
                     <i className="fa fa-hourglass-end" aria-hidden="true" />
                   </th>
-                  <th scope="col" data-tip="Start Date">
+                  <th scope="col" data-tip="Start Date" style={{ textAlign: 'center' }}>
                     <i className="fa fa-calendar-check-o" aria-hidden="true" />
                     {' '}
                     Start
                   </th>
-                  <th scope="col" data-tip="Due Date">
+                  <th scope="col" data-tip="Due Date" style={{ textAlign: 'center' }}>
                     <i className="fa fa-calendar-times-o" aria-hidden="true" />
                     {' '}
                     End
                   </th>
-                  <th scope="col" data-tip="Links">
+                  <th scope="col" data-tip="Links" style={{ textAlign: 'center' }}>
                     <i className="fa fa-link" aria-hidden="true" />
                   </th>
-                  <th scope="col" data-tip="Details">
+                  <th scope="col" data-tip="Details" style={{ textAlign: 'center' }}>
                     <i className="fa fa-question" aria-hidden="true" />
                   </th>
                 </tr>
               </thead>
               <tbody className={darkMode ? 'bg-yinmn-blue' : ''}>
-                <tr>
-                  <th scope="row">
-                    <div className="d-flex flex-column">
-                      <EditTaskModal
-                        key={`editTask_${task._id}`}
-                        parentNum={task.num}
-                        taskId={task._id}
-                        wbsId={task.wbsId}
-                        parentId1={task.parentId1}
-                        parentId2={task.parentId2}
-                        parentId3={task.parentId3}
-                        mother={task.mother}
-                        level={task.level}
-                        setTask={setTask}
-                      />
-                      {canDeleteTask && (
-                        <>
-                          <Button
-                            type="button"
-                            size="sm"
-                            className="btn btn-danger"
-                            onClick={() => showUpDeleteModal()}
-                            style={darkMode ? boxStyleDark : boxStyle}
-                          >
-                            Delete
-                          </Button>
-                          <ModalDelete
-                            isOpen={modalDelete}
-                            closeModal={() => setModalDelete(false)}
-                            confirmModal={() => deleteTask(task._id, task.mother)}
-                            modalMessage={
-                              props.popupEditor.currPopup.popupContent || 'DELETE THIS TASK ?'
-                            }
-                            modalTitle={Message.CONFIRM_DELETION}
-                            darkMode={darkMode}
-                          />
-                        </>
-                      )}
-                    </div>
-                  </th>
-                  <th scope="row">{task.num}</th>
+                <tr style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                <th scope="row">
+                  <div className={styles.actionButtonsContainer}>
+                    <EditTaskModal
+                      key={`editTask_${task._id}`}
+                      parentNum={task.num}
+                      taskId={task._id}
+                      wbsId={task.wbsId}
+                      parentId1={task.parentId1}
+                      parentId2={task.parentId2}
+                      parentId3={task.parentId3}
+                      mother={task.mother}
+                      level={task.level}
+                      setTask={setTask}
+                    />
+
+                    {canDeleteTask && (
+                      <>
+                        <Button
+                          type="button"
+                          size="sm"
+                          className={`btn btn-danger ${styles.actionButton}`}
+                          onClick={() => showUpDeleteModal()}
+                        >
+                          Delete
+                        </Button>
+
+                        <ModalDelete
+                          isOpen={modalDelete}
+                          closeModal={() => setModalDelete(false)}
+                          confirmModal={() => deleteTask(task._id, task.mother)}
+                          modalMessage={
+                            props.popupEditor.currPopup.popupContent || 'DELETE THIS TASK ?'
+                          }
+                          modalTitle={Message.CONFIRM_DELETION}
+                          darkMode={darkMode}
+                        />
+                      </>
+                    )}
+                  </div>
+                </th>
+                  <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                    {task.num}
+                  </td>
                   <td>{task.taskName}</td>
                   <td>{task.priority}</td>
                   <td>
                     {task?.resources &&
                       task.resources.map((elem, i) => {
-                        try {
-                          if (elem.profilePic) {
+                        if (elem.profilePic) {
                             return (
                               <a
                                 key={`res_${i}`}
@@ -206,8 +209,7 @@ function SingleTask(props) {
                                 target="_blank"
                                 rel="noreferrer"
                               >
-                                {/* eslint-disable-next-line jsx-a11y/alt-text */}
-                                <img className="img-circle" src={elem.profilePic} />
+                                <img className="img-circle" src={elem.profilePic} alt="" />
                               </a>
                             );
                           }
@@ -223,9 +225,7 @@ function SingleTask(props) {
                               <span className="dot">{elem.name.substring(0, 2)}</span>
                             </a>
                           );
-
-                        } catch (err) { }
-                      })}
+                        })}
                   </td>
                   <td>
                     {task.isAssigned ? (
