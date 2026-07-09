@@ -10,6 +10,7 @@ import {
   GET_TIME_ENTRIES_PERIOD_BULK,
 } from '../constants/timeEntries';
 import { ENDPOINTS } from '~/utils/URL';
+import { fetchServerTime, getServerMoment } from '../utils/serverTime';
 
 export const setTimeEntriesForWeek = (data, offset) => ({
   type: GET_TIME_ENTRIES_WEEK,
@@ -47,6 +48,7 @@ export const getTimeEntriesForWeek = (userId, offset) => {
     .format('YYYY-MM-DDTHH:mm:ss');
 
   const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
+  
   return async dispatch => {
     let loggedOut = false;
     const res = await axios.get(url).catch(error => {
@@ -197,6 +199,8 @@ export const getTimeStartDateEntriesByPeriod = (userId, fromDate, toDate) => {
     }
   };
 };
+
+/*
 export const postTimeEntry = (timeEntry, { displayedUserId } = {}) => {
   const url = ENDPOINTS.TIME_ENTRY();
   return async dispatch => {
@@ -211,6 +215,50 @@ export const postTimeEntry = (timeEntry, { displayedUserId } = {}) => {
     }
   };
 };
+*/
+
+
+export const postTimeEntry = (timeEntry, { displayedUserId } = {}) => {
+  const url = ENDPOINTS.TIME_ENTRY();
+
+  return async dispatch => {
+    try {
+      // Get backend server time
+      await fetchServerTime();
+
+      const serverNow = moment(getServerMoment());
+
+      const selectedDate = moment(timeEntry.dateOfWork);
+
+      console.log('Server time:', serverNow.format());
+      console.log('Selected time entry date:', selectedDate.format());
+
+      // // Prevent future date/time logging
+      // if (selectedDate.isAfter(serverNow)) {
+      //   toast.error('You cannot log time for a future date or time.');
+      //   return 400;
+      // }
+
+      // Prevent logging on previous or future dates
+      if (!selectedDate.isSame(serverNow, 'day')) {
+        toast.error('You can only log time for today.');
+        return 400;
+      }
+
+      const res = await axios.post(url, timeEntry);
+
+      if (timeEntry.entryType === 'default' || timeEntry.entryType === 'person') {
+        dispatch(updateTimeEntries(timeEntry, undefined, displayedUserId));
+      }
+
+      return res.status;
+
+    } catch (e) {
+      return e.response.status;
+    }
+  };
+};
+
 
 export const editTimeEntry = (timeEntryId, timeEntry, oldDateOfWork, { displayedUserId } = {}) => {
   const url = ENDPOINTS.TIME_ENTRY_CHANGE(timeEntryId);
