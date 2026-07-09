@@ -97,10 +97,7 @@ export function clampPinScheduleDateTime(dateStr, timeStr) {
 
 /** Generates a unique pin queue entry ID. */
 export function generatePinId() {
-  return `pin_${Date.now()}_${crypto
-    .randomUUID()
-    .toString(36)
-    .slice(2, 8)}`;
+  return `pin_${Date.now()}_${crypto.randomUUID()}`;
 }
 
 // ─── Tag suggestions ───────────────────────────────────────────────────────────
