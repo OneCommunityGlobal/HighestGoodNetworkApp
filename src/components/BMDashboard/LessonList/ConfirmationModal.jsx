@@ -17,7 +17,7 @@ function ConfirmationModal({ showConfirmModal, handleDeleteTags, setConfirmModal
       </ModalBody>
       <ModalFooter className={darkMode ? styles.darkFooter : ''}>
         <Button
-          color="danger"
+          variant="primary"
           onClick={() => {
             handleDeleteTags();
             setConfirmModal(false);
@@ -25,7 +25,7 @@ function ConfirmationModal({ showConfirmModal, handleDeleteTags, setConfirmModal
         >
           Confirm
         </Button>
-        <Button color="secondary" onClick={() => setConfirmModal(false)}>
+        <Button variant="danger" onClick={() => setConfirmModal(false)}>
           Cancel
         </Button>
       </ModalFooter>
