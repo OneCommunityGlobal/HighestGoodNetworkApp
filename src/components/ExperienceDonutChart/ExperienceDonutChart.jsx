@@ -1,51 +1,59 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import axios from 'axios'; // Added axios import to fix network request errors
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import styles from './ExperienceDonutChart.module.css';
 
-const EXPERIENCE_LABELS = ['0-1 years', '1-3 years', '3-5 years', '5+ years'];
-const SEGMENT_COLORS = ['#36A2EB', '#FF6384', '#FFCE56', '#10B981'];
-
-const ROLE_OPTIONS = [
-  'Frontend Developer',
-  'DevOps Engineer',
-  'Project Manager',
-  'Junior Developer',
-  'Full Stack Developer',
+const SEGMENT_COLORS = [
+  '#FF6384',
+  '#36A2EB',
+  '#FFCE56',
+  '#4BC0C0',
+  '#FF9F40',
+  '#8B5CF6',
+  '#10B981',
 ];
 
-export default function ExperienceDonutChart() {
-  const dispatch = useDispatch();
-  const { data, loading, error } = useSelector(state => state.jobExperienceBreakdown);
-  const darkMode = useSelector(state => state.theme.darkMode);
+const EXPERIENCE_LABELS = ['0-1 years', '1-3 years', '3-5 years', '5+ years'];
 
+// ✅ Crypto-based RNG (safer than Math.random)
+function secureRandomInt(min, max) {
+  const array = new Uint32Array(1);
+  crypto.getRandomValues(array);
+  return min + (array[0] % (max - min + 1));
+}
+
+function Spinner() {
+  return (
+    <div className={styles['spinner-container']} role="status" aria-live="polite" aria-busy="true">
+      <div className={styles.spinner} />
+      <p>Loading…</p>
+    </div>
+  );
+}
+
+export default function ExperienceDonutChart() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [selectedRoles, setSelectedRoles] = useState([]);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const [appliedFilters, setAppliedFilters] = useState({
-    startDate: '',
-    endDate: '',
-    roles: [],
-  });
+  const [appliedFilters, setAppliedFilters] = useState({ startDate: '', endDate: '', roles: [] });
 
-  const total = data?.reduce((sum, item) => sum + item.count, 0) || 0;
+  const [chartData, setChartData] = useState(null);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const chartData = EXPERIENCE_LABELS.map((label, index) => {
-    const found = data?.find(item => item.experience === label);
-    return {
-      name: label,
-      value: found?.count || 0,
-      color: SEGMENT_COLORS[index],
-    };
-  });
-
-  const filteredChartData = chartData.filter(segment => segment.value > 0);
+  const [activeIndex, setActiveIndex] = useState(null);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const hasFilters = useMemo(
     () =>
-      Boolean(appliedFilters.startDate || appliedFilters.endDate || appliedFilters.roles.length),
+      Boolean(
+        appliedFilters.startDate ||
+          appliedFilters.endDate ||
+          (appliedFilters.roles?.length ?? 0) > 0,
+      ),
     [appliedFilters],
   );
 
@@ -58,17 +66,19 @@ export default function ExperienceDonutChart() {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No token found. Please log in.');
 
-      const url = `${process.env.REACT_APP_APIENDPOINT}/experience-breakdown`;
+      // Fixed API endpoint path to include /applicant-analytics
+      const url = `${process.env.REACT_APP_APIENDPOINT}/applicant-analytics/experience-breakdown`;
       const params = {};
 
-      if (filterStartDate && filterEndDate) {
-        params.startDate = filterStartDate;
-        params.endDate = filterEndDate;
-      } else if (filterRoles && filterRoles.length > 0) {
-        params.roles = filterRoles.join(',');
+      // Replaced undefined filter variables with correctly scoped appliedFilters
+      if (appliedFilters.startDate && appliedFilters.endDate) {
+        params.startDate = appliedFilters.startDate;
+        params.endDate = appliedFilters.endDate;
+      }
+      if (appliedFilters.roles && appliedFilters.roles.length > 0) {
+        params.roles = appliedFilters.roles.join(',');
       }
 
-      // const response = await axios.get(url, { params });
       const response = await axios.get(url, {
         headers: { Authorization: token },
         params,
@@ -82,25 +92,20 @@ export default function ExperienceDonutChart() {
         return;
       }
 
-      const counts = experienceLabels.map(label => {
+      // Re-formatted chart data as an array of objects for Recharts compatibility
+      const formattedData = EXPERIENCE_LABELS.map((label, index) => {
         const found = data.find(d => d.experience === label);
-        return found ? found.count : 0;
+        return {
+          name: label,
+          value: found ? found.count : 0,
+          color: SEGMENT_COLORS[index % SEGMENT_COLORS.length], // Fixed case sensitivity for constants
+        };
       });
 
-      const totalCount = counts.reduce((a, b) => a + b, 0);
+      const totalCount = formattedData.reduce((a, b) => a + b.value, 0);
 
-      const chart = {
-        labels: experienceLabels,
-        datasets: [
-          {
-            data: counts,
-            backgroundColor: segmentColors,
-            hoverOffset: 20,
-          },
-        ],
-      };
-
-      setChartData({ chart, totalCount });
+      setChartData(formattedData);
+      setTotal(totalCount); // Added state update for chart center total
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Error fetching data.');
       setChartData(null);
@@ -112,25 +117,22 @@ export default function ExperienceDonutChart() {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appliedFilters]);
 
-  useEffect(() => {
-    const handleClickOutside = e => {
-      if (!e.target.closest(`.${styles['multi-select-wrapper']}`)) {
-        setDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  const onRolesChange = e => {
+    setSelectedRoles(Array.from(e.target.selectedOptions, o => o.value));
+  };
 
   const applyFilters = () => {
-    setAppliedFilters({
-      startDate,
-      endDate,
-      roles: selectedRoles,
-    });
-    setDropdownOpen(false);
+    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+      setError(null);
+      setChartData(null);
+      setTotal(0);
+      setLoading(false);
+      return;
+    }
+    setAppliedFilters({ startDate, endDate, roles: selectedRoles });
   };
 
   const resetFilters = () => {
@@ -138,46 +140,15 @@ export default function ExperienceDonutChart() {
     setEndDate('');
     setSelectedRoles([]);
     setAppliedFilters({ startDate: '', endDate: '', roles: [] });
-    setDropdownOpen(false);
   };
 
-  const toggleRole = role => {
-    setSelectedRoles(prev =>
-      prev.includes(role) ? prev.filter(r => r !== role) : [...prev, role],
-    );
-  };
-
-  const removeRole = role => {
-    setSelectedRoles(prev => prev.filter(r => r !== role));
-    setAppliedFilters(prev => ({
-      ...prev,
-      roles: prev.roles.filter(r => r !== role),
-    }));
-  };
-
-  const renderOuterLabel = ({
-    cx,
-    cy,
-    midAngle,
-    innerRadius,
-    outerRadius,
-    percent,
-    index,
-    value,
-  }) => {
-    if (value === 0) return null;
-
-    const RADIAN = Math.PI / 180;
-    const radius = outerRadius + 20;
-    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-    const y = cy + radius * Math.sin(-midAngle * RADIAN);
-    const percentValue = (percent * 100).toFixed(0);
-    const labelText = `${EXPERIENCE_LABELS[index]} (${percentValue}%)`;
+  const DetailsPanel = () => {
+    if (!chartData || total === 0) return null;
 
     return (
       <div className={styles['chart-details']}>
         {chartData.map((d, idx) => {
-          const pct = ((d.value / total) * 100).toFixed(1);
+          const pct = total > 0 ? ((d.value / total) * 100).toFixed(1) : 0;
           return (
             <div
               key={d.name}
@@ -199,10 +170,11 @@ export default function ExperienceDonutChart() {
   const CustomTooltip = ({ active, payload }) => {
     if (!active || !payload?.length) return null;
     const d = payload[0]?.payload;
-    const pct = ((d.value / total) * 100).toFixed(1);
+    const pct = total > 0 ? ((d.value / total) * 100).toFixed(1) : 0;
 
     return (
       <div className={styles['custom-tooltip']}>
+        {/* Corrected tooltip to use name and value from payload for visibility */}
         <strong>{d.name}</strong>
         <br />
         Count: {d.value}
@@ -214,139 +186,134 @@ export default function ExperienceDonutChart() {
 
   return (
     <div
-      className={`${styles['experience-donut-chart']} ${
-        darkMode ? styles['experience-donut-chart-dark-mode'] : ''
-      }`}
+      className={`${styles['experience-donut-chart']} ${darkMode &&
+        styles['experience-donut-chart-dark-mode']}`}
     >
-      <h2>Applicants by Experience</h2>
+      <div className={styles['experience-chart-container']}>
+        <div className={styles['chart-header']}>
+          <h2 className={styles['chart-title']}>Applicants by Experience</h2>
+        </div>
 
-      {/* FILTERS ROW */}
-      <div className={styles['filter-row']}>
-        <input
-          type="date"
-          value={startDate}
-          onChange={e => setStartDate(e.target.value)}
-          className={styles['filter-input']}
-        />
-        <input
-          type="date"
-          value={endDate}
-          onChange={e => setEndDate(e.target.value)}
-          className={styles['filter-input']}
-        />
+        <section className={styles['filter-section']}>
+          <div className={styles['filter-row']}>
+            <div className={styles['filter-group']}>
+              <label className={styles['filter-label']} htmlFor="startDate">
+                Start Date
+              </label>
+              <input
+                id="startDate"
+                type="date"
+                className={styles['filter-input']}
+                value={startDate}
+                onChange={e => setStartDate(e.target.value)}
+              />
+            </div>
 
-        {/* Multi-select dropdown */}
-        <div className={styles['multi-select-wrapper']}>
-          <div
-            className={styles['multi-select-input']}
-            onClick={() => setDropdownOpen(prev => !prev)}
-            role="button"
-            tabIndex={0}
-            onKeyDown={e => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                setDropdownOpen(prev => !prev);
-              }
-            }}
-          >
-            <span className={selectedRoles.length === 0 ? styles['placeholder-text'] : ''}>
-              {selectedRoles.length === 0 ? 'All Roles' : `${selectedRoles.length} selected`}
-            </span>
+            <div className={styles['filter-group']}>
+              <label className={styles['filter-label']} htmlFor="endDate">
+                End Date
+              </label>
+              <input
+                id="endDate"
+                type="date"
+                className={styles['filter-input']}
+                value={endDate}
+                onChange={e => setEndDate(e.target.value)}
+              />
+            </div>
 
-            <span style={{ marginLeft: 'auto' }}>▾</span>
+            <div className={styles['filter-group']}>
+              <label className={styles['filter-label']} htmlFor="roles">
+                Roles
+              </label>
+              <select
+                id="roles"
+                className={styles['filter-select']}
+                multiple
+                value={selectedRoles}
+                onChange={onRolesChange}
+              >
+                <option value="Frontend Developer">Frontend Developer</option>
+                <option value="DevOps Engineer">DevOps Engineer</option>
+                <option value="Project Manager">Project Manager</option>
+                <option value="Junior Developer">Junior Developer</option>
+                <option value="Full Stack Developer">Full Stack Developer</option>
+              </select>
+            </div>
           </div>
-          {dropdownOpen && (
-            <div className={styles['multi-select-options']}>
-              {ROLE_OPTIONS.map(role => (
-                <div
-                  key={role}
-                  className={styles['multi-select-option']}
-                  onClick={() => toggleRole(role)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      toggleRole(role);
-                    }
-                  }}
-                >
-                  <input type="checkbox" readOnly checked={selectedRoles.includes(role)} />
-                  <span>{role}</span>
+
+          <div className={styles['filter-actions']}>
+            <button className={`${styles.btn} ${styles.primary}`} onClick={applyFilters}>
+              Apply
+            </button>
+            <button
+              className={`${styles.btn} ${styles.ghost}`}
+              onClick={resetFilters}
+              disabled={!hasFilters}
+            >
+              Reset
+            </button>
+          </div>
+        </section>
+
+        <section className={styles['chart-section']}>
+          <div className={styles['chart-area']}>
+            {loading && <Spinner />}
+
+            {!loading && !error && chartData && total > 0 && (
+              <>
+                <div className={styles['chart-canvas']}>
+                  <ResponsiveContainer width="100%" aspect={1}>
+                    <PieChart>
+                      <Pie
+                        data={chartData}
+                        cx="50%"
+                        cy="50%"
+                        dataKey="value"
+                        innerRadius="55%"
+                        outerRadius="82%"
+                        stroke={darkMode ? '#1c2441' : '#fff'}
+                        strokeWidth={3}
+                        onMouseEnter={(_, i) => setActiveIndex(i)}
+                        onMouseLeave={() => setActiveIndex(null)}
+                      >
+                        {chartData.map((d, i) => (
+                          <Cell
+                            key={d.name}
+                            fill={d.color}
+                            className={styles['pie-cell']}
+                            opacity={activeIndex == null || activeIndex === i ? 1 : 0.45}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip content={<CustomTooltip />} />
+                      <text
+                        x="50%"
+                        y="50%"
+                        dominantBaseline="middle"
+                        textAnchor="middle"
+                        style={{
+                          fontWeight: 800,
+                          fontSize: '1rem',
+                          fill: darkMode ? '#f8fafc' : '#0f172a',
+                        }}
+                      >
+                        {total.toLocaleString()}
+                      </text>
+                    </PieChart>
+                  </ResponsiveContainer>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
 
-        <button className={`${styles.btn} ${styles.primary}`} onClick={applyFilters}>
-          Apply
-        </button>
-        <button
-          className={`${styles.btn} ${styles.ghost}`}
-          onClick={resetFilters}
-          disabled={!hasFilters}
-        >
-          Reset
-        </button>
+                <DetailsPanel />
+              </>
+            )}
+
+            {!loading && !error && (!chartData || total === 0) && <p>No Data Available 😢</p>}
+
+            {!loading && error && <p className={styles['error-message']}>{error}</p>}
+          </div>
+        </section>
       </div>
-
-      {/* DISPLAY SELECTED ROLES AS CHIPS */}
-      {selectedRoles.length > 0 && (
-        <div className={styles['selected-roles-container']}>
-          {selectedRoles.map(role => (
-            <div key={role} className={styles['role-chip']}>
-              {role}
-              <span
-                className={styles['role-chip-close']}
-                onClick={() => removeRole(role)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    removeRole(role);
-                  }
-                }}
-              >
-                ×
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* CHART AND STATES */}
-      {loading && <p>Loading...</p>}
-      {!loading && error && <p>{error}</p>}
-      {!loading && !error && total === 0 && <p>No Data Available</p>}
-
-      {!loading && !error && total > 0 && (
-        <div className={styles['chart-wrapper']}>
-          <ResponsiveContainer width="100%" height={350}>
-            <PieChart>
-              <Pie
-                data={filteredChartData}
-                dataKey="value"
-                nameKey="name"
-                innerRadius={80}
-                outerRadius={120}
-                label={renderOuterLabel}
-                labelLine={true}
-              >
-                {filteredChartData.map((entry, index) => (
-                  <Cell key={entry.name} fill={entry.color} />
-                ))}
-                <LabelList
-                  dataKey="value"
-                  position="inside"
-                  formatter={value => (value > 0 ? value : '')}
-                  fill={'#fff'}
-                  fontSize={14}
-                  fontWeight={700}
-                />
-              </Pie>
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-      )}
     </div>
   );
 }
