@@ -578,7 +578,6 @@ function PinQueuePane({ queueProps }) {
     handlePublishQueueEntry,
     handleRemoveQueueEntry,
     copyToClipboard,
-    openPinterestCreate,
   } = queueProps;
 
   return (
@@ -748,13 +747,6 @@ PinQueuePane.propTypes = {
     copyToClipboard: PropTypes.func.isRequired,
     openPinterestCreate: PropTypes.func.isRequired,
   }).isRequired,
-};
-
-PinQueuePane.defaultProps = {
-  queueProps: {
-    editingQueueEntryId: null,
-    activeQueueEntry: null,
-  },
 };
 
 // ─── PinterestPinComposer ─────────────────────────────────────────────────────
