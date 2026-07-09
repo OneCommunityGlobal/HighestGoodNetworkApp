@@ -31,6 +31,22 @@
   z-index: 9999;
 }
 
+.review-button-dropdown-dark {
+  background-color: #1c2541 !important;
+  border-color: #3a506b !important;
+}
+
+.dark-mode-btn {
+  background-color: #1c2541 !important;
+  color: #f1f1f1 !important;
+}
+
+.dark-mode-btn:hover,
+.dark-mode-btn:focus {
+  background-color: #3a506b !important;
+  color: #fff !important;
+}
+
 .reviewBtn-dropdown-wrapper {
   display: inline-flex;
   align-items: center;
