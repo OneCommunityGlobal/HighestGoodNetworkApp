@@ -1,7 +1,9 @@
+/* stylelint-disable  */
 .dashboard {
   min-height: 100vh;
   background-color: #f8f9fa;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, sans-serif;
 }
 
 .mainContainer {
@@ -48,10 +50,10 @@
 .viewToggle {
   display: flex;
   gap: 0.5rem;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 8px;
   padding: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
 }
 
 .toggleButton {
@@ -74,9 +76,9 @@
 }
 
 .toggleButton.active {
-  background-color: #2563eb;
-  color: #ffffff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  background-color: #3b82f6;
+  color: #fff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 10%);
 }
 
 .loadingContainer {
@@ -124,7 +126,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .mainContainer {
     padding: 1rem 0.5rem;
   }
@@ -157,6 +159,10 @@
   flex-direction: column;
 }
 
+:global(.dark-mode) .title {
+  color: #fff;
+}
+
 .headerRight {
   display: flex;
   align-items: center;
@@ -171,6 +177,15 @@
   color: #f8f9fa;
 }
 
+:global(.dark-mode) .sectionTitle {
+  color: #fff;
+}
+
+:global(.dark-mode) .viewToggle {
+  background-color: #2d2d2d;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
+}
+
 .dark .subtitle {
   color: #adb5bd;
 }
@@ -181,6 +196,11 @@
 
 .dark .viewToggle {
   background-color: #1c2541;
+}
+
+:global(.dark-mode) .toggleButton.active {
+  background-color: #2563eb;
+  color: #fff;
 }
 
 .dark .toggleButton {

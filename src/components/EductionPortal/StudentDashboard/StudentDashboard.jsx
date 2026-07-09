@@ -10,6 +10,7 @@ import SummaryCards from './SummaryCards';
 import TaskTimer from './TaskTimer';
 import { fetchStudentTasks, markStudentTaskAsDone } from '~/actions/studentTasks';
 import { fetchIntermediateTasks, markIntermediateTaskAsDone } from '~/actions/intermediateTasks';
+import HoursLogPanel from '../StudentTasks/HoursLogPanel';
 
 const StudentDashboard = () => {
   const [viewMode, setViewMode] = useState('card');
@@ -21,6 +22,7 @@ const StudentDashboard = () => {
   });
   const [intermediateTasks, setIntermediateTasks] = useState({});
   const [expandedTasks, setExpandedTasks] = useState({});
+  const [activeLogTask, setActiveLogTask] = useState(null);
 
   const dispatch = useDispatch();
   const authUser = useSelector(state => state.auth.user);
@@ -42,8 +44,8 @@ const StudentDashboard = () => {
             if (subTasks && subTasks.length > 0) {
               intermediateTasksData[task.id] = subTasks;
             }
-          } catch (error) {
-            console.error('Failed to fetch intermediate tasks:', error);
+          } catch {
+            // Non-critical: skip if intermediate tasks unavailable for this task
           }
         }
 
@@ -90,6 +92,12 @@ const StudentDashboard = () => {
     return `${wholeHours}h ${minutes}min`;
   };
 
+  // Handle log time
+  const handleLogTime = task => {
+    setActiveLogTask(task);
+  };
+
+  // Handle mark as done
   const handleMarkAsDone = async taskId => {
     dispatch(markStudentTaskAsDone(taskId));
   };
@@ -204,6 +212,7 @@ const StudentDashboard = () => {
             <TaskCardView
               tasks={tasks}
               onMarkAsDone={handleMarkAsDone}
+              onLogTime={handleLogTime}
               intermediateTasks={intermediateTasks}
               expandedTasks={expandedTasks}
               onToggleIntermediateTasks={toggleIntermediateTasks}
@@ -214,6 +223,7 @@ const StudentDashboard = () => {
             <TaskListView
               tasks={tasks}
               onMarkAsDone={handleMarkAsDone}
+              onLogTime={handleLogTime}
               intermediateTasks={intermediateTasks}
               expandedTasks={expandedTasks}
               onToggleIntermediateTasks={toggleIntermediateTasks}
@@ -223,6 +233,15 @@ const StudentDashboard = () => {
           )}
         </div>
       </Container>
+
+      {/* Hours Log Panel */}
+      {activeLogTask && (
+        <HoursLogPanel
+          task={activeLogTask}
+          darkMode={darkMode}
+          onClose={() => setActiveLogTask(null)}
+        />
+      )}
     </div>
   );
 };
