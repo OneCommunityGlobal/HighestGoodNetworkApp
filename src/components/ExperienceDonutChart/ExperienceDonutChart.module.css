@@ -806,3 +806,49 @@
     background: #1c2441;
   }
 }
+
+/* ROLES MULTI-SELECT */
+.ExperienceRoleMultiSelect :global(.experience-role-multi-select__option--is-focused.experience-role-multi-select__option--is-selected) {
+  background-color: #007bff;
+}
+
+:global(.dark-mode) .ExperienceRoleMultiSelect :global(.experience-role-multi-select__control) {
+  background-color: #1f2937;
+  border-color: #5a6c7d;
+  border-radius: 0.5rem;
+}
+
+:global(.dark-mode) .ExperienceRoleMultiSelect :global(.experience-role-multi-select__input) {
+  color: #ffffff !important;
+}
+
+:global(.dark-mode) .ExperienceRoleMultiSelect :global(.experience-role-multi-select__menu) {
+  background-color: #1f2937;
+  border-color: #5a6c7d;
+  color: #ffffff;
+}
+
+:global(.dark-mode) .ExperienceRoleMultiSelect :global(.experience-role-multi-select__option--is-focused) {
+    background-color: #374151;
+}
+
+:global(.dark-mode) .ExperienceRoleMultiSelect :global(.experience-role-multi-select__option--is-focused.experience-role-multi-select__option--is-selected) {
+  background-color: #007bff;
+}
+
+:global(.dark-mode) .ExperienceRoleMultiSelect :global(.experience-role-multi-select__clear-indicator:hover), :global(.dark-mode) .ExperienceRoleMultiSelect :global(.experience-role-multi-select__dropdown-indicator:hover) {
+  color: #ffffff;
+}
+
+.selectedPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 6px;
+  font-size: 13px;
+  line-height: 1.2;
+  white-space: nowrap;
+  border-radius: 0.3rem;
+  background-color: #007bff;
+  color: #ffffff;
+}

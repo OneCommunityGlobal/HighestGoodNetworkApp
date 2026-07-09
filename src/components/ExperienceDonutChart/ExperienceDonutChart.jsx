@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios'; // Added axios import to fix network request errors
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import Select, { components } from 'react-select';
 import styles from './ExperienceDonutChart.module.css';
 
 const SEGMENT_COLORS = [
@@ -15,6 +16,14 @@ const SEGMENT_COLORS = [
 ];
 
 const EXPERIENCE_LABELS = ['0-1 years', '1-3 years', '3-5 years', '5+ years'];
+
+const AVAILABLE_ROLES = [
+  { value: 'Frontend Developer', label: 'Frontend Developer' },
+  { value: 'DevOps Engineer', label: 'DevOps Engineer' },
+  { value: 'Project Manager', label: 'Project Manager' },
+  { value: 'Junior Developer', label: 'Junior Developer' },
+  { value: 'Full Stack Developer', label: 'Full Stack Developer' },
+];
 
 // ✅ Crypto-based RNG (safer than Math.random)
 function secureRandomInt(min, max) {
@@ -120,8 +129,8 @@ export default function ExperienceDonutChart() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appliedFilters]);
 
-  const onRolesChange = e => {
-    setSelectedRoles(Array.from(e.target.selectedOptions, o => o.value));
+  const handleRoleChange = selectedOptions => {
+    setSelectedRoles(selectedOptions || []);
   };
 
   const applyFilters = () => {
@@ -132,7 +141,11 @@ export default function ExperienceDonutChart() {
       setLoading(false);
       return;
     }
-    setAppliedFilters({ startDate, endDate, roles: selectedRoles });
+    setAppliedFilters({
+      startDate,
+      endDate,
+      roles: selectedRoles.map(r => r.value),
+    });
   };
 
   const resetFilters = () => {
@@ -226,19 +239,47 @@ export default function ExperienceDonutChart() {
               <label className={styles['filter-label']} htmlFor="roles">
                 Roles
               </label>
-              <select
-                id="roles"
-                className={styles['filter-select']}
-                multiple
+              <Select
+                isMulti
+                options={AVAILABLE_ROLES}
                 value={selectedRoles}
-                onChange={onRolesChange}
-              >
-                <option value="Frontend Developer">Frontend Developer</option>
-                <option value="DevOps Engineer">DevOps Engineer</option>
-                <option value="Project Manager">Project Manager</option>
-                <option value="Junior Developer">Junior Developer</option>
-                <option value="Full Stack Developer">Full Stack Developer</option>
-              </select>
+                onChange={handleRoleChange}
+                placeholder="Select roles…"
+                className={`${styles.ExperienceRoleMultiSelect} ${
+                  darkMode ? styles.selectDark : ''
+                }`}
+                classNamePrefix="experience-role-multi-select"
+                isDisabled={AVAILABLE_ROLES.length === 0}
+                closeMenuOnSelect={false}
+                hideSelectedOptions={false}
+                components={{
+                  MultiValue: props => {
+                    const { index, getValue, children, ...rest } = props;
+                    const allSelected = getValue();
+                    const isOverflowPill = index === 1 && allSelected.length > 1;
+                    if (!isOverflowPill && index > 0) return null;
+                    const pillClasses = `${styles.selectedPill}`;
+                    if (isOverflowPill) {
+                      const overflowCount = allSelected.length - 1;
+                      return (
+                        <div className={pillClasses}>
+                          + {overflowCount} role{overflowCount === 1 ? '' : 's'} selected
+                        </div>
+                      );
+                    }
+                    return (
+                      <div className={pillClasses} {...rest}>
+                        {children}
+                      </div>
+                    );
+                  },
+                  MultiValueRemove: props => {
+                    const { index, getValue } = props;
+                    if (index === 0 && getValue().length > 1) return null;
+                    return <components.MultiValueRemove {...props} />;
+                  },
+                }}
+              />
             </div>
           </div>
 
