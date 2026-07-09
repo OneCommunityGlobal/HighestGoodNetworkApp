@@ -70,9 +70,7 @@ export const TeamMembersPopup = React.memo(props => {
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon');
   const canAssignTeamToUsers = hasPermission('assignTeamToUsers');
   const [filterMode, setFilterMode] = useState('active'); // 'active' | 'all' | 'inactive'
-  const colorForMode = m =>
-    m === 'inactive' ? '#ccc' : m === 'active' ? 'limegreen' : 'dodgerblue';
-  const textColorForMode = m => (m === 'inactive' ? 'black' : 'white');
+
   const [selectedUser, setSelectedUser] = useState(undefined);
   const [isValidUser, setIsValidUser] = useState(true);
   const [searchText, setSearchText] = useState('');
