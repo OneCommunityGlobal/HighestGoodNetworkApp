@@ -42,7 +42,9 @@ const StudentDashboard = () => {
             if (subTasks && subTasks.length > 0) {
               intermediateTasksData[task.id] = subTasks;
             }
-          } catch (error) {}
+          } catch (error) {
+            console.error('Failed to fetch intermediate tasks:', error);
+          }
         }
 
         setIntermediateTasks(intermediateTasksData);
@@ -100,7 +102,9 @@ const StudentDashboard = () => {
         ...prev,
         [parentTaskId]: updatedTasks || [],
       }));
-    } catch (error) {}
+    } catch (error) {
+      console.error('Failed to mark intermediate task as done:', error);
+    }
   };
 
   const toggleIntermediateTasks = async taskId => {

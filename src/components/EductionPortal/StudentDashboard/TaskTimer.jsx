@@ -12,8 +12,7 @@ import AccessAlarmRoundedIcon from '@mui/icons-material/AccessAlarmRounded';
 const pad2 = n => String(n).padStart(2, '0');
 
 const BASE_URL =
-  (import.meta.env.VITE_API_BASE_URL && import.meta.env.VITE_API_BASE_URL.replace(/\/$/, '')) ||
-  'http://localhost:4500';
+  import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') || 'http://localhost:4500';
 
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
@@ -23,7 +22,6 @@ export default function TaskTimer({ userid }) {
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
   const [timerInfo, setTimerInfo] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [displayRemaining, setDisplayRemaining] = useState(null);
 
@@ -54,7 +52,6 @@ export default function TaskTimer({ userid }) {
   }, []);
 
   const callTimerApi = useCallback(async (path, method = 'GET', body = null) => {
-    setLoading(true);
     setError('');
 
     try {
@@ -83,8 +80,6 @@ export default function TaskTimer({ userid }) {
     } catch (err) {
       setError(err.message);
       throw err;
-    } finally {
-      setLoading(false);
     }
   }, [token, userid]);
 
@@ -158,7 +153,7 @@ export default function TaskTimer({ userid }) {
   }, [timerInfo]);
 
   useEffect(() => {
-    if (!timerInfo || timerInfo.status !== 'running' || displayRemaining == null) return;
+    if (timerInfo?.status !== 'running' || displayRemaining == null) return;
 
     const id = setInterval(
       () => setDisplayRemaining(prev => (prev && prev > 1000 ? prev - 1000 : 0)),
@@ -237,7 +232,7 @@ export default function TaskTimer({ userid }) {
       </div>
 
       {open && (
-        <div className={styles.backdrop} role="button" tabIndex={0} onClick={() => setOpen(false)}>
+        <div className={styles.backdrop} onClick={() => setOpen(false)} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') setOpen(false); }}>
           <div
             className={`${styles.card} ${darkMode ? styles.darkCard : ''}`}
             onClick={e => e.stopPropagation()}
