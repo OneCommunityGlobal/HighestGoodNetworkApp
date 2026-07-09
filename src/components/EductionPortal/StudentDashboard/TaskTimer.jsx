@@ -236,6 +236,7 @@ export default function TaskTimer({ userid }) {
           <div
             className={`${styles.card} ${darkMode ? styles.darkCard : ''}`}
             onClick={e => e.stopPropagation()}
+            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') e.stopPropagation(); }}
           >
             <div className={styles.cardHeader}>
               <span className={styles.headerTitle}>Timer</span>
