@@ -9,31 +9,73 @@ import { NavItem } from 'reactstrap';
 import { connect, useSelector } from 'react-redux';
 import {
   fetchAllMembers,
-  findUserProfiles,
+  findProjectMembers,
   getAllUserProfiles,
   assignProject,
-} from './../../../actions/projectMembers';
+ foundUsers } from '~/actions/projectMembers';
+ 
 import Member from './Member';
 import FoundUser from './FoundUser';
-import './members.css';
-import hasPermission from '../../../utils/permissions';
+import styles from './members.module.css';
+import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
 import ToggleSwitch from '~/components/UserProfile/UserProfileEdit/ToggleSwitch';
 import Loading from '~/components/common/Loading';
 import { getProjectDetail } from '~/actions/project';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import { ENDPOINTS } from '~/utils/URL';
+import PropTypes from 'prop-types';
 
 const Members = props => {
   const darkMode = props.state.theme.darkMode;
   const projectId = props.match.params.projectId;
   const [showFindUserList, setShowFindUserList] = useState(false);
   const [membersList, setMembersList] = useState(props.state.projectMembers.members);
-  const [lastTimeoutId, setLastTimeoutId] = useState(null);
+  const [query, setQuery] = useState('');
+  const [searchText, setSearchText] = useState('');
+
   const [isLoading, setIsLoading] = useState(true);
+
+  const [allProfiles, setAllProfiles] = useState([]);
+
+  useEffect(() => {
+    axios.get(ENDPOINTS.USER_PROFILES)
+      .then(response => {
+        setAllProfiles(response.data || []);
+      })
+      .catch(() => {
+        setAllProfiles([]);
+      });
+  }, []);
+
+  const filteredUsers = searchText.trim()
+    ? allProfiles
+        .filter(user => {
+          const search = searchText.trim().toLowerCase();
+          return (
+            (user.firstName && user.firstName.toLowerCase().includes(search)) ||
+            (user.lastName && user.lastName.toLowerCase().includes(search)) ||
+            (user.email && user.email.toLowerCase().includes(search))
+          );
+        })
+        .map(user => ({
+          fullName: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+          email: user.email,
+          assigned: false,
+          _id: user._id,
+        }))
+        .filter(user => !!user.email)
+    : [];
 
   const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
   const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
+  const [, setAllProjectMembers] = useState([]); 
+  const [isValid, setIsValid] = useState(true);
 
   const projectName = useSelector(state => state.projectById?.projectName || '');
+
+  const [filterMode, setFilterMode] = useState("find");
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -66,7 +108,7 @@ const Members = props => {
   }, [props.state.projectMembers.members, isLoading]);
 
   // ADDED: State for toggling display of active members only
-  const [showActiveMembersOnly, setShowActiveMembersOnly] = useState(true);
+  const [showActiveMembersOnly, setShowActiveMembersOnly] = useState(false);
 
   // avoid re-filtering the netire list on every render
   const displayedMembers = useMemo(
@@ -80,24 +122,42 @@ const Members = props => {
     setMembersList(props.state.projectMembers.members);
   };
 
+
   // Waits for user to finsh typing before calling API
   const handleInputChange = event => {
     const currentValue = event.target.value;
-  
-    if (lastTimeoutId !== null) clearTimeout(lastTimeoutId);
-  
-    const timeoutId = setTimeout(() => {
-      // Only call findUserProfiles if there's actual search text
-      if (currentValue && currentValue.trim() !== '') {
-        props.findUserProfiles(currentValue);
-        setShowFindUserList(true);
-      } else {
-        setShowFindUserList(false);
-      }
-    }, 300);
-  
-    setLastTimeoutId(timeoutId);
+    setQuery(currentValue);
+    setSearchText(currentValue);
+    setShowFindUserList(false);
   };
+
+  const handleFind = () => {
+  const q = (searchText || '').trim();
+    if (!q) {
+      setShowFindUserList(false);
+      return;
+    }
+    setIsValid(false);
+    props.findProjectMembers(projectId, q);
+    setTimeout(() => setIsValid(true), 0);
+    setShowFindUserList(true);
+    setFilterMode("find");
+  };
+  
+useEffect(() => {
+  if (props.state.projectMembers.fetching || !isValid) return;
+  if (props.state.projectMembers.foundUsers.length > 0) {
+    setAllProjectMembers(props.state.projectMembers.foundUsers);
+  } else if (searchText.trim() !== '') {
+    toast.error('No matching users found.');
+  }
+  setIsValid(false);
+}, [
+  props.state.projectMembers.foundUsers,
+  props.state.projectMembers.fetching,
+  isValid,
+  searchText,
+]);
 
   return (
     <React.Fragment>
@@ -152,48 +212,76 @@ const Members = props => {
           {canAssignProjectToUsers ? (
             <div className="input-group" id="new_project">
               <div className="input-group-prepend">
-                <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>Find user</span>
+                {/* <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>Find user</span> */}
+                <span className={`input-group-text ${darkMode ? styles.searchLabelDark : ''}`}>Find user</span>
               </div>
 
               <input
+                // eslint-disable-next-line jsx-a11y/no-autofocus
                 autoFocus
                 type="text"
                 className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
                 aria-label="Search user"
-                placeholder="Name"
-                onChange={e => handleInputChange(e)}
+                placeholder="Enter name to search.."
+                value={searchText}
+                onChange={handleInputChange}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleFind();
+                  }
+                }}
                 disabled={showActiveMembersOnly}
               />
               <div className="input-group-append">
                 <button
-                  className="btn btn-outline-primary"
+                className={`btn ${filterMode === "find"  ? "btn-primary" : "btn-outline-primary"}`}
+                type="button"
+                disabled={!searchText.trim()}   // enabled only when there’s something to find
+                onClick={handleFind}
+                >
+                  Find 
+                  </button>
+                  <button
+                  className={`btn ${filterMode === "all"  ? "btn-primary" : "btn-outline-primary"}`}
                   type="button"
-                  onClick={e => {
+                  onClick={() => {
+                    // optional “All users” button
                     props.getAllUserProfiles();
                     setShowFindUserList(true);
+                    setFilterMode("all");
                   }}
-                  disabled={showActiveMembersOnly}
-                >
+                  >
                   All
-                </button>
-                <button
+                  </button>
+                  <button
                   className="btn btn-outline-danger"
                   type="button"
-                  onClick={() => setShowFindUserList(false)} // Hide the find user list
-                >
+                  onClick={() => {
+                    setShowFindUserList(false);
+                    setQuery('');
+                    props.clearFoundUsers();
+                    setSearchText('');            // clear the visible input too
+                    // clear previous suggestions in Redux (you already imported foundUsers)
+                    if (props.dispatch) props.dispatch(foundUsers([]));
+                  }}
+                  >
+                  
+                  
                   Cancel
                 </button>
               </div>
+              
             </div>
           ) : null}
+           
 
-          {showFindUserList && props.state.projectMembers.foundUsers.length > 0 ? (
+
+          {showFindUserList && filteredUsers.length > 0 && (
             <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
               <thead>
                 <tr className={darkMode ? 'bg-space-cadet' : ''}>
-                  <th scope="col" id="foundUsers__order">
-                    #
-                  </th>
+                  <th scope="col" id="foundUsers__order">#</th>
                   <th scope="col">Name</th>
                   <th scope="col">Email</th>
                   {canAssignProjectToUsers ? (
@@ -205,29 +293,28 @@ const Members = props => {
                         onClick={() => assignAll()}
                         style={darkMode ? {} : boxStyle}
                       >
-                        +All
-                      </button>
+                        All
+                        </button>
                     </th>
                   ) : null}
                 </tr>
               </thead>
               <tbody>
-                {props.state.projectMembers.foundUsers.map((user, i) => (
+                {filteredUsers.map((user, i) => (
                   <FoundUser
                     index={i}
                     key={user._id}
                     projectId={projectId}
                     uid={user._id}
+                    fullName={user.fullName}
                     email={user.email}
-                    firstName={user.firstName}
-                    lastName={user.lastName}
                     assigned={user.assigned}
                     darkMode={darkMode}
                   />
                 ))}
               </tbody>
             </table>
-          ) : null}
+          )}
 
           <ToggleSwitch
             switchType="active_members"
@@ -270,12 +357,37 @@ const Members = props => {
   );
 };
 
+Members.propTypes = {
+  state: PropTypes.shape({
+    theme: PropTypes.shape({
+      darkMode: PropTypes.bool,
+    }),
+    projectMembers: PropTypes.shape({
+      members: PropTypes.array,
+      foundUsers: PropTypes.array,
+    }),
+  }).isRequired,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      projectId: PropTypes.string,
+    }),
+  }).isRequired,
+  fetchAllMembers: PropTypes.func.isRequired,
+  findProjectMembers: PropTypes.func.isRequired,
+  getAllUserProfiles: PropTypes.func.isRequired,
+  assignProject: PropTypes.func.isRequired,
+  getProjectDetail: PropTypes.func.isRequired,
+  hasPermission: PropTypes.func.isRequired,
+  clearFoundUsers: PropTypes.func,
+  dispatch: PropTypes.func,
+};
+
 const mapStateToProps = state => {
   return { state };
 };
 export default connect(mapStateToProps, {
   fetchAllMembers,
-  findUserProfiles,
+  findProjectMembers,
   getAllUserProfiles,
   assignProject,
   hasPermission,

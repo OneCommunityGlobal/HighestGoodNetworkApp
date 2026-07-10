@@ -1,27 +1,46 @@
+/* eslint-disable testing-library/no-node-access */
 import { useSelector } from 'react-redux';
+import { useRef } from 'react';
+import EventParticipationHeader from './EventParticipationHeader';
+import EngagementSummaryCards from './EngagementSummaryCards';
+import EventTypePieChart from './EventTypePieChart';
+import EngagementBarChart from './EngagementBarChart';
+import AnalyticsNavigation from './AnalyticsNavigation';
 import MyCases from './MyCases';
 import DropOffTracking from './DropOffTracking';
 import NoShowInsights from './NoShowInsights';
-import './Participation.css';
+import styles from './Participation.module.css';
 
-function LandingPage() {
+function EventParticipation() {
   const darkMode = useSelector(state => state.theme.darkMode);
+  const exportRef = useRef(null);
+
   return (
     <div
-      className={`participation-landing-page ${darkMode ? 'participation-landing-page-dark' : ''}`}
+      ref={exportRef}
+      className={`participation-landing-page-global ${styles.participationLandingPage} ${
+        darkMode ? styles.participationLandingPageDark : ''
+      }`}
     >
-      <header>
-        <h1 className={`landing-page-header ${darkMode ? 'landing-page-header-dark' : ''}`}>
-          HGN Management System
-        </h1>
-      </header>
+      <EventParticipationHeader />
+      <EngagementSummaryCards />
+      <div className={styles.chartsSection}>
+        <div className={styles.chartsRow}>
+          <EventTypePieChart />
+          <EngagementBarChart />
+        </div>
+      </div>
+
       <MyCases />
-      <div className="analytics-section">
+      <div className={`${styles.analyticsSection}`}>
         <DropOffTracking />
         <NoShowInsights />
       </div>
+      <AnalyticsNavigation />
+
+      {/* Print-only footer note */}
     </div>
   );
 }
 
-export default LandingPage;
+export default EventParticipation;

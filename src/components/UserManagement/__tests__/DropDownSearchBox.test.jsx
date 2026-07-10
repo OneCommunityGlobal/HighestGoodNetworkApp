@@ -1,6 +1,6 @@
 // import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
-import { configureStore } from 'redux-mock-store';
+import { render, fireEvent, screen } from '@testing-library/react';
+import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import DropDownSearchBox from '../DropDownSearchBox';
 
@@ -38,15 +38,15 @@ describe('DropDownSearchBox', () => {
     );
 
     // Check for placeholder
-    expect(getByText('All users')).toBeInTheDocument();
+    expect(screen.getByText('All users')).toBeInTheDocument();
 
     // Check for options
     mockItems.forEach(item => {
-      expect(getByText(item)).toBeInTheDocument();
+      expect(screen.getByText(item)).toBeInTheDocument();
     });
 
     // Check dropdown role
-    expect(getByRole('combobox')).toBeInTheDocument();
+    expect(screen.getByRole('combobox')).toBeInTheDocument();
   });
 
   it('calls searchCallback with correct value on selection change', () => {
@@ -63,7 +63,7 @@ describe('DropDownSearchBox', () => {
         />
       </Provider>,
     );
-    const select = getByRole('combobox');
+    const select = screen.getByRole('combobox');
 
     fireEvent.change(select, { target: { value: mockItems[1] } });
 

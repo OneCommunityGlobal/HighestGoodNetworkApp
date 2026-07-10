@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Spinner, ListGroup, ListGroupItem } from 'reactstrap';
 import { IoReload } from 'react-icons/io5';
-import './autoComplete.css';
+import './autoComplete.module.css';
 
 export const AutoCompleteTeamCode = props => {
   const {
@@ -102,6 +102,7 @@ export const AutoCompleteTeamCode = props => {
                       key={item}
                       className={`${arrayInputAutoComplete.length <= 3 ? '' : 'col col-cols-3'}`}
                     >
+                      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions */}
                       <p
                         className={classNameStyleP}
                         style={
