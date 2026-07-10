@@ -125,8 +125,12 @@
 }
 
 .lbRegisterDark .lbRegisterMain h2,
-.lbRegisterDark .lbRegisterMain p {
+.lbRegisterDark .lbRegisterMain > p {
   color: #e2e8f0;
+}
+
+.lbRegisterDark .lbRegisterError {
+  color: #f87171;
 }
 
 .lbRegisterDark .lbRegisterForm input {

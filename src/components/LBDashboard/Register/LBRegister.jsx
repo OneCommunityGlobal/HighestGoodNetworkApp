@@ -28,9 +28,17 @@ function LBRegister() {
     password: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*()\-_=+{};:,<.>]{8,}$/,
   };
 
+  const errorMessages = {
+    firstName: 'First name must be at least 2 letters (letters only)',
+    lastName: 'Last name must be at least 2 letters (letters only)',
+    email: 'Please enter a valid email address',
+    phone: 'Please enter a valid phone number (7-15 digits)',
+    password: 'Password must be at least 8 characters and include a letter and a number',
+  };
+
   const validateInput = (name, value) => {
     if (!regex[name].test(value)) {
-      return `Invalid ${name}`;
+      return errorMessages[name];
     }
     return '';
   };
