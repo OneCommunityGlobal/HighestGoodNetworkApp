@@ -28,7 +28,6 @@ import UserTableHeader from './UserTableHeader';
 import UserTableData from './UserTableData';
 import UserTableSearchHeader from './UserTableSearchHeader';
 import UserTableFooter from './UserTableFooter';
-import styles from './usermanagement.module.css';
 import UserSearchPanel from './UserSearchPanel';
 import NewUserPopup from './NewUserPopup';
 import ActivationDatePopup from './ActivationDatePopup';
@@ -41,7 +40,6 @@ import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import LogTimeOffPopUp from './logTimeOffPopUp';
 import SetupNewUserPopup from './setupNewUserPopup';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
-import { Spinner } from 'reactstrap';
 import { scheduleDeactivationAction, activateUserAction, deactivateImmediatelyAction } from '../../actions/userLifecycleActions';
 
 class UserManagement extends React.PureComponent {
@@ -111,7 +109,7 @@ class UserManagement extends React.PureComponent {
     if (prevProps.state.theme.darkMode !== this.props.state.theme.darkMode) {
       const { darkMode } = this.props.state.theme;
       // eslint-disable-next-line no-unused-vars
-      const { userProfiles, fetching } = this.props.state.allUserProfiles;
+      // const { userProfiles, fetching } = this.props.state.allUserProfiles;
       const { roles: rolesPermissions } = this.props.state.role;
       const { requests: timeOffRequests } = this.props.state.timeOffRequests;
 
@@ -148,7 +146,7 @@ class UserManagement extends React.PureComponent {
     ) {
       const { darkMode } = this.props.state.theme;
       // eslint-disable-next-line no-unused-vars
-      const { userProfiles, fetching } = this.props.state.allUserProfiles;
+      // const { userProfiles, fetching } = this.props.state.allUserProfiles;
       const { roles: rolesPermissions } = this.props.state.role;
       const { requests: timeOffRequests } = this.props.state.timeOffRequests;
       this.getFilteredData(
@@ -426,30 +424,7 @@ class UserManagement extends React.PureComponent {
       await this.reactivateUser(user);
     }
   };
-
-  onUserUpdate = updatedUser => {
-    const { userProfiles } = this.props.state.allUserProfiles;
-
-    // Update the userProfiles array with the updated user
-    const updatedProfiles = userProfiles.map(user =>
-      user._id === updatedUser._id ? updatedUser : user,
-    );
-
-    // Update the state with the new userProfiles
-    this.props.state.allUserProfiles.userProfiles = updatedProfiles;
-
-    // Re-render the table
-    this.getFilteredData(
-      updatedProfiles,
-      this.props.state.role.roles,
-      this.props.state.timeOffRequests.requests,
-      this.props.state.theme.darkMode,
-      this.state.editable,
-      this.state.isMobile,
-      this.state.mobileFontSize,
-    );
-  };
-
+  
   reactivateUser = async (user = this.state.selectedUser) => {
     await activateUserAction(
       this.props.dispatch,
@@ -542,25 +517,6 @@ class UserManagement extends React.PureComponent {
       activeInactivePopupOpen: true,
       selectedUser: user,
     });
-  };
-
-  /**
-   * Callback to trigger the status change on confirmation ok click.
-   */
-  setActiveInactive = isActive => {
-    this.setState({
-      activeInactivePopupOpen: false,
-      selectedUser: undefined,
-    });
-
-    this.props.updateUserStatus(
-      this.state.selectedUser,
-      isActive ? UserStatus.Active : UserStatus.InActive,
-      undefined,
-    );
-    // ).finally(() => {
-    //  this.setState({ isUpdating: false });
-    // });
   };
 
   activeInactivePopupClose = () => {
@@ -757,7 +713,7 @@ class UserManagement extends React.PureComponent {
                 <UserSearchPanel
                   onSearch={this.onWildCardSearch}
                   searchText={this.state.wildCardSearchText}
-                  onActiveFiter={this.onActiveFiter}
+                  onActiveFilter={this.onActiveFilter}
                   onNewUserClick={this.onNewUserClick}
                   handleNewUserSetupPopup={this.handleNewUserSetupPopup}
                   handleSetupHistoryPopup={this.handleSetupHistoryPopup}
