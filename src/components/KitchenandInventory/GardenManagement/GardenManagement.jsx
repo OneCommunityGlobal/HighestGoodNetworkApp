@@ -131,6 +131,7 @@ const formatDateDisplay = dateStr => {
 function AddEventModal({ sectionTitle, newEvent, setNewEvent, darkMode, onClose, onAdd }) {
   const [yieldError, setYieldError] = useState('');
   const dm = darkMode ? styles.dark : '';
+  const today = new Date().toISOString().split('T')[0];
 
   const handleAdd = () => {
     if (newEvent.yieldKg !== '' && Number(newEvent.yieldKg) < 0) {
@@ -164,6 +165,7 @@ function AddEventModal({ sectionTitle, newEvent, setNewEvent, darkMode, onClose,
           type="date"
           className={`${styles.modalInput} ${dm}`}
           value={newEvent.fromDate}
+          min={today}
           onChange={e => {
             const newFrom = e.target.value;
             setNewEvent(prev => ({
@@ -183,7 +185,7 @@ function AddEventModal({ sectionTitle, newEvent, setNewEvent, darkMode, onClose,
           type="date"
           className={`${styles.modalInput} ${dm}`}
           value={newEvent.toDate}
-          min={newEvent.fromDate || undefined}
+          min={newEvent.fromDate || today}
           onChange={e => setNewEvent({ ...newEvent, toDate: e.target.value })}
           style={darkMode ? { colorScheme: 'dark' } : {}}
         />
