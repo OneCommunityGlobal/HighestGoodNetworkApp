@@ -87,9 +87,8 @@ function AssignBadge(props) {
 
       if (safePrev.includes(user._id)) {
         return safePrev.filter(id => id !== user._id);
-      } else {
-        return [...safePrev, user._id];
       }
+      return [...safePrev, user._id];
     });
   };
 
