@@ -132,6 +132,7 @@ function PromotionTable() {
     setProcessingLoading(true);
     try {
       const selectedMemberIds = eligibilityData.filter(m => m.promote).map(m => m.reviewerId);
+      console.log('Selected member IDs for promotion:', selectedMemberIds);
       toast.success(
         `Processing promotions for ${selectedMemberIds.length} member(s). This may take a few moments. Please wait...`,
       );
@@ -142,7 +143,10 @@ function PromotionTable() {
       }
 
       await postPromotionEligibility(selectedMemberIds, requestor?.userid);
-      await fetchEligibilityData();
+      const newEligibilityData = eligibilityData
+        .filter(m => !selectedMemberIds.includes(m.reviewerId))
+        .map(m => ({ ...m, promote: false }));
+      setEligibilityData(newEligibilityData);
 
       toast.success(`Promotions processed successfully for ${selectedMemberIds.length} member(s).`);
     } catch (e) {
