@@ -4,6 +4,12 @@ import { useRef, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilePdf } from '@fortawesome/free-solid-svg-icons';
+import { useRef } from 'react';
+import EventParticipationHeader from './EventParticipationHeader';
+import EngagementSummaryCards from './EngagementSummaryCards';
+import EventTypePieChart from './EventTypePieChart';
+import EngagementBarChart from './EngagementBarChart';
+import AnalyticsNavigation from './AnalyticsNavigation';
 import MyCases from './MyCases';
 import DropOffTracking from './DropOffTracking';
 import NoShowInsights from './NoShowInsights';
@@ -52,48 +58,14 @@ function EventParticipation() {
         darkMode ? styles.participationLandingPageDark : ''
       }`}
     >
-      {/* Print-only page title header */}
-      <header
-        className={`${styles.landingPageHeaderContainer} ${styles.avoidBreak} ${styles.noPrintGap}`}
-      >
-        <h1
-          className={`${styles.landingPageHeader} ${darkMode ? styles.landingPageHeaderDark : ''}`}
-        >
-          Social And Recreational Management
-        </h1>
-        <div className={styles.headerActions}>
-          <button
-            className={`${styles.savePdfBtn} ${
-              darkMode ? styles.savePdfBtnDark : styles.savePdfBtnLight
-            } ${styles.noPrint}`}
-            onClick={handleSaveAsPDF}
-            disabled={exporting}
-            aria-busy={exporting}
-          >
-            {exporting ? (
-              'Preparing…'
-            ) : (
-              <>
-                <FontAwesomeIcon icon={faFilePdf} style={{ marginRight: '6px' }} />
-                Save as PDF
-              </>
-            )}
-          </button>
-
-          <select
-            className={`${styles.organizerDropdown} ${
-              darkMode ? styles.organizerDropdownDark : ''
-            }`}
-            value={selectedOrganizer}
-            onChange={e => setSelectedOrganizer(e.target.value)}
-          >
-            <option value="All Organizers">All Organizers</option>
-            <option value="Organizer 1">Organizer 1</option>
-            <option value="Organizer 2">Organizer 2</option>
-            <option value="Organizer 3">Organizer 3</option>
-          </select>
+      <EventParticipationHeader />
+      <EngagementSummaryCards />
+      <div className={styles.chartsSection}>
+        <div className={styles.chartsRow}>
+          <EventTypePieChart />
+          <EngagementBarChart />
         </div>
-      </header>
+      </div>
 
       <div className={styles.subPageNav}>
         <button
@@ -139,6 +111,7 @@ function EventParticipation() {
             </p>
             <span className={styles.actionTrendUp}>↑ 8%</span>
           </div>
+      <AnalyticsNavigation />
 
           <div className={`${styles.printOnly} ${styles.printFooter}`}>
             Generated from Event Participation
