@@ -171,10 +171,17 @@ export default function ExperienceDonutChart() {
               onMouseEnter={() => setActiveIndex(idx)}
               onMouseLeave={() => setActiveIndex(null)}
             >
-              <span className={styles['detail-dot']} style={{ backgroundColor: d.color }} />
-              <span className={styles['detail-name']}>{d.name}</span>
-              <span className={styles['detail-count']}>{d.value.toLocaleString()}</span>
-              <span className={styles['detail-pct']}>{pct}%</span>
+              <div className={styles['detail-header']}>
+                <span className={styles['detail-dot']} style={{ backgroundColor: d.color }} />
+                <span className={styles['detail-name']}>{d.name}</span>
+              </div>
+              <div className={styles['detail-stats']}>
+                <div className={styles['detail-stats-count']}>
+                  <span className={styles['detail-count']}>{d.value.toLocaleString()}</span>
+                  <span className={styles['detail-applicant-label']}> applicants</span>
+                </div>
+                <span className={styles['detail-pct']}>{pct}%</span>
+              </div>
             </div>
           );
         })}
@@ -216,7 +223,7 @@ export default function ExperienceDonutChart() {
 
         <section className={styles['filter-section']}>
           <div className={styles['filter-row']}>
-            <div className={styles['filter-group']}>
+            <div className={clsx(styles['filter-group'], styles['filter-group-date'])}>
               <label className={styles['filter-label']} htmlFor="startDate">
                 Start Date
               </label>
@@ -254,7 +261,7 @@ export default function ExperienceDonutChart() {
               />
             </div>
 
-            <div className={styles['filter-group']}>
+            <div className={clsx(styles['filter-group'], styles['filter-group-date'])}>
               <label className={styles['filter-label']} htmlFor="endDate">
                 End Date
               </label>
@@ -288,7 +295,7 @@ export default function ExperienceDonutChart() {
               />
             </div>
 
-            <div className={styles['filter-group']}>
+            <div className={clsx(styles['filter-group'], styles['filter-group-role'])}>
               <label className={styles['filter-label']} htmlFor="roles">
                 Roles
               </label>
@@ -297,7 +304,7 @@ export default function ExperienceDonutChart() {
                 options={AVAILABLE_ROLES}
                 value={selectedRoles}
                 onChange={handleRoleChange}
-                placeholder="Select roles…"
+                placeholder="Select roles"
                 className={`${styles.ExperienceRoleMultiSelect} ${
                   darkMode ? styles.selectDark : ''
                 }`}
@@ -305,6 +312,7 @@ export default function ExperienceDonutChart() {
                 isDisabled={AVAILABLE_ROLES.length === 0}
                 closeMenuOnSelect={false}
                 hideSelectedOptions={false}
+                menuPlacement="auto"
                 components={{
                   MultiValue: props => {
                     const { index, getValue, children, ...rest } = props;
@@ -337,15 +345,19 @@ export default function ExperienceDonutChart() {
           </div>
 
           <div className={styles['filter-actions']}>
-            <button className={`${styles.btn} ${styles.primary}`} onClick={applyFilters}>
+            <button
+              className={clsx(styles['filter-button'], styles['filter-button-apply'])}
+              //  className={`${styles.btn} ${styles.primary}`} onClick={applyFilters}
+            >
               Apply
             </button>
             <button
-              className={`${styles.btn} ${styles.ghost}`}
+              className={clsx(styles['filter-button'], styles['filter-button-clear-all'])}
+              // className={`${styles.btn} ${styles.ghost}`}
               onClick={resetFilters}
               disabled={!hasFilters}
             >
-              Reset
+              Clear all
             </button>
           </div>
         </section>

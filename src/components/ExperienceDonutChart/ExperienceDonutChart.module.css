@@ -8,21 +8,21 @@
 
 /* ===================== Container ===================== */
 .experience-chart-container {
-  position: relative;
+  /* position: relative; */
   width: 100%;
-  max-width: 960px;
-  margin: 2rem auto;
-  padding: 1.75rem;
+  max-width: 1280px;
+  /* margin: 2rem auto; */
+  padding: 1rem;
   background: #fff;
   border-radius: 16px;
-  box-shadow: 0 1px 0 rgb(0 0 0 / 4%), 0 12px 30px rgb(2 6 23 / 8%);
-  display: flex;
+  /* box-shadow: 0 1px 0 rgb(0 0 0 / 4%), 0 12px 30px rgb(2 6 23 / 8%); */
+  /* display: flex;
   flex-direction: column;
-  align-items: center; /* center children horizontally */
-  text-align: center; /* center text by default */
+  align-items: center;
+  text-align: center; */
 }
 
-.experience-chart-container::before {
+/* .experience-chart-container::before {
   content: '';
   position: absolute;
   inset: 0 auto auto 0;
@@ -37,7 +37,7 @@
     #ff9f40 100%
   );
   border-radius: 16px 16px 0 0;
-}
+} */
 
 /* ===================== Header ===================== */
 .chart-header {
@@ -48,9 +48,8 @@
 .chart-title {
   margin: 0;
   color: #0f172a;
-  letter-spacing: -0.015em;
   font-size: 1.6rem;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 /* ===================== Filters ===================== */
@@ -63,24 +62,37 @@
   width: 100%;
 }
 
+:global(.dark-mode) .experience-donut-chart .filter-section {
+  background-color: #1B2A41;
+  color: #e0e0e0;
+}
+
 .filter-row {
   display: flex;
-  flex-wrap: wrap;
-  /* justify-content: center !important; */
-  align-items: center; /* equal vertical alignment */
-  gap: 1rem;
+  flex-direction: column;
+  /* row-gap: 1rem;   */
   width: 100%;
   margin: 0 auto;
-  margin-bottom: 10px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  /* row-gap: 0.5rem; */
+  margin-bottom: 1rem;
+}
+
+.experience-donut-chart .filter-group :global(.react-datepicker-wrapper) {
+  width: 100%;
 }
 
 .filter-label {
   display: block;
-  margin-bottom: 0.35rem;
   font-size: 0.9rem;
   font-weight: 700;
   color: #334155;
-  letter-spacing: 0.04em;
+  margin-bottom: 0.3rem;
 }
 
 .filter-input,
@@ -121,6 +133,36 @@
   justify-content: center;
   align-items: center;
 }
+
+.filter-actions .filter-button {
+  display: block;
+  height: 40px;
+  padding-inline: 1.4rem;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.filter-actions .filter-button-apply {
+  background-color: #3b82f6;
+  color: #fff;
+}
+
+.filter-actions .filter-button-clear-all {
+  /* background-color: #3b82f6; */
+  /* color: #fff; */
+  color: #0000007b;
+  border: 1px solid #0000007b;
+}
+
+.filter-actions .filter-button-clear-all:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+
 
 .btn {
   appearance: none;
@@ -197,7 +239,6 @@
   align-items: center; /* center horizontally */
   justify-content: center; /* center vertically within area */
   text-align: center;
-  padding-right: 100px !important;
 }
 
 .chart-canvas {
@@ -228,83 +269,117 @@
 
 /* ===================== Details (below donut) ===================== */
 .chart-details {
-  max-width: 960px; /* match .experience-chart-container */
+  max-width: 1280px;
   width: 100%;
   margin: 1rem auto 0;
-  padding-inline: 0.5rem;
+  /* padding-inline: 0.5rem; */
   display: grid;
   gap: 0.8rem;
 
   /* single strategy: fluid columns that never force overflow */
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   place-items: stretch stretch;
-  overflow-x: hidden; /* safety net */
 }
 
 /* 2) Let cards fill the grid cell on desktop (remove narrow cap) */
-.detail-item {
-  display: grid;
-  grid-template-columns: 12px 1fr auto auto; /* dot | name | count | pct */
-  column-gap: 8px;
-  align-items: center;
+.chart-details .detail-item {
   width: 100%;
-  max-width: none; /* fill grid column, don't cap */
-  padding: 0.6rem 0.75rem;
+  background-color: #f1f5f9; /* stronger than #f8fafc, more visible */
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgb(2 6 23 / 6%);
+  /* background-clip: padding-box; */
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.2s ease,
+    transform 0.15s ease;
+}
+
+.chart-details .detail-item:hover {
+  /* background-color:  hsl(210, 40%, 90%); */
+  /* background-color: hsl(217, 91%, 95%); */
+  border-color: hsl(214, 32%, 60%);
+  transform: translateY(-2px);
+}
+
+/* .detail-item { */
+  /* display: grid;
+  grid-template-columns: 12px 1fr auto auto; */
+  /* display: flex; */
+  /* column-gap: 8px; */
+  /* align-items: center; */
+  /* width: 100%; */
+  /* padding: 0.6rem 0.75rem; */
 
   /* text-align: left; */
 
   /* prevent overflow on long role names / unbroken strings */
-  overflow-wrap: anywhere;
+  /* overflow-wrap: anywhere;
   text-align: center;
-  justify-content: center;
-}
+  justify-content: center; */
+/* } */
 
-.detail-item:hover,
+/* .detail-item:hover,
 .detail-item.active {
-  background: #111827;
-  border-color: #0b1220;
-  box-shadow: 0 8px 18px rgb(2 6 23 / 12%);
-  transform: translateY(-1px);
+  background: #ffffff;
+  border-color: #3b82f6;
+  box-shadow: 0 8px 18px rgb(59 130 246 / 18%);
+  transform: translateY(-2px);
+} */
+
+/* .detail-item:hover span,
+.detail-item.active span {
+  color: #0f172a !important;
+} */
+
+.detail-header {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  column-gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
-.detail-item:hover span,
-.detail-item.active span {
-  color: #fff !important;
+.detail-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
 }
 
 /* Map children into the grid */
 .detail-dot {
-  grid-column: 1;
-  width: 10px;
-  height: 10px;
+  display: block;
+  /* grid-column: 1; */
+  width: 1rem;
+  height: 1rem;
   border-radius: 999px;
   box-shadow: 0 0 0 2px rgb(255 255 255 / 70%);
 }
 
 .detail-name {
-  grid-column: 2;
-  font-weight: 800;
+  font-weight: 700;
   color: #0f172a;
   font-size: 0.9rem;
 }
 
 .detail-sep {
   display: none;
-} /* we don’t need the bullet in a grid layout */
+}
+
 .detail-count {
-  grid-column: 3;
-  font-weight: 800;
+  font-size: 2rem;
+  font-weight: 700;
   color: #0f172a;
 }
 
 .detail-sub {
   display: none;
-} /* optional: hide to keep cards compact; show if you prefer */
+}
+
 .detail-pct {
-  grid-column: 4;
+  /* grid-column: 4; */
+  font-size: 0.9rem;
   margin-left: 0;
-  font-weight: 800;
-  color: #2563eb;
+  color: hsl(0, 0%, 60%);
 }
 
 /* .detail-item:hover,
@@ -317,41 +392,41 @@
 
 /* .detail-item:hover span,
 .detail-item.active span { color: #ffffff !important; } */
-.detail-item:hover .detail-pct,
+/* .detail-item:hover .detail-pct,
 .detail-item.active .detail-pct {
   color: #93c5fd !important;
-} /* keep contrast on hover */
+} */
 
 @media (width <= 640px) {
   .chart-details {
     grid-template-columns: 1fr;
   }
 
-  .detail-item {
-    display: flex; /* simpler on mobile */
+  /* .detail-item {
+    display: flex;
     flex-wrap: wrap;
     justify-content: center;
     text-align: center;
     gap: 0.45rem 0.6rem;
-  }
+  } */
 
-  .detail-dot {
+  /* .detail-dot {
     order: 1;
-  }
+  } */
 
-  .detail-name {
+  /* .detail-name {
     order: 2;
     width: 100%;
     font-size: 1rem;
-  }
+  } */
 
   .detail-sep {
     display: none;
   }
 
-  .detail-count {
+  /* .detail-count {
     order: 3;
-  }
+  } */
 
   .detail-sub {
     order: 4;
@@ -359,9 +434,9 @@
     color: #475569;
   }
 
-  .detail-pct {
+  /* .detail-pct {
     order: 5;
-  }
+  } */
 }
 
 /* ===================== States ===================== */
@@ -488,9 +563,9 @@
     border: 1px solid #cbd5e1;
   }
 
-  .filter-section {
+  /* .filter-section {
     display: none;
-  }
+  } */
 }
 
 @media (prefers-contrast: more) {
@@ -522,44 +597,35 @@
     grid-template-columns: 1fr;
   }
 
-  .detail-item {
+  /* .detail-item {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     text-align: center;
     gap: 0.45rem 0.6rem;
-  }
+  } */
 
-  .detail-name {
+  /* .detail-name {
     width: 100%;
     font-size: 1rem;
-  }
+  } */
 }
 
 /* --- Ensure detail cards always show a visible background --- */
-.chart-details .detail-item {
-  background-color: #f1f5f9; /* stronger than #f8fafc, more visible */
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgb(2 6 23 / 6%);
-  background-clip: padding-box;
-  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.2s ease,
-    transform 0.15s ease;
-}
 
-/* Keep dark hover/active but ensure contrast is clear */
-.chart-details .detail-item:hover,
+/* Light-mode hover/active: brighter background, accent border, soft shadow */
+/* .chart-details .detail-item:hover,
 .chart-details .detail-item.active {
-  background-color: #111827;
-  border-color: #0b1220;
-  box-shadow: 0 8px 18px rgb(2 6 23 / 12%);
-}
+  background-color: hsl(210, 100%, 81%);
+  border-color: #3b82f6;
+  box-shadow: 0 8px 18px rgb(59 130 246 / 18%);
+} */
 
 /* If your app has global card or utility classes that might strip bg,
    this raises specificity a bit further without !important. */
-.experience-chart-container .chart-details .detail-item {
+/* .experience-chart-container .chart-details .detail-item {
   background-color: #f1f5f9;
-}
+} */
 
 /* Optional: high-contrast users still get borders */
 @media (prefers-contrast: more) {
@@ -568,17 +634,17 @@
   }
 }
 
-/* --- Make chart-driven active state win over base card styles --- */
-.chart-details .detail-item.active {
-  background-color: #111827 !important; /* win against base bg */
-  border-color: #0b1220 !important;
-  box-shadow: 0 8px 18px rgb(2 6 23 / 12%);
-  color: #fff;
-}
+/* --- Make chart-driven active state win over base card styles (light mode) --- */
+/* .chart-details .detail-item.active {
+  background-color: #ffffff !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 8px 18px rgb(59 130 246 / 18%);
+  color: #0f172a;
+} */
 
-.chart-details .detail-item.active span {
-  color: #fff !important; /* keep text readable */
-}
+/* .chart-details .detail-item.active span {
+  color: #0f172a !important;
+} */
 
 /* Optional: smooth the state change */
 
@@ -594,8 +660,8 @@
 .experience-donut-chart-dark-mode .experience-chart-container,
 .experience-donut-chart-dark-mode .chart-section,
 .experience-donut-chart-dark-mode .chart-area {
-  background-color: #1c2441 !important;
-  color: #f1f5f9;
+  /* background-color: #1c2441 !important;
+  color: #f1f5f9; */
 }
 
 .experience-donut-chart-dark-mode {
@@ -624,10 +690,10 @@
 }
 
 /* ===================== Filters ===================== */
-.experience-donut-chart-dark-mode .filter-section {
+/* .experience-donut-chart-dark-mode .filter-section {
   background: #232d53;
   border-color: #3b4a75;
-}
+} */
 
 .experience-donut-chart-dark-mode .filter-label {
   color: #dbe3ff;
@@ -701,10 +767,10 @@
 }
 
 /* Strong contrast on hover/active (details + svg labels) */
-.experience-donut-chart-dark-mode .chart-details .detail-item:hover span,
+/* .experience-donut-chart-dark-mode .chart-details .detail-item:hover span,
 .experience-donut-chart-dark-mode .chart-details .detail-item.active span {
   color: #fff !important;
-}
+} */
 
 .experience-donut-chart-dark-mode .recharts-sector:hover text,
 .experience-donut-chart-dark-mode .recharts-pie-sector:hover text {
@@ -737,12 +803,12 @@
 }
 
 /* Hover/active state harmonized with palette */
-.experience-donut-chart-dark-mode .chart-details .detail-item:hover,
+/* .experience-donut-chart-dark-mode .chart-details .detail-item:hover,
 .experience-donut-chart-dark-mode .chart-details .detail-item.active {
   background-color: #232d53;
   border-color: #1c2441;
   box-shadow: 0 8px 18px rgb(0 0 0 / 45%);
-}
+} */
 
 /* ===================== States (loading, error, empty) ===================== */
 .experience-donut-chart-dark-mode .spinner {
@@ -800,6 +866,10 @@
 }
 
 /* ROLES MULTI-SELECT */
+.ExperienceRoleMultiSelect {
+  width: 100%;
+}
+
 .ExperienceRoleMultiSelect :global(.experience-role-multi-select__option--is-focused.experience-role-multi-select__option--is-selected) {
   background-color: #007bff;
 }
@@ -832,12 +902,31 @@
   color: #ffffff;
 }
 
+.ExperienceRoleMultiSelect :global(.experience-role-multi-select__placeholder) {
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.ExperienceRoleMultiSelect :global(.experience-role-multi-select__menu) {
+  text-align: left;
+}
+
+.ExperienceRoleMultiSelect :global(.experience-role-multi-select__control) {
+  border-color: #e5e7eb;
+  border-radius: 0.5rem;
+}
+
+.ExperienceRoleMultiSelect :global(.experience-role-multi-select__value-container) {
+  padding: 0.2rem 1rem;
+}
+
+
 .selectedPill {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   padding: 3px 6px;
-  font-size: 13px;
+  font-size: 0.875rem;
   line-height: 1.2;
   white-space: nowrap;
   border-radius: 0.3rem;
@@ -979,4 +1068,60 @@
 
 :global(.experience-datepicker-dark .react-datepicker__triangle) {
   display: none;
+}
+
+@media screen and (min-width: 1024px) {
+  .experience-donut-chart .experience-chart-container {
+    margin: 2rem auto;
+  }
+
+  .experience-donut-chart .filter-section {
+    /* display: flex;
+    column-gap: 1rem;
+    align-items: end; */
+  }
+
+  .experience-donut-chart .filter-row {
+    flex-direction: row;
+    column-gap: 0.5rem;
+    flex: 1;
+    margin-bottom: 1rem;
+  }
+
+  .experience-donut-chart .filter-group {
+    margin-bottom: 0;
+    /* flex-direction: row; */
+    /* min-width: 220px; */
+  }
+  
+  .experience-donut-chart .filter-actions {
+    /* flex: 1; */
+    margin-bottom: 0;
+    /* flex-direction: row; */
+    /* min-width: 220px; */
+  }
+
+  .experience-donut-chart .filter-group-date {
+    /* flex-direction: row; */
+    flex: 1;
+    /* min-width: 220px; */
+  }
+
+  .experience-donut-chart .filter-group-role {
+    /* flex-direction: row; */
+    /* flex: 1; */
+  }
+
+  .experienceDateInput {
+    font-size: 1rem;
+  }
+
+  .selectedPill {
+    font-size: 1rem;
+  }
+
+  .ExperienceRoleMultiSelect :global(.experience-role-multi-select__control) {
+    min-width: 415px;
+  }
+
 }
