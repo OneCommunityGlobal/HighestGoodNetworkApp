@@ -1,10 +1,22 @@
-import { CalendarIcon, ClockIcon, StarIcon, UserCircleIcon, UsersIcon } from 'lucide-react';
+import {
+  CalendarIcon,
+  ClockIcon,
+  FileTextIcon,
+  StarIcon,
+  UserCircleIcon,
+  UsersIcon,
+} from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Avatar, AvatarFallback, AvatarImage } from './components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 import { DescriptionSection } from './sections/DescriptionSection';
-import { getEvent, updateDescription, uploadMedia } from '../../../../../api/events';
+import {
+  getEvent,
+  updateDescription,
+  updateSelectedDate,
+  uploadMedia,
+} from '../../../../../api/events';
 import { EventStatusSection } from './sections/EventStatusSection';
 import { ScheduleSection } from './sections/ScheduleSection';
 import styles from './EventPageOrganizer.module.css';
@@ -103,7 +115,21 @@ export const EventPageOrganizer = () => {
                     <CalendarIcon className={`${styles.detailIcon} w-3 h-3.5`} />
                     <span className={styles.detailLabelText}>Date</span>
                   </div>
-                  <div className={styles.detailValue}>{evt?.selectedDate ?? '—'}</div>
+                  <select
+                    className={`${styles.detailValue} ${styles.dateSelect}`}
+                    value={evt?.selectedDate ?? ''}
+                    onChange={async e => {
+                      const date = e.target.value;
+                      await updateSelectedDate(activityId, date);
+                      setEvt(prev => ({ ...prev, selectedDate: date }));
+                    }}
+                  >
+                    {(evt?.availableDates ?? []).map(d => (
+                      <option key={d} value={d}>
+                        {d}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className={styles.detailItem}>
@@ -154,11 +180,7 @@ export const EventPageOrganizer = () => {
 
                 <div className={styles.detailItem}>
                   <div className={styles.detailLabel}>
-                    <img
-                      className="w-[19px] h-[19px]"
-                      alt="Notes"
-                      src="https://c.animaapp.com/mhkba7ef3J2kka/img/notes.png"
-                    />
+                    <FileTextIcon className={`${styles.detailIcon} w-[19px] h-[19px]`} />
                     <span className={styles.detailLabelText}>Status</span>
                   </div>
                   <div className={`${styles.detailValue} ${styles.statusActive}`}>
@@ -191,17 +213,7 @@ export const EventPageOrganizer = () => {
             </div>
 
             <div className={styles.calendarSection}>
-              <div className={styles.statusIndicator}>
-                <div className={styles.statusDot} />
-                <img
-                  className={styles.sortIcon}
-                  alt="Sort down"
-                  src="https://c.animaapp.com/mhkba7ef3J2kka/img/sort-down.png"
-                />
-              </div>
-
               <div className={styles.calendarDivider} />
-
               <ScheduleSection />
             </div>
           </div>

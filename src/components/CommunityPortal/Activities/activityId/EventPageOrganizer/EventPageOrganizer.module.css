@@ -179,6 +179,13 @@
   line-height: 1.5rem;
 }
 
+.dateSelect {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
 .capacityValue {
   font-family: Inter, Helvetica, sans-serif;
   font-weight: 600;

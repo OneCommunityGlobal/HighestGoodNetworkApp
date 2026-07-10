@@ -1,6 +1,6 @@
 import { ImageIcon, XIcon } from 'lucide-react';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button } from '../../components/ui/button';
 import { Textarea } from '../../components/ui/textarea';
@@ -29,52 +29,46 @@ export const DescriptionSection = ({
   const [selectedMedia, setSelectedMedia] = useState([]);
   const [description, setDescription] = useState(initialDescription);
   const darkMode = useSelector(state => state.theme.darkMode);
+  const fileInputRef = useRef(null);
 
   const containerClassName = `${styles.container} ${darkMode ? styles.containerDark : ''}`;
   const textareaClassName = `${styles.textarea} ${darkMode ? styles.textareaDark : ''}`;
   const mediaButtonClassName = `${styles.mediaButton} ${darkMode ? styles.mediaButtonDark : ''}`;
   const addMediaLabelClassName = `${styles.buttonLabel} ${darkMode ? styles.buttonLabelDark : ''}`;
 
-  // Open file picker and upload via provided uploadMediaFn (if any)
-  const handleAddMedia = async () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.multiple = true;
-    input.accept = 'image/*';
+  const handleFileChange = async e => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+    e.target.value = '';
 
-    input.onchange = async e => {
-      const files = Array.from(e.target.files);
-
-      if (uploadMediaFn) {
-        try {
-          const uploads = await Promise.all(files.map(f => uploadMediaFn(activityId, f)));
-          const newMedia = uploads.map(u => ({
-            id: genId(),
-            url: u.url,
-            name: u.name,
-            size: u.size,
-          }));
-          setSelectedMedia(prev => [...prev, ...newMedia]);
-        } catch (err) {
-          if (process.env.NODE_ENV === 'development') {
-            // eslint-disable-next-line no-console
-            console.error('uploadMedia failed', err);
-          }
-        }
-      } else {
-        // fallback: use local preview URLs
-        const newMedia = files.map(file => ({
+    if (uploadMediaFn) {
+      try {
+        const uploads = await Promise.all(files.map(f => uploadMediaFn(activityId, f)));
+        const newMedia = uploads.map(u => ({
           id: genId(),
-          url: URL.createObjectURL(file),
-          name: file.name,
-          size: file.size,
+          url: u.url,
+          name: u.name,
+          size: u.size,
         }));
         setSelectedMedia(prev => [...prev, ...newMedia]);
+      } catch (err) {
+        if (process.env.NODE_ENV === 'development') {
+          // eslint-disable-next-line no-console
+          console.error('uploadMedia failed', err);
+        }
       }
-    };
-
-    input.click();
+    } else {
+      const newMedia = files.map(file => ({
+        id: genId(),
+        url: URL.createObjectURL(file),
+        name: file.name,
+        size: file.size,
+      }));
+      setSelectedMedia(prev => [...prev, ...newMedia]);
+    }
   };
+
+  const handleAddMedia = () => fileInputRef.current?.click();
 
   const handleRemoveMedia = mediaId => {
     setSelectedMedia(prev => {
@@ -140,6 +134,15 @@ export const DescriptionSection = ({
             ))}
           </div>
         )}
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+        />
 
         <div className={styles.actions}>
           <Button variant="secondary" className={mediaButtonClassName} onClick={handleAddMedia}>
