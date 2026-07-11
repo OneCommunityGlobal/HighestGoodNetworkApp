@@ -294,6 +294,16 @@
   }
 }
 
+.headerMargin {
+  height: 20px;
+  background-color: #1b2a41;
+}
+
+.headerMarginLight {
+  height: 20px;
+  background-color: #fff;
+}
+
 @media print {
   * {
     box-sizing: border-box !important;
