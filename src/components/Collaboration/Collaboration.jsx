@@ -9,6 +9,25 @@ import OneCommunityImage from '../../assets/images/logo2.png';
 
 const ADS_PER_PAGE = 18;
 
+/** Keep first listing per title+category (API may return duplicate job records). */
+function dedupeJobsByTitle(jobs) {
+  const seen = new Set();
+  return jobs.filter(job => {
+    if (!job) return false;
+    const title = String(job.title || '')
+      .trim()
+      .toLowerCase();
+    const category = String(job.category || 'General')
+      .trim()
+      .toLowerCase();
+    if (!title) return false;
+    const key = `${title}|${category}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 function Collaboration() {
   const [query, setQuery] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -45,7 +64,7 @@ function Collaboration() {
 
       const res = await fetch(url);
       const data = await res.json();
-      setAllJobs(data.jobs || []);
+      setAllJobs(dedupeJobsByTitle(Array.isArray(data.jobs) ? data.jobs : []));
     } catch {
       toast.error('Error fetching jobs');
     }
@@ -142,7 +161,11 @@ function Collaboration() {
           JSON.stringify(categoriesSelected),
         )}`,
       );
-      setSummaries(await res.json());
+      const data = await res.json();
+      setSummaries({
+        ...data,
+        jobs: dedupeJobsByTitle(Array.isArray(data.jobs) ? data.jobs : []),
+      });
     } catch {
       toast.error('Error fetching summaries');
     }
