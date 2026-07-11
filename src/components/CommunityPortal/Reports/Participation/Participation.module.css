@@ -9,13 +9,9 @@
 
 .participationLandingPageDark {
   width: 100%;
+  min-width: 100%;
   padding: 0 5%;
   max-width: 90%;
-  margin: 0 auto;
-}
-
-.participationLandingPageDark {
-  min-width: 100%;
   margin: 0 auto;
   background-color: #1b2a41;
   color: #fff;
@@ -437,15 +433,9 @@
 
 .infoIcon {
   cursor: pointer;
-  color: #6c757d;
-  font-size: 1rem;
   transition: color 0.2s ease;
-}
-
-.infoIcon {
   margin-left: 6px;
   font-size: 0.85rem;
-  cursor: pointer;
   color: #666;
   vertical-align: middle;
 }
