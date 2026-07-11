@@ -1160,14 +1160,18 @@ export default (
         <CPProtectedRoute
           path="/communityportal/activity/:activityid/comments"
           exact
-          render={() => <Activity initialTab="FAQs" />}
+          render={() => <ActivityFeedback initialTab="FAQs" />}
         />
         <CPProtectedRoute
           path="/communityportal/activity/:activityid/Comments"
           exact
-          render={() => <Activity initialTab="FAQs" />}
+          render={() => <ActivityFeedback initialTab="FAQs" />}
         />
-        <CPProtectedRoute path="/communityportal/activity/:activityId" exact component={Activity} />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityId"
+          exact
+          component={ActivityFeedback}
+        />
         <CPProtectedRoute
           path="/communityportal/reports/participation/demographics"
           exact
