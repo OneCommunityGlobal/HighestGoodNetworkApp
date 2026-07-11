@@ -2307,3 +2307,72 @@
     grid-template-columns: 1fr;
   }
 }
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  width: 420px;
+  max-width: 90vw;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 20%);
+}
+
+.modalDark {
+  background: #1C2541;
+  color: #fff;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.modalClose {
+  background: none;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  color: inherit;
+}
+
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modalMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+}
+
+.modalError {
+  color: #e74c3c;
+  font-size: 0.85rem;
+}
+
+.modalActions {
+  display: flex;
+  gap: 10px;
+}
