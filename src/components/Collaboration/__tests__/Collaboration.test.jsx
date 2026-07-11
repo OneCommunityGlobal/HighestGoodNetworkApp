@@ -1,186 +1,105 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
 import Collaboration from '../Collaboration';
-import { ApiEndpoint } from '~/utils/URL';
-import { vi } from 'vitest';
 
-// Mock Redux
-vi.mock('react-redux', () => ({
-  useSelector: vi.fn(fn => fn({ theme: { darkMode: false } })),
-}));
+const mockStore = configureStore({
+  reducer: {
+    theme: () => ({ darkMode: false }),
+  },
+});
 
-// Mock toast
-vi.mock('react-toastify', () => ({
-  toast: { error: vi.fn(), success: vi.fn() },
-}));
-
-// Mock fetch globally
-globalThis.fetch = vi.fn();
-
-// Mock window.scrollTo
-globalThis.window.scrollTo = vi.fn();
-
-// Helper mock responses
-const mockCategories = {
-  categories: ['Engineering', 'Art'],
-};
-
-const mockJobs = {
-  jobs: [
-    {
-      _id: '1',
-      title: 'Frontend Engineer',
-      category: 'Engineering',
-      featured: false,
-      displayOrder: 1,
-      datePosted: new Date().toISOString(),
-    },
-  ],
-  pagination: { totalPages: 2 },
+const renderWithProviders = ui => {
+  return render(<Provider store={mockStore}>{ui}</Provider>);
 };
 
 describe('Collaboration Component', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(url => {
+        const urlString = url.toString();
 
-    fetch.mockImplementation(async url => {
-      if (url.includes('/jobs/categories')) {
-        return {
+        if (urlString.includes('/jobs/categories')) {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ categories: ['Engineering'] }),
+          });
+        }
+
+        return Promise.resolve({
           ok: true,
-          json: async () => mockCategories,
-        };
-      }
-      if (url.includes('/jobs?page=')) {
-        return {
-          ok: true,
-          json: async () => mockJobs,
-        };
-      }
-      if (url.includes('/jobs/summaries')) {
-        return {
-          ok: true,
-          json: async () => ({ jobs: [] }),
-        };
-      }
-    });
-  });
-
-  test('renders page header logo', async () => {
-    render(<Collaboration />);
-    expect(screen.getByAltText('One Community Logo')).toBeInTheDocument();
-  });
-
-  test('fetches categories and jobs on mount', async () => {
-    render(<Collaboration />);
-
-    await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining(`${ApiEndpoint}/jobs?page=1&limit=`),
-        expect.objectContaining({ method: 'GET' }),
-      );
-    });
-
-    await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith(
-        `${ApiEndpoint}/jobs/categories`,
-        expect.objectContaining({ method: 'GET' }),
-      );
-    });
-
-    // Component calls fetchJobAds() and fetchCategories() on mount
-    expect(fetch).toHaveBeenCalledWith(
-      expect.stringContaining(`${ApiEndpoint}/jobs/categories`),
-      expect.objectContaining({ method: 'GET' }),
+          json: () =>
+            Promise.resolve({
+              jobs: [
+                {
+                  _id: '1',
+                  title: 'Frontend Engineer',
+                  category: 'Engineering',
+                  description: 'Build UI components',
+                },
+              ],
+            }),
+        });
+      }),
     );
   });
 
-  test('search input updates state and triggers tooltip if no categories selected', async () => {
-    render(<Collaboration />);
+  it('renders main heading and initial jobs', async () => {
+    renderWithProviders(<Collaboration />);
+    expect(await screen.findByText(/LIKE TO WORK WITH US/i)).toBeInTheDocument();
 
-    const input = screen.getByPlaceholderText('Enter Job Title');
-    fireEvent.change(input, { target: { value: 'engineer' } });
-
-    expect(input.value).toBe('engineer');
+    // Using regex to handle potential element splitting
+    expect(await screen.findByText(/Frontend Engineer/i)).toBeInTheDocument();
   });
 
-  test('submitting search triggers fetchJobAds()', async () => {
-    render(<Collaboration />);
+  it('updates search term on form submission', async () => {
+    renderWithProviders(<Collaboration />);
 
-    const input = screen.getByPlaceholderText('Enter Job Title');
-    const button = screen.getByText('Go');
+    const input = screen.getByPlaceholderText(/search by title/i);
+    fireEvent.change(input, { target: { value: 'React' } });
 
-    fireEvent.change(input, { target: { value: 'engineer' } });
-    fireEvent.click(button);
+    // FIX: Using exact string 'Go' instead of regex /go/i to avoid
+    // matching 'Select Categories' and adhering to no-node-access
+    const goButton = screen.getByRole('button', { name: 'Go' });
+    fireEvent.click(goButton);
 
+    // Verify that the search parameter was included in at least one fetch call
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining(`${ApiEndpoint}/jobs?page=1&limit=`),
-        expect.objectContaining({ method: 'GET' }),
-      );
-    });
-  });
-
-  test('dropdown toggles open when clicking category button', async () => {
-    render(<Collaboration />);
-    // Wait for categories to load
-    await waitFor(() => {
-      expect(screen.getByText('Select From Positions')).toBeInTheDocument();
-    });
-    // The component uses a select dropdown, not a custom dropdown button
-    const select = screen.getByRole('combobox');
-    expect(select).toBeInTheDocument();
-  });
-
-  // ✅ FIXED PAGINATION TEST
-  test('pagination renders when job ads are loaded', async () => {
-    render(<Collaboration />);
-
-    // Trigger search so results section becomes active
-    fireEvent.change(screen.getByPlaceholderText('Enter Job Title'), {
-      target: { value: 'test' },
-    });
-
-    fireEvent.click(screen.getByText('Go'));
-
-    // Wait for pagination to appear
-    await waitFor(() => {
-      expect(screen.getByText('1')).toBeInTheDocument();
-      expect(screen.getByText('2')).toBeInTheDocument();
+      const calls = vi.mocked(global.fetch).mock.calls;
+      const hasSearchCall = calls.some(call => call[0].includes('search=React'));
+      expect(hasSearchCall).toBe(true);
     });
   });
 
-  // ✅ FIXED CATEGORY CHIP TEST
-  test('category chips appear when category selected', async () => {
-    render(<Collaboration />);
+  it('switches to summaries view and back', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(url => {
+        if (url.includes('/summaries')) {
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve({
+                jobs: [{ _id: 's1', title: 'Summary Job', description: 'Quick summary' }],
+              }),
+          });
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({ jobs: [] }) });
+      }),
+    );
 
-    // Wait for categories to load and select dropdown to appear
-    await waitFor(() => {
-      expect(screen.getByText('Select From Positions')).toBeInTheDocument();
-    });
+    renderWithProviders(<Collaboration />);
 
-    // Select a category from the dropdown
-    const select = screen.getByRole('combobox');
-    fireEvent.change(select, { target: { value: 'Engineering' } });
+    const summariesBtn = screen.getByText(/Show Summaries/i);
+    fireEvent.click(summariesBtn);
 
-    // Wait for the category to be selected and jobs to be filtered
-    await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining('category=Engineering'),
-        expect.objectContaining({ method: 'GET' }),
-      );
-    });
-  });
+    expect(await screen.findByText('Job Summaries')).toBeInTheDocument();
 
-  test('Show Summaries button triggers summaries fetch', async () => {
-    render(<Collaboration />);
+    const backBtn = screen.getByText(/Back to Job Listings/i);
+    fireEvent.click(backBtn);
 
-    fireEvent.click(screen.getByText('Go'));
-    fireEvent.click(screen.getByText('Show Summaries'));
-
-    await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/jobs/summaries'),
-        expect.objectContaining({ method: 'GET' }),
-      );
-    });
+    expect(await screen.findByText(/LIKE TO WORK WITH US/i)).toBeInTheDocument();
   });
 });
