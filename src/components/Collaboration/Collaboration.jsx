@@ -36,16 +36,19 @@ function Collaboration() {
       .replace(/(^-|-$)/g, '');
 
   /* ================= FETCH JOBS ================= */
-  const fetchJobs = async () => {
+  const fetchJobs = async (page = currentPage) => {
     try {
       const url =
         `${ApiEndpoint}/jobs` +
-        `?search=${encodeURIComponent(searchTerm || '')}` +
+        `?page=${page}` +
+        `&limit=${ADS_PER_PAGE}` +
+        `&search=${encodeURIComponent(searchTerm || '')}` +
         `&category=${encodeURIComponent(JSON.stringify(categoriesSelected))}`;
 
       const res = await fetch(url);
       const data = await res.json();
       setAllJobs(data.jobs || []);
+      setTotalPages(Math.max(data.pagination?.totalPages || 1, 1));
     } catch {
       toast.error('Error fetching jobs');
     }
@@ -68,7 +71,8 @@ function Collaboration() {
 
   useEffect(() => {
     setCurrentPage(1);
-    fetchJobs();
+    fetchJobs(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, categoriesSelected]);
 
   /* ================= FILTERED JOBS ================= */
@@ -81,13 +85,16 @@ function Collaboration() {
   }, [allJobs, selectedPosition]);
 
   /* ================= PAGINATION ================= */
+  // Pagination is server-side (see fetchJobs); allJobs already holds only the
+  // current page's results, so jobAds just mirrors the (position-filtered) list.
   useEffect(() => {
-    const start = (currentPage - 1) * ADS_PER_PAGE;
-    setJobAds(filteredJobs.slice(start, start + ADS_PER_PAGE));
+    setJobAds(filteredJobs);
+  }, [filteredJobs]);
 
-    const calculatedPages = Math.ceil(filteredJobs.length / ADS_PER_PAGE);
-    setTotalPages(Math.max(calculatedPages, 1));
-  }, [filteredJobs, currentPage]);
+  const goToPage = page => {
+    setCurrentPage(page);
+    fetchJobs(page);
+  };
 
   /* ================= ESC CLOSE MODAL ================= */
   useEffect(() => {
@@ -305,7 +312,7 @@ function Collaboration() {
           {Array.from({ length: totalPages }, (_, i) => (
             <button
               key={i}
-              onClick={() => setCurrentPage(i + 1)}
+              onClick={() => goToPage(i + 1)}
               className={
                 currentPage === i + 1 ? styles.paginationButtonActive : styles.paginationButton
               }
