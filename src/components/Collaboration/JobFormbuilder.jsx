@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
+import { toast } from 'react-toastify';
 import styles from './JobFormBuilder.module.css';
 import { ENDPOINTS } from '~/utils/URL';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
@@ -86,9 +87,10 @@ function JobFormBuilder() {
     if (referralInputRef.current) {
       try {
         await navigator.clipboard.writeText(referralInputRef.current.value);
+        toast.success('Referral link copied!');
         console.log('Referral link copied!');
-        // you can add a toast/snackbar UI here if needed
       } catch (err) {
+        toast.error('Failed to copy referral link.');
         console.error('Failed to copy referral link:', err);
       }
     }
