@@ -86,9 +86,9 @@
   color: white;
 }
 
-:global(.dark-mode) label,
-:global(.dark-mode) h5,
-:global(.dark-mode) p {
+:global(.dark-mode) .pieChartByProject label,
+:global(.dark-mode) .pieChartByProject h5,
+:global(.dark-mode) .pieChartByProject p {
   color: white !important;
 }
 

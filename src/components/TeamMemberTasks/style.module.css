@@ -1,11 +1,11 @@
 /* stylelint-disable  */
-:global(.dark-mode) .modal-body p {
+:global(.dark-mode) .teamMemberTasksModal :global(.modal-body) p {
   color: #fff;
   background-color: transparent;
   transition: background-color 120ms ease-in-out;
 }
 
-:global(.dark-mode) .modal-body p:hover {
+:global(.dark-mode) .teamMemberTasksModal :global(.modal-body) p:hover {
   background-color: #444;
 }
 
@@ -619,49 +619,6 @@
   justify-content: center;
 }
 
-.dark-mode.multi-select-filter .dropdown-container {
-  background-color: #1c1c1c !important;
-}
-
-.dropdown-content {
-  z-index: 11 !important;
-}
-
-.rmsc.dark-mode .dropdown-content,
-.rmsc.dark-mode .dropdown-content .panel-content {
-  background-color: #1c1c1c !important;
-  color: #fff !important;
-  z-index: 11 !important;
-}
-
-.rmsc.dark-mode .select-item,
-.rmsc.dark-mode .select-item.selected {
-  color: #fff !important;
-  background: #252525 !important;
-}
-
-.rmsc.dark-mode .select-item:hover {
-  background: #252525 !important;
-  color: #fff !important;
-}
-
-.rmsc.dark-mode .search input:focus {
-  background: #252525 !important;
-  color: #fff !important;
-}
-
-:global(.multi-select-filter) {
-  position: relative;
-  z-index: 20;
-}
-
-:global(.multi-select-filter .dropdown-content) {
-  z-index: 30;
-}
-
-:global(.multi-select-filter:focus-within) {
-  z-index: 30;
-}
 
 @media ((width <= 1240px) and (width >= 992px)) {
   .header-box {

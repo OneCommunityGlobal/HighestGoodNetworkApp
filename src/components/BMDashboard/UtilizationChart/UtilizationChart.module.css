@@ -123,30 +123,30 @@
   color: #999;
 }
 
-:global(body:not(.dark-mode)) :global(.react-datepicker) {
+.utilizationChartContainer:not(.darkMode) :global(.react-datepicker) {
   background-color: #fff;
   color: #333;
   border: 1px solid #ccc;
 }
 
-:global(body:not(.dark-mode)) :global(.react-datepicker__header) {
+.utilizationChartContainer:not(.darkMode) :global(.react-datepicker__header) {
   background-color: #f0f0f0;
   border-bottom: 1px solid #ccc;
 }
 
-:global(body:not(.dark-mode)) :global(.react-datepicker__current-month),
-:global(body:not(.dark-mode)) :global(.react-datepicker__day-name),
-:global(body:not(.dark-mode)) :global(.react-datepicker__day) {
+.utilizationChartContainer:not(.darkMode) :global(.react-datepicker__current-month),
+.utilizationChartContainer:not(.darkMode) :global(.react-datepicker__day-name),
+.utilizationChartContainer:not(.darkMode) :global(.react-datepicker__day) {
   color: #333;
 }
 
-:global(body:not(.dark-mode)) :global(.react-datepicker__day:hover) {
+.utilizationChartContainer:not(.darkMode) :global(.react-datepicker__day:hover) {
   background-color: #f0f0f0;
 }
 
-:global(body:not(.dark-mode)) :global(.react-datepicker__day--selected),
-:global(body:not(.dark-mode)) :global(.react-datepicker__day--in-selecting-range),
-:global(body:not(.dark-mode)) :global(.react-datepicker__day--in-range) {
+.utilizationChartContainer:not(.darkMode) :global(.react-datepicker__day--selected),
+.utilizationChartContainer:not(.darkMode) :global(.react-datepicker__day--in-selecting-range),
+.utilizationChartContainer:not(.darkMode) :global(.react-datepicker__day--in-range) {
   background-color: #3b82f6;
   color: #f0f0f0 !important;
 }

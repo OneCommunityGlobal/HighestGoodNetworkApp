@@ -335,74 +335,74 @@
   border-color: rgb(255 255 255 / 20%) !important;
 }
 
-:global(.dark-mode) :global(.react-datepicker),
-:global(.bm-dashboard-dark) :global(.react-datepicker) {
+:global(.dark-mode) .timestampContainer :global(.react-datepicker),
+:global(.bm-dashboard-dark) .timestampContainer :global(.react-datepicker) {
   background-color: #2a2a2a !important;
   border-color: rgb(255 255 255 / 20%) !important;
 }
 
-:global(.dark-mode) :global(.react-datepicker__header),
-:global(.bm-dashboard-dark) :global(.react-datepicker__header) {
+:global(.dark-mode) .timestampContainer :global(.react-datepicker__header),
+:global(.bm-dashboard-dark) .timestampContainer :global(.react-datepicker__header) {
   background-color: #1a3d4d !important;
   border-bottom-color: rgb(255 255 255 / 20%) !important;
 }
 
-:global(.dark-mode) :global(.react-datepicker__current-month),
-:global(.dark-mode) :global(.react-datepicker__day-name),
-:global(.dark-mode) :global(.react-datepicker-time__header),
-:global(.bm-dashboard-dark) :global(.react-datepicker__current-month),
-:global(.bm-dashboard-dark) :global(.react-datepicker__day-name),
-:global(.bm-dashboard-dark) :global(.react-datepicker-time__header) {
+:global(.dark-mode) .timestampContainer :global(.react-datepicker__current-month),
+:global(.dark-mode) .timestampContainer :global(.react-datepicker__day-name),
+:global(.dark-mode) .timestampContainer :global(.react-datepicker-time__header),
+:global(.bm-dashboard-dark) .timestampContainer :global(.react-datepicker__current-month),
+:global(.bm-dashboard-dark) .timestampContainer :global(.react-datepicker__day-name),
+:global(.bm-dashboard-dark) .timestampContainer :global(.react-datepicker-time__header) {
   color: #fff !important;
 }
 
-:global(.dark-mode) :global(.react-datepicker__day),
-:global(.dark-mode) :global(.react-datepicker__time-list-item),
-:global(.bm-dashboard-dark) :global(.react-datepicker__day),
-:global(.bm-dashboard-dark) :global(.react-datepicker__time-list-item) {
+:global(.dark-mode) .timestampContainer :global(.react-datepicker__day),
+:global(.dark-mode) .timestampContainer :global(.react-datepicker__time-list-item),
+:global(.bm-dashboard-dark) .timestampContainer :global(.react-datepicker__day),
+:global(.bm-dashboard-dark) .timestampContainer :global(.react-datepicker__time-list-item) {
   color: #fff !important;
 }
 
-:global(.dark-mode) :global(.react-datepicker__day):hover,
-:global(.dark-mode) :global(.react-datepicker__time-list-item):hover,
-:global(.bm-dashboard-dark) :global(.react-datepicker__day):hover,
-:global(.bm-dashboard-dark) :global(.react-datepicker__time-list-item):hover {
+:global(.dark-mode) .timestampContainer :global(.react-datepicker__day):hover,
+:global(.dark-mode) .timestampContainer :global(.react-datepicker__time-list-item):hover,
+:global(.bm-dashboard-dark) .timestampContainer :global(.react-datepicker__day):hover,
+:global(.bm-dashboard-dark) .timestampContainer :global(.react-datepicker__time-list-item):hover {
   background-color: #4a9bc2 !important;
   color: #fff !important;
 }
 
-:global(.dark-mode) :global(.react-datepicker__day--selected),
-:global(.dark-mode) :global(.react-datepicker__day--keyboard-selected),
-:global(.dark-mode) :global(.react-datepicker__time-list-item--selected),
-:global(.bm-dashboard-dark) :global(.react-datepicker__day--selected),
-:global(.bm-dashboard-dark) :global(.react-datepicker__day--keyboard-selected),
-:global(.bm-dashboard-dark) :global(.react-datepicker__time-list-item--selected) {
+:global(.dark-mode) .timestampContainer :global(.react-datepicker__day--selected),
+:global(.dark-mode) .timestampContainer :global(.react-datepicker__day--keyboard-selected),
+:global(.dark-mode) .timestampContainer :global(.react-datepicker__time-list-item--selected),
+:global(.bm-dashboard-dark) .timestampContainer :global(.react-datepicker__day--selected),
+:global(.bm-dashboard-dark) .timestampContainer :global(.react-datepicker__day--keyboard-selected),
+:global(.bm-dashboard-dark) .timestampContainer :global(.react-datepicker__time-list-item--selected) {
   background-color: #2a5a70 !important;
   color: #fff !important;
 }
 
-:global(.dark-mode) :global(.react-datepicker__time-container),
-:global(.bm-dashboard-dark) :global(.react-datepicker__time-container) {
+:global(.dark-mode) .timestampContainer :global(.react-datepicker__time-container),
+:global(.bm-dashboard-dark) .timestampContainer :global(.react-datepicker__time-container) {
   border-left-color: rgb(255 255 255 / 20%) !important;
 }
 
-:global(.dark-mode) :global(.react-datepicker__time-list),
-:global(.bm-dashboard-dark) :global(.react-datepicker__time-list) {
+:global(.dark-mode) .timestampContainer :global(.react-datepicker__time-list),
+:global(.bm-dashboard-dark) .timestampContainer :global(.react-datepicker__time-list) {
   background-color: #2a2a2a !important;
 }
 
-:global(.dark-mode) :global(.react-datepicker__input-time-container),
-:global(.bm-dashboard-dark) :global(.react-datepicker__input-time-container) {
+:global(.dark-mode) .timestampContainer :global(.react-datepicker__input-time-container),
+:global(.bm-dashboard-dark) .timestampContainer :global(.react-datepicker__input-time-container) {
   background-color: #3a3a3a !important;
 }
 
-:global(.dark-mode) :global(.react-datepicker__navigation-icon::before),
-:global(.bm-dashboard-dark) :global(.react-datepicker__navigation-icon::before) {
+:global(.dark-mode) .timestampContainer :global(.react-datepicker__navigation-icon::before),
+:global(.bm-dashboard-dark) .timestampContainer :global(.react-datepicker__navigation-icon::before) {
   border-color: #fff !important;
 }
 
-:global(.dark-mode) :global(.react-datepicker__day--disabled),
-:global(.bm-dashboard-dark) :global(.react-datepicker__day--disabled) {
+:global(.dark-mode) .timestampContainer :global(.react-datepicker__day--disabled),
+:global(.bm-dashboard-dark) .timestampContainer :global(.react-datepicker__day--disabled) {
   color: #666 !important;
 }
 

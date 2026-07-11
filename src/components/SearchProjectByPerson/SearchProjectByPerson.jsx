@@ -35,7 +35,7 @@ export default function SearchProjectByPerson({
   };
 
   return (
-    <div className="search-project-person">
+    <div className={styles.searchProjectPerson}>
       <form className="input-group mb-2" onSubmit={e => e.preventDefault()}>
         <div className="input-group-prepend">
           <span
@@ -56,13 +56,13 @@ export default function SearchProjectByPerson({
       </form>
 
       {showSuggestions && suggestions?.length > 0 && (
-        <ul className="suggestions-list">
+        <ul className={styles.suggestionsList}>
           {suggestions.map(suggestion => (
-            <li key={suggestion._id} className="suggestion-item">
+            <li key={suggestion._id} className={styles.suggestionItem}>
               <button
                 type="button"
                 onClick={() => handleSuggestionClick(suggestion)}
-                className="suggestion-button"
+                className={styles.suggestionButton}
               >
                 {suggestion.firstName} {suggestion.lastName}
               </button>

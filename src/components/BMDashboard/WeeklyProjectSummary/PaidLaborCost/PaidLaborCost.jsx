@@ -525,7 +525,7 @@ export default function PaidLaborCost() {
                 aria-label="Start Date"
                 className={`${styles.dateInput} ${darkMode ? styles.darkDateInput : ''}`}
                 calendarClassName={
-                  darkMode ? 'paid-labor-cost-dark-calendar' : 'paid-labor-cost-calendar'
+                  darkMode ? styles.paidLaborCostDarkCalendar : styles.paidLaborCostCalendar
                 }
               />
             </div>
@@ -547,7 +547,7 @@ export default function PaidLaborCost() {
                 dateFormat="MM/dd/yyyy"
                 className={`${styles.dateInput} ${darkMode ? styles.darkDateInput : ''}`}
                 calendarClassName={
-                  darkMode ? 'paid-labor-cost-dark-calendar' : 'paid-labor-cost-calendar'
+                  darkMode ? styles.paidLaborCostDarkCalendar : styles.paidLaborCostCalendar
                 }
               />
             </div>

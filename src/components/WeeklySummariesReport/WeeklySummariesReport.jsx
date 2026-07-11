@@ -2252,7 +2252,7 @@ const WeeklySummariesReport = props => {
           </Nav>
           <TabContent
             activeTab={state.activeTab}
-            className={`p-4 ${darkMode ? 'bg-yinmn-blue border-0' : ''}`}
+            className={`p-4 ${styles.tabContent} ${darkMode ? 'bg-yinmn-blue border-0' : ''}`}
           >
             {navItems.map((item, index) => (
               <WeeklySummariesReportTab tabId={item} key={item} hidden={item !== state.activeTab}>

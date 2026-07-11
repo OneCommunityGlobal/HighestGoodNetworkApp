@@ -1,6 +1,6 @@
 /* stylelint-disable no-descending-specificity */
-table thead th,
-table td {
+.itemsListContainer table thead th,
+.itemsListContainer table td {
   vertical-align: middle !important;
 }
 
@@ -28,7 +28,7 @@ table td {
   overflow: scroll;
   font-size: small;
   margin-bottom: 0 !important;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #111827;
 }
 
@@ -86,7 +86,7 @@ table td {
   padding: 5px 34px 5px 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #111827;
 }
 
@@ -159,7 +159,7 @@ table td {
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-bottom: 8px;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #111827;
 }
 
@@ -206,7 +206,7 @@ table td {
   border-top: none;
   border-radius: 0 0 6px 6px;
   flex-wrap: wrap;
-  background-color: #ffffff;
+  background-color: #fff;
 }
 
 .rowsPerPage {
@@ -287,26 +287,26 @@ table td {
 .darkMode select,
 .darkMode option {
   background-color: #1e2632;
-  color: #ffffff;
+  color: #fff;
   border-color: #30363d;
 }
 
 /* Deep component tree modifications under Dark Mode */
 .darkMode .itemsListContainer table {
   background-color: #161b22;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #30363d;
 }
 
 .darkMode .itemsListContainer th {
   background-color: #1f2937;
-  color: #ffffff;
+  color: #fff;
   border-bottom: 1px solid #30363d;
 }
 
 .darkMode .itemsListContainer td {
   border-bottom: 1px solid #30363d;
-  color: #ffffff;
+  color: #fff;
 }
 
 .darkMode .itemsListContainer tr:hover {
@@ -314,7 +314,7 @@ table td {
 }
 
 .darkMode .itemsCell svg {
-  color: #ffffff;
+  color: #fff;
 }
 
 .darkMode .itemsCell svg:hover {
@@ -332,7 +332,7 @@ table td {
 }
 
 .darkMode .clearSearch:hover {
-  color: #ffffff;
+  color: #fff;
 }
 
 .darkMode .paginationBar {
@@ -471,7 +471,7 @@ table td {
 .lightDatePicker :global(.react-datepicker__time-container .react-datepicker__time),
 .lightDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box),
 .lightDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box ul.react-datepicker__time-list) {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   border-color: #d1d5db !important;
   color: #1f2937 !important;
 }

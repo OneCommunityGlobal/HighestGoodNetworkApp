@@ -1087,8 +1087,8 @@ function MostFrequentKeywords() {
             selected={startDate}
             onChange={handleStartDateChange}
             className={`${styles.mfkDatepicker} ${darkMode ? styles.mfkDatepickerDark : ''}`}
-            calendarClassName={darkMode ? 'mfk-dark-calendar' : ''}
-            popperClassName={darkMode ? 'mfk-dark-popper' : ''}
+            calendarClassName={darkMode ? styles.mfkDarkCalendar : ''}
+            popperClassName={darkMode ? styles.mfkDarkPopper : ''}
             placeholderText="Start"
             dateFormat={isMobile ? 'MM/dd/yyyy' : 'MM/dd/yy'}
             maxDate={endDate || today}
@@ -1105,8 +1105,8 @@ function MostFrequentKeywords() {
             selected={endDate}
             onChange={handleEndDateChange}
             className={`${styles.mfkDatepicker} ${darkMode ? styles.mfkDatepickerDark : ''}`}
-            calendarClassName={darkMode ? 'mfk-dark-calendar' : ''}
-            popperClassName={darkMode ? 'mfk-dark-popper' : ''}
+            calendarClassName={darkMode ? styles.mfkDarkCalendar : ''}
+            popperClassName={darkMode ? styles.mfkDarkPopper : ''}
             placeholderText="End"
             dateFormat={isMobile ? 'MM/dd/yyyy' : 'MM/dd/yy'}
             minDate={startDate || new Date('2023-01-01')}

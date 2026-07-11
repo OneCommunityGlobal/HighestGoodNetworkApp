@@ -297,16 +297,16 @@
 }
 
 /* --- RECHARTS FIXES FOR DARK MODE --- */
-:global(.dark-mode) :global(.recharts-text) {
+:global(.dark-mode) .dashboardContainer :global(.recharts-text) {
   fill: #94a3b8 !important;
 }
 
-:global(.dark-mode) :global(.recharts-cartesian-grid-horizontal line),
-:global(.dark-mode) :global(.recharts-cartesian-grid-vertical line) {
+:global(.dark-mode) .dashboardContainer :global(.recharts-cartesian-grid-horizontal line),
+:global(.dark-mode) .dashboardContainer :global(.recharts-cartesian-grid-vertical line) {
   stroke: #334155 !important;
 }
 
-:global(.dark-mode) :global(.recharts-legend-item-text) {
+:global(.dark-mode) .dashboardContainer :global(.recharts-legend-item-text) {
   color: #94a3b8 !important;
 }
 

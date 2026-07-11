@@ -353,7 +353,7 @@ export default function ToolsStoppageHorizontalBarChart() {
                 placeholderText={dateRangeLabel || 'Filter by Date Range'}
                 className={`${styles.datePickerInput} form-control ${darkMode ? 'darkTheme' : ''}`}
                 wrapperClassName={styles.datePickerControl}
-                calendarClassName={darkMode ? 'darkThemeCalendar' : 'customCalendar'}
+                calendarClassName={darkMode ? styles.darkThemeCalendar : styles.customCalendar}
               />
             </div>
             <Button
@@ -369,7 +369,7 @@ export default function ToolsStoppageHorizontalBarChart() {
           </div>
         </Col>
         <Col xs={12} md={4}>
-          <div className={`${darkMode ? styles.darkSelectWrapper : ''}`}>
+          <div className={`${styles.selectWrapper} ${darkMode ? styles.darkSelectWrapper : ''}`}>
             <Select
               className="w-100"
               classNamePrefix="customSelect"

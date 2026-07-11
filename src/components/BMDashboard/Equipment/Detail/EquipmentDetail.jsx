@@ -15,15 +15,15 @@ const CONDITION_OPTIONS = ['New', 'Used', 'Refurbished'];
 
 function DetailItem({ label, value }) {
   return (
-    <p className="EquipmentDetailPage__detail_item">
-      {label}: <span className="EquipmentDetailPage__span">{value}</span>
+    <p className={styles.equipmentDetailPageDetailItem}>
+      {label}: <span className={styles.equipmentDetailPageSpan}>{value}</span>
     </p>
   );
 }
 
 function LinkItem({ label, value }) {
   return (
-    <p className="EquipmentDetailPage__detail_item">
+    <p className={styles.equipmentDetailPageDetailItem}>
       <a href={value} target="_blank" rel="noopener noreferrer">
         {label}
       </a>
@@ -47,15 +47,15 @@ function DescriptionItem({ label, value, title }) {
 
 function RentalDurationItem({ label, from, to }) {
   return (
-    <p className="EquipmentDetailPage__detail_item">
-      {label}: <span className="EquipmentDetailPage__span">{from}</span> to{' '}
-      <span className="EquipmentDetailPage__span">{to}</span>
+    <p className={styles.equipmentDetailPageDetailItem}>
+      {label}: <span className={styles.equipmentDetailPageSpan}>{from}</span> to{' '}
+      <span className={styles.equipmentDetailPageSpan}>{to}</span>
     </p>
   );
 }
 
 function DashedLineItem() {
-  return <div className="EquipmentDetailPage__dashed_line" />;
+  return <div className={styles.equipmentDetailPageDashedLine} />;
 }
 
 function EditableDropdown({ label, value, options, onChange, error }) {

@@ -1,4 +1,5 @@
-* {
+.teams-report-time-logs-wrapper,
+.teams-report-time-logs-wrapper * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;

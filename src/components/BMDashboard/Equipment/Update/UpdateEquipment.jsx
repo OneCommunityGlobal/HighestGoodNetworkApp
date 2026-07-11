@@ -382,7 +382,11 @@ export default function UpdateEquipment() {
     hasFilePreviews && uploadedFilesPreview.some(f => f.status === 'not-saved');
 
   return (
-    <Container className={`${styles1.invFormPageContainer} ${darkMode ? 'dark-mode' : ''}`}>
+    <Container
+      className={`${styles1.invFormPageContainer} ${styles.updateEquipmentPage} ${
+        darkMode ? 'dark-mode' : ''
+      }`}
+    >
       <CheckTypesModal modal={modal} setModal={setModal} type="Equipments" />
       <Row>
         <Col md={12}>

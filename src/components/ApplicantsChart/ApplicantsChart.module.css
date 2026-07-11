@@ -1,76 +1,92 @@
 /* stylelint-disable no-descending-specificity */
 
-/* Dark mode hover styles for DatePicker calendar */
-.text-light .hgn-datepicker-dark-calendar .react-datepicker {
+/* Dark mode styles for DatePicker calendar popup */
+.hgnDatepickerDarkCalendar {
   background-color: #1f2937 !important;
   border: 1px solid #374151 !important;
   border-radius: 0 !important;
 }
 
-.text-light .hgn-datepicker-dark-calendar .react-datepicker__header {
+.hgnDatepickerDarkCalendar :global(.react-datepicker__header) {
   background-color: #111827 !important;
   border-bottom: 1px solid #374151 !important;
   border-radius: 0 !important;
 }
 
-.text-light .hgn-datepicker-dark-calendar .react-datepicker__month-container {
+.hgnDatepickerDarkCalendar :global(.react-datepicker__month-container) {
   background-color: #1f2937 !important;
   border-radius: 0 !important;
 }
 
-.text-light .hgn-datepicker-dark-calendar .react-datepicker__day {
+.hgnDatepickerDarkCalendar :global(.react-datepicker__day) {
   color: #e5e7eb !important;
   border-radius: 0 !important;
 }
 
-.text-light .hgn-datepicker-dark-calendar .react-datepicker__day:hover {
+.hgnDatepickerDarkCalendar :global(.react-datepicker__day:hover) {
   background-color: #374151 !important;
   color: #fff !important;
   border-radius: 0 !important;
 }
 
-.text-light .hgn-datepicker-dark-calendar .react-datepicker__day--selected,
-.text-light .hgn-datepicker-dark-calendar .react-datepicker__day--keyboard-selected {
+.hgnDatepickerDarkCalendar :global(.react-datepicker__day--selected),
+.hgnDatepickerDarkCalendar :global(.react-datepicker__day--keyboard-selected) {
   background-color: #2563eb !important;
   color: #fff !important;
   border-radius: 0 !important;
 }
 
-.text-light .hgn-datepicker-dark-calendar .react-datepicker__day--in-range,
-.text-light .hgn-datepicker-dark-calendar .react-datepicker__day--in-selecting-range {
+.hgnDatepickerDarkCalendar :global(.react-datepicker__day--in-range),
+.hgnDatepickerDarkCalendar :global(.react-datepicker__day--in-selecting-range) {
   background-color: #1e3a8a !important;
   color: #fff !important;
   border-radius: 0 !important;
 }
 
-.text-light .hgn-datepicker-dark-calendar .react-datepicker__current-month,
-.text-light .hgn-datepicker-dark-calendar .react-datepicker__day-name {
+.hgnDatepickerDarkCalendar :global(.react-datepicker__current-month),
+.hgnDatepickerDarkCalendar :global(.react-datepicker__day-name) {
   color: #e5e7eb !important;
 }
 
-.text-light .hgn-datepicker-dark-calendar .react-datepicker__navigation-icon::before {
+.hgnDatepickerDarkCalendar :global(.react-datepicker__navigation-icon::before) {
   border-color: #e5e7eb !important;
 }
 
-/* Dark mode hover for DatePicker input */
-.text-light .hgn-datepicker-dark:hover {
+/* Dark mode styles for DatePicker input */
+.hgnDatepickerDark,
+.hgnDatepickerDark input,
+.hgnDatepickerDark input[type='text'] {
+  color: #e5e7eb !important;
+  background-color: #1f2937 !important;
+}
+
+.hgnDatepickerDark::placeholder,
+.hgnDatepickerDark input::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+}
+
+.hgnDatepickerDark:hover {
   background-color: #374151 !important;
   border-color: #4b5563 !important;
 }
 
-.text-light .hgn-datepicker-dark:focus {
+.hgnDatepickerDark:focus,
+.hgnDatepickerDark:focus input,
+.hgnDatepickerDark:focus input[type='text'] {
+  color: #e5e7eb !important;
   background-color: #374151 !important;
   border-color: #3b82f6 !important;
   outline: none;
 }
 
 /* Dark mode hover for select dropdown */
-.text-light select:hover {
+.chartWrapper select:hover {
   background-color: #374151 !important;
   border-color: #4b5563 !important;
 }
 
-.text-light select:focus {
+.chartWrapper select:focus {
   background-color: #374151 !important;
   border-color: #3b82f6 !important;
   outline: none;
@@ -80,78 +96,37 @@
   display: inline-block;
 }
 
-/* Ensure date picker input text is visible in dark mode */
-:global(.text-light) :global(.hgn-datepicker-dark),
-:global(.text-light) :global(.hgn-datepicker-dark) input,
-:global(.text-light) :global(.hgn-datepicker-dark) input[type='text'] {
-  color: #e5e7eb !important;
-  background-color: #1f2937 !important;
-}
-
-:global(.text-light) :global(.hgn-datepicker-dark)::placeholder,
-:global(.text-light) :global(.hgn-datepicker-dark) input::placeholder {
-  color: #9ca3af !important;
-  opacity: 1 !important;
-}
-
 .disabledDay {
   color: #9ca3af !important;      /* gray */
   pointer-events: none;
   cursor: not-allowed;
 }
 
-:global(.text-light) :global(.hgn-datepicker-dark):focus,
-:global(.text-light) :global(.hgn-datepicker-dark):focus input,
-:global(.text-light) :global(.hgn-datepicker-dark):focus input[type='text'] {
-  color: #e5e7eb !important;
-  background-color: #374151 !important;
-}
-
 /* Additional styles for react-datepicker input in dark mode */
-:global(.text-light) .datePickerWrapper :global(input.react-datepicker-ignore-onclickoutside),
-:global(.text-light) .datePickerWrapper :global(.react-datepicker__input-container input),
-:global(.text-light) .datePickerWrapper :global(.react-datepicker__input-container) :global(input) {
+.datePickerWrapper :global(input.react-datepicker-ignore-onclickoutside),
+.datePickerWrapper :global(.react-datepicker__input-container input),
+.datePickerWrapper :global(.react-datepicker__input-container) :global(input) {
   color: #e5e7eb !important;
   background-color: #1f2937 !important;
 }
 
-:global(.text-light)
-  .datePickerWrapper
-  :global(input.react-datepicker-ignore-onclickoutside)::placeholder,
-:global(.text-light)
-  .datePickerWrapper
-  :global(.react-datepicker__input-container input)::placeholder,
-:global(.text-light)
-  .datePickerWrapper
-  :global(.react-datepicker__input-container)
-  :global(input)::placeholder {
+.datePickerWrapper :global(input.react-datepicker-ignore-onclickoutside)::placeholder,
+.datePickerWrapper :global(.react-datepicker__input-container input)::placeholder,
+.datePickerWrapper :global(.react-datepicker__input-container) :global(input)::placeholder {
   color: #9ca3af !important;
   opacity: 1 !important;
 }
 
-/* More specific targeting for react-datepicker input wrapper */
-:global(.text-light) :global(.react-datepicker-wrapper) :global(.hgn-datepicker-dark),
-:global(.text-light) :global(.react-datepicker-wrapper) :global(input) {
-  color: #e5e7eb !important;
-  background-color: #1f2937 !important;
-}
-
-:global(.text-light) :global(.react-datepicker-wrapper) :global(.hgn-datepicker-dark)::placeholder,
-:global(.text-light) :global(.react-datepicker-wrapper) :global(input)::placeholder {
-  color: #9ca3af !important;
-  opacity: 1 !important;
-}
- 
 /* Dark mode styles for recharts surface */
-:global(.bg-oxford-blue) :global(.recharts-surface) {
+.chartWrapper :global(.recharts-surface) {
   background-color: #1b2a41 !important;
 }
 
-:global(.bg-oxford-blue) :global(.recharts-wrapper) {
+.chartWrapper :global(.recharts-wrapper) {
   background-color: #1b2a41 !important;
 }
 
-:global(.bg-oxford-blue) :global(.recharts-cartesian-grid) {
+.chartWrapper :global(.recharts-cartesian-grid) {
   stroke: #555 !important;
 }
 
@@ -186,13 +161,6 @@
 /* Global tooltip styles to override any parent dark mode styles */
 :global(.recharts-tooltip-wrapper) .customTooltip,
 :global(.recharts-tooltip-wrapper) .customTooltip * {
-  color: #000 !important;
-  background-color: #fff !important;
-}
-
-/* Override text-light class for tooltip */
-:global(.text-light) :global(.recharts-tooltip-wrapper) .customTooltip,
-:global(.text-light) :global(.recharts-tooltip-wrapper) .customTooltip * {
   color: #000 !important;
   background-color: #fff !important;
 }

@@ -17,21 +17,15 @@
 
 .textEnd {
   text-align: right;
+  position: relative; /* Anchor point for custom inline menu mapping */
+  white-space: nowrap;
+  width: 1%;
 }
 
 .issuesTableResponsive :global(.text-end) {
   font-weight: 500;
   color: #6c757d;
   border-bottom-width: 1px;
-}
-
-/* Global wrappers layout guard rails */
-:global(.card) {
-  overflow: hidden;
-}
-
-:global(.container-fluid) {
-  max-width: 100%;
 }
 
 /* ==========================================================================
@@ -42,14 +36,8 @@
   position: static; /* Let cell control alignment context */
 }
 
-:global(td.text-end) {
-  position: relative; /* Anchor point for custom inline menu mapping */
-  white-space: nowrap;
-  width: 1%;
-}
-
 /* Legacy positioning override helper for specific row dropdown structures */
-:global(td.text-end) .issueDashboardDropdown :global(.issue-dashboard-dropdown-menu) {
+.textEnd .issueDashboardDropdown :global(.issue-dashboard-dropdown-menu) {
   position: absolute;
   right: 3rem !important;
   top: 65px !important;
@@ -246,19 +234,19 @@
    GLOBAL BOOTSTRAP DATATABLE THEME TARGET OVERRIDES
    ========================================================================== */
 
-:global(.table-dark thead tr:hover) {
+.issuesTableResponsive :global(.table-dark thead tr:hover) {
   background-color: #1b2a41;
 }
 
-:global(.table-dark thead tr th) {
+.issuesTableResponsive :global(.table-dark thead tr th) {
   color: #ffffff;
 }
 
-:global(.table-dark tbody tr) {
+.issuesTableResponsive :global(.table-dark tbody tr) {
   color: #ffffff;
 }
 
-:global(.table-dark tbody tr:hover) {
+.issuesTableResponsive :global(.table-dark tbody tr:hover) {
   background-color: #2f4157;
 }
 

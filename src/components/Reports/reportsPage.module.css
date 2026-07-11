@@ -1,5 +1,6 @@
 /* stylelint-disable  */
-* {
+.container-component-wrapper,
+.container-component-wrapper * {
   box-sizing: border-box;
   margin: 0;
 }

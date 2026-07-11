@@ -52,7 +52,7 @@
   width: 100%;
 }
 
-label {
+.hoursPledgedChart label {
   font-weight: bold;
   margin-bottom: 5px;
 }

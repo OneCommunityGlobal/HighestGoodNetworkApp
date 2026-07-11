@@ -199,7 +199,11 @@ function InjuryCategoryBarChart() {
   // : {};
 
   return (
-    <div className={`injury-chart-container ${darkMode && 'darkMode'}`}>
+    <div
+      className={`injury-chart-container ${styles.injuryChartContainer} ${
+        darkMode ? styles.darkModeWrapper : ''
+      }`}
+    >
       <div className="injury-chart-header">
         <h3 className="injury-chart-title">Injury Severity by Category of Worker Injured</h3>
 

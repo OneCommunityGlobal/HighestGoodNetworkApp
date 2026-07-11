@@ -1,31 +1,18 @@
 /* stylelint-disable no-descending-specificity */
-:global(.tooltip-donut) {
-  position: absolute;
-  text-align: center;
-  padding: 0.5rem;
-  background: #fff;
-  color: #313639;
-  border-radius: 8px;
-  pointer-events: none;
-  font-size: 1rem;
-  overflow-wrap: break-word; /* Ensures long text wraps within the tooltip */
-  white-space: normal;
-}
-
-:global(.switch) {
+.switch {
   position: relative;
   display: inline-block;
   width: 34px;
   height: 20px;
 }
 
-:global(.switch input) {
+.switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
 
-:global(.slider) {
+.slider {
   position: absolute;
   cursor: pointer;
   inset: 0;
@@ -34,7 +21,7 @@
   border-radius: 34px;
 }
 
-:global(.slider::before) {
+.slider::before {
   position: absolute;
   content: "";
   height: 14px;
@@ -46,11 +33,11 @@
   border-radius: 50%;
 }
 
-:global(.switch input:checked + .slider) {
+.switch input:checked + .slider {
   background-color: #2196f3;
 }
 
-:global(.switch input:checked + .slider::before) {
+.switch input:checked + .slider::before {
   transform: translateX(14px);
 }
 

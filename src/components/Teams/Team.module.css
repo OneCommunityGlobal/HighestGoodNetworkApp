@@ -1,5 +1,5 @@
 /* stylelint-disable  */
-thead {
+:global(.teams-table) thead {
   background: aliceblue;
 }
 
@@ -108,7 +108,7 @@ thead {
   display: none;
 }
 
-tr:hover {
+:global(.teams-table) tr:hover {
   background: #e9f6ff;
 }
 

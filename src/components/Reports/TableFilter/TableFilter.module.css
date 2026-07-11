@@ -1,5 +1,5 @@
-td > input,
-select {
+.table-filter-wrapper td > input,
+.table-filter-wrapper select {
   width: 100%;
 }
 

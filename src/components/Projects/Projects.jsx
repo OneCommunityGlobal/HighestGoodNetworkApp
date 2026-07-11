@@ -414,7 +414,7 @@ const Projects = function(props) {
         </button>
         </div>
         <div>
-        <table className="table table-bordered table-responsive-sm">
+        <table className={`table table-bordered table-responsive-sm ${styles.projectsTable}`}>
           <thead>
             <ProjectTableHeader
               onChange={onChangeCategory}

@@ -9,7 +9,7 @@ import {
   ErrorBoundary,
   IntegratedEmailSender,
 } from '../../../EmailManagement';
-import './index.css';
+import styles from './index.module.css';
 
 export default function EmailPanel({ title, initialEmail }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -175,7 +175,7 @@ export default function EmailPanel({ title, initialEmail }) {
   // Dashboard view - show platform selection cards
   if (currentView === 'dashboard') {
     return (
-      <div className={`email-update-container ${darkMode ? 'dark-mode' : 'light-mode'}`}>
+      <div className={`${styles.emailUpdateContainer} ${darkMode ? 'dark-mode' : 'light-mode'}`}>
         {renderViewSelector}
       </div>
     );
@@ -183,7 +183,7 @@ export default function EmailPanel({ title, initialEmail }) {
 
   if (currentView === 'templates') {
     return (
-      <div className={`email-update-container ${darkMode ? 'dark-mode' : 'light-mode'}`}>
+      <div className={`${styles.emailUpdateContainer} ${darkMode ? 'dark-mode' : 'light-mode'}`}>
         <div className="mb-3">
           <button
             onClick={() => handleViewChange('dashboard')}
@@ -201,7 +201,7 @@ export default function EmailPanel({ title, initialEmail }) {
           </button>
         </div>
         <div
-          className="email-content-area"
+          className={styles.emailContentArea}
           role="tabpanel"
           aria-labelledby="email-templates-tab"
           id="email-templates-panel"
@@ -218,7 +218,7 @@ export default function EmailPanel({ title, initialEmail }) {
   // Email view with tabs (Send and Outbox)
   if (currentView === 'email') {
     return (
-      <div className={`email-update-container ${darkMode ? 'dark-mode' : 'light-mode'}`}>
+      <div className={`${styles.emailUpdateContainer} ${darkMode ? 'dark-mode' : 'light-mode'}`}>
         <div className="mb-3">
           <button
             onClick={() => handleViewChange('dashboard')}
@@ -236,7 +236,7 @@ export default function EmailPanel({ title, initialEmail }) {
           </button>
         </div>
 
-        <div className="email-tabs-container">
+        <div className={styles.emailTabsContainer}>
           {/* Tab Navigation */}
           <Nav tabs className="mb-3">
             <NavItem>
@@ -289,7 +289,7 @@ export default function EmailPanel({ title, initialEmail }) {
           <TabContent activeTab={activeEmailTab}>
             <TabPane tabId="send">
               <div
-                className="email-content-area"
+                className={styles.emailContentArea}
                 role="tabpanel"
                 aria-labelledby="email-sender-tab"
                 id="email-sender-panel"
@@ -307,7 +307,7 @@ export default function EmailPanel({ title, initialEmail }) {
 
             <TabPane tabId="outbox">
               <div
-                className="email-content-area"
+                className={styles.emailContentArea}
                 role="tabpanel"
                 aria-labelledby="email-outbox-tab"
                 id="email-outbox-panel"
@@ -326,9 +326,9 @@ export default function EmailPanel({ title, initialEmail }) {
 
   // Default fallback - should never reach here
   return (
-    <div className={`email-update-container ${darkMode ? 'dark-mode' : 'light-mode'}`}>
+    <div className={`${styles.emailUpdateContainer} ${darkMode ? 'dark-mode' : 'light-mode'}`}>
       <div
-        className="email-content-area"
+        className={styles.emailContentArea}
         role="tabpanel"
         aria-labelledby="email-sender-tab"
         id="email-sender-panel"

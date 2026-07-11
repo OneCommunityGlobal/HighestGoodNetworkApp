@@ -186,17 +186,17 @@
 }
 
 /* Dark-mode body overrides for Recharts (replaces injected <style>) */
-:global(.dark-mode-body) :global(.recharts-wrapper),
-:global(.dark-mode-body) :global(.recharts-surface) {
+:global(.dark-mode-body) .costPredictionChartContainer :global(.recharts-wrapper),
+:global(.dark-mode-body) .costPredictionChartContainer :global(.recharts-surface) {
   background-color: #1e2736 !important;
 }
 
-:global(.dark-mode-body) :global(.recharts-cartesian-grid-horizontal) line,
-:global(.dark-mode-body) :global(.recharts-cartesian-grid-vertical) line {
+:global(.dark-mode-body) .costPredictionChartContainer :global(.recharts-cartesian-grid-horizontal) line,
+:global(.dark-mode-body) .costPredictionChartContainer :global(.recharts-cartesian-grid-vertical) line {
   stroke: #364156 !important;
 }
 
-:global(.dark-mode-body) :global(.recharts-text) {
+:global(.dark-mode-body) .costPredictionChartContainer :global(.recharts-text) {
   fill: #e0e0e0 !important;
 }
 
@@ -232,15 +232,15 @@
   line-height: 1.4;
 }
 
-:global(.dark-mode-body) :global(.recharts-default-legend) {
+:global(.dark-mode-body) .costPredictionChartContainer :global(.recharts-default-legend) {
   background-color: #1e2736 !important;
 }
 
-:global(.dark-mode-body) :global(.recharts-legend-item-text) {
+:global(.dark-mode-body) .costPredictionChartContainer :global(.recharts-legend-item-text) {
   color: #e0e0e0 !important;
 }
 
-:global(.dark-mode-body) :global(.recharts-tooltip-wrapper) {
+:global(.dark-mode-body) .costPredictionChartContainer :global(.recharts-tooltip-wrapper) {
   background-color: transparent !important;
 }
 
