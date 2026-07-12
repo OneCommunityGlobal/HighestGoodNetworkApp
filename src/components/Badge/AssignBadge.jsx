@@ -28,6 +28,11 @@ import {
 import { getAllUserProfile } from '../../actions/userManagement';
 import '../Header/index.module.css';
 
+const matchesName = (user, trimmedName) => {
+  const userFullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+  return userFullName.includes(trimmedName.toLowerCase());
+};
+
 function AssignBadge(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [isOpen, setOpen] = useState(false);
@@ -54,10 +59,7 @@ function AssignBadge(props) {
 
       const trimmedName = fullName.trim();
       if (trimmedName) {
-        const filtered = props.allUserProfiles.filter(user => {
-          const userFullName = `${user.firstName} ${user.lastName}`.toLowerCase();
-          return userFullName.includes(trimmedName.toLowerCase());
-        });
+        const filtered = props.allUserProfiles.filter(user => matchesName(user, trimmedName));
         setFilteredUsers(filtered);
       } else {
         setFilteredUsers([]);
