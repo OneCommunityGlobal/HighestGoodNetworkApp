@@ -1,51 +1,57 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Button, Alert, Badge } from 'reactstrap';
+import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faSync, faFilter } from '@fortawesome/free-solid-svg-icons';
 import { useHistory } from 'react-router-dom';
-import useResourceFetch from '../hooks/useResourceFetch';
 import {
-  getStatusBadgeConfig,
-  getPriorityBadgeConfig,
+  getStatusColor,
+  getPriorityColor,
   filterByStatus,
   getRequestStats,
 } from '../utils/resourceRequestUtils';
+import { getMockEducatorRequests } from '../../../__mocks__/resourceRequestMockData';
 import styles from './ResourceRequestList.module.css';
 
-const ResourceRequestList = ({ auth }) => {
+const ResourceRequestList = () => {
+  const darkMode = useSelector(state => state.theme?.darkMode || false);
   const history = useHistory();
   const [requests, setRequests] = useState([]);
   const [filterStatus, setFilterStatus] = useState('all');
-  const { loading, error, setError, fetchWithErrorHandling } = useResourceFetch();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const theme = darkMode ? styles.dark : '';
 
   useEffect(() => {
     fetchRequests();
+    const handleFocus = () => fetchRequests();
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
   }, []);
 
   const fetchRequests = async () => {
-    const result = await fetchWithErrorHandling('/educator/resource-requests');
-    if (result.success) {
-      setRequests(result.data || []);
+    setLoading(true);
+    setError('');
+    try {
+      const data = getMockEducatorRequests();
+      setRequests(data || []);
+    } catch (err) {
+      setError(err.message || 'Failed to load requests');
     }
+    setLoading(false);
   };
 
-  const getStatusBadge = status => {
-    const config = getStatusBadgeConfig(status);
-    return (
-      <Badge color={config.color} className={styles.statusBadge}>
-        {config.icon} {config.label}
-      </Badge>
-    );
-  };
+  const getStatusBadge = status => (
+    <span className={styles.statusBadge} style={{ backgroundColor: getStatusColor(status) }}>
+      {status?.charAt(0).toUpperCase() + status?.slice(1)}
+    </span>
+  );
 
-  const getPriorityBadge = priority => {
-    const config = getPriorityBadgeConfig(priority);
-    return (
-      <span className={styles.priorityBadge} style={{ backgroundColor: config.bgColor }}>
-        {priority?.toUpperCase()}
-      </span>
-    );
-  };
+  const getPriorityBadge = priority => (
+    <span className={styles.priorityBadge} style={{ backgroundColor: getPriorityColor(priority) }}>
+      {priority?.toUpperCase()}
+    </span>
+  );
 
   const filteredRequests = filterByStatus(requests, filterStatus);
   const stats = getRequestStats(requests);
@@ -56,33 +62,29 @@ const ResourceRequestList = ({ auth }) => {
 
   if (loading) {
     return (
-      <Container className={styles.container}>
+      <div className={`${styles.page} ${theme}`}>
         <div className={styles.loadingContainer}>
           <div className={styles.spinner} />
           <p>Loading your requests...</p>
         </div>
-      </Container>
+      </div>
     );
   }
 
   return (
-    <Container className={styles.container}>
-      {/* Header */}
+    <div className={`${styles.page} ${theme}`}>
       <div className={styles.header}>
         <div className={styles.headerContent}>
           <h1>My Resource Requests</h1>
           <p>Track the status of all your resource requests to Project Managers</p>
         </div>
-        <Button color="primary" onClick={handleNewRequest} className={styles.newRequestBtn}>
-          <FontAwesomeIcon icon={faPlus} className="me-2" />
-          New Request
-        </Button>
+        <button type="button" onClick={handleNewRequest} className={styles.newRequestBtn}>
+          <FontAwesomeIcon icon={faPlus} /> New Request
+        </button>
       </div>
 
-      {/* Error Alert */}
-      {error && <Alert color="danger">{error}</Alert>}
+      {error && <div className={styles.errorAlert}>{error}</div>}
 
-      {/* Filter Bar */}
       <div className={styles.filterBar}>
         <div className={styles.filterGroup}>
           <FontAwesomeIcon icon={faFilter} className={styles.filterIcon} />
@@ -97,18 +99,16 @@ const ResourceRequestList = ({ auth }) => {
             <option value="denied">Denied</option>
           </select>
         </div>
-        <Button
-          color="light"
-          size="sm"
+        <button
+          type="button"
           onClick={fetchRequests}
           disabled={loading}
           className={styles.refreshBtn}
         >
           <FontAwesomeIcon icon={faSync} />
-        </Button>
+        </button>
       </div>
 
-      {/* Requests Table / Cards */}
       {filteredRequests.length === 0 ? (
         <div className={styles.emptyState}>
           <div className={styles.emptyIcon}>📋</div>
@@ -118,14 +118,12 @@ const ResourceRequestList = ({ auth }) => {
               ? "You haven't submitted any resource requests yet."
               : `You have no ${filterStatus} requests.`}
           </p>
-          <Button color="primary" onClick={handleNewRequest}>
-            <FontAwesomeIcon icon={faPlus} className="me-2" />
-            Submit Your First Request
-          </Button>
+          <button type="button" onClick={handleNewRequest} className={styles.submitFirstBtn}>
+            <FontAwesomeIcon icon={faPlus} /> Submit Your First Request
+          </button>
         </div>
       ) : (
         <>
-          {/* Desktop Table */}
           <div className={styles.tableWrapper}>
             <table className={styles.requestsTable}>
               <thead>
@@ -143,8 +141,7 @@ const ResourceRequestList = ({ auth }) => {
                     <td className={styles.titleCell}>
                       <div className={styles.titleText}>{request.title}</div>
                       <small className={styles.details}>
-                        {request.details?.substring(0, 50)}
-                        ...
+                        {request.details?.substring(0, 50)}...
                       </small>
                     </td>
                     <td>{getPriorityBadge(request.priority)}</td>
@@ -161,7 +158,6 @@ const ResourceRequestList = ({ auth }) => {
             </table>
           </div>
 
-          {/* Mobile Cards */}
           <div className={styles.mobileCards}>
             {filteredRequests.map(request => (
               <div key={request.id} className={styles.requestCard}>
@@ -176,12 +172,10 @@ const ResourceRequestList = ({ auth }) => {
                       <strong>Priority:</strong> {getPriorityBadge(request.priority)}
                     </div>
                     <div className={styles.metaItem}>
-                      <strong>Submitted:</strong>
-                      {new Date(request.createdAt).toLocaleDateString()}
+                      <strong>Submitted:</strong> {new Date(request.createdAt).toLocaleDateString()}
                     </div>
                     <div className={styles.metaItem}>
-                      <strong>Updated:</strong>
-                      {new Date(request.updatedAt).toLocaleDateString()}
+                      <strong>Updated:</strong> {new Date(request.updatedAt).toLocaleDateString()}
                     </div>
                   </div>
                 </div>
@@ -191,12 +185,11 @@ const ResourceRequestList = ({ auth }) => {
         </>
       )}
 
-      {/* Summary Stats */}
       {filteredRequests.length > 0 && (
         <div className={styles.summaryStats}>
           <div className={styles.statItem}>
             <div className={styles.statNumber}>{stats.total}</div>
-            <div className={styles.statLabel}>Total Requests</div>
+            <div className={styles.statLabel}>Total</div>
           </div>
           <div className={styles.statItem}>
             <div className={styles.statNumber}>{stats.pending}</div>
@@ -212,7 +205,7 @@ const ResourceRequestList = ({ auth }) => {
           </div>
         </div>
       )}
-    </Container>
+    </div>
   );
 };
 

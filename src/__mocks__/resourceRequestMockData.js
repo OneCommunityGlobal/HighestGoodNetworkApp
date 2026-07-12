@@ -123,7 +123,7 @@ export const getMockPMRequests = (status = null) => {
  * Simulates creating a new request
  */
 export const createMockRequest = (title, details, priority) => {
-  return {
+  const newRequest = {
     id: Date.now().toString(),
     educatorName: 'John Smith', // In real app, would be authenticated user
     title,
@@ -133,6 +133,8 @@ export const createMockRequest = (title, details, priority) => {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
+  mockResourceRequests.push(newRequest);
+  return newRequest;
 };
 
 /**
@@ -140,15 +142,16 @@ export const createMockRequest = (title, details, priority) => {
  * Simulates updating request status
  */
 export const updateMockRequestStatus = (requestId, newStatus) => {
-  const request = mockResourceRequests.find(r => r.id === requestId);
-  if (!request) {
+  const index = mockResourceRequests.findIndex(r => r.id === requestId);
+  if (index === -1) {
     throw new Error(`Request ${requestId} not found`);
   }
-  return {
-    ...request,
+  mockResourceRequests[index] = {
+    ...mockResourceRequests[index],
     status: newStatus,
     updatedAt: new Date().toISOString(),
   };
+  return mockResourceRequests[index];
 };
 
 /**

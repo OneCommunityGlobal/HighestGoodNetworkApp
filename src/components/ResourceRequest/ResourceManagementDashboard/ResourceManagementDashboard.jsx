@@ -1,68 +1,76 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Button, Alert, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faXmark, faSync, faFilter, faEye } from '@fortawesome/free-solid-svg-icons';
-import useResourceFetch from '../hooks/useResourceFetch';
+import {
+  faCheck,
+  faXmark,
+  faSync,
+  faFilter,
+  faEye,
+  faTimes,
+} from '@fortawesome/free-solid-svg-icons';
 import {
   getStatusColor,
   getPriorityColor,
   filterByStatus,
   getRequestStats,
 } from '../utils/resourceRequestUtils';
+import {
+  getMockPMRequests,
+  updateMockRequestStatus,
+} from '../../../__mocks__/resourceRequestMockData';
 import styles from './ResourceManagementDashboard.module.css';
 
 const ResourceManagementDashboard = () => {
+  const darkMode = useSelector(state => state.theme?.darkMode || false);
   const [requests, setRequests] = useState([]);
   const [filterStatus, setFilterStatus] = useState('all');
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
-  const { loading, error, setError, fetchWithErrorHandling } = useResourceFetch();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const theme = darkMode ? styles.dark : '';
 
   useEffect(() => {
     fetchRequests();
   }, [filterStatus]);
 
   const fetchRequests = async () => {
-    const url =
-      filterStatus === 'all'
-        ? '/pm/resource-requests'
-        : `/pm/resource-requests?status=${filterStatus}`;
-
-    const result = await fetchWithErrorHandling(url);
-    if (result.success) {
-      setRequests(result.data || []);
+    setLoading(true);
+    setError('');
+    try {
+      const data = getMockPMRequests(filterStatus === 'all' ? null : filterStatus);
+      setRequests(data || []);
+    } catch (err) {
+      setError(err.message || 'Failed to load requests');
     }
+    setLoading(false);
   };
 
   const handleApprove = async requestId => {
     setActionLoading(true);
-    const result = await fetchWithErrorHandling(`/pm/resource-requests/${requestId}`, {
-      method: 'PUT',
-      body: { status: 'approved' },
-    });
-
-    if (result.success) {
-      setError('');
+    try {
+      updateMockRequestStatus(requestId, 'approved');
       fetchRequests();
       setShowModal(false);
       setSelectedRequest(null);
+    } catch (err) {
+      setError(err.message || 'Failed to approve request');
     }
     setActionLoading(false);
   };
 
   const handleDeny = async requestId => {
     setActionLoading(true);
-    const result = await fetchWithErrorHandling(`/pm/resource-requests/${requestId}`, {
-      method: 'PUT',
-      body: { status: 'denied' },
-    });
-
-    if (result.success) {
-      setError('');
+    try {
+      updateMockRequestStatus(requestId, 'denied');
       fetchRequests();
       setShowModal(false);
       setSelectedRequest(null);
+    } catch (err) {
+      setError(err.message || 'Failed to deny request');
     }
     setActionLoading(false);
   };
@@ -77,28 +85,22 @@ const ResourceManagementDashboard = () => {
 
   if (loading) {
     return (
-      <Container className={styles.container}>
+      <div className={`${styles.page} ${theme}`}>
         <div className={styles.loadingContainer}>
           <div className={styles.spinner} />
           <p>Loading resource requests...</p>
         </div>
-      </Container>
+      </div>
     );
   }
 
   return (
-    <Container className={styles.container}>
-      {/* Header */}
+    <div className={`${styles.page} ${theme}`}>
       <div className={styles.header}>
-        <div className={styles.headerContent}>
-          <div className={styles.headerTitle}>
-            <h1>Resource Request Management</h1>
-            <p>Review and respond to educator resource requests</p>
-          </div>
-        </div>
+        <h1>Resource Request Management</h1>
+        <p>Review and respond to educator resource requests</p>
       </div>
 
-      {/* Summary Stats - Top Section */}
       {filteredRequests.length > 0 && (
         <div className={styles.summaryStatsTop}>
           <div className={styles.statCard}>
@@ -126,14 +128,8 @@ const ResourceManagementDashboard = () => {
         </div>
       )}
 
-      {/* Error Alert */}
-      {error && (
-        <Alert color="danger" className={styles.errorAlert}>
-          {error}
-        </Alert>
-      )}
+      {error && <div className={styles.errorAlert}>{error}</div>}
 
-      {/* Filter & Controls Bar */}
       <div className={styles.controlsBar}>
         <div className={styles.filterSection}>
           <FontAwesomeIcon icon={faFilter} className={styles.filterIcon} />
@@ -148,20 +144,17 @@ const ResourceManagementDashboard = () => {
             <option value="denied">Denied</option>
           </select>
         </div>
-        <Button
-          color="secondary"
-          size="sm"
+        <button
+          type="button"
           onClick={fetchRequests}
           disabled={loading}
           className={styles.refreshBtn}
-          outline
         >
           <FontAwesomeIcon icon={faSync} className={loading ? styles.spinning : ''} />
           <span className={styles.refreshText}>Refresh</span>
-        </Button>
+        </button>
       </div>
 
-      {/* Requests Table / Cards */}
       {filteredRequests.length === 0 ? (
         <div className={styles.emptyState}>
           <div className={styles.emptyIcon}>📬</div>
@@ -174,7 +167,6 @@ const ResourceManagementDashboard = () => {
         </div>
       ) : (
         <>
-          {/* Desktop Table */}
           <div className={styles.tableWrapper}>
             <table className={styles.requestsTable}>
               <thead>
@@ -190,10 +182,8 @@ const ResourceManagementDashboard = () => {
               <tbody>
                 {filteredRequests.map(request => (
                   <tr key={request.id} className={styles.tableRow}>
-                    <td className={styles.nameCell}>
-                      {request.educatorName || 'Unknown Educator'}
-                    </td>
-                    <td className={styles.titleCell}>{request.title}</td>
+                    <td>{request.educatorName || 'Unknown Educator'}</td>
+                    <td>{request.title}</td>
                     <td>
                       <span
                         className={styles.priorityBadge}
@@ -214,34 +204,31 @@ const ResourceManagementDashboard = () => {
                       {new Date(request.createdAt).toLocaleDateString()}
                     </td>
                     <td className={styles.actionCell}>
-                      <Button
-                        color="info"
-                        size="sm"
+                      <button
+                        type="button"
                         onClick={() => openRequestDetail(request)}
                         className={styles.viewBtn}
                       >
-                        <FontAwesomeIcon icon={faEye} />
-                      </Button>
+                        <FontAwesomeIcon icon={faEye} /> View
+                      </button>
                       {request.status === 'pending' && (
                         <>
-                          <Button
-                            color="success"
-                            size="sm"
+                          <button
+                            type="button"
                             onClick={() => handleApprove(request.id)}
                             disabled={actionLoading}
-                            className={styles.actionBtn}
+                            className={styles.approveBtn}
                           >
-                            <FontAwesomeIcon icon={faCheck} />
-                          </Button>
-                          <Button
-                            color="danger"
-                            size="sm"
+                            <FontAwesomeIcon icon={faCheck} /> Approve
+                          </button>
+                          <button
+                            type="button"
                             onClick={() => handleDeny(request.id)}
                             disabled={actionLoading}
-                            className={styles.actionBtn}
+                            className={styles.denyBtn}
                           >
-                            <FontAwesomeIcon icon={faXmark} />
-                          </Button>
+                            <FontAwesomeIcon icon={faXmark} /> Deny
+                          </button>
                         </>
                       )}
                     </td>
@@ -251,7 +238,6 @@ const ResourceManagementDashboard = () => {
             </table>
           </div>
 
-          {/* Mobile Cards */}
           <div className={styles.mobileCards}>
             {filteredRequests.map(request => (
               <div key={request.id} className={styles.requestCard}>
@@ -267,11 +253,10 @@ const ResourceManagementDashboard = () => {
                 <div className={styles.cardBody}>
                   <div className={styles.cardMeta}>
                     <div className={styles.metaItem}>
-                      <strong>Educator:</strong>
-                      {request.educatorName || 'Unknown'}
+                      <strong>Educator:</strong> {request.educatorName || 'Unknown'}
                     </div>
                     <div className={styles.metaItem}>
-                      <strong>Priority:</strong>
+                      <strong>Priority:</strong>{' '}
                       <span
                         className={styles.priorityBadge}
                         style={{ backgroundColor: getPriorityColor(request.priority) }}
@@ -280,43 +265,36 @@ const ResourceManagementDashboard = () => {
                       </span>
                     </div>
                     <div className={styles.metaItem}>
-                      <strong>Submitted:</strong>
-                      {new Date(request.createdAt).toLocaleDateString()}
+                      <strong>Submitted:</strong> {new Date(request.createdAt).toLocaleDateString()}
                     </div>
                   </div>
                 </div>
                 <div className={styles.cardActions}>
-                  <Button
-                    color="info"
-                    size="sm"
+                  <button
+                    type="button"
                     onClick={() => openRequestDetail(request)}
                     className={styles.fullWidthBtn}
                   >
-                    <FontAwesomeIcon icon={faEye} className="me-2" />
-                    View Details
-                  </Button>
+                    <FontAwesomeIcon icon={faEye} /> View Details
+                  </button>
                   {request.status === 'pending' && (
                     <>
-                      <Button
-                        color="success"
-                        size="sm"
+                      <button
+                        type="button"
                         onClick={() => handleApprove(request.id)}
                         disabled={actionLoading}
-                        className={styles.fullWidthBtn}
+                        className={styles.approveBtnFull}
                       >
-                        <FontAwesomeIcon icon={faCheck} className="me-2" />
-                        Approve
-                      </Button>
-                      <Button
-                        color="danger"
-                        size="sm"
+                        <FontAwesomeIcon icon={faCheck} /> Approve
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => handleDeny(request.id)}
                         disabled={actionLoading}
-                        className={styles.fullWidthBtn}
+                        className={styles.denyBtnFull}
                       >
-                        <FontAwesomeIcon icon={faXmark} className="me-2" />
-                        Deny
-                      </Button>
+                        <FontAwesomeIcon icon={faXmark} /> Deny
+                      </button>
                     </>
                   )}
                 </div>
@@ -326,125 +304,103 @@ const ResourceManagementDashboard = () => {
         </>
       )}
 
-      {/* Request Detail Modal */}
-      <Modal isOpen={showModal} toggle={() => setShowModal(false)} size="lg">
-        <ModalHeader toggle={() => setShowModal(false)}>Request Details</ModalHeader>
-        <ModalBody>
-          {selectedRequest && (
-            <div className={styles.modalContent}>
-              <div className={styles.detailGroup}>
-                <label htmlFor="educatorName">Educator Name</label>
-                <p id="educatorName">{selectedRequest.educatorName || 'Unknown'}</p>
-              </div>
-
-              <div className={styles.detailGroup}>
-                <label htmlFor="requestTitle">Request Title</label>
-                <p id="requestTitle">{selectedRequest.title}</p>
-              </div>
-
-              <div className={styles.detailGroup}>
-                <label htmlFor="requestDetails">Details</label>
-                <p id="requestDetails">{selectedRequest.details}</p>
-              </div>
-
-              <div className={styles.detailsRow}>
-                <div className={styles.detailGroup}>
-                  <label htmlFor="priorityDisplay">Priority</label>
-                  <p id="priorityDisplay">
-                    <span
-                      className={styles.priorityBadge}
-                      style={{ backgroundColor: getPriorityColor(selectedRequest.priority) }}
-                    >
-                      {selectedRequest.priority?.toUpperCase()}
-                    </span>
-                  </p>
-                </div>
-
-                <div className={styles.detailGroup}>
-                  <label htmlFor="statusDisplay">Status</label>
-                  <p id="statusDisplay">
-                    <span
-                      className={styles.statusBadge}
-                      style={{ backgroundColor: getStatusColor(selectedRequest.status) }}
-                    >
-                      {selectedRequest.status?.charAt(0).toUpperCase() +
-                        selectedRequest.status?.slice(1)}
-                    </span>
-                  </p>
-                </div>
-              </div>
-
-              <div className={styles.detailsRow}>
-                <div className={styles.detailGroup}>
-                  <label htmlFor="submittedDate">Submitted Date</label>
-                  <p id="submittedDate">
-                    {new Date(selectedRequest.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-
-                <div className={styles.detailGroup}>
-                  <label htmlFor="updatedDate">Updated Date</label>
-                  <p id="updatedDate">{new Date(selectedRequest.updatedAt).toLocaleDateString()}</p>
-                </div>
-              </div>
-            </div>
-          )}
-        </ModalBody>
-        <ModalFooter>
-          {selectedRequest?.status === 'pending' && (
-            <>
-              <Button
-                color="success"
-                onClick={() => handleApprove(selectedRequest.id)}
-                disabled={actionLoading}
+      {showModal && (
+        // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+        <div className={styles.modalOverlay} onClick={() => setShowModal(false)}>
+          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+          <div className={styles.modalPopup} onClick={e => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h2>Request Details</h2>
+              <button
+                type="button"
+                onClick={() => setShowModal(false)}
+                className={styles.modalClose}
               >
-                <FontAwesomeIcon icon={faCheck} className="me-2" />
-                Approve
-              </Button>
-              <Button
-                color="danger"
-                onClick={() => handleDeny(selectedRequest.id)}
-                disabled={actionLoading}
-              >
-                <FontAwesomeIcon icon={faXmark} className="me-2" />
-                Deny
-              </Button>
-            </>
-          )}
-          <Button color="secondary" onClick={() => setShowModal(false)}>
-            Close
-          </Button>
-        </ModalFooter>
-      </Modal>
-
-      {/* Summary Stats */}
-      {filteredRequests.length > 0 && (
-        <div className={styles.summaryStats}>
-          <div className={styles.statItem}>
-            <div className={styles.statNumber}>{requests.length}</div>
-            <div className={styles.statLabel}>Total Requests</div>
-          </div>
-          <div className={styles.statItem}>
-            <div className={styles.statNumber}>
-              {requests.filter(r => r.status === 'pending').length}
+                <FontAwesomeIcon icon={faTimes} />
+              </button>
             </div>
-            <div className={styles.statLabel}>Pending</div>
-          </div>
-          <div className={styles.statItem}>
-            <div className={styles.statNumber}>
-              {requests.filter(r => r.status === 'approved').length}
+            <div className={styles.modalBody}>
+              {selectedRequest && (
+                <>
+                  <div className={styles.detailGroup}>
+                    <span className={styles.detailLabel}>Educator Name</span>
+                    <p>{selectedRequest.educatorName || 'Unknown'}</p>
+                  </div>
+                  <div className={styles.detailGroup}>
+                    <span className={styles.detailLabel}>Request Title</span>
+                    <p>{selectedRequest.title}</p>
+                  </div>
+                  <div className={styles.detailGroup}>
+                    <span className={styles.detailLabel}>Details</span>
+                    <p>{selectedRequest.details}</p>
+                  </div>
+                  <div className={styles.detailsRow}>
+                    <div className={styles.detailGroup}>
+                      <span className={styles.detailLabel}>Priority</span>
+                      <p>
+                        <span
+                          className={styles.priorityBadge}
+                          style={{ backgroundColor: getPriorityColor(selectedRequest.priority) }}
+                        >
+                          {selectedRequest.priority?.toUpperCase()}
+                        </span>
+                      </p>
+                    </div>
+                    <div className={styles.detailGroup}>
+                      <span className={styles.detailLabel}>Status</span>
+                      <p>
+                        <span
+                          className={styles.statusBadge}
+                          style={{ backgroundColor: getStatusColor(selectedRequest.status) }}
+                        >
+                          {selectedRequest.status?.charAt(0).toUpperCase() +
+                            selectedRequest.status?.slice(1)}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                  <div className={styles.detailsRow}>
+                    <div className={styles.detailGroup}>
+                      <span className={styles.detailLabel}>Submitted Date</span>
+                      <p>{new Date(selectedRequest.createdAt).toLocaleDateString()}</p>
+                    </div>
+                    <div className={styles.detailGroup}>
+                      <span className={styles.detailLabel}>Updated Date</span>
+                      <p>{new Date(selectedRequest.updatedAt).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
-            <div className={styles.statLabel}>Approved</div>
-          </div>
-          <div className={styles.statItem}>
-            <div className={styles.statNumber}>
-              {requests.filter(r => r.status === 'denied').length}
+            <div className={styles.modalFooter}>
+              {selectedRequest?.status === 'pending' && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => handleApprove(selectedRequest.id)}
+                    disabled={actionLoading}
+                    className={styles.approveBtnFull}
+                  >
+                    <FontAwesomeIcon icon={faCheck} /> Approve
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDeny(selectedRequest.id)}
+                    disabled={actionLoading}
+                    className={styles.denyBtnFull}
+                  >
+                    <FontAwesomeIcon icon={faXmark} /> Deny
+                  </button>
+                </>
+              )}
+              <button type="button" onClick={() => setShowModal(false)} className={styles.closeBtn}>
+                Close
+              </button>
             </div>
-            <div className={styles.statLabel}>Denied</div>
           </div>
         </div>
       )}
-    </Container>
+    </div>
   );
 };
 

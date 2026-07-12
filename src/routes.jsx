@@ -255,6 +255,15 @@ const JobAnalyticsPage = lazy(() =>
 );
 
 const SuggestedJobsListBuilder = lazy(() => import('./components/Collaboration/SuggestedJobsList'));
+const ResourceManagementDashboard = lazy(() =>
+  import('./components/ResourceRequest/ResourceManagementDashboard/ResourceManagementDashboard'),
+);
+const ResourceRequestForm = lazy(() =>
+  import('./components/ResourceRequest/ResourceRequestForm/ResourceRequestForm'),
+);
+const ResourceRequestList = lazy(() =>
+  import('./components/ResourceRequest/ResourceRequestList/ResourceRequestList'),
+);
 export default (
   <Switch>
     {/* ----- LB Dashboard Routing Starts----- */}
@@ -770,6 +779,20 @@ export default (
           path="/educationportal/tasks/intermediate"
           exact
           component={IntermediateTaskList}
+        />
+        {/* Resource Request Routes */}
+        <ProtectedRoute path="/educator/requests" exact component={ResourceRequestList} fallback />
+        <ProtectedRoute
+          path="/educator/requests/new"
+          exact
+          component={ResourceRequestForm}
+          fallback
+        />
+        <ProtectedRoute
+          path="/pm/dashboard/resources"
+          exact
+          component={ResourceManagementDashboard}
+          fallback
         />
         <CPProtectedRoute
           path="/communityportal/reports/event/personalization"
