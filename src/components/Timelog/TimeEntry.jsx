@@ -193,12 +193,21 @@ function TimeEntry(props) {
               <div className="d-flex justify-content-end">
                 {(hasATimeEntryEditPermission || isAuthUserAndSameDayEntry) &&
                   !cantEditJaeRelatedRecord && (
-                    <button type="button" aria-label="FAEdit" className="mr-3 text-primary">
-                      <FontAwesomeIcon icon={faEdit} size="lg" onClick={toggle} />
+                    <button
+                      type="button"
+                      aria-label="FAEdit"
+                      className={`${styles.iconBtn} mr-3 text-primary`}
+                      onClick={toggle}
+                    >
+                      <FontAwesomeIcon icon={faEdit} size="lg" />
                     </button>
                   )}
                 {canDelete && (
-                  <button type="button" aria-label="DeleteModal" className="text-primary">
+                  <button
+                    type="button"
+                    aria-label="DeleteModal"
+                    className={`${styles.iconBtn} text-primary`}
+                  >
                     <DeleteModal timeEntry={data} />
                   </button>
                 )}

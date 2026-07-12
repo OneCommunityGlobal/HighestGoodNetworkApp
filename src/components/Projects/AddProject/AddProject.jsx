@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
-import '../../Header/index.css';
+import '../../Header/index.module.css';
 import { addNewWBS } from './../../../actions/wbs';
 import { postNewProject } from './../../../actions/projects';
 import { findUserProfiles, assignProject } from './../../../actions/projectMembers';
@@ -248,7 +248,7 @@ const AddProject = (props) => {
               {wbsList.length > 0 && (
                 <ul className="list-group mt-2" style={{ maxHeight: '15vh', overflowY: 'auto' }}>
                   {wbsList.map((wbs, index) => (
-                    <li key={index} className={`list-group-item d-flex justify-content-between align-items-center ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`} style={{color:"#403e3e"}}>
+                    <li key={index} className={`list-group-item d-flex justify-content-between align-items-center ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`} style={{ color: darkMode ? '#fff' : '#403e3e' }}>
                       {wbs}
                       <Button color="danger" size="sm" onClick={() => removeWBS(index)} disabled={loading}>
                         Delete

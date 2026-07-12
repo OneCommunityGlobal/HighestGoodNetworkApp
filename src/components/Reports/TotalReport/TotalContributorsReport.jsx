@@ -1,18 +1,19 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
 import axios from 'axios';
+import PropTypes from 'prop-types';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ENDPOINTS } from '~/utils/URL';
-import styles from './TotalReport.module.css';
-import TotalReportBarGraph from './TotalReportBarGraph';
 import Loading from '../../common/Loading';
 import EditableInfoModal from '../../UserProfile/EditableModal/EditableInfoModal';
-import { generateBarData as generateBarDataUtil } from './generateBarData';
 import {
   getCachedData,
-  setCachedData,
-  validateUserList,
   logApiRequest,
   logApiResponse,
+  setCachedData,
+  validateUserList,
 } from './cacheUtils';
+import { generateBarData as generateBarDataUtil } from './generateBarData';
+import styles from './TotalReport.module.css';
+import TotalReportBarGraph from './TotalReportBarGraph';
 
 function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, userRole }) {
   const [contributors, setContributors] = useState([]);
@@ -26,13 +27,7 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
   const fromDate = useMemo(() => startDate.toLocaleDateString('en-CA'), [startDate]);
   const toDate = useMemo(() => endDate.toLocaleDateString('en-CA'), [endDate]);
   const userList = useMemo(() => {
-    const list = userProfiles?.map(({ _id }) => _id) || [];
-    // eslint-disable-next-line no-console
-    console.log('TotalContributorsReport userList created:', {
-      userProfilesLength: userProfiles?.length,
-      userListLength: list.length,
-    });
-    return list;
+    return userProfiles?.map(({ _id }) => _id) || [];
   }, [userProfiles]);
 
   // Fetch time entries for the selected period
@@ -95,7 +90,7 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
 
   // Group time entries by user and calculate total hours
   const sumByUser = useCallback((entries) => {
-    return entries.reduce((acc, { userId, hours = 0, minutes = 0, tangibleTime = 0 }) => {
+    return entries.reduce((acc, { userId, hours = 0, minutes = 0, isTangible = false }) => {
       if (!acc[userId]) {
         acc[userId] = {
           userId,
@@ -104,9 +99,13 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
           tangibleTime: 0,
         };
       }
-      acc[userId].hours += hours;
-      acc[userId].minutes += minutes;
-      acc[userId].tangibleTime += tangibleTime;
+      const numHours = parseFloat(hours) || 0;
+      const numMinutes = parseFloat(minutes) || 0;
+      acc[userId].hours += numHours;
+      acc[userId].minutes += numMinutes;
+      if (isTangible) {
+        acc[userId].tangibleTime += numHours + numMinutes / 60;
+      }
       return acc;
     }, {});
   }, []);
@@ -169,11 +168,6 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
   useEffect(() => {
     // Only make API call if userList has data
     if (!userList || userList.length === 0) {
-      // eslint-disable-next-line no-console
-      console.log('TotalContributorsReport: Waiting for userProfiles to load...', {
-        userProfilesLength: userProfiles?.length,
-        userListLength: userList?.length,
-      });
       return;
     }
 
@@ -239,5 +233,21 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
     </div>
   );
 }
+
+TotalContributorsReport.propTypes = {
+  startDate: PropTypes.instanceOf(Date).isRequired,
+  endDate: PropTypes.instanceOf(Date).isRequired,
+  userProfiles: PropTypes.arrayOf(PropTypes.shape({
+    _id: PropTypes.string,
+  })),
+  darkMode: PropTypes.bool,
+  userRole: PropTypes.string,
+};
+
+TotalContributorsReport.defaultProps = {
+  userProfiles: [],
+  darkMode: false,
+  userRole: '',
+};
 
 export default TotalContributorsReport;

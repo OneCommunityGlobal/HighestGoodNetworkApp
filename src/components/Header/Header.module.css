@@ -1,7 +1,33 @@
+/* stylelint-disable no-descending-specificity, selector-type-no-unknown */
+
+:global(body) {
+  display: block;
+  width: 100%;
+}
+
+:global(#root) {
+  width: 100%;
+}
+
 /* General Styling */
 .headerWrapper {
   height: fit-content;
   width: 100%;
+}
+
+.notificationOverlay {
+  position: fixed;
+  top: 72px;
+  left: 0;
+  right: 0;
+  z-index: 1200;
+  pointer-events: none;
+}
+
+.notificationOverlay :global(.container-fluid) {
+  padding-left: 0;
+  padding-right: 0;
+  pointer-events: auto;
 }
 
 .headerRow {
@@ -9,36 +35,37 @@
   grid-template-columns: auto minmax(0, 1fr) auto; 
   align-items: center;
   width: 100%;
+  gap: 0.5rem;
 }
 
 .leftSection {
-  justify-self: start;
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .centerSection {
-  justify-self: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
   min-width: 0;
+  overflow: hidden;
 }
 
 .rightSection {
-  justify-self: end;
   display: flex;
   align-items: center;
+  flex-shrink: 0;
+  margin-left: auto;
+  position: relative;
 }
 
 .navbarToggler {
   display: none;
 }
-
 @media (max-width: 768px) {
   .headerRow {
-    grid-template-columns: auto auto; /* left | right */
+    grid-template-columns: auto auto;
     grid-template-rows: auto auto;
   }
 
@@ -65,18 +92,15 @@
 }
 
 .cardContent {
-  padding: 15px;
-  padding-left: 40px;
-  padding-right: 40px; /* Match left padding for balance */
+  padding: 15px 40px;
   white-space: pre-line;
   color: white;
   font-size: medium;
   line-height: 1.4;
-  word-wrap: break-word;
   overflow-wrap: break-word;
   box-sizing: border-box;
   width: 100%;
-  margin: 0; /* Remove all margins */
+  margin: 0;
 }
 
 .headerCard {
@@ -88,27 +112,19 @@
   box-sizing: border-box;
   overflow: hidden;
   position: relative;
-  /* Ensure card extends to full width */
-  left: 0;
-  right: 0;
 }
 
 .cardWrapper {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-  /* Ensure wrapper uses full width */
+  padding: 1rem 0;
   width: 100%;
   margin: 0;
-  padding-left: 0;
-  padding-right: 0;
   box-sizing: border-box;
 }
 
 .navbar {
   z-index: 100;
-  white-space: nowrap;
+  position: relative;
 }
-
 @media (max-width: 916px) {
   .navbar {
     white-space: normal;
@@ -155,12 +171,11 @@
     margin-left: auto;
   }
 
-  .rightSection :global(.navbar-collapse) {
-    flex-basis: 100%;
-    width: 100%;
-  }
+  .navCollapse {
+  flex-basis: 100%;
+  width: 100%;
+ }
 }
-
 
 .redBackGroupHeader {
   z-index: 10;
@@ -224,56 +239,115 @@
 .hideInTablet {
   display: block;
 }
+
 .showInTablet {
   display: none;
 }
 
-@media (max-width: 1700px) {
+/* Hamburger toggle — hidden on wide screens */
+.navbarToggler {
+  display: none;
+  margin-left: 1rem;
+  flex-shrink: 0;
+}
+
+/* Collapsed nav — hidden on wide screens */
+.navCollapse {
+  display: flex;
+  align-items: center;
+}
+
+/* max-width: 1700px */
+@media (width <= 1700px) {
   .hideInTablet {
     display: none;
   }
+
   .showInTablet {
     display: block;
   }
 }
 
-@media screen and (max-width: 1151px) and (min-width: 992px) {
+/* max-width: 1151px and min-width: 992px */
+@media (992px <= width <= 1151px) {
   .dropdownMenu {
-      width: auto !important;
+    width: auto !important;
   }
 }
 
-@media screen and (max-width: 1199px) {
+/* max-width: 1199px */
+@media (width <= 1199px) {
+  .navbarToggler {
+    display: flex !important;
+    align-items: center;
+  }
+
+  .navCollapse {
+    display: block;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    padding-left: 10px;
+    min-width: 220px;
+    background-color: #343a40;
+    border-radius: 0 0 6px 6px;
+    box-shadow: 0 6px 16px rgb(0 0 0 / 40%);
+    z-index: 999;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease-out;
+  }
+
+  .navCollapseHidden {
+    display: none !important;
+  }
+
+  .navCollapseOpen {
+    max-height: 600px;
+    overflow-y: auto;
+    transition: max-height 0.25s ease-in;
+  }
+
   .menuContainer {
     align-items: start;
     flex-direction: column !important;
     padding-left: 50px;
+    max-height: 80vh;
+    overflow-y: auto;
   }
+
   .mobileMenuDropdown {
     background-color: #343a40 !important;
     border: none !important;
   }
-  .mobileDropdownText{
-    color: rgba(255, 255, 255, 0.5) !important;
+
+  .mobileDropdownText {
+    color: rgb(255 255 255 / 50%) !important;
   }
-  .mobileDropdownItem:hover{
+
+  .mobileDropdownItem:hover {
     background-color: #343a40 !important;
-    color: rgba(255, 255, 255, 0.75) !important;
+    color: rgb(255 255 255 / 75%) !important;
   }
+
   .darkMenuDropdown {
     background-color: #343a40 !important;
     border: none !important;
   }
+
   .darkDropdownText {
-    color: rgba(255, 255, 255, 0.5) !important;
+    color: rgb(255 255 255 / 50%) !important;
   }
+
   .darkDropdownItem:hover {
     background-color: #343a40 !important;
-    color: rgba(255, 255, 255, 0.75) !important;
+    color: rgb(255 255 255 / 75%) !important;
   }
+
   .hideInMobile {
     display: none;
   }
+
   .showInMobile {
     display: block;
   }
@@ -284,9 +358,7 @@
     display: none;
   }
 
-  .rightSection :global(.collapse:not(.show)),
-  .rightSection :global(.collapsing),
-  .rightSection :global(.navbar-collapse) {
+  .navCollapseOpen {
     display: flex !important;
     flex-basis: 100%;
     width: 100%;
@@ -317,18 +389,15 @@
 }
 
 @media print {
-  /* Reset all print styles */
   * {
     box-sizing: border-box !important;
   }
 
-  /* Set print scaling */
   @page {
     size: auto;
     margin: 0;
   }
 
-  /* Ensure navbar is compact and font size is correct */
   .navbar {
     padding: 0.5rem 1rem !important;
     min-height: auto !important;
@@ -339,7 +408,6 @@
     margin: 0 !important;
   }
 
-  /* Ensure all icons have correct size */
   .navbar img,
   .navbar svg {
     width: auto !important;
@@ -349,7 +417,6 @@
   }
 }
 
-/* Conservative Three Section Header Layout - Prevents icon overlap */
 .left-section {
   display: flex;
   align-items: center;
@@ -364,8 +431,8 @@
   justify-content: center;
   flex: 1;
   text-align: center;
-  min-width: 200px; /* Ensure minimum visibility */
-  overflow: hidden; /* Handle text overflow gracefully */
+  min-width: 200px;
+  overflow: hidden;
 }
 
 .right-section {
@@ -376,50 +443,47 @@
   min-width: fit-content;
 }
 
-/* Responsive behavior - prevent icon overlap on smaller screens */
-@media (max-width: 1200px) {
+/* max-width: 1200px */
+@media (width <= 1200px) {
   .left-section,
   .center-section,
   .right-section {
     flex-wrap: nowrap;
   }
-  
-  /* Ensure right section (navigation/icons) stays on the right */
+
   .right-section {
     margin-left: 0.5rem;
     flex-shrink: 0;
   }
-  
-  /* Give center section minimum space but allow some compression */
+
   .center-section {
     flex-shrink: 0.5;
-    min-width: 150px; /* Minimum width to stay visible */
-    margin: 0 0.5rem; /* Add some breathing room */
+    min-width: 150px;
+    margin: 0 0.5rem;
   }
-  
-  /* Keep left section stable but allow some compression */
+
   .left-section {
     flex-shrink: 0.5;
     margin-right: 0.5rem;
   }
 }
 
-/* Medium screens - better balance */
-@media (max-width: 900px) {
+/* max-width: 900px */
+@media (width <= 900px) {
   .center-section {
-    min-width: 120px; /* Still visible but more compressed */
-    font-size: 0.9rem; /* Slightly smaller text */
+    min-width: 120px;
+    font-size: 0.9rem;
   }
 }
 
-/* Mobile specific - stack vertically to prevent overlap */
-@media (max-width: 768px) {
+/* max-width: 768px */
+@media (width <= 768px) {
   .navbar .d-flex {
     flex-direction: column !important;
     align-items: center !important;
     gap: 0.5rem !important;
   }
-  
+
   .left-section,
   .center-section,
   .right-section {
