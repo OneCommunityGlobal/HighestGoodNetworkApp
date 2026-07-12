@@ -40,6 +40,11 @@ const getFilteredUsers = (fullName, allUserProfiles) => {
   return allUserProfiles.filter(user => matchesName(user, trimmedName));
 };
 
+const toggleSelection = (prev, id) => {
+  if (prev.includes(id)) return prev.filter(existing => existing !== id);
+  return [...prev, id];
+};
+
 function AssignBadge(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [isOpen, setOpen] = useState(false);
@@ -84,12 +89,16 @@ function AssignBadge(props) {
   };
 
   const handleUserSelect = user => {
-    setSelectedUserIds(prev => {
-      if (prev.includes(user._id)) {
-        return prev.filter(id => id !== user._id);
-      }
-      return [...prev, user._id];
-    });
+    setSelectedUserIds(prev => toggleSelection(prev, user._id));
+  };
+
+  const submit = async () => {
+    if (selectedUserIds?.length > 0 && props.selectedBadges?.length > 0) {
+      await props.assignBadgesToMultipleUserID(selectedUserIds, props.selectedBadges);
+      setOpen(false);
+      setSelectedUserIds([]);
+      props.clearNameAndSelected();
+    }
   };
 
   const toggle = (didSubmit = false) => {
@@ -99,15 +108,6 @@ function AssignBadge(props) {
       setOpen(prevIsOpen => !prevIsOpen);
     } else {
       props.validateBadges(props.firstName, props.lastName);
-    }
-  };
-
-  const submit = async () => {
-    if (selectedUserIds?.length > 0 && props.selectedBadges?.length > 0) {
-      await props.assignBadgesToMultipleUserID(selectedUserIds, props.selectedBadges);
-      setOpen(false);
-      setSelectedUserIds([]);
-      props.clearNameAndSelected();
     }
   };
 
