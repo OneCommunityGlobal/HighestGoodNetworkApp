@@ -1,11 +1,96 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { Container, Row, Alert, Col, Card, CardBody, Button, Input } from 'reactstrap';
-import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
+import {
+  FaCalendarAlt,
+  FaMapMarkerAlt,
+  FaUserAlt,
+  FaSearch,
+  FaTimes,
+  FaHistory,
+} from 'react-icons/fa';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+
+const RECENT_SEARCHES_KEY = 'cp_recent_searches';
+const MAX_RECENT_SEARCHES = 10;
+
+function useRecentSearches(key = RECENT_SEARCHES_KEY, maxItems = MAX_RECENT_SEARCHES) {
+  const [recentSearches, setRecentSearches] = useState(() => {
+    try {
+      const stored = localStorage.getItem(key);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const addSearch = useCallback(
+    query => {
+      const trimmed = query.trim();
+      if (!trimmed) return;
+      setRecentSearches(prev => {
+        const updated = [trimmed, ...prev.filter(s => s !== trimmed)].slice(0, maxItems);
+        localStorage.setItem(key, JSON.stringify(updated));
+        return updated;
+      });
+    },
+    [key, maxItems],
+  );
+
+  const removeSearch = useCallback(
+    query => {
+      setRecentSearches(prev => {
+        const updated = prev.filter(s => s !== query);
+        localStorage.setItem(key, JSON.stringify(updated));
+        return updated;
+      });
+    },
+    [key],
+  );
+
+  return { recentSearches, addSearch, removeSearch };
+}
+
+function RecentSearchDropdown({ searches, onSelect, onRemove, darkMode }) {
+  if (!searches.length) return null;
+  return (
+    <div
+      className={`${styles.recentSearchDropdown} ${
+        darkMode ? styles.darkRecentSearchDropdown : ''
+      }`}
+    >
+      <div className={styles.recentSearchHeader}>
+        <FaHistory className={darkMode ? styles.recentIconDark : styles.recentIcon} />
+        <span>Recently Searched</span>
+      </div>
+      {searches.map(term => (
+        <div key={term} className={styles.recentSearchItem}>
+          <button
+            type="button"
+            className={`${styles.recentSearchTerm} ${darkMode ? styles.darkRecentSearchTerm : ''}`}
+            onClick={() => onSelect(term)}
+          >
+            <FaSearch className={darkMode ? styles.recentIconDark : styles.recentIcon} />
+            {term}
+          </button>
+          <button
+            type="button"
+            className={`${styles.recentSearchRemove} ${
+              darkMode ? styles.darkRecentSearchRemove : ''
+            }`}
+            onClick={() => onRemove(term)}
+            aria-label={`Remove ${term}`}
+          >
+            <FaTimes />
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 const FixedRatioImage = ({ src, alt, fallback }) => (
   <div
@@ -51,7 +136,9 @@ export function CPDashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showPastEvents, setShowPastEvents] = useState(false);
+  const [showRecentSearches, setShowRecentSearches] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
+  const { recentSearches, addSearch, removeSearch } = useRecentSearches();
 
   // Hide the global back-to-top button — not needed on this page
   useEffect(() => {
@@ -109,7 +196,9 @@ export function CPDashboard() {
   const handleSearchClick = () => {
     const trimmed = searchInput.trim();
     setSearchQuery(trimmed);
+    addSearch(trimmed);
     setPagination(prev => ({ ...prev, currentPage: 1 }));
+    setShowRecentSearches(false);
   };
 
   // keep this near your refs/functions
@@ -122,6 +211,9 @@ export function CPDashboard() {
   };
 
   const searchRef = useRef(null);
+  const recentDropdownRef = useRef(null);
+  const blurTimeoutRef = useRef(null);
+
   useEffect(() => {
     autoGrow(searchRef.current); // ✅ runs even when you clear via button
   }, [searchInput]);
@@ -131,8 +223,34 @@ export function CPDashboard() {
       e.preventDefault(); // ✅ stops newline
       const trimmed = searchInput.trim();
       setSearchQuery(trimmed);
+      addSearch(trimmed);
       setPagination(prev => ({ ...prev, currentPage: 1 }));
+      setShowRecentSearches(false);
     }
+  };
+
+  const handleSearchFocus = () => {
+    setShowRecentSearches(true);
+  };
+
+  const handleSearchBlur = () => {
+    blurTimeoutRef.current = setTimeout(() => {
+      setShowRecentSearches(false);
+    }, 200);
+  };
+
+  const handleRecentDropdownMouseDown = () => {
+    if (blurTimeoutRef.current) {
+      clearTimeout(blurTimeoutRef.current);
+    }
+  };
+
+  const handleSelectRecent = term => {
+    setSearchInput(term);
+    setSearchQuery(term);
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
+    setShowRecentSearches(false);
+    if (searchRef.current) searchRef.current.focus();
   };
 
   const formatDate = dateStr => {
@@ -335,6 +453,8 @@ export function CPDashboard() {
                       value={searchInput}
                       onChange={e => setSearchInput(e.target.value)}
                       onKeyDown={handleSearchKeyDown}
+                      onFocus={handleSearchFocus}
+                      onBlur={handleSearchBlur}
                       className={`${styles.dashboardSearchTextarea} ${
                         darkMode ? styles.darkSearchTextarea : ''
                       }`}
@@ -365,6 +485,22 @@ export function CPDashboard() {
                   </div>
                   {searchInput.length >= 100 && (
                     <Alert className={styles.charCountWarning}>Max 100 characters</Alert>
+                  )}
+                  {showRecentSearches && (
+                    <div
+                      ref={recentDropdownRef}
+                      onMouseDown={handleRecentDropdownMouseDown}
+                      role="listbox"
+                      aria-label="Recent searches"
+                      tabIndex={-1}
+                    >
+                      <RecentSearchDropdown
+                        searches={recentSearches}
+                        onSelect={handleSelectRecent}
+                        onRemove={removeSearch}
+                        darkMode={darkMode}
+                      />
+                    </div>
                   )}
                 </div>
               </div>
