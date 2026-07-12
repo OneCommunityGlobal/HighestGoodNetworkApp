@@ -338,8 +338,8 @@ class PeopleReport extends Component {
       }
 
       const [startdate] = Object.keys(dict);
-      if (startdate) {
-        startdate.toString();
+      if (!startdate) {
+        return;
       }
       if (props.infringements.length > 0) {
         props.infringements.map((current, index) => (
