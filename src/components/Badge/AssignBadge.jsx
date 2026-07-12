@@ -70,9 +70,10 @@ function AssignBadge(props) {
         setFilteredUsers([]);
         setSelectedUserIds([]);
         props.clearNameAndSelected();
-      } else {
-        setFilteredUsers(filtered);
+        setError(null);
+        return;
       }
+      setFilteredUsers(filtered);
       setError(null);
     } catch (err) {
       /* eslint-disable no-console */
