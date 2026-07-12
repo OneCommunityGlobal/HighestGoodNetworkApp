@@ -33,6 +33,13 @@ const matchesName = (user, trimmedName) => {
   return userFullName.includes(trimmedName.toLowerCase());
 };
 
+const getFilteredUsers = (fullName, allUserProfiles) => {
+  if (typeof fullName !== 'string') throw new Error('Full name must be a string');
+  const trimmedName = fullName.trim();
+  if (!trimmedName) return null;
+  return allUserProfiles.filter(user => matchesName(user, trimmedName));
+};
+
 function AssignBadge(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [isOpen, setOpen] = useState(false);
@@ -53,19 +60,13 @@ function AssignBadge(props) {
 
   useEffect(() => {
     try {
-      if (typeof fullName !== 'string') {
-        throw new Error('Full name must be a string');
-      }
-
-      const trimmedName = fullName.trim();
-      if (trimmedName) {
-        const filtered = props.allUserProfiles.filter(user => matchesName(user, trimmedName));
-        setFilteredUsers(filtered);
-      } else {
+      const filtered = getFilteredUsers(fullName, props.allUserProfiles);
+      if (filtered === null) {
         setFilteredUsers([]);
-        // Clear selectedUserId when input is empty
         setSelectedUserIds([]);
         props.clearNameAndSelected();
+      } else {
+        setFilteredUsers(filtered);
       }
       setError(null);
     } catch (err) {
@@ -73,7 +74,6 @@ function AssignBadge(props) {
       console.error('Error filtering users:', err);
       setError(err.message);
       setFilteredUsers([]);
-      // Also clear selection on error
       setSelectedUserIds([]);
       props.clearNameAndSelected();
     }
