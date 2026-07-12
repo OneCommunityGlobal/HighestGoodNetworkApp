@@ -28,7 +28,7 @@ import { useDispatch } from 'react-redux';
 import jwtDecode from 'jwt-decode';
 import Image from 'react-bootstrap/Image';
 import { toast } from 'react-toastify';
-import config from '../../config.json';
+import { tokenKey } from '../../config.json';
 import { setCurrentUser } from '../../actions/authActions';
 import HomeCountryModal from './homeCountryModal';
 import ProfilePictureModal from './profilePictureModal';
@@ -38,8 +38,6 @@ import 'react-phone-input-2/lib/style.css';
 import './SetupProfileUserEntry.module.css';
 import logo from '../../assets/images/logo.png';
 import TimeZoneDropDown from '../UserProfile/TimeZoneDropDown';
-
-const { tokenKey } = config;
 
 function SetupProfileUserEntry({ token, userEmail }) {
   const dispatch = useDispatch();

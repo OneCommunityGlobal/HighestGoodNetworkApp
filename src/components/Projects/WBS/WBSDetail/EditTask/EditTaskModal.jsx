@@ -276,7 +276,18 @@ function EditTaskModal(props) {
     }
   }, [startedDate, dueDate]);
 
-
+  const formatDate = (date, format) => {
+    // consistent timezone handling
+    const zonedDate = utcToZonedTime(date, TIMEZONE);
+    return dateFnsFormat(zonedDate, format);
+  };
+  const parseDate = (str, format, locale) => {
+    const parsed = dateFnsParse(str, format, new Date(), { locale });
+    if (DateUtils.isDate(parsed)) {
+      return parsed;
+    }
+    return undefined;
+  };
 
   const validateDateFormat = (dateString) => {
     if (!dateString || dateString.trim() === '') return true;

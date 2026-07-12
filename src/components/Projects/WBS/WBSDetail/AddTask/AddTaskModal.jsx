@@ -13,7 +13,7 @@ import ReactTooltip from 'react-tooltip';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { addNewTask } from '../../../../../actions/task';
-import {
+import { DUE_DATE_MUST_GREATER_THAN_START_DATE ,
   END_DATE_ERROR_MESSAGE,
   START_DATE_ERROR_MESSAGE
 } from '../../../../../languages/en/messages';
@@ -513,6 +513,7 @@ function AddTaskModal(props) {
   const [modal, setModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [newTaskNum, setNewTaskNum] = useState('1');
+  const [dateWarning, setDateWarning] = useState(false);
   const [hoursWarning, setHoursWarning] = useState(false);
   const [showReplicateConfirm, setShowReplicateConfirm] = useState(false);
   const [isReplicating, setIsReplicating] = useState(false);
