@@ -84,13 +84,11 @@ function AssignBadge(props) {
   };
 
   const handleUserSelect = user => {
-    setSelectedUserIds(prevSelected => {
-      const safePrev = Array.isArray(prevSelected) ? prevSelected : [];
-
-      if (safePrev.includes(user._id)) {
-        return safePrev.filter(id => id !== user._id);
+    setSelectedUserIds(prev => {
+      if (prev.includes(user._id)) {
+        return prev.filter(id => id !== user._id);
       }
-      return [...safePrev, user._id];
+      return [...prev, user._id];
     });
   };
 
