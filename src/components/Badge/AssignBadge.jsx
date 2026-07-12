@@ -45,6 +45,25 @@ const toggleSelection = (prev, id) => {
   return [...prev, id];
 };
 
+function doToggle(
+  isOpen,
+  didSubmit,
+  selectedUserIds,
+  onSubmit,
+  setOpen,
+  validateBadges,
+  firstName,
+  lastName,
+) {
+  if (isOpen && didSubmit === true) {
+    onSubmit();
+  } else if (selectedUserIds?.length > 0) {
+    setOpen(prev => !prev);
+  } else {
+    validateBadges(firstName, lastName);
+  }
+}
+
 function AssignBadge(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [isOpen, setOpen] = useState(false);
@@ -102,15 +121,17 @@ function AssignBadge(props) {
     }
   };
 
-  const toggle = (didSubmit = false) => {
-    if (isOpen && didSubmit === true) {
-      submit();
-    } else if (selectedUserIds?.length > 0) {
-      setOpen(prevIsOpen => !prevIsOpen);
-    } else {
-      props.validateBadges(props.firstName, props.lastName);
-    }
-  };
+  const toggle = (didSubmit = false) =>
+    doToggle(
+      isOpen,
+      didSubmit,
+      selectedUserIds,
+      submit,
+      setOpen,
+      props.validateBadges,
+      props.firstName,
+      props.lastName,
+    );
 
   return (
     <Form
