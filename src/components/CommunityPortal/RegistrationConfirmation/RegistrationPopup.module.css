@@ -1,7 +1,7 @@
 .popupOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgb(0 0 0 / 55%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -11,14 +11,15 @@
 .popup {
   width: 420px;
   max-width: 90%;
-  background: #ffffff;
+  background: #fff;
   color: #1a1a1a;
   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 12px 30px rgb(0 0 0 / 20%);
   text-align: center;
-  animation: fadeIn 0.2s ease-out;
+  animation: fade-in 0.2s ease-out;
 }
+
 .popupHeader {
   display: flex;
   align-items: center;
@@ -73,7 +74,7 @@
 
 .calendarBtn {
   background: #2e7d32;
-  color: #ffffff;
+  color: #fff;
   margin-bottom: 16px;
 }
 
@@ -83,20 +84,21 @@
 }
 
 .emailBtn {
-  background: #0288d1;
-  color: #ffffff;
+  background: #01579b;
+  color: #fff;
   flex: 1;
 }
 
 .downloadBtn {
   background: #fbc02d;
-  color: #000000;
+  color: #000;
   flex: 1;
 }
 
 /* ==========================================================================
    DARK MODE
    ========================================================================== */
+
 .darkMode .popup {
   background: #2c3e50;
   color: #ecf0f1;
@@ -111,7 +113,7 @@
 }
 
 .darkMode .emailBtn {
-  background: #039be5;
+  background: #0277bd;
 }
 
 .darkMode .downloadBtn {
@@ -127,11 +129,12 @@
    ANIMATIONS
    ========================================================================== */
 
-@keyframes fadeIn {
+@keyframes fade-in {
   from {
     opacity: 0;
     transform: translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
