@@ -2,13 +2,12 @@ import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import Calendar from 'react-calendar';
+import CalendarWidget from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../../utils/URL';
 import styles from './Register.module.css';
 import EventDescription from './EventDescription';
-import { isTomorrow, isComingWeekend } from '../../utils';
 
 const MOCK_ACTIVITIES = [
   {
@@ -543,7 +542,7 @@ function Register() {
         {/* Right Column: Calendar */}
         <div className={styles['right-column']}>
           <div className={styles['calendar-container']}>
-            <Calendar
+            <CalendarWidget
               onChange={setSelectedDate}
               value={selectedDate}
               tileClassName={tileClassName}
