@@ -149,8 +149,8 @@ const activityId = params.get('a') || '';
 
   return (
     <div className={pageClassName}>
-      <h2>{poll.activity.title}</h2>
-      <div className={styles.muted}>{poll.activity.location}</div>
+<h2>{poll.activity?.title || poll.activity?.name || 'Activity'}</h2>
+<div className={styles.muted}>{poll.activity?.location}</div>
       {poll.reason ? (
         <p>
           <strong>Reason:</strong> {poll.reason}
