@@ -1,19 +1,15 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import Banner from '../questionpages/Banner';
-import QuestionnaireHeader from '../questionpages/QuestionnaireHeader';
 import BackendQuestions from '../questionpages/BackendQuestions';
 import Progress from '../questionpages/Progress';
 import containerStyles from '../styles/hgnform.module.css';
 
 function Page4() {
-  const headerRef = useRef(null);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
-    if (headerRef.current) {
-      headerRef.current.scrollIntoView({ behavior: 'auto', block: 'start' });
-    }
+    window.scrollTo({ top: 0, behavior: 'auto' });
   }, []);
 
   return (
@@ -23,7 +19,6 @@ function Page4() {
       }`}
     >
       <Banner />
-      <QuestionnaireHeader ref={headerRef} />
       <BackendQuestions />
       <Progress progressValue={16.67 * 4} />
     </div>

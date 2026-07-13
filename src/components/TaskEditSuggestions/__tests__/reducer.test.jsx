@@ -125,13 +125,11 @@ describe('taskEditSuggestionsReducer', () => {
   it('should handle TOGGLE_USER_SORT_DIRECTION', () => {
     const currentState = {
       isLoading: false,
-      userSortDirection: null,
+      userSortDirection: 'asc',
       taskEditSuggestions: [
         { _id: '1', user: 'UserA' },
         { _id: '2', user: 'UserB' },
       ],
-      // eslint-disable-next-line no-dupe-keys
-      userSortDirection: 'asc',
     };
     const toggleUserAction = {
       type: 'TOGGLE_USER_SORT_DIRECTION',
