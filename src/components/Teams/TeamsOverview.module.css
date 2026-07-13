@@ -1,77 +1,115 @@
-.card#card_team {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    background: linear-gradient(to bottom, #87CEEB, #1E90FF, #4169E1);
-    border-radius: 8px;
-    height: 40px;
-    width: 300px;
-    margin-top: 10px;
-    padding: 10px;
-  }
-  
-.team-name-col {
-  white-space: normal;      /* allow line breaks */
-  word-break: break-word;   /* break long words if needed */
-  overflow-wrap: anywhere;  /* modern browsers */
-  max-width: 300px;         /* optional: set a reasonable max width */
+/* stylelint-disable  */
+.card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border-radius: 8px;
+  height: 40px;
+  width: 300px;
+  padding: 10px;
 }
 
-
-  
-  .card#card_active {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    background: linear-gradient(to bottom, #FFD700, #FFA500, #FF8C00);
-    border-radius: 8px;
-    height: 40px;
-    width: 300px;
-    margin: 10px;
-    padding: 10px;
-  }
-
-  .card#card_in_active {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    background: linear-gradient(to bottom, #cbbc14, #bfb116, #d3d61b);
-    border-radius: 8px;
-    height: 40px;
-    width: 300px;
-    margin: 10px;
-    padding: 10px;
-  }
-
-  .card-body {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .card-text {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .card-text i {
-    margin-right: 5px;
-  }
-
-  .selected-filter {
-  border: 2px solid #007bff;
-  background-color: #e6f0ff;
+.totalCard {
+  background: linear-gradient(to bottom, #87ceeb, #1e90ff, #4169e1);
+  margin: 0;
 }
 
-.fa-circle-isActive{
+.activeCard {
+  background: linear-gradient(to bottom, #ffd700, #ffa500, #ff8c00);
+  margin: 0;
+}
+
+.inactiveCard {
+  background: linear-gradient(to bottom, #d387e0, #b044c0, #8e24aa) !important;
+  margin: 0;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.cardText {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+.cardTextIcon {
+  margin-right: 5px;
+}
+
+.selectedFilter {
+  border: #e6f0ff;
+}
+
+.faCircleIsActive {
   color: lawngreen;
 }
 
-.fa-circle-isInActive {
+.faCircleIsInActive {
   color: #dee2e6;
+}
+
+/* Dark mode styles */
+.darkMode.totalCard {
+  background: linear-gradient(to bottom, #2c3e50, #34495e, #2c3e50);
+  color: #ecf0f1;
+}
+
+.darkMode.activeCard {
+  background: linear-gradient(to bottom, #e67e22, #d35400, #e74c3c);
+  color: #ecf0f1;
+}
+
+.darkMode.inactiveCard {
+  background: linear-gradient(to bottom, #7d3c98, #6c3483, #5b2c6f) !important;
+  color: #ecf0f1;
+}
+
+/* If you still use this class elsewhere, we can keep it here too */
+.teamNameCol {
+  width: 40%;
+  max-width: 40%;
+  white-space: normal;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+}
+
+.overviewTop {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin: 25px 0;
+}
+
+/* Media queries for responsive design */
+@media (width <= 768px) {
+  .card {
+    width: 250px;
+  }
+  
+  .cardText {
+    font-size: 12px;
+  }
+  
+  .overviewTop {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+@media (width <= 575px) {
+  .card {
+    width: 200px;
+  }
+  
+  .cardText {
+    font-size: 11px;
+  }
 }

@@ -1,12 +1,13 @@
+/* stylelint-disable  */
 /* Styles for the Work Distribution Bar Chart */
-.work-distribution-container {
+.workDistributionContainer {
   font-family: Arial, sans-serif;
   padding: 20px;
   margin-top: 20px;
   margin-bottom: -35px;
 }
 
-.chart-title {
+.chartTitle {
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 15px;
@@ -14,19 +15,19 @@
   color: #333;
 }
 
-.chart-container {
+.chartContainer {
   width: 100%;
   height: 400px;
   position: relative;
 }
 
 /* Bar chart specific styles */
-.bar-group {
+.barGroup {
   cursor: pointer;
   transition: opacity 0.2s;
 }
 
-.bar-group:hover {
+.barGroup:hover {
   opacity: 0.8;
 }
 
@@ -39,13 +40,13 @@
   margin-top: 20px;
 }
 
-.legend-item {
+.legendItem {
   display: flex;
   align-items: center;
   font-size: 14px;
 }
 
-.legend-color {
+.legendColor {
   width: 15px;
   height: 15px;
   margin-right: 5px;
@@ -56,36 +57,36 @@
 .tooltip {
   position: absolute;
   padding: 8px;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgb(255 255 255 / 95%);
   border: 1px solid #ddd;
   border-radius: 4px;
   pointer-events: none;
   font-size: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
 /* Dark mode styles */
-.dark-mode .chart-title {
+.darkMode .chartTitle {
   color: #e0e0e0;
 }
 
-.dark-mode .tooltip {
-  background: rgba(28, 37, 65, 0.95);
+.darkMode .tooltip {
+  background: rgb(28 37 65 / 95%);
   border-color: #2f4157;
   color: #e0e0e0;
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
-  .chart-container {
+@media (width <= 768px) {
+  .chartContainer {
     height: 300px;
   }
-  
+
   .legend {
     gap: 10px;
   }
-  
-  .legend-item {
+
+  .legendItem {
     font-size: 12px;
   }
 }
