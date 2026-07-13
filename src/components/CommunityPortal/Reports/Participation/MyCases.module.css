@@ -29,6 +29,13 @@
   align-items: center;
 }
 
+/* Fixed no-descending-specificity: .headerActions moved before .myCasesPageDark .headerActions */
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
 .myCasesPageDark .header {
   display: flex;
   justify-content: space-between;
@@ -37,16 +44,8 @@
   color: #fff;
 }
 
-.headerActions {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
 .myCasesPageDark .headerActions {
   gap: 20px;
-
-  /* more room between dropdowns/buttons */
 }
 
 .sectionTitle {
@@ -64,7 +63,6 @@
   margin: 0;
 }
 
-
 @media (width <= 1024px) {
   .headerActions {
     flex-direction: column;
@@ -79,7 +77,6 @@
   }
 }
 
-/* ---------- View Switcher & Segmented Controls ---------- */
 .viewSwitcher {
   display: flex;
   gap: 12px;
@@ -98,6 +95,7 @@
 }
 
 /* Dark mode */
+
 .viewSwitcherDarkMode {
   display: flex;
   border-radius: 6px;
@@ -126,31 +124,19 @@
   color: #fff;
 }
 
-
 .filterWrapper {
-  margin: 10px 0;
+  display: flex;
 }
 
 /* ---------- Dropdown Styles ---------- */
 .filterDropdown {
-  padding: 8px;
+  padding: 8px 16px;
   font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  cursor: pointer;
-  width:100%;
-}
-
-/* Light Mode */
-.createNew {
-  font-weight: bold;
   border: 1px solid #ccc;
   border-radius: 6px;
-  background-color: #fff;
-  color: #333;
-  padding: 8px 16px;
   cursor: pointer;
-  font-size: 14px;
+  min-width: 130px;
+  box-sizing: border-box;
 }
 
 .myCasesPageDark .viewSwitcher button,
@@ -158,6 +144,12 @@
 .myCasesPageDark .createNew {
   color: #fff !important;
   border: 1px solid #555 !important;
+}
+
+.myCasesPageDark .filterDropdown {
+  background-color: #3a506b;
+  color: #fff;
+  border: 1px solid #555;
 }
 
 .filterDropdown:hover,
@@ -168,13 +160,15 @@
 
 /* Dark mode dropdown (component-level) */
 .filterDropdownDarkMode {
-  padding: 8px;
+  padding: 8px 16px;
   font-size: 14px;
   border: 1px solid #555;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   background-color: #1e293b;
   color: #fff;
+  min-width: 130px;
+  box-sizing: border-box;
 
   /* Custom arrow */
   background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E");
@@ -204,6 +198,19 @@
   border-radius: 4px;
 }
 
+/* Light Mode */
+/* stylelint-disable-next-line no-descending-specificity */
+.createNew {
+  font-weight: bold;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #333;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
 /* Dark mode */
 .createNewDarkMode {
   font-weight: bold;
@@ -218,8 +225,6 @@
 
 .myCasesPageDark .createNew {
   background-color: #3a506b;
-
-  /* Matches other dark elements */
   color: #fff;
   border: 1px solid #555;
 }
@@ -390,14 +395,24 @@
   border: 2px solid #fff; 
 }
 
+/* Combined duplicated selector blocks */
 .attendeesCount {
   font-size: 14px;
   color: #555;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
 .attendeesCountDark {
   font-size: 14px;
   color: #fff !important;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
 }
 
 .rates {
@@ -432,7 +447,7 @@
   box-shadow: 0 2px 10px rgb(0 0 0 / 10%);
 }
 
-.caseListItem:hover{
+.caseListItem:hover {
   background-color: #d2cfcf;
 }
 
@@ -445,7 +460,7 @@
   box-shadow: 0 2px 10px rgb(0 0 0 / 10%);
 }
 
-.caseListItemDark:hover{
+.caseListItemDark:hover {
   background-color: #2c3e50;
 }
 
@@ -514,6 +529,7 @@
 }
 
 /* ---------- Print styles ---------- */
+
 @media print {
   .myCasesPage {
     overflow: visible !important;
@@ -532,65 +548,135 @@
     break-inside: auto !important;
   }
 
-  .caseCard {
-    background: white !important;
-    color: #333 !important;
-    border: 1px solid #ddd !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-    break-inside: avoid-page !important;
-    break-inside: avoid !important;
-  }
+ .caseCard {
+  background: white !important;
+  color: #333 !important;
+  border: 1px solid #ddd !important;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+  break-inside: avoid-page !important;
+  break-inside: avoid !important;
+}
 
-  .caseCardDark {
-    background: #3a506b !important;
-    color: #fff !important;
-    border: 1px solid #555 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-    break-inside: avoid-page !important;
-    break-inside: avoid !important;
-  }
+.caseCardDark {
+  background: #3a506b !important;
+  color: #fff !important;
+  border: 1px solid #555 !important;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+  break-inside: avoid-page !important;
+  break-inside: avoid !important;
+}
 
-  .caseList {
-    max-height: none !important;
-    height: auto !important;
-    overflow: visible !important;
-    break-inside: auto !important;
-  }
+.caseList {
+  max-height: none !important;
+  height: auto !important;
+  overflow: visible !important;
+  break-inside: auto !important;
+}
 
-  .caseListItem {
-    break-inside: avoid-page !important;
-    break-inside: avoid !important;
-  }
+.caseListItem {
+  break-inside: avoid-page !important;
+  break-inside: avoid !important;
+}
 
-  .caseListItemDark {
-    break-inside: avoid-page !important;
-    break-inside: avoid !important;
-  }
+.caseListItemDark {
+  break-inside: avoid-page !important;
+  break-inside: avoid !important;
+}
 
-  .eventBadge {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
+.eventBadge {
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
 
-  .eventBadge[data-type='Yoga Class'] {
-    background-color: #e9f7ef !important;
-    color: #28a745 !important;
-  }
+.eventBadge[data-type='Yoga Class'] {
+  background-color: #e9f7ef !important;
+  color: #28a745 !important;
+}
 
-  .eventBadge[data-type='Cooking Workshop'] {
-    background-color: #fdecea !important;
-    color: #e74c3c !important;
-  }
+.eventBadge[data-type='Cooking Workshop'] {
+  background-color: #fdecea !important;
+  color: #e74c3c !important;
+}
 
-  .eventBadge[data-type='Dance Class'] {
-    background-color: #fff5e6 !important;
-    color: #f39c12 !important;
-  }
+.eventBadge[data-type='Dance Class'] {
+  background-color: #fff5e6 !important;
+  color: #f39c12 !important;
+}
 
-  .eventBadge[data-type='Fitness Bootcamp'] {
-    background-color: #f5e6ff !important;
-    color: #9b59b6 !important;
-  }
+.eventBadge[data-type='Fitness Bootcamp'] {
+  background-color: #f5e6ff !important;
+  color: #9b59b6 !important;
+}
+}
+
+/* ---------- Attendees Hover (Light Mode) ---------- */
+.attendeesCount:hover {
+  background-color: #e8f1ff;
+  color: #0b5ed7;
+  font-weight: 600;
+  border-radius: 6px;
+}
+
+/* ---------- Dark Mode Hover ---------- */
+.attendeesCountDark:hover {
+  background-color: #1e40af;
+  color: #fff;
+  font-weight: 500;
+  border-radius: 4px;
+}
+
+/* Light tooltip */
+.attendeesCount::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #111827;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 9999;
+}
+
+/* Dark mode tooltip */
+.attendeesCountDark::after {
+  background-color: #000;
+  color: #fff;
+  border: 1px solid rgb(255 255 255 /20%);
+}
+
+/* Show tooltip */
+.attendeesCount:hover::after {
+  opacity: 1;
+}
+
+.caseListItem .attendeesCount:hover {
+  background-color: rgb(0 123 255 /12%);
+  color: inherit; 
+  border-radius: 4px;
+}
+
+.caseListItemDark .attendeesCount:hover {
+  background-color: rgb(255 255 255 /12%);
+  color: inherit; 
+  border-radius: 4px;
+}
+
+.myCasesPageDark .moreBtn {
+  background-color: #3A506B;
+  border: 1px solid #5A6B7D;
+  color: #fff;
+}
+
+.myCasesPageDark .moreBtn:hover {
+  background-color: #5A6B7D;
+  color: #fff;
 }
