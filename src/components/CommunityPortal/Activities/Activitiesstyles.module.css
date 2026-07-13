@@ -9,6 +9,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
+  background-color: transparent;
 }
 
 .header h2,
@@ -497,6 +498,10 @@
 .darkmode .activitiesPage {
   background-color: #0f172a;
   color: #e5e7eb;
+}
+
+.darkmode .header {
+  background-color: transparent;
 }
 
 .darkmode .header h1,
