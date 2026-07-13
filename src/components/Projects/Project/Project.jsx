@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
 import { connect } from 'react-redux';
 import hasPermission from '~/utils/permissions';
-import { boxStyle } from '~/styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { toast } from 'react-toastify';
 import { modifyProject } from '../../../actions/projects';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
@@ -127,7 +127,7 @@ const Project = props => {
               data-testid="projects__category--input" // added for unit test
               value={category}
               onChange={onUpdateProjectCategory}
-              className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
+              className={`form-control ${darkMode ? 'bg-yinmn-blue border-0 text-light' : ''}`}
             >
               <option value="Unspecified">Unspecified</option>
               <option value="Food">Food</option>
@@ -167,7 +167,7 @@ const Project = props => {
             <button
               type="button"
               className="btn btn-outline-info"
-              style={darkMode ? {} : boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               <i className="fa fa-archive" aria-hidden="true" />
             </button>
@@ -180,7 +180,7 @@ const Project = props => {
               <button
                 type="button"
                 className="btn btn-outline-info d-flex align-items-center project-member-btn"
-                style={darkMode ? {} : boxStyle}
+                style={darkMode ? boxStyleDark : boxStyle}
               >
                 <i className="fa fa-users" aria-hidden="true" />
               </button>
@@ -206,7 +206,7 @@ const Project = props => {
             <button
               type="button"
               className="btn btn-outline-info"
-              style={darkMode ? {} : boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               <i className="fa fa-tasks" aria-hidden="true" />
             </button>
@@ -219,7 +219,7 @@ const Project = props => {
             data-testid="delete-button"
             type="button"
             className="btn btn-outline-danger"
-            style={darkMode ? { borderColor: '#D2042D' } : boxStyle}
+            style={darkMode ? boxStyleDark : boxStyle}
             onClick={onArchiveProject}
           >
             {projectData?.isArchived ? UNARCHIVE : ARCHIVE}
