@@ -1,9 +1,7 @@
 import PropTypes from 'prop-types';
 import { Doughnut } from 'react-chartjs-2';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Chart, ArcElement } from 'chart.js';
 import styles from './DonutChart.module.css';
-import { getReadableTextColor } from '../HoursWorkedPieChart/HoursWorkedPieChart';
 
 Chart.register(ArcElement);
 
@@ -16,8 +14,12 @@ function DonutChart(props) {
       {
         data: data.map(item => item.value),
         backgroundColor: colors,
-        borderWidth: 1,
-        borderAlign: 'inner',
+        borderWidth: 0,
+        // Explicit gap between every slice via canvas clipping, rather than
+        // relying on adjacent fill paths to butt up against each other
+        // cleanly — thin adjacent wedges were leaving an anti-aliasing seam
+        // at their shared edge without this.
+        spacing: 2,
       },
     ],
   };
@@ -25,30 +27,10 @@ function DonutChart(props) {
   const options = {
     plugins: {
       datalabels: {
-        color: context => {
-          const bgColor = colors[context.dataIndex % colors.length];
-          return getReadableTextColor(bgColor, darkMode);
-        },
-        font: {
-          size: 16,
-        },
-        // Only the large slice(s) get an in-chart label. Small slices
-        // (<10%) are too tight to fit a label without overlap or
-        // clipping, so their value/percentage is shown in the legend
-        // text instead (see donutLabels below).
-        display: context => {
-          const value = context.dataset.data[context.dataIndex];
-          if (value === 0) return false;
-          const percentage = totalCount ? (value / totalCount) * 100 : 0;
-          return percentage >= 10;
-        },
-        formatter: value => {
-          if (totalCount === 0 || isNaN(totalCount) || !isFinite(totalCount)) {
-            return `${value}`;
-          }
-          const percentage = ((value / totalCount) * 100).toFixed(0);
-          return `${value}\n(${percentage}%)`;
-        },
+        display: false, // chartjs-plugin-datalabels is registered globally by other
+        // components (RatingDistribution, PRQualityGraph); explicitly disabling it
+        // here prevents their global registration from drawing default labels on
+        // this chart, since values/percentages are already shown in the legend below.
       },
       legend: {
         display: false,
@@ -67,7 +49,7 @@ function DonutChart(props) {
     <div className={styles.donutContainer}>
       <div className={styles.donutScrollable}>
         <div className={styles.donutChart}>
-          <Doughnut data={chartData} options={options} plugins={[ChartDataLabels]} />
+          <Doughnut data={chartData} options={options} />
           <div className={styles.donutCenter}>
             <h5 className="donut-heading" style={{ color: darkMode ? 'white' : 'black' }}>
               {title}
