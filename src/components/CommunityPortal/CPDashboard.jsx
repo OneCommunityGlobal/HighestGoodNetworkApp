@@ -127,6 +127,46 @@ const DEFAULT_FILTERS = {
   categories: '',
 };
 
+function isTomorrow(dateString) {
+  const input = new Date(dateString);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+  return input >= tomorrow && input < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
+}
+
+function isComingWeekend(dateString) {
+  const input = new Date(dateString);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const day = today.getDay();
+  const daysUntilSaturday = (6 - day + 7) % 7 || 7;
+  const saturday = new Date(today);
+  saturday.setDate(today.getDate() + daysUntilSaturday);
+  const sunday = new Date(saturday);
+  sunday.setDate(saturday.getDate() + 1);
+  sunday.setHours(23, 59, 59, 999);
+  return input >= saturday && input <= sunday;
+}
+
+function passesFilters(
+  event,
+  { showPastEvents, isPastEvent, onlineOnly, dateFilter, searchQuery },
+) {
+  if (!showPastEvents && isPastEvent(event)) return false;
+  if (onlineOnly && event.location?.toLowerCase() !== 'virtual') return false;
+  if (dateFilter === 'tomorrow') return isTomorrow(event.date);
+  if (dateFilter === 'weekend') return isComingWeekend(event.date);
+  if (!searchQuery) return true;
+  const term = searchQuery.toLowerCase();
+  return (
+    event.title?.toLowerCase().includes(term) ||
+    event.location?.toLowerCase().includes(term) ||
+    event.organizer?.toLowerCase().includes(term)
+  );
+}
+
 export function CPDashboard() {
   const [events, setEvents] = useState([]);
   const [searchInput, setSearchInput] = useState('');
@@ -265,29 +305,6 @@ export function CPDashboard() {
     });
   };
 
-  const isTomorrow = dateString => {
-    const input = new Date(dateString);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
-    return input >= tomorrow && input < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
-  };
-
-  const isComingWeekend = dateString => {
-    const input = new Date(dateString);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const day = today.getDay();
-    const daysUntilSaturday = (6 - day + 7) % 7 || 7;
-    const saturday = new Date(today);
-    saturday.setDate(today.getDate() + daysUntilSaturday);
-    const sunday = new Date(saturday);
-    sunday.setDate(saturday.getDate() + 1);
-    sunday.setHours(23, 59, 59, 999);
-    return input >= saturday && input <= sunday;
-  };
-
   // Handler to update pending filter values
   const handleFilterChange = (filterName, value) => {
     setPendingFilters(prev => ({
@@ -316,32 +333,16 @@ export function CPDashboard() {
     if (!ref) return false;
     return new Date(ref) < now;
   };
-  // Filter events based on applied filters
-  const filteredEvents = events.filter(event => {
-    if (!showPastEvents && isPastEvent(event)) return false;
-    // Filter by online only
-    if (appliedFilters.onlineOnly) {
-      const isOnlineEvent = event.location?.toLowerCase() === 'virtual';
-      if (!isOnlineEvent) return false;
-    }
 
-    // Filter by date
-    if (appliedFilters.dateFilter === 'tomorrow') {
-      return isTomorrow(event.date);
-    } else if (appliedFilters.dateFilter === 'weekend') {
-      return isComingWeekend(event.date);
-    }
-
-    // Filter by search query
-    if (!searchQuery) return true;
-
-    const term = searchQuery.toLowerCase();
-    return (
-      event.title?.toLowerCase().includes(term) ||
-      event.location?.toLowerCase().includes(term) ||
-      event.organizer?.toLowerCase().includes(term)
-    );
-  });
+  const filteredEvents = events.filter(event =>
+    passesFilters(event, {
+      showPastEvents,
+      isPastEvent,
+      onlineOnly: appliedFilters.onlineOnly,
+      dateFilter: appliedFilters.dateFilter,
+      searchQuery,
+    }),
+  );
 
   // Reset pagination to page 1 when filters change
   useEffect(() => {
