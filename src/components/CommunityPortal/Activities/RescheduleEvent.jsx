@@ -118,10 +118,10 @@ const toISODate = d => {
       `${ApiEndpoint}/communityportal/activities/${eventId}/reschedule/notify`,
       {
         method: 'POST',
-        headers: {
-          Authorization: token,
-          'Content-Type': 'application/json',
-        },
+headers: {
+  ...(token ? { Authorization: token } : {}),
+  'Content-Type': 'application/json',
+},
         body: JSON.stringify(payload),
       },
     );
