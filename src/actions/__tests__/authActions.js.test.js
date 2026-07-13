@@ -20,7 +20,7 @@ const middlewares = [thunk]; // Define middlewares
 const mockStore = configureMockStore(middlewares); // Create mock store with middlewares
 
 vi.mock('jwt-decode', () => ({
-  default: vi.fn(),
+  jwtDecode: vi.fn(),
 }));
 
 vi.mock('../../services/httpService'); // Mock httpService
