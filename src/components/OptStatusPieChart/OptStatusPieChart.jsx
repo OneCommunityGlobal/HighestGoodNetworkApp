@@ -7,14 +7,11 @@
 import { useEffect, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
 import { useDispatch, useSelector } from 'react-redux';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Chart as ChartJS } from 'chart.js';
 import { fetchOptStatusBreakdown } from '../../actions/optStatusBreakdownAction';
 import { roleOptions } from './filter';
 import 'chart.js/auto';
 import styles from './OptStatusPieChart.module.css';
-
-ChartJS.register(ChartDataLabels);
 
 const COLORS = {
   'OPT started': '#f44336',
@@ -26,6 +23,10 @@ const COLORS = {
 
 const LABEL_OFFSET = 36;
 
+// Scoped to this chart only via the `plugins` prop on <Pie> below — do NOT
+// register this globally with ChartJS.register(). A global registration
+// makes every ArcElement-based chart in the app (pie/doughnut) draw these
+// leader lines, including charts in completely unrelated components.
 const leaderLinesPlugin = {
   id: 'leaderLines',
   afterDatasetDraw(chart) {
@@ -60,8 +61,6 @@ const leaderLinesPlugin = {
     });
   },
 };
-
-ChartJS.register(leaderLinesPlugin);
 
 const OptStatusPieChart = () => {
   const dispatch = useDispatch();
@@ -169,7 +168,7 @@ const OptStatusPieChart = () => {
             {localError ? (
               <div className={styles.errorMessage}>{localError}</div>
             ) : (
-              <Pie data={chartData} options={options} />
+              <Pie data={chartData} options={options} plugins={[leaderLinesPlugin]} />
             )}
           </div>
 
