@@ -31,7 +31,7 @@ export default function ReschedulePoll() {
   const darkMode = useSelector(state => state.theme?.darkMode);
   const params = new URLSearchParams(search);
   const emailToken = params.get('token') || '';
-  const activityId = params.get('a') || '1';
+const activityId = params.get('a') || '';
   const pageClassName = `${styles.reschedulePage} ${styles.pollPage} ${
     darkMode ? styles.reschedulePageDark : ''
   }`;
