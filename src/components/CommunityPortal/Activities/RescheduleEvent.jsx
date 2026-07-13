@@ -227,7 +227,12 @@ function RescheduleModal(props) {
           aria-modal="true"
           aria-labelledby="reschedule-title"
         >
-          <button type="button" className={styles.modalCloseBtn} onClick={closeModal}>
+<button
+  type="button"
+  aria-label="Close reschedule dialog"
+  className={styles.modalCloseBtn}
+  onClick={closeModal}
+>
             &times;
           </button>
 
