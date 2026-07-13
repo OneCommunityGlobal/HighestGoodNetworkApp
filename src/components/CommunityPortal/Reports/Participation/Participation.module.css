@@ -32,13 +32,13 @@
 }
 
 .savePdfBtnLight {
-  background: #f5f5f5;
-  color: #333;
-  border: 1px solid #ccc;
+  background: #1e293b;
+  color: #f8f9fa;
+  border: 1px solid #4a5568;
 }
 
 .savePdfBtnLight:hover {
-  background: #e8e8e8;
+  background: #374151;
   transform: translateY(-1px);
 }
 
@@ -188,7 +188,7 @@
   overflow-y: auto;
   border: 1px solid #ccc;
   border-radius: 10px;
-  padding: 10px;
+  padding: 0;
   background: #fff;
 }
 
@@ -197,6 +197,12 @@
   border-collapse: collapse;
   table-layout: fixed;
   overflow-wrap: break-word;
+}
+
+.trackingTable thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .trackingTable thead th {
@@ -502,7 +508,7 @@
 .trackingFiltersDark {
   display: flex;
   gap: 10px;
-  background-color: #1c2541;
+  background-color: #1e293b;
 }
 
 .trackingFiltersDark select {
@@ -521,13 +527,19 @@
   overflow-y: auto;
   border: 1px solid #ccc;
   border-radius: 10px;
-  padding: 10px;
+  padding: 0;
   background: #3a506b;
   color: #fff;
 }
 
+.trackingTableDark thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
 .trackingTableDark thead th {
-  background: #1c2541;
+  background: #1e293b;
   color: #fff;
 }
 
@@ -535,7 +547,7 @@
 .insightsDark {
   flex: 1;
   min-width: 48%;
-  background-color: #1c2541;
+  background-color: #1e293b;
   color: #fff;
   border-radius: 10px;
   border: 1px solid #ddd;
@@ -561,7 +573,7 @@
 .insightsFiltersDark {
   display: flex;
   gap: 10px;
-  background-color: #1c2541;
+  background-color: #1e293b;
 }
 
 .insightsFiltersDark select {
@@ -577,7 +589,7 @@
 
 .insightsTabDark {
   color: #f8f9fa;
-  background-color: #1c2541;
+  background-color: #1e293b;
 }
 
 .insightsTabDark:hover {
@@ -611,7 +623,7 @@
 }
 
 .modalDark {
-  background: #1c2541;
+  background: #1e293b;
 }
 
 .exportOptionsButtonsDark {
@@ -661,7 +673,6 @@
    ========================================================================== */
 
 .darkMode {
-  background-color: #1b2a41;
   color: #fff;
 }
 
@@ -670,13 +681,13 @@
 }
 
 .darkMode .savePdfBtn {
-  background: #333;
-  color: #f5f5f5;
-  border: 1px solid #666;
+  background: #374151;
+  color: #f8f9fa;
+  border: 1px solid #4a5568;
 }
 
 .darkMode .savePdfBtn:hover {
-  background: #444;
+  background: #4b5563;
   transform: translateY(-1px);
 }
 
@@ -684,7 +695,7 @@
 .darkMode .insights,
 .trackingContainer.darkMode,
 .insights.darkMode {
-  background-color: #1c2541;
+  background-color: #1e293b;
   color: #fff;
   border: 1px solid #4a5568;
 }
@@ -805,7 +816,7 @@
 }
 
 .darkMode .modal {
-  background: #1c2541;
+  background: #1e293b;
 }
 
 .darkMode .exportOptionsButtons {
@@ -882,7 +893,7 @@
   }
 
   .participationLandingPage.darkMode {
-    background: #1b2a41 !important;
+    background: #1e293b !important;
     color: #fff !important;
   }
 
@@ -965,7 +976,7 @@
   }
 
   .tracking-table-global-dark thead th {
-    background: #1c2541 !important;
+    background: #1e293b !important;
     color: #fff !important;
   }
 
@@ -989,7 +1000,7 @@
   .participationLandingPageDark .trackingContainerDark,
   .participationLandingPage.darkMode .trackingContainer,
   .participationLandingPage.darkMode .insights {
-    background: #1c2541 !important;
+    background: #1e293b !important;
     color: #fff !important;
     border: 1px solid #555 !important;
   }
@@ -1002,7 +1013,7 @@
 
   .participationLandingPageDark .tracking-table-global-dark thead th,
   .participationLandingPage.darkMode .trackingTable thead th {
-    background: #1c2541 !important;
+    background: #1e293b !important;
     color: #fff !important;
   }
 
@@ -1063,7 +1074,7 @@
   }
 
   .participationLandingPage.darkMode .myCasesPage {
-    background-color: #1c2541 !important;
+    background-color: #1e293b !important;
   }
 
   .participationLandingPage.darkMode .caseCard {

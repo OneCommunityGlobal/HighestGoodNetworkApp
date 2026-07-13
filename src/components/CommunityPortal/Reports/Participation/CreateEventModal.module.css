@@ -10,13 +10,17 @@
   margin: 1.75rem auto;
 }
 
+.modalDialogDark .modal-content {
+  background-color: #1e293b !important;
+}
+
 .modalHeader {
   display: flex;
   align-items: center;
 }
 
 .modalHeaderDark {
-  background-color: #1c2541;
+  background-color: #1e293b !important;
 }
 
 .modalTitle {
@@ -25,6 +29,11 @@
   margin-left: 8px;
   font-size: 1.25rem;
   font-weight: 600;
+  color: #111;
+}
+
+.modalTitleDark {
+  color: #f8f9fa;
 }
 
 .modalBody {
@@ -32,7 +41,7 @@
 }
 
 .modalBodyDark {
-  background-color: #1c2541;
+  background-color: #1e293b !important;
 }
 
 .modalFooter {
@@ -43,7 +52,7 @@
 }
 
 .modalFooterDark {
-  background-color: #1c2541;
+  background-color: #1e293b !important;
 }
 
 .formGroup {
@@ -82,24 +91,27 @@
   box-shadow: 0 0 0 0.2rem rgb(0 86 179 / 25%);
 }
 
-.inputDark {
-  background-color: #1c2541;
-  border: 1px solid #3a506b;
-  color: #f8f9fa;
+.inputDark,
+.inputDark:focus {
+  background-color: #1e293b !important;
+  border: 1px solid #4a5568 !important;
+  color: #f8f9fa !important;
   color-scheme: dark;
 }
 
-.selectDark {
-  background-color: #1c2541;
-  border: 1px solid #3a506b;
-  color: #f8f9fa;
+.selectDark,
+.selectDark:focus {
+  background-color: #1e293b !important;
+  border: 1px solid #4a5568 !important;
+  color: #f8f9fa !important;
   color-scheme: dark;
 }
 
-.textareaDark {
-  background-color: #1c2541;
-  border: 1px solid #3a506b;
-  color: #f8f9fa;
+.textareaDark,
+.textareaDark:focus {
+  background-color: #1e293b !important;
+  border: 1px solid #4a5568 !important;
+  color: #f8f9fa !important;
 }
 
 .inputInvalid {

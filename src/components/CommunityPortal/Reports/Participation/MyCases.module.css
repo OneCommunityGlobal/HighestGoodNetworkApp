@@ -18,13 +18,20 @@
 }
 
 .viewSwitcher button,
-.createNew {
-  background-color: #fff;
-  border-radius: 6px;
-  padding: 10px 20px;
-  cursor: pointer;
+.createNew,
+.moreBtn,
+.filterDropdown {
+  height: 38px;
+  padding: 0 16px;
   font-size: 14px;
   font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.viewSwitcher button {
+  background-color: #fff;
   color: #333;
   border: 1px solid #ccc;
 }
@@ -40,11 +47,8 @@
 }
 
 .filterDropdown {
-  padding: 8px;
-  font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  cursor: pointer;
 }
 
 .filterDropdown:hover,
@@ -55,12 +59,14 @@
 
 .createNew {
   font-weight: bold;
-  border: 1px solid #ccc;
+  border: 1px solid #0056b3;
   border-radius: 4px;
-  background-color: #fff;
-  color: #333;
-  padding: 8px 16px;
-  cursor: pointer;
+  background-color: #0056b3;
+  color: #fff;
+}
+
+.createNew:hover {
+  background-color: #004085;
 }
 
 .content {
@@ -194,10 +200,6 @@
   background-color: #0056b3;
   color: #fff;
   border: none;
-  padding: 6px 12px;
-  font-size: 14px;
-  border-radius: 4px;
-  cursor: pointer;
   transition: background-color 0.2s;
 }
 
@@ -370,11 +372,11 @@
    ========================================================================== */
 
 .myCasesPage.darkMode {
-  background-color: #1c2541;
+  background-color: #1e293b;
 }
 
 .myCasesPage.darkMode .header {
-  background-color: #1c2541;
+  background-color: #1e293b;
   color: #fff;
 }
 
@@ -383,18 +385,14 @@
 }
 
 .myCasesPage.darkMode .sectionTitle {
-  background-color: #1c2541;
+  background-color: #1e293b;
   color: #fff;
 }
 
 .myCasesPage.darkMode .viewSwitcher button,
-.myCasesPage.darkMode .createNew {
+.myCasesPage.darkMode .createNew,
+.myCasesPage.darkMode .moreBtn {
   background-color: #1e293b;
-  border-radius: 6px;
-  padding: 10px 20px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
   color: #f1f5f9;
   border: 1px solid #555;
 }
@@ -472,8 +470,13 @@
 }
 
 .myCasesPage.darkMode .calendarView {
-  background-color: #3a506b;
-  color: #fff;
+  background-color: #1e293b;
+  color: #cbd5e1;
+  border: 1px solid #4a5568;
+}
+
+.myCasesPage.darkMode .calendarView p {
+  color: inherit;
 }
 
 /* ==========================================================================
@@ -557,7 +560,7 @@
   }
 
   .myCasesPage.darkMode {
-    background-color: #1c2541 !important;
+    background-color: #1e293b !important;
   }
 
   .myCasesPage.darkMode .caseCard {

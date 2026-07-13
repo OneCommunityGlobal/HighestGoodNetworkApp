@@ -17,10 +17,11 @@ function CreateEventModal({ isOpen, toggle }) {
     location: 'Virtual',
     startTime: moment()
       .tz('America/Los_Angeles')
+      .add(1, 'hour')
       .format('HH:mm'),
     endTime: moment()
       .tz('America/Los_Angeles')
-      .add(1, 'hour')
+      .add(2, 'hour')
       .format('HH:mm'),
     date: moment()
       .tz('America/Los_Angeles')
@@ -37,10 +38,11 @@ function CreateEventModal({ isOpen, toggle }) {
       location: 'Virtual',
       startTime: moment()
         .tz('America/Los_Angeles')
+        .add(1, 'hour')
         .format('HH:mm'),
       endTime: moment()
         .tz('America/Los_Angeles')
-        .add(1, 'hour')
+        .add(2, 'hour')
         .format('HH:mm'),
       date: moment()
         .tz('America/Los_Angeles')
@@ -64,7 +66,16 @@ function CreateEventModal({ isOpen, toggle }) {
 
   const handleChange = e => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => {
+      const next = { ...prev, [name]: value };
+      if (name === 'startTime') {
+        const newEnd = moment(`${prev.date} ${value}`, 'YYYY-MM-DD HH:mm')
+          .add(1, 'hour')
+          .format('HH:mm');
+        next.endTime = newEnd;
+      }
+      return next;
+    });
     // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors(prev => {
@@ -74,6 +85,10 @@ function CreateEventModal({ isOpen, toggle }) {
       });
     }
   };
+
+  const minEndTime = moment(`${formData.date} ${formData.startTime}`, 'YYYY-MM-DD HH:mm')
+    .add(1, 'hour')
+    .format('HH:mm');
 
   const validateForm = () => {
     const newErrors = {};
@@ -108,6 +123,24 @@ function CreateEventModal({ isOpen, toggle }) {
       const end = moment(`${formData.date} ${formData.endTime}`, 'YYYY-MM-DD HH:mm');
       if (end.isSameOrBefore(start)) {
         newErrors.endTime = 'End time must be after start time';
+      }
+    }
+
+    // Validate that start time is at least 1 hour from now (for today)
+    if (
+      formData.date ===
+      moment()
+        .tz('America/Los_Angeles')
+        .format('YYYY-MM-DD')
+    ) {
+      const now = moment().tz('America/Los_Angeles');
+      const start = moment.tz(
+        `${formData.date} ${formData.startTime}`,
+        'YYYY-MM-DD HH:mm',
+        'America/Los_Angeles',
+      );
+      if (start.diff(now, 'minutes') < 60) {
+        newErrors.startTime = 'Event must be at least 1 hour from now';
       }
     }
 
@@ -170,7 +203,9 @@ function CreateEventModal({ isOpen, toggle }) {
       <ModalHeader
         toggle={handleToggle}
         className={`${styles.modalHeader} ${darkMode ? styles.modalHeaderDark : ''}`}
-        cssModule={{ 'modal-title': styles.modalTitle }}
+        cssModule={{
+          'modal-title': `${styles.modalTitle} ${darkMode ? styles.modalTitleDark : ''}`,
+        }}
       >
         Create New Event
       </ModalHeader>
@@ -252,6 +287,9 @@ function CreateEventModal({ isOpen, toggle }) {
               }`}
               id="date"
               name="date"
+              min={moment()
+                .tz('America/Los_Angeles')
+                .format('YYYY-MM-DD')}
               value={formData.date}
               onChange={handleChange}
               disabled={loading}
@@ -275,6 +313,18 @@ function CreateEventModal({ isOpen, toggle }) {
                 }`}
                 id="startTime"
                 name="startTime"
+                min={
+                  formData.date ===
+                  moment()
+                    .tz('America/Los_Angeles')
+                    .format('YYYY-MM-DD')
+                    ? moment()
+                        .tz('America/Los_Angeles')
+                        .add(1, 'hour')
+                        .format('HH:mm')
+                    : '00:00'
+                }
+                max="23:59"
                 value={formData.startTime}
                 onChange={handleChange}
                 disabled={loading}
@@ -297,6 +347,8 @@ function CreateEventModal({ isOpen, toggle }) {
                 }`}
                 id="endTime"
                 name="endTime"
+                min={minEndTime}
+                max="23:59"
                 value={formData.endTime}
                 onChange={handleChange}
                 disabled={loading}
