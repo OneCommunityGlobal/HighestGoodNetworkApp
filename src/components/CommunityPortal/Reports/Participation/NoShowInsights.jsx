@@ -14,9 +14,9 @@ function NoShowInsights({ darkMode }) {
   const [exportError, setExportError] = useState('');
   const [isExporting, setIsExporting] = useState(false);
 
-  const filterByDate = (events) => {
+  const filterByDate = events => {
     const today = new Date();
-    return events.filter((event) => {
+    return events.filter(event => {
       const eventDate = new Date(event.eventDate);
       switch (dateFilter) {
         case 'Today':
@@ -40,7 +40,7 @@ function NoShowInsights({ darkMode }) {
   };
 
   const handleSortClick = () => {
-    setSortOrder((prev) => {
+    setSortOrder(prev => {
       if (prev === 'none' || prev === 'desc') return 'asc';
       if (prev === 'asc') return 'desc';
       return 'none';
@@ -48,10 +48,10 @@ function NoShowInsights({ darkMode }) {
   };
   const SortIcon = sortOrder === 'none' ? ArrowUpDown : sortOrder === 'asc' ? ArrowUp : ArrowDown;
 
-  const calculateStats = (filteredEvents) => {
+  const calculateStats = filteredEvents => {
     const statsMap = new Map();
 
-    filteredEvents.forEach((event) => {
+    filteredEvents.forEach(event => {
       let key;
       if (activeTab === 'Event type') key = event.eventType;
       else if (activeTab === 'Time') key = event.eventTime.split(' ')[0];
@@ -86,7 +86,7 @@ function NoShowInsights({ darkMode }) {
             sortOrder === 'asc' ? a.percentage - b.percentage : b.percentage - a.percentage,
           );
 
-    return finalStats.map((item) => (
+    return finalStats.map(item => (
       <div key={item.label} className={styles.insightItem}>
         <div className={styles.insightLabel}>{item.label}</div>
         <div className={styles.insightBar}>
@@ -202,8 +202,8 @@ function NoShowInsights({ darkMode }) {
         >
           <div
             className={styles.modal}
-            onClick={(e) => e.stopPropagation()}
-            onKeyDown={(e) => e.stopPropagation()}
+            onClick={e => e.stopPropagation()}
+            onKeyDown={e => e.stopPropagation()}
             role="button"
             tabIndex={0}
           >
@@ -258,7 +258,7 @@ function NoShowInsights({ darkMode }) {
         <div className={styles.insightsHeader}>
           <h3>No-show rate insights</h3>
           <div className={styles.insightsFilters}>
-            <select value={dateFilter} onChange={(e) => setDateFilter(e.target.value)}>
+            <select value={dateFilter} onChange={e => setDateFilter(e.target.value)}>
               <option value="All">All Time</option>
               <option value="Today">Today</option>
               <option value="This Week">This Week</option>
@@ -269,7 +269,7 @@ function NoShowInsights({ darkMode }) {
 
         <div className={styles.insightsTabsContainer}>
           <div className={styles.insightsTabs}>
-            {['Event type', 'Time', 'Location'].map((tab) => (
+            {['Event type', 'Time', 'Location'].map(tab => (
               <button
                 key={tab}
                 type="button"
@@ -287,8 +287,8 @@ function NoShowInsights({ darkMode }) {
                 {sortOrder === 'none'
                   ? 'Default'
                   : sortOrder === 'asc'
-                    ? 'Low → High'
-                    : 'High → Low'}
+                  ? 'Low → High'
+                  : 'High → Low'}
               </span>
             </div>
             <div className={styles.tooltipWrapper}>

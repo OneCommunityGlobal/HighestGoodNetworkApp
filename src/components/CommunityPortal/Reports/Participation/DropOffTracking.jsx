@@ -31,7 +31,7 @@ function DropOffTracking({ darkMode }) {
     return { startDate, endDate };
   };
 
-  const filteredEvents = mockEvents.filter((event) => {
+  const filteredEvents = mockEvents.filter(event => {
     if (selectedEvent !== 'All Events' && event.eventType !== selectedEvent) {
       return false;
     }
@@ -48,14 +48,14 @@ function DropOffTracking({ darkMode }) {
       <div className={styles.trackingHeader}>
         <h3>Drop-off and no-show rate tracking</h3>
         <div className={styles.trackingFilters}>
-          <select value={selectedEvent} onChange={(e) => setSelectedEvent(e.target.value)}>
+          <select value={selectedEvent} onChange={e => setSelectedEvent(e.target.value)}>
             <option value="All Events">All Events</option>
             <option value="Yoga Class">Yoga Class</option>
             <option value="Cooking Workshop">Cooking Workshop</option>
             <option value="Dance Class">Dance Class</option>
             <option value="Fitness Bootcamp">Fitness Bootcamp</option>
           </select>
-          <select value={selectedTime} onChange={(e) => setSelectedTime(e.target.value)}>
+          <select value={selectedTime} onChange={e => setSelectedTime(e.target.value)}>
             <option value="All Time">All Time</option>
             <option value="Today">Today</option>
             <option value="This Week">This Week</option>
@@ -94,7 +94,7 @@ function DropOffTracking({ darkMode }) {
             </tr>
           </thead>
           <tbody>
-            {filteredEvents.map((event) => (
+            {filteredEvents.map(event => (
               <tr key={event.id}>
                 <td>{event.eventName}</td>
                 <td className={styles.trackingRateGreen}>{event.noShowRate}</td>

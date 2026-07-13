@@ -7,7 +7,7 @@ import styles from './CreateEventModal.module.css';
 
 function CreateEventModal({ isOpen, toggle }) {
   const dispatch = useDispatch();
-  const darkMode = useSelector((state) => state.theme.darkMode);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -15,9 +15,16 @@ function CreateEventModal({ isOpen, toggle }) {
     title: '',
     type: 'Workshop',
     location: 'Virtual',
-    startTime: moment().tz('America/Los_Angeles').format('HH:mm'),
-    endTime: moment().tz('America/Los_Angeles').add(1, 'hour').format('HH:mm'),
-    date: moment().tz('America/Los_Angeles').format('YYYY-MM-DD'),
+    startTime: moment()
+      .tz('America/Los_Angeles')
+      .format('HH:mm'),
+    endTime: moment()
+      .tz('America/Los_Angeles')
+      .add(1, 'hour')
+      .format('HH:mm'),
+    date: moment()
+      .tz('America/Los_Angeles')
+      .format('YYYY-MM-DD'),
     description: '',
     maxAttendees: 10,
     coverImage: '',
@@ -28,9 +35,16 @@ function CreateEventModal({ isOpen, toggle }) {
       title: '',
       type: 'Workshop',
       location: 'Virtual',
-      startTime: moment().tz('America/Los_Angeles').format('HH:mm'),
-      endTime: moment().tz('America/Los_Angeles').add(1, 'hour').format('HH:mm'),
-      date: moment().tz('America/Los_Angeles').format('YYYY-MM-DD'),
+      startTime: moment()
+        .tz('America/Los_Angeles')
+        .format('HH:mm'),
+      endTime: moment()
+        .tz('America/Los_Angeles')
+        .add(1, 'hour')
+        .format('HH:mm'),
+      date: moment()
+        .tz('America/Los_Angeles')
+        .format('YYYY-MM-DD'),
       description: '',
       maxAttendees: 10,
       coverImage: '',
@@ -48,12 +62,12 @@ function CreateEventModal({ isOpen, toggle }) {
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
     // Clear error for this field when user starts typing
     if (errors[name]) {
-      setErrors((prev) => {
+      setErrors(prev => {
         const newErrors = { ...prev };
         delete newErrors[name];
         return newErrors;
@@ -101,7 +115,7 @@ function CreateEventModal({ isOpen, toggle }) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
 
     if (!validateForm()) {
@@ -121,7 +135,9 @@ function CreateEventModal({ isOpen, toggle }) {
       endTime: moment(`${formData.date} ${formData.endTime}`, 'YYYY-MM-DD HH:mm')
         .tz('America/Los_Angeles')
         .format(),
-      date: moment(formData.date).tz('America/Los_Angeles').toDate(),
+      date: moment(formData.date)
+        .tz('America/Los_Angeles')
+        .toDate(),
       description: formData.description.trim(),
       maxAttendees: parseInt(formData.maxAttendees, 10),
       status: 'New',
@@ -170,7 +186,9 @@ function CreateEventModal({ isOpen, toggle }) {
             <span className={styles.redAsterisk}>* </span>
             <input
               type="text"
-              className={`${styles.input} ${darkMode ? styles.inputDark : ''} ${errors.title ? styles.inputInvalid : ''}`}
+              className={`${styles.input} ${darkMode ? styles.inputDark : ''} ${
+                errors.title ? styles.inputInvalid : ''
+              }`}
               id="title"
               name="title"
               placeholder="Enter event title"
@@ -229,7 +247,9 @@ function CreateEventModal({ isOpen, toggle }) {
             <span className={styles.redAsterisk}>* </span>
             <input
               type="date"
-              className={`${styles.input} ${darkMode ? styles.inputDark : ''} ${errors.date ? styles.inputInvalid : ''}`}
+              className={`${styles.input} ${darkMode ? styles.inputDark : ''} ${
+                errors.date ? styles.inputInvalid : ''
+              }`}
               id="date"
               name="date"
               value={formData.date}
@@ -250,7 +270,9 @@ function CreateEventModal({ isOpen, toggle }) {
               <span className={styles.redAsterisk}>* </span>
               <input
                 type="time"
-                className={`${styles.input} ${darkMode ? styles.inputDark : ''} ${errors.startTime ? styles.inputInvalid : ''}`}
+                className={`${styles.input} ${darkMode ? styles.inputDark : ''} ${
+                  errors.startTime ? styles.inputInvalid : ''
+                }`}
                 id="startTime"
                 name="startTime"
                 value={formData.startTime}
@@ -270,7 +292,9 @@ function CreateEventModal({ isOpen, toggle }) {
               <span className={styles.redAsterisk}>* </span>
               <input
                 type="time"
-                className={`${styles.input} ${darkMode ? styles.inputDark : ''} ${errors.endTime ? styles.inputInvalid : ''}`}
+                className={`${styles.input} ${darkMode ? styles.inputDark : ''} ${
+                  errors.endTime ? styles.inputInvalid : ''
+                }`}
                 id="endTime"
                 name="endTime"
                 value={formData.endTime}
@@ -290,7 +314,9 @@ function CreateEventModal({ isOpen, toggle }) {
             </label>
             <span className={styles.redAsterisk}>* </span>
             <textarea
-              className={`${styles.textarea} ${darkMode ? styles.textareaDark : ''} ${errors.description ? styles.inputInvalid : ''}`}
+              className={`${styles.textarea} ${darkMode ? styles.textareaDark : ''} ${
+                errors.description ? styles.inputInvalid : ''
+              }`}
               id="description"
               name="description"
               rows="4"
@@ -312,7 +338,9 @@ function CreateEventModal({ isOpen, toggle }) {
             <span className={styles.redAsterisk}>* </span>
             <input
               type="number"
-              className={`${styles.input} ${darkMode ? styles.inputDark : ''} ${errors.maxAttendees ? styles.inputInvalid : ''}`}
+              className={`${styles.input} ${darkMode ? styles.inputDark : ''} ${
+                errors.maxAttendees ? styles.inputInvalid : ''
+              }`}
               id="maxAttendees"
               name="maxAttendees"
               min="1"

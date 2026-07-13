@@ -7,7 +7,7 @@ import NoShowInsights from './NoShowInsights';
 import styles from './Participation.module.css';
 
 function EventParticipation() {
-  const darkMode = useSelector((state) => state.theme.darkMode);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const exportRef = useRef(null);
   const [exporting, setExporting] = useState(false);
 
@@ -50,7 +50,9 @@ function EventParticipation() {
       >
         <h1 className={styles.landingPageHeader}>Social And Recreational Management</h1>
         <button
-          className={`${styles.savePdfBtn} ${darkMode ? '' : styles.savePdfBtnLight} ${styles.noPrint}`}
+          className={`${styles.savePdfBtn} ${darkMode ? '' : styles.savePdfBtnLight} ${
+            styles.noPrint
+          }`}
           onClick={handleSaveAsPDF}
           disabled={exporting}
           aria-busy={exporting}

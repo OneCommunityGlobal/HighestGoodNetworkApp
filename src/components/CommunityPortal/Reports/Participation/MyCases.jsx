@@ -12,18 +12,18 @@ function MyCases({ darkMode }) {
   const isExporting =
     typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true'; // Sonar: prefer .dataset
 
-  const filterEvents = (events) => {
+  const filterEvents = events => {
     const now = new Date();
 
     const nowTime = now.getTime();
 
-    const upcomingEvents = events.filter((event) => {
+    const upcomingEvents = events.filter(event => {
       const eventTime = new Date(event.eventDate).getTime();
       return eventTime >= nowTime;
     });
 
     if (filter === 'today') {
-      return upcomingEvents.filter((event) => {
+      return upcomingEvents.filter(event => {
         const eventDate = new Date(event.eventDate);
         return (
           eventDate.getDate() === now.getDate() &&
@@ -36,7 +36,7 @@ function MyCases({ darkMode }) {
       const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
       const endOfWeek = new Date(startOfWeek);
       endOfWeek.setDate(endOfWeek.getDate() + 6);
-      return upcomingEvents.filter((event) => {
+      return upcomingEvents.filter(event => {
         const eventDate = new Date(event.eventTime);
         return eventDate >= startOfWeek && eventDate <= endOfWeek;
       });
@@ -44,7 +44,7 @@ function MyCases({ darkMode }) {
     if (filter === 'thisMonth') {
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
       const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-      return upcomingEvents.filter((event) => {
+      return upcomingEvents.filter(event => {
         const eventDate = new Date(event.eventTime);
         return eventDate >= startOfMonth && eventDate <= endOfMonth;
       });
@@ -66,7 +66,7 @@ function MyCases({ darkMode }) {
 
   const renderCardView = () => (
     <div className={`${styles.caseCards} ${expanded || isExporting ? styles.expanded : ''}`}>
-      {visibleEvents.map((event) => (
+      {visibleEvents.map(event => (
         <div className={styles.caseCard} key={event.id}>
           <span className={styles.eventBadge} data-type={event.eventType}>
             {event.eventType}
@@ -93,7 +93,7 @@ function MyCases({ darkMode }) {
 
   const renderListView = () => (
     <ul className={`${styles.caseList} ${expanded || isExporting ? styles.expanded : ''}`}>
-      {visibleEvents.map((event) => (
+      {visibleEvents.map(event => (
         <li className={styles.caseListItem} key={event.id}>
           <span className={styles.eventType}>{event.eventType}</span>
           <span className={styles.eventTime}>{event.eventTime}</span>
@@ -143,7 +143,7 @@ function MyCases({ darkMode }) {
             <select
               className={styles.filterDropdown}
               value={filter}
-              onChange={(e) => setFilter(e.target.value)}
+              onChange={e => setFilter(e.target.value)}
             >
               <option value="all">All Time</option>
               <option value="today">Today</option>
