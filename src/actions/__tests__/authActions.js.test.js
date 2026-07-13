@@ -1,6 +1,6 @@
 import configureMockStore from 'redux-mock-store'; // Import mock store configuration
 import thunk from 'redux-thunk'; // Import thunk middleware
-import jwtDecode from 'jwt-decode'; // Import jwtDecode
+import { jwtDecode } from 'jwt-decode';
 import axios from 'axios'; // Import axios
 
 

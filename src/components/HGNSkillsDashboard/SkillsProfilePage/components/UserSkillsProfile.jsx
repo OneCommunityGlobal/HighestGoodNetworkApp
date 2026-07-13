@@ -1,4 +1,4 @@
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
@@ -10,7 +10,6 @@ import { ENDPOINTS } from '~/utils/URL';
 import styles from '../styles/UserSkillsProfile.module.css';
 import LeftSection from './LeftSection';
 import RightSection from './RightSection';
-
 
 export default function UserSkillsProfile() {
   const { userId: routeUserId } = useParams();

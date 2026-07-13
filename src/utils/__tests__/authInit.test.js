@@ -1,6 +1,6 @@
 import { vi } from 'vitest';
 import initAuth from '../authInit';
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import httpService from '../../services/httpService';
 import { store } from '../../store';
 import { logoutUser, setCurrentUser } from '../../actions/authActions';

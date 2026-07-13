@@ -1,8 +1,8 @@
-import { useMemo, useState } from "react";
-import styles from "./DailyLogPage.module.css";
-import LogItemCard from "./LogItemCard";
+import { useMemo, useState } from 'react';
+import styles from './DailyLogPage.module.css';
+import LogItemCard from './LogItemCard';
 
-const parseDurationToMin = (str) => {
+const parseDurationToMin = str => {
   if (!str) return 0;
   const hMatch = str.match(/^\s*(\d+)\s*h\b/i);
   const mMatch = str.match(/^\s*(\d+)\s*m\b/i);
@@ -12,7 +12,7 @@ const parseDurationToMin = (str) => {
   return Number(h || 0) * 60 + Number(m || 0);
 };
 
-const formatMin = (min) => {
+const formatMin = min => {
   const h = Math.floor(min / 60);
   const m = min % 60;
   return `${h}h ${m}m`;
@@ -20,64 +20,64 @@ const formatMin = (min) => {
 
 export default function DailyLogPage() {
   const courseOptions = [
-    "Mathematics 101 - Algebra Fundamentals",
-    "English 200 - Creative Writing",
-    "Science 150 - Biology Basics",
+    'Mathematics 101 - Algebra Fundamentals',
+    'English 200 - Creative Writing',
+    'Science 150 - Biology Basics',
   ];
 
   const [logs, setLogs] = useState([
     {
-      log_id: "lg-2",
-      actor_id: "s-1",
-      action_type: "task_upload",
-      entity_id: "time-log-101",
+      log_id: 'lg-2',
+      actor_id: 's-1',
+      action_type: 'task_upload',
+      entity_id: 'time-log-101',
       metadata: {
-        course: "Mathematics 101 - Algebra Fundamentals",
-        duration: "2h 0m",
-        grade: "A-",
-        badge: "Graded (A-)",
-        link: "/time-logs/101",
+        course: 'Mathematics 101 - Algebra Fundamentals',
+        duration: '2h 0m',
+        grade: 'A-',
+        badge: 'Graded (A-)',
+        link: '/time-logs/101',
         comments_count: 8,
-        notes: "Worked on quadratic equations practice and reviewed feedback.",
+        notes: 'Worked on quadratic equations practice and reviewed feedback.',
       },
-      created_at: "2025-09-10T14:00:00Z",
+      created_at: '2025-09-10T14:00:00Z',
     },
     {
-      log_id: "lg-3",
-      actor_id: "s-1",
-      action_type: "task_upload",
-      entity_id: "time-log-102",
+      log_id: 'lg-3',
+      actor_id: 's-1',
+      action_type: 'task_upload',
+      entity_id: 'time-log-102',
       metadata: {
-        course: "English 200 - Creative Writing",
-        duration: "1h 30m",
-        badge: "Reviewed",
-        link: "/time-logs/102",
-        notes: "Drafted a short story outline and edited the introduction.",
+        course: 'English 200 - Creative Writing',
+        duration: '1h 30m',
+        badge: 'Reviewed',
+        link: '/time-logs/102',
+        notes: 'Drafted a short story outline and edited the introduction.',
       },
-      created_at: "2025-09-09T16:00:00Z",
+      created_at: '2025-09-09T16:00:00Z',
     },
     {
-      log_id: "lg-4",
-      actor_id: "s-1",
-      action_type: "task_upload",
-      entity_id: "time-log-103",
+      log_id: 'lg-4',
+      actor_id: 's-1',
+      action_type: 'task_upload',
+      entity_id: 'time-log-103',
       metadata: {
-        course: "Science 150 - Biology Basics",
-        duration: "1h 15m",
-        badge: "Pending Review",
-        link: "/time-logs/103",
-        notes: "Completed notes on cell structure and watched lecture video.",
+        course: 'Science 150 - Biology Basics',
+        duration: '1h 15m',
+        badge: 'Pending Review',
+        link: '/time-logs/103',
+        notes: 'Completed notes on cell structure and watched lecture video.',
       },
-      created_at: "2025-09-08T18:00:00Z",
+      created_at: '2025-09-08T18:00:00Z',
     },
   ]);
 
   const [showForm, setShowForm] = useState(false);
   const [newLog, setNewLog] = useState({
     course: courseOptions[0],
-    duration: "",
-    badge: "Pending Review",
-    notes: "",
+    duration: '',
+    badge: 'Pending Review',
+    notes: '',
   });
 
   const { totalMin, weekMin, weekCount, activeCourses } = useMemo(() => {
@@ -90,7 +90,7 @@ export default function DailyLogPage() {
     let wCount = 0;
     const courseSet = new Set();
 
-    logs.forEach((row) => {
+    logs.forEach(row => {
       const dur = parseDurationToMin(row.metadata?.duration);
       tMin += dur;
       courseSet.add(row.metadata?.course);
@@ -110,18 +110,19 @@ export default function DailyLogPage() {
     };
   }, [logs]);
 
-  const handleSave = (e) => {
+  const handleSave = e => {
     e.preventDefault();
-    const id = crypto.getRandomValues(new Uint8Array(6))
-      .reduce((s, b) => s + b.toString(36), "")
+    const id = crypto
+      .getRandomValues(new Uint8Array(6))
+      .reduce((s, b) => s + b.toString(36), '')
       .slice(0, 8);
 
     const nowIso = new Date().toISOString();
 
     const log = {
       log_id: `lg-${id}`,
-      actor_id: "s-1",
-      action_type: "task_upload",
+      actor_id: 's-1',
+      action_type: 'task_upload',
       entity_id: `time-log-${id}`,
       metadata: {
         course: newLog.course,
@@ -133,13 +134,13 @@ export default function DailyLogPage() {
       created_at: nowIso,
     };
 
-    setLogs((prev) => [log, ...prev]);
+    setLogs(prev => [log, ...prev]);
     setShowForm(false);
     setNewLog({
       course: courseOptions[0],
-      duration: "",
-      badge: "Pending Review",
-      notes: "",
+      duration: '',
+      badge: 'Pending Review',
+      notes: '',
     });
   };
 
@@ -184,11 +185,9 @@ export default function DailyLogPage() {
                 id="courseSelect"
                 className={styles.input}
                 value={newLog.course}
-                onChange={(e) =>
-                  setNewLog({ ...newLog, course: e.target.value })
-                }
+                onChange={e => setNewLog({ ...newLog, course: e.target.value })}
               >
-                {courseOptions.map((c) => (
+                {courseOptions.map(c => (
                   <option key={c} value={c}>
                     {c}
                   </option>
@@ -204,9 +203,7 @@ export default function DailyLogPage() {
                 className={styles.input}
                 placeholder="e.g. 1h 20m"
                 value={newLog.duration}
-                onChange={(e) =>
-                  setNewLog({ ...newLog, duration: e.target.value })
-                }
+                onChange={e => setNewLog({ ...newLog, duration: e.target.value })}
                 required
               />
             </div>
@@ -219,18 +216,12 @@ export default function DailyLogPage() {
                 rows={4}
                 placeholder="Describe what you worked on in this time"
                 value={newLog.notes}
-                onChange={(e) =>
-                  setNewLog({ ...newLog, notes: e.target.value })
-                }
+                onChange={e => setNewLog({ ...newLog, notes: e.target.value })}
               />
             </div>
 
             <div className={styles.formActions}>
-              <button
-                type="button"
-                className={styles.btnGhost}
-                onClick={() => setShowForm(false)}
-              >
+              <button type="button" className={styles.btnGhost} onClick={() => setShowForm(false)}>
                 Cancel
               </button>
               <button type="submit" className={styles.btnPrimary}>
@@ -241,7 +232,7 @@ export default function DailyLogPage() {
         )}
 
         <div className={styles.list}>
-          {logs.map((row) => (
+          {logs.map(row => (
             <LogItemCard key={row.log_id} row={row} />
           ))}
         </div>

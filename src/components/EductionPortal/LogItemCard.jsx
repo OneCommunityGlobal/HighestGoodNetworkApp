@@ -1,23 +1,22 @@
-import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import styles from "./DailyLogPage.module.css";
-import { FaEye, FaRegClock } from "react-icons/fa";
+import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+import styles from './DailyLogPage.module.css';
+import { FaEye, FaRegClock } from 'react-icons/fa';
 
-const formatDate = (iso) =>
+const formatDate = iso =>
   new Date(iso).toLocaleDateString(undefined, {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
   });
 
 export default function LogItemCard({ row }) {
   const md = row?.metadata || {};
-  const course = md.course || "Course";
-  const duration = md.duration || "—";
+  const course = md.course || 'Course';
+  const duration = md.duration || '—';
   const date = formatDate(row.created_at);
 
-  const id =
-    row.entity_id?.replace?.("time-log-", "") || row.log_id || "";
+  const id = row.entity_id?.replace?.('time-log-', '') || row.log_id || '';
 
   return (
     <div className={styles.row}>
