@@ -151,9 +151,11 @@
 }
 
 .trackingFilters select {
-  flex: 0 0 auto;
-  padding: 8px;
-  font-size: 0.8rem;
+  flex: 1;
+  min-width: 0;
+  height: 38px;
+  padding: 0 12px;
+  font-size: 0.85rem;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
