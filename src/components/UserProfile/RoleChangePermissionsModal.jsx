@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Input } from 'reactstrap';
-import { useSelector } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { ENDPOINTS } from '~/utils/URL';
@@ -21,7 +21,7 @@ function RoleChangePermissionsModal(props) {
     roles = [],
     userProfile,
     loadUserProfile,
-    authUser,
+    authRole,
     desktopDisplay,
     canAddDeleteEditOwners,
   } = props;
@@ -90,7 +90,7 @@ function RoleChangePermissionsModal(props) {
       await axios.put(url, updated);
 
       const permissionURL = `${ENDPOINTS.PERMISSION_MANAGEMENT_UPDATE()}/user/${userId}`;
-      const requestor = authUser;
+      const requestor = authRole;
 
       // Ensures a change log with reason and user's modified permissions when their role is changed
       const permissionData = {
@@ -203,7 +203,7 @@ function RoleChangePermissionsModal(props) {
         <div style={{display: 'flex', gap: '10px'}}>
           Manage Role & Permissions
           <EditableInfoModal
-            role={authUser.requestorRole}
+            role={authRole}
             areaName={'roleChangeInfo'}
             areaTitle="Role Change"
             fontSize={20}
@@ -275,12 +275,13 @@ RoleChangePermissionsModal.propTypes = {
     _id: PropTypes.string,
   }).isRequired,
   loadUserProfile: PropTypes.func.isRequired,
-  authUser: PropTypes.shape({
-    requestId: PropTypes.number,
-    requestorRole: PropTypes.string
-  }),
+  authRole: PropTypes.string,
   desktopDisplay: PropTypes.bool,
   canAddDeleteEditOwners: PropTypes.bool,
 }
 
-export default RoleChangePermissionsModal;
+const mapStateToProps = state => ({
+  authRole: state.auth.user.role || {},
+})
+
+export default connect(mapStateToProps, null)(RoleChangePermissionsModal);

@@ -491,7 +491,6 @@ const BasicInformationTab = props => {
     loadUserProfile,
     darkMode,
     hasFinalDay,
-    authUser
   } = props;
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [desktopDisplay, setDesktopDisplay] = useState(window.innerWidth > 1024);
@@ -1030,7 +1029,6 @@ const BasicInformationTab = props => {
         userProfile={userProfile}
         setUserProfile={setUserProfile}
         loadUserProfile={loadUserProfile}
-        authUser={authUser}
         desktopDisplay={desktopDisplay}
         canAddDeleteEditOwners={canAddDeleteEditOwners}
       />
@@ -1092,10 +1090,6 @@ BasicInformationTab.propTypes = {
   loadUserProfile: PropTypes.func.isRequired,
   darkMode: PropTypes.bool,
   hasPermission: PropTypes.func.isRequired,
-  authUser: PropTypes.shape({
-    requestId: PropTypes.number,
-    requestorRole: PropTypes.string
-  })
 };
 Name.propTypes = {
   userProfile: PropTypes.object.isRequired,
