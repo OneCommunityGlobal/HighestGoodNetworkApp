@@ -78,8 +78,8 @@
 .select:focus,
 .textarea:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  border-color: #0056b3;
+  box-shadow: 0 0 0 0.2rem rgb(0 86 179 / 25%);
 }
 
 input[type='date'].inputDark {
@@ -148,12 +148,12 @@ textarea.inputDark {
 }
 
 .buttonPrimary {
-  background-color: #007bff;
+  background-color: #0056b3;
   color: #fff;
 }
 
 .buttonPrimary:hover {
-  background-color: #0056b3;
+  background-color: #004085;
 }
 
 .button:disabled {
