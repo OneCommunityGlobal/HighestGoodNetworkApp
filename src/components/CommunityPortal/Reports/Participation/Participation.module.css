@@ -866,9 +866,24 @@
   .participationLandingPage {
     max-width: 100% !important;
     margin: 0 !important;
-    background: white !important;
     height: auto !important;
     overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .participationLandingPage * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .participationLandingPage:not(.darkMode) {
+    background: white !important;
+  }
+
+  .participationLandingPage.darkMode {
+    background: #1b2a41 !important;
+    color: #fff !important;
   }
 
   @page {
@@ -958,18 +973,8 @@
     display: block !important;
   }
 
-  .participationLandingPage,
-  .participationLandingPage * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  .participationLandingPageDark {
-    background: #1b2a41 !important;
-    color: #fff !important;
-  }
-
-  .participationLandingPageDark .case-card-global {
+  .participationLandingPageDark .case-card-global,
+  .participationLandingPage.darkMode .case-card-global {
     background: #3a506b !important;
     color: #fff !important;
     border: 1px solid #555 !important;
@@ -981,29 +986,28 @@
     border: 1px solid #ddd !important;
   }
 
-  .participationLandingPageDark .trackingContainerDark {
+  .participationLandingPageDark .trackingContainerDark,
+  .participationLandingPage.darkMode .trackingContainer,
+  .participationLandingPage.darkMode .insights {
     background: #1c2541 !important;
     color: #fff !important;
     border: 1px solid #555 !important;
   }
 
-  .participationLandingPageDark .insightsDark {
-    background: #1c2541 !important;
-    color: #fff !important;
-    border: 1px solid #555 !important;
-  }
-
-  .participationLandingPageDark .trackingListContainerDark {
+  .participationLandingPageDark .trackingListContainerDark,
+  .participationLandingPage.darkMode .trackingListContainer {
     background: #3a506b !important;
     color: #fff !important;
   }
 
-  .participationLandingPageDark .tracking-table-global-dark thead th {
+  .participationLandingPageDark .tracking-table-global-dark thead th,
+  .participationLandingPage.darkMode .trackingTable thead th {
     background: #1c2541 !important;
     color: #fff !important;
   }
 
-  .participationLandingPageDark .trackingRateDark {
+  .participationLandingPageDark .trackingRateDark,
+  .participationLandingPage.darkMode .trackingRate {
     background: #3a506b !important;
     color: #fff !important;
   }
@@ -1048,7 +1052,37 @@
   .participationLandingPageDark .eventTimeDark,
   .participationLandingPageDark .attendeesCountDark,
   .participationLandingPageDark .insightsLabelDark,
-  .participationLandingPageDark .insightsPercentageDark {
+  .participationLandingPageDark .insightsPercentageDark,
+  .participationLandingPage.darkMode .landingPageHeader,
+  .participationLandingPage.darkMode .eventName,
+  .participationLandingPage.darkMode .eventTime,
+  .participationLandingPage.darkMode .attendeesCount,
+  .participationLandingPage.darkMode .insightLabel,
+  .participationLandingPage.darkMode .insightPercentage {
+    color: #fff !important;
+  }
+
+  .participationLandingPage.darkMode .myCasesPage {
+    background-color: #1c2541 !important;
+  }
+
+  .participationLandingPage.darkMode .caseCard {
+    background-color: #3a506b !important;
+    color: #fff !important;
+  }
+
+  .participationLandingPage.darkMode .insightsTabs {
+    border: 1px solid #555 !important;
+    background-color: #1e293b !important;
+  }
+
+  .participationLandingPage.darkMode .insightsTab {
+    color: #cbd5e1 !important;
+    background-color: #1e293b !important;
+  }
+
+  .participationLandingPage.darkMode .insightsTab.activeTab {
+    background-color: #1d4ed8 !important;
     color: #fff !important;
   }
 }
