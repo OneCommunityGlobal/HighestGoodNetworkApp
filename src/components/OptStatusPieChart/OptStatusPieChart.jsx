@@ -7,7 +7,6 @@
 import { useEffect, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
 import { useDispatch, useSelector } from 'react-redux';
-import { Chart as ChartJS } from 'chart.js';
 import { fetchOptStatusBreakdown } from '../../actions/optStatusBreakdownAction';
 import { roleOptions } from './filter';
 import 'chart.js/auto';
