@@ -720,7 +720,7 @@
 
 .applyBtn {
   flex: 1;
-  background-color: #27ae60 !important;
+  background-color: #1e8449 !important;
   border: none;
   color: white;
   padding: 10px 5px;
@@ -732,13 +732,13 @@
 }
 
 .applyBtn:hover {
-  background-color: #229954 !important;
+  background-color: #156b3a !important;
   box-shadow: 0 4px 8px rgb(39 174 96 / 30%);
 }
 
 .clearBtn {
   flex: 1;
-  background-color: #95a5a6 !important;
+  background-color: #6c757d !important;
   border: none;
   color: white;
   padding: 10px 5px;

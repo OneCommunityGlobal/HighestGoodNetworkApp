@@ -132,7 +132,7 @@ export function CPDashboard() {
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
-  const [onlineOnly, setOnlineOnly] = useState(false);
+  const [onlineOnly] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showPastEvents, setShowPastEvents] = useState(false);
@@ -361,7 +361,7 @@ export function CPDashboard() {
 
   if (isLoading) {
     return (
-      <Container className={styles.dashboardContainer}>
+      <Container className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}>
         <p>Loading events...</p>
       </Container>
     );
@@ -369,7 +369,7 @@ export function CPDashboard() {
 
   if (error) {
     return (
-      <Container className={styles.dashboardContainer}>
+      <Container className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}>
         <p className={styles.errorText}>{error}</p>
       </Container>
     );
@@ -424,7 +424,7 @@ export function CPDashboard() {
   }
 
   return (
-    <Container className={styles.dashboardContainer}>
+    <Container className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}>
       <header className={`${styles.dashboardHeader} ${darkMode ? styles.darkHeader : ''}`}>
         <h1>All Events</h1>
       </header>
@@ -490,7 +490,7 @@ export function CPDashboard() {
                     <div
                       ref={recentDropdownRef}
                       onMouseDown={handleRecentDropdownMouseDown}
-                      role="listbox"
+                      role="menu"
                       aria-label="Recent searches"
                       tabIndex={-1}
                     >
