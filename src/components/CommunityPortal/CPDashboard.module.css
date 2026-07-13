@@ -169,8 +169,8 @@
   background: transparent;
   font-size: 1rem;
   line-height: 1.5;
-  padding: 10px 96px 10px 18px;
-  min-height: 36px;
+  padding: 8px 96px 8px 18px;
+  min-height: 32px;
   max-height: 120px;
   box-sizing: border-box;
   overflow: hidden auto;
