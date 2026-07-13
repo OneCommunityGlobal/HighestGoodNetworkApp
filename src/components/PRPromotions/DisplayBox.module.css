@@ -126,19 +126,13 @@
   font-weight: 600;
 }
 
-/* DARK BUTTONS — must come before .button:hover:not(:disabled) */
-
-.popupDark .button {
-  border: 1px solid #6b7280;
-  background-color: #374151;
-  color: #f9fafb;
-}
-
 .button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
   opacity: 0.6;
 }
+
+/* These action colors are intentionally shared by light and dark mode. */
 
 .cancelButton {
   background-color: #f00;
@@ -154,18 +148,17 @@
   background-color: #e5e7eb;
 }
 
-/* DARK DISABLED AND HOVER — must come after .button:hover:not(:disabled) */
-
-.popupDark .button:hover:not(:disabled) {
-  background-color: #4b5563;
-}
-
 .cancelButton:hover:not(:disabled) {
   background-color: #d60000;
 }
 
 .confirmButton:hover:not(:disabled) {
   background-color: #00c;
+}
+
+.popupDark .button:disabled {
+  background-color: #4b5563;
+  color: #d1d5db;
 }
 
 /* ======================================================
@@ -328,6 +321,28 @@
 
 .popupTable {
   border-collapse: collapse;
+}
+
+/* Dark modal content rules must come after the base table rules so they win in CSS order. */
+
+.popupDark .popupHeading {
+  color: #f9fafb;
+}
+
+.popupDark .popupTable {
+  background-color: #1f2937;
+}
+
+.popupDark .popupTable th,
+.popupDark .popupTable td {
+  border-color: #4b5563;
+  background-color: #1f2937;
+  color: #f9fafb;
+}
+
+.popupDark .popupTable thead th {
+  background-color: #374151;
+  color: #f9fafb;
 }
 
 .prBadgeRow {
