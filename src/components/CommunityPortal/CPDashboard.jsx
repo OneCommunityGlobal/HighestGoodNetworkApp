@@ -378,11 +378,7 @@ export function CPDashboard() {
 
   let eventsContent;
 
-  if (isLoading) {
-    eventsContent = <div className={styles.noEvents}>Loading events...</div>;
-  } else if (error) {
-    eventsContent = <div className={styles.noEvents}>{error}</div>;
-  } else if (displayedEvents.length > 0) {
+  if (displayedEvents.length > 0) {
     eventsContent = displayedEvents.map(event => (
       <Col md={4} key={event.id} className={`${styles.eventCardCol}`}>
         <Link
