@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faCheck,
-  faXmark,
-  faSync,
-  faFilter,
-  faEye,
-  faTimes,
-} from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faXmark, faSync, faFilter, faTimes } from '@fortawesome/free-solid-svg-icons';
 import {
   getStatusColor,
   getPriorityColor,
@@ -209,7 +202,7 @@ const ResourceManagementDashboard = () => {
                         onClick={() => openRequestDetail(request)}
                         className={styles.viewBtn}
                       >
-                        <FontAwesomeIcon icon={faEye} /> View
+                        View
                       </button>
                       {request.status === 'pending' && (
                         <>
@@ -275,7 +268,7 @@ const ResourceManagementDashboard = () => {
                     onClick={() => openRequestDetail(request)}
                     className={styles.fullWidthBtn}
                   >
-                    <FontAwesomeIcon icon={faEye} /> View Details
+                    View Details
                   </button>
                   {request.status === 'pending' && (
                     <>

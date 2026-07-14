@@ -1,8 +1,9 @@
 /* Page */
 .page {
-  padding: 2.5rem 2rem 5rem;
-  max-width: 1400px;
-  margin: 0 auto;
+  padding: 4rem 3rem 6rem;
+  min-width: 100%;
+  min-height: 100%;
+  margin: 0;
   background-color: #f8f9fa;
   box-sizing: border-box;
 }
