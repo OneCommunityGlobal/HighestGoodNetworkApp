@@ -4,7 +4,7 @@ import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
@@ -178,7 +178,8 @@ describe('PermissionsManagement', () => {
 
       buttons.forEach(button => {
         if (button.className.includes('role-btn')) {
-          expect(button).toHaveClass('text-light');
+          // Check if className contains 'text-light' pattern (CSS modules hash it)
+          expect(button.className).toMatch(/text-light/);
         }
       });
     });

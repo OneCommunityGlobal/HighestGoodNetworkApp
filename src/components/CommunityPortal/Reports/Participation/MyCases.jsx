@@ -2,57 +2,42 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './MyCases.module.css';
 import mockEvents from './mockData';
+import CreateEventModal from './CreateEventModal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUsers } from '@fortawesome/free-solid-svg-icons';
+import { filterEventsByDate } from './FilterByDate';
 
 function MyCases() {
   const [view, setView] = useState('card');
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState('All Time');
   const [expanded, setExpanded] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const isExporting =
-    typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true'; // Sonar: prefer .dataset
-
-  const filterEvents = events => {
-    const now = new Date();
-    if (filter === 'today') {
-      return events.filter(event => {
-        const eventDate = new Date(event.eventTime);
-        return (
-          eventDate.getDate() === now.getDate() &&
-          eventDate.getMonth() === now.getMonth() &&
-          eventDate.getFullYear() === now.getFullYear()
-        );
-      });
-    }
-    if (filter === 'thisWeek') {
-      const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
-      const endOfWeek = new Date(startOfWeek);
-      endOfWeek.setDate(endOfWeek.getDate() + 6);
-      return events.filter(event => {
-        const eventDate = new Date(event.eventTime);
-        return eventDate >= startOfWeek && eventDate <= endOfWeek;
-      });
-    }
-    if (filter === 'thisMonth') {
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-      return events.filter(event => {
-        const eventDate = new Date(event.eventTime);
-        return eventDate >= startOfMonth && eventDate <= endOfMonth;
-      });
-    }
-    return events;
-  };
+    typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true';
 
   const darkMode = useSelector(state => state.theme.darkMode);
-  const filteredEvents = filterEvents(mockEvents);
 
-  // Sonar: extract nested ternary into independent statement
+  const filteredEvents = filterEventsByDate(mockEvents, filter);
+
   let visibleEvents = filteredEvents;
+
   if (!isExporting) {
-    visibleEvents = expanded ? filteredEvents.slice(0, 40) : filteredEvents.slice(0, 10);
+    visibleEvents = expanded ? filteredEvents : filteredEvents.slice(0, 10);
   }
 
   const placeholderAvatar = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+
+  const isEventToday = dateString => {
+    const eventDate = new Date(dateString);
+    const now = new Date();
+
+    return (
+      eventDate.getDate() === now.getDate() &&
+      eventDate.getMonth() === now.getMonth() &&
+      eventDate.getFullYear() === now.getFullYear()
+    );
+  };
 
   const renderCardView = () => (
     <div
@@ -68,12 +53,16 @@ function MyCases() {
           <span className={styles.eventBadge} data-type={event.eventType}>
             {event.eventType}
           </span>
+
           <span className={`${styles.eventTime} ${darkMode ? styles.eventTimeDark : ''}`}>
             {event.eventTime}
           </span>
+
           <span className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
+            {isEventToday(event.eventDate) ? "Today's " : ''}
             {event.eventName}
           </span>
+
           <div className={`${styles.attendeesInfo} ${darkMode ? styles.attendeesInfoDark : ''}`}>
             <div className={styles.avatars}>
               <img
@@ -85,9 +74,15 @@ function MyCases() {
                 loading="lazy"
               />
             </div>
+
             <span
               className={`${styles.attendeesCount} ${darkMode ? styles.attendeesCountDark : ''}`}
-            >{`+${event.attendees}`}</span>
+              title="Number of members who attended this event"
+              data-tooltip="Members Attended"
+            >
+              <FontAwesomeIcon icon={faUsers} className="me-2" />
+              {`+${event.attendees}`} Attendees
+            </span>
           </div>
         </div>
       ))}
@@ -110,7 +105,15 @@ function MyCases() {
           <span className={styles.eventType}>{event.eventType}</span>
           <span className={styles.eventTime}>{event.eventTime}</span>
           <span className={styles.eventName}>{event.eventName}</span>
-          <span className={styles.attendeesCount}>{`+${event.attendees}`}</span>
+
+          <span
+            className={styles.attendeesCount}
+            title="Number of members who attended this event"
+            data-tooltip="Members Attended"
+          >
+            <FontAwesomeIcon icon={faUsers} className="me-2" />
+            {`+${event.attendees}`} Attendees
+          </span>
         </li>
       ))}
     </ul>
@@ -130,8 +133,9 @@ function MyCases() {
         <h2 className={`${styles.sectionTitle} ${darkMode ? styles.sectionTitleDark : ''}`}>
           Upcoming Events
         </h2>
+
         <div className={styles.headerActions}>
-          <div className={`view-switcher-global ${styles.viewSwitcher}`}>
+          <div className={`${styles.viewSwitcher} ${darkMode ? styles.viewSwitcherDarkMode : ''}`}>
             <button
               type="button"
               className={view === 'calendar' ? styles.active : ''}
@@ -139,6 +143,7 @@ function MyCases() {
             >
               Calendar
             </button>
+
             <button
               type="button"
               className={view === 'card' ? styles.active : ''}
@@ -146,6 +151,7 @@ function MyCases() {
             >
               Card
             </button>
+
             <button
               type="button"
               className={view === 'list' ? styles.active : ''}
@@ -154,21 +160,30 @@ function MyCases() {
               List
             </button>
           </div>
+
           <div className={`filter-wrapper-global ${styles.filterWrapper}`}>
             <select
-              className={styles.filterDropdown}
+              className={`${styles.filterDropdown} ${
+                darkMode ? styles.filterDropdownDarkMode : ''
+              }`}
               value={filter}
               onChange={e => setFilter(e.target.value)}
             >
-              <option value="all">All Time</option>
-              <option value="today">Today</option>
-              <option value="thisWeek">This Week</option>
-              <option value="thisMonth">This Month</option>
+              <option value="All Time">All Time</option>
+              <option value="Today">Today</option>
+              <option value="This Week">This Week</option>
+              <option value="This Month">This Month</option>
             </select>
           </div>
-          <button type="button" className={`create-new-global ${styles.createNew}`}>
+
+          <button
+            type="button"
+            className={`${styles.createNew} ${darkMode ? styles.createNewDarkMode : ''}`}
+            onClick={() => setIsCreateModalOpen(true)}
+          >
             + Create New
           </button>
+
           {filteredEvents.length > 10 && !isExporting && (
             <button
               type="button"
@@ -180,11 +195,17 @@ function MyCases() {
           )}
         </div>
       </header>
+
       <main className={styles.content}>
         {view === 'card' && renderCardView()}
         {view === 'list' && renderListView()}
         {view === 'calendar' && renderCalendarView()}
       </main>
+
+      <CreateEventModal
+        isOpen={isCreateModalOpen}
+        toggle={() => setIsCreateModalOpen(!isCreateModalOpen)}
+      />
     </div>
   );
 }

@@ -13,7 +13,6 @@ import {
 import { toast } from 'react-toastify';
 import { FiChevronLeft, FiChevronRight, FiSearch, FiPlus } from 'react-icons/fi';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../../Header/DarkMode.css';
 import { fetchOrders, createOrder, updateOrderStatus, fetchSuppliers } from './mockOrdersData';
 import styles from './OrdersPage.module.css';
 

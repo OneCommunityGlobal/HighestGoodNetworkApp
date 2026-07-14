@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .updateMaterialContainer {
   padding: 0% !important;
 
@@ -7,7 +8,7 @@
   background-color: #E8F4F9;
   width: 100%;
   height: auto;
-  margin: 0px;
+  margin: 0;
   padding: 1rem 2rem;
   font-size: 15px;
 }
@@ -95,4 +96,56 @@
 .updateModalContainer {
   overflow-y: scroll;
   height: 75vh;
+}
+
+/* 🌙 Dark Mode Support — HGN Theme */
+
+/* Page background */
+:global(.dark-mode) .updateMaterialPage {
+  background-color: #3A506B; /* Yinmn Blue */
+  color: #fff;
+}
+
+/* Card container */
+:global(.dark-mode) .updateMaterial {
+  background-color: #1B2A41; /* Muted Oxford Blue */
+  color: #fff;
+  border: 1px solid #2a2f3a;
+}
+
+/* Labels */
+:global(.dark-mode) .materialFormLabel {
+  color: #4DA8DA; /* light blue accent */
+}
+
+/* Values */
+:global(.dark-mode) .materialFormValue {
+  color: #fff;
+}
+
+/* Buttons */
+:global(.dark-mode) .materialButtonOutline {
+  color: #fff !important;
+  border-color: #fff !important;
+}
+
+:global(.dark-mode) .materialButtonOutline:hover {
+  background-color: #1C2541 !important; /* Space Cadet */
+  color: #fff !important;
+}
+
+:global(.dark-mode) .materialButtonBg {
+  background-color: #1C2541 !important; /* Space Cadet */
+  color: #fff !important;
+}
+
+:global(.dark-mode) .materialButtonBg:hover {
+  background-color: #3A506B !important; /* Yinmn Blue */
+  color: #fff !important;
+}
+
+/* Modal container */
+:global(.dark-mode) .updateModalContainer {
+  background-color: #1B2A41; /* Muted Oxford Blue */
+  color: #fff;
 }
