@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 import { createMockRequest } from '../../../__mocks__/resourceRequestMockData';
 import styles from './ResourceRequestForm.module.css';
 
-const ResourceRequestForm = () => {
+const ResourceRequestForm = ({ onClose }) => {
   const darkMode = useSelector(state => state.theme?.darkMode || false);
   const history = useHistory();
   const [formData, setFormData] = useState({
@@ -42,7 +42,11 @@ const ResourceRequestForm = () => {
       setFormData({ title: '', details: '', priority: 'medium' });
 
       setTimeout(() => {
-        history.push('/educator/requests');
+        if (onClose) {
+          onClose();
+        } else {
+          history.push('/educator/requests');
+        }
       }, 2000);
     } catch (err) {
       setMessage({
@@ -54,11 +58,15 @@ const ResourceRequestForm = () => {
   };
 
   const handleCancel = () => {
-    history.push('/educator/requests');
+    if (onClose) {
+      onClose();
+    } else {
+      history.push('/educator/requests');
+    }
   };
 
   return (
-    <div className={`${styles.page} ${theme}`}>
+    <div className={onClose ? theme : `${styles.page} ${theme}`}>
       <div className={styles.formWrapper}>
         <div className={styles.formHeader}>
           <h1>Submit a Resource Request</h1>

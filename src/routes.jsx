@@ -281,9 +281,6 @@ const SuggestedJobsListBuilder = lazy(() => import('./components/Collaboration/S
 const ResourceManagementDashboard = lazy(() =>
   import('./components/ResourceRequest/ResourceManagementDashboard/ResourceManagementDashboard'),
 );
-const ResourceRequestForm = lazy(() =>
-  import('./components/ResourceRequest/ResourceRequestForm/ResourceRequestForm'),
-);
 const ResourceRequestList = lazy(() =>
   import('./components/ResourceRequest/ResourceRequestList/ResourceRequestList'),
 );
@@ -1072,14 +1069,7 @@ export default (
           exact
           component={ResourcesUsage}
         />
-        {/* Resource Request Routes */}
         <ProtectedRoute path="/educator/requests" exact component={ResourceRequestList} fallback />
-        <ProtectedRoute
-          path="/educator/requests/new"
-          exact
-          component={ResourceRequestForm}
-          fallback
-        />
         <ProtectedRoute
           path="/pm/dashboard/resources"
           exact

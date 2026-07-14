@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faSync, faFilter } from '@fortawesome/free-solid-svg-icons';
-import { useHistory } from 'react-router-dom';
 import {
   getStatusColor,
   getPriorityColor,
@@ -10,15 +9,16 @@ import {
   getRequestStats,
 } from '../utils/resourceRequestUtils';
 import { getMockEducatorRequests } from '../../../__mocks__/resourceRequestMockData';
+import ResourceRequestForm from '../ResourceRequestForm/ResourceRequestForm';
 import styles from './ResourceRequestList.module.css';
 
 const ResourceRequestList = () => {
   const darkMode = useSelector(state => state.theme?.darkMode || false);
-  const history = useHistory();
   const [requests, setRequests] = useState([]);
   const [filterStatus, setFilterStatus] = useState('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showFormModal, setShowFormModal] = useState(false);
 
   const theme = darkMode ? styles.dark : '';
 
@@ -57,7 +57,12 @@ const ResourceRequestList = () => {
   const stats = getRequestStats(requests);
 
   const handleNewRequest = () => {
-    history.push('/educator/requests/new');
+    setShowFormModal(true);
+  };
+
+  const handleCloseFormModal = () => {
+    setShowFormModal(false);
+    fetchRequests();
   };
 
   if (loading) {
@@ -202,6 +207,15 @@ const ResourceRequestList = () => {
           <div className={styles.statItem}>
             <div className={styles.statNumber}>{stats.denied}</div>
             <div className={styles.statLabel}>Denied</div>
+          </div>
+        </div>
+      )}
+      {showFormModal && (
+        // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
+        <div className={styles.modalOverlay} onClick={handleCloseFormModal}>
+          {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
+          <div className={styles.modalPopup} onClick={e => e.stopPropagation()}>
+            <ResourceRequestForm onClose={handleCloseFormModal} />
           </div>
         </div>
       )}

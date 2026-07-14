@@ -615,6 +615,32 @@
   color: #7dd3fc;
 }
 
+/* Modal */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modalPopup {
+  background: #fff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgb(0 0 0 / 30%);
+}
+
+.dark .modalPopup {
+  background: #1e293b;
+}
+
 /* Responsive Design */
 @media (width <= 1024px) {
   .header {
