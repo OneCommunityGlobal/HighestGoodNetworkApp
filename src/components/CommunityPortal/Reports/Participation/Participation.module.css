@@ -158,6 +158,8 @@
   font-size: 0.85rem;
   border: 1px solid #ccc;
   border-radius: 5px;
+  cursor: pointer;
+  transition: border-color 0.2s;
 }
 
 .trackingSummary {
@@ -172,6 +174,10 @@
   width: 48%;
   padding: 10px;
   color: #333;
+  transition:
+    background-color 0.2s,
+    transform 0.2s;
+  cursor: default;
 }
 
 .trackingRate .trackingRateSubheading span,
@@ -247,6 +253,8 @@
   font-size: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
+  cursor: pointer;
+  transition: border-color 0.2s;
 }
 
 .insightsTabs {
@@ -670,6 +678,19 @@
   font-weight: bold;
 }
 
+.trackingFilters select:hover {
+  border-color: #0056b3;
+}
+
+.trackingRate:hover {
+  background: #e9ecef;
+  transform: translateY(-2px);
+}
+
+.insightsFilters select:hover {
+  border-color: #0056b3;
+}
+
 /* ==========================================================================
    DARK MODE (nested under .darkMode)
    ========================================================================== */
@@ -895,7 +916,7 @@
   }
 
   .participationLandingPage.darkMode {
-    background: #1e293b !important;
+    background: transparent !important;
     color: #fff !important;
   }
 
@@ -1076,7 +1097,7 @@
   }
 
   .participationLandingPage.darkMode .myCasesPage {
-    background-color: #1e293b !important;
+    background-color: transparent !important;
   }
 
   .participationLandingPage.darkMode .caseCard {
@@ -1098,4 +1119,19 @@
     background-color: #1d4ed8 !important;
     color: #fff !important;
   }
+}
+
+.darkMode .trackingContainer .trackingFilters select:hover,
+.trackingContainer.darkMode .trackingFilters select:hover {
+  border-color: #60a5fa;
+}
+
+.darkMode .trackingRate:hover {
+  background: #4a607b;
+  transform: translateY(-2px);
+}
+
+.darkMode .insights .insightsFilters select:hover,
+.insights.darkMode .insightsFilters select:hover {
+  border-color: #60a5fa;
 }

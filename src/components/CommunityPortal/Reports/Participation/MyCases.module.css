@@ -34,6 +34,7 @@
   background-color: #fff;
   color: #333;
   border: 1px solid #ccc;
+  transition: background-color 0.2s;
 }
 
 .viewSwitcher button.active {
@@ -51,22 +52,12 @@
   border-radius: 4px;
 }
 
-.filterDropdown:hover,
-.filterDropdown:focus {
-  border-color: #0056b3;
-  outline: none;
-}
-
 .createNew {
   font-weight: bold;
   border: 1px solid #0056b3;
   border-radius: 4px;
   background-color: #0056b3;
   color: #fff;
-}
-
-.createNew:hover {
-  background-color: #004085;
 }
 
 .content {
@@ -88,6 +79,9 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  transition:
+    box-shadow 0.2s,
+    transform 0.2s;
 }
 
 .eventBadge {
@@ -172,6 +166,7 @@
   padding: 15px;
   background-color: #fff;
   box-shadow: 0 2px 10px rgb(0 0 0 / 10%);
+  transition: background-color 0.2s;
 }
 
 .caseListItem span {
@@ -201,10 +196,6 @@
   color: #fff;
   border: none;
   transition: background-color 0.2s;
-}
-
-.moreBtn:hover {
-  background-color: #004085;
 }
 
 .caseCards.expanded,
@@ -249,12 +240,6 @@
   cursor: pointer;
   background-color: #1e293b;
   color: #fff;
-}
-
-.filterDropdownDarkMode:hover,
-.filterDropdownDarkMode:focus {
-  border-color: #1d4ed8;
-  outline: none;
 }
 
 .createNewDarkMode {
@@ -367,6 +352,39 @@
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
+.viewSwitcher button:hover {
+  background-color: #e9ecef;
+}
+
+.filterDropdown:hover,
+.filterDropdown:focus {
+  border-color: #0056b3;
+  outline: none;
+}
+
+.createNew:hover {
+  background-color: #004085;
+}
+
+.moreBtn:hover {
+  background-color: #004085;
+}
+
+.caseCard:hover {
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  transform: translateY(-2px);
+}
+
+.caseListItem:hover {
+  background-color: #f1f5f9;
+}
+
+.filterDropdownDarkMode:hover,
+.filterDropdownDarkMode:focus {
+  border-color: #1d4ed8;
+  outline: none;
+}
+
 /* ==========================================================================
    DARK MODE (nested under .myCasesPage.darkMode — higher specificity)
    ========================================================================== */
@@ -395,6 +413,7 @@
   background-color: #1e293b;
   color: #f1f5f9;
   border: 1px solid #555;
+  transition: background-color 0.2s;
 }
 
 .myCasesPage.darkMode .viewSwitcher button.active {
@@ -560,11 +579,32 @@
   }
 
   .myCasesPage.darkMode {
-    background-color: #1e293b !important;
+    background-color: transparent !important;
   }
 
   .myCasesPage.darkMode .caseCard {
     background-color: #3a506b !important;
     color: #fff !important;
   }
+}
+
+.myCasesPage.darkMode .viewSwitcher button:hover,
+.myCasesPage.darkMode .createNew:hover,
+.myCasesPage.darkMode .moreBtn:hover {
+  background-color: #334155;
+}
+
+.myCasesPage.darkMode .filterDropdown:hover,
+.myCasesPage.darkMode .filterDropdown:focus {
+  border-color: #60a5fa;
+  outline: none;
+}
+
+.myCasesPage.darkMode .caseCard:hover {
+  box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
+  transform: translateY(-2px);
+}
+
+.myCasesPage.darkMode .caseListItem:hover {
+  background-color: #4a607b;
 }
