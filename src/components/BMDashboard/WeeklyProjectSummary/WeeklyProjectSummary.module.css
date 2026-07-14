@@ -229,7 +229,7 @@
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  overflow: hidden visible;
+  overflow: visible;
 }
 
 .darkMode .weeklyProjectSummaryCard {
@@ -518,7 +518,8 @@
   border-radius: 25px;
   width: 100%;
   max-width: 284px;
-  height: 190px;
+  min-height: 190px;
+  height: auto;
   text-align: center;
   box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
   padding: 20px;
@@ -615,7 +616,7 @@
   grid-template-columns: repeat(5, 1fr);
   gap: 20px;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
   width: 100%;
   max-width: 1600px;
   margin: auto;
