@@ -168,24 +168,6 @@ export function CPDashboard() {
     tomorrow.setDate(today.getDate() + 1);
     return input >= tomorrow && input < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
   };
-  // Filter events based on applied filters
-  const filteredEvents = events.filter(event => {
-    if (!showPastEvents && isPastEvent(event)) return false;
-    // Filter by online only
-    if (appliedFilters.onlineOnly) {
-      const isOnlineEvent = event.location?.toLowerCase() === 'virtual';
-      if (!isOnlineEvent) return false;
-    }
-
-    // Filter by date
-    if (appliedFilters.dateFilter === 'tomorrow') {
-      return isTomorrow(event.date);
-    } else if (appliedFilters.dateFilter === 'weekend') {
-      return isComingWeekend(event.date);
-    }
-
-    // Filter by search query
-    if (!searchQuery) return true;
 
   const isComingWeekend = dateString => {
     const input = new Date(dateString);
