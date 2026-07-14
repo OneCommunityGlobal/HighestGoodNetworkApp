@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { Container, Row, Alert, Col, Card, CardBody, Button, Input } from 'reactstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
@@ -8,7 +7,7 @@ import { ENDPOINTS } from '../../utils/URL';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-const FixedRatioImage = ({ src = '', alt = '', fallback }) => (
+const FixedRatioImage = ({ src, alt, fallback }) => (
   <div
     style={{
       width: '100%',
@@ -34,11 +33,12 @@ const FixedRatioImage = ({ src = '', alt = '', fallback }) => (
   </div>
 );
 
-FixedRatioImage.propTypes = {
-  src: PropTypes.string,
-  alt: PropTypes.string,
-  fallback: PropTypes.string.isRequired,
-};
+// A single icon + text row inside an event card (date / location / organizer).
+const EventInfoRow = ({ icon: Icon, darkMode, className, children }) => (
+  <p className={className}>
+    <Icon className={`${darkMode ? styles.eventIconDark : styles.eventIcon}`} /> {children}
+  </p>
+);
 
 // Default filter values
 const DEFAULT_FILTERS = {
@@ -47,6 +47,65 @@ const DEFAULT_FILTERS = {
   branches: '',
   themes: '',
   categories: '',
+};
+
+const formatDate = dateStr => {
+  if (!dateStr) return 'Date TBD';
+  const date = new Date(dateStr);
+  return date.toLocaleString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+};
+
+const startOfToday = () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return today;
+};
+
+const isTomorrow = dateString => {
+  const tomorrow = startOfToday();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const dayAfterTomorrow = new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
+  const input = new Date(dateString);
+  return input >= tomorrow && input < dayAfterTomorrow;
+};
+
+const isComingWeekend = dateString => {
+  // Start of the upcoming Saturday (never today, even if today is a weekend).
+  const saturday = startOfToday();
+  saturday.setDate(saturday.getDate() + ((6 - saturday.getDay() + 7) % 7 || 7));
+  // Exclusive upper bound: start of the following Monday.
+  const monday = new Date(saturday);
+  monday.setDate(saturday.getDate() + 2);
+  const input = new Date(dateString);
+  return input >= saturday && input < monday;
+};
+
+const isPastEvent = (event, now) => {
+  const ref = event.startTime || event.date;
+  if (!ref) return false;
+  return new Date(ref) < now;
+};
+
+// Decide whether a single event survives the currently applied filters.
+const eventMatchesFilters = (event, { appliedFilters, showPastEvents, searchQuery, now }) => {
+  if (!showPastEvents && isPastEvent(event, now)) return false;
+  if (appliedFilters.onlineOnly && event.location?.toLowerCase() !== 'virtual') return false;
+  if (appliedFilters.dateFilter === 'tomorrow') return isTomorrow(event.date);
+  if (appliedFilters.dateFilter === 'weekend') return isComingWeekend(event.date);
+  if (!searchQuery) return true;
+
+  const term = searchQuery.toLowerCase();
+  return (
+    event.title?.toLowerCase().includes(term) ||
+    event.location?.toLowerCase().includes(term) ||
+    event.organizer?.toLowerCase().includes(term)
+  );
 };
 
 export function CPDashboard() {
@@ -59,13 +118,6 @@ export function CPDashboard() {
   const [error, setError] = useState(null);
   const [showPastEvents, setShowPastEvents] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
-
-  // Darken the page body in dark mode (app-wide pattern) so the area around the
-  // dashboard isn't left white.
-  useEffect(() => {
-    document.body.classList.toggle('dark-mode-body', darkMode);
-    return () => document.body.classList.remove('dark-mode-body');
-  }, [darkMode]);
 
   // Hide the global back-to-top button — not needed on this page
   useEffect(() => {
@@ -111,6 +163,13 @@ export function CPDashboard() {
     fetchEvents();
   }, []);
 
+  // Darken the page body in dark mode (app-wide pattern) so the area
+  // behind the dashboard isn't left white.
+  useEffect(() => {
+    document.body.classList.toggle('dark-mode-body', darkMode);
+    return () => document.body.classList.remove('dark-mode-body');
+  }, [darkMode]);
+
   useEffect(() => {
     const handler = setTimeout(() => {
       setSearchQuery(searchInput.trim());
@@ -149,42 +208,6 @@ export function CPDashboard() {
     }
   };
 
-  const formatDate = dateStr => {
-    if (!dateStr) return 'Date TBD';
-    const date = new Date(dateStr);
-    return date.toLocaleString('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-    });
-  };
-
-  const isTomorrow = dateString => {
-    const input = new Date(dateString);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
-    return input >= tomorrow && input < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
-  };
-
-  const isComingWeekend = dateString => {
-    const input = new Date(dateString);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const day = today.getDay();
-    const daysUntilSaturday = (6 - day + 7) % 7 || 7;
-    const saturday = new Date(today);
-    saturday.setDate(today.getDate() + daysUntilSaturday);
-    const sunday = new Date(saturday);
-    sunday.setDate(saturday.getDate() + 1);
-    sunday.setHours(23, 59, 59, 999);
-    return input >= saturday && input <= sunday;
-  };
-
   // Handler to update pending filter values
   const handleFilterChange = (filterName, value) => {
     setPendingFilters(prev => ({
@@ -217,37 +240,10 @@ export function CPDashboard() {
 
   const now = new Date();
 
-  const isPastEvent = event => {
-    const ref = event.startTime || event.date;
-    if (!ref) return false;
-    return new Date(ref) < now;
-  };
   // Filter events based on applied filters
-  const filteredEvents = events.filter(event => {
-    if (!showPastEvents && isPastEvent(event)) return false;
-    // Filter by online only
-    if (appliedFilters.onlineOnly) {
-      const isOnlineEvent = event.location?.toLowerCase() === 'virtual';
-      if (!isOnlineEvent) return false;
-    }
-
-    // Filter by date
-    if (appliedFilters.dateFilter === 'tomorrow') {
-      return isTomorrow(event.date);
-    } else if (appliedFilters.dateFilter === 'weekend') {
-      return isComingWeekend(event.date);
-    }
-
-    // Filter by search query
-    if (!searchQuery) return true;
-
-    const term = searchQuery.toLowerCase();
-    return (
-      event.title?.toLowerCase().includes(term) ||
-      event.location?.toLowerCase().includes(term) ||
-      event.organizer?.toLowerCase().includes(term)
-    );
-  });
+  const filteredEvents = events.filter(event =>
+    eventMatchesFilters(event, { appliedFilters, showPastEvents, searchQuery, now }),
+  );
 
   // Reset pagination to page 1 when filters change
   useEffect(() => {
@@ -282,47 +278,49 @@ export function CPDashboard() {
   }
 
   // isLoading and error are already handled by the early returns above.
-  let eventsContent;
-
-  if (displayedEvents.length > 0) {
-    eventsContent = displayedEvents.map(event => (
-      <Col md={4} key={event.id} className={`${styles.eventCardCol}`}>
-        <Link
-          className={styles.eventCardLink}
-          to={`/communityportal/Activities/Register/${event._id}`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Card className={`${styles.eventCard} ${darkMode ? styles.darkEventCard : ''}`}>
-            <div className={styles.eventCardImgContainer}>
-              <FixedRatioImage src={event.coverImage} alt={event.title} fallback={FALLBACK_IMG} />
-            </div>
-            <CardBody className={`${styles.eventCardBody} ${darkMode ? styles.darkEventCard : ''}`}>
-              <h5 className={styles.eventTitle}>{event.title}</h5>
-              <p className={styles.eventDate}>
-                <FaCalendarAlt
-                  className={`${darkMode ? styles.eventIconDark : styles.eventIcon}`}
-                />{' '}
-                {formatDate(event.date)}
-              </p>
-              <p className={styles.eventLocation}>
-                <FaMapMarkerAlt
-                  className={`${darkMode ? styles.eventIconDark : styles.eventIcon}`}
-                />{' '}
-                {event.location || 'Location TBD'}
-              </p>
-              <p className={styles.eventOrganizer}>
-                <FaUserAlt className={`${darkMode ? styles.eventIconDark : styles.eventIcon}`} />{' '}
-                {event.organizer || 'Organizer TBD'}
-              </p>
-            </CardBody>
-          </Card>
-        </Link>
-      </Col>
-    ));
-  } else {
-    eventsContent = <div className={styles.noEvents}>No events available</div>;
-  }
+  const eventsContent =
+    displayedEvents.length > 0 ? (
+      displayedEvents.map(event => (
+        <Col md={4} key={event.id} className={`${styles.eventCardCol}`}>
+          <Link
+            className={styles.eventCardLink}
+            to={`/communityportal/Activities/Register/${event._id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Card className={`${styles.eventCard} ${darkMode ? styles.darkEventCard : ''}`}>
+              <div className={styles.eventCardImgContainer}>
+                <FixedRatioImage src={event.coverImage} alt={event.title} fallback={FALLBACK_IMG} />
+              </div>
+              <CardBody
+                className={`${styles.eventCardBody} ${darkMode ? styles.darkEventCard : ''}`}
+              >
+                <h5 className={styles.eventTitle}>{event.title}</h5>
+                <EventInfoRow icon={FaCalendarAlt} darkMode={darkMode} className={styles.eventDate}>
+                  {formatDate(event.date)}
+                </EventInfoRow>
+                <EventInfoRow
+                  icon={FaMapMarkerAlt}
+                  darkMode={darkMode}
+                  className={styles.eventLocation}
+                >
+                  {event.location || 'Location TBD'}
+                </EventInfoRow>
+                <EventInfoRow
+                  icon={FaUserAlt}
+                  darkMode={darkMode}
+                  className={styles.eventOrganizer}
+                >
+                  {event.organizer || 'Organizer TBD'}
+                </EventInfoRow>
+              </CardBody>
+            </Card>
+          </Link>
+        </Col>
+      ))
+    ) : (
+      <div className={styles.noEvents}>No events available</div>
+    );
 
   return (
     <Container className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}>

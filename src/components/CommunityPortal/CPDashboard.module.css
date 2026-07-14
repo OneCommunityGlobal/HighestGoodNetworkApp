@@ -6,8 +6,6 @@
   padding: 0;
 }
 
-/* In dark mode the page body is darkened (class toggled from the component) so
-   the area around the dashboard matches the app's dark theme instead of white. */
 :global(body.dark-mode-body) {
   background: #1b2a41;
 }
@@ -27,8 +25,6 @@
 .darkContainer {
   background: #2b3e59 !important;
   color: #fff;
-  border-radius: 0;
-  box-shadow: none;
 }
 
 .dashboardHeader {
@@ -418,22 +414,6 @@
   transition: all 0.3s ease;
 }
 
-/* Render a single dropdown chevron: hide the browser's native arrow and draw
-   one custom chevron so the selects don't show a doubled-up arrow. */
-.filterItem select {
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232c3e50' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 16px;
-  padding-right: 36px;
-}
-
-/* In the dark sidebar the select text is white, so use a white chevron. */
-.darkSidebar .filterItem select {
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-}
-
 .dateFilter {
   margin-top: 10px;
   padding: 12px 15px;
@@ -492,6 +472,10 @@
 
 .darkMain {
   background: #2b3e59;
+}
+
+.darkMain .sectionTitle {
+  color: #f5f6f7;
 }
 
 .eventsHeader {
@@ -564,6 +548,10 @@
 
 .darkEventCard {
   background: #1b2a41;
+}
+
+.darkEventCard .eventTitle {
+  color: #f5f6f7;
 }
 
 .eventCardImgContainer {
@@ -642,12 +630,12 @@
 .noEvents {
   text-align: center;
   padding: 40px;
-  color: #595959; /* darker gray to meet AA contrast on the white background */
+  color: #888;
   font-size: 1.2rem;
 }
 
 .darkMain .noEvents {
-  color: #e4e6eb; /* lighter gray to meet AA contrast on the dark background */
+  color: #9ca3af;
 }
 
 .dashboardActions {
@@ -698,7 +686,7 @@
 
 .applyBtn {
   flex: 1;
-  background-color: #198754 !important; /* darker success green: white text meets AA contrast */
+  background-color: #1e8449 !important;
   border: none;
   color: white;
   padding: 10px 5px; 
@@ -710,13 +698,13 @@
 }
 
 .applyBtn:hover {
-  background-color: #146c43 !important;
+  background-color: #196f3d !important;
   box-shadow: 0 4px 8px rgb(39 174 96 / 30%);
 }
 
 .clearBtn {
   flex: 1;
-  background-color: #6c757d !important; /* darker secondary gray: white text meets AA contrast */
+  background-color: #626e6e !important;
   border: none;
   color: white;
   padding: 10px 5px; 
@@ -728,7 +716,7 @@
 }
 
 .clearBtn:hover {
-  background-color: #565e64 !important;
+  background-color: #4d5656 !important;
   box-shadow: 0 4px 8px rgb(149 165 166 / 30%);
 }
 
