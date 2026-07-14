@@ -105,6 +105,17 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
       </div>
     );
   };
+
+  const darkHighLight = shouldHighlight => {
+    return darkMode
+      ? shouldHighlight
+        ? styles['dark-highlight-row']
+        : styles.darkModeRow
+      : shouldHighlight
+      ? styles['highlight-row']
+      : '';
+  };
+
   return (
     <>
       <div className={styles['table-responsive']}>
@@ -128,7 +139,7 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
               const nameValue = log?.individualName ? formatName(log.individualName) : log.roleName;
               const shouldHighlight = roleSet.has(normalize(nameValue));
               return (
-                <tr key={log._id} className={shouldHighlight ? styles['highlight-row'] : ''}>
+                <tr key={log._id} className={darkHighLight(shouldHighlight)}>
                   <td className={`${styles['permission-change-log-table--cell']} ${bgYinmnBlue}`}>
                     {`${formatDate(log.logDateTime)} ${formattedAmPmTime(log.logDateTime)}`}
                   </td>
