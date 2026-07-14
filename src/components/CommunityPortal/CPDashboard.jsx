@@ -202,6 +202,13 @@ export function CPDashboard() {
     fetchEvents();
   }, []);
 
+  // Darken the page body in dark mode (app-wide pattern) so the area
+  // behind the dashboard isn't left white.
+  useEffect(() => {
+    document.body.classList.toggle('dark-mode-body', darkMode);
+    return () => document.body.classList.remove('dark-mode-body');
+  }, [darkMode]);
+
   useEffect(() => {
     const handler = setTimeout(() => {
       setSearchQuery(searchInput.trim());
