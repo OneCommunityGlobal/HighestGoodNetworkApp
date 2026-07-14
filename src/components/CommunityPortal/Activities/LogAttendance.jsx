@@ -23,6 +23,25 @@ import styles from './LogAttendance.module.css';
 const tabs = ['Description', 'Analysis', 'Participates', 'Comments'];
 const statusFilters = ['all', 'checked_in', 'no_show', 'pending'];
 
+const recordStatusLabel = status => {
+  if (status === 'checked_in') return 'Checked In';
+  if (status === 'no_show') return 'No Show';
+  return 'Pending';
+};
+
+const filterStatusLabel = filter => {
+  if (filter === 'all') return 'All Statuses';
+  if (filter === 'checked_in') return 'Checked In';
+  if (filter === 'no_show') return 'No Shows';
+  return 'Pending';
+};
+
+const statusBadgeClass = status => {
+  if (status === 'Checked In') return styles.statusSuccess;
+  if (status === 'Pending') return styles.statusPending;
+  return styles.statusDanger;
+};
+
 function LogAttendance() {
   const { activityId } = useParams();
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -96,12 +115,7 @@ function LogAttendance() {
             record.participantId?._id || record.participantId || record.participantExternalId,
           email: record.participantEmail || record.participantId?.email || '',
           checkInTime: record.checkInTime ? moment(record.checkInTime).format('h:mm A') : '—',
-          status:
-            record.status === 'checked_in'
-              ? 'Checked In'
-              : record.status === 'no_show'
-              ? 'No Show'
-              : 'Pending',
+          status: recordStatusLabel(record.status),
           rawStatus: record.status,
         }));
         setAttendanceRecords(records);
@@ -424,13 +438,7 @@ function LogAttendance() {
                   >
                     {statusFilters.map(filter => (
                       <option key={filter} value={filter}>
-                        {filter === 'all'
-                          ? 'All Statuses'
-                          : filter === 'checked_in'
-                          ? 'Checked In'
-                          : filter === 'no_show'
-                          ? 'No Shows'
-                          : 'Pending'}
+                        {filterStatusLabel(filter)}
                       </option>
                     ))}
                   </select>
@@ -479,13 +487,7 @@ function LogAttendance() {
                       <td>{record.checkInTime}</td>
                       <td>
                         <span
-                          className={`${styles.statusBadge} ${
-                            record.status === 'Checked In'
-                              ? styles.statusSuccess
-                              : record.status === 'Pending'
-                              ? styles.statusPending
-                              : styles.statusDanger
-                          }`}
+                          className={`${styles.statusBadge} ${statusBadgeClass(record.status)}`}
                         >
                           {record.status}
                         </span>

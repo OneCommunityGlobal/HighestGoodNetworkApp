@@ -26,8 +26,8 @@
 
 .errorContainer button {
   padding: 12px 24px;
-  background: #0f8fd5;
-  color: white;
+  background: #0a5a8a;
+  color: #fff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -322,7 +322,7 @@
 }
 
 .errorContainer button:hover {
-  background: #0d7bb8;
+  background: #084a72;
 }
 
 .ringWrapper {

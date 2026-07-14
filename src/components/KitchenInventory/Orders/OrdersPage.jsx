@@ -30,18 +30,22 @@ function Modal({ isOpen, toggle, size, className, children }) {
     if (e.target === overlayRef.current) toggle();
   };
 
+  const handleOverlayKeyDown = e => {
+    if (e.target === overlayRef.current && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      toggle();
+    }
+  };
+
   const sizeClass = size === 'lg' ? styles.modalLg : '';
 
   return createPortal(
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions -- Modal overlay backdrop
     <div
       className={styles.modalOverlay}
       ref={overlayRef}
       onClick={handleOverlayClick}
-      onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') handleOverlayClick(e);
-      }}
-      role="button"
-      tabIndex={0}
+      onKeyDown={handleOverlayKeyDown}
     >
       <div className={`${styles.modalContent} ${sizeClass} ${className || ''}`}>{children}</div>
     </div>,
@@ -68,13 +72,14 @@ function ModalFooter({ children }) {
   return <div className={styles.modalFooter}>{children}</div>;
 }
 
+const badgeClassForStatus = status => {
+  if (status === 'ordered') return styles.badgeOrdered;
+  if (status === 'received') return styles.badgeReceived;
+  return styles.badgeStocked;
+};
+
 const StatusBadge = ({ status }) => {
-  const cls =
-    status === 'ordered'
-      ? styles.badgeOrdered
-      : status === 'received'
-      ? styles.badgeReceived
-      : styles.badgeStocked;
+  const cls = badgeClassForStatus(status);
   return (
     <span className={`${styles.badge} ${cls}`}>
       {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -179,8 +184,8 @@ const OrderCard = ({ order, onStatusChange, darkMode }) => {
 
         <div className={styles.itemsSection}>
           <p className={styles.itemsSectionTitle}>Order Items:</p>
-          {order.items.map((item, idx) => (
-            <div key={idx} className={styles.itemRow}>
+          {order.items.map(item => (
+            <div key={item.name} className={styles.itemRow}>
               <div className={styles.itemInfo}>
                 <div className={styles.itemIcon}>✓</div>
                 <div>
@@ -281,8 +286,8 @@ const OrderCard = ({ order, onStatusChange, darkMode }) => {
                 </tr>
               </thead>
               <tbody>
-                {order.items.map((item, idx) => (
-                  <tr key={idx}>
+                {order.items.map(item => (
+                  <tr key={item.name}>
                     <td>{item.name}</td>
                     <td>{item.quantity}</td>
                     <td>{item.unit}</td>
@@ -324,7 +329,9 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
   const [orderDate, setOrderDate] = useState('');
   const [deliveryDate, setDeliveryDate] = useState('');
   const [notes, setNotes] = useState('');
-  const [items, setItems] = useState([{ name: '', quantity: '', unit: 'lbs', unitPrice: '' }]);
+  const [items, setItems] = useState([
+    { id: 1, name: '', quantity: '', unit: 'lbs', unitPrice: '' },
+  ]);
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -342,19 +349,17 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
     }
   };
 
-  const handleItemChange = (index, field, value) => {
-    const updated = [...items];
-    updated[index] = { ...updated[index], [field]: value };
-    setItems(updated);
+  const handleItemChange = (itemId, field, value) => {
+    setItems(items.map(item => (item.id === itemId ? { ...item, [field]: value } : item)));
   };
 
   const addItem = () => {
-    setItems([...items, { name: '', quantity: '', unit: 'lbs', unitPrice: '' }]);
+    setItems([...items, { id: Date.now(), name: '', quantity: '', unit: 'lbs', unitPrice: '' }]);
   };
 
-  const removeItem = index => {
+  const removeItem = itemId => {
     if (items.length <= 1) return;
-    setItems(items.filter((_, i) => i !== index));
+    setItems(items.filter(item => item.id !== itemId));
   };
 
   const handleSubmit = () => {
@@ -398,7 +403,7 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
     setOrderDate(today);
     setDeliveryDate('');
     setNotes('');
-    setItems([{ name: '', quantity: '', unit: 'lbs', unitPrice: '' }]);
+    setItems([{ id: 1, name: '', quantity: '', unit: 'lbs', unitPrice: '' }]);
   };
 
   return (
@@ -464,13 +469,13 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
           <span className={styles.itemFormColSm}>Unit Price</span>
           <span />
         </div>
-        {items.map((item, idx) => (
-          <div key={idx} className={styles.itemFormRow}>
+        {items.map(item => (
+          <div key={item.id} className={styles.itemFormRow}>
             <input
               className={`${styles.input} ${styles.itemFormColName}`}
               placeholder="Item name"
               value={item.name}
-              onChange={e => handleItemChange(idx, 'name', e.target.value)}
+              onChange={e => handleItemChange(item.id, 'name', e.target.value)}
             />
             <input
               className={`${styles.input} ${styles.itemFormColSm}`}
@@ -479,12 +484,12 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
               step="1"
               placeholder="Qty"
               value={item.quantity}
-              onChange={e => handleItemChange(idx, 'quantity', e.target.value)}
+              onChange={e => handleItemChange(item.id, 'quantity', e.target.value)}
             />
             <select
               className={`${styles.select} ${styles.itemFormColSm}`}
               value={item.unit}
-              onChange={e => handleItemChange(idx, 'unit', e.target.value)}
+              onChange={e => handleItemChange(item.id, 'unit', e.target.value)}
             >
               <option value="lbs">lbs</option>
               <option value="kg">kg</option>
@@ -502,12 +507,12 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
               step="0.01"
               placeholder="$0.00"
               value={item.unitPrice}
-              onChange={e => handleItemChange(idx, 'unitPrice', e.target.value)}
+              onChange={e => handleItemChange(item.id, 'unitPrice', e.target.value)}
             />
             <button
               type="button"
               className={styles.removeItemBtn}
-              onClick={() => removeItem(idx)}
+              onClick={() => removeItem(item.id)}
               disabled={items.length <= 1}
             >
               ✕
@@ -627,6 +632,63 @@ function OrdersPage() {
 
   const containerClass = `${styles.container} ${darkMode ? styles.containerDark : ''}`;
 
+  const renderOrdersContent = () => {
+    if (loading) {
+      return (
+        <div className={`${styles.orderCard} ${styles.emptyState}`}>
+          <div className={styles.spinner} /> Loading orders…
+        </div>
+      );
+    }
+    if (paginatedOrders.length === 0) {
+      return (
+        <div className={`${styles.orderCard} ${styles.emptyState}`}>
+          No orders found matching your search.
+        </div>
+      );
+    }
+    return (
+      <>
+        {paginatedOrders.map(order => (
+          <OrderCard
+            key={order._id}
+            order={order}
+            onStatusChange={handleStatusChange}
+            darkMode={darkMode}
+          />
+        ))}
+
+        {totalPages > 1 && (
+          <div className={styles.pagination}>
+            <button
+              className={styles.pageBtn}
+              disabled={safePage <= 1}
+              onClick={() => setCurrentPage(p => p - 1)}
+            >
+              <FiChevronLeft size={16} />
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+              <button
+                key={page}
+                className={`${styles.pageBtn} ${page === safePage ? styles.pageBtnActive : ''}`}
+                onClick={() => setCurrentPage(page)}
+              >
+                {page}
+              </button>
+            ))}
+            <button
+              className={styles.pageBtn}
+              disabled={safePage >= totalPages}
+              onClick={() => setCurrentPage(p => p + 1)}
+            >
+              <FiChevronRight size={16} />
+            </button>
+          </div>
+        )}
+      </>
+    );
+  };
+
   return (
     <div className={containerClass}>
       <main className={styles.main}>
@@ -702,56 +764,7 @@ function OrdersPage() {
               </button>
             </div>
 
-            {loading ? (
-              <div className={`${styles.orderCard} ${styles.emptyState}`}>
-                <div className={styles.spinner} /> Loading orders…
-              </div>
-            ) : paginatedOrders.length > 0 ? (
-              <>
-                {paginatedOrders.map(order => (
-                  <OrderCard
-                    key={order._id}
-                    order={order}
-                    onStatusChange={handleStatusChange}
-                    darkMode={darkMode}
-                  />
-                ))}
-
-                {totalPages > 1 && (
-                  <div className={styles.pagination}>
-                    <button
-                      className={styles.pageBtn}
-                      disabled={safePage <= 1}
-                      onClick={() => setCurrentPage(p => p - 1)}
-                    >
-                      <FiChevronLeft size={16} />
-                    </button>
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                      <button
-                        key={page}
-                        className={`${styles.pageBtn} ${
-                          page === safePage ? styles.pageBtnActive : ''
-                        }`}
-                        onClick={() => setCurrentPage(page)}
-                      >
-                        {page}
-                      </button>
-                    ))}
-                    <button
-                      className={styles.pageBtn}
-                      disabled={safePage >= totalPages}
-                      onClick={() => setCurrentPage(p => p + 1)}
-                    >
-                      <FiChevronRight size={16} />
-                    </button>
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className={`${styles.orderCard} ${styles.emptyState}`}>
-                No orders found matching your search.
-              </div>
-            )}
+            {renderOrdersContent()}
           </>
         )}
 
