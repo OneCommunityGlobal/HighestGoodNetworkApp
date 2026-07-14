@@ -33,6 +33,13 @@ const FixedRatioImage = ({ src, alt, fallback }) => (
   </div>
 );
 
+// A single icon + text row inside an event card (date / location / organizer).
+const EventInfoRow = ({ icon: Icon, darkMode, className, children }) => (
+  <p className={className}>
+    <Icon className={`${darkMode ? styles.eventIconDark : styles.eventIcon}`} /> {children}
+  </p>
+);
+
 // Default filter values
 const DEFAULT_FILTERS = {
   dateFilter: '',
@@ -293,22 +300,23 @@ export function CPDashboard() {
                 className={`${styles.eventCardBody} ${darkMode ? styles.darkEventCard : ''}`}
               >
                 <h5 className={styles.eventTitle}>{event.title}</h5>
-                <p className={styles.eventDate}>
-                  <FaCalendarAlt
-                    className={`${darkMode ? styles.eventIconDark : styles.eventIcon}`}
-                  />{' '}
+                <EventInfoRow icon={FaCalendarAlt} darkMode={darkMode} className={styles.eventDate}>
                   {formatDate(event.date)}
-                </p>
-                <p className={styles.eventLocation}>
-                  <FaMapMarkerAlt
-                    className={`${darkMode ? styles.eventIconDark : styles.eventIcon}`}
-                  />{' '}
+                </EventInfoRow>
+                <EventInfoRow
+                  icon={FaMapMarkerAlt}
+                  darkMode={darkMode}
+                  className={styles.eventLocation}
+                >
                   {event.location || 'Location TBD'}
-                </p>
-                <p className={styles.eventOrganizer}>
-                  <FaUserAlt className={`${darkMode ? styles.eventIconDark : styles.eventIcon}`} />{' '}
+                </EventInfoRow>
+                <EventInfoRow
+                  icon={FaUserAlt}
+                  darkMode={darkMode}
+                  className={styles.eventOrganizer}
+                >
                   {event.organizer || 'Organizer TBD'}
-                </p>
+                </EventInfoRow>
               </CardBody>
             </Card>
           </Link>
