@@ -50,8 +50,7 @@
 
 .popupTable {
   width: 100%;
-
-  /* border: 6px solid black; */
+  border-collapse: collapse;
 }
 
 /* DARK TABLE CELLS — must come before .popupTable thead th */
@@ -317,10 +316,6 @@
 :global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-6 {
   color: #fff !important;
   background-color: #b00000 !important;
-}
-
-.popupTable {
-  border-collapse: collapse;
 }
 
 /* Dark modal content rules must come after the base table rules so they win in CSS order. */
