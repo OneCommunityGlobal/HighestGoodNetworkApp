@@ -13,7 +13,7 @@
 
 /* Header */
 .header {
-  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  background: linear-gradient(135deg, #0050a0 0%, #003d7a 100%);
   color: #ffffff;
   padding: 3rem 2rem;
   border-radius: 12px;
@@ -48,7 +48,7 @@
   white-space: nowrap;
   padding: 0.875rem 1.75rem;
   font-weight: 600;
-  background: #16a34a;
+  background: #15803d;
   color: #ffffff;
   border: none;
   border-radius: 8px;
@@ -167,8 +167,8 @@
 .refreshBtn {
   padding: 0.75rem 1.25rem;
   background: #ffffff;
-  color: #007bff;
-  border: 2px solid #007bff;
+  color: #0056b3;
+  border: 2px solid #0056b3;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
@@ -186,7 +186,7 @@
 }
 
 .refreshBtn:hover {
-  background: #007bff;
+  background: #0050a0;
   color: #ffffff;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
@@ -465,7 +465,7 @@
   margin-top: 1.5rem;
   padding: 0.875rem 1.75rem;
   font-weight: 600;
-  background: #007bff;
+  background: #0050a0;
   color: #ffffff;
   border: none;
   border-radius: 8px;

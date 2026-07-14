@@ -24,7 +24,7 @@ export const useResourceFetch = () => {
 
       if (!response.ok) {
         const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('text/html')) {
+        if (contentType?.includes('text/html')) {
           throw new Error(
             'Backend endpoint not found. Please ensure the API server is running and the endpoint is configured.',
           );
@@ -35,7 +35,7 @@ export const useResourceFetch = () => {
       let data;
       try {
         data = await response.json();
-      } catch (parseError) {
+      } catch {
         const contentType = response.headers.get('content-type') || 'unknown format';
         throw new Error(
           `Invalid response format from server. Expected JSON but received: ${contentType}`,

@@ -13,7 +13,7 @@
 
 /* Header */
 .header {
-  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  background: linear-gradient(135deg, #0050a0 0%, #003d7a 100%);
   color: #ffffff;
   padding: 3rem 2rem;
   border-radius: 12px;
@@ -198,8 +198,8 @@
 }
 
 .refreshBtn:hover {
-  border-color: #007bff;
-  color: #007bff;
+  border-color: #0056b3;
+  color: #0056b3;
   background-color: #f8f9fa;
 }
 
@@ -772,7 +772,8 @@
   background-color: #f8f9fa;
   border-radius: 6px;
   font-size: 0.95rem;
-  word-break: break-word;
+  word-break: normal;
+  overflow-wrap: break-word;
   border-left: 3px solid #007bff;
 }
 
