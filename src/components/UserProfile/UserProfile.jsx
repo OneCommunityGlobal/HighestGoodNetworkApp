@@ -1,85 +1,88 @@
-import React, { useState, useEffect, useRef, useId } from 'react';
+import axios from 'axios';
+import classnames from 'classnames';
+import moment from 'moment';
+import PropTypes from 'prop-types';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import Image from 'react-bootstrap/Image';
+import { Link, useHistory } from 'react-router-dom';
+import Select from 'react-select';
 import {
-  Row,
-  Input,
-  Col,
+  Button,
   Container,
-  TabContent,
-  TabPane,
+  Input,
   List,
   Modal,
-  ModalHeader,
   ModalBody,
   ModalFooter,
+  ModalHeader,
   Nav,
   NavItem,
   NavLink,
-  Button,
+  Row,
+  TabContent,
+  TabPane
 } from 'reactstrap';
-import Select from 'react-select';
-import Image from 'react-bootstrap/Image';
-import { Link, useHistory } from 'react-router-dom';
-import classnames from 'classnames';
-import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
-import axios from 'axios';
-import { boxStyle, boxStyleDark } from '~/styles';
 import { v4 as uuidv4 } from 'uuid';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { ENDPOINTS } from '~/utils/URL';
+import { getAllTeamCode, getAllUserTeams } from '../../actions/allTeamsAction';
 import hasPermission, {
   cantDeactivateOwner,
   cantUpdateDevAdminDetails,
 } from '../../utils/permissions';
-import ActiveCell from '../UserManagement/ActiveCell';
-import { ENDPOINTS } from '~/utils/URL';
 import SkeletonLoading from '../common/SkeletonLoading';
-import UserProfileModal from './UserProfileModal';
-import './UserProfile.scss';
 import teamStyles from '../TeamMemberTasks/style.module.css';
-import TeamsTab from './TeamsAndProjects/TeamsTab';
-import ProjectsTab from './TeamsAndProjects/ProjectsTab';
-import BasicInformationTab from './BasicInformationTab/BasicInformationTab';
-import VolunteeringTimeTab from './VolunteeringTimeTab/VolunteeringTimeTab';
-import SaveButton from './UserProfileEdit/SaveButton';
-import UserLinkLayout from './UserLinkLayout';
-import TabToolTips from './ToolTips/TabToolTips';
-import BasicToolTips from './ToolTips/BasicTabTips';
-import TeamsTabTips from './ToolTips/TeamsTabTips';
+import ActiveCell from '../UserManagement/ActiveCell';
+import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton';
 import Badges from './Badges';
-import { getAllTeamCode , getAllUserTeams } from '../../actions/allTeamsAction';
+import BasicInformationTab from './BasicInformationTab/BasicInformationTab';
+import ProjectsTab from './TeamsAndProjects/ProjectsTab';
+import TeamsTab from './TeamsAndProjects/TeamsTab';
 import TimeEntryEditHistory from './TimeEntryEditHistory';
-import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
-import { updateUserStatus, updateRehireableStatus, toggleVisibility } from '../../actions/userManagement';
-import { updateUserProfile } from "../../actions/userProfile";
-import { UserStatus } from '../../utils/enums';
-import BlueSquareLayout from './BlueSquareLayout';
-import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
+import BasicToolTips from './ToolTips/BasicTabTips';
+import TabToolTips from './ToolTips/TabToolTips';
+import TeamsTabTips from './ToolTips/TeamsTabTips';
+import UserLinkLayout from './UserLinkLayout';
+import './UserProfile.scss';
+import SaveButton from './UserProfileEdit/SaveButton';
+import UserProfileModal from './UserProfileModal';
+import VolunteeringTimeTab from './VolunteeringTimeTab/VolunteeringTimeTab';
+
 import { connect, useDispatch, useSelector } from 'react-redux';
-import { formatDateLocal } from '~/utils/formatDate';
-import EditableInfoModal from './EditableModal/EditableInfoModal';
+import { formatDateCompany } from '~/utils/formatDate';
 import { fetchAllProjects } from '../../actions/projects';
+import { toggleVisibility, updateRehireableStatus } from '../../actions/userManagement';
+import { updateUserProfile } from "../../actions/userProfile";
+import BlueSquareLayout from './BlueSquareLayout';
+import EditableInfoModal from './EditableModal/EditableInfoModal';
+import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 
 import { toast } from 'react-toastify';
+import {
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from '~/utils/constants';
 import { setCurrentUser } from '../../actions/authActions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import QuickSetupModal from './QuickSetupModal/QuickSetupModal';
-import {
-  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
-  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
-  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
-} from '~/utils/constants';
 
+import { formatDateYYYYMMDD } from '~/utils/formatDate.js';
 import {
-  getTimeEndDateEntriesByPeriod,
-  getTimeStartDateEntriesByPeriod,
   getTimeEntriesForWeek,
+  getTimeStartDateEntriesByPeriod
 } from '../../actions/timeEntries.js';
-import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
-import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from '~/utils/formatDate.js';
+import { activateUserAction, deactivateImmediatelyAction, scheduleDeactivationAction } from '../../actions/userLifecycleActions';
+import { getSpecialWarnings, postWarningByUserId } from '../../actions/warnings';
+import { InactiveReason } from '../../utils/enums';
+import { clearCachedTeamMembers } from '../Teams/teamMembersCache';
+import SetUpFinalDayPopUp from '../UserManagement/SetUpFinalDayPopUp';
 import AccessManagementModal from './UserProfileModal/AccessManagementModal';
-import { postWarningByUserId, getSpecialWarnings } from '../../actions/warnings';
+import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 
-function UserProfile(props) { 
+function UserProfile(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
   /* Constant values */
   const initialFormValid = {
@@ -91,35 +94,38 @@ function UserProfile(props) {
   const dispatch = useDispatch();
   const history = useHistory();
 
-
-   // TO-DO Performance Optimization: Replace fetchTeamCodeAllUsers with getAllTeamCode(), a leener version API to retrieve all team codes (reduce data payload and response time)
+  // TO-DO Performance Optimization: Replace fetchTeamCodeAllUsers with getAllTeamCode(), a leener version API to retrieve all team codes (reduce data payload and response time)
   //        Also, replace passing inputAutoComplete, inputAutoStatus, and isLoading to the
   //        child component with access global redux store data (complexity)
   // Explaination:
   //        fetchTeamCodeAllUsers get all weekly summaries and filter out the team codes. (~800ms - 1 sec res time)
   //        getAllTeamCode() will get all team codes from the database directly with distinct teamcode value (~15ms res time cache enabled).
-  const fetchTeamCodeAllUsers = async () => {
-    const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
+  const fetchTeamCodeAllUsers = useCallback(async () => {
+    const url = ENDPOINTS.WEEKLY_SUMMARIES_TEAM_CODES();
+  
     try {
       setIsLoading(true);
-      const response = await axios.get(url);
-      const stringWithValue = response.data.map(item => item.teamCode).filter(Boolean);
-      const stringNoRepeat = stringWithValue
-        .map(item => item)
-        .filter((item, index, array) => array.indexOf(item) === index);
-      setInputAutoComplete(stringNoRepeat);
+  
+      const response = await axios.get(url, {
+        params: { _ts: Date.now() },
+        headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
+      });
+  
+      const teamCodes = (Array.isArray(response.data) ? response.data : [])
+        .filter(item => typeof item === 'string' && item.trim() !== '');
+  
+      const uniqueTeamCodes = [...new Set(teamCodes)].sort((a, b) => a.localeCompare(b));
+  
+      setInputAutoComplete(uniqueTeamCodes);
       setInputAutoStatus(response.status);
-      setIsLoading(false);
-      return stringNoRepeat;
-    } catch (error) {
+  
+      return uniqueTeamCodes;
+      } catch (error) {
       // eslint-disable-next-line no-console
-      console.log(error);
-      setIsLoading(false);
-      toast.error(`It was not possible to retrieve the team codes.
-      Please try again by clicking the icon inside the input auto complete.`);
+      console.log('Team codes fetch failed:', error);
+      return [];
     }
-  };
-
+  }, []);
 
   /* Hooks */
   const [showLoading, setShowLoading] = useState(true);
@@ -145,6 +151,7 @@ function UserProfile(props) {
   const [modalMessage, setModalMessage] = useState('');
   const [shouldRefresh, setShouldRefresh] = useState(false);
   const [activeInactivePopupOpen, setActiveInactivePopupOpen] = useState(false);
+  const [finalDayPopupOpen, setFinalDayPopupOpen] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [updatedTasks, setUpdatedTasks] = useState([]);
   const [summarySelected, setSummarySelected] = useState(null);
@@ -189,7 +196,7 @@ function UserProfile(props) {
 
   const [userStartDate, setUserStartDate] = useState('');
   const [userEndDate, setUserEndDate] = useState('');
-  const [calculatedStartDate, setCalculatedStartDate] = useState(''); 
+  const [calculatedStartDate, setCalculatedStartDate] = useState('');
 
   const [inputAutoComplete, setInputAutoComplete] = useState([]);
   const [inputAutoStatus, setInputAutoStatus] = useState();
@@ -210,7 +217,6 @@ function UserProfile(props) {
     fetchSpecialWarnings();
   }, []);
 
- 
   const updateProjectTouserProfile = () => {
     return new Promise(resolve => {
       checkIsProjectsEqual();
@@ -363,9 +369,18 @@ function UserProfile(props) {
   };
 
   const fetchCalculatedStartDate = async (userId, userProfileData) => {
+    if (!userProfileData?.endDate) {
+      const createdDate = userProfileData?.createdDate ? userProfileData.createdDate.split('T')[0] : '';
+      setCalculatedStartDate(createdDate);
+      return;
+    }
     try {
       const startDate = await dispatch(
-        getTimeStartDateEntriesByPeriod(userId, userProfileData.createdDate, userProfileData.endDate),
+        getTimeStartDateEntriesByPeriod(
+          userId,
+          userProfileData.createdDate,
+          userProfileData.endDate,
+        ),
       );
 
       if (startDate !== 'N/A') {
@@ -373,18 +388,14 @@ function UserProfile(props) {
         setCalculatedStartDate(formattedStartDate);
       } else {
         // No time entries yet, use createdDate as fallback
-        const createdDate = userProfile?.createdDate
-          ? userProfile.createdDate.split('T')[0]
-          : '';
+        const createdDate = userProfile?.createdDate ? userProfile.createdDate.split('T')[0] : '';
         setCalculatedStartDate(createdDate);
       }
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error fetching calculated start date:', error);
       // Fallback to createdDate on error
-      const createdDate = userProfile?.createdDate
-        ? userProfile.createdDate.split('T')[0]
-        : '';
+      const createdDate = userProfile?.createdDate ? userProfile.createdDate.split('T')[0] : '';
       setCalculatedStartDate(createdDate);
     }
   };
@@ -434,13 +445,18 @@ function UserProfile(props) {
         const { data } = await axios.get(
           ENDPOINTS.USER_PROJECTS
             ? ENDPOINTS.USER_PROJECTS(userId)
-            : `${ENDPOINTS.PROJECTS}/user/${userId}`
+            : `${ENDPOINTS.PROJECTS}/user/${userId}`,
         );
-        const normalized = (data || []).map((row) => {
+        const normalized = (data || []).map(row => {
           // common shapes: {project: {...}}, {projectId: {...}}, or already {...}
-          if (row?.project?.projectName) return row.project;
-          if (row?.projectId?.projectName) return row.projectId;
-          return row; // fallback if API already returns the project document
+          let project;
+          if (row?.project?.projectName) project = row.project;
+          else if (row?.projectId?.projectName) project = row.projectId;
+          else project = row; // fallback if API already returns the project document
+          return {
+            ...project,
+            projectId: project?._id || project?.projectId,
+          };
         });
         setProjects(normalized);
         setOriginalProjects(normalized);
@@ -582,7 +598,12 @@ const onAssignProject = async (assignedProject) => {
     return;
   }
 
-  const updatedProjects = [...currentProjects, assignedProject];
+  const normalizedProject = {
+    ...assignedProject,
+    projectId: assignedProject._id || assignedProject.projectId,
+  };
+
+  const updatedProjects = [...currentProjects, normalizedProject];
   setProjects(updatedProjects);
 
   const updatedUserProfile = {
@@ -651,11 +672,13 @@ setUpdatedTasks(prev => {
     if (evt) evt.preventDefault();
     const file = evt.target.files?.[0];
     if (!file) return;
-  
+
     const filesizeKB = file.size / 1024;
     const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
-    const allowedTypesString = `File type not permitted. Allowed types are ${allowedTypes.join(', ')}`;
-  
+    const allowedTypesString = `File type not permitted. Allowed types are ${allowedTypes.join(
+      ', ',
+    )}`;
+
     // type check
     if (!allowedTypes.includes(file.type)) {
       setType('image');
@@ -670,21 +693,21 @@ setUpdatedTasks(prev => {
       setShowModal(true);
       setModalTitle('Profile Pic Error');
       setModalMessage(
-        'The file you are trying to upload exceeds the maximum size of 50KB. You can either choose a different file, or use an online file compressor.'
+        'The file you are trying to upload exceeds the maximum size of 50KB. You can either choose a different file, or use an online file compressor.',
       );
       return;
     }
-  
+
     const fileReader = new FileReader();
-  
+
     fileReader.onloadend = async () => {
       const base64 = fileReader.result;
-  
+
       // optimistic preview
       const prevProfile = userProfileRef.current;
       const nextProfile = { ...prevProfile, profilePic: base64 };
       setUserProfile(nextProfile);
-  
+
       // persist immediately
       setIsSavingImage(true);
       try {
@@ -700,10 +723,9 @@ setUpdatedTasks(prev => {
         setIsSavingImage(false);
       }
     };
-  
+
     fileReader.readAsDataURL(file);
   };
-  
 
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
     if (targetIsDevAdminUneditable) {
@@ -740,107 +762,116 @@ setUpdatedTasks(prev => {
   const modifyBlueSquares = async (id, dateStamp, summary, operation) => {
     setShowModal(false);
     if (operation === 'add') {
-      /* peizhou: check that the date of the blue square is not future or empty. */
       if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD')) || dateStamp === '') {
         if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD'))) {
-          // eslint-disable-next-line no-console
           console.log('WARNING: Future Blue Square');
-          // eslint-disable-next-line no-alert
           alert('WARNING: Cannot Assign Blue Square with a Future Date');
         }
         if (dateStamp === '') {
-          // eslint-disable-next-line no-console
           console.log('WARNING: Empty Date');
-          // eslint-disable-next-line no-alert
           alert('WARNING: Cannot Assign Blue Square with an Empty Date');
         }
       } else {
         const newBlueSquare = {
           date: dateStamp,
           description: summary,
-          // createdDate: moment
-          //   .tz('America/Los_Angeles')
-          //   .toISOString()
-          //   .split('T')[0],
           createdDate: moment().format('YYYY-MM-DD'),
+          manuallyAssigned: true,
+          manuallyAssignedBy: requestorId,
         };
         setModalTitle('Blue Square');
         axios
-          .post(ENDPOINTS.ADD_BLUE_SQUARE(userProfile._id), {
-            blueSquare: newBlueSquare,
-          })
+          .post(ENDPOINTS.ADD_BLUE_SQUARE(userProfile._id), { blueSquare: newBlueSquare })
           .then(res => {
-
-            const updatedInfringements = [
-              ...userProfile.infringements,
-              {
-                _id: res.data._id,
-                ...newBlueSquare,
-              }
-            ];
-
-            setOriginalUserProfile(prev => ({
-              ...prev,
-              infringements: updatedInfringements,
-            }));
-
-            setUserProfile(prev => ({
-              ...prev,
-              infringements: updatedInfringements,
-            }));
+            // Use API response as source of truth
+            setUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
+            setOriginalUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
           })
           .catch(error => {
-            // eslint-disable-next-line no-console
             console.log('error in modifying bluesquare', error);
             toast.error('Failed to add Blue Square!');
           });
       }
     } else if (operation === 'update') {
-      const currentBlueSquares = [...userProfile?.infringements] || [];
-      if (dateStamp != null && currentBlueSquares.length !== 0) {
-        currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
-      }
-      if (summary != null && currentBlueSquares.length !== 0) {
-        currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
-      }
-      await axios
-        .put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
+      try {
+        const res = await axios.put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
           dateStamp,
           summary,
-        })
-        .catch(error => {
-          toast.error('Failed to update Blue Square!');
+          editedBy: requestorId,
         });
-      toast.success('Blue Square Updated!');
-      setUserProfile({ ...userProfile, infringements: currentBlueSquares });
-      setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
+        toast.success('Blue Square Updated!');
+        // Use API response as source of truth
+        setUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
+        setOriginalUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
+      } catch (error) {
+        console.error('Failed to update Blue Square:', error);
+        toast.error('Failed to update Blue Square!');
+      }
     } else if (operation === 'delete') {
-      let newInfringements = [...userProfile?.infringements] || [];
-      if (newInfringements.length !== 0) {
-        newInfringements = newInfringements.filter(infringement => infringement._id !== id);
-        await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id)).catch(error => {
+      if (userProfile?.infringements?.length !== 0) {
+        try {
+          const res = await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id));
+          toast.success('Blue Square Deleted!');
+          // Use API response as source of truth
+          setUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
+          setOriginalUserProfile(prev => ({ ...prev, infringements: res.data.infringements }));
+        } catch (error) {
+          console.error('Failed to delete Blue Square:', error);
           toast.error('Failed to delete Blue Square!');
-        });
-        toast.success('Blue Square Deleted!');
-        setUserProfile({ ...userProfile, infringements: newInfringements });
-        setOriginalUserProfile({ ...userProfile, infringements: newInfringements });
+        }
       }
     }
   };
+
   const fetchSpecialWarnings = async () => {
     const userId = props?.match?.params?.userId;
     try {
       dispatch(getSpecialWarnings(userId)).then(res => {
         if (res.error) {
-          console.log(res.error);
+          // eslint-disable-next-line no-console
+          console.error('Error fetching special warnings:', res.error);
           return;
         }
         setSpecialWarnings(res);
       });
     } catch (err) {
-      console.log(err);
+      // eslint-disable-next-line no-console
+      console.error('Error in fetchSpecialWarnings:', err);
     }
   };
+
+  const getWarningMessage = (warningData, noSummary, inCompleteHours) => {
+    const bothWarnings = warningData?.warningsArray;
+    let allBlSq = {};
+    let noneBlSq = {};
+    let inCompleteHoursMixedBlSq = false;
+    const inCompleteHoursMessage = '"completing most of your hours but not all"';
+    const noSummaryMessage = '"not submitting a weekly summary"'
+    if(warningData?.issueBlueSquare) {
+      allBlSq = Object.values(warningData?.issueBlueSquare).every(blueSquare => blueSquare === true);
+      noneBlSq = Object.values(warningData?.issueBlueSquare).every(blueSquare => blueSquare === false);
+      inCompleteHoursMixedBlSq = warningData?.issueBlueSquare['Blu Sq Rmvd - Hrs Close Enoug'] === true;
+    }
+    const inCompleteHoursBlSq = warningData.description === 'Blu Sq Rmvd - Hrs Close Enoug';
+
+    let message = null;
+    if(bothWarnings) {
+      if(allBlSq) {
+        message = `Issued a blue square for an Admin having to remove past blue squares ${inCompleteHours.warnings.length - 1} times for ${inCompleteHoursMessage} and ${noSummary.warnings.length - 1} times for ${noSummaryMessage}.`
+      } else if(noneBlSq) {
+        message = '';
+      } else if(inCompleteHoursMixedBlSq) {
+        message = `Issued a blue square for an Admin having to remove past blue squares ${inCompleteHours.warnings.length - 1} times for ${inCompleteHoursMessage} and received a warning for removing past blue squares ${noSummary.warnings.length - 1} times for ${noSummaryMessage}.`
+      } else {
+        message = `Issued a blue square for an Admin having to remove past blue squares ${noSummary.warnings.length - 1} times for ${noSummaryMessage} and received a warning for removing past blue squares ${inCompleteHours.warnings.length - 1} times for ${inCompleteHoursMessage}.`
+      }
+    } else if(inCompleteHoursBlSq) {
+        message = `Issued a blue square for an Admin having to remove past blue squares ${inCompleteHours.warnings.length - 1} times for ${inCompleteHoursMessage}.`
+    } else {
+      message = `Issued a blue square for an Admin having to remove past blue squares ${noSummary.warnings.length - 1} times for ${noSummaryMessage}.`
+    }
+    return message
+  }
 
   const handleLogWarning = async newWarningData => {
     let warningData = {};
@@ -876,7 +907,6 @@ setUpdatedTasks(prev => {
         userId: props.auth.user.userid,
       },
     };
-
     let toastMessage = '';
     dispatch(postWarningByUserId(warningData))
       .then(response => {
@@ -884,6 +914,8 @@ setUpdatedTasks(prev => {
           toast.error('Warning failed to log try again');
           return;
         } else {
+          const noSummary = response.find(warning => warning.title === 'Blu Sq Rmvd - For No Summary')
+          const inCompleteHours = response.find(warning => warning.title === 'Blu Sq Rmvd - Hrs Close Enoug')
           setShowModal(false);
           fetchSpecialWarnings();
 
@@ -892,46 +924,25 @@ setUpdatedTasks(prev => {
           } else if (warningData.color === 'yellow') {
             toastMessage = 'Warning successfully logged';
           } else {
-            toastMessage = 'Successfully logged and Blue Square issued';
+            const blSqMessage = getWarningMessage(warningData, noSummary, inCompleteHours)
+            if(blSqMessage) {
+              modifyBlueSquares('', 
+                moment(warningData.date).format("YYYY-MM-DD"),
+                blSqMessage, 
+                'add')
+                toastMessage = 'Successfully logged and Blue Square issued';
+            } else {
+              toastMessage = 'Warning successfully logged';
+            }
           }
         }
         toast.success(toastMessage);
       })
       .catch(err => {
-        console.log(err);
+        // eslint-disable-next-line no-console
+        console.error('Error updating user profile:', err);
       });
   };
-
-  // const handleSubmit = async updatedUserProfile => {
-  //   for (let i = 0; i < updatedTasks.length; i += 1) {
-  //     const updatedTask = updatedTasks[i];
-  //     const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
-  //     // eslint-disable-next-line no-console
-  //     axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
-  //   }
-  //   try {
-  //      const userProfileToUpdate = {
-  //       ...(updatedUserProfile || userProfileRef.current),
-  //       projects, // Ensure projects are included in the payload
-  //       };
-  //       // eslint-disable-next-line no-console
-  //       console.log('Submitting UserProfile:', userProfileToUpdate); // Debugging log
-  //     const result = await props.updateUserProfile(userProfileToUpdate);
-  //     if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
-  //       await props.refreshToken(userProfile._id);
-  //     }
-  //     await loadUserProfile();
-  //     await loadUserTasks();
-  //     setSaved(false);
-  //   } catch (err) {
-  //     if (err.response && err.response.data && err.response.data.error) {
-  //       const errorMessage = err.response.data.error.join('\n');
-  //       // eslint-disable-next-line no-alert
-  //       alert(errorMessage);
-  //     }
-  //     return err;
-  //   }
-  // };
 
   const handleSubmit = async (updatedUserProfile) => {
   // 1) Merge with the current ref FIRST
@@ -958,7 +969,8 @@ setUpdatedTasks(prev => {
   }
 
   try {
-    const result = await props.updateUserProfile(userProfileToUpdate);
+    await props.updateUserProfile(userProfileToUpdate);
+    clearCachedTeamMembers(); // clear all team caches on any profile save
     if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
       await props.refreshToken(userProfile._id);
     }
@@ -1051,43 +1063,6 @@ setUpdatedTasks(prev => {
     });
   };
 
-  const setActiveInactive = async isActive => {
-    let endDate;
-
-    if (!isActive) {
-      endDate = await dispatch(
-        getTimeEndDateEntriesByPeriod(
-          userProfile._id,
-          userProfile.createdDate,
-          moment().format('YYYY-MM-DDTHH:mm:ss'),
-        ),
-      );
-      if (endDate == 'N/A') {
-        endDate = userProfile.createdDate;
-      }
-      endDate = moment(endDate).format('YYYY-MM-DDTHH:mm:ss');
-    }
-    const newUserProfile = {
-      ...userProfile,
-      isActive,
-      endDate: endDate || undefined,
-    };
-
-    try {
-      await props.updateUserStatus(
-        newUserProfile,
-        isActive ? UserStatus.Active : UserStatus.InActive,
-        undefined,
-      );
-      setUserProfile(newUserProfile);
-      setOriginalUserProfile(newUserProfile);
-      window.location.reload();
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Failed to update user status:', error);
-    }
-    setActiveInactivePopupOpen(false);
-  };
 
   const activeInactivePopupClose = () => {
     setActiveInactivePopupOpen(false);
@@ -1193,13 +1168,28 @@ setUpdatedTasks(prev => {
     setShowToggleVisibilityModal(false);
   };
 
-  if ((showLoading && !props.isAddNewUser) || userProfile === undefined) {
-    return ( 
+  if (showLoading && !props.isAddNewUser) {
+    return (
       <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
         <Row className="text-center" data-test="loading">
           <SkeletonLoading template="UserProfile" />
         </Row>
       </Container>
+    );
+  } else if (userProfile === undefined) {
+    return (
+      <div className={`messageUserNotFound ${darkMode ? 'bg-oxford-blue' : ''}`}>
+        <div className={`test`} style={{backgroundColor: `${darkMode? '#3a506b' : 'white'}`}}>
+          <h1 className={`${darkMode ? 'text-white' : 'text-dark'}`}>User Not Found</h1>
+          <h3 className={`${darkMode ? 'text-white' : 'text-dark'}`}>
+            This does not exist, but you can go back to the dashboard by clicking the button below.
+          </h3>
+          {/* Back to the dashboard page */}
+          <Link to="/" className="btn btn-primary">
+            Back to Dashboard
+          </Link>
+        </div>
+      </div>
     );
   }
 
@@ -1259,7 +1249,7 @@ setUpdatedTasks(prev => {
     setUserProfile(prev => ({
       ...prev,
       startDate: startDate,
-      isStartDateManuallyModified: true
+      isStartDateManuallyModified: true,
     }));
   };
 
@@ -1267,15 +1257,36 @@ setUpdatedTasks(prev => {
     setUserEndDate(endDate);
   };
 
+  const hasScheduledFinalDay = userProfile.isActive && userProfile.inactiveReason === InactiveReason.ScheduledSeparation && !!userProfile.endDate;
+
   return (
     <div className={darkMode ? 'bg-oxford-blue' : ''} style={{ minHeight: '100%' }}>
       <ActiveInactiveConfirmationPopup
-        isActive={userProfile.isActive}
-        fullName={`${userProfile.firstName} ${userProfile.lastName}`}
         open={activeInactivePopupOpen}
-        setActiveInactive={setActiveInactive}
         onClose={activeInactivePopupClose}
+        fullName={`${userProfile.firstName} ${userProfile.lastName}`}
+        isActive={userProfile.isActive}
+        endDate={userProfile.endDate}
+        inactiveReason={userProfile.inactiveReason}
+        onDeactivateImmediate={() => deactivateImmediatelyAction(dispatch, userProfile, loadUserProfile)}
+        onScheduleFinalDay={() => {
+          setFinalDayPopupOpen(true);
+          setActiveInactivePopupOpen(false);
+        }}
+        onCancelScheduledDeactivation={() => activateUserAction(dispatch, userProfile, loadUserProfile)}
+        onReactivateUser={() => activateUserAction(dispatch, userProfile, loadUserProfile)}
       />
+
+      <SetUpFinalDayPopUp
+        open={finalDayPopupOpen}
+        darkMode={darkMode}
+        onClose={() => setFinalDayPopupOpen(false)}
+        onSave={(finalDayISO) => {
+          scheduleDeactivationAction(dispatch, userProfile, finalDayISO, loadUserProfile);
+          setFinalDayPopupOpen(false);
+        }}
+      />
+
       {showModal && (
         <UserProfileModal
           isOpen={showModal}
@@ -1328,7 +1339,7 @@ setUpdatedTasks(prev => {
         {/* <div className='containerProfile' > */}
 
         <div className="left-top">
-        <div className="profile-img" style={{ position: 'relative' }}>
+          <div className="profile-img" style={{ position: 'relative' }}>
             <Image
               src={profilePic && profilePic.trim().length > 0 ? profilePic : '/pfp-default.png'}
               alt="Profile Picture"
@@ -1412,7 +1423,7 @@ setUpdatedTasks(prev => {
             titleOnSet={titleOnSet}
             setTitleOnSet={setTitleOnSet}
             updateUserProfile={props.updateUserProfile}
-            fetchTeamCodeAllUsers = {fetchTeamCodeAllUsers}
+            fetchTeamCodeAllUsers={fetchTeamCodeAllUsers}
           />
         </div>
 
@@ -1437,7 +1448,10 @@ setUpdatedTasks(prev => {
             <span className="mr-2">
               <ActiveCell
                 isActive={userProfile.isActive}
+                deactivatedAt={userProfile.deactivatedAt}
                 user={userProfile}
+                endDate={userProfile.endDate}
+                reactivationDate={userProfile.reactivationDate}
                 canChange={canChangeUserStatus}
                 onClick={() => {
                   if (cantDeactivateOwner(userProfile, requestorRole)) {
@@ -1497,13 +1511,11 @@ setUpdatedTasks(prev => {
                   style={{ padding: '0', border: 'none', background: 'none' }}
                   size="sm"
                   onClick={() => setShowAccessManagementModal(true)}
-                  title={
-                    'Click to add user access to GitHub, Dropbox, Slack, and Sentry.'
-                  }
+                  title={'Click to add user access to GitHub, Dropbox, Slack, and Sentry.'}
                 >
                   <img
-                    src='/HGN_Add_Access.png'
-                    alt='Add Access'
+                    src="/HGN_Add_Access.png"
+                    alt="Add Access"
                     style={{ width: '20px', height: '20px' }}
                   />
                 </Button>
@@ -1561,16 +1573,19 @@ setUpdatedTasks(prev => {
             )}
           </div>
           <h6 className={darkMode ? 'text-light' : 'text-azure'}>{jobTitle}</h6>
-          <p className={`proile-rating ${darkMode ? 'text-light' : ''}`} style={{ textAlign: 'left' }}>
+          <p
+            className={`proile-rating ${darkMode ? 'text-light' : ''}`}
+            style={{ textAlign: 'left' }}
+          >
             {/* use converted date without tz otherwise the record's will updated with timezoned ts for start date.  */}
             From:{' '}
             <span className={darkMode ? 'text-light' : ''}>
-              {formatDateLocal(userProfile.startDate)}
+              {formatDateCompany(userProfile.startDate)}
             </span>
             {'   '}
             To:{' '}
             <span className={darkMode ? 'text-light' : ''}>
-              {userProfile.endDate ? formatDateLocal(userProfile.endDate) : 'N/A'}
+              {userProfile.endDate ? formatDateCompany(userProfile.endDate) : 'N/A'}
             </span>
           </p>
           {showSelect ? (
@@ -1619,12 +1634,15 @@ setUpdatedTasks(prev => {
             <div className="profile-tabs">
               <Nav tabs>
                 <NavItem>
-                  <NavLink
+                <NavLink
                     className={classnames(
-                      { active: activeTab === '1' },
                       'nav-link',
-                      darkMode && activeTab === '1' ? 'bg-space-cadet' : 'text-azure',
-                      darkMode ? 'text-light' : '',
+                      { active: activeTab === '1' },
+                      darkMode
+                        ? activeTab === '1'
+                          ? 'bg-space-cadet text-light'
+                          : 'text-azure'
+                        : 'text-azure',
                     )}
                     onClick={() => toggleTab('1')}
                     id="nabLink-basic"
@@ -1633,12 +1651,15 @@ setUpdatedTasks(prev => {
                   </NavLink>
                 </NavItem>
                 <NavItem>
-                  <NavLink
+                <NavLink
                     className={classnames(
-                      { active: activeTab === '2' },
                       'nav-link',
-                      darkMode && activeTab === '2' ? 'bg-space-cadet' : 'text-azure',
-                      darkMode ? 'text-light' : '',
+                      { active: activeTab === '2' },
+                      darkMode
+                        ? activeTab === '1'
+                          ? 'bg-space-cadet text-light'
+                          : 'text-azure'
+                        : 'text-azure',
                     )}
                     onClick={() => toggleTab('2')}
                     id="nabLink-time"
@@ -1647,12 +1668,15 @@ setUpdatedTasks(prev => {
                   </NavLink>
                 </NavItem>
                 <NavItem>
-                  <NavLink
+                <NavLink
                     className={classnames(
-                      { active: activeTab === '3' },
                       'nav-link',
-                      darkMode && activeTab === '3' ? 'bg-space-cadet' : 'text-azure',
-                      darkMode ? 'text-light' : '',
+                      { active: activeTab === '3' },
+                      darkMode
+                        ? activeTab === '1'
+                          ? 'bg-space-cadet text-light'
+                          : 'text-azure'
+                        : 'text-azure',
                     )}
                     onClick={() => toggleTab('3')}
                     id="nabLink-teams"
@@ -1661,12 +1685,15 @@ setUpdatedTasks(prev => {
                   </NavLink>
                 </NavItem>
                 <NavItem>
-                  <NavLink
+                <NavLink
                     className={classnames(
-                      { active: activeTab === '4' },
                       'nav-link',
-                      darkMode && activeTab === '4' ? 'bg-space-cadet' : 'text-azure',
-                      darkMode ? 'text-light' : '',
+                      { active: activeTab === '4' },
+                      darkMode
+                        ? activeTab === '1'
+                          ? 'bg-space-cadet text-light'
+                          : 'text-azure'
+                        : 'text-azure',
                     )}
                     onClick={() => toggleTab('4')}
                     id="nabLink-projects"
@@ -1676,19 +1703,19 @@ setUpdatedTasks(prev => {
                 </NavItem>
                 <NavItem>
                   <NavLink
+                    data-test-id="edit-history-tab"
                     className={classnames(
-                      { active: activeTab === '5' },
                       'nav-link',
-                      darkMode && activeTab === '5' ? 'bg-space-cadet' : 'text-azure',
-                      darkMode ? 'text-light' : '',
+                      { active: activeTab === '5' },
+                      darkMode
+                        ? activeTab === '1'
+                          ? 'bg-space-cadet text-light'
+                          : 'text-azure'
+                        : 'text-azure',
                     )}
-                    onClick={e => {
-                      e.preventDefault();
-                      toggleTab('5');
-                    }}
-                    data-testid="edit-history-tab"
+                    onClick={() => toggleTab('5')}
                   >
-                    Edit History
+                      Edit History
                   </NavLink>
                 </NavItem>
               </Nav>
@@ -1713,6 +1740,7 @@ setUpdatedTasks(prev => {
                   canEditRole={canEditUserProfile}
                   roles={roles}
                   darkMode={darkMode}
+                  hasFinalDay={hasScheduledFinalDay}
                 />
               </TabPane>
               <TabPane tabId="2">
@@ -1743,7 +1771,9 @@ setUpdatedTasks(prev => {
                   isVisible={userProfile.isVisible}
                   canEditVisibility={canEditVisibility}
                   handleSubmit={handleSubmit}
-                  disabled={!formValid.firstName || !formValid.lastName || !formValid.email || !codeValid}
+                  disabled={
+                    !formValid.firstName || !formValid.lastName || !formValid.email || !codeValid
+                  }
                   canEditTeamCode={canEditTeamCode}
                   setUserProfile={setUserProfile}
                   userProfile={userProfile}
@@ -1782,7 +1812,6 @@ setUpdatedTasks(prev => {
                     />
                   )
                 }
-
               </TabPane>
               <TabPane tabId="5">
                 <TimeEntryEditHistory
@@ -2384,6 +2413,30 @@ setUpdatedTasks(prev => {
   );
 }
 
+UserProfile.propTypes = {
+  auth: PropTypes.shape({
+    user: PropTypes.shape({
+      permissions: PropTypes.object,
+      role: PropTypes.string,
+      userid: PropTypes.string,
+    }).isRequired,
+  }).isRequired,
+  handleLinkModel: PropTypes.func,
+  handleSaveError: PropTypes.func,
+  hasPermission: PropTypes.func,
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }),
+  isAddNewUser: PropTypes.bool,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      userId: PropTypes.string,
+    }),
+  }),
+  refreshToken: PropTypes.func,
+  updateUserProfile: PropTypes.func.isRequired,
+};
+
  const mapStateToProps = state => ({
    allProjects: state.allProjects || state.projects || {},   // <- gives you .projects array
    allTeams: state.allTeams || {},
@@ -2393,6 +2446,5 @@ setUpdatedTasks(prev => {
 
 export default connect(
   mapStateToProps,
-  { hasPermission, updateUserStatus, updateUserProfile, getTimeEntriesForWeek }
+  { hasPermission, updateUserProfile, getTimeEntriesForWeek }
 )(UserProfile);
-

@@ -17,6 +17,7 @@ const IntermediateTaskList = () => {
   const dispatch = useDispatch();
   const authUser = useSelector(state => state.auth.user);
   const { taskItems: parentTasks } = useSelector(state => state.studentTasks);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const [expandedTasks, setExpandedTasks] = useState({});
   const [intermediateTasks, setIntermediateTasks] = useState({});
