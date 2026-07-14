@@ -35,10 +35,6 @@
   font-weight: 500;
 }
 
-.errorContainer button:hover {
-  background: #0d7bb8;
-}
-
 .mockDataNotice {
   background: #fff3cd;
   border: 1px solid #ffc107;
@@ -58,18 +54,16 @@
 .ringCard,
 .progressPanel,
 .attendancePanel {
-  background: #ffffff;
+  background: #fff;
   border-radius: 24px;
   padding: 28px;
-  box-shadow: 0 25px 60px rgba(15, 23, 42, 0.1);
+  box-shadow: 0 25px 60px rgb(15 23 42 / 10%);
 }
 
-.darkMode .summaryCard,
-.darkMode .ringCard,
-.darkMode .progressPanel,
-.darkMode .attendancePanel {
-  background: #15213b;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+.attendancePanel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .summaryCard {
@@ -78,6 +72,14 @@
   gap: 32px;
   position: relative;
   overflow: hidden;
+}
+
+.darkMode .summaryCard,
+.darkMode .ringCard,
+.darkMode .progressPanel,
+.darkMode .attendancePanel {
+  background: #15213b;
+  box-shadow: 0 20px 50px rgb(0 0 0 / 45%);
 }
 
 .heroLeft {
@@ -130,7 +132,7 @@
   border: none;
   border-radius: 14px;
   background: linear-gradient(135deg, #fefefe, #e6ecff);
-  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.35);
+  box-shadow: inset 0 0 0 1px rgb(148 163 184 / 35%);
   font-weight: 600;
   cursor: pointer;
   color: #0f172a;
@@ -218,10 +220,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.calendarShell header p {
-  font-weight: 600;
 }
 
 .calendarShell button {
@@ -323,6 +321,10 @@
   font-size: 1.2rem;
 }
 
+.errorContainer button:hover {
+  background: #0d7bb8;
+}
+
 .ringWrapper {
   display: flex;
   justify-content: center;
@@ -336,7 +338,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: conic-gradient(#0ea5e9 72%, #dbeafe 0);
+  background: conic-gradient(
+    var(--ring-color, #0ea5e9) var(--ring-deg, 72deg),
+    var(--ring-bg, #dbeafe) 0
+  );
   position: relative;
   font-size: 1.6rem;
   font-weight: 700;
@@ -380,6 +385,10 @@
 
 .legendItem p {
   margin: 0;
+}
+
+.calendarShell header p {
+  font-weight: 600;
 }
 
 .progressPanel header {
@@ -432,6 +441,22 @@
   text-align: center;
 }
 
+.segmentWidth87 {
+  width: 87%;
+}
+
+.segmentWidth3 {
+  width: 3%;
+}
+
+.segmentWidth18 {
+  width: 18%;
+}
+
+.segmentWidth8 {
+  width: 8%;
+}
+
 .leadsBreakdown {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -442,12 +467,6 @@
 
 .leadsBreakdown span {
   display: block;
-}
-
-.attendancePanel {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
 }
 
 .panelHeader {
@@ -537,18 +556,18 @@ td {
 .placeholder {
   padding: 48px;
   border-radius: 24px;
-  background: rgba(15, 23, 42, 0.05);
+  background: rgb(15 23 42 / 5%);
   text-align: center;
   font-size: 1.1rem;
 }
 
-@media (max-width: 1100px) {
+@media (width <= 1100px) {
   .summaryCard {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .page {
     padding: 20px;
   }
@@ -587,4 +606,3 @@ td {
 .panelHeader h2 {
   margin-bottom: 4px;
 }
-

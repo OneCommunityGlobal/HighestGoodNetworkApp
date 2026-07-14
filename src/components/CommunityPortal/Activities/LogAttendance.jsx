@@ -391,18 +391,10 @@ function LogAttendance() {
               <div className={styles.stayPill}>stay for 2.5-3 h</div>
             </header>
             <div className={styles.progressBar}>
-              <div className={styles.segmentBlue} style={{ width: '87%' }}>
-                87% Stayed
-              </div>
-              <div className={styles.segmentAmber} style={{ width: '3%' }}>
-                3% Late
-              </div>
-              <div className={styles.segmentPink} style={{ width: '18%' }}>
-                18% Early exit
-              </div>
-              <div className={styles.segmentPurple} style={{ width: '8%' }}>
-                8% Unknown
-              </div>
+              <div className={`${styles.segmentBlue} ${styles.segmentWidth87}`}>87% Stayed</div>
+              <div className={`${styles.segmentAmber} ${styles.segmentWidth3}`}>3% Late</div>
+              <div className={`${styles.segmentPink} ${styles.segmentWidth18}`}>18% Early exit</div>
+              <div className={`${styles.segmentPurple} ${styles.segmentWidth8}`}>8% Unknown</div>
             </div>
             <footer className={styles.leadsBreakdown}>
               <div>
@@ -579,7 +571,9 @@ function RingCard({ config }) {
         <div
           className={styles.ring}
           style={{
-            background: `conic-gradient(${colors[0]} ${value * 3.6}deg, ${colors[1]} 0)`,
+            '--ring-color': colors[0],
+            '--ring-deg': `${value * 3.6}deg`,
+            '--ring-bg': colors[1],
           }}
         >
           <span>{value}%</span>

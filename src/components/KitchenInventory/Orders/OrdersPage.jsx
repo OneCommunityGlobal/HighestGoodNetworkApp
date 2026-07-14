@@ -1,22 +1,72 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  Input,
-  Label,
-  FormGroup,
-} from 'reactstrap';
+import { createPortal } from 'react-dom';
 import { toast } from 'react-toastify';
 import { FiChevronLeft, FiChevronRight, FiSearch, FiPlus } from 'react-icons/fi';
-import { boxStyle, boxStyleDark } from '~/styles';
 import { fetchOrders, createOrder, updateOrderStatus, fetchSuppliers } from './mockOrdersData';
 import styles from './OrdersPage.module.css';
 
 const ORDERS_PER_PAGE = 5;
+
+function Modal({ isOpen, toggle, size, className, children }) {
+  const overlayRef = useRef(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleEscape = e => {
+      if (e.key === 'Escape') toggle();
+    };
+    document.addEventListener('keydown', handleEscape);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = '';
+    };
+  }, [isOpen, toggle]);
+
+  if (!isOpen) return null;
+
+  const handleOverlayClick = e => {
+    if (e.target === overlayRef.current) toggle();
+  };
+
+  const sizeClass = size === 'lg' ? styles.modalLg : '';
+
+  return createPortal(
+    <div
+      className={styles.modalOverlay}
+      ref={overlayRef}
+      onClick={handleOverlayClick}
+      onKeyDown={e => {
+        if (e.key === 'Enter' || e.key === ' ') handleOverlayClick(e);
+      }}
+      role="button"
+      tabIndex={0}
+    >
+      <div className={`${styles.modalContent} ${sizeClass} ${className || ''}`}>{children}</div>
+    </div>,
+    document.body,
+  );
+}
+
+function ModalHeader({ toggle, children }) {
+  return (
+    <div className={styles.modalHeader}>
+      <h3 className={styles.modalTitle}>{children}</h3>
+      <button type="button" className={styles.modalClose} onClick={toggle}>
+        &times;
+      </button>
+    </div>
+  );
+}
+
+function ModalBody({ children }) {
+  return <div className={styles.modalBody}>{children}</div>;
+}
+
+function ModalFooter({ children }) {
+  return <div className={styles.modalFooter}>{children}</div>;
+}
 
 const StatusBadge = ({ status }) => {
   const cls =
@@ -38,7 +88,7 @@ const StatCard = ({ label, value, bgColor, icon }) => (
       <p className={styles.statLabel}>{label}</p>
       <p className={styles.statValue}>{value}</p>
     </div>
-    <div className={styles.statIcon} style={{ backgroundColor: bgColor }}>
+    <div className={styles.statIcon} style={{ '--stat-bg': bgColor }}>
       {icon}
     </div>
   </div>
@@ -165,30 +215,17 @@ const OrderCard = ({ order, onStatusChange, darkMode }) => {
       <Modal
         isOpen={confirmOpen}
         toggle={() => setConfirmOpen(false)}
-        className={darkMode ? 'text-light dark-mode' : ''}
+        className={darkMode ? styles.modalDark : ''}
       >
-        <ModalHeader
-          toggle={() => setConfirmOpen(false)}
-          className={darkMode ? 'bg-space-cadet' : ''}
-        >
-          Confirm Status Change
-        </ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{confirmMessage}</ModalBody>
-        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <Button
-            color="secondary"
-            onClick={() => setConfirmOpen(false)}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
+        <ModalHeader toggle={() => setConfirmOpen(false)}>Confirm Status Change</ModalHeader>
+        <ModalBody>{confirmMessage}</ModalBody>
+        <ModalFooter>
+          <button className={styles.btnModalSecondary} onClick={() => setConfirmOpen(false)}>
             Cancel
-          </Button>
-          <Button
-            color="primary"
-            onClick={handleConfirm}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
+          </button>
+          <button className={styles.btnModalPrimary} onClick={handleConfirm}>
             {confirmLabel}
-          </Button>
+          </button>
         </ModalFooter>
       </Modal>
 
@@ -196,15 +233,12 @@ const OrderCard = ({ order, onStatusChange, darkMode }) => {
         isOpen={detailsOpen}
         toggle={() => setDetailsOpen(false)}
         size="lg"
-        className={darkMode ? 'text-light dark-mode' : ''}
+        className={darkMode ? styles.modalDark : ''}
       >
-        <ModalHeader
-          toggle={() => setDetailsOpen(false)}
-          className={darkMode ? 'bg-space-cadet' : ''}
-        >
+        <ModalHeader toggle={() => setDetailsOpen(false)}>
           Order Details — {order.orderNumber}
         </ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <ModalBody>
           <div className={styles.detailSection}>
             <p className={styles.detailLabel}>Status</p>
             <StatusBadge status={order.status} />
@@ -275,14 +309,10 @@ const OrderCard = ({ order, onStatusChange, darkMode }) => {
             </div>
           )}
         </ModalBody>
-        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <Button
-            color="secondary"
-            onClick={() => setDetailsOpen(false)}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
+        <ModalFooter>
+          <button className={styles.btnModalSecondary} onClick={() => setDetailsOpen(false)}>
             Close
-          </Button>
+          </button>
         </ModalFooter>
       </Modal>
     </>
@@ -372,21 +402,16 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      toggle={onClose}
-      size="lg"
-      className={darkMode ? 'text-light dark-mode' : ''}
-    >
-      <ModalHeader toggle={onClose} className={darkMode ? 'bg-space-cadet' : ''}>
-        New Purchase Order
-      </ModalHeader>
-      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-        <FormGroup>
-          <Label for="supplier">Supplier *</Label>
-          <Input
-            type="select"
+    <Modal isOpen={isOpen} toggle={onClose} size="lg" className={darkMode ? styles.modalDark : ''}>
+      <ModalHeader toggle={onClose}>New Purchase Order</ModalHeader>
+      <ModalBody>
+        <div className={styles.formGroup}>
+          <label className={styles.label} htmlFor="supplier">
+            Supplier <span className={styles.required}>*</span>
+          </label>
+          <select
             id="supplier"
+            className={styles.select}
             value={supplierId}
             onChange={e => setSupplierId(e.target.value)}
           >
@@ -396,34 +421,42 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
                 {s.name} ({s.category})
               </option>
             ))}
-          </Input>
-        </FormGroup>
+          </select>
+        </div>
 
         <div className={styles.formRow}>
-          <FormGroup className={styles.formGroup}>
-            <Label for="orderDate">Order Date *</Label>
-            <Input
-              type="date"
+          <div className={styles.formGroup}>
+            <label className={styles.label} htmlFor="orderDate">
+              Order Date <span className={styles.required}>*</span>
+            </label>
+            <input
               id="orderDate"
+              type="date"
+              className={styles.input}
               value={orderDate}
               min={today}
               onChange={e => handleOrderDateChange(e.target.value)}
             />
-          </FormGroup>
-          <FormGroup className={styles.formGroup}>
-            <Label for="deliveryDate">Expected Delivery *</Label>
-            <Input
-              type="date"
+          </div>
+          <div className={styles.formGroup}>
+            <label className={styles.label} htmlFor="deliveryDate">
+              Expected Delivery <span className={styles.required}>*</span>
+            </label>
+            <input
               id="deliveryDate"
+              type="date"
+              className={styles.input}
               value={deliveryDate}
               min={orderDate || today}
               disabled={!orderDate}
               onChange={e => setDeliveryDate(e.target.value)}
             />
-          </FormGroup>
+          </div>
         </div>
 
-        <Label>Order Items *</Label>
+        <p className={styles.label}>
+          Order Items <span className={styles.required}>*</span>
+        </p>
         <div className={styles.itemsFormHeader}>
           <span className={styles.itemFormColName}>Item Name</span>
           <span className={styles.itemFormColSm}>Qty</span>
@@ -433,14 +466,14 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
         </div>
         {items.map((item, idx) => (
           <div key={idx} className={styles.itemFormRow}>
-            <Input
-              className={styles.itemFormColName}
+            <input
+              className={`${styles.input} ${styles.itemFormColName}`}
               placeholder="Item name"
               value={item.name}
               onChange={e => handleItemChange(idx, 'name', e.target.value)}
             />
-            <Input
-              className={styles.itemFormColSm}
+            <input
+              className={`${styles.input} ${styles.itemFormColSm}`}
               type="number"
               min="0"
               step="1"
@@ -448,9 +481,8 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
               value={item.quantity}
               onChange={e => handleItemChange(idx, 'quantity', e.target.value)}
             />
-            <Input
-              className={styles.itemFormColSm}
-              type="select"
+            <select
+              className={`${styles.select} ${styles.itemFormColSm}`}
               value={item.unit}
               onChange={e => handleItemChange(idx, 'unit', e.target.value)}
             >
@@ -462,9 +494,9 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
               <option value="gallons">gallons</option>
               <option value="containers">containers</option>
               <option value="pcs">pcs</option>
-            </Input>
-            <Input
-              className={styles.itemFormColSm}
+            </select>
+            <input
+              className={`${styles.input} ${styles.itemFormColSm}`}
               type="number"
               min="0"
               step="0.01"
@@ -486,25 +518,27 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
           + Add Item
         </button>
 
-        <FormGroup className={styles.formGroup}>
-          <Label for="notes">Notes</Label>
-          <Input
-            type="textarea"
+        <div className={styles.formGroup}>
+          <label className={styles.label} htmlFor="notes">
+            Notes
+          </label>
+          <textarea
             id="notes"
+            className={styles.textarea}
             rows="2"
             placeholder="Optional notes…"
             value={notes}
             onChange={e => setNotes(e.target.value)}
           />
-        </FormGroup>
+        </div>
       </ModalBody>
-      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-        <Button color="secondary" onClick={onClose} style={darkMode ? boxStyleDark : boxStyle}>
+      <ModalFooter>
+        <button className={styles.btnModalSecondary} onClick={onClose}>
           Cancel
-        </Button>
-        <Button color="primary" onClick={handleSubmit} style={darkMode ? boxStyleDark : boxStyle}>
+        </button>
+        <button className={styles.btnModalPrimary} onClick={handleSubmit}>
           Create Order
-        </Button>
+        </button>
       </ModalFooter>
     </Modal>
   );
