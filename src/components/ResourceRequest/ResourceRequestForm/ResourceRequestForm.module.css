@@ -14,9 +14,9 @@
 
 /* Form Wrapper */
 .formWrapper {
-  background: #ffffff;
+  background: #fff;
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 8%);
   padding: 3rem;
   max-width: 700px;
   margin: 0 auto;
@@ -40,7 +40,7 @@
 .formHeader h1 {
   font-size: 2rem;
   color: #212529;
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 0.75rem;
   font-weight: 700;
   letter-spacing: -0.5px;
 }
@@ -98,8 +98,14 @@
   font-size: 0.95rem;
   font-family: inherit;
   color: #495057;
-  background: #ffffff;
+  background: #fff;
   transition: all 0.2s ease;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 140px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .dark .input,
@@ -116,26 +122,26 @@
   border-color: #007bff;
 }
 
+.input:focus,
+.textarea:focus,
+.select:focus {
+  outline: none;
+  border-color: #0056b3;
+  box-shadow: 0 0 0 3px rgb(0 123 255 / 25%);
+  background: #fff;
+}
+
 .dark .input:hover,
 .dark .textarea:hover,
 .dark .select:hover {
   border-color: #7dd3fc;
 }
 
-.input:focus,
-.textarea:focus,
-.select:focus {
-  outline: none;
-  border-color: #0056b3;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
-  background: #ffffff;
-}
-
 .dark .input:focus,
 .dark .textarea:focus,
 .dark .select:focus {
   border-color: #7dd3fc;
-  box-shadow: 0 0 0 3px rgba(125, 211, 252, 0.25);
+  box-shadow: 0 0 0 3px rgb(125 211 252 / 25%);
   background: #334155;
 }
 
@@ -147,12 +153,6 @@
 .dark .input::placeholder,
 .dark .textarea::placeholder {
   color: #cbd5e1;
-}
-
-.textarea {
-  resize: vertical;
-  min-height: 140px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
 }
 
 .help {
@@ -195,17 +195,12 @@
 
 .submitButton {
   background: linear-gradient(135deg, #0050a0 0%, #003d7a 100%);
-  color: #ffffff;
-  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+  color: #fff;
+  box-shadow: 0 4px 8px rgb(0 123 255 / 20%);
 }
 
 .dark .submitButton {
   background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-}
-
-.submitButton:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 123, 255, 0.3);
 }
 
 .submitButton:disabled {
@@ -213,11 +208,16 @@
   cursor: not-allowed;
 }
 
+.submitButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgb(0 123 255 / 30%);
+}
+
 .cancelButton {
-  background: #ffffff;
+  background: #fff;
   color: #0056b3;
   border: 2px solid #0056b3;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 5%);
 }
 
 .dark .cancelButton {
@@ -226,21 +226,21 @@
   border-color: #7dd3fc;
 }
 
+.cancelButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .cancelButton:hover:not(:disabled) {
   background: #0050a0;
-  color: #ffffff;
+  color: #fff;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+  box-shadow: 0 4px 8px rgb(0 123 255 / 20%);
 }
 
 .dark .cancelButton:hover:not(:disabled) {
   background: #7dd3fc;
   color: #0f172a;
-}
-
-.cancelButton:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }
 
 /* Alerts */
@@ -275,7 +275,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .formWrapper {
     padding: 2rem;
   }
@@ -299,7 +299,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .page {
     padding: 1rem;
   }
