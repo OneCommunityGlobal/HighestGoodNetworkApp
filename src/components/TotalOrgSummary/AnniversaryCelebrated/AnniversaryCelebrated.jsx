@@ -129,6 +129,25 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
     WebkitTextFillColor: darkMode ? '#f8fafc' : '#111827',
   };
 
+  const renderAnniversariesList = () => {
+    if (usersFilteredSixMonthsData.length === 0 && usersFilteredOneYearData.length === 0) {
+      return (
+        <li
+          className="text-center"
+          style={{ color: darkMode ? '#fff' : '#000', listStyle: 'none' }}
+        >
+          No anniversaries found
+        </li>
+      );
+    }
+    return (
+      <>
+        {usersFilteredSixMonthsData}
+        {usersFilteredOneYearData}
+      </>
+    );
+  };
+
   return (
     <div className="mt-3">
       <style>
@@ -200,16 +219,7 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
 
       {/* List of anniversaries */}
       <ul className="w-90 overflow-auto" style={{ maxHeight: '410px' }}>
-        {usersFilteredSixMonthsData.length === 0 && usersFilteredOneYearData.length === 0 ? (
-          <p className="text-center" style={{ color: darkMode ? '#fff' : '#000' }}>
-            No anniversaries found
-          </p>
-        ) : (
-          <>
-            {usersFilteredSixMonthsData}
-            {usersFilteredOneYearData}
-          </>
-        )}
+        {renderAnniversariesList()}
       </ul>
     </div>
   );
