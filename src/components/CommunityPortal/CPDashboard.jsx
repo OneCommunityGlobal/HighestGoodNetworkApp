@@ -61,27 +61,29 @@ const formatDate = dateStr => {
   });
 };
 
-const isTomorrow = dateString => {
-  const input = new Date(dateString);
+const startOfToday = () => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1);
-  return input >= tomorrow && input < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
+  return today;
+};
+
+const isTomorrow = dateString => {
+  const tomorrow = startOfToday();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const dayAfterTomorrow = new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
+  const input = new Date(dateString);
+  return input >= tomorrow && input < dayAfterTomorrow;
 };
 
 const isComingWeekend = dateString => {
+  // Start of the upcoming Saturday (never today, even if today is a weekend).
+  const saturday = startOfToday();
+  saturday.setDate(saturday.getDate() + ((6 - saturday.getDay() + 7) % 7 || 7));
+  // Exclusive upper bound: start of the following Monday.
+  const monday = new Date(saturday);
+  monday.setDate(saturday.getDate() + 2);
   const input = new Date(dateString);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const day = today.getDay();
-  const daysUntilSaturday = (6 - day + 7) % 7 || 7;
-  const saturday = new Date(today);
-  saturday.setDate(today.getDate() + daysUntilSaturday);
-  const sunday = new Date(saturday);
-  sunday.setDate(saturday.getDate() + 1);
-  sunday.setHours(23, 59, 59, 999);
-  return input >= saturday && input <= sunday;
+  return input >= saturday && input < monday;
 };
 
 const isPastEvent = (event, now) => {
@@ -161,17 +163,11 @@ export function CPDashboard() {
     fetchEvents();
   }, []);
 
-  // Apply dark mode to the page body so the area behind the dashboard isn't white
+  // Darken the page body in dark mode (app-wide pattern) so the area
+  // behind the dashboard isn't left white.
   useEffect(() => {
-    if (darkMode) {
-      document.body.classList.add('dark-mode-body');
-    } else {
-      document.body.classList.remove('dark-mode-body');
-    }
-
-    return () => {
-      document.body.classList.remove('dark-mode-body');
-    };
+    document.body.classList.toggle('dark-mode-body', darkMode);
+    return () => document.body.classList.remove('dark-mode-body');
   }, [darkMode]);
 
   useEffect(() => {
