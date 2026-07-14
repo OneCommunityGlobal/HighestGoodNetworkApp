@@ -430,7 +430,7 @@ function LogAttendance() {
               </div>
               <div className={styles.controls}>
                 <label htmlFor="status-filter">
-                  Status Filter
+                  {'Status Filter '}
                   <select
                     id="status-filter"
                     value={statusFilter}

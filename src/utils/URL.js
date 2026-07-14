@@ -576,8 +576,6 @@ export const ENDPOINTS = {
   ATTENDANCE_MOCK: eventId => `${APIEndpoint}/attendance/event/${eventId}/mock`,
   EVENTS_BY_ID: (activityId) => `${APIEndpoint}/events/${activityId}`,
   REGISTER_FOR_EVENT: (activityId) => `${APIEndpoint}/events/${activityId}/register`,
-  EVENT_TYPES: `${APIEndpoint}/events/types`,
-  EVENT_LOCATIONS: `${APIEndpoint}/events/locations`,
   EVENT_ATTENDANCE_STATS: `${APIEndpoint}/events/attendance/stats`,
   LB_SEND_MESSAGE: `${APIEndpoint}/lb/messages`,
   LB_READ_MESSAGE: `${APIEndpoint}/lb/messages/conversation`,
