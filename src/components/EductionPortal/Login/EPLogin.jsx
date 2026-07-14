@@ -39,9 +39,7 @@ function EPLogin(props) {
 
   // Note: email input type="text" to validate with Joi
   const schema = Joi.object({
-    email: Joi.string()
-      .email()
-      .required(),
+    email: Joi.string().email().required(),
     password: Joi.string().min(8),
   });
 
@@ -58,7 +56,7 @@ function EPLogin(props) {
   };
 
   // submit login
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // client side error validation
     // Note: Joi by default stops validation on first error
@@ -84,7 +82,7 @@ function EPLogin(props) {
         message: '',
       });
     }
-    // initiate push to BM Dashboard if validated (ie received token)
+    // initiate push to EP if validated (ie received token)
     sessionStorage.removeItem('gePortalLoggedOut');
     return setHasAccess(!!res.data.token);
   };
@@ -132,7 +130,7 @@ function EPLogin(props) {
   );
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   auth: state.auth,
 });
 

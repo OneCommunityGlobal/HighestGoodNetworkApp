@@ -7,7 +7,6 @@ import { toast } from 'react-toastify';
 import {
   Button,
   Card,
-  NavbarToggler,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
@@ -17,6 +16,7 @@ import {
   ModalHeader,
   Nav,
   Navbar,
+  NavbarToggler,
   NavItem,
   NavLink,
   UncontrolledDropdown
@@ -57,6 +57,7 @@ import {
   VIEW_PROFILE,
   WEEKLY_SUMMARIES_REPORT,
   WELCOME,
+  BM_DASHBOARD
 } from '../../languages/en/ui';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import PermissionWatcher from '../Auth/PermissionWatcher';
@@ -110,7 +111,8 @@ export function Header(props) {
     props.hasPermission('deleteUserProfile', !isAuthUser ) ||
     props.hasPermission('changeUserStatus', !isAuthUser ) ||
     props.hasPermission('getUserProfiles', !isAuthUser ) ||
-    props.hasPermission('setFinalDay', !isAuthUser);
+    props.hasPermission('setFinalDay', !isAuthUser) ||
+    props.hasPermission('interactWithPauseUserButton', !isAuthUser);
 
   // Badges
   const canAccessBadgeManagement =
@@ -153,7 +155,7 @@ export function Header(props) {
     props.hasPermission('putRole', !isAuthUser ) ||
     props.hasPermission('deleteRole', !isAuthUser ) ||
     props.hasPermission('putUserProfilePermissions', !isAuthUser);
-  
+
   // Blue Square Email Management
   const canAccessBlueSquareEmailManagement = props.hasPermission('resendBlueSquareAndSummaryEmails', !isAuthUser);
   // PR Dashboard
@@ -206,7 +208,7 @@ export function Header(props) {
       const currentWidth = window.innerWidth;
       // eslint-disable-next-line no-console
       console.log(`[Header Debug] Window resized to: ${currentWidth}px`);
-      
+
       // Log breakpoint information for debugging
       if (currentWidth >= 1728) {
         // eslint-disable-next-line no-console
@@ -406,12 +408,15 @@ export function Header(props) {
   if (location.pathname === '/login') return null;
 
   const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
+
+  const showBMDashboard = location.pathname.startsWith('/bmdashboard');
+
   return (
     <div className={`${styles.headerWrapper}`} data-testid="header">
       <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         {showPromotionsPopup && <DisplayBox onClose={() => setShowPromotionsPopup(false)} />}
-  
+
         <div className={styles.headerRow}>
             <div className={styles.leftSection}>
               {isAuthenticated && <Timer darkMode={darkMode} />}
@@ -424,7 +429,7 @@ export function Header(props) {
             <NavbarToggler onClick={toggle} ref={toggleRef} className={styles.navbarToggler} />
             <div
               ref={collapseRef}
-              className={`${styles.navCollapse} ${isOpen ? styles.navCollapseOpen : styles.navCollapseHidden}`}
+              className={`${styles.navCollapse} ${isOpen ? styles.navCollapseOpen : ''}`}
               role="menu"
               tabIndex={-1}
               onKeyDown={(e) => {
@@ -442,7 +447,7 @@ export function Header(props) {
                     />
                   </NavLink>
                 </NavItem>
-  
+
                 <UncontrolledDropdown nav inNavbar className={styles.showInMobile}>
                   <DropdownToggle nav caret>
                     <span>
@@ -454,7 +459,7 @@ export function Header(props) {
                       darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
                     }`}
                   >
-                      
+
                     <DropdownItem
                       tag={Link}
                       to={`/userprofile/${displayUserId}`}
@@ -462,7 +467,7 @@ export function Header(props) {
                     >
                       {VIEW_PROFILE}
                     </DropdownItem>
-  
+
                     {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
                       <DropdownItem
                         tag={Link}
@@ -472,17 +477,17 @@ export function Header(props) {
                         {UPDATE_PASSWORD}
                       </DropdownItem>
                     )}
-  
+
                     <DropdownItem className={fontColor}>
                       <DarkModeButton />
                     </DropdownItem>
-  
+
                     <DropdownItem onClick={openModal} className={fontColor}>
                       {LOGOUT}
                     </DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
-  
+
                 {canUpdateTask && (
                   <NavItem>
                     <NavLink tag={Link} to="/taskeditsuggestions" disabled={headerDisabled}>
@@ -495,19 +500,26 @@ export function Header(props) {
                     </NavLink>
                   </NavItem>
                 )}
-  
+
                 <NavItem>
                   <NavLink tag={Link} to="/dashboard" disabled={headerDisabled}>
                     <span>{DASHBOARD}</span>
                   </NavLink>
                 </NavItem>
+
+                {showBMDashboard && (<NavItem>
+                  <NavLink tag={Link} to="/bmdashboard" disabled={headerDisabled}>
+                    <span>{BM_DASHBOARD}</span>
+                  </NavLink>
+                </NavItem>
+                )}
   
                 <NavItem>
                   <NavLink tag={Link} to="/timelog#currentWeek" disabled={headerDisabled}>
                     <span>{TIMELOG}</span>
                   </NavLink>
                 </NavItem>
-  
+
                 {showProjectDropdown && (
                   <UncontrolledDropdown nav inNavbar>
                     <DropdownToggle nav caret disabled={headerDisabled}>
@@ -519,6 +531,9 @@ export function Header(props) {
                       }`}
                       disabled={headerDisabled}
                     >
+                      <DropdownItem tag={Link} to="/bmdashboard/inventorytypes" className={fontColor}>
+                        All Inventory Types
+                      </DropdownItem>
                       <DropdownItem tag={Link} to="/bmdashboard/materials/add" className={fontColor}>
                         Add Material
                       </DropdownItem>
@@ -544,7 +559,15 @@ export function Header(props) {
                         className={fontColor}
                         disabled={headerDisabled}
                       >
-                        Add Equipment/Tool
+                        Add Equipment
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/tools/add"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        Add Tool
                       </DropdownItem>
                       <DropdownItem
                         tag={Link}
@@ -570,12 +593,7 @@ export function Header(props) {
                       >
                         Equipment/Tool List
                       </DropdownItem>
-                      <DropdownItem
-                        tag={Link}
-                        to="/bmdashboard/Issue"
-                        className={fontColor}
-                        disabled={headerDisabled}
-                      >
+                      <DropdownItem tag={Link} to="/bmdashboard/issues" className={fontColor}  disabled={headerDisabled}>
                         Issue
                       </DropdownItem>
                       <DropdownItem
@@ -592,7 +610,7 @@ export function Header(props) {
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
-  
+
                 {canGetReports || canGetWeeklySummaries || canGetWeeklyVolunteerSummary ? (
                   <UncontrolledDropdown nav inNavbar>
                     <DropdownToggle nav caret>
@@ -688,7 +706,7 @@ export function Header(props) {
                     </NavLink>
                   </NavItem>
                 )}
-  
+
                 {(canAccessUserManagement ||
                   canAccessBadgeManagement ||
                   canAccessProjects ||
@@ -804,7 +822,7 @@ export function Header(props) {
                       <DropdownItem divider />
                       <DropdownItem
                         tag={Link}
-                        to="/pr-dashboard/analytics"
+                        to="/pr-dashboard/overview"
                         className={fontColor}
                         disabled={headerDisabled}
                       >
@@ -849,9 +867,9 @@ export function Header(props) {
                 <NavItem className={styles.hideInMobile}>
                   <BellNotification userId={displayUserId} />
                 </NavItem>
-  
-                
-  
+
+
+
                 <NavItem className={styles.hideInMobile}>
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                     <div
@@ -895,7 +913,7 @@ export function Header(props) {
                     >
                       {VIEW_PROFILE}
                     </DropdownItem>
-  
+
                     {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
                       <DropdownItem
                         tag={Link}
@@ -975,7 +993,7 @@ export function Header(props) {
       )}
       <div className={darkMode ? styles.headerMargin : styles.headerMarginLight} />
     </div>
-  );  
+  );
 }
 
 const mapStateToProps = state => ({
@@ -1015,4 +1033,3 @@ export default connect(mapStateToProps, {
   getWeeklySummaries,
   getUserProfile,
 })(Header);
-

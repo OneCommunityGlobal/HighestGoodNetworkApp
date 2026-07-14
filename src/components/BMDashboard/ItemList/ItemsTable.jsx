@@ -1,9 +1,20 @@
-import { useEffect, useState } from 'react';
-import { Table, Button } from 'reactstrap';
+import { useState } from 'react';
+import PropTypes from 'prop-types';
+import { Table, Button, Badge } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import RecordsModal from './RecordsModal';
+import styles from './ItemListView.module.css';
+
+const rowsPerPageOptions = [25, 50, 100];
+
+function generatePageNumbers(current, total) {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  if (current <= 3) return [1, 2, 3, 4, 5, '...', total];
+  if (current >= total - 2) return [1, '...', total - 4, total - 3, total - 2, total - 1, total];
+  return [1, '...', current - 1, current, current + 1, '...', total];
+}
 
 export default function ItemsTable({
   selectedProject,
@@ -13,30 +24,22 @@ export default function ItemsTable({
   dynamicColumns,
   darkMode = false,
   itemType,
+  sortConfig,
+  onSort,
+  totalItems,
+  currentPage,
+  totalPages,
+  rowsPerPage,
+  startRow,
+  endRow,
+  onPageChange,
+  onRowsPerPageChange,
 }) {
-  const [sortedData, setData] = useState(filteredItems);
   const [modal, setModal] = useState(false);
   const [record, setRecord] = useState(null);
   const [recordType, setRecordType] = useState('');
   const [updateModal, setUpdateModal] = useState(false);
   const [updateRecord, setUpdateRecord] = useState(null);
-  const [projectNameCol, setProjectNameCol] = useState({
-    iconsToDisplay: faSort,
-    sortOrder: 'default',
-  });
-  const [inventoryItemTypeCol, setInventoryItemTypeCol] = useState({
-    iconsToDisplay: faSort,
-    sortOrder: 'default',
-  });
-
-  useEffect(() => {
-    setData(filteredItems);
-  }, [filteredItems]);
-
-  useEffect(() => {
-    setInventoryItemTypeCol({ iconsToDisplay: faSort, sortOrder: 'default' });
-    setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
-  }, [selectedProject, selectedItem]);
 
   const handleEditRecordsClick = (selectedEl, type) => {
     if (type === 'Update') {
@@ -51,41 +54,33 @@ export default function ItemsTable({
     setRecordType(type);
   };
 
-  const sortData = columnName => {
-    const newSortedData = [...sortedData];
+  const getNestedValue = (obj, path) =>
+    path ? path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj) : null;
 
-    if (columnName === 'ProjectName') {
-      if (projectNameCol.sortOrder === 'default' || projectNameCol.sortOrder === 'desc') {
-        newSortedData.sort((a, b) => (a.project?.name || '').localeCompare(b.project?.name || ''));
-        setProjectNameCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
-      } else if (projectNameCol.sortOrder === 'asc') {
-        newSortedData.sort((a, b) => (b.project?.name || '').localeCompare(a.project?.name || ''));
-        setProjectNameCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
-      }
-      setInventoryItemTypeCol({ iconsToDisplay: faSort, sortOrder: 'default' });
-    } else if (columnName === 'InventoryItemType') {
-      if (
-        inventoryItemTypeCol.sortOrder === 'default' ||
-        inventoryItemTypeCol.sortOrder === 'desc'
-      ) {
-        newSortedData.sort((a, b) =>
-          (a.itemType?.name || '').localeCompare(b.itemType?.name || ''),
-        );
-        setInventoryItemTypeCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
-      } else if (inventoryItemTypeCol.sortOrder === 'asc') {
-        newSortedData.sort((a, b) =>
-          (b.itemType?.name || '').localeCompare(a.itemType?.name || ''),
-        );
-        setInventoryItemTypeCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
-      }
-      setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
-    }
-
-    setData(newSortedData);
+  const getIconFor = key => {
+    if (!sortConfig?.key || sortConfig.key !== key) return faSort;
+    return sortConfig.direction === 'asc' ? faSortUp : faSortDown;
   };
 
-  const getNestedValue = (obj, path) =>
-    path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
+  const dynamicSortKeyByLabel = {
+    Bought: 'bought',
+    Used: 'used',
+    Available: 'available',
+    Wasted: 'wasted',
+    Hold: 'hold',
+  };
+
+  const numericKeys = new Set(['stockBought', 'stockUsed', 'stockAvailable', 'stockWasted']);
+
+  const getColumnStyle = (key, isAction = false) => {
+    const base = { verticalAlign: 'middle' };
+    if (key && numericKeys.has(key)) base.textAlign = 'right';
+    if (isAction) {
+      base.borderLeft = '2px solid #dee2e6';
+      base.textAlign = 'center';
+    }
+    return base;
+  };
 
   return (
     <>
@@ -97,181 +92,134 @@ export default function ItemsTable({
         recordType={recordType}
         itemType={itemType}
       />
-      <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
-      {darkMode && (
-        <style>
-          {`
-            .dark-mode .items_table_container .table thead th {
-              background-color: #1C2541 !important;
-              color: #ffffff !important;
-              border-color: #555 !important;
-            }
-
-            .dark-mode .items_table_container .table thead tr {
-              background-color: #1C2541 !important;
-            }
-
-            .dark-mode .items_table_container .table tbody tr:hover {
-              background-color: #1C2541 !important;
-            }
-          `}
-        </style>
+      {UpdateItemModal && (
+        <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
       )}
-      <div
-        className={`items_table_container ${
-          darkMode ? 'items_table_container_dark dark-mode' : ''
-        }`}
-        style={darkMode ? { backgroundColor: '#3A506B' } : {}}
-      >
-        <Table
-          className={darkMode ? 'dark-table' : ''}
-          style={
-            darkMode ? { backgroundColor: '#3A506B', color: '#ffffff', borderColor: '#444' } : {}
-          }
-        >
-          <thead
-            className={darkMode ? 'dark-thead' : ''}
-            style={darkMode ? { backgroundColor: '#1C2541', color: '#ffffff' } : {}}
-          >
-            <tr style={darkMode ? { backgroundColor: '#1C2541' } : {}}>
-              {selectedProject === 'all' ? (
-                <th
-                  className={darkMode ? 'dark-th' : ''}
-                  style={
-                    darkMode
-                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
-                      : {}
-                  }
-                  onClick={() => sortData('ProjectName')}
-                >
-                  Project <FontAwesomeIcon icon={projectNameCol.iconsToDisplay} size="lg" />
-                </th>
-              ) : (
-                <th
-                  className={darkMode ? 'dark-th' : ''}
-                  style={
-                    darkMode
-                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
-                      : {}
-                  }
-                >
-                  Project
-                </th>
-              )}
-              {selectedItem === 'all' ? (
-                <th
-                  className={darkMode ? 'dark-th' : ''}
-                  style={
-                    darkMode
-                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
-                      : {}
-                  }
-                  onClick={() => sortData('InventoryItemType')}
-                >
-                  Name <FontAwesomeIcon icon={inventoryItemTypeCol.iconsToDisplay} size="lg" />
-                </th>
-              ) : (
-                <th
-                  className={darkMode ? 'dark-th' : ''}
-                  style={
-                    darkMode
-                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
-                      : {}
-                  }
-                >
-                  Name
-                </th>
-              )}
-              {dynamicColumns.map(({ label, key }) => (
-                <th
-                  className={darkMode ? 'dark-th' : ''}
-                  style={
-                    darkMode
-                      ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
-                      : {}
-                  }
-                  key={label}
-                >
-                  {label}
-                </th>
-              ))}
+
+      <div className={`${styles.itemsTableContainer} ${darkMode ? styles.darkTableWrapper : ''}`}>
+        <Table className={darkMode ? styles.darkTable : ''}>
+          <thead className={styles.stickyThead}>
+            <tr>
               <th
-                className={darkMode ? 'dark-th' : ''}
-                style={
-                  darkMode
-                    ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
-                    : {}
-                }
+                onClick={() => onSort?.('project')}
+                className={styles.sortableTh}
+                style={{ verticalAlign: 'middle' }}
+              >
+                Project <FontAwesomeIcon icon={getIconFor('project')} size="lg" />
+              </th>
+              <th
+                onClick={() => onSort?.('name')}
+                className={styles.sortableTh}
+                style={{ verticalAlign: 'middle' }}
+              >
+                Name <FontAwesomeIcon icon={getIconFor('name')} size="lg" />
+              </th>
+              {(dynamicColumns || []).map(({ label, key }) => {
+                const sortKey = dynamicSortKeyByLabel[label];
+                const clickable = Boolean(sortKey);
+                return (
+                  <th
+                    key={label || key}
+                    onClick={clickable ? () => onSort?.(sortKey) : undefined}
+                    className={clickable ? styles.sortableTh : undefined}
+                    style={getColumnStyle(key)}
+                  >
+                    {label} {clickable && <FontAwesomeIcon icon={getIconFor(sortKey)} size="lg" />}
+                  </th>
+                );
+              })}
+              <th style={getColumnStyle(null, true)} title="View usage history and charts">
+                Usage Record
+              </th>
+              <th
+                style={{ verticalAlign: 'middle', textAlign: 'center' }}
+                title="View history of manual updates"
               >
                 Updates
               </th>
               <th
-                className={darkMode ? 'dark-th' : ''}
-                style={
-                  darkMode
-                    ? { backgroundColor: '#1C2541', color: '#ffffff', borderColor: '#555' }
-                    : {}
-                }
+                style={{ verticalAlign: 'middle', textAlign: 'center' }}
+                title="View procurement history"
               >
                 Purchases
               </th>
             </tr>
           </thead>
-
-          <tbody
-            className={darkMode ? 'dark-tbody' : ''}
-            style={darkMode ? { backgroundColor: '#3A506B', color: '#ffffff' } : {}}
-          >
-            {sortedData && sortedData.length > 0 ? (
-              sortedData.map(el => (
-                <tr
-                  key={el._id}
-                  className={darkMode ? 'dark-row' : ''}
-                  style={
-                    darkMode ? { backgroundColor: '#3A506B', borderBottom: '1px solid #333' } : {}
-                  }
-                >
-                  <td style={darkMode ? { color: '#ffffff' } : {}}>{el.project?.name}</td>
-                  <td style={darkMode ? { color: '#ffffff' } : {}}>{el.itemType?.name}</td>
-                  {dynamicColumns.map(({ label, key }) => (
-                    <td key={label} style={darkMode ? { color: '#ffffff' } : {}}>
-                      {getNestedValue(el, key)}
-                    </td>
-                  ))}
-                  <td className="items_cell">
-                    <div
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        flexWrap: 'nowrap',
-                        whiteSpace: 'nowrap',
-                      }}
+          <tbody>
+            {filteredItems && filteredItems.length > 0 ? (
+              filteredItems.map(el => (
+                <tr key={el._id}>
+                  <td style={{ verticalAlign: 'middle' }}>{el.project?.name}</td>
+                  <td style={{ verticalAlign: 'middle' }}>{el.itemType?.name}</td>
+                  {(dynamicColumns || []).map(({ label, key }) => {
+                    const value = getNestedValue(el, key);
+                    if (
+                      key === 'stockAvailable' &&
+                      value !== null &&
+                      value !== undefined &&
+                      Number(value) < 10
+                    ) {
+                      return (
+                        <td key={label || key} style={getColumnStyle(key)}>
+                          <Badge
+                            color="danger"
+                            pill
+                            className="me-2"
+                            style={{ marginRight: '8px' }}
+                          >
+                            Low
+                          </Badge>
+                          {value}
+                        </td>
+                      );
+                    }
+                    return (
+                      <td key={label || key} style={getColumnStyle(key)}>
+                        {value}
+                      </td>
+                    );
+                  })}
+                  <td className={styles.itemsCell} style={getColumnStyle(null, true)}>
+                    <button
+                      type="button"
+                      onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
+                      aria-label="Edit Record"
                     >
-                      <button
-                        type="button"
-                        style={darkMode ? { color: '#4a90e2' } : {}}
-                        onClick={() => handleEditRecordsClick(el, 'Update')}
-                        aria-label="Edit Record"
-                      >
-                        <BiPencil />
-                      </button>
-                      <Button
-                        color="primary"
-                        outline={!darkMode}
-                        style={darkMode ? { borderColor: '#4a90e2', color: '#ffffff' } : {}}
-                        size="sm"
-                        onClick={() => handleViewRecordsClick(el, 'Update')}
-                      >
-                        View
-                      </Button>
-                    </div>
-                  </td>
-                  <td>
+                      <BiPencil />
+                    </button>
                     <Button
                       color="primary"
-                      outline={!darkMode}
-                      style={darkMode ? { borderColor: '#4a90e2', color: '#ffffff' } : {}}
+                      outline
+                      size="sm"
+                      onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
+                    >
+                      View
+                    </Button>
+                  </td>
+                  <td
+                    className={styles.itemsCell}
+                    style={{ verticalAlign: 'middle', textAlign: 'center' }}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => handleEditRecordsClick(el, 'Update')}
+                      aria-label="Edit Record"
+                    >
+                      <BiPencil />
+                    </button>
+                    <Button
+                      color="primary"
+                      outline
+                      size="sm"
+                      onClick={() => handleViewRecordsClick(el, 'Update')}
+                    >
+                      View
+                    </Button>
+                  </td>
+                  <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
+                    <Button
+                      color="primary"
+                      outline
                       size="sm"
                       onClick={() => handleViewRecordsClick(el, 'Purchase')}
                     >
@@ -282,7 +230,7 @@ export default function ItemsTable({
               ))
             ) : (
               <tr>
-                <td colSpan={11} style={{ textAlign: 'center' }}>
+                <td colSpan={(dynamicColumns?.length || 0) + 5} style={{ textAlign: 'center' }}>
                   No items data
                 </td>
               </tr>
@@ -290,6 +238,96 @@ export default function ItemsTable({
           </tbody>
         </Table>
       </div>
+
+      <div className={styles.paginationBar}>
+        <div className={styles.rowsPerPage}>
+          <span>Rows per page:</span>
+          <select
+            value={String(rowsPerPage)}
+            onChange={e => onRowsPerPageChange?.(Number(e.target.value))}
+          >
+            {rowsPerPageOptions.map(opt => (
+              <option key={opt} value={String(opt)}>
+                {opt}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className={styles.rangeInfo}>
+          {startRow}-{endRow} of {totalItems}
+        </div>
+        <div className={styles.pageButtons}>
+          <button type="button" onClick={() => onPageChange?.(1)} disabled={currentPage === 1}>
+            {'<<'}
+          </button>
+          <button
+            type="button"
+            onClick={() => onPageChange?.(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            {'<'}
+          </button>
+          {generatePageNumbers(currentPage, totalPages).map((p, idx) =>
+            typeof p === 'number' ? (
+              <button
+                key={idx}
+                type="button"
+                className={p === currentPage ? styles.activePage : ''}
+                onClick={() => onPageChange?.(p)}
+                disabled={p === currentPage}
+              >
+                {p}
+              </button>
+            ) : (
+              <span key={idx} className={styles.ellipsis}>
+                ...
+              </span>
+            ),
+          )}
+          <button
+            type="button"
+            onClick={() => onPageChange?.(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            {'>'}
+          </button>
+          <button
+            type="button"
+            onClick={() => onPageChange?.(totalPages)}
+            disabled={currentPage === totalPages}
+          >
+            {'>>'}
+          </button>
+        </div>
+      </div>
     </>
   );
 }
+
+ItemsTable.propTypes = {
+  selectedProject: PropTypes.string,
+  selectedItem: PropTypes.string,
+  filteredItems: PropTypes.arrayOf(PropTypes.object),
+  UpdateItemModal: PropTypes.elementType,
+  dynamicColumns: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string,
+      key: PropTypes.string,
+    }),
+  ).isRequired,
+  darkMode: PropTypes.bool,
+  itemType: PropTypes.string,
+  sortConfig: PropTypes.shape({
+    key: PropTypes.string,
+    direction: PropTypes.string,
+  }),
+  onSort: PropTypes.func,
+  totalItems: PropTypes.number,
+  currentPage: PropTypes.number,
+  totalPages: PropTypes.number,
+  rowsPerPage: PropTypes.number,
+  startRow: PropTypes.number,
+  endRow: PropTypes.number,
+  onPageChange: PropTypes.func,
+  onRowsPerPageChange: PropTypes.func,
+};
