@@ -1,6 +1,7 @@
 const APIEndpoint =
   process.env.REACT_APP_APIENDPOINT || 'http://localhost:4500/api';
 
+
 export const ENDPOINTS = {
   APIEndpoint: () => APIEndpoint,
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
@@ -515,7 +516,11 @@ export const ENDPOINTS = {
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   GET_JOB_FORM: formId => `${APIEndpoint}/jobforms/${formId}`,
   GET_ALL_JOB_FORMS: `${APIEndpoint}/jobforms/all`,
+  GET_JOB: jobId => `${APIEndpoint}/jobs/${jobId}`,
+  /** Referral pre-fill for job application (`/${referralId}` appended in client). */
+  GET_USER_QUESTIONNAIRE: `${APIEndpoint}/hgnform/referral`,
   GET_FORM_RESPONSES: formID => `${APIEndpoint}/jobforms/${formID}/responses`,
+  SUBMIT_JOB_APPLICATION: formId => `${APIEndpoint}/jobforms/${formId}/responses`,
 
   ADD_QUESTION: formId => `${APIEndpoint}/jobforms/${formId}/questions`,
   UPDATE_QUESTION: (formId, questionIndex) =>
@@ -523,6 +528,14 @@ export const ENDPOINTS = {
   DELETE_QUESTION: (formId, questionIndex) =>
     `${APIEndpoint}/jobforms/${formId}/questions/${questionIndex}`,
   REORDER_QUESTIONS: formId => `${APIEndpoint}/jobforms/${formId}/questions/reorder`,
+  DELETE_JOB_FORM: formId => `${APIEndpoint}/jobforms/${formId}`,
+  IMPORT_QUESTIONS: formId => `${APIEndpoint}/jobforms/${formId}/import-questions`,
+
+  // Question Sets APIs
+  QUESTION_SETS: `${APIEndpoint}/question-sets`,
+  QUESTION_SET_BY_ID: id => `${APIEndpoint}/question-sets/${id}`,
+  QUESTION_SETS_BY_CATEGORY: category => `${APIEndpoint}/question-sets/category/${category}`,
+  CLONE_QUESTION_SET: id => `${APIEndpoint}/question-sets/${id}/clone`,
 
   GET_ALL_TEMPLATES: `${APIEndpoint}/templates`,
   CREATE_TEMPLATE: `${APIEndpoint}/templates`,
