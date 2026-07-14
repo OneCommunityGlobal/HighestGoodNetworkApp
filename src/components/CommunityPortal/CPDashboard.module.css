@@ -685,8 +685,8 @@
 }
 
 .applyBtn {
-  flex: 1; 
-  background-color: #27ae60 !important;
+  flex: 1;
+  background-color: #1e8449 !important;
   border: none;
   color: white;
   padding: 10px 5px; 
@@ -698,13 +698,13 @@
 }
 
 .applyBtn:hover {
-  background-color: #229954 !important;
+  background-color: #196f3d !important;
   box-shadow: 0 4px 8px rgb(39 174 96 / 30%);
 }
 
 .clearBtn {
-  flex: 1; 
-  background-color: #95a5a6 !important;
+  flex: 1;
+  background-color: #626e6e !important;
   border: none;
   color: white;
   padding: 10px 5px; 
@@ -716,7 +716,7 @@
 }
 
 .clearBtn:hover {
-  background-color: #7f8c8d !important;
+  background-color: #4d5656 !important;
   box-shadow: 0 4px 8px rgb(149 165 166 / 30%);
 }
 
