@@ -86,7 +86,6 @@ import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOvervi
 import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
 import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
 import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
-import Activity from './components/CommunityPortal/Activities/activityId/Activity';
 import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
 import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
 import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
@@ -166,7 +165,7 @@ import EventStats from './components/CommunityPortal/EventPersonalization/EventS
 import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
 // Kicthen and Inventory Portal
 import KitchenandInventoryLogin from './components/KitchenandInventory/Login';
-import KIProtectedRoute from './components/common/KitchenandInventory/KIProtectedRoute';
+
 import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
 import RecipesLandingPage from './components/KitchenandInventory/Recipes';
 import KIINVENTORY from './components/KitchenandInventory/KIInventory/KIInventory';
@@ -946,41 +945,26 @@ export default (
           exact
           component={DatabaseDesign}
         />
-        <CPProtectedRoute
-          path="/communityportal/activity/:activityid/comments"
-          exact
-          render={() => <Activity initialTab="FAQs" />}
-        />
-        <CPProtectedRoute
-          path="/communityportal/activity/:activityid/Comments"
-          exact
-          render={() => <Activity initialTab="FAQs" />}
-        />
-        <CPProtectedRoute path="/communityportal/activity/:activityId" exact component={Activity} />
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
         {/* ----- END BM Dashboard Routing ----- */}
         {/* ----- Kitchen and Inventory Portal Routes ----- */}
-        <KIProtectedRoute path="/kitchenandinventory" exact component={KIDashboard} />
-        <KIProtectedRoute path="/kitchenandinventory/inventory" exact component={KIINVENTORY} />
-        <KIProtectedRoute path="/kitchenandinventory/calendar" exact component={KICalendar} />
-        <KIProtectedRoute
+        <ProtectedRoute path="/kitchenandinventory" exact component={KIDashboard} />
+        <ProtectedRoute path="/kitchenandinventory/inventory" exact component={KIINVENTORY} />
+        <ProtectedRoute path="/kitchenandinventory/calendar" exact component={KICalendar} />
+        <ProtectedRoute
           path="/kitchenandinventory/animalmanagement"
           exact
           component={AnimalManagement}
         />
-        <KIProtectedRoute
+        <ProtectedRoute
           path="/kitchenandinventory/orchardmanagement"
           exact
           component={OrchardManagement}
         />
         <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} />
-        <KIProtectedRoute
-          path="/kitchenandinventory/recipes"
-          exact
-          component={RecipesLandingPage}
-        />
+        <ProtectedRoute path="/kitchenandinventory/recipes" exact component={RecipesLandingPage} />
         {/* ----- End of Kitchen and Inventory Portal Routes ----- */}
         <Route path="/login" component={Login} />
         <Route path="/forgotpassword" component={ForgotPassword} />
