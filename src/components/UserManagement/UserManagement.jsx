@@ -8,7 +8,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Container } from 'reactstrap';
+import { Container, Spinner } from 'reactstrap';
 import { Table } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { getAllRoles } from '../../actions/role';
@@ -108,8 +108,7 @@ class UserManagement extends React.PureComponent {
   async componentDidUpdate(prevProps, prevState) {
     if (prevProps.state.theme.darkMode !== this.props.state.theme.darkMode) {
       const { darkMode } = this.props.state.theme;
-      // eslint-disable-next-line no-unused-vars
-      // const { userProfiles, fetching } = this.props.state.allUserProfiles;
+      const { userProfiles } = this.props.state.allUserProfiles;
       const { roles: rolesPermissions } = this.props.state.role;
       const { requests: timeOffRequests } = this.props.state.timeOffRequests;
 
@@ -145,8 +144,7 @@ class UserManagement extends React.PureComponent {
       userProfilesChanged
     ) {
       const { darkMode } = this.props.state.theme;
-      // eslint-disable-next-line no-unused-vars
-      // const { userProfiles, fetching } = this.props.state.allUserProfiles;
+      const { userProfiles } = this.props.state.allUserProfiles;
       const { roles: rolesPermissions } = this.props.state.role;
       const { requests: timeOffRequests } = this.props.state.timeOffRequests;
       this.getFilteredData(
@@ -702,7 +700,18 @@ class UserManagement extends React.PureComponent {
           {this.popupElements()}
           <div className="table-responsive" id="user-management-table">
             {this.state.isLoadingUsers ? (
-              <section className="message-loading">
+              <section
+                className="message-loading"
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '1rem',
+                  minHeight: '60vh',
+                }}
+              >
+                <Spinner color={darkMode ? 'light' : 'primary'} style={{ width: '3rem', height: '3rem' }} />
                 <h3 className={darkMode ? 'text-light' : 'text-dark'}>Loading users</h3>
               </section>
             ) : (
