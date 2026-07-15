@@ -6,8 +6,8 @@ export const SidebarProvider = ({ children }) => {
   const [isMinimized, setIsMinimized] = useState(() => {
     try {
       return localStorage.getItem('ep.sidebar.minimized') === 'true';
-    } catch (e) {
-      // localStorage may be unavailable in private browsing or SSR
+    } catch {
+      // localStorage unavailable (private browsing / SSR)
       return false;
     }
   });
@@ -15,8 +15,8 @@ export const SidebarProvider = ({ children }) => {
   useEffect(() => {
     try {
       localStorage.setItem('ep.sidebar.minimized', isMinimized ? 'true' : 'false');
-    } catch (e) {
-      // localStorage may be unavailable in private browsing or SSR
+    } catch {
+      // localStorage unavailable — silently ignore
     }
   }, [isMinimized]);
 

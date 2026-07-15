@@ -6,8 +6,8 @@
   width: min(320px, 86vw);
   display: flex;
   flex-direction: column;
-  border-right: 1px solid var(--ep-stroke);
-  background: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  background: #fff;
   box-shadow: inset 0 0 0 1px #00000008;
   backdrop-filter: blur(12px);
   z-index: 1001;
@@ -50,7 +50,7 @@
 
 .brandSub {
   font-size: 12px;
-  color: var(--ep-muted);
+  color: #64748b;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -68,7 +68,7 @@
   grid-template-columns: 34px 1fr;
   align-items: center;
   gap: 10px;
-  padding: 10px 10px;
+  padding: 10px;
   border-radius: 14px;
   color: #1e2332eb;
   text-decoration: none;
@@ -121,11 +121,11 @@
   grid-template-columns: 34px 1fr;
   align-items: center;
   gap: 10px;
-  padding: 10px 10px;
+  padding: 10px;
   border-radius: 14px;
   border: 1px solid #0000001a;
   background: #0000000a;
-  color: var(--ep-ink);
+  color: #1e293b;
   cursor: pointer;
 }
 
@@ -185,6 +185,10 @@
   border-color: #2a2a38;
 }
 
+.darkMode .brandSub {
+  color: #94a3b8;
+}
+
 .darkMode .footer {
   border-top-color: #2a2a36;
 }
@@ -192,6 +196,7 @@
 .darkMode .logout {
   border-color: #2a2a38;
   background: #1e1e2a;
+  color: #e2e8f0;
 }
 
 .darkMode .logout:hover {
@@ -199,5 +204,5 @@
 }
 
 .darkMode .overlay {
-  background: #00000099;
+  background: #0009;
 }

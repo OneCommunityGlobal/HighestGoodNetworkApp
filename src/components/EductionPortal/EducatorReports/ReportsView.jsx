@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Container,
   Row,
@@ -32,7 +32,6 @@ import {
 } from './mockdata';
 
 const ReportsView = () => {
-  const [loading, setLoading] = useState(true);
   const [subjectFilter, setSubjectFilter] = useState('All Subjects');
   const [subjectDropdownOpen, setSubjectDropdownOpen] = useState(false);
   const [performanceDropdownOpen, setPerformanceDropdownOpen] = useState(false);
@@ -45,12 +44,6 @@ const ReportsView = () => {
   });
 
   const darkMode = useSelector(state => state.theme?.darkMode || false);
-
-  useEffect(() => {
-    // Simulate loading
-    const timer = setTimeout(() => setLoading(false), 1000);
-    return () => clearTimeout(timer);
-  }, []);
 
   // Filter functions
   const getFilteredStrengthsGapsData = () => {
@@ -148,7 +141,7 @@ const ReportsView = () => {
                 </label>
                 <select
                   id="studentClassSelect"
-                  className="form-control"
+                  className={styles.formControl}
                   value={
                     activeTab === 'individual' ? filters.studentId || '' : filters.classId || ''
                   }

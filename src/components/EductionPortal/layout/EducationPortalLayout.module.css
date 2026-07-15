@@ -3,9 +3,9 @@
 .shell {
   min-height: 100vh;
   display: block;
-  background: var(--ep-bg-0);
-  color: var(--ep-ink);
-  font-family: var(--ep-font);
+  background: #f8fafc;
+  color: #1e293b;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .main {
@@ -51,7 +51,7 @@
   border-radius: 999px;
   border: 1px solid #00000020;
   background: #00000010;
-  color: var(--ep-ink);
+  color: #1e293b;
   box-shadow: 0 10px 24px #00000018;
   backdrop-filter: blur(10px);
   cursor: pointer;
@@ -83,10 +83,11 @@
   letter-spacing: 0.01em;
 }
 
-@media (max-width: 960px) {
+@media (width <= 960px) {
   .content {
     padding: 22px 18px 56px;
   }
+
   .header {
     padding: 10px 14px;
   }
@@ -95,21 +96,23 @@
 /* ── Dark mode overrides ─────────────────────────────────────── */
 
 .darkMode .shell {
-  background: #1b2a41;
+  background: #0f172a;
+  color: #e2e8f0;
 }
 
 .darkMode .header {
-  background: #1b2a41;
-  border-bottom-color: #2a2a38;
+  background: #0f172a;
+  border-bottom-color: #334155;
 }
 
 .darkMode .headerTitle {
-  color: #eaf0ff;
+  color: #f1f5f9;
 }
 
 .darkMode .mobileMenuButton {
   border-color: #2a2a3a;
   background: #1e1e2a;
+  color: #e2e8f0;
   box-shadow: 0 10px 24px #00000047;
 }
 
@@ -124,4 +127,5 @@
 .darkMode .mobileMenuIcon {
   background: #1a2e42;
   border-color: #2a4058;
+  color: #93c5fd;
 }

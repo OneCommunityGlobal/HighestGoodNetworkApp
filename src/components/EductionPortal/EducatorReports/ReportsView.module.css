@@ -1,10 +1,11 @@
 .dashboardContainer {
-  padding: 5px 20px 20px 20px;
+  padding: 5px 20px 20px;
   background-color: #fff;
   min-height: 100vh;
 }
+
 .darkMode .dashboardContainer {
-  background-color: #1b2a41;
+  background-color: #0f172a;
 }
 
 .dashboardHeader {
@@ -14,7 +15,7 @@
 }
 
 .darkMode .dashboardHeader {
-  border-bottom-color: rgba(255, 255, 255, 0.12);
+  border-bottom-color: rgb(255 255 255 / 12%);
 }
 
 .dashboardTitle {
@@ -25,7 +26,7 @@
 }
 
 .darkMode .dashboardTitle {
-  color: var(--primary-color-dark, #ffffff);
+  color: var(--primary-color-dark, #fff);
 }
 
 .dashboardSubtitle {
@@ -46,24 +47,26 @@
 .reportCard {
   border: none;
   border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
   transition: all 0.3s ease;
   background: white;
 }
+
 .cardBody {
   background-color: #f8fafc;
 }
+
 .darkMode .cardBody {
-  background-color: #0f172a;
+  background-color: #1e293b;
 }
 
 .reportCard:hover {
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 12px rgb(0 0 0 / 15%);
 }
 
 .darkMode .reportCard {
-  background: #1a1a1a;
-  box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+  background: #1e293b;
+  box-shadow: 0 4px 6px rgb(0 0 0 / 30%);
 }
 
 /* Card Headers */
@@ -82,7 +85,7 @@
 }
 
 .darkMode .cardTitle {
-  color: var(--primary-color-dark, #ffffff);
+  color: var(--primary-color-dark, #fff);
 }
 
 .subjectDropdown {
@@ -98,39 +101,25 @@
 }
 
 .darkMode .dropdownToggle {
-  background: var(--primary-color-dark, #2563eb) !important;
-  color: #fff !important;
+  background: #4f46e5;
+  color: #fff;
 }
 
 .darkMode .dropdownToggle::after {
-  border-top-color: #fff !important;
+  border-top-color: #fff;
 }
 
 .darkMode .dropdownToggle:focus,
 .darkMode .dropdownToggle:active,
 .darkMode .dropdownToggle span {
-  background: var(--primary-color-dark, #2563eb) !important;
-  color: #fff !important;
-  box-shadow: none !important;
-}
-
-.darkMode .dropdownMenu {
-  background-color: #1e293b !important;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.darkMode .dropdownItem {
-  background-color: #1e293b !important;
-}
-
-.darkMode .dropdownItem:hover {
-  background-color: rgba(255, 255, 255, 0.12) !important;
+  background: #4f46e5;
+  color: #fff;
+  box-shadow: none;
 }
 
 .dropdownMenu {
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
   border: none;
 }
 
@@ -144,12 +133,26 @@
   background-color: var(--hover-color, #f8f9fa);
 }
 
+.darkMode .dropdownMenu {
+  background-color: #1e293b;
+  box-shadow: 0 10px 28px rgb(0 0 0 / 55%);
+  border: 1px solid #334155;
+}
+
+.darkMode .dropdownItem {
+  background-color: #1e293b;
+}
+
+.darkMode .dropdownItem:hover {
+  background-color: rgb(255 255 255 / 8%);
+}
+
 .coloredDropdownItem {
   font-weight: 500;
 }
 
 .coloredDropdownItem:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: rgb(0 0 0 / 5%);
   opacity: 0.8;
 }
 
@@ -158,12 +161,12 @@
   border-radius: 12px;
   padding: 25px;
   margin-bottom: 30px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
 }
 
 .darkMode .strengthsGapsSection {
-  background: #1a1a1a;
-  box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+  background: #1e293b;
+  box-shadow: 0 4px 6px rgb(0 0 0 / 30%);
 }
 
 .strengthsTable {
@@ -190,36 +193,53 @@
 }
 
 .tableHeader th:first-child {
-  border-radius: 8px 0 0 0;
+  border-radius: 8px 0 0;
 }
 
 .tableHeader th:last-child {
   border-radius: 0 8px 0 0;
 }
 
-.tableRow {
+.strengthsTable tbody tr {
   border-bottom: 1px solid #e0e0e0;
   transition: background-color 0.2s ease;
 }
 
-.tableRow:hover {
+.strengthsTable tbody tr:hover {
   background-color: #f8f9fa;
 }
 
-.darkMode .tableRow {
-  border-bottom-color: #333;
+.darkMode .strengthsTable tbody tr {
+  border-bottom-color: #334155;
 }
 
-.tableCell {
-  padding: 16px 20px;
+.strengthsTable td {
+  padding: 15px 20px;
   vertical-align: middle;
   border: none;
-  color: var(--text-primary, #333);
   font-size: 14px;
+  color: #333;
 }
 
-.darkMode .tableCell {
-  color: var(--text-primary-dark, #fff);
+.darkMode .strengthsTable td {
+  color: #f1f5f9;
+}
+
+.subjectCell {
+  font-weight: 500;
+  color: #1d283a;
+}
+
+.darkMode .subjectCell {
+  color: #f1f5f9;
+}
+
+.performanceCell {
+  min-width: 160px;
+}
+
+.visualCell {
+  text-align: center;
 }
 
 .subjectName {
@@ -246,7 +266,7 @@
 }
 
 .darkMode .progressBar {
-  background-color: #333;
+  background-color: #334155;
 }
 
 .progressFill {
@@ -287,7 +307,7 @@
 }
 
 .darkMode .progressText {
-  color: rgba(255, 255, 255, 0.92);
+  color: rgb(255 255 255 / 92%);
 }
 
 .chartContainer {
@@ -357,20 +377,33 @@
   padding: 20px;
 }
 
+.actionButton {
+  background: var(--primary-color, #007bff);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.actionButton:hover {
+  background: var(--primary-hover, #0056b3);
+  transform: translateY(-1px);
+}
+
+.darkMode .actionButton {
+  background: var(--primary-color-dark, #2563eb);
+}
+
 .insightAlertInfo .actionButton {
   background: #0ea5e9;
 }
 
-.insightAlertInfo .actionButton:hover {
-  background: #0284c7;
-}
-
 .insightAlertSuccess .actionButton {
   background: #22c55e;
-}
-
-.insightAlertSuccess .actionButton:hover {
-  background: #16a34a;
 }
 
 .insightAlertWarning .actionButton {
@@ -378,12 +411,20 @@
   color: #fff;
 }
 
-.insightAlertWarning .actionButton:hover {
-  background: #9a3412;
-}
-
 .insightAlertDanger .actionButton {
   background: #ef4444;
+}
+
+.insightAlertInfo .actionButton:hover {
+  background: #0284c7;
+}
+
+.insightAlertSuccess .actionButton:hover {
+  background: #16a34a;
+}
+
+.insightAlertWarning .actionButton:hover {
+  background: #9a3412;
 }
 
 .insightAlertDanger .actionButton:hover {
@@ -393,8 +434,8 @@
 .darkMode .insightAlert {
   color: #111827;
   background-color: #e5e7eb;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(17, 24, 39, 0.16);
+  box-shadow: 0 10px 24px rgb(0 0 0 / 35%);
+  border: 1px solid rgb(17 24 39 / 16%);
 }
 
 .darkMode .insightAlert.insightAlertInfo {
@@ -452,32 +493,12 @@
   flex-wrap: wrap;
 }
 
-.actionButton {
-  background: var(--primary-color, #007bff);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
 .darkMode .insightAlert.insightAlertInfo .actionButton {
   background: #0284c7;
 }
 
-.darkMode .insightAlert.insightAlertInfo .actionButton:hover {
-  background: #0369a1;
-}
-
 .darkMode .insightAlert.insightAlertSuccess .actionButton {
   background: #16a34a;
-}
-
-.darkMode .insightAlert.insightAlertSuccess .actionButton:hover {
-  background: #15803d;
 }
 
 .darkMode .insightAlert.insightAlertWarning .actionButton {
@@ -485,25 +506,24 @@
   color: #fff;
 }
 
-.darkMode .insightAlert.insightAlertWarning .actionButton:hover {
-  background: #9a3412;
-}
-
 .darkMode .insightAlert.insightAlertDanger .actionButton {
   background: #dc2626;
 }
 
+.darkMode .insightAlert.insightAlertInfo .actionButton:hover {
+  background: #0369a1;
+}
+
+.darkMode .insightAlert.insightAlertSuccess .actionButton:hover {
+  background: #15803d;
+}
+
+.darkMode .insightAlert.insightAlertWarning .actionButton:hover {
+  background: #9a3412;
+}
+
 .darkMode .insightAlert.insightAlertDanger .actionButton:hover {
   background: #b91c1c;
-}
-
-.actionButton:hover {
-  background: var(--primary-hover, #0056b3);
-  transform: translateY(-1px);
-}
-
-.darkMode .actionButton {
-  background: var(--primary-color-dark, #2563eb);
 }
 
 .statusBadge {
@@ -522,16 +542,19 @@
   color: #15803d;
   border-color: #bbf7d0;
 }
+
 .statusBadge.good {
   background-color: #fefce8;
   color: #a16207;
   border-color: #fef08a;
 }
+
 .statusBadge.needsImprovement {
   background-color: #fff7ed;
   color: #c2410c;
   border-color: #fed7aa;
 }
+
 .statusBadge.critical {
   background-color: #fee2e2;
   color: #b91c1c;
@@ -539,24 +562,27 @@
 }
 
 .darkMode .statusBadge.excellent {
-  background-color: rgba(21, 128, 61, 0.15);
+  background-color: rgb(21 128 61 / 15%);
   color: #4ade80 !important;
-  border-color: rgba(74, 222, 128, 0.25);
+  border-color: rgb(74 222 128 / 25%);
 }
+
 .darkMode .statusBadge.good {
-  background-color: rgba(161, 98, 7, 0.15);
+  background-color: rgb(161 98 7 / 15%);
   color: #fcd34d !important;
-  border-color: rgba(252, 211, 77, 0.25);
+  border-color: rgb(252 211 77 / 25%);
 }
+
 .darkMode .statusBadge.needsImprovement {
-  background-color: rgba(194, 65, 12, 0.15);
+  background-color: rgb(194 65 12 / 15%);
   color: #fb923c !important;
-  border-color: rgba(251, 146, 60, 0.25);
+  border-color: rgb(251 146 60 / 25%);
 }
+
 .darkMode .statusBadge.critical {
-  background-color: rgba(185, 28, 28, 0.15);
+  background-color: rgb(185 28 28 / 15%);
   color: #fca5a5 !important;
-  border-color: rgba(252, 165, 165, 0.25);
+  border-color: rgb(252 165 165 / 25%);
 }
 
 .visualIndicator {
@@ -569,7 +595,43 @@
   -webkit-overflow-scrolling: touch;
 }
 
-@media (max-width: 768px) {
+/* Form Control (replaces Bootstrap form-control) */
+.formControl {
+  display: block;
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #333;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  appearance: none;
+  border-radius: 6px;
+  transition:
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
+}
+
+.formControl:focus {
+  border-color: #4f46e5;
+  outline: 0;
+  box-shadow: 0 0 0 3px rgb(79 70 229 / 15%);
+}
+
+.darkMode .formControl {
+  background-color: #334155;
+  border-color: #475569;
+  color: #f1f5f9;
+}
+
+.darkMode .formControl:focus {
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgb(129 140 248 / 15%);
+}
+
+@media (width <= 768px) {
   .dashboardContainer {
     padding: 10px;
     min-height: auto;
@@ -668,7 +730,7 @@
   }
 }
 
-@media (max-width: 576px) {
+@media (width <= 576px) {
   .dashboardTitle {
     font-size: 24px;
   }
@@ -683,22 +745,22 @@
   }
 
   .tableHeader th {
-    padding: 12px 12px;
+    padding: 12px;
     font-size: 13px;
   }
 }
 
 .darkMode .reportCard:hover {
-  box-shadow: 0 6px 12px rgba(255, 255, 255, 0.22);
+  box-shadow: 0 6px 12px rgb(0 0 0 / 40%);
   transform: translateY(-2px);
 }
 
-.darkMode .tableRow:hover {
-  background-color: #2f3f55;
+.darkMode .strengthsTable tbody tr:hover {
+  background-color: #334155;
 }
 
 .darkMode .coloredDropdownItem:hover {
-  background-color: rgba(255, 255, 255, 0.14);
+  background-color: rgb(255 255 255 / 8%);
   opacity: 1;
 }
 
@@ -711,7 +773,7 @@
 }
 
 .darkMode .navTabs {
-  border-bottom-color: rgba(255, 255, 255, 0.12);
+  border-bottom-color: rgb(255 255 255 / 12%);
 }
 
 .navTabs :global(.nav-link) {
@@ -772,8 +834,6 @@
   padding: 8px 12px;
   padding-right: 35px;
   appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
   background: #fff
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E")
     no-repeat right 12px center;
@@ -790,17 +850,17 @@
 }
 
 .darkMode .filterBar {
-  background-color: #2a3a4f;
+  background-color: #1e293b;
 }
 
 .darkMode .filterBar select {
-  background-color: #1b2a41;
-  border-color: rgba(255, 255, 255, 0.2);
-  color: #fff;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ccc' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-color: #334155;
+  border-color: #475569;
+  color: #f1f5f9;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
 }
 
 .darkMode .filterBar select option {
-  background-color: #1b2a41;
-  color: #fff;
+  background-color: #334155;
+  color: #f1f5f9;
 }

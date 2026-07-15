@@ -57,7 +57,7 @@ export default function EducationPortalSidebar({ mobileOpen, onRequestClose }) {
             globalThis.dispatchEvent(new globalThis.Event('storage'));
           }
         }
-      } catch (e) {
+      } catch {
         // Malformed JSON in sessionStorage — clear it to avoid repeated parse errors.
         storage.removeItem('viewingUser');
       }

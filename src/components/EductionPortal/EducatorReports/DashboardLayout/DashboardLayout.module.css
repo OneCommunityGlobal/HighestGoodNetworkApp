@@ -16,7 +16,7 @@
   max-width: 100%;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .dashboardLayout {
     flex-direction: column;
     margin-top: 0;
@@ -35,12 +35,12 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .contentWrapper {
     padding: 12px;
   }
 }
 
 .darkMode .dashboardLayout {
-  background-color: grey;
+  background-color: #0f172a;
 }
