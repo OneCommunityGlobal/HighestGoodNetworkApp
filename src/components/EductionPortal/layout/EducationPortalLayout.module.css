@@ -50,7 +50,7 @@
   padding: 10px 14px;
   border-radius: 999px;
   border: 1px solid #00000020;
-  background: #00000010;
+  background: #f1f5f9;
   color: #1e293b;
   box-shadow: 0 10px 24px #00000018;
   backdrop-filter: blur(10px);
@@ -63,7 +63,7 @@
 }
 
 .mobileMenuButton:hover {
-  background: #00000018;
+  background: #e2e8f0;
 }
 
 .mobileMenuIcon {

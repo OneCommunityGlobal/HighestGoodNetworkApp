@@ -100,13 +100,13 @@
   height: 2.5rem;
   border-radius: 8px;
   background-color: #f3f4f6;
-  color: #6b7280;
+  color: #374151;
   font-size: 1.125rem;
 }
 
 .darkMode .iconContainer {
   background-color: #374151;
-  color: #9ca3af;
+  color: #d1d5db;
 }
 
 .primary .iconContainer {
@@ -116,32 +116,32 @@
 
 .success .iconContainer {
   background-color: #ecfdf5;
-  color: #10b981;
+  color: #047857;
 }
 
 .warning .iconContainer {
   background-color: #fffbeb;
-  color: #f59e0b;
+  color: #b45309;
 }
 
 .danger .iconContainer {
   background-color: #fef2f2;
-  color: #ef4444;
+  color: #b91c1c;
 }
 
 .info .iconContainer {
   background-color: #ecfeff;
-  color: #06b6d4;
+  color: #0e7490;
 }
 
 .secondary .iconContainer {
   background-color: #faf5ff;
-  color: #8b5cf6;
+  color: #6d28d9;
 }
 
 .darkMode.primary .iconContainer {
   background-color: #312e81;
-  color: #818cf8;
+  color: #a5b4fc;
 }
 
 .darkMode.success .iconContainer {
@@ -156,7 +156,7 @@
 
 .darkMode.danger .iconContainer {
   background-color: #7f1d1d;
-  color: #f87171;
+  color: #fca5a5;
 }
 
 .darkMode.info .iconContainer {
@@ -166,7 +166,7 @@
 
 .darkMode.secondary .iconContainer {
   background-color: #581c87;
-  color: #a78bfa;
+  color: #c4b5fd;
 }
 
 .title {
@@ -250,22 +250,22 @@
 
 .changeIndicator.negative {
   background-color: #fef2f2;
-  color: #dc2626;
+  color: #b91c1c;
 }
 
 .darkMode .changeIndicator.negative {
   background-color: #7f1d1d;
-  color: #f87171;
+  color: #fca5a5;
 }
 
 .changeIndicator.neutral {
   background-color: #f3f4f6;
-  color: #6b7280;
+  color: #374151;
 }
 
 .darkMode .changeIndicator.neutral {
   background-color: #374151;
-  color: #9ca3af;
+  color: #d1d5db;
 }
 
 .changeValue {

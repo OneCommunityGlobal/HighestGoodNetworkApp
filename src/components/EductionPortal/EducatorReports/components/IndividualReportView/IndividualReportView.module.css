@@ -566,25 +566,25 @@
 }
 
 .darkMode .statusBadgeExcellent {
-  background-color: rgb(21 128 61 / 15%);
-  color: #4ade80 !important;
-  border-color: rgb(74 222 128 / 25%);
+  background-color: #064e3b;
+  color: #6ee7b7 !important;
+  border-color: #065f46;
 }
 
 .darkMode .statusBadgeGood {
-  background-color: rgb(161 98 7 / 15%);
-  color: #fcd34d !important;
-  border-color: rgb(252 211 77 / 25%);
+  background-color: #78350f;
+  color: #fde68a !important;
+  border-color: #92400e;
 }
 
 .darkMode .statusBadgeNeedsImprovement {
-  background-color: rgb(194 65 12 / 15%);
-  color: #fb923c !important;
-  border-color: rgb(251 146 60 / 25%);
+  background-color: #7c2d12;
+  color: #fed7aa !important;
+  border-color: #9a3412;
 }
 
 .darkMode .statusBadgeCritical {
-  background-color: rgb(185 28 28 / 15%);
-  color: #fca5a5 !important;
-  border-color: rgb(252 165 165 / 25%);
+  background-color: #7f1d1d;
+  color: #fecaca !important;
+  border-color: #991b1b;
 }
