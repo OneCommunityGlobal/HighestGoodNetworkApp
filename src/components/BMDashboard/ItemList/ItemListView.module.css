@@ -54,7 +54,6 @@ table td {
   color: black;
 }
 
-
 .searchRow {
   display: flex;
   align-items: center;
@@ -123,15 +122,17 @@ table td {
   text-decoration: underline;
 }
 
+/* Changed from grid to flexbox to handle variable number of filter items
+   without overflowing — grid with fixed columns caused SelectItem to push
+   off-screen when there were fewer items than columns */
 .selectInput {
-  display: grid;
-  grid-template-columns: auto 1fr auto 1fr auto 1fr;
+  display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 15px;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto 10px;
-  overflow: visible;
 }
 
 .selectInput label {
@@ -245,8 +246,6 @@ table td {
 .darkMode {
   color: #e8edf4;
   background-color: #0d1117 !important;
-
-/*   color: #fff !important; */
   min-height: 100vh;
   padding-bottom: 2rem;
 }
@@ -554,7 +553,8 @@ table td {
 
 @media (width <= 900px) {
   .selectInput {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: flex-start;
     max-width: 100%;
   }
 
@@ -566,6 +566,7 @@ table td {
   .selectInput select {
     max-width: 100%;
     min-width: 0;
+    width: 100%;
   }
 }
 

@@ -11,7 +11,6 @@ import {
   FaWrench,
   FaRulerCombined,
 } from 'react-icons/fa';
-
 import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
@@ -45,9 +44,10 @@ export function ItemListView({
   children,
 }) {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const [filteredItems, setFilteredItems] = useState(items || []);
-  const [selectedProject, setSelectedProject] = useState('all');
-  const [selectedItem, setSelectedItem] = useState('all');
+  const [filteredItems, setFilteredItems] = useState([]);
+  const [selectedProject, setSelectedProject] = useState([]); // Array of strings
+  const [selectedItem, setSelectedItem] = useState([]); // Array of strings
+  const [localValues, setLocalValues] = useState([]);
   const [isError, setIsError] = useState(false);
   const [selectedTime, setSelectedTime] = useState(new Date());
 
@@ -56,32 +56,37 @@ export function ItemListView({
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(25);
 
+  // Sync initial items load
   useEffect(() => {
     if (items) setFilteredItems([...items]);
   }, [items]);
 
+  // Unified Filtering Logic (Treats empty arrays as 'unfiltered/show all')
   useEffect(() => {
-    let filterItems;
     if (!items) return;
 
-    if (selectedProject === 'all' && selectedItem === 'all') {
-      setFilteredItems([...items]);
-    } else if (selectedProject !== 'all' && selectedItem === 'all') {
-      filterItems = items.filter(item => item.project?.name === selectedProject);
-      setFilteredItems([...filterItems]);
-    } else if (selectedProject === 'all' && selectedItem !== 'all') {
-      filterItems = items.filter(item => item.itemType?.name === selectedItem);
-      setFilteredItems([...filterItems]);
-    } else {
-      filterItems = items.filter(
-        item => item.project?.name === selectedProject && item.itemType?.name === selectedItem,
+    const hasProjectFilter = selectedProject.length > 0;
+    const hasItemFilter = selectedItem.length > 0;
+
+    let matchedItems = items;
+
+    if (hasProjectFilter && !hasItemFilter) {
+      matchedItems = items.filter(item => selectedProject.includes(item.project?.name));
+    } else if (!hasProjectFilter && hasItemFilter) {
+      matchedItems = items.filter(item => selectedItem.includes(item.itemType?.name));
+    } else if (hasProjectFilter && hasItemFilter) {
+      matchedItems = items.filter(
+        item =>
+          selectedProject.includes(item.project?.name) &&
+          selectedItem.includes(item.itemType?.name),
       );
-      setFilteredItems([...filterItems]);
     }
+
+    setFilteredItems(matchedItems);
   }, [selectedProject, selectedItem, items]);
 
   useEffect(() => {
-    setIsError(errors ? Object.keys(errors).length > 0 : false);
+    setIsError(Object.entries(errors || {}).length > 0);
   }, [errors]);
 
   useEffect(() => {
@@ -178,10 +183,7 @@ export function ItemListView({
   if (isError) {
     return (
       <main className={`${styles.itemsListContainer} ${darkMode ? styles.darkMode : ''}`}>
-        <h2>
-          {itemType}
-          {' List'}
-        </h2>
+        <h2>{itemType} List</h2>
         <BMError errors={errors} />
       </main>
     );
@@ -224,7 +226,9 @@ export function ItemListView({
               <SelectForm
                 items={items}
                 setSelectedProject={setSelectedProject}
-                setSelectedItem={setSelectedItem}
+                localValues={localValues}
+                setLocalValues={setLocalValues}
+                itemType={itemType}
               />
 
               <SelectItem
@@ -233,7 +237,7 @@ export function ItemListView({
                 selectedItem={selectedItem}
                 setSelectedItem={setSelectedItem}
                 label={itemType === 'Materials' ? 'Material' : itemType}
-                darkMode={darkMode}
+                itemType={itemType}
               />
             </div>
           )}
