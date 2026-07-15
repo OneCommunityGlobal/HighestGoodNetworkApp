@@ -28,30 +28,32 @@ const EditLinkModal = props => {
     { Name: 'Media Folder', Link: '' },
   ];
   const emptyLink = { Name: '', Link: '' };
+  const copyLinks = links => (links || []).map(link => ({ ...link }));
+  const getSavedDraftState = () => {
+    const savedAdminLinks = copyLinks(userProfile.adminLinks);
+    const googleDocLink =
+      savedAdminLinks.find(link => link.Name === 'Google Doc') || initialAdminLinkState[0];
+    const mediaLink =
+      savedAdminLinks.find(link => link.Name === 'Media Folder') || initialAdminLinkState[1];
+
+    return {
+      googleLink: { ...googleDocLink },
+      mediaFolderLink: { ...mediaLink },
+      adminLinks: savedAdminLinks
+        .filter(link => link.Name !== 'Google Doc')
+        .filter(link => link.Name !== 'Media Folder'),
+      personalLinks: copyLinks(userProfile.personalLinks),
+    };
+  };
+  const savedDraftState = getSavedDraftState();
 
   const [newAdminLink, setNewAdminLink] = useState(emptyLink);
   const [newPersonalLink, setNewPersonalLink] = useState(emptyLink);
 
-  const [googleLink, setGoogleLink] = useState(
-    userProfile.adminLinks.find(link => link.Name === 'Google Doc')
-      ? userProfile.adminLinks.find(link => link.Name === 'Google Doc')
-      : initialAdminLinkState[0],
-  );
-  const [mediaFolderLink, setMediaFolderLink] = useState(
-    userProfile.adminLinks.find(link => link.Name === 'Media Folder')
-      ? userProfile.adminLinks.find(link => link.Name === 'Media Folder')
-      : initialAdminLinkState[1],
-  );
-  const [adminLinks, setAdminLinks] = useState(
-    userProfile.adminLinks
-      ? userProfile.adminLinks
-          .filter(link => link.Name !== 'Google Doc')
-          .filter(link => link.Name !== 'Media Folder')
-      : [],
-  );
-  const [personalLinks, setPersonalLinks] = useState(
-    userProfile.personalLinks ? userProfile.personalLinks : [],
-  );
+  const [googleLink, setGoogleLink] = useState(savedDraftState.googleLink);
+  const [mediaFolderLink, setMediaFolderLink] = useState(savedDraftState.mediaFolderLink);
+  const [adminLinks, setAdminLinks] = useState(savedDraftState.adminLinks);
+  const [personalLinks, setPersonalLinks] = useState(savedDraftState.personalLinks);
   const originalMediaFolderLink = useRef(mediaFolderLink.Link);
 
   const [isChanged, setIsChanged] = useState(false);
@@ -60,6 +62,33 @@ const EditLinkModal = props => {
   const [isMediaFolderLinkChanged, setIsMediaFolderLinkChanged] = useState(false);
   const [isValidLink, setIsValidLink] = useState(true);
   const [duplicateNameError, setDuplicateNameError] = useState(false);
+
+  const resetTransientState = () => {
+    setNewAdminLink(emptyLink);
+    setNewPersonalLink(emptyLink);
+    setIsChanged(false);
+    setIsValidLink(true);
+    setDuplicateNameError(false);
+    setIsWarningPopupOpen(false);
+    setIsMediaFolderLinkChanged(false);
+  };
+
+  const resetDraftFromSavedProfile = () => {
+    // Keep edits in a local draft so Cancel/X can discard unsaved modal changes.
+    const draftState = getSavedDraftState();
+    setGoogleLink(draftState.googleLink);
+    setMediaFolderLink(draftState.mediaFolderLink);
+    setAdminLinks(draftState.adminLinks);
+    setPersonalLinks(draftState.personalLinks);
+    originalMediaFolderLink.current = draftState.mediaFolderLink.Link;
+    resetTransientState();
+  };
+
+  const handleCloseWithoutUpdate = () => {
+    // Closing without Update reloads saved values and clears temporary validation state.
+    resetDraftFromSavedProfile();
+    closeModal();
+  };
 
   const handleNameChanges = (e, links, index, setLinks) => {
     const updateLinks = [...links];
@@ -202,28 +231,21 @@ const EditLinkModal = props => {
   }, [mediaFolderLink.Link, userProfile.mediaUrl]);
 
   useEffect(() => {
-    if (userProfile.adminLinks) {
-      setGoogleLink(
-        userProfile.adminLinks.find(link => link.Name === 'Google Doc') || initialAdminLinkState[0],
-      );
-      setMediaFolderLink(
-        userProfile.adminLinks.find(link => link.Name === 'Media Folder') ||
-          initialAdminLinkState[1],
-      );
-      setAdminLinks(
-        userProfile.adminLinks
-          .filter(link => link.Name !== 'Google Doc')
-          .filter(link => link.Name !== 'Media Folder'),
-      );
+    if (isOpen) {
+      resetDraftFromSavedProfile();
     }
-  }, [userProfile.adminLinks]);
+  }, [isOpen, userProfile.adminLinks, userProfile.personalLinks]);
 
   return (
     <React.Fragment>
-      <Modal isOpen={isOpen} toggle={closeModal} className={darkMode ? 'text-light dark-mode' : ''}>
+      <Modal
+        isOpen={isOpen}
+        toggle={handleCloseWithoutUpdate}
+        className={darkMode ? 'text-light dark-mode' : ''}
+      >
         <ModalHeader
           className={darkMode ? 'bg-space-cadet text-white' : ''}
-          toggle={closeModal}
+          toggle={handleCloseWithoutUpdate}
         >
           <span className="modal-title">Edit Links</span>
         </ModalHeader>
@@ -470,7 +492,10 @@ const EditLinkModal = props => {
               {(!isValidLink || duplicateNameError) && (
                 <div className={`${styles['invalid-help-context']}`}>
                   {!isValidLink && (
-                    <p data-testid='invalid-url-warning'>
+                    <p
+                      className={styles['invalid-help-context']}
+                      data-testid='invalid-url-warning'
+                    >
                       Please enter valid URLs for each link.
                     </p>
                   )}
@@ -500,12 +525,7 @@ const EditLinkModal = props => {
           </Button>
           <Button
             color="primary"
-            onClick={() => {
-              setIsMediaFolderLinkChanged(false);
-              setMediaFolderLink({ ...mediaFolderLink, Link: originalMediaFolderLink.current });
-              setDuplicateNameError(false);
-              closeModal();
-            }}
+            onClick={handleCloseWithoutUpdate}
             style={darkMode ? boxStyleDark : boxStyle}
           >
             Cancel
@@ -559,4 +579,3 @@ EditLinkModal.propTypes = {
 };
 
 export default connect(null, { hasPermission })(EditLinkModal);
-

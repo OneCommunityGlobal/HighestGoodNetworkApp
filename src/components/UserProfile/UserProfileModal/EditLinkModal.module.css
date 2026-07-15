@@ -10,6 +10,7 @@
 
 .invalid-help-context,
 .warning-help-context {
+  /* Preserve error red in dark mode so validation text remains readable. */
   color: red;
   font-size: 0.8rem;
   margin-top: 0.5rem;
