@@ -275,7 +275,7 @@ const OrderCard = ({ order, onStatusChange, darkMode }) => {
 
           <div className={styles.detailItemsHeader}>Order Items</div>
           <div className={styles.detailTableWrap}>
-            <table className={`${styles.detailTable} ${darkMode ? styles.detailTableDark : ''}`}>
+            <table className={styles.detailTable}>
               <thead>
                 <tr>
                   <th>Item</th>

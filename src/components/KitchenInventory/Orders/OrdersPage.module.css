@@ -809,10 +809,15 @@
   letter-spacing: 0.5px;
 }
 
+.modalDark .modalBody .detailLabel {
+  color: #aaa;
+}
+
 .detailValue {
   font-size: 14px;
   color: #333;
   margin: 0;
+  font-weight: 600;
 }
 
 .modalDark .modalBody .detailValue {
@@ -848,27 +853,20 @@
   border-collapse: collapse;
   font-size: 13px;
   table-layout: fixed;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
 .detailTable th {
   text-align: left;
-  padding: 6px 8px;
+  padding: 10px 8px;
   border-bottom: 2px solid #eee;
   color: #666;
   font-weight: 600;
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.3px;
-}
-
-.detailTableDark th {
-  border-bottom-color: #3a3a5a;
-  color: #aaa;
-}
-
-.detailTableDark td {
-  border-bottom-color: #2a2a4a;
-  color: #e0e0e0;
+  background-color: #f9f9f9;
 }
 
 .detailTable th:nth-child(1) {
@@ -887,7 +885,7 @@
 }
 
 .detailTable td {
-  padding: 6px 8px;
+  padding: 10px 8px;
   border-bottom: 1px solid #f0f0f0;
   color: #333;
 }
@@ -900,14 +898,58 @@
 .detailTotalLabel {
   font-weight: 600;
   text-align: right;
-  padding-right: 8px !important;
+  padding: 12px 8px !important;
+  border-top: 2px solid #eee;
+  border-bottom: none;
 }
 
 .detailTotalValue {
   font-weight: 600;
   color: #2e7d32;
-  font-size: 14px;
+  font-size: 15px;
   text-align: right;
+  padding: 12px 8px;
+  border-top: 2px solid #eee;
+  border-bottom: none;
+}
+
+.modalDark .detailTable {
+  background-color: #16213e;
+  color: #e0e0e0;
+}
+
+.modalDark .detailTable th {
+  border-bottom: 2px solid #3a3a5a;
+  color: #bbb;
+  background-color: #1c2541;
+}
+
+.modalDark .detailTable td {
+  border-bottom: 1px solid #2a2a4a;
+  color: #e0e0e0;
+  padding: 10px 8px;
+  background-color: #16213e;
+}
+
+.modalDark .detailTable tfoot td {
+  border-top: 2px solid #3a3a5a;
+  border-bottom: none;
+  color: #e0e0e0;
+  padding: 12px 8px;
+}
+
+.modalDark .detailTable tbody tr:hover td {
+  background-color: #1c2541;
+}
+
+.modalDark .detailTotalLabel {
+  color: #bbb;
+  font-weight: 600;
+}
+
+.modalDark .detailTotalValue {
+  color: #66bb6a;
+  font-size: 15px;
 }
 
 .detailNotes {
@@ -1129,7 +1171,7 @@
 /* Form Elements */
 .label {
   display: block;
-  margin-bottom: 4px;
+  margin: 0 0 4px;
   font-size: 14px;
   color: #333;
 }
@@ -1139,7 +1181,7 @@
 }
 
 .modalDark .modalBody .label {
-  color: #aaa;
+  color: #e0e0e0;
 }
 
 .input,
