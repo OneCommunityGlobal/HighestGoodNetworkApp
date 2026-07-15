@@ -131,8 +131,13 @@
   color: rgb(245 245 245 / 40%) !important;
 }
 
-/* Chart axis labels and text in dark mode */
-.oxideDark :global(.recharts-text) {
+:global(.ant-picker-dropdown) :global(tr:hover) {
+  background: transparent !important;
+}
+
+/* Chart axis labels and text in dark mode (excludes bar value labels,
+   whose color is set inline per-theme in InjurySeverityChart.jsx instead) */
+.oxideDark :global(.recharts-text):not(:global(.recharts-label)) {
   fill: #f5f5f5 !important;
 }
 
