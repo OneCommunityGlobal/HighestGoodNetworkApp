@@ -39,12 +39,14 @@ function DonutChart(props) {
         enabled: false,
       },
       externalLabelGuides: {
-        offset: 28,
-        horizontalSpread: 44,
-        horizontalSpreadMap: { 0: 44, 1: 52, 2: 60, 3: 52, 4: 44 },
-        verticalOffsetMap: { 0: -58, 1: -28, 2: 6, 3: 40, 4: 70 },
-        sideMap: { 0: -1, 1: -1, 2: -1, 3: -1, 4: -1 },
-        allowSideMapOverride: true,
+        placement: 'outside',
+        outsideGap: 12,
+        minimumLabelSpacing: 8,
+        connectorRadialOffset: 8,
+        containmentPadding: 4,
+        fontSize: 14,
+        lineHeight: 16,
+        padding: { x: 8, y: 5 },
         total: totalCount,
         lineColor: labelTextColor,
         backgroundColor: labelBoxBackground,
@@ -55,7 +57,12 @@ function DonutChart(props) {
     maintainAspectRatio: false,
     cutout: '62%',
     layout: {
-      padding: 56,
+      padding: {
+        top: 28,
+        right: 80,
+        bottom: 28,
+        left: 80,
+      },
     },
   };
 

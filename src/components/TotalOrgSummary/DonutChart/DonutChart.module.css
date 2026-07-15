@@ -20,12 +20,13 @@
   column-gap: 0.75rem;
   align-items: center;
   width: 100%;
-  min-width: max-content;
+  min-width: 32rem;
 }
 
 .donutChart {
   position: relative;
   width: 100%;
+  min-width: 21.25rem;
   max-width: 22rem;
   height: 22rem;
   margin-left: 0;
@@ -44,7 +45,7 @@
   justify-content: center;
   gap: 0.28rem;
   width: 52%;
-  max-width: 8.25rem;
+  max-width: 7rem;
 }
 
 .donutCenter > * {

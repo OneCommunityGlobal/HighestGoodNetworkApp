@@ -59,6 +59,154 @@ const clampLabelBoxX = (boxX, boxWidth, chartArea, chartWidth, containmentPaddin
   return boxX;
 };
 
+const distributeLabelColumn = (labelBoxes, chartHeight, containmentPadding, minimumSpacing) => {
+  if (!labelBoxes.length) {
+    return;
+  }
+
+  const minY = containmentPadding;
+  const maxY = chartHeight - containmentPadding;
+  const sortedBoxes = [...labelBoxes].sort((box1, box2) => box1.baseY - box2.baseY);
+
+  sortedBoxes.forEach((labelBox, index) => {
+    const idealY = clampValue(
+      labelBox.baseY - labelBox.boxHeight / 2,
+      minY,
+      maxY - labelBox.boxHeight,
+    );
+
+    if (index === 0) {
+      labelBox.boxY = idealY;
+      return;
+    }
+
+    const previousBox = sortedBoxes[index - 1];
+    labelBox.boxY = Math.max(idealY, previousBox.boxY + previousBox.boxHeight + minimumSpacing);
+  });
+
+  for (let index = sortedBoxes.length - 1; index >= 0; index--) {
+    const labelBox = sortedBoxes[index];
+    const nextBox = sortedBoxes[index + 1];
+    const latestY = nextBox
+      ? nextBox.boxY - minimumSpacing - labelBox.boxHeight
+      : maxY - labelBox.boxHeight;
+    labelBox.boxY = Math.min(labelBox.boxY, latestY);
+  }
+
+  sortedBoxes.forEach((labelBox, index) => {
+    if (index === 0) {
+      labelBox.boxY = Math.max(labelBox.boxY, minY);
+      return;
+    }
+
+    const previousBox = sortedBoxes[index - 1];
+    labelBox.boxY = Math.max(
+      labelBox.boxY,
+      previousBox.boxY + previousBox.boxHeight + minimumSpacing,
+    );
+  });
+};
+
+export const layoutOutsideLabelBoxes = (
+  labelBoxes,
+  {
+    chartHeight,
+    containmentPadding = 4,
+    outsideGap = 12,
+    minimumSpacing = 8,
+    connectorRadialOffset = 8,
+  },
+) => {
+  const leftBoxes = [];
+  const rightBoxes = [];
+
+  labelBoxes.forEach(labelBox => {
+    const direction = Math.cos(labelBox.angle) >= 0 ? 1 : -1;
+    const arcLeft = labelBox.x - labelBox.arc.outerRadius;
+    const arcRight = labelBox.x + labelBox.arc.outerRadius;
+
+    labelBox.effectiveDirection = direction;
+    labelBox.boxX =
+      direction > 0 ? arcRight + outsideGap : arcLeft - outsideGap - labelBox.boxWidth;
+    labelBox.radialX =
+      labelBox.x + Math.cos(labelBox.angle) * (labelBox.arc.outerRadius + connectorRadialOffset);
+    labelBox.radialY =
+      labelBox.y + Math.sin(labelBox.angle) * (labelBox.arc.outerRadius + connectorRadialOffset);
+
+    if (direction > 0) {
+      rightBoxes.push(labelBox);
+    } else {
+      leftBoxes.push(labelBox);
+    }
+  });
+
+  distributeLabelColumn(leftBoxes, chartHeight, containmentPadding, minimumSpacing);
+  distributeLabelColumn(rightBoxes, chartHeight, containmentPadding, minimumSpacing);
+
+  labelBoxes.forEach(labelBox => {
+    labelBox.connectorX =
+      labelBox.effectiveDirection > 0 ? labelBox.boxX : labelBox.boxX + labelBox.boxWidth;
+    labelBox.connectorY = labelBox.boxY + labelBox.boxHeight / 2;
+  });
+
+  return labelBoxes;
+};
+
+const getLabelDirection = (options, index, angle) => {
+  const naturalDirection = Math.cos(angle) >= 0 ? 1 : -1;
+  if (options.placement === 'outside') {
+    return naturalDirection;
+  }
+
+  const mappedDirection = Math.sign(getMappedOption(options.sideMap, index, naturalDirection)) || 1;
+  if (options.allowSideMapOverride) {
+    return mappedDirection;
+  }
+
+  return naturalDirection > 0 ? Math.abs(mappedDirection) : -Math.abs(mappedDirection);
+};
+
+const getInitialLabelBoxX = (elbowX, direction, paddingX, horizontalSpread, boxWidth) => {
+  const labelEdgeX = elbowX + direction * (paddingX + horizontalSpread);
+  return direction < 0 ? labelEdgeX - boxWidth : labelEdgeX;
+};
+
+const containLegacyLabelBox = (boxX, boxY, boxWidth, boxHeight, chartArea, chartWidth, options) => {
+  if (options.placement === 'outside') {
+    return { boxX, boxY };
+  }
+
+  return {
+    boxX: clampLabelBoxX(boxX, boxWidth, chartArea, chartWidth, options.containmentPadding),
+    boxY: clampLabelBoxY(boxY, boxHeight, chartArea),
+  };
+};
+
+const getConnectorPosition = (labelBox, placement) => {
+  if (placement === 'outside') {
+    return { x: labelBox.connectorX, y: labelBox.connectorY };
+  }
+
+  return {
+    x: labelBox.effectiveDirection > 0 ? labelBox.boxX : labelBox.boxX + labelBox.boxWidth,
+    y: Math.max(
+      labelBox.boxY + labelBox.padding.y,
+      Math.min(labelBox.elbowY, labelBox.boxY + labelBox.boxHeight - labelBox.padding.y),
+    ),
+  };
+};
+
+const traceConnectorPath = (ctx, labelBox, placement, connectorPosition) => {
+  ctx.moveTo(labelBox.baseX, labelBox.baseY);
+  if (placement === 'outside') {
+    ctx.lineTo(labelBox.radialX, labelBox.radialY);
+  } else {
+    ctx.lineTo(labelBox.midX, labelBox.midY);
+    ctx.lineTo(labelBox.elbowX, labelBox.elbowY);
+  }
+  ctx.lineTo(connectorPosition.x, connectorPosition.y);
+};
+
 /**
  * Check if two label boxes overlap
  * @param {Object} box1 - First label box {left, right, top, bottom}
@@ -225,6 +373,7 @@ const externalLabelGuidesPlugin = {
     }
 
     const options = {
+      placement: 'radial',
       offset: 26,
       lineColor: '#4f4f4f',
       lineWidth: 1,
@@ -245,6 +394,9 @@ const externalLabelGuidesPlugin = {
       horizontalSpreadMap: undefined,
       verticalOffsetMap: undefined,
       containmentPadding: 12,
+      outsideGap: 12,
+      minimumLabelSpacing: 8,
+      connectorRadialOffset: 8,
       total:
         pluginOpts.total ??
         dataset.data.reduce((acc, val) => acc + (typeof val === 'number' ? val : 0), 0),
@@ -286,11 +438,7 @@ const externalLabelGuidesPlugin = {
       const angle = (arc.startAngle + arc.endAngle) / 2;
       const { x, y, outerRadius } = arc;
 
-      let direction = getMappedOption(options.sideMap, index, Math.cos(angle) >= 0 ? 1 : -1);
-      direction = Math.sign(direction) || 1;
-      if (!options.allowSideMapOverride) {
-        direction = Math.cos(angle) >= 0 ? Math.abs(direction) : -Math.abs(direction);
-      }
+      const direction = getLabelDirection(options, index, angle);
       const baseX = x + Math.cos(angle) * outerRadius;
       const baseY = y + Math.sin(angle) * outerRadius;
       const midX = x + Math.cos(angle) * (outerRadius + options.offset * options.guideBendRatio);
@@ -313,15 +461,19 @@ const externalLabelGuidesPlugin = {
         options.horizontalSpread,
       );
 
-      let boxX = elbowX + direction * (padding.x + horizontalSpread);
-      if (direction < 0) {
-        boxX -= boxWidth;
-      }
+      let boxX = getInitialLabelBoxX(elbowX, direction, padding.x, horizontalSpread, boxWidth);
       let boxY =
         elbowY - boxHeight / 2 + (getMappedOption(options.verticalOffsetMap, index, 0) || 0);
 
-      boxY = clampLabelBoxY(boxY, boxHeight, chartArea);
-      boxX = clampLabelBoxX(boxX, boxWidth, chartArea, chart?.width, options.containmentPadding);
+      ({ boxX, boxY } = containLegacyLabelBox(
+        boxX,
+        boxY,
+        boxWidth,
+        boxHeight,
+        chartArea,
+        chart?.width,
+        options,
+      ));
 
       const isRightOfCenter = boxX + boxWidth / 2 >= x;
       const effectiveDirection = isRightOfCenter ? 1 : -1;
@@ -349,8 +501,16 @@ const externalLabelGuidesPlugin = {
       });
     });
 
-    // Phase 2: Detect and resolve collisions
-    if (chartArea && labelBoxes.length > 1) {
+    // Phase 2: Position outside labels or resolve legacy label collisions
+    if (options.placement === 'outside') {
+      layoutOutsideLabelBoxes(labelBoxes, {
+        chartHeight: chart.height,
+        containmentPadding: options.containmentPadding,
+        outsideGap: options.outsideGap,
+        minimumSpacing: options.minimumLabelSpacing,
+        connectorRadialOffset: options.connectorRadialOffset,
+      });
+    } else if (chartArea && labelBoxes.length > 1) {
       let iterations = 0;
       const maxIterations = 5;
       let hasCollisions = true;
@@ -393,10 +553,6 @@ const externalLabelGuidesPlugin = {
       const {
         baseX,
         baseY,
-        midX,
-        midY,
-        elbowX,
-        elbowY,
         boxX,
         boxY,
         boxWidth,
@@ -407,19 +563,12 @@ const externalLabelGuidesPlugin = {
       } = labelBox;
 
       // Recalculate connector position based on final box position
-      const connectorX = effectiveDirection > 0 ? boxX : boxX + boxWidth;
-      const connectorY = Math.max(
-        boxY + labelPadding.y,
-        Math.min(elbowY, boxY + boxHeight - labelPadding.y),
-      );
+      const connectorPosition = getConnectorPosition(labelBox, options.placement);
 
       // Draw guide line
       ctx.strokeStyle = options.lineColor;
       ctx.beginPath();
-      ctx.moveTo(baseX, baseY);
-      ctx.lineTo(midX, midY);
-      ctx.lineTo(elbowX, elbowY);
-      ctx.lineTo(connectorX, connectorY);
+      traceConnectorPath(ctx, labelBox, options.placement, connectorPosition);
       ctx.stroke();
 
       if (options.markerRadius > 0) {
