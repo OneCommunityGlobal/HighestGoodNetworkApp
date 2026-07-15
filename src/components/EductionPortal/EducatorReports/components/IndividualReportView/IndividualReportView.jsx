@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Card, CardBody, Table, Alert } from 'reactstrap';
+import { Row, Col, Card, CardBody, Table } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import styles from './IndividualReportView.module.css';
 import MetricCard from '../MetricCard/MetricCard';
@@ -8,7 +8,7 @@ import { getStatusClass, getStatusIcon, getStatusText } from '../../utils/status
 
 const getStudentMockData = studentId => {
   const studentDataMap = {
-    '1': {
+    1: {
       student: { id: '1', name: 'Alex Johnson', grade: '5A', avatar: null },
       metrics: {
         averageScore: 82,
@@ -64,7 +64,7 @@ const getStudentMockData = studentId => {
         },
       ],
     },
-    '2': {
+    2: {
       student: { id: '2', name: 'Sarah Williams', grade: '5A', avatar: null },
       metrics: {
         averageScore: 91,
@@ -119,7 +119,7 @@ const getStudentMockData = studentId => {
         },
       ],
     },
-    '3': {
+    3: {
       student: { id: '3', name: 'Michael Brown', grade: '5A', avatar: null },
       metrics: {
         averageScore: 68,
@@ -180,7 +180,7 @@ const getStudentMockData = studentId => {
         },
       ],
     },
-    '4': {
+    4: {
       student: { id: '4', name: 'Emily Davis', grade: '5A', avatar: null },
       metrics: {
         averageScore: 76,
@@ -260,19 +260,6 @@ const IndividualReportView = ({ filters }) => {
     }
   }, [filters.studentId, filters.subject, filters.dateRange]);
 
-  const getStatusColor = status => {
-    switch (status) {
-      case 'excellent':
-        return 'success';
-      case 'good':
-        return 'info';
-      case 'needs-improvement':
-        return 'warning';
-      default:
-        return 'secondary';
-    }
-  };
-
   const getStatusBadgeClass = performance => {
     const status = getStatusClass(performance);
     const statusMap = {
@@ -282,23 +269,6 @@ const IndividualReportView = ({ filters }) => {
       critical: styles.statusBadgeCritical,
     };
     return statusMap[status] || '';
-  };
-
-  const getInsightAlertVariantClass = color => {
-    switch (color) {
-      case 'info':
-        return styles.insightAlertInfo;
-      case 'success':
-        return styles.insightAlertSuccess;
-      case 'warning':
-        return styles.insightAlertWarning;
-      case 'danger':
-        return styles.insightAlertDanger;
-      case 'primary':
-        return styles.insightAlertPrimary;
-      default:
-        return '';
-    }
   };
 
   const formatPerformance = performance => `${Math.round(performance)}%`;
@@ -466,17 +436,20 @@ const IndividualReportView = ({ filters }) => {
                     </div>
                   ) : (
                     studentData?.insights.map(insight => (
-                      <Alert
+                      <div
                         key={`${insight.type || 'info'}-${insight.title}`}
-                        color={getStatusColor(insight.type)}
-                        className={`${styles.insightAlert} ${getInsightAlertVariantClass(
-                          getStatusColor(insight.type),
-                        )}`}
+                        role="alert"
+                        className={`${styles.insightAlert} ${
+                          styles[
+                            `insightAlert${insight.type.charAt(0).toUpperCase() +
+                              insight.type.slice(1)}`
+                          ]
+                        }`}
                       >
                         <div className={`${styles.insightContent}`}>
                           <strong>{insight.title}:</strong> {insight.message}
                         </div>
-                      </Alert>
+                      </div>
                     ))
                   )}
                 </div>

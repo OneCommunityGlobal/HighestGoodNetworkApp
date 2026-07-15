@@ -1,14 +1,14 @@
 /* MetricCard.module.css */
 
 .metricCard {
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
   border: 1px solid #e5e7eb;
   transition: all 0.3s ease;
   position: relative;
-  animation: fadeInScale 0.5s ease-out;
+  animation: fade-in-scale 0.5s ease-out;
   overflow: hidden;
   height: fit-content;
 }
@@ -16,7 +16,7 @@
 .metricCard.darkMode {
   background-color: #1f2937;
   border-color: #374151;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
 }
 
 /* Size Variants */
@@ -114,19 +114,9 @@
   color: #4f46e5;
 }
 
-.darkMode.primary .iconContainer {
-  background-color: #312e81;
-  color: #818cf8;
-}
-
 .success .iconContainer {
   background-color: #ecfdf5;
   color: #10b981;
-}
-
-.darkMode.success .iconContainer {
-  background-color: #064e3b;
-  color: #34d399;
 }
 
 .warning .iconContainer {
@@ -134,19 +124,9 @@
   color: #f59e0b;
 }
 
-.darkMode.warning .iconContainer {
-  background-color: #78350f;
-  color: #fbbf24;
-}
-
 .danger .iconContainer {
   background-color: #fef2f2;
   color: #ef4444;
-}
-
-.darkMode.danger .iconContainer {
-  background-color: #7f1d1d;
-  color: #f87171;
 }
 
 .info .iconContainer {
@@ -154,14 +134,34 @@
   color: #06b6d4;
 }
 
-.darkMode.info .iconContainer {
-  background-color: #164e63;
-  color: #67e8f9;
-}
-
 .secondary .iconContainer {
   background-color: #faf5ff;
   color: #8b5cf6;
+}
+
+.darkMode.primary .iconContainer {
+  background-color: #312e81;
+  color: #818cf8;
+}
+
+.darkMode.success .iconContainer {
+  background-color: #064e3b;
+  color: #34d399;
+}
+
+.darkMode.warning .iconContainer {
+  background-color: #78350f;
+  color: #fbbf24;
+}
+
+.darkMode.danger .iconContainer {
+  background-color: #7f1d1d;
+  color: #f87171;
+}
+
+.darkMode.info .iconContainer {
+  background-color: #164e63;
+  color: #67e8f9;
 }
 
 .darkMode.secondary .iconContainer {
@@ -295,13 +295,13 @@
   right: 0;
   width: 100px;
   height: 100px;
-  background: linear-gradient(135deg, transparent 50%, rgba(79, 70, 229, 0.05) 50%);
+  background: linear-gradient(135deg, transparent 50%, rgb(79 70 229 / 5%) 50%);
   border-radius: 0 12px 0 100px;
   pointer-events: none;
 }
 
 .darkMode .accent {
-  background: linear-gradient(135deg, transparent 50%, rgba(129, 140, 248, 0.1) 50%);
+  background: linear-gradient(135deg, transparent 50%, rgb(129 140 248 / 10%) 50%);
 }
 
 /* Loading State */
@@ -349,6 +349,7 @@
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }
@@ -357,15 +358,25 @@
 /* Hover Effects */
 .metricCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+}
+
+/* Accessibility */
+.metricCard:focus-within {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
 }
 
 .darkMode .metricCard:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 40%);
+}
+
+.darkMode .metricCard:focus-within {
+  outline-color: #818cf8;
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .metricCard {
     padding: 1rem;
   }
@@ -410,7 +421,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .cardHeader {
     flex-direction: column;
     align-items: flex-start;
@@ -445,25 +456,16 @@
 
   .changeIndicator {
     background: transparent !important;
-    border: 1px solid currentColor;
+    border: 1px solid currentcolor;
   }
 }
 
-/* Accessibility */
-.metricCard:focus-within {
-  outline: 2px solid #4f46e5;
-  outline-offset: 2px;
-}
-
-.darkMode .metricCard:focus-within {
-  outline-color: #818cf8;
-}
-
-@keyframes fadeInScale {
+@keyframes fade-in-scale {
   from {
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);

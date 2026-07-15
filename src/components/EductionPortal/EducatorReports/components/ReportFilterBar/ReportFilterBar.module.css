@@ -1,20 +1,20 @@
 /* ReportFilterBar.module.css */
 
 .filterBar {
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
   border: 1px solid #e5e7eb;
   transition: all 0.3s ease;
-  animation: slideDown 0.3s ease-out;
+  animation: slide-down 0.3s ease-out;
 }
 
 .filterBar.darkMode {
   background-color: #1f2937;
   border-color: #374151;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
 }
 
 .filterRow {
@@ -44,7 +44,7 @@
   border-radius: 8px;
   padding: 0.75rem 1rem;
   font-size: 0.875rem;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #374151;
   transition: all 0.2s ease;
   width: 100%;
@@ -59,7 +59,12 @@
 .filterSelect:focus {
   outline: none;
   border-color: #4f46e5;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  box-shadow: 0 0 0 3px rgb(79 70 229 / 10%);
+}
+
+.filterSelect:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .darkMode .filterSelect {
@@ -71,7 +76,7 @@
 
 .darkMode .filterSelect:focus {
   border-color: #818cf8;
-  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.1);
+  box-shadow: 0 0 0 3px rgb(129 140 248 / 10%);
 }
 
 /* Action Buttons */
@@ -84,7 +89,7 @@
 
 .actionBtn {
   background-color: #4f46e5;
-  color: #ffffff;
+  color: #fff;
   border: none;
   border-radius: 8px;
   padding: 0.75rem 1rem;
@@ -101,7 +106,7 @@
 .actionBtn:hover {
   background-color: #3730a3;
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 4px 8px rgb(79 70 229 / 30%);
 }
 
 .actionBtn:active {
@@ -114,7 +119,7 @@
 
 .refreshBtn:hover {
   background-color: #047857;
-  box-shadow: 0 4px 8px rgba(5, 150, 105, 0.3);
+  box-shadow: 0 4px 8px rgb(5 150 105 / 30%);
 }
 
 .exportBtn {
@@ -123,15 +128,35 @@
 
 .exportBtn:hover {
   background-color: #b91c1c;
-  box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
+  box-shadow: 0 4px 8px rgb(220 38 38 / 30%);
+}
+
+.actionBtn:focus {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+.actionBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .darkMode .actionBtn {
   background-color: #4338ca;
 }
 
+.darkMode .actionBtn:focus {
+  outline-color: #818cf8;
+}
+
 .darkMode .actionBtn:hover {
   background-color: #3730a3;
+}
+
+.actionBtn:disabled:hover {
+  transform: none;
+  box-shadow: none;
 }
 
 .darkMode .refreshBtn {
@@ -164,7 +189,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 992px) {
+@media (width <= 992px) {
   .filterRow {
     margin: 0 -0.25rem;
   }
@@ -185,10 +210,10 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .filterBar {
     padding: 1rem;
-    margin: 0 -0.5rem 1.5rem -0.5rem;
+    margin: 0 -0.5rem 1.5rem;
     border-radius: 8px;
   }
 
@@ -216,7 +241,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .actionButtons {
     flex-direction: column;
     gap: 0.5rem;
@@ -236,43 +261,17 @@
   }
 }
 
-/* Focus and Accessibility */
-.actionBtn:focus {
-  outline: 2px solid #4f46e5;
-  outline-offset: 2px;
-}
-
-.darkMode .actionBtn:focus {
-  outline-color: #818cf8;
-}
-
 /* Animation */
-@keyframes slideDown {
+@keyframes slide-down {
   from {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* Loading State */
-.filterSelect:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.actionBtn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.actionBtn:disabled:hover {
-  transform: none;
-  box-shadow: none;
 }
 
 /* Icon Spacing */

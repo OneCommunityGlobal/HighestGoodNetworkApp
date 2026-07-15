@@ -6,7 +6,6 @@ import {
   Card,
   CardBody,
   Table,
-  Alert,
   Dropdown,
   DropdownToggle,
   DropdownMenu,
@@ -75,23 +74,6 @@ const ReportsView = () => {
   };
 
   // Status helpers are shared via utils/statusUtils.js
-
-  const getInsightAlertVariantClass = color => {
-    switch (color) {
-      case 'info':
-        return styles.insightAlertInfo;
-      case 'success':
-        return styles.insightAlertSuccess;
-      case 'warning':
-        return styles.insightAlertWarning;
-      case 'danger':
-        return styles.insightAlertDanger;
-      case 'primary':
-        return styles.insightAlertPrimary;
-      default:
-        return '';
-    }
-  };
 
   return (
     <div className={`${darkMode ? styles.darkMode : ''}`}>
@@ -254,9 +236,9 @@ const ReportsView = () => {
                     </div>
 
                     {/* Actionable Insight 1 */}
-                    <Alert
-                      color="info"
-                      className={`${styles.insightAlert} ${getInsightAlertVariantClass('info')}`}
+                    <div
+                      role="alert"
+                      className={`${styles.insightAlert} ${styles.insightAlertInfo}`}
                     >
                       <div className={`${styles.insightContent}`}>
                         <strong>Actionable Insight:</strong> You consistently excel in Mathematics
@@ -266,7 +248,7 @@ const ReportsView = () => {
                         <button className={`${styles.actionButton}`}>Set Target Goals</button>
                         <button className={`${styles.actionButton}`}>Study Schedule Tips</button>
                       </div>
-                    </Alert>
+                    </div>
                   </CardBody>
                 </Card>
               </Col>
@@ -313,9 +295,9 @@ const ReportsView = () => {
                       />
                     </div>
 
-                    <Alert
-                      color="warning"
-                      className={`${styles.insightAlert} ${getInsightAlertVariantClass('warning')}`}
+                    <div
+                      role="alert"
+                      className={`${styles.insightAlert} ${styles.insightAlertWarning}`}
                     >
                       <div className={`${styles.insightContent}`}>
                         <strong>Actionable Insight:</strong> Your performance in Mathematics shows a
@@ -328,7 +310,7 @@ const ReportsView = () => {
                         </button>
                         <button className={`${styles.actionButton}`}>Get one goal for Art</button>
                       </div>
-                    </Alert>
+                    </div>
                   </CardBody>
                 </Card>
               </Col>
@@ -366,9 +348,9 @@ const ReportsView = () => {
                       </div>
                     </div>
 
-                    <Alert
-                      color="success"
-                      className={`${styles.insightAlert} ${getInsightAlertVariantClass('success')}`}
+                    <div
+                      role="alert"
+                      className={`${styles.insightAlert} ${styles.insightAlertSuccess}`}
                     >
                       <div className={`${styles.insightContent}`}>
                         <strong>Actionable Insight:</strong> You found &apos;Game Genius&apos; and
@@ -384,7 +366,7 @@ const ReportsView = () => {
                           Explore Power Play activities
                         </button>
                       </div>
-                    </Alert>
+                    </div>
                   </CardBody>
                 </Card>
               </Col>
@@ -426,9 +408,9 @@ const ReportsView = () => {
                       </div>
                     </div>
 
-                    <Alert
-                      color="warning"
-                      className={`${styles.insightAlert} ${getInsightAlertVariantClass('warning')}`}
+                    <div
+                      role="alert"
+                      className={`${styles.insightAlert} ${styles.insightAlertWarning}`}
                     >
                       <div className={`${styles.insightContent}`}>
                         <strong>Actionable Insight:</strong> Consistently applying &apos;Everything
@@ -445,7 +427,7 @@ const ReportsView = () => {
                           Tips for emotional intelligence
                         </button>
                       </div>
-                    </Alert>
+                    </div>
                   </CardBody>
                 </Card>
               </Col>

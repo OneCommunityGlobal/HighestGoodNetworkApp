@@ -377,6 +377,36 @@
   padding: 20px;
 }
 
+.insightAlertInfo {
+  background-color: #d1ecf1;
+  border: 1px solid #bee5eb;
+  color: #0c5460;
+}
+
+.insightAlertSuccess {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+
+.insightAlertWarning {
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  color: #856404;
+}
+
+.insightAlertDanger {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+}
+
+.insightAlertPrimary {
+  background-color: #cce5ff;
+  border: 1px solid #b8daff;
+  color: #004085;
+}
+
 .actionButton {
   background: var(--primary-color, #007bff);
   color: white;
@@ -432,51 +462,46 @@
 }
 
 .darkMode .insightAlert {
-  color: #111827;
-  background-color: #e5e7eb;
+  color: #e2e8f0;
+  background-color: #1e293b;
   box-shadow: 0 10px 24px rgb(0 0 0 / 35%);
-  border: 1px solid rgb(17 24 39 / 16%);
+  border: 1px solid #334155;
+}
+
+.darkMode .insightAlert strong {
+  color: #f1f5f9;
 }
 
 .darkMode .insightAlert.insightAlertInfo {
-  background-color: #bcdde4;
-  border-color: #9acbd5;
-  color: #0c5460;
+  background-color: #172554;
+  border-color: #1e40af;
+  color: #93c5fd;
 }
 
 .darkMode .insightAlert.insightAlertSuccess {
-  background-color: #c3e0ca;
-  border-color: #a8d6b2;
-  color: #155724;
+  background-color: #052e16;
+  border-color: #166534;
+  color: #86efac;
 }
 
 .darkMode .insightAlert.insightAlertWarning {
-  background-color: #f2e2b6;
-  border-color: #e9d28f;
-  color: #856404;
+  background-color: #451a03;
+  border-color: #92400e;
+  color: #fde68a;
 }
 
 .darkMode .insightAlert.insightAlertDanger {
-  background-color: #e8c1c5;
-  border-color: #d9a1a7;
-  color: #721c24;
+  background-color: #450a0a;
+  border-color: #991b1b;
+  color: #fca5a5;
 }
 
 .darkMode .insightAlert.insightAlertPrimary {
-  background-color: #b7d6ff;
-  border-color: #94c5ff;
-  color: #004085;
+  background-color: #172554;
+  border-color: #1e40af;
+  color: #93c5fd;
 }
 
-.darkMode .insightAlert.insightAlertInfo *,
-.darkMode .insightAlert.insightAlertSuccess *,
-.darkMode .insightAlert.insightAlertWarning *,
-.darkMode .insightAlert.insightAlertDanger *,
-.darkMode .insightAlert.insightAlertPrimary * {
-  color: inherit;
-}
-
-/* But keep button labels high-contrast */
 .darkMode .insightAlert .actionButton {
   color: #fff;
 }
@@ -770,44 +795,61 @@
 
 .navTabs {
   border-bottom: 2px solid #e0e0e0;
+  display: flex;
+  gap: 4px;
 }
 
 .darkMode .navTabs {
-  border-bottom-color: rgb(255 255 255 / 12%);
+  border-bottom-color: #334155;
 }
 
 .navTabs :global(.nav-link) {
   border: none;
   border-bottom: 3px solid transparent;
-  color: #666;
-  font-weight: 500;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 14px;
   padding: 12px 20px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  background-color: #f1f5f9;
+  border-radius: 8px 8px 0 0;
+  margin-bottom: -2px;
 }
 
 .darkMode .navTabs :global(.nav-link) {
-  color: #ccc;
+  color: #94a3b8;
+  background-color: #1e293b;
 }
 
 .navTabs :global(.nav-link):hover {
-  color: #2c3e50;
-  border-color: transparent;
+  color: #1e293b;
+  background-color: #e2e8f0;
+  border-bottom-color: #94a3b8;
 }
 
 .darkMode .navTabs :global(.nav-link):hover {
-  color: #fff;
+  color: #f1f5f9;
+  background-color: #334155;
+  border-bottom-color: #64748b;
 }
 
 .activeTab {
-  color: #2c3e50 !important;
-  border-bottom-color: #2c3e50 !important;
-  background-color: transparent !important;
+  color: #4f46e5 !important;
+  border-bottom-color: #4f46e5 !important;
+  background-color: #fff !important;
+  box-shadow: 0 -2px 8px rgb(79 70 229 / 15%);
 }
 
 .darkMode .activeTab {
-  color: #fff !important;
-  border-bottom-color: #4f46e5 !important;
+  color: #818cf8 !important;
+  border-bottom-color: #818cf8 !important;
+  background-color: #0f172a !important;
+  box-shadow: 0 -2px 8px rgb(129 140 248 / 20%);
 }
 
 .filterBar {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Card, CardBody, Alert, Table } from 'reactstrap';
+import { Row, Col, Card, CardBody, Table } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import styles from './ClassPerformanceView.module.css';
 import MetricCard from '../MetricCard/MetricCard';
@@ -225,23 +225,6 @@ const ClassPerformanceView = ({ filters }) => {
       setLoading(false);
     }
   }, [filters.classId, filters.subject, filters.dateRange]);
-
-  const getInsightAlertVariantClass = color => {
-    switch (color) {
-      case 'info':
-        return styles.insightAlertInfo;
-      case 'success':
-        return styles.insightAlertSuccess;
-      case 'warning':
-        return styles.insightAlertWarning;
-      case 'danger':
-        return styles.insightAlertDanger;
-      case 'primary':
-        return styles.insightAlertPrimary;
-      default:
-        return '';
-    }
-  };
 
   if (!filters.classId) {
     return (
@@ -479,12 +462,15 @@ const ClassPerformanceView = ({ filters }) => {
                   </div>
                 ) : (
                   classData?.insights.map(insight => (
-                    <Alert
+                    <div
                       key={insight.title}
-                      color={insight.type || 'info'}
-                      className={`${styles.insightAlert} ${getInsightAlertVariantClass(
-                        insight.type,
-                      )}`}
+                      role="alert"
+                      className={`${styles.insightAlert} ${
+                        styles[
+                          `insightAlert${insight.type.charAt(0).toUpperCase() +
+                            insight.type.slice(1)}`
+                        ]
+                      }`}
                     >
                       <div className={styles.insightContent}>
                         <div className={styles.insightHeader}>
@@ -499,7 +485,7 @@ const ClassPerformanceView = ({ filters }) => {
                           </div>
                         )}
                       </div>
-                    </Alert>
+                    </div>
                   ))
                 )}
               </div>
