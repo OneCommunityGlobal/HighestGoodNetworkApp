@@ -136,6 +136,18 @@
   overflow: visible; /* Allow chart labels and tooltips to render outside */
 }
 
+.chartCanvasWrapper {
+  position: relative;
+  width: 100%;
+  height: 400px;
+}
+
+@media (width <= 480px) {
+  .chartCanvasWrapper {
+    height: 300px;
+  }
+}
+
 /* Dark mode for chart container */
 :global(.tools-availability-page.dark-mode .tools-horizontal-chart-container) {
   background-color: #2c3344 !important;
@@ -219,11 +231,37 @@
 
 .datepickerWrapper {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
   width: 100%;
   max-width: 100%;
   min-width: 0; /* Allow shrinking */
+}
+
+.datePickerContainer {
+  flex: 1;
+  min-width: 0;
+}
+
+.datePickerContainer :global(.react-datepicker-wrapper) {
+  display: block;
+  width: 100%;
+}
+
+.projectRowWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.projectSelectContainer {
+  flex: 1;
+  min-width: 0;
 }
 
 /* Date picker input group - includes input and clear button */
