@@ -93,7 +93,7 @@
 }
 
 .dropdownToggle {
-  background: var(--primary-color, #007bff);
+  background: var(--primary-color, #0069d9);
   border: none;
   border-radius: 6px;
   padding: 8px 16px;
@@ -424,7 +424,7 @@
 }
 
 .actionButton {
-  background: var(--primary-color, #007bff);
+  background: var(--primary-color, #0069d9);
   color: white;
   border: none;
   border-radius: 6px;
