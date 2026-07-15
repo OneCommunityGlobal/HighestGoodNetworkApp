@@ -7,6 +7,11 @@ import styles from './DonutChart.module.css';
 
 Chart.register(ArcElement);
 
+export const formatLegendLabel = ({ label, value }, totalCount) => {
+  const percentage = Number.isFinite(totalCount) && totalCount > 0 ? (value / totalCount) * 100 : 0;
+  return `${label}: ${value} (${percentage.toFixed(1)}%)`;
+};
+
 function DonutChart(props) {
   const { title, totalCount, percentageChange, data, colors, comparisonType, darkMode } = props;
   const labelTextColor = darkMode ? '#e2e8f0' : '#334155';
@@ -111,7 +116,7 @@ function DonutChart(props) {
                 className={styles.donutColor}
                 style={{ backgroundColor: chartData.datasets[0].backgroundColor[index] }}
               />
-              <span>{item.label}</span>
+              <span>{formatLegendLabel(item, totalCount)}</span>
             </div>
           ))}
         </div>
