@@ -12,8 +12,6 @@ const ReportFilterBar = ({ filters, onFilterChange, activeTab }) => {
   };
 
   const handleExport = () => {
-    // TODO: Implement export functionality
-    // eslint-disable-next-line no-alert
     alert('Export functionality coming soon!');
   };
 
@@ -104,8 +102,7 @@ const ReportFilterBar = ({ filters, onFilterChange, activeTab }) => {
                 onClick={() => window.location.reload()}
                 title="Refresh Data"
               >
-                <i className="fa fa-refresh" aria-hidden="true" />
-                Refresh
+                <i className="fa fa-refresh" aria-hidden="true" /> Refresh
               </button>
               <button
                 type="button"
@@ -113,8 +110,7 @@ const ReportFilterBar = ({ filters, onFilterChange, activeTab }) => {
                 onClick={handleExport}
                 title="Export Report"
               >
-                <i className="fa fa-download" aria-hidden="true" />
-                Export
+                <i className="fa fa-download" aria-hidden="true" /> Export
               </button>
             </div>
           </Col>

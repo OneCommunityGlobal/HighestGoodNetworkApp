@@ -7,6 +7,7 @@ export const SidebarProvider = ({ children }) => {
     try {
       return localStorage.getItem('ep.sidebar.minimized') === 'true';
     } catch (e) {
+      // localStorage may be unavailable in private browsing or SSR
       return false;
     }
   });
@@ -15,7 +16,7 @@ export const SidebarProvider = ({ children }) => {
     try {
       localStorage.setItem('ep.sidebar.minimized', isMinimized ? 'true' : 'false');
     } catch (e) {
-      // ignore
+      // localStorage may be unavailable in private browsing or SSR
     }
   }, [isMinimized]);
 

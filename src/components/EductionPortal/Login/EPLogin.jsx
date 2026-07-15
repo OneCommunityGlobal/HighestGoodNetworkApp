@@ -78,7 +78,6 @@ function EPLogin(props) {
           message: res.data.message,
         });
       }
-      // TODO: add additional error handling
       return setValidationError({
         label: '',
         message: '',

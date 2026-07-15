@@ -32,7 +32,7 @@ import {
 } from './mockdata';
 
 const ReportsView = () => {
-  const [, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [subjectFilter, setSubjectFilter] = useState('All Subjects');
   const [subjectDropdownOpen, setSubjectDropdownOpen] = useState(false);
   const [performanceDropdownOpen, setPerformanceDropdownOpen] = useState(false);

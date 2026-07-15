@@ -58,7 +58,7 @@ export default function EducationPortalSidebar({ mobileOpen, onRequestClose }) {
           }
         }
       } catch (e) {
-        // If the stored value is malformed, clear it to avoid repeated parse errors.
+        // Malformed JSON in sessionStorage — clear it to avoid repeated parse errors.
         storage.removeItem('viewingUser');
       }
     }

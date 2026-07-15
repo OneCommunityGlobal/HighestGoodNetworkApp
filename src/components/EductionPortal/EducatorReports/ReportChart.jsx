@@ -93,7 +93,7 @@ const ReportChart = ({
       ...customOptions,
       plugins: {
         ...baseOptions.plugins,
-        ...(customOptions.plugins || {}),
+        ...customOptions.plugins,
       },
     };
   };
