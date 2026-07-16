@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios'; // Added axios import to fix network request errors
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
@@ -45,8 +45,6 @@ function Spinner() {
 }
 
 export default function ExperienceDonutChart() {
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
   const [dateRange, setDateRange] = useState({
     start: null,
     end: null,
@@ -136,23 +134,18 @@ export default function ExperienceDonutChart() {
   };
 
   const applyFilters = () => {
-    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-      setError(null);
-      setChartData(null);
-      setTotal(0);
-      setLoading(false);
-      return;
-    }
     setAppliedFilters({
-      startDate,
-      endDate,
+      startDate: dateRange.start,
+      endDate: dateRange.end,
       roles: selectedRoles.map(r => r.value),
     });
   };
 
   const resetFilters = () => {
-    setStartDate('');
-    setEndDate('');
+    setDateRange({
+      start: null,
+      end: null,
+    });
     setSelectedRoles([]);
     setAppliedFilters({ startDate: '', endDate: '', roles: [] });
   };
@@ -227,13 +220,6 @@ export default function ExperienceDonutChart() {
               <label className={styles['filter-label']} htmlFor="startDate">
                 Start Date
               </label>
-              {/* <input
-                id="startDate"
-                type="date"
-                className={styles['filter-input']}
-                value={startDate}
-                onChange={e => setStartDate(e.target.value)}
-              />` */}
               <DatePicker
                 selected={dateRange?.start ? new Date(dateRange.start) : null}
                 onChange={date => {
@@ -251,7 +237,7 @@ export default function ExperienceDonutChart() {
                 startDate={dateRange.start}
                 endDate={dateRange.end}
                 dateFormat="yyyy-MM-dd"
-                isClearable
+                isClearable={dateRange.start}
                 placeholderText="Start date"
                 className={styles['experience-date-input']}
                 calendarClassName={clsx(
@@ -265,13 +251,6 @@ export default function ExperienceDonutChart() {
               <label className={styles['filter-label']} htmlFor="endDate">
                 End Date
               </label>
-              {/* <input
-                id="endDate"
-                type="date"
-                className={styles['filter-input']}
-                value={endDate}
-                onChange={e => setEndDate(e.target.value)}
-              /> */}
               <DatePicker
                 selected={dateRange?.end ? new Date(dateRange.end) : null}
                 onChange={date => {
@@ -285,7 +264,7 @@ export default function ExperienceDonutChart() {
                 endDate={dateRange.end}
                 dateFormat="yyyy-MM-dd"
                 minDate={dateRange?.start ? new Date(dateRange.start) : undefined}
-                isClearable
+                isClearable={dateRange.end}
                 placeholderText="End date"
                 className={styles['experience-date-input']}
                 calendarClassName={clsx(
@@ -305,9 +284,7 @@ export default function ExperienceDonutChart() {
                 value={selectedRoles}
                 onChange={handleRoleChange}
                 placeholder="Select roles"
-                className={`${styles['experience-role-multi-select']} ${
-                  darkMode ? styles.selectDark : ''
-                }`}
+                className={styles['experience-role-multi-select']}
                 classNamePrefix="experience-role-multi-select"
                 isDisabled={AVAILABLE_ROLES.length === 0}
                 closeMenuOnSelect={false}
@@ -347,13 +324,12 @@ export default function ExperienceDonutChart() {
           <div className={styles['filter-actions']}>
             <button
               className={clsx(styles['filter-button'], styles['filter-button-apply'])}
-              //  className={`${styles.btn} ${styles.primary}`} onClick={applyFilters}
+              onClick={applyFilters}
             >
               Apply
             </button>
             <button
               className={clsx(styles['filter-button'], styles['filter-button-clear-all'])}
-              // className={`${styles.btn} ${styles.ghost}`}
               onClick={resetFilters}
               disabled={!hasFilters}
             >
