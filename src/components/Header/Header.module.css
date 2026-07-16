@@ -60,10 +60,6 @@
   position: relative;
 }
 
-.navbarToggler {
-  display: none;
-}
-
 @media (width <= 768px) {
   .headerRow {
     grid-template-columns: auto auto;
@@ -167,11 +163,6 @@
   .rightSection {
     flex-wrap: wrap;
     justify-content: flex-end;
-  }
-
-  .navbarToggler {
-    display: block;
-    margin-left: auto;
   }
 
   .navCollapse {
@@ -316,6 +307,7 @@
     /* 906px and below uses the mobile hamburger layout. */
     display: flex !important;
     align-items: center;
+    margin-left: auto;
   }
 
   .navCollapse {
@@ -502,12 +494,6 @@
     justify-content: center !important;
   }
 
-  .navbarToggler {
-    /* 906px and below uses the mobile hamburger layout. */
-    display: flex !important;
-    align-items: center;
-  }
-
   .rightSection {
     flex-wrap: wrap;
     justify-content: flex-end;
@@ -525,6 +511,7 @@
 
   .navCollapseOpen {
     max-height: 80vh;
+    overflow-y: auto;
   }
 
   .menuContainer {
@@ -533,6 +520,7 @@
     flex-direction: column !important;
     justify-content: flex-start;
     width: 100%;
+    margin-right: 0 !important;
     padding-left: 0;
   }
 
@@ -540,14 +528,6 @@
     /* Keep the announcement readable once the mobile header stacks. */
     overflow: visible;
     max-width: 100%;
-  }
-
-  .navCollapseOpen {
-    overflow-y: auto;
-  }
-
-  .menuContainer {
-    margin-right: 0 !important;
   }
 }
 
