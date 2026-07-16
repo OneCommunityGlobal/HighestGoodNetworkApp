@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import styles from './DailyLogPage.module.css';
 import LogItemCard from './LogItemCard';
+import { useDailyLog } from './DailyLogContext';
 
 const parseDurationToMin = str => {
   if (!str) return 0;
@@ -18,64 +19,23 @@ const formatMin = min => {
   return `${h}h ${m}m`;
 };
 
+const hourOptions = Array.from({ length: 13 }, (_, i) => i);
+const minuteOptions = [0, 15, 30, 45];
+
 export default function DailyLogPage() {
+  const { logs, addLog } = useDailyLog();
+
   const courseOptions = [
     'Mathematics 101 - Algebra Fundamentals',
     'English 200 - Creative Writing',
     'Science 150 - Biology Basics',
   ];
 
-  const [logs, setLogs] = useState([
-    {
-      log_id: 'lg-2',
-      actor_id: 's-1',
-      action_type: 'task_upload',
-      entity_id: 'time-log-101',
-      metadata: {
-        course: 'Mathematics 101 - Algebra Fundamentals',
-        duration: '2h 0m',
-        grade: 'A-',
-        badge: 'Graded (A-)',
-        link: '/time-logs/101',
-        comments_count: 8,
-        notes: 'Worked on quadratic equations practice and reviewed feedback.',
-      },
-      created_at: '2025-09-10T14:00:00Z',
-    },
-    {
-      log_id: 'lg-3',
-      actor_id: 's-1',
-      action_type: 'task_upload',
-      entity_id: 'time-log-102',
-      metadata: {
-        course: 'English 200 - Creative Writing',
-        duration: '1h 30m',
-        badge: 'Reviewed',
-        link: '/time-logs/102',
-        notes: 'Drafted a short story outline and edited the introduction.',
-      },
-      created_at: '2025-09-09T16:00:00Z',
-    },
-    {
-      log_id: 'lg-4',
-      actor_id: 's-1',
-      action_type: 'task_upload',
-      entity_id: 'time-log-103',
-      metadata: {
-        course: 'Science 150 - Biology Basics',
-        duration: '1h 15m',
-        badge: 'Pending Review',
-        link: '/time-logs/103',
-        notes: 'Completed notes on cell structure and watched lecture video.',
-      },
-      created_at: '2025-09-08T18:00:00Z',
-    },
-  ]);
-
   const [showForm, setShowForm] = useState(false);
+  const [durationH, setDurationH] = useState(0);
+  const [durationM, setDurationM] = useState(0);
   const [newLog, setNewLog] = useState({
     course: courseOptions[0],
-    duration: '',
     badge: 'Pending Review',
     notes: '',
   });
@@ -118,6 +78,7 @@ export default function DailyLogPage() {
       .slice(0, 8);
 
     const nowIso = new Date().toISOString();
+    const duration = `${durationH}h ${durationM}m`;
 
     const log = {
       log_id: `lg-${id}`,
@@ -126,19 +87,22 @@ export default function DailyLogPage() {
       entity_id: `time-log-${id}`,
       metadata: {
         course: newLog.course,
-        duration: newLog.duration,
+        duration,
         badge: newLog.badge,
         notes: newLog.notes,
         link: `/time-logs/${id}`,
+        noteToTeacher: '',
+        teacherFeedback: '',
       },
       created_at: nowIso,
     };
 
-    setLogs(prev => [log, ...prev]);
+    addLog(log);
     setShowForm(false);
+    setDurationH(0);
+    setDurationM(0);
     setNewLog({
       course: courseOptions[0],
-      duration: '',
       badge: 'Pending Review',
       notes: '',
     });
@@ -196,16 +160,35 @@ export default function DailyLogPage() {
             </div>
 
             <div className={styles.formRow}>
-              <label htmlFor="durationInput">Duration</label>
-              <input
-                id="durationInput"
-                type="text"
-                className={styles.input}
-                placeholder="e.g. 1h 20m"
-                value={newLog.duration}
-                onChange={e => setNewLog({ ...newLog, duration: e.target.value })}
-                required
-              />
+              <label htmlFor="durationHours">Duration</label>
+              <div className={styles.durationSelects}>
+                <select
+                  id="durationHours"
+                  className={styles.input}
+                  value={durationH}
+                  onChange={e => setDurationH(Number(e.target.value))}
+                  aria-label="Hours"
+                >
+                  {hourOptions.map(h => (
+                    <option key={h} value={h}>
+                      {h}h
+                    </option>
+                  ))}
+                </select>
+                <select
+                  id="durationMinutes"
+                  className={styles.input}
+                  value={durationM}
+                  onChange={e => setDurationM(Number(e.target.value))}
+                  aria-label="Minutes"
+                >
+                  {minuteOptions.map(m => (
+                    <option key={m} value={m}>
+                      {m}m
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <div className={styles.formRow}>

@@ -199,6 +199,15 @@
   margin-top: 8px;
 }
 
+.durationSelects {
+  display: flex;
+  gap: 8px;
+}
+
+.durationSelects .input {
+  flex: 1;
+}
+
 .statsGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

@@ -2,20 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useParams, Link } from 'react-router-dom';
 import styles from './DailyLogPage.module.css';
 import { FaRegCalendarAlt } from 'react-icons/fa';
-
-async function fetchTimeLogExtras(logId) {
-  await new Promise(r => setTimeout(r, 300));
-  return {
-    noteToTeacher: '',
-    teacherFeedback:
-      'Good progress on quadratic equations. Focus on translating word problems into equations and check fraction operations carefully.',
-  };
-}
-
-async function saveNoteToTeacher(logId, note) {
-  await new Promise(r => setTimeout(r, 350));
-  return { ok: true };
-}
+import { useDailyLog } from './DailyLogContext';
 
 const formatDate = iso =>
   new Date(iso).toLocaleDateString(undefined, {
@@ -28,53 +15,32 @@ export default function TimeLogDetail() {
   const { id } = useParams();
   const location = useLocation();
   const passedLog = location.state?.log;
+  const { logs, updateLogNote } = useDailyLog();
 
-  // FIXED: remove setLog, log is read-only
-  const [log] = useState(
-    passedLog || {
-      log_id: `lg-${id}`,
-      created_at: new Date().toISOString(),
-      metadata: { course: 'Course', duration: '—', badge: '', notes: '' },
-    },
+  const logFromContext = useMemo(
+    () => logs.find(row => row.entity_id === `time-log-${id}` || row.log_id === `lg-${id}`),
+    [logs, id],
   );
+
+  const log = logFromContext || passedLog;
 
   const [noteValue, setNoteValue] = useState('');
   const [serverNote, setServerNote] = useState('');
   const [teacherFeedback, setTeacherFeedback] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    let cancelled = false;
-
-    async function init() {
-      setLoading(true);
-      setError('');
-
-      try {
-        const { noteToTeacher, teacherFeedback } = await fetchTimeLogExtras(id);
-
-        if (!cancelled) {
-          setServerNote(noteToTeacher || '');
-          setNoteValue(noteToTeacher || '');
-          setTeacherFeedback(teacherFeedback || '');
-        }
-      } catch (e) {
-        if (!cancelled) {
-          console.error('Failed to load extras:', e);
-          setError('Failed to load notes or feedback.');
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
+    if (log) {
+      const note = log.metadata?.noteToTeacher || '';
+      setServerNote(note);
+      setNoteValue(note);
+      setTeacherFeedback(log.metadata?.teacherFeedback || '');
+      setLoading(false);
     }
-
-    init();
-    return () => {
-      cancelled = true;
-    };
-  }, [id]);
+  }, [log]);
 
   const md = useMemo(() => log?.metadata || {}, [log]);
 
@@ -82,11 +48,15 @@ export default function TimeLogDetail() {
     try {
       setSaving(true);
       setError('');
+      setSaved(false);
 
-      const res = await saveNoteToTeacher(id, noteValue);
-      if (!res.ok) throw new Error('Save failed');
+      await new Promise(r => setTimeout(r, 300));
 
+      updateLogNote(id, noteValue);
       setServerNote(noteValue);
+      setSaved(true);
+
+      setTimeout(() => setSaved(false), 2000);
     } catch (e) {
       console.error('Error saving note:', e);
       setError('Saving failed. Please try again.');
@@ -95,7 +65,10 @@ export default function TimeLogDetail() {
     }
   };
 
-  const handleCancel = () => setNoteValue(serverNote);
+  const handleCancel = () => {
+    setNoteValue(serverNote);
+    setSaved(false);
+  };
 
   if (!log) {
     return (
@@ -156,7 +129,10 @@ export default function TimeLogDetail() {
               className={`${styles.input} ${styles.textarea}`}
               rows={5}
               value={noteValue}
-              onChange={e => setNoteValue(e.target.value)}
+              onChange={e => {
+                setNoteValue(e.target.value);
+                setSaved(false);
+              }}
               placeholder="Write a note to your teacher…"
             />
 
@@ -179,6 +155,12 @@ export default function TimeLogDetail() {
                 {saving ? 'Saving…' : 'Save'}
               </button>
             </div>
+
+            {saved && (
+              <div className={styles.detailNote} style={{ color: '#15803d' }}>
+                Note saved successfully.
+              </div>
+            )}
 
             {error && (
               <div className={styles.detailNote} style={{ color: '#b91c1c' }}>

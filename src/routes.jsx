@@ -273,6 +273,7 @@ const MonthsPledgedChart = lazy(() =>
 );
 import DailyLogPage from './components/EductionPortal/DailyLogPage';
 import TimeLogDetail from './components/EductionPortal/TimeLogDetail';
+import { DailyLogProvider } from './components/EductionPortal/DailyLogContext';
 
 const EnhancedPopularityTimelineChart = lazy(() =>
   import('./components/EnhancedPopularityTimelineAnalytics/EnhancedPopularityTimelineChart'),
@@ -1143,8 +1144,10 @@ export default (
           exact
           component={EvaluationResultsWrapper}
         />
-        <EPProtectedRoute path="/educationportal/dailylog" exact component={DailyLogPage} />
-        <EPProtectedRoute path="/educationportal/time-logs/:id" exact component={TimeLogDetail} />
+        <DailyLogProvider>
+          <EPProtectedRoute path="/educationportal/dailylog" exact component={DailyLogPage} />
+          <EPProtectedRoute path="/educationportal/time-logs/:id" exact component={TimeLogDetail} />
+        </DailyLogProvider>
         <Route path="/educationportal/InsightWidget" component={InsightWidget} />
         <Route path="/educationportal/lesson-library" exact component={BrowseLessonPlan} />
         <Route path="/educationportal/reportButton" component={ReportDownloadButton} />
