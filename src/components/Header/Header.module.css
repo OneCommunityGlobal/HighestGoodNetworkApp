@@ -63,7 +63,8 @@
 .navbarToggler {
   display: none;
 }
-@media (max-width: 768px) {
+
+@media (width <= 768px) {
   .headerRow {
     grid-template-columns: auto auto;
     grid-template-rows: auto auto;
@@ -106,6 +107,7 @@
 .headerCard {
   margin-left: 0; /* Remove left margin */
   margin-right: 0; /* Remove right margin */
+
   /* Keep the card inside the page width */
   width: 100%;
   max-width: 100%;
@@ -125,7 +127,8 @@
   z-index: 100;
   position: relative;
 }
-@media (max-width: 916px) {
+
+@media (width <= 906px) {
   .navbar {
     white-space: normal;
   }
@@ -160,7 +163,7 @@
   }
 }
 
-@media (max-width: 1199px) {
+@media (width <= 906px) {
   .rightSection {
     flex-wrap: wrap;
     justify-content: flex-end;
@@ -275,9 +278,42 @@
   }
 }
 
-/* max-width: 1199px */
-@media (width <= 1199px) {
+@media (907px <= width <= 1599px) {
+  .headerRow {
+    /* Preserve the compact desktop layout from 907px until the full header fits in one row. */
+    grid-template-columns: auto minmax(0, 1fr);
+    row-gap: 0.5rem;
+  }
+
+  .centerSection {
+    /* Keep the announcement readable instead of clipping it between timer and nav. */
+    overflow: visible;
+  }
+
+  .rightSection {
+    /* Keep desktop nav in normal flow and horizontally aligned above the mobile breakpoint. */
+    grid-column: 1 / -1;
+    justify-content: center;
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .menuContainer {
+    /* Override Bootstrap's below-xl column nav so desktop links do not stack vertically. */
+    align-items: center;
+    flex-direction: row !important;
+    flex-wrap: nowrap;
+    justify-content: center;
+    margin-right: 0 !important;
+    padding-left: 0;
+    width: 100%;
+  }
+}
+
+/* max-width: 906px */
+@media (width <= 906px) {
   .navbarToggler {
+    /* 906px and below uses the mobile hamburger layout. */
     display: flex !important;
     align-items: center;
   }
@@ -350,31 +386,6 @@
 
   .showInMobile {
     display: block;
-  }
-}
-
-@media (max-width: 916px) {
-  .navbarToggler {
-    display: none;
-  }
-
-  .navCollapseOpen {
-    display: flex !important;
-    flex-basis: 100%;
-    width: 100%;
-    height: auto !important;
-    overflow: visible !important;
-    visibility: visible !important;
-  }
-
-  .menuContainer {
-    align-items: center;
-    flex-direction: row !important;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-right: 0 !important;
-    padding-left: 0;
-    width: 100%;
   }
 }
 
@@ -476,8 +487,8 @@
   }
 }
 
-/* max-width: 768px */
-@media (width <= 768px) {
+/* max-width: 906px */
+@media (width <= 906px) {
   .navbar .d-flex {
     flex-direction: column !important;
     align-items: center !important;
@@ -489,5 +500,68 @@
   .right-section {
     width: 100% !important;
     justify-content: center !important;
+  }
+
+  .navbarToggler {
+    /* 906px and below uses the mobile hamburger layout. */
+    display: flex !important;
+    align-items: center;
+  }
+
+  .rightSection {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  .navCollapse {
+    /* Keep the mobile menu in normal flow so it pushes page content down. */
+    position: static;
+    flex-basis: 100%;
+    width: 100%;
+    margin-top: 0.5rem;
+    padding-left: 0;
+  }
+
+  .navCollapseOpen {
+    max-height: 80vh;
+  }
+
+  .menuContainer {
+    /* Full-width stacking prevents mobile nav links from compressing horizontally. */
+    align-items: stretch;
+    flex-direction: column !important;
+    justify-content: flex-start;
+    width: 100%;
+    padding-left: 0;
+  }
+
+  .centerSection {
+    /* Keep the announcement readable once the mobile header stacks. */
+    overflow: visible;
+    max-width: 100%;
+  }
+
+  .navCollapseOpen {
+    overflow-y: auto;
+  }
+
+  .menuContainer {
+    margin-right: 0 !important;
+  }
+}
+
+@media (687px <= width <= 905px) {
+  .menuContainer {
+    /* Spacing prevents compact navigation labels from running together between 687px and 905px. */
+    flex-direction: row !important;
+    gap: 0.35rem 1rem;
+  }
+
+  .menuContainer :global(.nav-link) {
+    /* Bootstrap removes nav-link side padding below xl, so restore compact spacing here. */
+    padding-left: 0.55rem !important;
+    padding-right: 0.55rem !important;
+    white-space: nowrap;
   }
 }
