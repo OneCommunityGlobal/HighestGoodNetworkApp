@@ -1,6 +1,6 @@
 // --- WeeklyProjectSummary.jsx ---
 /* eslint-disable import/no-unresolved */
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
@@ -125,6 +125,12 @@ const projectStatusButtons = [
     textColor: '#328D1B',
   },
 ];
+
+function renderFinancialCard(i) {
+  if (i === 2) return <CostPredictionChart projectId={1} />;
+  if (i === 3) return <ActualVsPlannedCost />;
+  return '📊 Card';
+}
 
 function WeeklyProjectSummary() {
   const dispatch = useDispatch();
@@ -334,13 +340,7 @@ function WeeklyProjectSummary() {
         className: 'full',
         content: [0, 1, 2, 3].map(i => (
           <div key={uuidv4()} className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-            {i === 2 ? (
-              <CostPredictionChart projectId={1} />
-            ) : i === 3 ? (
-              <ActualVsPlannedCost />
-            ) : (
-              '📊 Card'
-            )}
+            {renderFinancialCard(i)}
           </div>
         )),
       },
