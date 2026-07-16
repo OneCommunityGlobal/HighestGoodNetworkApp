@@ -184,6 +184,7 @@ function CreateEventModal({ isOpen, toggle }) {
     try {
       const result = await dispatch(createEvent(eventData));
       if (result?.success) {
+        resetForm();
         handleToggle();
         // The events list will be refreshed when the component re-renders
       }
