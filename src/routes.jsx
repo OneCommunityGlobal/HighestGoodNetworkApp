@@ -91,6 +91,7 @@ import ResourcesUsage from './components/CommunityPortal/Activities/activityId/R
 import EventNoShowChart from './components/CommunityPortal/Attendence/NoshowViz';
 import EventList from './components/CommunityPortal/Event/EventList/EventList';
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
+import LogAttendance from './components/CommunityPortal/Activities/LogAttendance';
 import MaterialSummary from './components/MaterialSummary/MaterialSummary';
 import FeedbackRatingEntry from './components/FeedbackActivityModal/FeedbackActivityEntry';
 import AddLessons from './components/BMDashboard/Lessons/AddLessons';
@@ -1059,6 +1060,11 @@ export default (
           component={Register}
         />
         <CPProtectedRoute path="/communityportal/ActivityAgenda" exact component={ActivityAgenda} />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityId/logattendance"
+          exact
+          component={LogAttendance}
+        />
         <CPProtectedRoute
           path="/communityportal/activity/:activityId/engagement/Comments"
           exact
