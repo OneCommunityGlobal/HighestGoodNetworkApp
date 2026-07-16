@@ -253,7 +253,7 @@ export default function ExperienceDonutChart() {
                 dateFormat="yyyy-MM-dd"
                 isClearable
                 placeholderText="Start date"
-                className={styles.experienceDateInput}
+                className={styles['experience-date-input']}
                 calendarClassName={clsx(
                   'experience-datepicker',
                   darkMode ? 'experience-datepicker-dark' : 'experience-datepicker-light',
@@ -287,7 +287,7 @@ export default function ExperienceDonutChart() {
                 minDate={dateRange?.start ? new Date(dateRange.start) : undefined}
                 isClearable
                 placeholderText="End date"
-                className={styles.experienceDateInput}
+                className={styles['experience-date-input']}
                 calendarClassName={clsx(
                   'experience-datepicker',
                   darkMode ? 'experience-datepicker-dark' : 'experience-datepicker-light',
@@ -305,7 +305,7 @@ export default function ExperienceDonutChart() {
                 value={selectedRoles}
                 onChange={handleRoleChange}
                 placeholder="Select roles"
-                className={`${styles.ExperienceRoleMultiSelect} ${
+                className={`${styles['experience-role-multi-select']} ${
                   darkMode ? styles.selectDark : ''
                 }`}
                 classNamePrefix="experience-role-multi-select"
