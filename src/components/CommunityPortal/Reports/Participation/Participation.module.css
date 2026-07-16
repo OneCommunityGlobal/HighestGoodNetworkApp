@@ -570,11 +570,29 @@
 }
 
 .pageBreakAfter {
-  break-after: page;
+  break-after: always;
 }
 
 .avoidBreak {
   break-inside: avoid;
+}
+
+/* Use :global for data attributes and print styles */
+:global(html[data-exporting='true']) .caseCards:global(.expanded),
+:global(html[data-exporting='true']) .caseList:global(.expanded),
+:global(html[data-exporting='true']) .trackingListContainer {
+  max-height: none !important;
+  overflow: visible !important;
+  -webkit-overflow-scrolling: auto !important;
+}
+
+:global(html[data-exporting='true']) * {
+  animation: none !important;
+  transition: none !important;
+}
+
+:global(html[data-exporting='true']) .participationLandingPageDark {
+  background-color: #1b2a41 !important;
 }
 
 .printOnly {
