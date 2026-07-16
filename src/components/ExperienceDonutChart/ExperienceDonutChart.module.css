@@ -50,7 +50,6 @@
   .detail-item {
     background-color: #253652;
     border-color: #404751;
-
   }
 
   .detail-name {
@@ -63,6 +62,10 @@
 
   .detail-pct {
     color: #C0C7D3
+  }
+
+  .experience-role-multi-select :global(.experience-role-multi-select__input) {
+    color: #f9fafb !important;
   }
 }
 
@@ -266,6 +269,18 @@
   aspect-ratio: 1 / 1; /* keeps donut perfectly square */
   min-height: 240px; /* fallback for older browsers */
   margin: 0 auto;
+  position: relative; /* anchor for absolute-positioned tooltip layer */
+}
+
+/* Floats the external CustomTooltip over the donut center so card-hover or
+   slice-hover both surface it in the same place. */
+.chart-tooltip-layer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 5;
 }
 
 .recharts-wrapper,
@@ -669,10 +684,6 @@
   border-radius: 0.5rem;
 }
 
-:global(.dark-mode) .experience-role-multi-select :global(.experience-role-multi-select__input) {
-  color: #ffffff !important;
-}
-
 :global(.dark-mode) .experience-role-multi-select :global(.experience-role-multi-select__menu) {
   background-color: #1f2937;
   border-color: #5a6c7d;
@@ -707,6 +718,7 @@
 
 .experience-role-multi-select :global(.experience-role-multi-select__value-container) {
   padding: 0.2rem 1rem;
+  column-gap: 0.5rem;
 }
 
 
@@ -883,9 +895,7 @@
     flex: 1;
   }
 
-  .selectedPill {
-    font-size: 1rem;
-  }
+
 
   .experience-role-multi-select :global(.experience-role-multi-select__control) {
     min-width: 415px;
