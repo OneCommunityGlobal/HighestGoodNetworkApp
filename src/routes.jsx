@@ -278,6 +278,12 @@ const JobAnalyticsPage = lazy(() =>
   import('./components/Reports/HitsAndApplicationRatio/JobAnalyticsPage'),
 );
 const SuggestedJobsListBuilder = lazy(() => import('./components/Collaboration/SuggestedJobsList'));
+const ResourceManagementDashboard = lazy(() =>
+  import('./components/ResourceRequest/ResourceManagementDashboard/ResourceManagementDashboard'),
+);
+const ResourceRequestList = lazy(() =>
+  import('./components/ResourceRequest/ResourceRequestList/ResourceRequestList'),
+);
 const ProcessingLandingPage = lazy(() =>
   import('./components/KitchenInterfaces/Processing/ProcessingLandingPage'),
 );
@@ -1062,6 +1068,13 @@ export default (
           path="/communityportal/activity/:activityId/resourcesusage"
           exact
           component={ResourcesUsage}
+        />
+        <ProtectedRoute path="/educator/requests" exact component={ResourceRequestList} fallback />
+        <ProtectedRoute
+          path="/pm/dashboard/resources"
+          exact
+          component={ResourceManagementDashboard}
+          fallback
         />
         <CPProtectedRoute
           path="/communityportal/activity/:activityId/resources"
