@@ -107,13 +107,10 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
   };
 
   const darkHighLight = shouldHighlight => {
-    return darkMode
-      ? shouldHighlight
-        ? styles['dark-highlight-row']
-        : styles.darkModeRow
-      : shouldHighlight
-      ? styles['highlight-row']
-      : '';
+    const darkClass = shouldHighlight ? styles['dark-highlight-row'] : styles.darkModeRow;
+    const lightClass = shouldHighlight ? styles['highlight-row'] : '';
+
+    return darkMode ? darkClass : lightClass;
   };
 
   return (
