@@ -40,11 +40,24 @@
 /* Only in darkMode: target filterSelect under .oxideDark */
 .oxideDark .filterSelect :global(.ant-select-selector) {
   background-color: #1c2541 !important;
-  border-color: rgb(255 255 255 / 20%) !important;
+  border-color: rgb(255 255 255 / 35%) !important;
 }
 
-.oxideDark .filterSelect :global(.ant-select-selection-item),
 .oxideDark .filterSelect :global(.ant-select-selection-placeholder) {
+  color: rgb(245 245 245 / 55%) !important;
+}
+
+.oxideDark .filterSelect :global(.ant-select-selection-item) {
+  background-color: rgb(0 123 255 / 25%) !important;
+  border-color: rgb(0 123 255 / 55%) !important;
+  color: #f5f5f5 !important;
+}
+
+.oxideDark .filterSelect :global(.ant-select-selection-item-remove) {
+  color: rgb(245 245 245 / 70%) !important;
+}
+
+.oxideDark .filterSelect :global(.ant-select-selection-item-remove):hover {
   color: #f5f5f5 !important;
 }
 
@@ -84,6 +97,10 @@
    globally via the popupClassName applied in the JSX (oxideDark-dropdown). */
 :global(.ant-select-dropdown.oxideDark-dropdown) {
   background-color: #1c2541 !important;
+  /* Popup bg is close to the page bg - give it a visible edge/elevation so
+     it doesn't blend into the page it floats over. */
+  border: 1px solid rgb(255 255 255 / 20%) !important;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 45%) !important;
 }
 
 :global(.ant-select-dropdown.oxideDark-dropdown .ant-select-item-option-content) {
@@ -91,11 +108,11 @@
 }
 
 :global(.ant-select-dropdown.oxideDark-dropdown .ant-select-item-option-active) {
-  background-color: rgb(255 255 255 / 8%) !important;
+  background-color: rgb(0 123 255 / 15%) !important;
 }
 
 :global(.ant-select-dropdown.oxideDark-dropdown .ant-select-item-option-selected) {
-  background-color: rgb(255 255 255 / 15%) !important;
+  background-color: rgb(0 123 255 / 28%) !important;
 }
 
 :global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-panel-container),
@@ -104,7 +121,13 @@
 :global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-content),
 :global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-footer) {
   background-color: #1c2541 !important;
-  border-color: rgb(255 255 255 / 10%) !important;
+  border-color: rgb(255 255 255 / 20%) !important;
+}
+
+/* Elevate the panel so it reads as a distinct floating surface, matching
+   the select dropdown's treatment. */
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-panel-container) {
+  box-shadow: 0 4px 16px rgb(0 0 0 / 45%) !important;
 }
 
 :global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-header),
@@ -133,6 +156,33 @@
 
 :global(.ant-picker-dropdown) :global(tr:hover) {
   background: transparent !important;
+}
+
+/* Day-cell hover/selected/in-range feedback. Without these, AntD's default
+   light-theme fills (faint black tints) are invisible on this dark panel,
+   so hovering or picking a date range gives no visible feedback. */
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-cell:hover:not(.ant-picker-cell-selected, .ant-picker-cell-range-start, .ant-picker-cell-range-end, .ant-picker-cell-disabled) .ant-picker-cell-inner) {
+  background-color: rgb(0 123 255 / 20%) !important;
+}
+
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-cell-in-range::before) {
+  background-color: rgb(0 123 255 / 15%) !important;
+}
+
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-cell-range-start:not(.ant-picker-cell-range-start-single)::before),
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-cell-range-end:not(.ant-picker-cell-range-end-single)::before) {
+  background-color: rgb(0 123 255 / 15%) !important;
+}
+
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-cell-selected .ant-picker-cell-inner),
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-cell-range-start .ant-picker-cell-inner),
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-cell-range-end .ant-picker-cell-inner) {
+  background-color: #007bff !important;
+  color: #ffffff !important;
+}
+
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-cell-today .ant-picker-cell-inner::before) {
+  border-color: #007bff !important;
 }
 
 /* Chart axis labels and text in dark mode (excludes bar value labels,

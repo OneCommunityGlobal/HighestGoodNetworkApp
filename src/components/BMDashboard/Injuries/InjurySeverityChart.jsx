@@ -25,6 +25,29 @@ const generateColors = n =>
     return `hsl(${hue}, 70%, 50%)`;
   });
 
+function hslToRgb(h, s, l) {
+  const sat = s / 100;
+  const light = l / 100;
+  const k = n => (n + h / 30) % 12;
+  const a = sat * Math.min(light, 1 - light);
+  const f = n => light - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+  return [255 * f(0), 255 * f(8), 255 * f(4)];
+}
+
+function getContrastTextColor(fillColor) {
+  const match = fillColor.match(/hsl\((\d+(?:\.\d+)?),\s*(\d+(?:\.\d+)?)%,\s*(\d+(?:\.\d+)?)%\)/);
+  if (!match) return '#333333';
+  const [h, s, l] = match.slice(1).map(Number);
+  const [r, g, b] = hslToRgb(h, s, l);
+  const relativeLuminance = [r, g, b]
+    .map(c => c / 255)
+    .map(cs => (cs <= 0.03928 ? cs / 12.92 : ((cs + 0.055) / 1.055) ** 2.4))
+    .reduce((acc, cur, i) => acc + cur * [0.2126, 0.7152, 0.0722][i], 0);
+  const contrastWithWhite = 1.05 / (relativeLuminance + 0.05);
+  const contrastWithBlack = (relativeLuminance + 0.05) / 0.05;
+  return contrastWithWhite > contrastWithBlack ? '#ffffff' : '#000000';
+}
+
 const SEVERITY_ORDER = ['Minor', 'Major', 'Critical'];
 
 function CustomTooltip({ active, payload, label, darkMode }) {
@@ -305,17 +328,21 @@ function InjurySeverityDashboard(props) {
             <XAxis
               dataKey="severity"
               height={60}
+              tick={{ fill: darkMode ? '#f5f5f5' : '#333333' }}
               label={{
                 value: 'Severity',
                 position: 'bottom',
                 dy: 0,
+                fill: darkMode ? '#f5f5f5' : '#333333',
               }}
             />
             <YAxis
+              tick={{ fill: darkMode ? '#f5f5f5' : '#333333' }}
               label={{
                 value: 'Injury Count',
                 angle: -90,
                 position: 'insideLeft',
+                fill: darkMode ? '#f5f5f5' : '#333333',
               }}
             />
             <Tooltip
@@ -353,8 +380,8 @@ function InjurySeverityDashboard(props) {
                 <LabelList
                   dataKey={bar.dataKey}
                   position="center"
+                  fill={getContrastTextColor(bar.fill)}
                   style={{
-                    fill: darkMode ? '#ffffff' : '#333333',
                     fontSize: '10px',
                     fontWeight: 'bold',
                   }}
