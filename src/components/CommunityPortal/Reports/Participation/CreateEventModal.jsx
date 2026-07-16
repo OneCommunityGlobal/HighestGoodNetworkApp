@@ -27,7 +27,7 @@ function CreateEventModal({ isOpen, toggle }) {
       .tz('America/Los_Angeles')
       .format('YYYY-MM-DD'),
     description: '',
-    maxAttendees: 10,
+    maxAttendees: '',
     coverImage: '',
   });
 
@@ -48,7 +48,7 @@ function CreateEventModal({ isOpen, toggle }) {
         .tz('America/Los_Angeles')
         .format('YYYY-MM-DD'),
       description: '',
-      maxAttendees: 10,
+      maxAttendees: '',
       coverImage: '',
     });
     setErrors({});
@@ -58,7 +58,7 @@ function CreateEventModal({ isOpen, toggle }) {
   const handleToggle = () => {
     if (!loading) {
       toggle();
-      if (!isOpen) {
+      if (isOpen) {
         resetForm();
       }
     }
