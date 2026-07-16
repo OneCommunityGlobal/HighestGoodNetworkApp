@@ -30,7 +30,7 @@ function RegistrationForm() {
 
   return (
     <form
-      className={`${styles.registrationForm} ${darkMode ? styles.darkmode : ''}`}
+      className={`${styles.eventRegistrationForm} ${darkMode ? styles.darkmode : ''}`}
       onSubmit={handleSubmit}
     >
       <h3>Event Registrations</h3>

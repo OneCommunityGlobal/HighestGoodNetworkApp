@@ -307,7 +307,7 @@
   color: #7f1d1d;
 }
 
-.registrationForm {
+.eventRegistrationForm {
   background: white;
   border-radius: 14px;
   padding: 16px 18px;
@@ -318,7 +318,7 @@
   box-shadow: 0 8px 22px rgb(0 0 0 / 8%);
 }
 
-.registrationForm h3 {
+.eventRegistrationForm h3 {
   grid-column: 1 / -1;
   margin: 0;
   font-size: 0.95rem;
@@ -333,8 +333,8 @@
 }
 
 /* Inputs */
-.registrationForm input,
-.registrationForm select {
+.eventRegistrationForm input,
+.eventRegistrationForm select {
   height: 36px;
   padding: 0 10px;
   font-size: 0.85rem;
@@ -385,7 +385,7 @@
   box-shadow: 0 0 0 2px rgb(220 38 38 / 12%);
 }
 
-.registrationForm input[type='date'] {
+.eventRegistrationForm input[type='date'] {
   max-width: 180px;
 }
 
@@ -515,7 +515,7 @@
 .darkmode .resourceMonitoring,
 .darkmode .latestRegistration,
 .darkmode .myEvent,
-.darkmode .registrationForm {
+.darkmode .eventRegistrationForm {
   background-color: #020617;
   border: 1px solid #1e293b;
   box-shadow:
@@ -579,20 +579,20 @@
   color: #f9fafb;
 }
 
-.darkmode .registrationForm input,
-.darkmode .registrationForm select,
+.darkmode .eventRegistrationForm input,
+.darkmode .eventRegistrationForm select,
 .darkmode .filterControls select {
   background-color: #020617;
   border-color: #1e293b;
   color: #e5e7eb;
 }
 
-.darkmode .registrationForm input::placeholder {
+.darkmode .eventRegistrationForm input::placeholder {
   color: #64748b;
 }
 
-.darkmode .registrationForm input:focus,
-.darkmode .registrationForm select:focus,
+.darkmode .eventRegistrationForm input:focus,
+.darkmode .eventRegistrationForm select:focus,
 .darkmode .filterControls select:focus {
   border-color: #60a5fa;
   background-color: #020617;
