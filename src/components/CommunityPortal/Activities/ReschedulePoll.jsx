@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
-import styles from './RescheduleEvent.module.css';
 import { ApiEndpoint } from '~/utils/URL';
+import styles from './RescheduleEvent.module.css';
 
 function getApiOrigin() {
   try {
@@ -23,7 +23,7 @@ function fmtHuman(opt, tz) {
 
   const d = new Date(`${opt.dateISO}T00:00:00`);
   const dateStr = d.toDateString();
-  return `${dateStr} • ${to12(opt.start)} – ${to12(opt.end)} (${tz})`;
+  return `${dateStr} \u2022 ${to12(opt.start)} \u2013 ${to12(opt.end)} (${tz})`;
 }
 
 export default function ReschedulePoll() {
@@ -31,7 +31,7 @@ export default function ReschedulePoll() {
   const darkMode = useSelector(state => state.theme?.darkMode);
   const params = new URLSearchParams(search);
   const emailToken = params.get('token') || '';
-const activityId = params.get('a') || '';
+  const activityId = params.get('a') || '';
   const pageClassName = `${styles.reschedulePage} ${styles.pollPage} ${
     darkMode ? styles.reschedulePageDark : ''
   }`;
@@ -134,7 +134,7 @@ const activityId = params.get('a') || '';
   if (loading) {
     return (
       <div className={pageClassName}>
-        <p>Loading poll…</p>
+        <p>Loading poll\u2026</p>
       </div>
     );
   }
@@ -149,8 +149,8 @@ const activityId = params.get('a') || '';
 
   return (
     <div className={pageClassName}>
-<h2>{poll.activity?.title || poll.activity?.name || 'Activity'}</h2>
-<div className={styles.muted}>{poll.activity?.location}</div>
+      <h2>{poll.activity?.title || poll.activity?.name || 'Activity'}</h2>
+      <div className={styles.muted}>{poll.activity?.location}</div>
       {poll.reason ? (
         <p>
           <strong>Reason:</strong> {poll.reason}
@@ -178,7 +178,7 @@ const activityId = params.get('a') || '';
             className={styles.primaryBtn}
             disabled={selected === null || submitting}
           >
-            {submitting ? 'Submitting…' : 'Submit'}
+            {submitting ? 'Submitting\u2026' : 'Submit'}
           </button>
         </div>
       </form>

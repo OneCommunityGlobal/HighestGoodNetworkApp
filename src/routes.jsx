@@ -1008,7 +1008,6 @@ export default (
         <CPProtectedRoute
           path="/communityportal/activities/:activityId/manage"
           component={RescheduleEvent}
-          routePermissions={['rescheduleEvent']}
         />
         <Route path="/communityportal/ReschedulePoll" component={ReschedulePoll} />
         {/* ----- Community Calendar Routing ----- */}

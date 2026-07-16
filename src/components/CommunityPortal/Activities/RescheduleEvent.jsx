@@ -1,17 +1,21 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import styles from './RescheduleEvent.module.css';
 import { useSelector } from 'react-redux';
 import { ApiEndpoint } from '~/utils/URL';
+import styles from './RescheduleEvent.module.css';
 
 function RescheduleEvent({ activity }) {
+  const { activityId: routeActivityId } = useParams();
+  const activityId = activity?._id || routeActivityId;
+
   const eventInfo = activity || {
-    _id: '1',
-    name: 'Event Name',
-    location: 'San Francisco, CA 94108',
-    link: 'Event Link',
+    _id: activityId,
+    name: 'Event',
+    location: '',
+    link: '',
   };
 
   const darkMode = useSelector(state => state.theme?.darkMode);
@@ -53,12 +57,12 @@ function RescheduleEvent({ activity }) {
     return slots;
   };
 
-const toISODate = d => {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
-};
+  const toISODate = d => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  };
 
   const addOption = () => {
     if (!selectedDate || !selectedTime) return;
@@ -70,11 +74,13 @@ const toISODate = d => {
     const exists = options.some(opt => opt.dateISO === dateISO && opt.timeSlot === timeSlot);
 
     if (exists) {
+      // eslint-disable-next-line no-alert
       alert('That date & time is already in the poll list.');
       return;
     }
 
     if (options.length >= 5) {
+      // eslint-disable-next-line no-alert
       alert('You can add up to 5 options.');
       return;
     }
@@ -112,19 +118,18 @@ const toISODate = d => {
       };
     });
 
-  const sendRescheduleRequest = async (eventId, payload) => {
+  const sendRescheduleRequest = async (id, payload) => {
     const token = localStorage.getItem('token');
-    const res = await fetch(
-      `${ApiEndpoint}/communityportal/activities/${eventId}/reschedule/notify`,
-      {
-        method: 'POST',
-headers: {
-  ...(token ? { Authorization: token } : {}),
-  'Content-Type': 'application/json',
-},
-        body: JSON.stringify(payload),
-      },
-    );
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) {
+      headers.Authorization = token;
+    }
+
+    const res = await fetch(`${ApiEndpoint}/communityportal/activities/${id}/reschedule/notify`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload),
+    });
 
     if (!res.ok) {
       const text = await res.text();
@@ -146,9 +151,11 @@ headers: {
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       });
 
+      // eslint-disable-next-line no-alert
       alert(`Notification sent to ${json.notified} participants.`);
       closeModal();
     } catch (e) {
+      // eslint-disable-next-line no-alert
       alert(`Error: ${e.message}`);
     } finally {
       setLoading(false);
@@ -227,12 +234,12 @@ function RescheduleModal(props) {
           aria-modal="true"
           aria-labelledby="reschedule-title"
         >
-<button
-  type="button"
-  aria-label="Close reschedule dialog"
-  className={styles.modalCloseBtn}
-  onClick={closeModal}
->
+          <button
+            type="button"
+            aria-label="Close reschedule dialog"
+            className={styles.modalCloseBtn}
+            onClick={closeModal}
+          >
             &times;
           </button>
 
@@ -244,7 +251,7 @@ function RescheduleModal(props) {
                 onClick={handleCreateAndNotify}
                 disabled={loading}
               >
-                {loading ? 'Sending…' : 'Create & Notify'}
+                {loading ? 'Sending\u2026' : 'Create & Notify'}
               </button>
               <button
                 type="button"
@@ -318,7 +325,7 @@ function RescheduleModal(props) {
                       key={`${opt.dateISO}-${opt.timeSlot}`}
                       onClick={() => removeOption(idx)}
                     >
-                      {opt.dateLabel} • {opt.timeSlot}
+                      {opt.dateLabel} &bull; {opt.timeSlot}
                     </button>
                   ))}
                 </div>
