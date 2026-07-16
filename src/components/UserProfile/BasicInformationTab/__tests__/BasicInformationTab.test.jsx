@@ -45,10 +45,6 @@ describe('Test Suite for Name component', () => {
     setFormValid: vi.fn(),
     canEdit: true,
     desktopDisplay: 3,
-    authUser: {
-      requestorId: '123',
-      requestorRole: 'Owner',
-    },
   };
   it('Test case 1 : Name component renders with editable fields when canEdit is true ', () => {
     render(<Name {...testProps} />);
