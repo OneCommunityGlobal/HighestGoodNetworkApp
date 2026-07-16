@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import styles from '../Projects/projects.module.css';
 
 export default function SearchProjectByPerson({
   onSearch,
@@ -39,7 +40,7 @@ export default function SearchProjectByPerson({
         <div className="input-group-prepend">
           <span
             className={`input-group-text search-field-container ${
-              darkMode ? 'bg-yinmn-blue text-light' : ''
+              darkMode ? `${styles.searchLabelDark} text-light` : ''
             }`}
           >
             Search
