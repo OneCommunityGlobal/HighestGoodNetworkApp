@@ -75,10 +75,6 @@
   .custom-tooltip-percentage span {
     color: #C0C7D3;
   }
-
-  .custom-tooltip-name{
-    font-weight: 700;
-  } 
 }
 
 /* ===================== Header ===================== */
@@ -483,6 +479,7 @@
 
 .custom-tooltip-name {
   padding-bottom: 0.4rem;
+  font-weight: 700;
 }
 
 .custom-tooltip-stats {
