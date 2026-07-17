@@ -827,7 +827,7 @@ class UserProfileAdd extends Component {
     else return false;
   };
 
-  createUserProfile = () => {
+  createUserProfile = (skipDuplicateCheck = false) => {
     let that = this;
     const {
       firstName,
@@ -869,7 +869,7 @@ class UserProfileAdd extends Component {
       collaborationPreference: collaborationPreference,
       timeZone: timeZone,
       location: location,
-      allowsDuplicateName: true,
+      allowsDuplicateName: skipDuplicateCheck,
       createdDate: createdDate,
       teamCode: this.state.teamCode,
       actualEmail: role === 'Administrator' || role === 'Owner' ? actualEmail : '',
@@ -925,11 +925,16 @@ class UserProfileAdd extends Component {
       }
     }
     if (this.fieldsAreValid()) {
-      this.setState({ showphone: false });
       if (!email.match(patt)) {
         toast.error('Email is not valid. Please include @ followed by .com format');
-      } else {
-        createUser(userData)
+        return;
+      }
+      if (!skipDuplicateCheck && this.checkIfDuplicate(firstName, lastName)) {
+        this.setState({ popupOpen: true });
+        return;
+      }
+      this.setState({ showphone: false });
+      createUser(userData)
           .then(res => {
             if (res.data.warning) {
               toast.warn(
@@ -1005,7 +1010,6 @@ class UserProfileAdd extends Component {
             // Generic fallback
             toast.error(`Create failed${status ? ` (${status})` : ''}: ${data.error || 'Unknown error occurred.'}`);
           });
-      }
     }
   };
 
