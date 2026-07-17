@@ -84,6 +84,38 @@ function renderDotTopOrBottom(lineKey, color) {
   };
 }
 
+// Custom label for the "Current Month" reference line. Rendered near the bottom
+// of the line and right-aligned to its left, so it stays in the empty lower area
+// and never overlaps the data value labels (which sit near the top on the right).
+function CurrentMonthLabel({ viewBox }) {
+  if (!viewBox) return null;
+  const { x, y, height } = viewBox;
+  return (
+    <text
+      x={x - 6}
+      y={y + height - 8}
+      fill="#fc07cf"
+      fontSize={12}
+      fontWeight="bold"
+      textAnchor="end"
+    >
+      Current Month
+    </text>
+  );
+}
+
+CurrentMonthLabel.propTypes = {
+  viewBox: PropTypes.shape({
+    x: PropTypes.number,
+    y: PropTypes.number,
+    height: PropTypes.number,
+  }),
+};
+
+CurrentMonthLabel.defaultProps = {
+  viewBox: null,
+};
+
 function CostPredictionChart({ projectId }) {
   const dispatch = useDispatch();
   const [chartData, setChartData] = useState([]);
@@ -224,12 +256,13 @@ function CostPredictionChart({ projectId }) {
               </ul>
             )}
           />
-          {/* Reference line (kept fixed color) */}
+          {/* Reference line marking the current month. Label sits near the bottom
+              of the line so it never overlaps the data value labels. */}
           <ReferenceLine
             x={currentMonth}
             stroke="#ff0000"
             strokeDasharray="3 3"
-            label={{ value: 'Current Month', position: 'top', fill: '#fc07cfff' }}
+            label={<CurrentMonthLabel />}
           />
           {/* Series (kept fixed colors) */}
           <Line

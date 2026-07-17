@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styles from './DisplayBox.module.css';
 
@@ -52,9 +52,25 @@ export default function DisplayBox({ onClose, darkMode = false }) {
     onClose();
   };
 
+  const modalRef = useRef(null);
+  const overlayRef = useRef(null);
+
+  useEffect(() => {
+    const overlayClickHandler = e => {
+      if (e.target.id === 'overlay') onClose();
+    };
+
+    document.addEventListener('click', overlayClickHandler);
+    return () => document.removeEventListener('click', overlayClickHandler);
+  }, []);
+
   return (
-    <div className={styles.overlay}>
-      <div className={`${styles.popup} ${darkMode ? styles.popupDark : ''}`}>
+    <div className={styles.overlay} ref={overlayRef} id="overlay">
+      <div
+        className={`${styles.popup} ${darkMode ? styles.popupDark : ''}`}
+        ref={modalRef}
+        id="modal"
+      >
         <h2 className={`${styles.popupHeading} ${darkMode ? styles.popupHeadingDark : ''}`}>
           Are you sure you want to promote these PR reviewers?
         </h2>
