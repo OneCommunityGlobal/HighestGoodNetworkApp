@@ -15,8 +15,8 @@
   align-items: center;
   border-radius: 10px;
   padding: 5px;
-  border: 1px solid #e8e8e8;
-  box-shadow: 0 1px 4px rgb(0 0 0 / 6%);
+
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .pageWrapper {
@@ -32,36 +32,94 @@
   color: #f1f1f1;
 }
 
+.darkContainer {
+  background-color: #1a2332;
+  color: #e8e8e8;
+  max-width: 100%;
+  margin: 0;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.darkContainer {
+  background-color: #1a2332;
+  color: #e8e8e8;
+  max-width: 100%;
+  margin: 0;
+  box-shadow: none;
+  border-radius: 0;
+}
+
 .customForm {
   background-color: var(--jfb-white);
   padding: 10px;
   margin-top: 0;
   border-radius: 5px;
-  border: 1px solid #ebebeb;
+  border: 1px solid #d9d9d9;
+}
+
+.darkContainer .customForm {
+  background-color: #1e2a3a;
+  border-color: #3a4a5c;
+}
+
+.darkContainer .customForm {
+  background-color: #1e2a3a;
+  border-color: #3a4a5c;
 }
 
 .jobformNavbar {
-  display: flex;
-  padding: 0 10px;
-  justify-content: space-between;
-  background-color: var(--jfb-lime);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  padding: 20px;
+  gap: 20px;
+  background-color: #97ca02;
   border-radius: 5px;
-  border: 1px solid var(--jfb-lime);
-  margin-bottom: 12px;
+  border: 1px solid #97ca02;
+  margin-bottom: 3%;
+  align-items: start;
+}
+
+.darkNavbar {
+  background-color: #243447;
+  border-color: #243447;
+}
+
+.navbarSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  border-radius: 5px;
+}
+
+.navbarSectionTitle {
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.darkContainer .navbarSection {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.darkContainer .navbarSectionTitle {
+  color: #e8e8e8;
 }
 
 .jobformNavbar input {
-  margin: 8px 0;
+  margin: 4px 0;
+  max-width: 100%;
 }
 
 .jobformNavbar select {
-  margin: 8px 0;
+  margin: 4px 0;
   width: 100%;
-}
-
-.jobformNavbar div {
-  display: flex;
-  padding: 2px;
 }
 
 .jobformNavbar button {
@@ -78,8 +136,139 @@
   box-shadow: 0 1px 2px rgb(0 0 0 / 10%);
 }
 
+.darkContainer input,
+.darkContainer select,
+.darkContainer textarea {
+  background-color: #1e2a3a;
+  color: #e8e8e8;
+  border-color: #3a4a5c;
+}
+
+.darkContainer .goButton,
+.darkContainer .jobformNavbar button {
+  background-color: #3d4f62;
+  color: #e8e8e8;
+}
+
+.darkContainer .goButton:hover,
+.darkContainer .jobformNavbar button:hover {
+  background-color: #4a5f75;
+}
+
+.darkContainer .addFieldButton,
+.darkContainer .addOptionButton {
+  background-color: #3d7a40;
+}
+
+.darkContainer .addFieldButton:hover,
+.darkContainer .addOptionButton:hover {
+  background-color: #2f5f33;
+}
+
+.darkContainer .jobSubmitButton {
+  background-color: #3d7a40;
+}
+
+.darkContainer .jobSubmitButton:hover {
+  background-color: #2f5f33;
+}
+
 .jobformNavbar button:hover {
   background-color: #f5f5f5;
+}
+
+.buttonRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.goButton {
+  padding: 11px 20px;
+  border: none;
+  background-color: #cccccc;
+  color: white;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  white-space: nowrap;
+}
+
+.darkContainer input,
+.darkContainer select,
+.darkContainer textarea {
+  background-color: #1e2a3a;
+  color: #e8e8e8;
+  border-color: #3a4a5c;
+}
+
+.darkContainer .goButton,
+.darkContainer .jobformNavbar button {
+  background-color: #3d4f62;
+  color: #e8e8e8;
+}
+
+.darkContainer .goButton:hover,
+.darkContainer .jobformNavbar button:hover {
+  background-color: #4a5f75;
+}
+
+.darkContainer .addFieldButton,
+.darkContainer .addOptionButton {
+  background-color: #3d7a40;
+}
+
+.darkContainer .addFieldButton:hover,
+.darkContainer .addOptionButton:hover {
+  background-color: #2f5f33;
+}
+
+.darkContainer .jobSubmitButton {
+  background-color: #3d7a40;
+}
+
+.darkContainer .jobSubmitButton:hover {
+  background-color: #2f5f33;
+}
+
+.goButton:hover {
+  background-color: grey;
+}
+
+.buttonRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.goButton {
+  padding: 11px 20px;
+  border: none;
+  background-color: #cccccc;
+  color: white;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.jobformNavbar button:hover {
+  background-color: grey;
 }
 
 .jobformDesc {
@@ -90,10 +279,14 @@
   text-align: center;
   color: black;
   font-weight: bold;
-  margin: 6px 0 10px;
-  padding: 0;
-  line-height: 1.2;
-  font-size: 1.75rem;
+}
+
+.darkContainer .jobformTitle,
+.darkContainer .jobformDesc,
+.darkContainer .jbformLabel,
+.darkContainer label,
+.darkContainer .fieldLabel {
+  color: #f5f5f5;
 }
 
 .jbformLabel {
@@ -114,6 +307,14 @@
   background-color: white;
 }
 
+.darkContainer .jobformInput,
+.darkContainer .jobformTextarea,
+.darkContainer .jobformSelect {
+  background-color: #1e2a3a;
+  color: #e8e8e8;
+  border-color: #3a4a5c;
+}
+
 .jobformTextarea {
   height: 80px;
   resize: vertical;
@@ -122,8 +323,15 @@
 .newFieldSection {
   background-color: var(--jfb-white);
   padding: 20px;
-  border-top: 1px solid #ebebeb;
-  margin-top: 8px;
+
+}
+
+.darkContainer .newFieldSection {
+  background-color: #1e2a3a;
+}
+
+.darkContainer .newFieldSection {
+  background-color: #1e2a3a;
 }
 
 /* General Container for Each Question */
@@ -231,7 +439,7 @@
   padding: 0;
 }
 
-@media (width <= 768px) {
+@media (width <=768px) {
   .formDiv {
     grid-template-columns: 1fr;
   }
@@ -485,4 +693,70 @@
 
 .darkMode .previewTextButton:hover {
   background-color: var(--jfb-blue);
+}
+
+@media (max-width: 720px) {
+
+  .formBuilderContainer {
+    width: 98%;
+    max-width: 100%;
+    margin: 1% 1% 0;
+    padding: 10px;
+  }
+
+  .jobformNavbar {
+    grid-template-columns: 1fr;
+    padding: 15px;
+    gap: 15px;
+  }
+
+  .navbarSection {
+    padding: 12px;
+  }
+
+  .buttonRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .jobformNavbar input[type="text"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 4px 0 !important;
+  }
+
+  .jobformInput,
+  .jobformTextarea,
+  .jobformSelect,
+  .goButton {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 4px 0 !important;
+  }
+
+  .formDiv {
+    flex-direction: column;
+  }
+
+  .formDivCheckbox {
+    width: auto;
+    order: 1;
+  }
+
+  .formField {
+    order: 2;
+    width: 100%;
+  }
+
+  .optionItem {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    word-break: break-word;
+  }
+
+  .oneCommunityGlobalImg {
+    max-width: 100%;
+    height: auto;
+  }
 }
