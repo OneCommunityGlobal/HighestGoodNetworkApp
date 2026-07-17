@@ -1,51 +1,69 @@
 /* stylelint-disable no-descending-specificity */
-
-/* ---------- BASE CONTAINER ---------- */
+table thead th,
+table td {
+  vertical-align: middle !important;
+}
 
 .itemsListContainer {
   width: 100%;
-  max-width: 1536px;
-  margin: 1rem auto;
-  padding: 0 1rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+  transition: background-color 0.25s ease, color 0.25s ease;
+  min-height: 100vh;
 }
 
+/* ==========================================================================
+   THEME CONFIGURATION PANELS
+   ========================================================================== */
 
+/* Light Mode Context Base */
 .lightTheme {
   background-color: #fff;
   color: #111827;
+
+  --border-color: #e5e7eb;
 }
 
+/* Dark Mode Context Base */
 .darkTheme {
   background-color: #0f1b2b;
   color: #f5f7fb;
+
+  --border-color: #1d3c52;
 }
 
-/* ---------- FILTERS LAYOUT ---------- */
+.itemsListContainer section {
+  margin-top: 1rem;
+}
+
+/* ==========================================================================
+   FILTER LAYOUT ENGINE & SELECT FIELDS
+   ========================================================================== */
 
 .filtersRow {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  width: 100%;
 }
 
 .projectToolColumn {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
   align-items: flex-end;
+  gap: 1.5rem;
+  width: 100%;
+  padding: 1rem 0;
+  margin-bottom: 1rem;
 }
 
 .filterGroup {
   display: flex;
   flex-direction: column;
-  flex: 0 0 260px;
-  width: 260px;
+  min-width: 260px;
 }
 
 .filterGroup form {
-  display: inline-block;
+  display: block;
   width: 100%;
 }
 
@@ -53,13 +71,40 @@
   display: flex;
   align-items: flex-end;
   width: 100%;
+  max-width: 280px;
   column-gap: 1rem;
 }
 
-.selectInput > div {
-  width: 100% !important;
-  min-width: 0 !important;
-  flex: 1 1 auto !important;
+.filterLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.resetContainer {
+  display: flex;
+  align-items: flex-end;
+  height: 100%;
+}
+
+.btnReset {
+  padding: 0.45rem 1.5rem;
+  font-weight: 500;
+  height: 38px;
+  background-color: #dc2626;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btnReset:hover {
+  background-color: #b91c1c;
+}
+
+.btnReset:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .availSearchColumn {
@@ -69,47 +114,23 @@
 
 .availSearchRow {
   display: flex;
-  width: 100%;
   flex-wrap: wrap;
-  align-items: flex-end;
   gap: 1rem;
+  align-items: flex-end;
+  width: 100%;
 }
 
 .availUsingGroup {
   display: flex;
   gap: 1rem;
   flex: 0 0 auto;
-}
-
-.searchGroup {
-  display: flex;
-  flex-direction: column;
-  margin-left: auto;
-}
-
-.statusIconOk,
-.statusIconOk svg,
-.statusIconOk path {
-  color: #16a34a !important;
-  fill: #16a34a !important;
-}
-
-.statusIconBad,
-.statusIconBad svg,
-.statusIconBad path {
-  color: #dc2626 !important;
-  fill: #dc2626 !important;
+  flex-wrap: wrap;
 }
 
 .filterGroupSmall {
   display: flex;
   flex-direction: column;
   min-width: 140px;
-}
-
-.filterLabel {
-  font-size: 0.85rem;
-  margin-bottom: 0.25rem;
 }
 
 .filterSelect,
@@ -123,6 +144,12 @@
 
 .searchInput {
   width: 100%;
+}
+
+.searchGroup {
+  display: flex;
+  flex-direction: column;
+  margin-left: auto;
 }
 
 .lightTheme .filterSelect,
@@ -153,28 +180,54 @@
   box-shadow: 0 0 0 1px rgb(75 163 255 / 30%);
 }
 
-@media (width <= 900px) {
-  .filtersRow {
-    align-items: flex-start;
-  }
+/* ==========================================================================
+   STATUS INDICATORS & ICON DECORATORS
+   ========================================================================== */
 
-  .projectToolColumn,
-  .availSearchColumn {
-    width: 100%;
-  }
-
-  .availSearchRow {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .searchGroup {
-    min-width: 100%;
-    max-width: 100%;
-  }
+.statusIconOk,
+.statusIconOk svg,
+.statusIconOk path {
+  color: #16a34a !important;
+  fill: #16a34a !important;
 }
 
-/* ---------- TABLE STYLES ---------- */
+.statusIconBad,
+.statusIconBad svg,
+.statusIconBad path {
+  color: #dc2626 !important;
+  fill: #dc2626 !important;
+}
+
+.itemsCell svg {
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
+  color: #6b7280;
+  transition: color 0.2s ease;
+}
+
+.lightTheme .itemsCell svg:hover {
+  color: #111827;
+}
+
+.darkTheme .itemsCell svg {
+  color: #9ca3af;
+}
+
+.darkTheme .itemsCell svg:hover {
+  color: #fff;
+}
+
+.conditionCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* ==========================================================================
+   TABLE STYLES
+   ========================================================================== */
 
 .itemsTableContainer {
   border-radius: 4px;
@@ -250,74 +303,66 @@
   background-color: #1e3046;
 }
 
-.itemsListContainer section {
-  margin-top: 2rem;
+/* ==========================================================================
+   GLOBAL BOOTSTRAP DATATABLE THEME INJECTIONS
+   ========================================================================== */
+
+.lightTheme :global(.table) {
+  color: #111827 !important;
+  background-color: #fff !important;
+  border: 1px solid #e5e7eb;
 }
 
-.itemsListContainer table {
-  text-align: center;
-  min-width: 1024px;
-  overflow: scroll;
-  font-size: small;
+.lightTheme :global(.table thead th) {
+  background-color: #f3f4f6 !important;
+  color: #111827 !important;
+  border-bottom: 2px solid #e5e7eb !important;
 }
 
-.itemsTable th {
-  height: 2rem;
+.lightTheme :global(.table tbody tr:nth-child(even)) {
+  background-color: #f9fafb !important;
 }
 
-.itemsListContainer th {
-  height: 2rem;
+.lightTheme :global(.table tbody tr:hover) {
+  background-color: #edf2ff !important;
 }
 
-.itemsCell svg {
-  width: 20px;
-  height: 20px;
-  margin-right: 6px;
-  color: dimgray;
-}
-
-.itemsCell svg:hover {
-  color: black;
-}
-
-.darkTheme .itemsCell svg {
-  color: #d1d5db;
-}
-
-.darkTheme .itemsCell svg:hover {
-  color: #fff;
-}
-
-.conditionCell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding-left: 0;
-}
-
-.darkTheme .form-select,
-.darkTheme .filterSelect {
-  background-color: #1e293b !important;
+.darkTheme :global(.table) {
   color: #e5e7eb !important;
-  border-color: #334155 !important;
+  background-color: #14253d !important;
+  border: 1px solid #1d3c52 !important;
 }
 
-.darkTheme .form-select option,
-.darkTheme .filterSelect option {
-  background-color: #1e293b;
-  color: #e5e7eb;
+.darkTheme :global(.table thead th) {
+  background-color: #0b1420 !important;
+  color: #f8fafc !important;
+  border-bottom: 2px solid #1d3c52 !important;
 }
 
-.darkTheme .form-select:focus {
-  box-shadow: 0 0 0 0.2rem rgb(59 130 246 / 25%);
-  border-color: #3b82f6;
+.darkTheme :global(.table tbody tr) {
+  background-color: #14253d !important;
+  border-bottom: 1px solid #1d3c52 !important;
 }
 
-.forceDarkSelect select option,
-.forceDarkSelect .form-select option {
-  background-color: #1e293b !important;
+.darkTheme :global(.table tbody tr:nth-child(even)) {
+  background-color: #0f1b2b !important;
+}
+
+.darkTheme :global(.table tbody tr:hover) {
+  background-color: #1c3354 !important;
+}
+
+.darkTheme :global(.table) button {
+  background: transparent;
+  color: #6af1ea;
+  border: none;
+}
+
+.darkTheme :global(.form-select),
+.darkTheme :global(.form-control) {
+  background-color: #14253d !important;
   color: #e5e7eb !important;
+  border-color: #1d3c52 !important;
 }
 
 /* ── Inventory Navigation Bar ── */
@@ -409,6 +454,10 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
 }
 
 .pageTitleIcon {
@@ -422,30 +471,57 @@
   color: #4dabf7;
 }
 
-/* ── Mobile responsive improvements ── */
+/* ==========================================================================
+   RESPONSIVE DESIGN SYSTEM MEDIA BREAKPOINTS
+   ========================================================================== */
+
 @media (width <= 768px) {
-  .itemsListContainer {
-    padding: 0 0.5rem;
+  .projectToolColumn {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
   }
 
-  .itemsTableContainer {
-    position: relative;
-    max-height: 70vh;
+  .filterGroup {
+    min-width: 100%;
   }
 
-  .itemsTableContainer::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 24px;
-    background: linear-gradient(to right, transparent, rgb(0 0 0 / 8%));
-    pointer-events: none;
+  .selectInput {
+    max-width: 100%;
   }
 
-  .darkTheme .itemsTableContainer::after {
-    background: linear-gradient(to right, transparent, rgb(255 255 255 / 8%));
+  .resetContainer {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .btnReset {
+    width: 100%;
+  }
+
+  .availSearchColumn {
+    width: 100%;
+  }
+
+  .availSearchRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .searchGroup {
+    min-width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+  }
+
+  .filterGroupSmall {
+    min-width: 120px;
+    flex: 1 1 45%;
+  }
+
+  .availUsingGroup {
+    width: 100%;
+    flex-wrap: wrap;
   }
 
   .inventoryNav {
@@ -465,21 +541,6 @@
 
   .pageTitle {
     font-size: 1.4rem;
-  }
-
-  .filterGroupSmall {
-    min-width: 120px;
-    flex: 1 1 45%;
-  }
-
-  .availUsingGroup {
-    width: 100%;
-    flex-wrap: wrap;
-  }
-
-  .searchGroup {
-    margin-left: 0;
-    width: 100%;
   }
 }
 

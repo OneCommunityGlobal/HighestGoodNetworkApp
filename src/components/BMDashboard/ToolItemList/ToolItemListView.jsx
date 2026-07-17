@@ -46,14 +46,18 @@ const toBool = raw => {
     if (['yes', 'y', 'true', 't', '1'].includes(v)) return true;
     if (['no', 'n', 'false', 'f', '0'].includes(v)) return false;
   }
-  return undefined; // unknown
+  return undefined;
 };
 
 function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, dynamicColumns }) {
   const [filteredItems, setFilteredItems] = useState(items || []);
+  const [localValues, setLocalValues] = useState([]);
   const [isError, setIsError] = useState(false);
 
-  // Read dark mode directly from Redux — no flash, no MutationObserver needed
+  const projectKey = `${itemType}_selected_projects`;
+  const itemKey = `${itemType}_selected_items`;
+
+  // Read dark mode directly from Redux
   const isDarkMode = useSelector(state => state.theme.darkMode);
 
   const { filters, setFilters } = useToolFilters();
@@ -85,13 +89,13 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
     let data = [...items];
 
     // 1) Project filter
-    if (selectedProject !== 'all') {
-      data = data.filter(item => item.project?.name === selectedProject);
+    if (Array.isArray(selectedProject) && selectedProject.length > 0) {
+      data = data.filter(item => selectedProject.includes(item.project?.name));
     }
 
     // 2) Tool type filter
-    if (selectedItem !== 'all') {
-      data = data.filter(item => item.itemType?.name === selectedItem);
+    if (Array.isArray(selectedItem) && selectedItem.length > 0) {
+      data = data.filter(item => selectedItem.includes(item.itemType?.name));
     }
 
     // 3) Available filter
@@ -106,7 +110,7 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
       data = data.filter(item => isItemUsing(item) === wantUsing);
     }
 
-    // 4.5) Tool Status (from upstream requirement)
+    // 4.5) Tool Status
     if (toolStatusFilter && toolStatusFilter !== 'all') {
       data = data.filter(item => {
         if (toolStatusFilter === 'using') return isItemUsing(item);
@@ -122,7 +126,7 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
       });
     }
 
-    // 4.6) Condition (from upstream requirement)
+    // 4.6) Condition
     if (conditionFilter && conditionFilter !== 'all') {
       data = data.filter(item => item.condition === conditionFilter);
     }
@@ -218,9 +222,20 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
     });
   };
 
+  const handleReset = () => {
+    setLocalValues([]);
+    updateFilter({ selectedProject: [], selectedItem: [] });
+    localStorage.removeItem(projectKey);
+    localStorage.removeItem(itemKey);
+  };
+
   if (isError) {
     return (
-      <main className={`${styles.itemsListContainer} ${styles.lightTheme}`}>
+      <main
+        className={`${styles.itemsListContainer} ${
+          isDarkMode ? styles.darkTheme : styles.lightTheme
+        }`}
+      >
         <h2>{itemType} List</h2>
         <BMError errors={errors} />
       </main>
@@ -248,11 +263,10 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
               <div className={styles.filterGroup}>
                 <SelectForm
                   items={items}
-                  selectedProject={selectedProject}
-                  selectedItem={selectedItem}
                   setSelectedProject={value => updateFilter({ selectedProject: value })}
-                  setSelectedItem={value => updateFilter({ selectedItem: value })}
-                  isDarkMode={isDarkMode}
+                  localValues={localValues}
+                  setLocalValues={setLocalValues}
+                  itemType={itemType}
                 />
               </div>
               <div className={styles.filterGroup}>
@@ -262,8 +276,21 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
                   selectedItem={selectedItem}
                   setSelectedItem={value => updateFilter({ selectedItem: value })}
                   label="Tool"
-                  isDarkMode={isDarkMode}
+                  itemType={itemType}
                 />
+              </div>
+              <div className={styles.resetContainer}>
+                <button
+                  type="button"
+                  className={styles.btnReset}
+                  onClick={handleReset}
+                  disabled={
+                    localStorage.getItem(projectKey) === null &&
+                    localStorage.getItem(itemKey) === null
+                  }
+                >
+                  Reset
+                </button>
               </div>
             </div>
 
