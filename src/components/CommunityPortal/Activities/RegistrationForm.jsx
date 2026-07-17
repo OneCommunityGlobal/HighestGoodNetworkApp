@@ -26,13 +26,15 @@ function RegistrationForm() {
         progressClassName: `${styles.registrationToastProgress} ${darkMode ? styles.darkmode : ''}`,
       },
     );
+    setName('');
+    setEventType('');
+    setLocation('');
+    setEventDate('');
+    setShowValidation(false);
   };
 
   return (
-    <form
-      className={`${styles.eventRegistrationForm} ${darkMode ? styles.darkmode : ''}`}
-      onSubmit={handleSubmit}
-    >
+    <form className={`${styles.eventRegistrationForm}`} onSubmit={handleSubmit}>
       <h3>Event Registrations</h3>
 
       <div className={`${styles.formFields}`}>

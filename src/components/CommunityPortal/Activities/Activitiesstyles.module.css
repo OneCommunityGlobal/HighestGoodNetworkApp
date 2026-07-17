@@ -508,7 +508,8 @@
 .darkmode .header h2,
 .darkmode .resourceMonitoring h2,
 .darkmode .latestRegistration h2,
-.darkmode .myEvent h2 {
+.darkmode .myEvent h2,
+.darkmode .eventRegistrationForm h3 {
   color: #f9fafb;
 }
 
