@@ -4,7 +4,6 @@ import { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
-import CostPredictionChart from './CostPredictionChart';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
@@ -13,8 +12,9 @@ import IssuesBreakdownChart from './IssuesBreakdownChart';
 import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
+import CostVarianceTrendGraph from './Financials/CostVarianceTrendGraph';
 import CostBreakDown from './Financials/CostBreakDown/CostBreakDown';
-import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
+import FinancialsTrackingSection from './ExpenditureChart/FinancialsTrackingSection';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import IssueCharts from '../Issues/openIssueCharts';
 import InteractiveMap from '../InteractiveMap/InteractiveMap';
@@ -304,14 +304,14 @@ function WeeklyProjectSummary() {
       {
         title: 'Lessons Learned',
         key: 'Lessons Learned',
-        className: 'half',
+        className: 'full',
         content: [
           <div
             key="frequent-tags-card"
             className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
             style={{ minHeight: '520px', height: 'auto', overflow: 'visible' }}
           >
-            <MostFrequentKeywords darkMode={darkMode} />
+            <MostFrequentKeywords />
           </div>,
           <div
             key="injury-chart"
@@ -343,7 +343,12 @@ function WeeklyProjectSummary() {
             <div className="weekly-project-summary-card financial-small financial-chart">
               <ExpenseBarChart />
             </div>
-            <div className="weekly-project-summary-card financial-big">
+
+            {/* Bottom: Cost Breakdown Pie Chart (Spans across both columns) */}
+            <div
+              className="weekly-project-summary-card financial-big"
+              style={{ gridColumn: 'span 2', width: '100%', minHeight: '400px' }}
+            >
               <CostBreakDown />
             </div>
           </div>
@@ -385,7 +390,7 @@ function WeeklyProjectSummary() {
         content: renderFinancialsTrackingCards(),
       },
     ],
-    [quantityOfMaterialsUsedData],
+    [quantityOfMaterialsUsedData, darkMode],
   );
 
   return (

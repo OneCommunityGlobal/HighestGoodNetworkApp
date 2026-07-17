@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect , useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import SearchProjectByPerson from '~/components/SearchProjectByPerson/SearchProjectByPerson';
 import { fetchAllProjects, fetchAllArchivedProjects, modifyProject, clearError } from '../../actions/projects';
 import { fetchProjectsWithActiveUsers } from '../../actions/projectMembers';
@@ -14,7 +15,7 @@ import ProjectTableHeader from './ProjectTableHeader';
 import Project from './Project';
 import ModalTemplate from './../common/Modal';
 import { CONFIRM_ARCHIVE, PROJECT_INACTIVE_CONFIRMATION, PROJECT_ACTIVE_CONFIRMATION } from './../../languages/en/messages';
-import './projects.module.css';
+import styles from './projects.module.css';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
@@ -23,7 +24,9 @@ import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 const Projects = function(props) {
   const { role } = props.state.userProfile;
   const { darkMode } = props.state.theme;
-
+  const location = useLocation();
+  const taskSelectionMode = location.state?.taskSelectionMode || false;
+  const taskSelectionReturnPath = location.state?.returnPath || '/bmdashboard/AddNewTeam';
   const allReduxProjects = useSelector(state => state.allProjects.projects);
   const numberOfProjects = props.state.allProjects.projects.length;
   const numberOfActive = props.state.allProjects.projects.filter(project => project.isActive)
@@ -193,10 +196,6 @@ const Projects = function(props) {
   };
 
   const generateProjectList = (categorySelectedForSort, showStatus, isShowingArchived) => {
-    console.log('generateProjectList called, isShowingArchived:', isShowingArchived);
-    console.log('total projects:', allReduxProjects.length);
-    console.log('archived projects:', allReduxProjects.filter(p => p.isArchived).length);
-    console.log('non-archived projects:', allReduxProjects.filter(p => !p.isArchived).length);
     const activeMemberCounts = props.state.projectMembers?.activeMemberCounts || {};
     const filteredProjects = allReduxProjects
       .filter(project => isShowingArchived ? project.isArchived : !project.isArchived)
@@ -262,6 +261,8 @@ const Projects = function(props) {
         onClickArchiveBtn={onClickArchiveBtn}
         onClickProjectStatusBtn={onClickProjectStatusBtn}
         darkMode={darkMode}
+        taskSelectionMode={taskSelectionMode}
+        taskSelectionReturnPath={taskSelectionReturnPath}
       />
     ));
 
@@ -279,7 +280,6 @@ const Projects = function(props) {
   }, []);
 
   useEffect(() => {
-    console.log('useEffect triggered, showArchived:', showArchived);
     generateProjectList(categorySelectedForSort, showStatus, showArchived);
     if (status !== 200) {
       setModalData({
@@ -316,6 +316,8 @@ const Projects = function(props) {
           onClickArchiveBtn={onClickArchiveBtn}
           onClickProjectStatusBtn={onClickProjectStatusBtn}
           darkMode={darkMode}
+          taskSelectionMode={taskSelectionMode}
+          taskSelectionReturnPath={taskSelectionReturnPath}
         />
       ));
 
@@ -334,6 +336,8 @@ const Projects = function(props) {
           onClickArchiveBtn={onClickArchiveBtn}
           onClickProjectStatusBtn={onClickProjectStatusBtn}
           darkMode={darkMode}
+          taskSelectionMode={taskSelectionMode}
+          taskSelectionReturnPath={taskSelectionReturnPath}
         />
       ));
 
@@ -366,8 +370,12 @@ const Projects = function(props) {
               role={role}
             />
             <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
-
             {canPostProject ? <AddProject hasPermission={hasPermission} /> : null}
+            {taskSelectionMode && (
+              <div className="alert alert-info mb-2" role="alert">
+                <strong>Task Selection Mode:</strong> Click the <i className="fa fa-tasks" /> WBS button on a project to browse its tasks.
+              </div>
+            )}
         </div>
         <div className="d-flex mb-3" style={{ gap: '10px' }}>
           <SearchProjectByPerson
@@ -379,7 +387,7 @@ const Projects = function(props) {
           <div className="input-group" style={{ maxWidth: '260px', maxHeight: '38px' }}>
             <div className="input-group-prepend">
               <span
-              className={`input-group-text ${darkMode ? 'bg-light-grey' : ''}`}
+                  className={`input-group-text ${darkMode ? styles.searchLabelDark + ' text-light' : ''}`}
               >
                 Filter by
               </span>
@@ -387,7 +395,7 @@ const Projects = function(props) {
             <select
               value={searchMode}
               onChange={e => setSearchMode(e.target.value)}
-              className={`form-control ${darkMode ? 'bg-white' : ''}`}
+              className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
               aria-label="Filter by"
             >
               <option value="person">User Name</option>

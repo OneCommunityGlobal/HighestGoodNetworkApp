@@ -51,6 +51,7 @@ for (let month = 0; month < 12; month++) {
         noShowRate: `${secureRandInt(5, 94)}%`,
         dropOffRate: `${secureRandInt(10, 79)}%`,
         location: locations[(id + t) % locations.length],
+        capacity: secureRandInt(1, 40),
       });
     }
   }
@@ -71,7 +72,21 @@ for (let t = 0; t < 6; t++) {
     noShowRate: `${secureRandInt(5, 94)}%`,
     dropOffRate: `${secureRandInt(10, 79)}%`,
     location: locations[id % locations.length],
+    capacity: secureRandInt(1, 40),
   });
 }
+
+mockEvents.push({
+  id: id++,
+  eventType: 'Fitness Bootcamp',
+  eventDate: new Date(2026, 0, 21, 8, 0, 0, 0).toISOString(),
+  eventTime: formatDisplayTime(new Date(2026, 0, 21, 8, 0, 0, 0)),
+  eventName: 'Sold Out Event',
+  attendees: 50,
+  noShowRate: '18%',
+  dropOffRate: '40%',
+  location: 'Chicago',
+  capacity: 0,
+});
 
 export default mockEvents;

@@ -624,7 +624,6 @@ function TotalOrgSummary(props) {
           onCancel={() => setShowDatePicker(false)}
           onApply={handleDatePickerSubmit}
         />
-
         <hr />
         <AccordianWrapper title="Volunteer Status">
           <Row>
