@@ -856,4 +856,8 @@
   .engagementLabel {
     color: #9ca3af;
   }
+
+  :global(.recharts-tooltip-label) {
+    color: #ffffff;
+  }
 }
