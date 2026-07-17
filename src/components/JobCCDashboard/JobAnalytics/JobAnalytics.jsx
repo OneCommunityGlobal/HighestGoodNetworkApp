@@ -42,6 +42,7 @@ import hasPermission from '../../../utils/permissions';
 import { ENDPOINTS } from '../../../utils/URL';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import Select from 'react-select';
 import clsx from 'clsx';
 
 const ROLE_OPTIONS = [
@@ -592,6 +593,12 @@ const DATE_RANGE_PRESETS = {
   },
 };
 
+const COMPARISON_PERIOD_OPTIONS = [
+  { value: 'previous-week', label: 'Previous Week' },
+  { value: 'previous-month', label: 'Previous Month' },
+  { value: 'previous-year', label: 'Same Period Last Year' },
+];
+
 function DateRangeSelector({ dateRange, setDateRange, comparisonPeriod, setComparisonPeriod }) {
   const [active, setActive] = useState('last30Days');
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -675,15 +682,14 @@ function DateRangeSelector({ dateRange, setDateRange, comparisonPeriod, setCompa
 
         <div>
           <p className={styles.label}>Compare with</p>
-          <select
-            className={clsx(styles.input)}
-            value={comparisonPeriod}
-            onChange={e => setComparisonPeriod(e.target.value)}
-          >
-            <option value="previous-week">Previous Week</option>
-            <option value="previous-month">Previous Month</option>
-            <option value="previous-year">Same Period Last Year</option>
-          </select>
+          <Select
+            classNamePrefix="job-analytics-compare-select"
+            className={styles.compareSelect}
+            value={COMPARISON_PERIOD_OPTIONS.find(opt => opt.value === comparisonPeriod)}
+            onChange={option => setComparisonPeriod(option.value)}
+            options={COMPARISON_PERIOD_OPTIONS}
+            isSearchable={false}
+          />
         </div>
       </div>
     </div>

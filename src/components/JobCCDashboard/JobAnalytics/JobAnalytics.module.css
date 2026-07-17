@@ -402,6 +402,99 @@
   box-shadow: 0 0 0 3px rgb(59 130 246 / 20%);
 }
 
+.compareSelect {
+  width: 100%;
+
+  :global(.job-analytics-compare-select__control) {
+    min-height: unset;
+    width: 100%;
+    padding: 0;
+    background: #fff;
+    color: #111827;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    box-shadow: none;
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+  }
+
+  :global(.job-analytics-compare-select__control:hover) {
+    border-color: #e5e7eb;
+  }
+
+  :global(.job-analytics-compare-select__control--is-focused),
+  :global(.job-analytics-compare-select__control--is-focused:hover) {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgb(59 130 246 / 20%);
+  }
+
+  :global(.job-analytics-compare-select__value-container) {
+    padding: 0.5rem 1rem;
+  }
+
+  :global(.job-analytics-compare-select__single-value),
+  :global(.job-analytics-compare-select__input) {
+    color: #111827;
+    font-size: 0.875rem;
+    margin: 0;
+  }
+
+  :global(.job-analytics-compare-select__placeholder) {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin: 0;
+  }
+
+  :global(.job-analytics-compare-select__menu) {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    z-index: 20;
+  }
+
+  :global(.job-analytics-compare-select__menu-list) {
+    padding: 4px;
+  }
+
+  :global(.job-analytics-compare-select__option) {
+    background-color: transparent;
+    color: #111827;
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+
+  :global(.job-analytics-compare-select__option--is-focused) {
+    background-color: #f5f5f5;
+  }
+
+  :global(.job-analytics-compare-select__option--is-selected) {
+    background-color: var(--primary);
+    color: #fff;
+  }
+
+  :global(.job-analytics-compare-select__dropdown-indicator) {
+    color: #6b7280;
+    padding: 4px;
+    transition: transform 0.15s ease, color 0.15s ease;
+  }
+
+  :global(.job-analytics-compare-select__dropdown-indicator:hover) {
+    color: #374151;
+  }
+
+  :global(.job-analytics-compare-select__control--menu-is-open)
+    :global(.job-analytics-compare-select__dropdown-indicator) {
+    transform: rotate(180deg);
+  }
+
+  :global(.job-analytics-compare-select__indicator-separator) {
+    background-color: #e5e7eb;
+  }
+
+  :global(.job-analytics-compare-select__indicators) {
+    padding-right: 4px;
+  }
+}
+
 .datePicker {
   padding: 10px 14px;
   border-radius: 8px;
@@ -860,4 +953,60 @@
   :global(.recharts-tooltip-label) {
     color: #ffffff;
   }
+
+  .compareSelect {
+  :global(.job-analytics-compare-select__control) {
+    background: #2d3d57;
+    color: #f9fafb;
+    border-color: #334155;
+  }
+
+  :global(.job-analytics-compare-select__control:hover) {
+    border-color: #334155;
+  }
+
+  :global(.job-analytics-compare-select__control--is-focused),
+  :global(.job-analytics-compare-select__control--is-focused:hover) {
+    border-color: var(--primary);
+  }
+
+  :global(.job-analytics-compare-select__single-value),
+  :global(.job-analytics-compare-select__input) {
+    color: #f9fafb;
+  }
+
+  :global(.job-analytics-compare-select__placeholder) {
+    color: #9ca3af;
+  }
+
+  :global(.job-analytics-compare-select__menu) {
+    background: #1b2a41;
+    border-color: #334155;
+  }
+
+  :global(.job-analytics-compare-select__option) {
+    color: #f9fafb;
+  }
+  
+  :global(.job-analytics-compare-select__option:active) {
+    background-color: #2563eb;
+  }
+
+  :global(.job-analytics-compare-select__option--is-focused:not(.job-analytics-compare-select__option--is-selected)) {
+    background-color: #25354e;
+    /* background-color: red; */
+  }
+
+  :global(.job-analytics-compare-select__dropdown-indicator) {
+    color: #9ca3af;
+  }
+
+  :global(.job-analytics-compare-select__dropdown-indicator:hover) {
+    color: #e5e7eb;
+  }
+
+  :global(.job-analytics-compare-select__indicator-separator) {
+    background-color: #334155;
+  }
+}
 }
