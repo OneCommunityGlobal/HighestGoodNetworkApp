@@ -154,9 +154,12 @@ function useMediaQuery(query) {
   return matches;
 }
 
-const toIsoDate = d => d.toISOString().split('T')[0];
+const toIsoDate = d => {
+  if (!d) return '';
+  if (typeof d === 'string') return d.split('T')[0];
+  return d.toISOString().split('T')[0];
+};
 
-// ======================== API SERVICE ========================
 // ======================== API SERVICE ========================
 class AnalyticsService {
   static getAuthToken() {
@@ -636,7 +639,7 @@ function DateRangeSelector({ dateRange, setDateRange, comparisonPeriod, setCompa
               startDate={dateRange.start}
               endDate={dateRange.end}
               dateFormat="yyyy-MM-dd"
-              isClearable
+              isClearable={dateRange.start !== null}
               placeholderText="Start date"
               className={styles.input}
               calendarClassName={clsx(
@@ -659,7 +662,7 @@ function DateRangeSelector({ dateRange, setDateRange, comparisonPeriod, setCompa
               endDate={dateRange.end}
               dateFormat="yyyy-MM-dd"
               minDate={dateRange?.start ? new Date(dateRange.start) : undefined}
-              isClearable
+              isClearable={dateRange.end !== null}
               placeholderText="End date"
               className={styles.input}
               calendarClassName={clsx(
@@ -714,9 +717,11 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
 
   const isMobile = useMediaQuery('(max-width: 640px)');
 
-  const [dateRange, setDateRange] = useState({
-    start: null,
-    end: null,
+  const [dateRange, setDateRange] = useState(() => {
+    const end = new Date();
+    const start = new Date();
+    start.setDate(start.getDate() - 30);
+    return { start, end };
   });
   const [comparisonPeriod, setComparisonPeriod] = useState('previous-month');
   const [selectedDevice, setSelectedDevice] = useState(null);
