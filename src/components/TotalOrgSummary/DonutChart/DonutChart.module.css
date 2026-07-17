@@ -61,7 +61,7 @@
 
 .donutHeading {
   color: var(--text-secondary);
-  font-size: 1rem;
+  font-size: .8rem;
   letter-spacing: 0.03em;
   line-height: 1.15;
   text-transform: uppercase;
@@ -80,7 +80,7 @@
 
 .donutCount {
   color: #828282;
-  font-size: 1rem;
+  font-size: .8rem;
   line-height: 1;
   font-weight: 800;
 }
