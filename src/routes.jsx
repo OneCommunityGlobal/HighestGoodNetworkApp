@@ -201,7 +201,6 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 import TaskTimer from './components/EductionPortal/StudentDashboard/TaskTimer';
 import StudentProfile from './components/EductionPortal/StudentProfile';
 import AnnouncementsPage from './components/EductionPortal/Announcements/AnnouncementsPage';
-import OptStatusPieChart from './components/OptStatusPieChart/OptStatusPieChart';
 import { UserRole } from './utils/enums';
 import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
 import IntermediateTaskList from './components/EductionPortal/IntermediateTasks/IntermediateTaskList';

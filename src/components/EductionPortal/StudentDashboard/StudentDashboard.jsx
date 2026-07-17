@@ -166,6 +166,7 @@ const StudentDashboard = () => {
             <h2 className={styles.sectionTitle}>Recent Time Logs</h2>
             <div className={styles.viewToggle}>
               <button
+                type="button"
                 className={`${styles.toggleButton} ${viewMode === 'card' ? styles.active : ''}`}
                 onClick={() => setViewMode('card')}
                 aria-label="Card view"
@@ -186,6 +187,7 @@ const StudentDashboard = () => {
               </button>
 
               <button
+                type="button"
                 className={`${styles.toggleButton} ${viewMode === 'list' ? styles.active : ''}`}
                 onClick={() => setViewMode('list')}
                 aria-label="List view"
