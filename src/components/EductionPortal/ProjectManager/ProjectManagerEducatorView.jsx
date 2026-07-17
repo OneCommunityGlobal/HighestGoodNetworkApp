@@ -159,13 +159,13 @@ function EducatorRow({ educator, isExpanded, onToggle, studentQuery }) {
 
       {isExpanded && (
         <div id={`students-${educator.id}`} className={styles.studentsWrap}>
-          {loading ? (
-            <div className={styles.loadingText}>Loading students…</div>
-          ) : filteredStudents.length === 0 ? (
+          {loading && <div className={styles.loadingText}>Loading students…</div>}
+          {!loading && filteredStudents.length === 0 && (
             <div className={styles.emptyText}>
               {studentQuery ? 'No students match this search.' : 'No students found.'}
             </div>
-          ) : (
+          )}
+          {!loading && filteredStudents.length > 0 && (
             <div className={styles.students}>
               {filteredStudents.map(s => (
                 <StudentCard key={s.id} s={s} />

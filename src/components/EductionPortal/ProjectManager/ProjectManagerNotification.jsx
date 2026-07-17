@@ -117,10 +117,9 @@ export default function ProjectManagerNotification({ educators, onClose, onSent 
   }
 
   return (
-    <div
+    <dialog
+      open
       className={`${styles.overlay} ${darkMode ? styles.dark : ''}`}
-      role="dialog"
-      aria-modal="true"
       aria-labelledby="composer-title"
     >
       <div className={styles.modal}>
@@ -191,6 +190,6 @@ export default function ProjectManagerNotification({ educators, onClose, onSent 
           </button>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 }
