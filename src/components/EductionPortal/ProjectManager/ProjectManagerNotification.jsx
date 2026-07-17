@@ -127,7 +127,7 @@ export default function ProjectManagerNotification({ educators, onClose, onSent 
           <h3 id="composer-title" className={styles.title}>
             New Announcement
           </h3>
-          <button className={styles.iconBtn} onClick={onClose} aria-label="Close">
+          <button type="button" className={styles.iconBtn} onClick={onClose} aria-label="Close">
             ×
           </button>
         </div>
@@ -182,10 +182,20 @@ export default function ProjectManagerNotification({ educators, onClose, onSent 
         </div>
 
         <div className={styles.footer}>
-          <button className={styles.cancelBtnNotify} onClick={onClose} disabled={sending}>
+          <button
+            type="button"
+            className={styles.cancelBtnNotify}
+            onClick={onClose}
+            disabled={sending}
+          >
             Cancel
           </button>
-          <button className={styles.primaryBtn} onClick={handleSend} disabled={sending}>
+          <button
+            type="button"
+            className={styles.primaryBtn}
+            onClick={handleSend}
+            disabled={sending}
+          >
             {sending ? 'Sending…' : 'Send Announcement'}
           </button>
         </div>

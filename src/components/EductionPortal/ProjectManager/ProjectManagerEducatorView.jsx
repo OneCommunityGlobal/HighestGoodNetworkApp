@@ -274,13 +274,13 @@ export default function ProjectManagerEducatorView() {
             value={studentQuery}
             onChange={e => setStudentQuery(e.target.value)}
           />
-          <button className={styles.ghostBtn} onClick={expandAll}>
+          <button type="button" className={styles.ghostBtn} onClick={expandAll}>
             Expand all
           </button>
-          <button className={styles.ghostBtn} onClick={collapseAll}>
+          <button type="button" className={styles.ghostBtn} onClick={collapseAll}>
             Collapse all
           </button>
-          <button className={styles.primaryBtn} onClick={() => setShowComposer(true)}>
+          <button type="button" className={styles.primaryBtn} onClick={() => setShowComposer(true)}>
             New Announcement
           </button>
         </div>
