@@ -917,7 +917,6 @@ export default (
           exact
           component={TaskSubmissions}
         />
-
         <EPProtectedRoute path="/student/profile" exact component={StudentProfilePage} />
         {/* PR Analytics Dashboard */}
         <Route path="/pull-request-analytics/reviews-insight" component={ReviewsInsight} />
