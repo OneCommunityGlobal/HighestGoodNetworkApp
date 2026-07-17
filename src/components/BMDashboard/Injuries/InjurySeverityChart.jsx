@@ -50,6 +50,78 @@ function getContrastTextColor(fillColor) {
 
 const SEVERITY_ORDER = ['Minor', 'Major', 'Critical'];
 
+function buildSingleDeptEntry(entry, sev, rawData, visibleProjects) {
+  visibleProjects.forEach(project => {
+    const rec = rawData.find(r => r.severity === sev && r.projectName === project.name);
+    entry[project.name] = rec ? rec.totalInjuries : 0;
+  });
+}
+
+function buildMultiDeptEntry(entry, sev, rawData, visibleProjects, visibleDepartments) {
+  visibleProjects.forEach(project => {
+    visibleDepartments.forEach(dept => {
+      const key = `${project.name}_${dept}`;
+      const rec = rawData.find(
+        r => r.severity === sev && r.projectName === project.name && r.department === dept,
+      );
+      entry[key] = rec ? rec.totalInjuries : 0;
+    });
+  });
+}
+
+function buildChartData(rawData, visibleProjects, visibleDepartments) {
+  return SEVERITY_ORDER.map(sev => {
+    const entry = { severity: sev };
+
+    if (visibleDepartments.length <= 1) {
+      buildSingleDeptEntry(entry, sev, rawData, visibleProjects);
+    } else {
+      buildMultiDeptEntry(entry, sev, rawData, visibleProjects, visibleDepartments);
+    }
+
+    return entry;
+  });
+}
+
+function buildSingleDeptBars(visibleProjects) {
+  const projectColors = generateColors(visibleProjects.length);
+  return visibleProjects.map((project, idx) => ({
+    key: project._id,
+    dataKey: project.name,
+    name: project.name,
+    fill: projectColors[idx],
+  }));
+}
+
+function buildMultiDeptBars(visibleProjects, visibleDepartments) {
+  const departmentColors = generateColors(visibleDepartments.length);
+  const bars = [];
+
+  visibleDepartments.forEach((dept, deptIdx) => {
+    visibleProjects.forEach((project, projectIdx) => {
+      bars.push({
+        key: `${project._id}_${dept}`,
+        dataKey: `${project.name}_${dept}`,
+        name: `${project.name} - ${dept}`, // Keep full name for tooltip
+        fill: departmentColors[deptIdx],
+        stackId: project.name, // Stack departments within each project
+        legendType: projectIdx === 0 ? 'rect' : 'none', // Only show first occurrence in legend
+      });
+    });
+  });
+
+  return bars;
+}
+
+function buildChartBars(visibleProjects, visibleDepartments) {
+  if (visibleDepartments.length <= 1) {
+    // Single department - one bar per project (these will be grouped)
+    return buildSingleDeptBars(visibleProjects);
+  }
+  // Multiple departments - create stacked bars per project
+  return buildMultiDeptBars(visibleProjects, visibleDepartments);
+}
+
 function CustomTooltip({ active, payload, label, darkMode }) {
   if (!active || !payload || payload.length === 0) return null;
 
@@ -154,66 +226,16 @@ function InjurySeverityDashboard(props) {
     return depts;
   }, [rawData]);
 
-  const chartData = useMemo(() => {
-    return SEVERITY_ORDER.map(sev => {
-      const entry = { severity: sev };
+  const chartData = useMemo(() => buildChartData(rawData, visibleProjects, visibleDepartments), [
+    rawData,
+    visibleProjects,
+    visibleDepartments,
+  ]);
 
-      if (visibleDepartments.length <= 1) {
-        // Single department - show total injuries per project
-        visibleProjects.forEach(project => {
-          const rec = rawData.find(r => r.severity === sev && r.projectName === project.name);
-          entry[project.name] = rec ? rec.totalInjuries : 0;
-        });
-      } else {
-        // Multiple departments - show department breakdown per project
-        visibleProjects.forEach(project => {
-          visibleDepartments.forEach(dept => {
-            const key = `${project.name}_${dept}`;
-            const rec = rawData.find(
-              r => r.severity === sev && r.projectName === project.name && r.department === dept,
-            );
-            entry[key] = rec ? rec.totalInjuries : 0;
-          });
-        });
-      }
-
-      return entry;
-    });
-  }, [rawData, visibleProjects, visibleDepartments]);
-
-  const chartBars = useMemo(() => {
-    if (visibleDepartments.length <= 1) {
-      // Single department - one bar per project (these will be grouped)
-      const projectColors = generateColors(visibleProjects.length);
-      return visibleProjects.map((project, idx) => ({
-        key: project._id,
-        dataKey: project.name,
-        name: project.name,
-        fill: projectColors[idx],
-      }));
-      // eslint-disable-next-line no-else-return
-    } else {
-      // Multiple departments - create stacked bars per project
-      const departmentColors = generateColors(visibleDepartments.length);
-      const bars = [];
-
-      visibleDepartments.forEach((dept, deptIdx) => {
-        visibleProjects.forEach((project, projectIdx) => {
-          bars.push({
-            key: `${project._id}_${dept}`,
-            dataKey: `${project.name}_${dept}`,
-            name: `${project.name} - ${dept}`, // Keep full name for tooltip
-            fill: departmentColors[deptIdx],
-            stackId: project.name, // Stack departments within each project
-            legendType: projectIdx === 0 ? 'rect' : 'none', // Only show first occurrence in legend
-          });
-        });
-      });
-      // eslint-disable-next-line prettier/prettier
-
-      return bars;
-    }
-  }, [visibleProjects, visibleDepartments]);
+  const chartBars = useMemo(() => buildChartBars(visibleProjects, visibleDepartments), [
+    visibleProjects,
+    visibleDepartments,
+  ]);
 
   const filterStyle = {
     flex: 1,

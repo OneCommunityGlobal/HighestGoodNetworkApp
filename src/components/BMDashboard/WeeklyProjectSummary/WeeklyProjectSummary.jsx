@@ -132,6 +132,12 @@ function renderFinancialCard(i) {
   return '📊 Card';
 }
 
+function renderMaterialCard(idx, quantityOfMaterialsUsedData) {
+  if (idx === 1) return <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />;
+  if (idx === 2) return <TotalMaterialCostPerProject />;
+  return <p>📊 Card</p>;
+}
+
 function WeeklyProjectSummary() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);
@@ -220,13 +226,7 @@ function WeeklyProjectSummary() {
         className: 'large',
         content: [0, 1, 2].map(idx => (
           <div key={uuidv4()} className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-            {idx === 1 ? (
-              <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />
-            ) : idx === 2 ? (
-              <TotalMaterialCostPerProject />
-            ) : (
-              <p>📊 Card</p>
-            )}
+            {renderMaterialCard(idx, quantityOfMaterialsUsedData)}
           </div>
         )),
       },
