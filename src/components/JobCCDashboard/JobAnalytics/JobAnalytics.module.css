@@ -33,14 +33,9 @@
   --grid-stroke: #374151;
 }
 
-.page {
+.bmDashboardJobAnalytics {
   min-height: 100vh;
-  padding-inline: 1.5rem;
-  padding-bottom: 1.5rem;
-}
-
-.darkMode.page {
-  background-color: #1b2a41;
+  padding: 1.5rem;
 }
 
 .header {
@@ -177,7 +172,59 @@
     color: var(--fg);
     margin-inline: 0.5rem;
   }
+}
 
+:global(.dark-mode) .bmDashboardJobAnalytics {
+  background-color: #1b2a41;
+  
+  .filters {
+    background-color: #25354E;
+    border-color: #334155;
+  }
+
+  .quickSelectButton {
+    background-color: #2D3D57;
+    border-color: #334155;
+  }
+
+  .quickSelectButton.active {
+    background-color: var(--primary);
+    border-color: transparent;
+  }
+
+  .metricCard {
+    background-color: #25354E;
+    border-color: #334155;
+  }
+
+  .metricIconWrap {
+    background-color: #2D3D57;
+  }
+
+  .metricIcon {
+    color: #94A3B8;
+  }
+
+  .chartCard {
+    background-color: #25354E;
+    border-color: #334155;
+  }
+
+  .chartIconWrap {
+    background-color: #2D3D57;
+  }
+
+  .chartIcon {
+    color: #94A3B8;
+  }
+
+  .input {
+    background: #2D3D57;
+    color: #f9fafb;
+    border-color: #334155;
+    color-scheme: dark;
+  }
+  
 }
 
 @media screen and (min-width: 768px) {
@@ -190,9 +237,6 @@
   }
 }
 
-.darkMode.filters {
-    background-color: #1b2a41;
-}
 
 /* ======================== METRICS GRID ======================== */
 .metricsGrid {
@@ -210,10 +254,6 @@
     transition: transform 0.15s ease;
   }
 
-  .darkMode.metricCard {
-    background-color: #1b2a41;
-  }
-
   .metricCard:hover {
     transform: translateY(-3px);
   }
@@ -229,10 +269,6 @@
     background-color: rgb(0 0 0 / 5%);
     padding: 10px;
     border-radius: 10px;
-  }
-
-  .darkMode.metricIconWrap {
-    background-color: rgb(255 255 255 / 6%);
   }
 
   .metricIcon {
@@ -386,17 +422,12 @@
     border-radius: 10px;
   }
 
-  .darkMode.chartIconWrap {
-    background: rgb(255 255 255 / 6%);
-  }
-
   .chartIcon {
     color: var(--muted);
   }
 
   .chartTitle {
     margin: 0;
-    font-weight: 700;
     font-size: 0.95rem;
   }
 
@@ -407,14 +438,6 @@
 
 .chartCard:hover {
   transform: translateY(-3px);
-}
-
-.darkMode.chartCard {
-  background-color: #1b2a41;
-
-  .pieChartLabel {
-    color: blue;
-  }
 }
 
 /* Pie chart hint text */
@@ -442,13 +465,6 @@
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgb(59 130 246 / 20%);
-}
-
-.darkMode .input {
-  background: #1f2937;
-  color: #f9fafb;
-  border-color: #374151;
-  color-scheme: dark;
 }
 
 .darkMode .input::-webkit-calendar-picker-indicator {
@@ -645,7 +661,6 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-weight: 700;
   font-size: 1rem;
 }
 
@@ -687,8 +702,8 @@
 }
 
 .darkMode.engagementPanel {
-  background-color: #1b2a41;
-  border-color: #374151;
+  background-color: #25354E;
+  border-color: #334155;
 }
 
 .darkMode .engagementDeviceLabel {
@@ -700,8 +715,8 @@
 }
 
 .darkMode.engagementItem {
-  background-color: hsl(216, 41%, 23%);
-  border-color: #374151;
+  background-color: #2D3D57;
+  border-color: #334155;
 }
 
 .darkMode .engagementLabel {

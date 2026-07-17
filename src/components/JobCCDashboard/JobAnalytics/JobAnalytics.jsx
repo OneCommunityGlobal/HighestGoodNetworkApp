@@ -811,7 +811,13 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
   );
 
   return (
-    <div className={clsx(styles.page, darkMode && styles.darkMode)}>
+    <div
+      className={clsx(
+        styles.bmDashboardJobAnalytics,
+        styles.jobAnalytics,
+        darkMode && styles.darkMode,
+      )}
+    >
       <header className={clsx(styles.header, darkMode && styles.darkMode)}>
         <h2 className={styles.title}>
           Job Analytics
