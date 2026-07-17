@@ -249,23 +249,17 @@ export default function TaskTimer({ userid }) {
       </div>
 
       {open && (
-        <div
-          role="button"
-          tabIndex={0}
-          className={styles.backdrop}
-          onClick={() => setOpen(false)}
-          onKeyDown={e => {
-            if (e.key === 'Enter' || e.key === ' ') setOpen(false);
-          }}
-        >
+        <div className={styles.modalOverlay}>
+          <button
+            type="button"
+            className={styles.backdrop}
+            onClick={() => setOpen(false)}
+            aria-label="Close timer"
+          />
           <div
-            role="button"
+            role="dialog"
             tabIndex={-1}
             className={`${styles.card} ${darkMode ? styles.darkCard : ''}`}
-            onClick={e => e.stopPropagation()}
-            onKeyDown={e => {
-              if (e.key === 'Enter' || e.key === ' ') e.stopPropagation();
-            }}
           >
             <div className={styles.cardHeader}>
               <span className={styles.headerTitle}>Timer</span>

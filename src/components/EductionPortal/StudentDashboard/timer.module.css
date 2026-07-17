@@ -90,6 +90,15 @@
   position: fixed;
   inset: 0;
   background: rgb(0 0 0 / 30%);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  z-index: 9999;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
