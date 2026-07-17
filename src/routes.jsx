@@ -207,9 +207,6 @@ import SupportLogin from './components/SupportPortal/SupportLogin';
 import SupportDashboard from './components/SupportPortal/SupportDashboard';
 import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
 import MaterialUtilizationChart from './components/MaterialUtilization/MaterialUtilizationChart';
-import OptStatusPieChart from './components/OptStatusPieChart/OptStatusPieChart';
-
-import WeeklyProgressDashboard from './components/WeeklyProgress/WeeklyProgressDashboard';
 
 // High Good Education
 import StudentBadgeGallery from './components/StudentBadgeGallery/StudentBadgeGallery';

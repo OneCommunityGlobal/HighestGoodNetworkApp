@@ -98,6 +98,63 @@ function StudentBadgeGallery({ darkMode }) {
 
   const closeModal = () => setModalOpen(false);
 
+  const renderBadgeContent = () => {
+    if (loading) {
+      return (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            padding: 24,
+          }}
+        >
+          <Spinner />
+        </div>
+      );
+    }
+
+    if (badges.length === 0) {
+      return (
+        <p
+          style={{
+            opacity: 0.7,
+            textAlign: 'center',
+            margin: '12px 0',
+            color: darkMode ? '#ffffff' : undefined,
+          }}
+        >
+          You haven’t earned any badges yet — keep contributing to unlock them!
+        </p>
+      );
+    }
+
+    return (
+      <div className={styles.badge_history_container}>
+        {badges.map((badge, index) => (
+          <div
+            key={badge.id}
+            className={`${styles.badge_image_container} ${!badge.earned ? styles.unearned : ''}`}
+          >
+            <button
+              onClick={() => openModal(badge)}
+              className={styles.badgeButton}
+              aria-label={`View details for ${badge.badgeName}`}
+            >
+              <StudentBadgeImage
+                badgeData={badge}
+                time={badge.badgeName}
+                index={index}
+                personalBestMaxHrs={badge.count || 0}
+                count={badge.count || 0}
+              />
+            </button>
+            <div className={styles.badgeLabel}>{badge.badgeName}</div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className={styles.galleryContainer}>
       <Row
@@ -116,56 +173,7 @@ function StudentBadgeGallery({ darkMode }) {
             }}
           >
             <CardHeader className={styles.cardHeader}>My Badges</CardHeader>
-            <CardBody>
-              {loading ? (
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    padding: 24,
-                  }}
-                >
-                  <Spinner />
-                </div>
-              ) : badges.length === 0 ? (
-                <p
-                  style={{
-                    opacity: 0.7,
-                    textAlign: 'center',
-                    margin: '12px 0',
-                    color: darkMode ? '#ffffff' : undefined,
-                  }}
-                >
-                  You haven’t earned any badges yet — keep contributing to unlock them!
-                </p>
-              ) : (
-                <div className={styles.badge_history_container}>
-                  {badges.map((badge, index) => (
-                    <div
-                      key={badge.id}
-                      className={`${styles.badge_image_container} ${
-                        !badge.earned ? styles.unearned : ''
-                      }`}
-                    >
-                      <button
-                        onClick={() => openModal(badge)}
-                        className={styles.badgeButton}
-                        aria-label={`View details for ${badge.badgeName}`}
-                      >
-                        <StudentBadgeImage
-                          badgeData={badge}
-                          time={badge.badgeName}
-                          index={index}
-                          personalBestMaxHrs={badge.count || 0}
-                          count={badge.count || 0}
-                        />
-                      </button>
-                      <div className={styles.badgeLabel}>{badge.badgeName}</div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardBody>
+            <CardBody>{renderBadgeContent()}</CardBody>
           </Card>
         </Col>
       </Row>

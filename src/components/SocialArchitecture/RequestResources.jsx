@@ -183,7 +183,7 @@ function RequestResources() {
         <div className={styles.formGroup}>
           <label htmlFor="materialImage">Upload Material Picture</label>
           <label htmlFor="materialImage" className={styles.uploadBox}>
-            Drag and drop your picture here
+            Drag and drop your picture here{' '}
             <input
               type="file"
               id="materialImage"
