@@ -838,16 +838,16 @@ class UserProfileAdd extends Component {
     }
 
     toast.error('Invalid Google Doc link. Please provide a valid Google Doc URL.');
-    this.setState({
+    this.setState(prevState => ({
       formValid: {
-        ...this.state.formValid,
+        ...prevState.formValid,
         googleDoc: false,
       },
       formErrors: {
-        ...this.state.formErrors,
+        ...prevState.formErrors,
         googleDoc: 'Invalid Google Doc URL',
       },
-    });
+    }));
     return false;
   };
 
@@ -862,16 +862,16 @@ class UserProfileAdd extends Component {
     }
 
     toast.error('Invalid DropBox link. Please provide a valid Drop Box URL.');
-    this.setState({
+    this.setState(prevState => ({
       formValid: {
-        ...this.state.formValid,
+        ...prevState.formValid,
         dropboxDoc: false,
       },
       formErrors: {
-        ...this.state.formErrors,
+        ...prevState.formErrors,
         dropboxDoc: 'Invalid Dropbox Link URL',
       },
-    });
+    }));
     return false;
   };
 
@@ -917,7 +917,8 @@ class UserProfileAdd extends Component {
             data?.error?.message ||
             data?.message ||
             '';
-          toast.error(`Admin credentials were not accepted${detail ? `: ${detail}` : ''}`);
+          const suffix = detail ? `: ${detail}` : '';
+          toast.error(`Admin credentials were not accepted${suffix}`);
           return;
         }
         default:
