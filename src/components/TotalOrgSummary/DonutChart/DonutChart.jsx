@@ -1,16 +1,39 @@
 import PropTypes from 'prop-types';
 import { Doughnut } from 'react-chartjs-2';
-import { Chart, ArcElement } from 'chart.js';
+import { Chart, ArcElement, Tooltip } from 'chart.js';
 import { clsx } from 'clsx';
 import externalLabelGuidesPlugin from '../VolunteerStatus/externalLabelGuidesPlugin';
 import styles from './DonutChart.module.css';
 
-Chart.register(ArcElement);
+Chart.register(ArcElement, Tooltip);
+
+const calculatePercentage = (value, totalCount) =>
+  Number.isFinite(totalCount) && totalCount > 0 ? (value / totalCount) * 100 : 0;
 
 export const formatLegendLabel = ({ label, value }, totalCount) => {
-  const percentage = Number.isFinite(totalCount) && totalCount > 0 ? (value / totalCount) * 100 : 0;
+  const percentage = calculatePercentage(value, totalCount);
   return `${label}: ${value} (${percentage.toFixed(1)}%)`;
 };
+
+export const buildDonutTooltipOptions = (totalCount, darkMode) => ({
+  enabled: true,
+  backgroundColor: darkMode ? '#222' : '#fff',
+  titleColor: darkMode ? '#fff' : '#222',
+  bodyColor: darkMode ? '#90cdf4' : '#444',
+  borderColor: '#ccc',
+  borderWidth: 1,
+  cornerRadius: 6,
+  padding: 10,
+  displayColors: false,
+  callbacks: {
+    title: items => items?.[0]?.label || '',
+    label: context => {
+      const count = Number.isFinite(context.raw) ? context.raw : 0;
+      const percentage = calculatePercentage(count, totalCount);
+      return [`Count: ${count}`, `Percentage: ${percentage.toFixed(1)}%`];
+    },
+  },
+});
 
 function DonutChart(props) {
   const { title, totalCount, percentageChange, data, colors, comparisonType, darkMode } = props;
@@ -40,9 +63,7 @@ function DonutChart(props) {
       legend: {
         display: false,
       },
-      tooltip: {
-        enabled: false,
-      },
+      tooltip: buildDonutTooltipOptions(totalCount, darkMode),
       externalLabelGuides: {
         placement: 'outside',
         outsideGap: 12,
@@ -58,6 +79,10 @@ function DonutChart(props) {
         borderColor: labelBoxBorder,
         formatter: ({ value, percentage }) => [`${value}`, `(${percentage}%)`],
       },
+    },
+    interaction: {
+      mode: 'nearest',
+      intersect: true,
     },
     maintainAspectRatio: false,
     cutout: '62%',

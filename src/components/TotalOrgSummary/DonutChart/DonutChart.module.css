@@ -33,8 +33,14 @@
   overflow: visible;
 }
 
+.donutChart canvas {
+  position: relative;
+  z-index: 2;
+}
+
 .donutCenter {
   position: absolute;
+  z-index: 1;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -46,6 +52,7 @@
   gap: 0.28rem;
   width: 52%;
   max-width: 7rem;
+  pointer-events: none;
 }
 
 .donutCenter > * {
