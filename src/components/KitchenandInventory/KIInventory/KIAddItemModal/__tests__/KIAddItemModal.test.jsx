@@ -117,6 +117,23 @@ describe('KIAddItemModal', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
+  test('omits empty optional fields from the add payload', async () => {
+    const onSubmit = vi.fn().mockResolvedValue({});
+    renderModal({ onSubmit });
+
+    fillRequiredFields();
+    fireEvent.click(screen.getByRole('button', { name: 'Add Item' }));
+
+    await waitFor(() => {
+      expect(onSubmit).toHaveBeenCalledTimes(1);
+    });
+
+    const submittedPayload = onSubmit.mock.calls[0][0];
+    expect(submittedPayload).not.toHaveProperty('lastHarvestDate');
+    expect(submittedPayload).not.toHaveProperty('nextHarvestDate');
+    expect(submittedPayload).not.toHaveProperty('nextHarvestQuantity');
+  });
+
   test('keeps the modal open and shows an error when submit fails', async () => {
     renderModal({
       onSubmit: vi.fn().mockRejectedValue(new Error('Server rejected item')),

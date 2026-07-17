@@ -3,6 +3,7 @@ import { TbCircleCheck } from 'react-icons/tb';
 import { FiAlertCircle, FiAlertTriangle, FiCalendar, FiShoppingCart } from 'react-icons/fi';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import { inventoryItemShape } from './KIInventoryPropTypes';
 import styles from './KIItemCard.module.css';
 
 function KIItemCard({ item, onUpdateItem }) {
@@ -193,23 +194,7 @@ function KIItemCard({ item, onUpdateItem }) {
 }
 
 KIItemCard.propTypes = {
-  item: PropTypes.shape({
-    _id: PropTypes.string,
-    name: PropTypes.string,
-    type: PropTypes.string,
-    unit: PropTypes.string,
-    location: PropTypes.string,
-    category: PropTypes.string,
-    presentQuantity: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    storedQuantity: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    reorderAt: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    monthlyUsage: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    onsite: PropTypes.bool,
-    expiryDate: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
-    lastHarvestDate: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
-    nextHarvestDate: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
-    nextHarvestQuantity: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  }).isRequired,
+  item: inventoryItemShape.isRequired,
   onUpdateItem: PropTypes.func,
 };
 

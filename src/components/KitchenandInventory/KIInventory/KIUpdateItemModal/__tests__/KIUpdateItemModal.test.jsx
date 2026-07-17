@@ -106,6 +106,27 @@ describe('KIUpdateItemModal', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
+  test('sends null for optional fields cleared during an update', async () => {
+    const onSubmit = vi.fn().mockResolvedValue({});
+    renderModal({ onSubmit });
+
+    fireEvent.change(screen.getByLabelText('Last harvest date'), { target: { value: '' } });
+    fireEvent.change(screen.getByLabelText('Next harvest date'), { target: { value: '' } });
+    fireEvent.change(screen.getByLabelText('Next harvest quantity'), { target: { value: '' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }));
+
+    await waitFor(() => {
+      expect(onSubmit).toHaveBeenCalledWith(
+        'item-1',
+        expect.objectContaining({
+          lastHarvestDate: null,
+          nextHarvestDate: null,
+          nextHarvestQuantity: null,
+        }),
+      );
+    });
+  });
+
   test('requires confirmation before deleting the item', async () => {
     const onDelete = vi.fn().mockResolvedValue({});
     const onClose = vi.fn();
