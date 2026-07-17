@@ -10,7 +10,7 @@
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 2rem 1rem;
   background: #fff;
 }
 
@@ -61,12 +61,24 @@
   }
 
   .detail-pct {
-    color: #C0C7D3
+    color: #C0C7D3;
   }
 
   .experience-role-multi-select :global(.experience-role-multi-select__input) {
     color: #f9fafb !important;
   }
+
+  .custom-tooltip-applicant span {
+    color: #C0C7D3;
+  }
+
+  .custom-tooltip-percentage span {
+    color: #C0C7D3;
+  }
+
+  .custom-tooltip-name{
+    font-weight: 700;
+  } 
 }
 
 /* ===================== Header ===================== */
@@ -323,7 +335,7 @@
     transform 0.15s ease;
 }
 
-.chart-details .detail-item:hover {
+.chart-details .detail-item.active {
   border-color: hsl(214, 32%, 60%);
   transform: translateY(-2px);
 }
@@ -459,6 +471,7 @@
 
 /* Adjusted tooltip for Light Mode: Light background with dark text for contrast */
 .custom-tooltip {
+  text-align: left;
   background: rgb(255 255 255 / 96%) !important;
   border: 1px solid #e2e8f0 !important;
   border-radius: 10px !important;
@@ -466,6 +479,29 @@
   box-shadow: 0 12px 28px rgb(2 6 23 / 15%) !important;
   backdrop-filter: blur(10px);
   color: #0f172a !important;
+}
+
+.custom-tooltip-name {
+  padding-bottom: 0.4rem;
+}
+
+.custom-tooltip-stats {
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.4rem;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 0.4rem;
+}
+
+.custom-tooltip-applicant {
+  display: flex;
+  justify-content: space-between;
+}
+
+.custom-tooltip-percentage {
+  display: flex;
+  justify-content: space-between;
+  column-gap: 1rem;
 }
 
 .tooltip-content {
@@ -659,7 +695,7 @@
 
 /* Adjusted tooltip for Dark Mode: Scoped to .experience-donut-chart-dark-mode */
 .experience-donut-chart-dark-mode .custom-tooltip {
-  background-color: rgb(42 53 95 / 96%) !important;
+  background-color: #253652 !important;
   color: #f1f5f9 !important;
   border: 1px solid #3b4a75 !important;
   box-shadow: 0 12px 28px rgb(0 0 0 / 45%) !important;

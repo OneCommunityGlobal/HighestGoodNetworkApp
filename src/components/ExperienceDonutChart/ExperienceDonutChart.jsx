@@ -161,8 +161,6 @@ export default function ExperienceDonutChart() {
             <div
               key={d.name}
               className={`${styles['detail-item']} ${activeIndex === idx ? styles.active : ''}`}
-              onMouseEnter={() => setActiveIndex(idx)}
-              onMouseLeave={() => setActiveIndex(null)}
             >
               <div className={styles['detail-header']}>
                 <span className={styles['detail-dot']} style={{ backgroundColor: d.color }} />
@@ -171,7 +169,10 @@ export default function ExperienceDonutChart() {
               <div className={styles['detail-stats']}>
                 <div className={styles['detail-stats-count']}>
                   <span className={styles['detail-count']}>{d.value.toLocaleString()}</span>
-                  <span className={styles['detail-applicant-label']}> applicants</span>
+                  <span className={styles['detail-applicant-label']}>
+                    {' '}
+                    applicant{d.value > 0 && 's'}
+                  </span>
                 </div>
                 <span className={styles['detail-pct']}>{pct}%</span>
               </div>
@@ -189,12 +190,15 @@ export default function ExperienceDonutChart() {
 
     return (
       <div className={styles['custom-tooltip']}>
-        {/* Corrected tooltip to use name and value from payload for visibility */}
-        <strong>{d.name}</strong>
-        <br />
-        Count: {d.value}
-        <br />
-        {pct}% of applicants
+        <div className={styles['custom-tooltip-name']}>{d.name}</div>
+        <div className={styles['custom-tooltip-stats']}>
+          <div className={styles['custom-tooltip-applicant']}>
+            <span>Applicants:</span> <strong>{d.value}</strong>
+          </div>
+          <div className={styles['custom-tooltip-percentage']}>
+            <span>% of applicants:</span> <strong>{pct}%</strong>
+          </div>
+        </div>
       </div>
     );
   };
