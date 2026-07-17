@@ -406,268 +406,267 @@ function JobFormBuilder() {
           </div>
         </div>
         <h1 className={styles.jobformTitle}>FORM CREATION</h1>
-        {canManageJobForms ? (
-          <div className={styles.customForm}>
-            <p className={styles.jobformDesc}>
-              Fill the form with questions about a specific position you want to create an ad for.
-              The default questions will automatically appear and are alredy selected. You can pick
-              and choose them with the checkbox.
+        {/* Commenting the below condition as one of the task in Job DOcs has:
+              Expected Result: Form builder elements should display below 
+              "FORM CREATION" heading for all user roles including Admin
+      */}
+        {/* {canManageJobForms ? ( */}
+        <div className={styles.customForm}>
+          <p className={styles.jobformDesc}>
+            Fill the form with questions about a specific position you want to create an ad for. The
+            default questions will automatically appear and are alredy selected. You can pick and
+            choose them with the checkbox.
+          </p>
+          <QuestionSetManager
+            formFields={formFields}
+            setFormFields={setFormFields}
+            onImportQuestions={fields => {
+              importQuestions(fields);
+              markAsSaved(fields);
+            }}
+            onTemplateSaved={() => {
+              markAsSaved(formFields);
+              resetBuilderState();
+            }}
+            darkMode={darkMode}
+            templateName={templateName}
+            setTemplateName={setTemplateName}
+            selectedTemplate={selectedTemplate}
+            setSelectedTemplate={setSelectedTemplate}
+          />
+          <div className={styles.standardApplicantSection}>
+            <p className={styles.standardApplicantNote}>
+              These profile fields always appear on the application form (including required email).
             </p>
-            <QuestionSetManager
-              formFields={formFields}
-              setFormFields={setFormFields}
-              onImportQuestions={fields => {
-                importQuestions(fields);
-                markAsSaved(fields);
-              }}
-              onTemplateSaved={() => {
-                markAsSaved(formFields);
-                resetBuilderState();
-              }}
-              darkMode={darkMode}
-              templateName={templateName}
-              setTemplateName={setTemplateName}
-              selectedTemplate={selectedTemplate}
-              setSelectedTemplate={setSelectedTemplate}
-            />
-            <div className={styles.standardApplicantSection}>
-              <p className={styles.standardApplicantNote}>
-                These profile fields always appear on the application form (including required
-                email).
-              </p>
-              <div className={styles.standardApplicantGrid}>
-                {STANDARD_APPLICANT_FIELDS.map(field => (
-                  <div key={field.label} className={styles.standardApplicantField}>
+            <div className={styles.standardApplicantGrid}>
+              {STANDARD_APPLICANT_FIELDS.map(field => (
+                <div key={field.label} className={styles.standardApplicantField}>
+                  <label className={`${styles.fieldLabel} ${styles.jbformLabel}`}>
+                    {field.label}
+                    {field.required && (
+                      <span className={styles.requiredMark} aria-hidden="true">
+                        {' '}
+                        *
+                      </span>
+                    )}
+                  </label>
+                  <input
+                    type={field.inputType}
+                    readOnly
+                    tabIndex={-1}
+                    placeholder={
+                      field.inputType === 'email'
+                        ? 'Applicant enters email here'
+                        : `Applicant enters ${field.label.toLowerCase()}`
+                    }
+                    className={`${styles.jobformInput} ${styles.standardApplicantInput}`}
+                    aria-label={`${field.label} preview`}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+          <form>
+            {formFields.map((field, index) => {
+              const questionType = normalizeQuestionType(field);
+
+              return (
+                <div className={styles.formDiv} key={`${index}-${field.questionText}`}>
+                  <QuestionFieldActions
+                    field={field}
+                    index={index}
+                    totalFields={formFields.length}
+                    onClone={cloneField}
+                    onMove={moveField}
+                    onDelete={deleteField}
+                    onEdit={editField}
+                    visible={field.visible}
+                    onVisibilityChange={event => changeVisiblity(event, field)}
+                    darkMode={darkMode}
+                  />
+                  <div className={styles.formField}>
                     <label className={`${styles.fieldLabel} ${styles.jbformLabel}`}>
-                      {field.label}
-                      {field.required && (
+                      {field.questionText}
+                      {isFieldRequired(field) && (
                         <span className={styles.requiredMark} aria-hidden="true">
                           {' '}
                           *
                         </span>
                       )}
                     </label>
-                    <input
-                      type={field.inputType}
-                      readOnly
-                      tabIndex={-1}
-                      placeholder={
-                        field.inputType === 'email'
-                          ? 'Applicant enters email here'
-                          : `Applicant enters ${field.label.toLowerCase()}`
-                      }
-                      className={`${styles.jobformInput} ${styles.standardApplicantInput}`}
-                      aria-label={`${field.label} preview`}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-            <form>
-              {formFields.map((field, index) => {
-                const questionType = normalizeQuestionType(field);
-
-                return (
-                  <div className={styles.formDiv} key={`${index}-${field.questionText}`}>
-                    <QuestionFieldActions
-                      field={field}
-                      index={index}
-                      totalFields={formFields.length}
-                      onClone={cloneField}
-                      onMove={moveField}
-                      onDelete={deleteField}
-                      onEdit={editField}
-                      visible={field.visible}
-                      onVisibilityChange={event => changeVisiblity(event, field)}
-                      darkMode={darkMode}
-                    />
-                    <div className={styles.formField}>
-                      <label className={`${styles.fieldLabel} ${styles.jbformLabel}`}>
-                        {field.questionText}
-                        {isFieldRequired(field) && (
-                          <span className={styles.requiredMark} aria-hidden="true">
-                            {' '}
-                            *
-                          </span>
-                        )}
-                      </label>
-                      <div className={styles.fieldOptions}>
-                        {questionType === 'textbox' && (
-                          <input
-                            type={resolveInputType(field)}
-                            placeholder={
-                              resolveInputType(field) === 'email'
-                                ? 'Enter email address'
-                                : 'Enter text here'
-                            }
-                            className={styles.jobformInput}
-                          />
-                        )}
-                        {questionType === 'date' && (
-                          <input
-                            type="date"
-                            placeholder="Enter date"
-                            className={styles.jobformInput}
-                          />
-                        )}
-                        {questionType === 'textarea' && (
-                          <textarea
-                            className={styles.jobformTextarea}
-                            placeholder="Enter long-form response here"
-                            rows={4}
-                          />
-                        )}
-                        {questionType === 'file' && (
-                          <input type="file" disabled className={styles.jobformInput} />
-                        )}
-                        {['checkbox', 'radio'].includes(questionType) &&
-                          field.options.map(option => (
-                            <div key={`${index}-${option}`} className={styles.optionItem}>
-                              <input
-                                type={questionType}
-                                name={`field-${index}`}
-                                className={styles.jobformInput}
-                              />
-                              <label className={styles.jbformLabel}>{option}</label>
-                            </div>
+                    <div className={styles.fieldOptions}>
+                      {questionType === 'textbox' && (
+                        <input
+                          type={resolveInputType(field)}
+                          placeholder={
+                            resolveInputType(field) === 'email'
+                              ? 'Enter email address'
+                              : 'Enter text here'
+                          }
+                          className={styles.jobformInput}
+                        />
+                      )}
+                      {questionType === 'date' && (
+                        <input
+                          type="date"
+                          placeholder="Enter date"
+                          className={styles.jobformInput}
+                        />
+                      )}
+                      {questionType === 'textarea' && (
+                        <textarea
+                          className={styles.jobformTextarea}
+                          placeholder="Enter long-form response here"
+                          rows={4}
+                        />
+                      )}
+                      {questionType === 'file' && (
+                        <input type="file" disabled className={styles.jobformInput} />
+                      )}
+                      {['checkbox', 'radio'].includes(questionType) &&
+                        field.options.map(option => (
+                          <div key={`${index}-${option}`} className={styles.optionItem}>
+                            <input
+                              type={questionType}
+                              name={`field-${index}`}
+                              className={styles.jobformInput}
+                            />
+                            <label className={styles.jbformLabel}>{option}</label>
+                          </div>
+                        ))}
+                      {questionType === 'dropdown' && (
+                        <select className={styles.jobformSelect}>
+                          {field.options.map(option => (
+                            <option key={`${index}-${option}`} value={option}>
+                              {option}
+                            </option>
                           ))}
-                        {questionType === 'dropdown' && (
-                          <select className={styles.jobformSelect}>
-                            {field.options.map(option => (
-                              <option key={`${index}-${option}`} value={option}>
-                                {option}
-                              </option>
-                            ))}
-                          </select>
-                        )}
-                      </div>
+                        </select>
+                      )}
                     </div>
                   </div>
-                );
-              })}
-            </form>
+                </div>
+              );
+            })}
+          </form>
 
-            <div className={styles.newFieldSection}>
-              <div>
+          <div className={styles.newFieldSection}>
+            <div>
+              <label className={styles.jbformLabel}>
+                Field Label:
+                <input
+                  type="text"
+                  value={newField.questionText}
+                  onChange={e => {
+                    e.persist();
+                    setNewField(prev => ({ ...prev, questionText: e.target.value }));
+                  }}
+                  placeholder="Enter Field Label"
+                  className={styles.jobformInput}
+                />
+              </label>
+            </div>
+            <div>
+              <label className={styles.jbformLabel}>
+                Input Type:
+                <select
+                  value={newField.questionType}
+                  className={styles.jobformSelect}
+                  onChange={e => {
+                    e.persist();
+                    setNewField(prev => ({
+                      ...prev,
+                      questionType: e.target.value,
+                      options: [],
+                    }));
+                  }}
+                >
+                  <option value="textbox">TextBox</option>
+                  <option value="email">Email</option>
+                  <option value="textarea">Textarea</option>
+                  <option value="checkbox">Checkbox</option>
+                  <option value="radio">Radio</option>
+                  <option value="dropdown">Dropdown</option>
+                  <option value="date">Date</option>
+                </select>
+              </label>
+            </div>
+
+            {/* Options Section */}
+            {['checkbox', 'radio', 'dropdown'].includes(newField.questionType) && (
+              <div className={styles.optionsSection}>
                 <label className={styles.jbformLabel}>
-                  Field Label:
+                  Add Option:
                   <input
                     type="text"
-                    value={newField.questionText}
-                    onChange={e => {
-                      e.persist();
-                      setNewField(prev => ({ ...prev, questionText: e.target.value }));
-                    }}
-                    placeholder="Enter Field Label"
+                    value={newOption}
+                    onChange={e => setNewOption(e.target.value)}
                     className={styles.jobformInput}
+                    placeholder="Enter an option"
                   />
                 </label>
-              </div>
-              <div>
-                <label className={styles.jbformLabel}>
-                  Input Type:
-                  <select
-                    value={newField.questionType}
-                    className={styles.jobformSelect}
-                    onChange={e => {
-                      e.persist();
-                      setNewField(prev => ({
-                        ...prev,
-                        questionType: e.target.value,
-                        options: [],
-                      }));
-                    }}
-                  >
-                    <option value="textbox">TextBox</option>
-                    <option value="email">Email</option>
-                    <option value="textarea">Textarea</option>
-                    <option value="checkbox">Checkbox</option>
-                    <option value="radio">Radio</option>
-                    <option value="dropdown">Dropdown</option>
-                    <option value="date">Date</option>
-                  </select>
-                </label>
-              </div>
-
-              {/* Options Section */}
-              {['checkbox', 'radio', 'dropdown'].includes(newField.questionType) && (
-                <div className={styles.optionsSection}>
-                  <label className={styles.jbformLabel}>
-                    Add Option:
-                    <input
-                      type="text"
-                      value={newOption}
-                      onChange={e => setNewOption(e.target.value)}
-                      className={styles.jobformInput}
-                      placeholder="Enter an option"
-                    />
-                  </label>
-                  <button
-                    type="button"
-                    onClick={handleAddOption}
-                    className={styles.addOptionButton}
-                  >
-                    Add Option
-                  </button>
-                  <div className={styles.optionsList}>
-                    <h4>Options:</h4>
-                    {newField.options.map(option => (
-                      <div key={uuidv4()} className={styles.optionItem}>
-                        {option}
-                      </div>
-                    ))}
-                  </div>
+                <button type="button" onClick={handleAddOption} className={styles.addOptionButton}>
+                  Add Option
+                </button>
+                <div className={styles.optionsList}>
+                  <h4>Options:</h4>
+                  {newField.options.map(option => (
+                    <div key={uuidv4()} className={styles.optionItem}>
+                      {option}
+                    </div>
+                  ))}
                 </div>
-              )}
-
-              <div>
-                <label className={styles.jbformLabel}>
-                  <input
-                    type="checkbox"
-                    checked={Boolean(newField.isRequired || newField.required)}
-                    onChange={e =>
-                      setNewField(prev => ({
-                        ...prev,
-                        isRequired: e.target.checked,
-                        required: e.target.checked,
-                      }))
-                    }
-                  />{' '}
-                  Required field
-                </label>
               </div>
-
-              <button type="button" onClick={handleAddField} className={styles.addFieldButton}>
-                Add Field
-              </button>
-            </div>
-
-            <div className={styles.previewSection}>
-              <button
-                type="button"
-                className={styles.previewTextButton}
-                onClick={() => setShowPreviewModal(true)}
-              >
-                Preview Form
-              </button>
-            </div>
-
-            <div className={styles.saveSection}>
-              <button type="button" className={styles.jobSubmitButton} onClick={handleSubmit}>
-                Save Form
-              </button>
-            </div>
-
-            {editModalOpen && editingQuestion && (
-              <QuestionEditModal
-                question={editingQuestion}
-                onSave={handleSaveEditedQuestion}
-                onCancel={handleCancelEdit}
-                darkMode={darkMode}
-              />
             )}
+
+            <div>
+              <label className={styles.jbformLabel}>
+                <input
+                  type="checkbox"
+                  checked={Boolean(newField.isRequired || newField.required)}
+                  onChange={e =>
+                    setNewField(prev => ({
+                      ...prev,
+                      isRequired: e.target.checked,
+                      required: e.target.checked,
+                    }))
+                  }
+                />{' '}
+                Required field
+              </label>
+            </div>
+
+            <button type="button" onClick={handleAddField} className={styles.addFieldButton}>
+              Add Field
+            </button>
           </div>
-        ) : (
+
+          <div className={styles.previewSection}>
+            <button
+              type="button"
+              className={styles.previewTextButton}
+              onClick={() => setShowPreviewModal(true)}
+            >
+              Preview Form
+            </button>
+          </div>
+
+          <div className={styles.saveSection}>
+            <button type="button" className={styles.jobSubmitButton} onClick={handleSubmit}>
+              Save Form
+            </button>
+          </div>
+
+          {editModalOpen && editingQuestion && (
+            <QuestionEditModal
+              question={editingQuestion}
+              onSave={handleSaveEditedQuestion}
+              onCancel={handleCancelEdit}
+              darkMode={darkMode}
+            />
+          )}
+        </div>
+        {/* ) : (
           <div className={styles.customForm}>
             <div className="alert alert-warning" role="alert">
               <h4 className="alert-heading">Access restricted</h4>
@@ -678,7 +677,7 @@ function JobFormBuilder() {
               </p>
             </div>
           </div>
-        )}
+        )} */}
         <FormPreviewModal
           isOpen={showPreviewModal}
           onClose={() => setShowPreviewModal(false)}
