@@ -61,19 +61,19 @@
 
 .btnPrimary:disabled {
   background-color: #9bbce5;
-  color: #385270;
+  color: #142d4c;
   cursor: not-allowed;
 }
 
 .btnCancelDark {
-  background: transparent;
+  background: #172033;
   color: #ecf0f1;
   border: 1px solid #ecf0f1;
 }
 
 .rescheduleButtonDisabled {
   background-color: #9bbce5;
-  color: #385270;
+  color: #142d4c;
   cursor: not-allowed;
   opacity: 0.7;
 }
@@ -106,6 +106,7 @@
   background: #fff;
   padding: 24px;
   border-radius: 10px;
+  border: none;
   width: min(900px, 95%);
   max-height: 90vh;
   overflow-y: auto;
@@ -306,7 +307,7 @@
 
 .primaryBtn:disabled {
   background: #9bbce5;
-  color: #385270;
+  color: #142d4c;
   cursor: not-allowed;
 }
 
@@ -375,7 +376,7 @@
 
 .datepickerDark :global(.react-datepicker__day--selected),
 .datepickerDark :global(.react-datepicker__day--keyboard-selected) {
-  background-color: #2980b9;
+  background-color: #2471a3;
   color: #fff;
 }
 

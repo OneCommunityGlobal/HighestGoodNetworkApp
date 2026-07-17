@@ -217,22 +217,16 @@ function RescheduleModal(props) {
         <div className={styles.muted}>{eventInfo.location}</div>
       </div>
 
-      <div
+      <button
+        type="button"
         className={`${styles.modalBackdrop} ${darkMode ? styles.modalBackdropDark : ''}`}
-        role="button"
-        tabIndex={0}
         onClick={e => e.target === e.currentTarget && closeModal()}
-        onKeyDown={e => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.target === e.currentTarget && closeModal();
-          }
-        }}
       >
-        <div
+        <dialog
           className={`${styles.modalContent} ${darkMode ? styles.modalContentDark : ''}`}
-          role="dialog"
           aria-modal="true"
           aria-labelledby="reschedule-title"
+          open
         >
           <button
             type="button"
@@ -346,8 +340,8 @@ function RescheduleModal(props) {
               </div>
             </>
           )}
-        </div>
-      </div>
+        </dialog>
+      </button>
     </div>
   );
 }
