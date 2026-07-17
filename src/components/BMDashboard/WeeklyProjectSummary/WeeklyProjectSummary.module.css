@@ -505,11 +505,6 @@
   color: var(--text-color);
 }
 
-/* --- FIX HEADER TEXT + DROPDOWNS FOR DARK MODE --- */
-.darkMode .weeklySummaryShareBtn:hover {
-  background-color: var(--button-hover) !important;
-}
-
 /* ---------------- STATUS CARD (base) ---------------- */
 .statusCard {
   display: flex;
@@ -714,10 +709,6 @@
 .darkMode .weeklySummaryShareBtn {
   background: #e8a71c !important;
   color: #000 !important; /* readable in dark mode */
-}
-
-.darkMode .weeklySummaryShareBtn:hover {
-  background: #f5b13a !important;
 }
 
 /* ---------------- OVAL STATUS BUTTON ---------------- */
