@@ -23,6 +23,8 @@ import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
 import InjurySeverityChart from '../Injuries/InjurySeverityChart';
+import CostPredictionChart from './CostPredictionChart';
+import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 
 import styles from './WeeklyProjectSummary.module.css';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
@@ -129,7 +131,7 @@ const projectStatusButtons = [
 function renderFinancialCard(i) {
   if (i === 2) return <CostPredictionChart projectId={1} />;
   if (i === 3) return <ActualVsPlannedCost />;
-  return '📊 Card';
+  return <div>📊 Card</div>;
 }
 
 function renderMaterialCard(idx, quantityOfMaterialsUsedData) {
