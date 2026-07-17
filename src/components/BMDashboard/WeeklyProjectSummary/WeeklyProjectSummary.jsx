@@ -138,6 +138,86 @@ function renderMaterialCard(idx, quantityOfMaterialsUsedData) {
   return <p>📊 Card</p>;
 }
 
+function renderProjectStatusGrid() {
+  return (
+    <div className={styles.projectStatusGrid}>
+      {projectStatusButtons.map(button => (
+        <div
+          key={uuidv4()}
+          className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
+          style={{ backgroundColor: button.bgColor }}
+        >
+          <div
+            className={styles.weeklyCardTitle}
+            style={{ color: '#000' }} // FIX: always visible
+          >
+            {button.title}
+          </div>
+
+          <div
+            className={styles.weeklyStatusButton}
+            style={{ backgroundColor: button.buttonColor }}
+          >
+            <span className={styles.weeklyStatusValue}>{button.value}</span>
+          </div>
+
+          <div className="weekly-status-change" style={{ color: button.textColor }}>
+            {button.change}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function renderMaterialConsumptionCards(quantityOfMaterialsUsedData) {
+  return [0, 1, 2].map(idx => (
+    <div key={uuidv4()} className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+      {renderMaterialCard(idx, quantityOfMaterialsUsedData)}
+    </div>
+  ));
+}
+
+function renderLaborTrackingCard(i) {
+  return i === 1 ? <PaidLaborCost /> : <DistributionLaborHours />;
+}
+
+function renderLaborTrackingCards() {
+  return [0, 1].map(i => (
+    <div key={uuidv4()} className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+      {renderLaborTrackingCard(i)}
+    </div>
+  ));
+}
+
+function renderFinancialsTrackingCards() {
+  return [0, 1, 2, 3].map(i => (
+    <div key={uuidv4()} className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+      {renderFinancialCard(i)}
+    </div>
+  ));
+}
+
+function DashboardSection({ title, sectionKey, className, content, isOpen, onToggle }) {
+  return (
+    <div className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]}`}>
+      {/* FIX: Title always visible */}
+      <button
+        type="button"
+        className={styles.weeklyProjectSummaryDashboardCategoryTitle}
+        style={{ color: '#000' }} // always readable
+        onClick={() => onToggle(sectionKey)}
+      >
+        {title} <span>{isOpen ? '∧' : '∨'}</span>
+      </button>
+
+      {isOpen && (
+        <div className={styles.weeklyProjectSummaryDashboardCategoryContent}>{content}</div>
+      )}
+    </div>
+  );
+}
+
 function WeeklyProjectSummary() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);
@@ -170,35 +250,7 @@ function WeeklyProjectSummary() {
         title: 'Project Status',
         key: 'Project Status',
         className: 'full',
-        content: (
-          <div className={styles.projectStatusGrid}>
-            {projectStatusButtons.map(button => (
-              <div
-                key={uuidv4()}
-                className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
-                style={{ backgroundColor: button.bgColor }}
-              >
-                <div
-                  className={styles.weeklyCardTitle}
-                  style={{ color: '#000' }} // FIX: always visible
-                >
-                  {button.title}
-                </div>
-
-                <div
-                  className={styles.weeklyStatusButton}
-                  style={{ backgroundColor: button.buttonColor }}
-                >
-                  <span className={styles.weeklyStatusValue}>{button.value}</span>
-                </div>
-
-                <div className="weekly-status-change" style={{ color: button.textColor }}>
-                  {button.change}
-                </div>
-              </div>
-            ))}
-          </div>
-        ),
+        content: renderProjectStatusGrid(),
       },
       {
         title: 'Issues Breakdown',
@@ -224,11 +276,7 @@ function WeeklyProjectSummary() {
         title: 'Material Consumption',
         key: 'Material Consumption',
         className: 'large',
-        content: [0, 1, 2].map(idx => (
-          <div key={uuidv4()} className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-            {renderMaterialCard(idx, quantityOfMaterialsUsedData)}
-          </div>
-        )),
+        content: renderMaterialConsumptionCards(quantityOfMaterialsUsedData),
       },
       {
         title: 'Issue Tracking',
@@ -328,21 +376,13 @@ function WeeklyProjectSummary() {
         title: 'Labor and Time Tracking',
         key: 'Labor and Time Tracking',
         className: 'half',
-        content: [0, 1].map(i => (
-          <div key={uuidv4()} className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-            {i === 1 ? <PaidLaborCost /> : <DistributionLaborHours />}
-          </div>
-        )),
+        content: renderLaborTrackingCards(),
       },
       {
         title: 'Financials Tracking',
         key: 'Financials Tracking',
         className: 'full',
-        content: [0, 1, 2, 3].map(i => (
-          <div key={uuidv4()} className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-            {renderFinancialCard(i)}
-          </div>
-        )),
+        content: renderFinancialsTrackingCards(),
       },
     ],
     [quantityOfMaterialsUsedData],
@@ -355,24 +395,15 @@ function WeeklyProjectSummary() {
       <div className={styles.weeklyProjectSummaryDashboardContainer}>
         <div className={styles.weeklyProjectSummaryDashboardGrid}>
           {sections.map(({ title, key, className, content }) => (
-            <div
+            <DashboardSection
               key={key}
-              className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]}`}
-            >
-              {/* FIX: Title always visible */}
-              <button
-                type="button"
-                className={styles.weeklyProjectSummaryDashboardCategoryTitle}
-                style={{ color: '#000' }} // always readable
-                onClick={() => toggleSection(key)}
-              >
-                {title} <span>{openSections[key] ? '∧' : '∨'}</span>
-              </button>
-
-              {openSections[key] && (
-                <div className={styles.weeklyProjectSummaryDashboardCategoryContent}>{content}</div>
-              )}
-            </div>
+              title={title}
+              sectionKey={key}
+              className={className}
+              content={content}
+              isOpen={!!openSections[key]}
+              onToggle={toggleSection}
+            />
           ))}
         </div>
       </div>
