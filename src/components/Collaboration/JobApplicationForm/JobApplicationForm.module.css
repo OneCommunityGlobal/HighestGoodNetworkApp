@@ -1,117 +1,188 @@
-/* stylelint-disable  */
 .container {
   font-family: Arial, sans-serif;
-  margin: 0 auto;
-  padding: 20px 0 40px;
+  margin: 0;
+  padding: 0;
+  padding-bottom: 1.5rem;
+  box-sizing: border-box;
   background-color: #d9d9d9;
   width: 100%;
+  min-height: auto;
 }
 
 .logo {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin: 0;
+  padding: 0;
 }
 
 .header {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
-  padding: 10px 0 0;
+  padding: 0;
+  margin: 0;
   border-radius: 5px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .headerContent {
   display: flex;
   gap: 10px;
   background-color: #98cb03;
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 12px 16px;
+  width: min(960px, 92vw);
+  max-width: 100%;
+  padding: clamp(0.75rem, 2vw, 1.25rem);
   justify-content: space-between;
   align-items: center;
-  box-sizing: border-box;
   flex-wrap: wrap;
+  box-sizing: border-box;
+  border-radius: 12px 12px 0 0;
 }
 
 .headerLeft {
   display: flex;
   gap: 10px;
-  flex: 1 1 0;
-  max-width: 50%;
-  align-items: center;
-  min-width: 260px;
 }
 
 .headerRight {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  flex: 1 1 0;
-  max-width: 50%;
-}
-
-.jobTitleInput {
-  padding: 6px 8px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  flex: 1 1 0;
+  flex-shrink: 1;
   min-width: 0;
 }
 
-.jobSelect {
-  padding: 6px 8px;
+.jobTitleInput {
+  padding: 5px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  width: 100%;
+}
+
+.jobSelect {
+  padding: 6px 36px 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  min-width: 150px;
+  max-width: 300px;
+  width: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23666' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
 }
 
 .goButton {
-  background-color: #4caf50;
-  color: white;
+  background-color: #006b32;
+  color: #fff;
   border: none;
-  padding: 6px 14px;
+  padding: 5px 10px;
   border-radius: 5px;
   cursor: pointer;
 }
 
-@media (width <= 768px) {
-  .headerContent {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .headerLeft {
-    width: 100%;
-  }
-
-  .headerRight {
-    width: 100%;
-    margin-top: 8px;
-  }
-
-  .jobSelect {
-    max-width: 100%;
-  }
-}
-
 .formContainer {
   background-color: #f9f9f9;
-  padding: 2%;
-  width: 75%;
-  padding: 24px 32px 32px;
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
+  padding: clamp(1rem, 2.5vw, 1.75rem);
+  width: min(960px, 92vw);
+  max-width: 100%;
+  margin-inline: auto;
   box-shadow: 0 0 10px rgb(0 0 0 / 10%);
+  border-radius: 0 0 12px 12px;
+  box-sizing: border-box;
 }
 
 .formTitle {
   text-align: center;
   font-size: 1.5em;
   margin-bottom: 10px;
+}
+
+.formHint {
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: #444;
+  margin: 0 0 1rem;
+}
+
+.requiredMark {
+  color: #b00020;
+  font-weight: 700;
+}
+
+.fieldLabel {
+  display: block;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.35rem;
+  color: #222;
+}
+
+.profileField {
+  margin-bottom: 0.9rem;
+}
+
+.formGroupTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  text-align: left;
+  color: #111;
+}
+
+.questionNumber {
+  color: #555;
+  font-weight: 600;
+}
+
+.adminRequirementsNote {
+  font-size: 0.85rem;
+  color: #555;
+  margin: 0 0 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: #f0f7ff;
+  border-radius: 6px;
+  border: 1px solid #cfe8ff;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.jaHeader {
+  margin-bottom: 20px;
+}
+
+.jaTitle {
+  font-size: 2.5em;
+  font-weight: 700;
+  margin-bottom: 15px;
+  text-align: left;
+  color: #333;
+  line-height: 1.2;
+}
+
+.jaDesc {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #555;
+  margin-bottom: 20px;
+  text-align: left;
 }
 
 .formSubtitle {
@@ -128,35 +199,48 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  background-color: #d9d9d9;
-  padding: 2%;
-  border-radius: 1%;
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .formContentGroup {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  margin-left: 2%;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.optionFieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
 }
 
 .formProfileDetailGroup {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  width: 100%;
 }
 
-.formProfileDetailGroup input {
-  flex: 1;
+.formProfileDetailGroup .profileField {
+  flex: 1 1 200px;
   min-width: 200px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
 }
 
 .formGroup h2 {
@@ -167,37 +251,75 @@
   font-size: medium;
 }
 
-.formGroup input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
+.formGroup input,
+.formGroup select,
 .formGroup textarea {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  width: 100%;
+  height: auto;
+  min-height: 40px;
   box-sizing: border-box;
-  min-height: 100px;
+  font-size: 1rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.formGroup textarea {
+  min-height: 120px;
   resize: vertical;
 }
 
-.dateInput,
-.selectField {
+.inputField {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  height: auto;
+  min-height: 40px;
+  box-sizing: border-box;
+  font-size: 1rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.selectField,
+.dateInput {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  height: auto;
+  min-height: 40px;
+  box-sizing: border-box;
+  font-size: 1rem;
+  width: 100%;
+}
+
+.inputFieldError {
+  border-color: #c62828;
+}
+
+.fieldError {
+  margin: 4px 0 0;
+  color: #c62828;
+  font-size: 0.85rem;
 }
 
 .submitButton {
-  background-color: #4caf50;
-  color: white;
+  background-color: #006b32;
+  color: #fff;
   border: none;
   padding: 10px;
   border-radius: 5px;
   cursor: pointer;
   align-self: center;
+  margin-top: 0.5rem;
+}
+
+.submitButton:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
 .popupOverlay {
@@ -339,30 +461,6 @@
   background: #155dc0;
 }
 
-/* Dark mode: native date input — white calendar icon (WebKit/Blink) */
-.darkMode input[type='date'],
-.darkMode .dateInput {
-  color-scheme: dark;
-}
-
-.darkMode input[type='date']::-webkit-calendar-picker-indicator,
-.darkMode .dateInput::-webkit-calendar-picker-indicator {
-  /* Force a light/white glyph on dark inputs (invert alone can stay too dim) */
-  filter: brightness(0) invert(1);
-  opacity: 1;
-  cursor: pointer;
-  width: 1.15rem;
-  height: 1.15rem;
-}
-
-/* Firefox: calendar icon in date inputs */
-.darkMode input[type='date']::-moz-calendar-picker-indicator,
-.darkMode .dateInput::-moz-calendar-picker-indicator {
-  filter: brightness(0) invert(1);
-  opacity: 1;
-  cursor: pointer;
-}
-
 .resumeLabel {
   display: inline-flex;
   margin-bottom: 0;
@@ -378,6 +476,90 @@
   line-height: 1;
   user-select: none;
   transition: background 150ms ease, box-shadow 150ms ease, transform 120ms ease;
+}
+
+.fileUploadField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1 1 100%;
+  width: 100%;
+}
+
+.fileUploadRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.hiddenFileInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.uploadButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: #006b32;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  line-height: 1.2;
+  transition: background 150ms ease, box-shadow 150ms ease;
+}
+
+.uploadButton:hover {
+  background: #005528;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 12%);
+}
+
+.fileStatus {
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #e6eef6;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fileStatusEmpty {
+  color: #666;
+  background: #f2f6f9;
+}
+
+.fileStatusSelected {
+  color: #0b3b2e;
+  background: #e8f5e9;
+  border-color: #b7dfc2;
+}
+
+.clearFileBtn {
+  padding: 4px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #fff;
+  color: #444;
+  cursor: pointer;
+}
+
+.clearFileBtn:hover {
+  background: #f5f5f5;
 }
 
 .resumeLabel:hover {
@@ -442,6 +624,35 @@
   background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 15l5-5 5 5z'/></svg>");
 }
 
+.darkMode input[type='date'],
+.darkMode .dateInput {
+  color-scheme: dark;
+}
+
+.darkMode input[type='date']::-webkit-calendar-picker-indicator,
+.darkMode .dateInput::-webkit-calendar-picker-indicator {
+  filter: brightness(0) invert(1);
+  opacity: 1;
+  cursor: pointer;
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.darkMode input[type='date']::-moz-calendar-picker-indicator,
+.darkMode .dateInput::-moz-calendar-picker-indicator {
+  filter: brightness(0) invert(1);
+  opacity: 1;
+  cursor: pointer;
+}
+
+.darkMode .fieldError {
+  color: #ff8a80;
+}
+
+.darkMode .inputFieldError {
+  border-color: #ef5350;
+}
+
 .darkMode .submitButton,
 .darkMode .goButton,
 .darkMode .btn {
@@ -452,14 +663,36 @@
 }
 
 .darkMode .form {
-  background: #23272a;
-  border-radius: 8px;
+  background: transparent;
+  border-radius: 0;
   transition: background 0.3s;
 }
 
 .darkMode .formTitle {
   color: #d9d9d9;
   transition: color 0.3s;
+}
+
+.darkMode .formHint {
+  color: #cbd5e1;
+}
+
+.darkMode .fieldLabel {
+  color: #e5e7eb;
+}
+
+.darkMode .formGroupTitle {
+  color: #f1f5f9;
+}
+
+.darkMode .questionNumber {
+  color: #94a3b8;
+}
+
+.darkMode .adminRequirementsNote {
+  color: #e2e8f0;
+  background: rgb(15 23 42 / 80%);
+  border-color: rgb(56 189 248 / 25%);
 }
 
 .darkMode .popupOverlay {
@@ -469,8 +702,6 @@
 .darkMode .popupContent {
   background: #225163;
   color: #f1f1f1;
-  background: #0b1324;
-  color: #e5e7eb;
   box-shadow: 0 8px 32px rgb(0 0 0 / 70%);
 }
 
@@ -491,7 +722,6 @@
   color: #e0e0e0;
 }
 
-/* Dark mode: job description modal (new layout) */
 .darkMode .jobDescTitle {
   color: #f8fafc;
 }
@@ -505,15 +735,15 @@
 }
 
 .darkMode .tagPill {
-  border-color: rgb(148 163 184 / 35%);
-  background: rgb(148 163 184 / 12%);
-  color: #e2e8f0;
+  border-color: rgb(148 163 184 / 45%);
+  background: #334155;
+  color: #f8fafc;
 }
 
 .darkMode .tagPillStrong {
-  border-color: rgb(56 189 248 / 35%);
-  background: rgb(56 189 248 / 14%);
-  color: #e0f2fe;
+  border-color: rgb(56 189 248 / 45%);
+  background: #1e3a5f;
+  color: #bae6fd;
 }
 
 .darkMode .gotItBtn {
@@ -541,11 +771,50 @@
   transition: color 0.3s;
 }
 
+.darkMode .jaTitle {
+  color: #fff;
+}
+
+.darkMode .jaDesc {
+  color: #e0e0e0;
+}
+
 .darkMode .resumeLabel {
   background: #1c2541;
   border-color: #2b3f57;
   color: #e6eef6;
   box-shadow: none;
+}
+
+.darkMode .uploadButton {
+  background: #225163;
+  color: #f1f1f1;
+}
+
+.darkMode .uploadButton:hover {
+  background: #2a6478;
+}
+
+.darkMode .fileStatusEmpty {
+  background: #22364e;
+  color: #cbd5e1;
+  border-color: rgb(255 255 255 / 15%);
+}
+
+.darkMode .fileStatusSelected {
+  background: #1e3a2f;
+  color: #bbf7d0;
+  border-color: #2d6a4f;
+}
+
+.darkMode .clearFileBtn {
+  background: #1c2541;
+  border-color: #444;
+  color: #e0e0e0;
+}
+
+.darkMode .clearFileBtn:hover {
+  background: #22364e;
 }
 
 .darkMode .resumeLabel:hover {
@@ -554,7 +823,189 @@
 }
 
 .darkMode .resumeLabel .fileName {
-  background: rgb(255 255 255 / 4%);
-  color: #cfe7ff;
-  border-color: rgb(255 255 255 / 5%);
+  background: #22364e;
+  color: #e6eef6;
+  border-color: rgb(255 255 255 / 15%);
+}
+
+/* Admin Requirements Section */
+.adminRequirementsSection {
+  margin: 20px 0;
+  padding: 15px;
+  border-top: 2px solid #98cb03;
+  border-bottom: 2px solid #98cb03;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  display: block;
+  visibility: visible;
+  min-height: 50px;
+}
+
+/* User Requirements Section */
+.userRequirementsSection {
+  margin: 20px 0;
+  padding: 15px;
+  border-top: 2px solid #98cb03;
+  border-bottom: 2px solid #98cb03;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  display: block;
+  visibility: visible;
+  min-height: 50px;
+}
+
+.requirementsTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 15px;
+  color: #333;
+  text-align: left;
+}
+
+.requirementsList {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (width <= 768px) {
+  .requirementsList {
+    grid-template-columns: 1fr;
+  }
+}
+
+.requirementItem {
+  display: flex;
+  align-items: flex-start;
+}
+
+.requirementCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: default;
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  width: 100%;
+}
+
+.requirementsSectionInteractive .requirementCheckbox {
+  position: relative;
+  cursor: pointer;
+}
+
+.requirementCheckboxInput {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.requirementsSectionInteractive .requirementCheckboxInput {
+  left: 0;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  transform: translateY(-50%);
+  z-index: 2;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.requirementCheckboxCustom {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.requirementCheckboxCustom svg {
+  display: none;
+}
+
+.darkMode .requirementCheckboxCustom {
+  border-color: #4a5a6b;
+  background-color: #2a2a2a;
+}
+
+.requirementsSectionInteractive .requirementCheckboxCustom {
+  pointer-events: none;
+}
+
+.requirementCheckboxInput:checked + .requirementCheckboxCustom,
+.requirementCheckboxCustom.checked {
+  background-color: #8cc63f;
+  border-color: #8cc63f;
+}
+
+.requirementCheckboxCustom.checked svg {
+  display: block;
+}
+
+.requirementCheckboxInput:checked + .requirementCheckboxCustom svg {
+  display: block;
+}
+
+.requirementCheckbox span:last-child {
+  color: #333;
+  flex: 1;
+}
+
+.darkMode .adminRequirementsSection {
+  background-color: #1c2541;
+  border-top-color: #98cb03;
+  border-bottom-color: #98cb03;
+}
+
+.darkMode .userRequirementsSection {
+  background-color: #1c2541;
+  border-top-color: #98cb03;
+  border-bottom-color: #98cb03;
+}
+
+.darkMode .requirementsTitle {
+  color: #e0e0e0;
+}
+
+.darkMode .requirementCheckbox {
+  color: #e5e7eb;
+}
+
+.darkMode .requirementCheckboxInput:checked + .requirementCheckboxCustom,
+.darkMode .requirementCheckboxCustom.checked {
+  background-color: #8cc63f;
+  border-color: #8cc63f;
+}
+
+.darkMode .requirementCheckbox span:last-child {
+  color: #e0e0e0;
+}
+
+/* Paint the real scroll canvas (html / body / #root), not only the form div — avoids a white band under long pages. */
+:global(html.job-application-route:not(.dark-mode)),
+:global(body.job-application-route:not(.dark-mode)),
+:global(html.job-application-route:not(.dark-mode) #root),
+:global(body.job-application-route:not(.dark-mode) #root) {
+  background-color: #d9d9d9 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+
+:global(html.dark-mode.job-application-route),
+:global(body.dark-mode.job-application-route),
+:global(html.dark-mode.job-application-route #root),
+:global(body.dark-mode.job-application-route #root) {
+  background-color: #1b2a41 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
 }
