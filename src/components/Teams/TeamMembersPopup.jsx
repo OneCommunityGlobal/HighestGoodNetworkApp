@@ -69,8 +69,8 @@ export const TeamMembersPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon');
   const canAssignTeamToUsers = hasPermission('assignTeamToUsers');
-  const [filterMode, setFilterMode] = useState('active'); // 'active' | 'all' | 'inactive'
 
+  const [filterMode, setFilterMode] = useState('all');
   const [selectedUser, setSelectedUser] = useState(undefined);
   const [isValidUser, setIsValidUser] = useState(true);
   const [searchText, setSearchText] = useState('');
@@ -403,9 +403,10 @@ export const TeamMembersPopup = React.memo(props => {
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    {filterMode}
+                    {labelForFilter(filterMode)}
                   </button>
                 </th>
+
                 <th
                   className="def-width"
                   style={{ width: 56, textAlign: 'center', verticalAlign: 'middle' }}
@@ -470,6 +471,26 @@ export const TeamMembersPopup = React.memo(props => {
           </Button>
         </ModalFooter>
       </Modal>
+
+      {/* <Modal
+        isOpen={deletedPopup}
+        toggle={closeDeletedPopup}
+        className={darkMode ? 'dark-mode text-light' : ''}
+      >
+        <ModalHeader
+          toggle={closeDeletedPopup}
+          className={`${darkMode ? 'bg-space-cadet' : ''} text-danger font-weight-bold`}
+        >
+          Member Deleted!
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <p>
+            Team member successfully deleted! Ryunosuke Satoro famously said, &ldquo;Individually we
+            are one drop, together we are an ocean.&rdquo; Through the action you just took, this
+            ocean is now one drop smaller.
+          </p>
+        </ModalBody>
+      </Modal> */}
     </Container>
   );
 });

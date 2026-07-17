@@ -1,3 +1,5 @@
+/* stylelint-disable declaration-property-value-keyword-no-deprecated, no-descending-specificity */
+
 /* ============================================================================
    EVALUATION RESULTS - CLEAN ACADEMIC DASHBOARD
    Modern table-based design matching the provided mockup
@@ -28,8 +30,53 @@
   min-height: 100vh;
   background-color: var(--bg-light);
   padding: 0;
-  margin-left: 0;
-  transition: none;
+  margin-left: 200px;
+  transition: margin-left 0.3s ease;
+}
+
+/* When sidebar is minimized, expand the content */
+.evaluationResultsPage[data-sidebar-minimized='true'] {
+  margin-left: 70px;
+}
+
+@media (width <= 991px) {
+  .evaluationResultsPage {
+    margin-left: 180px;
+  }
+
+  .evaluationResultsPage[data-sidebar-minimized='true'] {
+    margin-left: 70px;
+  }
+}
+
+@media (width <= 767px) {
+  .evaluationResultsPage {
+    margin-left: 240px;
+  }
+
+  .evaluationResultsPage[data-sidebar-minimized='true'] {
+    margin-left: 70px;
+  }
+}
+
+@media (width <= 480px) {
+  .evaluationResultsPage {
+    margin-left: 220px;
+  }
+
+  .evaluationResultsPage[data-sidebar-minimized='true'] {
+    margin-left: 70px;
+  }
+}
+
+@media (width <= 359px) {
+  .evaluationResultsPage {
+    margin-left: 200px;
+  }
+
+  .evaluationResultsPage[data-sidebar-minimized='true'] {
+    margin-left: 70px;
+  }
 }
 
 /* ============================================================================
@@ -451,6 +498,7 @@
   color: var(--text-dark);
   font-size: 0.9rem;
   line-height: 1.3;
+  word-break: break-word;
   overflow-wrap: anywhere;
 }
 
@@ -768,6 +816,14 @@
     padding: 0 1rem;
   }
 
+  /* Keep headers visible when scrolling horizontally */
+  .assignmentTable thead th {
+    position: sticky;
+    top: 0;
+    background: #f8f9fa;
+    z-index: 1;
+  }
+
   .categoryTable,
   .assignmentTable {
     min-width: 600px;
@@ -780,14 +836,6 @@
   .assignmentTable td {
     padding: 0.75rem 0.5rem;
     white-space: nowrap;
-  }
-
-  /* Keep headers visible when scrolling horizontally */
-  .assignmentTable thead th {
-    position: sticky;
-    top: 0;
-    background: #f8f9fa;
-    z-index: 1;
   }
 
   .teacherFeedbackSection {
@@ -1193,7 +1241,8 @@
 .feedbackTextItem {
   flex: 1 1 auto;
   min-width: 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* ============================================================================
@@ -1415,16 +1464,16 @@
    ============================================================================ */
 
 /* Tablets (768px and below) */
-@media (768px <= width <= 991px) {
+@media (width <= 991px) and (width >= 768px) {
   .evaluationResultsPage {
-    margin-left: 0;
+    margin-left: 180px;
   }
 }
 
 /* Mobile phones (767px and below) */
 @media (width <= 767px) {
   .evaluationResultsPage {
-    margin-left: 0;
+    margin-left: 240px;
   }
 
   .headerSection {
@@ -1533,7 +1582,7 @@
 /* Mobile phones (480px and below) */
 @media (width <= 480px) {
   .evaluationResultsPage {
-    margin-left: 0;
+    margin-left: 220px;
   }
 
   .headerSection {
@@ -1631,7 +1680,7 @@
 /* Small phones (below 360px) */
 @media (width <= 359px) {
   .evaluationResultsPage {
-    margin-left: 0;
+    margin-left: 200px;
   }
 
   .pageTitle {

@@ -1,28 +1,15 @@
-import React, { createContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useState } from 'react';
 
 export const SidebarContext = createContext();
 
 export const SidebarProvider = ({ children }) => {
-  const [isMinimized, setIsMinimized] = useState(() => {
-    try {
-      return localStorage.getItem('ep.sidebar.minimized') === 'true';
-    } catch {
-      // localStorage unavailable (private browsing / SSR)
-      return false;
-    }
-  });
+  const [isMinimized, setIsMinimized] = useState(false);
 
-  useEffect(() => {
-    try {
-      localStorage.setItem('ep.sidebar.minimized', isMinimized ? 'true' : 'false');
-    } catch {
-      // localStorage unavailable — silently ignore
-    }
-  }, [isMinimized]);
-
-  const value = useMemo(() => ({ isMinimized, setIsMinimized }), [isMinimized]);
-
-  return <SidebarContext.Provider value={value}>{children}</SidebarContext.Provider>;
+  return (
+    <SidebarContext.Provider value={{ isMinimized, setIsMinimized }}>
+      {children}
+    </SidebarContext.Provider>
+  );
 };
 
 export const useSidebar = () => {

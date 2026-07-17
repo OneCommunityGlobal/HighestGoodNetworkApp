@@ -3,6 +3,8 @@
    PAGE LAYOUT
 =========================== */
 .pageLayout {
+  display: flex;
+  flex-direction: row;
   min-height: 100vh;
   background-color: #f9fafb;
 
@@ -13,7 +15,7 @@
 
 .content {
   flex: 1;
-  margin-left: 0;
+  margin-left: 72px; /* matches sidebar width */
   padding: 2rem 3rem;
   background-color: #f9fafb;
   z-index: 1;

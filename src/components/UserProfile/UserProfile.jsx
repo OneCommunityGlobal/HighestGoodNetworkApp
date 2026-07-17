@@ -449,14 +449,9 @@ function UserProfile(props) {
         );
         const normalized = (data || []).map(row => {
           // common shapes: {project: {...}}, {projectId: {...}}, or already {...}
-          let project;
-          if (row?.project?.projectName) project = row.project;
-          else if (row?.projectId?.projectName) project = row.projectId;
-          else project = row; // fallback if API already returns the project document
-          return {
-            ...project,
-            projectId: project?._id || project?.projectId,
-          };
+          if (row?.project?.projectName) return row.project;
+          if (row?.projectId?.projectName) return row.projectId;
+          return row; // fallback if API already returns the project document
         });
         setProjects(normalized);
         setOriginalProjects(normalized);
@@ -598,12 +593,7 @@ const onAssignProject = async (assignedProject) => {
     return;
   }
 
-  const normalizedProject = {
-    ...assignedProject,
-    projectId: assignedProject._id || assignedProject.projectId,
-  };
-
-  const updatedProjects = [...currentProjects, normalizedProject];
+  const updatedProjects = [...currentProjects, assignedProject];
   setProjects(updatedProjects);
 
   const updatedUserProfile = {

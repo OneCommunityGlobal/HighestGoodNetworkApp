@@ -2,21 +2,14 @@ import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+
 import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
 import styles from './ItemListView.module.css';
-import { useSelector } from 'react-redux';
 
-export function ItemListView({
-  itemType,
-  items,
-  errors,
-  UpdateItemModal,
-  dynamicColumns,
-  children,
-}) {
+export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamicColumns }) {
   const [filteredItems, setFilteredItems] = useState([]);
   const [selectedProject, setSelectedProject] = useState([]); // Array of strings
   const [selectedItem, setSelectedItem] = useState([]); // Array of strings
@@ -27,8 +20,6 @@ export function ItemListView({
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(25);
-
-  const darkMode = useSelector(state => state.theme.darkMode);
 
   // Sync initial items load
   useEffect(() => {

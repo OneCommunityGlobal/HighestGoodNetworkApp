@@ -4,6 +4,8 @@
    PAGE LAYOUT
 =========================== */
 .pageLayout {
+  display: flex;
+  flex-direction: row;
   width: 100%;
   min-height: calc(100vh - 72px);
   background-color: #f9fafb;
