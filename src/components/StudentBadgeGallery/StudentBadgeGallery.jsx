@@ -104,13 +104,13 @@ function StudentBadgeGallery({ darkMode }) {
         className="bagde-box-shadow"
         style={{
           margin: '0 2px',
-          backgroundColor: '#ffffff', // lock to light mode
+          backgroundColor: darkMode ? '#1c2541' : '#ffffff',
         }}
       >
         <Col className="px-0">
           <Card
             style={{
-              backgroundColor: '#fafafa',
+              backgroundColor: darkMode ? '#1c2541' : '#fafafa',
               borderRadius: 0,
               minWidth: '100%',
             }}
@@ -133,6 +133,7 @@ function StudentBadgeGallery({ darkMode }) {
                     opacity: 0.7,
                     textAlign: 'center',
                     margin: '12px 0',
+                    color: darkMode ? '#ffffff' : undefined,
                   }}
                 >
                   You haven’t earned any badges yet — keep contributing to unlock them!
@@ -169,7 +170,12 @@ function StudentBadgeGallery({ darkMode }) {
         </Col>
       </Row>
 
-      <StudentBadgeDetailModal isOpen={modalOpen} onClose={closeModal} badge={selected} />
+      <StudentBadgeDetailModal
+        isOpen={modalOpen}
+        onClose={closeModal}
+        badge={selected}
+        darkMode={darkMode}
+      />
     </div>
   );
 }

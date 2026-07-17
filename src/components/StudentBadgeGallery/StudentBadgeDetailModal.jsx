@@ -1,11 +1,16 @@
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
+import styles from './StudentBadgeDetailModal.module.css';
 
-export default function StudentBadgeDetailModal({ isOpen, onClose, badge }) {
+export default function StudentBadgeDetailModal({ isOpen, onClose, badge, darkMode }) {
   if (!badge) return null;
 
+  const textColor = darkMode ? '#ffffff' : undefined;
+
   return (
-    <Modal isOpen={isOpen} toggle={onClose}>
-      <ModalHeader toggle={onClose}>{badge.badgeName}</ModalHeader>
+    <Modal isOpen={isOpen} toggle={onClose} className={styles.studentBadgeModal}>
+      <ModalHeader toggle={onClose}>
+        <span style={{ color: textColor }}>{badge.badgeName}</span>
+      </ModalHeader>
       <ModalBody>
         <div
           style={{
@@ -21,13 +26,15 @@ export default function StudentBadgeDetailModal({ isOpen, onClose, badge }) {
             style={{ width: 120, height: 120, borderRadius: '50%' }}
           />
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontWeight: 600 }}>{badge.type || 'Badge'}</div>
-            {badge.description && <p style={{ marginTop: 6 }}>{badge.description}</p>}
-            <div>
+            <div style={{ fontWeight: 600, color: textColor }}>{badge.type || 'Badge'}</div>
+            {badge.description && (
+              <p style={{ marginTop: 6, color: textColor }}>{badge.description}</p>
+            )}
+            <div style={{ color: textColor }}>
               <strong>Count:</strong> {badge.count ?? 0}
             </div>
             {badge.earned === false && (
-              <div style={{ opacity: 0.75, marginTop: 6 }}>Not earned yet</div>
+              <div style={{ opacity: 0.75, marginTop: 6, color: textColor }}>Not earned yet</div>
             )}
           </div>
         </div>

@@ -1,42 +1,4 @@
 /* =========================================================
-   🔒 Force Light Mode Styling (Even in Dark Mode)
-   ========================================================= */
-:global(.dark) .galleryContainer {
-  background-color: #ffffff !important;
-  color: #285739 !important;
-}
-
-:global(.dark) .card {
-  background-color: #fafafa !important;
-  color: #285739 !important;
-  border: 1px solid rgba(0, 0, 0, 0.1) !important;
-  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.15) !important;
-}
-
-:global(.dark) .cardHeader {
-  background-color: #eaeaea !important;
-  color: #285739 !important;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
-}
-
-:global(.dark) .badgeName,
-:global(.dark) .badgeDesc,
-:global(.dark) .badgeLabel {
-  color: #285739 !important;
-}
-
-:global(.dark) .icon {
-  filter: none !important;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2) !important;
-  background-color: #fafafa !important;
-}
-
-:global(.dark) .unearned {
-  opacity: 0.55 !important;
-  filter: grayscale(100%) !important;
-}
-
-/* =========================================================
    🎨 Layout & Structure
    ========================================================= */
 .galleryContainer {
@@ -85,7 +47,7 @@
   border-radius: 12px;
   padding: 1.2rem;
   text-align: center;
-  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.15);
+  box-shadow: 2px 2px 6px rgb(0 0 0 / 15%);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   width: 190px;
   height: 210px;
@@ -98,7 +60,7 @@
 
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 2px 6px 12px rgba(0, 0, 0, 0.25);
+  box-shadow: 2px 6px 12px rgb(0 0 0 / 25%);
 }
 
 /* =========================================================
@@ -184,7 +146,7 @@
 /* =========================================================
    📱 Responsive Design
    ========================================================= */
-@media screen and (max-width: 768px) {
+@media screen and (width <= 768px) {
   .badge_history_container,
   .grid {
     justify-content: center;
@@ -220,11 +182,10 @@
   }
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (width <= 480px) {
   .badge_history_container,
   .grid {
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-flow: row wrap;
     justify-content: center;
     gap: 14px;
   }
@@ -248,4 +209,45 @@
   .badgeLabel {
     font-size: 0.7rem;
   }
+}
+
+/* =========================================================
+   🌙 Dark Mode Styling
+   Note: .galleryContainer is intentionally NOT styled here — it's
+   the full page wrapper for this route, not the badge box, and
+   should just inherit the app's normal dark background.
+   The Row/Card backgrounds are set inline (via the darkMode prop)
+   in StudentBadgeGallery.jsx; these rules cover the classes that
+   don't have a conflicting inline style.
+   .card/.icon/.badgeName/.badgeDesc are used by StudentBadgeCard.jsx,
+   which isn't currently wired into this component.
+   ========================================================= */
+:global(body.dark-mode) .card {
+  background-color: #1c2541 !important;
+  color: #fff !important;
+  border: 1px solid #2e3d55 !important;
+  box-shadow: 2px 2px 6px rgb(0 0 0 / 35%) !important;
+}
+
+:global(body.dark-mode) .cardHeader {
+  background-color: #3a506b !important;
+  color: #fff !important;
+  border-bottom: 1px solid #2e3d55 !important;
+}
+
+:global(body.dark-mode) .badgeName,
+:global(body.dark-mode) .badgeDesc,
+:global(body.dark-mode) .badgeLabel {
+  color: #fff !important;
+}
+
+:global(body.dark-mode) .icon {
+  filter: none !important;
+  box-shadow: 0 0 4px rgb(0 0 0 / 40%) !important;
+  background-color: #1c2541 !important;
+}
+
+:global(body.dark-mode) .unearned {
+  opacity: 0.55 !important;
+  filter: grayscale(100%) !important;
 }

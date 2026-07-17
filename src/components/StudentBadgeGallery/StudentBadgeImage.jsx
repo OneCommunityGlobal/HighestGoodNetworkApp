@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Card, CardTitle, CardBody, CardImg, CardText, Popover } from 'reactstrap';
+import styles from './StudentBadgeImage.module.css';
 
 function StudentBadgeImage({ badgeData, time, index, personalBestMaxHrs, count, cssSuffix }) {
   const [isOpen, setOpen] = useState(false);
@@ -39,8 +40,14 @@ function StudentBadgeImage({ badgeData, time, index, personalBestMaxHrs, count, 
       </div>
 
       {/* Hover popover */}
-      <Popover trigger="hover" isOpen={isOpen} toggle={toggle} target={safeId}>
-        <Card className="text-center">
+      <Popover
+        trigger="hover"
+        isOpen={isOpen}
+        toggle={toggle}
+        target={safeId}
+        popperClassName={styles.studentBadgePopover}
+      >
+        <Card className={`text-center ${styles.popoverCard}`}>
           <CardImg className="badge_image_lg" src={badgeData?.imageUrl} />
           <CardBody>
             <CardTitle
