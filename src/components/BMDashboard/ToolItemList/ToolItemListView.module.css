@@ -84,7 +84,10 @@ table td {
 .resetContainer {
   display: flex;
   align-items: flex-end;
-  height: 100%;
+}
+
+.projectToolColumn :global(.react-select__menu) {
+  z-index: 10;
 }
 
 .btnReset {

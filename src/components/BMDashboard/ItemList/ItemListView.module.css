@@ -135,6 +135,10 @@ table td {
   margin: 0 auto 10px;
 }
 
+.selectInput :global(.react-select__menu) {
+  z-index: 10;
+}
+
 .selectInput label {
   font-weight: bold;
   text-align: center;

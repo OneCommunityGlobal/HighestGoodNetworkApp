@@ -18,6 +18,7 @@ import ToolItemsTable from './ToolItemsTable';
 import InventoryNavBar from '../InventoryTypesList/InventoryNavBar';
 import styles from './ToolItemListView.module.css';
 import { ToolFiltersProvider, useToolFilters } from '../Tools/ToolFiltersContext';
+import { Form, FormGroup, Label } from 'reactstrap';
 
 const siblingCategories = [
   { label: 'Materials', route: '/bmdashboard/materials', icon: <FaCubes /> },
@@ -280,17 +281,22 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
                 />
               </div>
               <div className={styles.resetContainer}>
-                <button
-                  type="button"
-                  className={styles.btnReset}
-                  onClick={handleReset}
-                  disabled={
-                    localStorage.getItem(projectKey) === null &&
-                    localStorage.getItem(itemKey) === null
-                  }
-                >
-                  Reset
-                </button>
+                <Form onSubmit={e => e.preventDefault()}>
+                  <FormGroup>
+                    <Label>&nbsp;</Label>
+                    <button
+                      type="button"
+                      className={styles.btnReset}
+                      onClick={handleReset}
+                      disabled={
+                        localStorage.getItem(projectKey) === null &&
+                        localStorage.getItem(itemKey) === null
+                      }
+                    >
+                      Reset
+                    </button>
+                  </FormGroup>
+                </Form>
               </div>
             </div>
 
