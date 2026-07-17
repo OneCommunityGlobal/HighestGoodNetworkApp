@@ -122,6 +122,20 @@ function buildChartBars(visibleProjects, visibleDepartments) {
   return buildMultiDeptBars(visibleProjects, visibleDepartments);
 }
 
+function buildLegendPayload(visibleDepartments) {
+  if (visibleDepartments.length <= 1) return undefined;
+  const departmentColors = generateColors(visibleDepartments.length);
+  return visibleDepartments.map((dept, idx) => ({
+    value: dept,
+    type: 'rect',
+    color: departmentColors[idx],
+  }));
+}
+
+function formatBarLabel(value) {
+  return value > 0 ? value : '';
+}
+
 function CustomTooltip({ active, payload, label, darkMode }) {
   if (!active || !payload || payload.length === 0) return null;
 
@@ -180,6 +194,77 @@ function CustomTooltip({ active, payload, label, darkMode }) {
         </div>
       ))}
     </div>
+  );
+}
+
+function InjurySeverityBarChart({
+  chartData,
+  chartBars,
+  visibleProjects,
+  visibleDepartments,
+  darkMode,
+}) {
+  const axisTextColor = darkMode ? '#f5f5f5' : '#333333';
+  const legendPayload = buildLegendPayload(visibleDepartments);
+
+  return (
+    <ResponsiveContainer width="100%" height={400}>
+      <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis
+          dataKey="severity"
+          height={60}
+          tick={{ fill: axisTextColor }}
+          label={{
+            value: 'Severity',
+            position: 'bottom',
+            dy: 0,
+            fill: axisTextColor,
+          }}
+        />
+        <YAxis
+          tick={{ fill: axisTextColor }}
+          label={{
+            value: 'Injury Count',
+            angle: -90,
+            position: 'insideLeft',
+            fill: axisTextColor,
+          }}
+        />
+        <Tooltip
+          cursor={{ fill: darkMode ? 'rgb(255 255 255 / 8%)' : 'rgb(204 204 204 / 30%)' }}
+          content={
+            <CustomTooltip
+              visibleProjects={visibleProjects}
+              visibleDepartments={visibleDepartments}
+              darkMode={darkMode}
+            />
+          }
+        />
+        <Legend verticalAlign="bottom" wrapperStyle={{ paddingTop: 30 }} payload={legendPayload} />
+        {chartBars.map(bar => (
+          <Bar
+            key={bar.key}
+            dataKey={bar.dataKey}
+            name={bar.name}
+            fill={bar.fill}
+            stackId={bar.stackId}
+            legendType={bar.legendType}
+          >
+            <LabelList
+              dataKey={bar.dataKey}
+              position="center"
+              fill={getContrastTextColor(bar.fill)}
+              style={{
+                fontSize: '10px',
+                fontWeight: 'bold',
+              }}
+              formatter={formatBarLabel}
+            />
+          </Bar>
+        ))}
+      </BarChart>
+    </ResponsiveContainer>
   );
 }
 
@@ -344,75 +429,13 @@ function InjurySeverityDashboard(props) {
           <Spin size="large" />
         </div>
       ) : (
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="severity"
-              height={60}
-              tick={{ fill: darkMode ? '#f5f5f5' : '#333333' }}
-              label={{
-                value: 'Severity',
-                position: 'bottom',
-                dy: 0,
-                fill: darkMode ? '#f5f5f5' : '#333333',
-              }}
-            />
-            <YAxis
-              tick={{ fill: darkMode ? '#f5f5f5' : '#333333' }}
-              label={{
-                value: 'Injury Count',
-                angle: -90,
-                position: 'insideLeft',
-                fill: darkMode ? '#f5f5f5' : '#333333',
-              }}
-            />
-            <Tooltip
-              cursor={{ fill: darkMode ? 'rgb(255 255 255 / 8%)' : 'rgb(204 204 204 / 30%)' }}
-              content={
-                <CustomTooltip
-                  visibleProjects={visibleProjects}
-                  visibleDepartments={visibleDepartments}
-                  darkMode={darkMode}
-                />
-              }
-            />
-            <Legend
-              verticalAlign="bottom"
-              wrapperStyle={{ paddingTop: 30 }}
-              payload={
-                visibleDepartments.length > 1
-                  ? visibleDepartments.map((dept, idx) => ({
-                      value: dept,
-                      type: 'rect',
-                      color: generateColors(visibleDepartments.length)[idx],
-                    }))
-                  : undefined
-              }
-            />
-            {chartBars.map(bar => (
-              <Bar
-                key={bar.key}
-                dataKey={bar.dataKey}
-                name={bar.name}
-                fill={bar.fill}
-                stackId={bar.stackId}
-                legendType={bar.legendType}
-              >
-                <LabelList
-                  dataKey={bar.dataKey}
-                  position="center"
-                  fill={getContrastTextColor(bar.fill)}
-                  style={{
-                    fontSize: '10px',
-                    fontWeight: 'bold',
-                  }}
-                  formatter={value => (value > 0 ? value : '')}
-                />
-              </Bar>
-            ))}
-          </BarChart>
-        </ResponsiveContainer>
+        <InjurySeverityBarChart
+          chartData={chartData}
+          chartBars={chartBars}
+          visibleProjects={visibleProjects}
+          visibleDepartments={visibleDepartments}
+          darkMode={darkMode}
+        />
       )}
     </div>
   );
