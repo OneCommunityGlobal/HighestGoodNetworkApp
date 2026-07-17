@@ -174,59 +174,6 @@
   }
 }
 
-:global(.dark-mode) .bmDashboardJobAnalytics {
-  background-color: #1b2a41;
-  
-  .filters {
-    background-color: #25354E;
-    border-color: #334155;
-  }
-
-  .quickSelectButton {
-    background-color: #2D3D57;
-    border-color: #334155;
-  }
-
-  .quickSelectButton.active {
-    background-color: var(--primary);
-    border-color: transparent;
-  }
-
-  .metricCard {
-    background-color: #25354E;
-    border-color: #334155;
-  }
-
-  .metricIconWrap {
-    background-color: #2D3D57;
-  }
-
-  .metricIcon {
-    color: #94A3B8;
-  }
-
-  .chartCard {
-    background-color: #25354E;
-    border-color: #334155;
-  }
-
-  .chartIconWrap {
-    background-color: #2D3D57;
-  }
-
-  .chartIcon {
-    color: #94A3B8;
-  }
-
-  .input {
-    background: #2D3D57;
-    color: #f9fafb;
-    border-color: #334155;
-    color-scheme: dark;
-  }
-  
-}
-
 @media screen and (min-width: 768px) {
   .filters {
     .filtersRow {
@@ -286,16 +233,8 @@
     color: #10b981;
   }
 
-  .darkMode .positive {
-    color: #34d399;
-  }
-
   .negative {
     color: #ef4444;
-  }
-
-  .darkMode .negative {
-    color: #f87171;
   }
 
   .metricValue {
@@ -354,10 +293,6 @@
     z-index: 100;
     pointer-events: none;
     box-shadow: 0 4px 12px rgb(0 0 0 / 7%);
-  }
-
-  .darkMode.tooltipBox {
-    background-color: #1b2a41;
   }
 
   .tooltipBox::after {
@@ -467,10 +402,6 @@
   box-shadow: 0 0 0 3px rgb(59 130 246 / 20%);
 }
 
-.darkMode .input::-webkit-calendar-picker-indicator {
-  filter: invert(1);
-}
-
 .datePicker {
   padding: 10px 14px;
   border-radius: 8px;
@@ -551,10 +482,6 @@
   color: #ef4444;
 }
 
-.darkMode .accessIcon {
-  color: #f87171;
-}
-
 /* ======================== DEVICE BANNER ======================== */
 
 .deviceBanner {
@@ -574,27 +501,10 @@
     margin-bottom: 0;
   }
 
-  .darkMode.description {
-    color: #ffffff !important;
-}
-
   span {
     font-weight: 700;
   }
 }
-
-.darkMode.deviceBanner {
-  background: color-mix(in srgb, var(--primary) 18%, #1b2a41);
-  border-color: color-mix(in srgb, var(--primary) 45%, #1b2a41);
-  color: #f9fafb;
-}
-
-.darkMode .deviceBannerClear {
-  background-color: transparent;
-  color: #f87171;
-  border-color: #f87171;
-}
-
 
 @keyframes banner-in {
   from {
@@ -699,28 +609,6 @@
   display: flex;
   align-items: center;
   gap: 4px;
-}
-
-.darkMode.engagementPanel {
-  background-color: #25354E;
-  border-color: #334155;
-}
-
-.darkMode .engagementDeviceLabel {
-  color: #f9fafb;
-}
-
-.darkMode .engagementSubtitle {
-  color: #9ca3af;
-}
-
-.darkMode.engagementItem {
-  background-color: #2D3D57;
-  border-color: #334155;
-}
-
-.darkMode .engagementLabel {
-  color: #9ca3af;
 }
 
 @media screen and (min-width: 768px) {
@@ -861,4 +749,111 @@
 
 :global(.job-analytics-datepicker-dark .react-datepicker__triangle) {
   display: none;
+}
+
+/* ============= DATE PICKER DARK MODE ============= */
+:global(.dark-mode) .bmDashboardJobAnalytics {
+  background-color: #1b2a41;
+  
+  .filters {
+    background-color: #25354E;
+    border-color: #334155;
+  }
+
+  .quickSelectButton {
+    background-color: #2D3D57;
+    border-color: #334155;
+  }
+
+  .quickSelectButton.active {
+    background-color: var(--primary);
+    border-color: transparent;
+  }
+
+  .metricCard {
+    background-color: #25354E;
+    border-color: #334155;
+  }
+
+  .metricIconWrap {
+    background-color: #2D3D57;
+  }
+
+  .metricIcon {
+    color: #94A3B8;
+  }
+
+  .chartCard {
+    background-color: #25354E;
+    border-color: #334155;
+  }
+
+  .chartIconWrap {
+    background-color: #2D3D57;
+  }
+
+  .chartIcon {
+    color: #94A3B8;
+  }
+
+  .input {
+    background: #2D3D57;
+    color: #f9fafb;
+    border-color: #334155;
+    color-scheme: dark;
+  }
+
+  .positive {
+    color: #34d399;
+  }
+  
+  .negative {
+    color: #f87171;
+  }
+
+  .tooltipBox {
+    background-color: #1b2a41;
+  }
+
+  .accessIcon {
+  color: #f87171;
+  }
+
+  .description {
+    color: #ffffff !important;
+  }
+
+  .deviceBanner {
+    background: color-mix(in srgb, var(--primary) 18%, #1b2a41);
+    border-color: color-mix(in srgb, var(--primary) 45%, #1b2a41);
+    color: #f9fafb;
+  }
+
+  .deviceBannerClear {
+    background-color: transparent;
+    color: #f87171;
+    border-color: #f87171;
+  }
+
+  .engagementPanel {
+    background-color: #25354E;
+    border-color: #334155;
+  }
+
+  .engagementDeviceLabel {
+    color: #f9fafb;
+  }
+
+  .engagementSubtitle {
+    color: #9ca3af;
+  }
+
+  .engagementItem {
+    background-color: #2D3D57;
+    border-color: #334155;
+  }
+
+  .engagementLabel {
+    color: #9ca3af;
+  }
 }
