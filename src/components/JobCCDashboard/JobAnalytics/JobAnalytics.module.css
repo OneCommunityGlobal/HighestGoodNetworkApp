@@ -423,6 +423,7 @@
   :global(.job-analytics-compare-select__control) {
     min-height: unset;
     width: 100%;
+    min-width: 212px;
     padding: 0;
     background: #fff;
     color: #111827;
