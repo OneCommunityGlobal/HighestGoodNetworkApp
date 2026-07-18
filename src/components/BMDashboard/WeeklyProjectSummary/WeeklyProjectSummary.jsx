@@ -129,26 +129,6 @@ const projectStatusButtons = [
   },
 ];
 
-const formatDate = date =>
-  date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: '2-digit',
-  });
-
-const getLatestCompletedWeekRange = () => {
-  const today = new Date();
-  const dayOfWeek = today.getDay();
-
-  const endOfLastCompletedWeek = new Date(today);
-  endOfLastCompletedWeek.setDate(today.getDate() - dayOfWeek - 1);
-
-  const startOfLastCompletedWeek = new Date(endOfLastCompletedWeek);
-  startOfLastCompletedWeek.setDate(endOfLastCompletedWeek.getDate() - 6);
-
-  return `${formatDate(startOfLastCompletedWeek)} - ${formatDate(endOfLastCompletedWeek)}`;
-};
-
 function WeeklyProjectSummary() {
   const dispatch = useDispatch();
   const containerRef = useRef(null);
@@ -157,14 +137,18 @@ function WeeklyProjectSummary() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const projectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter || '');
   const dateRangeFilter = useSelector(state => state.weeklyProjectSummary?.dateRangeFilter || '');
+  const comparisonPeriodFilter = useSelector(
+    state => state.weeklyProjectSummary?.comparisonPeriodFilter || '',
+  );
 
   const [openSections, setOpenSections] = useState({});
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [compareWithPreviousWeek, setCompareWithPreviousWeek] = useState(false);
 
-  const selectedProjectLabel = projectFilter || 'All Projects';
-  const selectedDateRangeLabel = dateRangeFilter || getLatestCompletedWeekRange();
+  const selectedProjectLabel = projectFilter || 'One Community';
+  const selectedDateRangeLabel = dateRangeFilter || 'Latest completed week';
+  const selectedComparisonRangeLabel = comparisonPeriodFilter || 'Previous week';
 
   useEffect(() => {
     if (materials.length === 0) {
@@ -180,7 +164,7 @@ function WeeklyProjectSummary() {
     }, 400);
 
     return () => clearTimeout(refreshTimer);
-  }, [projectFilter, dateRangeFilter]);
+  }, [projectFilter, dateRangeFilter, comparisonPeriodFilter]);
 
   const quantityOfMaterialsUsedData = useMemo(() => {
     if (!materials.length) return [];
@@ -199,10 +183,19 @@ function WeeklyProjectSummary() {
     () => ({
       projectFilter,
       dateRangeFilter,
+      comparisonPeriodFilter,
       selectedProjectLabel,
       selectedDateRangeLabel,
+      selectedComparisonRangeLabel,
     }),
-    [projectFilter, dateRangeFilter, selectedProjectLabel, selectedDateRangeLabel],
+    [
+      projectFilter,
+      dateRangeFilter,
+      comparisonPeriodFilter,
+      selectedProjectLabel,
+      selectedDateRangeLabel,
+      selectedComparisonRangeLabel,
+    ],
   );
 
   const sections = useMemo(
@@ -214,7 +207,7 @@ function WeeklyProjectSummary() {
         badgeLabel: 'Risk',
         hasData: true,
         emptyMessage: 'No risk profile data for this week.',
-        comparisonText: 'Risk profile: No comparison data available yet.',
+        comparisonText: `Risk profile: comparison period is ${selectedComparisonRangeLabel}.`,
         content: <ProjectRiskProfileOverview {...filterProps} />,
       },
       {
@@ -224,7 +217,7 @@ function WeeklyProjectSummary() {
         badgeLabel: `${projectStatusButtons.length}`,
         hasData: projectStatusButtons.length > 0,
         emptyMessage: 'No project status data for this week.',
-        comparisonText: 'Project status: Summary comparison data is not connected yet.',
+        comparisonText: `Project status: comparison period is ${selectedComparisonRangeLabel}.`,
         content: (
           <div className={styles.projectStatusGrid}>
             {projectStatusButtons.map((button, index) => (
@@ -255,7 +248,7 @@ function WeeklyProjectSummary() {
         badgeLabel: 'Issues',
         hasData: true,
         emptyMessage: 'No issues found for this week.',
-        comparisonText: 'Issues: Week-over-week issue comparison is not connected yet.',
+        comparisonText: `Issues: comparison period is ${selectedComparisonRangeLabel}.`,
         content: (
           <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
             <IssuesBreakdownChart {...filterProps} />
@@ -269,7 +262,7 @@ function WeeklyProjectSummary() {
         badgeLabel: `${quantityOfMaterialsUsedData.length}`,
         hasData: quantityOfMaterialsUsedData.length > 0,
         emptyMessage: 'No material consumption data for this week.',
-        comparisonText: 'Material consumption: Previous-week comparison is not connected yet.',
+        comparisonText: `Material consumption: comparison period is ${selectedComparisonRangeLabel}.`,
         content: [
           <div
             key="material-placeholder-card"
@@ -298,7 +291,7 @@ function WeeklyProjectSummary() {
         badgeLabel: 'Open',
         hasData: true,
         emptyMessage: 'No issue tracking data for this week.',
-        comparisonText: 'Issue tracking: Open issue comparison is not connected yet.',
+        comparisonText: `Issue tracking: comparison period is ${selectedComparisonRangeLabel}.`,
         content: (
           <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
             <IssueCharts {...filterProps} />
@@ -312,7 +305,7 @@ function WeeklyProjectSummary() {
         badgeLabel: 'Tools',
         hasData: true,
         emptyMessage: 'No tools or equipment data for this week.',
-        comparisonText: 'Tools and equipment: Availability comparison is not connected yet.',
+        comparisonText: `Tools and equipment: comparison period is ${selectedComparisonRangeLabel}.`,
         content: (
           <>
             <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
@@ -343,7 +336,7 @@ function WeeklyProjectSummary() {
         badgeLabel: 'Lessons',
         hasData: true,
         emptyMessage: 'No lessons learned data for this week.',
-        comparisonText: 'Lessons learned: Previous-week comparison is not connected yet.',
+        comparisonText: `Lessons learned: comparison period is ${selectedComparisonRangeLabel}.`,
         content: [
           <div
             key="frequent-tags-card"
@@ -373,7 +366,7 @@ function WeeklyProjectSummary() {
         badgeLabel: 'Costs',
         hasData: true,
         emptyMessage: 'No financial data for this week.',
-        comparisonText: 'Financials: Cost comparison is not connected yet.',
+        comparisonText: `Financials: comparison period is ${selectedComparisonRangeLabel}.`,
         content: (
           <div
             style={{
@@ -423,7 +416,7 @@ function WeeklyProjectSummary() {
         badgeLabel: 'Loss',
         hasData: true,
         emptyMessage: 'No loss tracking data for this week.',
-        comparisonText: 'Loss tracking: Previous-week comparison is not connected yet.',
+        comparisonText: `Loss tracking: comparison period is ${selectedComparisonRangeLabel}.`,
         content: (
           <div className="weekly-project-summary-card financial-big">
             <LossTrackingLineChart {...filterProps} />
@@ -437,7 +430,7 @@ function WeeklyProjectSummary() {
         badgeLabel: 'Map',
         hasData: true,
         emptyMessage: 'No global distribution data for this week.',
-        comparisonText: 'Global distribution: Project location comparison is not connected yet.',
+        comparisonText: `Global distribution: comparison period is ${selectedComparisonRangeLabel}.`,
         content: (
           <div
             className={`${styles.weeklyProjectSummaryCard} ${styles.mapCard}`}
@@ -454,7 +447,7 @@ function WeeklyProjectSummary() {
         badgeLabel: 'Labor',
         hasData: true,
         emptyMessage: 'No labor or time tracking data for this week.',
-        comparisonText: 'Labor and time: Labor comparison is not connected yet.',
+        comparisonText: `Labor and time: comparison period is ${selectedComparisonRangeLabel}.`,
         content: (
           <div
             style={{
@@ -491,8 +484,7 @@ function WeeklyProjectSummary() {
         badgeLabel: 'Tracking',
         hasData: true,
         emptyMessage: 'No financial tracking data for this week.',
-        comparisonText:
-          'Financials tracking: Planned and actual cost comparison is not connected yet.',
+        comparisonText: `Financials tracking: comparison period is ${selectedComparisonRangeLabel}.`,
         content: (
           <div style={{ gridColumn: '1 / -1', width: '100%' }}>
             <FinancialsTrackingSection {...filterProps} />
@@ -500,7 +492,7 @@ function WeeklyProjectSummary() {
         ),
       },
     ],
-    [darkMode, filterProps, quantityOfMaterialsUsedData],
+    [darkMode, filterProps, quantityOfMaterialsUsedData, selectedComparisonRangeLabel],
   );
 
   const expandAllSections = () => {
