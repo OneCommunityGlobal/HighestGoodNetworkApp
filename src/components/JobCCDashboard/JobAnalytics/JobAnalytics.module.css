@@ -384,6 +384,21 @@
   font-style: italic;
 }
 
+.pieChartLabelContainer {
+  fill: #ffffff;
+  stroke: #e5e7eb;
+}
+
+.bmDashboardJobAnalytics :global(.recharts-pie-labels) text {
+  .positive {
+    fill: green;
+  }
+
+  .negative {
+    fill: red;
+  }
+}
+
 /* ======================== INPUTS ======================== */
 .input {
   width: 100%;
@@ -1006,6 +1021,23 @@
 
     :global(.job-analytics-compare-select__indicator-separator) {
       background-color: #334155;
+    }
+  }
+
+  .pieChartLabelContainer {
+    fill: #2b3a51;
+    stroke: #334155;
+  }
+
+  :global(.recharts-pie-labels) text {
+    fill: #ffffff;
+
+    .positive {
+      fill: green;
+    }
+
+    .negative {
+      fill: red;
     }
   }
 }

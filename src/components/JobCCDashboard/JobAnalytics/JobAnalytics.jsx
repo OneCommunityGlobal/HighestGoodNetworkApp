@@ -527,30 +527,44 @@ function DeviceEngagementPanel({ device, darkMode }) {
 // ======================== CUSTOM PIE LABEL ========================
 function DevicePieLabel({ cx, cy, midAngle, outerRadius, name, value, previousValue }) {
   const RADIAN = Math.PI / 180;
-  const radius = outerRadius + 28;
+  // Render the label inside the slice (≈ 65% of outerRadius)
+  const radius = outerRadius * 0.9;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
   const change = calculatePercentageChange(value, previousValue);
-  const darkMode = useSelector(state => state.theme.darkMode);
 
-  const labelColor = darkMode ? '#f9fafb' : '#111827';
-  const positiveColor = darkMode ? '#34d399' : '#10b981';
-  const negativeColor = darkMode ? '#f87171' : '#ef4444';
+  const mainText = `${name} ${value}%`;
+  const tspanText = ` ${change.formatted}`;
+  const mainWidth = mainText.length * 6.2 + 2;
+  const tspanWidth = tspanText.length * 5.6;
+  const bgWidth = mainWidth + tspanWidth + 4;
+  const bgHeight = 22;
+  const bgX = x - bgWidth / 2;
+  const bgY = y - bgHeight / 2;
+  const radiusBg = 4;
 
   return (
-    <text
-      x={x}
-      y={y}
-      fill={labelColor}
-      textAnchor={x > cx ? 'start' : 'end'}
-      dominantBaseline="central"
-      fontSize={12}
-    >
-      {`${name}: ${value}%`}
-      <tspan fill={change.isPositive ? positiveColor : negativeColor} fontSize={11}>
-        {` (${change.formatted})`}
-      </tspan>
-    </text>
+    <g style={{ pointerEvents: 'none' }}>
+      <rect
+        x={bgX}
+        y={bgY}
+        width={bgWidth}
+        height={bgHeight}
+        rx={radiusBg}
+        ry={radiusBg}
+        strokeWidth={1}
+        className={styles.pieChartLabelContainer}
+      />
+      <text x={x} y={y} textAnchor="middle" dominantBaseline="central" fontSize={11}>
+        {mainText}
+        <tspan
+          fontSize={10}
+          className={clsx(change.isPositive ? styles.positive : styles.negative)}
+        >
+          {tspanText}
+        </tspan>
+      </text>
+    </g>
   );
 }
 
