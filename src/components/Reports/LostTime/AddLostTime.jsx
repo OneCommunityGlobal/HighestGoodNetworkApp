@@ -358,7 +358,7 @@ setSelectTeam(team);        // optional, remove if unused
 
   return (
     <Modal isOpen={props.isOpen} toggle={props.toggle} className={darkMode ? 'text-light dark-mode' : ''}>
-      <ModalHeader toggle={props.toggle} className={darkMode ? 'bg-space-cadet' : ''}>
+      <ModalHeader toggle={props.toggle} className={darkMode ? `bg-space-cadet ${styles['add-lost-time-header']}` : ''}>
         Add Lost Time
       </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -378,7 +378,7 @@ setSelectTeam(team);        // optional, remove if unused
                 />
                 <Label htmlFor="project" className={fontColor}>Project</Label>
               </div>
-              <div className='type-item'>
+              <div className={styles['type-item']}>
                 <Input
                   type="radio"
                   id="person"

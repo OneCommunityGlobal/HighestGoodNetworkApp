@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Dropdown, Input } from 'reactstrap';
 import './TeamsAndProjects.module.css';
 import { useSelector } from 'react-redux';
+import appStyles from '~/App.module.css';
 
 const TEAM_NAME_MAX_LENGTH = 100;
 
@@ -65,7 +66,7 @@ const AddTeamsAutoComplete = React.memo((props) => {
           setIsOpen(true);
         }}
         maxLength={TEAM_NAME_MAX_LENGTH}
-        className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
+        className={darkMode ? `${appStyles['bg-darkmode-liblack']} border-0 text-light` : ''}
         placeholder="Search or select a team..."
         aria-label="Add to Team"
       />
@@ -81,7 +82,7 @@ const AddTeamsAutoComplete = React.memo((props) => {
           tabIndex="-1"
           role="menu"
           aria-hidden="false"
-          className={`dropdown-menu show ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
+          className={`dropdown-menu show ${darkMode ? `${appStyles['bg-darkmode-liblack']} text-light` : ''}`}
           style={{ marginTop: 0, width: '100%', maxHeight: 260, overflowY: 'auto' }}
         >
           {/* If input is empty and we have nothing yet, show nothing (quiet state) */}

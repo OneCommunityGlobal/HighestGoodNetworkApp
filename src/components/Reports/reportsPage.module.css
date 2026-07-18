@@ -368,3 +368,11 @@
 .bg-yinmn-blue .info-modal-content.force-white-text * {
   color: #fff !important;
 }
+
+/* The EmailManagement dark-mode stylesheet applies a global
+   `filter: invert(1)` to any `.modal-title` on the page whenever
+   `body.bm-dashboard-dark` is present, which inverts our light
+   title text to black. Neutralize it for this modal specifically. */
+.add-lost-time-header :global(.modal-title) {
+  filter: none !important;
+}
