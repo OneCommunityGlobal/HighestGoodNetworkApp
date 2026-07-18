@@ -61,10 +61,10 @@ function BadgeDevelopment(props) {
       </Button>
       {isAddFiltersOpen && (
         <div style={{ marginTop: '20px', paddingLeft: '20px' }}>
-          <div style={{ marginBottom: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
             <p
               className={`${darkMode ? 'text-light' : 'text-dark'}`}
-              style={{ display: 'inline', marginRight: '8px' }}
+              style={{ margin: 0, marginRight: '8px' }}
             >
               Search for a badge:
             </p>
@@ -82,10 +82,10 @@ function BadgeDevelopment(props) {
               }}
             />
           </div>
-          <div style={{ marginBottom: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
             <p
               className={`${darkMode ? 'text-light' : 'text-dark'}`}
-              style={{ display: 'inline', marginRight: '8px' }}
+              style={{ margin: 0, marginRight: '8px' }}
             >
               Filter by type:
             </p>
@@ -108,10 +108,10 @@ function BadgeDevelopment(props) {
               ))}
             </select>
           </div>
-          <div>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
             <p
               className={`${darkMode ? 'text-light' : 'text-dark'}`}
-              style={{ display: 'inline', marginRight: '8px' }}
+              style={{ margin: 0, marginRight: '8px' }}
             >
               Filter by Rank (0 - {rankFilter}):
             </p>
@@ -123,29 +123,27 @@ function BadgeDevelopment(props) {
               value={rankFilter}
               onChange={e => setRankFilter(e.target.value)}
             />
-            <div style={{ display: 'inline-block', marginLeft: '8px', verticalAlign: 'middle' }}>
-              <p
-                className={`${darkMode ? 'text-light' : 'text-dark'}`}
-                style={{ display: 'inline', marginRight: '8px' }}
-              >
-                Or choose a rank:
-              </p>
-              <input
-                type="text"
-                placeholder="Rank Number"
-                value={chooseRankFilter}
-                onChange={e => setChooseRankFilter(e.target.value)}
-                style={{
-                  width: '80px',
-                  textAlign: 'center',
-                  padding: '5px',
-                  borderRadius: '5px',
-                  border: '1px solid #ccc',
-                  outline: 'none',
-                }}
-                className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
-              />
-            </div>
+            <p
+              className={`${darkMode ? 'text-light' : 'text-dark'}`}
+              style={{ margin: 0, marginLeft: '8px', marginRight: '8px' }}
+            >
+              Or choose a rank:
+            </p>
+            <input
+              type="text"
+              placeholder="Rank Number"
+              value={chooseRankFilter}
+              onChange={e => setChooseRankFilter(e.target.value)}
+              style={{
+                width: '80px',
+                textAlign: 'center',
+                padding: '5px',
+                borderRadius: '5px',
+                border: '1px solid #ccc',
+                outline: 'none',
+              }}
+              className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+            />
           </div>
         </div>
       )}
