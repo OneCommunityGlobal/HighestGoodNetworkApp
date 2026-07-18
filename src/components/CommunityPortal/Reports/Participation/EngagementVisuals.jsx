@@ -23,15 +23,15 @@ function EngagementVisuals() {
           getFormatComparison(),
         ]);
 
-        if (engagementResponse && engagementResponse.data) {
+        if (engagementResponse?.data) {
           setEngagementData(engagementResponse.data.engagement);
-        } else if (engagementResponse && engagementResponse.status >= 400) {
+        } else if (engagementResponse?.status >= 400) {
           throw new Error(engagementResponse.message || 'Failed to fetch engagement metrics');
         } else if (engagementResponse && !engagementResponse.data) {
           throw new Error(engagementResponse.message || 'Failed to fetch engagement metrics');
         }
 
-        if (comparisonResponse && comparisonResponse.data) {
+        if (comparisonResponse?.data) {
           setComparisonData(comparisonResponse.data.comparison);
         }
       } catch (err) {
@@ -196,7 +196,7 @@ function EngagementVisuals() {
         </div>
       )}
 
-      {engagementData && engagementData.events && engagementData.events.length > 0 && (
+      {engagementData?.events?.length > 0 && (
         <div className={styles.eventsList}>
           <h3 className={`${styles.eventsTitle} ${darkMode ? styles.eventsTitleDark : ''}`}>
             Event Engagement Details
