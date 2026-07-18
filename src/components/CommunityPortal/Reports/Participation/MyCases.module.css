@@ -22,23 +22,12 @@
   align-items: center;
 }
 
-/* Fixed no-descending-specificity: .headerActions moved before .myCasesPageDark .headerActions */
-.headerActions {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
 .myCasesPageDark .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background-color: #1c2541;
   color: #fff;
-}
-
-.myCasesPageDark .headerActions {
-  gap: 15px;
 }
 
 .sectionTitle {
@@ -955,15 +944,6 @@
 .caseCard:hover {
   box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
   transform: translateY(-2px);
-}
-
-.myCasesPageDark .moreBtn {
-  background-color: #007bff;
-  color: #fff;
-}
-
-.myCasesPageDark .moreBtn:hover {
-  background-color: #0056b3;
 }
 
 .caseListItem:hover {

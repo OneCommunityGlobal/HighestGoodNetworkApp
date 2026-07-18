@@ -587,8 +587,12 @@ export const ENDPOINTS = {
   ATTENDANCE_BY_ID: attendanceId => `${APIEndpoint}/attendance/${attendanceId}`,
   ATTENDANCE_SEED: eventId => `${APIEndpoint}/attendance/event/${eventId}/seed`,
   ATTENDANCE_MOCK: eventId => `${APIEndpoint}/attendance/event/${eventId}/mock`,
-  EVENT_POPULARITY: (startDate, endDate) =>
-    `${APIEndpoint}/events/popularity${startDate && endDate ? `?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}` : ''}`,
+  EVENT_POPULARITY: (startDate, endDate) => {
+    const params = [];
+    if (startDate) params.push(`startDate=${encodeURIComponent(startDate)}`);
+    if (endDate) params.push(`endDate=${encodeURIComponent(endDate)}`);
+    return `${APIEndpoint}/events/popularity${params.length ? `?${params.join('&')}` : ''}`;
+  },
   EVENT_ENGAGEMENT: (startDate, endDate, format) => {
     const params = [];
     if (startDate) params.push(`startDate=${encodeURIComponent(startDate)}`);
@@ -596,10 +600,18 @@ export const ENDPOINTS = {
     if (format) params.push(`format=${encodeURIComponent(format)}`);
     return `${APIEndpoint}/events/engagement${params.length ? `?${params.join('&')}` : ''}`;
   },
-  EVENT_VALUE: (startDate, endDate) =>
-    `${APIEndpoint}/events/value${startDate && endDate ? `?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}` : ''}`,
-  EVENT_FORMAT_COMPARISON: (startDate, endDate) =>
-    `${APIEndpoint}/events/format-comparison${startDate && endDate ? `?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}` : ''}`,
+  EVENT_VALUE: (startDate, endDate) => {
+    const params = [];
+    if (startDate) params.push(`startDate=${encodeURIComponent(startDate)}`);
+    if (endDate) params.push(`endDate=${encodeURIComponent(endDate)}`);
+    return `${APIEndpoint}/events/value${params.length ? `?${params.join('&')}` : ''}`;
+  },
+  EVENT_FORMAT_COMPARISON: (startDate, endDate) => {
+    const params = [];
+    if (startDate) params.push(`startDate=${encodeURIComponent(startDate)}`);
+    if (endDate) params.push(`endDate=${encodeURIComponent(endDate)}`);
+    return `${APIEndpoint}/events/format-comparison${params.length ? `?${params.join('&')}` : ''}`;
+  },
   LB_SEND_MESSAGE: `${APIEndpoint}/lb/messages`,
   LB_READ_MESSAGE: `${APIEndpoint}/lb/messages/conversation`,
   LB_UPDATE_MESSAGE_STATUS: `${APIEndpoint}/lb/messages/statuses`,
