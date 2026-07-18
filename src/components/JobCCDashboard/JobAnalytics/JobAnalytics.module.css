@@ -955,58 +955,57 @@
   }
 
   .compareSelect {
-  :global(.job-analytics-compare-select__control) {
-    background: #2d3d57;
-    color: #f9fafb;
-    border-color: #334155;
-  }
+    :global(.job-analytics-compare-select__control) {
+      background: #2d3d57;
+      color: #f9fafb;
+      border-color: #334155;
+    }
 
-  :global(.job-analytics-compare-select__control:hover) {
-    border-color: #334155;
-  }
+    :global(.job-analytics-compare-select__control:hover) {
+      border-color: #334155;
+    }
 
-  :global(.job-analytics-compare-select__control--is-focused),
-  :global(.job-analytics-compare-select__control--is-focused:hover) {
-    border-color: var(--primary);
-  }
+    :global(.job-analytics-compare-select__control--is-focused),
+    :global(.job-analytics-compare-select__control--is-focused:hover) {
+      border-color: var(--primary);
+    }
 
-  :global(.job-analytics-compare-select__single-value),
-  :global(.job-analytics-compare-select__input) {
-    color: #f9fafb;
-  }
+    :global(.job-analytics-compare-select__single-value),
+    :global(.job-analytics-compare-select__input) {
+      color: #f9fafb;
+    }
 
-  :global(.job-analytics-compare-select__placeholder) {
-    color: #9ca3af;
-  }
+    :global(.job-analytics-compare-select__placeholder) {
+      color: #9ca3af;
+    }
 
-  :global(.job-analytics-compare-select__menu) {
-    background: #1b2a41;
-    border-color: #334155;
-  }
+    :global(.job-analytics-compare-select__menu) {
+      background: #1b2a41;
+      border-color: #334155;
+    }
 
-  :global(.job-analytics-compare-select__option) {
-    color: #f9fafb;
-  }
-  
-  :global(.job-analytics-compare-select__option:active) {
-    background-color: #2563eb;
-  }
+    :global(.job-analytics-compare-select__option) {
+      color: #f9fafb;
+    }
+    
+    :global(.job-analytics-compare-select__option:active) {
+      background-color: #2563eb;
+    }
 
-  :global(.job-analytics-compare-select__option--is-focused:not(.job-analytics-compare-select__option--is-selected)) {
-    background-color: #25354e;
-    /* background-color: red; */
-  }
+    :global(.job-analytics-compare-select__option--is-focused:not(.job-analytics-compare-select__option--is-selected)) {
+      background-color: #25354e;
+    }
 
-  :global(.job-analytics-compare-select__dropdown-indicator) {
-    color: #9ca3af;
-  }
+    :global(.job-analytics-compare-select__dropdown-indicator) {
+      color: #9ca3af;
+    }
 
-  :global(.job-analytics-compare-select__dropdown-indicator:hover) {
-    color: #e5e7eb;
-  }
+    :global(.job-analytics-compare-select__dropdown-indicator:hover) {
+      color: #e5e7eb;
+    }
 
-  :global(.job-analytics-compare-select__indicator-separator) {
-    background-color: #334155;
+    :global(.job-analytics-compare-select__indicator-separator) {
+      background-color: #334155;
+    }
   }
-}
 }
