@@ -207,13 +207,16 @@ function MyCases() {
               ) : (
                 eventsForDate
                   .slice(0, 3)
-                  .map((event, idx) => (
-                    <div
-                      key={event.id}
-                      className={`${styles.calendarEventDot} ${styles[`eventType${idx}`]}`}
-                      title={event.eventName}
-                    />
-                  ))
+                  .map((event, idx) => {
+                    const eventTypeClass = styles[`eventType${idx}`];
+                    return (
+                      <div
+                        key={event.id}
+                        className={`${styles.calendarEventDot} ${eventTypeClass}`}
+                        title={event.eventName}
+                      />
+                    );
+                  })
               )}
             </div>
           );
