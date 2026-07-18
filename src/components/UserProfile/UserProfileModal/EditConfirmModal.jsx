@@ -6,14 +6,14 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import { useSelector } from 'react-redux';
 
 const EditConfirmModal = props => {
-  const { isOpen, closeModal, modalTitle, modalMessage, userProfile, disabled, darkMode } = props;
+  const { isOpen, closeModal, modalTitle, modalMessage, userProfile, disabled, darkMode, onClosed } = props;
   const history = useHistory();
   const toggle = () => {
     closeModal();
   };
   return (
     <React.Fragment>
-      <Modal isOpen={isOpen} toggle={closeModal} className={darkMode ? 'text-light dark-mode' : ''}>
+      <Modal isOpen={isOpen} toggle={closeModal} onClosed={onClosed} className={darkMode ? 'text-light dark-mode' : ''}>
         <ModalHeader toggle={disabled ? () => false : closeModal} className={darkMode ? 'bg-space-cadet' : ''}>{modalTitle}</ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{modalMessage}</ModalBody>
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -33,6 +33,7 @@ EditConfirmModal.propTypes = {
   userProfile: PropTypes.object.isRequired,
   isOpen: PropTypes.bool.isRequired,
   disabled: PropTypes.bool.isRequired,
+  onClosed: PropTypes.func,
 };
 
 export default EditConfirmModal;
