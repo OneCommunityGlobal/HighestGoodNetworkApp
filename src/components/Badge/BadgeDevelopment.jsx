@@ -5,7 +5,20 @@ import BadgeDevelopmentTable from './BadgeDevelopmentTable';
 import BadgeTypes from './BadgeTypes';
 import CreateNewBadgePopup from './CreateNewBadgePopup';
 import '../Header/index.module.css';
-import { matches } from 'lodash';
+import styles from './BadgeDevelopment.module.css';
+
+function normalize(str) {
+  return str.replace(/\s+/g, '').toLowerCase();
+}
+
+function badgeMatchesFilters(badge, searchName, searchType, rankFilter, chooseRankFilterNumber) {
+  if (searchName !== '' && !normalize(badge.badgeName).includes(normalize(searchName)))
+    return false;
+  if (searchType !== '' && !normalize(badge.type).includes(normalize(searchType))) return false;
+  if (badge.ranking > rankFilter) return false;
+  if (chooseRankFilterNumber !== null && badge.ranking !== chooseRankFilterNumber) return false;
+  return true;
+}
 
 function BadgeDevelopment(props) {
   const { darkMode, allBadgeData = [] } = props;
@@ -19,29 +32,11 @@ function BadgeDevelopment(props) {
   const toggle = () => setCreateNewBadgePopupOpen(prevIsOpen => !prevIsOpen);
   const toggleFilters = () => setAddFiltersOpen(prevState => !prevState);
 
-  // convert rank number into integer
   const chooseRankFilterNumber = chooseRankFilter ? Number(chooseRankFilter) : null;
 
-  // filter badge data based on type, report, and rank
-  const filteredBadgeData = allBadgeData.filter(badge => {
-    const matchesType =
-      searchType === '' ||
-      badge.type
-        .replace(/\s+/g, '')
-        .toLowerCase()
-        .includes(searchType.replace(/\s+/g, '').toLowerCase());
-    const matchesRank = badge.ranking <= rankFilter;
-    const matchesChoosenRank =
-      chooseRankFilterNumber === null || badge.ranking === chooseRankFilterNumber;
-    const matchesName =
-      searchName === '' ||
-      badge.badgeName
-        .replace(/\s+/g, '')
-        .toLowerCase()
-        .includes(searchName.replace(/\s+/g, '').toLowerCase());
-
-    return matchesType && matchesRank && matchesName && matchesChoosenRank;
-  });
+  const filteredBadgeData = allBadgeData.filter(badge =>
+    badgeMatchesFilters(badge, searchName, searchType, rankFilter, chooseRankFilterNumber),
+  );
 
   return (
     <div className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
@@ -60,12 +55,9 @@ function BadgeDevelopment(props) {
         {isAddFiltersOpen ? 'Remove Filters' : 'Add Filters'}
       </Button>
       {isAddFiltersOpen && (
-        <div style={{ marginTop: '20px', paddingLeft: '20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-            <p
-              className={`${darkMode ? 'text-light' : 'text-dark'}`}
-              style={{ margin: 0, marginRight: '8px' }}
-            >
+        <div className={styles.filtersContainer}>
+          <div className={styles.filterRow}>
+            <p className={`${styles.filterLabel} ${darkMode ? 'text-light' : 'text-dark'}`}>
               Search for a badge:
             </p>
             <input
@@ -73,32 +65,21 @@ function BadgeDevelopment(props) {
               placeholder="Enter name here"
               value={searchName}
               onChange={e => setSearchName(e.target.value)}
-              className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
-              style={{
-                padding: '5px',
-                borderRadius: '5px',
-                border: '1px solid #ccc',
-                outline: 'none',
-              }}
+              className={`${styles.filterInput} ${
+                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              }`}
             />
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-            <p
-              className={`${darkMode ? 'text-light' : 'text-dark'}`}
-              style={{ margin: 0, marginRight: '8px' }}
-            >
+          <div className={styles.filterRow}>
+            <p className={`${styles.filterLabel} ${darkMode ? 'text-light' : 'text-dark'}`}>
               Filter by type:
             </p>
             <select
               value={searchType}
               onChange={e => setSearchType(e.target.value)}
-              className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
-              style={{
-                padding: '5px',
-                borderRadius: '5px',
-                border: '1px solid #ccc',
-                outline: 'none',
-              }}
+              className={`${styles.filterInput} ${
+                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              }`}
             >
               <option value="">Select a type</option>
               {BadgeTypes.map((type, index) => (
@@ -108,11 +89,8 @@ function BadgeDevelopment(props) {
               ))}
             </select>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <p
-              className={`${darkMode ? 'text-light' : 'text-dark'}`}
-              style={{ margin: 0, marginRight: '8px' }}
-            >
+          <div className={styles.filterRowLast}>
+            <p className={`${styles.filterLabel} ${darkMode ? 'text-light' : 'text-dark'}`}>
               Filter by Rank (0 - {rankFilter}):
             </p>
             <input
@@ -123,10 +101,7 @@ function BadgeDevelopment(props) {
               value={rankFilter}
               onChange={e => setRankFilter(e.target.value)}
             />
-            <p
-              className={`${darkMode ? 'text-light' : 'text-dark'}`}
-              style={{ margin: 0, marginLeft: '8px', marginRight: '8px' }}
-            >
+            <p className={`${styles.filterLabelMid} ${darkMode ? 'text-light' : 'text-dark'}`}>
               Or choose a rank:
             </p>
             <input
@@ -134,15 +109,9 @@ function BadgeDevelopment(props) {
               placeholder="Rank Number"
               value={chooseRankFilter}
               onChange={e => setChooseRankFilter(e.target.value)}
-              style={{
-                width: '80px',
-                textAlign: 'center',
-                padding: '5px',
-                borderRadius: '5px',
-                border: '1px solid #ccc',
-                outline: 'none',
-              }}
-              className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+              className={`${styles.rankInput} ${
+                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              }`}
             />
           </div>
         </div>
