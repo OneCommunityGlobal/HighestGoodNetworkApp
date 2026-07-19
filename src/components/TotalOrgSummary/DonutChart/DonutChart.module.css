@@ -4,54 +4,94 @@
   align-items: center;
   justify-content: center;
   width: 100%;
+  overflow-x: auto;
   padding: 0.6rem;
   margin-top: 20px;
   margin-bottom: -35px;
 }
 
+.donutContainerDark {
+  color: #f8fafc;
+}
+
 .donutScrollable {
   display: grid;
-  grid-template-columns: 3fr 2fr;
+  grid-template-columns: minmax(21.25rem, 3fr) minmax(10rem, 2fr);
+  column-gap: 0.75rem;
+  align-items: center;
   width: 100%;
+  min-width: 32rem;
 }
 
 .donutChart {
   position: relative;
   width: 100%;
-  max-width: 21.25rem;
-  height: 21.25rem;
-  margin-left: auto;
+  min-width: 21.25rem;
+  max-width: 22rem;
+  height: 22rem;
+  margin-left: 0;
+  overflow: visible;
+}
+
+.donutChart canvas {
+  position: relative;
+  z-index: 2;
 }
 
 .donutCenter {
   position: absolute;
+  z-index: 1;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
-  font-size: 0.6em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.28rem;
+  width: 52%;
+  max-width: 7rem;
+  pointer-events: none;
 }
 
 .donutCenter > * {
-  margin: 0.2rem;
+  margin: 0;
 }
 
-.donutCenter :global(.donut-heading) {
+.donutHeading {
   color: var(--text-secondary);
-  font-size: 0.88rem;
+  font-size: .8rem;
+  letter-spacing: 0.03em;
+  line-height: 1.15;
+  text-transform: uppercase;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  color: #828282;
 }
 
-.donutCenter :global(.donut-count) {
-  color: var(--text-primary);
-  font-size: 2rem;
+.donutHeadingLine {
+  display: block;
+}
+
+.donutHeadingDark {
+  color: #f8fafc;
+}
+
+.donutCount {
+  color: #828282;
+  font-size: .8rem;
+  line-height: 1;
+  font-weight: 800;
+}
+
+.donutCountDark {
+  color: #f8fafc;
 }
 
 .donutComparisonPercent {
-  font-size: 0.7rem;
-}
-
-.donutCenter div {
-  margin: 2px 0;
+  font-size: 0.62rem;
+  line-height: 1.1;
 }
 
 .donutLabels {
@@ -63,17 +103,40 @@
   color: var(--text-primary);
 }
 
+.donutContainerDark .donutLabels,
+.donutContainerDark .donutLabel {
+  color: #f8fafc;
+}
+
 .donutLabel {
   display: flex;
   align-items: center;
-  margin-left: 20px;
+  margin-left: 0;
+  margin-bottom: 0.3rem;
+  gap: 0.5rem;
+  color: #828282;
+  font-size: 0.75rem;
+  line-height: 1.25;
+}
+
+.donutLabel:last-child {
+  margin-bottom: 0;
+}
+
+.donutLabel span:last-child {
+  overflow-wrap: anywhere;
+}
+
+.donutLabelValue {
+  color: var(--text-secondary);
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .donutColor {
   display: inline-block;
   min-width: 1rem;
   min-height: 1rem;
-  margin-right: 1rem;
 }
 
 .donutNoData {
@@ -96,7 +159,6 @@
 
 @media (width <= 615px) {
   .donutContainer {
-    overflow-x: scroll;
     justify-content: start;
   }
 }
