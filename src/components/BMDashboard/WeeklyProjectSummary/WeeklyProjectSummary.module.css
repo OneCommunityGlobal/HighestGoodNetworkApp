@@ -625,13 +625,6 @@
   margin: auto;
 }
 
-/* .projectStatusGrid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(2, auto);
-  gap: 10px;
-} */
-
 /* ---------------- OVAL STATUS BUTTON ---------------- */
 .weeklyStatusButton {
   width: 130px;
