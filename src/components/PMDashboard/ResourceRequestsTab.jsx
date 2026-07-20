@@ -103,6 +103,8 @@ function ResourceRequestsTab({ darkMode }) {
       const searchLower = filters.searchTerm.toLowerCase();
       filtered = filtered.filter(
         req =>
+          // Include the displayed request ID in the general search box.
+          req.id.toLowerCase().includes(searchLower) ||
           req.teacherName.toLowerCase().includes(searchLower) ||
           req.resourceType.toLowerCase().includes(searchLower) ||
           req.description.toLowerCase().includes(searchLower),

@@ -125,6 +125,8 @@ function CertificationsTab({ darkMode }) {
       const searchLower = filters.searchTerm.toLowerCase();
       filtered = filtered.filter(
         cert =>
+          // Include the displayed certification ID in the general search box.
+          cert.id.toLowerCase().includes(searchLower) ||
           cert.teacherName.toLowerCase().includes(searchLower) ||
           cert.certificationType.toLowerCase().includes(searchLower) ||
           cert.certifyingBody.toLowerCase().includes(searchLower),
