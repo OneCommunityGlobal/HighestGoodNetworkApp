@@ -1,6 +1,7 @@
 const APIEndpoint =
   process.env.REACT_APP_APIENDPOINT || 'http://localhost:4500/api';
 
+
 export const ENDPOINTS = {
   APIEndpoint: () => APIEndpoint,
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
@@ -32,7 +33,7 @@ export const ENDPOINTS = {
   },
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) =>
     `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
-  
+
   // Blue Square Email Triggers
   BLUE_SQUARE_RESEND_INFRINGEMENT_EMAILS: () =>
     `${APIEndpoint}/blueSquare/resend-infringement-emails-only`,
@@ -515,7 +516,11 @@ export const ENDPOINTS = {
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   GET_JOB_FORM: formId => `${APIEndpoint}/jobforms/${formId}`,
   GET_ALL_JOB_FORMS: `${APIEndpoint}/jobforms/all`,
+  GET_JOB: jobId => `${APIEndpoint}/jobs/${jobId}`,
+  /** Referral pre-fill for job application (`/${referralId}` appended in client). */
+  GET_USER_QUESTIONNAIRE: `${APIEndpoint}/hgnform/referral`,
   GET_FORM_RESPONSES: formID => `${APIEndpoint}/jobforms/${formID}/responses`,
+  SUBMIT_JOB_APPLICATION: formId => `${APIEndpoint}/jobforms/${formId}/responses`,
 
   ADD_QUESTION: formId => `${APIEndpoint}/jobforms/${formId}/questions`,
   UPDATE_QUESTION: (formId, questionIndex) =>
@@ -559,10 +564,18 @@ export const ENDPOINTS = {
 
   // event endpoint
   EVENTS: `${APIEndpoint}/events`,
-  EVENTS_BY_ID: (activityId) => `${APIEndpoint}/events/${activityId}`,
-  REGISTER_FOR_EVENT: (activityId) => `${APIEndpoint}/events/${activityId}/register`,
+  EVENT_BY_ID: eventId => `${APIEndpoint}/events/${eventId}`,
   EVENT_TYPES: `${APIEndpoint}/events/types`,
   EVENT_LOCATIONS: `${APIEndpoint}/events/locations`,
+
+  ATTENDANCE: `${APIEndpoint}/attendance`,
+  ATTENDANCE_BY_EVENT: eventId => `${APIEndpoint}/attendance/event/${eventId}`,
+  ATTENDANCE_SUMMARY: eventId => `${APIEndpoint}/attendance/event/${eventId}/summary`,
+  ATTENDANCE_BY_ID: attendanceId => `${APIEndpoint}/attendance/${attendanceId}`,
+  ATTENDANCE_SEED: eventId => `${APIEndpoint}/attendance/event/${eventId}/seed`,
+  ATTENDANCE_MOCK: eventId => `${APIEndpoint}/attendance/event/${eventId}/mock`,
+  EVENTS_BY_ID: (activityId) => `${APIEndpoint}/events/${activityId}`,
+  REGISTER_FOR_EVENT: (activityId) => `${APIEndpoint}/events/${activityId}/register`,
   EVENT_ATTENDANCE_STATS: `${APIEndpoint}/events/attendance/stats`,
   LB_SEND_MESSAGE: `${APIEndpoint}/lb/messages`,
   LB_READ_MESSAGE: `${APIEndpoint}/lb/messages/conversation`,

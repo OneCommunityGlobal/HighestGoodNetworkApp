@@ -519,7 +519,8 @@
   border-radius: 25px;
   width: 100%;
   max-width: 284px;
-  height: 190px;
+  min-height: 190px;
+  height: auto;
   text-align: center;
   box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
   padding: 20px;
@@ -597,8 +598,50 @@
   background: rgb(255 255 255 / 30%);
 }
 
-.darkMode .quantityOfMaterialsUsedChartTooltip {
-  scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
+/* Animation */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------------- RESPONSIVE GRID LAYOUT ---------------- */
+
+/* MERGED: keep ONLY one projectStatusGrid */
+.projectStatusGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  justify-content: center;
+  align-items: stretch;
+  width: 100%;
+  max-width: 1600px;
+  margin: auto;
+}
+
+/* .projectStatusGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 10px;
+} */
+
+/* ---------------- OVAL STATUS BUTTON ---------------- */
+.weeklyStatusButton {
+  width: 130px;
+  height: 65px;
+  border-radius: 50px / 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgb(0 0 0 / 15%);
+  margin: 12px 0;
 }
 
 /* ---------------- RESPONSIVE DESIGN ---------------- */

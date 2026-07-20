@@ -61,8 +61,6 @@ const leaderLinesPlugin = {
   },
 };
 
-ChartJS.register(leaderLinesPlugin);
-
 const OptStatusPieChart = () => {
   const dispatch = useDispatch();
   const { darkMode } = useSelector(state => state.theme);
@@ -169,7 +167,7 @@ const OptStatusPieChart = () => {
             {localError ? (
               <div className={styles.errorMessage}>{localError}</div>
             ) : (
-              <Pie data={chartData} options={options} />
+              <Pie data={chartData} options={options} plugins={[leaderLinesPlugin]} />
             )}
           </div>
 

@@ -72,7 +72,7 @@ const projectStatusButtons = [
     change: '+13% week over week',
     bgColor: '#FFF6EE',
     buttonColor: '#FFD8A5',
-    textColor: '#FFD8A5',
+    textColor: '#328D1B',
   },
   {
     title: 'Total Material Cost',
