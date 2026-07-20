@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/extend-expect';
 import mockState from '../../../__tests__/mockAdminState.js';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 
 const mockStore = configureStore([thunk]);
 describe('Dashboard ', () => {

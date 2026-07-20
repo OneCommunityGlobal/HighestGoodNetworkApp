@@ -1,7 +1,7 @@
 .ratingCard {
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
   padding: 16px;
   transition: all 0.3s ease;
   min-height: 220px;
@@ -10,7 +10,7 @@
 
 .darkCard {
   background-color: #1c2541 !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
   border: none !important;
 }
 
@@ -35,7 +35,7 @@
 }
 
 .darkText {
-  color: #ffffff;
+  color: #fff;
 }
 
 .dateRangeSelector {
@@ -106,7 +106,7 @@
 .darkInput:focus {
   outline: none;
   border-color: #8b5cf6;
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+  box-shadow: 0 0 0 3px rgb(139 92 246 / 10%);
 }
 
 .filtersSection {
@@ -132,7 +132,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .header {
     flex-direction: column;
     align-items: flex-start;
@@ -169,7 +169,7 @@
   }
 }
 
-@media (max-width: 576px) {
+@media (width <= 576px) {
   .ratingCard {
     padding: 15px;
   }
