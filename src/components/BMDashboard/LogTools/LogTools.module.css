@@ -3,14 +3,6 @@
 /* Custom dark mode table row hover effect */
 
 /* Improved dark mode table row hover effect */
-.toolTypeRow.dark-mode:hover,
-tr.toolTypeRow.dark-mode:hover,
-tbody tr.toolTypeRow.dark-mode:hover {
-  background-color: inherit !important;
-  color: inherit !important;
-  border: inherit !important;
-  transition: none !important;
-}
 
 .page {
   margin: 0;
@@ -168,6 +160,11 @@ tbody tr.toolTypeRow.dark-mode:hover {
   color: #168dc0
 }
 
+.subPropertyHighlight {
+  color: #3d4c53
+}
+
+
 .actionButtons {
   display: flex;
   flex-direction: row;
@@ -180,52 +177,35 @@ tbody tr.toolTypeRow.dark-mode:hover {
   border-bottom: 2px solid #aaacaf !important;
 }
 
-.toolTypeRow {
+.toolTypeRow td {
   border: none !important;
-  color:#aaacaf;
+  color: #1a1a1a;
 }
 
-/* Dark mode styles */
-.page.dark-mode {
-  background-color: #1e2736 !important;
+/* Dark Mode */
+:global(.dark-mode) .logFormContainer {
+  background-color: #2b2b2b;
+  color: #ffffff !important;
+  border-color: #444 !important;
 }
 
-.logFormContainer.dark-mode {
-  background-color: #343a40 !important;
-  border-color: #495057 !important;
-  color: #fff !important;
+:global(.dark-mode) .subtitleRow {
+  background-color: #1a1a1a;
+  border-bottom: 1px solid #444;
 }
 
-.titleLabel.dark-mode {
-  color: #fff !important;
+:global(body.dark-mode) .page {
+  background-color: #1e2736;
 }
 
-.selectorLabel.dark-mode {
-  color: #fff !important;
+:global(body.dark-mode) .logFormContainer {
+  background-color: #1b2a41;
+  color: #ffffff;
+  border-color: #444;
 }
 
-.subtitleRow.dark-mode {
-  background-color: #495057 !important;
-  color: #fff !important;
-}
 
-.tableSubtitle.dark-mode {
-  color: #adb5bd !important;
-}
-
-.subtitleHighlight.dark-mode {
-  color: red !important;
-}
-
-.toolTypeHead.dark-mode {
-  color: #fff !important;
-  border-bottom-color: #6c757d !important;
-}
-
-.toolTypeRow.dark-mode {
-  color: #fff !important;
-}
-
-.toolTypeRow.dark-mode td {
-  color: #fff !important;
+:global(body.dark-mode) .toolTypeHead {
+  background-color: #608597;
+  border-bottom: 2px solid #444 !important;
 }

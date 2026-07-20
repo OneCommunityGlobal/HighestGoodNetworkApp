@@ -73,41 +73,28 @@
   }
 }
 
-/*
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 12px;
-} */
-
 /* Timer Message Section */
 .timer-message-section {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  /* flex-wrap: wrap; */
   width: 100%;
   gap: 1rem;
 }
 
 .cardContent {
-  /* padding shorthand: top right bottom left */
   padding: 15px 40px;
   white-space: pre-line;
   color: white;
   font-size: medium;
   line-height: 1.4;
-
-  /* overflow-wrap replaces deprecated word-wrap */
   overflow-wrap: break-word;
   box-sizing: border-box;
   width: 100%;
   margin: 0;
 }
 
-.headerCard { /* Remove left margin */ /* Remove right margin */
-  /* Use full viewport width */
+.headerCard {
   margin-left: 0;
   margin-right: 0;
   width: 100vw;
@@ -115,16 +102,12 @@
   box-sizing: border-box;
   overflow: hidden;
   position: relative;
-
-  /* Ensure card extends to full width */
   left: 0;
   right: 0;
 }
 
 .cardWrapper {
   padding: 1rem 0;
-
-  /* Ensure wrapper uses full width */
   width: 100%;
   margin: 0;
   box-sizing: border-box;
@@ -202,6 +185,19 @@
   display: none;
 }
 
+/* Hamburger toggle — hidden on wide screens */
+.navbarToggler {
+  display: none;
+  margin-left: 1rem;
+  flex-shrink: 0;
+}
+
+/* Collapsed nav — hidden on wide screens */
+.navCollapse {
+  display: flex;
+  align-items: center;
+}
+
 /* max-width: 1700px */
 @media (width <= 1700px) {
   .hideInTablet {
@@ -220,18 +216,6 @@
   }
 }
 
-@media screen and (width <= 1199px) {
-  .menuContainer {
-    align-items: start;
-    flex-direction: column !important;
-
-    /* width: 100%; */
-.navbarToggler {
-  display: none;
-  margin-left: 1rem;
-  flex-shrink: 0;
-}
-
 /* max-width: 1199px */
 @media (width <= 1199px) {
   .navbarToggler {
@@ -240,6 +224,7 @@
   }
 
   .navCollapse {
+    display: block;
     position: absolute;
     top: 100%;
     right: 0;
@@ -247,8 +232,6 @@
     min-width: 220px;
     background-color: #343a40;
     border-radius: 0 0 6px 6px;
-
-    /* rgb() modern notation with alpha as percentage */
     box-shadow: 0 6px 16px rgb(0 0 0 / 40%);
     z-index: 999;
     max-height: 0;
@@ -256,11 +239,19 @@
     transition: max-height 0.25s ease-out;
   }
 
+  .navCollapseHidden {
+    display: none !important;
+  }
+
   .navCollapseOpen {
     max-height: 600px;
+    overflow-y: auto;
     transition: max-height 0.25s ease-in;
   }
 
+  .menuContainer {
+    align-items: start;
+    flex-direction: column !important;
     padding-left: 50px;
     max-height: 80vh;
     overflow-y: auto;
@@ -271,12 +262,10 @@
     border: none !important;
   }
 
-  .mobileDropdownText{
+  .mobileDropdownText {
     color: rgb(255 255 255 / 50%) !important;
   }
 
-  .mobileDropdownItem:hover{
-  .mobileDropdownText {
   .mobileDropdownItem:hover {
     background-color: #343a40 !important;
     color: rgb(255 255 255 / 75%) !important;
@@ -303,16 +292,6 @@
   .showInMobile {
     display: block;
   }
-}
-
-.headerMargin {
-  height: 20px;
-  background-color: #1b2a41;
-}
-
-.headerMarginLight {
-  height: 20px;
-  background-color: #fff;
 }
 
 @media print {
@@ -370,8 +349,6 @@
   min-width: fit-content;
 }
 
-/* Responsive behavior - prevent icon overlap on smaller screens */
-
 /* max-width: 1200px */
 @media (width <= 1200px) {
   .left-section,
@@ -397,8 +374,6 @@
   }
 }
 
-/* Medium screens - better balance */
-
 /* max-width: 900px */
 @media (width <= 900px) {
   .center-section {
@@ -406,8 +381,6 @@
     font-size: 0.9rem;
   }
 }
-
-/* Mobile specific - stack vertically to prevent overlap */
 
 /* max-width: 768px */
 @media (width <= 768px) {
@@ -423,7 +396,4 @@
     width: 100% !important;
     justify-content: center !important;
   }
-}
-
-}}
 }

@@ -36,10 +36,11 @@ const formatDisplayTime = date =>
 const mockEvents = [];
 let id = 1;
 
+// Mock data generation for 12 months and 4 event types per week
 for (let month = 0; month < 12; month++) {
   for (let week = 0; week < 4; week++) {
     for (let t = 0; t < eventTypes.length; t++) {
-      const eventDate = new Date(new Date().getFullYear(), month, 1 + week * 7 + t);
+      const eventDate = new Date(2026, month, 1 + week * 7 + t);
       mockEvents.push({
         id: id++,
         eventType: eventTypes[t],
@@ -50,11 +51,13 @@ for (let month = 0; month < 12; month++) {
         noShowRate: `${secureRandInt(5, 94)}%`,
         dropOffRate: `${secureRandInt(10, 79)}%`,
         location: locations[(id + t) % locations.length],
+        capacity: secureRandInt(1, 40),
       });
     }
   }
 }
 
+// Mock data generation for today
 const today = new Date();
 for (let t = 0; t < 6; t++) {
   const eventDate = new Date(today);
@@ -64,12 +67,26 @@ for (let t = 0; t < 6; t++) {
     eventType: eventTypes[t % eventTypes.length],
     eventDate: eventDate.toISOString(),
     eventTime: formatDisplayTime(eventDate),
-    eventName: `Today’s Event ${id}`,
+    eventName: `Event ${id}`,
     attendees: secureRandInt(20, 99),
     noShowRate: `${secureRandInt(5, 94)}%`,
     dropOffRate: `${secureRandInt(10, 79)}%`,
     location: locations[id % locations.length],
+    capacity: secureRandInt(1, 40),
   });
 }
+
+mockEvents.push({
+  id: id++,
+  eventType: 'Fitness Bootcamp',
+  eventDate: new Date(2026, 0, 21, 8, 0, 0, 0).toISOString(),
+  eventTime: formatDisplayTime(new Date(2026, 0, 21, 8, 0, 0, 0)),
+  eventName: 'Sold Out Event',
+  attendees: 50,
+  noShowRate: '18%',
+  dropOffRate: '40%',
+  location: 'Chicago',
+  capacity: 0,
+});
 
 export default mockEvents;

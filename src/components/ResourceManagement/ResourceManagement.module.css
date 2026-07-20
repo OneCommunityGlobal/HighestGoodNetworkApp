@@ -1,218 +1,410 @@
-/* stylelint-disable  */
-/* Light Mode (Default) */
+/* --- Dashboard Container --- */
 .resourceManagementDashboard {
   padding: 20px;
+  min-height: 100vh;
+  background-color: #fff;
+  color: #333;
+  transition: background-color 0.3s ease;
 }
 
+.darkModeResourceManagementDashboard {
+  background-color: #1b2a41;
+  color: #fff;
+}
+
+/* --- Header Section --- */
 .dashboardTitle {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 .dashboardTitle h2 {
-  font-size: 1.5em;
-  font-weight: bold;
-  color: black;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+  color: inherit;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 10px;
 }
 
 .addLogButton {
-  background-color: #d3d3d3;
-  color: black;
+  background-color: #0056b3;
+  color: #fff;
   border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
+  border-radius: 6px;
+  padding: 10px 24px;
   cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
 }
 
 .addLogButton:hover {
-  background-color: #b3b3b3;
+  background-color: #004494;
 }
 
+.darkModeResourceManagementDashboard .addLogButton {
+  background-color: #2196f3;
+}
+
+.darkModeResourceManagementDashboard .addLogButton:hover {
+  background-color: #4b7bec;
+}
+
+/* --- Search Bar --- */
 .searchBarContainer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  background-color: #f0f0f0;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  padding: 10px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 12px 20px;
 }
 
-.searchBarContainerLeft {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  font-size: 1.2em;
+.darkModeSearchBarContainer {
+  background-color: #172f53;
+  border-color: #2d4a77;
 }
 
+.searchBarContainerLeft,
 .searchBarContainerRight {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 15px;
+}
+
+.iconAdd,
+.iconLines {
+  font-size: 1.2rem;
+  color: inherit;
+}
+
+.iconToggle {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: inherit;
+  transition: transform 0.2s;
+}
+
+.iconToggle:hover {
+  transform: scale(1.2);
+  color: #007bff;
 }
 
 .searchInput {
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: white;
-  color: black;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  width: 250px;
+  outline: none;
+  background-color: #fff;
+  color: #333;
+}
+
+.searchInput:focus {
+  border-color: #007bff;
+}
+
+.darkModeSearchBarContainer .searchInput {
+  background-color: #1b2a41;
+  border-color: #444;
+  color: #fff;
 }
 
 .searchButton {
-  background-color: #007bff;
-  color: white;
+  padding: 8px 14px;
+  background-color: #0056b3;
+  color: #fff;
   border: none;
-  padding: 5px 10px;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
 }
 
 .searchButton:hover {
   background-color: #0056b3;
 }
 
-.resourceList {
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  padding: 10px;
+.clearButton {
+  padding: 8px 14px;
+  background-color: #6c757d;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
 }
 
-.checkboxContainer {
-  flex: 0;
-  margin-right: 20px;
+.clearButton:hover {
+  background-color: #545b62;
+}
+
+.darkModeSearchBarContainer .searchButton {
+  background-color: #1a6fc4;
+}
+
+.darkModeSearchBarContainer .searchButton:hover {
+  background-color: #155da0;
+}
+
+.darkModeSearchBarContainer .clearButton {
+  background-color: #555e68;
+}
+
+.darkModeSearchBarContainer .clearButton:hover {
+  background-color: #434a52;
+}
+
+/* --- Table & Column Alignment --- */
+.resourceList {
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.darkModeResourceManagementDashboard .resourceList {
+  background-color: #1b2a41;
+  border-color: #2d4a77;
+}
+
+.resourceTable {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.resourceHeaderRow,
+.resourceItem {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  border-bottom: 1px solid #edf2f7;
+  min-height: 60px;
+}
+
+.resourceHeaderRow {
+  background-color: #f1f5f9;
+  border-bottom: 2px solid #cbd5e1;
+  color: #475569;
+  font-weight: 700;
+}
+
+.darkModeResourceManagementDashboard .resourceHeaderRow {
+  background-color: #1e3a5f;
+  border-bottom: 2px solid #2d4a77;
+  color: #cbd5e1;
+}
+
+.resourceItem:hover {
+  background-color: rgb(236 236 141 / 26.4%);
+}
+
+.darkModeResourceManagementDashboard .resourceItem:hover {
+  background-color: #25416b;
+}
+
+.colCheck {
+  width: 70px;
+  flex-shrink: 0;
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 6px;
 }
 
-.resourceHeading,
-.resourceItem {
+.checkboxLabel {
+  font-size: 0.85rem;
+}
+
+.colUser {
+  flex: 2;
+  min-width: 150px;
+  padding: 0 10px;
+}
+
+.colDuration {
+  flex: 1.5;
+  padding: 0 10px;
+}
+
+.colFacilities {
+  flex: 2;
+  padding: 0 10px;
+}
+
+.colMaterials {
+  flex: 2;
+  padding: 0 10px;
+}
+
+.colDate {
+  flex: 1.5;
+  padding: 0 10px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 10px 0;
 }
 
-.resourceHeadingItem {
-  flex: 1;
-  text-align: left;
-  color: #555;
+.headerSortButton {
+  background: none;
+  border: none;
+  font: inherit;
   font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  color: inherit;
+  outline: none;
+}
+
+.headerSortButton:hover {
+  color: #007bff;
 }
 
 .resourceItemDetail {
-  flex: 1;
-  text-align: left;
-  color: #333;
+  font-size: 0.95rem;
+  color: #334155;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.darkModeResourceManagementDashboard .resourceItemDetail {
+  color: #e2e8f0;
 }
 
 .calendarIcon {
-  margin-right: 5px;
+  margin-right: 8px;
+  color: #64748b;
 }
 
-.lineSperator {
-  border: none;
-  border-top: 1px solid #ddd;
+.darkModeResourceManagementDashboard .calendarIcon {
+  color: #94a3b8;
 }
 
-.rmPagination {
+/* --- Pagination --- */
+.paginationContainer {
   display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  margin-top: 20px;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 30px;
+  padding-bottom: 20px;
 }
 
-.rmPagination button {
-  background-color: #f1f1f1;
-  border: 1px solid #ddd;
-  padding: 5px 10px;
+.paginationButtonIndexes,
+.paginationLeft,
+.paginationRight {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
   cursor: pointer;
-  color: #333;
+  transition: all 0.2s;
+  color: #334155;
+  padding: 6px 12px;
 }
 
-.rmPagination button:hover {
-  background-color: #007bff;
-  color: white;
+.paginationLeft:disabled,
+.paginationRight:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 
-.arrowButton {
-  font-weight: bold;
-  padding: 5px 15px;
+.darkModePaginationContainer .paginationButtonIndexes,
+.darkModePaginationContainer .paginationLeft,
+.darkModePaginationContainer .paginationRight {
+  background-color: #172f53;
+  border-color: #2d4a77;
+  color: #fff;
 }
 
+.paginationButtonIndexes:hover:not(:disabled),
+.paginationLeft:hover:not(:disabled),
+.paginationRight:hover:not(:disabled) {
+  border-color: #007bff;
+}
+
+.activePage {
+  border: 1px solid #0056b3;
+  padding: 6px 12px;
+  border-radius: 4px;
+  background-color: #0056b3;
+  color: #fff;
+}
+
+.darkModePaginationContainer .activePage {
+  background-color: #0056b3 !important;
+  border-color: #0056b3 !important;
+  color: #fff;
+}
+
+/* --- Modal --- */
 .modalOverlay {
   position: fixed;
   inset: 0;
   background-color: rgb(0 0 0 / 50%);
+  backdrop-filter: blur(4px);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  animation: scale-in 0.25s ease-in-out;
   z-index: 1000;
 }
 
 .modalContent {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 28px 24px;
+  width: 420px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 25%);
+  animation: scale-in 0.25s ease-in-out;
+  transform-origin: top center;
 }
 
-.modalHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
+.modalContentDark {
+  background-color: #172f53;
+  color: #fff;
+  border: 1px solid #2d4a77;
+  box-shadow: 0 8px 28px rgb(0 0 0 / 40%);
 }
 
-.modalHeader h3 {
-  margin: 0;
-  font-size: 1.5rem;
-  color: #333;
+.modalContent h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  text-align: center;
+  color: #007bff;
 }
 
-.errorMessage {
-  background-color: #fee;
-  border: 1px solid #fcc;
-  color: #c33;
-  padding: 0.75rem;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-}
-
-.closeButton {
-  background: none;
-  border: none;
-  font-size: 2rem;
-  cursor: pointer;
-  color: #666;
-  padding: 0;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.closeButton:hover {
-  color: #333;
+.modalContentDark h3 {
+  color: #dbe3f5;
 }
 
 .formGroup {
   margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .formGroup label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
-  color: #333;
+  color: inherit;
 }
 
 .formGroup input {
@@ -222,13 +414,45 @@
   border-radius: 4px;
   font-size: 1rem;
   box-sizing: border-box;
-  background-color: white;
+  background-color: #fff;
   color: #333;
+}
+
+.formGroup input[type='date'] {
+  color-scheme: light;
 }
 
 .formGroup input:focus {
   outline: none;
-  border-color: #4caf50;
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgb(0 123 255 / 50%);
+}
+
+.modalContentDark .formGroup input {
+  background-color: #1b2a41;
+  color: #fff;
+  border: 1px solid #667b9c;
+}
+
+.modalContentDark .formGroup input[type='date'] {
+  color-scheme: dark;
+}
+
+.inputError {
+  border: 1px solid #ff4d4f !important;
+}
+
+.errorText {
+  color: #ff4d4f;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+  line-height: 1.3;
+  text-align: left;
+}
+
+.modalContentDark .errorText {
+  color: #ff9a9a;
 }
 
 .modalActions {
@@ -259,149 +483,90 @@
 }
 
 .submitButton {
-  background-color: #4caf50;
-  color: white;
+  background-color: #2e7d32;
+  color: #fff;
 }
 
 .submitButton:hover {
-  background-color: #45a049;
+  background-color: #1b5e20;
 }
 
-/* Dark Mode Styles */
-.darkMode .dashboardTitle h2 {
+.modalContentDark .submitButton {
+  background-color: #2e7d32;
+  color: #fff;
+}
+
+.modalContentDark .cancelButton {
+  background-color: #2a3f5f;
   color: #e0e0e0;
 }
 
-.darkMode .addLogButton {
-  background-color: #3a3a3a;
-  color: #e0e0e0;
+.modalContentDark .cancelButton:hover {
+  background-color: #3a5275;
 }
 
-.darkMode .addLogButton:hover {
-  background-color: #505050;
+/* --- Toast Notification --- */
+.toast {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+  animation: fade-in 0.3s ease-in;
+  z-index: 1100;
 }
 
-.darkMode .searchBarContainer {
-  background-color: #2a2a2a;
-  border: 1px solid #444;
+.toastDark {
+  background-color: #172f53;
+  color: #fff;
+  border: 1px solid #2d4a77;
 }
 
-.darkMode .searchBarContainerLeft {
-  color: #e0e0e0;
+.toastCloseButton {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0;
 }
 
-.darkMode .searchInput {
-  background-color: #1a1a1a;
-  color: #e0e0e0;
-  border: 1px solid #444;
+.toastCloseButton:hover {
+  opacity: 0.7;
 }
 
-.darkMode .searchInput::placeholder {
-  color: #888;
+/* --- Checkbox Dark Mode --- */
+.darkModeResourceManagementDashboard input[type='checkbox'] {
+  accent-color: #2196f3;
 }
 
-.darkMode .searchButton {
-  background-color: #0d6efd;
-  color: white;
+/* --- Animations --- */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
-.darkMode .searchButton:hover {
-  background-color: #0a58ca;
-}
+@keyframes scale-in {
+  from {
+    transform: scale(0.96);
+    opacity: 0;
+  }
 
-.darkMode .resourceList {
-  background-color: #1a1a1a;
-  border: 1px solid #444;
-}
-
-.darkMode .resourceHeadingItem {
-  color: #b0b0b0;
-}
-
-.darkMode .resourceItemDetail {
-  color: #e0e0e0;
-}
-
-.darkMode .lineSperator {
-  border-top: 1px solid #444;
-}
-
-.darkMode .rmPagination button {
-  background-color: #2a2a2a;
-  border: 1px solid #444;
-  color: #e0e0e0;
-}
-
-.darkMode .rmPagination button:hover {
-  background-color: #0d6efd;
-  color: white;
-}
-
-.darkMode .modalOverlay {
-  background-color: rgb(0 0 0 / 75%);
-}
-
-.darkMode .modalContent {
-  background: #1a1a1a;
-  border: 1px solid #444;
-  box-shadow: 0 4px 6px rgb(0 0 0 / 40%);
-}
-
-.darkMode .modalHeader h3 {
-  color: #e0e0e0;
-}
-
-.darkMode .errorMessage {
-  background-color: #4a2020;
-  border: 1px solid #8a3030;
-  color: #ffb3b3;
-}
-
-.darkMode .closeButton {
-  color: #b0b0b0;
-}
-
-.darkMode .closeButton:hover {
-  color: #e0e0e0;
-}
-
-.darkMode .formGroup label {
-  color: #e0e0e0;
-}
-
-.darkMode .formGroup input {
-  background-color: #2a2a2a;
-  color: #e0e0e0;
-  border: 1px solid #444;
-}
-
-.darkMode .formGroup input::placeholder {
-  color: #888;
-}
-
-.darkMode .formGroup input:focus {
-  border-color: #4caf50;
-}
-
-.darkMode .cancelButton {
-  background-color: #2a2a2a;
-  color: #e0e0e0;
-}
-
-.darkMode .cancelButton:hover {
-  background-color: #3a3a3a;
-}
-
-.darkMode .submitButton {
-  background-color: #4caf50;
-  color: white;
-}
-
-.darkMode .submitButton:hover {
-  background-color: #45a049;
-}
-
-/* Checkbox styling for dark mode */
-.darkMode input[type='checkbox'] {
-  filter: invert(1) hue-rotate(180deg);
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }

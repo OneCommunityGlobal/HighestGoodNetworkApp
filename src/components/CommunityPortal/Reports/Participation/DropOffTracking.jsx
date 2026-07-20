@@ -1,17 +1,10 @@
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
-import styles from './Participation.module.css';
 import mockEvents from './mockData';
+import styles from './Participation.module.css';
 
-function DropOffTracking() {
+function DropOffTracking({ darkMode }) {
   const [selectedEvent, setSelectedEvent] = useState('All Events');
   const [selectedTime, setSelectedTime] = useState('All Time');
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeEvent, setActiveEvent] = useState(null);
-  const [selectedUsers, setSelectedUsers] = useState([]);
-
-  const darkMode = useSelector(state => state.theme.darkMode);
 
   const getDateRange = () => {
     const today = new Date();
@@ -50,27 +43,11 @@ function DropOffTracking() {
     return true;
   });
 
-  const handleOpenList = event => {
-    setActiveEvent(event);
-    setSelectedUsers([]);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setActiveEvent(null);
-    setSelectedUsers([]);
-  };
-
   return (
-    <div
-      className={`tracking-container-global ${styles.trackingContainer} ${
-        darkMode ? styles.trackingContainerDark : ''
-      }`}
-    >
-      <div className={`${styles.trackingHeader} ${darkMode ? styles.trackingHeaderDark : ''}`}>
+    <div className={`${styles.trackingContainer} ${darkMode ? styles.darkMode : ''}`}>
+      <div className={styles.trackingHeader}>
         <h3>Drop-off and no-show rate tracking</h3>
-        <div className={`${styles.trackingFilters} ${darkMode ? styles.trackingFiltersDark : ''}`}>
+        <div className={styles.trackingFilters}>
           <select value={selectedEvent} onChange={e => setSelectedEvent(e.target.value)}>
             <option value="All Events">All Events</option>
             <option value="Yoga Class">Yoga Class</option>
@@ -87,141 +64,47 @@ function DropOffTracking() {
         </div>
       </div>
 
-      <div className={styles.trackingSummary}>
-        <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
-          <p className={styles.trackingRateSubheading}>
-            <span>
-              <b>Drop-off rate</b>
-            </span>
-          </p>
+      <div className={`${styles.trackingSummary} ${darkMode ? styles.darkMode : ''}`}>
+        <div className={styles.trackingRate}>
           <p className={styles.trackingRateValue}>
-            <span className={styles.trackingRateValuePositive}>+5%</span>{' '}
-            <span>since Last week</span>
+            +5% <span>Last week</span>
+          </p>
+          <p className={styles.trackingRateSubheading}>
+            <span> Drop-off rate</span>
           </p>
         </div>
-        <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
-          <p className={styles.trackingRateSubheading}>
-            <span>
-              <b>No-show rate</b>
-            </span>
-          </p>
+        <div className={styles.trackingRate}>
           <p className={styles.trackingRateValue}>
-            <span className={styles.trackingRateValueNegative}>
-              <b>-5%</b>
-            </span>{' '}
-            <span>since Last week</span>
+            +5% <span>Last week</span>
+          </p>
+          <p className={styles.trackingRateSubheading}>
+            <span> No-show rate </span>
           </p>
         </div>
       </div>
 
-      <div
-        className={`${styles.trackingListContainer} ${
-          darkMode ? styles.trackingListContainerDark : ''
-        }`}
-      >
-        <table
-          className={`tracking-table-global ${styles.trackingTable} ${
-            darkMode ? `tracking-table-global-dark ${styles.trackingTableDark}` : ''
-          }`}
-        >
+      <div className={styles.trackingListContainer}>
+        <table className={styles.trackingTable}>
           <thead>
             <tr>
               <th>Event name</th>
               <th>No-show rate</th>
               <th>Drop-off rate</th>
-              <th>Get list</th>
+              <th>Attendees</th>
             </tr>
           </thead>
           <tbody>
             {filteredEvents.map(event => (
               <tr key={event.id}>
                 <td>{event.eventName}</td>
-                <td className={styles.trackingRateGreen} style={{ color: 'green' }}>
-                  {event.noShowRate}
-                </td>
-                <td className={styles.trackingRateRed} style={{ color: 'red' }}>
-                  {event.dropOffRate}
-                </td>
-                <td>
-                  <button
-                    type="button"
-                    className={styles.getListBtn}
-                    aria-label="Get no-show list"
-                    onClick={() => handleOpenList(event)}
-                  >
-                    👥
-                  </button>
-                </td>
+                <td className={styles.trackingRateGreen}>{event.noShowRate}</td>
+                <td className={styles.trackingRateRed}>{event.dropOffRate}</td>
+                <td>{event.attendees}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-
-      {isModalOpen && activeEvent && (
-        <div className={styles.modalOverlay}>
-          <div className={`${styles.modalContent} ${darkMode ? styles.modalContentDark : ''}`}>
-            <div className={styles.modalHeader}>
-              <h4>No-show list</h4>
-              <button type="button" className={styles.closeBtn} onClick={handleCloseModal}>
-                ✕
-              </button>
-            </div>
-
-            <div className={styles.modalSubHeader}>
-              {activeEvent.eventName} | {activeEvent.eventTime}
-            </div>
-
-            <div className={styles.modalList}>
-              <label className={styles.selectAll}>
-                <input
-                  type="checkbox"
-                  checked={
-                    selectedUsers.length > 0 &&
-                    selectedUsers.length === mockEvents.slice(0, 8).length
-                  }
-                  onChange={e =>
-                    setSelectedUsers(e.target.checked ? mockEvents.slice(0, 8).map(u => u.id) : [])
-                  }
-                />
-                Select all
-              </label>
-
-              {mockEvents.slice(0, 8).map(user => (
-                <label key={user.id} className={styles.userRow}>
-                  <input
-                    type="checkbox"
-                    checked={selectedUsers.includes(user.id)}
-                    onChange={() =>
-                      setSelectedUsers(prev =>
-                        prev.includes(user.id)
-                          ? prev.filter(id => id !== user.id)
-                          : [...prev, user.id],
-                      )
-                    }
-                  />
-                  <span className={styles.userAvatar}>👤</span>
-                  <span className={styles.userName}>No-show person {user.id}</span>
-                  <span className={styles.userEmail}>user{user.id}@example.com</span>
-                </label>
-              ))}
-            </div>
-
-            <div className={styles.modalFooter}>
-              <button
-                type="button"
-                className={styles.sendEmailBtn}
-                disabled={selectedUsers.length === 0}
-                onClick={() => {
-                  handleCloseModal();
-                }}
-              >
-                Send Email
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

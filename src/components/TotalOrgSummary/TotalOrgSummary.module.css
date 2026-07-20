@@ -34,7 +34,7 @@
     padding-top: 10px !important;
     padding-bottom: 10px !important;
   }
-  
+
   .containerTotalOrgWrapper:global(.mb-5) {
     margin-bottom: 20px !important;
   }
@@ -189,6 +189,53 @@
 .containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-label),
 .containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-cartesian-axis-tick-value) {
   fill: #fff !important;
+}
+
+/* Explicit overrides for Volunteer Hours Distribution slice labels.
+   These must win over global forced-white chart text rules above. */
+.containerTotalOrgWrapper:global(.bg-oxford-blue)
+  .componentContainer
+  :global(.hours-distribution-label-dark),
+.containerTotalOrgWrapper:global(.bg-oxford-blue)
+  .componentContainer
+  :global(.hours-distribution-label-dark)
+  tspan {
+  fill: #111 !important;
+  color: #111 !important;
+}
+
+.containerTotalOrgWrapper:global(.bg-oxford-blue)
+  .componentContainer
+  :global(.hours-distribution-label-light),
+.containerTotalOrgWrapper:global(.bg-oxford-blue)
+  .componentContainer
+  :global(.hours-distribution-label-light)
+  tspan {
+  fill: #fff !important;
+  color: #fff !important;
+}
+
+/* Role Distribution slice label overrides */
+.containerTotalOrgWrapper:global(.bg-oxford-blue)
+  .componentContainer
+  :global(.role-distribution-label-dark),
+.containerTotalOrgWrapper:global(.bg-oxford-blue)
+  .componentContainer
+  :global(.role-distribution-label-dark)
+  tspan {
+  fill: #000 !important;
+  color: #000 !important;
+}
+
+.containerTotalOrgWrapper:global(.bg-oxford-blue)
+  .componentContainer
+  :global(.role-distribution-label-light),
+.containerTotalOrgWrapper:global(.bg-oxford-blue)
+  .componentContainer
+  :global(.role-distribution-label-light)
+  tspan {
+  fill: #fff !important;
+  color: #fff !important;
 }
 
 .containerTotalOrgWrapper.bg-oxford-blue h3 {
@@ -357,8 +404,6 @@
   color: #6f42c1 !important;
   transform: translateX(4px) !important;
 }
-
-/* Dark mode dropdown consistency */
 
 /* Component containers - Clean borderless design */
 .componentContainer {
@@ -671,3 +716,5 @@
     padding-left: 1% !important;
   }
 }
+
+/* stylelint-enable no-descending-specificity */
