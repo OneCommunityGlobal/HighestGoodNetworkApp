@@ -348,7 +348,7 @@ Issue Charts Module CSS
 :global(.lightCalendar) :global(.react-datepicker__day--range-start),
 :global(.lightCalendar) :global(.react-datepicker__day--range-end),
 :global(.lightCalendar) :global(.react-datepicker__day--selected) {
-  background-color: #007bff !important;
+  background-color: #0056b3 !important;
   color: #fff !important;
 }
 
@@ -381,7 +381,7 @@ Issue Charts Module CSS
 :global(.darkCalendar) :global(.react-datepicker__day--selected),
 :global(.darkCalendar) :global(.react-datepicker__day--keyboard-selected),
 :global(.darkCalendar) :global(.react-datepicker__day--in-range) {
-  background-color: #007bff !important;
+  background-color: #0056b3 !important;
   color: #fff !important;
 }
 
