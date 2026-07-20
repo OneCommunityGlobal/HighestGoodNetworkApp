@@ -431,7 +431,8 @@ export default function ReturnedLateChart() {
       startDate: prev.startDate > date ? date : prev.startDate,
       endDate: date,
     }));
-  const isOxfordBlue = darkMode ? 'bg-oxford-blue' : '';
+  // 🚨 Hooked up to the 'styles' object!
+  const isOxfordBlue = darkMode ? styles['bg-oxford-blue'] : '';
 
   return (
     <div className={`${styles['returned-late-chart']} ${isOxfordBlue}`}>
@@ -475,7 +476,7 @@ export default function ReturnedLateChart() {
       </div>
       <div className={styles['returned-late-filters']}>
         <div className={styles['returned-late-filter-group']}>
-          <label htmlFor="project-select" className={`${styles['returned-late-filter-label']} `}>
+          <label htmlFor="project-select" className={styles['returned-late-filter-label']}>
             Project:
           </label>
           <select
@@ -496,10 +497,7 @@ export default function ReturnedLateChart() {
         </div>
 
         <div className={styles['returned-late-filter-group']}>
-          <label
-            htmlFor="tools-select"
-            className={`${styles['returned-late-filter-label']} ${darkMode ? 'text-white' : ''}`}
-          >
+          <label htmlFor="tools-select" className={styles['returned-late-filter-label']}>
             Tools:
           </label>
           <MultiSelect
@@ -532,10 +530,7 @@ export default function ReturnedLateChart() {
         </div>
 
         <div className={styles['returned-late-filter-group']}>
-          <label
-            htmlFor="start-date-picker"
-            className={`${styles['returned-late-filter-label']} ${darkMode ? 'text-white' : ''}`}
-          >
+          <label htmlFor="start-date-picker" className={styles['returned-late-filter-label']}>
             From:
           </label>
           <DatePicker
@@ -547,11 +542,9 @@ export default function ReturnedLateChart() {
             } `}
           />
         </div>
+
         <div className={styles['returned-late-filter-group']}>
-          <label
-            htmlFor="end-date-picker"
-            className={`${styles['returned-late-filter-label']} ${darkMode ? 'text-white' : ''}`}
-          >
+          <label htmlFor="end-date-picker" className={styles['returned-late-filter-label']}>
             To:
           </label>
           <DatePicker

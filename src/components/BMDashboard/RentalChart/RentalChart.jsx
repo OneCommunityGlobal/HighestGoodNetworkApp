@@ -44,6 +44,15 @@ const MONTHS = [
   'December',
 ];
 
+const CHART_COLORS = {
+  darkBg: '#1b2a41',
+  lightBg: '#ffffff',
+  darkText: '#e0e0e0',
+  lightText: '#333333',
+};
+
+const FILTER_ALL = 'All';
+
 /* ---------- helper functions to keep processChartData simple ---------- */
 
 const filterRentalData = (data, selectedProject, selectedTool, dateRange) =>
@@ -136,6 +145,49 @@ const buildDatasetsFromGroupMap = (groupMap, groupBy) =>
     };
   });
 
+const getDatalabelAnchor = ctx => {
+  if (ctx.datasetIndex === 0) return 'end'; // right
+  if (ctx.datasetIndex === 1) return 'start'; // left
+  return 'center'; // 3rd stays centered if any
+};
+
+const getDatalabelAlign = ctx => {
+  if (ctx.datasetIndex === 0) return 'bottom'; // slightly below
+  if (ctx.datasetIndex === 1) return 'top'; // slightly above
+  return 'top';
+};
+
+const getDatalabelFormatter = (value, chartType) => {
+  if (value == null || Number.isNaN(value)) return '';
+  if (chartType === 'percentage') {
+    return `${value.toFixed(0)}%`;
+  }
+  return `$${value.toFixed(2)}`;
+};
+
+const formatDate = date => `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+
+const buildChartTitle = (groupBy, selectedProject, selectedTool, dateRange) => {
+  let title = 'Rental Costs';
+
+  if (groupBy === 'project') {
+    title += ' by Project';
+    if (selectedProject !== 'All') {
+      // (Or use FILTER_ALL if you added that constant!)
+      title = `Rental Costs for Project ${selectedProject.substring(0, 8)}...`;
+    }
+  } else {
+    title += ' by Tool Type';
+    if (selectedTool !== 'All') {
+      // (Or use FILTER_ALL here too)
+      title = `Rental Costs for ${selectedTool}`;
+    }
+  }
+
+  title += ` (${formatDate(dateRange.startDate)} - ${formatDate(dateRange.endDate)})`;
+  return title;
+};
+
 /* ---------------------------------------------------------------------- */
 
 export default function RentalChart() {
@@ -147,8 +199,8 @@ export default function RentalChart() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [chartType, setChartType] = useState('cost');
-  const [selectedProject, setSelectedProject] = useState('All');
-  const [selectedTool, setSelectedTool] = useState('All');
+  const [selectedProject, setSelectedProject] = useState(FILTER_ALL);
+  const [selectedTool, setSelectedTool] = useState(FILTER_ALL);
   const [groupBy] = useState('project');
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -209,28 +261,6 @@ export default function RentalChart() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function generateChartTitle() {
-    let title = 'Rental Costs';
-
-    if (groupBy === 'project') {
-      title += ' by Project';
-      if (selectedProject !== 'All') {
-        title = `Rental Costs for Project ${selectedProject.substring(0, 8)}...`;
-      }
-    } else {
-      title += ' by Tool Type';
-      if (selectedTool !== 'All') {
-        title = `Rental Costs for ${selectedTool}`;
-      }
-    }
-
-    const formatDate = date => `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
-
-    title += ` (${formatDate(dateRange.startDate)} - ${formatDate(dateRange.endDate)})`;
-
-    return title;
-  }
-
   useEffect(() => {
     if (rawData.length > 0) {
       processChartData(rawData);
@@ -250,7 +280,7 @@ export default function RentalChart() {
     return {
       responsive: true,
       maintainAspectRatio: false,
-      backgroundColor: bgColor,
+      backgroundColor: darkMode ? CHART_COLORS.darkBg : CHART_COLORS.lightBg,
       plugins: {
         legend: {
           position: 'top',
@@ -258,9 +288,14 @@ export default function RentalChart() {
         },
         title: {
           display: true,
-          text: generateChartTitle(),
-          font: { size: 25 },
-          color: titleColor,
+          text: buildChartTitle(groupBy, selectedProject, selectedTool, dateRange),
+          font: {
+            size: 14,
+          },
+          color: darkMode ? CHART_COLORS.lightBg : CHART_COLORS.darkBg,
+          padding: {
+            bottom: 20,
+          },
         },
         tooltip: {
           callbacks: {
@@ -282,36 +317,14 @@ export default function RentalChart() {
         },
         datalabels: {
           color: darkMode ? '#e0e0e0' : '#333333',
-          // move each dataset to a slightly different side of the point
-          anchor: ctx => {
-            // horizontal side of the point
-            if (ctx.datasetIndex === 0) return 'end'; // right
-            if (ctx.datasetIndex === 1) return 'start'; // left
-            return 'center'; // 3rd stays centered if any
-          },
-
-          align: ctx => {
-            // vertical side of the anchor
-            if (ctx.datasetIndex === 0) return 'bottom'; // slightly below
-            if (ctx.datasetIndex === 1) return 'top'; // slightly above
-            return 'top';
-          },
-          offset: 8, // distance in px away from the point (same for all is fine)
+          anchor: getDatalabelAnchor,
+          align: getDatalabelAlign,
+          offset: 8,
           font: {
             size: 12,
           },
 
-          formatter: value => {
-            if (value == null || Number.isNaN(value)) return '';
-
-            // percentage mode → whole-number percent
-            if (chartType === 'percentage') {
-              return `${value.toFixed(0)}%`; // e.g., 348%
-            }
-
-            // cost mode → dollars (you can use 0 or 2 decimals as you like)
-            return `$${value.toFixed(2)}`; // e.g., $175.00
-          },
+          formatter: value => getDatalabelFormatter(value, chartType),
         },
       },
       scales: {
@@ -377,105 +390,139 @@ export default function RentalChart() {
 
   const renderChartContent = () => {
     if (loading) {
-      return <div>Loading Chart Data....</div>;
+      return (
+        <div className={`${styles.loading} ${darkMode ? styles['text-light'] : ''}`}>
+          Loading Chart Data....
+        </div>
+      );
     }
 
     if (error) {
-      return <div>{error}</div>;
+      return (
+        <div className={`${styles.error} ${darkMode ? styles['text-light'] : ''}`}>{error}</div>
+      );
     }
 
     if (chartData.datasets.length === 0) {
-      return <div>No data available for the selected filters</div>;
+      return (
+        <div className={`${styles['no-data']} ${darkMode ? styles['text-light'] : ''}`}>
+          No data available for the selected filters
+        </div>
+      );
     }
 
     return <Line ref={chartRef} data={chartData} options={options} />;
   };
 
   return (
-    <div className={`${darkMode ? styles.darkMode : ''}`}>
-      <div className={`${styles.rentalContainer}`}>
-        <h1>Rental Cost Over Time</h1>
-        <div className={`${styles.chartFilters}`}>
-          <div className={`${styles.filterRow} ${styles.topFilters}`}>
-            <div className={`${styles.filterGroup}`}>
-              <label htmlFor="chart-type">Display: </label>
-              <select id="chart-type" value={chartType} onChange={handleTypeChange}>
-                <option value="cost">Total Rental Cost</option>
-                <option value="percentage">% of Materials Cost</option>
-              </select>
-            </div>
+    <div className={`${styles['rental-container']} ${darkMode ? styles['dark-mode'] : ''}`}>
+      <h1 className={darkMode ? styles['text-light'] : ''}>Rental Cost Over Time</h1>
 
-            <div className={`${styles.filterGroup}`}>
-              <label htmlFor="project-filter">Project: </label>
-              <select id="project-filter" value={selectedProject} onChange={handleProjectChange}>
-                <option value="All">All Projects</option>
-                {availableProjects.map(projectId => (
-                  <option key={projectId} value={projectId}>
-                    Project {projectId.substring(0, 8)}...
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className={`${styles.filterGroup}`}>
-              <label htmlFor="tool-filter">Tool: </label>
-              <select
-                id="tool-filter"
-                value={selectedTool}
-                onChange={handleToolChange}
-                disabled={groupBy === 'project' && selectedProject !== 'All'}
-              >
-                <option value="All">All Tools</option>
-                {availableTools.map(tool => (
-                  <option key={tool} value={tool}>
-                    {tool}
-                  </option>
-                ))}
-              </select>
-            </div>
+      <div className={styles['chart-filters']}>
+        <div className={`${styles['filter-row']} ${styles['top-filters']}`}>
+          <div className={styles['filter-group']}>
+            <label htmlFor="chart-type" className={darkMode ? styles['text-light'] : ''}>
+              Display:{' '}
+            </label>
+            <select
+              id="chart-type"
+              value={chartType}
+              onChange={handleTypeChange}
+              className={`${styles['rental-chart-select']} ${
+                darkMode ? styles['dark-select'] : ''
+              }`}
+            >
+              <option value="cost">Total Rental Cost</option>
+              <option value="percentage">% of Materials Cost</option>
+            </select>
           </div>
 
-          <div className={`${styles.filterRow} ${styles.dateFilter}`}>
-            <div className={`${styles.filterGroup}`}>
-              <label htmlFor="chart-type">From: </label>
-              <DatePicker
-                selected={dateRange.startDate}
-                onChange={handleStartDateChange}
-                selectsStart
-                startDate={dateRange.startDate}
-                endDate={dateRange.endDate}
-                dateFormat="MM/dd/yyyy"
-                showYearDropdown
-                showMonthDropdown
-                dropdownMode="select"
-                className={`${styles.DatePickerInput}`}
-                popperClassName={`#{styles.DatePickerPopper}`}
-                calendarClassName={`${styles.DatePickerCalendar}`}
-              />
-            </div>
+          <div className={styles['filter-group']}>
+            <label htmlFor="project-filter" className={darkMode ? styles['text-light'] : ''}>
+              Project:{' '}
+            </label>
+            <select
+              id="project-filter"
+              value={selectedProject}
+              onChange={handleProjectChange}
+              className={`${styles['rental-chart-select']} ${
+                darkMode ? styles['dark-select'] : ''
+              }`}
+            >
+              <option value="All">All Projects</option>
+              {availableProjects.map(projectId => (
+                <option key={projectId} value={projectId}>
+                  Project {projectId.substring(0, 8)}...
+                </option>
+              ))}
+            </select>
+          </div>
 
-            <div className={`${styles.filterGroup}`}>
-              <label htmlFor="chart-type">To: </label>
-              <DatePicker
-                selected={dateRange.endDate}
-                onChange={handleEndDateChange}
-                selectsEnd
-                startDate={dateRange.startDate}
-                endDate={dateRange.endDate}
-                minDate={dateRange.startDate}
-                dateFormat="MM/dd/yyyy"
-                showYearDropdown
-                showMonthDropdown
-                dropdownMode="select"
-                className={`${styles.DatePicker}`}
-                popperClassName={`#{styles.DatePickerPopper}`}
-                calendarClassName={`${styles.DatePickerCalendar}`}
-              />
-            </div>
+          <div className={styles['filter-group']}>
+            <label htmlFor="tool-filter" className={darkMode ? styles['text-light'] : ''}>
+              Tool:{' '}
+            </label>
+            <select
+              id="tool-filter"
+              value={selectedTool}
+              onChange={handleToolChange}
+              disabled={groupBy === 'project' && selectedProject !== 'All'}
+              className={`${styles['rental-chart-select']} ${
+                darkMode ? styles['dark-select'] : ''
+              }`}
+            >
+              <option value="All">All Tools</option>
+              {availableTools.map(tool => (
+                <option key={tool} value={tool}>
+                  {tool}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
-        <div className={`${styles.chartWrapper}`}>{renderChartContent()}</div>
+        <div className={`${styles['filter-row']} ${styles['date-filters']}`}>
+          <div className={styles['filter-group']}>
+            <label className={`${darkMode ? styles['text-light'] : ''} ${styles['date-label']}`}>
+              From:{' '}
+            </label>
+            <DatePicker
+              selected={dateRange.startDate}
+              onChange={handleStartDateChange}
+              selectsStart
+              startDate={dateRange.startDate}
+              endDate={dateRange.endDate}
+              dateFormat="MM/dd/yyyy"
+              showYearDropdown
+              showMonthDropdown
+              dropdownMode="select"
+              className={`${styles['date-picker']} ${darkMode ? styles['dark-date-picker'] : ''}`}
+            />
+          </div>
+
+          <div className={`${styles['filter-group']} ${styles['date-to-group']}`}>
+            <label className={`${darkMode ? styles['text-light'] : ''} ${styles['date-label']}`}>
+              To:{' '}
+            </label>
+            <DatePicker
+              selected={dateRange.endDate}
+              onChange={handleEndDateChange}
+              selectsEnd
+              startDate={dateRange.startDate}
+              endDate={dateRange.endDate}
+              minDate={dateRange.startDate}
+              dateFormat="MM/dd/yyyy"
+              showYearDropdown
+              showMonthDropdown
+              dropdownMode="select"
+              className={`${styles['date-picker']} ${darkMode ? styles['dark-date-picker'] : ''}`}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className={`${styles['chart-wrapper']} ${darkMode ? styles['dark-chart'] : ''}`}>
+        {renderChartContent()}
       </div>
     </div>
   );

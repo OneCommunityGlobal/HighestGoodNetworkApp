@@ -65,7 +65,8 @@
   align-items: center;
   flex-wrap: nowrap;
   margin-left: auto;
-  min-width: 0; /* allow selects to shrink instead of crushing the button */
+  min-width: 0;
+  /* allow selects to shrink instead of crushing the button */
 }
 
 /* Reactstrap Input adds .form-control — match box model to the Share PDF button */
@@ -226,10 +227,12 @@
   border-radius: 6px;
   text-align: center;
   box-shadow: 0 2px 5px var(--card-shadow);
+  flex: 1 1 250px;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  overflow: visible;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .darkMode .weeklyProjectSummaryCard {
@@ -322,9 +325,7 @@
 
 .normalCard {
   width: 100%;
-  max-width: 100%;
-  min-height: 250px;
-  box-sizing: border-box;
+  min-height: 200px;
 }
 
 .mapCard {
@@ -563,10 +564,12 @@
 /* Tooltip styles */
 .quantityOfMaterialsUsedChartTooltip {
   max-height: 80vh !important;
+  /* Limit to 80% of viewport height */
   overflow-y: auto !important;
+  /* Enable vertical scrolling */
   padding-right: 15px !important;
-
-  /* Firefox */
+  /* Add some padding for the scrollbar */
+  /* Support for Firefox */
   scrollbar-width: thin;
   scrollbar-color: rgb(0 0 0 / 30%) rgb(0 0 0 / 10%);
 }
@@ -641,53 +644,53 @@
   margin: 12px 0;
 }
 
-/* ---------------- RESPONSIVE BREAKPOINTS ---------------- */
+/* ---------------- RESPONSIVE DESIGN ---------------- */
 
 /* Large Screens */
-@media (width >= 1400px) {
+@media (width >=1400px) {
   .lessonsLearnedGrid {
     min-height: 650px;
   }
-  
+
   .lessonsCard {
     min-height: 650px;
   }
 }
 
-@media (width <= 1399px) and (width >= 1200px) {
+@media (width <=1399px) and (width >=1200px) {
   .lessonsLearnedGrid {
     min-height: 600px;
   }
-  
+
   .lessonsCard {
     min-height: 600px;
   }
 }
 
-@media (width <= 1199px) and (width >= 992px) {
+@media (width <=1199px) and (width >=992px) {
   .lessonsLearnedGrid {
     min-height: 550px;
     gap: 20px;
   }
-  
+
   .lessonsCard {
     min-height: 550px;
   }
 }
 
-@media (width <= 991px) and (width >= 769px) {
+@media (width <=991px) and (width >=769px) {
   .lessonsLearnedGrid {
     min-height: 500px;
     gap: 16px;
   }
-  
+
   .lessonsCard {
     min-height: 500px;
   }
 }
 
 /* Medium Screens */
-@media (width <= 1024px) {
+@media (width <=1024px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
     align-items: center;
@@ -705,7 +708,7 @@
 }
 
 /* Small Screens */
-@media (width <= 768px) {
+@media (width <=768px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
     align-items: center;
@@ -741,101 +744,94 @@
   .projectStatusGrid {
     grid-template-columns: 1fr;
   }
-  
-  .weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
-    grid-template-columns: 1fr;
-  }
-  
-  .weeklyProjectSummaryCard :global(.chartContainer) {
-    min-height: 240px;
-  }
-  
-  .normalCard {
-    min-height: 280px;
-  }
-
-  .lessonsLearnedGrid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-    min-height: auto;
-  }
-  
-  .lessonsCard {
-    min-height: 500px;
-  }
-  
-  .toolsTrackingLayout {
-    grid-template-columns: 1fr;
-  }
-  
-  .toolsDonutWrap {
-    grid-column: span 1;
-  }
-  
-  .financialsGrid {
-    grid-template-columns: 1fr;
-  }
-  
-  .financialsGrid .financialBig {
-    grid-column: span 1;
-  }
-  
-  .laborTimeGrid {
-    grid-template-columns: 1fr;
-  }
-  
-  .financialsTrackingGrid {
-    grid-template-columns: 1fr;
-  }
 }
 
-/* Extra Small Screens */
-@media (width <= 480px) {
-  .lessonsCard {
-    min-height: 450px;
-  }
-  
-  .weeklyProjectSummaryCard :global(.chartContainer) {
-    min-height: 220px;
-  }
-  
-  .normalCard {
-    min-height: 260px;
-  }
-  
-  .weeklySummaryHeaderTitle {
-    font-size: large;
-    flex-direction: column;
-    gap: 5px;
-  }
+/* ---------------- STATUS CARD ---------------- */
+.statusCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 25px;
+  width: 100%;
+  max-width: 284px;
+  height: 190px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+/* ---------------- RESPONSIVE GRID LAYOUT ---------------- */
+.projectStatusGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 1600px;
+  margin: auto;
+}
+
+/* .projectStatusGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 10px;
+} */
+
+/* ---------------- OVAL STATUS BUTTON ---------------- */
+.weeklyStatusButton {
+  width: 130px;
+  height: 65px;
+  border-radius: 50px / 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  margin: 12px 0;
+}
+
+.weeklyCardTitle {
+  color: #000;
+  font-size: clamp(14px, 1.4vw, 18px);
+  font-weight: 600;
+}
+
+.weeklyStatusValue {
+  color: #000;
+  font-size: 40px;
+  font-weight: 600;
 }
 
 /* Status Grid Responsive */
-@media (width >= 1600px) {
+@media (width >=1600px) {
   .projectStatusGrid {
     grid-template-columns: repeat(6, 1fr);
   }
 }
 
-@media (width <= 1400px) {
+@media (width <=1400px) {
   .projectStatusGrid {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
-@media (width <= 1024px) {
+@media (width <=1024px) {
   .projectStatusGrid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-@media (width <= 768px) {
+@media (width <=768px) {
   .projectStatusGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (width <= 576px) {
+@media (width <=576px) {
   .projectStatusGrid {
     grid-template-columns: repeat(1, 1fr);
   }
@@ -868,12 +864,12 @@
   .weeklyProjectSummaryCard {
     break-inside: avoid;
   }
-  
+
   .weeklyProjectSummaryCard :global(.container) {
     box-shadow: none;
     border: 1px solid #ddd;
   }
-  
+
   .lessonsLearnedGrid,
   .toolsTrackingLayout,
   .financialsGrid,
@@ -881,7 +877,7 @@
   .financialsTrackingGrid {
     break-inside: avoid;
   }
-  
+
   .weeklySummaryShareBtn,
   .weeklySummaryHeaderControls select {
     display: none;

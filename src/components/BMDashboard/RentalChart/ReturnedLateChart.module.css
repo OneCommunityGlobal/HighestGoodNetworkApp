@@ -106,6 +106,11 @@
   color: #333;
 }
 
+/* Dark mode labels */
+.bg-oxford-blue .returned-late-filter-label {
+  color: #ffffff;
+}
+
 .returned-late-project-select {
   padding: 8px;
   min-width: 180px;
@@ -130,6 +135,7 @@
   position: relative;
 }
 
+/* Loading state */
 .returned-late-loading {
   display: flex;
   justify-content: center;
@@ -139,15 +145,22 @@
   color: #666;
 }
 
-.returned-late-error {
-  color: #d32f2f;
-  padding: 16px;
-  background-color: #ffebee;
-  border: 1px solid #ffcdd2;
-  border-radius: 4px;
-  margin: 20px 0;
+.bg-oxford-blue .returned-late-loading {
+  color: #ffffff;
 }
 
+
+.returned-late-error {
+  color: #ffffff !important;
+  background-color: #b3261e;
+  padding: 14px 16px;
+  border-radius: 6px;
+  margin: 20px 0;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* No data state */
 .returned-late-no-data {
   display: flex;
   justify-content: center;
@@ -158,193 +171,54 @@
   font-style: italic;
 }
 
-.background-dark {
-  background-color: #2a3f5f;
+.bg-oxford-blue .returned-late-no-data {
+  color: #ffffff;
+}
+
+/* Fix select dropdown readability in dark mode */
+.bg-oxford-blue .returned-late-project-select,
+.bg-oxford-blue .returned-late-date-picker {
+  background-color: #1b2a41;
+  color: #e0e0e0;
   border: 1px solid #555;
 }
 
-.background-red {
-  background-color: #ff4d4f;
+.bg-oxford-blue .returned-late-project-select option {
+  color: #e0e0e0;
+  background-color: #1b2a41;
 }
 
-:global(.dark.rmsc ) {
-  --rmsc-border: none;
-  --rmsc-bg: none;
-
-  border:transparent;
+.bg-oxford-blue .returned-late-project-select:disabled {
+  color: #a0a0a0;
+  background-color: #0f1a2a;
 }
 
-:global(.dark.rmsc .dropdown-heading) {
-  background-color: #2a3f5f;
-  color: #fff;
+
+.bg-oxford-blue :global(.rmsc .dropdown-heading) {
+  background-color: #1b2a41;
+  color: #e0e0e0;
   border: 1px solid #555;
-  border-radius: 4px;
-  overflow: hidden;
 }
 
-:global(.dark.rmsc .select-item:hover) {
-  background-color: #253246;
+.bg-oxford-blue :global(.rmsc .dropdown-content) {
+  background-color: #1b2a41;
+  border: 1px solid #555;
 }
 
-:global(.dark.rmsc .select-item.selected) {
-  background-color: #253246;
+.bg-oxford-blue :global(.rmsc .dropdown-content .select-item) {
+  background-color: #1b2a41 !important;
+  color: #ffffff !important;
 }
 
-:global(.rmsc.dark .options) {
-  background-color: #2a3f5f;
-  color: #fff;
+.bg-oxford-blue :global(.rmsc .dropdown-content label) {
+  color: #ffffff !important;
 }
 
-/* Search box */
-:global(.rmsc.dark .search) {
-  background-color: #2a3f5f;
-  color: #fff;
+.bg-oxford-blue :global(.rmsc .dropdown-content .select-item:hover) {
+  background-color: #2c3e50 !important;
+  color: #ffffff !important;
 }
 
-:global(.rmsc.dark .search input:focus) {
-  background-color: #223653;
-}
-
-
-.returned-late-detail-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgb(0 0 0 / 25%);
-   z-index: 2147483646;
-}
-
-.returned-late-detail-panel {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 360px;
-  height: 100vh;
-  padding: 20px;
-  z-index: 2147483647;
-  box-shadow: -4px 0 10px rgb(0 0 0 / 40%);
-  background: #fff;
-  color: #111;
-}
-
-.dark-panel {
-  background: #0b2545;
-  color: #fff;
-}
-
-.returned-late-detail-close {
-  background: none;
-  border: none;
-  font-size: 20px;
-  float: right;
-  cursor: pointer;
-  color: inherit;
-}
-
-:global(html.dark-mode) .returned-late-chart h1,
-:global(body.dark-mode) .returned-late-chart h1 {
-  color: #fff;
-}
-
-:global(html.dark-mode) .returned-late-legend-hint,
-:global(body.dark-mode) .returned-late-legend-hint {
-  color: #cbd5e1;
-}
-
-:global(html.dark-mode) .returned-late-legend-item,
-:global(body.dark-mode) .returned-late-legend-item {
-  background: #0f172a;
-  color: #f8fafc;
-  border-color: #475569;
-}
-
-:global(html.dark-mode) .returned-late-legend-item:hover,
-:global(body.dark-mode) .returned-late-legend-item:hover {
-  border-color: #94a3b8;
-  background: #172033;
-}
-
-:global(html.dark-mode) .returned-late-legend-item-hidden,
-:global(body.dark-mode) .returned-late-legend-item-hidden {
-  background: #172033;
-  color: #cbd5e1;
-}
-
-:global(html.dark-mode) .returned-late-filter-label,
-:global(body.dark-mode) .returned-late-filter-label {
-  color: #fff;
-}
-
-:global(html.dark-mode) .returned-late-project-select,
-:global(body.dark-mode) .returned-late-project-select {
-  background-color: #1e293b;
-  color: #fff;
-  border: 1px solid #475569;
-}
-
-:global(html.dark-mode) .returned-late-project-select option,
-:global(body.dark-mode) .returned-late-project-select option {
-  background-color: #1e293b;
-  color: #fff;
-}
-
-:global(html.dark-mode) .returned-late-date-picker,
-:global(body.dark-mode) .returned-late-date-picker {
-  background-color: #1e293b;
-  color: #fff;
-  border: 1px solid #475569;
-}
-
-:global(html.dark-mode) .returned-late-tools-select :global(.dropdown-container),
-:global(body.dark-mode) .returned-late-tools-select :global(.dropdown-container) {
-  background-color: #1e293b;
-  color: #fff;
-  border: 1px solid #475569;
-}
-
-:global(html.dark-mode) .returned-late-tools-select :global(.dropdown-heading),
-:global(body.dark-mode) .returned-late-tools-select :global(.dropdown-heading) {
-  color: #fff;
-}
-
-:global(html.dark-mode) .returned-late-tools-select :global(.select-panel),
-:global(body.dark-mode) .returned-late-tools-select :global(.select-panel) {
-  background-color: #1e293b;
-  color: #fff;
-  border: 1px solid #475569;
-}
-
-:global(html.dark-mode) .returned-late-tools-select :global(.select-panel) :global(input),
-:global(body.dark-mode) .returned-late-tools-select :global(.select-panel) :global(input) {
-  background-color: #0f172a;
-  color: #fff;
-  border: 1px solid #475569;
-}
-
-:global(html.dark-mode) .returned-late-tools-select :global(.select-item),
-:global(body.dark-mode) .returned-late-tools-select :global(.select-item) {
-  color: #fff;
-}
-
-:global(html.dark-mode) .returned-late-tools-select :global(.select-item:hover),
-:global(body.dark-mode) .returned-late-tools-select :global(.select-item:hover) {
-  background-color: #243b64;
-}
-
-@media screen and (width <= 768px) {
-  .returned-late-chart h1 {
-    margin-bottom: 8px;
-  }
-
-  .returned-late-legend-hint {
-    margin-top: 0;
-  }
-
-  .returned-late-legend-block {
-    align-items: stretch;
-    width: 100%;
-  }
-
-  .returned-late-legend {
-    justify-content: flex-start;
-  }
+.bg-oxford-blue :global(.rmsc .dropdown-container) {
+  background-color: transparent;
 }

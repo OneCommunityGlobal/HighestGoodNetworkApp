@@ -30,6 +30,8 @@ import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHo
 import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
 import IssueCharts from '../Issues/openIssueCharts';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
+import RentalChart from '../RentalChart/RentalChart';
+import ReturnedLateChart from '../RentalChart/ReturnedLateChart';
 
 const projectStatusButtons = [
   {
@@ -446,6 +448,28 @@ function WeeklyProjectSummary() {
               }}
             >
               <PaidLaborCost />
+            </div>
+          </div>
+        ),
+      },
+      {
+        title: 'Rental Tracking',
+        key: 'Rental Tracking',
+        className: 'full',
+        content: (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr',
+              gap: '12px',
+            }}
+          >
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <RentalChart />
+            </div>
+
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <ReturnedLateChart />
             </div>
           </div>
         ),
