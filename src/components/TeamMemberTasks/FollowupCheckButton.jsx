@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { faCheck, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch, useSelector } from 'react-redux';
@@ -70,7 +71,7 @@ function FollowupCheckButton({ mouseoverText, user, task }) {
     const data = {
       followUpCheck: needFollowUp ? true : !isChecked,
       followUpPercentageDeadline: progressPercentage,
-      acceptedPercentage: !isChecked ? progressPercentage : 0, // save percentage when accepting
+      acceptedPercentage: isChecked ? 0 : progressPercentage,
     };
     dispatch(setUserFollowUp(user.personId, task._id, data));
   };
@@ -109,5 +110,21 @@ function FollowupCheckButton({ mouseoverText, user, task }) {
     </div>
   );
 }
+
+FollowupCheckButton.propTypes = {
+  mouseoverText: PropTypes.string,
+  user: PropTypes.shape({
+    personId: PropTypes.string.isRequired,
+  }).isRequired,
+  task: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    hoursLogged: PropTypes.number,
+    estimatedHours: PropTypes.number,
+  }).isRequired,
+};
+
+FollowupCheckButton.defaultProps = {
+  mouseoverText: '',
+};
 
 export default FollowupCheckButton;
