@@ -54,8 +54,14 @@
   font-size: 2.5rem;
   font-weight: bold;
   color: #2c3e50;
-  white-space: nowrap; 
+  white-space: nowrap;
   flex-shrink: 0;
+}
+
+/* In dark mode the header background is dark navy, so the navy h1 color above
+   has almost no contrast — force a light color. */
+.darkHeader h1 {
+  color: #fff;
 }
 
 .dashboardControls {
@@ -309,6 +315,11 @@
   font-weight: 600;
 }
 
+/* Dark sidebar background is dark navy; lighten the "Filters" heading for contrast. */
+.darkSidebar .filterSection h4 {
+  color: #ecf0f1;
+}
+
 .filterSectionDivider {
   display: flex;
   flex-direction: column;
@@ -354,9 +365,9 @@
 .radioRow {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-top: 10px;
-  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  align-items: flex-start;
 }
 
 .radioOption,
@@ -387,7 +398,6 @@
 }
 
 /* Tighter vertical spacing for dropdown filters (Branches/Themes/Categories) */
-/* stylelint-disable-next-line no-descending-specificity */
 .compact-dropdown-filter label {
   margin-bottom: 4px;
 }
@@ -445,7 +455,7 @@
 }
 
 .dateFilter {
-  margin-top: 10px;
+  margin-top: 8px;
   padding: 12px 15px;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -453,21 +463,21 @@
   height: auto;
   font-size: 1rem;
   transition: all 0.3s ease;
-  margin-bottom: 20px;
+  margin-bottom: 0;
 }
 
 .filterItem input[type='date'] {
   display: block;
   box-sizing: border-box;
   padding: 12px 15px;
-  margin-top: 10px;
+  margin-top: 8px;
   border: 1px solid #ddd;
   border-radius: 8px;
   width: 100%;
   height: auto;
   font-size: 1rem;
   transition: all 0.3s ease;
-  margin-bottom: 20px;
+  margin-bottom: 0;
 }
 
 .searchFilter {
@@ -607,6 +617,11 @@
   overflow: hidden;
   text-overflow: ellipsis;
   cursor: default;
+}
+
+/* On the dark event card the navy title above is unreadable — use a light color. */
+.darkEventCard .eventTitle {
+  color: #fff;
 }
 
 .eventDate,
