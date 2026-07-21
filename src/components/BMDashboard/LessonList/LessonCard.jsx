@@ -224,7 +224,10 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
 
   if (!filteredLessons || filteredLessons.length === 0) {
     return (
-      <div style={{ padding: '20px', textAlign: 'center' }}>
+      <div
+        className={darkMode ? styles.darkNoLessonsFound : styles.noLessonsFound}
+        style={{ padding: '20px', textAlign: 'center' }}
+      >
         <p>No lessons found. Please add lessons to the database or adjust your filters.</p>
       </div>
     );

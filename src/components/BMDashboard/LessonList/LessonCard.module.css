@@ -21,6 +21,19 @@
   justify-content: space-between;
 }
 
+.noLessonsFound {
+  color: #212529 !important;
+}
+
+.darkNoLessonsFound {
+  color: #e0e0e0 !important;
+}
+
+.darkNoLessonsFound p,
+.noLessonsFound p {
+  color: inherit !important;
+}
+
 /* Expanded Scrollable Section */
 .scrollableCardBody {
   max-height: 400px;
