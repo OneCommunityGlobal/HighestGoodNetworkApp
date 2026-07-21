@@ -130,6 +130,10 @@
   -webkit-overflow-scrolling: touch;
 }
 
+.table-data-container :global(.bg-yinmn-blue tbody tr:hover) {
+  background: #2f4157 !important;
+}
+
 .search-field-container {
   max-width: 100%;
 }
