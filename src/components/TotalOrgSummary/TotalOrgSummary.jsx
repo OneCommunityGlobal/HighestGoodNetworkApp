@@ -601,132 +601,6 @@ function TotalOrgSummary(props) {
       )}
     >
       <div ref={rootRef} data-pdf-root>
-        <Row className={styles.totalOrgReportHeaderRow} data-pdf-title-row>
-          <div className={styles.reportHeaderTitle} data-pdf-title-col>
-            <h3 className="my-0">Total Org Summary</h3>
-          </div>
-          <div className={styles.reportHeaderActions}>
-            <Dropdown
-              isOpen={dateRangeDropdownOpen}
-              toggle={() => setDateRangeDropdownOpen(!dateRangeDropdownOpen)}
-            >
-              <DropdownToggle caret>{selectedDateRange}</DropdownToggle>
-              <DropdownMenu className={styles.menuDropdownColor}>
-                <DropdownItem
-                  className={styles.colorOptionsText}
-                  onClick={() => handleDateRangeSelect('Current Week')}
-                >
-                  Current Week
-                </DropdownItem>
-                <DropdownItem
-                  className={styles.colorOptionsText}
-                  onClick={() => handleDateRangeSelect('Previous Week')}
-                >
-                  Previous Week
-                </DropdownItem>
-                <DropdownItem
-                  className={styles.colorOptionsText}
-                  onClick={() => handleDateRangeSelect('Select Date Range')}
-                >
-                  Select Date Range
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-            <Dropdown
-              isOpen={comparisonDropdownOpen}
-              toggle={() => setComparisonDropdownOpen(!comparisonDropdownOpen)}
-            >
-              <DropdownToggle caret>{selectedComparison}</DropdownToggle>
-              <DropdownMenu className={styles.menuDropdownColor}>
-                <DropdownItem
-                  className={styles.colorOptionsText}
-                  onClick={() => setSelectedComparison('No Comparison')}
-                >
-                  No Comparison
-                </DropdownItem>
-                <DropdownItem
-                  className={styles.colorOptionsText}
-                  onClick={() => setSelectedComparison('Week Over Week')}
-                >
-                  Week Over Week
-                </DropdownItem>
-                <DropdownItem
-                  className={styles.colorOptionsText}
-                  onClick={() => setSelectedComparison('Month Over Month')}
-                >
-                  Month Over Month
-                </DropdownItem>
-                <DropdownItem
-                  className={styles.colorOptionsText}
-                  onClick={() => setSelectedComparison('Year Over Year')}
-                >
-                  Year Over Year
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-            <Button
-              className={styles.sharePdfBtn}
-              data-pdf-hide
-              onClick={handleSaveAsPDF}
-              disabled={isGeneratingPDF}
-            >
-              {isGeneratingPDF ? 'Generating PDF...' : 'Save as PDF'}
-            </Button>
-          </div>
-        </Row>
-        <Modal isOpen={showDatePicker} toggle={() => setShowDatePicker(!showDatePicker)}>
-          <ModalHeader toggle={() => setShowDatePicker(!showDatePicker)}>
-            Select Date Range
-          </ModalHeader>
-          <ModalBody>
-            <div className="d-flex flex-column gap-4">
-              <div>
-                <label htmlFor="start-date" style={{ display: 'block', marginBottom: '1rem' }}>
-                  Start Date
-                </label>
-                <div style={{ padding: '0.5rem 0' }}>
-                  <DatePicker
-                    id="start-date"
-                    selected={startDate}
-                    onChange={date => setStartDate(date)}
-                    className="form-control"
-                    dateFormat="MM/dd/yyyy"
-                    placeholderText="Select start date"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="end-date" style={{ display: 'block', marginBottom: '1rem' }}>
-                  End Date
-                </label>
-                <div style={{ padding: '0.5rem 0' }}>
-                  <DatePicker
-                    id="end-date"
-                    selected={endDate}
-                    onChange={date => setEndDate(date)}
-                    className="form-control"
-                    dateFormat="MM/dd/yyyy"
-                    placeholderText="Select end date"
-                    minDate={startDate}
-                  />
-                </div>
-              </div>
-            </div>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="secondary" onClick={() => setShowDatePicker(false)}>
-              Cancel
-            </Button>
-            <Button
-              color="primary"
-              onClick={handleDatePickerSubmit}
-              disabled={!startDate || !endDate}
-            >
-              Apply
-            </Button>
-          </ModalFooter>
-        </Modal>
         <ReportHeader
           darkMode={darkMode}
           selectedDateRange={selectedDateRange}
@@ -1032,6 +906,7 @@ function TotalOrgSummary(props) {
                   usersInTeamStats={volunteerStats?.usersInTeamStats}
                   endDate={currentToDate}
                   comparisonType={selectedComparison}
+                  darkMode={darkMode}
                 />
               </div>
             </Col>

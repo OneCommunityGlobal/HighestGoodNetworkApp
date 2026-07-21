@@ -1,138 +1,99 @@
+import { useEffect, useMemo, useState } from 'react';
+import { Form, FormGroup, Label } from 'reactstrap';
+import Select from 'react-select';
 import PropTypes from 'prop-types';
-import { Form, FormGroup, Label, Input } from 'reactstrap';
+import { useSelector } from 'react-redux';
+import styles from './ItemListView.module.css';
+import { getReactSelectStyles } from './selectStyles.js';
 
-const getConsumablesSet = (items, selectedProject) => {
-  if (selectedProject === 'all') {
-    return [...new Set(items.filter(m => m.name && m.name !== 'N/A').map(m => m.name))];
-  }
-  return [
-    ...new Set(
-      items
-        .filter(mat => mat.project?.name === selectedProject && mat.name && mat.name !== 'N/A')
-        .map(m => m.name),
-    ),
-  ];
-};
-
-const getConditionSet = (items, selectedProject) => {
-  if (selectedProject === 'all') {
-    return [...new Set(items.filter(m => m.condition).map(m => m.condition))];
-  }
-  return [
-    ...new Set(
-      items
-        .filter(mat => mat.project?.name === selectedProject && mat.condition)
-        .map(m => m.condition),
-    ),
-  ];
-};
-
-const getDefaultSet = (items, selectedProject) => {
-  if (selectedProject === 'all') {
-    return [...new Set(items.map(m => m.itemType?.name))];
-  }
-  return [
-    ...new Set(
-      items.filter(mat => mat.project?.name === selectedProject).map(m => m.itemType?.name),
-    ),
-  ];
-};
+const ITEM_KEY = 'tool_selected_items';
 
 export default function SelectItem({
   items,
   selectedProject,
   selectedItem,
   setSelectedItem,
-  selectedToolStatus,
-  setSelectedToolStatus,
-  selectedCondition,
-  setSelectedCondition,
   label,
-  darkMode,
 }) {
-  let itemSet = [];
+  const darkMode = useSelector(state => state.theme?.darkMode || false);
+  const [localValues, setLocalValues] = useState([]);
 
-  if (items && items.length > 0) {
-    if (label === 'Consumables') {
-      itemSet = getConsumablesSet(items, selectedProject);
-    } else if (label === 'Tool Status') {
-      itemSet = ['Using', 'Available', 'Under Maintenance'];
-    } else if (label === 'Condition') {
-      itemSet = getConditionSet(items, selectedProject);
-    } else {
-      itemSet = getDefaultSet(items, selectedProject);
+  const itemOptions = useMemo(() => {
+    if (!items?.length) return [];
+
+    let list = items;
+    if (Array.isArray(selectedProject) && selectedProject.length > 0) {
+      list = items.filter(i => selectedProject.includes(i.project?.name));
     }
-  }
 
-  const darkStyle = darkMode
-    ? { backgroundColor: '#1e293b', color: '#e5e7eb', borderColor: '#334155' }
-    : undefined;
+    const names = [...new Set(list.map(i => i.itemType?.name).filter(Boolean))];
+    return names.map(name => ({ label: name, value: name }));
+  }, [items, selectedProject]);
 
-  const getSelectValue = () => {
-    if (label === 'Condition') return selectedCondition;
-    if (label === 'Tool Status') return selectedToolStatus;
-    return selectedItem;
-  };
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(ITEM_KEY));
+      if (Array.isArray(saved)) {
+        setLocalValues(saved);
+        setSelectedItem(saved.map(s => s.value));
+      }
+    } catch (error) {
+      console.error('Failed to parse cached item filter scope:', error);
+    }
+  }, [setSelectedItem]);
 
-  const handleSelectChange = e => {
-    const val = e.target.value;
-    if (label === 'Tool Status') setSelectedToolStatus(val);
-    else if (label === 'Condition') setSelectedCondition(val);
-    else setSelectedItem(val);
+  useEffect(() => {
+    if (Array.isArray(selectedItem) && selectedItem.length === 0) {
+      setLocalValues([]);
+    }
+  }, [selectedItem]);
+
+  useEffect(() => {
+    if (localValues.length > 0 && itemOptions.length > 0) {
+      const activeKeys = itemOptions.map(opt => opt.value);
+      const alignedValues = localValues.filter(val => activeKeys.includes(val.value));
+
+      if (alignedValues.length !== localValues.length) {
+        setLocalValues(alignedValues);
+        setSelectedItem(alignedValues.map(v => v.value));
+        localStorage.setItem(ITEM_KEY, JSON.stringify(alignedValues));
+      }
+    }
+  }, [itemOptions, localValues, setSelectedItem]);
+
+  const handleChange = selected => {
+    const values = selected || [];
+    setLocalValues(values);
+    setSelectedItem(values.map(v => v.value));
+    localStorage.setItem(ITEM_KEY, JSON.stringify(values));
   };
 
   return (
-    <Form>
-      <FormGroup className="select_input">
-        <Label
-          htmlFor="select-item"
-          style={{ marginLeft: '10px', color: darkMode ? 'white' : 'inherit' }}
-        >
-          {label ? `${label}:` : 'Material:'}
-        </Label>
-        <Input
-          id="select-item"
-          name="select-item"
-          type="select"
-          value={getSelectValue() || ''}
-          onChange={handleSelectChange}
-          disabled={!itemSet.length}
-          style={darkStyle}
-        >
-          {itemSet.length > 0 ? (
-            <>
-              <option value="all">All</option>
-              {itemSet.map(name => (
-                <option key={name} value={name}>
-                  {name}
-                </option>
-              ))}
-            </>
-          ) : (
-            <option>No data</option>
-          )}
-        </Input>
+    <Form className={styles.filterItem} onSubmit={e => e.preventDefault()}>
+      <FormGroup className={styles.selectInput}>
+        <Label htmlFor="select-item">{label ? `${label}:` : 'Material:'}</Label>
+        <Select
+          inputId="select-item"
+          isMulti
+          isSearchable
+          isClearable
+          options={itemOptions}
+          value={localValues}
+          onChange={handleChange}
+          isDisabled={!items?.length}
+          placeholder="Search or select Tools..."
+          classNamePrefix="react-select"
+          styles={getReactSelectStyles(darkMode)}
+        />
       </FormGroup>
     </Form>
   );
 }
 
 SelectItem.propTypes = {
-  items: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string,
-      condition: PropTypes.string,
-      project: PropTypes.shape({ name: PropTypes.string }),
-      itemType: PropTypes.shape({ name: PropTypes.string }),
-    }),
-  ).isRequired,
-  selectedProject: PropTypes.string,
-  selectedItem: PropTypes.string,
-  setSelectedItem: PropTypes.func,
-  selectedToolStatus: PropTypes.string,
-  setSelectedToolStatus: PropTypes.func,
-  selectedCondition: PropTypes.string,
-  setSelectedCondition: PropTypes.func,
+  items: PropTypes.array.isRequired,
+  selectedProject: PropTypes.array.isRequired,
+  selectedItem: PropTypes.array.isRequired,
+  setSelectedItem: PropTypes.func.isRequired,
   label: PropTypes.string,
-  darkMode: PropTypes.bool,
 };
