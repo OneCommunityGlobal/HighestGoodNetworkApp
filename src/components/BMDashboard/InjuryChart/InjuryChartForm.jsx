@@ -17,11 +17,68 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { toast } from 'react-toastify';
-import { getInjuryData } from '../../../actions/bmdashboard/injuryActions';
-import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
+import { fetchInjuryProjects, getInjuryData } from '../../../actions/bmdashboard/injuryActions';
 
 import 'react-datepicker/dist/react-datepicker.css';
 import styles from './InjuryChartForm.module.css';
+
+const severityColors = {
+  Serious: '#dc3545',
+  Medium: '#fd7e14',
+  Low: '#198754',
+};
+
+const severities = ['Serious', 'Medium', 'Low'];
+
+function InjuryTrendTooltip({
+  active,
+  payload,
+  label,
+  projectName,
+  dark,
+  showAllSeverities = false,
+}) {
+  if (!active || !payload?.length) return null;
+
+  const hoveredSeverity = payload[0]?.dataKey || payload[0]?.name;
+  // Bar charts use item hover, so rebuild the month's full severity list from the hovered row.
+  const tooltipItems = showAllSeverities
+    ? severities.map(severity => ({
+        dataKey: severity,
+        name: severity,
+        value: payload[0]?.payload?.[severity],
+      }))
+    : payload;
+
+  return (
+    <div
+      className={styles.tooltip}
+      style={{
+        backgroundColor: dark ? '#1e293b' : '#fff',
+        borderColor: dark ? '#475569' : '#ddd',
+        color: dark ? '#e2e8f0' : '#333',
+      }}
+    >
+      <div className={styles.tooltipTitle}>{label}</div>
+      {projectName !== 'all' && <div className={styles.tooltipProject}>{projectName}</div>}
+      {tooltipItems.map(item => (
+        <div
+          key={item.dataKey}
+          className={`${styles.tooltipRow} ${
+            showAllSeverities && item.dataKey === hoveredSeverity ? styles.tooltipRowActive : ''
+          }`}
+        >
+          <span
+            className={styles.tooltipMarker}
+            style={{ backgroundColor: severityColors[item.name] || item.color }}
+          />
+          <span>{item.name}</span>
+          <span>{Number(item.value) || 0}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 function InjuryChartForm({ dark }) {
   const wrapperClass = dark ? styles.wrapperDark : 'bg-white';
@@ -40,22 +97,14 @@ function InjuryChartForm({ dark }) {
     position: 'insideLeft',
     fill: tickStyle.fill,
   };
-  const tooltipStyle = {
-    backgroundColor: dark ? '#1e293b' : '#fff',
-    border: `1px solid ${dark ? '#475569' : '#ddd'}`,
-    borderRadius: 8,
-    color: dark ? '#e2e8f0' : '#333',
-  };
-  const tooltipLabelStyle = { color: dark ? '#f1f5f9' : '#333', fontWeight: 600 };
-  const tooltipItemStyle = { color: dark ? '#e2e8f0' : '#555' };
   const noDataClass = dark ? 'bg-dark text-light' : 'bg-white';
   const noDataText = dark ? 'text-light' : 'text-muted';
 
   const [chartType, setChartType] = useState('line');
   const dispatch = useDispatch();
-  const bmProjects = useSelector(state => state.bmProjects || []);
+  const injuryProjects = useSelector(state => state.bmInjury?.projects || []);
   // Form state
-  const [projectId, setProjectId] = useState('all');
+  const [projectName, setProjectName] = useState('all');
   const [startDate, setStartDate] = useState(
     moment()
       .subtract(6, 'months')
@@ -68,9 +117,9 @@ function InjuryChartForm({ dark }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Load projects on mount
+  // Send projectName so duplicate legacy project IDs are aggregated under one displayed project.
   useEffect(() => {
-    dispatch(fetchBMProjects()).catch(err => {
+    dispatch(fetchInjuryProjects({})).catch(err => {
       toast.error(`Failed to load projects: ${err.message}`);
     });
   }, [dispatch]);
@@ -91,6 +140,8 @@ function InjuryChartForm({ dark }) {
     return transformed;
   };
 
+  const selectedProject = injuryProjects.find(project => project.name === projectName);
+
   // Fetch injury data
   const fetchData = async () => {
     setLoading(true);
@@ -100,7 +151,13 @@ function InjuryChartForm({ dark }) {
       const formattedStartDate = moment(startDate).format('YYYY-MM-DD');
       const formattedEndDate = moment(endDate).format('YYYY-MM-DD');
 
-      const response = await getInjuryData(projectId, formattedStartDate, formattedEndDate);
+      // Send grouped IDs with projectName so specific selections cannot fall back to all-project data.
+      const response = await getInjuryData(
+        projectName,
+        formattedStartDate,
+        formattedEndDate,
+        selectedProject?.projectIds || [],
+      );
       const transformedData = transformData(response);
       setChartData(transformedData);
     } catch (err) {
@@ -114,11 +171,11 @@ function InjuryChartForm({ dark }) {
   // Fetch data when filters change
   useEffect(() => {
     fetchData();
-  }, [projectId, startDate, endDate]);
+  }, [projectName, startDate, endDate, selectedProject]);
 
   // Handle project change
   const handleProjectChange = e => {
-    setProjectId(e.target.value);
+    setProjectName(e.target.value);
   };
 
   // Handle date changes
@@ -151,10 +208,10 @@ function InjuryChartForm({ dark }) {
               <Label for="project" className={labelClass}>
                 Project
               </Label>
-              <Input id="project" type="select" value={projectId} onChange={handleProjectChange}>
+              <Input id="project" type="select" value={projectName} onChange={handleProjectChange}>
                 <option value="all">All Projects</option>
-                {bmProjects.map(project => (
-                  <option key={project._id} value={project._id}>
+                {injuryProjects.map(project => (
+                  <option key={project._id} value={project.name}>
                     {project.name}
                   </option>
                 ))}
@@ -162,7 +219,7 @@ function InjuryChartForm({ dark }) {
             </FormGroup>
           </div>
 
-          <div className="ol-md-4">
+          <div className="col-md-4">
             <FormGroup>
               <Label className={labelClass}>Start Date</Label>
               <DatePicker
@@ -240,10 +297,13 @@ function InjuryChartForm({ dark }) {
                   label={xLabelStyle}
                 />
                 <YAxis allowDecimals={false} tick={tickStyle} label={yLabelStyle} />
+                {/* Keep item hover/cursor off, but show all severities for the hovered month. */}
                 <Tooltip
-                  contentStyle={tooltipStyle}
-                  labelStyle={tooltipLabelStyle}
-                  itemStyle={tooltipItemStyle}
+                  content={
+                    <InjuryTrendTooltip projectName={projectName} dark={dark} showAllSeverities />
+                  }
+                  cursor={false}
+                  shared={false}
                 />
                 <Legend verticalAlign="top" align="center" />
                 <Bar dataKey="Serious" fill="#dc3545" name="Serious" barSize={20} />
@@ -260,11 +320,8 @@ function InjuryChartForm({ dark }) {
                   label={xLabelStyle}
                 />
                 <YAxis allowDecimals={false} tick={tickStyle} label={yLabelStyle} />
-                <Tooltip
-                  contentStyle={tooltipStyle}
-                  labelStyle={tooltipLabelStyle}
-                  itemStyle={tooltipItemStyle}
-                />
+                {/* Line tooltip stays shared so all severity values for the hovered month remain visible. */}
+                <Tooltip content={<InjuryTrendTooltip projectName={projectName} dark={dark} />} />
                 <Legend verticalAlign="top" align="center" />
                 <Line
                   type="monotone"

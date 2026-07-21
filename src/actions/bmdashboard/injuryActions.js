@@ -194,10 +194,11 @@ export const fetchInjuries = (projectId, startDate, endDate) => async dispatch =
 };
 
 // Function to get injury trend data (non-Redux version for direct component use)
-export const getInjuryData = async (projectId, startDate, endDate) => {
+export const getInjuryData = async (projectName, startDate, endDate, projectIds = []) => {
   const params = {};
-  if (projectId && projectId !== 'all') {
-    params.projectId = projectId;
+  if (projectName && projectName !== 'all') {
+    // Send the displayed injury project name so duplicate legacy project IDs aggregate correctly.
+    params.projectName = projectName;
   }
   if (startDate) params.startDate = startDate;
   if (endDate) params.endDate = endDate;

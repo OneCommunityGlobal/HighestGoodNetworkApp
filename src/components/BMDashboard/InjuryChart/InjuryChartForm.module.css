@@ -38,6 +38,55 @@
   margin-right: 0.3rem;
 }
 
+.tooltip {
+  min-width: 150px;
+  padding: 10px 12px;
+  border: 1px solid;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 16%);
+}
+
+.tooltipTitle {
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.tooltipProject {
+  margin-bottom: 8px;
+  font-size: 0.875rem;
+  opacity: 0.85;
+}
+
+.tooltipRow {
+  display: grid;
+  grid-template-columns: 10px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.tooltipRowActive {
+  font-weight: 700;
+}
+
+.tooltipMarker {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+/* DatePicker adds wrapper spans around the input, so make them stack like Bootstrap controls. */
+.filterForm :global(.react-datepicker-wrapper),
+.filterForm :global(.react-datepicker__input-container) {
+  display: block;
+  width: 100%;
+}
+
+/* Keep the wrapped DatePicker input the same full-width size as the Project select. */
+.filterForm :global(.react-datepicker__input-container input) {
+  width: 100%;
+}
+
 .wrapperDark {
   background-color: #1b2a41;
   color: #f5f7fa;
