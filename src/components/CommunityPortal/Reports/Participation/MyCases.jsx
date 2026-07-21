@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
 import styles from './MyCases.module.css';
 import mockEvents from './mockData';
 import CreateEventModal from './CreateEventModal';
 import { filterEventsByDate } from './FilterByDate';
 
-function MyCases() {
+function MyCases({ darkMode }) {
   const [view, setView] = useState('card');
   const [filter, setFilter] = useState('All Time');
   const [expanded, setExpanded] = useState(false);
@@ -14,7 +13,6 @@ function MyCases() {
   const isExporting =
     typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true'; // Sonar: prefer .dataset
 
-  const darkMode = useSelector(state => state.theme.darkMode);
   const now = new Date();
   const filteredEvents = filterEventsByDate(mockEvents, filter).filter(
     event => new Date(event.eventDate).getTime() >= now.getTime(),
@@ -28,38 +26,20 @@ function MyCases() {
 
   const placeholderAvatar = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 
-  const isEventToday = dateString => {
-    const eventDate = new Date(dateString);
-    const now = new Date();
-    return (
-      eventDate.getDate() === now.getDate() &&
-      eventDate.getMonth() === now.getMonth() &&
-      eventDate.getFullYear() === now.getFullYear()
-    );
-  };
-
   const renderCardView = () => (
     <div
       className={`case-cards-global ${styles.caseCards} ${
         expanded || isExporting ? styles.expanded : ''
       }`}
     >
-      {visibleEvents?.map(event => (
-        <div
-          className={`case-card-global ${styles.caseCard} ${darkMode ? styles.caseCardDark : ''}`}
-          key={event.id}
-        >
+      {visibleEvents.map(event => (
+        <div className={`case-card-global ${styles.caseCard}`} key={event.id}>
           <span className={styles.eventBadge} data-type={event.eventType}>
             {event.eventType}
           </span>
-          <span className={`${styles.eventTime} ${darkMode ? styles.eventTimeDark : ''}`}>
-            {event.eventTime}
-          </span>
-          <span className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
-            {isEventToday(event.eventDate) ? "Today's " : ''}
-            {event.eventName}
-          </span>
-          <div className={`${styles.attendeesInfo} ${darkMode ? styles.attendeesInfoDark : ''}`}>
+          <span className={styles.eventTime}>{event.eventTime}</span>
+          <div className={styles.eventName}>{event.eventName}</div>
+          <div className={styles.attendeesInfo}>
             <div className={styles.avatars}>
               <img
                 alt="profile img"
@@ -70,9 +50,7 @@ function MyCases() {
                 loading="lazy"
               />
             </div>
-            <span
-              className={`${styles.attendeesCount} ${darkMode ? styles.attendeesCountDark : ''}`}
-            >{`+${event.attendees}`}</span>
+            <span className={styles.attendeesCount}>{`+${event.attendees}`}</span>
           </div>
         </div>
       ))}
@@ -85,13 +63,8 @@ function MyCases() {
         expanded || isExporting ? styles.expanded : ''
       }`}
     >
-      {visibleEvents?.map(event => (
-        <li
-          className={`case-list-item-global ${styles.caseListItem} ${
-            darkMode ? styles.caseListItemDark : ''
-          }`}
-          key={event.id}
-        >
+      {visibleEvents.map(event => (
+        <li className={`case-list-item-global ${styles.caseListItem}`} key={event.id}>
           <span className={styles.eventType}>{event.eventType}</span>
           <span className={styles.eventTime}>{event.eventTime}</span>
           <span className={styles.eventName}>{event.eventName}</span>
@@ -102,21 +75,17 @@ function MyCases() {
   );
 
   const renderCalendarView = () => (
-    <div className={`${styles.calendarView} ${darkMode ? styles.calendarViewDark : ''}`}>
+    <div className={styles.calendarView}>
       <p>Calendar View is under construction...</p>
     </div>
   );
 
   return (
-    <div
-      className={`my-cases-global ${styles.myCasesPage} ${darkMode ? styles.myCasesPageDark : ''}`}
-    >
+    <div className={`my-cases-global ${styles.myCasesPage} ${darkMode ? styles.darkMode : ''}`}>
       <header className={styles.header}>
-        <h2 className={`${styles.sectionTitle} ${darkMode ? styles.sectionTitleDark : ''}`}>
-          Upcoming Events
-        </h2>
+        <h2 className={styles.sectionTitle}>Upcoming Events</h2>
         <div className={styles.headerActions}>
-          <div className={`${styles.viewSwitcher} ${darkMode ? styles.viewSwitcherDarkMode : ''}`}>
+          <div className={`view-switcher-global ${styles.viewSwitcher}`}>
             <button
               type="button"
               className={view === 'calendar' ? styles.active : ''}
@@ -142,9 +111,7 @@ function MyCases() {
 
           <div className={`filter-wrapper-global ${styles.filterWrapper}`}>
             <select
-              className={`${styles.filterDropdown} ${
-                darkMode ? styles.filterDropdownDarkMode : ''
-              }`}
+              className={styles.filterDropdown}
               value={filter}
               onChange={e => setFilter(e.target.value)}
             >
@@ -154,15 +121,14 @@ function MyCases() {
               <option value="This Month">This Month</option>
             </select>
           </div>
-
           <button
             type="button"
-            className={`${styles.createNew} ${darkMode ? styles.createNewDarkMode : ''}`}
+            className={`create-new-global ${styles.createNew}`}
             onClick={() => setIsCreateModalOpen(true)}
           >
             + Create New
           </button>
-          {filteredEvents.length > 10 && !isExporting && (
+          {filteredEvents.length > 10 && (
             <button
               type="button"
               className={`more-btn-global ${styles.moreBtn}`}
@@ -173,7 +139,7 @@ function MyCases() {
           )}
         </div>
       </header>
-      <main className={`${styles.content}`}>
+      <main className={styles.content}>
         {view === 'card' && renderCardView()}
         {view === 'list' && renderListView()}
         {view === 'calendar' && renderCalendarView()}

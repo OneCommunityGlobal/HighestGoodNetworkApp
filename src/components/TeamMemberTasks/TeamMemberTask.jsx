@@ -412,7 +412,7 @@ const TeamMemberTask = React.memo(
                           <td
                             colSpan={2}
                             className={styles['team-member-tasks-user-name']}
-                            style={{ textAlign: 'center' }}
+                            style={{ textAlign: 'left', alignItems: 'flex-start' }}
                           >
                             <Link
                               className={styles['team-member-tasks-user-name-link']}
@@ -649,17 +649,13 @@ const TeamMemberTask = React.memo(
                                         </div>
 
                                         {/* Review Button */}
-                                        <div
-                                          className={styles['team-member-task-review-button']}
-                                          style={
-                                            onTimeOff ? { opacity: 0.4, pointerEvents: 'none' } : {}
-                                          }
-                                        >
+                                        <div className={styles['team-member-task-review-button']}>
                                           <ReviewButton
                                             user={user}
                                             userId={userId}
                                             task={task}
                                             updateTask={updateTaskStatus}
+                                            onTimeOff={onTimeOff}
                                           />
                                         </div>
                                       </div>
