@@ -63,6 +63,8 @@ function JobFormBuilder() {
   };
 
   const [jobTitle, setJobTitle] = useState('Please Choose an option');
+  const [jobTitleInput, setJobTitleInput] = useState('');
+  const [forms, setForms] = useState([]);
   const jobPositions = JOB_FORM_POSITION_OPTIONS;
 
   const [newOption, setNewOption] = useState('');
@@ -90,31 +92,33 @@ function JobFormBuilder() {
     setNewOption('');
   };
 
-  // Auto-load existing form on component mount
   useEffect(() => {
-    const loadFirstAvailableForm = async () => {
+    const loadJobForms = async () => {
       try {
         const response = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
-        const forms = response.data?.forms ?? (Array.isArray(response.data) ? response.data : []);
 
-        if (forms.length > 0) {
-          const firstForm = forms[0];
+        const fetchedForms =
+          response.data?.forms ?? (Array.isArray(response.data) ? response.data : []);
+
+        setForms(fetchedForms);
+
+        if (fetchedForms.length > 0) {
+          const firstForm = fetchedForms[0];
           const formId = firstForm._id || firstForm.id;
+          const normalizedQuestions = normalizeLoadedQuestions(firstForm.questions || []);
 
           setCurrentFormId(formId);
-          setFormFields(normalizeLoadedQuestions(firstForm.questions || []));
+          setFormFields(normalizedQuestions);
           setJobTitle(firstForm.title || 'Please Choose an option');
-          markAsSaved(normalizeLoadedQuestions(firstForm.questions || []));
+          markAsSaved(normalizedQuestions);
           setNewField(initialNewField);
-
-          console.log('Auto-loaded form:', formId);
         }
       } catch (error) {
-        console.error('Error auto-loading form:', error);
+        console.error('Error loading job forms:', error);
       }
     };
 
-    loadFirstAvailableForm();
+    loadJobForms();
   }, []);
 
   // Detect unsaved changes
@@ -374,6 +378,35 @@ function JobFormBuilder() {
     }
   };
 
+  const handleGo = () => {
+    const enteredTitle = jobTitleInput.trim();
+
+    if (!enteredTitle) {
+      alert('Please enter a job title.');
+      return;
+    }
+
+    const selectedForm = forms.find(
+      form => form.title.trim().toLowerCase() === enteredTitle.toLowerCase(),
+    );
+
+    if (!selectedForm) {
+      alert('No form found for this job title.');
+      return;
+    }
+
+    const formId = selectedForm._id || selectedForm.id;
+    const normalizedQuestions = normalizeLoadedQuestions(selectedForm.questions || []);
+
+    setCurrentFormId(formId);
+    setJobTitle(selectedForm.title);
+    setFormFields(normalizedQuestions);
+    markAsSaved(normalizedQuestions);
+
+    // Clear the input after successful loading
+    setJobTitleInput('');
+  };
+
   return (
     <div className={`${styles.pageWrapper} ${darkMode ? styles.darkMode : ''}`}>
       <div className={styles.formBuilderContainer}>
@@ -385,8 +418,15 @@ function JobFormBuilder() {
         />
         <div className={styles.jobformNavbar}>
           <div>
-            <input placeholder="Enter Job Title" className={styles.jobformInput} />
-            <button type="button" className={styles.goButton}>
+            <input
+              type="text"
+              placeholder="Enter Job Title"
+              value={jobTitleInput}
+              onChange={e => setJobTitleInput(e.target.value)}
+              className={styles.jobformInput}
+            />
+
+            <button type="button" className={styles.goButton} onClick={handleGo}>
               Go
             </button>
           </div>
