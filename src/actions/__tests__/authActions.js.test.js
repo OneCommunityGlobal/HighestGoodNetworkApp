@@ -1,6 +1,6 @@
 import configureMockStore from 'redux-mock-store'; // Import mock store configuration
 import thunk from 'redux-thunk'; // Import thunk middleware
-import { jwtDecode } from 'jwt-decode';
+import jwtDecode from 'jwt-decode';
 import axios from 'axios'; // Import axios
 
 
@@ -20,7 +20,7 @@ const middlewares = [thunk]; // Define middlewares
 const mockStore = configureMockStore(middlewares); // Create mock store with middlewares
 
 vi.mock('jwt-decode', () => ({
-  jwtDecode: vi.fn(),
+  default: vi.fn(),
 }));
 
 vi.mock('../../services/httpService'); // Mock httpService

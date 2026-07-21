@@ -6,7 +6,7 @@ import { renderWithStoreRouter } from './renderWithStoreRouter';
 vi.mock('axios');
 
 vi.mock('jwt-decode', () => ({
-  jwtDecode: vi.fn(() => ({ decodedPayload: 'mocked_decoded_payload' })),
+  default: vi.fn(() => ({ decodedPayload: 'mocked_decoded_payload' })),
 }));
 
 const history = {
