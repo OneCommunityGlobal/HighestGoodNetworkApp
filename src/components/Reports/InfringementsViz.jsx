@@ -178,7 +178,11 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
 
       <Modal size="lg" show={modalVisible} onHide={handleModalClose}>
         <Modal.Header closeButton style={darkMode ? { backgroundColor: '#1b2a41', color: '#f9fafb', borderColor: '#374151' } : {}}>
-          <Modal.Title>{focusedInf.date ? focusedInf.date.toString() : 'Infringement'}</Modal.Title>
+          <Modal.Title
+            style={darkMode ? { color: '#f9fafb', WebkitTextFillColor: '#f9fafb' } : {}}
+          >
+            {focusedInf.date ? focusedInf.date.toString() : 'Infringement'}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body style={darkMode ? { backgroundColor: '#1b2a41', color: '#f9fafb' } : {}}>
           <div id="inf">

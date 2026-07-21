@@ -3,8 +3,23 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
+    max-width: 100%;
+    min-width: 0;
 
     /* overflow: hidden; */
+  }
+
+  .pie-chart-donut {
+    width: var(--pie-chart-size);
+    height: var(--pie-chart-size);
+    max-width: 100%;
+    flex: 0 0 var(--pie-chart-size);
+  }
+
+  .pie-chart-toggle {
+    display: flex;
+    justify-content: center;
+    margin-top: 6px;
   }
 
   .donut-box {
@@ -141,9 +156,11 @@
   }
 
   .pie-chart-legend-container {
-    margin-top: 20px;
+    margin-top: 8px;
+    margin-left: 40px;
     height: 100%;
     width: 60%;
+    min-width: 0;
 
   }
 
@@ -265,10 +282,34 @@
 .pie-chart-legend-container td:nth-child(2) {
   text-align: center;
   width: 60%; /* Name column */
+  overflow-wrap: anywhere;
 }
 
 .pie-chart-legend-container th:nth-child(3),
 .pie-chart-legend-container td:nth-child(3) {
   width: 80px; /* Hours column */
   text-align: right;
+  white-space: nowrap;
+}
+
+@media (width <= 1200px) {
+  .pie-chart-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pie-chart-donut {
+    align-self: center;
+  }
+
+  .pie-chart-legend-container {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+@media (width <= 670px) {
+  .pie-chart-legend-container {
+    overflow-x: auto;
+  }
 }

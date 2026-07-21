@@ -43,7 +43,7 @@ function toChartData(projectsData) {
 }
 
 /** Single-line label + center toggle (matches bottom donut behavior) */
-function CenterLabel({ viewBox, total, darkMode, showPct, onToggle }) {
+function CenterLabel({ viewBox, total, darkMode, showPct }) {
   if (!viewBox || total <= 0) return null;
   const { cx, cy } = viewBox;
   const text = showPct ? '100% All Projects' : `${total.toFixed(2)} Hrs`;
@@ -53,35 +53,6 @@ function CenterLabel({ viewBox, total, darkMode, showPct, onToggle }) {
       <text x={cx} y={cy + 4} textAnchor="middle" fill={darkMode ? '#fff' : '#111'} fontSize="18">
         {text}
       </text>
-
-      {/* same switch you use in the D3 chart */}
-      <foreignObject x={cx - 18} y={cy + 12} width="36" height="28">
-        <div
-          xmlns="http://www.w3.org/1999/xhtml"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '100%',
-            height: '100%',
-          }}
-        >
-          <label className={styles['switch']}>
-            {/* Accessible text for the label */}
-            {/* <span className={styles['sr-only']}>Show percentage</span> */}
-
-            {/* The control associated with the label */}
-            <input
-              type="checkbox"
-              checked={showPct}
-              onChange={e => onToggle(e.target.checked)}
-              aria-label="Show percentage"
-            />
-
-            <span className={styles['slider']} aria-hidden="true" />
-          </label>
-        </div>
-      </foreignObject>
     </g>
   );
 }
@@ -103,7 +74,7 @@ export default function UserProjectD3PieChart({ projectsData, darkMode }) {
       }`}
     >
       {/* Square box so the donut isn't clipped; same size as D3 chart */}
-      <div style={{ width: CHART_SIZE, height: CHART_SIZE }}>
+      <div className={styles['pie-chart-donut']} style={{ '--pie-chart-size': `${CHART_SIZE}px` }}>
         <ResponsiveContainer width="100%" height="100%">
           <RechartsPieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
             <Pie
@@ -122,13 +93,7 @@ export default function UserProjectD3PieChart({ projectsData, darkMode }) {
               <Label
                 position="center"
                 content={props => (
-                  <CenterLabel
-                    {...props}
-                    total={total}
-                    darkMode={darkMode}
-                    showPct={showPct}
-                    onToggle={setShowPct}
-                  />
+                  <CenterLabel {...props} total={total} darkMode={darkMode} showPct={showPct} />
                 )}
               />
               {data.map((_, i) => (
@@ -151,12 +116,20 @@ export default function UserProjectD3PieChart({ projectsData, darkMode }) {
             />
           </RechartsPieChart>
         </ResponsiveContainer>
+        <div className={styles['pie-chart-toggle']}>
+          <label className={styles['switch']}>
+            <input
+              type="checkbox"
+              checked={showPct}
+              onChange={e => setShowPct(e.target.checked)}
+              aria-label="Show percentage"
+            />
+            <span className={styles['slider']} aria-hidden="true" />
+          </label>
+        </div>
       </div>
 
-      <div
-        className={styles['pie-chart-legend-container']}
-        style={{ marginTop: 8, marginLeft: 40 }}
-      >
+      <div className={styles['pie-chart-legend-container']}>
         <table
           className={
             darkMode ? styles['pie-chart-legend-table-dark'] : styles['pie-chart-legend-table']

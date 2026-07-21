@@ -29,6 +29,8 @@
 
 .people-report-pie-wrapper {
   height: 100% !important;
+  max-width: 100%;
+  min-width: 0;
 }
 
 @media (width >= 2000px) {
@@ -63,6 +65,7 @@
   align-items: center;
   gap: 2rem;
   width: 100%;
+  min-width: 0;
 }
 
 .pie-chart-wrapper {
