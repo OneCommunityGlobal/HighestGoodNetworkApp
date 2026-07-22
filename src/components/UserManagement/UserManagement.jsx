@@ -228,9 +228,22 @@ class UserManagement extends React.PureComponent {
 
       return usersSearchData
         .sort((a, b) => {
-          if (a.startDate >= b.startDate) return -1;
-          if (a.startDate < b.startDate) return 1;
-          return 0;
+          // Sort by signup date (createdDate), most recent signups first.
+          // Previously this sorted by startDate, which is intended to track
+          // when a user actually begins logging time (and can be updated
+          // later), not when they signed up - using it here produced an
+          // incorrect and unstable ordering on the User Management page.
+          // See hotfix: User Management stale date replay bug.
+          const aTime = new Date(a.createdDate).getTime();
+          const bTime = new Date(b.createdDate).getTime();
+          const aValid = !Number.isNaN(aTime);
+          const bValid = !Number.isNaN(bTime);
+
+          if (!aValid && !bValid) return 0;
+          if (!aValid) return 1;
+          if (!bValid) return -1;
+
+          return bTime - aTime;
         })
         .slice(
           (this.state.selectedPage - 1) * this.state.pageSize,
