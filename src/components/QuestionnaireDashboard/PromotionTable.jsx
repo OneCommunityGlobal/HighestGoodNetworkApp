@@ -79,9 +79,9 @@ function PromotionTable() {
   const canModifyPromotion = AUTHORIZED_ROLES.includes(userRole);
 
   const fetchEligibilityData = useCallback(async () => {
-    const data = await getPromotionEligibility();
+    const data = await getPromotionEligibility(requestor?.userid);
     setEligibilityData(data);
-  }, []);
+  }, [requestor?.userid]);
 
   useEffect(() => {
     setLoading(true);
