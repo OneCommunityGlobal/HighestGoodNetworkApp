@@ -65,7 +65,7 @@ function KILogin(props) {
     const res = await dispatch(loginBMUser({ email: enteredEmail, password: enterPassword }));
     // server side error validation
     if (res?.statusText !== 'OK') {
-      if (res?.status === 422 && res?.data) {
+      if (res?.status === 422) {
         return setValidationError({
           label: res.data.label,
           message: res.data.message,
