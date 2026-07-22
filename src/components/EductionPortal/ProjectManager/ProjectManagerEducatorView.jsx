@@ -117,18 +117,23 @@ function EducatorRow({ educator, isExpanded, onToggle, studentQuery }) {
   const [students, setStudents] = React.useState([]);
   const [loaded, setLoaded] = React.useState(false);
 
-  async function ensureLoaded() {
-    if (!loaded) {
-      setLoading(true);
-      const data = await fetchStudentsByEducator(educator.id);
+  React.useEffect(() => {
+    if (!isExpanded || loaded) return;
+    let cancelled = false;
+    setLoading(true);
+    fetchStudentsByEducator(educator.id).then(data => {
+      if (cancelled) return;
       setStudents(data);
       setLoading(false);
       setLoaded(true);
-    }
-  }
+    });
+    // eslint-disable-next-line consistent-return
+    return () => {
+      cancelled = true;
+    };
+  }, [isExpanded, loaded, educator.id]);
 
-  async function handleToggle() {
-    if (!isExpanded) await ensureLoaded();
+  function handleToggle() {
     onToggle(educator.id);
   }
 
