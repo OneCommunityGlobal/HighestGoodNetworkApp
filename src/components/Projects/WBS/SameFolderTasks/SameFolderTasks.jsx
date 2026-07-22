@@ -3,12 +3,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import { ENDPOINTS } from '~/utils/URL';
-import { Table } from 'reactstrap';
 import { useHistory } from 'react-router-dom';
 
-import EditTaskModal from '../WBSDetail/EditTask/EditTaskModal';
 import { getPopupById } from '../../../../actions/popupEditorAction';
-import { TASK_DELETE_POPUP_ID } from '../../../../constants/popupId';
 
 function SameFolderTasks(props) {
   const { taskId } = props.match.params;
@@ -18,9 +15,6 @@ function SameFolderTasks(props) {
 
   const [task, setTask] = useState({});
   const [wbsId, setWBSId] = useState('');
-
-  const [allTasks, setAllTasks] = useState([]);
-  const [loading, setLoading] = useState(false);
 
   const [projectId, setProjectId] = useState('');
   const [wbsName, setWbsName] = useState('');
