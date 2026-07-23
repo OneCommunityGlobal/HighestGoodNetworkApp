@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
+import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import UserStateDisplay from '../UserState/UserStateDisplay';
@@ -34,10 +34,10 @@ import {
 } from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { assignStarDotColors, showStar } from '~/utils/leaderboardPermissions';
 import { postLeaderboardData } from '~/actions/leaderBoardData';
 import { toggleUserBio } from '~/actions/weeklySummariesReport';
 import { calculateDurationBetweenDates, showTrophyIcon } from '~/utils/anniversaryPermissions';
+import { assignStarDotColors, showStar } from '~/utils/leaderboardPermissions';
 
 import RoleInfoModal from '~/components/UserProfile/EditableModal/RoleInfoModal';
 import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
@@ -81,7 +81,11 @@ const teamColorMap = {
 };
 
 function ListGroupItem({ children, darkMode }) {
-  return <LGI className={`px-0 border-0 py-1 ${darkMode ? 'bg-yinmn-blue' : ''}`}>{children}</LGI>;
+  return (
+    <LGI className={`px-0 border-0 py-1 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+      {children}
+    </LGI>
+  );
 }
 
 function FormattedReport({
@@ -307,11 +311,15 @@ function ReportDetails({
   const isMeetCriteria =
     canSeeBioHighlight &&
     summary.totalTangibleHrs > 80 &&
-    summary.daysInTeam > 60 &&
+    summary.weeklySummariesCount >= 8 &&
     summary.bioPosted !== 'posted';
 
   return (
-    <li className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} ref={ref}>
+    <li
+      className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+      style={darkMode ? { backgroundColor: '#3a506b', color: '#ffffff' } : {}}
+      ref={ref}
+    >
       <ListGroup className={`px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} flush>
         <ListGroupItem darkMode={darkMode}>
           <Index
@@ -329,6 +337,7 @@ function ReportDetails({
           <div
             style={{
               backgroundColor: isMeetCriteria ? '#FFF200' : 'transparent',
+              color: isMeetCriteria ? '#000000' : 'inherit',
               width: '100%',
               padding: '6px 12px 6px 0px',
             }}
@@ -339,13 +348,19 @@ function ReportDetails({
               bioPosted={summary.bioPosted}
               summary={summary}
               getWeeklySummariesReport={getWeeklySummariesReport}
+              isMeetCriteria={isMeetCriteria}
             />
           </div>
         </ListGroupItem>
 
         {/* TWO-COLUMN CONTENT BELOW */}
         <Row className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <Col md="6" xs="12" className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <Col
+            md="6"
+            xs="12"
+            className={darkMode ? 'bg-yinmn-blue' : ''}
+            style={darkMode ? { backgroundColor: '#3a506b', color: '#ffffff' } : {}}
+          >
             <ListGroupItem darkMode={darkMode}>
               <TeamCodeRow
                 canEditTeamCode={canEditTeamCode && !cantEditJaeRelatedRecord}
@@ -383,7 +398,7 @@ function ReportDetails({
             </ListGroupItem>
 
             <ListGroupItem darkMode={darkMode}>
-              <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
+              <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} darkMode={darkMode} />
             </ListGroupItem>
           </Col>
 
@@ -407,7 +422,7 @@ function ReportDetails({
   );
 }
 
-function WeeklySummaryMessage({ summary, weekIndex }) {
+function WeeklySummaryMessage({ summary, weekIndex, darkMode }) {
   if (!summary) {
     return (
       <p>
@@ -447,7 +462,7 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
   const summaryContent = (() => {
     if (summaryText) {
       const style = {
-        color: textColors[summary?.weeklySummaryOption] || textColors.Default,
+        color: textColors[summary?.weeklySummaryOption] || (darkMode ? '#ffffff' : '#000000'),
       };
 
       if (currentSummary?.uploadDate) {
@@ -614,7 +629,7 @@ function MediaUrlLink({ summary }) {
 
 function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
   const style = {
-    color: textColors[summary?.weeklySummaryOption] || textColors.Default,
+    color: textColors[summary?.weeklySummaryOption] || (darkMode ? '#ffffff' : '#000000'),
   };
 
   const [weeklySummariesCount, setWeeklySummariesCount] = useState(
@@ -735,7 +750,7 @@ function BioSwitch({ userId, bioPosted, summary, getWeeklySummariesReport }) {
   );
 }
 
-function BioLabel({ bioPosted, summary }) {
+function BioLabel({ bioPosted, summary, isMeetCriteria }) {
   const style = {
     color: textColors[summary?.weeklySummaryOption] || textColors.Default,
   };
@@ -749,7 +764,7 @@ function BioLabel({ bioPosted, summary }) {
     text = 'Requested';
   }
   return (
-    <div>
+    <div style={style}>
       <b>Bio announcement: </b>
       {text}
     </div>
@@ -1105,6 +1120,7 @@ Index.propTypes = {
     startDate: PropTypes.string,
     endDate: PropTypes.string,
     trophyFollowedUp: PropTypes.bool,
+    weeklySummariesCount: PropTypes.number,
     timeOffFrom: PropTypes.string,
     timeOffTill: PropTypes.string,
   }).isRequired,
