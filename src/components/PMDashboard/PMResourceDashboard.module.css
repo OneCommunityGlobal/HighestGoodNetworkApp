@@ -63,7 +63,7 @@
 .tabLinkActive {
   color: #007bff !important;
   border-bottom: 3px solid #007bff !important;
-  background-color: #ffffff !important;
+  background-color: #fff !important;
 }
 
 .tabIcon {
@@ -72,27 +72,28 @@
 
 /* Tab Content */
 .tabContent {
-  background-color: #ffffff;
+  background-color: #fff;
   padding: 2rem;
   border-radius: 0 0 8px 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
   min-height: 400px;
 }
 
 .tabContentDark {
   background-color: #242b3d;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
 }
 
 .tabPanel {
-  animation: fadeIn 0.3s ease-in;
+  animation: fade-in 0.3s ease-in;
 }
 
-@keyframes fadeIn {
+@keyframes fade-in {
   from {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -205,6 +206,32 @@
   border-bottom: 1px solid #3a4460;
 }
 
+/* Scope hover to data cells so global table hover rules cannot affect headers. */
+.resourceTable tbody tr:hover > * {
+  background-color: #dff1fb !important;
+  color: #212529 !important;
+}
+
+/* Keep the header fixed when broad table hover styles are present elsewhere. */
+.resourceTable thead tr:hover,
+.resourceTable thead tr:hover th {
+  background-color: #e9ecef !important;
+  color: #495057 !important;
+}
+
+/* Use a darker hover in dark mode so text, IDs, and controls stay readable. */
+.resourceTableDark tbody tr:hover > * {
+  background-color: #2f4157 !important;
+  color: #f1f5f9 !important;
+}
+
+/* Preserve dark header colors on hover. */
+.resourceTableDark thead tr:hover,
+.resourceTableDark thead tr:hover th {
+  background-color: #1a1f36 !important;
+  color: #e4e6eb !important;
+}
+
 /* Table Cells */
 .requestId,
 .certId {
@@ -290,7 +317,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 1200px) {
+@media (width <= 1200px) {
   .filterRow {
     flex-direction: column;
   }
@@ -306,7 +333,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .dashboard {
     padding: 1rem;
   }
@@ -369,6 +396,11 @@
   color: #b0b3b8;
 }
 
+/* Keep only the summary label text light; the count stays blue below. */
+.dashboardDark .resultsInfo p {
+  color: #e4e6eb;
+}
+
 .dashboardDark .resultsInfo strong {
   color: #5b9bd5;
 }
@@ -395,7 +427,7 @@
 
 .dashboardDark .tabLink:hover {
   color: #5b9bd5;
-  background-color: rgba(91, 155, 213, 0.1);
+  background-color: rgb(91 155 213 / 10%);
 }
 
 .dashboardDark .tabLinkActive {
@@ -403,8 +435,3 @@
   border-bottom-color: #5b9bd5 !important;
   background-color: #242b3d !important;
 }
-
-
-
-
-
