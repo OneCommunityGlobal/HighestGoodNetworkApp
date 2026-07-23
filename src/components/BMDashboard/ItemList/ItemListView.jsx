@@ -17,6 +17,7 @@ import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
 import InventoryNavBar from '../InventoryTypesList/InventoryNavBar';
 import styles from './ItemListView.module.css';
+import { Form, FormGroup, Label } from 'reactstrap';
 
 const allCategories = [
   { label: 'Materials', route: '/bmdashboard/materials', icon: <FaCubes /> },
@@ -50,6 +51,17 @@ export function ItemListView({
   const [localValues, setLocalValues] = useState([]);
   const [isError, setIsError] = useState(false);
   const [selectedTime, setSelectedTime] = useState(new Date());
+
+  const projectKey = `${itemType}_selected_projects`;
+  const itemKey = `${itemType}_selected_items`;
+
+  const handleReset = () => {
+    setLocalValues([]);
+    setSelectedProject([]);
+    setSelectedItem([]);
+    localStorage.removeItem(projectKey);
+    localStorage.removeItem(itemKey);
+  };
 
   const [searchQuery, setSearchQuery] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
@@ -239,6 +251,25 @@ export function ItemListView({
                 label={itemType === 'Materials' ? 'Material' : itemType}
                 itemType={itemType}
               />
+
+              <div className={styles.resetContainer}>
+                <Form onSubmit={e => e.preventDefault()}>
+                  <FormGroup>
+                    <Label>&nbsp;</Label>
+                    <button
+                      type="button"
+                      className={styles.btnReset}
+                      onClick={handleReset}
+                      disabled={
+                        localStorage.getItem(projectKey) === null &&
+                        localStorage.getItem(itemKey) === null
+                      }
+                    >
+                      Reset
+                    </button>
+                  </FormGroup>
+                </Form>
+              </div>
             </div>
           )}
 

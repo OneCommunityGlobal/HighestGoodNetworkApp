@@ -127,7 +127,7 @@ table td {
    off-screen when there were fewer items than columns */
 .selectInput {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   flex-wrap: wrap;
   gap: 15px;
   width: 100%;
@@ -137,6 +137,31 @@ table td {
 
 .selectInput :global(.react-select__menu) {
   z-index: 10;
+}
+
+.resetContainer {
+  display: flex;
+  align-items: flex-end;
+}
+
+.btnReset {
+  height: 38px;
+  padding: 0 1.2rem;
+  font-weight: 500;
+  background-color: #dc2626;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btnReset:hover {
+  background-color: #b91c1c;
+}
+
+.btnReset:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .selectInput label {
