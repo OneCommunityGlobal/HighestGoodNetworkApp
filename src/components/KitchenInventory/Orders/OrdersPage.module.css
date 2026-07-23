@@ -1,7 +1,7 @@
 .container {
   min-height: 100vh;
   background-color: #f8f9fa;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .containerDark {

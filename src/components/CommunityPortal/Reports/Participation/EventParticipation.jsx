@@ -42,28 +42,17 @@ function EventParticipation() {
   return (
     <div
       ref={exportRef}
-      className={`participation-landing-page-global ${styles.participationLandingPage} ${
-        darkMode ? styles.participationLandingPageDark : ''
-      }`}
+      className={`${styles.participationLandingPage} ${darkMode ? styles.darkMode : ''}`}
     >
       {/* Print-only page title header */}
-      <div className={`${styles.printOnly} ${styles.printHeader}`}>
-        <div className={styles.printHeaderTitle}>Social And Recreational Management</div>
-        <div className={styles.printHeaderSubtitle}>Event Participation</div>
-      </div>
-
       <header
         className={`${styles.landingPageHeaderContainer} ${styles.avoidBreak} ${styles.noPrintGap}`}
       >
-        <h1
-          className={`${styles.landingPageHeader} ${darkMode ? styles.landingPageHeaderDark : ''}`}
-        >
-          Social And Recreational Management
-        </h1>
+        <h1 className={styles.landingPageHeader}>Social And Recreational Management</h1>
         <button
-          className={`${styles.savePdfBtn} ${
-            darkMode ? styles.savePdfBtnDark : styles.savePdfBtnLight
-          } ${styles.noPrint}`}
+          className={`${styles.savePdfBtn} ${darkMode ? '' : styles.savePdfBtnLight} ${
+            styles.noPrint
+          }`}
           onClick={handleSaveAsPDF}
           disabled={exporting}
           aria-busy={exporting}
@@ -72,17 +61,15 @@ function EventParticipation() {
         </button>
       </header>
 
-      <MyCases />
-
-      <div className={styles.analyticsSection}>
-        <DropOffTracking />
-        <NoShowInsights />
+      <div>
+        <MyCases darkMode={darkMode} />
+        <div className={styles.analyticsSection}>
+          <DropOffTracking darkMode={darkMode} />
+          <NoShowInsights darkMode={darkMode} />
+        </div>
       </div>
 
       {/* Print-only footer note */}
-      <div className={`${styles.printOnly} ${styles.printFooter}`}>
-        Generated from Event Participation
-      </div>
     </div>
   );
 }

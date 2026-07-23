@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
-import styles from './Participation.module.css';
 import mockEvents from './mockData';
+import styles from './Participation.module.css';
 
-function DropOffTracking() {
+function DropOffTracking({ darkMode }) {
   const [selectedEvent, setSelectedEvent] = useState('All Events');
   const [selectedTime, setSelectedTime] = useState('All Time');
 
@@ -44,15 +43,9 @@ function DropOffTracking() {
     return true;
   });
 
-  const darkMode = useSelector(state => state.theme.darkMode);
-
   return (
-    <div
-      className={`tracking-container-global ${styles.trackingContainer} ${
-        darkMode ? styles.trackingContainerDark : ''
-      }`}
-    >
-      <div className={`${styles.trackingHeader} ${darkMode ? styles.trackingHeaderDark : ''}`}>
+    <div className={`${styles.trackingContainer} ${darkMode ? styles.darkMode : ''}`}>
+      <div className={styles.trackingHeader}>
         <h3>Drop-off and no-show rate tracking</h3>
         <div className={styles.trackingFilters}>
           <select value={selectedEvent} onChange={e => setSelectedEvent(e.target.value)}>
@@ -71,8 +64,8 @@ function DropOffTracking() {
         </div>
       </div>
 
-      <div className={styles.trackingSummary}>
-        <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
+      <div className={`${styles.trackingSummary} ${darkMode ? styles.darkMode : ''}`}>
+        <div className={styles.trackingRate}>
           <p className={styles.trackingRateValue}>
             +5% <span>Last week</span>
           </p>
@@ -80,7 +73,7 @@ function DropOffTracking() {
             <span> Drop-off rate</span>
           </p>
         </div>
-        <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
+        <div className={styles.trackingRate}>
           <p className={styles.trackingRateValue}>
             +5% <span>Last week</span>
           </p>
@@ -90,16 +83,8 @@ function DropOffTracking() {
         </div>
       </div>
 
-      <div
-        className={`${styles.trackingListContainer} ${
-          darkMode ? styles.trackingListContainerDark : ''
-        }`}
-      >
-        <table
-          className={`tracking-table-global ${styles.trackingTable} ${
-            darkMode ? `tracking-table-global-dark ${styles.trackingTableDark}` : ''
-          }`}
-        >
+      <div className={styles.trackingListContainer}>
+        <table className={styles.trackingTable}>
           <thead>
             <tr>
               <th>Event name</th>
