@@ -135,9 +135,81 @@ const StatCard = ({ label, value, bgColor, icon }) => (
   </div>
 );
 
+// const SupplierCard = ({ supplier }) => {
+//   const handleNewOrder = () => {
+//     window.open(supplier.website, '_blank');
+//   };
+
+//   return (
+//     <div className={styles.supplierCard}>
+//       <div className={styles.supplierHeader}>
+//         <div className={styles.supplierName}>
+//           <span>🏢</span>
+//           {supplier.name}
+//         </div>
+//         <span className={styles.reliabilityBadge}>{supplier.reliability}% reliable</span>
+//       </div>
+
+//       <div className={styles.supplierContact}>Contact: {supplier.contact}</div>
+
+//       <div className={styles.supplierDetails}>
+//         <div className={styles.detailRow}>
+//           <span className={styles.detailLabel}>Email</span>
+//           <span className={styles.detailValue}>{supplier.email}</span>
+//         </div>
+//         <div className={styles.detailRow}>
+//           <span className={styles.detailLabel}>Phone</span>
+//           <span className={styles.detailValue}>{supplier.phone}</span>
+//         </div>
+//         <div className={styles.detailRow}>
+//           <span className={styles.detailLabel}>📦 Avg Delivery</span>
+//           <span className={styles.detailValue}>{supplier.avgDelivery}</span>
+//         </div>
+//         <div className={styles.detailRow}>
+//           <span className={styles.detailLabel}>🛒 Total Orders</span>
+//           <span className={styles.detailValue}>{supplier.totalOrders}</span>
+//         </div>
+//       </div>
+
+//       <div className={styles.specialties}>
+//         <p className={styles.specialtiesLabel}>Specialties</p>
+//         <div className={styles.specialtyTags}>
+//           {supplier.specialties.map((specialty, idx) => (
+//             <span key={idx} className={styles.specialtyTag}>
+//               {specialty}
+//             </span>
+//           ))}
+//         </div>
+//       </div>
+
+//       <div className={styles.supplierActions}>
+//         <button type="button" className={styles.btnOutline}>
+//           View Pricing History
+//         </button>
+//         <button type="button" className={styles.btnOutline}>
+//           Edit Supplier Info
+//         </button>
+//         <button type="button" className={styles.btnPrimary} onClick={handleNewOrder}>
+//           New Order
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
+
 const SupplierCard = ({ supplier }) => {
   const handleNewOrder = () => {
-    window.open(supplier.website, '_blank');
+    if (supplier.website) {
+      window.open(supplier.website, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  const handlePricingHistory = () => {
+    console.log(`View pricing history for ${supplier.name}`);
+  };
+
+  const handleEditSupplier = () => {
+    console.log(`Edit supplier info for ${supplier.name}`);
   };
 
   return (
@@ -147,6 +219,7 @@ const SupplierCard = ({ supplier }) => {
           <span>🏢</span>
           {supplier.name}
         </div>
+
         <span className={styles.reliabilityBadge}>{supplier.reliability}% reliable</span>
       </div>
 
@@ -157,14 +230,17 @@ const SupplierCard = ({ supplier }) => {
           <span className={styles.detailLabel}>Email</span>
           <span className={styles.detailValue}>{supplier.email}</span>
         </div>
+
         <div className={styles.detailRow}>
           <span className={styles.detailLabel}>Phone</span>
           <span className={styles.detailValue}>{supplier.phone}</span>
         </div>
+
         <div className={styles.detailRow}>
           <span className={styles.detailLabel}>📦 Avg Delivery</span>
           <span className={styles.detailValue}>{supplier.avgDelivery}</span>
         </div>
+
         <div className={styles.detailRow}>
           <span className={styles.detailLabel}>🛒 Total Orders</span>
           <span className={styles.detailValue}>{supplier.totalOrders}</span>
@@ -173,6 +249,7 @@ const SupplierCard = ({ supplier }) => {
 
       <div className={styles.specialties}>
         <p className={styles.specialtiesLabel}>Specialties</p>
+
         <div className={styles.specialtyTags}>
           {supplier.specialties.map((specialty, idx) => (
             <span key={idx} className={styles.specialtyTag}>
@@ -183,12 +260,14 @@ const SupplierCard = ({ supplier }) => {
       </div>
 
       <div className={styles.supplierActions}>
-        <button type="button" className={styles.btnOutline}>
+        <button type="button" className={styles.btnOutline} onClick={handlePricingHistory}>
           View Pricing History
         </button>
-        <button type="button" className={styles.btnOutline}>
+
+        <button type="button" className={styles.btnOutline} onClick={handleEditSupplier}>
           Edit Supplier Info
         </button>
+
         <button type="button" className={styles.btnPrimary} onClick={handleNewOrder}>
           New Order
         </button>
