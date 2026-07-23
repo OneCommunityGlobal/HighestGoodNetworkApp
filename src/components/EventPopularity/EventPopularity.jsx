@@ -408,11 +408,6 @@ export default function EventDashboard() {
     setSelectedTimeSlot(null);
   }, []);
 
-  // Handle participation card click
-  const handleCardClick = useCallback(cardId => {
-    setDetailView('participation');
-  }, []);
-
   // Close detail view and reset selections
   const closeDetailView = useCallback(() => {
     setDetailView(null);
@@ -601,16 +596,10 @@ export default function EventDashboard() {
                 id: 'event-card-2',
               },
             ].map(card => (
-              <button
-                key={card.id}
-                type="button"
-                onClick={() => handleCardClick(card.id)}
-                className={styles.epParticipationCard}
-                title={`Click to view ${card.title} details`}
-              >
+              <div key={card.id} className={styles.epParticipationCard}>
                 <h3 className={styles.epStatTitle}>{card.title}</h3>
                 <p className={styles.epStatSubtitle}>{card.subtitle}</p>
-              </button>
+              </div>
             ))}
           </div>
         </div>
@@ -681,23 +670,19 @@ export default function EventDashboard() {
           {/* Summary Cards for Time */}
           <div className={styles.epParticipationGrid}>
             {participationCards.slice(0, 2).map(card => (
-              <button
-                key={card.id}
-                type="button"
-                onClick={() => handleCardClick(card.id)}
-                className={styles.epParticipationCard}
-                title={`Click to view ${card.title} details`}
-              >
+              <div key={card.id} className={styles.epParticipationCard}>
                 <div className={styles.epCardHeader}>
                   <h3 className={styles.epCardTitle}>{card.title}</h3>
-                  <span className={styles.epCardArrow}>→</span>
                 </div>
+
                 <p className={styles.epStatSubtitle}>{card.subtitle}</p>
+
                 {card.participants > 0 && (
                   <div className={styles.epParticipantsInfo}>
                     <span>👥</span> +{card.participants} users
                   </div>
                 )}
+
                 <p
                   className={`${styles.epTrend} ${
                     card.trendType === 'positive' ? styles.trendPositive : styles.trendNegative
@@ -705,7 +690,7 @@ export default function EventDashboard() {
                 >
                   {card.trend} vs last month
                 </p>
-              </button>
+              </div>
             ))}
           </div>
         </div>
@@ -785,7 +770,7 @@ export default function EventDashboard() {
                   This view shows aggregated participation data across all time periods and event
                   types.
                 </p>
-                <button className={styles.epDetailActionBtn}>View Detailed Report</button>
+                {/* <button className={styles.epDetailActionBtn}>View Detailed Report</button> */}
               </div>
             </div>
           )}

@@ -343,18 +343,18 @@
   color: var(--ep-primary);
 }
 
-.progressBarBackground {
-  flex-grow: 1;
+.epProgressBar {
+  width: 100%;
   height: 6px;
-  background: var(--ep-border-color);
+  background-color: var(--ep-border-color);
   border-radius: 3px;
   overflow: hidden;
-  margin: 0 10px;
 }
 
-.progressBarFill {
+.epProgressFill {
   height: 100%;
-  background: var(--ep-primary);
+  background-color: var(--ep-primary);
+  border-radius: 3px;
   transition: width 0.3s ease;
 }
 
@@ -629,9 +629,13 @@
 
 .epDetailValueLarge {
   font-size: 32px;
-  font-weight: bold;
+  font-weight: 700;
   margin: 0;
-  color: var(--ep-success);
+  color: var(--ep-success) !important;
+}
+
+:global(.dark-mode) .eventpopularity .epDetailValueLarge {
+  color: #4ade80 !important;
 }
 
 .epDetailDescription {
@@ -663,6 +667,11 @@
 .epEmptyState {
   padding: 24px;
   text-align: center;
+  color: var(--ep-text-muted);
+}
+
+.epEmptyState p {
+  margin: 0;
   color: var(--ep-text-muted);
 }
 
