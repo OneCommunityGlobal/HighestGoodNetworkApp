@@ -149,6 +149,9 @@ import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import CPLogin from './components/CommunityPortal/Login';
 import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
+import FaqSection from './components/CommunityPortal/Activities/FaqSection';
+import RescheduleEvent from './components/CommunityPortal/Activities/RescheduleEvent';
+import ReschedulePoll from './components/CommunityPortal/Activities/ReschedulePoll';
 import ActivityComments from './components/CommunityPortal/Activities/activityId/ActivityComments';
 import Feedbackform from './components/CommunityPortal/Activities/Feedbackform';
 import FollowUpEmailTemplate from './components/CommunityPortal/Activities/FollowUpEmailTemplate';
@@ -820,6 +823,18 @@ export default (
         <CPProtectedRoute path="/communityportal/calendar" exact component={CommunityCalendar} />
         <CPProtectedRoute path="/communityportal/database/design" exact component={EventList} />
         <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
+        <CPProtectedRoute
+          path="/communityportal/activities/:activityid/faq"
+          exact
+          component={FaqSection}
+        />
+
+        <CPProtectedRoute
+          path="/communityportal/activities/:activityId/manage"
+          component={RescheduleEvent}
+        />
+
+        <Route path="/communityportal/ReschedulePoll" component={ReschedulePoll} />
         <CPProtectedRoute
           path="/communityportal/profile/:userId"
           fallback
