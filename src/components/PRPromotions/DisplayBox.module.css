@@ -1,12 +1,10 @@
-/* stylelint-disable no-descending-specificity */
 .overlay {
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  background-color: rgb(0 0 0 / 50%);
   display: flex;
-  align-items: center;
   justify-content: center;
-  background-color: rgb(0 0 0 / 60%);
+  align-items: center;
 }
 
 /* ======================================================
@@ -52,20 +50,10 @@
 
 .popupTable {
   width: 100%;
-  margin-bottom: 24px;
   border-collapse: collapse;
-  background-color: #fff;
 }
 
-.popupTable th,
-.popupTable td {
-  padding: 10px;
-  border: 1px solid #d1d5db;
-  text-align: left;
-  color: #111827;
-}
-
-/* DARK TABLE FIRST (fixes specificity rule) */
+/* DARK TABLE CELLS — must come before .popupTable thead th */
 
 .popupTableDark {
   background-color: #1f2937;
@@ -78,12 +66,39 @@
   background-color: #1f2937;
 }
 
+.popup-table-dark {
+  background-color: #374151;
+}
+
+.popup-table-dark th,
+.popup-table-dark td {
+  color: #e5e7eb;
+  border-color: #4b5563;
+}
+
+/* LIGHT TABLE CELLS — after dark so specificity is correct */
+
+.popupTable th,
+.popupTable td {
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  text-align: left;
+  color: #111827;
+}
+
+/* DARK TABLE HEADERS — must come before .popupTable thead th */
+
 .popupTableDark thead th {
   background-color: #374151;
   color: #f9fafb;
 }
 
-/* LIGHT TABLE HEADER AFTER */
+.popup-table-dark thead th {
+  background-color: #374151;
+  color: #e5e7eb;
+}
+
+/* LIGHT TABLE HEADER — after dark thead rules */
 
 .popupTable thead th {
   font-weight: 600;
@@ -98,48 +113,51 @@
 .buttonRow {
   display: flex;
   justify-content: space-between;
+  margin-top: 32px;
 }
 
 .button {
   padding: 8px 16px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  background-color: #f3f4f6;
-  color: #111827;
+  border-radius: 4px;
+  border: none;
   cursor: pointer;
+  color: #fff;
   font-weight: 600;
-  transition: background-color 0.2s ease;
 }
-
-/* BASE STATES FIRST */
 
 .button:disabled {
-  opacity: 0.8;
+  background-color: #ccc;
   cursor: not-allowed;
-  color: #4b5563;
-  background-color: #d1d5db;
+  opacity: 0.6;
 }
 
-.popupDark .button {
-  border: 1px solid #6b7280;
-  background-color: #374151;
-  color: #f9fafb;
+/* These action colors are intentionally shared by light and dark mode. */
+
+.cancelButton {
+  background-color: #f00;
 }
+
+.confirmButton:not(:disabled) {
+  background-color: #00f;
+}
+
+/* LIGHT HOVER — after dark base button rules */
 
 .button:hover:not(:disabled) {
   background-color: #e5e7eb;
 }
 
-/* DARK MODE (MORE SPECIFIC — MUST COME AFTER) */
-
-.popupDark .button:disabled {
-  border: 1px solid #4b5563;
-  background-color: #2d3748;
-  color: #9ca3af;
+.cancelButton:hover:not(:disabled) {
+  background-color: #d60000;
 }
 
-.popupDark .button:hover:not(:disabled) {
+.confirmButton:hover:not(:disabled) {
+  background-color: #00c;
+}
+
+.popupDark .button:disabled {
   background-color: #4b5563;
+  color: #d1d5db;
 }
 
 /* ======================================================
@@ -158,12 +176,13 @@
 
 .prCountBadge {
   display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 4px;
   width: 24px;
   height: 24px;
-  margin: 0 4px;
   border-radius: 50%;
-  align-items: center;
-  justify-content: center;
+  color: black;
   font-size: 12px;
   font-weight: bold;
 }
@@ -172,30 +191,29 @@
   filter: brightness(0.9);
 }
 
-/* COLORS (fixed hex shorthand) */
+/* COLORS */
 
 .color0 {
   color: #fff;
   background-color: #9400d3;
 }
 
-.color1 {
-  color: #fff;
-  background-color: #4b0082;
+.color-1 {
+  background-color: rgb(77 82 174);
 }
 
 .color-2 {
-  background-color: #00f; /* Blue - dark, use white text */
+  background-color: #00f;
   color: white;
 }
 
 .color-3 {
-  background-color: #0f0; /* Green - bright, use black text */
+  background-color: #0f0;
   color: black;
 }
 
 .color-4 {
-  background-color: #ff0; /* Yellow - bright, use black text */
+  background-color: #ff0;
   color: black;
 }
 
@@ -220,11 +238,14 @@
 }
 
 .color-6 {
-  background-color: #f00; /* Red - dark, use white text */
+  background-color: #f00;
   color: white;
 }
 
-/* Dark mode - page and heading */
+/* ======================================================
+   DARK MODE — PAGE AND HEADING
+   ====================================================== */
+
 .page-dark {
   color: #e5e7eb;
 }
@@ -238,7 +259,10 @@
   color: #e5e7eb;
 }
 
-/* Dark mode - popup modal */
+/* ======================================================
+   DARK MODE — POPUP LEGACY CLASSES
+   ====================================================== */
+
 .popup-dark {
   background-color: #1f2937;
   border-color: #4b5563;
@@ -248,26 +272,10 @@
   color: #e5e7eb;
 }
 
-.popup-table-dark {
-  background-color: #374151;
-}
+/* ======================================================
+   PR BADGE OVERRIDES FOR DARK MODE
+   ====================================================== */
 
-.popup-table-dark th,
-.popup-table-dark td {
-  color: #e5e7eb;
-  border-color: #4b5563;
-}
-
-.popup-dark .button {
-  background-color: #374151;
-  color: #e5e7eb;
-}
-
-.popup-dark .button:disabled {
-  background-color: #4b5563;
-}
-
-/* Ensure PR count badge numbers stay visible in dark mode - override global body.dark-mode * { color } */
 :global(body.dark-mode) .popup-table-dark .pr-count-badge.color-0,
 :global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-0 {
   color: #fff !important;
@@ -308,4 +316,34 @@
 :global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-6 {
   color: #fff !important;
   background-color: #b00000 !important;
+}
+
+/* Dark modal content rules must come after the base table rules so they win in CSS order. */
+
+.popupDark .popupHeading {
+  color: #f9fafb;
+}
+
+.popupDark .popupTable {
+  background-color: #1f2937;
+}
+
+.popupDark .popupTable th,
+.popupDark .popupTable td {
+  border-color: #4b5563;
+  background-color: #1f2937;
+  color: #f9fafb;
+}
+
+.popupDark .popupTable thead th {
+  background-color: #374151;
+  color: #f9fafb;
+}
+
+.prBadgeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  min-width: 0;
 }

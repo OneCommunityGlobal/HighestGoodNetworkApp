@@ -857,7 +857,10 @@ export function Header(props) {
     <div className={`${styles.headerWrapper}`} data-testid="header">
       <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
-        {showPromotionsPopup && <DisplayBox onClose={() => setShowPromotionsPopup(false)} />}
+        {showPromotionsPopup && (
+          // Header launches this modal outside the PR Promotions page, so pass the theme explicitly.
+          <DisplayBox onClose={() => setShowPromotionsPopup(false)} darkMode={darkMode} />
+        )}
 
         <div className={styles.headerRow}>
             <div className={styles.leftSection}>

@@ -12,9 +12,10 @@ export function HeaderRenderer(props) {
   const location = useLocation();
   const isKitchenAndInventory = location.pathname.startsWith('/kitchenandinventory');
   const isCommunityPortal = location.pathname.startsWith('/communityportal');
-  const isEducationEvaluation = location.pathname.startsWith('/educationportal/evaluation-results');
+  const isEducatorReports = location.pathname.startsWith('/educator');
 
-  if (isEducationEvaluation) {
+  // Hide header for educator reports page
+  if (isEducatorReports) {
     return null;
   }
 
@@ -24,6 +25,7 @@ export function HeaderRenderer(props) {
   }
 
   // Header is already Redux-connected; CPHeader still needs props from this wrapper.
+  // eslint-disable-next-line react/jsx-props-no-spreading
   return isCommunityPortal ? <CPHeader {...props} /> : <Header />;
 }
 

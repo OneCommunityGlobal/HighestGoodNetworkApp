@@ -1,5 +1,5 @@
 /* stylelint-disable  */
-:global(thead) {
+.projectsTableHead {
   background: aliceblue;
 }
 
@@ -219,4 +219,7 @@ tr:hover {
     flex: 1 1 auto;
     width: 50%;
   }
+}
+.searchLabelDark {
+  background-color: #1f3b63 !important;
 }
