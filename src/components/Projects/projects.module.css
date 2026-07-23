@@ -1,5 +1,5 @@
 /* stylelint-disable  */
-:global(thead) {
+.projectsTableHead {
   background: aliceblue;
 }
 
@@ -198,6 +198,13 @@ tr:hover {
   background: #e9f6ff;
 }
 
+/* In dark mode the page wrapper carries .bg-oxford-blue. Keep the row-hover
+   highlight on-theme (yinmn-blue) instead of the light default, so the dark
+   inputs/buttons in the hovered row stay legible instead of washing out. */
+:global(.bg-oxford-blue) tr:hover {
+  background: #3a506b;
+}
+
 .archived-button {
   background-color: #007bff;
   border: none;
@@ -219,4 +226,7 @@ tr:hover {
     flex: 1 1 auto;
     width: 50%;
   }
+}
+.searchLabelDark {
+  background-color: #1f3b63 !important;
 }

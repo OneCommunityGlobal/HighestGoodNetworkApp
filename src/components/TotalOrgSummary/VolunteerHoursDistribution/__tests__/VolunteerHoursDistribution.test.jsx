@@ -13,6 +13,7 @@ beforeEach(() => {
   container.style.height = '600px';
   document.body.appendChild(container);
 });
+
 afterEach(() => {
   container.remove();
   container = null;
@@ -25,6 +26,7 @@ describe('VolunteerHoursDistribution wrapper', () => {
       { _id: '20', count: 3 },
     ];
     const totalHoursData = { current: 1234 };
+
     render(
       <VolunteerHoursDistribution
         isLoading={false}
@@ -35,16 +37,20 @@ describe('VolunteerHoursDistribution wrapper', () => {
       { container },
     );
 
-    // legend now shows plain bucket IDs only
-    expect(screen.getByText('10')).toBeInTheDocument();
-    expect(screen.getByText('20')).toBeInTheDocument();
+    // Assert using the corrected formatted range strings, matching assignToBucket's
+    // actual threshold boundaries (inclusive upper bound, first bucket starts at 0)
+    expect(screen.getByText('0-10 hrs')).toBeInTheDocument();
+    expect(screen.getByText('11-20 hrs')).toBeInTheDocument();
 
-    // verify computeDistribution now allocates hours to buckets so slices add up to total hours
+    // Verify computeDistribution now allocates hours to buckets so slices add up to total hours
     const computed = computeDistribution(hoursData, totalHoursData);
+
+    // Assert that names in userData match the corrected formatRangeLabel output
+    // valueType is 'hours' here since totalHoursWorked (1234) > 0
     expect(computed).toEqual({
       userData: [
-        { name: '10', value: 494, percentage: 40 },
-        { name: '20', value: 740, percentage: 60 },
+        { name: '0-10 hrs', value: 494, percentage: 40, valueType: 'hours' },
+        { name: '11-20 hrs', value: 740, percentage: 60, valueType: 'hours' },
       ],
       totalVolunteers: 5,
       totalHoursWorked: 1234,
