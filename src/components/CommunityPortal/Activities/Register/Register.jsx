@@ -15,7 +15,6 @@ import ShareAvailability from './ShareAvailability';
 /* =========================
    MOCK DATA (KEEP ONLY ONCE)
 ========================= */
-
 const MOCK_ACTIVITIES = [
   {
     id: 1,
