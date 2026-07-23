@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import Calendar from 'react-calendar';
+import CalendarWidget from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import axios from 'axios';
 
@@ -15,6 +15,7 @@ import ShareAvailability from './ShareAvailability';
 /* =========================
    MOCK DATA (KEEP ONLY ONCE)
 ========================= */
+
 
 const MOCK_ACTIVITIES = [
   {
@@ -286,8 +287,8 @@ function Register() {
 
         {/* RIGHT */}
         <div className={styles['right-column']}>
-          <div className={styles.calendarContainer}>
-            <Calendar
+          <div className={styles['calendar-container']}>
+            <CalendarWidget
               onChange={setSelectedDate}
               value={selectedDate}
               tileClassName={tileClassName}

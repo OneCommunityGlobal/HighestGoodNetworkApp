@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import TinyBarChart from '../TinyBarChart';
 import Loading from '../../common/Loading';
 
-export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
+export default function HoursCompletedBarChart({ isLoading, data, darkMode, comparisonType }) {
   const initialCardSize = () => {
     if (window.innerWidth <= 680) {
       return { height: '240px' };
@@ -86,7 +86,10 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
     color: ['rgba(76,75,245,255)', 'rgba(0,175,244,255)'],
   }));
   const projectBarInfo = {
-    ifcompare: projectChangePercentage !== undefined && projectChangePercentage !== null,
+    ifcompare:
+      comparisonType !== 'No Comparison' &&
+      projectChangePercentage !== undefined &&
+      projectChangePercentage !== null,
     amount: projectHours.count,
     percentage: `${(projectPercentage * 100).toFixed(2)}%`,
     change:
