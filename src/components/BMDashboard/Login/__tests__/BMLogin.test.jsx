@@ -13,7 +13,7 @@ vi.mock('~/actions/authActions', () => ({
 }));
 
 vi.mock('jwt-decode', () => ({
-  jwtDecode: vi.fn(() => ({ decodedPayload: 'mocked_decoded_payload' })),
+  default: vi.fn(() => ({ decodedPayload: 'mocked_decoded_payload' })),
 }));
 
 const mockStore = configureStore([thunk]);

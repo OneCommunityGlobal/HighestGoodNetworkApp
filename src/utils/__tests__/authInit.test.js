@@ -6,9 +6,7 @@ import { store } from '../../store';
 import { logoutUser, setCurrentUser } from '../../actions/authActions';
 import config from '../../config.json';
 
-vi.mock('jwt-decode', () => ({
-  default: vi.fn(),
-}));
+vi.mock('jwt-decode');
 vi.mock('../../services/httpService', () => ({ default: { setjwt: vi.fn() } }));
 vi.mock('../../store', () => ({ __esModule: true, store: { dispatch: vi.fn() } }));
 vi.mock('../../actions/authActions', () => ({
