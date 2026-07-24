@@ -688,6 +688,16 @@ export const ENDPOINTS = {
 
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
+  GITHUB_REVIEW_SUMMARY: (duration, sort = 'desc', team) => {
+    const params = new URLSearchParams({
+      duration,
+      sort,
+    });
+    if (team) {
+      params.set('team', team);
+    }
+    return `${APIEndpoint}/analytics/review-summary?${params.toString()}`;
+  },
   PR_GRADING_CONFIG: `${APIEndpoint}/pr-grading-config`,
   WEEKLY_GRADING: `${APIEndpoint}/weekly-grading`,
   WEEKLY_GRADING_SAVE: `${APIEndpoint}/weekly-grading/save`,

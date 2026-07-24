@@ -516,7 +516,7 @@ export function Header(props) {
                   </NavLink>
                 </NavItem>
                 )}
-  
+
                 <NavItem>
                   <NavLink tag={Link} to="/timelog#currentWeek" disabled={headerDisabled}>
                     <span>{TIMELOG}</span>
@@ -838,6 +838,14 @@ export function Header(props) {
                         disabled={headerDisabled}
                       >
                         PR Analytics
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard/reviewers"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        Reviewers by Requirement
                       </DropdownItem>
                       <DropdownItem
                         tag={Link}

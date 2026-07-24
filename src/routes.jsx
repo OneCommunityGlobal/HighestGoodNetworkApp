@@ -195,6 +195,9 @@ import BookingPage from './components/Booking/BookingPage';
 import BookingConfirmPage from './components/Booking/BookingConfirmPage';
 import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
 import ReviewersStackedBarChart from './components/HGNPRDashboard/ReviewersStackedBarChart/ReviewersStackedBarChart';
+import PRReviewTeamAnalyticsDashboard from './components/Analytics/AnalyticsDashboard';
+import PopularPRChart from './components/Analytics/PopularPRChart';
+import ReviewersRequirementChart from './components/Analytics/ReviewersRequirementChart';
 import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
 import PRGradingScreen from './components/PRGradingScreen';
 import PRGradingTest from './components/PRGradingScreen/PRGradingTest'; //temporary route for testing - delete after testing
@@ -1067,6 +1070,25 @@ export default (
           path="/pr-team-analytics/reviewers-stacked-bar-chart"
           exact
           component={ReviewersStackedBarChart}
+        />
+        <ProtectedRoute
+          path="/analytics/dashboard"
+          exact
+          component={PRReviewTeamAnalyticsDashboard}
+          fallback
+        />
+        <ProtectedRoute
+          path="/pr-dashboard/reviewers"
+          exact
+          component={PRReviewTeamAnalyticsDashboard}
+          fallback
+        />
+        <ProtectedRoute path="/analytics/popular-prs" exact component={PopularPRChart} fallback />
+        <ProtectedRoute
+          path="/analytics/review-summary"
+          exact
+          component={ReviewersRequirementChart}
+          fallback
         />
         {/* /*  for support team*/}
         <Route path="/support/login" component={SupportLogin} />
