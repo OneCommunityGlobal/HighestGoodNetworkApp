@@ -24,8 +24,8 @@ import { ReportPage } from '../sharedComponents/ReportPage';
 import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
 import { Checkbox } from '../../common/Checkbox';
-import { updateRehireableStatus } from '../../../actions/userManagement'
-
+import { updateRehireableStatus } from '../../../actions/userManagement';
+import CompletedTasksTable from '~/components/Reports/PeopleReport/CompletedTasksTable';
 class PeopleReport extends Component {
   constructor(props) {
     super(props);
@@ -593,6 +593,7 @@ class PeopleReport extends Component {
               </div>
 
               <PeopleTasksPieChart darkMode={darkMode} />
+              <CompletedTasksTable/>
 
               <div className={`${styles.mobilePeopleTable}`}>
                 <ReportPage.ReportBlock darkMode={darkMode}>
