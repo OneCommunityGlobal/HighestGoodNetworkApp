@@ -114,27 +114,28 @@ class UserProfileAdd extends Component {
   normalizeName = s => (s || '').toLowerCase().replace(/[^a-z]/g, '');
 
   productionNameIsIncluded = () => {
+    console.log('NODE_ENV =', process.env.NODE_ENV);
+  // ✅ DO NOT enforce name rules in production
+    if (process.env.NODE_ENV === 'production') {
+      return true;
+    }
+
     const prodFirstRaw = this.props?.auth?.user?.firstName || '';
     const prodLastRaw  = this.props?.auth?.user?.lastName || '';
-  
+
     const prodFirst  = this.normalizeName(prodFirstRaw);
     const prodLast   = this.normalizeName(prodLastRaw);
     const inputFirst = this.normalizeName(this.state.userProfile.firstName);
     const inputLast  = this.normalizeName(this.state.userProfile.lastName);
-  
+
+    // If we don't know the prod user name, don't block
     if (!prodFirst || !prodLast) return true;
-  
+
     const combined = `${inputFirst}${inputLast}`;
     const hasFirst = combined.includes(prodFirst);
     const hasLast  = combined.includes(prodLast);
-  
+
     if (!hasFirst || !hasLast) {
-      const examples = [
-        `${prodFirstRaw} ${prodLastRaw} Admin`,
-        `${prodFirstRaw}${prodLastRaw} Test`,
-        `${prodFirstRaw} ${prodLastRaw}A`,
-      ];
-  
       toast.error(
         (
           <div style={{ lineHeight: 1.5 }}>
@@ -143,7 +144,7 @@ class UserProfileAdd extends Component {
               <b>&quot;{prodFirstRaw}&quot;</b> and last name&nbsp;
               <b>&quot;{prodLastRaw}&quot;</b>.
             </div>
-      
+
             <div style={{ marginTop: 8, fontWeight: 600 }}>Allowed examples:</div>
             <ul style={{ margin: '6px 0', paddingLeft: '1.5rem' }}>
               <li>{`${prodFirstRaw} ${prodLastRaw} Admin`}</li>
@@ -188,6 +189,14 @@ class UserProfileAdd extends Component {
       this.setState({ isLoading: true })
 
       const response = await axios.get(url);
+      
+      // Check if response.data exists and is an array
+      if (!response.data || !Array.isArray(response.data)) {
+        console.warn('Invalid response format from weekly summaries endpoint:', response.data);
+        this.setState({ inputAutoComplete: [], isLoading: false });
+        return;
+      }
+
       const stringWithValue = response.data.map(item => item.teamCode).filter(Boolean);
       const stringNoRepeat = stringWithValue
         .map(item => item)
@@ -818,7 +827,110 @@ class UserProfileAdd extends Component {
     else return false;
   };
 
-  createUserProfile = () => {
+  // Validates the Google Doc link (if provided) and appends it to userData.adminLinks.
+  // Returns true if creation should proceed, false if it should stop here.
+  validateAndAddGoogleDoc = (googleDoc, userData) => {
+    if (!googleDoc) return true;
+
+    if (isValidGoogleDocsUrl(googleDoc)) {
+      userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc.trim() });
+      return true;
+    }
+
+    toast.error('Invalid Google Doc link. Please provide a valid Google Doc URL.');
+    this.setState(prevState => ({
+      formValid: {
+        ...prevState.formValid,
+        googleDoc: false,
+      },
+      formErrors: {
+        ...prevState.formErrors,
+        googleDoc: 'Invalid Google Doc URL',
+      },
+    }));
+    return false;
+  };
+
+  // Validates the Dropbox/media link (if provided) and appends it to userData.adminLinks.
+  // Returns true if creation should proceed, false if it should stop here.
+  validateAndAddDropboxDoc = (dropboxDoc, userData) => {
+    if (!dropboxDoc) return true;
+
+    if (isValidMediaUrl(dropboxDoc)) {
+      userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc.trim() });
+      return true;
+    }
+
+    toast.error('Invalid DropBox link. Please provide a valid Drop Box URL.');
+    this.setState(prevState => ({
+      formValid: {
+        ...prevState.formValid,
+        dropboxDoc: false,
+      },
+      formErrors: {
+        ...prevState.formErrors,
+        dropboxDoc: 'Invalid Dropbox Link URL',
+      },
+    }));
+    return false;
+  };
+
+  // Centralized error handling for the createUser API call, extracted out of
+  // createUserProfile to keep that method's cognitive complexity in check.
+  handleCreateUserError = err => {
+    const res = err.response;
+    const status = res?.status;
+    const data = res?.data || {};
+
+    if (!res) {
+      toast.error(`Network error: ${err.message}`);
+      return;
+    }
+
+    // Handle Mongoose validation error cleanup
+    if (data?.errors && typeof data.errors === 'object') {
+      const firstErrorKey = Object.keys(data.errors)[0];
+      const firstError = data.errors[firstErrorKey];
+      const fieldName = firstError.path || firstErrorKey;
+      const message = firstError.message;
+
+      toast.error(`${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}: ${message}`);
+      return;
+    }
+
+    // Fallback to known type-based errors
+    if (data.type) {
+      switch (data.type) {
+        case 'email':
+          toast.error('Email already exists');
+          return;
+        case 'phoneNumber':
+          toast.error('Phone number already exists');
+          return;
+        case 'name':
+          toast.error('A user with this first and last name already exists');
+          return;
+        case 'credentials': {
+          // Prefer the backend’s explanation if available
+          const detail =
+            (typeof data.error === 'string' && data.error) ||
+            data?.error?.message ||
+            data?.message ||
+            '';
+          const suffix = detail ? `: ${detail}` : '';
+          toast.error(`Admin credentials were not accepted${suffix}`);
+          return;
+        }
+        default:
+          break;
+      }
+    }
+
+    // Generic fallback
+    toast.error(`Create failed${status ? ` (${status})` : ''}: ${data.error || 'Unknown error occurred.'}`);
+  };
+
+  createUserProfile = (skipDuplicateCheck = false) => {
     let that = this;
     const {
       firstName,
@@ -860,7 +972,7 @@ class UserProfileAdd extends Component {
       collaborationPreference: collaborationPreference,
       timeZone: timeZone,
       location: location,
-      allowsDuplicateName: true,
+      allowsDuplicateName: skipDuplicateCheck,
       createdDate: createdDate,
       teamCode: this.state.teamCode,
       actualEmail: role === 'Administrator' || role === 'Owner' ? actualEmail : '',
@@ -879,121 +991,51 @@ class UserProfileAdd extends Component {
       return;
     }
 
-    if (googleDoc) {
-      if (isValidGoogleDocsUrl(googleDoc)) {
-        userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc.trim() });
-      } else {
-        toast.error('Invalid Google Doc link. Please provide a valid Google Doc URL.');
-        this.setState({
-          formValid: {
-            ...that.state.formValid,
-            googleDoc: false,
-          },
-          formErrors: {
-            ...that.state.formErrors,
-            googleDoc: 'Invalid Google Doc URL',
-          },
-        });
-        return;
-      }
+    if (!this.validateAndAddGoogleDoc(googleDoc, userData)) {
+      return;
     }
-    if (dropboxDoc) {
-      if (isValidMediaUrl(dropboxDoc)) {
-        userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc.trim() });
-      } else {
-        toast.error('Invalid DropBox link. Please provide a valid Drop Box URL.');
-        this.setState({
-          formValid: {
-            ...that.state.formValid,
-            dropboxDoc: false,
-          },
-          formErrors: {
-            ...that.state.formErrors,
-            dropboxDoc: 'Invalid Dropbox Link URL',
-          },
-        });
-        return;
-      }
+    if (!this.validateAndAddDropboxDoc(dropboxDoc, userData)) {
+      return;
     }
-    if (this.fieldsAreValid()) {
-      this.setState({ showphone: false });
-      if (!email.match(patt)) {
-        toast.error('Email is not valid. Please include @ followed by .com format');
-      } else {
-        createUser(userData)
-          .then(res => {
-            if (res.data.warning) {
-              toast.warn(res.data.warning);
-            } else {
-              toast.success('User profile created.');
-              // eslint-disable-next-line react/no-direct-mutation-state
-              this.state.userProfile._id = res.data._id;
-              if (this.state.teams.length > 0) {
-                this.state.teams.forEach(team => {
-                  this.props.addTeamMember(
-                    team._id,
-                    res.data._id,
-                    res.data.firstName,
-                    res.data.lastName,
-                  );
-                });
-              }
-            }
-            this.props.userCreated();
-          })
-          .catch(err => {
-            const res = err.response;
-            const status = res?.status;
-            const data = res?.data || {};
-
-            if (!res) {
-              toast.error(`Network error: ${err.message}`);
-              return;
-            }
-
-            // Handle Mongoose validation error cleanup
-            if (data?.errors && typeof data.errors === 'object') {
-              const firstErrorKey = Object.keys(data.errors)[0];
-              const firstError = data.errors[firstErrorKey];
-              const fieldName = firstError.path || firstErrorKey;
-              const message = firstError.message;
-          
-              toast.error(`${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}: ${message}`);
-              return;
-            }
-
-            // Fallback to known type-based errors
-            if (data.type) {
-              switch (data.type) {
-                case 'email':
-                  toast.error('Email already exists');
-                  return;
-                case 'phoneNumber':
-                  toast.error('Phone number already exists');
-                  return;
-                case 'name':
-                  toast.error('A user with this first and last name already exists');
-                  return;
-                case 'credentials': {
-                // Prefer the backend’s explanation if available
-                  const detail =
-                    (typeof data.error === 'string' && data.error) ||
-                    data?.error?.message ||
-                    data?.message ||
-                    '';
-                  toast.error(
-                    `Admin credentials were not accepted${detail ? `: ${detail}` : ''}`
-                  );
-                  return;
-                }
-              }
-            }
-
-            // Generic fallback
-            toast.error(`Create failed${status ? ` (${status})` : ''}: ${data.error || 'Unknown error occurred.'}`);
-          });
-      }
+    if (!this.fieldsAreValid()) {
+      return;
     }
+    if (!email.match(patt)) {
+      toast.error('Email is not valid. Please include @ followed by .com format');
+      return;
+    }
+    if (!skipDuplicateCheck && this.checkIfDuplicate(firstName, lastName)) {
+      this.setState({ popupOpen: true });
+      return;
+    }
+
+    this.setState({ showphone: false });
+    createUser(userData)
+      .then(res => {
+        if (res.data.warning) {
+          toast.warn(
+            typeof res.data.warning === 'string'
+              ? res.data.warning
+              : res.data.warning?.message || JSON.stringify(res.data.warning),
+          );
+        } else {
+          toast.success('User profile created.');
+          // eslint-disable-next-line react/no-direct-mutation-state
+          this.state.userProfile._id = res.data._id;
+          if (this.state.teams.length > 0) {
+            this.state.teams.forEach(team => {
+              this.props.addTeamMember(
+                team._id,
+                res.data._id,
+                res.data.firstName,
+                res.data.lastName,
+              );
+            });
+          }
+        }
+        this.props.userCreated();
+      })
+      .catch(err => this.handleCreateUserError(err));
   };
 
   handleImageUpload = async e => {

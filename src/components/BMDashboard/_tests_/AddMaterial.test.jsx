@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import { toast } from 'react-toastify';
 import AddMaterial from '../AddMaterial/AddMaterial';
 import * as invTypeActions from '../../../actions/bmdashboard/invTypeActions';
@@ -43,7 +43,7 @@ vi.mock('react-phone-input-2', () => ({
       <input
         data-testid="phone-input"
         value={props.value}
-        onChange={e => props.onChange(e.target.value)}
+        onChange={e => props.onChange(e.target.value, { dialCode: '1', countryCode: 'us' })}
         placeholder="Phone number"
       />
     );
@@ -96,6 +96,9 @@ describe('AddMaterial', () => {
       user: {
         email: 'test@example.com',
       },
+    },
+    theme: {
+      darkMode: false,
     },
   };
 

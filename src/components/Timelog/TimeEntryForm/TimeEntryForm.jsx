@@ -35,7 +35,7 @@ import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
 import { ENDPOINTS } from '../../../utils/URL';
-import '../../Header/index.css';
+import '../../Header/index.module.css';
 import styles from '../Timelog.module.css';
 
 import { updateIndividualTaskTime } from '../../TeamMemberTasks/actions';
@@ -92,6 +92,7 @@ function TimeEntryForm(props) {
   const viewingUser = JSON.parse(sessionStorage.getItem('viewingUser') ?? '{}');
   const userTimeZone = userProfile?.timeZone || 'America/Los_Angeles';
   const [actualDate, setActualDate] = useState('');
+  const [editorKey, setEditorKey] = useState(0);
 
   const initialFormValues = {
     dateOfWork: moment()
@@ -163,6 +164,7 @@ function TimeEntryForm(props) {
   const [timeEntryFormUserTasks, setTimeEntryFormUserTasks] = useState([]);
   const [projectOrTaskId, setProjectOrTaskId] = useState(timeEntryInitialProjectOrTaskId);
   const [isAsyncDataLoaded, setIsAsyncDataLoaded] = useState(
+
     Boolean(userProjects?.length),
   );
   const [errors, setErrors] = useState({});
@@ -289,7 +291,7 @@ function TimeEntryForm(props) {
 
   const validateForm = isTimeModified => {
     const errorObj = {};
-    const remindObj = { ...initialReminder };
+    const remindObj = { ...reminder, remind: '' };
     const date = moment(formValues.dateOfWork);
     const isDateValid = date.isValid();
 
@@ -450,7 +452,7 @@ function TimeEntryForm(props) {
       if (edit) {
         await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
       } else {
-        await props.postTimeEntry(timeEntry);
+        await props.postTimeEntry(timeEntry, { displayedUserId: props.displayedUserId });
       }
 
       await handlePostSubmitActions();
@@ -637,8 +639,8 @@ function TimeEntryForm(props) {
 
   /* ---------------- useEffects -------------- */
   useEffect(() => {
-      if (isAsyncDataLoaded) {
-        const options = buildOptions();
+    if (isAsyncDataLoaded) {
+      const options = buildOptions();
       setProjectsAndTasksOptions(options);
     }
   }, [isAsyncDataLoaded, timeEntryFormUserProjects, timeEntryFormUserTasks]);
@@ -652,23 +654,26 @@ function TimeEntryForm(props) {
 
   useEffect(() => {
     if (isOpen) {
+      setEditorKey(prev => prev + 1);
       setActualDate(null);
       getActualDate();
     }
   }, [isOpen]);
 
   useEffect(() => {
-      if (actualDate && !edit) {
+    if (actualDate && !edit) {
       setFormValues(prev => ({
-          ...prev,
-          dateOfWork: moment(actualDate).tz('America/Los_Angeles').format('YYYY-MM-DD'),
-        }));
-      }
-    }, [actualDate, edit]);
+        ...prev,
+        dateOfWork: moment(actualDate)
+          .tz('America/Los_Angeles')
+          .format('YYYY-MM-DD'),
+      }));
+    }
+  }, [actualDate, edit]);
 
   useEffect(() => {
-      setFormValues(prev => ({ ...prev, ...data }));
-    }, [data]);
+    setFormValues(prev => ({ ...prev, ...data }));
+  }, [data]);
 
   const fontColor = darkMode ? 'text-light' : '';
   const headerBg = darkMode ? 'bg-space-cadet' : '';
@@ -805,18 +810,36 @@ function TimeEntryForm(props) {
               <Label for="notes" className={fontColor}>
                 Notes
               </Label>
-              <Editor
-                tinymceScriptSrc="/tinymce/tinymce.min.js"
-                init={TINY_MCE_INIT_OPTIONS}
-                id="notes"
-                name="notes"
-                className="form-control"
-                value={formValues.notes}
-                onEditorChange={handleEditorChange}
-                disabled={
-                  !((isSameDayAuthUserEdit || canEditTimeEntryDescription) && !!formValues.projectId)
+
+              <div
+                onClick={() =>
+                  //prettier-ignore
+                  formValues.projectId === '' && toast.error('Please select a project or task in the dropdown first.')
                 }
-              />
+                onKeyDown={() => {}} // Empty onKeyDown added to prevent ESLint error
+                role='button'
+                tabIndex={0}
+                style={{ cursor: formValues.projectId === '' ? 'not-allowed' : 'text' }}
+              >
+                <div
+                  style={{
+                    pointerEvents: formValues.projectId === '' ? 'none' : 'auto',
+                    opacity: formValues.projectId === '' ? 0.8 : 1,
+                  }}
+                >
+                  <Editor
+                    key={editorKey}
+                    tinymceScriptSrc="/tinymce/tinymce.min.js"
+                    init={TINY_MCE_INIT_OPTIONS}
+                    id="notes"
+                    name="notes"
+                    className="form-control"
+                    value={formValues.notes}
+                    onEditorChange={handleEditorChange}
+                    disabled={!(isSameDayAuthUserEdit || canEditTimeEntryDescription)}
+                  />
+                </div>
+              </div>
 
               {'notes' in errors && (
                 <div className="text-danger">
@@ -928,6 +951,7 @@ const mapStateToProps = state => ({
   authUser: state.auth.user,
   darkMode: state.theme.darkMode,
   userProjects: state.userProjects.projects,
+  displayedUserId: state.userProfile?._id,
 });
 
 export default connect(mapStateToProps, {
