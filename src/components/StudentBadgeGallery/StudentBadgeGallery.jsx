@@ -136,6 +136,7 @@ function StudentBadgeGallery({ darkMode }) {
             className={`${styles.badge_image_container} ${!badge.earned ? styles.unearned : ''}`}
           >
             <button
+              type="button"
               onClick={() => openModal(badge)}
               className={styles.badgeButton}
               aria-label={`View details for ${badge.badgeName}`}
