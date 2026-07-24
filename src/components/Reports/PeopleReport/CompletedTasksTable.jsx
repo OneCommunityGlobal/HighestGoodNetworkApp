@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import { FiClipboard } from 'react-icons/fi';
 import { useTable } from 'react-table';
 
 import { peopleTasksPieChartViewData } from '~/components/Reports/PeopleReport/selectors';
@@ -60,13 +61,27 @@ function CompletedTasksTable() {
           </div>
           <div className={styles.totalTasks}>
             <span>{totals.taskCount}</span>
-            <span>{totals.taskCount == 1 ? 'Task' : 'Tasks'}</span>
+            <span>{totals.taskCount > 1 ? 'Tasks' : 'Task'}</span>
           </div>
         </div>
       </div>
 
       {data.length === 0 ? (
-        <p className={styles['empty-message']}>No tasks with completed hours yet.</p>
+        <div
+          className={styles.emptyState}
+          role="status"
+          aria-live="polite"
+          data-testid="completed-tasks-empty-state"
+        >
+          <div className={styles.emptyIcon} aria-hidden="true">
+            <FiClipboard size={32} />
+          </div>
+          <h4 className={styles.emptyTitle}>No completed tasks yet</h4>
+          <p className={styles.emptyDescription}>
+            Once people log hours against a task, it will show up here with a running total of the
+            time they&apos;ve spent on it.
+          </p>
+        </div>
       ) : (
         <div className={styles.tableContainer}>
           <table
