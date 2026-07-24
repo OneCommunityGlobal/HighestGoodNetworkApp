@@ -18,8 +18,19 @@
 
 /* Direct match — a global rule elsewhere (EmailTemplateEditor.module.css) targets
    body.bm-dashboard-dark .modal-title unscoped, so this needs its own override
-   rather than relying on inheritance from .modal-header. */
+   rather than relying on inheritance from .modal-header. That same rule also sets
+   filter: invert(1) on .modal-title, which visually inverts our white text back
+   to black on screen even though its computed color is #fff — cancel it here. */
 :global(body.dark-mode) .studentBadgeModal :global(.modal-title) {
+  color: #fff !important;
+  filter: none !important;
+}
+
+.badgeName {
+  color: #212529 !important;
+}
+
+.badgeName.darkMode {
   color: #fff !important;
 }
 

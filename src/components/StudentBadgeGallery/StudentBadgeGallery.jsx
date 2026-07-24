@@ -158,7 +158,7 @@ function StudentBadgeGallery({ darkMode }) {
   return (
     <div className={styles.galleryContainer}>
       <Row
-        className="bagde-box-shadow"
+        className={darkMode ? 'badge-box-shadow-dark' : 'bagde-box-shadow'}
         style={{
           margin: '0 2px',
           backgroundColor: darkMode ? '#1c2541' : '#ffffff',

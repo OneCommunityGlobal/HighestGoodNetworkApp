@@ -9,7 +9,9 @@ export default function StudentBadgeDetailModal({ isOpen, onClose, badge, darkMo
   return (
     <Modal isOpen={isOpen} toggle={onClose} className={styles.studentBadgeModal}>
       <ModalHeader toggle={onClose}>
-        <span style={{ color: textColor }}>{badge.badgeName}</span>
+        <span className={`${styles.badgeName} ${darkMode ? styles.darkMode : ''}`}>
+          {badge.badgeName}
+        </span>
       </ModalHeader>
       <ModalBody>
         <div
