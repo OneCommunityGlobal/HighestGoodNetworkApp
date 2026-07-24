@@ -1,13 +1,12 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
-import DatePicker, { CalendarContainer } from 'react-datepicker';
+import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import * as d3 from 'd3';
+import { FaTrash } from 'react-icons/fa';
 import styles from './MostFrequentKeywords.module.css';
 import Select, { components as selectComponents } from 'react-select';
-import PropTypes from 'prop-types';
-
 const formatCalendarMonth = date =>
   date.toLocaleString('en-US', {
     month: 'long',
@@ -20,67 +19,14 @@ const DropdownIndicator = props => (
   </selectComponents.DropdownIndicator>
 );
 
-const LIGHT_PALETTE = {
-  controlBg: '#ffffff',
-  controlBorder: '#d1d5db',
-  controlBorderHover: '#3b82f6',
-  text: '#0f172a',
-  mutedText: '#64748b',
-  indicator: '#475569',
-  menuBg: '#ffffff',
-  optionBg: '#ffffff',
-  optionHoverBg: '#e2e8f0',
-  optionSelectedBg: '#dbeafe',
-  groupHeading: '#475569',
-  shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-};
+// Pick the most recent unique-tag items, capped at maxItems.
+function getLatestData(data, isMobile) {
+  if (!data || data.length === 0) return [];
 
-const DARK_PALETTE = {
-  controlBg: '#243447',
-  controlBorder: '#475569',
-  controlBorderHover: '#64748b',
-  text: '#f8fafc',
-  mutedText: '#cbd5e1',
-  indicator: '#e2e8f0',
-  menuBg: '#243447',
-  optionBg: '#243447',
-  optionHoverBg: '#31465f',
-  optionSelectedBg: '#3b82f6',
-  groupHeading: '#94a3b8',
-  shadow: '0 10px 24px rgba(2, 6, 23, 0.45)',
-};
-
-const getPalette = darkMode => (darkMode ? DARK_PALETTE : LIGHT_PALETTE);
-
-const normalizeDate = date => {
-  const normalized = new Date(date);
-  normalized.setHours(0, 0, 0, 0);
-  return normalized;
-};
-
-const isTagWithinDateRange = (itemDate, startDate, endDate) => {
-  if (startDate && endDate) {
-    const start = normalizeDate(startDate);
-    const end = new Date(endDate);
-    end.setHours(23, 59, 59, 999);
-    return itemDate >= start && itemDate <= end;
-  }
-  if (startDate) {
-    return itemDate >= normalizeDate(startDate);
-  }
-  if (endDate) {
-    const end = new Date(endDate);
-    end.setHours(23, 59, 59, 999);
-    return itemDate <= end;
-  }
-  return true;
-};
-
-const getLatestUniqueTags = (data, maxItems) => {
   const sorted = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
-  if (sorted.length < maxItems) {
-    return sorted;
-  }
+  const maxItems = isMobile ? 6 : 8;
+
+  if (sorted.length < maxItems) return sorted;
 
   const latestItems = [];
   const usedTags = new Set();
@@ -94,9 +40,32 @@ const getLatestUniqueTags = (data, maxItems) => {
   }
 
   return latestItems;
-};
+}
 
-function MostFrequentKeywords({ darkMode: propDarkMode }) {
+// Items without a real date are always included; otherwise check the bounds.
+function isWithinDateRange(item, startDate, endDate) {
+  if (!item.date) return true;
+
+  const itemDate = new Date(item.date);
+  itemDate.setHours(0, 0, 0, 0);
+
+  if (startDate) {
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    if (itemDate < start) return false;
+  }
+
+  if (endDate) {
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+    if (itemDate > end) return false;
+  }
+
+  return true;
+}
+
+function MostFrequentKeywords() {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const svgRef = useRef();
   const containerRef = useRef();
   const [projects, setProjects] = useState([]);
@@ -111,9 +80,35 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
   const [isMobile, setIsMobile] = useState(false);
   const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 });
   const API_BASE = process.env.REACT_APP_APIENDPOINT;
-  const reduxDarkMode = useSelector(state => state.theme.darkMode);
-  const darkMode = propDarkMode !== undefined ? propDarkMode : reduxDarkMode;
-  const palette = getPalette(darkMode);
+  const palette = darkMode
+    ? {
+        controlBg: '#243447',
+        controlBorder: '#475569',
+        controlBorderHover: '#64748b',
+        text: '#f8fafc',
+        mutedText: '#cbd5e1',
+        indicator: '#e2e8f0',
+        menuBg: '#243447',
+        optionBg: '#243447',
+        optionHoverBg: '#31465f',
+        optionSelectedBg: '#3b82f6',
+        groupHeading: '#94a3b8',
+        shadow: '0 10px 24px rgba(2, 6, 23, 0.45)',
+      }
+    : {
+        controlBg: '#ffffff',
+        controlBorder: '#d1d5db',
+        controlBorderHover: '#3b82f6',
+        text: '#0f172a',
+        mutedText: '#64748b',
+        indicator: '#475569',
+        menuBg: '#ffffff',
+        optionBg: '#ffffff',
+        optionHoverBg: '#e2e8f0',
+        optionSelectedBg: '#dbeafe',
+        groupHeading: '#475569',
+        shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+      };
 
   // Get today's date for max date restriction
   const today = new Date();
@@ -193,36 +188,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     }
   };
 
-  // Generate clean data for any project
-  const generateProjectSpecificData = projectName => {
-    const isDuplicableCityCenter = projectName.toLowerCase().includes('duplicable city center');
-
-    if (isDuplicableCityCenter) {
-      return [
-        { tag: 'Modular Design', count: 85, date: '2025-03-15' },
-        { tag: 'Prefabrication', count: 78, date: '2025-04-22' },
-        { tag: 'Replicable Units', count: 72, date: '2025-05-10' },
-        { tag: 'Standard Parts', count: 64, date: '2025-06-18' },
-        { tag: 'Urban Planning', count: 81, date: '2025-08-30' },
-        { tag: 'Smart City Tech', count: 69, date: '2025-10-05' },
-        { tag: 'Energy Efficiency', count: 76, date: '2026-01-19' },
-        { tag: 'Mixed Use', count: 68, date: '2026-05-08' },
-      ];
-    }
-
-    return [
-      { tag: 'Site Planning', count: 72, date: '2024-03-15' },
-      { tag: 'Foundation', count: 65, date: '2024-06-22' },
-      { tag: 'Framing', count: 58, date: '2024-09-10' },
-      { tag: 'Electrical', count: 62, date: '2025-01-18' },
-      { tag: 'Plumbing', count: 54, date: '2025-04-25' },
-      { tag: 'HVAC', count: 67, date: '2025-07-30' },
-      { tag: 'Finishing', count: 59, date: '2025-11-14' },
-      { tag: 'Landscaping', count: 51, date: '2026-02-05' },
-    ];
-  };
-
-  const fetchProjectData = async (projectId, projectName) => {
+  const fetchProjectData = async projectId => {
     try {
       setIsLoading(true);
       setError('');
@@ -240,29 +206,21 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
 
         const responseData = response?.data?.data;
         if (responseData && responseData.length > 0) {
-          const dataWithDates = responseData.slice(0, 8).map((item, index) => {
-            const years = [2023, 2024, 2025, 2026];
-            const year = years[index % 4];
-            const month = ((index * 3) % 12) + 1;
-            const day = ((index * 5) % 28) + 1;
-            return {
-              ...item,
-              count: item.count || 50 + index * 5,
-              date: `${year}-${month.toString().padStart(2, '0')}-${day
-                .toString()
-                .padStart(2, '0')}`,
-            };
-          });
-          setAllTags(dataWithDates);
+          const normalizedData = responseData.slice(0, 8).map(item => ({
+            tag: item.tag,
+            count: item.count || 1,
+            date: item.date || null,
+          }));
+          setAllTags(normalizedData);
           return;
         }
-      } catch {
-        // Use generated data when API fails
-      }
 
-      // Fallback to generated data
-      const generatedData = generateProjectSpecificData(projectName);
-      setAllTags(generatedData);
+        // API returned empty — no keywords for this project
+        setAllTags([]);
+      } catch {
+        setError('Failed to load keywords. Please try again.');
+        setAllTags([]);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -282,7 +240,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     } else if (selected.type === 'project') {
       const project = projects.find(p => p._id === selected.value);
       if (project) {
-        fetchProjectData(project._id, project.projectName);
+        fetchProjectData(project._id);
       }
     }
   };
@@ -328,40 +286,25 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     };
   }, [dimensions, isMobile]);
 
-  const getLatestData = useCallback(
-    data => {
-      if (!data || data.length === 0) return [];
-      return getLatestUniqueTags(data, isMobile ? 6 : 8);
-    },
-    [isMobile],
-  );
-
   const filterTagsByDate = useCallback(
     tagsToFilter => {
       if (!tagsToFilter || tagsToFilter.length === 0) return [];
 
       if (!startDate && !endDate) {
-        return getLatestData(tagsToFilter);
+        return getLatestData(tagsToFilter, isMobile);
       }
 
-      const filtered = tagsToFilter.filter(item => {
-        const itemDate = normalizeDate(item.date);
-        return isTagWithinDateRange(itemDate, startDate, endDate);
-      });
+      const filtered = tagsToFilter.filter(item => isWithinDateRange(item, startDate, endDate));
 
       const sorted = [...filtered].sort((a, b) => b.count - a.count);
       const maxItems = isMobile ? 6 : 8;
       const result = sorted.slice(0, maxItems);
 
-      if (result.length === 0) {
-        setError('No data for selected range');
-      } else {
-        setError('');
-      }
+      setError(result.length === 0 ? 'No keywords available for selected filters' : '');
 
       return result;
     },
-    [startDate, endDate, getLatestData, isMobile],
+    [startDate, endDate, isMobile],
   );
 
   useEffect(() => {
@@ -1064,58 +1007,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     backgroundColor: palette.menuBg,
   });
 
-  const applyDarkCalendarTheme = useCallback(() => {
-    requestAnimationFrame(() => {
-      const poppers = Array.from(document.querySelectorAll('.react-datepicker-popper'));
-      const activePopper = poppers.find(popper => popper.offsetParent !== null) || poppers.at(-1);
-      if (!activePopper) return;
-
-      const datepicker = activePopper.querySelector('.react-datepicker');
-      const monthContainer = activePopper.querySelector('.react-datepicker__month-container');
-      const header = activePopper.querySelector('.react-datepicker__header');
-      const currentMonth = activePopper.querySelector('.react-datepicker__current-month');
-      const dayNames = activePopper.querySelectorAll('.react-datepicker__day-name');
-      const days = activePopper.querySelectorAll('.react-datepicker__day');
-
-      if (datepicker) {
-        datepicker.style.backgroundColor = '#0f172a';
-        datepicker.style.borderColor = '#334155';
-      }
-
-      if (monthContainer) {
-        monthContainer.style.backgroundColor = '#0f172a';
-      }
-
-      if (header) {
-        header.style.backgroundColor = '#1e293b';
-        header.style.borderBottomColor = '#334155';
-      }
-
-      if (currentMonth) {
-        currentMonth.style.color = '#f8fafc';
-      }
-
-      dayNames.forEach(dayName => {
-        dayName.style.color = '#e2e8f0';
-        dayName.style.backgroundColor = 'transparent';
-      });
-
-      days.forEach(day => {
-        if (!day.classList.contains('react-datepicker__day--selected')) {
-          day.style.color = '#f8fafc';
-          day.style.backgroundColor = 'transparent';
-        }
-      });
-    });
-  }, []);
-
-  const renderCalendarContainer = useCallback(
-    ({ className, children }) => (
-      <CalendarContainer className={className}>{children}</CalendarContainer>
-    ),
-    [],
-  );
-
   const renderCalendarHeader = useCallback(
     ({ date, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled }) => (
       <div className={styles.mfkCalendarHeader}>
@@ -1144,70 +1035,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
   );
 
   return (
-    <MostFrequentKeywordsView
-      darkMode={darkMode}
-      isMobile={isMobile}
-      selectedOption={selectedOption}
-      onOptionChange={handleOptionChange}
-      dropdownOptions={getDropdownOptions()}
-      selectStyles={{
-        control: getControlStyles,
-        valueContainer: getValueContainerStyles,
-        input: getInputStyles,
-        placeholder: getPlaceholderStyles,
-        singleValue: getSingleValueStyles,
-        indicatorSeparator: getIndicatorSeparatorStyles,
-        indicatorsContainer: getIndicatorsContainerStyles,
-        dropdownIndicator: getIndicatorStyles,
-        clearIndicator: getIndicatorStyles,
-        menu: getMenuStyles,
-        menuList: getMenuListStyles,
-        option: getOptionStyles,
-        groupHeading: getGroupHeadingStyles,
-        noOptionsMessage: getNoOptionsMessageStyles,
-        loadingMessage: getNoOptionsMessageStyles,
-      }}
-      startDate={startDate}
-      endDate={endDate}
-      onStartDateChange={handleStartDateChange}
-      onEndDateChange={handleEndDateChange}
-      today={today}
-      onClearDates={handleClearDates}
-      renderCalendarContainer={renderCalendarContainer}
-      onCalendarOpen={applyDarkCalendarTheme}
-      renderCalendarHeader={darkMode ? renderCalendarHeader : undefined}
-      containerRef={containerRef}
-      isLoading={isLoading}
-      error={error}
-      tags={tags}
-      svgRef={svgRef}
-    />
-  );
-}
-
-function MostFrequentKeywordsView({
-  darkMode,
-  isMobile,
-  selectedOption,
-  onOptionChange,
-  dropdownOptions,
-  selectStyles,
-  startDate,
-  endDate,
-  onStartDateChange,
-  onEndDateChange,
-  today,
-  onClearDates,
-  renderCalendarContainer,
-  onCalendarOpen,
-  renderCalendarHeader,
-  containerRef,
-  isLoading,
-  error,
-  tags,
-  svgRef,
-}) {
-  return (
     <div
       className={`${styles.mfkContainer} ${darkMode ? styles.darkMode : ''} ${
         isMobile ? styles.mobile : ''
@@ -1225,14 +1052,30 @@ function MostFrequentKeywordsView({
             inputId="data-select"
             className={styles.mfkSelect}
             classNamePrefix="data-select"
-            options={dropdownOptions}
+            options={getDropdownOptions()}
             value={selectedOption}
-            onChange={onOptionChange}
+            onChange={handleOptionChange}
             placeholder={isMobile ? 'Select' : 'Choose'}
             isClearable
             isSearchable
             components={{ DropdownIndicator }}
-            styles={selectStyles}
+            styles={{
+              control: getControlStyles,
+              valueContainer: getValueContainerStyles,
+              input: getInputStyles,
+              placeholder: getPlaceholderStyles,
+              singleValue: getSingleValueStyles,
+              indicatorSeparator: getIndicatorSeparatorStyles,
+              indicatorsContainer: getIndicatorsContainerStyles,
+              dropdownIndicator: getIndicatorStyles,
+              clearIndicator: getIndicatorStyles,
+              menu: getMenuStyles,
+              menuList: getMenuListStyles,
+              option: getOptionStyles,
+              groupHeading: getGroupHeadingStyles,
+              noOptionsMessage: getNoOptionsMessageStyles,
+              loadingMessage: getNoOptionsMessageStyles,
+            }}
           />
         </div>
         <div className={styles.controlGroup}>
@@ -1242,7 +1085,7 @@ function MostFrequentKeywordsView({
           <DatePicker
             id="start-date"
             selected={startDate}
-            onChange={onStartDateChange}
+            onChange={handleStartDateChange}
             className={`${styles.mfkDatepicker} ${darkMode ? styles.mfkDatepickerDark : ''}`}
             calendarClassName={darkMode ? 'mfk-dark-calendar' : ''}
             popperClassName={darkMode ? 'mfk-dark-popper' : ''}
@@ -1250,9 +1093,7 @@ function MostFrequentKeywordsView({
             dateFormat={isMobile ? 'MM/dd/yyyy' : 'MM/dd/yy'}
             maxDate={endDate || today}
             minDate={new Date('2023-01-01')}
-            calendarContainer={renderCalendarContainer}
-            onCalendarOpen={onCalendarOpen}
-            renderCustomHeader={renderCalendarHeader}
+            renderCustomHeader={darkMode ? renderCalendarHeader : undefined}
           />
         </div>
         <div className={styles.controlGroup}>
@@ -1262,7 +1103,7 @@ function MostFrequentKeywordsView({
           <DatePicker
             id="end-date"
             selected={endDate}
-            onChange={onEndDateChange}
+            onChange={handleEndDateChange}
             className={`${styles.mfkDatepicker} ${darkMode ? styles.mfkDatepickerDark : ''}`}
             calendarClassName={darkMode ? 'mfk-dark-calendar' : ''}
             popperClassName={darkMode ? 'mfk-dark-popper' : ''}
@@ -1270,14 +1111,17 @@ function MostFrequentKeywordsView({
             dateFormat={isMobile ? 'MM/dd/yyyy' : 'MM/dd/yy'}
             minDate={startDate || new Date('2023-01-01')}
             maxDate={today}
-            calendarContainer={renderCalendarContainer}
-            onCalendarOpen={onCalendarOpen}
-            renderCustomHeader={renderCalendarHeader}
+            renderCustomHeader={darkMode ? renderCalendarHeader : undefined}
           />
         </div>
         {(startDate || endDate) && (
-          <button className={styles.clearButton} onClick={onClearDates} title="Clear">
-            ✕
+          <button
+            className={styles.clearButton}
+            onClick={handleClearDates}
+            title="Clear dates"
+            aria-label="Clear dates"
+          >
+            <FaTrash size={11} />
           </button>
         )}
       </div>
@@ -1286,51 +1130,18 @@ function MostFrequentKeywordsView({
         {isLoading && <div className={styles.mfkLoading}>Loading...</div>}
         {!isLoading && error && <div className={styles.mfkError}>{error}</div>}
         {!isLoading && !error && tags.length === 0 && (
-          <div className={styles.mfkEmpty}>{selectedOption ? 'No data' : 'Select source'}</div>
+          <div className={styles.mfkEmpty}>
+            {selectedOption
+              ? 'No keywords available for selected filters'
+              : 'Select a data source to view keywords'}
+          </div>
         )}
-        {!isLoading && !error && tags.length > 0 && (
+        {!isLoading && !error && tags.length > 0 && dimensions.width > 0 && (
           <svg ref={svgRef} style={{ width: '100%', height: '100%' }} />
         )}
       </div>
     </div>
   );
 }
-
-MostFrequentKeywordsView.propTypes = {
-  darkMode: PropTypes.bool.isRequired,
-  isMobile: PropTypes.bool.isRequired,
-  selectedOption: PropTypes.object,
-  onOptionChange: PropTypes.func.isRequired,
-  dropdownOptions: PropTypes.arrayOf(PropTypes.object).isRequired,
-  selectStyles: PropTypes.object.isRequired,
-  startDate: PropTypes.instanceOf(Date),
-  endDate: PropTypes.instanceOf(Date),
-  onStartDateChange: PropTypes.func.isRequired,
-  onEndDateChange: PropTypes.func.isRequired,
-  today: PropTypes.instanceOf(Date).isRequired,
-  onClearDates: PropTypes.func.isRequired,
-  renderCalendarContainer: PropTypes.func.isRequired,
-  onCalendarOpen: PropTypes.func.isRequired,
-  renderCalendarHeader: PropTypes.func,
-  containerRef: PropTypes.oneOfType([
-    PropTypes.func,
-    PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
-  ]).isRequired,
-  isLoading: PropTypes.bool.isRequired,
-  error: PropTypes.string.isRequired,
-  tags: PropTypes.arrayOf(PropTypes.object).isRequired,
-  svgRef: PropTypes.oneOfType([
-    PropTypes.func,
-    PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
-  ]).isRequired,
-};
-
-MostFrequentKeywords.propTypes = {
-  darkMode: PropTypes.bool,
-};
-
-MostFrequentKeywords.defaultProps = {
-  darkMode: false,
-};
 
 export default MostFrequentKeywords;

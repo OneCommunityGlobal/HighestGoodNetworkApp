@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Select from 'react-select';
 import { useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import styles from './DistributionLaborHours.module.css';
@@ -20,7 +21,7 @@ const CustomTooltip = ({ active, payload, total, darkMode }) => {
       >
         <p>{name}</p>
         <p>{`Hours: ${value} hrs`}</p>
-        <p>{`Percentage: ${percent} %`}</p>
+        <p>{`Percentage: ${percent}%`}</p>
       </div>
     );
   }
@@ -64,6 +65,18 @@ export default function DistributionLaborHours() {
 
   const totalHours = filteredData.reduce((sum, item) => sum + item.value, 0);
 
+  const projectOptions = [
+    { value: '', label: 'ALL' },
+    { value: 'Project A', label: 'Project A' },
+    { value: 'Project B', label: 'Project B' },
+  ];
+
+  const memberOptions = [
+    { value: '', label: 'ALL' },
+    { value: 'Member 1', label: 'Member 1' },
+    { value: 'Member 2', label: 'Member 2' },
+  ];
+
   return (
     <div className={styles.container}>
       <h3 className={styles.title}>Distribution of Labor Hours</h3>
@@ -86,32 +99,39 @@ export default function DistributionLaborHours() {
             onChange={e => setDateRange({ ...dateRange, to: e.target.value })}
           />
         </label>
-        <label>
-          Project:{' '}
-          <select onChange={e => setProjectFilter(e.target.value)} value={projectFilter}>
-            <option value="">All</option>
-            <option value="Project A">Project A</option>
-            <option value="Project B">Project B</option>
-          </select>
+        <label htmlFor="project-filter">
+          Project:
+          <Select
+            options={projectOptions}
+            value={projectOptions.find(opt => opt.value === projectFilter)}
+            onChange={opt => setProjectFilter(opt.value)}
+            className="react-select-container"
+            classNamePrefix="react-select"
+          />
         </label>
-        <label>
-          Member:{' '}
-          <select onChange={e => setMemberFilter(e.target.value)} value={memberFilter}>
-            <option value="">All</option>
-            <option value="Member 1">Member 1</option>
-            <option value="Member 2">Member 2</option>
-          </select>
+        <label htmlFor="member-filter">
+          Member:
+          <Select
+            options={memberOptions}
+            value={memberOptions.find(opt => opt.value === memberFilter)}
+            onChange={opt => setMemberFilter(opt.value)}
+            className="react-select-container"
+            classNamePrefix="react-select"
+          />
         </label>
-        <button className={styles.button} type="button">
-          Submit
-        </button>
+
+        <div className={styles.buttonContainer}>
+          <button className={styles.button} type="button">
+            Submit
+          </button>
+        </div>
       </div>
 
       {/* Chart + Legend */}
       <div className={styles.chartWrapper}>
         <div className={styles.legend}>
           {filteredData.map((entry, index) => (
-            <div key={entry.name} className={styles.legendItem}>
+            <div key={index} className={styles.legendItem}>
               <span
                 className={styles.colorBox}
                 style={{ backgroundColor: COLORS[index % COLORS.length] }}
@@ -144,12 +164,12 @@ export default function DistributionLaborHours() {
                     fontSize={12}
                     fontWeight="600"
                   >
-                    {`${((value / totalHours) * 100).toFixed(1)} %`}
+                    {`${((value / totalHours) * 100).toFixed(1)}%`}
                   </text>
                 )}
               >
                 {filteredData.map((entry, index) => (
-                  <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
               <Tooltip content={<CustomTooltip total={totalHours} darkMode={darkMode} />} />

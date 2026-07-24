@@ -408,9 +408,9 @@ body .email-template-list .action-btn.info-btn {
 
 /* Fix edit button - orange */
 body .email-template-list .action-btn.edit-btn {
-  background-color: #b35a00 !important;
-  color: #ffffff !important;
-  border-color: #d96b00 !important;
+  background-color: #fd7e14 !important;
+  color: #000 !important;
+  border-color: #fd7e14 !important;
 }
 
 /* Fix delete button - red */

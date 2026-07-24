@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { useDispatch, Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import { BrowserRouter as Router } from 'react-router-dom';
 import axios from 'axios';
 import EPLogin from '../EPLogin';
@@ -59,13 +59,9 @@ describe('EPLogin component', () => {
   it('renders without crashing', () => {
     renderComponent(store);
   });
-  it.each([
-    [/log in to good education portal/i, 'Log In To Good Education Portal'],
-    [/email/i, 'Email'],
-    [/password/i, 'Password'],
-  ])('displays %s label when authenticated', (matcher, _label) => {
+  it('check if login elements get displayed when isAuthenticated is true', () => {
     renderComponent(store);
-    expect(screen.getByText(matcher)).toBeInTheDocument();
+    expect(screen.getByText('Log In To Good Education Portal')).toBeInTheDocument();
   });
   it('check if login elements does not get displayed when isAuthenticated is false', () => {
     const testStore = mockStore({
@@ -98,6 +94,14 @@ describe('EPLogin component', () => {
     expect(
       screen.getByText('Note: You must use your Production/Main credentials for this login.'),
     ).toBeInTheDocument();
+  });
+  it('check if email label is displaying as expected', () => {
+    renderComponent(store);
+    expect(screen.getByText('Email')).toBeInTheDocument();
+  });
+  it('check if password label is displaying as expected', () => {
+    renderComponent(store);
+    expect(screen.getByText('Password')).toBeInTheDocument();
   });
   it('check if submit button is disabled when either email or password is not entered', () => {
     renderComponent(store);

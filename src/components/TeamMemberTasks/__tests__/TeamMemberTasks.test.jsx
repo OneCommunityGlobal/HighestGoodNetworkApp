@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import axios from 'axios';
@@ -114,15 +114,7 @@ describe('TeamMemberTasks component', () => {
       </Provider>,
     );
   });
-  it.each([
-    'Team Member Tasks',
-    'Team Member',
-    'Weekly Committed Hours',
-    'Total Hours Completed this Week',
-    'Total Remaining Hours',
-    'Tasks(s)',
-    'Progress',
-  ])('check if %s header is displaying as expected', headerText => {
+  it('check if Team Member Tasks header is displaying as expected', () => {
     axios.get.mockResolvedValue({
       status: 200,
       data: '',
@@ -134,7 +126,91 @@ describe('TeamMemberTasks component', () => {
         </MemoryRouter>
       </Provider>,
     );
-    expect(screen.getByText(headerText)).toBeInTheDocument();
+    expect(screen.getByText('Team Member Tasks')).toBeInTheDocument();
+  });
+  it('check if Team Member header is displaying as expected', () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <TeamMemberTasks />
+        </MemoryRouter>
+      </Provider>,
+    );
+    expect(screen.getByText('Team Member')).toBeInTheDocument();
+  });
+  it('check if Weekly Committed Hours header is displaying as expected', () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <TeamMemberTasks />
+        </MemoryRouter>
+      </Provider>,
+    );
+    expect(screen.getByText('Weekly Committed Hours')).toBeInTheDocument();
+  });
+  it('check if Total Hours Completed this Week header is displaying as expected', () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <TeamMemberTasks />
+        </MemoryRouter>
+      </Provider>,
+    );
+    expect(screen.getByText('Total Hours Completed this Week')).toBeInTheDocument();
+  });
+  it('check if Total Remaining Hours header is displaying as expected', () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <TeamMemberTasks />
+        </MemoryRouter>
+      </Provider>,
+    );
+    expect(screen.getByText('Total Remaining Hours')).toBeInTheDocument();
+  });
+  it('check if Tasks(s) header is displaying as expected', () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <TeamMemberTasks />
+        </MemoryRouter>
+      </Provider>,
+    );
+    expect(screen.getByText('Tasks(s)')).toBeInTheDocument();
+  });
+  it('check if Progress header is displaying as expected', () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <TeamMemberTasks />
+        </MemoryRouter>
+      </Provider>,
+    );
+    expect(screen.getByText('Progress')).toBeInTheDocument();
   });
   it('check if the skeleton loading html elements are shown when isLoading is true', () => {
     axios.get.mockResolvedValue({

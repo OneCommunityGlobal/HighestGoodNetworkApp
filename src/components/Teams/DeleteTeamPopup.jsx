@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
 import '../Header/index.module.css';
@@ -15,6 +14,9 @@ export const DeleteTeamPopup = React.memo(props => {
   const canDeleteTeam = props.hasPermission('deleteTeam');
   const canPutTeam = props.hasPermission('putTeam');
 
+  const wrapLongTeamName = teamName =>
+    teamName && teamName.length >= 60 ? teamName.slice(0, 50) + '...' : teamName;
+
   return (
     <Modal
       isOpen={props.open}
@@ -26,7 +28,9 @@ export const DeleteTeamPopup = React.memo(props => {
       </ModalHeader>
       <ModalBody style={{ textAlign: 'center' }} className={darkMode ? 'bg-yinmn-blue' : ''}>
         <span>
-          {`Are you sure you want to delete the team with name "${props.selectedTeamName}"?
+          {`Are you sure you want to delete the team with name "${wrapLongTeamName(
+            props.selectedTeamName,
+          )}"?
           This action cannot be undone. Switch this team to "Inactive" if you'd like to keep it in the system.`}
         </span>
       </ModalBody>
@@ -68,16 +72,5 @@ export const DeleteTeamPopup = React.memo(props => {
 });
 
 DeleteTeamPopup.displayName = 'DeleteTeamPopup';
-
-DeleteTeamPopup.propTypes = {
-  open: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  onDeleteClick: PropTypes.func.isRequired,
-  onSetInactiveClick: PropTypes.func.isRequired,
-  selectedTeamName: PropTypes.string,
-  selectedTeamId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  selectedTeamCode: PropTypes.string,
-  hasPermission: PropTypes.func.isRequired,
-};
 
 export default connect(null, { hasPermission })(DeleteTeamPopup);

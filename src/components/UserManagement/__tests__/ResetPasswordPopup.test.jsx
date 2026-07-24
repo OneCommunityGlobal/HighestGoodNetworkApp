@@ -2,7 +2,7 @@
 import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import { themeMock } from '../../../__tests__/mockStates';
 import ResetPasswordPopup from '../ResetPasswordPopup';
 
@@ -69,21 +69,61 @@ describe('reset password popup', () => {
       screen.getAllByRole('button', { name: /close/i }).forEach(button => userEvent.click(button));
       expect(onClose).toHaveBeenCalledTimes(2);
     });
-    it.each([
-      ['AB@12345!', 'the password length does not meet the requirement'],
-      ['AB@12345.', 'the password contains illegal symbol'],
-      ['12345678', 'the password contains only numbers'],
-      ['qazwsxedc', 'the password contains only characters'],
-    ])('should popup error when %s', async (password, _description) => {
+    it('should popup error when the password length does not meet the requirement', async () => {
       render(
         <Provider store={store}>
           <ResetPasswordPopup open onReset={onReset} onClose={onClose} />
         </Provider>,
       );
-      await userEvent.type(screen.getByLabelText(/new password/i), password, {
+      await userEvent.type(screen.getByLabelText(/new password/i), 'AB@12345!', {
         allAtOnce: false,
       });
-      await userEvent.type(screen.getByLabelText(/confirm password/i), password, {
+      await userEvent.type(screen.getByLabelText(/confirm password/i), 'AB@12345!', {
+        allAtOnce: false,
+      });
+      await userEvent.click(screen.getByRole('button', { name: /reset password/i }));
+      expect(screen.getByText(invalidPasswordError)).toBeInTheDocument();
+    });
+    it('should popup error when the password contains illegal symbol', async () => {
+      render(
+        <Provider store={store}>
+          <ResetPasswordPopup open onReset={onReset} onClose={onClose} />
+        </Provider>,
+      );
+      await userEvent.type(screen.getByLabelText(/new password/i), 'AB@12345.', {
+        allAtOnce: false,
+      });
+      await userEvent.type(screen.getByLabelText(/confirm password/i), 'AB@12345.', {
+        allAtOnce: false,
+      });
+      await userEvent.click(screen.getByRole('button', { name: /reset password/i }));
+      expect(screen.getByText(invalidPasswordError)).toBeInTheDocument();
+    });
+    it('should popup error when the password contains only numbers', async () => {
+      render(
+        <Provider store={store}>
+          <ResetPasswordPopup open onReset={onReset} onClose={onClose} />
+        </Provider>,
+      );
+      await userEvent.type(screen.getByLabelText(/new password/i), '12345678', {
+        allAtOnce: false,
+      });
+      await userEvent.type(screen.getByLabelText(/confirm password/i), '12345678', {
+        allAtOnce: false,
+      });
+      await userEvent.click(screen.getByRole('button', { name: /reset password/i }));
+      expect(screen.getByText(invalidPasswordError)).toBeInTheDocument();
+    });
+    it('should popup error when the password contains only characters', async () => {
+      render(
+        <Provider store={store}>
+          <ResetPasswordPopup open onReset={onReset} onClose={onClose} />
+        </Provider>,
+      );
+      await userEvent.type(screen.getByLabelText(/new password/i), 'qazwsxedc', {
+        allAtOnce: false,
+      });
+      await userEvent.type(screen.getByLabelText(/confirm password/i), 'qazwsxedc', {
         allAtOnce: false,
       });
       await userEvent.click(screen.getByRole('button', { name: /reset password/i }));

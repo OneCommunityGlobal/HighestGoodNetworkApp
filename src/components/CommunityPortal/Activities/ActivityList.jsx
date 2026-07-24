@@ -3,7 +3,15 @@ import { useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import styles from './ActivityList.module.css';
-// import { useHistory } from 'react-router-dom';
+import {
+  FaTag,
+  FaCalendarAlt,
+  FaMapMarkerAlt,
+  FaDumbbell,
+  FaUsers,
+  FaGraduationCap,
+  FaPalette,
+} from 'react-icons/fa';
 import { fuzzySearch } from '../../../utils/fuzzySearch';
 import { mockActivities } from './mockActivities';
 
@@ -13,12 +21,13 @@ function ActivityList() {
   const [error, setError] = useState(null);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+
   const darkMode = useSelector(state => state.theme.darkMode);
+
   const [filter, setFilter] = useState({
     type: '',
     date: '',
     location: '',
-    pastEvents: false,
   });
   const [locationSuggestions, setLocationSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -27,6 +36,10 @@ function ActivityList() {
   const [sortOrder, setSortOrder] = useState('earliest');
   const [showPastEvents, setShowPastEvents] = useState(false);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  // Dark mode body class
   useEffect(() => {
     if (darkMode) {
       document.body.classList.add('activity-list-dark-body');
@@ -39,18 +52,22 @@ function ActivityList() {
     };
   }, [darkMode]);
 
+  // Fetch activities (mock fallback)
   useEffect(() => {
     const fetchActivities = async () => {
       try {
         setLoading(true);
         setError(null);
+
         throw new Error('API not implemented yet');
       } catch (err) {
         setError(err.message);
+
         const parsed = mockActivities.map(a => ({
           ...a,
           _dateObj: new Date(`${a.date}T00:00:00`),
         }));
+
         setActivities(parsed);
       } finally {
         setLoading(false);
@@ -59,6 +76,11 @@ function ActivityList() {
 
     fetchActivities();
   }, []);
+
+  // Reset pagination on filter/sort change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter, sortOrder, showPastEvents]);
 
   const handleFilterChange = e => {
     const { name, value } = e.target;
@@ -95,12 +117,12 @@ function ActivityList() {
       type: '',
       date: '',
       location: '',
-      showPastEvents: false,
     });
     setLocationSuggestions([]);
     setShowSuggestions(false);
     setDateError('');
     setShowPastEvents(false);
+    setCurrentPage(1);
   };
 
   const handleActivityClick = activity => {
@@ -112,11 +134,38 @@ function ActivityList() {
     setModalOpen(false);
   };
 
+  const getTypeIcon = type => {
+    switch (type) {
+      case 'Fitness':
+        return <FaDumbbell className={styles.activityIcon} />;
+      case 'Social':
+        return <FaUsers className={styles.activityIcon} />;
+      case 'Educational':
+        return <FaGraduationCap className={styles.activityIcon} />;
+      case 'Art':
+        return <FaPalette className={styles.activityIcon} />;
+      default:
+        return <FaTag className={styles.activityIcon} />;
+    }
+  };
+
   const startOfToday = useMemo(() => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
     return d;
   }, []);
+
+  const activityTypes = useMemo(() => {
+    const typeOrder = new Map();
+
+    activities.forEach(activity => {
+      if (activity.type && !typeOrder.has(activity.type)) {
+        typeOrder.set(activity.type, typeOrder.size);
+      }
+    });
+
+    return [...typeOrder.keys()].sort((a, b) => typeOrder.get(a) - typeOrder.get(b));
+  }, [activities]);
 
   const filteredActivities = activities
     .filter(activity => showPastEvents || activity._dateObj >= startOfToday)
@@ -134,41 +183,13 @@ function ActivityList() {
       return sortOrder === 'earliest' ? dateA - dateB : dateB - dateA;
     });
 
-  const renderActivityListContent = () => {
-    if (loading) {
-      return <p className={darkMode ? 'text-light' : ''}>Loading activities...</p>;
-    }
-    if (filteredActivities.length > 0) {
-      return (
-        <ul>
-          {filteredActivities.map(activity => (
-            <div
-              key={activity.id}
-              style={{ cursor: 'pointer' }}
-              onClick={() => handleActivityClick(activity)}
-              tabIndex={0}
-              role="button"
-              aria-label={`View details for ${activity.name}`}
-              onKeyDown={e => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  handleActivityClick(activity);
-                }
-              }}
-            >
-              <li className={`${styles.activityItem} ${darkMode ? styles.darkModeItem : ''}`}>
-                <strong>{activity.name}</strong>
-                <span>
-                  {activity.type} – {activity.date} – {activity.location}
-                </span>
-              </li>
-            </div>
-          ))}
-        </ul>
-      );
-    }
-    return <p className={darkMode ? 'text-light' : ''}>No activities found</p>;
-  };
+  // Pagination
+  const totalPages = Math.ceil(filteredActivities.length / itemsPerPage);
+  const safePage = Math.min(currentPage, totalPages || 1);
+  const startIndex = (safePage - 1) * itemsPerPage;
 
+  const paginatedActivities = filteredActivities.slice(startIndex, startIndex + itemsPerPage);
+  const hasActivities = paginatedActivities.length > 0;
   return (
     <div
       className={`${styles.activityListContainer} ${
@@ -288,15 +309,84 @@ function ActivityList() {
         </div>
       </div>
 
+      {/* Activity List */}
       <div className={`${styles.activityList} ${darkMode ? styles.darkModeList : ''}`}>
-        {renderActivityListContent()}
+        {loading && <p className={darkMode ? 'text-light' : ''}>Loading activities...</p>}
+
+        {!loading && hasActivities && (
+          <ul>
+            {paginatedActivities.map(activity => (
+              <div
+                key={activity.id}
+                style={{ cursor: 'pointer' }}
+                onClick={() => handleActivityClick(activity)}
+                tabIndex={0}
+                role="button"
+                aria-label={`View details for ${activity.name}`}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    handleActivityClick(activity);
+                  }
+                }}
+              >
+                <li className={`${styles.activityItem} ${darkMode ? styles.darkModeItem : ''}`}>
+                  <strong>{activity.name}</strong>
+
+                  {/* Type */}
+                  <div className={styles.altypeRow}>
+                    {getTypeIcon(activity.type)}
+                    <span className={styles.altypeText}>{activity.type}</span>
+                  </div>
+
+                  {/* Location + Date */}
+                  <div className={styles.allocationDateRow}>
+                    <div className={styles.allocation}>
+                      <FaMapMarkerAlt className={styles.alactivityIcon} />
+                      <span>{activity.location}</span>
+                    </div>
+
+                    <div className={styles.aldate}>
+                      <FaCalendarAlt className={styles.alactivityIcon} />
+                      <span>{activity.date}</span>
+                    </div>
+                  </div>
+                </li>
+              </div>
+            ))}
+          </ul>
+        )}
+
+        {!loading && !hasActivities && (
+          <p className={darkMode ? 'text-light' : ''}>No activities found</p>
+        )}
       </div>
 
-      {/* Modal for activity details */}
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className={styles.pagination}>
+          <Button onClick={() => setCurrentPage(p => p - 1)} disabled={safePage === 1}>
+            Prev
+          </Button>
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+            <Button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={page === safePage ? styles.activePage : ''}
+            >
+              {page}
+            </Button>
+          ))}
+
+          <Button onClick={() => setCurrentPage(p => p + 1)} disabled={safePage === totalPages}>
+            Next
+          </Button>
+        </div>
+      )}
+
+      {/* Modal */}
       <Modal isOpen={modalOpen} toggle={handleCloseModal}>
-        <ModalHeader toggle={handleCloseModal}>
-          {selectedActivity ? selectedActivity.name : ''}
-        </ModalHeader>
+        <ModalHeader toggle={handleCloseModal}>{selectedActivity?.name}</ModalHeader>
         <ModalBody>
           {selectedActivity && (
             <div>
@@ -315,7 +405,6 @@ function ActivityList() {
               <p>
                 <strong>Description:</strong> {selectedActivity.description}
               </p>
-              {/* Add more details as needed */}
             </div>
           )}
         </ModalBody>

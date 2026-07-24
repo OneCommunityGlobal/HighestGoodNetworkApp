@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
@@ -200,11 +199,5 @@ function CurrentPromptModal(props) {
     </div>
   );
 }
-
-CurrentPromptModal.propTypes = {
-  userRole: PropTypes.string,
-  userId: PropTypes.string,
-  darkMode: PropTypes.bool,
-};
 
 export default CurrentPromptModal;

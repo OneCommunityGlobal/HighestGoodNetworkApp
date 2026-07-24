@@ -1,5 +1,4 @@
 import Loading from '../common/Loading';
-import PropTypes from 'prop-types';
 import styles from './PopUpBar.module.css';
 
 function PopUpBar({
@@ -9,8 +8,8 @@ function PopUpBar({
   onClickClose,
   textColor = '#000',
   isLoading = false,
+  // eslint-disable-next-line no-unused-vars
   button = true,
-  isMeetingNotification = false,
 }) {
   const defaultTemplate =
     `You are currently functioning as ${firstName} ${lastName}, ` +
@@ -18,43 +17,18 @@ function PopUpBar({
 
   const displayText = message ?? defaultTemplate;
 
-  const containerClass = [
-    styles.popupContainer,
-    textColor === 'black_text' ? styles.blackText : '',
-    isMeetingNotification ? styles.meetingNotification : '',
-  ]
-    .filter(Boolean)
-    .join(' ');
-
   return (
     <div
-      className={containerClass}
+      className={`${styles.popupContainer}`}
       data-testid="test-popup"
-      style={textColor === 'black_text' ? undefined : { color: textColor }}
+      style={{ color: textColor }}
     >
-      {isLoading ? (
-        <Loading />
-      ) : (
-        <p className={styles.popupMessage} dangerouslySetInnerHTML={{ __html: displayText }} />
-      )}
-      {button && (
-        <button type="button" className={styles.closeButton} onClick={onClickClose}>
-          X
-        </button>
-      )}
+      {isLoading ? <Loading /> : <p className="popup_message">{displayText}</p>}
+      <button type="button" className={`${styles.closeButton}`} onClick={onClickClose}>
+        X
+      </button>
     </div>
   );
 }
-
-PopUpBar.propTypes = {
-  firstName: PropTypes.string,
-  lastName: PropTypes.string,
-  message: PropTypes.string,
-  onClickClose: PropTypes.func,
-  textColor: PropTypes.string,
-  isLoading: PropTypes.bool,
-  button: PropTypes.bool,
-  isMeetingNotification: PropTypes.bool,
-};
 
 export default PopUpBar;

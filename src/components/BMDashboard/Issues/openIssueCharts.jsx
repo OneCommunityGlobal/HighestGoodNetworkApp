@@ -1,16 +1,16 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   BarChart,
   Bar,
-  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  LabelList,
 } from 'recharts';
 import Select from 'react-select';
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
@@ -31,6 +31,15 @@ const getThemeColors = isDark => ({
   hoverBg: isDark ? '#2d3748' : '#e2e8f0',
 });
 
+const getErrorColor = isDark => (isDark ? '#fca5a5' : '#dc2626');
+
+const getOptionBackground = (isDark, isFocused) => {
+  if (isFocused) {
+    return isDark ? '#2d3748' : '#e2e8f0';
+  }
+  return isDark ? '#1a202c' : '#ffffff';
+};
+
 const getChartClasses = (css, isDark) => ({
   containerClass: `${css.issueChartContainer} ${isDark ? css.issueChartContainerDark : ''}`,
   labelClass: `${css.issueChartLabel} ${isDark ? css.issueChartLabelDark : ''}`,
@@ -40,40 +49,52 @@ const getChartClasses = (css, isDark) => ({
   noDataContentClass: `${css.noDataContent} ${isDark ? css.noDataContentDark : ''}`,
 });
 
-// Deterministic, collision-resistant color per projectId
-const getStableProjectColor = projectId => {
-  if (!projectId) return '#94a3b8';
-
-  let hash = 0;
-  for (let i = 0; i < projectId.length; i++) {
-    hash = projectId.codePointAt(i) + ((hash << 5) - hash);
-  }
-
-  const hue = Math.abs(hash) % 360;
-  const saturation = 65;
-  const lightness = 50;
-
-  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-};
-
-const getProjectColorMap = issues => {
-  const map = {};
-  (issues || []).forEach(issue => {
-    (issue.projects || []).forEach(p => {
-      if (p?.projectId && !map[p.projectId]) {
-        map[p.projectId] = getStableProjectColor(p.projectId);
-      }
-    });
-  });
-  return map;
-};
+const createSelectStyles = (isDark, textColor) => ({
+  control: (base, state) => ({
+    ...base,
+    backgroundColor: isDark ? '#2d3748' : '#ffffff',
+    borderColor: isDark ? '#4a5568' : '#cbd5e0',
+    boxShadow: state.isFocused ? '0 0 0 1px #4caf50' : 'none',
+    '&:hover': {
+      borderColor: '#4caf50',
+    },
+    color: textColor,
+  }),
+  menu: base => ({
+    ...base,
+    backgroundColor: isDark ? '#1a202c' : '#ffffff',
+    color: textColor,
+  }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: getOptionBackground(isDark, state.isFocused),
+    color: textColor,
+    cursor: 'pointer',
+  }),
+  singleValue: base => ({
+    ...base,
+    color: textColor,
+  }),
+  multiValue: base => ({
+    ...base,
+    backgroundColor: isDark ? '#4a5568' : '#e2e8f0',
+  }),
+  multiValueLabel: base => ({
+    ...base,
+    color: textColor,
+  }),
+  placeholder: base => ({
+    ...base,
+    color: isDark ? '#a0aec0' : '#718096',
+  }),
+});
 
 /* --------------------------- component --------------------------- */
 
 function IssueCharts() {
   const dispatch = useDispatch();
-  const darkMode = useSelector(state => state.theme.darkMode);
-  const { issues, selectedProjects } = useSelector(state => state.bmissuechart);
+  const darkMode = useSelector(state => state.theme?.darkMode);
+  const { issues, loading, error, selectedProjects } = useSelector(state => state.bmissuechart);
   const projects = useSelector(state => state.bmProjects);
 
   const [startDate, setStartDate] = useState(null);
@@ -81,7 +102,8 @@ function IssueCharts() {
   const chartContainerRef = useRef(null);
   const [containerWidth, setContainerWidth] = useState(window.innerWidth);
 
-  const { textColor } = getThemeColors(darkMode);
+  const { textColor, gridColor, tooltipBg, tooltipBorder, hoverBg } = getThemeColors(darkMode);
+  const errorColor = getErrorColor(darkMode);
   const {
     containerClass,
     labelClass,
@@ -90,6 +112,99 @@ function IssueCharts() {
     noDataMessageClass,
     noDataContentClass,
   } = getChartClasses(styles, darkMode);
+  const selectStyles = createSelectStyles(darkMode, textColor);
+
+  const loadingMessageStyle = {
+    color: textColor,
+    textAlign: 'center',
+    padding: '20px',
+  };
+
+  const errorMessageStyle = {
+    color: errorColor,
+    textAlign: 'center',
+    padding: '20px',
+  };
+
+  // Normalize issues for chart
+  // Number issues per project to avoid conflicts when multiple projects are selected
+  // Prefix with project name when multiple projects are selected to distinguish them
+  const normalizedIssues = useMemo(() => {
+    if (!issues || issues.length === 0) return [];
+
+    // Check if multiple projects are selected
+    const uniqueProjectIds = new Set((issues || []).map(item => item.projectId).filter(Boolean));
+    const multipleProjects = uniqueProjectIds.size > 1;
+
+    // Group issues by projectId
+    const issuesByProject = new Map();
+    (issues || []).forEach(item => {
+      const projectId = item.projectId || 'unknown';
+      if (!issuesByProject.has(projectId)) {
+        issuesByProject.set(projectId, []);
+      }
+      issuesByProject.get(projectId).push(item);
+    });
+
+    // Create per-project numbering maps
+    const projectNumberMaps = new Map();
+
+    issuesByProject.forEach((projectIssues, projectId) => {
+      const issueIdToNumber = new Map();
+      let counter = 1;
+
+      // Sort issues by issueId within each project for consistent ordering
+      const sortedById = [...projectIssues].sort((a, b) => {
+        const idA = a.issueId || '';
+        const idB = b.issueId || '';
+        return idA.localeCompare(idB);
+      });
+
+      // Assign numbers to issues without names within this project
+      sortedById.forEach(item => {
+        if (!item.issueName && item.issueId && !issueIdToNumber.has(item.issueId)) {
+          issueIdToNumber.set(item.issueId, counter++);
+        }
+      });
+
+      projectNumberMaps.set(projectId, issueIdToNumber);
+    });
+
+    // Map back to original order (sorted by duration) but use per-project numbers
+    return (issues || []).map(item => {
+      const projectId = item.projectId || 'unknown';
+      const projectNumberMap = projectNumberMaps.get(projectId);
+
+      // Generate the base issue name
+      let baseIssueName = item.issueName;
+      let isGeneratedName = false;
+
+      if (!baseIssueName) {
+        // If no name, generate Issue #X based on project numbering
+        if (item.issueId && projectNumberMap?.has(item.issueId)) {
+          baseIssueName = `Issue #${projectNumberMap.get(item.issueId)}`;
+          isGeneratedName = true;
+        } else {
+          baseIssueName = 'Untitled Issue';
+          isGeneratedName = true;
+        }
+      }
+
+      // Only prefix with project name if:
+      // 1. Multiple projects are selected AND
+      // 2. The issue name was generated (Issue #X), not a real name
+      // This keeps the display clean for named issues while distinguishing unnamed issues
+      const finalIssueName =
+        multipleProjects && isGeneratedName && item.projectName
+          ? `${item.projectName} - ${baseIssueName}`
+          : baseIssueName;
+
+      return {
+        issueName: finalIssueName,
+        durationOpen: item.durationOpen ?? 0,
+      };
+    });
+  }, [issues]);
 
   useEffect(() => {
     dispatch(fetchBMProjects());
@@ -111,57 +226,6 @@ function IssueCharts() {
 
     dispatch(fetchLongestOpenIssues(dateRange, selectedProjects));
   }, [dispatch, startDate, endDate, selectedProjects]);
-
-  const normalizedIssues = (issues || []).map(issue => {
-    if (Array.isArray(issue.projects) && issue.projects.length > 0) {
-      return issue;
-    }
-    // fallback when backend does not send projects
-    return {
-      ...issue,
-      projects: [
-        {
-          projectId: 'unknown',
-          projectName: 'Unknown Project',
-          durationOpen: issue.durationOpen,
-        },
-      ],
-    };
-  });
-
-  // Step 1: Normalize missing issue names
-  const safeIssues = normalizedIssues.map(issue => {
-    const name = issue.issueName;
-    return {
-      ...issue,
-      issueName:
-        typeof name === 'string' && name.trim() && name !== 'undefined'
-          ? name.trim()
-          : 'Unknown Issue',
-    };
-  });
-
-  // Step 2: Use safeIssues for chartData
-  const chartData = safeIssues.flatMap(issue =>
-    (issue.projects || []).map(project => ({
-      issueName: issue.issueName,
-      projectId: project.projectId,
-      durationOpen: project.durationOpen,
-    })),
-  );
-
-  // Step 3: Stable project color map and legend
-  const projectColorMap = getProjectColorMap(safeIssues);
-
-  const projectLegend = Object.entries(projectColorMap).map(([projectId, color]) => {
-    const project = safeIssues.flatMap(i => i.projects || []).find(p => p.projectId === projectId);
-
-    return {
-      projectId,
-      projectName: project?.projectName || 'Unknown Project',
-      color,
-    };
-  });
 
   useEffect(() => {
     function handleResize() {
@@ -196,7 +260,66 @@ function IssueCharts() {
 
   /* ------------ decide what to show inside chart container ------------ */
 
-  // (chartContent block removed; chart rendering is below in render)
+  let chartContent;
+
+  if (error) {
+    chartContent = <div style={errorMessageStyle}>Error: {error}</div>;
+  } else if (loading) {
+    chartContent = <div style={loadingMessageStyle}>Loading chart data...</div>;
+  } else if (!normalizedIssues || normalizedIssues.length === 0) {
+    chartContent = (
+      <div className={noDataMessageClass}>
+        <div className={noDataContentClass}>
+          <h3>No Open Issues Found</h3>
+          <p>There are currently no open issues matching your selected criteria.</p>
+          <p>Try adjusting your date range or project filters to see more results.</p>
+        </div>
+      </div>
+    );
+  } else {
+    chartContent = (
+      <ResponsiveContainer width="100%" height={400}>
+        <BarChart data={normalizedIssues} layout="vertical" margin={margin}>
+          <CartesianGrid stroke={gridColor} />
+          <XAxis
+            type="number"
+            tick={{ fill: textColor }}
+            label={{
+              value: 'Duration in Months',
+              position: 'insideBottom',
+              offset: -5,
+              fill: textColor,
+            }}
+          />
+          <YAxis
+            dataKey="issueName"
+            type="category"
+            tick={{ fontSize: 14, fill: textColor }}
+            width={yAxisWidth}
+          />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: tooltipBg,
+              borderColor: tooltipBorder,
+            }}
+            itemStyle={{ color: textColor }}
+            labelStyle={{ color: textColor }}
+            formatter={value => `${value} months`}
+            labelFormatter={label => `Issue : ${label}`}
+            cursor={{ fill: hoverBg, opacity: 0.8 }}
+          />
+          <Bar name="Duration Open" dataKey="durationOpen" fill="#6495ED" barSize={30}>
+            <LabelList
+              dataKey="durationOpen"
+              position="right"
+              formatter={v => `${v} months`}
+              style={{ fill: textColor }}
+            />
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    );
+  }
 
   /* --------------------------- render --------------------------- */
 
@@ -309,82 +432,7 @@ function IssueCharts() {
       </div>
 
       <div className={chartContainerClass} ref={chartContainerRef}>
-        {/* Step 6: Project Legend above the chart */}
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            alignItems: 'center',
-            gap: '12px',
-            marginBottom: '12px',
-            justifyContent: 'center',
-          }}
-        >
-          {projectLegend.map(p => (
-            <div key={p.projectId} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span
-                style={{
-                  width: 12,
-                  height: 12,
-                  backgroundColor: p.color,
-                  borderRadius: 2,
-                  display: 'inline-block',
-                }}
-              />
-              <span style={{ fontSize: 13, color: textColor }}>{p.projectName}</span>
-            </div>
-          ))}
-        </div>
-        {!issues || issues.length === 0 ? (
-          <div className={noDataMessageClass}>
-            <div className={noDataContentClass}>
-              <h3>No Open Issues Found</h3>
-              <p>There are currently no open issues matching your selected criteria.</p>
-              <p>Try adjusting your date range or project filters to see more results.</p>
-            </div>
-          </div>
-        ) : (
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} layout="vertical" margin={margin}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                type="number"
-                label={{ value: 'Duration in Months', position: 'insideBottom', offset: -12 }}
-              />
-              <YAxis
-                dataKey="issueName"
-                type="category"
-                tick={{ fontSize: 14, fontWeight: 500 }}
-                width={yAxisWidth}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: darkMode ? '#1e1e1e' : '#ffffff',
-                  border: `1px solid ${darkMode ? '#4a5568' : '#e2e8f0'}`,
-                  color: darkMode ? '#f3f4f6' : '#1a202c',
-                  borderRadius: '6px',
-                }}
-                labelStyle={{
-                  color: darkMode ? '#d1d5db' : '#111827',
-                  fontWeight: 600,
-                }}
-                itemStyle={{
-                  color: darkMode ? '#e5e7eb' : '#1a202c',
-                }}
-                formatter={value => `${value} months`}
-                labelFormatter={label => `Issue: ${label}`}
-              />
-              <Bar dataKey="durationOpen" barSize={22} isAnimationActive={false}>
-                {chartData.map(entry => (
-                  <Cell
-                    key={`${entry.issueName}-${entry.projectId}`}
-                    fill={projectColorMap[entry.projectId] || '#94a3b8'}
-                  />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        )}
+        {chartContent}
       </div>
     </div>
   );
