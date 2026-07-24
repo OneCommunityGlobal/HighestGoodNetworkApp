@@ -374,7 +374,7 @@
 .checkboxOption {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
   margin: 0;
   cursor: pointer;
   font-weight: 500;
@@ -388,10 +388,13 @@
   flex-shrink: 0;
 }
 
+/* Fixed, identical size for radios and checkbox so their left edges line up
+   on a straight left line and the control-to-text gap is uniform. */
 .filterItem input[type='radio'],
 .filterItem input[type='checkbox'] {
   display: inline-block; /* <– keeps input on same line as text */
-  width: auto;
+  width: 16px;
+  height: 16px;
   padding: 0;
   margin: 0;
   vertical-align: middle;
