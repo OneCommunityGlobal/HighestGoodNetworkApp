@@ -376,6 +376,7 @@ body {
 
 .peopleReportFlexLayout {
   display: flex;
+  flex-direction: row-reverse;
   flex-wrap: nowrap; 
   align-items: flex-start;
   justify-content: space-between;
