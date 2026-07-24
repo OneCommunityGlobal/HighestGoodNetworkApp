@@ -1,9 +1,10 @@
 /* eslint-disable jsx-a11y/no-autofocus */
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../Header/index.css';
+import '../Header/index.module.css';
 const TEAM_NAME_MAX_LENGTH = 100;
 
 export const CreateNewTeamPopup = React.memo(props => {
@@ -32,17 +33,9 @@ export const CreateNewTeamPopup = React.memo(props => {
     }
   };
 
-  //prettier-ignore
-  const formatSearchInput = text => text.toLowerCase().replace(/\s+/g, '').trim();
-
   const handleSubmit = async () => {
-    const teamNames = allTeams.filter(team => team.teamName).map(team => team.teamName);
-    const matchingTeams = teamNames.find(
-      team => formatSearchInput(team) === formatSearchInput(newTeam),
-    );
-
     if (newTeam !== '') {
-      if (!matchingTeams || (props.isEdit && !matchingTeams)) {
+      if (!teamExists || props.isEdit) {
         await props.onOkClick(newTeam, props.isEdit);
       } else {
         setTeamExists(true);
@@ -82,11 +75,29 @@ export const CreateNewTeamPopup = React.memo(props => {
         >
           {newTeam.length}/{TEAM_NAME_MAX_LENGTH} characters
         </small>
-        {!isValidTeam && <Alert color="danger">Please enter a team name.</Alert>}
-        {teamExists && (
-          <Alert color="warning">
-            That’s a great team name! So great that someone else already created that team. Please
-            choose a new name or use the existing team.
+        {!isValidTeam && (
+          <Alert
+            color="danger"
+            style={
+              darkMode
+                ? { backgroundColor: '#2d1b1b', color: '#f8d7da', borderColor: '#dc3545' }
+                : {}
+            }
+          >
+            Please enter a team name.
+          </Alert>
+        )}
+        {teamExists && !props.isEdit && (
+          <Alert
+            color="warning"
+            style={
+              darkMode
+                ? { backgroundColor: '#2d2a1a', color: '#fff3cd', borderColor: '#ffc107' }
+                : {}
+            }
+          >
+            That&apos;s a great team name! So great that someone else already created that team.
+            Please choose a new name or use the existing team.
           </Alert>
         )}
       </ModalBody>
@@ -103,5 +114,20 @@ export const CreateNewTeamPopup = React.memo(props => {
 });
 
 CreateNewTeamPopup.displayName = 'CreateNewTeamPopup';
+
+CreateNewTeamPopup.propTypes = {
+  open: PropTypes.bool.isRequired,
+  teamName: PropTypes.string,
+  isEdit: PropTypes.bool,
+  onClose: PropTypes.func,
+  onOkClick: PropTypes.func,
+};
+
+CreateNewTeamPopup.defaultProps = {
+  teamName: '',
+  isEdit: false,
+  onClose: () => {},
+  onOkClick: () => {},
+};
 
 export default CreateNewTeamPopup;
