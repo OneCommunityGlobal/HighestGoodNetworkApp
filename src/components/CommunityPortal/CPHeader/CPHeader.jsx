@@ -425,7 +425,7 @@ export function Header(props) {
                     {isAuthenticated && (
                       <DropdownItem
                         tag={Link}
-                        to="/communityportal/activity/:activityid/resources"
+                        to="/communityportal/activity/:activityid/resourcemanagement"
                         className={fontColor}
                       >
                         {ACTIVITY_RESOURCE_MANGEMENT}

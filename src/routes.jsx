@@ -930,7 +930,7 @@ export default (
           fallback
         />
         <CPProtectedRoute
-          path="/communityportal/activity/:activityId/ResourceManagement"
+          path="/communityportal/activity/:activityId/resourcemanagement"
           exact
           component={ResourceManagement}
           fallback
