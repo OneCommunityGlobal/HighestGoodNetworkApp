@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import TinyBarChart from '../TinyBarChart';
 import Loading from '../../common/Loading';
 
-export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
+export default function HoursCompletedBarChart({ isLoading, data, darkMode, comparisonType }) {
   const initialCardSize = () => {
     if (window.innerWidth <= 680) {
       return { height: '240px' };
@@ -104,6 +104,19 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
     1,
   )}% Projects (${projectHoursCount.toFixed(2)}) (Total = 100%)`;
 
+  const projectBarInfo = {
+    ifcompare:
+      comparisonType !== 'No Comparison' &&
+      projectChangePercentage !== undefined &&
+      projectChangePercentage !== null,
+    amount: projectHours.count,
+    percentage: `${(projectPercentage * 100).toFixed(2)}%`,
+    change:
+      projectChangePercentage > 0
+        ? `+${(projectChangePercentage * 100).toFixed(0)}%`
+        : `${(projectChangePercentage * 100).toFixed(0)}%`,
+    fontcolor: projectChangePercentage >= 0 ? greenColor : 'red',
+  };
   const renderCustomizedLabel = props => {
     const { x, y, width, value, index } = props;
     if (typeof y !== 'number' || Number.isNaN(y)) {
