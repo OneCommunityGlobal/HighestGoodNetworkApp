@@ -132,6 +132,27 @@ function EquipmentsInputs({
               </Col>
             </Row>
           </Col>
+
+          <Col xs="auto" className={`${styles.InputsMargin} ${styles.resetCol}`}>
+            <button
+              type="button"
+              className={styles.btnReset}
+              onClick={() => {
+                setLocalProjectValues([]);
+                setLocalEquipmentValues([]);
+                setProject([]);
+                setEquipment([]);
+                localStorage.removeItem(PROJECT_KEY);
+                localStorage.removeItem(ITEM_KEY);
+              }}
+              disabled={
+                localStorage.getItem(PROJECT_KEY) === null &&
+                localStorage.getItem(ITEM_KEY) === null
+              }
+            >
+              Reset
+            </button>
+          </Col>
         </Row>
       </Form>
     </div>

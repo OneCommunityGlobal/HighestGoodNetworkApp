@@ -536,7 +536,7 @@ body.bm-dashboard-dark .BuildingTitle svg {
   align-items: center;
   gap: 3px;
   padding: 6px 10px;
-  border: 1px solid #4dabf7;
+  border: 1px solid #78bdda;
   border-radius: 8px;
   color: #0d5675;
   text-decoration: none;
@@ -559,29 +559,24 @@ body.bm-dashboard-dark .BuildingTitle svg {
   font-weight: 500;
 }
 
-body.dark-mode .returnBtn,
-body.bm-dashboard-dark .returnBtn {
-  background-color: #1a3a4d;
+.darkMode .returnBtn {
+  background-color: #2e5061;
   color: #fff;
 }
 
-body.dark-mode .returnBtn:hover,
-body.bm-dashboard-dark .returnBtn:hover {
+.darkMode .returnBtn:hover {
   background-color: #1a73c0;
+}
+
+.darkMode .categoryIconLink {
+  border-color: #4a9bc2;
+  color: #5eb3e4;
+}
+
+.darkMode .categoryIconLink:hover {
+  background-color: #2e5061;
   color: #fff;
-}
-
-body.dark-mode .categoryIconLink,
-body.bm-dashboard-dark .categoryIconLink {
-  border-color: #4dabf7;
-  color: #4dabf7;
-}
-
-body.dark-mode .categoryIconLink:hover,
-body.bm-dashboard-dark .categoryIconLink:hover {
-  background-color: #4dabf7;
-  color: #0f172a;
-  border-color: #4dabf7;
+  border-color: #4a9bc2;
 }
 
 body.dark-mode .PageViewContainer,
@@ -591,4 +586,42 @@ body.bm-dashboard-dark .PageViewContainer {
 
 .darkTitle {
   color: #fff !important;
+}
+
+/* ── Reset Button ── */
+.resetCol {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.btnReset {
+  height: 38px;
+  padding: 0 1.2rem;
+  font-weight: 500;
+  background-color: #dc2626;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btnReset:hover {
+  background-color: #b91c1c;
+}
+
+.btnReset:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+body.dark-mode .btnReset,
+body.bm-dashboard-dark .btnReset {
+  background-color: #b91c1c;
+}
+
+body.dark-mode .btnReset:hover,
+body.bm-dashboard-dark .btnReset:hover {
+  background-color: #991b1b;
 }
