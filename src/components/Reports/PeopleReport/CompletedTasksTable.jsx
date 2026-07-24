@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { FiClipboard } from 'react-icons/fi';
-import { useTable } from 'react-table';
+import { usePagination, useTable } from 'react-table';
 
 import { peopleTasksPieChartViewData } from '~/components/Reports/PeopleReport/selectors';
 
@@ -11,11 +11,13 @@ function CompletedTasksTable() {
   const { tasksWithLoggedHoursById } = useSelector(peopleTasksPieChartViewData);
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const data = useMemo(() => tasksWithLoggedHoursById ?? [], [tasksWithLoggedHoursById]);
+  const data = useMemo(() => {
+    return tasksWithLoggedHoursById ?? [];
+  }, [tasksWithLoggedHoursById]);
 
   const totals = useMemo(() => {
     const totalHours = data.reduce((sum, t) => sum + (Number(t.totalTime) || 0), 0).toFixed(2);
-    return { taskCount: data.length, totalHours};
+    return { taskCount: data.length, totalHours };
   }, [data]);
 
   const columns = useMemo(
@@ -23,17 +25,23 @@ function CompletedTasksTable() {
       {
         id: 'index',
         Header: '#',
-        Cell: ({ row }) => <div className={styles.indexCell}>{row.index + 1}</div>,
+        Cell: ({ row, state }) => (
+          <div className={styles.indexCell}>
+            {state.pageIndex * state.pageSize + row.index + 1}
+          </div>
+        ),
       },
       {
         Header: 'Task',
         accessor: 'projectName',
-        Cell: ({ value }) => <div className={styles.nameCell}>{value}</div>|| '—',
+        Cell: ({ value }) => <div className={styles.nameCell}>{value}</div> || '—',
       },
       {
         Header: 'Total Time',
         accessor: 'totalTime',
-        Cell: ({ value }) => <div className={styles.totalTimeCell}>{value.toFixed(2)} hrs</div>
+        Cell: ({ value }) => (
+          <div className={styles.totalTimeCell}>{value.toFixed(2)} hrs</div>
+        ),
       },
     ],
     [],
@@ -43,9 +51,25 @@ function CompletedTasksTable() {
     getTableProps,
     getTableBodyProps,
     headerGroups,
-    rows,
+    page,
     prepareRow,
-  } = useTable({ columns, data });
+    canPreviousPage,
+    canNextPage,
+    pageOptions,
+    pageCount,
+    gotoPage,
+    nextPage,
+    previousPage,
+    setPageSize,
+    state: { pageIndex, pageSize },
+  } = useTable(
+    {
+      columns,
+      data,
+      initialState: { pageIndex: 0, pageSize: 10 },
+    },
+    usePagination,
+  );
 
   return (
     <div className={styles.completedTasksTable}>
@@ -83,45 +107,102 @@ function CompletedTasksTable() {
           </p>
         </div>
       ) : (
-        <div className={styles.tableContainer}>
-          <table
-            {...getTableProps()}
-            className={styles.table}
-          >
-            <thead>
-              {headerGroups.map(headerGroup => (
-                <tr
-                  {...headerGroup.getHeaderGroupProps()}
-                  key={headerGroup.id}
-                >
-                  {headerGroup.headers.map(column => (
-                    <th {...column.getHeaderProps()} key={column.id}>
-                      {column.render('Header')}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody {...getTableBodyProps()}>
-              {rows.map(row => {
-                prepareRow(row);
-                const { key, ...rowProps } = row.getRowProps();
-                return (
-                  <tr {...rowProps} key={key}>
-                    {row.cells.map(cell => {
-                      const { key: cellKey, ...cellProps } = cell.getCellProps();
-                      return (
-                        <td {...cellProps} key={cellKey}>
-                          {cell.render('Cell')}
-                        </td>
-                      );
-                    })}
+        <>
+          <div className={styles.tableContainer}>
+            <table {...getTableProps()} className={styles.table}>
+              <thead>
+                {headerGroups.map(headerGroup => (
+                  <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
+                    {headerGroup.headers.map(column => (
+                      <th {...column.getHeaderProps()} key={column.id}>
+                        {column.render('Header')}
+                      </th>
+                    ))}
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                ))}
+              </thead>
+              <tbody {...getTableBodyProps()}>
+                {page.map(row => {
+                  prepareRow(row);
+                  const { key, ...rowProps } = row.getRowProps();
+                  return (
+                    <tr {...rowProps} key={key}>
+                      {row.cells.map(cell => {
+                        const { key: cellKey, ...cellProps } = cell.getCellProps();
+                        return (
+                          <td {...cellProps} key={cellKey}>
+                            {cell.render('Cell')}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          <div className={styles.pagination} role="navigation" aria-label="Table pagination">
+            <div className={styles.pageControl}>
+              <button
+                type="button"
+                className={styles.pageButton}
+                onClick={() => gotoPage(0)}
+                disabled={!canPreviousPage}
+                aria-label="First page"
+              >
+                «
+              </button>
+              <button
+                type="button"
+                className={styles.pageButton}
+                onClick={() => previousPage()}
+                disabled={!canPreviousPage}
+                aria-label="Previous page"
+              >
+                ‹
+              </button>
+              <span className={styles.pageIndicator}>
+                Page <strong>{pageIndex + 1}</strong> of <strong>{pageOptions.length}</strong>
+              </span>
+              <button
+                type="button"
+                className={styles.pageButton}
+                onClick={() => nextPage()}
+                disabled={!canNextPage}
+                aria-label="Next page"
+              >
+                ›
+              </button>
+              <button
+                type="button"
+                className={styles.pageButton}
+                onClick={() => gotoPage(pageCount - 1)}
+                disabled={!canNextPage}
+                aria-label="Last page"
+              >
+                »
+              </button>
+            </div>
+            
+            <div className={styles.rowsControl}>
+              <p className={styles.pageSizeLabel}>
+                Rows per page:
+              </p>
+              <select
+                className={styles.pageSizeSelect}
+                value={pageSize}
+                onChange={e => setPageSize(Number(e.target.value))}
+              >
+                {[10, 20, 25, 50].map(size => (
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
