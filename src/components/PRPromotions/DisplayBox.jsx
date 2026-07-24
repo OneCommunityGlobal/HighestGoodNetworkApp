@@ -52,6 +52,22 @@ export default function DisplayBox({ onClose, darkMode = false }) {
     onClose();
   };
 
+  const tableClassName = [
+    styles.popupTable,
+    darkMode ? styles.popupTableDark : '',
+    darkMode ? styles['popup-table-dark'] : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const getBadgeClassName = index =>
+    [
+      styles.prCountBadge,
+      styles['pr-count-badge'],
+      styles[`color-${index}`] || styles[`color${index}`],
+    ]
+      .filter(Boolean)
+      .join(' ');
   const modalRef = useRef(null);
   const overlayRef = useRef(null);
 
@@ -75,7 +91,7 @@ export default function DisplayBox({ onClose, darkMode = false }) {
           Are you sure you want to promote these PR reviewers?
         </h2>
 
-        <table className={`${styles.popupTable} ${darkMode ? styles.popupTableDark : ''}`}>
+        <table className={tableClassName}>
           <thead>
             <tr>
               <th>
@@ -108,28 +124,33 @@ export default function DisplayBox({ onClose, darkMode = false }) {
                 <td>{promotion.teamCode}</td>
                 <td>{promotion.teamReviewerName}</td>
                 <td>
-                  {promotion.weeklyPRs.map((pr, prIndex) => (
-                    <span
-                      key={`${promotion.prReviewer}-${pr.week}`}
-                      className={`${styles.prCountBadge} ${styles[`color${prIndex}`] || ''}`}
-                    >
-                      {pr.prCount}
-                    </span>
-                  ))}
+                  <div className={styles.prBadgeRow}>
+                    {promotion.weeklyPRs.map((pr, prIndex) => (
+                      <span
+                        key={`${promotion.prReviewer}-${pr.week}`}
+                        className={getBadgeClassName(prIndex)}
+                      >
+                        {pr.prCount}
+                      </span>
+                    ))}
+                  </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-
         <div className={styles.buttonRow}>
-          <button type="button" className={styles.button} onClick={onClose}>
+          <button
+            type="button"
+            className={`${styles.button} ${styles.cancelButton}`}
+            onClick={onClose}
+          >
             Cancel
           </button>
 
           <button
             type="button"
-            className={styles.button}
+            className={`${styles.button} ${styles.confirmButton}`}
             disabled={!checkedItems.some(Boolean)}
             onClick={handleConfirm}
           >

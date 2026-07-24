@@ -166,7 +166,7 @@ div.pie-chart-legend-container {
 }
 
 .pie-chart-legend-table th {
-  background-color: white;
+  background-color: transparent;
 }
 
 .pie-chart-legend-table td,
@@ -175,7 +175,7 @@ div.pie-chart-legend-container {
 }
 
 .pie-chart-legend-table-dark th {
-  background-color: #1f2937;
+  background-color: transparent;
   color: #f9fafb;
 }
 

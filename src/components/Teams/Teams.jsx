@@ -3,6 +3,7 @@
 /* eslint-disable react/sort-comp */
 import React from 'react';
 import PropTypes from 'prop-types';
+import styles from './Team.module.css';
 import { connect } from 'react-redux';
 import { Container } from 'reactstrap';
 import { toast } from 'react-toastify';
@@ -257,7 +258,7 @@ class Teams extends React.PureComponent {
     return (
       <div className="table-responsive mt-3">
         <table className={tableClass}>
-          <thead>
+          <thead className={styles.teamsTableHead}>
             <TeamTableHeader
               onTeamNameSort={this.toggleTeamNameSort}
               onTeamActiveSort={this.toggleTeamActiveSort}
