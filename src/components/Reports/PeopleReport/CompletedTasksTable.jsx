@@ -14,8 +14,8 @@ function CompletedTasksTable() {
   const data = useMemo(() => tasksWithLoggedHoursById ?? [], [tasksWithLoggedHoursById]);
 
   const totals = useMemo(() => {
-    const totalHours = data.reduce((sum, t) => sum + (Number(t.totalTime) || 0), 0);
-    return { taskCount: data.length, totalHours };
+    const totalHours = data.reduce((sum, t) => sum + (Number(t.totalTime) || 0), 0).toFixed(2);
+    return { taskCount: data.length, totalHours};
   }, [data]);
 
   const columns = useMemo(
@@ -33,7 +33,7 @@ function CompletedTasksTable() {
       {
         Header: 'Total Time',
         accessor: 'totalTime',
-        Cell: ({ value }) => value,
+        Cell: ({ value }) => <div className={styles.totalTimeCell}>{value.toFixed(2)} hrs</div>
       },
     ],
     [],

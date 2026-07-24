@@ -119,6 +119,12 @@
     color: #0f172a;
   }
 
+  .totalTimeCell {
+    font-size: 0.75rem;
+    font-weight: 900; 
+    color: #334155;
+  }
+
   .emptyState {
     display: flex;
     flex-direction: column;
