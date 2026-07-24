@@ -176,7 +176,7 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
       </Button>
       <div className={`${styles.kaitest} ${darkMode ? 'mt-2' : ''}`} id="infplot" data-testid="infplot" />
 
-      <Modal size="lg" show={modalVisible} onHide={handleModalClose}>
+      <Modal size="lg" show={modalVisible} onHide={handleModalClose} dialogClassName={styles.infringementModalDialog}>
         <Modal.Header closeButton style={darkMode ? { backgroundColor: '#1b2a41', color: '#f9fafb', borderColor: '#374151' } : {}}>
           <span
             style={{
@@ -189,8 +189,11 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
             {focusedInf.date ? focusedInf.date.toString() : 'Infringement'}
           </span>
         </Modal.Header>
-        <Modal.Body style={darkMode ? { backgroundColor: '#1b2a41', color: '#f9fafb' } : {}}>
-          <div id="inf">
+        <Modal.Body
+          className={styles.infringementModalBody}
+          style={darkMode ? { backgroundColor: '#1b2a41', color: '#f9fafb' } : {}}
+        >
+          <div id="inf" className={styles.infringementDescriptions}>
             <table style={darkMode ? { backgroundColor: '#1b2a41', color: '#f9fafb', width: '100%' } : { width: '100%' }}>
               <thead>
                 <tr style={darkMode ? { backgroundColor: '#1b2a41' } : {}}>

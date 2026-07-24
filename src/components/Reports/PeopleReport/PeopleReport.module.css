@@ -198,6 +198,32 @@ body {
   background-color: #f2f2f2;
 }
 
+.infringementModalDialog {
+  max-width: min(800px, calc(100vw - 2rem));
+}
+
+.infringementModalDialog :global(.modal-content) {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.infringementModalBody,
+.infringementDescriptions {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.infringementDescriptions table {
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+}
+
+.infringementDescriptions th,
+.infringementDescriptions td {
+  overflow-wrap: anywhere;
+}
+
 /* Table css starts */
 
 .introDate {
@@ -416,6 +442,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100%;
+  min-width: 0;
   margin-top: 2rem;
   height: auto;
   overflow: visible;
@@ -438,6 +465,15 @@ body {
   box-shadow: 0 0 12px rgb(0 0 0 / 8%);
   height: 698px;
   margin-top: 2rem;
+  min-width: 0;
+}
+
+.reportStats p,
+.reportStats h4,
+.reportStats a {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
 @media (width >= 1489px) and (width <= 1784px) {
