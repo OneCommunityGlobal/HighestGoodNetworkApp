@@ -255,5 +255,21 @@
       flex-direction: row;
       justify-content: space-between;
     }
+
+    thead tr th {
+      font-size: 0.8rem;
+    }
+
+    .indexCell {
+      font-size: 0.8rem;
+    }
+
+    .nameCell {
+      font-size: 0.8rem;
+    }
+
+    .totalTimeCell {
+      font-size: 0.8rem;
+    }
   }
 }
