@@ -32,7 +32,7 @@ export const ENDPOINTS = {
   },
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) =>
     `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
-  
+
   // Blue Square Email Triggers
   BLUE_SQUARE_RESEND_INFRINGEMENT_EMAILS: () =>
     `${APIEndpoint}/blueSquare/resend-infringement-emails-only`,
@@ -602,15 +602,15 @@ export const ENDPOINTS = {
   APPLICANT_SOURCES: `${APIEndpoint}/applicant-analytics/applicant-sources`,
 
   OPT_STATUS_BREAKDOWN: (startDate, endDate, role) => {
-  let url = `${APIEndpoint}/analytics/opt-status`;
-  const params = [];
+    let url = `${APIEndpoint}/analytics/opt-status`;
+    const params = [];
 
-  if (startDate) params.push(`startDate=${startDate}`);
-  if (endDate) params.push(`endDate=${endDate}`);
-  if (role) params.push(`role=${role}`);
+    if (startDate) params.push(`startDate=${startDate}`);
+    if (endDate) params.push(`endDate=${endDate}`);
+    if (role) params.push(`role=${role}`);
 
-  return params.length > 0 ? `${url}?${params.join("&")}` : url;
-},
+    return params.length > 0 ? `${url}?${params.join("&")}` : url;
+  },
 
 
 
@@ -662,8 +662,10 @@ export const ENDPOINTS = {
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
   PR_GRADING_CONFIG: `${APIEndpoint}/pr-grading-config`,
+  PR_GRADING_SYNC_REVIEWERS: `${APIEndpoint}/pr-grading-config/sync-reviewers`,
   WEEKLY_GRADING: `${APIEndpoint}/weekly-grading`,
   WEEKLY_GRADING_SAVE: `${APIEndpoint}/weekly-grading/save`,
+  WEEKLY_GRADING_DELETE_REVIEWER: `${APIEndpoint}/weekly-grading/reviewer`,
 
   // Education Portal endpoints
   PROGRESS_EDUCATOR_STUDENT: studentId => `${APIEndpoint}/progress/educator/student-progress/${studentId}`,

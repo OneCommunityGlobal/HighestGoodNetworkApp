@@ -155,6 +155,7 @@ import Register from './components/CommunityPortal/Activities/Register/Register'
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
 import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
 import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
+import PRGradingScreenContainer from './components/PRGradingScreen';
 
 import KICalendar from './components/KitchenandInventory/KICalendar/KICalendar';
 import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
@@ -1167,6 +1168,12 @@ export default (
           path="/pr-grading-dashboard"
           exact
           component={PRGradingDashboard}
+          fallback
+        />
+        <ProtectedRoute
+          path="/pr-grading-screen"
+          exact
+          component={PRGradingScreenContainer}
           fallback
         />
         <ProtectedRoute path="/pr-dashboard/overview" exact component={PRDashboardOverview} />
