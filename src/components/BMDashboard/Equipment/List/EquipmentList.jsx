@@ -23,8 +23,10 @@ const siblingCategories = [
 ];
 
 function EquipmentList() {
-  const [equipment, setEquipment] = useState({ label: 'All Equipments', value: '0' });
-  const [project, setProject] = useState({ label: 'All Projects', value: '0' });
+  const [equipment, setEquipment] = useState([]); // Array of strings
+  const [project, setProject] = useState([]); // Array of strings
+  const [localProjectValues, setLocalProjectValues] = useState([]);
+  const [localEquipmentValues, setLocalEquipmentValues] = useState([]);
   const darkMode = useSelector(state => state.theme.darkMode);
   useTheme();
 
@@ -43,13 +45,12 @@ function EquipmentList() {
             setEquipment={setEquipment}
             project={project}
             setProject={setProject}
+            localProjectValues={localProjectValues}
+            setLocalProjectValues={setLocalProjectValues}
+            localEquipmentValues={localEquipmentValues}
+            setLocalEquipmentValues={setLocalEquipmentValues}
           />
-          <EquipmentsTable
-            equipment={equipment}
-            setEquipment={setEquipment}
-            project={project}
-            setProject={setProject}
-          />
+          <EquipmentsTable equipment={equipment} project={project} />
         </div>
       </div>
     </div>
