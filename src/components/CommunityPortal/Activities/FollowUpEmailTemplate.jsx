@@ -33,7 +33,7 @@ function FollowUpEmailTemplate() {
       <img src={companyLogo} alt="One Community Logo" className={styles.emailLogo} />
 
       <h2 className={styles.h2}>Hi {email || '[Name]'},</h2>
-      <p>
+      <p className={styles.p}>
         Thanks for attending <strong>{eventName}</strong> on <strong>{eventDate}</strong>. Your
         feedback helps us improve future events and make them more valuable for you.
       </p>
@@ -73,11 +73,13 @@ function FollowUpEmailTemplate() {
         </ul>
       </div>
 
-      <p className={styles.p}>Best regards,</p>
-      <p className={styles.p}>One Community Team</p>
-      <p className={styles.p}>Primary Email: jae@onecommunityglobal.org</p>
-      <p className={styles.p}>Google Email: onecommunityglobal@gmail.com</p>
-      <p className={styles.p}>Timezone: Los Angeles, CA - Pacific Time</p>
+      <div className={styles.signatureBlock}>
+        <p className={styles.p}>Best regards,</p>
+        <p className={styles.p}>One Community Team</p>
+        <p className={styles.p}>Primary Email: jae@onecommunityglobal.org</p>
+        <p className={styles.p}>Google Email: onecommunityglobal@gmail.com</p>
+        <p className={styles.p}>Timezone: Los Angeles, CA - Pacific Time</p>
+      </div>
 
       <hr className={`${styles.emailDivider} ${darkMode ? styles.emailDividerDark : ''}`} />
 
@@ -117,7 +119,7 @@ function FollowUpEmailTemplate() {
         &quot;Open Source Sustainability for The Highest Good of All&quot;
       </p>
 
-      <p style={{ fontSize: '12px', textAlign: 'center' }} className={styles.p}>
+      <p style={{ fontSize: '12px', textAlign: 'center' }} className={styles.footerDisclaimer}>
         You are receiving this mail because you registered to join the One Community Global platform
         as a user or a creator. This also shows that you agree to our Terms of Use and Privacy
         Policies. If you no longer want to receive mails from us, click the unsubscribe link below.

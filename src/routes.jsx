@@ -153,7 +153,7 @@ import ActivityComments from './components/CommunityPortal/Activities/activityId
 import Feedbackform from './components/CommunityPortal/Activities/Feedbackform';
 import FollowUpEmailTemplate from './components/CommunityPortal/Activities/FollowUpEmailTemplate';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
-// import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
+import ActivityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
 import Register from './components/CommunityPortal/Activities/Register/Register';
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
@@ -857,7 +857,7 @@ export default (
         <CPProtectedRoute
           path="/communityportal/activities/:activityid"
           exact
-          component={Activity}
+          component={ActivityDetailPage}
         />
         <CPProtectedRoute path="/communityportal/ActivitiesPage" exact component={ActivitiesPage} />
         <CPProtectedRoute
