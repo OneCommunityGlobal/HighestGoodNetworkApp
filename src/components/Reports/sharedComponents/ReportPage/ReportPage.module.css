@@ -6,8 +6,6 @@
   background-color: #faf7fd;
   align-items: stretch;
   padding-top: 2rem;
-  padding-left: 24px;
-  padding-right: 24px;
 }
 
 .report-page-wrapper-dark {
@@ -35,10 +33,6 @@
 @media (width <= 435px) {
   .report-page-content {
     padding: 0;
-  }
-
-  .report-page-wrapper {
-    padding: 20px;
   }
 }
 
