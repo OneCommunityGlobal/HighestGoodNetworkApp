@@ -265,6 +265,26 @@
   padding: 10px;
   background: #3A506B;
   color: var(--color-text-dark);
+  scrollbar-color: #6b7fa0 #2c3e50;
+}
+
+.trackingListContainerDark::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.trackingListContainerDark::-webkit-scrollbar-track {
+  background: #2c3e50;
+  border-radius: 10px;
+}
+
+.trackingListContainerDark::-webkit-scrollbar-thumb {
+  background: #6b7fa0;
+  border-radius: 10px;
+}
+
+.trackingListContainerDark::-webkit-scrollbar-thumb:hover {
+  background: #8a9bc0;
 }
 
 .trackingTable {
@@ -321,6 +341,10 @@
 .trackingTableDark tbody td {
   color: var(--color-text-dark);
   border-bottom: 1px solid var(--color-border-dark);
+}
+
+.trackingTableDark tbody tr:hover {
+  background: #2c3e50;
 }
 
 .trackingTableDark tbody tr:hover td {
