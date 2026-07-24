@@ -244,6 +244,10 @@
   display: inline-block;
 }
 
+.trackingRateDark .trackingRateValue span {
+  color: #cbd5e1;
+}
+
 .trackingListContainer {
   max-height: 600px;
   overflow-y: auto;
