@@ -11,17 +11,11 @@ function buildClassName(...classNames) {
   return classNames.filter(Boolean).join(' ');
 }
 
-function getTagClassName(isFilter, darkMode) {
-  if (!isFilter) {
-    return styles.tag;
-  }
+function getTagClassName(darkMode) {
   return buildClassName(styles.tag, darkMode && styles.tagDark);
 }
 
-function getCloseClassName(isFilter, darkMode) {
-  if (!isFilter) {
-    return styles.buttonClose;
-  }
+function getCloseClassName(darkMode) {
   return buildClassName(styles.buttonClose, darkMode && styles.buttonCloseDark);
 }
 
@@ -34,10 +28,10 @@ function getRemoveAriaLabel(isFilter, tag) {
 
 function LessonListRemovableTag({ tag, darkMode, onRemove, variant }) {
   const isFilter = variant === 'filter';
-  const tagClass = getTagClassName(isFilter, darkMode);
-  const closeClass = getCloseClassName(isFilter, darkMode);
+  const tagClass = getTagClassName(darkMode);
+  const closeClass = getCloseClassName(darkMode);
   const removeAriaLabel = getRemoveAriaLabel(isFilter, tag);
-  const tagTextClass = isFilter && darkMode ? styles.tagTextDark : '';
+  const tagTextClass = darkMode ? styles.tagTextDark : '';
 
   const handleClick = e => handleRemoveEvent(e, onRemove, tag);
   const handleKeyDown = e => {

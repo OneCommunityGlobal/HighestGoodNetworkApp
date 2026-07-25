@@ -297,14 +297,20 @@ function InjurySeverityDashboard(props) {
     ).finally(() => setLoading(false));
   }, [dispatch, selProjects, selTypes, selDepts, dateRange]);
 
+  const isEmptyState =
+    selProjects.length === 0 &&
+    selTypes.length === 0 &&
+    selDepts.length === 0 &&
+    !dateRange[0] &&
+    !dateRange[1];
+  const hasNoData = !loading && !isEmptyState && rawData.length === 0;
+
   const visibleProjects = useMemo(() => {
-    const projectsWithData = Array.from(new Set(rawData.map(r => r.projectName)));
-    return bmProjects.filter(
-      project =>
-        projectsWithData.includes(project.name) &&
-        (selProjects.length === 0 || selProjects.includes(project._id)),
-    );
-  }, [bmProjects, rawData, selProjects]);
+    if (selProjects.length > 0) {
+      return bmProjects.filter(p => selProjects.includes(p._id));
+    }
+    return bmProjects;
+  }, [bmProjects, selProjects]);
 
   const visibleDepartments = useMemo(() => {
     const depts = Array.from(new Set(rawData.map(r => r.department).filter(Boolean)));
@@ -355,15 +361,22 @@ function InjurySeverityDashboard(props) {
 
       {/* Filters */}
       <div
-        style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 20, paddingLeft: 20 }}
+        style={{
+          display: 'flex',
+          gap: 12,
+          flexWrap: 'wrap',
+          marginBottom: 20,
+          paddingLeft: 20,
+          color: '#f80a0a',
+        }}
       >
         <Select
           className={styles.filterSelect}
+          popupClassName={dropdownClassName}
           mode="multiple"
           allowClear
           placeholder="Projects"
           style={filterStyle}
-          popupClassName={dropdownClassName}
           value={selProjects}
           onChange={setSelProjects}
           maxTagCount="responsive"
@@ -386,11 +399,11 @@ function InjurySeverityDashboard(props) {
 
         <Select
           className={styles.filterSelect}
+          popupClassName={dropdownClassName}
           mode="multiple"
           allowClear
           placeholder="Injury Types"
           style={filterStyle}
-          popupClassName={dropdownClassName}
           value={selTypes}
           onChange={setSelTypes}
           maxTagCount="responsive"
@@ -405,11 +418,11 @@ function InjurySeverityDashboard(props) {
 
         <Select
           className={styles.filterSelect}
+          popupClassName={dropdownClassName}
           mode="multiple"
           allowClear
           placeholder="Departments"
           style={filterStyle}
-          popupClassName={dropdownClassName}
           value={selDepts}
           onChange={setSelDepts}
           maxTagCount="responsive"
@@ -428,6 +441,13 @@ function InjurySeverityDashboard(props) {
         <div style={{ textAlign: 'center', padding: 50 }}>
           <Spin size="large" />
         </div>
+      ) : isEmptyState ? (
+        <button type="button" className={styles.chartPlaceholder}>
+          <div className={styles.placeholderGraphic} />
+          <div className={styles.placeholderTooltip}>Select filters to generate visualization</div>
+        </button>
+      ) : hasNoData ? (
+        <div className={styles.noDataState}>No data available for the selected filters</div>
       ) : (
         <InjurySeverityBarChart
           chartData={chartData}
