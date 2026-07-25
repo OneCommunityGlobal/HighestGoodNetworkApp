@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import styles from './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
+import hasPermission from '~/utils/permissions';
+import JobReorderModal from './JobReorderModal';
 
 function getColumnsFromMQ() {
   if (typeof globalThis.matchMedia !== 'function') return 1;
@@ -65,6 +67,11 @@ function Collaboration() {
   const [columns, setColumns] = useState(() => getColumnsFromMQ());
   const [loadingJobs, setLoadingJobs] = useState(true);
   const [jobsFetchError, setJobsFetchError] = useState(null);
+
+  const [isReorderModalOpen, setIsReorderModalOpen] = useState(false);
+  const dispatch = useDispatch();
+  const userHasPermission = perm => dispatch(hasPermission(perm));
+  const canReorderJobs = userHasPermission('reorderJobs');
 
   const darkMode = useSelector(state => state.theme?.darkMode);
   const history = useHistory();
@@ -340,6 +347,14 @@ function Collaboration() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
+  const toggleReorderModal = () => {
+    setIsReorderModalOpen(prevState => !prevState);
+  };
+
+  const handleJobsReordered = () => {
+    fetchJobAds(query, category);
+  };
+
   const renderSummaries = () => {
     const start = (summariesPage - 1) * summariesPageSize;
     const end = start + summariesPageSize;
@@ -384,6 +399,15 @@ function Collaboration() {
                 >
                   Show Summaries
                 </button>
+                {canReorderJobs && (
+                  <button
+                    className={`btn btn-secondary ${styles.reorderButton}`}
+                    type="button"
+                    onClick={toggleReorderModal}
+                  >
+                    Edit to Reorder
+                  </button>
+                )}
               </form>
             </div>
 
@@ -478,6 +502,15 @@ function Collaboration() {
               <button className={styles.showSummaries} type="button" onClick={handleShowSummaries}>
                 Show Summaries
               </button>
+              {canReorderJobs && (
+                <button
+                  className={`btn btn-secondary ${styles.reorderButton}`}
+                  type="button"
+                  onClick={toggleReorderModal}
+                >
+                  Edit to Reorder
+                </button>
+              )}
             </form>
           </div>
 
@@ -597,6 +630,12 @@ function Collaboration() {
           </div>
         )}
       </div>
+      <JobReorderModal
+        isOpen={isReorderModalOpen}
+        toggle={toggleReorderModal}
+        onJobsReordered={handleJobsReordered}
+        darkMode={darkMode}
+      />
     </div>
   );
 }
