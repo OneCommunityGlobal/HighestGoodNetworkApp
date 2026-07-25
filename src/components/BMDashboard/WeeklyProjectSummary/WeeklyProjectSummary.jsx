@@ -757,7 +757,7 @@ function WeeklyProjectSummary() {
                     )}
 
                     {hasData ? (
-                      content
+                      <div className={styles.sectionContentWrapper}>{content}</div>
                     ) : (
                       <div className={styles.emptySectionMessage}>
                         {emptyMessage || 'No data for this week.'}
