@@ -175,6 +175,113 @@ function applyFieldUpdate(fielddata, setfield) {
   });
 }
 
+async function loadUserProfile(displayUserId, setUserProfile) {
+  if (!displayUserId) return;
+  try {
+    const response = await axios.get(ENDPOINTS.USER_PROFILE(displayUserId));
+    setUserProfile(response.data);
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log('User Profile not loaded.');
+  }
+}
+
+async function getUserTasks(displayUserId, setTasks) {
+  if (!displayUserId) return;
+  try {
+    const response = await axios.get(ENDPOINTS.TASKS_BY_USERID(displayUserId));
+    setTasks(response.data.length);
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log('User Tasks not loaded.');
+  }
+}
+
+async function openSuggestionModal(
+  showSuggestionModal,
+  displayUserProfile,
+  setSuggestionCategory,
+  setInputField,
+  setShowSuggestionModal,
+) {
+  if (!showSuggestionModal) {
+    try {
+      const res = await httpService.get(
+        `${ApiEndpoint}/dashboard/suggestionoption/${displayUserProfile._id}`,
+      );
+      if (res && res.status === 200) {
+        setSuggestionCategory(res.data.suggestion);
+        setInputField(res.data.field);
+      } else {
+        // eslint-disable-next-line no-console
+        console.error(res.status);
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error:', error);
+    }
+  }
+  setShowSuggestionModal(prev => !prev);
+}
+
+async function editField(
+  event,
+  sortableContainerRef,
+  extraFieldForSuggestionForm,
+  displayUserProfile,
+  setSuggestionCategory,
+  setInputField,
+  setExtraFieldForSuggestionForm,
+  setEditType,
+) {
+  event.preventDefault();
+  const data = readFormData(sortableContainerRef, 'newFieldForm');
+  if (data) {
+    if (extraFieldForSuggestionForm === 'suggestion') {
+      data.suggestion = true;
+      data.field = false;
+      applyFieldUpdate(data, setSuggestionCategory);
+    } else if (extraFieldForSuggestionForm === 'field') {
+      data.suggestion = false;
+      data.field = true;
+      applyFieldUpdate(data, setInputField);
+    }
+    setExtraFieldForSuggestionForm('');
+    setEditType('');
+    httpService
+      .post(`${ApiEndpoint}/dashboard/suggestionoption/${displayUserProfile._id}`, data)
+      .catch(() => {});
+  } else {
+    toast.error('Please fill all fields with valid values.');
+  }
+}
+
+async function sendUserSuggestion(
+  event,
+  sortableContainerRef,
+  displayUserProfile,
+  setShowSuggestionModal,
+) {
+  event.preventDefault();
+  const data = readFormData(sortableContainerRef, 'suggestionForm');
+  data.firstName = displayUserProfile.firstName;
+  data.lastName = displayUserProfile.lastName;
+  data.email = displayUserProfile.email;
+  if (data) {
+    setShowSuggestionModal(prev => !prev);
+    const res = await httpService
+      .post(`${ApiEndpoint}/dashboard/makesuggestion/${displayUserProfile._id}`, data)
+      .catch(() => {});
+    if (res.status === 200) {
+      toast.success('Email sent successfully!');
+    } else {
+      toast.error('Failed to send email!');
+    }
+  } else {
+    toast.error('Please fill all fields with valid values.');
+  }
+}
+
 function SummaryBar(props) {
   const location = useLocation();
 
@@ -258,31 +365,6 @@ function SummaryBar(props) {
 
   // Similar to UserProfile component function
   // Loads component depending on displayUserId passed as prop
-  const loadUserProfile = async () => {
-    const userId = displayUserId;
-    if (!userId) return;
-    try {
-      const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
-      const newUserProfile = response.data;
-      setUserProfile(newUserProfile);
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.log('User Profile not loaded.');
-    }
-  };
-
-  const getUserTasks = async () => {
-    const userId = displayUserId;
-    if (!userId) return;
-    try {
-      const response = await axios.get(ENDPOINTS.TASKS_BY_USERID(userId));
-      const newUserTasks = response.data;
-      setTasks(newUserTasks.length);
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.log('User Tasks not loaded.');
-    }
-  };
 
   const openReport = () => {
     const htmlStr = '';
@@ -305,74 +387,6 @@ function SummaryBar(props) {
     openReport();
   };
 
-  // add new text field or suggestion category by owner class and update the backend
-  const editField = async event => {
-    event.preventDefault();
-    const data = readFormData(sortableContainerRef, 'newFieldForm');
-    if (data) {
-      if (extraFieldForSuggestionForm === 'suggestion') {
-        data.suggestion = true;
-        data.field = false;
-        applyFieldUpdate(data, setSuggestionCategory);
-      } else if (extraFieldForSuggestionForm === 'field') {
-        data.suggestion = false;
-        data.field = true;
-        applyFieldUpdate(data, setInputField);
-      }
-      setExtraFieldForSuggestionForm('');
-      setEditType('');
-      httpService
-        .post(`${ApiEndpoint}/dashboard/suggestionoption/${displayUserProfile._id}`, data)
-        .catch(() => {});
-    } else {
-      toast.error('Please fill all fields with valid values.');
-    }
-  };
-
-  const sendUserSuggestion = async event => {
-    event.preventDefault();
-    const data = readFormData(sortableContainerRef, 'suggestionForm');
-    data.firstName = displayUserProfile.firstName;
-    data.lastName = displayUserProfile.lastName;
-    data.email = displayUserProfile.email;
-    if (data) {
-      setShowSuggestionModal(prev => !prev);
-      const res = await httpService
-        .post(`${ApiEndpoint}/dashboard/makesuggestion/${displayUserProfile._id}`, data)
-        .catch(() => {});
-      if (res.status === 200) {
-        toast.success('Email sent successfully!');
-      } else {
-        toast.error('Failed to send email!');
-      }
-    } else {
-      toast.error('Please fill all fields with valid values.');
-    }
-  };
-
-  const openSuggestionModal = async () => {
-    if (!showSuggestionModal) {
-      try {
-        const res = await httpService.get(
-          `${ApiEndpoint}/dashboard/suggestionoption/${displayUserProfile._id}`,
-        );
-        if (res && res.status === 200) {
-          setSuggestionCategory(res.data.suggestion);
-          setInputField(res.data.field);
-        } else {
-          // eslint-disable-next-line no-console
-          console.error(res.status);
-          // Handle the error as needed
-        }
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Error:', error);
-        // Handle the error
-      }
-    }
-    setShowSuggestionModal(prev => !prev);
-  };
-
   window.addEventListener('load', () => {
     if (location.search === '?openModalReport') {
       window.location.replace('/dashboard');
@@ -381,7 +395,14 @@ function SummaryBar(props) {
 
   useEffect(() => {
     // eslint-disable-next-line no-unused-expressions
-    location.search === '?openModalReport' && openSuggestionModal();
+    location.search === '?openModalReport' &&
+      openSuggestionModal(
+        showSuggestionModal,
+        displayUserProfile,
+        setSuggestionCategory,
+        setInputField,
+        setShowSuggestionModal,
+      );
   }, []);
 
   const onTaskClick = () => {
@@ -399,8 +420,8 @@ function SummaryBar(props) {
   useEffect(() => {
     // Fetch user profile only if the selected timelog is of different user
     if (!isAuthUser) {
-      loadUserProfile();
-      getUserTasks();
+      loadUserProfile(displayUserId, setUserProfile);
+      getUserTasks(displayUserId, setTasks);
     } else {
       setUserProfile(authUser);
       setTasks(displayUserTask.length);
@@ -687,7 +708,15 @@ function SummaryBar(props) {
               {isAuthUser ||
               canEditData(displayUserProfile, authUser, canPutUserProfileImportantInfo) ? (
                 <button
-                  onClick={openSuggestionModal}
+                  onClick={() =>
+                    openSuggestionModal(
+                      showSuggestionModal,
+                      displayUserProfile,
+                      setSuggestionCategory,
+                      setInputField,
+                      setShowSuggestionModal,
+                    )
+                  }
                   className={styles.btnReset}
                   aria-label="Open Suggestions"
                   type="button"
@@ -703,7 +732,15 @@ function SummaryBar(props) {
         <Modal
           isOpen={showSuggestionModal}
           onClosed={() => closeSuggestionModal()}
-          toggle={openSuggestionModal}
+          toggle={() =>
+            openSuggestionModal(
+              showSuggestionModal,
+              displayUserProfile,
+              setSuggestionCategory,
+              setInputField,
+              setShowSuggestionModal,
+            )
+          }
           className={darkMode ? 'text-light' : ''}
         >
           <ModalHeader className={headerBg}>User Suggestion</ModalHeader>
@@ -732,7 +769,18 @@ function SummaryBar(props) {
 
             {extraFieldForSuggestionForm && (
               <Form
-                onSubmit={editField}
+                onSubmit={e =>
+                  editField(
+                    e,
+                    sortableContainerRef,
+                    extraFieldForSuggestionForm,
+                    displayUserProfile,
+                    setSuggestionCategory,
+                    setInputField,
+                    setExtraFieldForSuggestionForm,
+                    setEditType,
+                  )
+                }
                 id="newFieldForm"
                 style={{ border: '1px solid gray', padding: '5px 10px', margin: '5px 10px' }}
               >
@@ -838,7 +886,17 @@ function SummaryBar(props) {
                 </Button>
               </Form>
             )}
-            <Form onSubmit={sendUserSuggestion} id="suggestionForm">
+            <Form
+              onSubmit={e =>
+                sendUserSuggestion(
+                  e,
+                  sortableContainerRef,
+                  displayUserProfile,
+                  setShowSuggestionModal,
+                )
+              }
+              id="suggestionForm"
+            >
               <FormGroup>
                 <Label for="suggestioncate" className={fontColor}>
                   Please select a category of your suggestion:
