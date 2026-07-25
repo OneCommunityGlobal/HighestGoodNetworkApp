@@ -267,7 +267,7 @@ function RescheduleModal(props) {
               </div>
 
               <div className={styles.modalBody}>
-                <div className={styles.formPanel}>
+                <div className={`${styles.formPanel} ${styles.confirmDetails}`}>
                   <p>
                     <strong>Event:</strong> {eventInfo.name || eventInfo.title || 'Event'}
                   </p>
