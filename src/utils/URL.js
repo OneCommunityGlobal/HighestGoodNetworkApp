@@ -33,7 +33,7 @@ export const ENDPOINTS = {
   },
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) =>
     `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
-  
+
   // Blue Square Email Triggers
   BLUE_SQUARE_RESEND_INFRINGEMENT_EMAILS: () =>
     `${APIEndpoint}/blueSquare/resend-infringement-emails-only`,
@@ -407,6 +407,9 @@ export const ENDPOINTS = {
   BM_TOOL_AVAILABILITY: (toolId = '', projectId = '') =>
     `${APIEndpoint}/tools/availability?toolId=${toolId}&projectId=${projectId}`,
   BM_LOG_TOOLS: `${APIEndpoint}/bm/tools/log`,
+  BM_TOOL_UTILIZATION: `${APIEndpoint}/tools/utilization`,
+  BM_TOOL_UTILIZATION_INSIGHTS: `${APIEndpoint}/tools/utilization/insights`,
+  BM_TOOL_UTILIZATION_EXPORT: `${APIEndpoint}/tools/utilization/export`,
   BM_EQUIPMENT_BY_ID: singleEquipmentId => `${APIEndpoint}/bm/equipment/${singleEquipmentId}`,
   BM_EQUIPMENT_STATUS_UPDATE: (equipmentId) => `${APIEndpoint}/bm/equipment/${equipmentId}/status`,
   BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
@@ -564,10 +567,18 @@ export const ENDPOINTS = {
 
   // event endpoint
   EVENTS: `${APIEndpoint}/events`,
-  EVENTS_BY_ID: (activityId) => `${APIEndpoint}/events/${activityId}`,
-  REGISTER_FOR_EVENT: (activityId) => `${APIEndpoint}/events/${activityId}/register`,
+  EVENT_BY_ID: eventId => `${APIEndpoint}/events/${eventId}`,
   EVENT_TYPES: `${APIEndpoint}/events/types`,
   EVENT_LOCATIONS: `${APIEndpoint}/events/locations`,
+
+  ATTENDANCE: `${APIEndpoint}/attendance`,
+  ATTENDANCE_BY_EVENT: eventId => `${APIEndpoint}/attendance/event/${eventId}`,
+  ATTENDANCE_SUMMARY: eventId => `${APIEndpoint}/attendance/event/${eventId}/summary`,
+  ATTENDANCE_BY_ID: attendanceId => `${APIEndpoint}/attendance/${attendanceId}`,
+  ATTENDANCE_SEED: eventId => `${APIEndpoint}/attendance/event/${eventId}/seed`,
+  ATTENDANCE_MOCK: eventId => `${APIEndpoint}/attendance/event/${eventId}/mock`,
+  EVENTS_BY_ID: (activityId) => `${APIEndpoint}/events/${activityId}`,
+  REGISTER_FOR_EVENT: (activityId) => `${APIEndpoint}/events/${activityId}/register`,
   EVENT_ATTENDANCE_STATS: `${APIEndpoint}/events/attendance/stats`,
   LB_SEND_MESSAGE: `${APIEndpoint}/lb/messages`,
   LB_READ_MESSAGE: `${APIEndpoint}/lb/messages/conversation`,

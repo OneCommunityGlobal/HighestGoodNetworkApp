@@ -1,5 +1,5 @@
 /* stylelint-disable  */
-:global(thead) {
+.projectsTableHead {
   background: aliceblue;
 }
 
