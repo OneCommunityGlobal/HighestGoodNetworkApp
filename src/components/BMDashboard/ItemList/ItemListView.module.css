@@ -7,7 +7,7 @@ table td {
 .itemsListContainer {
   width: 100%;
   max-width: 1536px;
-  margin: 1rem auto;
+  margin: 0 auto;
   padding: 0 1rem;
 }
 
@@ -274,9 +274,37 @@ table td {
 
 .darkMode {
   color: #e8edf4;
-  background-color: #0d1117 !important;
+  background-color: #0f1b2b !important;
   min-height: 100vh;
+  padding-top: 1rem;
   padding-bottom: 2rem;
+}
+
+.darkMode table {
+  background-color: #14253d !important;
+  color: #fff !important;
+  border-color: #1d3c52 !important;
+}
+
+.darkMode table thead th {
+  background-color: #0b1420 !important;
+  color: #fff !important;
+  border-color: #1d3c52 !important;
+}
+
+.darkMode table tbody td {
+  background-color: #14253d !important;
+  color: #fff !important;
+  border-color: #1d3c52 !important;
+}
+
+.darkMode table tbody tr:nth-child(even) td {
+  background-color: #0f1b2b !important;
+}
+
+.darkMode table tbody tr:hover td {
+  background-color: #1c3354 !important;
+  color: #fff !important;
 }
 
 .darkTable tbody td,

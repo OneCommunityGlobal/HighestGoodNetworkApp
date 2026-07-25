@@ -104,6 +104,30 @@
   color: #212529;
 }
 
+:global(body.dark-mode) .tableWrapper tbody td,
+:global(body.bm-dashboard-dark) .tableWrapper tbody td {
+  color: #fff !important;
+  background-color: #14253d !important;
+  border-color: #1d3c52 !important;
+}
+
+:global(body.dark-mode) .tableWrapper tbody tr,
+:global(body.bm-dashboard-dark) .tableWrapper tbody tr {
+  background-color: #14253d !important;
+  border-color: #1d3c52 !important;
+}
+
+:global(body.dark-mode) .tableWrapper tbody tr:nth-child(even) td,
+:global(body.bm-dashboard-dark) .tableWrapper tbody tr:nth-child(even) td {
+  background-color: #0f1b2b !important;
+}
+
+:global(body.dark-mode) .tableWrapper tbody tr:hover td,
+:global(body.bm-dashboard-dark) .tableWrapper tbody tr:hover td {
+  background-color: #1c3354 !important;
+  color: #fff !important;
+}
+
 /* Link Styling */
 .linkButton {
   color: #0d6efd;
@@ -219,9 +243,9 @@ body.dark-mode table thead th,
 body.bm-dashboard-dark table thead,
 body.bm-dashboard-dark table thead tr,
 body.bm-dashboard-dark table thead th {
-  background-color: #3d3d3d !important;
+  background-color: #0b1420 !important;
   color: #fff !important;
-  border-color: #404040 !important;
+  border-color: #1d3c52 !important;
 }
 
 body.dark-mode table tbody,
@@ -421,8 +445,8 @@ body.bm-dashboard-dark [class*="col-"] {
 
 body.dark-mode .Box,
 body.bm-dashboard-dark .Box {
-  background: #1a1a1a !important;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 40%);
+  background: #0f1b2b !important;
+  box-shadow: none;
 }
 
 body.dark-mode .BuildingTitle,
@@ -544,6 +568,19 @@ body.bm-dashboard-dark .BuildingTitle svg {
   transition: background-color 0.2s, color 0.2s;
 }
 
+:global(body.dark-mode) .categoryIconLink,
+:global(body.bm-dashboard-dark) .categoryIconLink {
+  border-color: #4dabf7 !important;
+  color: #4dabf7 !important;
+}
+
+:global(body.dark-mode) .categoryIconLink:hover,
+:global(body.bm-dashboard-dark) .categoryIconLink:hover {
+  background-color: #4dabf7 !important;
+  color: #0f172a !important;
+  border-color: #4dabf7 !important;
+}
+
 .categoryIconLink:hover {
   background-color: #0d5675;
   color: #fff;
@@ -579,9 +616,14 @@ body.bm-dashboard-dark .BuildingTitle svg {
   border-color: #4a9bc2;
 }
 
-body.dark-mode .PageViewContainer,
-body.bm-dashboard-dark .PageViewContainer {
-  background-color: #0a0a0a;
+:global(body.dark-mode) .PageViewContainer,
+:global(body.bm-dashboard-dark) .PageViewContainer {
+  background-color: #0f1b2b;
+}
+
+:global(body.dark-mode) .Page,
+:global(body.bm-dashboard-dark) .Page {
+  background-color: #0f1b2b;
 }
 
 .darkTitle {
@@ -614,6 +656,18 @@ body.bm-dashboard-dark .PageViewContainer {
 .btnReset:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.helperText {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+body.dark-mode .helperText,
+body.bm-dashboard-dark .helperText {
+  color: #9ca3af;
 }
 
 body.dark-mode .btnReset,
