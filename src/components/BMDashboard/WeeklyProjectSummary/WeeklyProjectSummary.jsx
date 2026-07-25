@@ -22,8 +22,6 @@ import LossTrackingLineChart from './Financials/LossTrackingLineCharts/LossTrack
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
-import InjurySeverityChart from '../Injuries/InjurySeverityChart';
-import CostPredictionChart from './CostPredictionChart';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 
 import styles from './WeeklyProjectSummary.module.css';
