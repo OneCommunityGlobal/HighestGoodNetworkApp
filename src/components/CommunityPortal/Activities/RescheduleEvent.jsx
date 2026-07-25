@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -10,14 +10,19 @@ import styles from './RescheduleEvent.module.css';
 function RescheduleEvent({ activity }) {
   const { activityId: routeActivityId } = useParams();
   const history = useHistory();
-  const activityId = activity?._id || routeActivityId;
+  const location = useLocation();
 
-  const eventInfo = activity || {
-    _id: activityId,
-    name: 'Event',
-    location: '',
-    link: '',
-  };
+  const routedActivity = location.state?.activity;
+
+  const eventInfo = activity ||
+    routedActivity || {
+      _id: routeActivityId,
+      id: routeActivityId,
+      name: 'Event',
+      location: '',
+      link: '',
+    };
+  const activityId = eventInfo._id || eventInfo.id || routeActivityId;
 
   const darkMode = useSelector(state => state.theme?.darkMode);
 
@@ -145,14 +150,22 @@ function RescheduleEvent({ activity }) {
     try {
       const beOptions = buildBackendOptions(options);
 
-      const json = await sendRescheduleRequest(eventInfo._id, {
+      const json = await sendRescheduleRequest(activityId, {
         options: beOptions,
         reason: reason || '',
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       });
 
       // eslint-disable-next-line no-alert
-      alert(`Notification sent to ${json.notified} participants.`);
+      if (json.emailMode === 'dry-run') {
+        // eslint-disable-next-line no-alert
+        alert(
+          `Poll created successfully. Email delivery was skipped locally for ${json.skipped} participants.`,
+        );
+      } else {
+        // eslint-disable-next-line no-alert
+        alert(`Notification sent to ${json.notified} participants.`);
+      }
       closeModal();
     } catch (e) {
       // eslint-disable-next-line no-alert
@@ -245,23 +258,62 @@ function RescheduleModal(props) {
           </button>
 
           {confirmStep ? (
-            <div className={styles.modalFooter}>
-              <button
-                type="button"
-                className={styles.primaryBtn}
-                onClick={handleCreateAndNotify}
-                disabled={loading}
-              >
-                {loading ? 'Sending\u2026' : 'Create & Notify'}
-              </button>
-              <button
-                type="button"
-                className={styles.secondaryBtn}
-                onClick={() => setConfirmStep(false)}
-              >
-                Back
-              </button>
-            </div>
+            <>
+              <div className={styles.modalHeader}>
+                <h3 id="reschedule-title" className={styles.modalTitle}>
+                  Confirm reschedule poll
+                </h3>
+              </div>
+
+              <div className={styles.modalBody}>
+                <div className={styles.formPanel}>
+                  <p>
+                    <strong>Event:</strong> {eventInfo.name || eventInfo.title || 'Event'}
+                  </p>
+
+                  <p>
+                    <strong>Reason:</strong> {reason || 'No reason provided'}
+                  </p>
+
+                  <p>
+                    <strong>Proposed options:</strong>
+                  </p>
+
+                  <div className={styles.optionsList}>
+                    {options.map(option => (
+                      <div
+                        key={`${option.dateISO}-${option.timeSlot}`}
+                        className={`${styles.optionButton} ${
+                          darkMode ? styles.optionButtonDark : ''
+                        }`}
+                      >
+                        {option.dateLabel} &bull; {option.timeSlot}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className={styles.modalFooter}>
+                <button
+                  type="button"
+                  className={styles.primaryBtn}
+                  onClick={handleCreateAndNotify}
+                  disabled={loading}
+                >
+                  {loading ? 'Sending\u2026' : 'Create & Notify'}
+                </button>
+
+                <button
+                  type="button"
+                  className={styles.secondaryBtn}
+                  onClick={() => setConfirmStep(false)}
+                  disabled={loading}
+                >
+                  Back
+                </button>
+              </div>
+            </>
           ) : (
             <>
               <div className={styles.modalHeader}>

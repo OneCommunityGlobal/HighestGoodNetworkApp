@@ -137,9 +137,15 @@ function ActivityList() {
   };
 
   const goToReschedule = useCallback(
-    (event, id) => {
+    (event, activity) => {
       event.stopPropagation();
-      history.push(`/communityportal/activities/${id}/manage`);
+
+      const activityId = activity._id || activity.id;
+
+      history.push({
+        pathname: `/communityportal/activities/${activityId}/manage`,
+        state: { activity },
+      });
     },
     [history],
   );
@@ -363,7 +369,7 @@ function ActivityList() {
 
                   <button
                     type="button"
-                    onClick={event => goToReschedule(event, activity.id)}
+                    onClick={event => goToReschedule(event, activity)}
                     className="btn btn-primary btn-sm mt-2"
                     aria-label={`Reschedule ${activity.name}`}
                   >
