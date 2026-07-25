@@ -442,6 +442,113 @@ function renderSummaryMessage(
   return <span className="summary-toggle">{message}</span>;
 }
 
+function handleLoadEvent(search) {
+  if (search === '?openModalReport') {
+    window.location.replace('/dashboard');
+  }
+}
+
+function BadgeIcons({
+  canEdit,
+  tasks,
+  badges,
+  infringements,
+  displayUserProfile,
+  setBugReport,
+  showSuggestionModal,
+  setSuggestionCategory,
+  setInputField,
+  setShowSuggestionModal,
+  btnResetClass,
+}) {
+  return (
+    <div className="d-flex justify-content-around no-gutters">
+      &nbsp;&nbsp;
+      <div className="image_frame">
+        <div className="redBackgroup">
+          <span>{tasks}</span>
+        </div>
+        {canEdit ? (
+          <button onClick={onTaskClick} className={btnResetClass} aria-label="Task" type="button">
+            <img className="sum_img" src={TaskIcon} alt="" />
+          </button>
+        ) : (
+          <img className="sum_img" src={TaskIcon} alt="" />
+        )}
+      </div>
+      &nbsp;&nbsp;
+      <div className="image_frame">
+        <div className="redBackgroup">
+          <span>{badges}</span>
+        </div>
+        {canEdit ? (
+          <button onClick={onBadgeClick} className={btnResetClass} aria-label="Badge" type="button">
+            <img className="sum_img" src={BadgesIcon} alt="" />
+          </button>
+        ) : (
+          <img className="sum_img" src={BadgesIcon} alt="" />
+        )}
+      </div>
+      &nbsp;&nbsp;
+      <div className="image_frame">
+        {canEdit ? (
+          <Link to={`/userprofile/${displayUserProfile._id}#bluesquare`}>
+            <img className="sum_img" src={BlueScoreIcon} alt="" />
+            <div className="redBackgroup">
+              <span>{infringements}</span>
+            </div>
+          </Link>
+        ) : (
+          <div>
+            <img className="sum_img" src={BlueScoreIcon} alt="" />
+            <div className="redBackgroup">
+              <span>{infringements}</span>
+            </div>
+          </div>
+        )}
+      </div>
+      &nbsp;&nbsp;
+      <div className="image_frame">
+        {canEdit ? (
+          <button
+            onClick={() => openReport(setBugReport)}
+            className={btnResetClass}
+            aria-label="Open Report"
+            type="button"
+          >
+            <img className="sum_img" src={ReportIcon} alt="" />
+          </button>
+        ) : (
+          <img className="sum_img" src={ReportIcon} alt="" />
+        )}
+      </div>
+      &nbsp;&nbsp;
+      <div className="image_frame">
+        {canEdit ? (
+          <button
+            onClick={() =>
+              openSuggestionModal(
+                showSuggestionModal,
+                displayUserProfile,
+                setSuggestionCategory,
+                setInputField,
+                setShowSuggestionModal,
+              )
+            }
+            className={btnResetClass}
+            aria-label="Open Suggestions"
+            type="button"
+          >
+            <img className="sum_img" src={SuggestionsIcon} alt="" />
+          </button>
+        ) : (
+          <img className="sum_img" src={SuggestionsIcon} alt="" />
+        )}
+      </div>
+    </div>
+  );
+}
+
 function SuggestionModal({
   showSuggestionModal,
   darkMode,
@@ -871,15 +978,10 @@ function SummaryBar(props) {
   // Similar to UserProfile component function
   // Loads component depending on displayUserId passed as prop
 
-  window.addEventListener('load', () => {
-    if (location.search === '?openModalReport') {
-      window.location.replace('/dashboard');
-    }
-  });
+  window.addEventListener('load', () => handleLoadEvent(location.search));
 
   useEffect(() => {
-    // eslint-disable-next-line no-unused-expressions
-    location.search === '?openModalReport' &&
+    if (location.search === '?openModalReport') {
       openSuggestionModal(
         showSuggestionModal,
         displayUserProfile,
@@ -887,6 +989,7 @@ function SummaryBar(props) {
         setInputField,
         setShowSuggestionModal,
       );
+    }
   }, []);
 
   useEffect(() => {
@@ -1035,100 +1138,19 @@ function SummaryBar(props) {
         <Col
           className={`m-auto mt-2 col-lg-4 col-12 badge-list ${darkMode ? 'bg-space-cadet' : ''}`}
         >
-          <div className="d-flex justify-content-around no-gutters">
-            &nbsp;&nbsp;
-            <div className="image_frame">
-              <div className="redBackgroup">
-                <span>{tasks}</span>
-              </div>
-              {canEdit ? (
-                <button
-                  onClick={onTaskClick}
-                  className={styles.btnReset}
-                  aria-label="Task"
-                  type="button"
-                >
-                  <img className="sum_img" src={TaskIcon} alt="" />
-                </button>
-              ) : (
-                <img className="sum_img" src={TaskIcon} alt="" />
-              )}
-            </div>
-            &nbsp;&nbsp;
-            <div className="image_frame">
-              <div className="redBackgroup">
-                <span>{badges}</span>
-              </div>
-              {canEdit ? (
-                <button
-                  onClick={onBadgeClick}
-                  className={styles.btnReset}
-                  aria-label="Badge"
-                  type="button"
-                >
-                  <img className="sum_img" src={BadgesIcon} alt="" />
-                </button>
-              ) : (
-                <img className="sum_img" src={BadgesIcon} alt="" />
-              )}
-            </div>
-            &nbsp;&nbsp;
-            <div className="image_frame">
-              {canEdit ? (
-                <Link to={`/userprofile/${displayUserProfile._id}#bluesquare`}>
-                  <img className="sum_img" src={BlueScoreIcon} alt="" />
-                  <div className="redBackgroup">
-                    <span>{infringements}</span>
-                  </div>
-                </Link>
-              ) : (
-                <div>
-                  <img className="sum_img" src={BlueScoreIcon} alt="" />
-                  <div className="redBackgroup">
-                    <span>{infringements}</span>
-                  </div>
-                </div>
-              )}
-            </div>
-            &nbsp;&nbsp;
-            <div className="image_frame">
-              {canEdit ? (
-                <button
-                  onClick={() => openReport(setBugReport)}
-                  className={styles.btnReset}
-                  aria-label="Open Report"
-                  type="button"
-                >
-                  <img className="sum_img" src={ReportIcon} alt="" />
-                </button>
-              ) : (
-                <img className="sum_img" src={ReportIcon} alt="" />
-              )}
-            </div>
-            &nbsp;&nbsp;
-            <div className="image_frame">
-              {canEdit ? (
-                <button
-                  onClick={() =>
-                    openSuggestionModal(
-                      showSuggestionModal,
-                      displayUserProfile,
-                      setSuggestionCategory,
-                      setInputField,
-                      setShowSuggestionModal,
-                    )
-                  }
-                  className={styles.btnReset}
-                  aria-label="Open Suggestions"
-                  type="button"
-                >
-                  <img className="sum_img" src={SuggestionsIcon} alt="" />
-                </button>
-              ) : (
-                <img className="sum_img" src={SuggestionsIcon} alt="" />
-              )}
-            </div>
-          </div>
+          <BadgeIcons
+            canEdit={canEdit}
+            tasks={tasks}
+            badges={badges}
+            infringements={infringements}
+            displayUserProfile={displayUserProfile}
+            setBugReport={setBugReport}
+            showSuggestionModal={showSuggestionModal}
+            setSuggestionCategory={setSuggestionCategory}
+            setInputField={setInputField}
+            setShowSuggestionModal={setShowSuggestionModal}
+            btnResetClass={styles.btnReset}
+          />
         </Col>
         <SuggestionModal
           showSuggestionModal={showSuggestionModal}
