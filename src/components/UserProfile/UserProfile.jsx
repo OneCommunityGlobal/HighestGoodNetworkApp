@@ -18,12 +18,12 @@ import {
 } from 'reactstrap';
 import Select from 'react-select';
 import Image from 'react-bootstrap/Image';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import classnames from 'classnames';
 import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
 import axios from 'axios';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import hasPermission, {
   cantDeactivateOwner,
   cantUpdateDevAdminDetails,
@@ -44,11 +44,11 @@ import BasicToolTips from './ToolTips/BasicTabTips';
 import TeamsTabTips from './ToolTips/TeamsTabTips';
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton';
 import Badges from './Badges';
-import { getAllTeamCode } from '../../actions/allTeamsAction';
+import { getAllTeamCode, getAllUserTeams } from '../../actions/allTeamsAction';
 import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 import {
-  updateUserStatus,
+  updateUserPauseStatus,
   updateRehireableStatus,
   toggleVisibility,
 } from '../../actions/userManagement';
@@ -56,12 +56,10 @@ import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 import { connect, useDispatch, useSelector } from 'react-redux';
-import { convertDateFormatToMMMDDYY, formatDateLocal } from 'utils/formatDate';
+import { convertDateFormatToMMMDDYY, formatDateLocal } from '~/utils/formatDate';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
-import { getAllUserTeams } from '../../actions/allTeamsAction';
 import { toast } from 'react-toastify';
-import { GiConsoleController } from 'react-icons/gi';
 import { setCurrentUser } from '../../actions/authActions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import QuickSetupModal from './QuickSetupModal/QuickSetupModal';
@@ -69,7 +67,7 @@ import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
-} from 'utils/constants';
+} from '~/utils/constants';
 
 import {
   getTimeEndDateEntriesByPeriod,
@@ -77,9 +75,7 @@ import {
 } from '../../actions/timeEntries.js';
 import ProfileImageModal from './UserProfileModal/suggestedProfileModal';
 import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
-import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from 'utils/formatDate.js';
-import { use } from 'react';
-import { useHistory } from 'react-router-dom';
+import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from '~/utils/formatDate.js';
 
 function UserProfile(props) {
   const history = useHistory();
@@ -694,7 +690,7 @@ function UserProfile(props) {
     };
 
     try {
-      await props.updateUserStatus(
+      await props.updateUserPauseStatus(
         newUserProfile,
         isActive ? UserStatus.Active : UserStatus.InActive,
         undefined,
@@ -1422,6 +1418,9 @@ function UserProfile(props) {
                   />
                   {activeTab !== '3' && (
                     <span
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={() => {}}
                       onClick={() => {
                         setUserProfile(originalUserProfile);
                         setTasks(originalTasks);
@@ -1552,6 +1551,9 @@ function UserProfile(props) {
                             darkMode={darkMode}
                           />
                           <span
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={() => {}}
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
@@ -1629,6 +1631,9 @@ function UserProfile(props) {
                             darkMode={darkMode}
                           />
                           <span
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={() => {}}
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
@@ -1724,6 +1729,9 @@ function UserProfile(props) {
                             darkMode={darkMode}
                           />
                           <span
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={() => {}}
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
@@ -1809,6 +1817,9 @@ function UserProfile(props) {
                             darkMode={darkMode}
                           />
                           <span
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={() => {}}
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
@@ -1881,6 +1892,9 @@ function UserProfile(props) {
                             darkMode={darkMode}
                           />
                           <span
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={() => {}}
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
@@ -1949,4 +1963,4 @@ function UserProfile(props) {
   );
 }
 
-export default connect(null, { hasPermission, updateUserStatus })(UserProfile);
+export default connect(null, { hasPermission, updateUserPauseStatus })(UserProfile);

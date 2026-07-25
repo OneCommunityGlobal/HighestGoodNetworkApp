@@ -16,10 +16,10 @@ import {
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import { HashLink as Link } from 'react-router-hash-link';
-import './SummaryBar.css';
-import { ENDPOINTS, ApiEndpoint } from 'utils/URL';
+import './SummaryBar.module.css';
+import { ENDPOINTS, ApiEndpoint } from '~/utils/URL';
 import axios from 'axios';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 import { toast } from 'react-toastify';
 import { useLocation } from 'react-router-dom';
 import TaskIcon from './task_icon.png';
@@ -435,10 +435,7 @@ function SummaryBar(props) {
     if (!weeklySummary) {
       if (weeklySummaryNotReq) {
         return (
-          <div
-            className="border-black col-4 bg-super-awesome no-gutters d-flex justify-content-center align-items-center"
-            align="center"
-          >
+          <div className="border-black col-4 bg-super-awesome no-gutters d-flex justify-content-center align-items-center">
             <font className="text-center text-light" size="3">
               SUMMARY
             </font>
@@ -616,6 +613,7 @@ function SummaryBar(props) {
               style={{ border: '1px solid black' }}
             >
               <div className="m-auto p-2 text-center">
+                {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                 <font
                   onClick={props.toggleSubmitForm}
                   className="med_text_summary align-middle summary-toggle"
