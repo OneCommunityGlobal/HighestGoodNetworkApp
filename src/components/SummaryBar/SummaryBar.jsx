@@ -224,16 +224,14 @@ async function openSuggestionModal(
   setShowSuggestionModal(prev => !prev);
 }
 
-async function editField(
-  event,
-  sortableContainerRef,
-  extraFieldForSuggestionForm,
-  displayUserProfile,
-  setSuggestionCategory,
-  setInputField,
-  setExtraFieldForSuggestionForm,
-  setEditType,
-) {
+async function editField(event, sortableContainerRef, displayUserProfile, fieldState) {
+  const {
+    extraFieldForSuggestionForm,
+    setSuggestionCategory,
+    setInputField,
+    setExtraFieldForSuggestionForm,
+    setEditType,
+  } = fieldState;
   event.preventDefault();
   const data = readFormData(sortableContainerRef, 'newFieldForm');
   if (data) {
@@ -282,6 +280,171 @@ async function sendUserSuggestion(
   }
 }
 
+function onDragToggleDraggingClass(event) {
+  event.currentTarget.classList.toggle('sortable-draggable-dragging');
+}
+
+function onSortableDragOver(event, sortableContainerRef) {
+  event.preventDefault();
+  const draggedElement = event.currentTarget.querySelector('.sortable-draggable-dragging');
+  const nextElement = getDraggedNextElement(sortableContainerRef.current, event.clientY);
+  if (nextElement == null && draggedElement) {
+    sortableContainerRef.current.appendChild(draggedElement);
+  } else {
+    sortableContainerRef.current.insertBefore(draggedElement, nextElement);
+  }
+}
+
+function handleEditClick(event) {
+  const { currentTarget } = event;
+  if (!currentTarget) return;
+  const textNode = currentTarget.parentNode.querySelector('p');
+  if (currentTarget.classList.contains('fa-edit') && textNode) {
+    applyEditMode(currentTarget, textNode);
+  } else if (textNode) {
+    applyDraggableMode(currentTarget, textNode);
+  }
+  currentTarget.classList.toggle('fa-edit');
+  currentTarget.classList.toggle('fa-check');
+}
+
+function openReport(setBugReport) {
+  setBugReport(info => ({ ...info, in: !info.in, information: '' }));
+}
+
+function sendBugReport(event, sortableContainerRef, displayUserProfile, setBugReport) {
+  event.preventDefault();
+  const data = readFormData(sortableContainerRef, 'bugReportForm');
+  data.firstName = displayUserProfile.firstName;
+  data.lastName = displayUserProfile.lastName;
+  data.email = displayUserProfile.email;
+  httpService
+    .post(`${ApiEndpoint}/dashboard/bugreport/${displayUserProfile._id}`, data)
+    .catch(() => {});
+  openReport(setBugReport);
+}
+
+function closeSuggestionModal(setEditType, setExtraFieldForSuggestionForm, setCategoryDescription) {
+  setEditType('');
+  setExtraFieldForSuggestionForm('');
+  setCategoryDescription('');
+}
+
+function editRadioButtonSelected(value, setEditType, setCategoryDescription) {
+  setEditType(value);
+  setCategoryDescription(getCategoryDescription(value));
+}
+
+function onTaskClick() {
+  window.location.hash = '#tasks';
+}
+
+function onBadgeClick() {
+  window.location.hash = '#badgesearned';
+}
+
+function renderSummary(
+  weeklySummary,
+  weeklySummaryNotReq,
+  darkMode,
+  isAuthUser,
+  displayUserProfile,
+  authUser,
+  canPutUserProfileImportantInfo,
+  toggleSubmitForm,
+  btnResetClass,
+) {
+  if (!weeklySummary) {
+    if (weeklySummaryNotReq) {
+      return (
+        <div className="border-black col-4 bg-super-awesome no-gutters d-flex justify-content-center align-items-center">
+          <font className="text-center text-light" size="3">
+            SUMMARY
+          </font>
+        </div>
+      );
+    }
+    return (
+      <div
+        className={`border border-danger col-4 no-gutters ${
+          darkMode ? 'bg-yinmn-blue' : 'bg-white'
+        }`}
+      >
+        <div className="py-1"> </div>
+        {isAuthUser || canEditData(displayUserProfile, authUser, canPutUserProfileImportantInfo) ? (
+          <div className="d-flex justify-content-center">
+            <button
+              onClick={toggleSubmitForm}
+              className={`summary-toggle large_text_summary text-danger ${btnResetClass}`}
+              aria-label="Toggle submit form"
+              type="button"
+            >
+              !
+            </button>
+          </div>
+        ) : (
+          <p className="text-center summary-toggle large_text_summary text-danger">!</p>
+        )}
+        <font className="text-center" size="3">
+          SUMMARY
+        </font>
+        <div className="py-2"> </div>
+      </div>
+    );
+  }
+  return (
+    <div className="border-green col-4 bg--dark-green">
+      <div className="py-1"> </div>
+      <div className="d-flex justify-content-center">
+        <button
+          onClick={toggleSubmitForm}
+          className={`text-center large_text_summary summary-toggle ${btnResetClass}`}
+          aria-label="Toggle submit form"
+          type="button"
+        >
+          ✓
+        </button>
+      </div>
+      <font className="text-center" size="3">
+        SUMMARY
+      </font>
+      <div className="py-2"> </div>
+    </div>
+  );
+}
+
+function renderSummaryMessage(
+  weeklySummary,
+  submittedSummary,
+  weeklySummaryNotReq,
+  isAuthUser,
+  toggleSubmitForm,
+  btnResetInheritClass,
+) {
+  if (weeklySummary || submittedSummary) {
+    return 'You have submitted your weekly summary.';
+  }
+
+  const message = weeklySummaryNotReq
+    ? "You don't need to complete a weekly summary, but you still can. Click here to submit it."
+    : 'You still need to complete the weekly summary. Click here to submit it.';
+
+  if (isAuthUser) {
+    return (
+      <button
+        className={`summary-toggle ${btnResetInheritClass}`}
+        type="button"
+        onClick={toggleSubmitForm}
+        aria-label="Toggle submit form"
+      >
+        {message}
+      </button>
+    );
+  }
+
+  return <span className="summary-toggle">{message}</span>;
+}
+
 function SummaryBar(props) {
   const location = useLocation();
 
@@ -319,45 +482,6 @@ function SummaryBar(props) {
   const [categoryDescription, setCategoryDescription] = useState();
   const sortableContainerRef = useRef(null);
 
-  const editRadioButtonSelected = value => {
-    setEditType(value);
-    setCategoryDescription(getCategoryDescription(value));
-  };
-
-  const closeSuggestionModal = () => {
-    editRadioButtonSelected('');
-    setExtraFieldForSuggestionForm('');
-  };
-
-  const onDragToggleDraggingClass = event => {
-    event.currentTarget.classList.toggle('sortable-draggable-dragging');
-  };
-
-  const onSortableDragOver = event => {
-    event.preventDefault();
-    const draggedElement = event.currentTarget.querySelector('.sortable-draggable-dragging');
-    const nextElement = getDraggedNextElement(sortableContainerRef.current, event.clientY);
-
-    if (nextElement == null && draggedElement) {
-      sortableContainerRef.current.appendChild(draggedElement);
-    } else {
-      sortableContainerRef.current.insertBefore(draggedElement, nextElement);
-    }
-  };
-
-  const handleEditClick = event => {
-    const { currentTarget } = event;
-    if (!currentTarget) return;
-    const textNode = currentTarget.parentNode.querySelector('p');
-    if (currentTarget.classList.contains('fa-edit') && textNode) {
-      applyEditMode(currentTarget, textNode);
-    } else if (textNode) {
-      applyDraggableMode(currentTarget, textNode);
-    }
-    currentTarget.classList.toggle('fa-edit');
-    currentTarget.classList.toggle('fa-check');
-  };
-
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
   const [weeklySummaryNotReq, setweeklySummaryNotReq] = useState(
     displayUserProfile?.weeklySummaryOption === 'Not Required',
@@ -365,27 +489,6 @@ function SummaryBar(props) {
 
   // Similar to UserProfile component function
   // Loads component depending on displayUserId passed as prop
-
-  const openReport = () => {
-    const htmlStr = '';
-    setBugReport(info => ({
-      ...info,
-      in: !info.in,
-      information: htmlStr,
-    }));
-  };
-
-  const sendBugReport = event => {
-    event.preventDefault();
-    const data = readFormData(sortableContainerRef, 'bugReportForm');
-    data.firstName = displayUserProfile.firstName;
-    data.lastName = displayUserProfile.lastName;
-    data.email = displayUserProfile.email;
-    httpService
-      .post(`${ApiEndpoint}/dashboard/bugreport/${displayUserProfile._id}`, data)
-      .catch(() => {});
-    openReport();
-  };
 
   window.addEventListener('load', () => {
     if (location.search === '?openModalReport') {
@@ -404,14 +507,6 @@ function SummaryBar(props) {
         setShowSuggestionModal,
       );
   }, []);
-
-  const onTaskClick = () => {
-    window.location.hash = '#tasks';
-  };
-
-  const onBadgeClick = () => {
-    window.location.hash = '#badgesearned';
-  };
 
   useEffect(() => {
     setUserProfile(userProfile);
@@ -437,92 +532,6 @@ function SummaryBar(props) {
       setweeklySummaryNotReq(displayUserProfile?.weeklySummaryOption === 'Not Required');
     }
   }, [displayUserProfile, summaryBarData]);
-
-  const renderSummary = () => {
-    if (!weeklySummary) {
-      if (weeklySummaryNotReq) {
-        return (
-          <div className="border-black col-4 bg-super-awesome no-gutters d-flex justify-content-center align-items-center">
-            <font className="text-center text-light" size="3">
-              SUMMARY
-            </font>
-          </div>
-        );
-      }
-      return (
-        <div
-          className={`border border-danger col-4 no-gutters ${
-            darkMode ? 'bg-yinmn-blue' : 'bg-white'
-          }`}
-        >
-          <div className="py-1"> </div>
-          {isAuthUser ||
-          canEditData(displayUserProfile, authUser, canPutUserProfileImportantInfo) ? (
-            <div className="d-flex justify-content-center">
-              <button
-                onClick={props.toggleSubmitForm}
-                className={`summary-toggle large_text_summary text-danger ${styles.btnReset}`}
-                aria-label="Toggle submit form"
-                type="button"
-              >
-                !
-              </button>
-            </div>
-          ) : (
-            <p className="text-center summary-toggle large_text_summary text-danger">!</p>
-          )}
-          <font className="text-center" size="3">
-            SUMMARY
-          </font>
-          <div className="py-2"> </div>
-        </div>
-      );
-    }
-    return (
-      <div className="border-green col-4 bg--dark-green">
-        <div className="py-1"> </div>
-        <div className="d-flex justify-content-center">
-          <button
-            onClick={props.toggleSubmitForm}
-            className={`text-center large_text_summary summary-toggle ${styles.btnReset}`}
-            aria-label="Toggle submit form"
-            type="button"
-          >
-            ✓
-          </button>
-        </div>
-        <font className="text-center" size="3">
-          SUMMARY
-        </font>
-        <div className="py-2"> </div>
-      </div>
-    );
-  };
-
-  const renderSummaryMessage = () => {
-    if (weeklySummary || props.submittedSummary) {
-      return 'You have submitted your weekly summary.';
-    }
-
-    const message = weeklySummaryNotReq
-      ? 'You don’t need to complete a weekly summary, but you still can. Click here to submit it.'
-      : 'You still need to complete the weekly summary. Click here to submit it.';
-
-    if (isAuthUser) {
-      return (
-        <button
-          className={`summary-toggle ${styles.btnResetInherit}`}
-          type="button"
-          onClick={props.toggleSubmitForm}
-          aria-label="Toggle submit form"
-        >
-          {message}
-        </button>
-      );
-    }
-
-    return <span className="summary-toggle">{message}</span>;
-  };
 
   const fontColor = darkMode ? 'text-light' : '';
   const headerBg = darkMode ? 'bg-space-cadet' : '';
@@ -605,7 +614,17 @@ function SummaryBar(props) {
 
         <Col className="d-flex col-lg-3 col-12 no-gutters">
           <Row className="no-gutters w-100">
-            {renderSummary()}
+            {renderSummary(
+              weeklySummary,
+              weeklySummaryNotReq,
+              darkMode,
+              isAuthUser,
+              displayUserProfile,
+              authUser,
+              canPutUserProfileImportantInfo,
+              props.toggleSubmitForm,
+              styles.btnReset,
+            )}
             <div
               className={`col-8 d-flex align-items-center ${
                 darkMode ? 'bg-yinmn-blue' : 'bg-white'
@@ -619,7 +638,14 @@ function SummaryBar(props) {
                   className="med_text_summary align-middle summary-toggle"
                   size="3"
                 >
-                  {renderSummaryMessage()}
+                  {renderSummaryMessage(
+                    weeklySummary,
+                    props.submittedSummary,
+                    weeklySummaryNotReq,
+                    isAuthUser,
+                    props.toggleSubmitForm,
+                    styles.btnResetInherit,
+                  )}
                 </font>
               </div>
             </div>
@@ -692,7 +718,7 @@ function SummaryBar(props) {
               {isAuthUser ||
               canEditData(displayUserProfile, authUser, canPutUserProfileImportantInfo) ? (
                 <button
-                  onClick={openReport}
+                  onClick={() => openReport(setBugReport)}
                   className={styles.btnReset}
                   aria-label="Open Report"
                   type="button"
@@ -731,7 +757,13 @@ function SummaryBar(props) {
         </Col>
         <Modal
           isOpen={showSuggestionModal}
-          onClosed={() => closeSuggestionModal()}
+          onClosed={() =>
+            closeSuggestionModal(
+              setEditType,
+              setExtraFieldForSuggestionForm,
+              setCategoryDescription,
+            )
+          }
           toggle={() =>
             openSuggestionModal(
               showSuggestionModal,
@@ -770,16 +802,13 @@ function SummaryBar(props) {
             {extraFieldForSuggestionForm && (
               <Form
                 onSubmit={e =>
-                  editField(
-                    e,
-                    sortableContainerRef,
+                  editField(e, sortableContainerRef, displayUserProfile, {
                     extraFieldForSuggestionForm,
-                    displayUserProfile,
                     setSuggestionCategory,
                     setInputField,
                     setExtraFieldForSuggestionForm,
                     setEditType,
-                  )
+                  })
                 }
                 id="newFieldForm"
                 style={{ border: '1px solid gray', padding: '5px 10px', margin: '5px 10px' }}
@@ -789,7 +818,13 @@ function SummaryBar(props) {
                   <FormGroup check>
                     <Label check className={fontColor}>
                       <Input
-                        onChange={e => editRadioButtonSelected(e.target.value)}
+                        onChange={e =>
+                          editRadioButtonSelected(
+                            e.target.value,
+                            setEditType,
+                            setCategoryDescription,
+                          )
+                        }
                         type="radio"
                         name="action"
                         value="add"
@@ -802,7 +837,13 @@ function SummaryBar(props) {
                     <FormGroup check>
                       <Label check className={fontColor}>
                         <Input
-                          onChange={e => editRadioButtonSelected(e.target.value)}
+                          onChange={e =>
+                            editRadioButtonSelected(
+                              e.target.value,
+                              setEditType,
+                              setCategoryDescription,
+                            )
+                          }
                           type="radio"
                           name="action"
                           value="edit"
@@ -815,7 +856,13 @@ function SummaryBar(props) {
                   <FormGroup check>
                     <Label check className={fontColor}>
                       <Input
-                        onChange={e => editRadioButtonSelected(e.target.value)}
+                        onChange={e =>
+                          editRadioButtonSelected(
+                            e.target.value,
+                            setEditType,
+                            setCategoryDescription,
+                          )
+                        }
                         type="radio"
                         name="action"
                         value="delete"
@@ -975,7 +1022,7 @@ function SummaryBar(props) {
           </ModalBody>
         </Modal>
 
-        <Modal isOpen={report.in} toggle={openReport} className={fontColor}>
+        <Modal isOpen={report.in} toggle={() => openReport(setBugReport)} className={fontColor}>
           <ModalHeader className={headerBg}>Bug Report</ModalHeader>
           <ModalBody className={bodyBg}>
             <Form onSubmit={sendBugReport} id="bugReportForm">
@@ -1071,7 +1118,7 @@ function SummaryBar(props) {
                   Submit
                 </Button>{' '}
                 &nbsp;&nbsp;&nbsp;
-                <Button onClick={openReport} color="danger" size="lg">
+                <Button onClick={() => openReport(setBugReport)} color="danger" size="lg">
                   Close
                 </Button>
               </FormGroup>
