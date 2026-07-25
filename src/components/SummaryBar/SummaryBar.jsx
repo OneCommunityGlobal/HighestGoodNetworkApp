@@ -346,11 +346,8 @@ function onBadgeClick() {
 function renderSummary(
   weeklySummary,
   weeklySummaryNotReq,
+  canEdit,
   darkMode,
-  isAuthUser,
-  displayUserProfile,
-  authUser,
-  canPutUserProfileImportantInfo,
   toggleSubmitForm,
   btnResetClass,
 ) {
@@ -371,7 +368,7 @@ function renderSummary(
         }`}
       >
         <div className="py-1"> </div>
-        {isAuthUser || canEditData(displayUserProfile, authUser, canPutUserProfileImportantInfo) ? (
+        {canEdit ? (
           <div className="d-flex justify-content-center">
             <button
               onClick={toggleSubmitForm}
@@ -536,6 +533,8 @@ function SummaryBar(props) {
   const fontColor = darkMode ? 'text-light' : '';
   const headerBg = darkMode ? 'bg-space-cadet' : '';
   const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
+  const canEdit =
+    isAuthUser || canEditData(displayUserProfile, authUser, canPutUserProfileImportantInfo);
 
   return displayUserProfile !== undefined && summaryBarData !== undefined ? (
     <Container
@@ -617,11 +616,8 @@ function SummaryBar(props) {
             {renderSummary(
               weeklySummary,
               weeklySummaryNotReq,
+              canEdit,
               darkMode,
-              isAuthUser,
-              displayUserProfile,
-              authUser,
-              canPutUserProfileImportantInfo,
               props.toggleSubmitForm,
               styles.btnReset,
             )}
@@ -661,8 +657,7 @@ function SummaryBar(props) {
               <div className="redBackgroup">
                 <span>{tasks}</span>
               </div>
-              {isAuthUser ||
-              canEditData(displayUserProfile, authUser, canPutUserProfileImportantInfo) ? (
+              {canEdit ? (
                 <button
                   onClick={onTaskClick}
                   className={styles.btnReset}
@@ -680,8 +675,7 @@ function SummaryBar(props) {
               <div className="redBackgroup">
                 <span>{badges}</span>
               </div>
-              {isAuthUser ||
-              canEditData(displayUserProfile, authUser, canPutUserProfileImportantInfo) ? (
+              {canEdit ? (
                 <button
                   onClick={onBadgeClick}
                   className={styles.btnReset}
@@ -696,8 +690,7 @@ function SummaryBar(props) {
             </div>
             &nbsp;&nbsp;
             <div className="image_frame">
-              {isAuthUser ||
-              canEditData(displayUserProfile, authUser, canPutUserProfileImportantInfo) ? (
+              {canEdit ? (
                 <Link to={`/userprofile/${displayUserProfile._id}#bluesquare`}>
                   <img className="sum_img" src={BlueScoreIcon} alt="" />
                   <div className="redBackgroup">
@@ -715,8 +708,7 @@ function SummaryBar(props) {
             </div>
             &nbsp;&nbsp;
             <div className="image_frame">
-              {isAuthUser ||
-              canEditData(displayUserProfile, authUser, canPutUserProfileImportantInfo) ? (
+              {canEdit ? (
                 <button
                   onClick={() => openReport(setBugReport)}
                   className={styles.btnReset}
@@ -731,8 +723,7 @@ function SummaryBar(props) {
             </div>
             &nbsp;&nbsp;
             <div className="image_frame">
-              {isAuthUser ||
-              canEditData(displayUserProfile, authUser, canPutUserProfileImportantInfo) ? (
+              {canEdit ? (
                 <button
                   onClick={() =>
                     openSuggestionModal(
