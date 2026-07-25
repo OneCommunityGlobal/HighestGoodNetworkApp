@@ -101,6 +101,11 @@
   font: inherit;
 }
 
+.item__button--dark {
+  background-color: #4f6fdc;
+  border-color: #89a2ff;
+}
+
 .item__button:hover{
   background-color: black;
   border-radius: 5px;

@@ -22,20 +22,6 @@ function LBDashboardHeader({ authUser, villages, onVillageChange }) {
   const [selectedVillage, setSelectedVillage] = useState('');
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const selectorStyle = darkMode
-    ? {
-        backgroundColor: 'transparent',
-        color: '#ffffff',
-      }
-    : undefined;
-
-  const goButtonStyle = darkMode
-    ? {
-        backgroundColor: '#4f6fdc',
-        borderColor: '#89a2ff',
-      }
-    : undefined;
-
   const handleGoClick = () => {
     onVillageChange(selectedVillage);
   };
@@ -56,7 +42,6 @@ function LBDashboardHeader({ authUser, villages, onVillageChange }) {
               <select
                 value={selectedVillage}
                 onChange={e => setSelectedVillage(e.target.value)}
-                style={selectorStyle}
                 aria-label="Filter by village"
               >
                 <option value="">All Villages</option>
@@ -70,13 +55,23 @@ function LBDashboardHeader({ authUser, villages, onVillageChange }) {
 
             <button
               type="button"
-              className={itemStyles.item__button}
-              style={goButtonStyle}
+              className={`${itemStyles.item__button} ${
+                darkMode ? itemStyles['item__button--dark'] : ''
+              }`}
               onClick={handleGoClick}
             >
               <p>Go</p>
             </button>
           </div>
+
+          <ThemeIconToggle
+            buttonClassName={`${cx(
+              itemStyles['item__nav-link'],
+              itemStyles['item__nav-link--dark'],
+              darkMode,
+            )} ${itemStyles.item__themeIconBtn}`}
+            iconClassName={itemStyles['item__nav-icon']}
+          />
 
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav" className={itemStyles.item__navbarCollapse}>
@@ -91,15 +86,6 @@ function LBDashboardHeader({ authUser, villages, onVillageChange }) {
 
               <div className={itemStyles.item__icons}>
                 <Nav className="ml-auto">
-                  <ThemeIconToggle
-                    buttonClassName={`${cx(
-                      itemStyles['item__nav-link'],
-                      itemStyles['item__nav-link--dark'],
-                      darkMode,
-                    )} ${itemStyles.item__themeIconBtn}`}
-                    iconClassName={itemStyles['item__nav-icon']}
-                  />
-
                   <Nav.Link
                     as={Link}
                     to="/lbdashboard/messaging"
