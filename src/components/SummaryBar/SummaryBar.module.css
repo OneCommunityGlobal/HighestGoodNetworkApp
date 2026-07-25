@@ -7,6 +7,14 @@
   cursor: pointer;
 }
 
+.btnResetInherit {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  cursor: pointer;
+}
+
 .btn--dark-sea-green {
   background-color: #c9d6c6 !important;
   border-color: #225163 !important;

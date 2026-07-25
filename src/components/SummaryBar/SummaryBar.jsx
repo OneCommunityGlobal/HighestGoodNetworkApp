@@ -31,6 +31,95 @@ import httpService from '../../services/httpService';
 
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 
+const CATEGORY_DESCRIPTIONS = {
+  add: 'Add Category',
+  edit: 'Edit Categories',
+  delete: 'Delete category (Write the suggestion category number from the dropdown to delete it).',
+};
+
+function getCategoryDescription(value) {
+  return CATEGORY_DESCRIPTIONS[value] ?? '';
+}
+
+function getDraggedNextElement(container, yMouse) {
+  const draggableElements = [
+    ...container.querySelectorAll('.sortable-draggable:not(.sortable-dragging)'),
+  ];
+  if (draggableElements.length === 0) return null;
+  return draggableElements.reduce(
+    (closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = yMouse - box.top - box.height / 2;
+      if (offset < 0 && offset > closest.offset) {
+        return { offset, element: child };
+      }
+      return closest;
+    },
+    { offset: Number.NEGATIVE_INFINITY },
+  ).element;
+}
+
+function applyEditMode(currentTarget, textNode) {
+  textNode.contentEditable = true;
+  currentTarget.parentNode.draggable = false;
+  currentTarget.parentNode.style.cursor = 'default';
+  const range = document.createRange();
+  const selection = window.getSelection();
+  range.selectNodeContents(textNode);
+  range.collapse(false);
+  selection.removeAllRanges();
+  selection.addRange(range);
+  textNode.style.cursor = 'text';
+  textNode.focus();
+}
+
+function applyDraggableMode(currentTarget, textNode) {
+  textNode.style.cursor = 'grab';
+  currentTarget.parentNode.draggable = true;
+  currentTarget.parentNode.style.cursor = 'grab';
+}
+
+function readFormData(sortableRef, formid) {
+  const form = document.getElementById(formid);
+  const formData = new FormData(form);
+  const data = {};
+  let isvalid = true;
+  formData.forEach((value, key) => {
+    if (value.trim() !== '') {
+      data[key] = value;
+    } else {
+      isvalid = false;
+    }
+  });
+  if (data?.action === 'edit') {
+    const updatedSuggestionCategory = Array.from(sortableRef.current.children).map(
+      child => child.textContent,
+    );
+    updatedSuggestionCategory.forEach(value => {
+      if (value.trim() === '') isvalid = false;
+    });
+    data.updatedSuggestionCategory = updatedSuggestionCategory;
+  }
+  return isvalid ? data : null;
+}
+
+function applyFieldUpdate(fielddata, setfield) {
+  if (fielddata?.action === 'edit' && fielddata?.updatedSuggestionCategory) {
+    setfield(fielddata.updatedSuggestionCategory);
+    return;
+  }
+  setfield(prev => {
+    let newarr = [...prev];
+    if (fielddata.action === 'add') newarr.unshift(fielddata.newField);
+    if (fielddata.action === 'delete') {
+      newarr = newarr.filter((item, index) =>
+        fielddata.field ? fielddata.newField !== item : +fielddata.newField !== index + 1,
+      );
+    }
+    return newarr;
+  });
+}
+
 function SummaryBar(props) {
   const location = useLocation();
 
@@ -69,21 +158,8 @@ function SummaryBar(props) {
   const sortableContainerRef = useRef(null);
 
   const editRadioButtonSelected = value => {
-    // dynamic way to set description rather than using tenerary operators.
-
     setEditType(value);
-
-    if (value === 'add') {
-      setCategoryDescription('Add Category');
-    } else if (value === 'edit') {
-      setCategoryDescription('Edit Categories');
-    } else if (value === 'delete') {
-      setCategoryDescription(
-        'Delete category (Write the suggestion category number from the dropdown to delete it).',
-      );
-    } else {
-      setCategoryDescription('');
-    }
+    setCategoryDescription(getCategoryDescription(value));
   };
 
   const closeSuggestionModal = () => {
@@ -93,32 +169,6 @@ function SummaryBar(props) {
 
   const onDragToggleDraggingClass = event => {
     event.currentTarget.classList.toggle('sortable-draggable-dragging');
-  };
-
-  const getDraggedNextElement = (container, yMouse) => {
-    // grab all draggable elements that are not being dragged.
-    const draggableElements = [
-      ...container.querySelectorAll('.sortable-draggable:not(.sortable-dragging)'),
-    ];
-
-    // below uses the array of draggable elements and uses the offset to find the closest draggable element after
-    // the element is dragged
-    if (draggableElements.length > 0) {
-      return draggableElements.reduce(
-        (closest, child) => {
-          const box = child.getBoundingClientRect();
-          const offset = yMouse - box.top - box.height / 2;
-
-          if (offset < 0 && offset > closest.offset) {
-            return { offset, element: child };
-          }
-          return closest;
-        },
-        { offset: Number.NEGATIVE_INFINITY },
-      ).element;
-    }
-    // Default return if no draggable elements found
-    return null;
   };
 
   const onSortableDragOver = event => {
@@ -135,36 +185,15 @@ function SummaryBar(props) {
 
   const handleEditClick = event => {
     const { currentTarget } = event;
-
-    if (currentTarget) {
-      const textNode = currentTarget.parentNode.querySelector('p');
-
-      if (currentTarget.classList.contains('fa-edit') && textNode) {
-        // Going to edit mode
-        textNode.contentEditable = true;
-        currentTarget.parentNode.draggable = false;
-        currentTarget.parentNode.style.cursor = 'default';
-
-        const range = document.createRange();
-        const selection = window.getSelection();
-
-        range.selectNodeContents(textNode);
-        range.collapse(false);
-        selection.removeAllRanges();
-        selection.addRange(range);
-
-        textNode.style.cursor = 'text';
-        textNode.focus();
-      } else if (textNode) {
-        // Going to draggable mode
-        textNode.style.cursor = 'grab';
-        currentTarget.parentNode.draggable = true;
-        currentTarget.parentNode.style.cursor = 'grab';
-      }
-
-      currentTarget.classList.toggle('fa-edit');
-      currentTarget.classList.toggle('fa-check');
+    if (!currentTarget) return;
+    const textNode = currentTarget.parentNode.querySelector('p');
+    if (currentTarget.classList.contains('fa-edit') && textNode) {
+      applyEditMode(currentTarget, textNode);
+    } else if (textNode) {
+      applyDraggableMode(currentTarget, textNode);
     }
+    currentTarget.classList.toggle('fa-edit');
+    currentTarget.classList.toggle('fa-check');
   };
 
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
@@ -223,39 +252,6 @@ function SummaryBar(props) {
     return totalBadges;
   };
 
-  // refactored for rading form values
-  const readFormData = formid => {
-    const form = document.getElementById(formid);
-    const formData = new FormData(form);
-    const data = {};
-    let isvalid = true;
-    formData.forEach((value, key) => {
-      if (value.trim() !== '') {
-        data[key] = value;
-      } else {
-        isvalid = false;
-      }
-    });
-
-    if (data && data.action && data.action === 'edit') {
-      const updatedSuggestionCategory = Array.from(sortableContainerRef.current.children).map(
-        child => {
-          return child.textContent;
-        },
-      );
-
-      updatedSuggestionCategory.forEach(value => {
-        if (value.trim() === '') {
-          isvalid = false;
-        }
-      });
-
-      data.updatedSuggestionCategory = updatedSuggestionCategory;
-    }
-
-    return isvalid ? data : null;
-  };
-
   const openReport = () => {
     const htmlStr = '';
     setBugReport(info => ({
@@ -267,7 +263,7 @@ function SummaryBar(props) {
 
   const sendBugReport = event => {
     event.preventDefault();
-    const data = readFormData('bugReportForm');
+    const data = readFormData(sortableContainerRef, 'bugReportForm');
     data.firstName = displayUserProfile.firstName;
     data.lastName = displayUserProfile.lastName;
     data.email = displayUserProfile.email;
@@ -277,37 +273,19 @@ function SummaryBar(props) {
     openReport();
   };
 
-  const setnewfields = (fielddata, setfield) => {
-    if (fielddata?.action === 'edit' && fielddata?.updatedSuggestionCategory) {
-      setfield(fielddata.updatedSuggestionCategory);
-    } else {
-      setfield(prev => {
-        let newarr = [...prev];
-        if (fielddata.action === 'add') newarr.unshift(fielddata.newField);
-        if (fielddata.action === 'delete') {
-          newarr = newarr.filter((item, index) => {
-            return fielddata.field
-              ? fielddata.newField !== item
-              : +fielddata.newField !== index + 1;
-          });
-        }
-        return newarr;
-      });
-    }
-  };
   // add new text field or suggestion category by owner class and update the backend
   const editField = async event => {
     event.preventDefault();
-    const data = readFormData('newFieldForm');
+    const data = readFormData(sortableContainerRef, 'newFieldForm');
     if (data) {
       if (extraFieldForSuggestionForm === 'suggestion') {
         data.suggestion = true;
         data.field = false;
-        setnewfields(data, setSuggestionCategory);
+        applyFieldUpdate(data, setSuggestionCategory);
       } else if (extraFieldForSuggestionForm === 'field') {
         data.suggestion = false;
         data.field = true;
-        setnewfields(data, setInputField);
+        applyFieldUpdate(data, setInputField);
       }
       setExtraFieldForSuggestionForm('');
       setEditType('');
@@ -321,7 +299,7 @@ function SummaryBar(props) {
 
   const sendUserSuggestion = async event => {
     event.preventDefault();
-    const data = readFormData('suggestionForm');
+    const data = readFormData(sortableContainerRef, 'suggestionForm');
     data.firstName = displayUserProfile.firstName;
     data.lastName = displayUserProfile.lastName;
     data.email = displayUserProfile.email;
@@ -501,16 +479,9 @@ function SummaryBar(props) {
     if (isAuthUser) {
       return (
         <button
-          className="summary-toggle"
+          className={`summary-toggle ${styles.btnResetInherit}`}
           type="button"
           onClick={props.toggleSubmitForm}
-          style={{
-            background: 'none',
-            border: 'none',
-            padding: 0,
-            color: 'inherit',
-            cursor: 'pointer',
-          }}
           aria-label="Toggle submit form"
         >
           {message}
