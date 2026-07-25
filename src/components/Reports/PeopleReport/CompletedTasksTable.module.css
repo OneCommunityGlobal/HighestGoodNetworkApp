@@ -1,3 +1,5 @@
+/* stylelint-disable no-descending-specificity */
+
 .completedTasksTable {
   background-color: #fff;
   border-radius: 1rem;
@@ -177,6 +179,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    column-gap: 0.4rem;
   }
 
   .pageButton {
@@ -271,5 +274,129 @@
     .totalTimeCell {
       font-size: 0.8rem;
     }
+  }
+}
+
+:global(.dark-mode) .completedTasksTable {
+  background-color: #1b2a41;
+  border-color: #202b45;
+  box-shadow: 0 1px 2px 0 #00000040;
+
+  .summary {
+    background-color: #172238;
+    border-bottom-color: #202b45;
+  }
+
+  .title {
+    color: #f1f5f9;
+  }
+
+  .subtitle {
+    color: #94a3b8;
+  }
+
+  .totalTimeLabel {
+    color: #94a3b8;
+  }
+
+  .totalTimeValue {
+    color: #fb7185;
+  }
+
+  .totalTasks {
+    background-color: #2f3e5e;
+    color: #e2e8f0;
+    border-color: #3b4d72;
+  }
+
+  th, td {
+    border-bottom-color: transparent;
+  }
+
+  thead tr {
+    background-color: #172238;
+    border-bottom-color: #2f3e5e;
+  }
+
+  thead tr th {
+    color: #94a3b8;
+  }
+
+  tbody tr:nth-child(odd) {
+    background-color: #111a2e;
+  }
+  
+  tbody tr:nth-child(even) {
+    background-color: #172238;
+  }
+
+  tbody tr:hover {
+    background-color: #2f3e5e;
+  }
+
+  .indexCell {
+    color: #94a3b8;
+  }
+
+  .nameCell {
+    color: #f1f5f9;
+  }
+
+  .totalTimeCell {
+    color: #e2e8f0;
+  }
+
+  .emptyState {
+    background-color: #253342;
+    border-top-color: #2f3e5e;
+  }
+
+  .emptyIcon {
+    color: #94a3b8;
+    background-color: #1b2a41;
+    border-color: #2f3e5e;
+  }
+
+  .emptyTitle {
+    color: #f1f5f9;
+  }
+
+  .emptyDescription {
+    color: #94a3b8;
+  }
+
+  .pagination {
+    border-top-color: #202b45;
+    background-color: #172238;
+  }
+
+  .pageButton {
+    color: #e2e8f0;
+    background-color: #111a2e;
+    border-color: #202b45;
+  }
+
+  .pageButton:disabled {
+    color: #475569;
+    background-color: #1b2a41;
+  }
+
+  .pageButton:hover:not(:disabled) {
+    background-color: #2f3e5e;
+    color: #f1f5f9;
+  }
+
+  .pageIndicator {
+    color: #cbd5e1;
+  }
+
+  .pageSizeLabel {
+    color: #cbd5e1;
+  }
+
+  .pageSizeSelect {
+    color: #f1f5f9;
+    background-color: #111a2e;
+    border-color: #202b45;
   }
 }
