@@ -156,22 +156,23 @@ function RescheduleEvent({ activity }) {
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       });
 
-      // eslint-disable-next-line no-alert
-      if (json.emailMode === 'dry-run') {
+      const successMessage =
+        json.emailMode === 'dry-run'
+          ? `Poll created successfully. Email delivery was skipped locally for ${json.skipped} participants.`
+          : `Notification sent to ${json.notified} participants.`;
+
+      setLoading(false);
+      history.replace('/communityportal/activities');
+
+      window.setTimeout(() => {
         // eslint-disable-next-line no-alert
-        alert(
-          `Poll created successfully. Email delivery was skipped locally for ${json.skipped} participants.`,
-        );
-      } else {
-        // eslint-disable-next-line no-alert
-        alert(`Notification sent to ${json.notified} participants.`);
-      }
-      closeModal();
+        alert(successMessage);
+      }, 0);
     } catch (e) {
+      setLoading(false);
+
       // eslint-disable-next-line no-alert
       alert(`Error: ${e.message}`);
-    } finally {
-      setLoading(false);
     }
   };
 
