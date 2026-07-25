@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as actions from '../constants/totalOrgSummary';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 /**
  * Action to set the 'loading' flag to true.
@@ -65,13 +65,18 @@ export const fetchTotalOrgSummaryDataError = fetchingError => ({
 });
 
 export const getTotalOrgSummary = (startDate, endDate, comparisonStartDate, comparisonEndDate) => {
-  const url = ENDPOINTS.TOTAL_ORG_SUMMARY(startDate, endDate, comparisonStartDate, comparisonEndDate);
+  const url = ENDPOINTS.TOTAL_ORG_SUMMARY(
+    startDate,
+    endDate,
+    comparisonStartDate,
+    comparisonEndDate,
+  );
   return async dispatch => {
     dispatch(fetchTotalOrgSummaryReportBegin());
     try {
       const response = await axios.get(url);
       dispatch(fetchTotalOrgSummaryDataSuccess(response.data));
-      return {status: response.status, data: response.data};
+      return { status: response.status, data: response.data };
     } catch (error) {
       dispatch(fetchTotalOrgSummaryDataError(error));
       return error.response.status;
@@ -83,7 +88,7 @@ export const getTotalOrgSummary = (startDate, endDate, comparisonStartDate, comp
  * Action to set the 'loading' flag to true.
  */
 export const fetchVolunteerRolesTeamStatsBegin = () => ({
-  type: actions.FETCH_VOLUNTEER_ROLES_TEAM_STATS_BEGIN
+  type: actions.FETCH_VOLUNTEER_ROLES_TEAM_STATS_BEGIN,
 });
 
 /**
@@ -91,7 +96,7 @@ export const fetchVolunteerRolesTeamStatsBegin = () => ({
  *
  * @param {object} volunteerRoleTeamStats An Object with the count of active members in the team.
  */
-export const fetchVolunteerRolesTeamStatsSuccess = (volunteerRoleTeamStats) => ({
+export const fetchVolunteerRolesTeamStatsSuccess = volunteerRoleTeamStats => ({
   type: actions.FETCH_VOLUNTEER_ROLES_TEAM_STATS_SUCCESS,
   payload: { volunteerRoleTeamStats },
 });
@@ -106,20 +111,19 @@ export const fetchVolunteerRolesTeamStatsError = error => ({
   payload: { error },
 });
 
-export const getTeamStatsActiveMembers = (endDate, activeMembersMinimum) =>{
-
-const url =  ENDPOINTS.VOLUNTEER_ROLES_TEAM_STATS(endDate, activeMembersMinimum);
+export const getTeamStatsActiveMembers = (endDate, activeMembersMinimum) => {
+  const url = ENDPOINTS.VOLUNTEER_ROLES_TEAM_STATS(endDate, activeMembersMinimum);
   return async dispatch => {
     dispatch(fetchVolunteerRolesTeamStatsBegin());
     try {
       const response = await axios.get(url);
       dispatch(fetchVolunteerRolesTeamStatsSuccess(response.data));
       return {
-        data: response.data
+        data: response.data,
       };
     } catch (error) {
       dispatch(fetchVolunteerRolesTeamStatsError(error));
       return error.response.status;
     }
   };
-}
+};

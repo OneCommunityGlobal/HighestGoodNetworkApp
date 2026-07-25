@@ -22,7 +22,8 @@ function OldBadges({ personalBestMaxHrs, badges, darkMode }) {
             }}
             className="responsive-font-size"
           >
-            Badges Earned Before Last Week <i className="fa fa-info-circle" id="OldBadgeInfo" />
+            Badges Earned Before Last Week{' '}
+            <i className="fa fa-info-circle" id="OldBadgeInfo" data-testid="old-badge-info-icon" />
           </CardTitle>
           <div className="old_badges">
             <BadgeHistory personalBestMaxHrs={personalBestMaxHrs} badges={badges} />

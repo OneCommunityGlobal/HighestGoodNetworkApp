@@ -7,13 +7,13 @@ import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { boxStyle, boxStyleDark } from '../../styles';
 import hasPermission from '../../utils/permissions';
 import { SEARCH, SHOW, CREATE_NEW_USER, SEND_SETUP_LINK } from '../../languages/en/ui';
+import styles from './usermanagement.module.css';
 
 const setupHistoryTooltip = <Tooltip id="tooltip">Setup History Modal</Tooltip>;
 
 /**
  * The search panel stateless component for user management grid
  */
-
 function UserSearchPanel({
   // eslint-disable-next-line no-shadow
   hasPermission,
@@ -22,14 +22,16 @@ function UserSearchPanel({
   onNewUserClick,
   searchText,
   onSearch,
-  onActiveFiter,
+  onActiveFilter,
   darkMode,
+  selectText,
 }) {
   const canCreateUsers = hasPermission('postUserProfile');
   const [tooltipCreateNewUserOpen, setTooltipCreateNewUserOpen] = useState(false);
   const toggleCreateNewUserTooltip = () => setTooltipCreateNewUserOpen(!tooltipCreateNewUserOpen);
+
   return (
-    <div className="input-group mt-3" id="new_usermanagement">
+    <div className={`input-group mt-3 ${styles.new_user_management}`}>
       <button
         type="button"
         disabled={!canCreateUsers}
@@ -39,12 +41,14 @@ function UserSearchPanel({
       >
         {SEND_SETUP_LINK}
       </button>
+      
       <OverlayTrigger placement="bottom" overlay={setupHistoryTooltip}>
         <button
           type="button"
           className="btn btn-info mr-2"
           onClick={handleSetupHistoryPopup}
           style={darkMode ? boxStyleDark : boxStyle}
+          aria-label="Setup History"
         >
           <FontAwesomeIcon className="bell_icon" icon={faBell} />
         </button>
@@ -76,13 +80,17 @@ function UserSearchPanel({
         {CREATE_NEW_USER}
       </button>
 
+      {/* SEARCH Label Box - explicitly forced text-dark or clear color styling */}
       <div className="input-group-prepend">
-        <span className="input-group-text">{SEARCH}</span>
+        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-dark font-weight-bold' : ''}`}>
+          {SEARCH}
+        </span>
       </div>
+      
+      {/* Search Input Field */}
       <input
-        // autoFocus
         type="text"
-        className="form-control"
+        className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
         aria-label="Search"
         placeholder="Search Text"
         id="user-profiles-wild-card-search"
@@ -90,21 +98,31 @@ function UserSearchPanel({
         onChange={e => {
           onSearch(e.target.value);
         }}
+        style={{ marginRight: '5px' }}
       />
-      <div className="input-group-prepend ml-2">
-        <span className="input-group-text">{SHOW}</span>
-        <select
-          id="active-filter-dropdown"
-          onChange={e => {
-            onActiveFiter(e.target.value);
-          }}
-        >
-          <option value="all">All</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-          <option value="paused">Paused</option>
-        </select>
+
+      {/* SHOW Label Box - changed text-light to text-dark so it pops on the white background label */}
+      <div className="input-group-prepend">
+        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-dark font-weight-bold' : ''}`}>
+          {SHOW}
+        </span>
       </div>
+
+      {/* Dropdown Select - Added explicit class styling */}
+      <select
+        id="active-filter-dropdown"
+        onChange={e => {
+          onActiveFilter(e.target.value);
+        }}
+        value={selectText}
+        className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light border-secondary' : ''}`}
+        style={{ marginBottom: '0px' }}
+      >
+        <option value="all">All</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+        <option value="paused">Paused</option>
+      </select>
 
       <div className="input-group-append" />
     </div>

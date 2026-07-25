@@ -15,7 +15,10 @@ class DropDownSearchBox extends React.PureComponent {
     // });
   };
 
+
   render() {
+
+
     return (
       <select
         onChange={this.onSelectionChange}
@@ -29,13 +32,15 @@ class DropDownSearchBox extends React.PureComponent {
         }}
         className={this.props.className}
       >
-        <option value="" style={{ color: '#9b9b9b' }}>
-          {this.props.placeholder}
-        </option>
-        {this.props.items.map((item,index) => {
+        <option value="">All users</option>
+
+        {/* eslint-disable-next-line no-unused-vars */}
+        {this.props.items.map((item, index) => {
           return (
-            // <option value={item} key={`search-dropdown-${  index}`}>
-            <option value={item} key={`${item}-${index}`}>
+            // <option value={item} key={`${item}-${index}`}>
+            //  {item}
+            // </option>
+            <option value={item} key={item}>
               {item}
             </option>
           );

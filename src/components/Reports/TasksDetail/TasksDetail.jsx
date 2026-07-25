@@ -3,8 +3,7 @@ import { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import Collapse from 'react-bootstrap/Collapse';
 import EditTaskModal from '../../Projects/WBS/WBSDetail/EditTask/EditTaskModal';
-import 'react-table/react-table.css';
-import './TasksDetail.css';
+import './TasksDetail.module.css';
 
 
 
@@ -122,6 +121,7 @@ export function TasksDetail(props) {
             parentId3={task.parentId3}
             mother={task.mother}
             level={task.level}
+            projectId={props.projectId}
           />
         )}
       </td>

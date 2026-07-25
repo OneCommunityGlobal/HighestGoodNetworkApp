@@ -1,0 +1,367 @@
+import { useEffect, useMemo, useState } from 'react';
+import { connect, useDispatch, useSelector } from 'react-redux';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  LabelList,
+  ResponsiveContainer,
+} from 'recharts';
+import { Select, DatePicker, Spin } from 'antd';
+import { fetchInjurySeverity } from '../../../actions/bmdashboard/injuryActions';
+import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
+import styles from './InjurySeverityChart.module.css';
+
+const { Option } = Select;
+const { RangePicker } = DatePicker;
+
+const generateColors = n =>
+  Array.from({ length: n }, (_, i) => {
+    const hue = Math.round((i * 360) / n);
+    return `hsl(${hue}, 70%, 50%)`;
+  });
+
+const SEVERITY_ORDER = ['Minor', 'Major', 'Critical'];
+
+const buildSingleDeptEntry = (sev, projects, dataMap) => {
+  const entry = { severity: sev };
+  projects.forEach(project => {
+    entry[project.name] = dataMap[`${sev}_${project._id}`] || 0;
+  });
+  return entry;
+};
+
+const buildMultiDeptEntry = (sev, projects, depts, dataMap) => {
+  const entry = { severity: sev };
+  projects.forEach(project => {
+    depts.forEach(dept => {
+      const key = `${project.name}_${dept}`;
+      entry[key] = dataMap[`${sev}_${project._id}_${dept}`] || 0;
+    });
+  });
+  return entry;
+};
+
+function CustomTooltip({ active, payload, label, darkMode }) {
+  if (!active || !payload || payload.length === 0) return null;
+
+  // Group data by project
+  const projectData = {};
+
+  payload.forEach(entry => {
+    if (entry.value > 0) {
+      // Extract project and department from dataKey
+      const match = entry.dataKey.match(/^([^_]+)_(.+)$/);
+      if (match) {
+        const [, projectName, department] = match;
+        if (!projectData[projectName]) projectData[projectName] = [];
+        projectData[projectName].push({ department, value: entry.value, color: entry.color });
+      }
+    }
+  });
+
+  return (
+    <div className={`${styles.customTooltip} ${darkMode ? styles.dark : ''}`}>
+      <p
+        style={{
+          margin: '0 0 8px 0',
+          fontWeight: 'bold',
+          color: darkMode ? '#f5f5f5' : '#333',
+        }}
+      >
+        {label}
+      </p>
+      {Object.entries(projectData).map(([projectName, departments]) => (
+        <div key={projectName} style={{ marginBottom: '6px' }}>
+          <div
+            style={{
+              fontWeight: 'bold',
+              color: darkMode ? '#f5f5f5' : '#333',
+              marginBottom: '2px',
+            }}
+          >
+            {projectName}:
+          </div>
+          <div
+            style={{
+              paddingLeft: '8px',
+              color: darkMode ? '#e0e0e0' : '#666',
+            }}
+          >
+            {departments.map(({ department, value, color }, idx) => (
+              <span key={department}>
+                <span style={{ color }}>
+                  {department}: {value}
+                </span>
+                {idx < departments.length - 1 ? ', ' : ''}
+              </span>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function InjurySeverityDashboard(props) {
+  const dispatch = useDispatch();
+  const bmProjects = useSelector(state => state.bmProjects);
+  const rawData = useSelector(state => state.bmInjury?.severityData || []);
+  const { darkMode } = props;
+
+  const [selProjects, setSelProjects] = useState([]);
+  const [selTypes, setSelTypes] = useState([]);
+  const [selDepts, setSelDepts] = useState([]);
+  const [dateRange, setDateRange] = useState([null, null]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    dispatch(fetchBMProjects());
+  }, [dispatch]);
+
+  useEffect(() => {
+    setLoading(true);
+    dispatch(
+      fetchInjurySeverity({
+        projectIds: selProjects,
+        types: selTypes,
+        departments: selDepts,
+        startDate: dateRange[0]?.format('YYYY-MM-DD'),
+        endDate: dateRange[1]?.format('YYYY-MM-DD'),
+      }),
+    ).finally(() => setLoading(false));
+  }, [dispatch, selProjects, selTypes, selDepts, dateRange]);
+
+  const isEmptyState =
+    selProjects.length === 0 &&
+    selTypes.length === 0 &&
+    selDepts.length === 0 &&
+    !dateRange[0] &&
+    !dateRange[1];
+  const hasNoData = !loading && !isEmptyState && rawData.length === 0;
+
+  const visibleProjects = useMemo(() => {
+    if (selProjects.length > 0) {
+      return bmProjects.filter(p => selProjects.includes(p._id));
+    }
+    return bmProjects;
+  }, [bmProjects, selProjects]);
+
+  const visibleDepartments = useMemo(() => {
+    const depts = Array.from(new Set(rawData.map(r => r.department).filter(Boolean)));
+    return depts;
+  }, [rawData]);
+
+  //Refactored
+  const chartData = useMemo(() => {
+    const dataMap = rawData.reduce((acc, r) => {
+      if (r.projectId) {
+        acc[`${r.severity}_${r.projectId}`] = r.totalInjuries;
+        acc[`${r.severity}_${r.projectId}_${r.department}`] = r.totalInjuries;
+      }
+      return acc;
+    }, {});
+
+    return SEVERITY_ORDER.map(sev => {
+      if (visibleDepartments.length <= 1) {
+        return buildSingleDeptEntry(sev, visibleProjects, dataMap);
+      }
+      return buildMultiDeptEntry(sev, visibleProjects, visibleDepartments, dataMap);
+    });
+  }, [rawData, visibleProjects, visibleDepartments]);
+
+  const chartBars = useMemo(() => {
+    if (visibleDepartments.length <= 1) {
+      // Single department - one bar per project (these will be grouped)
+      const projectColors = generateColors(visibleProjects.length);
+      return visibleProjects.map((project, idx) => ({
+        key: project._id,
+        dataKey: project.name,
+        name: project.name,
+        fill: projectColors[idx],
+      }));
+      // eslint-disable-next-line no-else-return
+    } else {
+      // Multiple departments - create stacked bars per project
+      const departmentColors = generateColors(visibleDepartments.length);
+      const bars = [];
+
+      visibleDepartments.forEach((dept, deptIdx) => {
+        visibleProjects.forEach((project, projectIdx) => {
+          bars.push({
+            key: `${project._id}_${dept}`,
+            dataKey: `${project.name}_${dept}`,
+            name: `${project.name} - ${dept}`, // Keep full name for tooltip
+            fill: departmentColors[deptIdx],
+            stackId: project.name, // Stack departments within each project
+            legendType: projectIdx === 0 ? 'rect' : 'none', // Only show first occurrence in legend
+          });
+        });
+      });
+      // eslint-disable-next-line prettier/prettier
+
+      return bars;
+    }
+  }, [visibleProjects, visibleDepartments]);
+
+  const filterStyle = {
+    flex: 1,
+    minWidth: 180,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  };
+
+  return (
+    <div
+      style={{ padding: '0 24px' }}
+      className={`${styles.injurySeverityContainer} container-fluid h-100 ${
+        darkMode ? `${styles.oxideDark} text-light` : ''
+      }`}
+    >
+      <h2
+        style={{
+          textAlign: 'center',
+          color: '#007bff',
+          fontSize: '2rem',
+          fontWeight: 'bold',
+          marginBottom: '20px',
+        }}
+        className={`${darkMode && 'text-light'}`}
+      >
+        Injury Severity by Projects
+      </h2>
+
+      {/* Filters */}
+      <div
+        style={{
+          display: 'flex',
+          gap: 12,
+          flexWrap: 'wrap',
+          marginBottom: 20,
+          paddingLeft: 20,
+          color: '#f80a0a',
+        }}
+      >
+        <Select
+          className={styles.filterSelect}
+          popupClassName={darkMode ? styles.oxideDark : ''}
+          mode="multiple"
+          allowClear
+          placeholder="Projects"
+          style={filterStyle}
+          value={selProjects}
+          onChange={setSelProjects}
+          maxTagCount="responsive"
+          maxTagPlaceholder={omitted => `+${omitted.length}`}
+        >
+          {bmProjects.map(p => (
+            <Option key={p._id} value={p._id}>
+              {p.name}
+            </Option>
+          ))}
+        </Select>
+
+        <RangePicker
+          className={styles.filterSelect}
+          popupClassName={darkMode ? styles.oxideDark : ''}
+          value={dateRange}
+          onChange={dates => setDateRange(dates || [null, null])}
+          style={filterStyle}
+        />
+
+        <Select
+          className={styles.filterSelect}
+          popupClassName={darkMode ? styles.oxideDark : ''}
+          mode="multiple"
+          allowClear
+          placeholder="Injury Types"
+          style={filterStyle}
+          value={selTypes}
+          onChange={setSelTypes}
+          maxTagCount="responsive"
+          maxTagPlaceholder={omitted => `+${omitted.length}`}
+        >
+          {['Cut', 'Bruise', 'Fracture', 'Burn', 'Electric Shock'].map(t => (
+            <Option key={t} value={t}>
+              {t}
+            </Option>
+          ))}
+        </Select>
+
+        <Select
+          className={styles.filterSelect}
+          popupClassName={darkMode ? styles.oxideDark : ''}
+          mode="multiple"
+          allowClear
+          placeholder="Departments"
+          style={filterStyle}
+          value={selDepts}
+          onChange={setSelDepts}
+          maxTagCount="responsive"
+          maxTagPlaceholder={omitted => `+${omitted.length}`}
+        >
+          {['Plumbing', 'Electrical', 'Carpentry', 'Welding'].map(d => (
+            <Option key={d} value={d}>
+              {d}
+            </Option>
+          ))}
+        </Select>
+      </div>
+
+      {/* Chart */}
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: 50 }}>
+          <Spin size="large" />
+        </div>
+      ) : isEmptyState ? (
+        <button type="button" className={styles.chartPlaceholder}>
+          <div className={styles.placeholderGraphic} />
+          <div className={styles.placeholderTooltip}>Select filters to generate visualization</div>
+        </button>
+      ) : hasNoData ? (
+        <div className={styles.noDataState}>No data available for the selected filters</div>
+      ) : (
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="severity" />
+            <YAxis />
+            <Tooltip
+              content={<CustomTooltip darkMode={darkMode} />}
+              cursor={{ fill: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)' }}
+            />
+            <Legend />
+
+            {chartBars.map(bar => (
+              <Bar
+                key={bar.key}
+                dataKey={bar.dataKey}
+                name={bar.name}
+                fill={bar.fill}
+                stackId={bar.stackId}
+                legendType={bar.legendType}
+              >
+                <LabelList
+                  dataKey={bar.dataKey}
+                  position="center"
+                  formatter={value => (value > 0 ? value : '')}
+                  fill="#ffffff"
+                  fontWeight="bold"
+                />
+              </Bar>
+            ))}
+          </BarChart>
+        </ResponsiveContainer>
+      )}
+    </div>
+  );
+}
+
+const mapStateToProps = state => ({
+  darkMode: state.theme.darkMode,
+});
+export default connect(mapStateToProps)(InjurySeverityDashboard);

@@ -6,8 +6,9 @@
  **************************************************************** */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Container } from 'reactstrap';
+import { Container, Spinner } from 'reactstrap';
 import { Table } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { getAllRoles } from '../../actions/role';
@@ -18,39 +19,35 @@ import {
 } from '../../utils/constants';
 import {
   getAllUserProfile,
-  updateUserStatus,
-  updateUserFinalDayStatusIsSet,
   deleteUser,
   enableEditUserInfo,
   disableEditUserInfo,
+  updateUserPauseStatus,
 } from '../../actions/userManagement';
-// import Loading from '../common/Loading';
-// import SkeletonLoading from '../common/SkeletonLoading';
 import UserTableHeader from './UserTableHeader';
 import UserTableData from './UserTableData';
 import UserTableSearchHeader from './UserTableSearchHeader';
 import UserTableFooter from './UserTableFooter';
-import './usermanagement.css';
 import UserSearchPanel from './UserSearchPanel';
 import NewUserPopup from './NewUserPopup';
 import ActivationDatePopup from './ActivationDatePopup';
 import { UserStatus, UserDeleteType, FinalDay } from '../../utils/enums';
-import hasPermission, { cantDeactivateOwner } from '../../utils/permissions';
-import { searchWithAccent } from '../../utils/search';
+import hasPermission, { cantDeactivateOwner, cantUpdateDevAdminDetails } from '../../utils/permissions';
 import SetupHistoryPopup from './SetupHistoryPopup';
 import DeleteUserPopup from './DeleteUserPopup';
 import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import LogTimeOffPopUp from './logTimeOffPopUp';
 import SetupNewUserPopup from './setupNewUserPopup';
-import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
+import { scheduleDeactivationAction, activateUserAction, deactivateImmediatelyAction } from '../../actions/userLifecycleActions';
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
 
   constructor(props) {
     super(props);
+    const initialPage = props.state?.userPagination?.pagestats?.selectedPage;
     this.state = {
       firstNameSearchText: '',
       lastNameSearchText: '',
@@ -59,11 +56,10 @@ class UserManagement extends React.PureComponent {
       weeklyHrsSearchText: '',
       emailSearchText: '',
       wildCardSearchText: '',
-      selectedPage: props.state.userPagination.pagestats.selectedPage,
-      pageSize: props.state.userPagination.pagestats.pageSize,
+      selectedPage: initialPage > 0 ? initialPage : 1, // Prevent 0 index slice error
+      pageSize: props.state?.userPagination?.pagestats?.pageSize || 10,
       allSelected: undefined,
       isActive: undefined,
-      // isSet: undefined,
       activationDateOpen: false,
       deletePopupOpen: false,
       isPaused: false,
@@ -74,8 +70,16 @@ class UserManagement extends React.PureComponent {
       logTimeOffPopUpOpen: false,
       userForTimeOff: '',
       userTableItems: [],
-      editable: props.state.userPagination.editable,
-      // updating:props.state.updateUserInfo.updating
+      editable: props.state?.userPagination?.editable,
+      isMobile: window.innerWidth <= 750,
+      mobileFontSize: 10,
+      mobileWidth: '100px',
+      isLoadingUsers: props.initialIsLoadingUsers ?? true,
+      isFilteringTable: false,
+      selectText: '',
+      activeInactivePopupOpen: false,
+      finalDayPopupOpen: false,
+      selectedUser: null,
     };
     this.onPauseResumeClick = this.onPauseResumeClick.bind(this);
     this.onLogTimeOffClick = this.onLogTimeOffClick.bind(this);
@@ -85,65 +89,82 @@ class UserManagement extends React.PureComponent {
   }
 
   componentDidMount() {
-    // Initiating the user profile fetch action.
+    document.body.classList.add('no-global-theme');
     this.props.getAllUserProfile();
     this.props.getAllTimeOffRequests();
-    const { darkMode } = this.props.state.theme;
-    const { userProfiles } = this.props.state.allUserProfiles;
-    const { roles: rolesPermissions } = this.props.state.role;
-    const { requests: timeOffRequests } = this.props.state.timeOffRequests;
-    this.getFilteredData(
-      userProfiles,
-      rolesPermissions,
-      timeOffRequests,
-      darkMode,
-      this.state.editable,
-    );
+    window.addEventListener('resize', this.handleResize);
+    this.updateGetFilteredData();
   }
+
+  componentWillUnmount() {
+    document.body.classList.remove('no-global-theme');
+    window.removeEventListener('resize', this.handleResize);
+  }
+
+  handleResize = () => {
+    this.setState({ isMobile: window.innerWidth <= 750 });
+  };
 
   async componentDidUpdate(prevProps, prevState) {
-    
     if (prevProps.state.theme.darkMode !== this.props.state.theme.darkMode) {
-      const darkMode = this.props.state.theme.darkMode;
-      let { userProfiles, fetching } = this.props.state.allUserProfiles;
-      let { roles: rolesPermissions } = this.props.state.role;
-      let { requests: timeOffRequests } = this.props.state.timeOffRequests;
+      const { darkMode } = this.props.state.theme;
+      const { userProfiles } = this.props.state.allUserProfiles;
+      const { roles: rolesPermissions } = this.props.state.role;
+      const { requests: timeOffRequests } = this.props.state.timeOffRequests;
 
-      this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode, this.state.editable);
+      this.getFilteredData(
+        userProfiles,
+        rolesPermissions,
+        timeOffRequests,
+        darkMode,
+        this.state.editable,
+        this.state.isMobile,
+        this.state.mobileFontSize,
+      );
     }
-    
-    const searchStateChanged = (prevState.firstNameSearchText !== this.state.firstNameSearchText) || 
-                               (prevState.lastNameSearchText !== this.state.lastNameSearchText) || 
-                               (prevState.roleSearchText !== this.state.roleSearchText) || 
-                               prevState.titleSearchText !== this.state.titleSearchText ||
-                               (prevState.weeklyHrsSearchText !== this.state.weeklyHrsSearchText) || 
-                               (prevState.emailSearchText !== this.state.emailSearchText);
-  
+
+    const searchStateChanged =
+      prevState.firstNameSearchText !== this.state.firstNameSearchText ||
+      prevState.lastNameSearchText !== this.state.lastNameSearchText ||
+      prevState.roleSearchText !== this.state.roleSearchText ||
+      prevState.titleSearchText !== this.state.titleSearchText ||
+      prevState.weeklyHrsSearchText !== this.state.weeklyHrsSearchText ||
+      prevState.emailSearchText !== this.state.emailSearchText;
+
     const pageSizeChanged = prevState.pageSize !== this.state.pageSize;
-    const userProfilesChanged = prevProps.state.allUserProfiles.userProfiles !== this.props.state.allUserProfiles.userProfiles;
+    const userProfilesChanged =
+      prevProps.state.allUserProfiles.userProfiles !==
+      this.props.state.allUserProfiles.userProfiles;
 
-    if ((prevState.selectedPage !== this.state.selectedPage) ||
-      (prevState.wildCardSearchText !== this.state.wildCardSearchText) ||
-      searchStateChanged || pageSizeChanged || userProfilesChanged) {
+    if (
+      prevState.selectedPage !== this.state.selectedPage ||
+      prevState.wildCardSearchText !== this.state.wildCardSearchText ||
+      searchStateChanged ||
+      pageSizeChanged ||
+      userProfilesChanged
+    ) {
+      const { darkMode } = this.props.state.theme;
+      const { userProfiles } = this.props.state.allUserProfiles;
+      const { roles: rolesPermissions } = this.props.state.role;
+      const { requests: timeOffRequests } = this.props.state.timeOffRequests;
+      this.getFilteredData(
+        userProfiles,
+        rolesPermissions,
+        timeOffRequests,
+        darkMode,
+        this.state.editable,
+        this.state.isMobile,
+        this.state.mobileFontSize,
+      );
 
-      let darkMode = this.props.state.theme.darkMode;
-      let { userProfiles, fetching } = this.props.state.allUserProfiles;
-      let { roles: rolesPermissions } = this.props.state.role;
-      let { requests: timeOffRequests } = this.props.state.timeOffRequests;
-      this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode, this.state.editable);
+      this.setState({
+        isLoadingUsers: false,
+      });
     }
   }
 
-  /**
-   * Returns the differenet popup components to render
-   * 1. Popup to show the reactivation date selection
-   * 2. Popup to show the profile creation (new user)
-   * 3. Popup to choose the delete option upon clicking delete button.
-   * 4. Popup to confirm the action of setting a user active or inactive upon the status column click.
-   * 5. Popup to show the last day selection
-   */
   popupElements = () => {
-    const userName = `${this.state?.selectedUser?.firstName}_${this.state?.selectedUser?.lastName}`;
+    const userName = `${this.state?.selectedUser?.firstName || ''}_${this.state?.selectedUser?.lastName || ''}`;
     return (
       <>
         <ActivationDatePopup
@@ -165,6 +186,8 @@ class UserManagement extends React.PureComponent {
         />
         <ActiveInactiveConfirmationPopup
           isActive={this.state.selectedUser ? this.state.selectedUser.isActive : false}
+          endDate={this.state.selectedUser ? this.state.selectedUser.endDate : null}
+          inactiveReason={this.state.selectedUser ? this.state.selectedUser.inactiveReason : null}
           fullName={
             this.state.selectedUser
               ? `${this.state.selectedUser.firstName} ${this.state.selectedUser.lastName}`
@@ -172,12 +195,31 @@ class UserManagement extends React.PureComponent {
           }
           open={this.state.activeInactivePopupOpen}
           onClose={this.activeInactivePopupClose}
-          setActiveInactive={this.setActiveInactive}
+          onDeactivateImmediate={() =>
+            deactivateImmediatelyAction(this.props.dispatch, this.state.selectedUser, this.props.getAllUserProfile)
+          }
+          onScheduleFinalDay={() => {
+            this.setState({
+              finalDayPopupOpen: true,
+              activeInactivePopupOpen: false,
+            });
+          }}
+          onCancelScheduledDeactivation={this.reactivateUser}
+          onReactivateUser={this.reactivateUser}
         />
         <SetUpFinalDayPopUp
-          open={this.state.finalDayDateOpen}
-          onClose={this.setUpFinalDayPopupClose}
-          onSave={this.deactiveUser}
+          open={this.state.finalDayPopupOpen}
+          darkMode={this.props.state.theme.darkMode}
+          onClose={() => this.setState({ finalDayPopupOpen: false })}
+          onSave={(finalDayISO) => {
+            scheduleDeactivationAction(
+              this.props.dispatch,
+              this.state.selectedUser,
+              finalDayISO,
+              this.props.getAllUserProfile,
+            );
+            this.setState({ finalDayPopupOpen: false });
+          }}
         />
         <SetupNewUserPopup
           open={this.state.setupNewUserPopupOpen}
@@ -202,20 +244,37 @@ class UserManagement extends React.PureComponent {
   /**
    * Creates the table body elements after applying the search filter and return it.
    */
-  userTableElements = (userProfiles, rolesPermissions, timeOffRequests, darkMode) => {
+  userTableElements = (
+    userProfiles,
+    rolesPermissions,
+    timeOffRequests,
+    darkMode,
+    isMobile,
+    mobileFontSize,
+  ) => {
     if (userProfiles && userProfiles.length > 0) {
       const usersSearchData = this.filteredUserList(userProfiles);
       this.filteredUserDataCount = usersSearchData.length;
       const that = this;
-      /* Builiding the table body for users based on the page size and selected page number and returns
-       * the rows for currently selected page .
-       * Applying the Default sort in the order of created date as well
-       */
+
       return usersSearchData
         .sort((a, b) => {
-          if (a.createdDate >= b.createdDate) return -1;
-          if (a.createdDate < b.createdDate) return 1;
-          return 0;
+          // Sort by signup date (createdDate), most recent signups first.
+          // Previously this sorted by startDate, which is intended to track
+          // when a user actually begins logging time (and can be updated
+          // later), not when they signed up - using it here produced an
+          // incorrect and unstable ordering on the User Management page.
+          // See hotfix: User Management stale date replay bug.
+          const aTime = new Date(a.createdDate).getTime();
+          const bTime = new Date(b.createdDate).getTime();
+          const aValid = !Number.isNaN(aTime);
+          const bValid = !Number.isNaN(bTime);
+
+          if (!aValid && !bValid) return 0;
+          if (!aValid) return 1;
+          if (!bValid) return -1;
+
+          return bTime - aTime;
         })
         .slice(
           (this.state.selectedPage - 1) * this.state.pageSize,
@@ -224,8 +283,7 @@ class UserManagement extends React.PureComponent {
         .map((user, index) => {
           return (
             <UserTableData
-              // eslint-disable-next-line react/no-array-index-key
-              key={`user_${index}`}
+              key={user._id || `user_${index}`}
               index={index}
               isActive={user.isActive}
               isSet={user.isSet}
@@ -248,87 +306,114 @@ class UserManagement extends React.PureComponent {
               roles={rolesPermissions}
               timeOffRequests={timeOffRequests[user._id] || []}
               darkMode={darkMode}
-            // editUser={editUser}
+              isMobile={isMobile}
+              mobileFontSize={mobileFontSize}
+              onUserUpdate={this.onUserUpdate}
             />
           );
         });
     }
+
     return null;
   };
 
-  getFilteredData = (userProfiles, rolesPermissions, timeOffRequests, darkMode, editUser) => {
+  getFilteredData = (
+    userProfiles,
+    rolesPermissions,
+    timeOffRequests,
+    darkMode,
+    editUser,
+    isMobile,
+    mobileFontSize,
+  ) => {
     this.setState({
+      userTableItems: this.userTableElements(
+        userProfiles,
+        rolesPermissions,
+        timeOffRequests,
+        darkMode,
+        isMobile,
+        mobileFontSize,
+      ),
+      isFilteringTable: false,
+    });
+  };
 
-      userTableItems: this.userTableElements(userProfiles, rolesPermissions, timeOffRequests, darkMode, editUser)
-    })
-  }
-
-  filteredUserList = userProfiles => {
+  filteredUserList = (userProfiles) => {
     const wildCardSearch = this.state.wildCardSearchText.trim().toLowerCase();
 
-    return userProfiles.filter(user => {
+    return userProfiles.filter((user) => {
       const firstNameSearch = this.state.firstNameSearchText || '';
       const lastNameSearch = this.state.lastNameSearchText || '';
 
-      const firstName = user.firstName.toLowerCase();
-      const lastName = user.lastName.toLowerCase();
+      const firstName = user.firstName ? user.firstName.toLowerCase() : '';
+      const lastName = user.lastName ? user.lastName.toLowerCase() : '';
       const email = user.email ? user.email.toLowerCase() : '';
 
       const trimmedFirstNameSearch = firstNameSearch.trim();
       const trimmedLastNameSearch = lastNameSearch.trim();
 
-      const isFirstNameExactMatch = firstNameSearch.endsWith(' ') && trimmedFirstNameSearch.length > 0;
+      const isFirstNameExactMatch =
+        firstNameSearch.endsWith(' ') && trimmedFirstNameSearch.length > 0;
       const isLastNameExactMatch = lastNameSearch.endsWith(' ') && trimmedLastNameSearch.length > 0;
 
+      let firstNameMatches = true;
+      if (trimmedFirstNameSearch) {
+        if (isFirstNameExactMatch) {
+          firstNameMatches = firstName === trimmedFirstNameSearch.toLowerCase();
+        } else {
+          firstNameMatches = firstName.includes(trimmedFirstNameSearch.toLowerCase());
+        }
+      }
 
-      const firstNameMatches = trimmedFirstNameSearch
-        ? (isFirstNameExactMatch
-          ? firstName === trimmedFirstNameSearch.toLowerCase()
-          : firstName.includes(trimmedFirstNameSearch.toLowerCase()))
-        : true;
+      let lastNameMatches = true;
+      if (trimmedLastNameSearch) {
+        if (isLastNameExactMatch) {
+          lastNameMatches = lastName === trimmedLastNameSearch.toLowerCase();
+        } else {
+          lastNameMatches = lastName.includes(trimmedLastNameSearch.toLowerCase());
+        }
+      }
 
+      let wildcardMatches = true;
+      if (wildCardSearch) {
+        const fullName = `${firstName} ${lastName}`;
+        const trimmedSearch = wildCardSearch.trim();
 
-      const lastNameMatches = trimmedLastNameSearch
-        ? (isLastNameExactMatch
-          ? lastName === trimmedLastNameSearch.toLowerCase()
-          : lastName.includes(trimmedLastNameSearch.toLowerCase()))
-        : true;
-
-
-      const wildcardMatches = wildCardSearch
-        ? wildCardSearch.includes(" ")
-          ? (firstName + " " + lastName).startsWith(wildCardSearch.trim()) ||
-          (firstName + " " + lastName) === wildCardSearch.trim() ||
-          email === wildCardSearch.trim()
-          : firstName.startsWith(wildCardSearch) ||
-          lastName.startsWith(wildCardSearch) ||
-          firstName.includes(wildCardSearch) ||
-          lastName.includes(wildCardSearch) ||
-          email.includes(wildCardSearch)
-        : true;
+        if (wildCardSearch.includes(' ')) {
+          wildcardMatches = fullName.startsWith(trimmedSearch) || fullName === trimmedSearch || email === trimmedSearch;
+        } else {
+          wildcardMatches =
+            firstName.startsWith(wildCardSearch) ||
+            lastName.startsWith(wildCardSearch) ||
+            firstName.includes(wildCardSearch) ||
+            lastName.includes(wildCardSearch) ||
+            email.includes(wildCardSearch);
+        }
+      }
 
       const nameMatches = firstNameMatches && lastNameMatches && wildcardMatches;
 
+      const roleStr = user.role ? user.role.toLowerCase() : '';
+      const jobTitleStr = user.jobTitle ? user.jobTitle.toLowerCase() : '';
+
       return (
         nameMatches &&
-        user.role.toLowerCase().includes(this.state.roleSearchText.toLowerCase()) &&
-        user.jobTitle.toLowerCase().includes(this.state.titleSearchText.toLowerCase()) &&
-        user.email.toLowerCase().includes(this.state.emailSearchText.toLowerCase()) &&
+        roleStr.includes(this.state.roleSearchText.toLowerCase()) &&
+        jobTitleStr.includes(this.state.titleSearchText.toLowerCase()) &&
+        email.includes(this.state.emailSearchText.toLowerCase()) &&
         (this.state.weeklyHrsSearchText === '' ||
           user.weeklycommittedHours === Number(this.state.weeklyHrsSearchText)) &&
         ((this.state.allSelected && true) ||
-          (this.state.isActive === undefined || user.isActive === this.state.isActive)) &&
+          this.state.isActive === undefined ||
+          user.isActive === this.state.isActive) &&
         ((this.state.allSelected && true) ||
-          (this.state.isPaused === false ||
-            (user.reactivationDate && new Date(user.reactivationDate) > new Date())))
+          this.state.isPaused === false ||
+          (user.reactivationDate && new Date(user.reactivationDate) > new Date()))
       );
     });
   };
 
-  /**
-   * 
-   * reload user list and close user creation popup
-   */
   userCreated = () => {
     const text = this.state.wildCardSearchText;
     this.props.getAllUserProfile();
@@ -338,26 +423,34 @@ class UserManagement extends React.PureComponent {
     }));
   };
 
+  onPauseResumeClick = async (user, status) => {
+    this.setState({ selectedUser: user });
 
-  /**
-   * Call back on Pause or Resume button click to trigger the action to update user status
-   */
-  onPauseResumeClick = (user, status) => {
-    if (status === UserStatus.Active) {
-      this.props.updateUserStatus(user, status, Date.now());
+    if (status === UserStatus.Inactive) {
+      this.setState({ activationDateOpen: true });
     } else {
-      this.setState({
-        activationDateOpen: true,
-        selectedUser: user,
-      });
+      await this.reactivateUser(user);
     }
   };
+  
+  reactivateUser = async (user = this.state.selectedUser) => {
+    await activateUserAction(
+      this.props.dispatch,
+      user,
+      this.props.getAllUserProfile,
+    );
+  };
 
-  /**
-   * Call back on log time off button click
-   */
-  onLogTimeOffClick = user => {
-    // Check if target user is Jae's related user and authroized to manage time off requests
+  onUserUpdate = (updatedUser) => {
+    const { userProfiles } = this.props.state.allUserProfiles;
+    const updatedProfiles = userProfiles.map(user =>
+      user._id === updatedUser._id ? updatedUser : user,
+    );
+    this.props.state.allUserProfiles.userProfiles = updatedProfiles;
+    this.updateGetFilteredData();
+  };
+
+  onLogTimeOffClick = (user) => {
     if (cantUpdateDevAdminDetails(user.email, this.authEmail)) {
       if (user?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
         alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
@@ -366,11 +459,9 @@ class UserManagement extends React.PureComponent {
       }
       return;
     }
-    const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests')
-
+    const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests');
     const hasRolePermission =
-      this.props.state.auth.user.role === 'Administrator' ||
-      this.props.state.auth.user.role === 'Owner';
+      this.props.state.auth.user.role === 'Administrator' || this.props.state.auth.user.role === 'Owner';
     if (canManageTimeOffRequests || hasRolePermission) {
       this.setState({
         logTimeOffPopUpOpen: true,
@@ -381,11 +472,7 @@ class UserManagement extends React.PureComponent {
     }
   };
 
-  /**
-   * Call back on Set Final day or Delete final button click to trigger the action to update user endate
-   */
-
-  onFinalDayClick = (user, status) => {
+  onFinalDayClick = async (user, status) => {
     if (cantUpdateDevAdminDetails(user.email, this.authEmail)) {
       if (user?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
         alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
@@ -394,8 +481,8 @@ class UserManagement extends React.PureComponent {
       }
       return;
     }
-    if (status === FinalDay.NotSetFinalDay) {
-      this.props.updateUserFinalDayStatusIsSet(user, 'Active', undefined, FinalDay.NotSetFinalDay);
+    if (status === FinalDay.RemoveFinalDay) {
+      await this.reactivateUser(user);
     } else {
       this.setState({
         finalDayDateOpen: true,
@@ -404,68 +491,33 @@ class UserManagement extends React.PureComponent {
     }
   };
 
-  /**
-   * call back function to close the activation date popup
-   */
   activationDatePopupClose = () => {
-    this.setState({
-      activationDateOpen: false,
-    });
+    this.setState({ activationDateOpen: false });
   };
 
-  /**
-   * call back function to close the final date popup
-   */
   setUpFinalDayPopupClose = () => {
-    this.setState({
-      finalDayDateOpen: false,
-    });
+    this.setState({ finalDayDateOpen: false });
   };
 
-  /**
-   * call back function to close log time off popup
-   */
   logTimeOffPopUpClose = () => {
-    this.setState({
-      logTimeOffPopUpOpen: false,
-    });
+    this.setState({ logTimeOffPopUpOpen: false });
   };
 
-  /**
-   * Call back on Pause confirmation button click to trigger the action to update user status
-   */
-  pauseUser = reActivationDate => {
-    this.props.updateUserStatus(this.state.selectedUser, UserStatus.InActive, reActivationDate);
+  pauseUser = async (reactivationDate) => {
+    await this.props.dispatch(
+      updateUserPauseStatus(this.state.selectedUser, UserStatus.Inactive, reactivationDate),
+    );
+    await this.props.getAllUserProfile();
+
     this.setState({
       activationDateOpen: false,
       selectedUser: undefined,
     });
   };
 
-  /**
-   * Call back on Save confirmation button click to trigger the action to update user status
-   */
-  deactiveUser = finalDayDate => {
-    this.props.updateUserFinalDayStatusIsSet(
-      this.state.selectedUser,
-      'Active',
-      finalDayDate,
-      FinalDay.FinalDay,
-    );
-    this.setState({
-      finalDayDateOpen: false,
-      selectedUser: undefined,
-    });
-  };
-
-  /**
-   * Callback to trigger on the status (active/inactive) column click to show the confirmaton change the status
-   */
-  onActiveInactiveClick = user => {
+  onActiveInactiveClick = (user) => {
     const authRole = this?.props?.state?.auth?.user.role || user.role;
-    // const canChangeUserStatus = hasPermission('changeUserStatus');
     if (cantDeactivateOwner(user, authRole)) {
-      // Owner user cannot be deactivated by another user that is not an Owner.
       alert('You are not authorized to deactivate an owner.');
       return;
     }
@@ -475,164 +527,67 @@ class UserManagement extends React.PureComponent {
     });
   };
 
-  /**
-   * Callback to trigger the status change on confirmation ok click.
-   */
-  setActiveInactive = isActive => {    
-    this.setState(
-      {      
-        activeInactivePopupOpen: false,      
-        selectedUser: undefined,      
-        isUpdating: true    
-      });    
-    
-      this.props.updateUserStatus(      
-        this.state.selectedUser, isActive ? UserStatus.Active : UserStatus.InActive,      
-        undefined,    
-      ).finally(() => {      
-        this.setState({ isUpdating: false });    
-      });
-  };
-
-  /**
-   * Callback to close the confirmation popup on close button click.
-   */
   activeInactivePopupClose = () => {
-    this.setState({
-      activeInactivePopupOpen: false,
-    });
+    this.setState({ activeInactivePopupOpen: false });
   };
 
-  /**
-   * Call back on delete button clic and triggering the delete action.
-   */
-  onDeleteButtonClick = user => {
+  onDeleteButtonClick = (user) => {
     this.setState({
       deletePopupOpen: true,
       selectedUser: user,
     });
   };
 
-  /**
-   * Call back to trigger the delete based on the type chosen from the popup.
-   */
-  onDeleteUser = deleteType => {
+  onDeleteUser = (deleteType) => {
     this.setState({
       deletePopupOpen: false,
       selectedUser: undefined,
-      isUpdating: true
     });
 
     if (deleteType === UserDeleteType.Inactive) {
-      this.props.updateUserStatus(
-        this.state.selectedUser,
-        UserStatus.InActive,
-        undefined
-      ).finally(() => {
-        this.setState({ isUpdating: false });
-      });
+      this.props.updateUserStatus(this.state.selectedUser, UserStatus.InActive, undefined);
     } else {
-      this.props.deleteUser(
-        this.state.selectedUser,
-        deleteType
-      ).finally(() => {
-        this.setState({ isUpdating: false });
-      });
+      this.props.deleteUser(this.state.selectedUser, deleteType);
     }
   };
 
-  /**
-   * To hide the delete user popup upon close button click
-   */
   deletePopupClose = () => {
-    this.setState({
-      deletePopupOpen: false,
-    });
+    this.setState({ deletePopupOpen: false });
   };
 
-  /**
-   * Call back for search filter - First name
-   */
-  onFirstNameSearch = searchText => {
-    this.setState({
-      firstNameSearchText: searchText,
-      selectedPage: 1,
-    });
+  onFirstNameSearch = (searchText) => {
+    this.setState({ firstNameSearchText: searchText, selectedPage: 1 });
   };
 
-  /**
-   * Call back for search filter - Last name
-   */
-  onLastNameSearch = searchText => {
-    this.setState({
-      lastNameSearchText: searchText,
-      selectedPage: 1,
-    });
+  onLastNameSearch = (searchText) => {
+    this.setState({ lastNameSearchText: searchText, selectedPage: 1 });
   };
 
-  /**
-   * Call back for search filter - role
-   */
-  onRoleSearch = searchText => {
-    this.setState({
-      roleSearchText: searchText,
-      selectedPage: 1,
-    });
+  onRoleSearch = (searchText) => {
+    this.setState({ roleSearchText: searchText, selectedPage: 1 });
   };
 
-  /**
-   * Call back for search filter - Job Title
-   */
-  onTitleSearch = searchText => {
-    this.setState({
-      titleSearchText: searchText.trim(),
-      selectedPage: 1,
-    });
+  onTitleSearch = (searchText) => {
+    this.setState({ titleSearchText: searchText.trim(), selectedPage: 1 });
   };
 
-  /**
-   * Call back for search filter - email
-   */
-  onEmailSearch = searchText => {
-    this.setState({
-      emailSearchText: searchText.trim(),
-      selectedPage: 1,
-    });
+  onEmailSearch = (searchText) => {
+    this.setState({ emailSearchText: searchText.trim(), selectedPage: 1 });
   };
 
-  /**
-   * Call back for search filter - weekly committed hours
-   */
-  onWeeklyHrsSearch = searchText => {
-    this.setState({
-      weeklyHrsSearchText: searchText.trim(),
-      selectedPage: 1,
-    });
+  onWeeklyHrsSearch = (searchText) => {
+    this.setState({ weeklyHrsSearchText: searchText.trim(), selectedPage: 1 });
   };
 
-  /**
-   * Callback for page selection
-   */
-  onSelectPage = pageNo => {
-    this.setState({
-      selectedPage: pageNo,
-    });
+  onSelectPage = (pageNo) => {
+    this.setState({ selectedPage: pageNo });
   };
 
-  /**
-   * Callback for page size selection
-   */
-  onSelectPageSize = pageSize => {
-    this.setState({
-      pageSize,
-      selectedPage: 1,
-    });
+  onSelectPageSize = (pageSize) => {
+    this.setState({ pageSize, selectedPage: 1 });
   };
 
-  /**
-   * callback for search
-   */
-  onWildCardSearch = searchText => {
+  onWildCardSearch = (searchText) => {
     this.setState(
       {
         wildCardSearchText: searchText,
@@ -642,17 +597,14 @@ class UserManagement extends React.PureComponent {
         const { userProfiles } = this.props.state.allUserProfiles;
         const { roles: rolesPermissions } = this.props.state.role;
         const { requests: timeOffRequests } = this.props.state.timeOffRequests;
-        const darkMode = this.props.state.theme.darkMode;
+        const { darkMode } = this.props.state.theme;
 
         this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode);
-      }
+      },
     );
   };
 
-  /**
-   * call back for active/inactive search filter
-   */
-  onActiveFiter = value => {
+  onActiveFilter = (value) => {
     let active;
     let paused = false;
     let allSelected = false;
@@ -689,138 +641,234 @@ class UserManagement extends React.PureComponent {
       selectedPage: 1,
       isPaused: paused,
       allSelected,
+      isFilteringTable: true,
+      selectText: value,
     });
+
+    setTimeout(() => this.updateGetFilteredData(), 1000);
   };
 
-  /**
-   * New user button click
-   */
-  onNewUserClick = () => {
-    this.setState({
-      newUserPopupOpen: true,
-    });
+  updateGetFilteredData = () => {
+    const { userProfiles } = this.props.state.allUserProfiles;
+    const { roles: rolesPermissions } = this.props.state.role;
+    const { requests: timeOffRequests } = this.props.state.timeOffRequests;
+    const { darkMode } = this.props.state.theme;
+
+    this.getFilteredData(
+      userProfiles,
+      rolesPermissions,
+      timeOffRequests,
+      darkMode,
+      this.state.editable,
+      this.state.isMobile,
+      this.state.mobileFontSize
+    );
   };
-  /**
-   *  set up new user button click handler
-   */
+
+  onNewUserClick = () => {
+    this.setState({ newUserPopupOpen: true });
+  };
 
   handleNewUserSetupPopup = () => {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       setupNewUserPopupOpen: !prevState.setupNewUserPopupOpen,
     }));
   };
 
-  /**
-   * When a new invitation send to user. We should update the state
-   * and re-fecth the invitation history.
-   */
   handleShouldRefreshInvitationHistory = () => {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       shouldRefreshInvitationHistory: !prevState.shouldRefreshInvitationHistory,
     }));
   };
 
-  /**
-   * Setup invitation history popup modal
-   */
   handleSetupHistoryPopup = () => {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       setupHistoryPopupOpen: !prevState.setupHistoryPopupOpen,
     }));
   };
 
-  /**
-   * New user popup close button click
-   */
   onUserPopupClose = () => {
-    this.setState({
-      newUserPopupOpen: false,
-    });
+    this.setState({ newUserPopupOpen: false });
   };
+
+  renderFilteringMessage = () => {
+    const { darkMode } = this.props.state.theme;
+    return (
+      <div
+        className="filtering-message"
+        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}
+      >
+        <h3 className={darkMode ? `text-light` : `text-dark`}>
+          The table is being filtered, please wait.
+        </h3>
+      </div>
+    );
+  };
+
+  renderLoadingUsers = () => {
+    const { darkMode } = this.props.state.theme;
+    return (
+      <section
+        className="message-loading"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '1rem',
+          minHeight: '60vh',
+        }}
+      >
+        <Spinner color={darkMode ? 'light' : 'primary'} style={{ width: '3rem', height: '3rem' }} />
+        <h3 className={darkMode ? 'text-light' : 'text-dark'}>Loading users</h3>
+      </section>
+    );
+  };
+
+  renderUserTable = () => {
+    const { darkMode } = this.props.state.theme;
+    const { userProfiles } = this.props.state.allUserProfiles;
+    const roles = [...new Set(userProfiles.map((item) => item.role).filter(Boolean))];
+
+    return (
+      <>
+        <UserSearchPanel
+          onSearch={this.onWildCardSearch}
+          searchText={this.state.wildCardSearchText}
+          onActiveFilter={this.onActiveFilter}
+          onNewUserClick={this.onNewUserClick}
+          handleNewUserSetupPopup={this.handleNewUserSetupPopup}
+          handleSetupHistoryPopup={this.handleSetupHistoryPopup}
+          darkMode={darkMode}
+        />
+        <Table
+          className={`table table-bordered noWrap ${
+            darkMode ? 'text-light bg-yinmn-blue' : ''
+          }`}
+        >
+          <thead>
+            <UserTableHeader
+              authRole={this.props.state.auth.user.role}
+              roleSearchText={this.state.roleSearchText}
+              darkMode={darkMode}
+              editUser={this.props.state.userProfileEdit.editable}
+              enableEditUserInfo={this.props.enableEditUserInfo}
+              disableEditUserInfo={this.props.disableEditUserInfo}
+              isMobile={this.state.isMobile}
+              mobileFontSize={this.state.mobileFontSize}
+              mobileWidth={this.state.mobileWidth}
+            />
+            <UserTableSearchHeader
+              onFirstNameSearch={this.onFirstNameSearch}
+              onLastNameSearch={this.onLastNameSearch}
+              onRoleSearch={this.onRoleSearch}
+              onTitleSearch={this.onTitleSearch}
+              onEmailSearch={this.onEmailSearch}
+              onWeeklyHrsSearch={this.onWeeklyHrsSearch}
+              roles={roles}
+              authRole={this.props.state.auth.user.role}
+              roleSearchText={this.state.roleSearchText}
+              darkMode={darkMode}
+              isMobile={this.state.isMobile}
+              mobileFontSize={this.state.mobileFontSize}
+              mobileWidth={this.state.mobileWidth}
+            />
+          </thead>
+          <tbody className={darkMode ? 'dark-mode' : ''}>{this.state.userTableItems}</tbody>
+        </Table>
+
+        <UserTableFooter
+          datacount={this.filteredUserDataCount}
+          selectedPage={this.state.selectedPage}
+          onPageSelect={this.onSelectPage}
+          onSelectPageSize={this.onSelectPageSize}
+          pageSize={this.state.pageSize}
+          darkMode={darkMode}
+        />
+      </>
+    );
+  };
+
+  renderTableContent = () => (
+    <>
+      {this.popupElements()}
+      <div className="table-responsive" id="user-management-table">
+        {this.state.isLoadingUsers ? this.renderLoadingUsers() : this.renderUserTable()}
+      </div>
+    </>
+  );
 
   render() {
     const { darkMode } = this.props.state.theme;
-    const { userProfiles } = this.props.state.allUserProfiles;
-    const roles = [...new Set(userProfiles.map(item => item.role))];
-    // let userdataInformation = this.state.userTableItems
+
     return (
       <Container
         fluid
-        className={darkMode ? ' bg-oxford-blue text-light' : ''}
+        className={darkMode ? ' bg-oxford-blue text-light p-3' : 'p-3'}
         style={{ minHeight: '100%' }}
       >
-        {/* {fetching ? (
-          <SkeletonLoading template="UserManagement" />
-        ) : ( */}
-        <>
-          {this.popupElements()}
-          <UserSearchPanel
-            onSearch={this.onWildCardSearch}
-            searchText={this.state.wildCardSearchText}
-            onActiveFiter={this.onActiveFiter}
-            onNewUserClick={this.onNewUserClick}
-            handleNewUserSetupPopup={this.handleNewUserSetupPopup}
-            handleSetupHistoryPopup={this.handleSetupHistoryPopup}
-            darkMode={darkMode}
-          />
-          <div className="table-responsive" id="user-management-table">
-            <Table
-              className={`table table-bordered noWrap ${darkMode ? 'text-light bg-yinmn-blue' : ''
-                }`}
-            >
-              <thead>
-                <UserTableHeader
-                  authRole={this.props.state.auth.user.role}
-                  roleSearchText={this.state.roleSearchText}
-                  darkMode={darkMode}
-                  editUser={this.props.state.userProfileEdit.editable}
-                  enableEditUserInfo={this.props.enableEditUserInfo}
-                  disableEditUserInfo={this.props.disableEditUserInfo}
-                />
-                <UserTableSearchHeader
-                  onFirstNameSearch={this.onFirstNameSearch}
-                  onLastNameSearch={this.onLastNameSearch}
-                  onRoleSearch={this.onRoleSearch}
-                  onTitleSearch={this.onTitleSearch}
-                  onEmailSearch={this.onEmailSearch}
-                  onWeeklyHrsSearch={this.onWeeklyHrsSearch}
-                  roles={roles}
-                  authRole={this.props.state.auth.user.role}
-                  roleSearchText={this.state.roleSearchText}
-                  darkMode={darkMode}
-                />
-              </thead>
-              <tbody className={darkMode ? 'dark-mode' : ''}>{this.state.userTableItems}</tbody>
-            </Table>
-          </div>
-          <UserTableFooter
-            datacount={this.filteredUserDataCount}
-            selectedPage={this.state.selectedPage}
-            onPageSelect={this.onSelectPage}
-            onSelectPageSize={this.onSelectPageSize}
-            pageSize={this.state.pageSize}
-            darkMode={darkMode}
-          />
-        </>
-        {/* )} */}
+        {this.state.isFilteringTable ? this.renderFilteringMessage() : this.renderTableContent()}
       </Container>
     );
   }
 }
 
-const mapStateToProps = state => {
+UserManagement.propTypes = {
+  dispatch: PropTypes.func,
+  getAllTimeOffRequests: PropTypes.func,
+  getAllUserProfile: PropTypes.func,
+  deleteUser: PropTypes.func,
+  enableEditUserInfo: PropTypes.func,
+  disableEditUserInfo: PropTypes.func,
+  hasPermission: PropTypes.func,
+  updateUserStatus: PropTypes.func,
+  state: PropTypes.shape({
+    theme: PropTypes.shape({
+      darkMode: PropTypes.bool,
+    }).isRequired,
+    auth: PropTypes.shape({
+      user: PropTypes.shape({
+        role: PropTypes.string,
+      }),
+    }).isRequired,
+    userProfile: PropTypes.shape({
+      email: PropTypes.string,
+      jobTitle: PropTypes.string,
+    }).isRequired,
+    allUserProfiles: PropTypes.shape({
+      userProfiles: PropTypes.array,
+    }).isRequired,
+    role: PropTypes.shape({
+      roles: PropTypes.array,
+    }).isRequired,
+    timeOffRequests: PropTypes.shape({
+      requests: PropTypes.object,
+    }).isRequired,
+    userPagination: PropTypes.shape({
+      pagestats: PropTypes.shape({
+        selectedPage: PropTypes.number,
+        pageSize: PropTypes.number,
+      }).isRequired,
+      editable: PropTypes.bool,
+    }).isRequired,
+    userProfileEdit: PropTypes.shape({
+      editable: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+    }).isRequired,
+  }).isRequired,
+};
+
+const mapStateToProps = (state) => {
   return { state };
 };
-export default connect(mapStateToProps, {
-  getAllUserProfile,
-  updateUserStatus,
-  updateUserFinalDayStatusIsSet,
-  deleteUser,
-  hasPermission,
-  getAllTimeOffRequests,
-  enableEditUserInfo,
-  disableEditUserInfo,
-  getAllRoles,
-})(UserManagement);
-// exporting without connect
-export { UserManagement as UnconnectedUserManagement };
+
+const mapDispatchToProps = (dispatch) => ({
+  dispatch,
+  getAllUserProfile: () => dispatch(getAllUserProfile()),
+  deleteUser: (...args) => dispatch(deleteUser(...args)),
+  getAllTimeOffRequests: () => dispatch(getAllTimeOffRequests()),
+  enableEditUserInfo: () => dispatch(enableEditUserInfo()),
+  disableEditUserInfo: () => dispatch(disableEditUserInfo()),
+  getAllRoles: () => dispatch(getAllRoles()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserManagement);

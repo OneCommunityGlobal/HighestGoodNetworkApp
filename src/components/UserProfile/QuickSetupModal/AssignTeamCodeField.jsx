@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Dropdown, Input } from 'reactstrap';
+import { useSelector } from 'react-redux';
 
+// eslint-disable-next-line react/display-name
 const AssignTeamCodeField = React.memo(props => {
   const {
     isError = false,
@@ -20,6 +22,8 @@ const AssignTeamCodeField = React.memo(props => {
     return '';
   });
   const [isOpen, toggle] = useState(false);
+  const darkMode = useSelector(state => state.theme.darkMode);
+  
   useEffect(() => {
     if (selectedTeamCode && selectedTeamCode !== searchText) {
       onSelectTeamCode(undefined);
@@ -54,7 +58,9 @@ const AssignTeamCodeField = React.memo(props => {
           tabIndex="-1"
           role="menu"
           aria-hidden="false"
-          className={`dropdown-menu${isOpen ? ' show' : ''}`}
+          className={`dropdown-menu${isOpen ? ' show' : ''} ${
+            darkMode ? 'bg-darkmode-liblack text-light' : ''
+          }`}
           style={{ marginTop: '0px', width: '100%' }}
         >
           {teamCodeData
@@ -63,6 +69,7 @@ const AssignTeamCodeField = React.memo(props => {
             })
             .slice(0, 10)
             .map((teamCode, index) => (
+              // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
               <div
                 className="project-auto-complete"
                 key={index}

@@ -1,7 +1,7 @@
-import {
-  incrementDashboardTaskCount,
-  INCREMENT_DASHBOARD_TASK_COUNT,
-} from '../dashboardActions';
+import { toast } from 'react-toastify';
+
+
+import { incrementDashboardTaskCount, INCREMENT_DASHBOARD_TASK_COUNT } from '../dashboardActions';
 
 describe('incrementDashboardTaskCount action creator', () => {
   it('should create an action to increment the dashboard task count', () => {
@@ -12,12 +12,12 @@ describe('incrementDashboardTaskCount action creator', () => {
     };
 
     // Spy on console.log
-    console.log = jest.fn();
+    toast.info = vi.fn();
 
     const action = incrementDashboardTaskCount(taskId);
 
     expect(action).toEqual(expectedAction);
-    expect(console.log).toHaveBeenCalledWith(
+    expect(toast.info).toHaveBeenCalledWith(
       `Dispatching incrementDashboardTaskCount for task ID: ${taskId}`,
     );
   });

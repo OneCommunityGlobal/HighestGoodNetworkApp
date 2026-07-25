@@ -1,13 +1,15 @@
 import axios from 'axios';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import {
   getWarningByUserId,
+  getSpecialWarnings as getSpecialWarningsAction,
   postWarningsByUserId,
   deleteWarningByUserId,
   getCurrentWarnings as getCurrentWarningsAction,
   postNewWarning as postNewWarningAction,
   deleteWarningDescription as deleteWarningDescriptionAction,
   updateWarningDescription as updateWarningDescriptionAction,
+  reorderWarningDescriptions as reorderWarningDescriptionsAction,
   editWarningDescription as editWarningDescriptionAction,
 } from '../constants/warning';
 
@@ -22,9 +24,24 @@ export const getWarningsByUserId = userId => {
     } catch (error) {
       if (error.response && error.response.status === 400) {
         return { error: error.response.data.message };
-      } else {
-        return { error: error.message };
       }
+      return { error: error.message };
+    }
+  };
+};
+export const getSpecialWarnings = userId => {
+  const url = ENDPOINTS.GET_SPECIAL_WARNINGS(userId);
+
+  return async dispatch => {
+    try {
+      const res = await axios.get(url);
+      const response = await dispatch(getSpecialWarningsAction(res.data.warnings));
+      return response.payload;
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        return { error: error.response.data.message };
+      }
+      return { error: error.message };
     }
   };
 };
@@ -42,9 +59,8 @@ export const postWarningByUserId = warningData => {
     } catch (error) {
       if (error.response && error.response.status === 200) {
         return { error: error.message };
-      } else {
-        return { error: error };
       }
+      return { error };
     }
   };
 };
@@ -60,9 +76,8 @@ export const deleteWarningsById = (warningId, personId) => {
     } catch (error) {
       if (error.response && error.response.status === 400) {
         return { error: error.response.data.message };
-      } else {
-        return { error: 'Something else went wrong' };
       }
+      return { error: 'Something else went wrong' };
     }
   };
 };
@@ -80,9 +95,8 @@ export const getWarningDescriptions = () => {
     } catch (error) {
       if (error.response && error.response.status === 400) {
         return { error: error.response.data.message };
-      } else {
-        return { error: error };
       }
+      return { error };
     }
   };
 };
@@ -143,6 +157,21 @@ export const updateWarningDescription = warningDescriptionId => {
     try {
       const res = await axios.put(url, { warningDescriptionId });
       const response = await dispatch(updateWarningDescriptionAction(res.data));
+
+      return response.payload;
+    } catch (error) {
+      return { error: error.message };
+    }
+  };
+};
+
+export const reorderWarningDescriptions = warningDescriptions => {
+  const url = ENDPOINTS.REORDER_WARNING_DESCRIPTIONS(warningDescriptions);
+
+  return async dispatch => {
+    try {
+      const res = await axios.put(url, { warningDescriptions });
+      const response = await dispatch(reorderWarningDescriptionsAction(res.data));
 
       return response.payload;
     } catch (error) {

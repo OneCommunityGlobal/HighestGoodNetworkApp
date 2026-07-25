@@ -1,58 +1,122 @@
-import axios from "axios";
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
-import { ENDPOINTS } from "utils/URL";
+import { ENDPOINTS } from '~/utils/URL';
 import {
   FETCH_BUILDING_MATERIAL_INVENTORY_UNITS,
-  POST_BUILDING_MATERIAL_INVENTORY_UNIT, RESET_POST_BUILDING_MATERIAL_INVENTORY_UNIT
-} from "constants/bmdashboard/inventoryTypeConstants"; import { GET_ERRORS } from "constants/errors";
+  POST_BUILDING_MATERIAL_INVENTORY_UNIT,
+  RESET_POST_BUILDING_MATERIAL_INVENTORY_UNIT,
+  DELETE_INVENTORY_UNIT_SUCCESS,
+  DELETE_INVENTORY_UNIT_ERROR,
+} from '../../constants/bmdashboard/inventoryTypeConstants';
+import { GET_ERRORS } from '../../constants/errors';
 
-export const fetchInvUnits = () => {
-  return async dispatch => {
-    axios.get(ENDPOINTS.BM_INVENTORY_UNITS)
-      .then(res => {
-        dispatch(setInvUnits(res.data))
-      })
-      .catch(err => {
-        dispatch(setErrors(err))
-      })
-  }
-}
-
-export const postBuildingInventoryUnit = (payload) => {
-  return async dispatch => {
-    axios.post(ENDPOINTS.BM_INVENTORY_UNITS, payload)
-      .then(res => {
-        dispatch(setPostInvUnitResult(res.data))
-      })
-      .catch(err => {
-        dispatch(setErrors(err))
-      })
-  }
-}
-
-export const setPostInvUnitResult = (payload) => {
+export const setPostInvUnitResult = payload => {
   return {
     type: POST_BUILDING_MATERIAL_INVENTORY_UNIT,
-    payload
-  }
-}
+    payload,
+  };
+};
 
 export const resetPostInvUnitResult = () => {
   return {
-    type: RESET_POST_BUILDING_MATERIAL_INVENTORY_UNIT
-  }
-}
+    type: RESET_POST_BUILDING_MATERIAL_INVENTORY_UNIT,
+  };
+};
 
 export const setInvUnits = payload => {
   return {
     type: FETCH_BUILDING_MATERIAL_INVENTORY_UNITS,
-    payload
-  }
-}
+    payload,
+  };
+};
 
 export const setErrors = payload => {
   return {
     type: GET_ERRORS,
-    payload
-  }
-}
+    payload,
+  };
+};
+
+export const fetchInvUnits = () => {
+  return async dispatch => {
+    axios
+      .get(ENDPOINTS.BM_INVENTORY_UNITS)
+      .then(res => {
+        dispatch(setInvUnits(res.data));
+      })
+      .catch(err => {
+        // Don't show toast for internal refresh calls
+      });
+  };
+};
+
+export const postBuildingInventoryUnit = payload => {
+  return async dispatch => {
+    const toastId = `add-unit-${Date.now()}`;
+    try {
+      await axios.post(ENDPOINTS.BM_INVENTORY_UNITS, payload);
+      // Refresh the data after successful addition
+      dispatch(fetchInvUnits());
+      toast.success('Unit added successfully!', { toastId });
+    } catch (err) {
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || 'Failed to add unit. Please try again.';
+      toast.error(errorMessage, { toastId: `add-unit-error-${Date.now()}` });
+    }
+  };
+};
+
+export const deleteInvUnit = (unitName) => {
+  return async dispatch => {
+    const toastId = `delete-unit-${Date.now()}`;
+    try {
+      await axios.delete(ENDPOINTS.BM_INVENTORY_UNITS, { data: { unit: unitName } });
+      // Refresh the data after successful deletion
+      dispatch(fetchInvUnits());
+      toast.success('Unit deleted successfully!', { toastId });
+    } catch (err) {
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || 'Failed to delete unit. Please try again.';
+      toast.error(errorMessage, { toastId: `delete-unit-error-${Date.now()}` });
+    }
+  };
+};
+
+/**
+ * Add a new inventory unit
+ * @param {Object} payload - { unit }
+ */
+export const addInventoryUnit = payload => {
+  return async dispatch => {
+    try {
+      const res = await axios.post(ENDPOINTS.BM_INVENTORY_UNITS, payload);
+      dispatch(setPostInvUnitResult(res.data));
+      // Refresh the units list
+      dispatch(fetchInvUnits());
+      return { success: true, data: res.data };
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || err.response?.data || 'Failed to add unit';
+      dispatch(setErrors(err));
+      return { success: false, error: errorMsg };
+    }
+  };
+};
+
+/**
+ * Delete an inventory unit
+ * @param {string} unitId - The ID of the unit to delete
+ */
+export const deleteInventoryUnit = unitId => {
+  return async dispatch => {
+    try {
+      await axios.delete(ENDPOINTS.BM_INVENTORY_UNIT_BY_ID(unitId));
+      dispatch({ type: DELETE_INVENTORY_UNIT_SUCCESS, payload: unitId });
+      // Refresh the units list
+      dispatch(fetchInvUnits());
+      return { success: true };
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || err.response?.data || 'Failed to delete unit';
+      dispatch({ type: DELETE_INVENTORY_UNIT_ERROR, payload: errorMsg });
+      return { success: false, error: errorMsg };
+    }
+  };
+};

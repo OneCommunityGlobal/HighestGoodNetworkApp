@@ -1,33 +1,34 @@
-import * as actions from '../constants/weeklySummariesReport';
-import { ENDPOINTS } from '../utils/URL';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import * as actions from '../constants/weeklySummariesReport';
+import { ENDPOINTS } from '~/utils/URL';
 
-export const authorizeWeeklySummaries = (message) => ({
+export const authorizeWeeklySummaries = message => ({
   type: actions.AUTHORIZE_WEEKLY_SUMMARY_REPORTS,
-  payload: message
-})
+  payload: message,
+});
 
-export const authorizeWeeklySummariesReportError = (errorMsg) => ({
+export const authorizeWeeklySummariesReportError = errorMsg => ({
   type: actions.AUTHORIZE_WEEKLYSUMMARIES_REPORTS_ERROR,
-  payload: errorMsg
-})
+  payload: errorMsg,
+});
 
 // export const saveWeeklySummary = (message) => ({
 //   type: actions.SAVE_WEEKLY_SUMMARIES_RECIPIENTS,
 //   payload: message
 // })
 
-export const getRecepients = (recepientsArr) => ({
+export const getRecepients = recepientsArr => ({
   type: actions.GET_SUMMARY_RECIPIENTS,
-  recepientsArr
-})
+  recepientsArr,
+});
 
-export const getRecepientsError = (err) => ({
+export const getRecepientsError = err => ({
   type: actions.GET_SUMMARY_RECIPIENTS_ERROR,
-  payload: err
-})
+  payload: err,
+});
 
-export const addSummaryRecipient = (userid) => {
+export const addSummaryRecipient = userid => {
   const url = ENDPOINTS.SAVE_SUMMARY_RECEPIENTS(userid);
   return async dispatch => {
     try {
@@ -35,19 +36,19 @@ export const addSummaryRecipient = (userid) => {
       // dispatch(saveWeeklySummary(response.data.message));
       return response.status;
     } catch (error) {
-      console.log("response for Error:", error)
+      toast.info('response for Error:', error);
       dispatch(authorizeWeeklySummariesReportError(error));
-      // return error.response.status;
+      return error;
     }
   };
-}
+};
 
-export const deleteRecipient = (userid) => ({
+export const deleteRecipient = userid => ({
   type: actions.DELETE_WEEKLY_SUMMARIES_RECIPIENTS,
-  payload: {userid}
-})
+  payload: { userid },
+});
 
-export const deleteSummaryRecipient = (userid) => {
+export const deleteSummaryRecipient = userid => {
   const url = ENDPOINTS.SAVE_SUMMARY_RECEPIENTS(userid);
   return async dispatch => {
     try {
@@ -55,12 +56,12 @@ export const deleteSummaryRecipient = (userid) => {
       dispatch(deleteRecipient(userid));
       return response.status;
     } catch (error) {
-      console.log("response for Error:", error)
+      toast.info('response for Error:', error);
       dispatch(authorizeWeeklySummariesReportError(error));
-      // return error.response.status;
+      return error;
     }
   };
-}
+};
 
 export const getSummaryRecipients = () => {
   const url = ENDPOINTS.GET_SUMMARY_RECEPIENTS();
@@ -70,9 +71,9 @@ export const getSummaryRecipients = () => {
       dispatch(getRecepients(response.data));
       return response.data;
     } catch (error) {
-      console.log("response for Error:", error)
+      toast.info('response for Error:', error);
       dispatch(getRecepientsError(error));
-      // return error.response.status;
+      return error;
     }
   };
-}
+};

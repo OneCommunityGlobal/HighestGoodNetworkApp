@@ -1,0 +1,45 @@
+/* stylelint-disable  */
+.title {
+  margin: 0 0 8px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: normal;
+  color: var(--text-color);
+}
+
+.titleContainer {
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+}
+
+/* Keep dashed grid lines visible in dark mode. Overrides the app-wide
+   `:global(.dark-mode) .recharts-cartesian-grid-* line` rule that leaks
+   from EventPopularity.module.css (stroke #334155 !important). */
+:global(.dark-mode) .titleContainer :global(.recharts-cartesian-grid-horizontal) line,
+:global(.dark-mode) .titleContainer :global(.recharts-cartesian-grid-vertical) line {
+  stroke: #aab4c2 !important;
+}
+
+.legendList {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+}
+
+.legendItem {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.legendListItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

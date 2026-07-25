@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { ENDPOINTS } from 'utils/URL';
-import Loading from 'components/common/Loading';
-import { boxStyle, boxStyleDark } from 'styles';
-import hasPermission from 'utils/permissions';
+import { ENDPOINTS } from '~/utils/URL';
+import Loading from '~/components/common/Loading';
+import { boxStyle, boxStyleDark } from '~/styles';
+import hasPermission from '~/utils/permissions';
 import { connect } from 'react-redux';
 import EditHistoryModal from './EditHistoryModal';
 

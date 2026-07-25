@@ -1,0 +1,92 @@
+const eventTypes = ['Yoga Class', 'Cooking Workshop', 'Dance Class', 'Fitness Bootcamp'];
+const locations = ['New York', 'San Francisco', 'Los Angeles', 'Chicago', 'Austin'];
+
+let __lcgSeed =
+  (Date.now() ^ (typeof performance !== 'undefined' ? Math.floor(performance.now()) : 0)) >>> 0;
+const secureRandInt = (min, max) => {
+  const cryptoObj = globalThis.crypto;
+  const range = max - min + 1;
+
+  if (cryptoObj?.getRandomValues) {
+    const maxUint32 = 0xffffffff;
+    const bucket = Math.floor(maxUint32 / range) * range;
+    const buf = new Uint32Array(1);
+    let r;
+    do {
+      cryptoObj.getRandomValues(buf);
+      r = buf[0];
+    } while (r >= bucket);
+    return min + (r % range);
+  }
+
+  __lcgSeed = (1664525 * __lcgSeed + 1013904223) >>> 0;
+  return min + (__lcgSeed % range);
+};
+
+const formatDisplayTime = date =>
+  date.toLocaleString('en-US', {
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+
+const mockEvents = [];
+let id = 1;
+
+// Mock data generation for 12 months and 4 event types per week
+for (let month = 0; month < 12; month++) {
+  for (let week = 0; week < 4; week++) {
+    for (let t = 0; t < eventTypes.length; t++) {
+      const eventDate = new Date(2026, month, 1 + week * 7 + t);
+      mockEvents.push({
+        id: id++,
+        eventType: eventTypes[t],
+        eventDate: eventDate.toISOString(),
+        eventTime: formatDisplayTime(eventDate),
+        eventName: `Event ${id}`,
+        attendees: secureRandInt(20, 99),
+        noShowRate: `${secureRandInt(5, 94)}%`,
+        dropOffRate: `${secureRandInt(10, 79)}%`,
+        location: locations[(id + t) % locations.length],
+        capacity: secureRandInt(1, 40),
+      });
+    }
+  }
+}
+
+// Mock data generation for today
+const today = new Date();
+for (let t = 0; t < 6; t++) {
+  const eventDate = new Date(today);
+  eventDate.setHours(10 + t * 2, 0, 0, 0);
+  mockEvents.push({
+    id: id++,
+    eventType: eventTypes[t % eventTypes.length],
+    eventDate: eventDate.toISOString(),
+    eventTime: formatDisplayTime(eventDate),
+    eventName: `Event ${id}`,
+    attendees: secureRandInt(20, 99),
+    noShowRate: `${secureRandInt(5, 94)}%`,
+    dropOffRate: `${secureRandInt(10, 79)}%`,
+    location: locations[id % locations.length],
+    capacity: secureRandInt(1, 40),
+  });
+}
+
+mockEvents.push({
+  id: id++,
+  eventType: 'Fitness Bootcamp',
+  eventDate: new Date(2026, 0, 21, 8, 0, 0, 0).toISOString(),
+  eventTime: formatDisplayTime(new Date(2026, 0, 21, 8, 0, 0, 0)),
+  eventName: 'Sold Out Event',
+  attendees: 50,
+  noShowRate: '18%',
+  dropOffRate: '40%',
+  location: 'Chicago',
+  capacity: 0,
+});
+
+export default mockEvents;

@@ -10,19 +10,39 @@ function ConsumableListView() {
   const errors = useSelector(state => state.errors);
   const postConsumableUpdateResult = useSelector(state => state.bmConsumables.updateConsumables);
 
+  // --- DATA TRANSFORMATION ---
+  const transformedConsumables = consumables
+    ? consumables
+        .map(item => ({
+          ...item,
+          // Flatten Data
+          projectName: item.project?.name || 'N/A',
+          name: item.itemType?.name || 'N/A',
+          unit: item.itemType?.unit || 'N/A',
+          // Dropdown Fixes
+          inventoryItemType: item.itemType?.name || 'N/A',
+          type: item.itemType?.name || 'N/A',
+          // Preserve Structure
+          itemType: item.itemType || { name: 'N/A', unit: '' },
+          id: item._id,
+        }))
+        // Filter out bad data (empty names)
+        .filter(item => item.name !== 'N/A')
+    : [];
+
   useEffect(() => {
     dispatch(fetchAllConsumables());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (!postConsumableUpdateResult || postConsumableUpdateResult?.result == null)
       dispatch(fetchAllConsumables());
-  }, [postConsumableUpdateResult?.result]);
+  }, [postConsumableUpdateResult?.result, dispatch]);
 
-  const itemType = 'Consumables';
+  const itemTypeLabel = 'Consumables';
 
   const dynamicColumns = [
-    { label: 'Unit', key: 'itemType.unit' },
+    { label: 'Unit', key: 'unit' },
     { label: 'Bought', key: 'stockBought' },
     { label: 'Used', key: 'stockUsed' },
     { label: 'Available', key: 'stockAvailable' },
@@ -31,8 +51,8 @@ function ConsumableListView() {
 
   return (
     <ItemListView
-      itemType={itemType}
-      items={consumables}
+      itemType={itemTypeLabel}
+      items={transformedConsumables}
       errors={errors}
       UpdateItemModal={UpdateConsumableModal}
       dynamicColumns={dynamicColumns}

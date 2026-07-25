@@ -1,0 +1,1137 @@
+.participationLandingPage {
+  max-width: 90%;
+  margin: 0 auto;
+}
+
+.landingPageHeaderContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding: 12px 0;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.landingPageHeader {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #111;
+  letter-spacing: 0.5px;
+}
+
+.savePdfBtn {
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.1s ease;
+}
+
+.savePdfBtnLight {
+  background: #1e293b;
+  color: #f8f9fa;
+  border: 1px solid #4a5568;
+}
+
+.savePdfBtnLight:hover {
+  background: #374151;
+  transform: translateY(-1px);
+}
+
+@media (width <= 768px) {
+  .landingPageHeaderContainer {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+  }
+}
+
+.myCasesHeader h2,
+.trackingHeader h3,
+.insightsHeader h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.myCases {
+  margin-bottom: 40px;
+}
+
+.myCasesHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.myCasesHeader h2 {
+  font-size: 20px;
+  color: #333;
+}
+
+.myCasesHeader button {
+  padding: 8px 15px;
+  background-color: #0056b3;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.myCasesHeader button:hover {
+  background-color: #004085;
+}
+
+.myCasesList {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.myCaseItem {
+  padding: 15px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+}
+
+.analyticsSection {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 20px;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-top: 20px;
+}
+
+.trackingContainer,
+.insights {
+  flex: 1;
+  min-width: 48%;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+@media (width <= 768px) {
+  .analyticsSection {
+    flex-wrap: wrap;
+  }
+
+  .trackingContainer,
+  .insights {
+    width: 100%;
+  }
+}
+
+.trackingHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.trackingHeader h3 {
+  font-size: 1.3rem;
+  color: #333;
+  margin: 0;
+}
+
+.trackingFilters {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 12px;
+}
+
+.trackingFilters select {
+  flex: 1;
+  min-width: 0;
+  height: 38px;
+  padding: 0 12px;
+  font-size: 0.85rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.trackingSummary {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.trackingRate {
+  background: #f8f9fa;
+  border-radius: 10px;
+  width: 48%;
+  padding: 10px;
+  color: #333;
+  transition:
+    background-color 0.2s,
+    transform 0.2s;
+  cursor: default;
+}
+
+.trackingRate .trackingRateSubheading span,
+.trackingRate .trackingRateValue span {
+  color: #333;
+}
+
+.trackingRateValue {
+  font-size: 0.9rem;
+  color: #f44336;
+  display: inline-block;
+}
+
+.trackingListContainer {
+  max-height: 600px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 0;
+  background: #fff;
+}
+
+.trackingTable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  overflow-wrap: break-word;
+}
+
+.trackingTable thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.trackingTable thead th {
+  text-align: left;
+  padding: 10px;
+  background: #f4f4f4;
+}
+
+.trackingTable tbody td {
+  padding: 5px;
+  border-bottom: 1px solid #eee;
+}
+
+.trackingRateGreen {
+  color: #16a34a;
+  font-weight: bold;
+}
+
+.trackingRateRed {
+  color: #dc2626;
+}
+
+.insightsHeader {
+  font-weight: bold;
+  color: #444;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.insightsHeader h3 {
+  font-size: 1.3rem;
+  color: #333;
+  margin: 0;
+}
+
+.insightsFilters select {
+  margin-left: 10px;
+  padding: 8px;
+  font-size: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.insightsTabs {
+  flex: 1;
+  display: flex;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+  max-width: 60%;
+}
+
+.insightsTabsContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.icons {
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+}
+
+.insightsTab {
+  flex: 1;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+}
+
+.insightsTabLight {
+  color: #555;
+  background-color: #f8f9fa;
+}
+
+.insightsTabLight:hover {
+  background-color: #e0e0e0;
+}
+
+.insightsTab:not(:last-child) {
+  border-right: 1px solid #ccc;
+}
+
+.insightsTab.activeTab {
+  border-radius: 4px;
+  background-color: #0056b3;
+  color: #fff;
+  font-weight: bold;
+}
+
+.insightsTab:hover {
+  background-color: #e0e0e0;
+}
+
+.insightsContent {
+  display: flex;
+  flex-direction: column;
+  padding-top: 20px;
+  gap: 15px;
+}
+
+.insightItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.insightLabel {
+  flex: 1;
+  font-size: 0.9rem;
+  color: #555;
+  margin-right: 10px;
+}
+
+.insightBar {
+  flex: 2;
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.insightFill {
+  height: 100%;
+  background: #0056b3;
+  border-radius: 4px;
+  transition: width 0.3s ease-in-out;
+}
+
+.insightPercentage {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.tooltipWrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 10px;
+  font-size: 12px;
+  background-color: #111;
+  color: #fff;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  z-index: 10;
+}
+
+.tooltipWrapper:hover .tooltip {
+  opacity: 1;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 45%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal {
+  width: 420px;
+  max-width: calc(100vw - 32px);
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modalTitle {
+  margin: 0;
+}
+
+.modalClose {
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.modalBody {
+  margin-top: 12px;
+}
+
+.modalMeta {
+  font-size: 16px;
+  opacity: 0.85;
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.modalError {
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: #b00020;
+}
+
+.modalActions {
+  display: flex;
+  gap: 10px;
+}
+
+.exportOptionsButtons {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid #ccc;
+  color: #555;
+}
+
+.exportOptionsButtons:hover {
+  color: #555;
+  background-color: #e0e0e0;
+}
+
+.exportOptionsButtons:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.pageBreakBefore {
+  break-before: page;
+}
+
+.pageBreakAfter {
+  break-after: page;
+}
+
+.avoidBreak {
+  break-inside: avoid;
+}
+
+.printOnly {
+  display: none;
+}
+
+/* ==========================================================================
+   DARK MODE (standalone classes)
+   ========================================================================== */
+
+.landingPageHeaderDark {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #fff !important;
+  letter-spacing: 0.5px;
+}
+
+.savePdfBtnDark {
+  background: #333;
+  color: #f5f5f5;
+  border: 1px solid #666;
+}
+
+.savePdfBtnDark:hover {
+  background: #444;
+  transform: translateY(-1px);
+}
+
+.trackingHeaderDark {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+.trackingHeaderDark h3 {
+  color: #fff;
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+.trackingFiltersDark {
+  display: flex;
+  gap: 10px;
+  background-color: #1e293b;
+}
+
+.trackingFiltersDark select {
+  background-color: #2d3748;
+  border-color: #4a5568;
+  color: #fff;
+}
+
+.trackingFiltersDark select option {
+  background-color: #2d3748;
+  color: #fff;
+}
+
+.trackingListContainerDark {
+  max-height: 600px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 0;
+  background: #3a506b;
+  color: #fff;
+}
+
+.trackingTableDark thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.trackingTableDark thead th {
+  background: #1e293b;
+  color: #fff;
+}
+
+.trackingContainerDark,
+.insightsDark {
+  flex: 1;
+  min-width: 48%;
+  background-color: #1e293b;
+  color: #fff;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.insightsHeaderDark {
+  color: #fff;
+  font-weight: bold;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.insightsHeaderDark h3 {
+  color: #fff;
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+.insightsFiltersDark {
+  display: flex;
+  gap: 10px;
+  background-color: #1e293b;
+}
+
+.insightsFiltersDark select {
+  background-color: #2d3748;
+  border-color: #4a5568;
+  color: #fff;
+}
+
+.insightsFiltersDark select option {
+  background-color: #2d3748;
+  color: #fff;
+}
+
+.insightsTabDark {
+  color: #f8f9fa;
+  background-color: #1e293b;
+}
+
+.insightsTabDark:hover {
+  background-color: #3a506b;
+}
+
+.insightsDark .insightsTab {
+  background-color: #3a506b;
+  color: #fff;
+  border-right: 1px solid #555;
+}
+
+.insightsDark .insightsTab:hover {
+  background-color: #4a607b;
+}
+
+.insightsDark .insightsTab.activeTab {
+  background-color: #0056b3;
+  color: #fff;
+}
+
+.insightLabelDark {
+  color: #fff;
+  font-size: 0.9rem;
+  flex: 1;
+  margin-right: 10px;
+}
+
+.insightsPercentageDark {
+  color: #fff;
+}
+
+.modalDark {
+  background: #1e293b;
+}
+
+.exportOptionsButtonsDark {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  color: #111;
+}
+
+.exportOptionsButtonsDark:hover {
+  background: #3a506b;
+}
+
+.exportOptionsButtonsDark:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.insightsTabsDarkMode {
+  border: 1px solid #555;
+  background-color: #1e293b;
+}
+
+.insightsTabDarkMode {
+  color: #ddd;
+  background-color: #1e293b;
+}
+
+.insightsTabDarkMode:not(:last-child) {
+  border-right: 1px solid #555;
+}
+
+.insightsTabDarkMode:hover {
+  background-color: #374151;
+}
+
+.activeTabDarkMode {
+  background-color: #1d4ed8;
+  color: #fff;
+  font-weight: bold;
+}
+
+.trackingFilters select:hover {
+  border-color: #0056b3;
+}
+
+.trackingRate:hover {
+  background: #e9ecef;
+  transform: translateY(-2px);
+}
+
+.insightsFilters select:hover {
+  border-color: #0056b3;
+}
+
+/* ==========================================================================
+   DARK MODE (nested under .darkMode)
+   ========================================================================== */
+
+.darkMode {
+  color: #fff;
+}
+
+.darkMode .landingPageHeader {
+  color: #fff;
+}
+
+.darkMode .savePdfBtn {
+  background: #374151;
+  color: #f8f9fa;
+  border: 1px solid #4a5568;
+}
+
+.darkMode .savePdfBtn:hover {
+  background: #4b5563;
+  transform: translateY(-1px);
+}
+
+.darkMode .trackingContainer,
+.darkMode .insights,
+.trackingContainer.darkMode,
+.insights.darkMode {
+  background-color: #1e293b;
+  color: #fff;
+  border: 1px solid #4a5568;
+}
+
+.darkMode .trackingContainer .trackingHeader,
+.trackingContainer.darkMode .trackingHeader {
+  color: #fff;
+}
+
+.darkMode .trackingContainer .trackingHeader h3,
+.trackingContainer.darkMode .trackingHeader h3 {
+  color: #fff;
+}
+
+.darkMode .trackingContainer .trackingFilters select,
+.trackingContainer.darkMode .trackingFilters select {
+  background-color: #2d3748;
+  border-color: #4a5568;
+  color: #fff;
+}
+
+.darkMode .trackingContainer .trackingFilters select option,
+.trackingContainer.darkMode .trackingFilters select option {
+  background-color: #2d3748;
+  color: #fff;
+}
+
+.darkMode .trackingRate {
+  background: #3a506b;
+  border-radius: 10px;
+  width: 48%;
+  padding: 10px;
+  color: #fff;
+}
+
+.darkMode .trackingRate span {
+  color: #fff;
+}
+
+.darkMode .trackingContainer .trackingRate,
+.trackingContainer.darkMode .trackingRate {
+  background: #3a506b;
+  color: #fff;
+}
+
+.darkMode .trackingContainer .trackingRate span,
+.trackingContainer.darkMode .trackingRate span {
+  color: #cbd5e1;
+}
+
+.darkMode .trackingContainer .trackingListContainer,
+.trackingContainer.darkMode .trackingListContainer {
+  background: #2d3748;
+  color: #fff;
+}
+
+.darkMode .trackingContainer .trackingTable thead th,
+.trackingContainer.darkMode .trackingTable thead th {
+  background: #1e293b;
+  color: #fff;
+}
+
+.darkMode .insights .insightsHeader h3,
+.insights.darkMode .insightsHeader h3 {
+  color: #fff;
+}
+
+.darkMode .insights .insightsFilters select,
+.insights.darkMode .insightsFilters select {
+  background-color: #2d3748;
+  border-color: #4a5568;
+  color: #fff;
+}
+
+.darkMode .insights .insightsFilters select option,
+.insights.darkMode .insightsFilters select option {
+  background-color: #2d3748;
+  color: #fff;
+}
+
+.darkMode .insights .insightsTabs,
+.insights.darkMode .insightsTabs {
+  border: 1px solid #4a5568;
+  background-color: #1e293b;
+}
+
+.darkMode .insights .insightsTab,
+.insights.darkMode .insightsTab {
+  color: #cbd5e1;
+  background-color: #1e293b;
+  border-right: 1px solid #4a5568;
+}
+
+.darkMode .insights .insightsTab:hover,
+.insights.darkMode .insightsTab:hover {
+  background-color: #374151;
+}
+
+.darkMode .insights .insightsTab.activeTab,
+.insights.darkMode .insightsTab.activeTab {
+  background-color: #1d4ed8;
+  color: #fff;
+  font-weight: bold;
+}
+
+.darkMode .insights .insightLabel,
+.insights.darkMode .insightLabel {
+  color: #f1f5f9;
+}
+
+.darkMode .insights .insightsPercentage,
+.insights.darkMode .insightsPercentage {
+  color: #f1f5f9;
+}
+
+.darkMode .modalOverlay {
+  background: rgb(0 0 0 / 45%);
+}
+
+.darkMode .modal {
+  background: #1e293b;
+}
+
+.darkMode .exportOptionsButtons {
+  background: #3a506b;
+  border: 1px solid #4a5568;
+  color: #f1f5f9;
+}
+
+.darkMode .exportOptionsButtons:hover {
+  background: #475569;
+  color: #fff;
+}
+
+.darkMode .trackingRateValue,
+.darkMode .trackingSummary .trackingRateValue {
+  color: #f87171 !important;
+}
+
+.darkMode .trackingTable tbody td {
+  color: #f1f5f9;
+  border-bottom: 1px solid #475569;
+}
+
+.darkMode .trackingTable tbody tr:hover {
+  background-color: #374151;
+}
+
+.darkMode .trackingTable tbody td.trackingRateGreen,
+.darkMode .trackingContainer .trackingRateGreen,
+.trackingContainer.darkMode .trackingRateGreen {
+  color: #4ade80 !important;
+  font-weight: bold;
+}
+
+.darkMode .trackingTable tbody td.trackingRateRed,
+.darkMode .trackingContainer .trackingRateRed,
+.trackingContainer.darkMode .trackingRateRed {
+  color: #f87171 !important;
+}
+
+.darkMode .insightBar {
+  background: #475569;
+}
+
+.darkMode .insightFill {
+  background: #60a5fa;
+}
+
+.darkMode .insightPercentage {
+  color: #fff;
+}
+
+/* ==========================================================================
+   PRINT
+   ========================================================================== */
+
+@media print {
+  .participationLandingPage {
+    max-width: 100% !important;
+    margin: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .participationLandingPage * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .participationLandingPage:not(.darkMode) {
+    background: white !important;
+  }
+
+  .participationLandingPage.darkMode {
+    background: transparent !important;
+    color: #fff !important;
+  }
+
+  @page {
+    size: auto;
+    margin: 0.5in;
+  }
+
+  @supports (-webkit-print-color-adjust: exact) {
+    * {
+      -webkit-print-color-adjust: exact;
+    }
+  }
+
+  @supports (print-color-adjust: exact) {
+    * {
+      print-color-adjust: exact;
+    }
+  }
+
+  .my-cases-global,
+  .case-cards-global,
+  .case-list-global {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  .case-cards-global {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+    break-inside: auto !important;
+  }
+
+  .case-card-global {
+    break-inside: avoid !important;
+    height: auto !important;
+  }
+
+  .case-list-global {
+    break-inside: auto !important;
+  }
+
+  .case-list-item-global {
+    break-inside: avoid !important;
+  }
+
+  .trackingListContainer,
+  .trackingListContainerDark {
+    max-height: none !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  .tracking-table-global tr {
+    break-inside: avoid;
+  }
+
+  .insightItem {
+    break-inside: avoid;
+  }
+
+  .view-switcher-global,
+  .filter-wrapper-global,
+  .create-new-global,
+  .more-btn-global,
+  .noPrint {
+    display: none !important;
+  }
+
+  .noPrintGap {
+    margin-bottom: 8px;
+  }
+
+  .tracking-table-global thead th {
+    background: #f4f4f4 !important;
+    color: #333 !important;
+  }
+
+  .tracking-table-global-dark thead th {
+    background: #1e293b !important;
+    color: #fff !important;
+  }
+
+  .printOnly {
+    display: block !important;
+  }
+
+  .participationLandingPageDark .case-card-global,
+  .participationLandingPage.darkMode .case-card-global {
+    background: #3a506b !important;
+    color: #fff !important;
+    border: 1px solid #555 !important;
+  }
+
+  #root .case-card-global {
+    background: white !important;
+    color: #333 !important;
+    border: 1px solid #ddd !important;
+  }
+
+  .participationLandingPageDark .trackingContainerDark,
+  .participationLandingPage.darkMode .trackingContainer,
+  .participationLandingPage.darkMode .insights {
+    background: #1e293b !important;
+    color: #fff !important;
+    border: 1px solid #555 !important;
+  }
+
+  .participationLandingPageDark .trackingListContainerDark,
+  .participationLandingPage.darkMode .trackingListContainer {
+    background: #3a506b !important;
+    color: #fff !important;
+  }
+
+  .participationLandingPageDark .tracking-table-global-dark thead th,
+  .participationLandingPage.darkMode .trackingTable thead th {
+    background: #1e293b !important;
+    color: #fff !important;
+  }
+
+  .participationLandingPageDark .trackingRateDark,
+  .participationLandingPage.darkMode .trackingRate {
+    background: #3a506b !important;
+    color: #fff !important;
+  }
+
+  .event-badge-global[data-type='Yoga Class'] {
+    background-color: #052e16 !important;
+    color: #4ade80 !important;
+  }
+
+  .event-badge-global[data-type='Cooking Workshop'] {
+    background-color: #450a0a !important;
+    color: #f87171 !important;
+  }
+
+  .event-badge-global[data-type='Dance Class'] {
+    background-color: #451a03 !important;
+    color: #fbbf24 !important;
+  }
+
+  .event-badge-global[data-type='Fitness Bootcamp'] {
+    background-color: #2e1065 !important;
+    color: #c084fc !important;
+  }
+
+  .trackingRateGreen {
+    color: green !important;
+    font-weight: bold !important;
+  }
+
+  .trackingRateRed {
+    color: red !important;
+    font-weight: bold !important;
+  }
+
+  .insightFill {
+    background: #0056b3 !important;
+  }
+
+  .participationLandingPageDark .landingPageHeaderDark,
+  .participationLandingPageDark .sectionTitleDark,
+  .participationLandingPageDark .eventNameDark,
+  .participationLandingPageDark .eventTimeDark,
+  .participationLandingPageDark .attendeesCountDark,
+  .participationLandingPageDark .insightsLabelDark,
+  .participationLandingPageDark .insightsPercentageDark,
+  .participationLandingPage.darkMode .landingPageHeader,
+  .participationLandingPage.darkMode .eventName,
+  .participationLandingPage.darkMode .eventTime,
+  .participationLandingPage.darkMode .attendeesCount,
+  .participationLandingPage.darkMode .insightLabel,
+  .participationLandingPage.darkMode .insightPercentage {
+    color: #fff !important;
+  }
+
+  .participationLandingPage.darkMode .myCasesPage {
+    background-color: transparent !important;
+  }
+
+  .participationLandingPage.darkMode .caseCard {
+    background-color: #3a506b !important;
+    color: #fff !important;
+  }
+
+  .participationLandingPage.darkMode .insightsTabs {
+    border: 1px solid #555 !important;
+    background-color: #1e293b !important;
+  }
+
+  .participationLandingPage.darkMode .insightsTab {
+    color: #cbd5e1 !important;
+    background-color: #1e293b !important;
+  }
+
+  .participationLandingPage.darkMode .insightsTab.activeTab {
+    background-color: #1d4ed8 !important;
+    color: #fff !important;
+  }
+}
+
+.darkMode .trackingContainer .trackingFilters select:hover,
+.trackingContainer.darkMode .trackingFilters select:hover {
+  border-color: #60a5fa;
+}
+
+.darkMode .trackingRate:hover {
+  background: #4a607b;
+  transform: translateY(-2px);
+}
+
+.darkMode .insights .insightsFilters select:hover,
+.insights.darkMode .insightsFilters select:hover {
+  border-color: #60a5fa;
+}
