@@ -112,13 +112,10 @@
   background-color: var(--section-title-hover) !important;
 }
 
-<<<<<<< HEAD
-=======
 /* Share Button — override Bootstrap .btn so it lines up with .form-control selects */
 
 /* Bootstrap .btn defaults to flex-shrink: 1; when the row is tight the button shrinks and
    the label overflows outside the painted background (overlapping the last dropdown). */
->>>>>>> origin/development
 .weeklySummaryShareBtn {
   height: 38px !important;
   min-height: 38px;
@@ -220,12 +217,9 @@
   max-width: 100%;
   box-sizing: border-box;
   overflow: hidden visible;
-<<<<<<< HEAD
-=======
   display: flex;
   flex-direction: column;
   height: 100%;
->>>>>>> origin/development
 }
 
 .darkMode .weeklyProjectSummaryCard {
@@ -363,13 +357,13 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
-  align-items: stretch; /* Make all cards in a row the same height */
   border-top: 1px solid var(--card-shadow);
   animation: fade-in 0.3s ease-in-out;
   background: var(--section-bg);
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  min-width: 0;
 }
 
 .sectionContentWrapper {
@@ -526,13 +520,9 @@
   justify-content: center;
   border-radius: 25px;
   width: 100%;
-<<<<<<< HEAD
-  max-width: none;
   min-height: 190px;
-=======
   max-width: 284px;
   height: 190px;
->>>>>>> origin/development
   text-align: center;
   box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
   padding: 20px;
@@ -622,13 +612,11 @@
   }
 }
 
-<<<<<<< HEAD
 /* ---------------- PROJECT STATUS GRID ---------------- */
-=======
+
 /* ---------------- RESPONSIVE GRID LAYOUT ---------------- */
 
 /* MERGED: keep ONLY one projectStatusGrid */
->>>>>>> origin/development
 .projectStatusGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -642,33 +630,25 @@
 
 /* ---------------- OVAL STATUS BUTTON ---------------- */
 .weeklyStatusButton {
-<<<<<<< HEAD
-  width: min(180px, 100%);
   min-height: 65px;
-  border-radius: 999px;
-=======
   width: 130px;
   height: 65px;
   border-radius: 50px / 32px;
->>>>>>> origin/development
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 5px rgb(0 0 0 / 15%);
   margin: 12px 0;
-<<<<<<< HEAD
   padding: 8px 16px;
   box-sizing: border-box;
 }
 
 /* ---------------- RESPONSIVE BREAKPOINTS ---------------- */
-=======
-}
+
 
 /* ---------------- RESPONSIVE BREAKPOINTS ---------------- */
 
 /* Large Screens */
->>>>>>> origin/development
 @media (width >= 1400px) {
   .lessonsLearnedGrid {
     min-height: 650px;
@@ -711,8 +691,6 @@
   }
 }
 
-<<<<<<< HEAD
-=======
 /* Large screens - Tools section layout optimization */
 @media (width <= 1366px) {
   /* Tools and Equipment Tracking - Switch to 2 column layout earlier for better chart visibility */
@@ -733,7 +711,6 @@
 }
 
 /* Medium Screens - Wrap Items */
->>>>>>> origin/development
 @media (width <= 1024px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
@@ -750,26 +727,17 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-<<<<<<< HEAD
   .projectStatusGrid {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   }
 }
-
-=======
-  /* Tools and Equipment Tracking - 2 column layout on tablet */
-  .weeklyProjectSummaryDashboardCategoryContent {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    padding: 12px;
-  }
 
   /* Cards span full width on tablet */
   .weeklyProjectSummaryDashboardCategoryContent .wideCard,
   .weeklyProjectSummaryDashboardCategoryContent .normalCard {
     grid-column: span 2;
   }
-}
+
 
 /* Extra Small Screens - Small phones */
 @media (width <= 375px) {
@@ -833,7 +801,6 @@
 }
 
 /* Small Screens - Make Dropdowns Vertical */
->>>>>>> origin/development
 @media (width <= 768px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
@@ -868,7 +835,6 @@
   }
 
   .projectStatusGrid {
-<<<<<<< HEAD
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   }
 
@@ -880,9 +846,10 @@
     min-height: 240px;
   }
 
-=======
+  .weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
     grid-template-columns: 1fr;
   }
+
   
   .weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
     grid-template-columns: 1fr;
@@ -892,7 +859,6 @@
     min-height: 240px;
   }
   
->>>>>>> origin/development
   .normalCard {
     min-height: 280px;
   }
@@ -902,7 +868,6 @@
     gap: 16px;
     min-height: auto;
   }
-<<<<<<< HEAD
 
   .lessonsCard {
     min-height: 500px;
@@ -931,7 +896,7 @@
   .financialsTrackingGrid {
     grid-template-columns: 1fr;
   }
-}
+
 
 @media (width <= 576px) {
   .projectStatusGrid {
@@ -939,7 +904,6 @@
   }
 }
 
-=======
   
   .lessonsCard {
     min-height: 500px;
@@ -977,7 +941,7 @@
     max-width: 100%;
     overflow: visible;
   }
-}
+
 
 /* Extra small screens */
 @media (width <= 576px) {
@@ -992,12 +956,10 @@
 }
 
 /* Extra Small Screens */
->>>>>>> origin/development
 @media (width <= 480px) {
   .lessonsCard {
     min-height: 450px;
   }
-<<<<<<< HEAD
 
   .weeklyProjectSummaryCard :global(.chartContainer) {
     min-height: 220px;
@@ -1007,7 +969,6 @@
     min-height: 260px;
   }
 
-=======
   
   .weeklyProjectSummaryCard :global(.chartContainer) {
     min-height: 220px;
@@ -1017,14 +978,11 @@
     min-height: 260px;
   }
   
->>>>>>> origin/development
   .weeklySummaryHeaderTitle {
     font-size: large;
     flex-direction: column;
     gap: 5px;
   }
-<<<<<<< HEAD
-=======
 }
 
 /* Status Grid Responsive */
@@ -1056,7 +1014,6 @@
   .projectStatusGrid {
     grid-template-columns: repeat(1, 1fr);
   }
->>>>>>> origin/development
 }
 
 /* Dark mode fixes */
@@ -1316,14 +1273,12 @@
   .financialsTrackingGrid {
     break-inside: avoid;
   }
-<<<<<<< HEAD
 
   .weeklySummaryControls,
-=======
   
->>>>>>> origin/development
   .weeklySummaryShareBtn,
   .weeklySummaryHeaderControls select {
     display: none;
   }
+}
 }
