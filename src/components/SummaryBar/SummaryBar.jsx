@@ -103,6 +103,61 @@ function readFormData(sortableRef, formid) {
   return isvalid ? data : null;
 }
 
+function getInfringements(displayUserProfile) {
+  return displayUserProfile?.infringements ? displayUserProfile.infringements.length : 0;
+}
+
+function getBadges(displayUserProfile) {
+  if (!displayUserProfile?.badgeCollection) return 0;
+  let totalBadges = 0;
+  displayUserProfile.badgeCollection.forEach(badge => {
+    if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
+      totalBadges += 1;
+    } else {
+      totalBadges += Math.round(badge?.count ? Number(badge.count) : 0);
+    }
+  });
+  return totalBadges;
+}
+
+function getWeeklySummary(user) {
+  const latestSummary = user?.weeklySummaries?.[0];
+  return latestSummary && new Date() < new Date(latestSummary.dueDate) ? latestSummary.summary : '';
+}
+
+function canEditData(displayUserProfile, authUser, canPutUserProfileImportantInfo) {
+  return (
+    !(displayUserProfile.role === 'Owner' && authUser.role !== 'Owner') &&
+    canPutUserProfileImportantInfo
+  );
+}
+
+function getContainerClass(
+  isAuthUser,
+  darkMode,
+  displayUserProfile,
+  authUser,
+  canPutUserProfileImportantInfo,
+) {
+  if (isAuthUser || canEditData(displayUserProfile, authUser, canPutUserProfileImportantInfo)) {
+    return darkMode
+      ? 'bg-space-cadet text-light box-shadow-dark'
+      : 'bg--bar text--black box-shadow-light';
+  }
+  return darkMode
+    ? 'bg-space-cadet disabled-bar text-light box-shadow-dark'
+    : 'bg--bar disabled-bar text--black box-shadow-light';
+}
+
+function getPlaceholderText(extraFieldForSuggestionForm, editType) {
+  if (extraFieldForSuggestionForm === 'suggestion') {
+    return editType === 'delete'
+      ? 'write the category number, like 1 or 2 etc'
+      : 'write the category name';
+  }
+  return 'write the field name';
+}
+
 function applyFieldUpdate(fielddata, setfield) {
   if (fielddata?.action === 'edit' && fielddata?.updatedSuggestionCategory) {
     setfield(fielddata.updatedSuggestionCategory);
@@ -229,29 +284,6 @@ function SummaryBar(props) {
     }
   };
 
-  // Get infringement count from userProfile
-  const getInfringements = () => {
-    return displayUserProfile?.infringements ? displayUserProfile.infringements.length : 0;
-  };
-
-  // Get badges count from userProfile
-  const getBadges = () => {
-    if (!displayUserProfile?.badgeCollection) {
-      return 0;
-    }
-    let totalBadges = 0;
-    displayUserProfile.badgeCollection.forEach(badge => {
-      if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
-        totalBadges += 1;
-      } else {
-        const badgeCount = badge?.count ? Number(badge.count) : 0;
-        totalBadges += Math.round(badgeCount);
-      }
-    });
-
-    return totalBadges;
-  };
-
   const openReport = () => {
     const htmlStr = '';
     setBugReport(info => ({
@@ -360,17 +392,6 @@ function SummaryBar(props) {
     window.location.hash = '#badgesearned';
   };
 
-  const getWeeklySummary = user => {
-    const latestSummary = user?.weeklySummaries?.[0];
-    return latestSummary && new Date() < new Date(latestSummary.dueDate)
-      ? latestSummary.summary
-      : '';
-  };
-
-  const canEditData = () =>
-    !(displayUserProfile.role === 'Owner' && authUser.role !== 'Owner') &&
-    canPutUserProfileImportantInfo;
-
   useEffect(() => {
     setUserProfile(userProfile);
   }, [userProfile]);
@@ -388,24 +409,13 @@ function SummaryBar(props) {
 
   useEffect(() => {
     if (summaryBarData && displayUserProfile !== undefined) {
-      setInfringements(getInfringements());
-      setBadges(getBadges());
+      setInfringements(getInfringements(displayUserProfile));
+      setBadges(getBadges(displayUserProfile));
       setTotalEffort(summaryBarData.tangibletime);
       setWeeklySummary(getWeeklySummary(displayUserProfile));
       setweeklySummaryNotReq(displayUserProfile?.weeklySummaryOption === 'Not Required');
     }
   }, [displayUserProfile, summaryBarData]);
-
-  const getContainerClass = () => {
-    if (isAuthUser || canEditData()) {
-      return darkMode
-        ? 'bg-space-cadet text-light box-shadow-dark'
-        : 'bg--bar text--black box-shadow-light';
-    }
-    return darkMode
-      ? 'bg-space-cadet disabled-bar text-light box-shadow-dark'
-      : 'bg--bar disabled-bar text--black box-shadow-light';
-  };
 
   const renderSummary = () => {
     if (!weeklySummary) {
@@ -425,7 +435,8 @@ function SummaryBar(props) {
           }`}
         >
           <div className="py-1"> </div>
-          {isAuthUser || canEditData() ? (
+          {isAuthUser ||
+          canEditData(displayUserProfile, authUser, canPutUserProfileImportantInfo) ? (
             <div className="d-flex justify-content-center">
               <button
                 onClick={props.toggleSubmitForm}
@@ -492,21 +503,22 @@ function SummaryBar(props) {
     return <span className="summary-toggle">{message}</span>;
   };
 
-  const getPlaceholderText = () => {
-    if (extraFieldForSuggestionForm === 'suggestion') {
-      return editType === 'delete'
-        ? 'write the category number, like 1 or 2 etc'
-        : 'write the category name';
-    }
-    return 'write the field name';
-  };
-
   const fontColor = darkMode ? 'text-light' : '';
   const headerBg = darkMode ? 'bg-space-cadet' : '';
   const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
 
   return displayUserProfile !== undefined && summaryBarData !== undefined ? (
-    <Container fluid className={`px-lg-0 rounded ${getContainerClass()}`} style={{ width: '97%' }}>
+    <Container
+      fluid
+      className={`px-lg-0 rounded ${getContainerClass(
+        isAuthUser,
+        darkMode,
+        displayUserProfile,
+        authUser,
+        canPutUserProfileImportantInfo,
+      )}`}
+      style={{ width: '97%' }}
+    >
       <Row className="no-gutters row-eq-height">
         <Col
           className="d-flex justify-content-center align-items-center col-lg-2 col-12 text-list"
@@ -602,7 +614,8 @@ function SummaryBar(props) {
               <div className="redBackgroup">
                 <span>{tasks}</span>
               </div>
-              {isAuthUser || canEditData() ? (
+              {isAuthUser ||
+              canEditData(displayUserProfile, authUser, canPutUserProfileImportantInfo) ? (
                 <button
                   onClick={onTaskClick}
                   className={styles.btnReset}
@@ -620,7 +633,8 @@ function SummaryBar(props) {
               <div className="redBackgroup">
                 <span>{badges}</span>
               </div>
-              {isAuthUser || canEditData() ? (
+              {isAuthUser ||
+              canEditData(displayUserProfile, authUser, canPutUserProfileImportantInfo) ? (
                 <button
                   onClick={onBadgeClick}
                   className={styles.btnReset}
@@ -635,7 +649,8 @@ function SummaryBar(props) {
             </div>
             &nbsp;&nbsp;
             <div className="image_frame">
-              {isAuthUser || canEditData() ? (
+              {isAuthUser ||
+              canEditData(displayUserProfile, authUser, canPutUserProfileImportantInfo) ? (
                 <Link to={`/userprofile/${displayUserProfile._id}#bluesquare`}>
                   <img className="sum_img" src={BlueScoreIcon} alt="" />
                   <div className="redBackgroup">
@@ -653,7 +668,8 @@ function SummaryBar(props) {
             </div>
             &nbsp;&nbsp;
             <div className="image_frame">
-              {isAuthUser || canEditData() ? (
+              {isAuthUser ||
+              canEditData(displayUserProfile, authUser, canPutUserProfileImportantInfo) ? (
                 <button
                   onClick={openReport}
                   className={styles.btnReset}
@@ -668,7 +684,8 @@ function SummaryBar(props) {
             </div>
             &nbsp;&nbsp;
             <div className="image_frame">
-              {isAuthUser || canEditData() ? (
+              {isAuthUser ||
+              canEditData(displayUserProfile, authUser, canPutUserProfileImportantInfo) ? (
                 <button
                   onClick={openSuggestionModal}
                   className={styles.btnReset}
@@ -773,7 +790,7 @@ function SummaryBar(props) {
                         type="textarea"
                         name="newField"
                         id="newField"
-                        placeholder={getPlaceholderText()}
+                        placeholder={getPlaceholderText(extraFieldForSuggestionForm, editType)}
                         required
                       />
                     )}
