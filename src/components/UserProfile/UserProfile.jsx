@@ -122,9 +122,7 @@ function UserProfile(props) {
   const [showToggleVisibilityModal, setShowToggleVisibilityModal] = useState(false);
   const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
   const [isRehireable, setIsRehireable] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const toggleModal = () => setIsModalOpen(!isModalOpen);
-  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const toggleRemoveModal = () => setIsRemoveModalOpen(!isRemoveModalOpen);
 
   const updateRemovedImage = async () => {
@@ -937,7 +935,7 @@ function UserProfile(props) {
                 src={profilePic && profilePic.trim().length > 0 ? profilePic : '/pfp-default.png'}
                 alt="Profile Picture"
                 roundedCircle
-                className={`profilePicture bg-white${profilePic ? '' : ` ${userProfileStyles.profilePicPlaceholder}`}`}
+                className={['profilePicture bg-white', profilePic ? '' : userProfileStyles.profilePicPlaceholder].filter(Boolean).join(' ')}
               />
               {canEdit ? (
                 <div

@@ -202,14 +202,12 @@ function SummaryBar(props) {
 
   // Get infringement count from userProfile
   const getInfringements = () => {
-    return displayUserProfile && displayUserProfile.infringements
-      ? displayUserProfile.infringements.length
-      : 0;
+    return displayUserProfile?.infringements ? displayUserProfile.infringements.length : 0;
   };
 
   // Get badges count from userProfile
   const getBadges = () => {
-    if (!displayUserProfile || !displayUserProfile.badgeCollection) {
+    if (!displayUserProfile?.badgeCollection) {
       return 0;
     }
     let totalBadges = 0;
