@@ -76,7 +76,9 @@ describe('<ReportTableSearchPanel />', () => {
 
     vi.runAllTimers();
 
-    expect(onSearchMock).toHaveBeenCalledTimes(5); // adjust this if debounce is implemented
+    // Debounce is leading+trailing: the first keystroke ('h') fires immediately,
+    // then rapid keystrokes collapse into a single trailing call with the final value.
+    expect(onSearchMock).toHaveBeenCalledTimes(2);
     expect(onSearchMock).toHaveBeenCalledWith('hello');
     vi.useRealTimers();
   });

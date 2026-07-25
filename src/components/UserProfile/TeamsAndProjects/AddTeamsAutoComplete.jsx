@@ -1,10 +1,12 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Dropdown, Input } from 'reactstrap';
+import debounce from 'lodash/debounce';
 import './TeamsAndProjects.module.css';
 import { useSelector } from 'react-redux';
 
 const TEAM_NAME_MAX_LENGTH = 100;
+const SEARCH_DEBOUNCE_MS = 300;
 
 // eslint-disable-next-line react/display-name
 const AddTeamsAutoComplete = React.memo((props) => {
@@ -26,11 +28,27 @@ const AddTeamsAutoComplete = React.memo((props) => {
   const normalize = (s) =>
     (s ?? '').toString().toLowerCase().trim().replace(/\s+/g, ' ');
 
+  // The input stays fully responsive via searchText; only the (re)filtering of the
+  // suggestion list is debounced so rapid keystrokes don't recompute it every time.
+  const [debouncedSearchText, setDebouncedSearchText] = useState(searchText);
+  const debouncedSetSearchText = useRef(
+    debounce((value) => setDebouncedSearchText(value), SEARCH_DEBOUNCE_MS, {
+      leading: true,
+      trailing: true,
+    }),
+  ).current;
+
+  useEffect(() => {
+    debouncedSetSearchText(searchText);
+  }, [searchText, debouncedSetSearchText]);
+
+  useEffect(() => () => debouncedSetSearchText.cancel(), [debouncedSetSearchText]);
+
   const suggestions = React.useMemo(() => {
-    const q = normalize(searchText);
+    const q = normalize(debouncedSearchText);
     if (!q) return allTeams; // show all when empty
     return allTeams.filter((t) => normalize(t.teamName).includes(q));
-  }, [allTeams, searchText]);
+  }, [allTeams, debouncedSearchText]);
 
   const handlePick = (team) => {
     setInputs(team);                 // parent expects the TEAM OBJECT

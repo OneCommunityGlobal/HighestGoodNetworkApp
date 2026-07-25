@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Dropdown, Input } from 'reactstrap';
+import debounce from 'lodash/debounce';
 import './TeamsAndProjects.module.css';
 import { useSelector } from 'react-redux';
+
+const SEARCH_DEBOUNCE_MS = 300;
 
 // eslint-disable-next-line react/display-name
 const AddProjectsAutoComplete = React.memo(props => {
@@ -16,6 +19,22 @@ const AddProjectsAutoComplete = React.memo(props => {
       if (!props.selectedProject) props.onInputChange('');
     }
   }, [props.selectedProject]);
+
+  // The input stays fully responsive via props.searchText; only the (re)filtering
+  // of the suggestion list is debounced so rapid keystrokes don't recompute it every time.
+  const [debouncedSearchText, setDebouncedSearchText] = useState(props.searchText);
+  const debouncedSetSearchText = useRef(
+    debounce(value => setDebouncedSearchText(value), SEARCH_DEBOUNCE_MS, {
+      leading: true,
+      trailing: true,
+    }),
+  ).current;
+
+  useEffect(() => {
+    debouncedSetSearchText(props.searchText);
+  }, [props.searchText, debouncedSetSearchText]);
+
+  useEffect(() => () => debouncedSetSearchText.cancel(), [debouncedSetSearchText]);
 
   return (
     <Dropdown
@@ -52,7 +71,7 @@ const AddProjectsAutoComplete = React.memo(props => {
             .filter(project => {
               if (
                 //prettier-ignore
-                props.formatText(project.projectName).indexOf(props.formatText(props.searchText)) >-1
+                props.formatText(project.projectName).indexOf(props.formatText(debouncedSearchText)) >-1
               ) {
                 return project;
               }
@@ -74,7 +93,7 @@ const AddProjectsAutoComplete = React.memo(props => {
             ))}
 
           {props.projectsData.every(
-            item => props.formatText(item.projectName) !== props.formatText(props.searchText),
+            item => props.formatText(item.projectName) !== props.formatText(debouncedSearchText),
           ) && (
             // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
             <div
@@ -84,7 +103,7 @@ const AddProjectsAutoComplete = React.memo(props => {
                 props.setIsOpenDropdown(true);
               }}
             >
-              Create new project: {props.searchText}
+              Create new project: {debouncedSearchText}
             </div>
           )}
         </div>
