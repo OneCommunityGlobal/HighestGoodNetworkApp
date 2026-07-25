@@ -4,6 +4,7 @@ import parse from 'html-react-parser';
 import { useDispatch, useSelector } from 'react-redux';
 import { markNotificationAsRead } from '../../actions/notificationAction';
 import { convertDateFormatToMMMDDYY } from '../../utils/formatDate';
+import styles from './notificationCard.module.css';
 
 // Mock data
 // const URL_TO_BLUE_SQUARE_PAGE = 'https://google.com';
@@ -69,13 +70,15 @@ function NotificationCard({ notification }) {
   };
 
   return (
-    <Container fluid className={`${darkMode ? 'bg-oxford-blue' : 'bg-white'}`}>
+    <Container
+      fluid
+      className={`${styles.notificationContainer} ${darkMode ? 'bg-oxford-blue' : 'bg-white'}`}
+    >
       <Card
         color="primary"
-        className={fade ? 'fade' : ''}
+        className={`${styles.notificationCard}${fade ? ` ${styles.fade}` : ''}`}
         onAnimationEnd={() => setFade(false)}
         inverse
-        style={{ marginRight: '15px', marginBottom: '5px' }}
       >
         <CardBody>
           <CardTitle tag="h5">
