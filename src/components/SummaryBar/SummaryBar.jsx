@@ -442,6 +442,390 @@ function renderSummaryMessage(
   return <span className="summary-toggle">{message}</span>;
 }
 
+function SuggestionModal({
+  showSuggestionModal,
+  darkMode,
+  fontColor,
+  headerBg,
+  bodyBg,
+  displayUserProfile,
+  extraFieldForSuggestionForm,
+  setExtraFieldForSuggestionForm,
+  editType,
+  setEditType,
+  categoryDescription,
+  setCategoryDescription,
+  suggestionCategory,
+  inputFiled,
+  takeInput,
+  setTakeInput,
+  sortableContainerRef,
+  setSuggestionCategory,
+  setInputField,
+  setShowSuggestionModal,
+}) {
+  return (
+    <Modal
+      isOpen={showSuggestionModal}
+      onClosed={() =>
+        closeSuggestionModal(setEditType, setExtraFieldForSuggestionForm, setCategoryDescription)
+      }
+      toggle={() =>
+        openSuggestionModal(
+          showSuggestionModal,
+          displayUserProfile,
+          setSuggestionCategory,
+          setInputField,
+          setShowSuggestionModal,
+        )
+      }
+      className={darkMode ? 'text-light' : ''}
+    >
+      <ModalHeader className={headerBg}>User Suggestion</ModalHeader>
+      <ModalBody className={bodyBg}>
+        {displayUserProfile.role === 'Owner' && !extraFieldForSuggestionForm && (
+          <FormGroup>
+            <Button
+              onClick={() => setExtraFieldForSuggestionForm('suggestion')}
+              type="button"
+              color="success"
+              size="md"
+            >
+              Edit Category
+            </Button>{' '}
+            &nbsp;&nbsp;&nbsp;
+            <Button
+              onClick={() => setExtraFieldForSuggestionForm('field')}
+              type="button"
+              color="success"
+              size="md"
+            >
+              Edit Field
+            </Button>
+          </FormGroup>
+        )}
+
+        {extraFieldForSuggestionForm && (
+          <Form
+            onSubmit={e =>
+              editField(e, sortableContainerRef, displayUserProfile, {
+                extraFieldForSuggestionForm,
+                setSuggestionCategory,
+                setInputField,
+                setExtraFieldForSuggestionForm,
+                setEditType,
+              })
+            }
+            id="newFieldForm"
+            style={{ border: '1px solid gray', padding: '5px 10px', margin: '5px 10px' }}
+          >
+            <FormGroup tag="fieldset" id="fieldsetinner">
+              <legend style={{ fontSize: '16px' }}>Select Action type:</legend>
+              <FormGroup check>
+                <Label check className={fontColor}>
+                  <Input
+                    onChange={e =>
+                      editRadioButtonSelected(e.target.value, setEditType, setCategoryDescription)
+                    }
+                    type="radio"
+                    name="action"
+                    value="add"
+                    required
+                  />{' '}
+                  Add
+                </Label>
+              </FormGroup>
+              {extraFieldForSuggestionForm === 'suggestion' && (
+                <FormGroup check>
+                  <Label check className={fontColor}>
+                    <Input
+                      onChange={e =>
+                        editRadioButtonSelected(e.target.value, setEditType, setCategoryDescription)
+                      }
+                      type="radio"
+                      name="action"
+                      value="edit"
+                      required
+                    />{' '}
+                    Edit
+                  </Label>
+                </FormGroup>
+              )}
+              <FormGroup check>
+                <Label check className={fontColor}>
+                  <Input
+                    onChange={e =>
+                      editRadioButtonSelected(e.target.value, setEditType, setCategoryDescription)
+                    }
+                    type="radio"
+                    name="action"
+                    value="delete"
+                    required
+                    disabled={extraFieldForSuggestionForm === 'field' && inputFiled.length === 0}
+                  />{' '}
+                  Delete
+                </Label>
+              </FormGroup>
+            </FormGroup>
+            {editType !== '' && (
+              <FormGroup>
+                <Label for="newField" className={fontColor}>
+                  {extraFieldForSuggestionForm === 'suggestion' && categoryDescription}
+                </Label>
+                {editType !== 'edit' && (
+                  <Input
+                    type="textarea"
+                    name="newField"
+                    id="newField"
+                    placeholder={getPlaceholderText(extraFieldForSuggestionForm, editType)}
+                    required
+                  />
+                )}
+                {editType === 'edit' && (
+                  <div
+                    className="sortable-container"
+                    ref={sortableContainerRef}
+                    onDragOver={e => onSortableDragOver(e)}
+                  >
+                    {suggestionCategory.map(item => (
+                      <div
+                        className={`sortable-content ${bodyBg} sortable-draggable`}
+                        key={item.id}
+                        draggable="true"
+                        onDragStart={event => onDragToggleDraggingClass(event)}
+                        onDragEnd={event => onDragToggleDraggingClass(event)}
+                      >
+                        <p>{item.value}</p>
+                        <button
+                          type="button"
+                          className="edit-icon fa fa-edit"
+                          onClick={event => handleEditClick(event)}
+                          aria-label="Edit item"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </FormGroup>
+            )}
+            <Button id="add" type="submit" color="success" size="md">
+              Submit
+            </Button>{' '}
+            &nbsp;&nbsp;&nbsp;
+            <Button
+              onClick={() => {
+                setEditType('');
+                setExtraFieldForSuggestionForm('');
+              }}
+              type="button"
+              color="danger"
+              size="md"
+            >
+              Cancel
+            </Button>
+          </Form>
+        )}
+        <Form
+          onSubmit={e =>
+            sendUserSuggestion(e, sortableContainerRef, displayUserProfile, setShowSuggestionModal)
+          }
+          id="suggestionForm"
+        >
+          <FormGroup>
+            <Label for="suggestioncate" className={fontColor}>
+              Please select a category of your suggestion:
+            </Label>
+
+            <Input
+              onChange={() => setTakeInput(true)}
+              type="select"
+              name="suggestioncate"
+              id="suggestioncate"
+              defaultValue=""
+              required
+            >
+              <option disabled value="" hidden>
+                {' '}
+                -- select an option --{' '}
+              </option>
+              {suggestionCategory.map((item, index) => {
+                return <option key={item.id} value={item}>{`${index + 1}. ${item}`}</option>;
+              })}
+            </Input>
+          </FormGroup>
+          {takeInput && (
+            <FormGroup>
+              <Label for="suggestion" className={fontColor}>
+                {' '}
+                Write your suggestion:{' '}
+              </Label>
+              <Input
+                type="textarea"
+                name="suggestion"
+                id="suggestion"
+                placeholder="I suggest ..."
+                required
+              />
+            </FormGroup>
+          )}
+          {inputFiled.length > 0 &&
+            inputFiled.map(item => (
+              <FormGroup key={item.id}>
+                <Label for="title" className={fontColor}>
+                  {item}{' '}
+                </Label>
+                <Input type="textbox" name={item} id={item.id} placeholder="" required />
+              </FormGroup>
+            ))}
+          <FormGroup tag="fieldset" id="fieldset">
+            <legend style={{ fontSize: '16px' }}>
+              Would you like a followup/reply regarding this feedback?
+            </legend>
+            <FormGroup check>
+              <Label check className={fontColor}>
+                <Input type="radio" name="confirm" value="yes" required /> Yes
+              </Label>
+            </FormGroup>
+            <FormGroup check>
+              <Label check className={fontColor}>
+                <Input type="radio" name="confirm" value="no" required /> No
+              </Label>
+            </FormGroup>
+          </FormGroup>
+          <FormGroup>
+            <Button type="submit" color="primary" size="lg">
+              Submit
+            </Button>{' '}
+            &nbsp;&nbsp;&nbsp;
+            <Button onClick={() => setShowSuggestionModal(prev => !prev)} color="danger" size="lg">
+              Close
+            </Button>
+          </FormGroup>
+        </Form>
+      </ModalBody>
+    </Modal>
+  );
+}
+
+function BugReportModal({
+  report,
+  fontColor,
+  headerBg,
+  bodyBg,
+  sortableContainerRef,
+  displayUserProfile,
+  setBugReport,
+}) {
+  return (
+    <Modal isOpen={report.in} toggle={() => openReport(setBugReport)} className={fontColor}>
+      <ModalHeader className={headerBg}>Bug Report</ModalHeader>
+      <ModalBody className={bodyBg}>
+        <Form
+          onSubmit={e => sendBugReport(e, sortableContainerRef, displayUserProfile, setBugReport)}
+          id="bugReportForm"
+        >
+          <FormGroup>
+            <Label for="title" className={fontColor}>
+              [Feature Name] Bug Title{' '}
+            </Label>
+            <Input
+              type="textbox"
+              name="title"
+              id="title"
+              required
+              placeholder="Provide Concise Sumary Title..."
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="environment" className={fontColor}>
+              {' '}
+              Environment (OS/Device/App Version/Connection/Time etc){' '}
+            </Label>
+            <Input
+              type="textarea"
+              name="environment"
+              id="environment"
+              required
+              placeholder="Environment Info..."
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="reproduction" className={fontColor}>
+              Steps to reproduce (Please Number, Short Sweet to the point){' '}
+            </Label>
+            <Input
+              type="textarea"
+              name="reproduction"
+              id="reproduction"
+              required
+              placeholder="1. Click on the UserProfile Button in the Header..."
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="expected" className={fontColor}>
+              Expected Result (Short Sweet to the point){' '}
+            </Label>
+            <Input
+              type="textarea"
+              name="expected"
+              id="expected"
+              required
+              placeholder="What did you expect to happen?..."
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="actual" className={fontColor}>
+              Actual Result (Short Sweet to the point){' '}
+            </Label>
+            <Input
+              type="textarea"
+              name="actual"
+              id="actual"
+              required
+              placeholder="What actually happened?.."
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="visual" className={fontColor}>
+              Visual Proof (screenshots, videos, text){' '}
+            </Label>
+            <Input
+              type="textarea"
+              name="visual"
+              id="visual"
+              required
+              placeholder="Links to screenshots etc..."
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="severity" className={fontColor}>
+              Severity/Priority (How Bad is the Bug?){' '}
+            </Label>
+            <Input type="select" name="severity" id="severity" defaultValue="" required>
+              <option hidden value="" disabled>
+                {' '}
+                -- select an option --{' '}
+              </option>
+              <option>1. High/Critical </option>
+              <option>2. Medium </option>
+              <option>3. Minor</option>
+            </Input>
+          </FormGroup>
+          <FormGroup>
+            <Button type="submit" color="primary" size="lg">
+              Submit
+            </Button>{' '}
+            &nbsp;&nbsp;&nbsp;
+            <Button onClick={() => openReport(setBugReport)} color="danger" size="lg">
+              Close
+            </Button>
+          </FormGroup>
+        </Form>
+      </ModalBody>
+    </Modal>
+  );
+}
+
 function SummaryBar(props) {
   const location = useLocation();
 
@@ -746,376 +1130,37 @@ function SummaryBar(props) {
             </div>
           </div>
         </Col>
-        <Modal
-          isOpen={showSuggestionModal}
-          onClosed={() =>
-            closeSuggestionModal(
-              setEditType,
-              setExtraFieldForSuggestionForm,
-              setCategoryDescription,
-            )
-          }
-          toggle={() =>
-            openSuggestionModal(
-              showSuggestionModal,
-              displayUserProfile,
-              setSuggestionCategory,
-              setInputField,
-              setShowSuggestionModal,
-            )
-          }
-          className={darkMode ? 'text-light' : ''}
-        >
-          <ModalHeader className={headerBg}>User Suggestion</ModalHeader>
-          <ModalBody className={bodyBg}>
-            {displayUserProfile.role === 'Owner' && !extraFieldForSuggestionForm && (
-              <FormGroup>
-                <Button
-                  onClick={() => setExtraFieldForSuggestionForm('suggestion')}
-                  type="button"
-                  color="success"
-                  size="md"
-                >
-                  Edit Category
-                </Button>{' '}
-                &nbsp;&nbsp;&nbsp;
-                <Button
-                  onClick={() => setExtraFieldForSuggestionForm('field')}
-                  type="button"
-                  color="success"
-                  size="md"
-                >
-                  Edit Field
-                </Button>
-              </FormGroup>
-            )}
-
-            {extraFieldForSuggestionForm && (
-              <Form
-                onSubmit={e =>
-                  editField(e, sortableContainerRef, displayUserProfile, {
-                    extraFieldForSuggestionForm,
-                    setSuggestionCategory,
-                    setInputField,
-                    setExtraFieldForSuggestionForm,
-                    setEditType,
-                  })
-                }
-                id="newFieldForm"
-                style={{ border: '1px solid gray', padding: '5px 10px', margin: '5px 10px' }}
-              >
-                <FormGroup tag="fieldset" id="fieldsetinner">
-                  <legend style={{ fontSize: '16px' }}>Select Action type:</legend>
-                  <FormGroup check>
-                    <Label check className={fontColor}>
-                      <Input
-                        onChange={e =>
-                          editRadioButtonSelected(
-                            e.target.value,
-                            setEditType,
-                            setCategoryDescription,
-                          )
-                        }
-                        type="radio"
-                        name="action"
-                        value="add"
-                        required
-                      />{' '}
-                      Add
-                    </Label>
-                  </FormGroup>
-                  {extraFieldForSuggestionForm === 'suggestion' && (
-                    <FormGroup check>
-                      <Label check className={fontColor}>
-                        <Input
-                          onChange={e =>
-                            editRadioButtonSelected(
-                              e.target.value,
-                              setEditType,
-                              setCategoryDescription,
-                            )
-                          }
-                          type="radio"
-                          name="action"
-                          value="edit"
-                          required
-                        />{' '}
-                        Edit
-                      </Label>
-                    </FormGroup>
-                  )}
-                  <FormGroup check>
-                    <Label check className={fontColor}>
-                      <Input
-                        onChange={e =>
-                          editRadioButtonSelected(
-                            e.target.value,
-                            setEditType,
-                            setCategoryDescription,
-                          )
-                        }
-                        type="radio"
-                        name="action"
-                        value="delete"
-                        required
-                        disabled={
-                          extraFieldForSuggestionForm === 'field' && inputFiled.length === 0
-                        }
-                      />{' '}
-                      Delete
-                    </Label>
-                  </FormGroup>
-                </FormGroup>
-                {editType !== '' && (
-                  <FormGroup>
-                    <Label for="newField" className={fontColor}>
-                      {extraFieldForSuggestionForm === 'suggestion' && categoryDescription}
-                    </Label>
-                    {editType !== 'edit' && (
-                      <Input
-                        type="textarea"
-                        name="newField"
-                        id="newField"
-                        placeholder={getPlaceholderText(extraFieldForSuggestionForm, editType)}
-                        required
-                      />
-                    )}
-                    {editType === 'edit' && (
-                      <div
-                        className="sortable-container"
-                        ref={sortableContainerRef}
-                        onDragOver={e => onSortableDragOver(e)}
-                      >
-                        {suggestionCategory.map(item => (
-                          <div
-                            className={`sortable-content ${bodyBg} sortable-draggable`}
-                            key={item.id}
-                            draggable="true"
-                            onDragStart={event => onDragToggleDraggingClass(event)}
-                            onDragEnd={event => onDragToggleDraggingClass(event)}
-                          >
-                            <p>{item.value}</p>
-                            <button
-                              type="button"
-                              className="edit-icon fa fa-edit"
-                              onClick={event => handleEditClick(event)}
-                              aria-label="Edit item"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </FormGroup>
-                )}
-                <Button id="add" type="submit" color="success" size="md">
-                  Submit
-                </Button>{' '}
-                &nbsp;&nbsp;&nbsp;
-                <Button
-                  onClick={() => {
-                    setEditType('');
-                    setExtraFieldForSuggestionForm('');
-                  }}
-                  type="button"
-                  color="danger"
-                  size="md"
-                >
-                  Cancel
-                </Button>
-              </Form>
-            )}
-            <Form
-              onSubmit={e =>
-                sendUserSuggestion(
-                  e,
-                  sortableContainerRef,
-                  displayUserProfile,
-                  setShowSuggestionModal,
-                )
-              }
-              id="suggestionForm"
-            >
-              <FormGroup>
-                <Label for="suggestioncate" className={fontColor}>
-                  Please select a category of your suggestion:
-                </Label>
-
-                <Input
-                  onChange={() => setTakeInput(true)}
-                  type="select"
-                  name="suggestioncate"
-                  id="suggestioncate"
-                  defaultValue=""
-                  required
-                >
-                  <option disabled value="" hidden>
-                    {' '}
-                    -- select an option --{' '}
-                  </option>
-                  {suggestionCategory.map((item, index) => {
-                    return <option key={item.id} value={item}>{`${index + 1}. ${item}`}</option>;
-                  })}
-                </Input>
-              </FormGroup>
-              {takeInput && (
-                <FormGroup>
-                  <Label for="suggestion" className={fontColor}>
-                    {' '}
-                    Write your suggestion:{' '}
-                  </Label>
-                  <Input
-                    type="textarea"
-                    name="suggestion"
-                    id="suggestion"
-                    placeholder="I suggest ..."
-                    required
-                  />
-                </FormGroup>
-              )}
-              {inputFiled.length > 0 &&
-                inputFiled.map(item => (
-                  <FormGroup key={item.id}>
-                    <Label for="title" className={fontColor}>
-                      {item}{' '}
-                    </Label>
-                    <Input type="textbox" name={item} id={item.id} placeholder="" required />
-                  </FormGroup>
-                ))}
-              <FormGroup tag="fieldset" id="fieldset">
-                <legend style={{ fontSize: '16px' }}>
-                  Would you like a followup/reply regarding this feedback?
-                </legend>
-                <FormGroup check>
-                  <Label check className={fontColor}>
-                    <Input type="radio" name="confirm" value="yes" required /> Yes
-                  </Label>
-                </FormGroup>
-                <FormGroup check>
-                  <Label check className={fontColor}>
-                    <Input type="radio" name="confirm" value="no" required /> No
-                  </Label>
-                </FormGroup>
-              </FormGroup>
-              <FormGroup>
-                <Button type="submit" color="primary" size="lg">
-                  Submit
-                </Button>{' '}
-                &nbsp;&nbsp;&nbsp;
-                <Button
-                  onClick={() => setShowSuggestionModal(prev => !prev)}
-                  color="danger"
-                  size="lg"
-                >
-                  Close
-                </Button>
-              </FormGroup>
-            </Form>
-          </ModalBody>
-        </Modal>
-
-        <Modal isOpen={report.in} toggle={() => openReport(setBugReport)} className={fontColor}>
-          <ModalHeader className={headerBg}>Bug Report</ModalHeader>
-          <ModalBody className={bodyBg}>
-            <Form onSubmit={sendBugReport} id="bugReportForm">
-              <FormGroup>
-                <Label for="title" className={fontColor}>
-                  [Feature Name] Bug Title{' '}
-                </Label>
-                <Input
-                  type="textbox"
-                  name="title"
-                  id="title"
-                  required
-                  placeholder="Provide Concise Sumary Title..."
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label for="environment" className={fontColor}>
-                  {' '}
-                  Environment (OS/Device/App Version/Connection/Time etc){' '}
-                </Label>
-                <Input
-                  type="textarea"
-                  name="environment"
-                  id="environment"
-                  required
-                  placeholder="Environment Info..."
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label for="reproduction" className={fontColor}>
-                  Steps to reproduce (Please Number, Short Sweet to the point){' '}
-                </Label>
-                <Input
-                  type="textarea"
-                  name="reproduction"
-                  id="reproduction"
-                  required
-                  placeholder="1. Click on the UserProfile Button in the Header..."
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label for="expected" className={fontColor}>
-                  Expected Result (Short Sweet to the point){' '}
-                </Label>
-                <Input
-                  type="textarea"
-                  name="expected"
-                  id="expected"
-                  required
-                  placeholder="What did you expect to happen?..."
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label for="actual" className={fontColor}>
-                  Actual Result (Short Sweet to the point){' '}
-                </Label>
-                <Input
-                  type="textarea"
-                  name="actual"
-                  id="actual"
-                  required
-                  placeholder="What actually happened?.."
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label for="visual" className={fontColor}>
-                  Visual Proof (screenshots, videos, text){' '}
-                </Label>
-                <Input
-                  type="textarea"
-                  name="visual"
-                  id="visual"
-                  required
-                  placeholder="Links to screenshots etc..."
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label for="severity" className={fontColor}>
-                  Severity/Priority (How Bad is the Bug?){' '}
-                </Label>
-                <Input type="select" name="severity" id="severity" defaultValue="" required>
-                  <option hidden value="" disabled>
-                    {' '}
-                    -- select an option --{' '}
-                  </option>
-                  <option>1. High/Critical </option>
-                  <option>2. Medium </option>
-                  <option>3. Minor</option>
-                </Input>
-              </FormGroup>
-              <FormGroup>
-                <Button type="submit" color="primary" size="lg">
-                  Submit
-                </Button>{' '}
-                &nbsp;&nbsp;&nbsp;
-                <Button onClick={() => openReport(setBugReport)} color="danger" size="lg">
-                  Close
-                </Button>
-              </FormGroup>
-            </Form>
-          </ModalBody>
-        </Modal>
+        <SuggestionModal
+          showSuggestionModal={showSuggestionModal}
+          darkMode={darkMode}
+          fontColor={fontColor}
+          headerBg={headerBg}
+          bodyBg={bodyBg}
+          displayUserProfile={displayUserProfile}
+          extraFieldForSuggestionForm={extraFieldForSuggestionForm}
+          setExtraFieldForSuggestionForm={setExtraFieldForSuggestionForm}
+          editType={editType}
+          setEditType={setEditType}
+          categoryDescription={categoryDescription}
+          setCategoryDescription={setCategoryDescription}
+          suggestionCategory={suggestionCategory}
+          inputFiled={inputFiled}
+          takeInput={takeInput}
+          setTakeInput={setTakeInput}
+          sortableContainerRef={sortableContainerRef}
+          setSuggestionCategory={setSuggestionCategory}
+          setInputField={setInputField}
+          setShowSuggestionModal={setShowSuggestionModal}
+        />
+        <BugReportModal
+          report={report}
+          fontColor={fontColor}
+          headerBg={headerBg}
+          bodyBg={bodyBg}
+          sortableContainerRef={sortableContainerRef}
+          displayUserProfile={displayUserProfile}
+          setBugReport={setBugReport}
+        />
       </Row>
     </Container>
   ) : (
