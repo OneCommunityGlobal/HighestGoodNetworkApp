@@ -61,7 +61,7 @@ export function PeopleTasksPieChart({ darkMode }) {
           </div>
         </ReportPage.ReportBlock>
       )}
-      {showTasksPieChart && (
+      {/* {showTasksPieChart && (
         <ReportPage.ReportBlock darkMode={darkMode} style={{ overflow: 'visible' }} className={styles['pie-no-scroll']}>
           <h5 className={styles['people-pie-charts-header']}>Tasks With Completed Hours</h5>
           <div style={{ width: '100%', minHeight: tasksHeight }}>
@@ -73,7 +73,7 @@ export function PeopleTasksPieChart({ darkMode }) {
           />
         </div>
       </ReportPage.ReportBlock>
-      )}
+      )} */}
     </div>
   );
 }
