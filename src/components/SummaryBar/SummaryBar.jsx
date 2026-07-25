@@ -16,7 +16,7 @@ import {
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import { HashLink as Link } from 'react-router-hash-link';
-import './SummaryBar.module.css';
+import styles from './SummaryBar.module.css';
 import { ENDPOINTS, ApiEndpoint } from '~/utils/URL';
 import axios from 'axios';
 import hasPermission from '~/utils/permissions';
@@ -453,8 +453,7 @@ function SummaryBar(props) {
             <div className="d-flex justify-content-center">
               <button
                 onClick={props.toggleSubmitForm}
-                className="summary-toggle large_text_summary text-danger"
-                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                className={`summary-toggle large_text_summary text-danger ${styles.btnReset}`}
                 aria-label="Toggle submit form"
                 type="button"
               >
@@ -477,8 +476,7 @@ function SummaryBar(props) {
         <div className="d-flex justify-content-center">
           <button
             onClick={props.toggleSubmitForm}
-            className="text-center large_text_summary summary-toggle"
-            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+            className={`text-center large_text_summary summary-toggle ${styles.btnReset}`}
             aria-label="Toggle submit form"
             type="button"
           >
@@ -638,7 +636,7 @@ function SummaryBar(props) {
               {isAuthUser || canEditData() ? (
                 <button
                   onClick={onTaskClick}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                  className={styles.btnReset}
                   aria-label="Task"
                   type="button"
                 >
@@ -656,7 +654,7 @@ function SummaryBar(props) {
               {isAuthUser || canEditData() ? (
                 <button
                   onClick={onBadgeClick}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                  className={styles.btnReset}
                   aria-label="Badge"
                   type="button"
                 >
@@ -689,7 +687,7 @@ function SummaryBar(props) {
               {isAuthUser || canEditData() ? (
                 <button
                   onClick={openReport}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                  className={styles.btnReset}
                   aria-label="Open Report"
                   type="button"
                 >
@@ -704,7 +702,7 @@ function SummaryBar(props) {
               {isAuthUser || canEditData() ? (
                 <button
                   onClick={openSuggestionModal}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                  className={styles.btnReset}
                   aria-label="Open Suggestions"
                   type="button"
                 >

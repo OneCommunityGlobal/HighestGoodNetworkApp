@@ -9,7 +9,6 @@ function Logout({ setLogoutPopup, open }) {
   const history = useHistory();
   const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
-  const redirect = useHistory();
 
   const closePopup = () => {
     setLogoutPopup(false);

@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef, useId } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import userProfileStyles from './UserProfile.module.css';
 import {
   Row,
   Input,
-  Col,
   Container,
   TabContent,
   TabPane,
@@ -56,7 +56,7 @@ import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 import { connect, useDispatch, useSelector } from 'react-redux';
-import { convertDateFormatToMMMDDYY, formatDateLocal } from '~/utils/formatDate';
+import { formatDateLocal } from '~/utils/formatDate';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
 import { toast } from 'react-toastify';
@@ -73,9 +73,8 @@ import {
   getTimeEndDateEntriesByPeriod,
   getTimeStartDateEntriesByPeriod,
 } from '../../actions/timeEntries.js';
-import ProfileImageModal from './UserProfileModal/suggestedProfileModal';
 import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
-import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from '~/utils/formatDate.js';
+import { formatDateYYYYMMDD } from '~/utils/formatDate.js';
 
 function UserProfile(props) {
   const history = useHistory();
@@ -124,8 +123,6 @@ function UserProfile(props) {
   const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
   const [isRehireable, setIsRehireable] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [didLinkUpdate, setDidLinkUpdate] = useState(false);
-  // Function to toggle the modal
   const toggleModal = () => setIsModalOpen(!isModalOpen);
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const toggleRemoveModal = () => setIsRemoveModalOpen(!isRemoveModalOpen);
@@ -410,10 +407,10 @@ function UserProfile(props) {
       const leaderBoardData = response.data;
       const allSummaries = [];
 
-      for (let i = 0; i < leaderBoardData.length; i++) {
+      for (const entry of leaderBoardData) {
         allSummaries.push({
-          value: [leaderBoardData[i].name, leaderBoardData[i].personId],
-          label: `View ${leaderBoardData[i].name}'s summary.`,
+          value: [entry.name, entry.personId],
+          label: `View ${entry.name}'s summary.`,
         });
       }
       setSummaries(allSummaries);
@@ -452,7 +449,7 @@ function UserProfile(props) {
       return tasksWithoutTheUpdated;
     });
 
-    if (updatedTasks.findIndex(task => task.taskId === taskId) !== -1) {
+    if (updatedTasks.some(task => task.taskId === taskId)) {
       const taskIndex = updatedTasks.findIndex(task => task.taskId === taskId);
       const tasksToUpdate = updatedTasks;
       tasksToUpdate.splice(taskIndex, 1);
@@ -466,7 +463,7 @@ function UserProfile(props) {
   const handleImageUpload = async evt => {
     if (evt) evt.preventDefault();
     const file = evt.target.files[0];
-    if (typeof file !== 'undefined') {
+    if (file !== undefined) {
       const filesizeKB = file.size / 1024;
       const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
       const allowedTypesString = `File type not permitted. Allowed types are ${allowedTypes
@@ -575,7 +572,7 @@ function UserProfile(props) {
         });
       }
     } else if (operation === 'update') {
-      const currentBlueSquares = [...userProfile?.infringements] || [];
+      const currentBlueSquares = [...(userProfile?.infringements ?? [])];
       if (dateStamp != null && currentBlueSquares.length !== 0) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
       }
@@ -594,7 +591,7 @@ function UserProfile(props) {
       setUserProfile({ ...userProfile, infringements: currentBlueSquares });
       setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
     } else if (operation === 'delete') {
-      let newInfringements = [...userProfile?.infringements] || [];
+      let newInfringements = [...(userProfile?.infringements ?? [])];
       if (newInfringements.length !== 0) {
         newInfringements = newInfringements.filter(infringement => infringement._id !== id);
         await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id)).catch(error => {
@@ -614,7 +611,7 @@ function UserProfile(props) {
       axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
     try {
-      const result = await props.updateUserProfile(userProfileRef.current);
+      await props.updateUserProfile(userProfileRef.current);
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
         await props.refreshToken(userProfile._id);
       }
@@ -622,7 +619,7 @@ function UserProfile(props) {
       await loadUserTasks();
       setSaved(false);
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.error) {
+      if (err.response?.data?.error) {
         const errorMessage = err.response.data.error.join('\n');
         alert(errorMessage);
       }
@@ -841,11 +838,14 @@ function UserProfile(props) {
   const canSeeReports = props.hasPermission('getReports');
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
 
-  const canEditUserProfile = targetIsDevAdminUneditable
-    ? false
-    : userProfile.role === 'Owner'
-    ? canAddDeleteEditOwners
-    : canPutUserProfile;
+  let canEditUserProfile;
+  if (targetIsDevAdminUneditable) {
+    canEditUserProfile = false;
+  } else if (userProfile.role === 'Owner') {
+    canEditUserProfile = canAddDeleteEditOwners;
+  } else {
+    canEditUserProfile = canPutUserProfile;
+  }
 
   const canEdit = canEditUserProfile || isUserSelf;
 
@@ -876,20 +876,7 @@ function UserProfile(props) {
     setUserEndDate(endDate);
   };
 
-  const startDateValidation = (createdDate, startDate) => {
-    // console.log("userProfile:createdDate, startDate", createdDate, startDate === '' ? "EMPTY" : startDate);
-    return startDate === ''
-      ? false
-      : createdDate < CREATED_DATE_CRITERIA || createdDate <= startDate;
-  };
 
-  const endDateValidation = (startDate, endDate) => {
-    // console.log("userProfile:startDate, endDate", startDate === '' ? "EMPTY" : startDate, endDate === '' ? "EMPTY" : endDate );
-    return endDate ? startDate <= endDate : true;
-  };
-
-  const isStartDateValid = startDateValidation(userProfile.createdDate, userProfile.startDate);
-  const isEndDateValid = endDateValidation(userProfile.startDate, userProfile.endDate);
 
   return (
     <div className={darkMode ? 'bg-oxford-blue' : ''} style={{ minHeight: '100%' }}>
@@ -950,9 +937,7 @@ function UserProfile(props) {
                 src={profilePic && profilePic.trim().length > 0 ? profilePic : '/pfp-default.png'}
                 alt="Profile Picture"
                 roundedCircle
-                className="profilePicture bg-white"
-                // this line below should fix the image formatting issue
-                style={profilePic ? {} : { width: '240px', height: '240px' }}
+                className={`profilePicture bg-white${profilePic ? '' : ` ${userProfileStyles.profilePicPlaceholder}`}`}
               />
               {canEdit ? (
                 <div
@@ -961,7 +946,7 @@ function UserProfile(props) {
                 >
                   Change Photo
                   <Input
-                    style={{ width: '100%', height: '100%', zIndex: '2', cursor: 'pointer' }}
+                    className={userProfileStyles.fileInput}
                     type="file"
                     name="newProfilePic"
                     id="newProfilePic"
@@ -972,7 +957,7 @@ function UserProfile(props) {
               ) : null}
             </div>
             <div
-              style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px' }}
+              className={userProfileStyles.profileButtonRow}
             >
               {userProfile?.profilePic !== undefined ? (
                 <Button color="danger" onClick={toggleRemoveModal} className="remove-button">
@@ -1031,7 +1016,7 @@ function UserProfile(props) {
               <h5
                 className={`mr-2 ${darkMode ? 'text-light' : ''}`}
               >{`${firstName} ${lastName}`}</h5>
-              <div style={{ marginTop: '6px' }}>
+              <div className={userProfileStyles.infoIconWrapper}>
                 <EditableInfoModal
                   areaName="UserProfileInfoModal"
                   areaTitle="User Profile"
@@ -1060,9 +1045,8 @@ function UserProfile(props) {
                 <span className="mr-2">
                   <i
                     data-toggle="tooltip"
-                    className="fa fa-clock-o"
+                    className={`fa fa-clock-o ${userProfileStyles.profileIcon}`}
                     aria-hidden="true"
-                    style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
                     title="Click to see user's timelog"
                     onClick={e => {
                       if (e.metaKey || e.ctrlKey) {
@@ -1079,8 +1063,7 @@ function UserProfile(props) {
               {canSeeReports && (
                 <span className="mr-2">
                   <Link
-                    className="team-member-tasks-user-report-link"
-                    style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
+                    className={`team-member-tasks-user-report-link ${userProfileStyles.profileIcon}`}
                     to={`/peoplereport/${userProfile._id}`}
                   >
                     <img
@@ -1094,9 +1077,8 @@ function UserProfile(props) {
               {canChangeRehireableStatus && (
                 <span className="mr-2">
                   <i
-                    className={isRehireable ? 'fa fa-check-square-o' : 'fa fa-square-o'}
+                    className={`${isRehireable ? 'fa fa-check-square-o' : 'fa fa-square-o'} ${userProfileStyles.profileIcon}`}
                     aria-hidden="true"
-                    style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
                     title="Click to change rehirable status"
                     onClick={handleRehireableChange}
                   />
@@ -1417,10 +1399,8 @@ function UserProfile(props) {
                     darkMode={darkMode}
                   />
                   {activeTab !== '3' && (
-                    <span
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={() => {}}
+                    <button
+                      type="button"
                       onClick={() => {
                         setUserProfile(originalUserProfile);
                         setTasks(originalTasks);
@@ -1432,7 +1412,7 @@ function UserProfile(props) {
                       style={darkMode ? boxStyleDark : boxStyle}
                     >
                       Cancel
-                    </span>
+                    </button>
                   )}
                 </>
               )}
@@ -1550,10 +1530,8 @@ function UserProfile(props) {
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
                           />
-                          <span
-                            role="button"
-                            tabIndex={0}
-                            onKeyDown={() => {}}
+                          <button
+                            type="button"
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
@@ -1565,7 +1543,7 @@ function UserProfile(props) {
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
-                          </span>
+                          </button>
                         </>
                       )}
                       <Button
@@ -1630,10 +1608,8 @@ function UserProfile(props) {
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
                           />
-                          <span
-                            role="button"
-                            tabIndex={0}
-                            onKeyDown={() => {}}
+                          <button
+                            type="button"
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
@@ -1645,7 +1621,7 @@ function UserProfile(props) {
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
-                          </span>
+                          </button>
                         </>
                       )}
                       <Button
@@ -1728,10 +1704,8 @@ function UserProfile(props) {
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
                           />
-                          <span
-                            role="button"
-                            tabIndex={0}
-                            onKeyDown={() => {}}
+                          <button
+                            type="button"
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
@@ -1743,7 +1717,7 @@ function UserProfile(props) {
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
-                          </span>
+                          </button>
                         </>
                       )}
                       <Button
@@ -1816,10 +1790,8 @@ function UserProfile(props) {
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
                           />
-                          <span
-                            role="button"
-                            tabIndex={0}
-                            onKeyDown={() => {}}
+                          <button
+                            type="button"
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
@@ -1831,7 +1803,7 @@ function UserProfile(props) {
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
-                          </span>
+                          </button>
                         </>
                       )}
                       <Button
@@ -1891,10 +1863,8 @@ function UserProfile(props) {
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
                           />
-                          <span
-                            role="button"
-                            tabIndex={0}
-                            onKeyDown={() => {}}
+                          <button
+                            type="button"
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
@@ -1906,7 +1876,7 @@ function UserProfile(props) {
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
-                          </span>
+                          </button>
                         </>
                       )}
                       <Button

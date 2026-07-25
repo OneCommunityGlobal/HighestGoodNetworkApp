@@ -76,7 +76,7 @@ function NotificationCard({ notification }) {
     >
       <Card
         color="primary"
-        className={`${styles.notificationCard}${fade ? ` ${styles.fade}` : ''}`}
+        className={[styles.notificationCard, fade ? styles.fade : ''].filter(Boolean).join(' ')}
         onAnimationEnd={() => setFade(false)}
         inverse
       >
