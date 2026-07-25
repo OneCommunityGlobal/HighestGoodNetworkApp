@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -9,6 +9,7 @@ import styles from './RescheduleEvent.module.css';
 
 function RescheduleEvent({ activity }) {
   const { activityId: routeActivityId } = useParams();
+  const history = useHistory();
   const activityId = activity?._id || routeActivityId;
 
   const eventInfo = activity || {
@@ -20,7 +21,6 @@ function RescheduleEvent({ activity }) {
 
   const darkMode = useSelector(state => state.theme?.darkMode);
 
-  const [showModal, setShowModal] = useState(true);
   const [confirmStep, setConfirmStep] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -29,16 +29,16 @@ function RescheduleEvent({ activity }) {
   const [options, setOptions] = useState([]);
 
   useEffect(() => {
-    if (showModal) window.scrollTo(0, 0);
-  }, [showModal]);
+    window.scrollTo(0, 0);
+  }, []);
 
   const closeModal = () => {
-    setShowModal(false);
     setConfirmStep(false);
     setSelectedDate(null);
     setSelectedTime('');
     setReason('');
     setOptions([]);
+    history.push('/communityportal/activities');
   };
 
   const formatTime = hour24 => {
@@ -162,8 +162,6 @@ function RescheduleEvent({ activity }) {
     }
   };
 
-  if (!showModal) return null;
-
   return (
     <RescheduleModal
       darkMode={darkMode}
@@ -217,16 +215,25 @@ function RescheduleModal(props) {
         <div className={styles.muted}>{eventInfo.location}</div>
       </div>
 
-      <button
-        type="button"
+      <div
         className={`${styles.modalBackdrop} ${darkMode ? styles.modalBackdropDark : ''}`}
-        onClick={e => e.target === e.currentTarget && closeModal()}
+        role="presentation"
+        onClick={e => {
+          if (e.target === e.currentTarget) closeModal();
+        }}
+        onKeyDown={e => {
+          if (e.key === 'Escape') closeModal();
+        }}
       >
         <dialog
           className={`${styles.modalContent} ${darkMode ? styles.modalContentDark : ''}`}
           aria-modal="true"
           aria-labelledby="reschedule-title"
           open
+          onCancel={e => {
+            e.preventDefault();
+            closeModal();
+          }}
         >
           <button
             type="button"
@@ -341,7 +348,7 @@ function RescheduleModal(props) {
             </>
           )}
         </dialog>
-      </button>
+      </div>
     </div>
   );
 }
