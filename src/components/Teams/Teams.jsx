@@ -31,7 +31,6 @@ import DeleteTeamPopup from './DeleteTeamPopup';
 import TeamStatusPopup from './TeamStatusPopup';
 import AddTeamPopup from '../UserProfile/TeamsAndProjects/AddTeamPopup';
 import CreateNewTeamPopup from './CreateNewTeamPopup';
-import styles from './Team.module.css';
 // constants
 const FILTER_ALL = 'all';
 const FILTER_ACTIVE = 'active';
