@@ -740,13 +740,13 @@ export const ENDPOINTS = {
   FEEDBACK_CLOSE_PERMANENTLY: `${APIEndpoint}/feedback/close-permanently`,
   FEEDBACK_SUBMIT: `${APIEndpoint}/feedback/submit`,
   // application time analytics
-  APPLICATION_TIME_DATA: (startDate, endDate, roles) => {
+  APPLICATION_TIME_DATA: (startDate, roles) => {
     let url = `${APIEndpoint}/analytics/application-time?`;
     if (startDate) url += `startDate=${encodeURIComponent(startDate)}&`;
-    if (endDate) url += `endDate=${encodeURIComponent(endDate)}&`;
-    if (roles && roles.length > 0) url += `roles=${encodeURIComponent(roles.join(','))}&`;
-    return url.slice(0, -1);
+    if (roles && roles.length > 0) url += `roles=${encodeURIComponent(roles.join(','))}`;
+    return url.slice(0);
   },
+  APPLICATION_TIME_DATA_ROLES: `${APIEndpoint}/analytics/application-time/roles`,
 };
 
 export const ApiEndpoint = APIEndpoint;
