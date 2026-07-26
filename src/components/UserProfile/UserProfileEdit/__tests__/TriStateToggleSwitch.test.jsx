@@ -85,7 +85,7 @@ describe('TriStateToggleSwitch Component', () => {
     const { container } = render(<TriStateToggleSwitch pos="requested" />);
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const options = container.querySelectorAll('.knob-area button');
-    expect(options.length).toBe(3);
+    expect(options).toHaveLength(3);
   });
 
   it('wrapper always includes the toggle-switch class', () => {
@@ -100,18 +100,18 @@ describe('TriStateToggleSwitch Component', () => {
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const wrapper = container.querySelector('.toggle-switch');
     
-    expect(wrapper.classList.length).toBe(2);
+    expect(wrapper.classList).toHaveLength(2);
     expect(wrapper.classList.contains('toggle-switch')).toBe(true);
     expect(wrapper.classList.contains('bg-darkgray')).toBe(true);
 
     
     rerender(<TriStateToggleSwitch pos="posted" />);
-    expect(wrapper.classList.length).toBe(2);
+    expect(wrapper.classList).toHaveLength(2);
     expect(wrapper.classList.contains('bg-blue')).toBe(true);
 
     
     rerender(<TriStateToggleSwitch pos="requested" />);
-    expect(wrapper.classList.length).toBe(2);
+    expect(wrapper.classList).toHaveLength(2);
     expect(wrapper.classList.contains('bg-green')).toBe(true);
   });
 
