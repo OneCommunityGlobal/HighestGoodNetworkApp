@@ -19,7 +19,6 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-// these colors can be randomly generated once more projects are shared here. Colors generated from ChatGPT
 const PROJECT_COLORS = [
   { borderColor: 'rgb(53, 162, 235)', backgroundColor: 'rgba(53, 162, 235, 0.5)' },
   { borderColor: 'rgb(255, 99, 132)', backgroundColor: 'rgba(255, 99, 132, 0.5)' },
@@ -52,8 +51,6 @@ const CHART_COLORS = {
 };
 
 const FILTER_ALL = 'All';
-
-/* ---------- helper functions to keep processChartData simple ---------- */
 
 const filterRentalData = (data, selectedProject, selectedTool, dateRange) =>
   data.filter(item => {
@@ -88,7 +85,14 @@ const buildMonthsRange = dateRange => {
   return { labels, monthsInRange, totalMonths };
 };
 
-const aggregateDataByGroup = (filteredData, monthsInRange, totalMonths, groupBy, chartType) => {
+const aggregateDataByGroup = (
+  filteredData,
+  monthsInRange,
+  totalMonths,
+  groupBy,
+  chartType,
+  projMap,
+) => {
   const groupMap = new Map();
 
   for (const item of filteredData) {
@@ -108,8 +112,17 @@ const aggregateDataByGroup = (filteredData, monthsInRange, totalMonths, groupBy,
         : item.rentalCost;
 
     if (!groupMap.has(groupKey)) {
+      let projectName = item.toolName;
+      if (groupBy === 'project') {
+        projectName =
+          projMap instanceof Map && projMap.has(groupKey)
+            ? projMap.get(groupKey)
+            : `Project ${groupKey.substring(0, 8)}...`;
+      }
+
       groupMap.set(groupKey, {
         key: groupKey,
+        name: projectName,
         dataPoints: new Array(totalMonths).fill(undefined),
         monthsWithData: new Set(),
       });
@@ -129,10 +142,9 @@ const aggregateDataByGroup = (filteredData, monthsInRange, totalMonths, groupBy,
 const buildDatasetsFromGroupMap = (groupMap, groupBy) =>
   Array.from(groupMap.values()).map((group, index) => {
     const colorIndex = index % PROJECT_COLORS.length;
-    const label = groupBy === 'project' ? `Project ${group.key.substring(0, 8)}...` : group.key;
 
     return {
-      label,
+      label: group.name,
       data: group.dataPoints,
       borderColor: PROJECT_COLORS[colorIndex].borderColor,
       backgroundColor: PROJECT_COLORS[colorIndex].backgroundColor,
@@ -146,14 +158,14 @@ const buildDatasetsFromGroupMap = (groupMap, groupBy) =>
   });
 
 const getDatalabelAnchor = ctx => {
-  if (ctx.datasetIndex === 0) return 'end'; // right
-  if (ctx.datasetIndex === 1) return 'start'; // left
-  return 'center'; // 3rd stays centered if any
+  if (ctx.datasetIndex === 0) return 'end';
+  if (ctx.datasetIndex === 1) return 'start';
+  return 'center';
 };
 
 const getDatalabelAlign = ctx => {
-  if (ctx.datasetIndex === 0) return 'bottom'; // slightly below
-  if (ctx.datasetIndex === 1) return 'top'; // slightly above
+  if (ctx.datasetIndex === 0) return 'bottom';
+  if (ctx.datasetIndex === 1) return 'top';
   return 'top';
 };
 
@@ -167,19 +179,21 @@ const getDatalabelFormatter = (value, chartType) => {
 
 const formatDate = date => `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
 
-const buildChartTitle = (groupBy, selectedProject, selectedTool, dateRange) => {
+const buildChartTitle = (groupBy, selectedProject, selectedTool, dateRange, availableProjects) => {
   let title = 'Rental Costs';
 
   if (groupBy === 'project') {
     title += ' by Project';
     if (selectedProject !== 'All') {
-      // (Or use FILTER_ALL if you added that constant!)
-      title = `Rental Costs for Project ${selectedProject.substring(0, 8)}...`;
+      const projectName =
+        availableProjects instanceof Map && availableProjects.has(selectedProject)
+          ? availableProjects.get(selectedProject)
+          : `Project ${selectedProject.substring(0, 8)}...`;
+      title = `Rental Costs for ${projectName}`;
     }
   } else {
     title += ' by Tool Type';
     if (selectedTool !== 'All') {
-      // (Or use FILTER_ALL here too)
       title = `Rental Costs for ${selectedTool}`;
     }
   }
@@ -187,8 +201,6 @@ const buildChartTitle = (groupBy, selectedProject, selectedTool, dateRange) => {
   title += ` (${formatDate(dateRange.startDate)} - ${formatDate(dateRange.endDate)})`;
   return title;
 };
-
-/* ---------------------------------------------------------------------- */
 
 export default function RentalChart() {
   const chartRef = useRef(null);
@@ -209,11 +221,11 @@ export default function RentalChart() {
     endDate: new Date(2024, 11, 31),
   });
 
-  const [availableProjects, setAvailableProjects] = useState([]);
+  const [availableProjects, setAvailableProjects] = useState(new Map());
   const [availableTools, setAvailableTools] = useState([]);
   const [rawData, setRawData] = useState([]);
 
-  const processChartData = data => {
+  const processChartData = (data, projMap) => {
     const filteredData = filterRentalData(data, selectedProject, selectedTool, dateRange);
     const { labels, monthsInRange, totalMonths } = buildMonthsRange(dateRange);
     const groupMap = aggregateDataByGroup(
@@ -222,6 +234,7 @@ export default function RentalChart() {
       totalMonths,
       groupBy,
       chartType,
+      projMap,
     );
     const datasets = buildDatasetsFromGroupMap(groupMap, groupBy);
 
@@ -232,18 +245,48 @@ export default function RentalChart() {
     const fetchRentalData = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(ENDPOINTS.BM_RENTAL_CHART);
-        if (response.data.success) {
-          const { data } = response.data;
-          setRawData(data);
+        const headers = { Authorization: localStorage.getItem('token') };
+        const [rentalResponse, projectsResponse] = await Promise.allSettled([
+          axios.get(ENDPOINTS.BM_RENTAL_CHART),
+          axios.get(ENDPOINTS.BM_TOOLS_RETURNED_LATE_PROJECTS, { headers }),
+        ]);
 
-          const projectIds = [...new Set(data.map(item => item.projectId))];
-          setAvailableProjects(projectIds);
+        if (rentalResponse.status === 'fulfilled' && rentalResponse.value.data.success) {
+          const { data } = rentalResponse.value.data;
+
+          // Build a dictionary of Project IDs -> Names
+          const projectMap = new Map();
+          if (projectsResponse.status === 'fulfilled') {
+            let pData = projectsResponse.value.data;
+            if (pData && !Array.isArray(pData)) pData = pData.data || pData.results || [];
+
+            if (Array.isArray(pData)) {
+              pData.forEach(p => {
+                const pId = p.projectId || p._id;
+                const pName = p.projectName || p.name;
+                if (pId && pName) {
+                  projectMap.set(pId, pName);
+                }
+              });
+            }
+          }
+
+          data.forEach(item => {
+            if (item.projectId && !projectMap.has(item.projectId)) {
+              projectMap.set(
+                item.projectId,
+                item.projectName || `Project ${item.projectId.substring(0, 8)}...`,
+              );
+            }
+          });
+
+          setAvailableProjects(projectMap);
+          setRawData(data);
 
           const toolNames = [...new Set(data.map(item => item.toolName))];
           setAvailableTools(toolNames);
 
-          processChartData(data);
+          processChartData(data, projectMap);
         } else {
           setError('Failed to fetch data');
         }
@@ -258,15 +301,13 @@ export default function RentalChart() {
     };
 
     fetchRentalData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (rawData.length > 0) {
-      processChartData(rawData);
+      processChartData(rawData, availableProjects);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chartType, selectedProject, selectedTool, dateRange, groupBy, rawData]);
+  }, [chartType, selectedProject, selectedTool, dateRange, groupBy, rawData, availableProjects]);
 
   const options = useMemo(() => {
     const textColor = darkMode ? '#ffffff' : '#000000';
@@ -288,7 +329,13 @@ export default function RentalChart() {
         },
         title: {
           display: true,
-          text: buildChartTitle(groupBy, selectedProject, selectedTool, dateRange),
+          text: buildChartTitle(
+            groupBy,
+            selectedProject,
+            selectedTool,
+            dateRange,
+            availableProjects,
+          ),
           font: {
             size: 14,
           },
@@ -352,7 +399,7 @@ export default function RentalChart() {
         },
       },
     };
-  }, [darkMode, chartType, dateRange, selectedProject, selectedTool]);
+  }, [darkMode, chartType, dateRange, selectedProject, selectedTool, availableProjects, groupBy]);
 
   const handleTypeChange = e => {
     setChartType(e.target.value);
@@ -450,9 +497,9 @@ export default function RentalChart() {
               }`}
             >
               <option value="All">All Projects</option>
-              {availableProjects.map(projectId => (
-                <option key={projectId} value={projectId}>
-                  Project {projectId.substring(0, 8)}...
+              {Array.from(availableProjects.entries()).map(([id, name]) => (
+                <option key={id} value={id}>
+                  {name}
                 </option>
               ))}
             </select>

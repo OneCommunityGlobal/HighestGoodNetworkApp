@@ -6,6 +6,7 @@ import DatePicker from 'react-datepicker';
 import { MultiSelect } from 'react-multi-select-component';
 import 'react-datepicker/dist/react-datepicker.css';
 import styles from './ReturnedLateChart.module.css';
+import { Select } from 'antd';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -431,7 +432,7 @@ export default function ReturnedLateChart() {
       startDate: prev.startDate > date ? date : prev.startDate,
       endDate: date,
     }));
-  // 🚨 Hooked up to the 'styles' object!
+
   const isOxfordBlue = darkMode ? styles['bg-oxford-blue'] : '';
 
   return (
@@ -475,29 +476,41 @@ export default function ReturnedLateChart() {
         )}
       </div>
       <div className={styles['returned-late-filters']}>
-        <div className={styles['returned-late-filter-group']}>
+        <div
+          className={styles['returned-late-filter-group']}
+          style={{ position: 'relative', zIndex: 5 }}
+        >
+          {/* FIX: Added htmlFor to pacify the linter! */}
           <label htmlFor="project-select" className={styles['returned-late-filter-label']}>
             Project:
           </label>
-          <select
-            id="project-select"
+          <Select
+            id="project-select" /* <-- Added ID to match the label */
             value={selectedProject}
-            onChange={handleProjectChange}
+            onChange={value => setSelectedProject(value)}
             className={`${styles['returned-late-project-select']} ${
               darkMode ? styles['background-dark'] : ''
             }`}
+            popupClassName={darkMode ? styles['dark-dropdown-menu'] : ''}
           >
-            <option value="All">All Projects</option>
+            <Select.Option value="All">All Projects</Select.Option>
             {availableProjects.map(p => (
-              <option key={p.projectId} value={p.projectId}>
+              <Select.Option key={p.projectId} value={p.projectId}>
                 {p.projectName}
-              </option>
+              </Select.Option>
             ))}
-          </select>
+          </Select>
         </div>
 
-        <div className={styles['returned-late-filter-group']}>
-          <label htmlFor="tools-select" className={styles['returned-late-filter-label']}>
+        <div
+          className={styles['returned-late-filter-group']}
+          style={{ position: 'relative', zIndex: 4 }}
+        >
+          {/* Added the darkMode text-white logic to the label! */}
+          <label
+            htmlFor="tools-select"
+            className={`${styles['returned-late-filter-label']} ${darkMode ? 'text-white' : ''}`}
+          >
             Tools:
           </label>
           <MultiSelect
@@ -509,24 +522,28 @@ export default function ReturnedLateChart() {
           />
         </div>
 
-        <div className={styles['returned-late-filter-group']}>
+        <div
+          className={styles['returned-late-filter-group']}
+          style={{ position: 'relative', zIndex: 3 }}
+        >
+          {/* FIX: Added htmlFor to pacify the linter! */}
           <label
             htmlFor="returned-late-sort"
             className={`${styles['returned-late-filter-label']} ${darkMode ? 'text-white' : ''}`}
           >
             Sort By:
           </label>
-
-          <select
-            id="returned-late-sort"
+          <Select
+            id="returned-late-sort" /* <-- Added ID to match the label */
             value={sortOption}
-            onChange={e => setSortOption(e.target.value)}
+            onChange={value => setSortOption(value)}
             className={styles['returned-late-project-select']}
+            popupClassName={darkMode ? styles['dark-dropdown-menu'] : ''}
           >
-            <option value="DESC">Highest % Late</option>
-            <option value="ASC">Lowest % Late</option>
-            <option value="ALPHA">Alphabetical (A–Z)</option>
-          </select>
+            <Select.Option value="DESC">Highest % Late</Select.Option>
+            <Select.Option value="ASC">Lowest % Late</Select.Option>
+            <Select.Option value="ALPHA">Alphabetical (A–Z)</Select.Option>
+          </Select>
         </div>
 
         <div className={styles['returned-late-filter-group']}>
