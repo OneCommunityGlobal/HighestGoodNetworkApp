@@ -624,7 +624,6 @@ function TotalOrgSummary(props) {
           onCancel={() => setShowDatePicker(false)}
           onApply={handleDatePickerSubmit}
         />
-
         <hr />
         <AccordianWrapper title="Volunteer Status">
           <Row>
@@ -907,6 +906,7 @@ function TotalOrgSummary(props) {
                   usersInTeamStats={volunteerStats?.usersInTeamStats}
                   endDate={currentToDate}
                   comparisonType={selectedComparison}
+                  darkMode={darkMode}
                 />
               </div>
             </Col>

@@ -43,6 +43,7 @@ function LBDashboardHeader(props) {
               )}
             >
               <h2>WELCOME {authUser?.name || 'USER_NAME'}</h2>
+
               <div className={itemStyles.item__icons}>
                 <Nav className="ml-auto">
                   <ThemeIconToggle
@@ -53,6 +54,7 @@ function LBDashboardHeader(props) {
                     )} ${itemStyles.item__themeIconBtn}`}
                     iconClassName={itemStyles['item__nav-icon']}
                   />
+
                   <Nav.Link
                     as={Link}
                     to="/lbdashboard/messaging"
@@ -64,6 +66,7 @@ function LBDashboardHeader(props) {
                   >
                     <BsChat className={itemStyles['item__nav-icon']} />
                   </Nav.Link>
+
                   <Nav.Link
                     as={Link}
                     to="/lbdashboard/bidding"
@@ -75,6 +78,7 @@ function LBDashboardHeader(props) {
                   >
                     <IoNotificationsOutline className={itemStyles['item__nav-icon']} />
                   </Nav.Link>
+
                   <Nav.Link
                     as={Link}
                     to={getUserProfilePath(authUser)}
