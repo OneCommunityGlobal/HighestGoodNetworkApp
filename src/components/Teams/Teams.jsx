@@ -31,6 +31,7 @@ import DeleteTeamPopup from './DeleteTeamPopup';
 import TeamStatusPopup from './TeamStatusPopup';
 import AddTeamPopup from '../UserProfile/TeamsAndProjects/AddTeamPopup';
 import CreateNewTeamPopup from './CreateNewTeamPopup';
+import styles from './Team.module.css';
 // constants
 const FILTER_ALL = 'all';
 const FILTER_ACTIVE = 'active';
@@ -242,15 +243,32 @@ class Teams extends React.PureComponent {
     }
 
     if (this.state.teams.length === 0) {
+      const { wildCardSearchText } = this.state;
       return (
         <div
           className={`d-flex justify-content-center align-items-center py-5 ${
             darkMode ? 'dark-mode' : ''
           }`}
         >
-          <h1 className="warning-text">
-            <strong>Team Not Found</strong>
-          </h1>
+          {wildCardSearchText ? (
+            <div className={styles.teamNotFoundContainer}>
+              <p className={darkMode ? 'text-light' : 'text-dark'}>
+                No team found matching &quot;{wildCardSearchText}&quot;, but you can create it by
+                clicking the button below.
+              </p>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={this.onCreateNewTeamFromSearch}
+              >
+                Create Team
+              </button>
+            </div>
+          ) : (
+            <h1 className="warning-text">
+              <strong>Team Not Found</strong>
+            </h1>
+          )}
         </div>
       );
     }
@@ -364,6 +382,7 @@ class Teams extends React.PureComponent {
           open={this.state.createNewTeamPopupOpen}
           onClose={this.onCreateNewTeamPopupClose}
           onOkClick={this.onCreateNewTeamOkClick}
+          teamName={this.state.createNewTeamName}
         />
       </>
     );
@@ -441,11 +460,18 @@ class Teams extends React.PureComponent {
   };
 
   onCreateNewTeamShow = () => {
-    this.setState({ createNewTeamPopupOpen: true });
+    this.setState({ createNewTeamPopupOpen: true, createNewTeamName: '' });
+  };
+
+  onCreateNewTeamFromSearch = () => {
+    this.setState(prevState => ({
+      createNewTeamPopupOpen: true,
+      createNewTeamName: prevState.wildCardSearchText,
+    }));
   };
 
   onCreateNewTeamPopupClose = () => {
-    this.setState({ createNewTeamPopupOpen: false });
+    this.setState({ createNewTeamPopupOpen: false, createNewTeamName: '' });
   };
 
   onCreateNewTeamOkClick = async teamName => {
