@@ -1,0 +1,213 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 60%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.modalLight,
+.modalDark {
+  padding: 28px;
+  width: 440px;
+  max-width: calc(100vw - 32px);
+  border-radius: 12px;
+  position: relative;
+  animation: modal-pop 0.25s ease-out;
+  box-shadow: 0 22px 60px rgb(15 23 42 / 32%);
+  outline: none;
+}
+
+.modalLight {
+  background: #fff;
+  color: #111827;
+}
+
+.modalDark {
+  background: #111827;
+  color: #f9fafb;
+  border: 1px solid #334155;
+}
+
+@keyframes modal-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.closeBtn {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.heading {
+  text-align: center;
+  font-size: 22px;
+  margin-bottom: 14px;
+  font-weight: 600;
+}
+
+.starContainer {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 15px 0;
+}
+
+.starWrapper {
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.starWrapper:hover {
+  transform: scale(1.2);
+}
+
+.starFilled,
+.starEmpty {
+  width: 40px;
+  height: 40px;
+}
+
+.starFilled {
+  fill: #ffb400;
+  stroke: #ffb400;
+}
+
+.starEmpty {
+  fill: transparent;
+  stroke: #6b7280;
+}
+
+.modalDark .starEmpty {
+  stroke: #cbd5e1;
+}
+
+.commentBox,
+.moreDetailsBox {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  color: inherit;
+}
+
+.commentBox {
+  min-height: 110px;
+  margin-bottom: 8px;
+}
+
+.moreDetailsBox {
+  min-height: 80px;
+  margin-bottom: 8px;
+}
+
+.modalDark .commentBox,
+.modalDark .moreDetailsBox {
+  background: #0f172a;
+  border-color: #64748b;
+  color: #f8fafc;
+}
+
+.modalDark .commentBox::placeholder,
+.modalDark .moreDetailsBox::placeholder {
+  color: #cbd5e1;
+}
+
+.charCount {
+  text-align: right;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.charCountWarning {
+  text-align: right;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ff4d4d;
+}
+
+.moreDetailsBtn {
+  border: none;
+  background: none;
+  color: #007bff;
+  cursor: pointer;
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.modalDark .moreDetailsBtn {
+  color: #93c5fd;
+}
+
+.error {
+  color: #b91c1c;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.modalDark .error {
+  color: #fca5a5;
+}
+
+.success {
+  background: #d4edda;
+  color: #155724;
+  padding: 10px;
+  border-radius: 6px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 12px;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.submitButton:hover {
+  background: #005fcc;
+}
+
+.submitButtonDisabled {
+  width: 100%;
+  padding: 12px;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  opacity: 0.4;
+  border-radius: 6px;
+  cursor: not-allowed;
+}
+
+.closeBtn:focus-visible,
+.starWrapper:focus-visible,
+.commentBox:focus,
+.moreDetailsBtn:focus-visible,
+.moreDetailsBox:focus,
+.submitButton:focus-visible,
+.submitButtonDisabled:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 2px;
+}

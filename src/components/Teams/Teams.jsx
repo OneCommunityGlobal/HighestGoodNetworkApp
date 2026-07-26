@@ -3,6 +3,7 @@
 /* eslint-disable react/sort-comp */
 import React from 'react';
 import PropTypes from 'prop-types';
+import styles from './Team.module.css';
 import { connect } from 'react-redux';
 import { Container } from 'reactstrap';
 import { toast } from 'react-toastify';
@@ -17,6 +18,7 @@ import {
   addTeamMember,
   updateTeamMemeberVisibility,
   clearTeamMembers,
+  postNewTeam,
 } from '../../actions/allTeamsAction';
 import { getAllUserProfile } from '../../actions/userManagement';
 import Loading from '../common/Loading';
@@ -28,6 +30,7 @@ import TeamMembersPopup from './TeamMembersPopup';
 import DeleteTeamPopup from './DeleteTeamPopup';
 import TeamStatusPopup from './TeamStatusPopup';
 import AddTeamPopup from '../UserProfile/TeamsAndProjects/AddTeamPopup';
+import CreateNewTeamPopup from './CreateNewTeamPopup';
 // constants
 const FILTER_ALL = 'all';
 const FILTER_ACTIVE = 'active';
@@ -53,6 +56,7 @@ class Teams extends React.PureComponent {
       selectedFilter: FILTER_ALL,
       // Features from HEAD
       addTeamPopupOpen: false,
+      createNewTeamPopupOpen: false,
       isEdit: false,
       membersFetching: false,
       selectedTeamMembers: [],
@@ -207,6 +211,7 @@ class Teams extends React.PureComponent {
               onActiveClick={() => this.setFilter(FILTER_ACTIVE)}
               onInactiveClick={() => this.setFilter(FILTER_INACTIVE)}
               selectedFilter={this.state.selectedFilter}
+              darkMode={darkMode}
             />
             <TeamTableSearchPanel
               onSearch={this.onWildCardSearch}
@@ -237,15 +242,32 @@ class Teams extends React.PureComponent {
     }
 
     if (this.state.teams.length === 0) {
+      const { wildCardSearchText } = this.state;
       return (
         <div
           className={`d-flex justify-content-center align-items-center py-5 ${
             darkMode ? 'dark-mode' : ''
           }`}
         >
-          <h1 className="warning-text">
-            <strong>Team Not Found</strong>
-          </h1>
+          {wildCardSearchText ? (
+            <div className={styles.teamNotFoundContainer}>
+              <p className={darkMode ? 'text-light' : 'text-dark'}>
+                No team found matching &quot;{wildCardSearchText}&quot;, but you can create it by
+                clicking the button below.
+              </p>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={this.onCreateNewTeamFromSearch}
+              >
+                Create Team
+              </button>
+            </div>
+          ) : (
+            <h1 className="warning-text">
+              <strong>Team Not Found</strong>
+            </h1>
+          )}
         </div>
       );
     }
@@ -253,7 +275,7 @@ class Teams extends React.PureComponent {
     return (
       <div className="table-responsive mt-3">
         <table className={tableClass}>
-          <thead>
+          <thead className={styles.teamsTableHead}>
             <TeamTableHeader
               onTeamNameSort={this.toggleTeamNameSort}
               onTeamActiveSort={this.toggleTeamActiveSort}
@@ -322,8 +344,7 @@ class Teams extends React.PureComponent {
               await this.props.getAllUserTeams();
               await this.props.getAllUserProfile();
             } catch (error) {
-              console.error('Error updating team list:', error);
-              toast.error('Error updating team list. Please refresh the page.');
+              toast.error(error?.message || 'Error updating team list. Please refresh the page.');
             }
           }}
           handleSubmit={() => {}}
@@ -356,6 +377,12 @@ class Teams extends React.PureComponent {
           onConfirmClick={this.onConfirmClick}
           selectedTeamCode={selectedTeamCode}
         />
+        <CreateNewTeamPopup
+          open={this.state.createNewTeamPopupOpen}
+          onClose={this.onCreateNewTeamPopupClose}
+          onOkClick={this.onCreateNewTeamOkClick}
+          teamName={this.state.createNewTeamName}
+        />
       </>
     );
   };
@@ -373,6 +400,7 @@ class Teams extends React.PureComponent {
     await this.props.updateTeamMemeberVisibility(this.state.selectedTeamId, userId, visibility);
     const freshMembers = await this.props.getTeamMembers(this.state.selectedTeamId);
     this.setState({ selectedTeamMembers: freshMembers || [] });
+    await this.props.getAllUserTeams();
   };
 
   // NOTE: Team component calls (id, name, code) and we open immediately
@@ -394,10 +422,14 @@ class Teams extends React.PureComponent {
 
   onTeamMembersPopupClose = () => {
     this.props.clearTeamMembers();
+    // Do NOT clear selectedTeamId here — setting it to undefined causes
+    // getTeamMembers(undefined) on the next toggle, which fires a 400 error
+    // and briefly wipes selectedTeamData, resetting all toggles to ON.
+    // selectedTeamId gets overwritten correctly when the next team is opened.
     this.setState({
-      selectedTeamId: undefined,
       selectedTeam: '',
       teamMembersPopupOpen: false,
+      selectedTeamMembers: [],
     });
   };
 
@@ -427,14 +459,33 @@ class Teams extends React.PureComponent {
   };
 
   onCreateNewTeamShow = () => {
-    this.setState({
-      addTeamPopupOpen: true,
-      isEdit: false,
-      selectedTeam: '',
-      selectedTeamId: undefined,
-      selectedTeamCode: '',
-      isActive: '',
-    });
+    this.setState({ createNewTeamPopupOpen: true, createNewTeamName: '' });
+  };
+
+  onCreateNewTeamFromSearch = () => {
+    this.setState(prevState => ({
+      createNewTeamPopupOpen: true,
+      createNewTeamName: prevState.wildCardSearchText,
+    }));
+  };
+
+  onCreateNewTeamPopupClose = () => {
+    this.setState({ createNewTeamPopupOpen: false, createNewTeamName: '' });
+  };
+
+  onCreateNewTeamOkClick = async teamName => {
+    try {
+      const res = await this.props.postNewTeam(teamName, true);
+      if (res?.status === 200) {
+        toast.success(`Team "${teamName}" created successfully!`);
+        this.setState({ createNewTeamPopupOpen: false });
+        await this.props.getAllUserTeams();
+      } else {
+        toast.error(res?.data?.error || 'Failed to create team. Please try again.');
+      }
+    } catch (err) {
+      toast.error(err?.message || 'An unexpected error occurred. Please try again.');
+    }
   };
 
   onAddTeamPopupClose = () => {
@@ -540,6 +591,7 @@ Teams.propTypes = {
   addTeamMember: PropTypes.func.isRequired,
   updateTeamMemeberVisibility: PropTypes.func.isRequired,
   clearTeamMembers: PropTypes.func.isRequired,
+  postNewTeam: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({ state });
@@ -554,4 +606,5 @@ export default connect(mapStateToProps, {
   addTeamMember,
   updateTeamMemeberVisibility,
   clearTeamMembers,
+  postNewTeam,
 })(Teams);

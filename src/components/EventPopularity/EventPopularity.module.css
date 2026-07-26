@@ -1,0 +1,778 @@
+:global(html),
+:global(body) {
+  height: 100%;
+  background-color: var(--ep-background);
+}
+
+:global(.dark-mode),
+:global(.dark-mode body),
+:global(.dark-mode html) {
+  background-color: var(--ep-background);
+}
+
+:root {
+  --ep-primary: #4a90e2;
+  --ep-primary-2: #82b7ff;
+  --ep-secondary: #f5f5f5;
+  --ep-background: #f9f9f9;
+  --ep-text-color: #333;
+  --ep-text-muted: #666;
+  --ep-text-light: #999;
+  --ep-border-color: #ddd;
+  --ep-card-bg: #fff;
+  --ep-grid-stroke: #e0e0e0;
+  --ep-chart-tick: #999;
+  --ep-success: #27ae60;
+  --ep-warning: #e74c3c;
+}
+
+:global(.dark-mode) {
+  --ep-primary: #4a90e2;
+  --ep-primary-2: #82b7ff;
+  --ep-secondary: #1f2937;
+  --ep-background: #111827;
+  --ep-text-color: #f3f4f6;
+  --ep-text-muted: #cbd5e1;
+  --ep-text-light: #94a3b8;
+  --ep-border-color: #374151;
+  --ep-card-bg: #0f172a;
+  --ep-grid-stroke: #334155;
+  --ep-chart-tick: #e5e7eb;
+  --ep-success: #4ade80;
+  --ep-warning: #f87171;
+}
+
+.eventpopularity {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: var(--ep-background);
+  min-height: 100vh;
+  color: var(--ep-text-color);
+}
+
+/* Header */
+.epHeader {
+  margin-bottom: 30px;
+}
+
+.epTitle {
+  font-size: 28px;
+  font-weight: bold;
+  margin: 0 0 10px;
+  color: var(--ep-text-color);
+}
+
+.epSubtitle {
+  color: var(--ep-text-muted);
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Filter Panel */
+.epFilterPanel {
+  background: var(--ep-card-bg);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgb(0 0 0 /25%);
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid var(--ep-border-color);
+}
+
+.epFilterHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.epFilterTitle {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0;
+  color: var(--ep-text-color);
+}
+
+.epResetBtn {
+  padding: 8px 16px;
+  background-color: var(--ep-warning);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.epResetBtn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.epResetBtn:active {
+  transform: translateY(0);
+}
+
+.epFilterGroup {
+  margin-bottom: 20px;
+}
+
+.epFilterLabel {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--ep-text-color);
+}
+
+.epDateInputs {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.epDateInput {
+  padding: 8px 12px;
+  border: 1px solid var(--ep-border-color);
+  border-radius: 4px;
+  font-size: 12px;
+  background-color: var(--ep-card-bg);
+  color: var(--ep-text-color);
+  flex: 1;
+  max-width: 150px;
+}
+
+.epDateInput:focus {
+  outline: none;
+  border-color: var(--ep-primary);
+  box-shadow: 0 0 0 2px rgb(74 144 226 /10%);
+}
+
+:global(.dark-mode) input[type="date"] {
+  color-scheme: dark;
+}
+
+/* Dark mode date input fixes */
+:global(.dark-mode) .epDateInput {
+  background-color: var(--ep-card-bg);
+  color: var(--ep-text-color);
+  border: 1px solid var(--ep-border-color);
+}
+
+/* Placeholder / empty text consistency */
+:global(.dark-mode) .epDateInput::placeholder {
+  color: var(--ep-text-muted);
+}
+
+/* WebKit calendar icon (Chrome, Edge, Safari) */
+:global(.dark-mode) .epDateInput::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(1.8);
+  cursor: pointer;
+  opacity: 0.9;
+}
+
+/* Fix text inside date field */
+:global(.dark-mode) .epDateInput::-webkit-datetime-edit {
+  color: var(--ep-text-color);
+}
+
+:global(.dark-mode) .epDateInput::-webkit-datetime-edit-text {
+  color: var(--ep-text-muted);
+}
+
+:global(.dark-mode) .epDateInput::-webkit-datetime-edit-month-field,
+:global(.dark-mode) .epDateInput::-webkit-datetime-edit-day-field,
+:global(.dark-mode) .epDateInput::-webkit-datetime-edit-year-field {
+  color: var(--ep-text-color);
+}
+
+.epDateSeparator {
+  color: var(--ep-text-light);
+  font-size: 12px;
+}
+
+.epButtonGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.epFilterBtn {
+  padding: 8px 16px;
+  background-color: var(--ep-secondary);
+  color: var(--ep-text-color);
+  border: 1px solid var(--ep-border-color);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.epFilterBtn:hover {
+  border-color: var(--ep-primary);
+  background-color: #eef6ff;
+}
+
+.epFilterBtn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(74 144 226 /20%);
+}
+
+:global(.dark-mode) .epFilterBtn:hover {
+  background-color: rgb(74 144 226 /12%);
+}
+
+.epFilterBtn.epFilterBtnActive {
+  background-color: var(--ep-primary);
+  color: white;
+  border-color: var(--ep-primary);
+  font-weight: bold;
+}
+
+/* Main Grid */
+.epgrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  transition: grid-template-columns 0.3s ease;
+}
+
+.epgrid.withDetailView {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* Cards */
+.epCard,
+.epChartCard {
+  background: var(--ep-card-bg);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgb(0 0 0 /25%);
+  padding: 20px;
+  border: 1px solid var(--ep-border-color);
+}
+
+.epCardTitle {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0 0 20px;
+  color: var(--ep-text-color);
+}
+
+/* Events List */
+.epEventsList {
+  margin-bottom: 20px;
+}
+
+.epRowHeader {
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) 140px auto;
+  align-items: center;
+  font-size: 12px;
+  color: var(--ep-text-light);
+  margin-bottom: 12px;
+  font-weight: bold;
+  padding: 0 8px;
+}
+
+.epEventRow {
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) 140px auto;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: transparent;
+  border-left: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.epRowHeader,
+.epEventRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) max-content;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.epEventRow:hover {
+  background-color: #f8fafc !important;
+  box-shadow: 0 1px 4px rgb(0 0 0 /8%);
+}
+
+.epEventRow:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--ep-primary);
+}
+
+/* Dark mode override */
+:global(.dark-mode) .eventpopularity .epEventRow:hover {
+  background-color: rgb(74 144 226 /12%) !important;
+  box-shadow: none;
+}
+
+.epEventRow.epEventRowActive {
+  background-color: #eef6ff;
+  border-left-color: var(--ep-primary);
+  padding-left: 5px;
+}
+
+/* Dark mode active row */
+:global(.dark-mode) .epEventRow.epEventRowActive {
+  background-color: rgb(74 144 226 /16%);
+}
+
+.epEventName {
+  width: auto;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ep-text-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
+.epEventRow.epEventRowActive .epEventName {
+  color: var(--ep-primary);
+}
+
+.epProgressBar {
+  width: 100%;
+  height: 6px;
+  background-color: var(--ep-border-color);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.epProgressFill {
+  height: 100%;
+  background-color: var(--ep-primary);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.epEventStats {
+  justify-self: end;
+  min-width: 120px;
+  font-size: 12px;
+  color: var(--ep-text-muted);
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Stats Grid */
+.epStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.epStatCard {
+  background: var(--ep-secondary);
+  border-radius: 4px;
+  padding: 16px 12px;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.epStatCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgb(0 0 0 /15%);
+}
+
+.epStatCard:focus {
+  outline: none;
+  border-color: var(--ep-primary);
+}
+
+.epStatCard.epStatCardPrimary {
+  background: rgb(74 144 226 /10%);
+  border: 2px solid var(--ep-primary);
+}
+
+.epStatTitle {
+  color: var(--ep-text-color);
+  margin: 0 0 5px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.epStatCardPrimary .epStatTitle {
+  color: var(--ep-primary);
+}
+
+.epStatSubtitle {
+  font-size: 11px;
+  color: var(--ep-text-light);
+  margin: 0;
+}
+
+/* Chart */
+.epChartContainer {
+  margin-bottom: 20px;
+}
+
+.epChartTooltip {
+  background: var(--ep-card-bg);
+  color: var(--ep-text-color);
+  padding: 10px 12px;
+  border-radius: 10px;
+  min-width: 140px;
+  border: 1px solid var(--ep-border-color);
+  box-shadow: 0 10px 30px rgb(0 0 0 /12%);
+}
+
+.epTooltipTime {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--ep-text-color);
+}
+
+.epTooltipRegistered {
+  font-size: 13px;
+  margin-bottom: 4px;
+  color: var(--ep-text-muted);
+}
+
+.epTooltipAttended {
+  font-size: 13px;
+  margin-bottom: 6px;
+  color: var(--ep-text-muted);
+}
+
+.epTooltipHint {
+  font-size: 12px;
+  opacity: 0.8;
+  color: var(--ep-text-light);
+}
+
+:global(.dark-mode) .recharts-legend-item-text {
+  color: #f3f4f6 !important;
+}
+
+/* Participation Cards */
+.epParticipationGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.epParticipationCard {
+  background: var(--ep-secondary);
+  border-radius: 4px;
+  padding: 12px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.epParticipationCard:hover {
+  background-color: #f5f9ff;
+  transform: scale(1.02);
+}
+
+.epParticipationCard:focus {
+  outline: none;
+  border-color: var(--ep-primary);
+}
+
+:global(.dark-mode) .epParticipationCard:hover {
+  background-color: rgb(74 144 226 /16%);
+}
+
+.epCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.epCardHeader .epCardTitle {
+  font-size: 14px;
+  margin: 0;
+}
+
+.epCardArrow {
+  font-size: 12px;
+  color: var(--ep-text-light);
+  transition: transform 0.2s ease;
+}
+
+.epParticipationCard:hover .epCardArrow {
+  transform: translateX(2px);
+}
+
+.epParticipantsInfo {
+  font-size: 11px;
+  margin-top: 6px;
+  color: var(--ep-text-muted);
+}
+
+.epTrend {
+  font-size: 11px;
+  font-weight: bold;
+  margin: 6px 0 0;
+}
+
+.trendPositive {
+  color: var(--ep-success);
+}
+
+.trendNegative {
+  color: var(--ep-warning);
+}
+
+/* Detail View Panel */
+.epDetailViewPanel {
+  margin-top: 20px;
+  background: var(--ep-card-bg);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgb(0 0 0 /25%);
+  padding: 20px;
+  border: 1px solid var(--ep-border-color);
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.epDetailHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 15px;
+}
+
+.epDetailTitle {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+  color: var(--ep-text-color);
+  flex: 1;
+}
+
+.epCloseBtn {
+  padding: 6px 12px;
+  background-color: var(--ep-warning);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.epCloseBtn:hover {
+  opacity: 0.9;
+}
+
+.epDetailGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+}
+
+.epDetailCard {
+  background: var(--ep-secondary);
+  padding: 16px;
+  border-radius: 4px;
+  text-align: center;
+  border: 1px solid var(--ep-border-color);
+}
+
+.epDetailCardFull {
+  grid-column: span 4;
+}
+
+.epDetailLabel {
+  font-size: 12px;
+  color: var(--ep-text-light);
+  margin: 0 0 8px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.epDetailValue {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+  color: var(--ep-text-color);
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+.epDetailValueLarge {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ep-success) !important;
+}
+
+:global(.dark-mode) .eventpopularity .epDetailValueLarge {
+  color: #4ade80 !important;
+}
+
+.epDetailDescription {
+  color: var(--ep-text-muted);
+}
+
+.epDetailActionBtn {
+  padding: 10px 20px;
+  background-color: var(--ep-primary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 10px;
+  transition: all 0.2s ease;
+}
+
+.epDetailActionBtn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.epDetailActionBtn:active {
+  transform: translateY(0);
+}
+
+.epEmptyState {
+  padding: 24px;
+  text-align: center;
+  color: var(--ep-text-muted);
+}
+
+.epEmptyState p {
+  margin: 0;
+  color: var(--ep-text-muted);
+}
+
+/* Responsive Design */
+@media (width<= 1024px) {
+  .epgrid {
+    grid-template-columns: 1fr;
+  }
+
+  .epStatsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .epDetailGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .epDetailCardFull {
+    grid-column: span 2;
+  }
+}
+
+@media (width<= 768px) {
+  .eventpopularity {
+    padding: 12px;
+  }
+
+  .epTitle {
+    font-size: 20px;
+  }
+
+  .epCard,
+  .epChartCard {
+    padding: 16px;
+  }
+
+  .epFilterPanel {
+    padding: 16px;
+  }
+
+  .epEventName {
+    width: 100px;
+    font-size: 12px;
+  }
+
+  .epEventStats {
+    min-width: 60px;
+    font-size: 11px;
+  }
+
+  .epStatsGrid,
+  .epParticipationGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .epDetailGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .epDetailCardFull {
+    grid-column: span 1;
+  }
+
+  .epDateInputs {
+    flex-direction: column;
+  }
+
+  .epDateInput {
+    max-width: 100%;
+  }
+
+  .epButtonGroup {
+    flex-direction: column;
+  }
+
+  .epFilterBtn {
+    width: 100%;
+  }
+}
+
+/* Focus Management */
+*:focus-visible {
+  outline: 2px solid var(--ep-primary);
+  outline-offset: 2px;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+:global(.dark-mode) .recharts-tooltip-wrapper {
+  filter: none !important;
+}
+
+:global(.dark-mode) .recharts-default-tooltip {
+  background: rgb(17 24 39 /96%) !important;
+  border: 1px solid rgb(74 144 226 /40%) !important;
+  color: #fff !important;
+}
