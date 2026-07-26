@@ -1,7 +1,6 @@
-// ToolItemListView.jsx
-
 import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import BMError from '../shared/BMError';
 import SelectForm from '../ItemList/SelectForm';
 import SelectItem from '../ItemList/SelectItem';
@@ -36,34 +35,7 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
   const [filteredItems, setFilteredItems] = useState(items || []);
   const [isError, setIsError] = useState(false);
 
-  // theme state
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  // read dark / light from body class
-  useEffect(() => {
-    if (typeof document === 'undefined') return;
-
-    const checkDark = () => {
-      const className = document.body.className || '';
-      // treat ANY body class that contains "dark" (case-insensitive) as dark-mode
-      return /dark/i.test(className);
-    };
-
-    // initial value
-    setIsDarkMode(checkDark());
-
-    // watch for body class changes when the user toggles theme
-    const observer = new MutationObserver(() => {
-      setIsDarkMode(checkDark());
-    });
-
-    observer.observe(document.body, {
-      attributes: true,
-      attributeFilter: ['class'],
-    });
-
-    return () => observer.disconnect();
-  }, []);
+  const isDarkMode = useSelector(state => state.theme.darkMode);
 
   const { filters, setFilters } = useToolFilters();
   const {
