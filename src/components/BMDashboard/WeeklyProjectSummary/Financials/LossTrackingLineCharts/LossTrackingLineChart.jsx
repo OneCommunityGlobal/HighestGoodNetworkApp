@@ -197,8 +197,8 @@ export default function LossTrackingLineChart() {
   const chartData = useMemo(() => {
     const merged = {};
 
-    const filterStart = startDate ? startDate.substring(0, 7) : '';
-    const filterEnd = endDate ? endDate.substring(0, 7) : '';
+    const filterStart = typeof startDate === 'string' ? startDate.substring(0, 7) : '';
+    const filterEnd = typeof endDate === 'string' ? endDate.substring(0, 7) : '';
 
     filteredLines.forEach(line => {
       line.data.forEach(({ date, month, value }) => {
@@ -318,54 +318,59 @@ export default function LossTrackingLineChart() {
             <div className={styles.noDataMessage}>No data available for the selected filters.</div>
           ) : (
             <>
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 44 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-                  <XAxis
-                    dataKey="month"
-                    height={72}
-                    tick={{ fill: textColor }}
-                    axisLine={{ stroke: textColor }}
-                    tickLine={{ stroke: textColor }}
-                    label={{
-                      value: 'Time (months)',
-                      position: 'bottom',
-                      offset: 18,
-                      fill: textColor,
-                    }}
-                  />
-                  <YAxis
-                    tick={{ fill: textColor }}
-                    axisLine={{ stroke: textColor }}
-                    tickLine={{ stroke: textColor }}
-                    label={{
-                      value: 'Loss (%)',
-                      angle: -90,
-                      position: 'insideLeft',
-                      fill: textColor,
-                    }}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'var(--tooltip-bg)',
-                      color: 'var(--text-color)',
-                      border: `1px solid var(--border-color)`,
-                    }}
-                  />
-                  {filteredLines.map(line => (
-                    <Line
-                      key={`${line.year}-${line.material}`}
-                      type="monotone"
-                      dataKey={`${line.year}-${line.material}`}
-                      stroke={colors[`${line.year}-${line.material}`]}
-                      strokeWidth={2}
-                      dot={{ r: 3 }}
-                      activeDot={{ r: 5 }}
-                      name={`${line.year} - ${line.material}`}
+              {}
+              <div className={styles.responsiveChartBox}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 44 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+                    <XAxis
+                      dataKey="month"
+                      height={72}
+                      tick={{ fill: textColor }}
+                      axisLine={{ stroke: textColor }}
+                      tickLine={{ stroke: textColor }}
+                      label={{
+                        value: 'Time (months)',
+                        position: 'bottom',
+                        offset: 18,
+                        fill: textColor,
+                      }}
                     />
-                  ))}
-                </LineChart>
-              </ResponsiveContainer>
+                    <YAxis
+                      tick={{ fill: textColor }}
+                      axisLine={{ stroke: textColor }}
+                      tickLine={{ stroke: textColor }}
+                      label={{
+                        value: 'Loss (%)',
+                        angle: -90,
+                        position: 'insideLeft',
+                        fill: textColor,
+                      }}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'var(--tooltip-bg)',
+                        color: 'var(--text-color)',
+                        border: `1px solid var(--border-color)`,
+                      }}
+                    />
+                    {filteredLines.map(line => (
+                      <Line
+                        key={`${line.year}-${line.material}`}
+                        type="monotone"
+                        dataKey={`${line.year}-${line.material}`}
+                        stroke={colors[`${line.year}-${line.material}`]}
+                        strokeWidth={2}
+                        dot={{ r: 3 }}
+                        activeDot={{ r: 5 }}
+                        name={`${line.year} - ${line.material}`}
+                      />
+                    ))}
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+
+              {}
               <div className={styles.customLegend}>
                 {legendItems.map(item => (
                   <span key={item.key} className={styles.legendItem}>

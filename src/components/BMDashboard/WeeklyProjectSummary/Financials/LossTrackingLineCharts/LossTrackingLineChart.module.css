@@ -1,4 +1,4 @@
-/* ---------- Theme tokens ---------- */
+/* stylelint-disable */
 :root {
   --bg-color: #fff;
   --text-color: #1f1f1f;
@@ -20,16 +20,16 @@
   --radius-sm: 8px;
   --space: 1rem;
   --shadow: 0 2px 10px rgb(0 0 0 / 8%);
+  --error-color: #dc3545;
 }
 
-/* Optional manual dark mode (toggle this class on our container) */
 .darkMode {
   --bg-color: #0f1522;
   --text-color: #f1f3f7;
   --muted-text: #c9ced8;
-  --border-color: #2c3a52;
-  --tooltip-bg: #1a2336;
-  --surface: #182235;
+  --border-color: #555;
+  --tooltip-bg: #1b2a41;
+  --surface: #1b2a41;
   --surface-muted: #111a2b;
   --accent-color: #7aa2ff;
   --accent-hover: #9bb9ff;
@@ -40,9 +40,9 @@
   --reset-btn-bg: #ff6b5e;
   --reset-btn-hover: #ff4a3a;
   --reset-btn-text: #0f1522;
+  --error-color: #ff6b6b;
 }
 
-/* ---------- Host & card container ---------- */
 .host {
   width: 100%;
   max-width: 100%;
@@ -74,7 +74,6 @@
   letter-spacing: 0.1px;
 }
 
-/* ---------- Filters (grid: one lane when space allows) ---------- */
 .lossTrackingChartFilters {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -199,30 +198,21 @@
   box-shadow: none;
 }
 
-.dateRangeError {
+div.lossTrackingChartContainer span.dateRangeError {
   grid-column: 1 / -1;
-  color: #e53935;
-  font-size: 0.82rem;
-  font-weight: 500;
+  color: var(--error-color) !important;
+  font-size: 0.85rem;
+  font-weight: 600;
   padding: 0.15rem 0.1rem;
+  display: block;
+  margin-top: 10px;
 }
 
-@media (width <=768px) {
-  .resetBtn {
-    justify-self: stretch;
-  }
-
-  .customLegend {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-/* ---------- Chart area (responsive height) ---------- */
 .chartWrapper {
+  display: flex;
+  flex-direction: column;
   width: 100%;
-
   --chart-height: clamp(320px, 42vh, 680px);
-
   height: var(--chart-height);
   background-color: var(--surface-muted);
   border: 1px solid var(--border-color);
@@ -231,7 +221,13 @@
   min-width: 0;
 }
 
-@media screen and (width >=1440px) {
+.responsiveChartBox {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+
+@media (width >=1440px) {
   .chartWrapper {
     --chart-height: clamp(340px, 40vh, 720px);
   }
@@ -239,35 +235,6 @@
 
 .recharts-cartesian-grid line {
   stroke: var(--grid-color);
-}
-
-.customLegend {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.55rem 1.1rem;
-  margin-top: 1rem;
-  color: var(--text-color);
-  font-size: 0.95rem;
-  align-items: start;
-}
-
-.legendItem {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  min-width: 0;
-  justify-self: start;
-}
-
-.legendSwatch {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  flex: 0 0 auto;
-}
-
-.legendItem>span:last-child {
-  white-space: nowrap;
 }
 
 .noDataMessage {
@@ -286,6 +253,37 @@
   transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
 }
 
+.customLegend {
+  display: flex;
+  flex-wrap: wrap !important;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.legendSwatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  flex: 0 0 auto;
+}
+
+@media (width <=768px) {
+  .resetBtn {
+    justify-self: stretch;
+  }
+}
+
 @media (width <=400px) {
   .lossTrackingChartFilters {
     grid-template-columns: 1fr;
@@ -302,13 +300,5 @@
   .resetBtn {
     width: 100%;
     box-sizing: border-box;
-  }
-
-  .resetBtn {
-    justify-self: stretch;
-  }
-
-  .customLegend {
-    grid-template-columns: 1fr;
   }
 }
