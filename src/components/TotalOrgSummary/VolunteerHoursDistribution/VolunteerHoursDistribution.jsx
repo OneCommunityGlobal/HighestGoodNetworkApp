@@ -83,13 +83,20 @@ export function formatRangeLabel(rangeStr) {
   const normalizedRange = normalizeBucketId(rangeStr);
 
   if (normalizedRange.includes('+')) {
-    // FIX: Prefer Number() over parseFloat() for safer numeric string conversions
-    const num = Number(normalizedRange.replace('+', ''));
-    return `${num}+ hrs`;
-  } else {
-    const num = Number(normalizedRange);
-    return `${num}-${num + 9} hrs`;
+    // assignToBucket's overflow bucket is strictly greater than the
+    // threshold (e.g. '50+' means weeklyAverage > 50), so the label
+    // should start one hour above that threshold to avoid implying
+    // overlap with the adjacent bucket.
+    const threshold = Number(normalizedRange.replace('+', ''));
+    return `${threshold + 1}+ hrs`;
   }
+
+  const num = Number(normalizedRange);
+  // assignToBucket buckets are inclusive upper thresholds (<=10, <=20, ...),
+  // so each bucket's lower bound is one above the previous threshold —
+  // except the very first bucket, which starts at 0, not 1.
+  const lowerBound = num === 10 ? 0 : num - 9;
+  return `${lowerBound}-${num} hrs`;
 }
 
 function buildChartData(hoursData, totalHoursData) {
@@ -106,11 +113,13 @@ function buildChartData(hoursData, totalHoursData) {
   const userData = hoursByBucket.map(range => {
     const value = totalHoursWorked > 0 ? range.allocatedHours || 0 : range.count || 0;
     const denominator = totalHoursWorked > 0 ? totalAllocatedHours : totalVolunteers;
+    const valueType = totalHoursWorked > 0 ? 'hours' : 'volunteers';
 
     return {
       name: formatRangeLabel(range._id),
       value,
       percentage: denominator ? Math.round((value / denominator) * 100) : 0,
+      valueType,
     };
   });
 

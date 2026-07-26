@@ -111,6 +111,13 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
   const filterUsers = users =>
     users.filter(u => `${u.firstName} ${u.lastName}`.toLowerCase().includes(search.toLowerCase()));
 
+  const usersFilteredSixMonthsData = filterUsers(sixMonthsData.users).map(item =>
+    getAnniversaryListItem(item, 6),
+  );
+  const usersFilteredOneYearData = filterUsers(oneYearData.users).map(item =>
+    getAnniversaryListItem(item, 12),
+  );
+
   const searchInputStyle = {
     margin: '10px 0',
     padding: '5px 10px',
@@ -120,6 +127,25 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
     backgroundColor: darkMode ? '#111827' : '#fff',
     color: darkMode ? '#f8fafc' : '#111827',
     WebkitTextFillColor: darkMode ? '#f8fafc' : '#111827',
+  };
+
+  const renderAnniversariesList = () => {
+    if (usersFilteredSixMonthsData.length === 0 && usersFilteredOneYearData.length === 0) {
+      return (
+        <li
+          className="text-center"
+          style={{ color: darkMode ? '#fff' : '#000', listStyle: 'none' }}
+        >
+          No anniversaries found
+        </li>
+      );
+    }
+    return (
+      <>
+        {usersFilteredSixMonthsData}
+        {usersFilteredOneYearData}
+      </>
+    );
   };
 
   return (
@@ -193,8 +219,7 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
 
       {/* List of anniversaries */}
       <ul className="w-90 overflow-auto" style={{ maxHeight: '410px' }}>
-        {filterUsers(sixMonthsData.users).map(item => getAnniversaryListItem(item, 6))}
-        {filterUsers(oneYearData.users).map(item => getAnniversaryListItem(item, 12))}
+        {renderAnniversariesList()}
       </ul>
     </div>
   );
