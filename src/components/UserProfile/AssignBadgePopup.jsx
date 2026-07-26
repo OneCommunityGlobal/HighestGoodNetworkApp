@@ -96,8 +96,6 @@ function AssignBadgePopup(props) {
   };
   let existBadges = addExistBadges();
 
-  const showBadgeTable = !isLoadingBadge && (props.isTableOpen ?? filteredBadges.length > 0);
-
   return (
     <div data-testid="test-assignbadgepopup">
       {/* Comprehensive dark mode hover style fix */}
