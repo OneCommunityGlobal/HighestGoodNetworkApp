@@ -157,7 +157,7 @@ function JobCCDashboard() {
                 <tr key={job._id}>
                   <td>{job.title}</td>
                   <td>{job.category}</td>
-                  <td>{new Date(job.datePosted).toLocaleDateString()}</td>
+                  <td>{job.datePosted ? new Date(job.datePosted).toLocaleDateString() : '-'}</td>
                   <td>{job.ccList.map(entry => entry.email).join(', ') || 'No CCs'}</td>
                   <td>
                     <Button color="info" size="sm" onClick={() => handleOpenModal(job)}>

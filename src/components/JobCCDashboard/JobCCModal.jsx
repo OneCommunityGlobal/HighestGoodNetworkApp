@@ -1,6 +1,17 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Modal, Form, FormGroup, Label, Input, Button, Table } from 'reactstrap';
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  Button,
+  Table,
+} from 'reactstrap';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
 import { toast } from 'react-toastify';
@@ -64,84 +75,72 @@ function JobCCModal({ job, onClose, onRefresh, darkMode }) {
     }
   };
 
+  const darkClass = darkMode ? styles.darkModeModel : '';
+
   return (
-    <Modal isOpen toggle={onClose} className={`${styles.modalWrapper}`}>
-      <div className={`${darkMode ? styles.darkModeModel : ''}`}>
-        <div className={`${styles.modalHeader}`}>
-          <h5 className={`${styles.modalTitle}`}>{`Manage CCs for ${job.title}`}</h5>
-          <Button color="danger" className={`${styles.modalCloseButton}`} onClick={onClose}>
-            &times;
-          </Button>
-        </div>
-      </div>
-      <div className={`${darkMode ? styles.darkModeModel : ''}`}>
-        <div className={`${styles.modalBody}`}>
-          <Form
-            onSubmit={e => {
-              e.preventDefault();
-              handleAddEmail();
-            }}
-          >
-            <FormGroup>
-              <Label for="email" className={`${styles.label}`}>
-                Add Email Address
-              </Label>
-              <Input
-                type="email"
-                id="email"
-                placeholder="Enter email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                disabled={loading}
-                className={`${styles.input}`}
-              />
-            </FormGroup>
-            <Button
-              color="primary"
-              style={{ marginBottom: '10px' }}
-              onClick={handleAddEmail}
+    <Modal isOpen toggle={onClose}>
+      <ModalHeader className={darkClass} toggle={onClose}>
+        {`Manage CCs for ${job.title}`}
+      </ModalHeader>
+      <ModalBody className={darkClass}>
+        <Form
+          onSubmit={e => {
+            e.preventDefault();
+            handleAddEmail();
+          }}
+        >
+          <FormGroup>
+            <Label for="email" className={styles.label}>
+              Add Email Address
+            </Label>
+            <Input
+              type="email"
+              id="email"
+              placeholder="Enter email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
               disabled={loading}
-            >
-              {loading ? 'Adding...' : 'Add Email'}
-            </Button>
-          </Form>
-
-          <h6 className={`${styles.listTitle}`}>Current CC List</h6>
-
-          <Table striped bordered hover className={`${styles.jobCcDashboardTable}`}>
-            <thead>
-              <tr>
-                <th>Email</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ccList.map(entry => (
-                <tr key={entry.email}>
-                  <td>{entry.email}</td>
-                  <td>
-                    <Button
-                      color="danger"
-                      size="sm"
-                      onClick={() => handleRemoveEmail(entry.email)}
-                      disabled={loading}
-                    >
-                      {loading ? 'Removing...' : 'Remove'}
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </div>
-      </div>
-      <div className={`${darkMode ? styles.darkModeModel : ''}`}>
-        <div className={`${styles.modalFooter}`}>
-          <Button color="danger" onClick={onClose} disabled={loading}>
-            Close
+              className={styles.input}
+            />
+          </FormGroup>
+          <Button color="primary" className="mb-2" onClick={handleAddEmail} disabled={loading}>
+            {loading ? 'Adding...' : 'Add Email'}
           </Button>
-        </div>
-      </div>
+        </Form>
+
+        <h6 className={styles.listTitle}>Current CC List</h6>
+
+        <Table striped bordered hover className={styles.jobCcDashboardTable}>
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {ccList.map(entry => (
+              <tr key={entry.email}>
+                <td>{entry.email}</td>
+                <td>
+                  <Button
+                    color="danger"
+                    size="sm"
+                    onClick={() => handleRemoveEmail(entry.email)}
+                    disabled={loading}
+                  >
+                    {loading ? 'Removing...' : 'Remove'}
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </ModalBody>
+      <ModalFooter className={darkClass}>
+        <Button color="danger" onClick={onClose} disabled={loading}>
+          Close
+        </Button>
+      </ModalFooter>
     </Modal>
   );
 }

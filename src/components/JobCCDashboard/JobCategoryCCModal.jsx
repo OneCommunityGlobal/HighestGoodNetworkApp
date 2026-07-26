@@ -1,4 +1,14 @@
-import { Modal, Button, Form, FormGroup, Label, Input } from 'reactstrap';
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+} from 'reactstrap';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
@@ -73,70 +83,63 @@ function JobCategoryCCModal({ categories, onClose, onRefresh, darkMode }) {
     }
   };
 
+  const darkClass = darkMode ? styles.darkModeModel : '';
+
   return (
-    <Modal isOpen toggle={onClose} className={`${styles.modalWrapper}`}>
-      <div className={`${darkMode ? styles.darkModeModel : ''}`}>
-        <div className={`${styles.modalHeader}`}>
-          <h5 className={`${styles.modalTitle}`}>Manage CC</h5>
-          <Button color="danger" className={`${styles.modalCloseButton}`} onClick={onClose}>
-            &times;
+    <Modal isOpen toggle={onClose}>
+      <ModalHeader className={darkClass} toggle={onClose}>
+        Manage CC
+      </ModalHeader>
+      <ModalBody className={darkClass}>
+        <Form
+          onSubmit={e => {
+            e.preventDefault();
+            handleAddEmail();
+          }}
+        >
+          <FormGroup>
+            <Label className={styles.label} for="filter">
+              Filter by Category
+            </Label>
+            <Input
+              type="select"
+              id="filter"
+              value={filter}
+              onChange={handleFilterChange}
+              className={styles.selectInput}
+            >
+              <option value="">Select Category</option>
+              <option value="all">All</option>
+              {categories.map(category => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </Input>
+          </FormGroup>
+          <FormGroup>
+            <Label className={styles.label} for="email">
+              Add Email Address
+            </Label>
+            <Input
+              type="email"
+              id="email"
+              placeholder="Enter email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              className={styles.input}
+            />
+          </FormGroup>
+          <Button color="primary" onClick={handleAddEmail} disabled={loading}>
+            {loading ? 'Adding...' : 'Add Email'}
           </Button>
-        </div>
-      </div>
-      <div className={`${darkMode ? styles.darkModeModel : ''}`}>
-        <div className={`${styles.modalBody}`}>
-          <Form
-            onSubmit={e => {
-              e.preventDefault();
-              handleAddEmail();
-            }}
-          >
-            <FormGroup>
-              <Label className={`${styles.label}`} for="filter">
-                Filter by Category
-              </Label>
-              <Input
-                type="select"
-                id="filter"
-                value={filter}
-                onChange={handleFilterChange}
-                className={`${styles.selectInput}`}
-              >
-                <option value="">Select Category</option>
-                <option value="all">All</option>
-                {categories.map(category => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </Input>
-            </FormGroup>
-            <FormGroup>
-              <Label className={`${styles.label}`} for="email">
-                Add Email Address
-              </Label>
-              <Input
-                type="email"
-                id="email"
-                placeholder="Enter email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                className={`${styles.input}`}
-              />
-            </FormGroup>
-            <Button color="primary" onClick={handleAddEmail} disabled={loading}>
-              {loading ? 'Adding...' : 'Add Email'}
-            </Button>
-          </Form>
-        </div>
-      </div>
-      <div className={`${darkMode ? styles.darkModeModel : ''}`}>
-        <div className={`${styles.modalFooter}`}>
-          <Button color="danger" onClick={onClose} disabled={loading}>
-            Close
-          </Button>
-        </div>
-      </div>
+        </Form>
+      </ModalBody>
+      <ModalFooter className={darkClass}>
+        <Button color="danger" onClick={onClose} disabled={loading}>
+          Close
+        </Button>
+      </ModalFooter>
     </Modal>
   );
 }
