@@ -1,6 +1,8 @@
 import axios from 'axios';
+import DOMPurify from 'dompurify';
+import parse from 'html-react-parser';
 import PropTypes from 'prop-types';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -25,7 +27,12 @@ import { getWeeklySummaries } from '~/actions/weeklySummaries';
 import PopUpBar from '~/components/PopUpBar';
 import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
 import { ENDPOINTS } from '~/utils/URL';
+import httpService from '../../services/httpService';
 import { getHeaderData } from '../../actions/authActions';
+import {
+  getUnreadMeetingNotification,
+  markMeetingNotificationAsRead,
+} from '../../actions/meetingNotificationAction';
 import {
   getUnreadUserNotifications,
   resetNotificationError,
@@ -33,6 +40,7 @@ import {
 import { getAllRoles } from '../../actions/role';
 import { getUserProfile } from '../../actions/userProfile';
 import '../../App.module.css';
+import { boxStyle, boxStyleDark } from '../../styles';
 import {
   ACTUAL_COST_BREAKDOWN,
   BADGE_MANAGEMENT,
@@ -46,6 +54,7 @@ import {
   PROJECTS,
   REPORTS,
   SEND_EMAILS,
+  SCHEDULE_MEETINGS,
   TEAM_LOCATIONS,
   TEAMS,
   TIMELOG,
@@ -69,6 +78,65 @@ import Timer from '../Timer/Timer';
 import BellNotification from './BellNotification';
 import DarkModeButton from './DarkModeButton';
 import styles from './Header.module.css';
+import {
+  formatMeetingDateTime,
+  formatMeetingDuration,
+  resolveUserTimeZone,
+  stripHtmlToPlainText,
+} from '../../utils/meetingTime';
+
+const buildMeetingDetailsMessageHtml = (
+  currMeeting,
+  organizerName,
+  totalMeetings,
+  meetingIndex,
+  viewerTimeZone,
+  getMeetingCountLabel,
+) => {
+  const cleanNotes = stripHtmlToPlainText(currMeeting.notes);
+  const countLabel = getMeetingCountLabel(totalMeetings, meetingIndex);
+  const durationLabel = formatMeetingDuration(currMeeting.duration);
+  const messageParts = [
+    `Reminder: You have an upcoming meeting${countLabel}! Please check the details and be prepared.<br>`,
+    `<strong>Time:</strong> ${formatMeetingDateTime(currMeeting.dateTime, viewerTimeZone)}<br>`,
+  ];
+
+  if (durationLabel) {
+    messageParts.push(`<strong>Duration:</strong> ${durationLabel}<br>`);
+  }
+
+  messageParts.push(`<strong>Organizer:</strong> ${organizerName}<br>`);
+
+  if (currMeeting.location) {
+    messageParts.push(`<strong>Location:</strong> ${currMeeting.location}<br>`);
+  }
+  if (cleanNotes) {
+    messageParts.push(`<strong>Notes:</strong> ${cleanNotes}<br>`);
+  }
+
+  return messageParts.join('');
+};
+
+function MeetingNotificationModalHeader({ children, onClose }) {
+  return (
+    <div className={styles.meetingNotificationCustomHeader}>
+      <h5 className={styles.meetingNotificationCustomHeaderTitle}>{children}</h5>
+      <button
+        type="button"
+        className={styles.meetingNotificationCustomHeaderClose}
+        onClick={onClose}
+        aria-label="Close"
+      >
+        <span aria-hidden="true">&#215;</span>
+      </button>
+    </div>
+  );
+}
+
+MeetingNotificationModalHeader.propTypes = {
+  children: PropTypes.node.isRequired,
+  onClose: PropTypes.func.isRequired,
+};
 
 export function Header(props) {
   const location = useLocation();
@@ -149,6 +217,7 @@ export function Header(props) {
     props.hasPermission('updatePopup', !isAuthUser );
   // SendEmails
   const canAccessSendEmails = props.hasPermission('sendEmails', !isAuthUser);
+  const canAccessScheduleMeetings = props.hasPermission('scheduleMeetings', !isAuthUser);
   // Permissions
   const canAccessPermissionsManagement =
     props.hasPermission('postRole', !isAuthUser ) ||
@@ -163,16 +232,313 @@ export function Header(props) {
 
 
   const userId = user.userid;
+  const viewerTimeZone = resolveUserTimeZone(props.userProfile?.timeZone);
   const [isModalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState('');
+  const [meetingContents, setMeetingContents] = useState([]);
+  const [meetingContentsNotification, setMeetingContentsNotification] = useState(false);
   const [userDashboardProfile, setUserDashboardProfile] = useState(undefined);
   const [hasProfileLoaded, setHasProfileLoaded] = useState(false);
   const dismissalKey = `lastDismissed_${userId}`;
   const [lastDismissed, setLastDismissed] = useState(localStorage.getItem(dismissalKey));
-  const unreadNotifications = props.notification?.unreadNotifications; // List of unread notifications
+  const [meetingModalOpen, setMeetingModalOpen] = useState(false);
+  const [meetingModalMessage, setMeetingModalMessage] = useState('');
+  const [activeMeetingModalIndex, setActiveMeetingModalIndex] = useState(0);
+  const [meetingCalendarLinks, setMeetingCalendarLinks] = useState(null);
+  const [meetingAudioUnlocked, setMeetingAudioUnlocked] = useState(
+    () => sessionStorage.getItem('meetingAudioUnlocked') === 'true',
+  );
+  const { allUserProfiles, unreadMeetingNotifications } = props;
+  const userUnreadMeetings = useMemo(
+    () =>
+      unreadMeetingNotifications?.filter(
+        meeting => String(meeting.recipient) === String(userId),
+      ) || [],
+    [unreadMeetingNotifications, userId],
+  );
+  const unreadNotifications = props.notification?.unreadNotifications;
   const dispatch = useDispatch();
   const history = useHistory();
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
+  const MeetingNotificationAudioRef = useRef(null);
+  const dismissedMeetingModalIdRef = useRef(null);
+  const preventMeetingModalAutoOpenRef = useRef(false);
+  const organizerNameCacheRef = useRef({});
+
+  const resolveOrganizerName = useCallback(
+    async organizerId => {
+      if (!organizerId) return 'Unknown';
+
+      const key = String(organizerId);
+      if (organizerNameCacheRef.current[key]) {
+        return organizerNameCacheRef.current[key];
+      }
+
+      const fromList = allUserProfiles?.find(profile => String(profile._id) === key);
+      if (fromList) {
+        const name = `${fromList.firstName} ${fromList.lastName}`.trim();
+        organizerNameCacheRef.current[key] = name;
+        return name;
+      }
+
+      try {
+        const { data } = await httpService.get(ENDPOINTS.USER_PROFILE(key));
+        const name = `${data.firstName || ''} ${data.lastName || ''}`.trim() || 'Unknown';
+        organizerNameCacheRef.current[key] = name;
+        return name;
+      } catch {
+        return 'Unknown';
+      }
+    },
+    [allUserProfiles],
+  );
+
+  const pauseMeetingAudio = useCallback(() => {
+    if (!MeetingNotificationAudioRef.current) return;
+    try {
+      MeetingNotificationAudioRef.current.pause();
+      MeetingNotificationAudioRef.current.currentTime = 0;
+    } catch {
+      // jsdom does not implement HTMLMediaElement.pause
+    }
+  }, []);
+
+  const playMeetingAudio = useCallback(() => {
+    if (!MeetingNotificationAudioRef.current) return;
+    MeetingNotificationAudioRef.current.play().catch(() => {});
+  }, []);
+
+  const getMeetingCountLabel = useCallback((totalMeetings, meetingIndex = 1) => {
+    if (totalMeetings <= 1) return '';
+    return ` (${meetingIndex} of ${totalMeetings})`;
+  }, []);
+
+  const clearMeetingCalendarLinks = useCallback(() => {
+    setMeetingCalendarLinks(prev => {
+      if (prev?.icsUrl) {
+        URL.revokeObjectURL(prev.icsUrl);
+      }
+      return null;
+    });
+  }, []);
+
+  const revokeMeetingBarUrls = useCallback(items => {
+    items.forEach(item => {
+      if (item?.icsUrl) {
+        URL.revokeObjectURL(item.icsUrl);
+      }
+    });
+  }, []);
+
+  const buildCompactBarMessage = useCallback(
+    (meeting, organizerName, calendarData) => {
+      const formattedDate = formatMeetingDateTime(meeting.dateTime, viewerTimeZone);
+      const locationPart = meeting.location ? ` · ${meeting.location}` : '';
+      const linksPart = calendarData
+        ? ` · <a href="${calendarData.googleCalendarLink}" target="_blank" rel="noreferrer">Google Calendar</a><span class="meeting-popup-action-separator"> · </span><a href="${calendarData.icsUrl}" download="meeting.ics">Download .ics</a>`
+        : '';
+
+      return `Upcoming meeting: <strong>${formattedDate}</strong> with ${organizerName}${locationPart}${linksPart}`;
+    },
+    [viewerTimeZone],
+  );
+
+  const syncAllMeetingPopupBars = useCallback(
+    async meetings => {
+      if (!meetings.length) {
+        setMeetingContents(prev => {
+          revokeMeetingBarUrls(prev);
+          return [];
+        });
+        setMeetingContentsNotification(false);
+        return;
+      }
+
+      const results = await Promise.all(
+        meetings.map(async meeting => {
+          const organizerName = await resolveOrganizerName(meeting.sender);
+          let calendarData = null;
+
+          try {
+            const { data } = await httpService.get(ENDPOINTS.MEETING_CALENDAR(meeting.meetingId));
+            const icsBlob = new Blob([data.icsContent], { type: 'text/calendar' });
+            calendarData = {
+              googleCalendarLink: data.googleCalendarLink,
+              icsUrl: URL.createObjectURL(icsBlob),
+            };
+          } catch {
+            // Calendar links are optional for the compact bar.
+          }
+
+          return {
+            msg: buildCompactBarMessage(meeting, organizerName, calendarData),
+            id: meeting.meetingId,
+            recipient: meeting.recipient,
+            icsUrl: calendarData?.icsUrl || null,
+          };
+        }),
+      );
+
+      setMeetingContents(prev => {
+        revokeMeetingBarUrls(prev);
+        return results;
+      });
+      setMeetingContentsNotification(true);
+    },
+    [buildCompactBarMessage, resolveOrganizerName, revokeMeetingBarUrls],
+  );
+
+  const loadMeetingCalendarLinks = useCallback(
+    async meetingId => {
+      if (!meetingId) {
+        clearMeetingCalendarLinks();
+        return;
+      }
+
+      try {
+        const { data } = await httpService.get(ENDPOINTS.MEETING_CALENDAR(meetingId));
+        const icsBlob = new Blob([data.icsContent], { type: 'text/calendar' });
+        const icsUrl = URL.createObjectURL(icsBlob);
+
+        clearMeetingCalendarLinks();
+        setMeetingCalendarLinks({
+          googleCalendarLink: data.googleCalendarLink,
+          icsUrl,
+        });
+      } catch {
+        clearMeetingCalendarLinks();
+      }
+    },
+    [clearMeetingCalendarLinks],
+  );
+
+  const dismissMeetingNotification = useCallback(
+    async (meetingId, recipient) => {
+      setMeetingContents(prev => {
+        const next = prev.filter(item => String(item.id) !== String(meetingId));
+        const removed = prev.find(item => String(item.id) === String(meetingId));
+        if (removed?.icsUrl) {
+          URL.revokeObjectURL(removed.icsUrl);
+        }
+        setMeetingContentsNotification(next.length > 0);
+        return next;
+      });
+
+      if (String(userUnreadMeetings[activeMeetingModalIndex]?.meetingId) === String(meetingId)) {
+        setMeetingModalOpen(false);
+        setMeetingModalMessage('');
+        clearMeetingCalendarLinks();
+        pauseMeetingAudio();
+      }
+
+      await dispatch(markMeetingNotificationAsRead({ meetingId, recipient }));
+      dispatch(getUnreadUserNotifications(recipient));
+      await dispatch(getUnreadMeetingNotification(userId));
+    },
+    [
+      userUnreadMeetings,
+      activeMeetingModalIndex,
+      userId,
+      dispatch,
+      pauseMeetingAudio,
+      clearMeetingCalendarLinks,
+    ],
+  );
+
+  const buildMeetingDetailsMessage = useCallback(
+    (currMeeting, organizerName, totalMeetings = 1, meetingIndex = 1) =>
+      buildMeetingDetailsMessageHtml(
+        currMeeting,
+        organizerName,
+        totalMeetings,
+        meetingIndex,
+        viewerTimeZone,
+        getMeetingCountLabel,
+      ),
+    [viewerTimeZone, getMeetingCountLabel],
+  );
+
+  const showMeetingModalAtIndex = useCallback(
+    async (index, { playSound = false } = {}) => {
+      const meeting = userUnreadMeetings[index];
+      if (!meeting) return;
+
+      const organizerName = await resolveOrganizerName(meeting.sender);
+      const totalMeetings = userUnreadMeetings.length;
+      const meetingPosition = index + 1;
+
+      if (meetingAudioUnlocked) {
+        setMeetingModalMessage(
+          buildMeetingDetailsMessage(meeting, organizerName, totalMeetings, meetingPosition),
+        );
+        await loadMeetingCalendarLinks(meeting.meetingId);
+        if (playSound) {
+          playMeetingAudio();
+        }
+      } else {
+        setMeetingModalMessage(
+          `You have an upcoming meeting scheduled within the next 3 days${getMeetingCountLabel(totalMeetings, meetingPosition)}.<br>
+        Click "Enable Alerts &amp; View Meeting" to enable notification sounds and see meeting details.`,
+        );
+      }
+
+      setActiveMeetingModalIndex(index);
+    },
+    [
+      userUnreadMeetings,
+      meetingAudioUnlocked,
+      resolveOrganizerName,
+      getMeetingCountLabel,
+      buildMeetingDetailsMessage,
+      loadMeetingCalendarLinks,
+      playMeetingAudio,
+    ],
+  );
+
+  const openMeetingNotification = useCallback(() => {
+    if (userUnreadMeetings.length > 0) {
+      preventMeetingModalAutoOpenRef.current = false;
+      dismissedMeetingModalIdRef.current = null;
+      const modalIndex = Math.min(activeMeetingModalIndex, userUnreadMeetings.length - 1);
+      setMeetingModalOpen(true);
+      showMeetingModalAtIndex(modalIndex);
+    }
+  }, [userUnreadMeetings, activeMeetingModalIndex, showMeetingModalAtIndex]);
+
+  const handleMeetingRead = async () => {
+    const activeMeeting = userUnreadMeetings[activeMeetingModalIndex];
+
+    if (userUnreadMeetings?.length > 0 && !meetingAudioUnlocked) {
+      sessionStorage.setItem('meetingAudioUnlocked', 'true');
+      setMeetingAudioUnlocked(true);
+      await showMeetingModalAtIndex(activeMeetingModalIndex, { playSound: true });
+      return;
+    }
+
+    if (activeMeeting) {
+      dismissedMeetingModalIdRef.current = String(activeMeeting.meetingId);
+      preventMeetingModalAutoOpenRef.current = true;
+    }
+
+    setMeetingModalOpen(false);
+    pauseMeetingAudio();
+  };
+
+  const goToPreviousMeeting = () => {
+    if (activeMeetingModalIndex > 0) {
+      showMeetingModalAtIndex(activeMeetingModalIndex - 1);
+    }
+  };
+
+  const goToNextMeeting = () => {
+    if (activeMeetingModalIndex < userUnreadMeetings.length - 1) {
+      showMeetingModalAtIndex(activeMeetingModalIndex + 1);
+    }
+  };
+
+  const CloseMeetingContentsNotification = async (meetingId, recipient) => {
+    await dismissMeetingNotification(meetingId, recipient);
+  };
 
   useEffect(() => {
     const handleStorageEvent = () => {
@@ -267,6 +633,82 @@ export function Header(props) {
       dispatch(resetNotificationError());
     }
   }, [props.notification?.error]);
+
+  useEffect(() => {
+    if (props.meetingNotification?.error) {
+      toast.error(props.meetingNotification.error.message);
+    }
+  }, [props.meetingNotification?.error]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !userId) return;
+
+    setMeetingContents([]);
+    setMeetingContentsNotification(false);
+    setMeetingModalOpen(false);
+    setMeetingModalMessage('');
+
+    dispatch(getUnreadUserNotifications(userId));
+    dispatch(getUnreadMeetingNotification(userId));
+  }, [isAuthenticated, userId, dispatch]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !userId || !localStorage.getItem('token')) return;
+    dispatch(getUnreadMeetingNotification(userId));
+  }, [props.userProfile?.timeZone, isAuthenticated, userId, dispatch]);
+
+  useEffect(() => {
+    if (!userUnreadMeetings.length) {
+      dismissedMeetingModalIdRef.current = null;
+      preventMeetingModalAutoOpenRef.current = false;
+      setActiveMeetingModalIndex(0);
+      setMeetingModalOpen(false);
+      setMeetingModalMessage('');
+      setMeetingContents(prev => {
+        revokeMeetingBarUrls(prev);
+        return [];
+      });
+      setMeetingContentsNotification(false);
+      clearMeetingCalendarLinks();
+      pauseMeetingAudio();
+      return;
+    }
+
+    let cancelled = false;
+
+    const syncNotifications = async () => {
+      await syncAllMeetingPopupBars(userUnreadMeetings);
+      if (cancelled) return;
+
+      setActiveMeetingModalIndex(prev => Math.min(prev, userUnreadMeetings.length - 1));
+
+      const firstMeeting = userUnreadMeetings[0];
+      const shouldAutoOpen =
+        !preventMeetingModalAutoOpenRef.current &&
+        dismissedMeetingModalIdRef.current !== String(firstMeeting.meetingId);
+
+      if (shouldAutoOpen) {
+        await showMeetingModalAtIndex(0, { playSound: meetingAudioUnlocked });
+        if (!cancelled) {
+          setMeetingModalOpen(true);
+        }
+      }
+    };
+
+    syncNotifications();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    userUnreadMeetings,
+    meetingAudioUnlocked,
+    showMeetingModalAtIndex,
+    syncAllMeetingPopupBars,
+    clearMeetingCalendarLinks,
+    revokeMeetingBarUrls,
+    pauseMeetingAudio,
+  ]);
 
   const toggle = () => {
   setIsOpen(prevIsOpen => !prevIsOpen);
@@ -596,7 +1038,12 @@ export function Header(props) {
                       >
                         Equipment/Tool List
                       </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/issues" className={fontColor}  disabled={headerDisabled}>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/Issue"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
                         Issue
                       </DropdownItem>
                       <DropdownItem
@@ -716,6 +1163,7 @@ export function Header(props) {
                   canAccessTeams ||
                   canAccessPopups ||
                   canAccessSendEmails ||
+                  canAccessScheduleMeetings ||
                   canAccessPermissionsManagement ||
                   canAccessBlueSquareEmailManagement) && (
                   <UncontrolledDropdown nav inNavbar>
@@ -775,6 +1223,16 @@ export function Header(props) {
                           disabled={headerDisabled}
                         >
                           {SEND_EMAILS}
+                        </DropdownItem>
+                      )}
+                      {canAccessScheduleMeetings && (
+                        <DropdownItem
+                          tag={Link}
+                          to="/schedulemeetings"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
+                          {SCHEDULE_MEETINGS}
                         </DropdownItem>
                       )}
                       {canAccessPermissionsManagement && (
@@ -868,7 +1326,12 @@ export function Header(props) {
                 )}
 
                 <NavItem className={styles.hideInMobile}>
-                  <BellNotification userId={displayUserId} />
+                  <BellNotification
+                    userId={displayUserId}
+                    hasMeetingNotification={userUnreadMeetings.length > 0}
+                    meetingNotificationCount={userUnreadMeetings.length}
+                    onMeetingNotificationClick={openMeetingNotification}
+                  />
                 </NavItem>
 
 
@@ -948,6 +1411,18 @@ export function Header(props) {
           onClickClose={() => setPopup(prevPopup => !prevPopup)}
         />
       )}
+      {meetingContentsNotification &&
+        meetingContents.map(item => (
+          <PopUpBar
+            key={item.id}
+            firstName={viewingUser?.firstName || firstName}
+            lastName={viewingUser?.lastName}
+            message={item.msg}
+            onClickClose={() => CloseMeetingContentsNotification(item.id, item.recipient)}
+            textColor="black_text"
+            isMeetingNotification
+          />
+        ))}
       <PermissionWatcher props={props} />
       {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged === false && (
         <PopUpBar
@@ -960,8 +1435,11 @@ export function Header(props) {
         />
       )}
       <div>
-        <Modal isOpen={popup} className={darkMode ? 'text-light' : ''}>
-          <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>
+        <Modal
+          isOpen={popup}
+          className={darkMode ? 'text-light hgn-themed-modal--dark' : 'hgn-themed-modal'}
+        >
+          <ModalHeader className={darkMode ? 'bg-space-cadet text-white' : ''}>
             Return to your Dashboard
           </ModalHeader>
           <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -994,6 +1472,99 @@ export function Header(props) {
           ) : null}
         </div>
       )}
+      <audio
+        ref={MeetingNotificationAudioRef}
+        key="meetingNotificationAudio"
+        preload="auto"
+        src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3"
+      >
+        <track kind="captions" />
+      </audio>
+      <Modal
+        isOpen={meetingModalOpen}
+        toggle={handleMeetingRead}
+        className={
+          darkMode
+            ? 'text-light meeting-notification-modal meeting-notification-modal--dark'
+            : 'meeting-notification-modal'
+        }
+        contentClassName={darkMode ? 'meeting-notification-modal-panel--dark' : ''}
+      >
+        {darkMode ? (
+          <MeetingNotificationModalHeader onClose={handleMeetingRead}>
+            Meeting Notification
+            {userUnreadMeetings.length > 1 ? ` (${userUnreadMeetings.length} upcoming)` : ''}
+          </MeetingNotificationModalHeader>
+        ) : (
+          <ModalHeader toggle={handleMeetingRead}>
+            Meeting Notification
+            {userUnreadMeetings.length > 1 ? ` (${userUnreadMeetings.length} upcoming)` : ''}
+          </ModalHeader>
+        )}
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <div className={styles.meetingNotificationModalBody}>
+            <p>{parse(DOMPurify.sanitize(meetingModalMessage))}</p>
+            {meetingCalendarLinks && (
+              <div className={styles.meetingNotificationModalActions}>
+                <a
+                  href={meetingCalendarLinks.googleCalendarLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={styles.meetingCalendarLink}
+                >
+                  Add to Google Calendar
+                </a>
+                <a
+                  href={meetingCalendarLinks.icsUrl}
+                  download="meeting.ics"
+                  className={styles.meetingCalendarLink}
+                >
+                  Download .ics
+                </a>
+              </div>
+            )}
+          </div>
+        </ModalBody>
+        <ModalFooter
+          className={`${styles.meetingNotificationModalFooter}${
+            darkMode ? ' bg-yinmn-blue text-white' : ''
+          }`}
+        >
+          {userUnreadMeetings.length > 1 && meetingAudioUnlocked && (
+            <div className={styles.meetingNotificationNav}>
+              <Button
+                color="secondary"
+                onClick={goToPreviousMeeting}
+                disabled={activeMeetingModalIndex === 0}
+                aria-label="Previous meeting notification"
+              >
+                &lt;
+              </Button>
+              <span className={styles.meetingNotificationNavCount}>
+                {activeMeetingModalIndex + 1} / {userUnreadMeetings.length}
+              </span>
+              <Button
+                color="secondary"
+                onClick={goToNextMeeting}
+                disabled={activeMeetingModalIndex >= userUnreadMeetings.length - 1}
+                aria-label="Next meeting notification"
+              >
+                &gt;
+              </Button>
+            </div>
+          )}
+          <Button
+            color="primary"
+            onClick={handleMeetingRead}
+            style={darkMode ? boxStyleDark : boxStyle}
+            className={styles.meetingNotificationCloseBtn}
+          >
+            {userUnreadMeetings?.length > 0 && !meetingAudioUnlocked
+              ? 'Enable Alerts & View Meeting'
+              : 'Close'}
+          </Button>
+        </ModalFooter>
+      </Modal>
       <div className={darkMode ? styles.headerMargin : styles.headerMarginLight} />
     </div>
   );
@@ -1005,6 +1576,10 @@ const mapStateToProps = state => ({
   taskEditSuggestionCount: state.taskEditSuggestions.count,
   role: state.role,
   notification: state.notification,
+  unreadNotifications: state.notification.unreadNotifications,
+  unreadMeetingNotifications: state.meetingNotification.unreadMeetingNotifications,
+  meetingNotification: state.meetingNotification,
+  allUserProfiles: state.allUserProfiles.userProfiles,
   darkMode: state.theme.darkMode,
 });
 Header.propTypes = {
@@ -1025,6 +1600,13 @@ Header.propTypes = {
     roles: PropTypes.array
   }),
   notification: PropTypes.object,
+  unreadMeetingNotifications: PropTypes.arrayOf(PropTypes.object),
+  meetingNotification: PropTypes.shape({
+    error: PropTypes.shape({
+      message: PropTypes.string,
+    }),
+  }),
+  allUserProfiles: PropTypes.arrayOf(PropTypes.object),
   userProfile: PropTypes.object,
   darkMode: PropTypes.bool,
   taskEditSuggestionCount: PropTypes.number,
