@@ -58,26 +58,41 @@
 .filterGroup {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  justify-content: flex-end;
+  gap: 6px;
   font-size: 13px;
 }
 
 .filterGroup label {
   font-weight: 500;
+  line-height: 1;
+}
+.resetGroup {
+  flex: 1 1 100%;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 4px;
 }
 
-.control {
-  padding: 6px 10px;
+.control,
+.dateInput,
+.resetButton {
+  height: 38px;
+  box-sizing: border-box;
+  padding: 0 10px;
   border-radius: 6px;
   font-size: 13px;
+  line-height: 36px;
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-.control:hover {
+.control:hover,
+.dateInput:hover {
   filter: brightness(1.1);
 }
 
-.control:focus-visible {
+.control:focus-visible,
+.dateInput:focus-visible {
   outline: 2px solid #6fffe9;
   outline-offset: 1px;
 }
@@ -87,7 +102,6 @@
   font-family: inherit;
   color-scheme: light;
 }
-
 
 .dateInputDark {
   color-scheme: dark;
@@ -99,10 +113,8 @@
 }
 
 .resetButton {
-  padding: 7px 14px;
-  border-radius: 6px;
-  font-size: 13px;
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  padding: 0 20px;
+  cursor: pointer;
 }
 
 .resetButton:hover:not(:disabled) {
