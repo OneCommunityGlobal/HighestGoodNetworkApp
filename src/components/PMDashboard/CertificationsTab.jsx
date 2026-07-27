@@ -122,11 +122,12 @@ function CertificationsTab({ darkMode }) {
 
     // Filter by search term
     if (filters.searchTerm.trim()) {
-      const searchLower = filters.searchTerm.toLowerCase();
+      const searchLower = filters.searchTerm.trim().toLowerCase();
+      const searchId = searchLower.replace(/\s+/g, '');
       filtered = filtered.filter(
         cert =>
           // Include the displayed certification ID in the general search box.
-          cert.id.toLowerCase().includes(searchLower) ||
+          cert.id.toLowerCase().includes(searchId) ||
           cert.teacherName.toLowerCase().includes(searchLower) ||
           cert.certificationType.toLowerCase().includes(searchLower) ||
           cert.certifyingBody.toLowerCase().includes(searchLower),

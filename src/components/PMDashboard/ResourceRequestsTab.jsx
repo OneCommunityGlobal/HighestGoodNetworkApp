@@ -100,11 +100,12 @@ function ResourceRequestsTab({ darkMode }) {
 
     // Filter by search term
     if (filters.searchTerm.trim()) {
-      const searchLower = filters.searchTerm.toLowerCase();
+      const searchLower = filters.searchTerm.trim().toLowerCase();
+      const searchId = searchLower.replace(/\s+/g, '');
       filtered = filtered.filter(
         req =>
           // Include the displayed request ID in the general search box.
-          req.id.toLowerCase().includes(searchLower) ||
+          req.id.toLowerCase().includes(searchId) ||
           req.teacherName.toLowerCase().includes(searchLower) ||
           req.resourceType.toLowerCase().includes(searchLower) ||
           req.description.toLowerCase().includes(searchLower),
