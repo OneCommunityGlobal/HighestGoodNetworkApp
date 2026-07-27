@@ -186,6 +186,14 @@
   background-color: #2f4157;
 }
 
+.loading-message-div {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
 .loading-message {
   font-size: 30px;
 }
