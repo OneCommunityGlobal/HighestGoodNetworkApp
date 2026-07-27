@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import Select from 'react-select';
+import { getStandardSelectStyles } from '../../../../utils/reactSelectUtils';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { fetchToolAvailability, fetchTools } from '../../../../actions/bmdashboard/toolActions';
 import styles from './ToolStatusDonutChart.module.css';
@@ -13,8 +15,8 @@ const COLORS = {
 
 const RADIAN = Math.PI / 180;
 const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, width }) => {
-  const isSmall = width <= 768;
-  if (isSmall) return null;
+  // Hide labels on mobile/tablet for better readability
+  if (width <= 1024) return null;
 
   const radius = outerRadius + 20;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -133,6 +135,7 @@ export default function ToolStatusDonutChart() {
   const toolslist = useSelector(state => state.tools.toolslist);
   const availabilityData = useSelector(state => state.toolAvailability.availabilityData);
   const darkMode = useSelector(state => state.theme.darkMode);
+  const projects = useSelector(state => state.bmProjects || state.allProjects?.projects || []);
 
   const [toolId, setToolId] = useState('');
   const [projectId, setProjectId] = useState('');
@@ -162,61 +165,105 @@ export default function ToolStatusDonutChart() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const isXS = windowWidth <= 480;
   const chartData = availabilityData?.data || [];
   const total = availabilityData?.total || 0;
+  const hasNoToolsMatch = total === 0 && !toolId;
+  const hasNoData = total === 0 && !!toolId;
 
-  // Check if we have no data for the selected combination
-  const hasNoData = (toolId || projectId) && chartData.length === 0 && total === 0;
-  const hasNoToolsMatch = total === 0;
-
-  // Use the stored initial data for dropdowns, or fall back to current data
-  const dropdownData = allToolsData || availabilityData;
-  const toolsFromDropdown = dropdownData?.tools || [];
-  const allAvailableTools =
-    Array.isArray(toolsFromDropdown) && toolsFromDropdown.length
-      ? toolsFromDropdown
-      : toolslist || [];
-
-  // Get all unique projects from the combined data
-  const uniqueProjects = Array.from(
-    new Map(
-      allAvailableTools
-        .filter(t => t?.projectId)
-        .map(t => [t.projectId, { id: t.projectId, name: t.projectName || 'Unnamed Project' }]),
-    ).values(),
+  // Extract unique projects from fetched projects list
+  const uniqueProjects = useMemo(
+    () =>
+      Array.from(
+        new Map(
+          projects
+            .filter(p => p?.projectId)
+            .map(p => [
+              p.projectId,
+              { id: p.projectId, name: p.projectName || p.projectId || 'Unnamed Project' },
+            ]),
+        ).values(),
+      ),
+    [projects],
   );
 
-  // Get all unique tools from the combined data
-  const uniqueTools = Array.from(
-    new Map(
-      allAvailableTools
-        .filter(t => t?.toolId)
-        .map(t => [t.toolId, { id: t.toolId, name: t.name || 'Unnamed Tool' }]),
-    ).values(),
+  // Extract unique tools from toolslist using correct data structure (tool.itemType._id and tool.itemType.name)
+  const uniqueTools = useMemo(
+    () =>
+      Array.from(
+        new Map(
+          toolslist
+            .filter(t => t?.itemType?._id && t?.itemType?.name)
+            .map(t => [t.itemType._id, { id: t.itemType._id, name: t.itemType.name }]),
+        ).values(),
+      ),
+    [toolslist],
   );
 
-  // Get the selected tool name
-  const selectedTool = uniqueTools.find(tool => tool.id === toolId);
-  const toolName = selectedTool ? selectedTool.name : null;
+  // Build react-select option lists
+  const projectOptions = useMemo(
+    () => [
+      { label: 'All', value: '' },
+      ...uniqueProjects.map(project => ({
+        label: project.name,
+        value: project.id,
+      })),
+    ],
+    [uniqueProjects],
+  );
 
+  const toolOptions = useMemo(
+    () => [
+      { label: 'All', value: '' },
+      ...uniqueTools.map(tool => ({
+        label: tool.name,
+        value: tool.id,
+      })),
+    ],
+    [uniqueTools],
+  );
+
+  const toolName = toolOptions.find(option => option.value === toolId)?.label ?? '';
+  // Use shared react-select styles to reduce duplication
+  const selectStyles = useMemo(() => getStandardSelectStyles(darkMode), [darkMode]);
+
+  // Gradient responsive sizing - matches other charts for consistent height
+  // Scales smoothly from smallest phones to desktop
   let innerRadius;
   let outerRadius;
   let chartHeight;
-  if (isXS) {
-    innerRadius = 25;
-    outerRadius = 40;
-    chartHeight = 180;
-  } else if (windowWidth <= 768) {
+  if (windowWidth <= 375) {
+    // Small phones (iPhone SE, iPhone 12 mini)
     innerRadius = 30;
     outerRadius = 50;
-    chartHeight = 200;
-  } else {
+    chartHeight = 180;
+  } else if (windowWidth <= 428) {
+    // Medium phones (iPhone 12/13/14)
     innerRadius = 35;
+    outerRadius = 55;
+    chartHeight = 200;
+  } else if (windowWidth <= 480) {
+    // Large phones
+    innerRadius = 37;
     outerRadius = 60;
     chartHeight = 220;
+  } else if (windowWidth <= 768) {
+    // Tablets in portrait
+    innerRadius = 40;
+    outerRadius = 65;
+    chartHeight = 240;
+  } else if (windowWidth <= 1024) {
+    // Tablets in landscape
+    innerRadius = 50;
+    outerRadius = 80;
+    chartHeight = 280;
+  } else {
+    // Desktop
+    innerRadius = 70;
+    outerRadius = 100;
+    chartHeight = 300;
   }
 
+  const isXS = windowWidth <= 480;
   const wrapperClass = `${styles.toolDonutWrapper} ${darkMode ? styles.toolDonutWrapperDark : ''}`;
 
   return (
@@ -227,32 +274,34 @@ export default function ToolStatusDonutChart() {
           <label htmlFor="tool-select" className={styles.filterLabel}>
             Tool/Equipment Name
           </label>
-          <select id="tool-select" value={toolId} onChange={e => setToolId(e.target.value)}>
-            <option value="">All</option>
-            {uniqueTools.map(tool => (
-              <option key={`tool-${tool.id}`} value={tool.id}>
-                {tool.name}
-              </option>
-            ))}
-          </select>
+          <Select
+            inputId="tool-select"
+            className="tool-donut-select"
+            classNamePrefix="select"
+            options={toolOptions}
+            value={toolOptions.find(option => option.value === toolId) || toolOptions[0]}
+            onChange={selected => setToolId(selected ? selected.value : '')}
+            isClearable={false}
+            placeholder="All"
+            styles={selectStyles}
+          />
         </div>
 
         <div className={styles.filterItem}>
           <label htmlFor="project-select" className={styles.filterLabel}>
             Project
           </label>
-          <select
-            id="project-select"
-            value={projectId}
-            onChange={e => setProjectId(e.target.value)}
-          >
-            <option value="">All</option>
-            {uniqueProjects.map(project => (
-              <option key={`project-${project.id}`} value={project.id}>
-                {project.name}
-              </option>
-            ))}
-          </select>
+          <Select
+            inputId="project-select"
+            className="tool-donut-select"
+            classNamePrefix="select"
+            options={projectOptions}
+            value={projectOptions.find(option => option.value === projectId) || projectOptions[0]}
+            onChange={selected => setProjectId(selected ? selected.value : '')}
+            isClearable={false}
+            placeholder="All"
+            styles={selectStyles}
+          />
         </div>
       </div>
 
