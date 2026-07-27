@@ -6,37 +6,75 @@
   box-sizing: border-box;
 }
 
-/* ===================== Container ===================== */
 .experience-chart-container {
-  position: relative;
   width: 100%;
-  max-width: 960px;
-  margin: 2rem auto;
-  padding: 1.75rem;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
   background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 1px 0 rgb(0 0 0 / 4%), 0 12px 30px rgb(2 6 23 / 8%);
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* center children horizontally */
-  text-align: center; /* center text by default */
 }
 
-.experience-chart-container::before {
-  content: '';
-  position: absolute;
-  inset: 0 auto auto 0;
-  height: 4px;
-  width: 100%;
-  background: linear-gradient(
-    90deg,
-    #ff6384 0%,
-    #36a2eb 25%,
-    #ffce56 50%,
-    #4bc0c0 75%,
-    #ff9f40 100%
-  );
-  border-radius: 16px 16px 0 0;
+:global(.dark-mode) .experience-donut-chart {
+  background-color: #1B2A41;
+
+  .experience-chart-container {
+    background-color: transparent;
+  }
+
+  .filter-section {
+    background-color: #253652;
+    border-color: #404751;
+  }
+
+  .filter-label {
+    color: #C0C7D3;
+  }
+
+  .experience-date-input {
+    border-color: #404751;
+  }
+
+  .experience-date-input::placeholder {
+    color: #E0E2EA;
+  }
+
+  .filter-button-clear-all {
+    color: #E0E2EA;
+    border-color: #404751;
+  }
+  
+  .filter-button-clear-all:disabled {
+    opacity: 0.6;
+  }
+  
+  .detail-item {
+    background-color: #253652;
+    border-color: #404751;
+  }
+
+  .detail-name {
+    color: #C0C7D3;
+  }
+
+  .detail-count {
+    color: #E0E2EA;
+  }
+
+  .detail-pct {
+    color: #C0C7D3;
+  }
+
+  .experience-role-multi-select :global(.experience-role-multi-select__input) {
+    color: #f9fafb !important;
+  }
+
+  .custom-tooltip-applicant span {
+    color: #C0C7D3;
+  }
+
+  .custom-tooltip-percentage span {
+    color: #C0C7D3;
+  }
 }
 
 /* ===================== Header ===================== */
@@ -48,9 +86,8 @@
 .chart-title {
   margin: 0;
   color: #0f172a;
-  letter-spacing: -0.015em;
   font-size: 1.6rem;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 /* ===================== Filters ===================== */
@@ -65,30 +102,30 @@
 
 .filter-row {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center !important; /* center items in the row */
-  align-items: center; /* equal vertical alignment */
-  gap: 1rem;
+  flex-direction: column;
+  /* row-gap: 1rem;   */
   width: 100%;
   margin: 0 auto;
-  margin-bottom: 10px;
 }
 
-.filter-group,
-.filter-actions {
-  flex: 1 1 220px; /* grow/shrink; base width ~220px */
-  max-width: 320px; /* avoid overly wide inputs */
-  min-width: 200px; /* don’t get too tiny */
-  text-align: left; /* labels/inputs left-aligned inside */
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  /* row-gap: 0.5rem; */
+  margin-bottom: 1rem;
+}
+
+.experience-donut-chart .filter-group :global(.react-datepicker-wrapper) {
+  width: 100%;
 }
 
 .filter-label {
   display: block;
-  margin-bottom: 0.35rem;
   font-size: 0.9rem;
-  font-weight: 700;
+  font-weight: 400;
   color: #334155;
-  letter-spacing: 0.04em;
+  margin-bottom: 0.3rem;
 }
 
 .filter-input,
@@ -128,6 +165,32 @@
   gap: 0.75rem;
   justify-content: center;
   align-items: center;
+}
+
+.filter-actions .filter-button {
+  display: block;
+  height: 40px;
+  width: 100%;
+  padding-inline: 1.4rem;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.filter-actions .filter-button-apply {
+  background-color: #3b82f6;
+  color: #fff;
+}
+
+.filter-actions .filter-button-clear-all {
+  color: #0000007b;
+  border: 1px solid #0000007b;
+}
+
+.filter-actions .filter-button-clear-all:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .btn {
@@ -189,8 +252,6 @@
   padding: 0;
 }
 
-/* Firefox normalization - removed deprecated hack */
-
 /* ===================== Chart Area ===================== */
 .chart-section {
   width: 100%;
@@ -205,7 +266,6 @@
   align-items: center; /* center horizontally */
   justify-content: center; /* center vertically within area */
   text-align: center;
-  padding-right: 100px !important;
 }
 
 .chart-canvas {
@@ -217,6 +277,18 @@
   aspect-ratio: 1 / 1; /* keeps donut perfectly square */
   min-height: 240px; /* fallback for older browsers */
   margin: 0 auto;
+  position: relative; /* anchor for absolute-positioned tooltip layer */
+}
+
+/* Floats the external CustomTooltip over the donut center so card-hover or
+   slice-hover both surface it in the same place. */
+.chart-tooltip-layer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 5;
 }
 
 .recharts-wrapper,
@@ -236,139 +308,92 @@
 
 /* ===================== Details (below donut) ===================== */
 .chart-details {
-  max-width: 960px; /* match .experience-chart-container */
+  max-width: 1280px;
   width: 100%;
   margin: 1rem auto 0;
-  padding-inline: 0.5rem;
   display: grid;
   gap: 0.8rem;
 
   /* single strategy: fluid columns that never force overflow */
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   place-items: stretch stretch;
-  overflow-x: hidden; /* safety net */
 }
 
 /* 2) Let cards fill the grid cell on desktop (remove narrow cap) */
-.detail-item {
-  display: grid;
-  grid-template-columns: 12px 1fr auto auto; /* dot | name | count | pct */
-  column-gap: 8px;
-  align-items: center;
+.chart-details .detail-item {
   width: 100%;
-  max-width: none; /* fill grid column, don't cap */
-  padding: 0.6rem 0.75rem;
-
-  /* text-align: left; */
-
-  /* prevent overflow on long role names / unbroken strings */
-  overflow-wrap: anywhere;
-  text-align: center;
-  justify-content: center;
+  background-color: #f1f5f9; /* stronger than #f8fafc, more visible */
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgb(2 6 23 / 6%);
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.2s ease,
+    transform 0.15s ease;
 }
 
-.detail-item:hover,
-.detail-item.active {
-  background: #111827;
-  border-color: #0b1220;
-  box-shadow: 0 8px 18px rgb(2 6 23 / 12%);
-  transform: translateY(-1px);
+.chart-details .detail-item.active {
+  border-color: hsl(214, 32%, 60%);
+  transform: translateY(-2px);
 }
 
-.detail-item:hover span,
-.detail-item.active span {
-  color: #fff !important;
+.detail-header {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  column-gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.detail-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
 }
 
 /* Map children into the grid */
 .detail-dot {
-  grid-column: 1;
-  width: 10px;
-  height: 10px;
+  display: block;
+  width: 1rem;
+  height: 1rem;
   border-radius: 999px;
-  box-shadow: 0 0 0 2px rgb(255 255 255 / 70%);
 }
 
 .detail-name {
-  grid-column: 2;
-  font-weight: 800;
   color: #0f172a;
   font-size: 0.9rem;
 }
 
 .detail-sep {
   display: none;
-} /* we don’t need the bullet in a grid layout */
+}
+
 .detail-count {
-  grid-column: 3;
-  font-weight: 800;
+  font-size: 2rem;
+  font-weight: 700;
   color: #0f172a;
 }
 
 .detail-sub {
   display: none;
-} /* optional: hide to keep cards compact; show if you prefer */
-.detail-pct {
-  grid-column: 4;
-  margin-left: 0;
-  font-weight: 800;
-  color: #2563eb;
 }
 
-/* .detail-item:hover,
-.detail-item.active {
-  background: #111827;
-  border-color: #0b1220;
-  box-shadow: 0 8px 18px rgba(2,6,23,.12);
-  transform: translateY(-1px);
-} */
-
-/* .detail-item:hover span,
-.detail-item.active span { color: #ffffff !important; } */
-.detail-item:hover .detail-pct,
-.detail-item.active .detail-pct {
-  color: #93c5fd !important;
-} /* keep contrast on hover */
+.detail-pct {
+  font-size: 0.9rem;
+  margin-left: 0;
+  color: hsl(0, 0%, 60%);
+}
 
 @media (width <= 640px) {
   .chart-details {
     grid-template-columns: 1fr;
   }
-
-  .detail-item {
-    display: flex; /* simpler on mobile */
-    flex-wrap: wrap;
-    justify-content: center;
-    text-align: center;
-    gap: 0.45rem 0.6rem;
-  }
-
-  .detail-dot {
-    order: 1;
-  }
-
-  .detail-name {
-    order: 2;
-    width: 100%;
-    font-size: 1rem;
-  }
-
   .detail-sep {
     display: none;
   }
-
-  .detail-count {
-    order: 3;
-  }
-
   .detail-sub {
     order: 4;
     display: inline;
     color: #475569;
-  }
-
-  .detail-pct {
-    order: 5;
   }
 }
 
@@ -442,6 +467,7 @@
 
 /* Adjusted tooltip for Light Mode: Light background with dark text for contrast */
 .custom-tooltip {
+  text-align: left;
   background: rgb(255 255 255 / 96%) !important;
   border: 1px solid #e2e8f0 !important;
   border-radius: 10px !important;
@@ -449,6 +475,30 @@
   box-shadow: 0 12px 28px rgb(2 6 23 / 15%) !important;
   backdrop-filter: blur(10px);
   color: #0f172a !important;
+}
+
+.custom-tooltip-name {
+  padding-bottom: 0.4rem;
+  font-weight: 700;
+}
+
+.custom-tooltip-stats {
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.4rem;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 0.4rem;
+}
+
+.custom-tooltip-applicant {
+  display: flex;
+  justify-content: space-between;
+}
+
+.custom-tooltip-percentage {
+  display: flex;
+  justify-content: space-between;
+  column-gap: 1rem;
 }
 
 .tooltip-content {
@@ -469,16 +519,8 @@
   filter: brightness(1.05);
 }
 
-/* .detail-item { text-align: center; justify-content: center; } */
-
 /* ===================== Responsive tweaks ===================== */
 @media (width <= 640px) {
-  .filter-group,
-  .filter-actions {
-    max-width: 320px;
-    min-width: 220px;
-  }
-
   .chart-canvas {
     max-width: 360px;
     min-height: 220px;
@@ -496,9 +538,6 @@
     border: 1px solid #cbd5e1;
   }
 
-  .filter-section {
-    display: none;
-  }
 }
 
 @media (prefers-contrast: more) {
@@ -529,44 +568,6 @@
   .chart-details {
     grid-template-columns: 1fr;
   }
-
-  .detail-item {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    text-align: center;
-    gap: 0.45rem 0.6rem;
-  }
-
-  .detail-name {
-    width: 100%;
-    font-size: 1rem;
-  }
-}
-
-/* --- Ensure detail cards always show a visible background --- */
-.chart-details .detail-item {
-  background-color: #f1f5f9; /* stronger than #f8fafc, more visible */
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgb(2 6 23 / 6%);
-  background-clip: padding-box;
-  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.2s ease,
-    transform 0.15s ease;
-}
-
-/* Keep dark hover/active but ensure contrast is clear */
-.chart-details .detail-item:hover,
-.chart-details .detail-item.active {
-  background-color: #111827;
-  border-color: #0b1220;
-  box-shadow: 0 8px 18px rgb(2 6 23 / 12%);
-}
-
-/* If your app has global card or utility classes that might strip bg,
-   this raises specificity a bit further without !important. */
-.experience-chart-container .chart-details .detail-item {
-  background-color: #f1f5f9;
 }
 
 /* Optional: high-contrast users still get borders */
@@ -574,52 +575,6 @@
   .chart-details .detail-item {
     border-color: #0f172a;
   }
-}
-
-/* --- Make chart-driven active state win over base card styles --- */
-.chart-details .detail-item.active {
-  background-color: #111827 !important; /* win against base bg */
-  border-color: #0b1220 !important;
-  box-shadow: 0 8px 18px rgb(2 6 23 / 12%);
-  color: #fff;
-}
-
-.chart-details .detail-item.active span {
-  color: #fff !important; /* keep text readable */
-}
-
-/* Optional: smooth the state change */
-
-/* .chart-details .detail-item {
-  transition: background-color .15s ease, border-color .15s ease, box-shadow .2s ease, transform .15s ease;
-} */
-
-/* ===================== DARK MODE (scoped to wrapper) ===================== */
-
-/* Ensure every surface flips dark */
-.experience-donut-chart.experience-donut-chart-dark-mode,
-.experience-donut-chart-dark-mode,
-.experience-donut-chart-dark-mode .experience-chart-container,
-.experience-donut-chart-dark-mode .chart-section,
-.experience-donut-chart-dark-mode .chart-area {
-  background-color: #1c2441 !important;
-  color: #f1f5f9;
-}
-
-.experience-donut-chart-dark-mode {
-  margin-top: -35px;
-}
-
-/* Top gradient bar */
-.experience-donut-chart-dark-mode .experience-chart-container::before {
-  background: linear-gradient(
-    90deg,
-    #60a5fa 0%,
-    #34d399 25%,
-    #fbbf24 50%,
-    #22d3ee 75%,
-    #f97316 100%
-  );
 }
 
 /* Title & header */
@@ -632,15 +587,6 @@
 }
 
 /* ===================== Filters ===================== */
-.experience-donut-chart-dark-mode .filter-section {
-  background: #232d53;
-  border-color: #3b4a75;
-}
-
-.experience-donut-chart-dark-mode .filter-label {
-  color: #dbe3ff;
-}
-
 .experience-donut-chart-dark-mode .filter-input,
 .experience-donut-chart-dark-mode .filter-select,
 .experience-donut-chart-dark-mode .filter-group select {
@@ -708,12 +654,6 @@
   stroke: #3b4a75 !important;
 }
 
-/* Strong contrast on hover/active (details + svg labels) */
-.experience-donut-chart-dark-mode .chart-details .detail-item:hover span,
-.experience-donut-chart-dark-mode .chart-details .detail-item.active span {
-  color: #fff !important;
-}
-
 .experience-donut-chart-dark-mode .recharts-sector:hover text,
 .experience-donut-chart-dark-mode .recharts-pie-sector:hover text {
   fill: #fff !important;
@@ -722,34 +662,6 @@
 /* ===================== Details (cards under chart) ===================== */
 .experience-donut-chart-dark-mode .chart-details {
   color: #e5e7eb;
-}
-
-.experience-donut-chart-dark-mode .chart-details .detail-item {
-  background-color: #2a355f;
-  border: 1px solid #3b4a75;
-  color: #e2e8f0;
-  box-shadow: 0 2px 8px rgb(0 0 0 / 35%);
-}
-
-.experience-donut-chart-dark-mode .detail-name,
-.experience-donut-chart-dark-mode .detail-count {
-  color: #e5e7eb;
-}
-
-.experience-donut-chart-dark-mode .detail-item .detail-pct {
-  color: #93c5fd;
-}
-
-.experience-donut-chart-dark-mode .detail-dot {
-  box-shadow: 0 0 0 2px rgb(28 36 65 / 70%);
-}
-
-/* Hover/active state harmonized with palette */
-.experience-donut-chart-dark-mode .chart-details .detail-item:hover,
-.experience-donut-chart-dark-mode .chart-details .detail-item.active {
-  background-color: #232d53;
-  border-color: #1c2441;
-  box-shadow: 0 8px 18px rgb(0 0 0 / 45%);
 }
 
 /* ===================== States (loading, error, empty) ===================== */
@@ -780,7 +692,7 @@
 
 /* Adjusted tooltip for Dark Mode: Scoped to .experience-donut-chart-dark-mode */
 .experience-donut-chart-dark-mode .custom-tooltip {
-  background-color: rgb(42 53 95 / 96%) !important;
+  background-color: #253652 !important;
   color: #f1f5f9 !important;
   border: 1px solid #3b4a75 !important;
   box-shadow: 0 12px 28px rgb(0 0 0 / 45%) !important;
@@ -790,19 +702,236 @@
   color: #fff !important;
 }
 
-/* ===================== Print & prefers-color-scheme ===================== */
-@media print {
-  .experience-donut-chart-dark-mode .experience-chart-container {
-    background: #fff;
-    color: #0f172a;
-    box-shadow: none;
-    border: 1px solid #cbd5e1;
-  }
+/* ROLES MULTI-SELECT */
+.experience-role-multi-select {
+  width: 100%;
 }
 
-/* Keep prefers-color-scheme consistent with your chosen dark */
-@media (prefers-color-scheme: dark) {
-  .experience-donut-chart-dark-mode .experience-chart-container {
-    background: #1c2441;
+.experience-role-multi-select :global(.experience-role-multi-select__option--is-focused.experience-role-multi-select__option--is-selected) {
+  background-color: #007bff;
+}
+
+:global(.dark-mode) .experience-role-multi-select :global(.experience-role-multi-select__control) {
+  background-color: #1f2937;
+  border-color: #404751;
+  border-radius: 0.5rem;
+}
+
+:global(.dark-mode) .experience-role-multi-select :global(.experience-role-multi-select__menu) {
+  background-color: #1f2937;
+  border-color: #5a6c7d;
+  color: #ffffff;
+}
+
+:global(.dark-mode) .experience-role-multi-select :global(.experience-role-multi-select__option--is-focused) {
+    background-color: #374151;
+}
+
+:global(.dark-mode) .experience-role-multi-select :global(.experience-role-multi-select__option--is-focused.experience-role-multi-select__option--is-selected) {
+  background-color: #007bff;
+}
+
+:global(.dark-mode) .experience-role-multi-select :global(.experience-role-multi-select__clear-indicator:hover), :global(.dark-mode) .experience-role-multi-select :global(.experience-role-multi-select__dropdown-indicator:hover) {
+  color: #ffffff;
+}
+
+.experience-role-multi-select :global(.experience-role-multi-select__placeholder) {
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.experience-role-multi-select :global(.experience-role-multi-select__menu) {
+  text-align: left;
+}
+
+.experience-role-multi-select :global(.experience-role-multi-select__control) {
+  border-color: #e5e7eb;
+  border-radius: 0.5rem;
+}
+
+.experience-role-multi-select :global(.experience-role-multi-select__value-container) {
+  padding: 0.2rem 1rem;
+  column-gap: 0.5rem;
+}
+
+
+.selectedPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 6px;
+  font-size: 0.875rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  border-radius: 0.3rem;
+  background-color: #007bff;
+  color: #ffffff;
+}
+
+/* DATE RANGE FITLER */
+.experience-date-input {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background: #fff;
+  color: #111827;
+  font-size: 0.875rem;
+  border: 1px solid #e5e7eb;
+  color-scheme: light;
+}
+
+.experience-date-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 20%);
+}
+
+:global(.experience-datepicker-light .react-datepicker__navigation-icon::before) {
+  border-color: #08060d !important;
+}
+
+:global(.experience-datepicker .react-datepicker__navigation-icon) {
+  font-size: initial !important;
+}
+
+:global(.experience-datepicker .react-datepicker__day--disabled:hover) {
+  background-color: transparent !important;
+  cursor:not-allowed;
+}
+
+:global(.experience-datepicker-light .react-datepicker__day--disabled) {
+  color: #9ca3af !important;
+}
+
+:global(.experience-datepicker-light .react-datepicker__day--keyboard-selected) {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+:global(.experience-datepicker-light .react-datepicker__day--in-selecting-range:not(.react-datepicker__day--in-range)) {
+  color: #000000 !important;
+  background-color: #f0f0f0;
+}
+
+:global(.experience-datepicker-light .react-datepicker__day--in-range) {
+  color: #000000 !important;
+}
+
+:global(.experience-datepicker-light .react-datepicker__day--in-range.react-datepicker__day--in-selecting-range) {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+:global(.experience-datepicker-light .react-datepicker__day--in-range.react-datepicker__day--outside-month) {
+  color: #ffffff !important;
+}
+
+:global(.experience-datepicker-light .react-datepicker__month--selecting-range .react-datepicker__day--in-range:not(.react-datepicker__day--in-selecting-range)) {
+  color: #000000 !important;
+}
+
+:global(.dark-mode) .experience-date-input {
+  background: #1f2937;
+  color: #f9fafb;
+  border-color: #374151;
+  color-scheme: dark;
+}
+
+:global(.dark-mode) .experience-date-input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+:global(.experience-datepicker-dark) {
+  background-color: #1b2a41;
+  color: #f9fafb;
+  border-color: #374151;
+}
+
+:global(.experience-datepicker-dark .react-datepicker__header) {
+  background-color: #111827;
+  border-bottom: 1px solid #374151;
+}
+
+:global(.experience-datepicker-dark .react-datepicker__current-month),
+:global(.experience-datepicker-dark .react-datepicker__day-name),
+:global(.experience-datepicker-dark .react-datepicker__day),
+:global(.experience-datepicker-dark .react-datepicker__time-name) {
+  color: #f9fafb;
+}
+
+:global(.experience-datepicker-dark .react-datepicker__day:hover) {
+  background-color: #374151;
+}
+
+:global(.experience-datepicker-dark .react-datepicker__day--disabled) {
+  color: #9ca3af !important;
+}
+
+:global(.experience-datepicker-dark .react-datepicker__day--keyboard-selected) {
+  background-color: #1b2a41;
+  color: #ffffff;
+}
+
+:global(.experience-datepicker-dark .react-datepicker__day--in-selecting-range:not(.react-datepicker__day--in-range)) {
+  color: #ffffff !important;
+  background-color: #ffffff1b;
+}
+
+:global(.experience-datepicker-dark .react-datepicker__day--in-range) {
+  color: #ffffff !important;
+  background-color: #3b82f6;
+}
+
+:global(.experience-datepicker-dark .react-datepicker__day--in-range.react-datepicker__day--in-selecting-range) {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+:global(.experience-datepicker-dark .react-datepicker__day--in-range.react-datepicker__day--outside-month) {
+  color: #ffffff !important;
+}
+
+:global(.experience-datepicker-dark .react-datepicker__month--selecting-range .react-datepicker__day--in-range:not(.react-datepicker__day--in-selecting-range)) {
+  color: #ffffff !important;
+  background-color: #ffffff1b;
+}
+
+:global(.experience-datepicker-dark .react-datepicker__day--disabled) {
+  color: #6b7280;
+}
+
+:global(.experience-datepicker-dark .react-datepicker__triangle) {
+  display: none;
+}
+
+@media screen and (min-width: 1024px) {
+  .experience-donut-chart .filter-row {
+    flex-direction: row;
+    column-gap: 0.5rem;
+    flex: 1;
+    margin-bottom: 1rem;
   }
+
+  .experience-donut-chart .filter-group {
+    margin-bottom: 0;
+  }
+  
+  .experience-donut-chart .filter-actions {
+    margin-bottom: 0;
+  }
+
+  .filter-actions .filter-button {
+    width: auto;
+  }
+
+  .experience-donut-chart .filter-group-date {
+    flex: 1;
+  }
+
+
+
+  .experience-role-multi-select :global(.experience-role-multi-select__control) {
+    min-width: 415px;
+  }
+
 }
