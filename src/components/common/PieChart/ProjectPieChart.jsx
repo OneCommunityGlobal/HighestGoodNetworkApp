@@ -75,47 +75,49 @@ export default function UserProjectD3PieChart({ projectsData, darkMode }) {
     >
       {/* Square box so the donut isn't clipped; same size as D3 chart */}
       <div className={styles['pie-chart-donut']} style={{ '--pie-chart-size': `${CHART_SIZE}px` }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <RechartsPieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
-            <Pie
-              data={data}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              innerRadius={70} // <- same as D3
-              outerRadius={CHART_RADIUS} // <- same as D3
-              label={false} // no labels
-              labelLine={false} // no pointers
-              isAnimationActive={false}
-              stroke="none"
-            >
-              <Label
-                position="center"
-                content={props => (
-                  <CenterLabel {...props} total={total} darkMode={darkMode} showPct={showPct} />
-                )}
-              />
-              {data.map((_, i) => (
-                <Cell key={i} fill={colors[i]} />
-              ))}
-            </Pie>
+        <div className={styles['pie-chart-donut-canvas']}>
+          <ResponsiveContainer width="100%" height="100%">
+            <RechartsPieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
+              <Pie
+                data={data}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                innerRadius={70} // <- same as D3
+                outerRadius={CHART_RADIUS} // <- same as D3
+                label={false} // no labels
+                labelLine={false} // no pointers
+                isAnimationActive={false}
+                stroke="none"
+              >
+                <Label
+                  position="center"
+                  content={props => (
+                    <CenterLabel {...props} total={total} darkMode={darkMode} showPct={showPct} />
+                  )}
+                />
+                {data.map((_, i) => (
+                  <Cell key={i} fill={colors[i]} />
+                ))}
+              </Pie>
 
-            <Tooltip
-              contentStyle={
-                darkMode
-                  ? { backgroundColor: '#1b2a41', color: '#f9fafb', border: '1px solid #374151' }
-                  : {}
-              }
-              itemStyle={darkMode ? { color: '#f9fafb' } : {}}
-              formatter={(value, _name, entry) =>
-                showPct
-                  ? [`${((Number(value) * 100) / total).toFixed(2)}%`, entry?.payload?.name]
-                  : [`${Number(value).toFixed(2)} hrs`, entry?.payload?.name]
-              }
-            />
-          </RechartsPieChart>
-        </ResponsiveContainer>
+              <Tooltip
+                contentStyle={
+                  darkMode
+                    ? { backgroundColor: '#1b2a41', color: '#f9fafb', border: '1px solid #374151' }
+                    : {}
+                }
+                itemStyle={darkMode ? { color: '#f9fafb' } : {}}
+                formatter={(value, _name, entry) =>
+                  showPct
+                    ? [`${((Number(value) * 100) / total).toFixed(2)}%`, entry?.payload?.name]
+                    : [`${Number(value).toFixed(2)} hrs`, entry?.payload?.name]
+                }
+              />
+            </RechartsPieChart>
+          </ResponsiveContainer>
+        </div>
         <div className={styles['pie-chart-toggle']}>
           <label className={styles['switch']}>
             <input

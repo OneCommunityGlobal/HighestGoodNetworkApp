@@ -19,7 +19,7 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate, darkMode }) {
 
   React.useEffect(() => {
     generateGraph();
-  }, [show, fromDate, toDate]);
+  }, [show, fromDate, toDate, darkMode]);
 
   function displayGraph(logs, maxHoursCount, totalHours) {
     if (!d3 || !d3.selectAll) return;
