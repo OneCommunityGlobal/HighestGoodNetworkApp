@@ -568,44 +568,6 @@ export function Header(props) {
     };
   }, [user.userid, props.auth.firstName]);
 
-  // Debugging Enhancement: Monitor window resize events for responsive testing
-  useEffect(() => {
-    const handleResize = () => {
-      const currentWidth = window.innerWidth;
-      // eslint-disable-next-line no-console
-      console.log(`[Header Debug] Window resized to: ${currentWidth}px`);
-
-      // Log breakpoint information for debugging
-      if (currentWidth >= 1728) {
-        // eslint-disable-next-line no-console
-        console.log(`[Header Debug] Breakpoint: Large screen (90%+) - Owner message below timer`);
-      } else if (currentWidth >= 1400) {
-        // eslint-disable-next-line no-console
-        console.log(`[Header Debug] Breakpoint: Desktop - Centered layout`);
-      } else if (currentWidth >= 1200) {
-        // eslint-disable-next-line no-console
-        console.log(`[Header Debug] Breakpoint: Medium desktop - Centered layout`);
-      } else if (currentWidth >= 768) {
-        // eslint-disable-next-line no-console
-        console.log(`[Header Debug] Breakpoint: Tablet - Stacked layout`);
-      } else {
-        // eslint-disable-next-line no-console
-        console.log(`[Header Debug] Breakpoint: Mobile - Compact vertical layout`);
-      }
-    };
-
-    // Log initial window size
-    handleResize();
-
-    // Add resize event listener
-    window.addEventListener('resize', handleResize);
-
-    // Cleanup event listener on component unmount
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
@@ -871,17 +833,23 @@ export function Header(props) {
               {isAuthenticated && <OwnerMessage />}
             </div>
             <div className={styles.rightSection}>
-            <NavbarToggler onClick={toggle} ref={toggleRef} className={styles.navbarToggler} />
+               
+            <NavbarToggler
+              onClick={toggle}
+              ref={toggleRef}
+              className={styles.navbarToggler}
+              aria-label="Toggle navigation"
+            />
             <div
               ref={collapseRef}
               className={`${styles.navCollapse} ${isOpen ? styles.navCollapseOpen : ''}`}
               role="menu"
               tabIndex={-1}
-              onKeyDown={(e) => {
+              onKeyDown={e => {
                 if (e.key === 'Escape') setIsOpen(false);
               }}
             >
-            <Nav className={`${styles.menuContainer} mr-3`} navbar>
+              <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>                
                 <NavItem className={styles.showInMobile}>
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                     <img
