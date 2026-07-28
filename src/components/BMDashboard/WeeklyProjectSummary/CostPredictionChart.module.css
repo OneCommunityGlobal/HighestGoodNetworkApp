@@ -67,11 +67,11 @@
   font-weight: 500;
   line-height: 1;
 }
-.resetGroup {
-  flex: 1 1 100%;
-  flex-direction: row;
-  justify-content: center;
-  margin-top: 4px;
+
+.filterGroupSpacerLabel {
+  display: block;
+  height: 13px;
+  line-height: 1;
 }
 
 .control,

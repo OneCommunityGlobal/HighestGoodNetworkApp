@@ -48,55 +48,57 @@ const SERIES_COLORS = {
   predicted: '#ff7300',
 };
 
-// Simple hardcoded project list for testing the filter — swap this out for
-// a real API/Redux-backed list later.
+// Simple hardcoded project list for testing the filter — swap this out for a real API/Redux-backed list later.
 const PROJECTS = [
   { id: 'building-1', name: 'Building 1' },
   { id: 'building-2', name: 'Building 2' },
   { id: 'building-3', name: 'Building 3' },
 ];
 
-const SAMPLE_DATA_BY_PROJECT = {
-  'building-1': {
-    planned: [1200, 1500, 1800, 2100, 2400, 2700],
-    actual: [1100, 1600, 1750, 2200, 2300, 2650],
-    predicted: [null, null, null, 2050, 2350, 2680],
-  },
-  'building-2': {
-    planned: [2000, 2300, 2600, 2900, 3200, 3500],
-    actual: [1900, 2400, 2500, 3000, 3100, 3450],
-    predicted: [null, null, null, 2950, 3150, 3480],
-  },
-  'building-3': {
-    planned: [800, 950, 1100, 1250, 1400, 1550],
-    actual: [750, 1000, 1050, 1300, 1350, 1500],
-    predicted: [null, null, null, 1220, 1380, 1530],
-  },
+const DEFAULT_WINDOW_MONTHS = 6;
+
+const SAMPLE_DATA_BASE = {
+  'building-1': { plannedStart: 400, plannedGrowth: 5.6, actualStart: 380, actualGrowth: 5.4 },
+  'building-2': { plannedStart: 700, plannedGrowth: 9.2, actualStart: 660, actualGrowth: 9.0 },
+  'building-3': { plannedStart: 250, plannedGrowth: 3.1, actualStart: 240, actualGrowth: 3.0 },
 };
 
 // Fallback sample data so the chart always renders, even when the backend has
 // no cost/prediction records for this project (e.g. on a reviewer's machine).
-// Uses a fixed data set per known project id; unknown ids fall back to Building 1's numbers
 function buildSampleData(projectId) {
   const now = new Date();
-  const { planned, actual, predicted } =
-    SAMPLE_DATA_BY_PROJECT[projectId] ?? SAMPLE_DATA_BY_PROJECT['building-1'];
+  const start = new Date(2012, 0, 1);
+  const totalMonths =
+    (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth()) + 1;
 
-  return planned.map((_, i) => {
-    const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
-    return {
+  const base = SAMPLE_DATA_BASE[projectId] ?? SAMPLE_DATA_BASE['building-1'];
+
+  const data = [];
+  for (let i = 0; i < totalMonths; i += 1) {
+    const d = new Date(start.getFullYear(), start.getMonth() + i, 1);
+    const planned = Math.round(base.plannedStart + i * base.plannedGrowth);
+    const actual = Math.round(base.actualStart + i * base.actualGrowth);
+    const isRecent = i >= totalMonths - 3; // only the last 3 months have a "prediction"
+    const predicted = isRecent ? Math.round(planned * 1.02) : null;
+
+    data.push({
       month: d.toLocaleString('default', { month: 'long', year: 'numeric' }),
-      plannedCost: planned[i],
-      actualCost: actual[i],
-      predictedCost: predicted[i],
-    };
-  });
+      plannedCost: planned,
+      actualCost: actual,
+      predictedCost: predicted,
+    });
+  }
+  return data;
 }
 
 function renderDotTopOrBottom(lineKey, color, dataLength) {
   return function CustomDot(props) {
     const { cx, cy, value, payload, index } = props;
     if (value == null) return null;
+
+    const isFirst = index === 0;
+    const isLast = dataLength != null && index === dataLength - 1;
+    if (!isFirst && !isLast) return null;
 
     const planned = payload.plannedCost;
     const actual = payload.actualCost;
@@ -105,43 +107,24 @@ function renderDotTopOrBottom(lineKey, color, dataLength) {
     if (values.length === 0) return null;
 
     const max = Math.max(...values);
-    const min = Math.min(...values);
-    const isFirst = index === 0;
-    const isLast = dataLength != null && index === dataLength - 1;
-    const dx = isFirst ? 32 : isLast ? -18 : 0;
+    const dx = isFirst ? 32 : -18;
     const textAnchor = isLast ? 'end' : 'middle';
 
-    if (value === max) {
-      return (
-        <text
-          x={cx + dx}
-          y={cy - 20}
-          fill={color}
-          fontSize={14}
-          fontWeight="bold"
-          textAnchor={textAnchor}
-          alignmentBaseline="middle"
-        >
-          {value}
-        </text>
-      );
-    }
-    if (value === min) {
-      return (
-        <text
-          x={cx + dx}
-          y={cy + 18}
-          fill={color}
-          fontSize={14}
-          fontWeight="bold"
-          textAnchor={textAnchor}
-          alignmentBaseline="middle"
-        >
-          {value}
-        </text>
-      );
-    }
-    return null;
+    const y = value === max ? cy - 20 : cy + 18;
+
+    return (
+      <text
+        x={cx + dx}
+        y={y}
+        fill={color}
+        fontSize={14}
+        fontWeight="bold"
+        textAnchor={textAnchor}
+        alignmentBaseline="middle"
+      >
+        {value}
+      </text>
+    );
   };
 }
 
@@ -349,7 +332,9 @@ function CostPredictionChart({ projectId }) {
   }, [effectiveProjectId]);
 
   const filteredData = useMemo(() => {
-    if (!dateRange.start && !dateRange.end) return chartData;
+    if (!dateRange.start && !dateRange.end) {
+      return chartData.slice(-DEFAULT_WINDOW_MONTHS);
+    }
     return chartData.filter(d => {
       const pointDate = new Date(d.month);
       if (dateRange.start && pointDate < new Date(dateRange.start)) return false;
@@ -454,6 +439,7 @@ function CostPredictionChart({ projectId }) {
             }`}
             style={filterStyles.control}
             value={dateRange.start}
+            min="2011-01-01"
             max={dateRange.end || undefined}
             onChange={e => setDateRange(prev => ({ ...prev, start: e.target.value }))}
           />
@@ -476,7 +462,10 @@ function CostPredictionChart({ projectId }) {
           />
         </div>
 
-        <div className={`${styles.filterGroup} ${styles.resetGroup}`}>
+        {/* Flows inline with the other filters; only wraps to a new line
+            naturally (like the others) when the row runs out of space. */}
+        <div className={styles.filterGroup}>
+          <span aria-hidden="true" className={styles.filterGroupSpacerLabel} />
           <button
             type="button"
             className={styles.resetButton}
