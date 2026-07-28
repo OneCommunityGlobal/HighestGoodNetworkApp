@@ -25,7 +25,7 @@ export default function TimeLogDetail() {
   const log = logFromContext || passedLog;
 
   const [noteValue, setNoteValue] = useState('');
-  const [serverNote, setServerNote] = useState('');
+  const [savedNote, setSavedNote] = useState('');
   const [teacherFeedback, setTeacherFeedback] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -35,7 +35,7 @@ export default function TimeLogDetail() {
   useEffect(() => {
     if (log) {
       const note = log.metadata?.noteToTeacher || '';
-      setServerNote(note);
+      setSavedNote(note);
       setNoteValue(note);
       setTeacherFeedback(log.metadata?.teacherFeedback || '');
       setLoading(false);
@@ -53,12 +53,11 @@ export default function TimeLogDetail() {
       await new Promise(r => setTimeout(r, 300));
 
       updateLogNote(id, noteValue);
-      setServerNote(noteValue);
+      setSavedNote(noteValue);
       setSaved(true);
 
-      setTimeout(() => setSaved(false), 2000);
-    } catch (e) {
-      console.error('Error saving note:', e);
+      window.setTimeout(() => setSaved(false), 2000);
+    } catch {
       setError('Saving failed. Please try again.');
     } finally {
       setSaving(false);
@@ -66,8 +65,9 @@ export default function TimeLogDetail() {
   };
 
   const handleCancel = () => {
-    setNoteValue(serverNote);
+    setNoteValue(savedNote);
     setSaved(false);
+    setError('');
   };
 
   if (!log) {
@@ -132,6 +132,7 @@ export default function TimeLogDetail() {
               onChange={e => {
                 setNoteValue(e.target.value);
                 setSaved(false);
+                setError('');
               }}
               placeholder="Write a note to your teacher…"
             />
@@ -157,15 +158,13 @@ export default function TimeLogDetail() {
             </div>
 
             {saved && (
-              <div className={styles.detailNote} style={{ color: '#15803d' }}>
+              <div className={`${styles.formMessage} ${styles.formMessageSuccess}`}>
                 Note saved successfully.
               </div>
             )}
 
             {error && (
-              <div className={styles.detailNote} style={{ color: '#b91c1c' }}>
-                {error}
-              </div>
+              <div className={`${styles.formMessage} ${styles.formMessageError}`}>{error}</div>
             )}
           </>
         )}

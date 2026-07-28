@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useMemo } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 
 const DailyLogContext = createContext(null);
@@ -57,10 +57,65 @@ const initialLogs = [
   },
 ];
 
-export function DailyLogProvider({ children }) {
-  const [logs, setLogs] = useState(initialLogs);
+const STORAGE_KEY = 'daily-log-logs';
 
-  const addLog = log => setLogs(prev => [log, ...prev]);
+function getStorageKey() {
+  if (typeof window === 'undefined') return STORAGE_KEY;
+
+  const userId =
+    window.localStorage.getItem('userId') ||
+    window.localStorage.getItem('user_id') ||
+    window.localStorage.getItem('currentUserId') ||
+    '';
+
+  return userId ? `daily-log-logs-${userId}` : STORAGE_KEY;
+}
+
+function readPersistedLogs() {
+  if (typeof window === 'undefined') return null;
+
+  try {
+    const rawValue = window.localStorage.getItem(getStorageKey());
+    if (!rawValue) return null;
+
+    const parsed = JSON.parse(rawValue);
+    return Array.isArray(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function persistLogs(logs) {
+  if (typeof window === 'undefined') return;
+
+  try {
+    window.localStorage.setItem(getStorageKey(), JSON.stringify(logs));
+  } catch {
+    // Ignore persistence failures and fall back to in-memory state.
+  }
+}
+
+export function DailyLogProvider({ children }) {
+  const [logs, setLogs] = useState(() => readPersistedLogs() ?? initialLogs);
+
+  useEffect(() => {
+    persistLogs(logs);
+  }, [logs]);
+
+  const addLog = log =>
+    setLogs(prev => {
+      const nextLogs = [...prev, log];
+      return nextLogs.sort((left, right) => {
+        const leftTime = new Date(left.created_at).getTime();
+        const rightTime = new Date(right.created_at).getTime();
+
+        if (Number.isNaN(leftTime) && Number.isNaN(rightTime)) return 0;
+        if (Number.isNaN(leftTime)) return 1;
+        if (Number.isNaN(rightTime)) return -1;
+
+        return rightTime - leftTime;
+      });
+    });
 
   const updateLogNote = (logId, note) => {
     setLogs(prev =>

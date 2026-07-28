@@ -2,22 +2,21 @@ import { useMemo, useState } from 'react';
 import styles from './DailyLogPage.module.css';
 import LogItemCard from './LogItemCard';
 import { useDailyLog } from './DailyLogContext';
+import { formatDuration, getCurrentWeekRange, parseDurationToMin } from './dailyLogUtils';
 
-const parseDurationToMin = str => {
-  if (!str) return 0;
-  const hMatch = str.match(/^\s*(\d+)\s*h\b/i);
-  const mMatch = str.match(/^\s*(\d+)\s*m\b/i);
+const courseOptions = [
+  'Mathematics 101 - Algebra Fundamentals',
+  'English 200 - Creative Writing',
+  'Science 150 - Biology Basics',
+];
 
-  const h = hMatch ? hMatch[1] : 0;
-  const m = mMatch ? mMatch[1] : 0;
-  return Number(h || 0) * 60 + Number(m || 0);
-};
-
-const formatMin = min => {
-  const h = Math.floor(min / 60);
-  const m = min % 60;
-  return `${h}h ${m}m`;
-};
+function getDefaultFormState() {
+  return {
+    course: courseOptions[0],
+    badge: 'Pending Review',
+    notes: '',
+  };
+}
 
 const hourOptions = Array.from({ length: 13 }, (_, i) => i);
 const minuteOptions = [0, 15, 30, 45];
@@ -25,60 +24,77 @@ const minuteOptions = [0, 15, 30, 45];
 export default function DailyLogPage() {
   const { logs, addLog } = useDailyLog();
 
-  const courseOptions = [
-    'Mathematics 101 - Algebra Fundamentals',
-    'English 200 - Creative Writing',
-    'Science 150 - Biology Basics',
-  ];
-
   const [showForm, setShowForm] = useState(false);
   const [durationH, setDurationH] = useState(0);
   const [durationM, setDurationM] = useState(0);
-  const [newLog, setNewLog] = useState({
-    course: courseOptions[0],
-    badge: 'Pending Review',
-    notes: '',
-  });
+  const [newLog, setNewLog] = useState(() => getDefaultFormState());
+  const [validationError, setValidationError] = useState('');
+  const [formSuccess, setFormSuccess] = useState('');
+
+  const resetForm = () => {
+    setDurationH(0);
+    setDurationM(0);
+    setNewLog(getDefaultFormState());
+    setValidationError('');
+    setFormSuccess('');
+  };
+
+  const handleOpenForm = () => {
+    resetForm();
+    setShowForm(true);
+  };
+
+  const handleCancel = () => {
+    setShowForm(false);
+    resetForm();
+  };
 
   const { totalMin, weekMin, weekCount, activeCourses } = useMemo(() => {
     const now = new Date();
-    const weekAgo = new Date(now);
-    weekAgo.setDate(now.getDate() - 7);
+    const { start, end } = getCurrentWeekRange(now);
 
-    let tMin = 0;
-    let wMin = 0;
-    let wCount = 0;
+    let totalMinutes = 0;
+    let weeklyMinutes = 0;
+    let weeklyCount = 0;
     const courseSet = new Set();
 
     logs.forEach(row => {
-      const dur = parseDurationToMin(row.metadata?.duration);
-      tMin += dur;
+      const durationMinutes = parseDurationToMin(row.metadata?.duration);
+      totalMinutes += durationMinutes;
       courseSet.add(row.metadata?.course);
 
-      const created = new Date(row.created_at);
-      if (created >= weekAgo && created <= now) {
-        wMin += dur;
-        wCount += 1;
+      const createdAt = new Date(row.created_at);
+      if (!Number.isNaN(createdAt.getTime()) && createdAt >= start && createdAt <= end) {
+        weeklyMinutes += durationMinutes;
+        weeklyCount += 1;
       }
     });
 
     return {
-      totalMin: tMin,
-      weekMin: wMin || tMin,
-      weekCount: wCount || logs.length,
-      activeCourses: courseSet.size || 3,
+      totalMin: totalMinutes,
+      weekMin: weeklyMinutes,
+      weekCount: weeklyCount,
+      activeCourses: courseSet.size,
     };
   }, [logs]);
 
   const handleSave = e => {
     e.preventDefault();
+    const totalMinutes = durationH * 60 + durationM;
+
+    if (totalMinutes <= 0) {
+      setValidationError('Duration must be greater than zero.');
+      setFormSuccess('');
+      return;
+    }
+
     const id = crypto
       .getRandomValues(new Uint8Array(6))
       .reduce((s, b) => s + b.toString(36), '')
       .slice(0, 8);
 
     const nowIso = new Date().toISOString();
-    const duration = `${durationH}h ${durationM}m`;
+    const duration = formatDuration(totalMinutes);
 
     const log = {
       log_id: `lg-${id}`,
@@ -99,35 +115,31 @@ export default function DailyLogPage() {
 
     addLog(log);
     setShowForm(false);
-    setDurationH(0);
-    setDurationM(0);
-    setNewLog({
-      course: courseOptions[0],
-      badge: 'Pending Review',
-      notes: '',
-    });
+    resetForm();
+    setFormSuccess('Time log saved.');
   };
+
+  const weeklyEntryLabel = weekCount === 1 ? '1 log entry' : `${weekCount} log entries`;
 
   return (
     <div className={styles.page}>
       <div className={styles.pageTop}>
         <h1 className={styles.pageTitle}>Student Dashboard</h1>
-        <button className={styles.btnPrimary} onClick={() => setShowForm(true)}>
+        <button className={styles.btnPrimary} onClick={handleOpenForm}>
           + New Time Log
         </button>
       </div>
 
-      {/* Stats */}
       <section className={styles.statsGrid}>
         <div className={styles.statCard}>
           <div className={styles.statLabel}>Total Time Logged</div>
-          <div className={styles.statValue}>{formatMin(totalMin)}</div>
+          <div className={styles.statValue}>{formatDuration(totalMin)}</div>
           <div className={styles.statSub}>Across all courses</div>
         </div>
         <div className={styles.statCard}>
           <div className={styles.statLabel}>This Week</div>
-          <div className={styles.statValue}>{formatMin(weekMin)}</div>
-          <div className={styles.statSub}>{weekCount} log entries</div>
+          <div className={styles.statValue}>{formatDuration(weekMin)}</div>
+          <div className={styles.statSub}>{weeklyEntryLabel}</div>
         </div>
         <div className={styles.statCard}>
           <div className={styles.statLabel}>Active Courses</div>
@@ -166,7 +178,11 @@ export default function DailyLogPage() {
                   id="durationHours"
                   className={styles.input}
                   value={durationH}
-                  onChange={e => setDurationH(Number(e.target.value))}
+                  onChange={e => {
+                    const nextHours = Number(e.target.value);
+                    setDurationH(nextHours);
+                    if (nextHours * 60 + durationM > 0) setValidationError('');
+                  }}
                   aria-label="Hours"
                 >
                   {hourOptions.map(h => (
@@ -179,7 +195,11 @@ export default function DailyLogPage() {
                   id="durationMinutes"
                   className={styles.input}
                   value={durationM}
-                  onChange={e => setDurationM(Number(e.target.value))}
+                  onChange={e => {
+                    const nextMinutes = Number(e.target.value);
+                    setDurationM(nextMinutes);
+                    if (durationH * 60 + nextMinutes > 0) setValidationError('');
+                  }}
                   aria-label="Minutes"
                 >
                   {minuteOptions.map(m => (
@@ -199,12 +219,28 @@ export default function DailyLogPage() {
                 rows={4}
                 placeholder="Describe what you worked on in this time"
                 value={newLog.notes}
-                onChange={e => setNewLog({ ...newLog, notes: e.target.value })}
+                onChange={e => {
+                  setNewLog({ ...newLog, notes: e.target.value });
+                  setValidationError('');
+                  setFormSuccess('');
+                }}
               />
             </div>
 
+            {validationError && (
+              <div role="alert" className={`${styles.formMessage} ${styles.formMessageError}`}>
+                {validationError}
+              </div>
+            )}
+
+            {formSuccess && (
+              <div className={`${styles.formMessage} ${styles.formMessageSuccess}`}>
+                {formSuccess}
+              </div>
+            )}
+
             <div className={styles.formActions}>
-              <button type="button" className={styles.btnGhost} onClick={() => setShowForm(false)}>
+              <button type="button" className={styles.btnGhost} onClick={handleCancel}>
                 Cancel
               </button>
               <button type="submit" className={styles.btnPrimary}>

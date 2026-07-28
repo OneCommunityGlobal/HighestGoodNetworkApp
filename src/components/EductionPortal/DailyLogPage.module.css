@@ -34,6 +34,11 @@
   background: #1f2937;
 }
 
+.btnPrimary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 .btnGhost {
   background: transparent;
   border: 1px solid #e5e7eb;
@@ -48,12 +53,17 @@
   background: #f9fafb;
 }
 
+.btnGhost:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 .card {
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   background: #fff;
   padding: 20px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
 }
 
 .cardHeader {
@@ -90,7 +100,7 @@
 }
 
 .row:hover {
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 8%);
 }
 
 .left {
@@ -125,7 +135,7 @@
   border: 1px solid #e5e7eb;
   padding: 2px 8px;
   border-radius: 999px;
-  color: #374151; 
+  color: #374151;
 }
 
 .metaLine {
@@ -184,6 +194,8 @@
   border-radius: 6px;
   padding: 8px 10px;
   font-size: 14px;
+  background: #fff;
+  color: #111827;
 }
 
 .input:focus {
@@ -241,7 +253,25 @@
   margin-top: 4px;
 }
 
-@media (max-width: 820px) {
+.formMessage {
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+.formMessageError {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+}
+
+.formMessageSuccess {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+}
+
+@media (width <= 820px) {
   .statsGrid {
     grid-template-columns: 1fr;
   }
@@ -272,7 +302,7 @@
   border-radius: 12px;
   background: #fff;
   padding: 20px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
 }
 
 .detailGrid {
@@ -307,7 +337,7 @@
   margin: 12px 0 16px;
 }
 
-@media (max-width: 820px) {
+@media (width <= 820px) {
   .detailGrid {
     grid-template-columns: 1fr;
   }
@@ -514,6 +544,141 @@
   border: 2px solid #e5e7eb;
   border-top-color: #111827;
   animation: spin 0.8s linear infinite;
+}
+
+:global(.dark-mode) .page,
+:global(.dark-mode) .detailCard,
+:global(.dark-mode) .entryCard,
+:global(.dark-mode) .blockCard,
+:global(.dark-mode) .card,
+:global(.dark-mode) .statCard,
+:global(.dark-mode) .row,
+:global(.dark-mode) .form {
+  background: #111827;
+  color: #f9fafb;
+  border-color: #374151;
+}
+
+:global(.dark-mode) .pageTitle,
+:global(.dark-mode) .headerTitle,
+:global(.dark-mode) .title,
+:global(.dark-mode) .sectionTitle,
+:global(.dark-mode) .entryTitle,
+:global(.dark-mode) .blockTitle,
+:global(.dark-mode) .msgWho,
+:global(.dark-mode) .statValue,
+:global(.dark-mode) .detailValue,
+:global(.dark-mode) .entryBodyLabel,
+:global(.dark-mode) .formRow label,
+:global(.dark-mode) .page {
+  color: #f9fafb;
+}
+
+:global(.dark-mode) .btnPrimary {
+  background: #2563eb;
+  color: #f9fafb;
+  border: 1px solid #2563eb;
+}
+
+:global(.dark-mode) .btnPrimary:hover,
+:global(.dark-mode) .btnPrimary:focus-visible {
+  background: #1d4ed8;
+  color: #f9fafb;
+}
+
+:global(.dark-mode) .btnPrimary:disabled {
+  background: #374151;
+  color: #d1d5db;
+  border-color: #4b5563;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+:global(.dark-mode) .btnGhost,
+:global(.dark-mode) .viewBtn {
+  background: #111827;
+  color: #f9fafb;
+  border-color: #4b5563;
+}
+
+:global(.dark-mode) .btnGhost:hover,
+:global(.dark-mode) .viewBtn:hover {
+  background: #1f2937;
+  color: #f9fafb;
+}
+
+:global(.dark-mode) .btnGhost:focus-visible,
+:global(.dark-mode) .viewBtn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(96 165 250 / 35%);
+}
+
+:global(.dark-mode) .btnGhost:active,
+:global(.dark-mode) .viewBtn:active {
+  transform: translateY(1px);
+}
+
+:global(.dark-mode) .input,
+:global(.dark-mode) textarea.input {
+  background: #1f2937;
+  color: #f9fafb;
+  border-color: #4b5563;
+}
+
+:global(.dark-mode) .input::placeholder,
+:global(.dark-mode) textarea::placeholder {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .input:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 2px rgb(96 165 250 / 35%);
+}
+
+:global(.dark-mode) .pill,
+:global(.dark-mode) .badge,
+:global(.dark-mode) .entryBodyNote,
+:global(.dark-mode) .blockArea,
+:global(.dark-mode) .msgBubble {
+  background: #1f2937;
+  color: #f9fafb;
+  border-color: #4b5563;
+}
+
+:global(.dark-mode) .metaLine,
+:global(.dark-mode) .statLabel,
+:global(.dark-mode) .detailNote,
+:global(.dark-mode) .entrySubmeta,
+:global(.dark-mode) .metaSep,
+:global(.dark-mode) .statSub,
+:global(.dark-mode) .feedbackBody,
+:global(.dark-mode) .msgMeta,
+:global(.dark-mode) .msgText,
+:global(.dark-mode) .feedbackText {
+  color: #d1d5db;
+}
+
+:global(.dark-mode) .feedbackCard {
+  background: #064e3b;
+  border-color: #34d399;
+}
+
+:global(.dark-mode) .formMessageError {
+  background: #450a0a;
+  border-color: #f87171;
+  color: #fecaca;
+}
+
+:global(.dark-mode) .formMessageSuccess {
+  background: #052e16;
+  border-color: #34d399;
+  color: #bbf7d0;
+}
+
+:global(.dark-mode) .grade {
+  background: #f9fafb;
+  color: #111827;
+  border-color: #f9fafb;
 }
 
 @keyframes spin {
