@@ -308,5 +308,6 @@ describe('UserPermissionsPopup component', () => {
       const addButtons = screen.queryAllByRole('button', { name: /add/i });
       expect(addButtons.length).toBeGreaterThan(0);
     });
-  });
-}, 10000);
+  }, 10000);
+  */
+});
