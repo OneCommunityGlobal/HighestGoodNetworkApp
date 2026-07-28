@@ -115,7 +115,6 @@ import MasterPlan from './components/LBDashboard/Map/MasterPlan/MasterPlan';
 import ListOveriew from './components/LBDashboard/ListingOverview/ListOverview';
 import LBBidOverview from './components/LBDashboard/BiddingOverview/BiddingOverview';
 import BiddingHomepage from './components/LBDashboard/BiddingHomepage/BiddingHomepage';
-import WishList from './components/LBDashboard/WishList/WishList';
 import WishListItem from './components/LBDashboard/WishList/ItemOverview';
 
 // Most Wasted Materials
@@ -132,7 +131,6 @@ import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import ExpenditureLineGraph from './components/BMDashboard/ExpenditureGraph/ExpenditureLineGraph';
 import WishList from './components/LBDashboard/WishList/WishList';
-import MostWastedMaterials from './components/MostWastedMaterials/MostWastedMaterials.jsx';
 import InteractiveMap from './components/BMDashboard/InteractiveMap/InteractiveMap';
 import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts.jsx';
 import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
@@ -206,7 +204,6 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 import { UserRole } from './utils/enums';
 import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
 import IntermediateTaskList from './components/EductionPortal/IntermediateTasks/IntermediateTaskList';
-import InteractiveMap from './components/BMDashboard/InteractiveMap/InteractiveMap';
 import SimpleToolChart from './components/BMDashboard/Tools/SimpleToolChart';
 import SupportLogin from './components/SupportPortal/SupportLogin';
 import SupportDashboard from './components/SupportPortal/SupportDashboard';
