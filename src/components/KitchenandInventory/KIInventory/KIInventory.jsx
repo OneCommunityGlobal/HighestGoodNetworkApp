@@ -66,11 +66,21 @@ const KIInventory = () => {
   // Onsite grown — computed from all items
   const onsiteGrown = items.filter(i => i.onsite).length;
 
-  // Items for active tab filtered by category and search term
+  // Search helper
+  const filterItems = itemsToFilter => {
+    if (!searchTerm.trim()) {
+      return itemsToFilter;
+    }
+
+    return itemsToFilter.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  };
+
+  // Items for active tab
   const activeCategory = CATEGORY_MAP[activeTab];
-  const tabItems = items
-    .filter(i => i.category === activeCategory)
-    .filter(i => !searchTerm || i.name.toLowerCase().includes(searchTerm.toLowerCase()));
+
+  const categoryItems = items.filter(i => i.category === activeCategory);
+
+  const tabItems = filterItems(categoryItems);
 
   // Preserved items description for notification banner
   const preservedDesc =
@@ -91,7 +101,9 @@ const KIInventory = () => {
     }
     if (searchTerm) {
       return (
-        <p style={{ padding: '1rem', opacity: 0.6 }}>No results for &quot;{searchTerm}&quot;</p>
+        <p className={`${styles.noResults} ${darkMode ? styles.darkNoResults : ''}`}>
+          No results for "{searchTerm}"
+        </p>
       );
     }
     return <p style={{ padding: '1rem', opacity: 0.6 }}>No items in {tabName} yet.</p>;
@@ -188,12 +200,20 @@ const KIInventory = () => {
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
             />
-            <button
-              className={`${styles.clearSearch} ${darkMode ? styles.darkClearSearch : ''}`}
-              onClick={() => setSearchTerm('')}
-            >
-              x
-            </button>
+            {searchTerm && (
+              <button
+                className={`${styles.clearSearch} ${darkMode ? styles.darkClearSearch : ''}`}
+                onClick={() => setSearchTerm('')}
+                style={{
+                  backgroundColor: 'red',
+                  color: 'white',
+                  padding: '4px 8px',
+                  marginLeft: '5px',
+                }}
+              >
+                CLEAR
+              </button>
+            )}
           </div>
           <div>
             <button className={classnames(styles.button, styles.addItemButton)}>
@@ -213,7 +233,7 @@ const KIInventory = () => {
           <TabPane key={tab} tabId={tab}>
             <div className={styles.tabContainer}>
               {/* Preserved items notification — only on the Ingredients tab */}
-              {index === 0 && preservedItems.length > 0 && (
+              {index === 0 && preservedItems.length > 0 && !searchTerm && (
                 <div
                   className={`${styles.notificationContainer} ${
                     darkMode ? styles.darkModeNotification : ''

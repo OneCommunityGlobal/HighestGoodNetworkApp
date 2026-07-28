@@ -1,7 +1,7 @@
 // import React from 'react';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import ActivationDatePopup from '../ActivationDatePopup';
 import { themeMock } from '../../../__tests__/mockStates';
