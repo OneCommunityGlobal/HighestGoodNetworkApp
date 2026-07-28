@@ -83,11 +83,15 @@ function bmInjuryReducer(state = initialState, action) {
       const raw = Array.isArray(action.payload) ? action.payload : [];
       const arr = raw
         .filter(p => p && (p._id || p.id) && (p.name || p.title))
-        .map(p => ({
-          _id: p._id || p.id,
-          name: p.name || p.title,
-          projectIds: Array.isArray(p.projectIds) ? p.projectIds : [],
-        }));
+        .map(p => {
+          const projectId = p._id || p.id;
+          return {
+            _id: projectId,
+            name: p.name || p.title,
+            projectIds:
+              Array.isArray(p.projectIds) && p.projectIds.length ? p.projectIds : [projectId],
+          };
+        });
       const map = new Map();
       arr.forEach(project => {
         // Dropdown filters by projectName, so collapse legacy IDs with the same normalized display name.

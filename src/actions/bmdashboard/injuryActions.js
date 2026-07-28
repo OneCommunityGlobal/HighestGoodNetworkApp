@@ -197,8 +197,11 @@ export const fetchInjuries = (projectId, startDate, endDate) => async dispatch =
 export const getInjuryData = async (projectName, startDate, endDate, projectIds = []) => {
   const params = {};
   if (projectName && projectName !== 'all') {
-    // Send the displayed injury project name so duplicate legacy project IDs aggregate correctly.
+    // Legacy injury data can share project IDs across names, so send both filters for exact matching.
     params.projectName = projectName;
+    if (projectIds.length) {
+      params.projectId = projectIds.join(',');
+    }
   }
   if (startDate) params.startDate = startDate;
   if (endDate) params.endDate = endDate;
