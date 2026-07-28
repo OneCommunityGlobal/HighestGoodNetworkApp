@@ -1,6 +1,9 @@
 /* stylelint-disable declaration-property-value-no-unknown */
-.tableResponsive {
+.tableResponsive,
+.table-responsive {
   overflow-x: auto;
+  width: 100%;
+  max-width: 100%;
 }
 
 .highlight-row {
