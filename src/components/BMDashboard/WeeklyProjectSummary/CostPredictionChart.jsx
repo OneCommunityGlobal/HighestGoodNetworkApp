@@ -56,6 +56,7 @@ const PROJECTS = [
 ];
 
 const DEFAULT_WINDOW_MONTHS = 6;
+const TODAY_STR = new Date().toISOString().slice(0, 10);
 
 const SAMPLE_DATA_BASE = {
   'building-1': { plannedStart: 400, plannedGrowth: 5.6, actualStart: 380, actualGrowth: 5.4 },
@@ -337,8 +338,17 @@ function CostPredictionChart({ projectId }) {
     }
     return chartData.filter(d => {
       const pointDate = new Date(d.month);
-      if (dateRange.start && pointDate < new Date(dateRange.start)) return false;
-      if (dateRange.end && pointDate > new Date(dateRange.end)) return false;
+
+      if (dateRange.start) {
+        const s = new Date(dateRange.start);
+        const startMonth = new Date(s.getFullYear(), s.getMonth(), 1);
+        if (pointDate < startMonth) return false;
+      }
+      if (dateRange.end) {
+        const e = new Date(dateRange.end);
+        const endMonth = new Date(e.getFullYear(), e.getMonth(), 1);
+        if (pointDate > endMonth) return false;
+      }
       return true;
     });
   }, [chartData, dateRange]);
@@ -440,7 +450,7 @@ function CostPredictionChart({ projectId }) {
             style={filterStyles.control}
             value={dateRange.start}
             min="2011-01-01"
-            max={dateRange.end || undefined}
+            max={dateRange.end || TODAY_STR}
             onChange={e => setDateRange(prev => ({ ...prev, start: e.target.value }))}
           />
         </div>
@@ -458,6 +468,7 @@ function CostPredictionChart({ projectId }) {
             style={filterStyles.control}
             value={dateRange.end}
             min={dateRange.start || undefined}
+            max={TODAY_STR}
             onChange={e => setDateRange(prev => ({ ...prev, end: e.target.value }))}
           />
         </div>
