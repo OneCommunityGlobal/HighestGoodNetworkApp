@@ -36,6 +36,11 @@
     grid-auto-flow: column;
     column-gap: 24px;
   }
+
+  .people-pie-charts-wrapper.tasks-many {
+    grid-auto-flow: row;
+    row-gap: 8px;
+  }
 }
 
 .people-pie-charts-header {
