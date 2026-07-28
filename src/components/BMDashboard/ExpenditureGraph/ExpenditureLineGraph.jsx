@@ -20,10 +20,6 @@ const MONTH_NAMES = [
 ];
 const CHART_COLORS = ['#6293CC', '#C55151', '#E8D06B', '#94B66F'];
 
-function formatDateForInput(date) {
-  return date.toISOString().split('T')[0];
-}
-
 function getDateRangeFromData(data) {
   const dates = data.map(item => new Date(item.date));
   return { minDate: new Date(Math.min(...dates)), maxDate: new Date(Math.max(...dates)) };
@@ -85,6 +81,7 @@ export default function ExpenditureLineGraph() {
   const [error, setError] = useState(null);
   const [expenditureData, setExpenditureData] = useState([]);
   const [projects, setProjects] = useState([]);
+  const [projectNameMap, setProjectNameMap] = useState({});
   const [selectedProject, setSelectedProject] = useState('all');
   const [dateError, setDateError] = useState(null);
   const [noDataError, setNoDataError] = useState(null);
@@ -120,10 +117,8 @@ export default function ExpenditureLineGraph() {
           setExpenditureData(data);
           setProjects([...new Set(data.map(item => item.projectId))]);
           if (data.length > 0) {
-            const { minDate, maxDate } = getDateRangeFromData(data);
-            setStartDate(formatDateForInput(minDate));
-            setEndDate(formatDateForInput(maxDate));
-            setDateRange({ start: minDate, end: maxDate });
+            const { minDate } = getDateRangeFromData(data);
+            setDateRange({ start: minDate, end: new Date() });
           }
         } else {
           setError('Failed to fetch the data');
@@ -143,6 +138,26 @@ export default function ExpenditureLineGraph() {
         setChartInstance(null);
       }
     };
+  }, []);
+
+  useEffect(() => {
+    const fetchProjectNames = async () => {
+      try {
+        const response = await axios.get(ENDPOINTS.BM_PROJECT_NAMES);
+        if (Array.isArray(response?.data)) {
+          const nameMap = {};
+          response.data.forEach(({ projectId, projectName }) => {
+            if (projectId) nameMap[projectId] = projectName || projectId;
+          });
+          setProjectNameMap(nameMap);
+        }
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('Error fetching project names:', err);
+      }
+    };
+
+    fetchProjectNames();
   }, []);
 
   useEffect(() => {
@@ -166,7 +181,8 @@ export default function ExpenditureLineGraph() {
     const chartTitle =
       selectedProject === 'all'
         ? 'Cost Breakdown by Type of Expenditure (all projects)'
-        : `Cost Breakdown by Type of Expenditure (Project: ${selectedProject})`;
+        : `Cost Breakdown by Type of Expenditure (Project: ${projectNameMap[selectedProject] ||
+            selectedProject})`;
 
     const gridColor = darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
     const textColor = darkMode ? '#ffffff' : '#666666';
@@ -200,6 +216,9 @@ export default function ExpenditureLineGraph() {
             borderColor: darkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)',
             borderWidth: 1,
           },
+          // Other charts in the app register chartjs-plugin-datalabels globally, which
+          // otherwise leaks into this chart and prints an overlapping value at every point.
+          datalabels: { display: false },
         },
         scales: {
           y: {
@@ -282,7 +301,7 @@ export default function ExpenditureLineGraph() {
     }
 
     createChart(processDataForChart(filteredData));
-  }, [selectedProject, dateRange, expenditureData, darkMode]);
+  }, [selectedProject, dateRange, expenditureData, darkMode, projectNameMap]);
 
   const handleProjectChange = e => setSelectedProject(e.target.value);
 
@@ -303,8 +322,7 @@ export default function ExpenditureLineGraph() {
     if (newEndDate) {
       setDateRange(prev => ({ ...prev, end: new Date(newEndDate) }));
     } else {
-      const { maxDate } = getDateRangeFromData(expenditureData);
-      setDateRange(prev => ({ ...prev, end: maxDate }));
+      setDateRange(prev => ({ ...prev, end: new Date() }));
     }
   };
 
@@ -352,73 +370,66 @@ export default function ExpenditureLineGraph() {
         >
           Cost Breakdown by Type of Expenditures
         </h1>
-        <div className="filter-controls">
+        <div className="filter-controls" style={{ marginBottom: '30px' }}>
           <div
             style={{
               display: 'flex',
-              justifyContent: 'flex-end',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              alignItems: 'flex-end',
               width: '100%',
               padding: '0 20px',
+              gap: '20px',
             }}
           >
             <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-end',
-                gap: '10px',
-              }}
+              className="project-filter"
+              style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}
             >
-              <div
-                className="project-filter"
-                style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
+              <label htmlFor="project-select" style={labelStyle}>
+                Filter by project:
+              </label>
+              <select
+                id="project-select"
+                value={selectedProject}
+                onChange={handleProjectChange}
+                disabled={loading || projects.length === 0}
+                style={inputStyle}
               >
-                <label htmlFor="project-select" style={labelStyle}>
-                  Filter by project:
-                </label>
-                <select
-                  id="project-select"
-                  value={selectedProject}
-                  onChange={handleProjectChange}
-                  disabled={loading || projects.length === 0}
-                  style={inputStyle}
-                >
-                  <option value="all">All Projects</option>
-                  {projects.map(project => (
-                    <option key={project} value={project}>
-                      {project}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div
-                className="date-filters"
-                style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
-              >
-                <label htmlFor="start-date" style={labelStyle}>
-                  From:
-                </label>
-                <input
-                  id="start-date"
-                  type="date"
-                  value={startDate}
-                  onChange={handleStartDateChange}
-                  disabled={loading}
-                  style={inputStyle}
-                />
-                <label htmlFor="end-date" style={labelStyle}>
-                  To:
-                </label>
-                <input
-                  id="end-date"
-                  type="date"
-                  value={endDate}
-                  onChange={handleEndDateChange}
-                  disabled={loading}
-                  min={startDate}
-                  style={inputStyle}
-                />
-              </div>
+                <option value="all">All Projects</option>
+                {projects.map(project => (
+                  <option key={project} value={project}>
+                    {projectNameMap[project] || project}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <label htmlFor="start-date" style={labelStyle}>
+                From:
+              </label>
+              <input
+                id="start-date"
+                type="date"
+                value={startDate}
+                onChange={handleStartDateChange}
+                disabled={loading}
+                style={inputStyle}
+              />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <label htmlFor="end-date" style={labelStyle}>
+                To:
+              </label>
+              <input
+                id="end-date"
+                type="date"
+                value={endDate}
+                onChange={handleEndDateChange}
+                disabled={loading}
+                min={startDate}
+                style={inputStyle}
+              />
             </div>
           </div>
         </div>
@@ -442,9 +453,9 @@ export default function ExpenditureLineGraph() {
               border: darkMode ? '1px solid #233554' : '1px solid rgba(0, 0, 0, 0.08)',
               boxShadow: darkMode ? 'none' : '0 2px 4px rgba(0,0,0,0.1)',
               padding: '20px',
-              maxWidth: '800px',
+              maxWidth: '1100px',
               width: '100%',
-              height: '400px',
+              height: '550px',
               position: 'relative',
               transition: 'all 0.3s ease',
             }}

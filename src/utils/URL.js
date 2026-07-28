@@ -424,6 +424,7 @@ export const ENDPOINTS = {
   BM_EQUIPMENT_STATUS_UPDATE: (equipmentId) => `${APIEndpoint}/bm/equipment/${equipmentId}/status`,
   BM_INVTYPE_TYPE: type => `${APIEndpoint}/bm/invtypes/${type}`,
   BM_EXPENDITURE: `${APIEndpoint}/bm/expenditure`,
+  BM_PROJECT_NAMES: `${APIEndpoint}/bm/projectsNames`,
 
   BM_ISSUE_CHART: `${APIEndpoint}/bm/issue/issue-chart`,
   BM_EQUIPMENT_INVTYPE: `${APIEndpoint}/bm/invtypes/equipment`,
