@@ -4,7 +4,7 @@
   margin: 0 auto;
   padding: 1.5rem;
   background-color: var(--background-color);
-  min-height: 100vh;
+  /* Size to the filters and chart content instead of forcing extra viewport-height space below. */
 }
 
 .injuryChartHeader {
