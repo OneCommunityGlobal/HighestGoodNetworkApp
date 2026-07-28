@@ -679,44 +679,17 @@ const TeamMemberTask = React.memo(
                                                   : styles['team-task-progress-time-volunteers']
                                               }`}
                                             >
-                                              {`${Number.parseFloat(
-                                                task.hoursLogged.toFixed(2),
-                                              )} of ${Number.parseFloat(
-                                                task.estimatedHours.toFixed(2),
-                                              )}`}
-                                            </p>
-                                          </div>
-                                          {canSeeFollowUpCheckButton && (
-                                            <div className={styles['task-followup-icon']}>
-                                              <FollowupCheckButton
-                                                moseoverText={followUpMouseoverText(task)}
-                                                user={user}
-                                                task={task}
-                                              />
-                                              <div className={styles['followup-info-override']}>
-                                                <FollowUpInfoModal />
-                                                {isAllowedToSeeDeadlineCount && (
-                                                  <span
-                                                    className={styles['deadlineCount']}
-                                                    title="Click to view task change history"
-                                                    data-testid={`deadline-${task.taskName}`}
-                                                    onClick={() => handleOpenTaskChangeLog(task)}
-                                                    onKeyDown={e => {
-                                                      if (e.key === 'Enter' || e.key === ' ') {
-                                                        e.preventDefault();
-                                                        handleOpenTaskChangeLog(task);
-                                                      }
-                                                    }}
-                                                    role="button"
-                                                    tabIndex={0}
-                                                    style={{ cursor: 'pointer' }}
-                                                  >
-                                                    {taskCounts[task._id] ??
-                                                      task.deadlineCount ??
-                                                      0}
-                                                  </span>
-                                                )}
-                                              </div>
+                                              <p
+                                                className={`${styles['progress-text']} ${
+                                                  darkMode ? 'text-light' : ''
+                                                }`}
+                                              >
+                                                {`${Number.parseFloat(
+                                                  task.hoursLogged.toFixed(2),
+                                                )} of ${Number.parseFloat(
+                                                  task.estimatedHours.toFixed(2),
+                                                )}`}
+                                              </p>
                                             </div>
                                             {canSeeFollowUpCheckButton && (
                                               <div className={styles['task-followup-icon']}>
