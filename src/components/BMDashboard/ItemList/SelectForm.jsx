@@ -1,78 +1,66 @@
-import { Form, FormGroup, Label, Input } from 'reactstrap';
+import { useEffect, useMemo } from 'react';
+import { Form, FormGroup, Label } from 'reactstrap';
+import Select from 'react-select';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import styles from './ItemListView.module.css';
+import { getReactSelectStyles } from './selectStyles.js';
 
-export default function SelectForm({
-  items,
-  setSelectedProject,
-  setSelectedItem,
-  selectedProject, // optional (controlled)
-  selectedItem, // optional (controlled)
-  darkStyle,
-}) {
-  const darkMode = useSelector(state => state.theme.darkMode);
-  let projectsSet = [];
-  if (items.length) {
-    projectsSet = [...new Set(items.map(el => el.project?.name))];
-  }
+const PROJECT_KEY = 'tool_selected_projects';
 
-  const handleChange = event => {
-    const newProject = event.target.value;
+export default function SelectForm({ items, setSelectedProject, localValues, setLocalValues }) {
+  const darkMode = useSelector(state => state.theme?.darkMode || false);
 
-    const toolsForNewProject =
-      newProject === 'all'
-        ? [...new Set(items.map(m => m.itemType?.name).filter(Boolean))]
-        : [
-            ...new Set(
-              items
-                .filter(mat => mat.project?.name === newProject && mat.itemType?.name)
-                .map(m => m.itemType.name),
-            ),
-          ];
+  const projectOptions = useMemo(() => {
+    if (!items?.length) return [];
+    const unique = [...new Set(items.map(i => i.project?.name).filter(Boolean))];
+    return unique.map(name => ({ label: name, value: name }));
+  }, [items]);
 
-    if (typeof setSelectedItem === 'function') {
-      // If controlled, only reset tool if invalid under new project
-      if (typeof selectedItem !== 'undefined') {
-        if (selectedItem !== 'all' && !toolsForNewProject.includes(selectedItem)) {
-          setSelectedItem('all');
-        }
-      } else {
-        // Backwards compatibility (uncontrolled)
-        setSelectedItem('all');
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(PROJECT_KEY));
+      if (Array.isArray(saved) && saved.length > 0) {
+        setLocalValues(saved);
+        setSelectedProject(saved.map(p => p.value));
       }
+    } catch (error) {
+      console.error('Failed to parse cached project filters:', error);
     }
+  }, []);
 
-    setSelectedProject(newProject);
+  const handleChange = selected => {
+    const values = selected || [];
+    setLocalValues(values);
+    setSelectedProject(values.map(v => v.value));
+    localStorage.setItem(PROJECT_KEY, JSON.stringify(values));
   };
 
-  const isControlled = typeof selectedProject !== 'undefined';
-
   return (
-    <Form>
-      <FormGroup className={`${styles.selectInput} ${darkMode ? styles.darkBg : ''}`}>
+    <Form className={styles.filterForm} onSubmit={e => e.preventDefault()}>
+      <FormGroup className={styles.selectInput}>
         <Label htmlFor="select-project">Project:</Label>
-        <select
-          id="select-project"
-          name="select-project"
-          className={styles.filterSelect}
+        <Select
+          inputId="select-project"
+          isMulti
+          isSearchable
+          isClearable
+          options={projectOptions}
+          value={localValues}
           onChange={handleChange}
-          disabled={!items.length}
-          value={isControlled ? selectedProject : undefined}
-        >
-          {items.length ? (
-            <>
-              <option value="all">All</option>
-              {projectsSet.map(name => (
-                <option key={name} value={name}>
-                  {name}
-                </option>
-              ))}
-            </>
-          ) : (
-            <option>No data</option>
-          )}
-        </select>
+          isDisabled={!items?.length}
+          placeholder="Search or select projects..."
+          classNamePrefix="react-select"
+          styles={getReactSelectStyles(darkMode)}
+        />
       </FormGroup>
     </Form>
   );
 }
+
+SelectForm.propTypes = {
+  items: PropTypes.array.isRequired,
+  setSelectedProject: PropTypes.func.isRequired,
+  localValues: PropTypes.array.isRequired,
+  setLocalValues: PropTypes.func.isRequired,
+};

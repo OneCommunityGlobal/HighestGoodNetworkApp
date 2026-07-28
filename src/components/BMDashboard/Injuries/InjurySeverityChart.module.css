@@ -1,5 +1,6 @@
+/* stylelint-disable  */
 .customTooltip {
-  background-color: #ffffff;
+  background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 8px;
@@ -8,90 +9,246 @@
 
 .customTooltip.dark {
   background-color: #1c2541;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(222, 19, 19, 0.2) !important;
 }
 
-.filterSelect .ant-select-selector,
-.filterSelect .ant-select-selection-item,
-.filterSelect .ant-select-selection-placeholder {
+/* light mode */
+
+.filterSelect :global(.ant-select-selector),
+.filterSelect:global(.ant-picker) {
+  background-color: #ffffff !important;
+  border-color: #8c8c8c !important;
+  border-width: 1px !important;
+}
+
+.filterSelect :global(.ant-select-selection-item) {
   color: #333333 !important;
 }
 
-.filterSelect .ant-select-selector {
-  background-color: #ffffff !important;
-  border-color: rgba(0, 0, 0, 0.2) !important;
+.filterSelect :global(.ant-select-selection-search-input),
+.filterSelect :global(.ant-picker-input) input {
+  color: #000000 !important;
 }
 
-/* RangePicker placeholder */
-.filterSelect .ant-picker-input > input::placeholder {
-  color: #666666 !important;
+.filterSelect :global(.ant-select-selection-placeholder),
+.filterSelect :global(.ant-picker-input)>input::placeholder {
+  color: #b2b2b2 !important;
+  opacity: 1 !important;
+  font-weight: 500;
 }
 
-.filterSelect .ant-picker {
-  background-color: #ffffff !important;
-  border-color: rgba(0, 0, 0, 0.2) !important;
-} 
+/* Darken Light Mode Icons */
+.filterSelect :global(.ant-select-arrow),
+.filterSelect :global(.ant-picker-suffix),
+.filterSelect :global(.ant-picker-range-separator),
+.filterSelect :global(.ant-picker-separator) {
+  color: #939393 !important;
+}
+
+.oxideDark .filterSelect :global(.ant-select-arrow),
+.oxideDark .filterSelect :global(.ant-picker-suffix),
+.oxideDark .filterSelect :global(.ant-select-clear),
+.oxideDark .filterSelect :global(.ant-picker-clear) {
+  color: #f5f5f5 !important;
+}
+
+.oxideDark .filterSelect :global(.ant-picker-suffix) {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+
+.placeholderGraphic {
+  width: 60%;
+  height: 120px;
+  border: 2px dashed #d0d0d0;
+  opacity: 0.4;
+  margin-bottom: 12px;
+  animation: placeholderPulse 2.2s ease-in-out infinite;
+}
+
+.chartPlaceholder:hover .placeholderTooltip,
+.chartPlaceholder:focus-visible .placeholderTooltip {
+  opacity: 0.9;
+}
+
+.noDataState {
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #efe8e8;
+  font-size: 16px;
+  font-weight: 500;
+}
 
 .oxideDark {
-  background-color: #1b2a41;
+  background-color: #1B2A41;
 }
 
-/* Only in darkMode: target filterSelect under .oxideDark */
 .oxideDark .filterSelect .ant-select-selector {
   background-color: #1c2541 !important;
   border-color: rgba(255, 255, 255, 0.2) !important;
 }
-.oxideDark .filterSelect .ant-select-selection-item,
-.oxideDark .filterSelect .ant-select-selection-placeholder {
-  color: #f5f5f5 !important;
+
+/* Selected Text inside Dropdowns */
+.oxideDark .filterSelect :global(.ant-select-selection-item-content) {
+  color: #000000 !important;
+  font-weight: 500;
 }
-.oxideDark .filterSelect .ant-select-arrow {
-  color: #f5f5f5 !important;
-}
-.oxideDark .filterSelect .ant-select-clear {
-  color: #f5f5f5 !important;
-}
-.oxideDark .filterSelect .ant-select-dropdown {
-  background-color: #1c2541 !important;
-}
-.oxideDark .filterSelect .ant-select-item-option-content {
+
+.oxideDark .filterSelect .ant-select-selection-item {
   color: #f5f5f5 !important;
 }
 
-.oxideDark .filterSelect.ant-picker {
+
+.oxideDark .filterSelect .ant-select-selection-placeholder,
+.oxideDark .filterSelect .ant-picker-input>input::placeholder {
+  color: #b0b0b0 !important;
+  opacity: 1 !important;
+  font-weight: 500;
+}
+
+/* Icons and Arrows */
+.oxideDark .filterSelect .ant-select-arrow,
+.oxideDark .filterSelect .ant-picker-suffix,
+.oxideDark .filterSelect .ant-select-clear,
+.oxideDark .filterSelect .ant-picker-clear {
+  color: #f5f5f5 !important;
+}
+
+.oxideDark .filterSelect .ant-picker-suffix {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.oxideDark .filterSelect .ant-select-dropdown,
+.oxideDark :global(.ant-picker-dropdown) {
+  background-color: #1c2541 !important;
+}
+
+/* Option Text */
+.oxideDark :global(.ant-select-item-option-content) {
+  color: #f5f5f5 !important;
+}
+
+/* Dropdown Hover State */
+.oxideDark :global(.ant-select-item-option-active:not(.ant-select-item-option-disabled)) {
+  background-color: #2c3e50 !important;
+}
+
+
+.oxideDark :global(.ant-select-item-option-selected:not(.ant-select-item-option-disabled)) {
+  background-color: #3b5068 !important;
+  color: #ffffff !important;
+}
+
+
+
+.oxideDark :global(.ant-picker-panel-container),
+.oxideDark :global(.ant-picker-panels),
+.oxideDark :global(.ant-picker-panel) {
   background-color: #1c2541 !important;
   border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
-.oxideDark .filterSelect.ant-picker .ant-picker-input > input,
-.oxideDark .filterSelect.ant-picker .ant-picker-input > input::placeholder {
+.oxideDark .filterSelect.ant-picker .ant-picker-input>input {
   color: #f5f5f5 !important;
 }
-.oxideDark .filterSelect .ant-picker-suffix {
-  color: #f5f5f5 !important;
-}
-.oxideDark .filterSelect .ant-picker-clear {
-  color: #f5f5f5 !important;
-}
-.oxideDark .filterSelect .ant-picker-dropdown {
+
+.oxideDark :global(.ant-picker-content th) {
   background-color: #1c2541 !important;
+  color: #a0a0a0 !important;
+}
+
+.oxideDark :global(.ant-picker-header) {
+  color: #f5f5f5 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.oxideDark :global(.ant-picker-header-view),
+.oxideDark :global(.ant-picker-header button) {
   color: #f5f5f5 !important;
 }
 
-/* Chart axis labels and text in dark mode */
-.oxideDark .recharts-text {
-  fill: #f5f5f5 !important;
+
+.oxideDark :global(.ant-picker-cell-in-view .ant-picker-cell-inner) {
+  color: #f5f5f5 !important;
+  /* Current month */
 }
 
-.oxideDark .recharts-cartesian-axis-tick-value {
-  fill: #f5f5f5 !important;
+.oxideDark :global(.ant-picker-cell:not(.ant-picker-cell-in-view) .ant-picker-cell-inner) {
+  color: #666666 !important;
+
 }
 
+.oxideDark :global(.ant-picker-cell-today .ant-picker-cell-inner) {
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+/* Calendar Hover / Range Selection Highlights */
+.oxideDark :global(.ant-picker-cell:hover:not(.ant-picker-cell-selected):not(.ant-picker-cell-in-view) .ant-picker-cell-inner),
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell:hover:not(.ant-picker-cell-selected):not(.ant-picker-cell-in-view) .ant-picker-cell-inner) {
+  background-color: #2c3e50 !important;
+}
+
+.oxideDark :global(.ant-picker-cell-range-hover::before),
+.oxideDark :global(.ant-picker-cell-range-hover-start::before),
+.oxideDark :global(.ant-picker-cell-range-hover-end::before) {
+  background-color: #3b5068 !important;
+
+}
+
+.oxideDark :global(.ant-picker-cell-range-hover .ant-picker-cell-inner) {
+  color: #ffffff !important;
+}
+
+.oxideDark :global(.ant-picker-cell-in-range::before),
+.oxideDark:global(.ant-picker-dropdown) :global(.ant-picker-cell-in-range::before) {
+  background-color: #3b5068 !important;
+}
+
+/* Input Box Target */
+.oxideDark .filterSelect:global(.ant-picker) {
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.oxideDark .filterSelect :global(.ant-picker-input > input) {
+  color: #000000 !important;
+}
+
+.oxideDark .filterSelect :global(.ant-picker-range-separator) * {
+  color: #000000 !important;
+  padding-right: 5px;
+}
+
+.oxideDark .filterSelect :global(.ant-picker-clear) {
+  background-color: transparent !important;
+}
+
+
+.oxideDark .recharts-text,
+.oxideDark .recharts-cartesian-axis-tick-value,
 .oxideDark .recharts-legend-item-text {
+  fill: #f5f5f5 !important;
   color: #f5f5f5 !important;
 }
 
 .oxideDark .recharts-cartesian-grid-horizontal line,
 .oxideDark .recharts-cartesian-grid-vertical line {
   stroke: rgba(255, 255, 255, 0.2) !important;
+}
+
+
+@keyframes placeholderPulse {
+  0% {
+    opacity: 0.35;
+  }
+
+  50% {
+    opacity: 0.55;
+  }
+
+  100% {
+    opacity: 0.35;
+  }
 }

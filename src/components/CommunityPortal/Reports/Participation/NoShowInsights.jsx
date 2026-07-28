@@ -1,16 +1,14 @@
 import { useState, useRef } from 'react';
-import { useSelector } from 'react-redux';
 import { ArrowUpDown, ArrowUp, ArrowDown, SquareArrowOutUpRight } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import mockEvents from './mockData';
 import styles from './Participation.module.css';
 
-function NoShowInsights() {
+function NoShowInsights({ darkMode }) {
   const [dateFilter, setDateFilter] = useState('All');
   const [activeTab, setActiveTab] = useState('Event type');
   const [sortOrder, setSortOrder] = useState('none');
-  const darkMode = useSelector(state => state.theme.darkMode);
   const insightsRef = useRef(null);
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [exportError, setExportError] = useState('');
@@ -90,19 +88,11 @@ function NoShowInsights() {
 
     return finalStats.map(item => (
       <div key={item.label} className={styles.insightItem}>
-        <div className={`${styles.insightLabel} ${darkMode ? styles.insightLabelDark : ''}`}>
-          {item.label}
+        <div className={styles.insightLabel}>{item.label}</div>
+        <div className={styles.insightBar}>
+          <div className={styles.insightFill} style={{ width: `${item.percentage}%` }} />
         </div>
-        <div className={`${styles.insightBar}`}>
-          <div className={`${styles.insightFill}`} style={{ width: `${item.percentage}%` }} />
-        </div>
-        <div
-          className={`${styles.insightsPercentage} ${
-            darkMode ? styles.insightsPercentageDark : ''
-          }`}
-        >
-          {item.percentage}%
-        </div>
+        <div className={styles.insightsPercentage}>{item.percentage}%</div>
       </div>
     ));
   };
@@ -204,14 +194,14 @@ function NoShowInsights() {
     <>
       {isExportOpen && (
         <div
-          className={styles.modalOverlay}
+          className={`${styles.modalOverlay} ${darkMode ? styles.darkMode : ''}`}
           onClick={() => !isExporting && setIsExportOpen(false)}
           onKeyDown={() => !isExporting && setIsExportOpen(false)}
           role="button"
           tabIndex={0}
         >
           <div
-            className={`${styles.modal} ${darkMode ? styles.modalDark : ''}`}
+            className={styles.modal}
             onClick={e => e.stopPropagation()}
             onKeyDown={e => e.stopPropagation()}
             role="button"
@@ -244,9 +234,7 @@ function NoShowInsights() {
               <div className={styles.modalActions}>
                 <button
                   type="button"
-                  className={`${
-                    darkMode ? styles.exportOptionsButtonsDark : styles.exportOptionsButtons
-                  }`}
+                  className={styles.exportOptionsButtons}
                   onClick={handleDownloadPdf}
                   disabled={isExporting}
                 >
@@ -255,9 +243,7 @@ function NoShowInsights() {
 
                 <button
                   type="button"
-                  className={`${
-                    darkMode ? styles.exportOptionsButtonsDark : styles.exportOptionsButtons
-                  }`}
+                  className={styles.exportOptionsButtons}
                   onClick={handleSharePdf}
                   disabled={isExporting}
                 >
@@ -268,15 +254,10 @@ function NoShowInsights() {
           </div>
         </div>
       )}
-      <div
-        ref={insightsRef}
-        className={`${styles.insights} ${darkMode ? styles.insightsDark : ''}`}
-      >
-        <div className={`${styles.insightsHeader} ${darkMode ? styles.insightsHeaderDark : ''}`}>
+      <div ref={insightsRef} className={`${styles.insights} ${darkMode ? styles.darkMode : ''}`}>
+        <div className={styles.insightsHeader}>
           <h3>No-show rate insights</h3>
-          <div
-            className={`${styles.insightsFilters} ${darkMode ? styles.insightsFiltersDark : ''}`}
-          >
+          <div className={styles.insightsFilters}>
             <select value={dateFilter} onChange={e => setDateFilter(e.target.value)}>
               <option value="All">All Time</option>
               <option value="Today">Today</option>
@@ -287,17 +268,12 @@ function NoShowInsights() {
         </div>
 
         <div className={styles.insightsTabsContainer}>
-          <div className={`${styles.insightsTabs} ${darkMode ? styles.insightsTabsDarkMode : ''}`}>
+          <div className={styles.insightsTabs}>
             {['Event type', 'Time', 'Location'].map(tab => (
               <button
                 key={tab}
                 type="button"
-                className={`
-                ${styles.insightsTab} 
-                ${darkMode ? styles.insightsTabDarkMode : ''} 
-                ${
-                  activeTab === tab ? (darkMode ? styles.activeTabDarkMode : styles.activeTab) : ''
-                }`}
+                className={`${styles.insightsTab} ${activeTab === tab ? styles.activeTab : ''}`}
                 onClick={() => setActiveTab(tab)}
               >
                 {tab}
