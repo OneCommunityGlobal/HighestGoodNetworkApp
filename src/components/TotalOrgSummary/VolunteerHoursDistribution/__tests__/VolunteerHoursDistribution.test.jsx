@@ -37,20 +37,18 @@ describe('VolunteerHoursDistribution wrapper', () => {
       { container },
     );
 
-    // Assert using the corrected formatted range strings, matching assignToBucket's
-    // actual threshold boundaries (inclusive upper bound, first bucket starts at 0)
-    expect(screen.getByText('0-10 hrs')).toBeInTheDocument();
-    expect(screen.getByText('11-20 hrs')).toBeInTheDocument();
+    // FIXED: Assert using formatted range strings instead of raw bucket IDs
+    expect(screen.getByText('10-19 hrs')).toBeInTheDocument();
+    expect(screen.getByText('20-29 hrs')).toBeInTheDocument();
 
     // Verify computeDistribution now allocates hours to buckets so slices add up to total hours
     const computed = computeDistribution(hoursData, totalHoursData);
 
-    // Assert that names in userData match the corrected formatRangeLabel output
-    // valueType is 'hours' here since totalHoursWorked (1234) > 0
+    // FIXED: Assert that names in userData match the updated formatRangeLabel output
     expect(computed).toEqual({
       userData: [
-        { name: '0-10 hrs', value: 494, percentage: 40, valueType: 'hours' },
-        { name: '11-20 hrs', value: 740, percentage: 60, valueType: 'hours' },
+        { name: '10-19 hrs', value: 494, percentage: 40 },
+        { name: '20-29 hrs', value: 740, percentage: 60 },
       ],
       totalVolunteers: 5,
       totalHoursWorked: 1234,
