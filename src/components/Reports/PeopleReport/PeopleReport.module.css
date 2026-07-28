@@ -596,20 +596,27 @@ body {
 @media (width >= 1024px) {
   .peopleReportPage {
     .peopleReportContainer {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
+      display: flex;
+      flex-direction: row-reverse;
+      /* display: grid;
+      grid-template-columns: repeat(12, 1fr); */
       column-gap: 1rem;
     }
 
     .userProfile {
-      grid-column-start: 10;
-      grid-column-end: 13;
+      min-width: 20rem;
+      /* grid-column-start: 10;
+      grid-column-end: 13; */
     }
 
     .stats {
-      order: -1;
+      /* order: -1;
       grid-column-start: 1;
-      grid-column-end: 10;
+      grid-column-end: 10; */
     }
   }
+}
+
+.peopleTasksPieChartWrapper {
+  display: block;
 }

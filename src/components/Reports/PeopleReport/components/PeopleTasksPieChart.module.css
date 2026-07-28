@@ -2,8 +2,15 @@
 .people-pie-charts-wrapper {
   display: grid;
   grid-auto-flow: row;
-  row-gap: 8px; 
+  row-gap: 8px;
   color: rgb(0 0 0 / 50%);
+}
+
+.people-pie-charts-wrapper.tasks-many {
+  /* When there are many tasks, cap each chart block to roughly half the viewport
+     so the legend fits as many rows as possible without pushing the page taller. */
+  /* min-height: 75vh; */
+  /* grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); */
 }
 
 .pie-no-scroll,
@@ -31,15 +38,17 @@
   height: 100% !important;
 }
 
-@media (width >= 2000px) {
+@media (width >= 1280px) {
   .people-pie-charts-wrapper {
+    display: block;
     grid-auto-flow: column;
     column-gap: 24px;
   }
 
   .people-pie-charts-wrapper.tasks-many {
-    grid-auto-flow: row;
-    row-gap: 8px;
+    /* grid-auto-flow: row; */
+    /* row-gap: 8px; */
+    /* min-height: 75vh;x */
   }
 }
 
@@ -74,5 +83,10 @@
   display: flex;
   align-items: center;
   gap: 2rem;
+  width: 100%;
+}
+
+.tasks-block-wrapper {
+  /* Lets the inner ReportBlock fill whatever vertical space the parent grid gives it. */
   width: 100%;
 }

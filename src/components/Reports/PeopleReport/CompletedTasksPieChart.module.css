@@ -1,0 +1,117 @@
+.completedTasksPieChart {
+  height: auto;
+}
+
+@media (width >= 2000px) {
+  .completedTasksPieChart {
+    height: 70vh;
+  }
+}
+
+.report-block {
+  border-radius: 12px;
+  box-shadow: 0 0 12px #eae1f6;
+  background-color: #fff;
+  padding: 2rem;
+  margin: 2px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.pie-chart-wrapper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex: 1 1 auto;
+  min-height: 0; /* allow children to be height-clamped instead of stretching the parent */
+}
+
+.pie-chart-legend-container {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pie-chart-legend-table,
+.pie-chart-legend-table-dark {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pie-chart-legend-table th,
+.pie-chart-legend-table td,
+.pie-chart-legend-table-dark th,
+.pie-chart-legend-table-dark td {
+  padding: 8px 0;
+  text-align: left;
+}
+
+/* Holds the table + footer. The tbody inside gets the actual height clamp; this
+   wrapper just stacks them vertically. No scrollbar — overflow is hidden. */
+.legend-scroll-area {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.legend-scroll-area tbody {
+  display: block; /* lets us set a max-height on tbody specifically */
+  overflow: hidden; /* clipped rows simply disappear — no internal scrollbar */
+  max-height: 55vh; /* JS reads this via getComputedStyle to compute visibleCount */
+}
+
+@media (width >= 2000px) {
+  .legend-scroll-area tbody {
+    /* match the wrapper's expanded 70vh budget, after the heading and total-hours block */
+    max-height: calc(70vh - 200px);
+  }
+}
+
+.legend-scroll-area thead,
+.legend-scroll-area tbody,
+.legend-scroll-area tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.legend-scroll-area thead {
+  /* keep the header pinned visually above the tbody's overflow */
+  position: relative;
+  z-index: 1;
+}
+
+.more-rows-footer {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 4px;
+}
+
+.show-more-btn {
+  border: 1px solid #b58cdb;
+  background: #f4ecff;
+  color: #5b2a86;
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.show-more-btn:hover {
+  background: #e6d4f9;
+}
+
+.report-block-dark .show-more-btn {
+  background: #2a1f3d;
+  color: #e6d4f9;
+  border-color: #6a4a9c;
+}
+
+.project-chart-legend {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
