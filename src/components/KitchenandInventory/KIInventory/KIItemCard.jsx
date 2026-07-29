@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { inventoryItemShape } from './KIInventoryPropTypes';
 import styles from './KIItemCard.module.css';
 
-function KIItemCard({ item, onUpdateItem }) {
+function KIItemCard({ item, onUpdateItem, onReorder }) {
   const healthyStock = item.presentQuantity > item.reorderAt;
   const lowStock =
     item.presentQuantity <= item.reorderAt && item.presentQuantity >= item.reorderAt * 0.75;
@@ -185,6 +185,7 @@ function KIItemCard({ item, onUpdateItem }) {
           type="button"
           className={styles.cardButton}
           style={darkMode ? { backgroundColor: '#3a3a3a', color: '#ffffff' } : {}}
+          onClick={() => onReorder(item)}
         >
           <FiShoppingCart /> Reorder
         </button>
@@ -196,10 +197,12 @@ function KIItemCard({ item, onUpdateItem }) {
 KIItemCard.propTypes = {
   item: inventoryItemShape.isRequired,
   onUpdateItem: PropTypes.func,
+  onReorder: PropTypes.func,
 };
 
 KIItemCard.defaultProps = {
   onUpdateItem: () => {},
+  onReorder: () => {},
 };
 
 export default KIItemCard;

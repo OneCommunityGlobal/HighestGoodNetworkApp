@@ -20,6 +20,7 @@ import {
 import { RiLeafLine } from 'react-icons/ri';
 import KIItemCard from './KIItemCard';
 import KIAddItemModal from './KIAddItemModal/KIAddItemModal';
+import KIReorderItemModal from './KIReorderItemModal/KIReorderItemModal';
 import KIUpdateItemModal from './KIUpdateItemModal/KIUpdateItemModal';
 import {
   addInventoryItem,
@@ -27,6 +28,7 @@ import {
   fetchInventoryItems,
   fetchInventoryStats,
   fetchPreservedItems,
+  reorderInventoryItem,
   updateInventoryItem,
 } from '../../../actions/KIInventoryActions';
 
@@ -58,6 +60,8 @@ const KIInventory = () => {
     updateItemError,
     deleteItemLoading,
     deleteItemError,
+    reorderItemLoading,
+    reorderItemError,
   } = useSelector(state => state.kiInventory);
 
   const tabs = [
@@ -71,6 +75,7 @@ const KIInventory = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
   const [selectedInventoryItem, setSelectedInventoryItem] = useState(null);
+  const [selectedReorderItem, setSelectedReorderItem] = useState(null);
 
   const toggleTab = tab => {
     if (activeTab !== tabs[tab]) {
@@ -108,8 +113,11 @@ const KIInventory = () => {
   const handleAddItem = payload => dispatch(addInventoryItem(payload));
   const handleUpdateItem = (itemId, payload) => dispatch(updateInventoryItem(itemId, payload));
   const handleDeleteItem = itemId => dispatch(deleteInventoryItem(itemId));
+  const handleReorderItem = (itemId, payload) => dispatch(reorderInventoryItem(itemId, payload));
   const handleOpenUpdateItemModal = item => setSelectedInventoryItem(item);
   const handleCloseUpdateItemModal = () => setSelectedInventoryItem(null);
+  const handleOpenReorderItemModal = item => setSelectedReorderItem(item);
+  const handleCloseReorderItemModal = () => setSelectedReorderItem(null);
   const selectedItemCategoryValue = selectedInventoryItem?.category || activeCategory;
   const selectedItemCategoryLabel = CATEGORY_LABEL_MAP[selectedItemCategoryValue] || activeTab;
 
@@ -126,7 +134,11 @@ const KIInventory = () => {
     if (tabItems.length > 0) {
       return tabItems.map(item => (
         <div key={item._id}>
-          <KIItemCard item={item} onUpdateItem={handleOpenUpdateItemModal} />
+          <KIItemCard
+            item={item}
+            onUpdateItem={handleOpenUpdateItemModal}
+            onReorder={handleOpenReorderItemModal}
+          />
         </div>
       ));
     }
@@ -327,6 +339,15 @@ const KIInventory = () => {
         isDeleting={deleteItemLoading}
         submitError={updateItemError}
         deleteError={deleteItemError}
+        darkMode={darkMode}
+      />
+      <KIReorderItemModal
+        isOpen={Boolean(selectedReorderItem)}
+        item={selectedReorderItem}
+        onClose={handleCloseReorderItemModal}
+        onSubmit={handleReorderItem}
+        isSubmitting={reorderItemLoading}
+        submitError={reorderItemError}
         darkMode={darkMode}
       />
     </div>

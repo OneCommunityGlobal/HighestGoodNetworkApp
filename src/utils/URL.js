@@ -708,6 +708,7 @@ export const ENDPOINTS = {
   KI_CALENDAR_EVENTS: (month, year) => `${APIEndpoint}/kitchenandinventory/calendar?month=${month}&year=${year}`,
   KI_INVENTORY_ITEMS: `${APIEndpoint}/kitchenandinventory/inventory/items`,
   KI_INVENTORY_ITEM: itemId => `${APIEndpoint}/kitchenandinventory/inventory/items/${itemId}`,
+  KI_INVENTORY_STORED_QUANTITY: `${APIEndpoint}/kitchenandinventory/inventory/items/storedQuantity`,
   KI_INVENTORY_STATS: `${APIEndpoint}/kitchenandinventory/inventory/items/stats`,
   KI_INVENTORY_PRESERVED: `${APIEndpoint}/kitchenandinventory/inventory/items/ingredients/preserved`,
 

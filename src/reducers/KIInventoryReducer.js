@@ -17,6 +17,9 @@ import {
   KI_INVENTORY_DELETE_REQUEST,
   KI_INVENTORY_DELETE_SUCCESS,
   KI_INVENTORY_DELETE_FAILURE,
+  KI_INVENTORY_REORDER_REQUEST,
+  KI_INVENTORY_REORDER_SUCCESS,
+  KI_INVENTORY_REORDER_FAILURE,
 } from '../constants/KIInventoryConstants';
 
 const initialState = {
@@ -32,6 +35,8 @@ const initialState = {
   updateItemError: null,
   deleteItemLoading: false,
   deleteItemError: null,
+  reorderItemLoading: false,
+  reorderItemError: null,
   error: null,
 };
 
@@ -84,6 +89,14 @@ const KIInventoryReducer = (state = initialState, action) => {
       return { ...state, deleteItemLoading: false, deleteItemError: null };
     case KI_INVENTORY_DELETE_FAILURE:
       return { ...state, deleteItemLoading: false, deleteItemError: action.payload };
+
+    // ── Reorder Item ──────────────────────────────────────────────────────
+    case KI_INVENTORY_REORDER_REQUEST:
+      return { ...state, reorderItemLoading: true, reorderItemError: null };
+    case KI_INVENTORY_REORDER_SUCCESS:
+      return { ...state, reorderItemLoading: false, reorderItemError: null };
+    case KI_INVENTORY_REORDER_FAILURE:
+      return { ...state, reorderItemLoading: false, reorderItemError: action.payload };
 
     default:
       return state;

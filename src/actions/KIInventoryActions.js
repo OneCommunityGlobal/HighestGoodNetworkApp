@@ -19,6 +19,9 @@ import {
   KI_INVENTORY_DELETE_REQUEST,
   KI_INVENTORY_DELETE_SUCCESS,
   KI_INVENTORY_DELETE_FAILURE,
+  KI_INVENTORY_REORDER_REQUEST,
+  KI_INVENTORY_REORDER_SUCCESS,
+  KI_INVENTORY_REORDER_FAILURE,
 } from '../constants/KIInventoryConstants';
 
 const createFetchAction = (
@@ -174,6 +177,44 @@ export const deleteInventoryItem = itemId => async dispatch => {
 
     dispatch({
       type: KI_INVENTORY_DELETE_FAILURE,
+      payload: errorMessage,
+    });
+
+    throw new Error(errorMessage);
+  }
+};
+
+/**
+ * Add newly received stock to an inventory item.
+ * POST /api/kitchenandinventory/inventory/items/storedQuantity
+ */
+export const reorderInventoryItem = (itemId, payload) => async dispatch => {
+  dispatch({ type: KI_INVENTORY_REORDER_REQUEST });
+
+  try {
+    const res = await axios.post(ENDPOINTS.KI_INVENTORY_STORED_QUANTITY, {
+      itemId,
+      ...payload,
+    });
+    dispatch({ type: KI_INVENTORY_REORDER_SUCCESS, payload: res.data?.data || res.data });
+
+    await Promise.all([
+      dispatch(fetchInventoryItems()),
+      dispatch(fetchInventoryStats()),
+      dispatch(fetchPreservedItems()),
+    ]);
+
+    return res.data;
+  } catch (err) {
+    const notFoundMessage =
+      'Inventory reorder route was not found. Please confirm the backend is running with the stored quantity route.';
+    const errorMessage =
+      err.response?.status === 404
+        ? notFoundMessage
+        : err.response?.data?.message || err.message || 'Failed to reorder inventory item.';
+
+    dispatch({
+      type: KI_INVENTORY_REORDER_FAILURE,
       payload: errorMessage,
     });
 
