@@ -3,6 +3,7 @@
   gap: 3rem;
   align-items: flex-start;
   padding: 1.5rem 2rem; /* <-- adds spacing from page edges */
+  min-height: 100vh; /* fills the page so dark mode has no leftover white gap below short content */
 }
 
 .leftSection {
@@ -145,6 +146,25 @@
   background: #4b5563;
 }
 
+/* Empty State (zero results for selected date range) */
+.emptyState {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+.emptyStateText {
+  font-size: 15px;
+  color: #6b7280;
+}
+
+.darkMode .emptyStateText {
+  color: #94a3b8;
+}
+
 /* Date Validation Error */
 .dateError {
   background: #fef2f2;
@@ -214,15 +234,77 @@
   color: #fecaca;
 }
 
-/* Dark mode for DatePicker */
-.darkMode .react-datepicker-wrapper input {
+/* Dark mode for DatePicker input (the input itself lives inside .wrapper, so
+   the .darkMode ancestor works here - but the class from the react-datepicker
+   library must be marked :global or CSS Modules hashes it and the rule never
+   matches the real library markup). */
+.darkMode :global(.react-datepicker-wrapper) input {
   background: #334155;
   color: #e2e8f0;
   border-color: #475569;
 }
 
-.darkMode .react-datepicker-wrapper input::placeholder {
+.darkMode :global(.react-datepicker-wrapper) input::placeholder {
   color: #94a3b8;
+}
+
+/* react-datepicker renders its calendar popup in a portal appended to
+   document.body, so it is never a DOM descendant of .wrapper/.darkMode -
+   ancestor selectors scoped to this component can't reach it. Target the
+   global body.dark-mode class (toggled app-wide by ThemeManager) instead,
+   and mark every react-datepicker class :global so CSS Modules doesn't
+   hash it away from the library's real, unscoped class names. */
+:global(.react-datepicker__navigation-icon::before) {
+  /* library default (#ccc) is nearly invisible against the light header background */
+  border-color: #6b7280;
+}
+
+:global(.react-datepicker__navigation:hover .react-datepicker__navigation-icon::before) {
+  border-color: #374151;
+}
+
+:global(body.dark-mode .react-datepicker) {
+  background-color: #334155;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+:global(body.dark-mode .react-datepicker__header) {
+  background-color: #1e293b;
+  border-color: #475569;
+}
+
+:global(body.dark-mode .react-datepicker__current-month),
+:global(body.dark-mode .react-datepicker__day-name),
+:global(body.dark-mode .react-datepicker__day) {
+  color: #e2e8f0;
+}
+
+:global(body.dark-mode .react-datepicker__day:hover) {
+  background-color: #475569;
+}
+
+:global(body.dark-mode .react-datepicker__day--selected),
+:global(body.dark-mode .react-datepicker__day--keyboard-selected) {
+  background-color: #1d4ed8;
+  color: #fff;
+}
+
+:global(body.dark-mode .react-datepicker__day--disabled) {
+  color: #64748b;
+}
+
+:global(body.dark-mode .react-datepicker__navigation-icon::before) {
+  border-color: #cbd5e1;
+}
+
+:global(body.dark-mode .react-datepicker__navigation:hover .react-datepicker__navigation-icon::before) {
+  border-color: #fff;
+}
+
+:global(body.dark-mode .react-datepicker__triangle::before),
+:global(body.dark-mode .react-datepicker__triangle::after) {
+  border-bottom-color: #334155 !important;
 }
 
 .darkMode .btnPrimary {
@@ -241,4 +323,30 @@
 
 .darkMode .btnSecondary:hover {
   background: #334155;
+}
+
+/* Responsive: stack the stats panel below the chart instead of letting it
+   overlap the title/date filters on narrow (mobile) viewports. */
+@media (width <= 768px) {
+  .wrapper {
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1rem;
+  }
+
+  .panel {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .controls {
+    flex-wrap: wrap;
+  }
+
+  .chartWrapper {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
 }

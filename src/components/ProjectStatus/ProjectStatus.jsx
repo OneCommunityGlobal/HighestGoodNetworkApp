@@ -87,6 +87,10 @@ export default function ProjectStatus() {
     () => ({
       responsive: true,
       cutout: '65%',
+      // The resting outer radius fills the canvas edge-to-edge with no margin, so
+      // without this the hoverOffset (8px) push on hover clips the arc against the
+      // canvas boundary on the left/right edges.
+      layout: { padding: 8 },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -113,10 +117,23 @@ export default function ProjectStatus() {
           total: data?.totalProjects ?? 0,
           darkMode,
         },
+        // Explicitly disabled: OptStatusPieChart registers chartjs-plugin-datalabels
+        // globally, which otherwise leaks into this chart and draws unwanted value
+        // labels on the donut segments.
+        datalabels: { display: false },
+        // OptStatusPieChart also globally registers a custom 'leaderLines' plugin
+        // (ctx.stroke from every arc's outer edge) with no per-chart opt-out inside
+        // its own code, so it silently draws on every other chart too, including
+        // this one. Chart.js skips a plugin's hooks entirely when its options key is
+        // literally `false` (not `{ display: false }`), which is the only way to
+        // opt this chart out short of editing OptStatusPieChart itself.
+        leaderLines: false,
       },
     }),
     [data, darkMode],
   );
+
+  const hasData = (data?.totalProjects ?? 0) > 0;
 
   const onApply = () => {
     setDateError('');
@@ -128,6 +145,13 @@ export default function ProjectStatus() {
     }
 
     load({ startDate: from, endDate: to });
+  };
+
+  const onReset = () => {
+    setFrom(null);
+    setTo(null);
+    setDateError('');
+    load({});
   };
 
   return (
@@ -153,6 +177,9 @@ export default function ProjectStatus() {
             />
             <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={onApply}>
               Apply
+            </button>
+            <button className={`${styles.btn} ${styles.btnSecondary}`} onClick={onReset}>
+              Reset
             </button>
           </div>
         </div>
@@ -184,23 +211,33 @@ export default function ProjectStatus() {
         {/* Chart + Legend */}
         {!pending && !error && data && (
           <>
-            <div className={styles.chartWrapper}>
-              <Doughnut data={chartData} options={chartOptions} />
-            </div>
-            <div className={styles.legend}>
-              <span className={styles.legendItem}>
-                <span className={styles.swatch} style={{ background: COLORS.active }} />
-                <span>Active</span>
-              </span>
-              <span className={styles.legendItem}>
-                <span className={styles.swatch} style={{ background: COLORS.completed }} />
-                <span>Completed</span>
-              </span>
-              <span className={styles.legendItem}>
-                <span className={styles.swatch} style={{ background: COLORS.delayed }} />
-                <span>Delayed</span>
-              </span>
-            </div>
+            {hasData ? (
+              <>
+                <div className={styles.chartWrapper}>
+                  <Doughnut data={chartData} options={chartOptions} />
+                </div>
+                <div className={styles.legend}>
+                  <span className={styles.legendItem}>
+                    <span className={styles.swatch} style={{ background: COLORS.active }} />
+                    <span>Active</span>
+                  </span>
+                  <span className={styles.legendItem}>
+                    <span className={styles.swatch} style={{ background: COLORS.completed }} />
+                    <span>Completed</span>
+                  </span>
+                  <span className={styles.legendItem}>
+                    <span className={styles.swatch} style={{ background: COLORS.delayed }} />
+                    <span>Delayed</span>
+                  </span>
+                </div>
+              </>
+            ) : (
+              <div className={styles.emptyState}>
+                <div className={styles.emptyStateText}>
+                  No project data available for the selected date range.
+                </div>
+              </div>
+            )}
             <div className={styles.total}>{dayjs().format('dddd, MMMM D, YYYY')}</div>
           </>
         )}
