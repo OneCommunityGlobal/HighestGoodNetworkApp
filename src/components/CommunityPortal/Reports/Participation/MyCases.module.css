@@ -1,6 +1,6 @@
 /* ---------- CSS Variables for Dark Mode ---------- */
 :root {
-  --color-text-dark: #ffffff;
+  --color-text-dark: #fff;
   --color-border-dark: #4a5a77;
 }
 
@@ -108,14 +108,15 @@
 }
 
 .viewSwitcher button.active {
-  background-color: #007bff;
+  background-color: #0056b3;
   color: #fff;
+  border-color: #0056b3;
 }
 
 .myCasesPageDark .viewSwitcher button.active {
-  background-color: #007bff;
+  background-color: #0056b3;
   color: var(--color-text-dark);
-  border-color: #007bff;
+  border-color: #0056b3;
 }
 
 .filterWrapper {
@@ -129,7 +130,7 @@
   border: 1px solid #ccc;
   border-radius: 6px;
   cursor: pointer;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #333;
 }
 
@@ -137,11 +138,6 @@
   background-color: #3A506B;
   color: var(--color-text-dark);
   border: 1px solid var(--color-border-dark);
-}
-
-.myCasesPageDark .filterDropdown option {
-  background-color: #3A506B;
-  color: var(--color-text-dark);
 }
 
 .myCasesPageDark .filterDropdown {
