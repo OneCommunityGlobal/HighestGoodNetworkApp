@@ -347,9 +347,11 @@
 }
 
 :global(.react-datepicker__close-icon::after) {
-  background-color: var(--input-text) !important;
+  background-color: transparent !important;
   color: var(--input-text) !important;
   opacity: 0.6;
+  font-size: 16px !important;
+  font-weight: 400;
 }
 
 :global(.react-datepicker-popper) {

@@ -217,7 +217,7 @@ function FilterPanel({
               selectsStart
               startDate={startDate}
               endDate={endDate}
-              maxDate={endDate}
+              maxDate={endDate || new Date()}
               placeholderText="Start Date"
               dateFormat="yyyy-MM-dd"
               className={darkMode ? styles.datePickerDark : styles.datePickerLight}
@@ -231,6 +231,7 @@ function FilterPanel({
               startDate={startDate}
               endDate={endDate}
               minDate={startDate}
+              maxDate={new Date()}
               placeholderText="End Date"
               dateFormat="yyyy-MM-dd"
               className={darkMode ? styles.datePickerDark : styles.datePickerLight}

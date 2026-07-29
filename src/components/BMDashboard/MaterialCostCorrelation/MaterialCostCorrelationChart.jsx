@@ -492,7 +492,7 @@ function MaterialCostCorrelationChart() {
                 width={yAxisProps.width}
               />
               <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
-              <Legend />
+              <Legend wrapperStyle={{ color: chartConfig.textColor }} />
               <Bar
                 yAxisId="cost"
                 dataKey="totalCostK"
