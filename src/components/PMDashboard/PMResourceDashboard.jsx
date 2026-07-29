@@ -49,8 +49,7 @@ function PMResourceDashboard() {
                 })}
                 onClick={() => toggleTab('requests')}
               >
-                <span className={styles.tabIcon}>📋</span>
-                Resource Requests
+                <span className={styles.tabIcon}>📋</span> Resource Requests
               </NavLink>
             </NavItem>
             <NavItem>
@@ -60,8 +59,7 @@ function PMResourceDashboard() {
                 })}
                 onClick={() => toggleTab('certifications')}
               >
-                <span className={styles.tabIcon}>🎓</span>
-                Certifications
+                <span className={styles.tabIcon}>🎓</span> Certifications
               </NavLink>
             </NavItem>
           </Nav>

@@ -56,12 +56,12 @@
 }
 
 .tabLink:hover {
-  color: #007bff;
+  color: #0056b3;
   background-color: #f8f9fa;
 }
 
 .tabLinkActive {
-  color: #007bff !important;
+  color: #0056b3 !important;
   border-bottom: 3px solid #007bff !important;
   background-color: #fff !important;
 }
@@ -426,7 +426,7 @@
 }
 
 .dashboardDark .tabLink:hover {
-  color: #5b9bd5;
+  color: #7fb5e8;
   background-color: rgb(91 155 213 / 10%);
 }
 
