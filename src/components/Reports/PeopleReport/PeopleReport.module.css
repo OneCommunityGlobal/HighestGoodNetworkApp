@@ -26,6 +26,28 @@ body {
   flex-direction: column;
 }
 
+.metrics {
+  display: grid;
+  gap: 1rem;
+}
+
+.metricCard {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 2rem 1rem;
+  border-radius: 12px;
+}
+
+.metricCardValue {
+  color: #ffffff;
+}
+
+.metricCardTitle {
+  color: #ffffff;
+  font-weight: 600;
+}
+
 .rehireable {
   margin-bottom: 30px;
 }
@@ -583,8 +605,11 @@ body {
 
 @media (width >= 768px) {
   .peopleReportPage {
-    .metrics {
-      display: flex;
+    .metrics.threeMetrics {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .metrics.fourMetrics {
+      grid-template-columns: repeat(2, 1fr);
     }
 
     .metricCard {
@@ -609,10 +634,8 @@ body {
       grid-column-end: 13; */
     }
 
-    .stats {
-      /* order: -1;
-      grid-column-start: 1;
-      grid-column-end: 10; */
+    .metrics.fourMetrics {
+      grid-template-columns: repeat(4, 1fr);
     }
   }
 }

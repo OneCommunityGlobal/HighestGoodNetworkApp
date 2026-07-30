@@ -21,6 +21,7 @@ import { Checkbox } from '../../common/Checkbox';
 import { updateRehireableStatus } from '../../../actions/userManagement';
 import CompletedTasksTable from '~/components/Reports/PeopleReport/CompletedTasksTable';
 import CompletedTasksPieChart from '~/components/Reports/PeopleReport/CompletedTasksPieChart';
+import clsx from 'clsx';
 
 function PeopleReport(props) {
   const {
@@ -207,25 +208,24 @@ function PeopleReport(props) {
         // ref={statsRef}
          className={styles.stats}>
           <div 
-          // ref={metricsRef}
-           className={styles.metrics}>
-            <div className={styles.metricCard}>
-              <h3>{weeklycommittedHours}</h3>
-              <p>Weekly Committed Hours</p>
+           className={clsx(styles.metrics, userProfile.isActive ? styles.fourMetrics : styles.threeMetrics)}>
+            <div style={{backgroundImage: 'linear-gradient(to bottom right, #ff5e82, #e25cb2)'}} className={styles.metricCard}>
+              <h3 className={styles.metricCardValue}>{weeklycommittedHours}</h3>
+              <p className={styles.metricCardTitle}>Weekly Committed Hours</p>
             </div>
             {userProfile.isActive && (
-              <div className={styles.metricCard}>
-                <h3>{tangibleHoursReportedThisWeek}</h3>
-                <p>Hours Logged This Week</p>
+              <div style={{backgroundImage: 'linear-gradient(to bottom right, #b368d2, #831ec4)'}} className={styles.metricCard}>
+                <h3 className={styles.metricCardValue}>{tangibleHoursReportedThisWeek}</h3>
+                <p className={styles.metricCardTitle}>Hours Logged This Week</p>
               </div>
             )}
-            <div className={styles.metricCard}>
-              <h3>{(infringements || []).length}</h3>
-              <p>Blue squares</p>
+            <div style={{backgroundImage: 'linear-gradient(to bottom right, #64b7ff, #928aef)'}} className={styles.metricCard}>
+              <h3 className={styles.metricCardValue}>{(infringements || []).length}</h3>
+              <p className={styles.metricCardTitle}>Blue squares</p>
             </div>
-            <div className={styles.metricCard}>
-              <h3>{totalTangibleHrsRound}</h3>
-              <p>Total Hours Logged</p>
+            <div style={{backgroundImage: 'linear-gradient(to bottom right, #ffdb56, #ff9145)'}} className={styles.metricCard}>
+              <h3 className={styles.metricCardValue}>{totalTangibleHrsRound}</h3>
+              <p className={styles.metricCardTitle}>Total Hours Logged</p>
             </div>
           </div>
 
