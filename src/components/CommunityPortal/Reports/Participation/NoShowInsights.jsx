@@ -1,26 +1,43 @@
 import { useState, useRef } from 'react';
-import { useSelector } from 'react-redux';
-import { Tooltip } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { ArrowUpDown, ArrowUp, ArrowDown, SquareArrowOutUpRight } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import mockEvents from './mockData';
 import styles from './Participation.module.css';
-import { filterEventsByDate } from './FilterByDate';
 
-function NoShowInsights() {
-  const [dateFilter, setDateFilter] = useState('This Week');
-  const [scopeFilter, setScopeFilter] = useState('My Event');
+function NoShowInsights({ darkMode }) {
+  const [dateFilter, setDateFilter] = useState('All');
   const [activeTab, setActiveTab] = useState('Event type');
   const [sortOrder, setSortOrder] = useState('none');
-  const [tooltipOpen, setTooltipOpen] = useState(false);
-  const darkMode = useSelector(state => state.theme.darkMode);
   const insightsRef = useRef(null);
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [exportError, setExportError] = useState('');
   const [isExporting, setIsExporting] = useState(false);
+
+  const filterByDate = events => {
+    const today = new Date();
+    return events.filter(event => {
+      const eventDate = new Date(event.eventDate);
+      switch (dateFilter) {
+        case 'Today':
+          return eventDate.toDateString() === today.toDateString();
+        case 'This Week': {
+          const startOfWeek = new Date(today);
+          startOfWeek.setDate(today.getDate() - today.getDay());
+          const endOfWeek = new Date(startOfWeek);
+          endOfWeek.setDate(startOfWeek.getDate() + 6);
+          return eventDate >= startOfWeek && eventDate <= endOfWeek;
+        }
+        case 'This Month':
+          return (
+            eventDate.getMonth() === today.getMonth() &&
+            eventDate.getFullYear() === today.getFullYear()
+          );
+        default:
+          return true;
+      }
+    });
+  };
 
   const handleSortClick = () => {
     setSortOrder(prev => {
@@ -30,17 +47,6 @@ function NoShowInsights() {
     });
   };
   const SortIcon = sortOrder === 'none' ? ArrowUpDown : sortOrder === 'asc' ? ArrowUp : ArrowDown;
-
-  const toggleTooltip = () => setTooltipOpen(!tooltipOpen);
-
-  const getTooltipContent = () => {
-    let categoryDescription;
-    if (activeTab === 'Event type') categoryDescription = 'event types';
-    else if (activeTab === 'Time') categoryDescription = 'time periods';
-    else categoryDescription = 'locations';
-
-    return `Percentages represent the average no-show rate for each ${categoryDescription} (${activeTab}), aggregated from all matching events within the selected time range. Higher percentages indicate a higher likelihood of participants not attending.`;
-  };
 
   const calculateStats = filteredEvents => {
     const statsMap = new Map();
@@ -71,12 +77,7 @@ function NoShowInsights() {
   };
 
   const renderStats = () => {
-    const dateFilteredEvents = filterEventsByDate(mockEvents, dateFilter);
-    // Placeholder until real ownership/user context is wired in: treat even-id events as "mine".
-    const filteredEvents =
-      scopeFilter === 'My Event'
-        ? dateFilteredEvents.filter(event => event.id % 2 === 0)
-        : dateFilteredEvents;
+    const filteredEvents = filterByDate(mockEvents);
     const stats = calculateStats(filteredEvents);
     const finalStats =
       sortOrder === 'none'
@@ -87,20 +88,11 @@ function NoShowInsights() {
 
     return finalStats.map(item => (
       <div key={item.label} className={styles.insightItem}>
-        <div className={`${styles.insightLabel} ${darkMode ? styles.insightLabelDark : ''}`}>
-          {item.label}
+        <div className={styles.insightLabel}>{item.label}</div>
+        <div className={styles.insightBar}>
+          <div className={styles.insightFill} style={{ width: `${item.percentage}%` }} />
         </div>
-        <div className={`${styles.insightBar}`}>
-          <div className={`${styles.insightFill}`} style={{ width: `${item.percentage}%` }} />
-        </div>
-        <div
-          className={`${styles.insightsPercentage} ${
-            darkMode ? styles.insightsPercentageDark : ''
-          }`}
-          style={{ color: 'red' }}
-        >
-          {item.percentage}%
-        </div>
+        <div className={styles.insightsPercentage}>{item.percentage}%</div>
       </div>
     ));
   };
@@ -150,7 +142,7 @@ function NoShowInsights() {
   const getPdfFilename = () => {
     const now = new Date();
     const localDate = now.toLocaleDateString('en-CA');
-    const filename = `no-show-insights_${scopeFilter}_${dateFilter}_${activeTab}_${localDate}.pdf`;
+    const filename = `no-show-insights_${dateFilter}_${activeTab}_${localDate}.pdf`;
     return filename.replace(/\s+/g, '_').toLowerCase();
   };
 
@@ -186,7 +178,7 @@ function NoShowInsights() {
 
       await navigator.share({
         title: 'No-show rate insights',
-        text: `Insights (${scopeFilter}, ${dateFilter}, ${activeTab})`,
+        text: `Insights (${dateFilter}, ${activeTab})`,
         files: [file],
       });
 
@@ -202,14 +194,14 @@ function NoShowInsights() {
     <>
       {isExportOpen && (
         <div
-          className={styles.modalOverlay}
+          className={`${styles.modalOverlay} ${darkMode ? styles.darkMode : ''}`}
           onClick={() => !isExporting && setIsExportOpen(false)}
           onKeyDown={() => !isExporting && setIsExportOpen(false)}
           role="button"
           tabIndex={0}
         >
           <div
-            className={`${styles.modal} ${darkMode ? styles.modalDark : ''}`}
+            className={styles.modal}
             onClick={e => e.stopPropagation()}
             onKeyDown={e => e.stopPropagation()}
             role="button"
@@ -230,9 +222,6 @@ function NoShowInsights() {
             <div className={styles.modalBody}>
               <div className={styles.modalMeta}>
                 <div>
-                  <strong>Scope:</strong> {scopeFilter}
-                </div>
-                <div>
                   <strong>Filter:</strong> {dateFilter}
                 </div>
                 <div>
@@ -245,9 +234,7 @@ function NoShowInsights() {
               <div className={styles.modalActions}>
                 <button
                   type="button"
-                  className={`${
-                    darkMode ? styles.exportOptionsButtonsDark : styles.exportOptionsButtons
-                  }`}
+                  className={styles.exportOptionsButtons}
                   onClick={handleDownloadPdf}
                   disabled={isExporting}
                 >
@@ -256,9 +243,7 @@ function NoShowInsights() {
 
                 <button
                   type="button"
-                  className={`${
-                    darkMode ? styles.exportOptionsButtonsDark : styles.exportOptionsButtons
-                  }`}
+                  className={styles.exportOptionsButtons}
                   onClick={handleSharePdf}
                   disabled={isExporting}
                 >
@@ -269,37 +254,12 @@ function NoShowInsights() {
           </div>
         </div>
       )}
-      <div
-        ref={insightsRef}
-        className={`${styles.insights} ${darkMode ? styles.insightsDark : ''}`}
-      >
-        <div className={`${styles.insightsHeader} ${darkMode ? styles.insightsHeaderDark : ''}`}>
-          <div className={styles.insightsTitleWrapper}>
-            <h3>No-show rate insights</h3>
-            <span id="noShowInsightsTooltip" className={styles.infoIcon}>
-              <FontAwesomeIcon icon={faInfoCircle} />
-            </span>
-            <Tooltip
-              key={activeTab}
-              delay={{ show: 0, hide: 500 }}
-              autohide={false}
-              placement="right"
-              isOpen={tooltipOpen}
-              target="noShowInsightsTooltip"
-              toggle={toggleTooltip}
-            >
-              {getTooltipContent()}
-            </Tooltip>
-          </div>
-          <div
-            className={`${styles.insightsFilters} ${darkMode ? styles.insightsFiltersDark : ''}`}
-          >
-            <select value={scopeFilter} onChange={e => setScopeFilter(e.target.value)}>
-              <option value="My Event">My Event</option>
-              <option value="All Events">All Events</option>
-            </select>
+      <div ref={insightsRef} className={`${styles.insights} ${darkMode ? styles.darkMode : ''}`}>
+        <div className={styles.insightsHeader}>
+          <h3>No-show rate insights</h3>
+          <div className={styles.insightsFilters}>
             <select value={dateFilter} onChange={e => setDateFilter(e.target.value)}>
-              <option value="All Time">All Time</option>
+              <option value="All">All Time</option>
               <option value="Today">Today</option>
               <option value="This Week">This Week</option>
               <option value="This Month">This Month</option>
@@ -308,17 +268,12 @@ function NoShowInsights() {
         </div>
 
         <div className={styles.insightsTabsContainer}>
-          <div className={`${styles.insightsTabs} ${darkMode ? styles.insightsTabsDarkMode : ''}`}>
+          <div className={styles.insightsTabs}>
             {['Event type', 'Time', 'Location'].map(tab => (
               <button
                 key={tab}
                 type="button"
-                className={`
-                ${styles.insightsTab} 
-                ${darkMode ? styles.insightsTabDarkMode : ''} 
-                ${
-                  activeTab === tab ? (darkMode ? styles.activeTabDarkMode : styles.activeTab) : ''
-                }`}
+                className={`${styles.insightsTab} ${activeTab === tab ? styles.activeTab : ''}`}
                 onClick={() => setActiveTab(tab)}
               >
                 {tab}
