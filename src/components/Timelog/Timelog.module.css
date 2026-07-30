@@ -223,33 +223,103 @@
   padding-right: 0px !important;
 }
 
-.button {
+.actionButton {
   margin-left: 10px;
-  /* Add space between buttons */
   padding: 5px 10px;
-  /* Add padding to the buttons */
-  border: curved;
+  border: 1px solid transparent !important;
   border-radius: 5px;
   cursor: pointer;
   font-weight: bold;
+  line-height: 1.5;
+  text-decoration: none;
 }
 
 .editButton {
-  background-color: blue !important;
-  /* Blue for the Edit button */
-  color: white;
+  background-color: #0069d9 !important;
+  border-color: #0062cc !important;
+  color: #fff !important;
+}
+
+.moveButton {
+  background-color: #5a6268 !important;
+  border-color: #545b62 !important;
+  color: #fff !important;
+}
+
+.moveControls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.moveControlsDark {
+  color: #f8f9fa;
+}
+
+.moveControls label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.moveSelect {
+  min-height: 34px;
+  padding: 4px 28px 4px 8px;
+  border: 1px solid #6c757d;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #212529;
+}
+
+.moveSelectDark {
+  border-color: #adb5bd;
+  background-color: #1c2541;
+  color: #f8f9fa;
+}
+
+.moveSelectDark option {
+  background-color: #1c2541;
+  color: #f8f9fa;
 }
 
 .saveButton {
-  background-color: green;
-  /* Green for the Save button */
-  color: white;
+  background-color: #218838 !important;
+  border-color: #1e7e34 !important;
+  color: #fff !important;
 }
 
 .cancelButton {
-  background-color: red;
-  /* Red for the Cancel button */
-  color: white;
+  background-color: #c82333 !important;
+  border-color: #bd2130 !important;
+  color: #fff !important;
+}
+
+.actionButton:hover:not(:disabled),
+.actionButton:focus-visible:not(:disabled) {
+  filter: brightness(1.12);
+  color: #fff !important;
+}
+
+.actionButton:focus-visible {
+  outline: 2px solid #212529;
+  outline-offset: 2px;
+}
+
+.actionButtonDark {
+  border-color: #dee2e6 !important;
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 18%);
+  color: #fff !important;
+}
+
+.actionButtonDark:focus-visible {
+  outline-color: #fff;
+}
+
+.actionButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .editTextarea {
