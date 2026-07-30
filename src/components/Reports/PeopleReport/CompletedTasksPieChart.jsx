@@ -9,7 +9,7 @@ const FOOTER_RESERVED_ROWS = 1;
 
 function CompletedTasksPieChart({ darkMode }) {
   // TEMP: 80 dummy tasks to test the layout. Replace with the real data source when ready.
-  const dummyTasks = Array.from({ length: 20 }, (_, i) => ({
+  const dummyTasks = Array.from({ length: 70 }, (_, i) => ({
     projectId: `dummy-task-${i + 1}`,
     projectName: `Dummy Task ${i + 1}`,
     totalTime: Math.max(0.5, 80 - i),
@@ -185,12 +185,11 @@ function CompletedTasksPieChart({ darkMode }) {
               </div>
             )}
             <div
-              className={`${styles['data-total-value']} ${darkMode ? styles['text-light'] : ''}`}
-              style={{ marginTop: 8, color: darkMode ? '#f5f5f5' : 'inherit' }}
+              className={`${styles['data-total-hours']}`}
             >
-              <strong className={`${styles['strong-text']} ${darkMode ? styles['text-light'] : ''}`}>
+              <strong>
                 Total Hours:
-              </strong>{' '}
+              </strong>
               {total.toFixed(2)}
             </div>
           </div>

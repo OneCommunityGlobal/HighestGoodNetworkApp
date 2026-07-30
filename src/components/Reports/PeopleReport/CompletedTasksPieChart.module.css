@@ -1,3 +1,5 @@
+/* stylelint-disable no-descending-specificity */
+
 .completedTasksPieChart {
   height: auto;
   flex: 1;
@@ -49,6 +51,10 @@
 .pie-chart-legend-table-dark td {
   padding: 8px 0;
   text-align: left;
+}
+
+.pie-chart-legend-table tr:hover {
+  background-color: transparent;
 }
 
 /* Holds the table + footer. The tbody inside gets the actual height clamp; this
@@ -115,10 +121,6 @@
   cursor: pointer;
 }
 
-.show-more-btn:hover {
-  background: #e6d4f9;
-}
-
 .report-block-dark .show-more-btn {
   background: #2a1f3d;
   color: #e6d4f9;
@@ -130,4 +132,11 @@
   width: 16px;
   height: 16px;
   border-radius: 50%;
+}
+
+.data-total-hours {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  column-gap: 0.5rem;
 }
