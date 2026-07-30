@@ -1,11 +1,6 @@
 .completedTasksPieChart {
   height: auto;
-}
-
-@media (width >= 2000px) {
-  .completedTasksPieChart {
-    height: 70vh;
-  }
+  flex: 1;
 }
 
 .report-block {
@@ -14,7 +9,6 @@
   background-color: #fff;
   padding: 2rem;
   margin: 2px;
-  height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -39,10 +33,12 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .pie-chart-legend-table,
 .pie-chart-legend-table-dark {
+  height: 100%;
   width: 100%;
   border-collapse: collapse;
 }
@@ -60,13 +56,11 @@
 .legend-scroll-area {
   display: flex;
   flex-direction: column;
-  min-height: 0;
 }
 
 .legend-scroll-area tbody {
   display: block; /* lets us set a max-height on tbody specifically */
   overflow: hidden; /* clipped rows simply disappear — no internal scrollbar */
-  max-height: 55vh; /* JS reads this via getComputedStyle to compute visibleCount */
 }
 
 @media(width >= 768px) {
@@ -83,7 +77,11 @@
 @media (width >= 2000px) {
   .legend-scroll-area tbody {
     /* match the wrapper's expanded 70vh budget, after the heading and total-hours block */
-    max-height: calc(70vh - 200px);
+    max-height: calc(70vh - 120px);
+  }
+
+  .completedTasksPieChart {
+    /* height: 70vh; */
   }
 }
 

@@ -43,8 +43,6 @@ export function PeopleTasksPieChart({ darkMode }) {
   const hasManyTasks = dummyTasks.length > 15;
 
   // const [showAllTasks, setShowAllTasks] = useState(false);
-  console.log(showProjectsPieChart);
-  console.log(showTasksPieChart);
 
   if (!showTasksPieChart && !showProjectsPieChart) {
     return null;
