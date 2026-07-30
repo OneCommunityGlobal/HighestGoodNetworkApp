@@ -21,10 +21,17 @@
 
 .pie-chart-wrapper {
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
   justify-content: flex-start;
   flex: 1 1 auto;
-  min-height: 0; /* allow children to be height-clamped instead of stretching the parent */
+  min-height: 0;
+}
+
+.pie-chart {
+  height: auto;
+  width: auto;
+  flex-shrink: 0;
 }
 
 .pie-chart-legend-container {
@@ -60,6 +67,17 @@
   display: block; /* lets us set a max-height on tbody specifically */
   overflow: hidden; /* clipped rows simply disappear — no internal scrollbar */
   max-height: 55vh; /* JS reads this via getComputedStyle to compute visibleCount */
+}
+
+@media(width >= 768px) {
+  .pie-chart-wrapper {
+    flex-direction: row;
+    column-gap: 8.5rem;
+  }
+  
+  .pie-chart-legend-container {
+    width: 60%;
+  }
 }
 
 @media (width >= 2000px) {
