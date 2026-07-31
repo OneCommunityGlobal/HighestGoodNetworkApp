@@ -41,6 +41,7 @@ import AddEquipmentType from './components/BMDashboard/Equipment/Add/AddEquipmen
 import EDailyActivityLog from './components/BMDashboard/Equipment/DailyActivityLog/EDailyActivityLog';
 import EquipmentUpdateLog from './components/BMDashboard/Equipment/EHistory';
 import LogTools from './components/BMDashboard/LogTools/LogTools';
+import OrdersPage from './components/KitchenInventory/Orders/OrdersPage';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
@@ -87,8 +88,8 @@ import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgen
 import EventList from './components/CommunityPortal/Event/EventList/EventList';
 import ResourcesUsage from './components/CommunityPortal/Activities/activityId/ResourcesUsage';
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
+import LogAttendance from './components/CommunityPortal/Activities/LogAttendance';
 import NoShowList from './components/CommunityPortal/Activities/NoShow/NoShowList';
-
 import MaterialSummary from './components/MaterialSummary/MaterialSummary';
 // Activity Feedback Modal
 import FeedbackRatingEntry from './components/FeedbackActivityModal/FeedbackActivityEntry';
@@ -272,6 +273,10 @@ const PermissionsManagement = lazy(() =>
   import('./components/PermissionsManagement/PermissionsManagement'),
 );
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
+const MeetingScheduling = lazy(() => import('./components/MeetingScheduling'));
+const BlueSquareEmailManagement = lazy(() =>
+  import('./components/BlueSquareEmailManagement/BlueSquareEmailManagement'),
+);
 const Teams = lazy(() => import('./components/Teams/Teams'));
 const JobFormBuilder = lazy(() => import('./components/Collaboration/JobFormbuilder'));
 const PopularityTimelineChart = lazy(() =>
@@ -524,6 +529,13 @@ export default (
           routePermissions={RoutePermissions.permissionsManagement}
         />
         <ProtectedRoute
+          path="/bluesquare-email-management"
+          exact
+          component={BlueSquareEmailManagement}
+          fallback
+          routePermissions={['resendBlueSquareAndSummaryEmails']}
+        />
+        <ProtectedRoute
           path="/teams"
           exact
           component={Teams}
@@ -684,6 +696,20 @@ export default (
           path="/analytics/roles-hits-and-applications"
           exact
           component={JobsHitsApplicationsChart}
+        />
+        <ProtectedRoute
+          path="/schedulemeetings"
+          exact
+          component={MeetingScheduling}
+          fallback
+          allowedRoles={[
+            UserRole.Administrator,
+            UserRole.Manager,
+            UserRole.CoreTeam,
+            UserRole.Owner,
+            UserRole.Mentor,
+          ]}
+          routePermissions={RoutePermissions.meetings}
         />
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
@@ -863,6 +889,11 @@ export default (
           exact
           component={Register}
         />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityId/attendance"
+          exact
+          component={LogAttendance}
+        />
         <CPProtectedRoute path="/communityportal/ActivityAgenda" exact component={ActivityAgenda} />
         <CPProtectedRoute
           path="/communityportal/activity/:activityId/engagement/Comments"
@@ -985,6 +1016,7 @@ export default (
         <Route path="/subscribe" component={SubscribePage} />
         <Route path="/unsubscribe" component={UnsubscribePage} />
         <Route path="/collaboration" component={Collaboration} />
+        <ProtectedRoute path="/kitchenandinventory/orders" component={OrdersPage} />
         <Route path="/suggestedjobslist" component={SuggestedJobsList} />
         <ProtectedRoute path="/jobformbuilder" fallback component={JobFormBuilder} />
         <ProtectedRoute path="/materials/mostwastedmaterials" component={MostWastedMaterials} />

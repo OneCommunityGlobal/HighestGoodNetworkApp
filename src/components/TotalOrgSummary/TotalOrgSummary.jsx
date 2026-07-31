@@ -906,6 +906,7 @@ function TotalOrgSummary(props) {
                   usersInTeamStats={volunteerStats?.usersInTeamStats}
                   endDate={currentToDate}
                   comparisonType={selectedComparison}
+                  darkMode={darkMode}
                 />
               </div>
             </Col>
