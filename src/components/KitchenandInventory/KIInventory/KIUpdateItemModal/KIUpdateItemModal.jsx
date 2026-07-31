@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import classnames from 'classnames';
@@ -80,6 +80,7 @@ function KIUpdateItemModal({
   deleteError,
   darkMode,
 }) {
+  const modalRef = useRef(null);
   const [formData, setFormData] = useState(() => getInitialFormData(item));
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState('');
@@ -104,11 +105,18 @@ function KIUpdateItemModal({
         onClose();
       }
     };
+    const handleBackdropMouseDown = event => {
+      if (event.target === modalRef.current) {
+        onClose();
+      }
+    };
 
     document.addEventListener('keydown', handleEscape);
+    document.addEventListener('mousedown', handleBackdropMouseDown);
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('mousedown', handleBackdropMouseDown);
     };
   }, [isOpen, onClose]);
 
@@ -173,21 +181,14 @@ function KIUpdateItemModal({
   };
 
   return (
-    <div
+    <dialog
+      ref={modalRef}
+      open
       className={styles.updateItemModalBackdrop}
-      role="presentation"
-      onMouseDown={event => {
-        if (event.target === event.currentTarget) {
-          onClose();
-        }
-      }}
+      aria-modal="true"
+      aria-labelledby="ki-update-item-modal-title"
     >
-      <section
-        className={modalClassName}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="ki-update-item-modal-title"
-      >
+      <section className={modalClassName}>
         <div className={classnames(styles.updateItemModalHeader, darkMode ? 'bg-space-cadet' : '')}>
           <h5 id="ki-update-item-modal-title">Update Inventory Item</h5>
           <button
@@ -452,7 +453,7 @@ function KIUpdateItemModal({
           </div>
         </form>
       </section>
-    </div>
+    </dialog>
   );
 }
 

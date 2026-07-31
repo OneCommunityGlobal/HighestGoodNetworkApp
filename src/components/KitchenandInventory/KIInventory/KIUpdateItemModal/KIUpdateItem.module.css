@@ -3,9 +3,16 @@
   inset: 0;
   z-index: 1050;
   display: flex;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
+  border: 0;
   padding: 24px;
+  margin: 0;
   background-color: rgb(0 0 0 / 55%);
 }
 

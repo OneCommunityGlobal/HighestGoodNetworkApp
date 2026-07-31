@@ -18,7 +18,7 @@ const fieldLabels = {
   nextHarvestDate: 'Next harvest date',
 };
 
-export const toNumber = value => Number(value);
+export const toNumber = Number;
 
 export const getTodayDateValue = () => {
   const today = new Date();

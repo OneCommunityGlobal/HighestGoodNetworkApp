@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import classnames from 'classnames';
@@ -65,6 +65,7 @@ function KIReorderItemModal({
   submitError,
   darkMode,
 }) {
+  const modalRef = useRef(null);
   const [formData, setFormData] = useState(getInitialFormData);
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState('');
@@ -87,9 +88,19 @@ function KIReorderItemModal({
         onClose();
       }
     };
+    const handleBackdropMouseDown = event => {
+      if (event.target === modalRef.current && !isSubmitting) {
+        onClose();
+      }
+    };
 
     document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    document.addEventListener('mousedown', handleBackdropMouseDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('mousedown', handleBackdropMouseDown);
+    };
   }, [isOpen, isSubmitting, onClose]);
 
   if (!isOpen || !item) {
@@ -133,22 +144,14 @@ function KIReorderItemModal({
   };
 
   return (
-    <div
+    <dialog
+      ref={modalRef}
+      open
       className={styles.reorderItemModalBackdrop}
-      role="presentation"
-      onMouseDown={event => {
-        if (event.target === event.currentTarget && !isSubmitting) {
-          onClose();
-        }
-      }}
+      aria-modal="true"
+      aria-labelledby="ki-reorder-item-modal-title"
     >
-      <section
-        className={modalClassName}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="ki-reorder-item-modal-title"
-        data-testid="reorder-item-modal"
-      >
+      <section className={modalClassName} data-testid="reorder-item-modal">
         <div
           className={classnames(styles.reorderItemModalHeader, darkMode ? 'bg-space-cadet' : '')}
         >
@@ -243,7 +246,7 @@ function KIReorderItemModal({
           </div>
         </form>
       </section>
-    </div>
+    </dialog>
   );
 }
 

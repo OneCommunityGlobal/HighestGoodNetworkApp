@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import classnames from 'classnames';
@@ -52,6 +52,7 @@ function KIAddItemModal({
   submitError,
   darkMode,
 }) {
+  const modalRef = useRef(null);
   const [formData, setFormData] = useState(getInitialFormData);
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState('');
@@ -74,11 +75,18 @@ function KIAddItemModal({
         onClose();
       }
     };
+    const handleBackdropMouseDown = event => {
+      if (event.target === modalRef.current) {
+        onClose();
+      }
+    };
 
     document.addEventListener('keydown', handleEscape);
+    document.addEventListener('mousedown', handleBackdropMouseDown);
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('mousedown', handleBackdropMouseDown);
     };
   }, [isOpen, onClose]);
 
@@ -122,21 +130,14 @@ function KIAddItemModal({
   const todayDateValue = getTodayDateValue();
 
   return (
-    <div
+    <dialog
+      ref={modalRef}
+      open
       className={styles.addItemModalBackdrop}
-      role="presentation"
-      onMouseDown={event => {
-        if (event.target === event.currentTarget) {
-          onClose();
-        }
-      }}
+      aria-modal="true"
+      aria-labelledby="ki-add-item-modal-title"
     >
-      <section
-        className={modalClassName}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="ki-add-item-modal-title"
-      >
+      <section className={modalClassName}>
         <div className={classnames(styles.addItemModalHeader, darkMode ? 'bg-space-cadet' : '')}>
           <h5 id="ki-add-item-modal-title">Add Inventory Item</h5>
           <button
@@ -371,7 +372,7 @@ function KIAddItemModal({
           </div>
         </form>
       </section>
-    </div>
+    </dialog>
   );
 }
 
