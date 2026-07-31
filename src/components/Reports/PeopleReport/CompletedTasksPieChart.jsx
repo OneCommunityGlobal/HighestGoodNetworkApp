@@ -153,7 +153,7 @@ function CompletedTasksPieChart({ darkMode }) {
                           style={{ backgroundColor: `${colorScale(project.projectId)}` }}
                         />
                       </td>
-                      <td className={styles.projectNameRow}>{project.projectName}asdhflkashdflkahsdflkahsdflkahsdflkashdfjklhasdlkfhasklfhaklsjdfhaslkfhaklsdhflaksdfhaklsjdfhaslkjh</td>
+                      <td className={styles.projectNameRow}>{project.projectName}</td>
                       <td className={styles.totalTimeRow}>{project.totalTime.toFixed(2)}</td>
                     </tr>
                   ))}
