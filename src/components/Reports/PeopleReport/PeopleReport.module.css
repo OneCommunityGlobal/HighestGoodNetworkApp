@@ -24,6 +24,7 @@ body {
 .stats {
   display: flex;
   flex-direction: column;
+  row-gap: 1rem;
 }
 
 .metrics {
@@ -598,9 +599,9 @@ body {
   display: flex;
   min-height: 94vh;
 
-  /* .peopleReportContainer {
-    height: 100%;
-  } */
+  .peopleReportContainer {
+    padding: 1rem;
+  }
 }
 
 @media (width >= 768px) {
