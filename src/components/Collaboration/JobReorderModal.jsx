@@ -6,7 +6,7 @@ import { ApiEndpoint } from '~/utils/URL';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import hasPermission from '~/utils/permissions';
-import './JobReorderModal.css';
+import styles from './JobReorderModal.module.css';
 
 function JobReorderModal({ isOpen, toggle, onJobsReordered, darkMode, checkPermission }) {
   const [jobs, setJobs] = useState([]);
@@ -140,7 +140,7 @@ function JobReorderModal({ isOpen, toggle, onJobsReordered, darkMode, checkPermi
                 ref={droppableProvided.innerRef}
                 // eslint-disable-next-line react/jsx-props-no-spreading
                 {...droppableProvided.droppableProps}
-                className="jobs-list"
+                className={styles.jobsList}
               >
                 {jobs.map((job, index) => (
                   <Draggable
@@ -157,12 +157,12 @@ function JobReorderModal({ isOpen, toggle, onJobsReordered, darkMode, checkPermi
                           {...draggableProvided.draggableProps}
                           // eslint-disable-next-line react/jsx-props-no-spreading
                           {...draggableProvided.dragHandleProps}
-                          className={`job-item ${snapshot.isDragging ? 'dragging' : ''} ${
-                            job.featured ? 'featured' : ''
-                          }`}
+                          className={`${styles.jobsItem} ${
+                            snapshot.isDragging ? styles.dragging : ''
+                          } ${job.featured ? styles.featured : ''}`}
                         >
-                          <div className="position-number">{job.originalPosition}</div>
-                          <div className="job-item-content">
+                          <div className={styles.positionNumber}>{job.originalPosition}</div>
+                          <div className={styles.jobTtemContent}>
                             {job.featured && <span className="featured-badge">Featured</span>}
                             <h4>{job.title}</h4>
                             <div className="job-details">
