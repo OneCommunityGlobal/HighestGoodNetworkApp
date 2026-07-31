@@ -122,7 +122,7 @@ function CompletedTasksPieChart({ darkMode }) {
     //  className={styles['tasks-block-wrapper']}
     >
       <div
-        className={`${styles['report-block']} ${darkMode ? styles['report-block-dark'] : ''}`}
+        className={styles['report-block']}
       >
         <h5 className={styles['people-pie-charts-header']}>Tasks With Completed Hours</h5>
         <div className={styles['pie-chart-wrapper']}>
@@ -135,9 +135,7 @@ function CompletedTasksPieChart({ darkMode }) {
               className={styles['legend-scroll-area']}
             >
               <table
-                className={
-                  darkMode ? styles['pie-chart-legend-table-dark'] : styles['pie-chart-legend-table']
-                }
+                className={styles['pie-chart-legend-table']}
               >
                 <thead>
                   <tr>
@@ -169,7 +167,7 @@ function CompletedTasksPieChart({ darkMode }) {
                   className={styles['show-more-btn']}
                   onClick={() => setExpanded(true)}
                 >
-                  + {hiddenCount} more row{hiddenCount === 1 ? '' : 's'}
+                  + {hiddenCount} more task{hiddenCount === 1 ? '' : 's'}
                 </button>
               </div>
             )}

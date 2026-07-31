@@ -6,7 +6,6 @@
 
 .report-block {
   border-radius: 12px;
-  box-shadow: 0 0 12px #eae1f6;
   background-color: #fff;
   padding: 1rem;
   margin: 2px;
@@ -38,8 +37,7 @@
   row-gap: 0.5rem;
 }
 
-.pie-chart-legend-table,
-.pie-chart-legend-table-dark {
+.pie-chart-legend-table {
   height: 100%;
   width: 100%;
   border-collapse: collapse;
@@ -53,17 +51,30 @@
   padding: 8px;
 }
 
+.colorColumn {
+  width: 150px;
+}
+
+.colorRow {
+  width: 150px;
+}
+
 .hoursColumn {
   text-align: right;
+  width: 150px;
 }
 
 .projectNameRow {
   color: #888;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .totalTimeRow {
   text-align: right;
   color: #888;
+  width: 150px;
 }
 
 .pie-chart-legend-table tr:hover {
@@ -108,12 +119,22 @@
   padding: 4px 12px;
   font-size: 0.85rem;
   cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
-.report-block-dark .show-more-btn {
-  background: #2a1f3d;
-  color: #e6d4f9;
-  border-color: #6a4a9c;
+.show-more-btn:hover {
+  background: #ead7ff;
+  border-color: #7b3fad;
+}
+
+.show-more-btn:active {
+  background: #dcc1fc;
+  border-color: #7b3fad;
+}
+
+.show-more-btn:focus-visible {
+  outline: 2px solid #5b2a86;
+  outline-offset: 2px;
 }
 
 .project-chart-legend {
@@ -154,5 +175,33 @@
 @media (width >= 2000px) {
   .legend-scroll-area tbody {
     max-height: calc(70vh - 420px);
+  }
+}
+
+:global(.dark-mode) {
+  .report-block {
+    background-color: #1a2639;
+    box-shadow: 0 0 12px black;
+  }
+
+  .show-more-btn {
+    background-color: #2a1f47;
+    border-color: #c9a4f0;
+    color: #e8d4ff;
+  }
+
+  .show-more-btn:hover {
+    background-color: #36265a;
+    border-color: #d8b5f5;
+    color: #fff;
+  }
+
+  .show-more-btn:focus-visible {
+    outline: 2px solid #d8b5f5;
+    outline-offset: 2px;
+  }
+
+  .show-more-btn:active {
+    background-color: #412c6b;
   }
 }

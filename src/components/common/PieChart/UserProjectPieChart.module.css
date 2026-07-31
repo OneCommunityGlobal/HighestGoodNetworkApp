@@ -193,8 +193,12 @@
   }
 
   .pie-chart-legend-table-dark tr{
-    background-color: #1f2a40;
+    background-color: transparent;
     color: white;
+  }
+
+  .pie-chart-legend-table-dark tr:hover {
+    background-color: transparent;
   }
 
   .project-chart-legend{
