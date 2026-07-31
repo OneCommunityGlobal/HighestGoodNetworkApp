@@ -11,7 +11,7 @@ const ResolvedTasks = props => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { darkMode } = props.auth;
+  const { darkMode } = props.theme;
 
   useEffect(() => {
     const fetchResolvedTasks = async () => {
@@ -112,11 +112,11 @@ const ResolvedTasks = props => {
 };
 
 const mapStateToProps = state => ({
-  auth: state.auth,
+  theme: state.theme,
 });
 
 ResolvedTasks.propTypes = {
-  auth: PropTypes.shape({
+  theme: PropTypes.shape({
     darkMode: PropTypes.bool,
   }),
 };
