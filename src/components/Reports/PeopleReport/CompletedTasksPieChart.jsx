@@ -1,29 +1,27 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import * as d3 from 'd3';
 import { CHART_RADIUS, CHART_SIZE } from '../../common/PieChart/constants';
 import { generateArrayOfUniqColors } from '../../common/PieChart/colorsGenerator';
+import { peopleTasksPieChartViewData } from './selectors';
 import styles from './CompletedTasksPieChart.module.css';
 
 // Reserve space for the "Show more" footer so it doesn't push the last visible row offscreen.
 const FOOTER_RESERVED_ROWS = 1;
 
 function CompletedTasksPieChart({ darkMode }) {
-  // TEMP: 80 dummy tasks to test the layout. Replace with the real data source when ready.
-  const dummyTasks = Array.from({ length: 80}, (_, i) => ({
-    projectId: `dummy-task-${i + 1}`,
-    projectName: `Dummy Task ${i + 1}`,
-    totalTime: Math.max(0.5, 80 - i),
-  }));
+  const { tasksWithLoggedHoursById } = useSelector(peopleTasksPieChartViewData);
+  const tasks = tasksWithLoggedHoursById ?? [];
 
-  const total = dummyTasks.reduce((sum, t) => sum + t.totalTime, 0);
+  const total = tasks.reduce((sum, t) => sum + t.totalTime, 0);
   const colors = useMemo(
-    () => generateArrayOfUniqColors(dummyTasks.length),
-    [dummyTasks.length],
+    () => generateArrayOfUniqColors(tasks.length),
+    [tasks.length],
   );
   const colorScale = useMemo(() => {
-    const domain = dummyTasks.map(t => t.projectId);
+    const domain = tasks.map(t => t.projectId);
     return d3.scaleOrdinal().domain(domain).range(colors);
-  }, [colors, dummyTasks]);
+  }, [colors, tasks]);
 
   const pieChartId = 'completedTasksPieChart';
 
@@ -31,7 +29,7 @@ function CompletedTasksPieChart({ darkMode }) {
   // render every row regardless of this number. The renderer slices in half: the
   // measurement effect owns the cap, the JSX owns the slice.
   const tbodyRef = useRef(null);
-  const [visibleCount, setVisibleCount] = useState(dummyTasks.length);
+  const [visibleCount, setVisibleCount] = useState(tasks.length);
   const [expanded, setExpanded] = useState(false);
 
   // Draw the donut (same look as common/PieChart's D3 render).
@@ -55,7 +53,7 @@ function CompletedTasksPieChart({ darkMode }) {
       .text(`${total.toFixed(2)} Hrs`);
 
     const pie = d3.pie().value(d => d.totalTime);
-    const arcs = pie(dummyTasks);
+    const arcs = pie(tasks);
     const arcGen = d3.arc().innerRadius(70).outerRadius(CHART_RADIUS);
 
     svg
@@ -69,7 +67,7 @@ function CompletedTasksPieChart({ darkMode }) {
     return () => {
       d3.select(`#pie-chart-${pieChartId}`).remove();
     };
-  }, [colorScale, darkMode, dummyTasks, total]);
+  }, [colorScale, darkMode, tasks, total]);
 
   // Measure how many rows fit in the clamped tbody height. Uses the height of the
   // first measured row — every row in the table has the same layout, so a single
@@ -87,20 +85,20 @@ function CompletedTasksPieChart({ darkMode }) {
       const styles = window.getComputedStyle(tbody);
       const maxHeightPx = parseFloat(styles.maxHeight);
       if (!Number.isFinite(maxHeightPx) || maxHeightPx <= 0) {
-        setVisibleCount(dummyTasks.length);
+        setVisibleCount(tasks.length);
         return;
       }
       const firstCell = tbody.querySelector('td');
       const rowHeight = firstCell ? firstCell.getBoundingClientRect().height : 0;
       if (!rowHeight) {
-        setVisibleCount(dummyTasks.length);
+        setVisibleCount(tasks.length);
         return;
       }
       const fits = Math.max(
         0,
         Math.floor(maxHeightPx / rowHeight) - FOOTER_RESERVED_ROWS,
       );
-      setVisibleCount(Math.min(dummyTasks.length, fits));
+      setVisibleCount(Math.min(tasks.length, fits));
     };
 
     recompute();
@@ -111,10 +109,12 @@ function CompletedTasksPieChart({ darkMode }) {
       ro.disconnect();
       window.removeEventListener('resize', recompute);
     };
-  }, [dummyTasks.length, expanded]);
+  }, [tasks.length, expanded]);
 
-  const hiddenCount = expanded ? 0 : Math.max(0, dummyTasks.length - visibleCount);
-  const renderedTasks = expanded ? dummyTasks : dummyTasks.slice(0, visibleCount);
+  const hiddenCount = expanded ? 0 : Math.max(0, tasks.length - visibleCount);
+  const renderedTasks = expanded ? tasks : tasks.slice(0, visibleCount);
+
+  if(tasksWithLoggedHoursById == 0) return null;
 
   return (
     <div

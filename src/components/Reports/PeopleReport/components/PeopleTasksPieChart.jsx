@@ -1,12 +1,10 @@
 /* eslint-disable import/prefer-default-export */
 import { useSelector } from 'react-redux';
-import { PieChart } from '../../../common/PieChart';
 import UserProjectD3PieChart from '../../../common/PieChart/ProjectPieChart';
 
 import { peopleTasksPieChartViewData } from '../selectors';
 import { ReportPage } from '../../sharedComponents/ReportPage';
 import styles from './PeopleTasksPieChart.module.css';
-// import { ProjectPieChart } from '~/components/Reports/ProjectReport/ProjectPieChart/ProjectPieChart';
 
 export function PeopleTasksPieChart({ darkMode }) {
   const {
@@ -31,30 +29,13 @@ export function PeopleTasksPieChart({ darkMode }) {
     HEADER_H + VSPACE + ROW_H * Math.max(1, tasksLegend.length)
   );
 
-// TEMP: 50 dummy tasks to test the wide-screen layout. Replace with `tasksWithLoggedHoursById` when done.
-  const dummyTasks = Array.from({ length: 16 }, (_, i) => ({
-    projectId: `dummy-task-${i + 1}`,
-    projectName: `Dummy Task ${i + 1}`,
-    totalTime: Math.max(0.5, 50 - i),
-  }));
-  const visibleTasks = dummyTasks;
-
-  const showTasksPie = showTasksPieChart;
-  const hasManyTasks = dummyTasks.length > 15;
-
-  // const [showAllTasks, setShowAllTasks] = useState(false);
 
   if (!showTasksPieChart && !showProjectsPieChart) {
     return null;
   }
 
-  // function handleViewAll() {
-  //   setShowAllTasks(prev => !prev);
-  // }
-
-
   return (
-    <div className={`${styles['people-pie-charts-wrapper']} ${darkMode ? styles['text-light'] : ''}${hasManyTasks ? ` ${styles['tasks-many']}` : ''}`}>
+    <div className={`${styles['people-pie-charts-wrapper']} ${darkMode ? styles['text-light'] : ''}`}>
       {hoursLoggedToProjectsOnly.length !== 0 && (
         <ReportPage.ReportBlock darkMode={darkMode} style={{ overflow: 'visible' }} className={styles['pie-no-scroll']}>
           <h5 className={styles['people-pie-charts-header']}>Time Logged to Projects/Non-tasks</h5>
@@ -70,19 +51,6 @@ export function PeopleTasksPieChart({ darkMode }) {
           </div>
         </ReportPage.ReportBlock>
       )}
-      {/* {dummyTasks.length > 0 && (
-        <ReportPage.ReportBlock darkMode={darkMode} style={{ overflow: 'visible' }} className={styles['pie-no-scroll']}>
-          <h5 className={styles['people-pie-charts-header']}>Tasks With Completed Hours</h5>
-          <div style={{ width: '100%', minHeight: tasksHeight }}>
-          <PieChart
-            pieChartId="tasksPieChart"
-            darkMode={darkMode}
-            tasksData={visibleTasks}
-            height={tasksHeight}     // pass down
-          />
-        </div>
-      </ReportPage.ReportBlock>
-      )} */}
     </div>
   );
 }
