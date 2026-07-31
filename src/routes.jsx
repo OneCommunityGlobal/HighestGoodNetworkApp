@@ -42,6 +42,7 @@ import EDailyActivityLog from './components/BMDashboard/Equipment/DailyActivityL
 import EquipmentUpdateLog from './components/BMDashboard/Equipment/EHistory';
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 import OrdersPage from './components/KitchenInventory/Orders/OrdersPage';
+import GardenManagementPage from './components/KitchenInventory/GardenManagement/GardenManagementPage';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
@@ -1076,6 +1077,10 @@ export default (
         <Route path="/unsubscribe" component={UnsubscribePage} />
         <Route path="/collaboration" component={Collaboration} />
         <ProtectedRoute path="/kitchenandinventory/orders" component={OrdersPage} />
+        <ProtectedRoute
+          path="/kitchenandinventory/gardenmanagement"
+          component={GardenManagementPage}
+        />
         <Route path="/suggestedjobslist" component={SuggestedJobsList} />
         <ProtectedRoute path="/jobformbuilder" fallback component={JobFormBuilder} />
         <ProtectedRoute path="/materials/mostwastedmaterials" component={MostWastedMaterials} />
