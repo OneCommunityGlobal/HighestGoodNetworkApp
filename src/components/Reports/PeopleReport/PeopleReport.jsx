@@ -19,7 +19,6 @@ import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
 import { Checkbox } from '../../common/Checkbox';
 import { updateRehireableStatus } from '../../../actions/userManagement';
-import CompletedTasksTable from '~/components/Reports/PeopleReport/CompletedTasksTable';
 import CompletedTasksPieChart from '~/components/Reports/PeopleReport/CompletedTasksPieChart';
 import clsx from 'clsx';
 
@@ -39,10 +38,6 @@ function PeopleReport(props) {
   } = props;
 
   const [isRehireable, setIsRehireableState] = useState(true);
-  // const statsRef = useRef(null);
-  // const metricsRef = useRef(null);
-  // const pieChartRef = useRef(null);
-  // const [availableHeight, setAvailableHeight] = useState(null);
 
   useEffect(() => {
     if (!match) return undefined;
@@ -81,58 +76,6 @@ function PeopleReport(props) {
     },
     [userProfile],
   );
-
-  // useEffect(() => {
-  //   const compute = () => {
-  //     if (!statsRef.current || !pieChartRef.current) return;
-  //     // Measure the empty space inside .stats that sits BELOW the pie chart.
-  //     // We can't use stats.clientHeight - metrics.clientHeight - pie.clientHeight
-  //     // because .stats is auto-sized — its height already includes the table
-  //     // itself, making the formula tautological (statsH ≈ metricsH + pieH + tableH).
-  //     //
-  //     // The leftover space below the pie chart is `statsRect.height - pieBottom`
-  //     // where pieBottom is the pie's bottom edge offset from the top of .stats.
-  //     // On the first compute (before any inline cap is applied) this equals the
-  //     // current table height. We apply that value as an inline maxHeight cap, so
-  //     // on the next render the table can't grow past it, .stats stops growing,
-  //     // and the value stabilizes at the real leftover space.
-  //     const statsRect = statsRef.current.getBoundingClientRect();
-  //     const pieRect = pieChartRef.current.getBoundingClientRect();
-  //     const pieBottom = pieRect.bottom - statsRect.top;
-  //     // Skip while the layout hasn't settled (first paint with no data — all
-  //     // heights read 0). Once data lands, ResizeObserver will fire again with
-  //     // real values.
-  //     if (statsRect.height === 0 || pieRect.height === 0) return;
-  //     const available = Math.max(0, statsRect.height - pieBottom);
-  //     setAvailableHeight(available);
-  //   };
-
-  //   if (typeof window === 'undefined' || window.innerWidth < 2000) {
-  //     setAvailableHeight(null);
-  //     return undefined;
-  //   }
-
-  //   compute();
-
-  //   const ro = new ResizeObserver(compute);
-  //   ro.observe(statsRef.current);
-  //   ro.observe(metricsRef.current);
-  //   ro.observe(pieChartRef.current);
-
-  //   const onResize = () => {
-  //     if (window.innerWidth < 2000) {
-  //       setAvailableHeight(null);
-  //     } else {
-  //       compute();
-  //     }
-  //   };
-  //   window.addEventListener('resize', onResize);
-
-  //   return () => {
-  //     ro.disconnect();
-  //     window.removeEventListener('resize', onResize);
-  //   };
-  // }, []);
 
   const totalTangibleHrsRound = (
     timeEntries.period?.reduce((total, entry) => {
@@ -205,7 +148,6 @@ function PeopleReport(props) {
         </div>
 
         <div 
-        // ref={statsRef}
          className={styles.stats}>
           <div 
            className={clsx(styles.metrics, userProfile.isActive ? styles.fourMetrics : styles.threeMetrics)}>
@@ -230,14 +172,11 @@ function PeopleReport(props) {
           </div>
 
           <div
-          //  ref={pieChartRef}
            className={styles.peopleTasksPieChartWrapper}>
             <PeopleTasksPieChart darkMode={darkMode} />
           </div>
           <CompletedTasksPieChart darkMode={darkMode} 
-          // maxHeight={availableHeight}
            />
-          {/* <CompletedTasksTable /> */}
         </div>
       </div>
     </div>
