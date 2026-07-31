@@ -201,11 +201,9 @@ function renderFinancialsTrackingCards() {
 function DashboardSection({ title, sectionKey, className, content, isOpen, onToggle }) {
   return (
     <div className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]}`}>
-      {/* FIX: Title always visible */}
       <button
         type="button"
         className={styles.weeklyProjectSummaryDashboardCategoryTitle}
-        style={{ color: '#000' }} // always readable
         onClick={() => onToggle(sectionKey)}
       >
         {title} <span>{isOpen ? '∧' : '∨'}</span>

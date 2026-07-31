@@ -49,6 +49,8 @@ function getContrastTextColor(fillColor) {
 }
 
 const SEVERITY_ORDER = ['Minor', 'Major', 'Critical'];
+const DEPARTMENT_OPTIONS = ['Plumbing', 'Electrical', 'Carpentry', 'Welding'];
+const DEFAULT_DEPARTMENTS = DEPARTMENT_OPTIONS;
 
 function buildSingleDeptEntry(entry, sev, rawData, visibleProjects) {
   visibleProjects.forEach(project => {
@@ -276,7 +278,7 @@ function InjurySeverityDashboard(props) {
 
   const [selProjects, setSelProjects] = useState([]);
   const [selTypes, setSelTypes] = useState([]);
-  const [selDepts, setSelDepts] = useState([]);
+  const [selDepts, setSelDepts] = useState(DEFAULT_DEPARTMENTS);
   const [dateRange, setDateRange] = useState([null, null]);
   const [loading, setLoading] = useState(false);
 
@@ -306,11 +308,11 @@ function InjurySeverityDashboard(props) {
   const hasNoData = !loading && !isEmptyState && rawData.length === 0;
 
   const visibleProjects = useMemo(() => {
-    if (selProjects.length > 0) {
-      return bmProjects.filter(p => selProjects.includes(p._id));
-    }
-    return bmProjects;
-  }, [bmProjects, selProjects]);
+    const base =
+      selProjects.length > 0 ? bmProjects.filter(p => selProjects.includes(p._id)) : bmProjects;
+    const projectNamesWithData = new Set(rawData.map(r => r.projectName));
+    return base.filter(p => projectNamesWithData.has(p.name));
+  }, [bmProjects, selProjects, rawData]);
 
   const visibleDepartments = useMemo(() => {
     const depts = Array.from(new Set(rawData.map(r => r.department).filter(Boolean)));
@@ -338,6 +340,9 @@ function InjurySeverityDashboard(props) {
   };
 
   const dropdownClassName = darkMode ? 'oxideDark-dropdown' : '';
+  const dateDropdownClassName = `injurySeverityDateDropdown${
+    darkMode ? ' oxideDark-dropdown' : ''
+  }`;
 
   return (
     <div
@@ -391,7 +396,7 @@ function InjurySeverityDashboard(props) {
 
         <RangePicker
           className={styles.filterSelect}
-          popupClassName={dropdownClassName}
+          popupClassName={dateDropdownClassName}
           value={dateRange}
           onChange={dates => setDateRange(dates || [null, null])}
           style={filterStyle}
@@ -428,7 +433,7 @@ function InjurySeverityDashboard(props) {
           maxTagCount="responsive"
           maxTagPlaceholder={omitted => `+${omitted.length}`}
         >
-          {['Plumbing', 'Electrical', 'Carpentry', 'Welding'].map(d => (
+          {DEPARTMENT_OPTIONS.map(d => (
             <Option key={d} value={d}>
               {d}
             </Option>
@@ -437,26 +442,32 @@ function InjurySeverityDashboard(props) {
       </div>
 
       {/* Chart */}
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: 50 }}>
-          <Spin size="large" />
-        </div>
-      ) : isEmptyState ? (
-        <button type="button" className={styles.chartPlaceholder}>
-          <div className={styles.placeholderGraphic} />
-          <div className={styles.placeholderTooltip}>Select filters to generate visualization</div>
-        </button>
-      ) : hasNoData ? (
-        <div className={styles.noDataState}>No data available for the selected filters</div>
-      ) : (
-        <InjurySeverityBarChart
-          chartData={chartData}
-          chartBars={chartBars}
-          visibleProjects={visibleProjects}
-          visibleDepartments={visibleDepartments}
-          darkMode={darkMode}
-        />
-      )}
+      <div className={styles.chartStateContainer}>
+        {loading ? (
+          <div className={styles.chartStateCenter}>
+            <Spin size="large" />
+          </div>
+        ) : isEmptyState ? (
+          <button type="button" className={`${styles.chartPlaceholder} ${styles.chartStateCenter}`}>
+            <div className={styles.placeholderGraphic} />
+            <div className={styles.placeholderTooltip}>
+              Select filters to generate visualization
+            </div>
+          </button>
+        ) : hasNoData ? (
+          <div className={`${styles.noDataState} ${styles.chartStateCenter}`}>
+            No data available for the selected filters
+          </div>
+        ) : (
+          <InjurySeverityBarChart
+            chartData={chartData}
+            chartBars={chartBars}
+            visibleProjects={visibleProjects}
+            visibleDepartments={visibleDepartments}
+            darkMode={darkMode}
+          />
+        )}
+      </div>
     </div>
   );
 }
