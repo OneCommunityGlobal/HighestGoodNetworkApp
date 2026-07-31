@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import styles from './ActivityComments.module.css';
 
 // Utility function to calculate relative time
@@ -244,8 +243,6 @@ const mockFeedbacks = [
 ];
 
 function ActivityComments() {
-  const darkMode = useSelector(state => state.theme?.darkMode || false);
-
   // Utility function to restore Date objects from localStorage
   const restoreDates = items => {
     return items.map(item => ({
@@ -913,15 +910,17 @@ function ActivityComments() {
                     <div className={styles.commentText}>{comment.text}</div>
                     <div className={styles.commentActionsRow}>
                       <button
+                        aria-label="Upvote comment"
                         onClick={() => handleUpvote(comment.id)}
-                        className={darkMode ? styles.darkButton : styles.lightButton}
+                        className={styles.upvoteBtn}
                       >
                         <span style={{ fontSize: '1.1em' }}>↑</span>
                         <span className={styles.voteCount}>{comment.upvotes}</span>
                       </button>
                       <button
+                        aria-label="Downvote comment"
                         onClick={() => handleDownvote(comment.id)}
-                        className={darkMode ? styles.darkButton : styles.lightButton}
+                        className={styles.downvoteBtn}
                       >
                         <span style={{ fontSize: '1.1em' }}>↓</span>
                         <span className={styles.voteCount}>{comment.downvotes}</span>
