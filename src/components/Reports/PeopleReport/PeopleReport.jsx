@@ -38,20 +38,26 @@ function PeopleReport(props) {
   } = props;
 
   const [isRehireable, setIsRehireableState] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!match) return undefined;
     const { userId } = match.params;
 
+    setIsLoading(true);
     Promise.all([
       getUserProfile(userId),
       getUserTasks(userId),
       getUserProjects(userId),
       getWeeklySummaries(userId),
       getTimeEntriesForPeriod(userId, '2016-01-01', '3000-12-31'),
-    ]).catch(() => {
-      // Errors are surfaced by the individual action creators; nothing to do here.
-    });
+    ])
+      .catch(() => {
+        // Errors are surfaced by the individual action creators; nothing to do here.
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
 
     return undefined;
   }, [
@@ -85,6 +91,16 @@ function PeopleReport(props) {
 
   const { firstName, lastName, weeklycommittedHours } = userProfile;
   const { profilePic, role, jobTitle, endDate, _id, startDate } = userProfile;
+
+  if(isLoading) {
+    return (
+        <div className={styles.reportLoading}>
+          <div className='fa-3x'>
+            <i className={`fa fa-spinner fa-pulse ${darkMode ? 'text-azure' : ''}`}data-testid="loading-spinner"/>
+          </div>
+        </div>
+    )
+  }
 
   return (
     <div className={`${styles.peopleReportPage}`}>

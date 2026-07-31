@@ -25,6 +25,7 @@ body {
   display: flex;
   flex-direction: column;
   row-gap: 1rem;
+  flex: 1;
 }
 
 .metrics {
@@ -500,11 +501,21 @@ body {
     flex-direction: column;
     padding: 1rem;
     gap: 1rem;
+    width: 100%;
   }
 }
 
 .peopleTasksPieChartWrapper {
   display: block;
+}
+
+.reportLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+  min-height: calc(100vh - 169px);
+  width: 100%;
 }
 
 @media (width >= 768px) {
@@ -519,6 +530,10 @@ body {
     .metricCard {
       flex: 1;
     }
+  }
+
+  .reportLoading {
+    min-height: calc(100vh - 104px);
   }
 }
 
@@ -536,6 +551,16 @@ body {
       grid-template-columns: repeat(4, 1fr);
     }
   }
+  
+  .reportLoading {
+    min-height: calc(100vh - 80px);
+  }
+}
+
+@media (width >= 1440px) {
+  .reportLoading {
+    min-height: calc(100vh - 160px);
+  }
 }
 
 @media (width >= 1536px) {
@@ -545,3 +570,4 @@ body {
     }
   }
 }
+
