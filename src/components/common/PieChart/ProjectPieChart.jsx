@@ -165,8 +165,8 @@ export default function UserProjectD3PieChart({ projectsData, darkMode }) {
           <thead>
             <tr>
               <th>Color</th>
-              <th>Project Name</th>
-              <th>Hours</th>
+              <th className={styles.projectNameColumn}>Project Name</th>
+              <th className={styles.hoursColumn}>Hours</th>
             </tr>
           </thead>
           <tbody>
@@ -178,8 +178,8 @@ export default function UserProjectD3PieChart({ projectsData, darkMode }) {
                     style={{ backgroundColor: colors[i] }}
                   />
                 </td>
-                <td>{p.name}</td>
-                <td>{p.value.toFixed(2)}</td>
+                <td className={styles.projectNameRow}>{p.name}</td>
+                <td className={styles.hoursRow}>{p.value.toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
@@ -189,10 +189,7 @@ export default function UserProjectD3PieChart({ projectsData, darkMode }) {
           className={`${styles['data-total-value']} ${darkMode ? styles['text-light'] : ''}`}
           style={{ marginTop: 8, color: darkMode ? '#f5f5f5' : 'inherit' }}
         >
-          <strong className={`${styles['strong-text']} ${darkMode ? styles['text-light'] : ''}`}>
-            Total Hours:
-          </strong>{' '}
-          {total.toFixed(2)}
+          <strong>Total Hours:</strong> {total.toFixed(2)}
         </div>
       </div>
     </div>

@@ -1,10 +1,7 @@
 /* stylelint-disable no-descending-specificity */
 .pie-chart-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-
-    /* overflow: hidden; */
+  display: flex;
+  align-items: center;
   }
 
   .donut-box {
@@ -12,9 +9,8 @@
   height: 240px;  /* square so the ring isn’t cropped */
 }
 
-  .pie-chart-wrapper svg,
+.pie-chart-wrapper svg,
 .pie-chart-wrapper .recharts-surface {
-  /* border: none !important; */
   outline: none !important;
   box-shadow: none !important;
 }
@@ -85,7 +81,10 @@
   }
 
   div.pie-chart-legend-container {
-    min-width: 150px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.5rem;
+    margin: 0 !important;
   }
 
   /* Toggle Switch */
@@ -141,10 +140,8 @@
   }
 
   .pie-chart-legend-container {
-    margin-top: 20px;
     height: 100%;
-    width: 60%;
-
+    flex: 1;
   }
 
   .pie-chart-legend-table-wrapper {
@@ -193,8 +190,6 @@
   .pie-chart-legend-table-dark th {
     font-weight: bold;
     background: none;
-
-    /* color: inherit; */
   }
 
   .pie-chart-legend-table-dark tr{
@@ -215,9 +210,8 @@
   }
 
   .data-total-value {
-  font-weight: bold;
-  margin-top: 10px;
-  color: inherit;
+    margin-top: 10px;
+    color: inherit;
 }
 
 .strong-text.text-light,
@@ -271,4 +265,12 @@
 .pie-chart-legend-container td:nth-child(3) {
   width: 80px; /* Hours column */
   text-align: right;
+}
+
+.projectNameRow {
+  color: #888;
+}
+
+.hoursRow {
+  color: #888;
 }
