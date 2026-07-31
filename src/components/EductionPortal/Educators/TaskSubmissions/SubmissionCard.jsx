@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useHistory } from 'react-router-dom';
 import { FiInfo, FiCheck } from 'react-icons/fi';
 import styles from './SubmissionCard.module.css';
 
@@ -35,8 +36,22 @@ const getTaskTypeLabel = type => {
 };
 
 const SubmissionCard = ({ submission }) => {
+  const history = useHistory();
   const [showTooltip, setShowTooltip] = useState(false);
   const { studentName, taskType, status, submittedAt, dueAt, grade } = submission;
+
+  const goToReview = () => {
+    if (submission._id) {
+      history.push(`/educationportal/educator/review/${submission._id}`);
+    }
+  };
+
+  const handleCardKeyPress = e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      goToReview();
+    }
+  };
 
   const statusDetails = useMemo(() => {
     const isLate =
@@ -71,13 +86,26 @@ const SubmissionCard = ({ submission }) => {
       };
     }
 
+    if (status === 'assigned' || status === 'in_progress') {
+      return {
+        showInfoIcon: true,
+        tooltipContent: <span className={styles.tooltipText}>Not yet submitted</span>,
+      };
+    }
+
     return {};
   }, [status, submittedAt, dueAt]);
 
   const avatarColor = getAvatarColor(studentName);
 
   return (
-    <div className={`${styles.card} ${statusDetails.cardClass || ''}`}>
+    <div
+      className={`${styles.card} ${statusDetails.cardClass || ''}`}
+      onClick={goToReview}
+      onKeyPress={handleCardKeyPress}
+      role="button"
+      tabIndex={0}
+    >
       <div className={styles.cardHeader}>
         <div className={styles.studentInfo}>
           <div
@@ -110,6 +138,9 @@ const SubmissionCard = ({ submission }) => {
               className={styles.infoIconWrapper}
               onMouseEnter={() => setShowTooltip(true)}
               onMouseLeave={() => setShowTooltip(false)}
+              onClick={e => e.stopPropagation()}
+              onKeyPress={e => e.stopPropagation()}
+              role="presentation"
             >
               <div className={styles.infoIcon}>
                 <FiInfo size={20} />
