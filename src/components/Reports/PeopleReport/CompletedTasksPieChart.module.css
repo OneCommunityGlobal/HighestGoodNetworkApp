@@ -11,6 +11,7 @@
   margin: 2px;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 0 12px #eae1f6;
 }
 
 .pie-chart-wrapper {
