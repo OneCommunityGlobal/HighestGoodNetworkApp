@@ -47,6 +47,7 @@ body {
 .metricCardTitle {
   color: #ffffff;
   font-weight: 600;
+  text-align: center;
 }
 
 .rehireable {

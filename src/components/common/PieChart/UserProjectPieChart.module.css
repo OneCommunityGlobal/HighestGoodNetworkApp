@@ -2,9 +2,10 @@
 .pie-chart-wrapper {
   display: flex;
   align-items: center;
-  }
+  gap: 1rem;
+}
 
-  .donut-box {
+.donut-box {
   width: 240px;   /* match the bottom donut look */
   height: 240px;  /* square so the ring isn’t cropped */
 }
@@ -182,7 +183,6 @@
   .pie-chart-legend-table-dark th,
   .pie-chart-legend-table-dark td {
     padding: 8px;
-    text-align: left;
     color:rgb(236 233 233)
   }
 
@@ -253,28 +253,43 @@
   table-layout: fixed; /* even column widths */
 }
 
-.pie-chart-legend-container th:nth-child(1),
-.pie-chart-legend-container td:nth-child(1) {
-  text-align: center;
-  width: 60px; /* Color */
+.colorColumn{
+  text-align: left;
+  width: 150px;
 }
 
-.pie-chart-legend-container th:nth-child(2),
-.pie-chart-legend-container td:nth-child(2) {
-  text-align: center;
-  width: 60%; /* Name column */
+.colorRow {
+  display: flex;
 }
 
-.pie-chart-legend-container th:nth-child(3),
-.pie-chart-legend-container td:nth-child(3) {
-  width: 80px; /* Hours column */
-  text-align: right;
+.projectNameColumn {
+  text-align: left;
 }
 
 .projectNameRow {
   color: #888;
+  text-align: left;
+  text-overflow: ellipsis;
+}
+
+.hoursColumn {
+  text-align: right;
+  width: 150px;
 }
 
 .hoursRow {
+  text-align: right;
   color: #888;
+}
+
+@media (width >= 768px) {
+  .pie-chart-wrapper {
+    gap: 1rem;
+  }
+}
+
+@media (width >= 1440px) {
+  .pie-chart-wrapper {
+    gap: 8.5rem;
+  }
 }

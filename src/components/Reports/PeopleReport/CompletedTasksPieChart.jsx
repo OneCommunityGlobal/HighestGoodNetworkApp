@@ -140,20 +140,20 @@ function CompletedTasksPieChart({ darkMode }) {
                 <thead>
                   <tr>
                     <th className={styles.colorColumn}>Color</th>
-                    <th  className={styles.taskNameColumn}>Task Name</th>
-                    <th  className={styles.hoursColumn}>Hours</th>
+                    <th className={styles.taskNameColumn}>Task Name</th>
+                    <th className={styles.hoursColumn}>Hours</th>
                   </tr>
                 </thead>
                 <tbody ref={tbodyRef}>
                   {renderedTasks.map(project => (
                     <tr key={project.projectId}>
-                      <td>
+                      <td className={styles.colorRow}>
                         <div
                           className={styles['project-chart-legend']}
                           style={{ backgroundColor: `${colorScale(project.projectId)}` }}
                         />
                       </td>
-                      <td className={styles.projectNameRow}>{project.projectName}</td>
+                      <td className={styles.projectNameRow}>{project.projectName}asdhflkashdflkahsdflkahsdflkahsdflkashdfjklhasdlkfhasklfhaklsjdfhaslkfhaklsdhflaksdfhaklsjdfhaslkjh</td>
                       <td className={styles.totalTimeRow}>{project.totalTime.toFixed(2)}</td>
                     </tr>
                   ))}

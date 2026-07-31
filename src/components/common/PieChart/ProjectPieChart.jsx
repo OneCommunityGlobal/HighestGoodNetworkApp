@@ -164,7 +164,7 @@ export default function UserProjectD3PieChart({ projectsData, darkMode }) {
         >
           <thead>
             <tr>
-              <th>Color</th>
+              <th className={styles.colorColumn}>Color</th>
               <th className={styles.projectNameColumn}>Project Name</th>
               <th className={styles.hoursColumn}>Hours</th>
             </tr>
@@ -172,7 +172,7 @@ export default function UserProjectD3PieChart({ projectsData, darkMode }) {
           <tbody>
             {data.map((p, i) => (
               <tr key={p.id || p.name}>
-                <td>
+                <td className={styles.colorRow}>
                   <div
                     className={styles['project-chart-legend']}
                     style={{ backgroundColor: colors[i] }}
