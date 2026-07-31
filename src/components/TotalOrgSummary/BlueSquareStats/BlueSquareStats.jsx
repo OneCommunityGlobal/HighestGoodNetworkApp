@@ -1,5 +1,6 @@
 import { BLUE_SQUARE_STATS_COLORS } from '~/constants/totalOrgSummary';
 import styles from './BlueSquareStats.module.css';
+import donutStyles from '../DonutChart/DonutChart.module.css';
 import Loading from '~/components/common/Loading';
 import DonutChart from '../DonutChart/DonutChart';
 
@@ -13,16 +14,6 @@ function BlueSquareStats({ isLoading, blueSquareStats, comparisonType, darkMode 
       </div>
     );
   }
-
-  // Uncomment and remove blueSquareStats prop to test data with values
-  // const blueSquareStats = {
-  //   totalBlueSquares: { count: 260, comparisonPercentage: 0 },
-  //   missingHours: { count: 12, percentageOutOfTotal: 5 },
-  //   missingSummary: { count: 10, percentageOutOfTotal: 4 },
-  //   missingHoursAndSummary: { count: 96, percentageOutOfTotal: 37 },
-  //   vacationTime: { count: 100, percentageOutOfTotal: 38 },
-  //   other: { count: 42, percentageOutOfTotal: 16 },
-  // };
 
   const {
     totalBlueSquares,
@@ -41,8 +32,19 @@ function BlueSquareStats({ isLoading, blueSquareStats, comparisonType, darkMode 
     { label: 'Other', value: other.count },
   ];
 
-  const hasData = data.every(item => item.value !== 0);
+  const hasData = data.some(item => item.value !== 0);
   const pctChange = totalBlueSquares.comparisonPercentage ?? totalBlueSquares.percentageChange ?? 0;
+
+  if (!hasData) {
+    return (
+      <section className={styles.blueSquareStats}>
+        <div className={donutStyles.donutNoData}>
+          <p className={donutStyles.noDataText}>No Blue Square data available for this period.</p>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className={styles.blueSquareStats}>
       <div className={styles.blueSquareStatsPieChart}>
