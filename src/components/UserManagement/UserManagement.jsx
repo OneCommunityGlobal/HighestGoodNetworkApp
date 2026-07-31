@@ -270,7 +270,7 @@ class UserManagement extends React.PureComponent {
       this.filteredUserDataCount = usersSearchData.length;
       const that = this;
 
-      return usersSearchData
+      return [...usersSearchData]
         .sort((a, b) => {
           // Sort by signup date (createdDate), most recent signups first.
           // Previously this sorted by startDate, which is intended to track
@@ -582,10 +582,8 @@ class UserManagement extends React.PureComponent {
       selectedUser: undefined,
     });
 
-    if (deleteType === UserDeleteType.Inactive) {
-    } else {
-      this.props.deleteUser(this.state.selectedUser, deleteType);
-    }
+   if (deleteType === UserDeleteType.Inactive) return;
+    this.props.deleteUser(this.state.selectedUser, deleteType);
   };
 
   deletePopupClose = () => {
@@ -687,8 +685,6 @@ class UserManagement extends React.PureComponent {
         break;
       case 'production-sync':
         active = false;
-        paused = false;
-        allSelected = false;
         this.setState({
           isActive: active,
           selectedPage: 1,

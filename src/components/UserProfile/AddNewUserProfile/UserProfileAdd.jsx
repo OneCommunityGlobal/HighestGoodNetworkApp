@@ -139,23 +139,23 @@ class UserProfileAdd extends Component {
 
       const { firstName, lastName, email, verificationToken } = response.data;
 
-      this.setState({
+      this.setState((prevState) => ({
         productionIdentityVerified: true,
         productionVerificationToken: verificationToken,
         verifyingProductionIdentity: false,
         userProfile: {
-          ...this.state.userProfile,
+          ...prevState.userProfile,
           firstName,
           lastName,
           email,
         },
         formErrors: {
-          ...this.state.formErrors,
+          ...prevState.formErrors,
           firstName: '',
           lastName: '',
           email: '',
         },
-      });
+      }));
 
       toast.success('Production identity verified. Name and email are now locked.');
     } catch (error) {
@@ -304,6 +304,16 @@ class UserProfileAdd extends Component {
     const phoneNumberEntered =
       this.state.userProfile.phoneNumber === null ||
       this.state.userProfile.phoneNumber.length === 0;
+
+      let verifyButtonText;
+
+      if (this.state.verifyingProductionIdentity) {
+        verifyButtonText = 'Verifying...';
+      } else if (this.state.productionIdentityVerified) {
+        verifyButtonText = 'Verified';
+      } else {
+        verifyButtonText = 'Verify Production Identity';
+      }
     return (
       <StickyContainer>
         <DuplicateNamePopup
@@ -357,11 +367,7 @@ class UserProfileAdd extends Component {
                       }
                       onClick={this.verifyProductionIdentity}
                     >
-                      {this.state.verifyingProductionIdentity
-                        ? 'Verifying...'
-                        : this.state.productionIdentityVerified
-                          ? 'Verified'
-                          : 'Verify Production Identity'}
+                      {verifyButtonText}
                     </Button>
                     {this.state.productionVerifyError && (
                       <div className="text-danger mt-2">{this.state.productionVerifyError}</div>
