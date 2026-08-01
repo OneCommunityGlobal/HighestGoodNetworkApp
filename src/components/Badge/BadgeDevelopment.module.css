@@ -1,5 +1,11 @@
 .btn {
   margin: 20px;
+  box-shadow: 2px 2px 4px 1px #d3d3d3;
+}
+
+.btnDark {
+  margin: 20px;
+  box-shadow: 0.5px 0.5px 5px #000;
 }
 
 .filtersContainer {
@@ -43,4 +49,10 @@
   border-radius: 5px;
   border: 1px solid #ccc;
   outline: none;
+}
+
+.filtersContainer input::placeholder,
+.filtersContainer select::placeholder {
+  color: inherit;
+  opacity: 1;
 }

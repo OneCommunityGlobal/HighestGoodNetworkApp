@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { getBoxStyling } from '~/styles';
 import BadgeDevelopmentTable from './BadgeDevelopmentTable';
 import BadgeTypes from './BadgeTypes';
 import CreateNewBadgePopup from './CreateNewBadgePopup';
@@ -51,16 +50,14 @@ function BadgeDevelopment(props) {
   return (
     <div className={getDark(darkMode, 'bg-yinmn-blue text-light')}>
       <Button
-        className={`btn--dark-sea-green ${styles.btn}`}
+        className={`btn--dark-sea-green ${getDark(darkMode, styles.btnDark, styles.btn)}`}
         onClick={toggle}
-        style={getBoxStyling(darkMode)}
       >
         Create New Badge
       </Button>
       <Button
-        className={`btn--dark-sea-green ${styles.btn}`}
+        className={`btn--dark-sea-green ${getDark(darkMode, styles.btnDark, styles.btn)}`}
         onClick={toggleFilters}
-        style={getBoxStyling(darkMode)}
       >
         {isAddFiltersOpen ? 'Remove Filters' : 'Add Filters'}
       </Button>
