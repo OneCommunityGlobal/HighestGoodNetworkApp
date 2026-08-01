@@ -33,7 +33,7 @@
   text-align: center;
   font-size: 0.92rem;
   line-height: 1.4;
-  color: #4b5563;
+  color: #374151;
 }
 
 .subtitleDark {
@@ -113,6 +113,46 @@
   overflow: hidden;
 }
 
+.calendar :global(.react-datepicker__header) {
+  background-color: #f3f4f6;
+  border-bottom-color: #d1d5db;
+}
+
+.calendar :global(.react-datepicker__navigation-icon::before) {
+  border-color: #1f2937 !important;
+  border-width: 2px 2px 0 0;
+}
+
+.calendar :global(.react-datepicker__navigation:hover *::before) {
+  border-color: #000 !important;
+}
+
+.calendar :global(.react-datepicker__month-select),
+.calendar :global(.react-datepicker__year-select),
+.calendarDark :global(.react-datepicker__month-select),
+.calendarDark :global(.react-datepicker__year-select) {
+  min-height: 30px;
+  padding: 3px 24px 3px 8px;
+  border-radius: 5px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.calendar :global(.react-datepicker__month-select),
+.calendar :global(.react-datepicker__year-select) {
+  border: 1px solid #6b7280;
+  background-color: #fff;
+  color: #111827;
+}
+
+.calendar :global(.react-datepicker__day--selected),
+.calendar :global(.react-datepicker__day--in-range),
+.calendar :global(.react-datepicker__day--in-selecting-range) {
+  background-color: #1d4ed8 !important;
+  color: #fff !important;
+}
+
 .calendarDark {
   background-color: #263a56 !important;
   border-color: #64748b !important;
@@ -131,7 +171,7 @@
 }
 
 .calendarDark :global(.react-datepicker__day--outside-month) {
-  color: #94a3b8 !important;
+  color: #cbd5e1 !important;
 }
 
 .calendarDark :global(.react-datepicker__day:hover),
@@ -142,24 +182,32 @@
 .calendarDark :global(.react-datepicker__day--selected),
 .calendarDark :global(.react-datepicker__day--in-range),
 .calendarDark :global(.react-datepicker__day--in-selecting-range) {
-  background-color: #3b82f6 !important;
+  background-color: #1d4ed8 !important;
   color: #fff !important;
 }
 
 .calendarDark :global(.react-datepicker__day--disabled) {
-  color: #64748b !important;
+  color: #94a3b8 !important;
 }
 
 .calendarDark :global(.react-datepicker__navigation-icon::before) {
   border-color: #f8fafc !important;
+  border-width: 2px 2px 0 0;
+}
+
+.calendarDark :global(.react-datepicker__month-select),
+.calendarDark :global(.react-datepicker__year-select) {
+  border: 1px solid #94a3b8;
+  background-color: #334155;
+  color: #f8fafc;
 }
 
 .resetBtn {
   min-height: 42px;
   padding: 8px 16px;
-  border: 1px solid #8884d8;
+  border: 1px solid #4f46e5;
   border-radius: 8px;
-  background-color: #8884d8;
+  background-color: #4f46e5;
   color: #fff;
   font-weight: 500;
   cursor: pointer;

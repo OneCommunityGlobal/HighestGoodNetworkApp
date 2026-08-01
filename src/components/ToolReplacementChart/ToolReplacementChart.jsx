@@ -1,4 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Bar,
@@ -18,6 +26,7 @@ import { fetchBMProjects } from '../../actions/bmdashboard/projectActions';
 import styles from './ToolReplacementChart.module.css';
 
 const ALL_PROJECTS_OPTION = { value: 'all', label: 'All Projects' };
+const ChartUiContext = createContext({ darkMode: false, isMobile: false });
 
 const getRecordProjectId = item => {
   if (!item?.projectId && !item?.project) return '';
@@ -78,6 +87,105 @@ const getSelectStyles = darkMode => {
   };
 };
 
+const getYAxisWidth = (isMobile, isCompact) => {
+  if (isMobile) return 92;
+  if (isCompact) return 112;
+  return 145;
+};
+
+const getChartMargin = isMobile => ({
+  top: 16,
+  right: isMobile ? 42 : 58,
+  left: isMobile ? 0 : 8,
+  bottom: isMobile ? 44 : 40,
+});
+
+const getAxisFill = darkMode => (darkMode ? '#f8fafc' : '#4b5563');
+const getAxisStroke = darkMode => (darkMode ? '#94a3b8' : '#6b7280');
+const getBarFill = darkMode => (darkMode ? '#4f9bff' : '#3b82f6');
+const getBarStroke = darkMode => (darkMode ? '#a8c8ff' : '#1e40af');
+
+const buildProjectOptions = (bmProjects, data) => {
+  const optionsById = new Map();
+
+  const addOption = (id, label) => {
+    if (!id || !label || optionsById.has(id)) return;
+    optionsById.set(id, { value: id, label });
+  };
+
+  (Array.isArray(bmProjects) ? bmProjects : []).forEach(project => {
+    addOption(String(project?._id || ''), getProjectDisplayName(project));
+  });
+
+  (Array.isArray(data) ? data : []).forEach(item => {
+    addOption(getRecordProjectId(item), getRecordProjectName(item));
+  });
+
+  return [ALL_PROJECTS_OPTION, ...optionsById.values()];
+};
+
+const buildChartData = (data, selectedProject) => {
+  if (!Array.isArray(data) || data.length === 0) return [];
+
+  let filtered = data;
+  if (selectedProject?.value && selectedProject.value !== 'all') {
+    filtered = data.filter(item => getRecordProjectId(item) === String(selectedProject.value));
+  }
+
+  const toolMap = {};
+  filtered.forEach(item => {
+    const name = item.toolName;
+    const percentage = Number(item.requirementSatisfiedPercentage);
+    if (!name || Number.isNaN(percentage)) return;
+
+    if (!toolMap[name]) {
+      toolMap[name] = { total: percentage, count: 1 };
+    } else {
+      toolMap[name].total += percentage;
+      toolMap[name].count += 1;
+    }
+  });
+
+  return Object.keys(toolMap)
+    .map(toolName => ({
+      toolName,
+      requirementSatisfiedPercentage: Number(
+        (toolMap[toolName].total / toolMap[toolName].count).toFixed(1),
+      ),
+    }))
+    .sort((a, b) => a.requirementSatisfiedPercentage - b.requirementSatisfiedPercentage);
+};
+
+const getEmptyMessage = selectedProject => {
+  if (selectedProject?.value === 'all') {
+    return 'No tool data available for the selected filters.';
+  }
+  return `No tools found for "${selectedProject.label}". This project may not have tool replacement records yet.`;
+};
+
+function useChartWidth(containerRef) {
+  const [chartWidth, setChartWidth] = useState(0);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return undefined;
+
+    const updateWidth = () => setChartWidth(container.getBoundingClientRect().width);
+    updateWidth();
+
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', updateWidth);
+      return () => window.removeEventListener('resize', updateWidth);
+    }
+
+    const resizeObserver = new ResizeObserver(updateWidth);
+    resizeObserver.observe(container);
+    return () => resizeObserver.disconnect();
+  }, [containerRef]);
+
+  return chartWidth;
+}
+
 function CustomYAxisTick({ x, y, payload, darkMode, isMobile }) {
   const text = payload?.value || '';
   const words = text.split(' ');
@@ -136,8 +244,6 @@ function PercentageLabel({ x, y, width, height, value, darkMode, isMobile }) {
 
   const text = `${Number(value).toFixed(1)}%`;
   const fontSize = isMobile ? 11 : 12;
-  // Narrow screens have no room outside the bar, so draw the value inside its
-  // filled end where white text keeps a strong contrast ratio.
   const fitsInsideBar = width > text.length * fontSize * 0.62 + 14;
   const renderInside = isMobile && fitsInsideBar;
 
@@ -159,6 +265,211 @@ function PercentageLabel({ x, y, width, height, value, darkMode, isMobile }) {
   );
 }
 
+function YAxisTick(props) {
+  const { darkMode, isMobile } = useContext(ChartUiContext);
+  return <CustomYAxisTick {...props} darkMode={darkMode} isMobile={isMobile} />;
+}
+
+function PercentageLabelRenderer(props) {
+  const { darkMode, isMobile } = useContext(ChartUiContext);
+  return <PercentageLabel {...props} darkMode={darkMode} isMobile={isMobile} />;
+}
+
+function ChartFilters({
+  darkMode,
+  projectOptions,
+  selectedProject,
+  onProjectChange,
+  startDate,
+  endDate,
+  onStartDateChange,
+  onEndDateChange,
+  onResetFilters,
+  hasActiveFilters,
+}) {
+  const labelClass = `${styles.filterLabel} ${darkMode ? styles.filterLabelDark : ''}`;
+  const dateClass = `${styles.datePicker} ${darkMode ? styles.datePickerDark : ''}`;
+  const calendarClass = darkMode ? styles.calendarDark : styles.calendar;
+
+  return (
+    <div className={styles.filters}>
+      <div className={styles.filterGroup}>
+        <label htmlFor="tool-replacement-project" className={labelClass}>
+          Project
+        </label>
+        <Select
+          inputId="tool-replacement-project"
+          className={styles.projectSelect}
+          options={projectOptions}
+          value={selectedProject}
+          onChange={onProjectChange}
+          placeholder="Select a project"
+          styles={getSelectStyles(darkMode)}
+          aria-label="Filter by project"
+        />
+      </div>
+
+      <div className={styles.filterGroup}>
+        <label htmlFor="tool-replacement-start-date" className={labelClass}>
+          Start Date
+        </label>
+        <DatePicker
+          id="tool-replacement-start-date"
+          selected={startDate}
+          onChange={onStartDateChange}
+          selectsStart
+          startDate={startDate}
+          endDate={endDate}
+          placeholderText="Start Date"
+          className={dateClass}
+          wrapperClassName={styles.datePickerWrapper}
+          calendarClassName={calendarClass}
+          popperClassName={styles.datePickerPopper}
+          dateFormat="MMM d, yyyy"
+          popperPlacement="bottom-start"
+          showMonthDropdown
+          showYearDropdown
+          dropdownMode="select"
+        />
+      </div>
+
+      <div className={styles.filterGroup}>
+        <label htmlFor="tool-replacement-end-date" className={labelClass}>
+          End Date
+        </label>
+        <DatePicker
+          id="tool-replacement-end-date"
+          selected={endDate}
+          onChange={onEndDateChange}
+          selectsEnd
+          startDate={startDate}
+          endDate={endDate}
+          minDate={startDate}
+          placeholderText="End Date"
+          className={dateClass}
+          wrapperClassName={styles.datePickerWrapper}
+          calendarClassName={calendarClass}
+          popperClassName={styles.datePickerPopper}
+          dateFormat="MMM d, yyyy"
+          popperPlacement="bottom-start"
+          showMonthDropdown
+          showYearDropdown
+          dropdownMode="select"
+        />
+      </div>
+
+      <div className={styles.filterGroup}>
+        <span className={labelClass}>&nbsp;</span>
+        <button
+          type="button"
+          onClick={onResetFilters}
+          disabled={!hasActiveFilters}
+          className={`${styles.resetBtn} ${darkMode ? styles.resetBtnDark : ''}`}
+        >
+          Reset Filters
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ToolsBarChart({ chartData, darkMode, isMobile, yAxisWidth, chartMargin }) {
+  const axisFill = getAxisFill(darkMode);
+  const axisStroke = getAxisStroke(darkMode);
+  const fontSize = isMobile ? 10 : 12;
+  const labelFontSize = isMobile ? 12 : 14;
+
+  return (
+    <ResponsiveContainer className={styles.chart} width="100%" height="100%">
+      <BarChart layout="vertical" data={chartData} margin={chartMargin}>
+        <CartesianGrid
+          strokeDasharray="3 3"
+          horizontal={false}
+          stroke={darkMode ? '#44556b' : '#e5e5e5'}
+        />
+        <XAxis
+          type="number"
+          domain={[0, 100]}
+          ticks={[0, 25, 50, 75, 100]}
+          tick={{ fill: axisFill, fontSize }}
+          axisLine={{ stroke: axisStroke }}
+          tickLine={{ stroke: axisStroke }}
+          label={{
+            value: '% of requirement satisfied',
+            position: 'insideBottom',
+            offset: isMobile ? -16 : -12,
+            fill: axisFill,
+            fontSize: labelFontSize,
+          }}
+        />
+        <YAxis
+          type="category"
+          dataKey="toolName"
+          width={yAxisWidth}
+          tick={YAxisTick}
+          tickLine={false}
+          axisLine={{ stroke: axisStroke }}
+        />
+        <Tooltip
+          content={<ChartTooltip darkMode={darkMode} />}
+          cursor={{
+            fill: darkMode ? 'rgba(147, 197, 253, 0.12)' : 'rgba(30, 64, 175, 0.08)',
+          }}
+        />
+        <Bar
+          dataKey="requirementSatisfiedPercentage"
+          name="% of requirement satisfied"
+          fill={getBarFill(darkMode)}
+          stroke={getBarStroke(darkMode)}
+          strokeWidth={1.5}
+          barSize={chartData.length === 1 ? 28 : undefined}
+          isAnimationActive={false}
+        >
+          <LabelList dataKey="requirementSatisfiedPercentage" content={PercentageLabelRenderer} />
+        </Bar>
+      </BarChart>
+    </ResponsiveContainer>
+  );
+}
+
+function ChartPanel({
+  chartContainerRef,
+  chartHeight,
+  loading,
+  error,
+  chartData,
+  selectedProject,
+  darkMode,
+  isMobile,
+  yAxisWidth,
+  chartMargin,
+}) {
+  let body = null;
+  if (loading) {
+    body = <div className={styles.statusMessage}>Loading...</div>;
+  } else if (error) {
+    body = <div className={styles.errorMessage}>{error}</div>;
+  } else if (chartData.length === 0) {
+    body = <div className={styles.emptyMessage}>{getEmptyMessage(selectedProject)}</div>;
+  } else {
+    body = (
+      <ToolsBarChart
+        chartData={chartData}
+        darkMode={darkMode}
+        isMobile={isMobile}
+        yAxisWidth={yAxisWidth}
+        chartMargin={chartMargin}
+      />
+    );
+  }
+
+  return (
+    <div ref={chartContainerRef} className={styles.chartContainer} style={{ height: chartHeight }}>
+      {body}
+    </div>
+  );
+}
+
 export const ToolReplacementChart = () => {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -169,32 +480,13 @@ export const ToolReplacementChart = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [selectedProject, setSelectedProject] = useState(ALL_PROJECTS_OPTION);
-  const [chartWidth, setChartWidth] = useState(0);
   const chartContainerRef = useRef(null);
-
-  useEffect(() => {
-    const container = chartContainerRef.current;
-    if (!container) return undefined;
-
-    const updateWidth = () => setChartWidth(container.getBoundingClientRect().width);
-    updateWidth();
-
-    if (typeof ResizeObserver === 'undefined') {
-      window.addEventListener('resize', updateWidth);
-      return () => window.removeEventListener('resize', updateWidth);
-    }
-
-    const resizeObserver = new ResizeObserver(updateWidth);
-    resizeObserver.observe(container);
-    return () => resizeObserver.disconnect();
-  }, []);
+  const chartWidth = useChartWidth(chartContainerRef);
 
   useEffect(() => {
     dispatch(fetchBMProjects());
   }, [dispatch]);
 
-  // Fetch by date range only. Project filtering is done client-side so we
-  // don't depend on the backend projectId filter returning an empty set.
   useEffect(() => {
     const queryParams = new URLSearchParams();
     if (startDate) queryParams.append('startDate', startDate.toISOString());
@@ -202,27 +494,7 @@ export const ToolReplacementChart = () => {
     dispatch(fetchToolReplacements(queryParams.toString()));
   }, [startDate, endDate, dispatch]);
 
-  const projectOptions = useMemo(() => {
-    // Matches the other BM dashboard filters: options come from state.bmProjects
-    // as { value: _id, label: name }, in the order the API returns them.
-    const optionsById = new Map();
-
-    const addOption = (id, label) => {
-      if (!id || !label || optionsById.has(id)) return;
-      optionsById.set(id, { value: id, label });
-    };
-
-    (Array.isArray(bmProjects) ? bmProjects : []).forEach(project => {
-      addOption(String(project?._id || ''), getProjectDisplayName(project));
-    });
-
-    // Include projects named by the tool data itself once the API populates them.
-    (Array.isArray(data) ? data : []).forEach(item => {
-      addOption(getRecordProjectId(item), getRecordProjectName(item));
-    });
-
-    return [ALL_PROJECTS_OPTION, ...optionsById.values()];
-  }, [bmProjects, data]);
+  const projectOptions = useMemo(() => buildProjectOptions(bmProjects, data), [bmProjects, data]);
 
   useEffect(() => {
     if (selectedProject?.value === 'all') return;
@@ -232,244 +504,86 @@ export const ToolReplacementChart = () => {
     }
   }, [projectOptions, selectedProject]);
 
-  const chartData = useMemo(() => {
-    if (!Array.isArray(data) || data.length === 0) return [];
-
-    // Filter to one project's tools, then aggregate by tool name for the bar chart.
-    let filtered = data;
-    if (selectedProject?.value && selectedProject.value !== 'all') {
-      filtered = data.filter(item => getRecordProjectId(item) === String(selectedProject.value));
-    }
-
-    const toolMap = {};
-    filtered.forEach(item => {
-      const name = item.toolName;
-      const percentage = Number(item.requirementSatisfiedPercentage);
-      if (!name || Number.isNaN(percentage)) return;
-
-      if (!toolMap[name]) {
-        toolMap[name] = { total: percentage, count: 1 };
-      } else {
-        toolMap[name].total += percentage;
-        toolMap[name].count += 1;
-      }
-    });
-
-    return Object.keys(toolMap)
-      .map(toolName => ({
-        toolName,
-        requirementSatisfiedPercentage: Number(
-          (toolMap[toolName].total / toolMap[toolName].count).toFixed(1),
-        ),
-      }))
-      .sort((a, b) => a.requirementSatisfiedPercentage - b.requirementSatisfiedPercentage);
-  }, [data, selectedProject]);
+  const chartData = useMemo(() => buildChartData(data, selectedProject), [data, selectedProject]);
 
   const chartHeight = Math.max(280, chartData.length * 48 + 80);
   const isMobile = chartWidth > 0 && chartWidth < 600;
   const isCompact = chartWidth > 0 && chartWidth < 900;
-  const yAxisWidth = isMobile ? 92 : isCompact ? 112 : 145;
-  const chartMargin = {
-    top: 16,
-    right: isMobile ? 42 : 58,
-    left: isMobile ? 0 : 8,
-    bottom: isMobile ? 44 : 40,
-  };
+  const yAxisWidth = getYAxisWidth(isMobile, isCompact);
+  const chartMargin = getChartMargin(isMobile);
+  const chartUiValue = useMemo(() => ({ darkMode, isMobile }), [darkMode, isMobile]);
 
-  const handleStartDateChange = date => {
-    if (endDate && date && date > endDate) {
-      setEndDate(date);
-    }
-    setStartDate(date);
-  };
-
-  const handleEndDateChange = date => {
-    if (startDate && date && date < startDate) {
+  const handleStartDateChange = useCallback(
+    date => {
+      if (endDate && date && date > endDate) {
+        setEndDate(date);
+      }
       setStartDate(date);
-    }
-    setEndDate(date);
-  };
+    },
+    [endDate],
+  );
 
-  const handleResetFilters = () => {
+  const handleEndDateChange = useCallback(
+    date => {
+      if (startDate && date && date < startDate) {
+        setStartDate(date);
+      }
+      setEndDate(date);
+    },
+    [startDate],
+  );
+
+  const handleResetFilters = useCallback(() => {
     setStartDate(null);
     setEndDate(null);
     setSelectedProject(ALL_PROJECTS_OPTION);
-  };
+  }, []);
+
+  const handleProjectChange = useCallback(option => {
+    setSelectedProject(option || ALL_PROJECTS_OPTION);
+  }, []);
 
   const hasActiveFilters =
     Boolean(startDate) || Boolean(endDate) || selectedProject?.value !== 'all';
 
   return (
-    <div className={`${styles.mainContainer} ${darkMode ? styles.bgDark : ''}`}>
-      <h2 className={`${styles.title} ${darkMode ? styles.titleDark : ''}`}>
-        Tools Most Susceptible to Breakdown
-      </h2>
-      <p className={`${styles.subtitle} ${darkMode ? styles.subtitleDark : ''}`}>
-        Choose a project to view its tools ranked by % of requirement satisfied. Lower % means
-        higher replacement risk.
-      </p>
+    <ChartUiContext.Provider value={chartUiValue}>
+      <div className={`${styles.mainContainer} ${darkMode ? styles.bgDark : ''}`}>
+        <h2 className={`${styles.title} ${darkMode ? styles.titleDark : ''}`}>
+          Tools Most Susceptible to Breakdown
+        </h2>
+        <p className={`${styles.subtitle} ${darkMode ? styles.subtitleDark : ''}`}>
+          Choose a project to view its tools ranked by % of requirement satisfied. Lower % means
+          higher replacement risk.
+        </p>
 
-      <div className={styles.filters}>
-        <div className={styles.filterGroup}>
-          <label
-            htmlFor="tool-replacement-project"
-            className={`${styles.filterLabel} ${darkMode ? styles.filterLabelDark : ''}`}
-          >
-            Project
-          </label>
-          <Select
-            inputId="tool-replacement-project"
-            className={styles.projectSelect}
-            options={projectOptions}
-            value={selectedProject}
-            onChange={option => setSelectedProject(option || ALL_PROJECTS_OPTION)}
-            placeholder="Select a project"
-            styles={getSelectStyles(darkMode)}
-            aria-label="Filter by project"
-          />
-        </div>
+        <ChartFilters
+          darkMode={darkMode}
+          projectOptions={projectOptions}
+          selectedProject={selectedProject}
+          onProjectChange={handleProjectChange}
+          startDate={startDate}
+          endDate={endDate}
+          onStartDateChange={handleStartDateChange}
+          onEndDateChange={handleEndDateChange}
+          onResetFilters={handleResetFilters}
+          hasActiveFilters={hasActiveFilters}
+        />
 
-        <div className={styles.filterGroup}>
-          <label
-            htmlFor="tool-replacement-start-date"
-            className={`${styles.filterLabel} ${darkMode ? styles.filterLabelDark : ''}`}
-          >
-            Start Date
-          </label>
-          <DatePicker
-            id="tool-replacement-start-date"
-            selected={startDate}
-            onChange={handleStartDateChange}
-            selectsStart
-            startDate={startDate}
-            endDate={endDate}
-            placeholderText="Start Date"
-            className={`${styles.datePicker} ${darkMode ? styles.datePickerDark : ''}`}
-            wrapperClassName={styles.datePickerWrapper}
-            calendarClassName={darkMode ? styles.calendarDark : styles.calendar}
-            popperClassName={styles.datePickerPopper}
-            dateFormat="MMM d, yyyy"
-            popperPlacement="bottom-start"
-          />
-        </div>
-
-        <div className={styles.filterGroup}>
-          <label
-            htmlFor="tool-replacement-end-date"
-            className={`${styles.filterLabel} ${darkMode ? styles.filterLabelDark : ''}`}
-          >
-            End Date
-          </label>
-          <DatePicker
-            id="tool-replacement-end-date"
-            selected={endDate}
-            onChange={handleEndDateChange}
-            selectsEnd
-            startDate={startDate}
-            endDate={endDate}
-            minDate={startDate}
-            placeholderText="End Date"
-            className={`${styles.datePicker} ${darkMode ? styles.datePickerDark : ''}`}
-            wrapperClassName={styles.datePickerWrapper}
-            calendarClassName={darkMode ? styles.calendarDark : styles.calendar}
-            popperClassName={styles.datePickerPopper}
-            dateFormat="MMM d, yyyy"
-            popperPlacement="bottom-start"
-          />
-        </div>
-
-        <div className={styles.filterGroup}>
-          <span className={`${styles.filterLabel} ${darkMode ? styles.filterLabelDark : ''}`}>
-            &nbsp;
-          </span>
-          <button
-            type="button"
-            onClick={handleResetFilters}
-            disabled={!hasActiveFilters}
-            className={`${styles.resetBtn} ${darkMode ? styles.resetBtnDark : ''}`}
-          >
-            Reset Filters
-          </button>
-        </div>
+        <ChartPanel
+          chartContainerRef={chartContainerRef}
+          chartHeight={chartHeight}
+          loading={loading}
+          error={error}
+          chartData={chartData}
+          selectedProject={selectedProject}
+          darkMode={darkMode}
+          isMobile={isMobile}
+          yAxisWidth={yAxisWidth}
+          chartMargin={chartMargin}
+        />
       </div>
-
-      <div
-        ref={chartContainerRef}
-        className={styles.chartContainer}
-        style={{ height: chartHeight }}
-      >
-        {loading && <div className={styles.statusMessage}>Loading...</div>}
-        {!loading && error && <div className={styles.errorMessage}>{error}</div>}
-        {!loading && !error && chartData.length === 0 && (
-          <div className={styles.emptyMessage}>
-            {selectedProject?.value === 'all'
-              ? 'No tool data available for the selected filters.'
-              : `No tools found for "${selectedProject.label}". This project may not have tool replacement records yet.`}
-          </div>
-        )}
-        {!loading && !error && chartData.length > 0 && (
-          <ResponsiveContainer className={styles.chart} width="100%" height="100%">
-            <BarChart layout="vertical" data={chartData} margin={chartMargin}>
-              <CartesianGrid
-                strokeDasharray="3 3"
-                horizontal={false}
-                stroke={darkMode ? '#44556b' : '#e5e5e5'}
-              />
-              <XAxis
-                type="number"
-                domain={[0, 100]}
-                ticks={[0, 25, 50, 75, 100]}
-                tick={{
-                  fill: darkMode ? '#f8fafc' : '#4b5563',
-                  fontSize: isMobile ? 10 : 12,
-                }}
-                axisLine={{ stroke: darkMode ? '#94a3b8' : '#6b7280' }}
-                tickLine={{ stroke: darkMode ? '#94a3b8' : '#6b7280' }}
-                label={{
-                  value: '% of requirement satisfied',
-                  position: 'insideBottom',
-                  offset: isMobile ? -16 : -12,
-                  fill: darkMode ? '#f8fafc' : '#4b5563',
-                  fontSize: isMobile ? 12 : 14,
-                }}
-              />
-              <YAxis
-                type="category"
-                dataKey="toolName"
-                width={yAxisWidth}
-                tick={tickProps => (
-                  <CustomYAxisTick {...tickProps} darkMode={darkMode} isMobile={isMobile} />
-                )}
-                tickLine={false}
-                axisLine={{ stroke: darkMode ? '#94a3b8' : '#6b7280' }}
-              />
-              <Tooltip
-                content={<ChartTooltip darkMode={darkMode} />}
-                cursor={{
-                  fill: darkMode ? 'rgba(147, 197, 253, 0.12)' : 'rgba(30, 64, 175, 0.08)',
-                }}
-              />
-              <Bar
-                dataKey="requirementSatisfiedPercentage"
-                name="% of requirement satisfied"
-                fill={darkMode ? '#4f9bff' : '#3b82f6'}
-                stroke={darkMode ? '#a8c8ff' : '#1e40af'}
-                strokeWidth={1.5}
-                barSize={chartData.length === 1 ? 28 : undefined}
-                isAnimationActive={false}
-              >
-                <LabelList
-                  dataKey="requirementSatisfiedPercentage"
-                  content={labelProps => (
-                    <PercentageLabel {...labelProps} darkMode={darkMode} isMobile={isMobile} />
-                  )}
-                />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        )}
-      </div>
-    </div>
+    </ChartUiContext.Provider>
   );
 };
 
