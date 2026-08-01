@@ -76,6 +76,40 @@ import EPDashboard from './components/EductionPortal';
 
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
+import StudentProfilePage from './components/EductionPortal/StudentProfile/StudentProfilePage';
+import AssignAtoms from './components/EductionPortal/AssignAtoms/AssignAtoms';
+import ReportDownloadButton from './components/EductionPortal/AnalyticsDashboard/ReportDownloadButton';
+import GroupList from './components/EductionPortal/GroupList/GroupList';
+import EvaluationResultsWrapper from './components/EductionPortal/EvaluationResultsWrapper';
+import InsightWidget from './components/EductionPortal/AnalyticsDashboard/InsightsWidget';
+import StudentDashboard from './components/EductionPortal/StudentTasks/StudentDashboard';
+import StudentTasks from './components/EductionPortal/StudentTasks/StudentTasks';
+import TaskDetails from './components/EductionPortal/StudentTasks/TaskDetails';
+import EducatorReports from './components/EductionPortal/EducatorReports';
+import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
+import PRDashboardOverview from './components/HGNPRDashboard/PRDashboardOverview';
+import PRDashboardPromotionEligibility from './components/HGNPRDashboard/PRDashboardPromotionEligibility';
+import PRDashboardTopReviewedPRs from './components/HGNPRDashboard/PRDashboardTopReviewedPRs';
+import PRDashboardDetails from './components/HGNPRDashboard/PRDashboardDetails';
+import PromotionEligibility from './components/HGNPRDashboard/PromotionEligibility';
+import BookingPage from './components/Booking/BookingPage';
+import BookingConfirmPage from './components/Booking/BookingConfirmPage';
+import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
+import ReviewersStackedBarChart from './components/HGNPRDashboard/ReviewersStackedBarChart/ReviewersStackedBarChart';
+import PRReviewTeamAnalyticsDashboard from './components/Analytics/AnalyticsDashboard';
+import PopularPRChart from './components/Analytics/PopularPRChart';
+import ReviewersRequirementChart from './components/Analytics/ReviewersRequirementChart';
+import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
+import PRGradingScreen from './components/PRGradingScreen';
+import PRGradingTest from './components/PRGradingScreen/PRGradingTest'; //temporary route for testing - delete after testing
+import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
+import IntermediateTaskList from './components/EductionPortal/IntermediateTasks/IntermediateTaskList';
+import InteractiveMap from './components/BMDashboard/InteractiveMap/InteractiveMap';
+import SimpleToolChart from './components/BMDashboard/Tools/SimpleToolChart';
+import SupportLogin from './components/SupportPortal/SupportLogin';
+import SupportDashboard from './components/SupportPortal/SupportDashboard';
+import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
+import MaterialUtilizationChart from './components/MaterialUtilization/MaterialUtilizationChart';
 
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
 const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
@@ -127,6 +161,10 @@ const PermissionsManagement = lazy(() =>
   import('./components/PermissionsManagement/PermissionsManagement'),
 );
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
+const MeetingScheduling = lazy(() => import('./components/MeetingScheduling'));
+const BlueSquareEmailManagement = lazy(() =>
+  import('./components/BlueSquareEmailManagement/BlueSquareEmailManagement'),
+);
 const Teams = lazy(() => import('./components/Teams/Teams'));
 
 export default (
@@ -268,6 +306,13 @@ export default (
           routePermissions={RoutePermissions.permissionsManagement}
         />
         <ProtectedRoute
+          path="/bluesquare-email-management"
+          exact
+          component={BlueSquareEmailManagement}
+          fallback
+          routePermissions={['resendBlueSquareAndSummaryEmails']}
+        />
+        <ProtectedRoute
           path="/teams"
           exact
           component={Teams}
@@ -311,6 +356,21 @@ export default (
           component={JobCCDashboard}
           fallback
           allowedRoles={[UserRole.Owner]}
+        />
+
+        <ProtectedRoute
+          path="/schedulemeetings"
+          exact
+          component={MeetingScheduling}
+          fallback
+          allowedRoles={[
+            UserRole.Administrator,
+            UserRole.Manager,
+            UserRole.CoreTeam,
+            UserRole.Owner,
+            UserRole.Mentor,
+          ]}
+          routePermissions={RoutePermissions.meetings}
         />
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}
@@ -431,6 +491,71 @@ export default (
         <ProtectedRoute path="/hgnform/page5" exact component={Page5} />
         <ProtectedRoute path="/hgnform/page6" exact component={Page6} />
         <ProtectedRoute path="/" exact component={Dashboard} />
+        <ProtectedRoute
+          path="/collaboration/analytics"
+          exact
+          component={ApplicantSourceDonutChart}
+        />
+        {/* ----- PR Dashboard  ----- */}
+        <ProtectedRoute
+          path="/pr-dashboard/promotion-eligibility"
+          exact
+          component={PromotionEligibility}
+        />
+        <ProtectedRoute path="/planned-costs" exact component={PlannedCostDonutChart} />
+        <ProtectedRoute
+          path="/pr-team-analytics/reviewers-stacked-bar-chart"
+          exact
+          component={ReviewersStackedBarChart}
+        />
+        <ProtectedRoute
+          path="/analytics/dashboard"
+          exact
+          component={PRReviewTeamAnalyticsDashboard}
+          fallback
+        />
+        <ProtectedRoute
+          path="/pr-dashboard/reviewers"
+          exact
+          component={PRReviewTeamAnalyticsDashboard}
+          fallback
+        />
+        <ProtectedRoute path="/analytics/popular-prs" exact component={PopularPRChart} fallback />
+        <ProtectedRoute
+          path="/analytics/review-summary"
+          exact
+          component={ReviewersRequirementChart}
+          fallback
+        />
+        {/* /*  for support team*/}
+        <Route path="/support/login" component={SupportLogin} />
+        <Route path="/support/dashboard" component={SupportDashboard} />
+        <Route path="/support/log/:studentId" component={SupportLogViewer} />
+        {/* PR Routes */}
+        <ProtectedRoute
+          path="/pr-team-analytics/popular-prs"
+          exact
+          component={PRReviewTeamAnalytics}
+        />
+        <ProtectedRoute
+          path="/pr-grading-dashboard"
+          exact
+          component={PRGradingDashboard}
+          fallback
+        />
+        <ProtectedRoute path="/pr-dashboard/overview" exact component={PRDashboardOverview} />
+        <ProtectedRoute path="/pr-dashboard/analytics" exact component={PRReviewTeamAnalytics} />
+        <ProtectedRoute
+          path="/pr-dashboard/promotion-eligibility"
+          exact
+          component={PRDashboardPromotionEligibility}
+        />
+        <ProtectedRoute
+          path="/pr-dashboard/top-reviewed-prs"
+          exact
+          component={PRDashboardTopReviewedPRs}
+        />
+        <ProtectedRoute path="/pr-dashboard/details" exact component={PRDashboardDetails} />
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
