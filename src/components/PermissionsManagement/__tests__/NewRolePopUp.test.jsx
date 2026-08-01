@@ -3,7 +3,7 @@ import '@testing-library/jest-dom';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import { ModalProvider } from '~/context/ModalContext';
 import axios from 'axios';
 import CreateNewRolePopup from '../NewRolePopUp';

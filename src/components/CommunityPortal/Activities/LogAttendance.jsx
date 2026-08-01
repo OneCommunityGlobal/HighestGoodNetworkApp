@@ -24,6 +24,25 @@ import styles from './LogAttendance.module.css';
 const tabs = ['Description', 'Analysis', 'Participates', 'Comments'];
 const statusFilters = ['all', 'checked_in', 'no_show', 'pending'];
 
+const recordStatusLabel = status => {
+  if (status === 'checked_in') return 'Checked In';
+  if (status === 'no_show') return 'No Show';
+  return 'Pending';
+};
+
+const filterStatusLabel = filter => {
+  if (filter === 'all') return 'All Statuses';
+  if (filter === 'checked_in') return 'Checked In';
+  if (filter === 'no_show') return 'No Shows';
+  return 'Pending';
+};
+
+const statusBadgeClass = status => {
+  if (status === 'Checked In') return styles.statusSuccess;
+  if (status === 'Pending') return styles.statusPending;
+  return styles.statusDanger;
+};
+
 function LogAttendance() {
   const { activityId } = useParams();
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -103,7 +122,7 @@ function LogAttendance() {
             record.participantId?._id || record.participantId || record.participantExternalId,
           email: record.participantEmail || record.participantId?.email || '',
           checkInTime: record.checkInTime ? moment(record.checkInTime).format('h:mm A') : '—',
-          status: getStatusLabel(record.status),
+          status: recordStatusLabel(record.status),
           rawStatus: record.status,
         }));
         setAttendanceRecords(records);
@@ -387,18 +406,10 @@ function LogAttendance() {
               <div className={styles.stayPill}>stay for 2.5-3 h</div>
             </header>
             <div className={styles.progressBar}>
-              <div className={styles.segmentBlue} style={{ width: '87%' }}>
-                87% Stayed
-              </div>
-              <div className={styles.segmentAmber} style={{ width: '3%' }}>
-                3% Late
-              </div>
-              <div className={styles.segmentPink} style={{ width: '18%' }}>
-                18% Early exit
-              </div>
-              <div className={styles.segmentPurple} style={{ width: '8%' }}>
-                8% Unknown
-              </div>
+              <div className={`${styles.segmentBlue} ${styles.segmentWidth87}`}>87% Stayed</div>
+              <div className={`${styles.segmentAmber} ${styles.segmentWidth3}`}>3% Late</div>
+              <div className={`${styles.segmentPink} ${styles.segmentWidth18}`}>18% Early exit</div>
+              <div className={`${styles.segmentPurple} ${styles.segmentWidth8}`}>8% Unknown</div>
             </div>
             <footer className={styles.leadsBreakdown}>
               <div>
@@ -419,26 +430,20 @@ function LogAttendance() {
                 <p>Track arrivals, no-shows, and pending participants in real time.</p>
               </div>
               <div className={styles.controls}>
-                <label htmlFor="status-filter">Status Filter</label>
-                <select
-                  id="status-filter"
-                  value={statusFilter}
-                  onChange={event => setStatusFilter(event.target.value)}
-                >
-                  {statusFilters.map(filter => {
-                    const filterLabels = {
-                      all: 'All Statuses',
-                      checked_in: 'Checked In',
-                      no_show: 'No Shows',
-                      pending: 'Pending',
-                    };
-                    return (
+                <label htmlFor="status-filter">
+                  {'Status Filter '}
+                  <select
+                    id="status-filter"
+                    value={statusFilter}
+                    onChange={event => setStatusFilter(event.target.value)}
+                  >
+                    {statusFilters.map(filter => (
                       <option key={filter} value={filter}>
-                        {filterLabels[filter] ?? filter}
+                        {filterStatusLabel(filter)}
                       </option>
-                    );
-                  })}
-                </select>
+                    ))}
+                  </select>
+                </label>
               </div>
             </header>
             <div className={styles.tableWrapper}>
@@ -474,25 +479,22 @@ function LogAttendance() {
                   </tr>
                 </thead>
                 <tbody>
-                  {sortedRecords.map(record => {
-                    let statusClass = styles.statusDanger;
-                    if (record.status === 'Checked In') statusClass = styles.statusSuccess;
-                    else if (record.status === 'Pending') statusClass = styles.statusPending;
-                    return (
-                      <tr key={record.id}>
-                        <td>{record.id}</td>
-                        <td>{record.participantName}</td>
-                        <td>{record.participantId}</td>
-                        <td>{record.email}</td>
-                        <td>{record.checkInTime}</td>
-                        <td>
-                          <span className={`${styles.statusBadge} ${statusClass}`}>
-                            {record.status}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                  {sortedRecords.map(record => (
+                    <tr key={record.id}>
+                      <td>{record.id}</td>
+                      <td>{record.participantName}</td>
+                      <td>{record.participantId}</td>
+                      <td>{record.email}</td>
+                      <td>{record.checkInTime}</td>
+                      <td>
+                        <span
+                          className={`${styles.statusBadge} ${statusBadgeClass(record.status)}`}
+                        >
+                          {record.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -589,7 +591,9 @@ function RingCard({ config }) {
         <div
           className={styles.ring}
           style={{
-            background: `conic-gradient(${colors[0]} ${value * 3.6}deg, ${colors[1]} 0)`,
+            '--ring-color': colors[0],
+            '--ring-deg': `${value * 3.6}deg`,
+            '--ring-bg': colors[1],
           }}
         >
           <span>{value}%</span>
