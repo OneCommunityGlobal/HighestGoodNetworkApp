@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { Table, Button, FormGroup, Label, Input } from 'reactstrap';
 import { ENDPOINTS } from '~/utils/URL';
-import JobCCModal from './JobCCModal'; // Modal for managing CC list
+import JobCCModal from './JobCCModal';
 import JobCategoryCCModal from './JobCategoryCCModal';
 import styles from './JobCCDashboard.module.css';
 
@@ -129,7 +129,11 @@ function JobCCDashboard() {
             <Button color="primary" onClick={handleSort}>
               Sort by Date {sortOrder === 'desc' ? '↑' : '↓'}
             </Button>
-            <Button style={{ margin: '10px' }} color="primary" onClick={handleOpenCategoryModal}>
+            <Button
+              className={styles.categoryButton}
+              color="primary"
+              onClick={handleOpenCategoryModal}
+            >
               Add Email CC to Category
             </Button>
           </div>

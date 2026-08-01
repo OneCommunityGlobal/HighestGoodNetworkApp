@@ -57,9 +57,8 @@ function JobCategoryCCModal({ categories, onClose, onRefresh, darkMode }) {
           ),
         );
 
-        // Add to local list for immediate UI feedback
         setEmail('');
-        onRefresh(); // Refresh parent data
+        onRefresh();
       } catch (error) {
         toast.error('Failed to add email. Please try again.');
       } finally {
@@ -72,9 +71,8 @@ function JobCategoryCCModal({ categories, onClose, onRefresh, darkMode }) {
           category: filter,
         });
 
-        // Add to local list for immediate UI feedback
         setEmail('');
-        onRefresh(); // Refresh parent data
+        onRefresh();
       } catch (error) {
         toast.error('Failed to add email. Please try again.');
       } finally {

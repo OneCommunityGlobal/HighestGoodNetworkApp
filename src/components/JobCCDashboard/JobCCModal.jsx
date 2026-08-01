@@ -45,11 +45,12 @@ function JobCCModal({ job, onClose, onRefresh, darkMode }) {
 
     setLoading(true);
     try {
-      await axios.post(`${ENDPOINTS.JOB_NOTIFICATION_LIST}/job`, {
+      const response = await axios.post(`${ENDPOINTS.JOB_NOTIFICATION_LIST}/job`, {
         email,
         jobId: job._id,
       });
 
+      setCCList(prev => [...prev, response.data]);
       setEmail('');
       onRefresh();
     } catch (error) {
@@ -65,9 +66,8 @@ function JobCCModal({ job, onClose, onRefresh, darkMode }) {
     setLoading(true);
     try {
       await axios.delete(`${ENDPOINTS.JOB_NOTIFICATION_LIST}${ccEntry._id}`);
-      // Remove from local list for immediate UI feedback
       setCCList(prevList => prevList.filter(entry => entry.email !== emailToRemove));
-      onRefresh(); // Refresh parent data
+      onRefresh();
     } catch (error) {
       toast.error('Failed to remove email. Please try again.');
     } finally {

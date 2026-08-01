@@ -163,6 +163,10 @@
   color: #fff;
 }
 
+.categoryButton {
+  margin: 10px;
+}
+
 .darkMode {
   background-color: #1b2a41;
   color: #fff;
