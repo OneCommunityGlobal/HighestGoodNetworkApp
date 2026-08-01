@@ -76,40 +76,23 @@ import EPDashboard from './components/EductionPortal';
 
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
-import StudentProfilePage from './components/EductionPortal/StudentProfile/StudentProfilePage';
-import AssignAtoms from './components/EductionPortal/AssignAtoms/AssignAtoms';
-import ReportDownloadButton from './components/EductionPortal/AnalyticsDashboard/ReportDownloadButton';
-import GroupList from './components/EductionPortal/GroupList/GroupList';
-import EvaluationResultsWrapper from './components/EductionPortal/EvaluationResultsWrapper';
-import InsightWidget from './components/EductionPortal/AnalyticsDashboard/InsightsWidget';
-import StudentDashboard from './components/EductionPortal/StudentTasks/StudentDashboard';
-import StudentTasks from './components/EductionPortal/StudentTasks/StudentTasks';
-import TaskDetails from './components/EductionPortal/StudentTasks/TaskDetails';
-import EducatorReports from './components/EductionPortal/EducatorReports';
+
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
 import PRDashboardOverview from './components/HGNPRDashboard/PRDashboardOverview';
 import PRDashboardPromotionEligibility from './components/HGNPRDashboard/PRDashboardPromotionEligibility';
 import PRDashboardTopReviewedPRs from './components/HGNPRDashboard/PRDashboardTopReviewedPRs';
 import PRDashboardDetails from './components/HGNPRDashboard/PRDashboardDetails';
 import PromotionEligibility from './components/HGNPRDashboard/PromotionEligibility';
-import BookingPage from './components/Booking/BookingPage';
-import BookingConfirmPage from './components/Booking/BookingConfirmPage';
-import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
+
 import ReviewersStackedBarChart from './components/HGNPRDashboard/ReviewersStackedBarChart/ReviewersStackedBarChart';
 import PRReviewTeamAnalyticsDashboard from './components/Analytics/AnalyticsDashboard';
 import PopularPRChart from './components/Analytics/PopularPRChart';
 import ReviewersRequirementChart from './components/Analytics/ReviewersRequirementChart';
 import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
-import PRGradingScreen from './components/PRGradingScreen';
-import PRGradingTest from './components/PRGradingScreen/PRGradingTest'; //temporary route for testing - delete after testing
-import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
-import IntermediateTaskList from './components/EductionPortal/IntermediateTasks/IntermediateTaskList';
-import InteractiveMap from './components/BMDashboard/InteractiveMap/InteractiveMap';
-import SimpleToolChart from './components/BMDashboard/Tools/SimpleToolChart';
+
 import SupportLogin from './components/SupportPortal/SupportLogin';
 import SupportDashboard from './components/SupportPortal/SupportDashboard';
 import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
-import MaterialUtilizationChart from './components/MaterialUtilization/MaterialUtilizationChart';
 
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
 const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
