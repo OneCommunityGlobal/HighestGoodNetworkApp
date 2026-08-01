@@ -178,8 +178,10 @@ import EPLogin from './components/EductionPortal/Login';
 import BrowseLessonPlan from './components/EductionPortal/BrowseLessonPlan/BrowseLP';
 import EPDashboard from './components/EductionPortal';
 import TaskSubmissions from './components/EductionPortal/Educators/TaskSubmissions';
+import AnnouncementsPage from './components/EductionPortal/Announcements/AnnouncementsPage';
 
 import StudentProfilePage from './components/EductionPortal/StudentProfile/StudentProfilePage';
+import StudentProfile from './components/EductionPortal/StudentProfile/StudentProfile';
 import AssignAtoms from './components/EductionPortal/AssignAtoms/AssignAtoms';
 import ReportDownloadButton from './components/EductionPortal/AnalyticsDashboard/ReportDownloadButton';
 import GroupList from './components/EductionPortal/GroupList/GroupList';
