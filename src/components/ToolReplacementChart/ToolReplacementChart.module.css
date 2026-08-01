@@ -3,6 +3,9 @@
   height: 100%;
   padding: 16px;
   box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
 }
 
 .bgDark {
@@ -101,6 +104,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
 }
 
 .chart {
