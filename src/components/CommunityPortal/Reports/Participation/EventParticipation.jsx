@@ -24,16 +24,30 @@ function EventParticipation() {
   return (
     <div
       ref={exportRef}
-      className={`participation-landing-page-global ${styles.participationLandingPage} ${
-        darkMode ? styles.participationLandingPageDark : ''
-      }`}
+      className={`${styles.participationLandingPage} ${darkMode ? styles.darkMode : ''}`}
     >
-      <EventParticipationHeader />
-      <EngagementSummaryCards />
-      <div className={styles.chartsSection}>
-        <div className={styles.chartsRow}>
-          <EventTypePieChart />
-          <EngagementBarChart />
+      {/* Print-only page title header */}
+      <header
+        className={`${styles.landingPageHeaderContainer} ${styles.avoidBreak} ${styles.noPrintGap}`}
+      >
+        <h1 className={styles.landingPageHeader}>Social And Recreational Management</h1>
+        <button
+          className={`${styles.savePdfBtn} ${darkMode ? '' : styles.savePdfBtnLight} ${
+            styles.noPrint
+          }`}
+          onClick={handleSaveAsPDF}
+          disabled={exporting}
+          aria-busy={exporting}
+        >
+          {exporting ? 'Preparing…' : '📄 Save as PDF'}
+        </button>
+      </header>
+
+      <div>
+        <MyCases darkMode={darkMode} />
+        <div className={styles.analyticsSection}>
+          <DropOffTracking darkMode={darkMode} />
+          <NoShowInsights darkMode={darkMode} />
         </div>
       </div>
 
