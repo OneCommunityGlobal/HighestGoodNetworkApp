@@ -209,7 +209,7 @@ div.pie-chart-legend-container {
 
 .pie-chart-legend-table-dark th:nth-child(2),
 .pie-chart-legend-table-dark td:nth-child(2) {
-  text-align: left;
+  text-align: center;
   width: auto;
 }
 

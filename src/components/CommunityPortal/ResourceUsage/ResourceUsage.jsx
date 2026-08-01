@@ -194,11 +194,7 @@ export default function ResourceUsage() {
       {/* LEFT SECTION — Chart */}
       <div className={`${styles.chartSection} ${darkMode ? 'bg-space-cadet' : ''}`}>
         <div className={styles.headerSection}>
-          <h1
-            style={{ color: darkMode ? '#ffffff' : '#111827' }}
-          >
-            Resources usage
-          </h1>
+          <h1 style={{ color: darkMode ? '#ffffff' : '#111827' }}>Resources usage</h1>
 
           <div className={styles.filters}>
             <Dropdown>
