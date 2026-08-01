@@ -267,7 +267,7 @@ function WeeklyProjectSummary() {
         content: (
           <>
             <div
-              className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}
+              className={`${styles.weeklyProjectSummaryCard} ${styles.toolReplacementCard}`}
               style={{ minHeight: '520px' }}
             >
               <ToolReplacementChart />
