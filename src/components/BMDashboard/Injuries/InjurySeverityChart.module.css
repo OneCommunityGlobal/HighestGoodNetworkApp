@@ -45,6 +45,7 @@
 
 /* =========================
    DARK MODE FILTERS
+   +=========================*/
 
 .oxideDark .filterSelect :global(.ant-select-selector),
 .oxideDark .filterSelect:global(.ant-picker) {
@@ -89,9 +90,6 @@
 :global(.ant-select-item-option-content) {
   color: #333 !important;
 }
-
-.oxideDark :global(.ant-select-item-option-content) {
-/* light mode */
 
 .filterSelect :global(.ant-select-selector),
 .filterSelect:global(.ant-picker) {
@@ -262,6 +260,7 @@
 .oxideDark :global(.ant-picker-header-view),
 .oxideDark :global(.ant-picker-header button) {
   color: #f5f5f5 !important;
+}
 }
 
 
