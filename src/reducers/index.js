@@ -107,6 +107,7 @@ import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
 import { JobsHitsApplicationsReducer } from './jobAnalytics/JobsHitsApplicationsReducer';
 import { studentTasksReducer } from './studentTasksReducer';
+import { toolReplacementReducer } from './toolReplacementReducer';
 
 // Education Dashboard Reducers
 import { weeklySummariesFiltersApi } from '../actions/weeklySummariesFilterAction';
@@ -209,6 +210,7 @@ const localReducers = {
   // student tasks
   studentTasks: studentTasksReducer,
   jobApplication: jobApplicationReducer,
+  toolReplacement: toolReplacementReducer,
 
   // education portal
   atom: atomReducer,

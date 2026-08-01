@@ -1,0 +1,141 @@
+.mainContainer {
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.bgDark {
+  background-color: #1b2a41;
+}
+
+.title {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 16px;
+  color: #111;
+}
+
+.titleDark {
+  color: #e5e5e5;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 0 auto 20px;
+  max-width: 980px;
+  align-items: end;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filterLabel {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #111;
+}
+
+.filterLabelDark {
+  color: #e5e5e5;
+}
+
+.datePicker {
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+  background-color: #fff;
+  color: #111;
+}
+
+.datePickerDark {
+  background-color: #3a506b;
+  border-color: #5a7a9b;
+  color: #e5e5e5;
+}
+
+.datePickerDark::placeholder {
+  color: rgb(255 255 255 / 70%);
+}
+
+.resetBtn {
+  min-height: 42px;
+  padding: 8px 16px;
+  border: 1px solid #8884d8;
+  border-radius: 8px;
+  background-color: #8884d8;
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.resetBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.resetBtn:hover:not(:disabled) {
+  background-color: #82ca9d;
+  border-color: #82ca9d;
+}
+
+.resetBtnDark {
+  background-color: #3a506b;
+  border-color: #5a7a9b;
+  color: #fff;
+}
+
+.chartContainer {
+  width: 100%;
+  min-height: 280px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chart {
+  width: 100%;
+}
+
+.statusMessage {
+  text-align: center;
+  font-size: 1rem;
+  color: #888;
+  padding: 32px 16px;
+}
+
+.errorMessage {
+  text-align: center;
+  font-size: 1rem;
+  padding: 32px 16px;
+  color: #dc3545;
+  font-weight: 600;
+}
+
+.emptyMessage {
+  text-align: center;
+  font-size: 1rem;
+  color: #888;
+  padding: 32px 16px;
+  font-style: italic;
+}
+
+@media (width <= 570px) {
+  .mainContainer {
+    padding: 12px 8px;
+  }
+
+  .filters {
+    grid-template-columns: 1fr;
+  }
+}
