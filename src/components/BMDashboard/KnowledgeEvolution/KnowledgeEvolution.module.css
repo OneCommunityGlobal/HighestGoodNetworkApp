@@ -122,6 +122,62 @@
   background-color: #e6e6e6;
 }
 
+.filterWrapper {
+  position: relative;
+}
+
+.filterDropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 50;
+  min-width: 200px;
+  background: #fff;
+  border: 1.3px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 6px 16px rgb(0 0 0 / 12%);
+  padding: 8px 0;
+}
+
+.pageContainerDarkMode .filterDropdown {
+  background-color: #3a4b65;
+  border-color: #555;
+}
+
+.filterDropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  margin: 0;
+}
+
+.filterDropdownItem:hover {
+  background-color: #f0f0f0;
+}
+
+.pageContainerDarkMode .filterDropdownItem:hover {
+  background-color: #2a3b55;
+}
+
+.noResultsMessage {
+  padding: 40px 20px;
+  text-align: center;
+  color: #666;
+  border: 1.5px solid #ccc;
+  background: #fafafa;
+  border-radius: 6px;
+}
+
+.pageContainerDarkMode .noResultsMessage {
+  background-color: #2a3b55;
+  border-color: #444;
+  color: #ccc;
+}
+
 .chartWrapper {
   display: flex;
   justify-content: center;

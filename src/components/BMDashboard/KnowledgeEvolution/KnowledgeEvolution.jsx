@@ -18,12 +18,54 @@ const KnowledgeEvolution = () => {
   }, [dispatch, userId]);
 
   const [selectedSubject, setSelectedSubject] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeSubjectFilters, setActiveSubjectFilters] = useState([]);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const filterRef = useRef(null);
 
   useEffect(() => {
     if (data?.knowledgeEvolution?.length > 0) {
       setSelectedSubject(data.knowledgeEvolution[0]._id);
+      setActiveSubjectFilters(data.knowledgeEvolution.map(s => s._id));
     }
   }, [data]);
+
+  useEffect(() => {
+    if (!isFilterOpen) return undefined;
+    const handleClickOutside = e => {
+      if (filterRef.current && !filterRef.current.contains(e.target)) {
+        setIsFilterOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isFilterOpen]);
+
+  const searchTerm = searchQuery.trim().toLowerCase();
+  const matchesSearch = subject => {
+    if (!searchTerm) return true;
+    if (subject.subjectName?.toLowerCase().includes(searchTerm)) return true;
+    return (subject.atoms || []).some(a => a.atomName?.toLowerCase().includes(searchTerm));
+  };
+  const visibleSubjects = (data?.knowledgeEvolution || []).filter(
+    s => activeSubjectFilters.includes(s._id) && matchesSearch(s),
+  );
+
+  useEffect(() => {
+    if (visibleSubjects.length === 0) {
+      setSelectedSubject(null);
+      return;
+    }
+    if (!visibleSubjects.some(s => s._id === selectedSubject)) {
+      setSelectedSubject(visibleSubjects[0]._id);
+    }
+  }, [visibleSubjects, selectedSubject]);
+
+  const toggleSubjectFilter = subjectId => {
+    setActiveSubjectFilters(prev =>
+      prev.includes(subjectId) ? prev.filter(id => id !== subjectId) : [...prev, subjectId],
+    );
+  };
 
   const allAtoms = data?.knowledgeEvolution?.flatMap(s => s.atoms) || [];
   const totalCompleted = allAtoms.filter(a => a.atomStatus === 'completed').length;
@@ -40,7 +82,11 @@ const KnowledgeEvolution = () => {
     const subjectData = data.knowledgeEvolution.find(s => s._id === selectedSubject);
     if (!subjectData) return;
 
-    const courses = subjectData.atoms || [];
+    const subjectNameMatches = subjectData.subjectName?.toLowerCase().includes(searchTerm);
+    const courses = (subjectData.atoms || []).filter(
+      atom =>
+        !searchTerm || subjectNameMatches || atom.atomName?.toLowerCase().includes(searchTerm),
+    );
 
     const width = 700;
     const height = 500;
@@ -157,7 +203,7 @@ const KnowledgeEvolution = () => {
           yOffset = 12;
         });
       });
-  }, [data, selectedSubject, darkMode]);
+  }, [data, selectedSubject, darkMode, searchTerm]);
 
   if (loading) return <div>Loading Knowledge Evolution...</div>;
   if (error) return <div>Failed to load knowledge evolution data. Please try again later.</div>;
@@ -238,19 +284,42 @@ const KnowledgeEvolution = () => {
                 type="text"
                 placeholder="Search atoms or subjects"
                 className={`${styles.searchInput}`}
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
               />
             </div>
 
-            <button className={`${styles.filterButton}`}>
-              <Funnel size={18} />
-              <span>Filter by Subject</span>
-            </button>
+            <div className={`${styles.filterWrapper}`} ref={filterRef}>
+              <button
+                type="button"
+                className={`${styles.filterButton}`}
+                onClick={() => setIsFilterOpen(open => !open)}
+              >
+                <Funnel size={18} />
+                <span>Filter by Subject</span>
+              </button>
+
+              {isFilterOpen && (
+                <div className={`${styles.filterDropdown}`}>
+                  {data.knowledgeEvolution.map(s => (
+                    <label key={s._id} className={`${styles.filterDropdownItem}`}>
+                      <input
+                        type="checkbox"
+                        checked={activeSubjectFilters.includes(s._id)}
+                        onChange={() => toggleSubjectFilter(s._id)}
+                      />
+                      {s.subjectName}
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
         {/* SUBJECT TABS */}
         <div className={`${styles.subjectTabs}`}>
-          {data.knowledgeEvolution.map(s => (
+          {visibleSubjects.map(s => (
             <button
               key={s._id}
               className={`${styles.tabButton} ${selectedSubject === s._id ? styles.activeTab : ''}`}
@@ -260,61 +329,70 @@ const KnowledgeEvolution = () => {
             </button>
           ))}
         </div>
-        <div
-          ref={tooltipRef}
-          className={`${styles.subjectTooltipTop}`}
-          style={tooltipData ? { top: tooltipPos.y - 130, left: tooltipPos.x } : {}}
-          aria-hidden={!tooltipData}
-        >
-          {tooltipData ? (
-            <>
-              <div className={`${styles.tooltipTitle}`}>{tooltipData.subject} Progress</div>
-              <div className={`${styles.tooltipCounts}`}>
-                <div className={`${styles.tooltipCount}`}>
-                  <span className={`${styles.completedText}`}>{tooltipData.completed}</span>
-                  <div> Completed</div>
-                </div>
 
-                <div className={`${styles.tooltipCount}`}>
-                  <span className={`${styles.inProgressText}`}>{tooltipData.inProgress}</span>
-                  <div> In Progress</div>
-                </div>
+        {visibleSubjects.length === 0 ? (
+          <div className={`${styles.noResultsMessage}`}>
+            No atoms or subjects match your search.
+          </div>
+        ) : (
+          <>
+            <div
+              ref={tooltipRef}
+              className={`${styles.subjectTooltipTop}`}
+              style={tooltipData ? { top: tooltipPos.y - 130, left: tooltipPos.x } : {}}
+              aria-hidden={!tooltipData}
+            >
+              {tooltipData ? (
+                <>
+                  <div className={`${styles.tooltipTitle}`}>{tooltipData.subject} Progress</div>
+                  <div className={`${styles.tooltipCounts}`}>
+                    <div className={`${styles.tooltipCount}`}>
+                      <span className={`${styles.completedText}`}>{tooltipData.completed}</span>
+                      <div> Completed</div>
+                    </div>
 
-                <div className={`${styles.tooltipCount}`}>
-                  <span className={`${styles.notStartedText}`}>{tooltipData.notStarted}</span>
-                  <div> Not Started</div>
-                </div>
+                    <div className={`${styles.tooltipCount}`}>
+                      <span className={`${styles.inProgressText}`}>{tooltipData.inProgress}</span>
+                      <div> In Progress</div>
+                    </div>
+
+                    <div className={`${styles.tooltipCount}`}>
+                      <span className={`${styles.notStartedText}`}>{tooltipData.notStarted}</span>
+                      <div> Not Started</div>
+                    </div>
+                  </div>
+                </>
+              ) : null}
+            </div>
+
+            {/* D3 CHART with subject-level hover */}
+            <button
+              type="button"
+              className={`${styles.chartWrapper}`}
+              onMouseEnter={handleChartMouseEnter}
+              onMouseLeave={handleChartMouseLeave}
+              onMouseMove={handleChartMouseMove}
+              onFocus={handleChartMouseEnter}
+              onBlur={handleChartMouseLeave}
+              onKeyDown={handleChartKeyDown}
+            >
+              <svg ref={svgRef} width={700} height={500} />
+            </button>
+
+            {/* Legend placed below chart */}
+            <div className={`${styles.subjectTooltipBottomLegend}`}>
+              <div className={`${styles.legendItem}`}>
+                <span className={`${styles.completedDotSmall}`} /> Completed
               </div>
-            </>
-          ) : null}
-        </div>
-
-        {/* D3 CHART with subject-level hover */}
-        <button
-          type="button"
-          className={`${styles.chartWrapper}`}
-          onMouseEnter={handleChartMouseEnter}
-          onMouseLeave={handleChartMouseLeave}
-          onMouseMove={handleChartMouseMove}
-          onFocus={handleChartMouseEnter}
-          onBlur={handleChartMouseLeave}
-          onKeyDown={handleChartKeyDown}
-        >
-          <svg ref={svgRef} width={700} height={500} />
-        </button>
-
-        {/* Legend placed below chart */}
-        <div className={`${styles.subjectTooltipBottomLegend}`}>
-          <div className={`${styles.legendItem}`}>
-            <span className={`${styles.completedDotSmall}`} /> Completed
-          </div>
-          <div className={`${styles.legendItem}`}>
-            <span className={`${styles.inProgressDotSmall}`} /> In Progress
-          </div>
-          <div className={`${styles.legendItem}`}>
-            <span className={`${styles.notStartedDotSmall}`} /> Not Started
-          </div>
-        </div>
+              <div className={`${styles.legendItem}`}>
+                <span className={`${styles.inProgressDotSmall}`} /> In Progress
+              </div>
+              <div className={`${styles.legendItem}`}>
+                <span className={`${styles.notStartedDotSmall}`} /> Not Started
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
