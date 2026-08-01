@@ -1,0 +1,5 @@
+.tableDark tbody tr:hover,
+.tableDark tbody tr:hover td {
+  background-color: #2b3553;
+  color: #fff;
+}
