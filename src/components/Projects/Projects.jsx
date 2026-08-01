@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect , useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import SearchProjectByPerson from '~/components/SearchProjectByPerson/SearchProjectByPerson';
-import { fetchAllProjects, modifyProject, clearError } from '../../actions/projects';
+import { fetchAllProjects, fetchAllArchivedProjects, modifyProject, clearError } from '../../actions/projects';
 import { fetchProjectsWithActiveUsers } from '../../actions/projectMembers';
 import { getProjectsByUsersName } from '../../actions/userProfile';
 import { getPopupById } from '../../actions/popupEditorAction';
@@ -14,7 +15,7 @@ import ProjectTableHeader from './ProjectTableHeader';
 import Project from './Project';
 import ModalTemplate from './../common/Modal';
 import { CONFIRM_ARCHIVE, PROJECT_INACTIVE_CONFIRMATION, PROJECT_ACTIVE_CONFIRMATION } from './../../languages/en/messages';
-import './projects.module.css';
+import styles from './projects.module.css';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
@@ -23,7 +24,9 @@ import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 const Projects = function(props) {
   const { role } = props.state.userProfile;
   const { darkMode } = props.state.theme;
-  
+  const location = useLocation();
+  const taskSelectionMode = location.state?.taskSelectionMode || false;
+  const taskSelectionReturnPath = location.state?.returnPath || '/bmdashboard/AddNewTeam';
   const allReduxProjects = useSelector(state => state.allProjects.projects);
   const numberOfProjects = props.state.allProjects.projects.length;
   const numberOfActive = props.state.allProjects.projects.filter(project => project.isActive)
@@ -44,7 +47,7 @@ const Projects = function(props) {
   const [sorter, setSorter] = useState({
     column: "PROJECTS",
     direction: "DEFAULT",
-  });  
+  });
   const [projectTarget, setProjectTarget] = useState({
     projectName: '',
     projectId: -1,
@@ -56,7 +59,21 @@ const Projects = function(props) {
   const [allProjects, setAllProjects] = useState(null);
   const [isChangingStatus, setIsChangingStatus] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
-  const [searchMode, setSearchMode] = useState('person'); 
+  const [searchMode, setSearchMode] = useState('person');
+
+  const [showArchived, setShowArchived] = useState(false);
+
+  const handleFetchArchivedProjects = () => {
+  setShowArchived(prev => {
+    const next = !prev;
+    if (next) {
+      props.fetchAllArchivedProjects();
+    } else {
+      props.fetchAllProjects();
+    }
+      return next;
+    });
+  };
 
   const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -80,10 +97,13 @@ const Projects = function(props) {
 
   const onClickArchiveBtn = projectData => {
     setProjectTarget(projectData);
+    const archiveMessage = projectData.isArchived
+      ? `<p style="${darkMode ? 'color: white' : 'color: black'}">Do you want to unarchive <b>${projectData.projectName}</b>? This will restore it and its tasks.</p>`
+      : `<p style="${darkMode ? 'color: white' : 'color: black'}"><b>Hold on!</b><br/>Archiving <b>${projectData.projectName}</b> will deactivate all its WBS, tasks, and time entries, and remove it from all team members' profiles.<br/><b>Sure about this?</b></p>`;
     setModalData({
       showModal: true,
-      modalMessage: `<p style="${darkMode ? 'color: white' : 'color: black;'}">Do you want to archive ${projectData.projectName}?</p>`,
-      modalTitle: CONFIRM_ARCHIVE,
+      modalMessage: archiveMessage,
+      modalTitle: projectData.isArchived ? 'Confirm Unarchive' : CONFIRM_ARCHIVE,
       hasConfirmBtn: true,
       hasInactiveBtn: false,
       hasActiveBtn: false,
@@ -141,7 +161,7 @@ const Projects = function(props) {
       return { column, direction: 'ASC' };
     });
   };
-  
+
   const onUpdateProject = async updatedProject => {
     await props.modifyProject(updatedProject);
     // Optimistically update the state
@@ -154,11 +174,15 @@ const Projects = function(props) {
   };
 
   const confirmArchive = async () => {
-    setIsArchiving(true); // show loading on confirm
-    const updatedProject = { ...projectTarget, isArchived: true };
+    setIsArchiving(true);
+    const updatedProject = { ...projectTarget, isArchived: !projectTarget.isArchived };
     await onUpdateProject(updatedProject);
-    await props.fetchAllProjects();
-    setIsArchiving(false); // reset loading
+    if (showArchived) {
+      await props.fetchAllArchivedProjects(); // stay in archived view after unarchiving
+    } else {
+      await props.fetchAllProjects();
+    }
+    setIsArchiving(false);
     onCloseModal();
   };
 
@@ -171,10 +195,10 @@ const Projects = function(props) {
     onCloseModal();
   };
 
-  const generateProjectList = (categorySelectedForSort, showStatus) => {
-    const activeMemberCounts = props.state.projectMembers?.activeMemberCounts || {};  
+  const generateProjectList = (categorySelectedForSort, showStatus, isShowingArchived) => {
+    const activeMemberCounts = props.state.projectMembers?.activeMemberCounts || {};
     const filteredProjects = allReduxProjects
-      .filter(project => !project.isArchived)
+      .filter(project => isShowingArchived ? project.isArchived : !project.isArchived)
       .filter(project => {
         if (categorySelectedForSort && showStatus){
           return project.category === categorySelectedForSort && project.isActive === showStatus;
@@ -188,10 +212,10 @@ const Projects = function(props) {
           return true;
         }
       });
-  
+
     const sortedProjects = [...filteredProjects].sort((a, b) => {
       const { column, direction } = sorter;
-  
+
       if (column === "PROJECTS") {
         if (direction === "ASC") {
           return a.projectName.localeCompare(b.projectName, undefined, { sensitivity: 'base' });
@@ -201,7 +225,7 @@ const Projects = function(props) {
           return 0; // Default: recently added, retain original order
         }
       }
-  
+
       if (column === "MEMBERS") {
         if (direction === "ASC") {
           const countA = activeMemberCounts[a._id] || 0;
@@ -223,10 +247,10 @@ const Projects = function(props) {
         if (direction === "DESC") return dateB - dateA;
         return 0;
       }
-  
+
       return 0;
     });
-  
+
     const renderedProjects = sortedProjects.map((project, index) => (
       <Project
         key={`${project._id}-${project.isActive}`}
@@ -237,13 +261,15 @@ const Projects = function(props) {
         onClickArchiveBtn={onClickArchiveBtn}
         onClickProjectStatusBtn={onClickProjectStatusBtn}
         darkMode={darkMode}
+        taskSelectionMode={taskSelectionMode}
+        taskSelectionReturnPath={taskSelectionReturnPath}
       />
     ));
-  
+
     setProjectList(renderedProjects);
     setAllProjects(renderedProjects);
   };
-  
+
 
   useEffect(() => {
     props.fetchAllProjects();
@@ -254,7 +280,7 @@ const Projects = function(props) {
   }, []);
 
   useEffect(() => {
-    generateProjectList(categorySelectedForSort, showStatus);
+    generateProjectList(categorySelectedForSort, showStatus, showArchived);
     if (status !== 200) {
       setModalData({
         showModal: true,
@@ -264,7 +290,7 @@ const Projects = function(props) {
         hasInactiveBtn: false,
       });
     }
-  }, [categorySelectedForSort, showStatus, sorter, allReduxProjects, props.state.theme.darkMode, props.state.projectMembers?.activeMemberCounts]);
+  }, [categorySelectedForSort, showStatus, sorter, allReduxProjects, props.state.theme.darkMode, props.state.projectMembers?.activeMemberCounts, showArchived]);
 
   useEffect(() => {
   const fetchProjects = async () => {
@@ -290,6 +316,8 @@ const Projects = function(props) {
           onClickArchiveBtn={onClickArchiveBtn}
           onClickProjectStatusBtn={onClickProjectStatusBtn}
           darkMode={darkMode}
+          taskSelectionMode={taskSelectionMode}
+          taskSelectionReturnPath={taskSelectionReturnPath}
         />
       ));
 
@@ -308,6 +336,8 @@ const Projects = function(props) {
           onClickArchiveBtn={onClickArchiveBtn}
           onClickProjectStatusBtn={onClickProjectStatusBtn}
           darkMode={darkMode}
+          taskSelectionMode={taskSelectionMode}
+          taskSelectionReturnPath={taskSelectionReturnPath}
         />
       ));
 
@@ -340,20 +370,24 @@ const Projects = function(props) {
               role={role}
             />
             <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
-
             {canPostProject ? <AddProject hasPermission={hasPermission} /> : null}
+            {taskSelectionMode && (
+              <div className="alert alert-info mb-2" role="alert">
+                <strong>Task Selection Mode:</strong> Click the <i className="fa fa-tasks" /> WBS button on a project to browse its tasks.
+              </div>
+            )}
         </div>
-        <div className="d-flex" style={{ gap: '10px' }}>
-          <SearchProjectByPerson onSearch={handleSearchName} searchMode={searchMode} />
+        <div className="d-flex mb-3" style={{ gap: '10px' }}>
+          <SearchProjectByPerson
+            onSearch={handleSearchName}
+            searchMode={searchMode}
+            handleFetchArchivedProjects={handleFetchArchivedProjects}
+            showArchived={showArchived}
+          />
           <div className="input-group" style={{ maxWidth: '260px', maxHeight: '38px' }}>
             <div className="input-group-prepend">
               <span
-              className="input-group-text"
-              style={
-                darkMode
-                  ? { backgroundColor: '#1c2541', color: '#ffffff', borderColor: '#3a506b' }
-                  : {}
-              }
+                  className={`input-group-text ${darkMode ? styles.searchLabelDark + ' text-light' : ''}`}
               >
                 Filter by
               </span>
@@ -362,21 +396,26 @@ const Projects = function(props) {
               value={searchMode}
               onChange={e => setSearchMode(e.target.value)}
               className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
-              style={
-                darkMode
-                  ? { backgroundColor: '#1c2541', color: '#ffffff', borderColor: '#3a506b' }
-                  : {}
-              }
               aria-label="Filter by"
             >
               <option value="person">User Name</option>
               <option value="project">Project Name</option>
             </select>
           </div>
+          <button
+          type="button"
+          onClick={handleFetchArchivedProjects}
+          style={{ whiteSpace: 'nowrap', height: '38px', flexShrink: 0 }}
+          className={`btn px-3 ${
+            showArchived ? 'btn-warning' : darkMode ? 'btn-outline-light' : 'btn-outline-secondary'
+          }`}
+        >
+          {showArchived ? 'Hide Archived' : 'Show Archived'}
+        </button>
         </div>
         <div>
         <table className="table table-bordered table-responsive-sm">
-          <thead>
+          <thead className={styles.projectsTableHead}>
             <ProjectTableHeader
               onChange={onChangeCategory}
               selectedValue={categorySelectedForSort}
@@ -401,7 +440,10 @@ const Projects = function(props) {
         modalMessage={modalData.modalMessage}
         modalTitle={modalData.modalTitle}
         darkMode={darkMode}
-        confirmButtonText={isArchiving ? 'Archiving...' : 'Confirm'}
+        confirmButtonText={isArchiving
+          ? (projectTarget.isArchived ? 'Unarchiving...' : 'Archiving...')
+          : (projectTarget.isArchived ? 'Unarchive' : 'Yes, archive it')
+        }
         isConfirmDisabled={isArchiving}
         setInactiveButton={isChangingStatus ? 'Setting Inactive' : 'Yes, hide it all'}
         isSetInactiveDisabled={isChangingStatus}
@@ -420,6 +462,7 @@ const mapStateToProps = state => {
 Projects.propTypes = {
   clearError: PropTypes.func.isRequired,
   fetchAllProjects: PropTypes.func.isRequired,
+  fetchAllArchivedProjects: PropTypes.func.isRequired,
   fetchProjectsWithActiveUsers: PropTypes.func.isRequired,
   getProjectsByUsersName: PropTypes.func.isRequired,
   hasPermission: PropTypes.func.isRequired,
@@ -446,6 +489,7 @@ Projects.propTypes = {
 
 export default connect(mapStateToProps, {
   fetchAllProjects,
+  fetchAllArchivedProjects,
   modifyProject,
   clearError,
   getPopupById,

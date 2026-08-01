@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import styles from '../Projects/projects.module.css';
 
 export default function SearchProjectByPerson({
   onSearch,
@@ -38,19 +39,16 @@ export default function SearchProjectByPerson({
       <form className="input-group mb-2" onSubmit={e => e.preventDefault()}>
         <div className="input-group-prepend">
           <span
-            className="input-group-text search-field-container"
-            style={
-              darkMode
-                ? { backgroundColor: '#1c2541', color: '#ffffff', borderColor: '#3a506b' }
-                : {}
-            }
+            className={`input-group-text search-field-container ${
+              darkMode ? `${styles.searchLabelDark} text-light` : ''
+            }`}
           >
             Search
           </span>
         </div>
         <input
           type="text"
-          className="form-control"
+          className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
           placeholder={searchMode === 'person' ? 'Search by Person Name' : 'Search by Project Name'}
           value={inputValue}
           onChange={handleInputChange}
@@ -58,23 +56,6 @@ export default function SearchProjectByPerson({
             darkMode ? { backgroundColor: '#1c2541', color: '#ffffff', borderColor: '#3a506b' } : {}
           }
         />
-        <div>
-          <button
-            className={`btn ${showArchived ? 'btn-warning' : 'btn-outline-secondary'}`}
-            onClick={handleFetchArchivedProjects}
-            style={
-              darkMode && !showArchived
-                ? {
-                    backgroundColor: '#1c2541',
-                    color: '#ffffff',
-                    borderColor: '#3a506b',
-                  }
-                : {}
-            }
-          >
-            {showArchived ? 'Hide Archived' : 'Show Archived'}
-          </button>
-        </div>
       </form>
 
       {showSuggestions && suggestions?.length > 0 && (

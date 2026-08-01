@@ -1,3 +1,5 @@
+/* stylelint-disable declaration-property-value-no-unknown, no-descending-specificity */
+
 /* `container-fluid` comes from reactstrap and stays global, so it cannot be part of
    a scoped compound selector here - `.wrapper` alone is enough to target the element. */
 .wrapper {

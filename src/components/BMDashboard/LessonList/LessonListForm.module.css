@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .formContainer {
   .formControl {
     max-width: unset !important;
@@ -147,6 +148,16 @@
 }
 
 /* Dark mode */
+.darkMode {
+  background-color: #1B2A41;
+  color: #f8f9fa;
+}
+
+.darkMode .formContainer {
+  background-color: #1C2541;
+  border-radius: 8px;
+  padding: 1rem;
+}
 
 .tagTextDark {
   color: #fff;
@@ -166,6 +177,12 @@
 
 .tagDark span {
   color: #fff;
+}
+
+.tagContainerDark {
+  background-color: #1C2541;
+  border: 1px solid #3A506B;
+  border-radius: 6px;
 }
 
 .buttonCloseDark {
@@ -220,6 +237,10 @@
   }
 }
 
+.lightMode {
+  background-color: #ffffff;
+  color: #212529;
+}
 .lightMode label {
   color: #212529 !important;
 }

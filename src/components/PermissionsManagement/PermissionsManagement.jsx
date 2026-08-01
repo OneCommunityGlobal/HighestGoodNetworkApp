@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 
-import { Button, Modal, ModalBody, ModalHeader } from 'reactstrap';
+import { Button, Modal, ModalBody, ModalHeader, Spinner } from 'reactstrap';
 import styles from './PermissionsManagement.module.css';
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -162,7 +162,7 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
                     >
                       {roleName}
                     </button>
-                    <div className="infos">
+                    <div className={styles.infos}>
                       <EditableInfoModal
                         role={role}
                         areaName={`${roleName} Info`}
@@ -261,7 +261,17 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
           </Modal>
         </div>
       </div>
-      {loading && <p className={styles['loading-message']}>Loading...</p>}
+      {loading && (
+        <div className={styles['loading-message-div']}>
+          <p
+            data-testid="loading-message"
+            className={`${styles['loading-message']} ${darkMode ? 'text-light' : 'text-dark'} mb-2`}
+          >
+            Loading...
+          </p>
+          <Spinner color="primary" />
+        </div>
+      )}
       {error && (
         <p data-testid="error-message" className={styles['error-message']}>
           {error}

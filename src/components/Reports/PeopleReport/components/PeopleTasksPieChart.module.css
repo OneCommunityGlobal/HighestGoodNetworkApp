@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .people-pie-charts-wrapper {
   display: grid;
   grid-auto-flow: row;
@@ -40,6 +41,10 @@
 .people-pie-charts-header {
   text-align: start;
   margin-bottom: 12px;
+}
+
+.text-light .people-pie-charts-header {
+  color: #f5f5f5;
 }
 
 .show-all-tasks-button {

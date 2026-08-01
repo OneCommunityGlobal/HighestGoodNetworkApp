@@ -29,16 +29,19 @@
 }
 
 .customDropdown {
+  background: transparent !important;
   border: 1px solid #e5e7eb !important;
+  color: #374151 !important;
   padding: 0.5rem 1rem !important;
-  border-radius: 0.375rem !important;
+  width: 8.75rem !important;
   font-size: 0.875rem !important;
-
-  /* Your enhancements */
+  border-radius: 0.375rem !important;
   box-shadow: none !important;
   display: flex !important;
   align-items: center !important;
+  justify-content: space-between !important;
   gap: 0.5rem !important;
+  white-space: nowrap !important;
 }
 
 .customDropdown:hover,
@@ -232,7 +235,7 @@
 .customDropdownDark {
   background-color: #1c2541 !important;
   color: #fff !important;
-  border-color: #3a506b !important;
+  border-color: #3A506B !important;
 }
 
 /* Two classes so this outranks `.customDropdown:hover/:focus` above, which is
@@ -259,6 +262,63 @@
 .dropdownItemDark:focus {
   background-color: #3a506b !important;
   color: #fff !important;
+}
+
+/* ─── Responsive breakpoints ─── */
+
+/* Narrow desktop / large tablet: shrink insights panel */
+@media (width <= 1024px) {
+  .insightsSection {
+    flex: 0 0 320px;
+    min-width: 280px;
+  }
+}
+
+/* Tablet: stack chart above insights */
+@media (width <= 768px) {
+  .resourceUsageContainer {
+    flex-direction: column;
+  }
+
+  .chartSection {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .insightsSection {
+    flex: 1 1 auto;
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .chartContainer {
+    height: 300px;
+  }
+}
+
+/* Mobile: single-column insights, smaller padding and chart */
+@media (width <= 480px) {
+  .chartSection,
+  .insightsSection {
+    padding: 1rem;
+  }
+
+  .chartContainer {
+    height: 240px;
+  }
+
+  .headerSection h1 {
+    font-size: 1.5rem;
+  }
+
+  .insightsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .filters {
+    flex-wrap: wrap;
+  }
 }
 
 /* ─── Responsive breakpoints ─── */

@@ -26,7 +26,86 @@ import {
   getUserId,
 } from '../../actions/badgeManagement';
 import { getAllUserProfile } from '../../actions/userManagement';
-import '../Header/index.css';
+import '../Header/index.module.css';
+
+const matchesName = (user, trimmedName) => {
+  const userFullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+  return userFullName.includes(trimmedName.toLowerCase());
+};
+
+const getFilteredUsers = (fullName, allUserProfiles) => {
+  if (typeof fullName !== 'string') throw new Error('Full name must be a string');
+  const trimmedName = fullName.trim();
+  if (!trimmedName) return null;
+  return allUserProfiles.filter(user => matchesName(user, trimmedName));
+};
+
+const toggleSelection = (prev, id) => {
+  if (prev.includes(id)) return prev.filter(existing => existing !== id);
+  return [...prev, id];
+};
+
+function doToggle(isOpen, didSubmit, selectedUserIds, onSubmit, setOpen, props) {
+  if (isOpen && didSubmit === true) {
+    onSubmit();
+  } else if (selectedUserIds?.length > 0) {
+    setOpen(prev => !prev);
+  } else {
+    props.validateBadges(props.firstName, props.lastName);
+  }
+}
+
+function UserList({ filteredUsers, fullName, darkMode, selectedUserIds, onUserSelect }) {
+  if (filteredUsers.length > 0) {
+    return (
+      <div className="table-responsive mb-3">
+        <Table
+          className={`table table-bordered ${darkMode ? 'dark-mode bg-yinmn-blue text-light' : ''}`}
+        >
+          <thead>
+            <tr className={darkMode ? 'bg-space-cadet text-light' : 'table-primary'}>
+              <th>Select</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredUsers.map(user => (
+              <tr
+                key={user._id}
+                onClick={() => onUserSelect(user)}
+                style={{
+                  cursor: 'pointer',
+                  backgroundColor: selectedUserIds?.includes(user._id) ? '#e9ecef' : '',
+                }}
+                className={
+                  darkMode && selectedUserIds?.includes(user._id) ? 'bg-dark text-light' : ''
+                }
+              >
+                <td>
+                  <input
+                    type="checkbox"
+                    name="user"
+                    checked={selectedUserIds?.includes(user._id)}
+                    readOnly
+                  />
+                </td>
+                <td>{user.firstName}</td>
+                <td>{user.lastName}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
+    );
+  }
+  if (fullName) {
+    return (
+      <p className={`${darkMode ? 'text-light' : 'text-dark'} text-center`}>No user is found.</p>
+    );
+  }
+  return null;
+}
 
 function AssignBadge(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -48,30 +127,21 @@ function AssignBadge(props) {
 
   useEffect(() => {
     try {
-      if (typeof fullName !== 'string') {
-        throw new Error('Full name must be a string');
-      }
-
-      const trimmedName = fullName.trim();
-      if (trimmedName) {
-        const filtered = props.allUserProfiles.filter(user => {
-          const userFullName = `${user.firstName} ${user.lastName}`.toLowerCase();
-          return userFullName.includes(trimmedName.toLowerCase());
-        });
-        setFilteredUsers(filtered);
-      } else {
+      const filtered = getFilteredUsers(fullName, props.allUserProfiles);
+      if (filtered === null) {
         setFilteredUsers([]);
-        // Clear selectedUserId when input is empty
         setSelectedUserIds([]);
         props.clearNameAndSelected();
+        setError(null);
+        return;
       }
+      setFilteredUsers(filtered);
       setError(null);
     } catch (err) {
       /* eslint-disable no-console */
       console.error('Error filtering users:', err);
       setError(err.message);
       setFilteredUsers([]);
-      // Also clear selection on error
       setSelectedUserIds([]);
       props.clearNameAndSelected();
     }
@@ -82,25 +152,7 @@ function AssignBadge(props) {
   };
 
   const handleUserSelect = user => {
-    setSelectedUserIds(prevSelected => {
-      const safePrev = Array.isArray(prevSelected) ? prevSelected : [];
-
-      if (safePrev.includes(user._id)) {
-        return safePrev.filter(id => id !== user._id);
-      } else {
-        return [...safePrev, user._id];
-      }
-    });
-  };
-
-  const toggle = (didSubmit = false) => {
-    if (isOpen && didSubmit === true) {
-      submit();
-    } else if (selectedUserIds?.length > 0) {
-      setOpen(prevIsOpen => !prevIsOpen);
-    } else {
-      props.validateBadges(props.firstName, props.lastName);
-    }
+    setSelectedUserIds(prev => toggleSelection(prev, user._id));
   };
 
   const submit = async () => {
@@ -111,6 +163,9 @@ function AssignBadge(props) {
       props.clearNameAndSelected();
     }
   };
+
+  const toggle = (didSubmit = false) =>
+    doToggle(isOpen, didSubmit, selectedUserIds, submit, setOpen, props);
 
   return (
     <Form
@@ -167,49 +222,13 @@ function AssignBadge(props) {
         </Alert>
       )}
 
-      {filteredUsers.length > 0 && (
-        <div className="table-responsive mb-3">
-          <Table
-            className={`table table-bordered ${
-              darkMode ? 'dark-mode bg-yinmn-blue text-light' : ''
-            }`}
-          >
-            <thead>
-              <tr className={darkMode ? 'bg-space-cadet text-light' : 'table-primary'}>
-                <th>Select</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.map(user => (
-                <tr
-                  key={user._id}
-                  onClick={() => handleUserSelect(user)}
-                  style={{
-                    cursor: 'pointer',
-                    backgroundColor: selectedUserIds?.includes(user._id) ? '#e9ecef' : '',
-                  }}
-                  className={
-                    darkMode && selectedUserIds?.includes(user._id) ? 'bg-dark text-light' : ''
-                  }
-                >
-                  <td>
-                    <input
-                      type="checkbox"
-                      name="user"
-                      checked={selectedUserIds?.includes(user._id)}
-                      readOnly
-                    />
-                  </td>
-                  <td>{user.firstName}</td>
-                  <td>{user.lastName}</td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </div>
-      )}
+      <UserList
+        filteredUsers={filteredUsers}
+        fullName={fullName}
+        darkMode={darkMode}
+        selectedUserIds={selectedUserIds}
+        onUserSelect={handleUserSelect}
+      />
       <FormGroup className="mb-3">
         <Button
           className="btn--dark-sea-green"

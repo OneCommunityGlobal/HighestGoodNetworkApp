@@ -349,8 +349,7 @@ export default function ResourceUsage() {
       {/* RIGHT SECTION — Insights */}
       <div className={`${styles.insightsSection} ${darkMode ? styles.darkInsightsSection : ''}`}>
         <div className={styles.insightsHeader}>
-          <h2 style={{ color: darkMode ? '#ffffff' : '#111827' }}>Insights</h2>
-
+          <h2>Insights</h2>
           <Dropdown>
             <Dropdown.Toggle
               className={`${styles.customDropdown} ${darkMode ? styles.customDropdownDark : ''}`}

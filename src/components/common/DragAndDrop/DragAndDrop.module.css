@@ -1,3 +1,4 @@
+/* stylelint-disable no-descending-specificity */
 .fileUploadForm {
   height: 16rem;
   width: 100%;
@@ -12,7 +13,7 @@
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
 }
@@ -29,7 +30,7 @@
   border-radius: 1rem;
   border-style: dashed;
   border-color: #cbd5e1;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #374151;
   transition: all 0.2s ease;
 }
@@ -94,16 +95,13 @@
   width: 100%;
   height: 100%;
   border-radius: 1rem;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background-color: rgba(248, 250, 252, 0.5);
+  inset: 0;
+  background-color: rgb(248 250 252 / 50%);
   pointer-events: none;
 }
 
 .dragFileElementDark {
-  background-color: rgba(55, 65, 81, 0.5);
+  background-color: rgb(55 65 81 / 50%);
 }
 
 .fileUploadIcon {
@@ -174,5 +172,5 @@
 
 /* For form labels in dark mode */
 :global(.dark-mode) :global(.form-label) {
-  color: #ffffff !important;
+  color: #fff !important;
 }

@@ -171,6 +171,21 @@
   font-size: 14px;
 }
 
+.darkUsermanagementData td,
+.darkUsermanagementData a,
+.darkUsermanagementData span,
+.darkUsermanagementData input {
+  color: #fff !important;
+}
+
+.darkSearchBox input,
+.darkSearchBox .form-control,
+.darkSearchRow input {
+  background-color: #2b2b2b !important;
+  color: #fff !important;
+  border: 1px solid #4a4a4a !important;
+}
+
 .emailCell {
   position: relative;
 }
@@ -479,6 +494,32 @@
   vertical-align: middle;
 }
 
+.darkUsermanagementData {
+  background-color: #3a506b !important;
+  color: #fff !important;
+}
+
+.userManagementTable tbody tr.darkUsermanagementData:hover,
+.darkUsermanagementData:hover {
+  background-color: #111831 !important;
+  color: #fff !important;
+}
+
+
+.lightUsermanagementData {
+  background-color: white;
+}
+
+.lightUsermanagementData:hover {
+  background-color: #f0f8ff;
+}
+
+.tooltipContainer::after {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
 .tooltipContainer {
   position: relative;
   display: inline-block;
@@ -520,43 +561,95 @@
   text-decoration: none;
 }
 
-.dark-mode .table,
-.dark-mode .table th,
-.dark-mode .table td {
-  border-color: #3a506b;
+.darkSearchRow td {
+  background-color: #3a506b !important;
+  color: #fff !important;
 }
 
-.dark-mode .form-control,
-.dark-mode select {
-  background-color: #1c2541;
-  color: #fff;
-  border-color: #3a506b;
+
+
+
+.darkSearchBox input::placeholder,
+.darkSearchBox .form-control::placeholder,
+.darkSearchRow input::placeholder {
+  color: #bdbdbd !important;
 }
 
-.dark-mode .btn-default,
-.bg-oxford-blue .btn-default {
-  background-color: #1c2541;
-  color: #fff;
-  border-color: #3a506b;
+.darkSearchBox input:focus,
+.darkSearchBox .form-control:focus,
+.darkSearchRow input:focus {
+  background-color: #2b2b2b !important;
+  color: #fff !important;
+  border-color: #6ea8fe !important;
+  box-shadow: 0 0 0 0.15rem rgb(110 168 254 / 25%) !important;
 }
 
-.dark-mode .table-bordered td,
-.dark-mode .table-bordered th,
-.bg-yinmn-blue .table-bordered td,
-.bg-yinmn-blue .table-bordered th {
-  border-color: #3a506b;
+.darkSearchBox select,
+.darkSearchBox .form-select,
+.darkSearchRow select,
+.darkSearchRow .form-select,
+.darkUsermanagementData select {
+  background-color: #2b2b2b !important;
+  color: #fff !important;
+  border: 1px solid #4a4a4a !important;
 }
 
-.dark-mode .userManagementTable thead {
-  background-color: #1c2541;
-  color: #fff;
+.darkSearchBox select option,
+.darkSearchRow select option,
+.darkUsermanagementData select option {
+  background-color: #2b2b2b !important;
+  color: #fff !important;
 }
 
-.dark-mode .userManagementTable tbody tr {
-  background-color: #3a506b;
-  color: #fff;
+.darkSearchBox button,
+.darkSearchBox .btn,
+.darkSearchRow button,
+.darkSearchRow .btn,
+.darkUsermanagementData button,
+.darkUsermanagementData .btn {
+  background-color: #1d62f0 !important; /* Standout blue background color */
+  color: #fff !important;            /* Pure white visible text */
+  border: 1px solid #0056b3 !important;
 }
 
-.dark-mode .btn {
-  color: #fff;
+/* Ensures crisp visibility when hovering over those specific buttons */
+.darkSearchBox .btn:hover,
+.darkSearchRow .btn:hover,
+.darkUsermanagementData .btn:hover {
+  background-color: #0b49c4 !important;
+  color: #fff !important;
+}
+
+/* ===================================================
+   DARK MODE TEXT VISIBILITY & CONTRAST FIXES
+   =================================================== */
+
+/* Ensures the text inside the inputs/dropdowns stands out clearly */
+#user-profiles-wild-card-search.text-light,
+#active-filter-dropdown.text-light {
+  color: #fff !important;
+  background-color: #2b2b2b !important;
+  border: 1px solid #4a4a4a !important;
+}
+
+/* Fixes the select menu options container visibility when expanded */
+#active-filter-dropdown.text-light option {
+  background-color: #2b2b2b !important;
+  color: #fff !important;
+}
+
+/* Overrides the browser's dark native dropdown arrow so a clear white one is rendered instead */
+#active-filter-dropdown.text-light {
+  padding-right: 1.75rem !important;
+  appearance: none !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.5rem center !important;
+  background-size: 10px 10px !important;
+}
+
+/* Ensures the placeholder text inside the search bar is legible but distinct */
+#user-profiles-wild-card-search.text-light::placeholder {
+  color: #b0b0b0 !important;
+  opacity: 1;
 }
