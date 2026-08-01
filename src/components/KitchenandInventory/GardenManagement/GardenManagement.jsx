@@ -128,6 +128,24 @@ const formatDateDisplay = dateStr => {
   });
 };
 
+function ModalField({ id, label, dm, children }) {
+  return (
+    <>
+      <label htmlFor={id} className={`${styles.modalLabel} ${dm}`}>
+        {label}
+      </label>
+      {children}
+    </>
+  );
+}
+
+ModalField.propTypes = {
+  id: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  dm: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+};
+
 function AddEventModal({ sectionTitle, newEvent, setNewEvent, darkMode, onClose, onAdd }) {
   const [yieldError, setYieldError] = useState('');
   const dm = darkMode ? styles.dark : '';
@@ -141,100 +159,95 @@ function AddEventModal({ sectionTitle, newEvent, setNewEvent, darkMode, onClose,
     setYieldError('');
     onAdd();
   };
+
+  const dateInputClass = `${styles.modalInput} ${dm} ${darkMode ? styles.modalInputDark : ''}`;
+
   return (
     <div className={styles.modalOverlay}>
       <div className={`${styles.modalBox} ${dm}`}>
         <h3 className={`${styles.modalTitle} ${dm}`}>{sectionTitle}</h3>
 
-        <label htmlFor="gm-crop" className={`${styles.modalLabel} ${dm}`}>
-          Crop *
-        </label>
-        <input
-          id="gm-crop"
-          className={`${styles.modalInput} ${dm}`}
-          value={newEvent.crop}
-          onChange={e => setNewEvent({ ...newEvent, crop: e.target.value })}
-          placeholder="e.g. Tomatoes"
-        />
+        <ModalField id="gm-crop" label="Crop *" dm={dm}>
+          <input
+            id="gm-crop"
+            className={`${styles.modalInput} ${dm}`}
+            value={newEvent.crop}
+            onChange={e => setNewEvent({ ...newEvent, crop: e.target.value })}
+            placeholder="e.g. Tomatoes"
+          />
+        </ModalField>
 
-        <label htmlFor="gm-fromDate" className={`${styles.modalLabel} ${dm}`}>
-          Start Date *
-        </label>
-        <input
-          id="gm-fromDate"
-          type="date"
-          className={`${styles.modalInput} ${dm}`}
-          value={newEvent.fromDate}
-          min={today}
-          onChange={e => {
-            const newFrom = e.target.value;
-            setNewEvent(prev => ({
-              ...prev,
-              fromDate: newFrom,
-              toDate: prev.toDate && prev.toDate < newFrom ? '' : prev.toDate,
-            }));
-          }}
-          style={darkMode ? { colorScheme: 'dark' } : {}}
-        />
+        <ModalField id="gm-fromDate" label="Start Date *" dm={dm}>
+          <input
+            id="gm-fromDate"
+            type="date"
+            className={dateInputClass}
+            value={newEvent.fromDate}
+            min={today}
+            onChange={e => {
+              const newFrom = e.target.value;
+              setNewEvent(prev => ({
+                ...prev,
+                fromDate: newFrom,
+                toDate: prev.toDate && prev.toDate < newFrom ? '' : prev.toDate,
+              }));
+            }}
+          />
+        </ModalField>
 
-        <label htmlFor="gm-toDate" className={`${styles.modalLabel} ${dm}`}>
-          End Date *
-        </label>
-        <input
-          id="gm-toDate"
-          type="date"
-          className={`${styles.modalInput} ${dm}`}
-          value={newEvent.toDate}
-          min={newEvent.fromDate || today}
-          onChange={e => setNewEvent({ ...newEvent, toDate: e.target.value })}
-          style={darkMode ? { colorScheme: 'dark' } : {}}
-        />
+        <ModalField id="gm-toDate" label="End Date *" dm={dm}>
+          <input
+            id="gm-toDate"
+            type="date"
+            className={dateInputClass}
+            value={newEvent.toDate}
+            min={newEvent.fromDate || today}
+            onChange={e => setNewEvent({ ...newEvent, toDate: e.target.value })}
+          />
+        </ModalField>
 
-        <label htmlFor="gm-location" className={`${styles.modalLabel} ${dm}`}>
-          Location *
-        </label>
-        <input
-          id="gm-location"
-          className={`${styles.modalInput} ${dm}`}
-          value={newEvent.location}
-          onChange={e => setNewEvent({ ...newEvent, location: e.target.value })}
-          placeholder="e.g. Greenhouse A"
-        />
+        <ModalField id="gm-location" label="Location *" dm={dm}>
+          <input
+            id="gm-location"
+            className={`${styles.modalInput} ${dm}`}
+            value={newEvent.location}
+            onChange={e => setNewEvent({ ...newEvent, location: e.target.value })}
+            placeholder="e.g. Greenhouse A"
+          />
+        </ModalField>
 
-        <label htmlFor="gm-yield" className={`${styles.modalLabel} ${dm}`}>
-          Est. Yield (kg)
-        </label>
-        <input
-          id="gm-yield"
-          type="number"
-          min="0"
-          step="0.1"
-          className={`${styles.modalInput} ${dm}`}
-          value={newEvent.yieldKg}
-          onKeyDown={e => {
-            if (['-', 'e', 'E', '+'].includes(e.key)) e.preventDefault();
-          }}
-          onChange={e => {
-            if (e.target.value === '' || Number(e.target.value) >= 0) {
-              setNewEvent({ ...newEvent, yieldKg: e.target.value });
-            }
-          }}
-          placeholder="e.g. 40"
-        />
+        <ModalField id="gm-yield" label="Est. Yield (kg)" dm={dm}>
+          <input
+            id="gm-yield"
+            type="number"
+            min="0"
+            step="0.1"
+            className={`${styles.modalInput} ${dm}`}
+            value={newEvent.yieldKg}
+            onKeyDown={e => {
+              if (['-', 'e', 'E', '+'].includes(e.key)) e.preventDefault();
+            }}
+            onChange={e => {
+              if (e.target.value === '' || Number(e.target.value) >= 0) {
+                setNewEvent({ ...newEvent, yieldKg: e.target.value });
+              }
+            }}
+            placeholder="e.g. 40"
+          />
+        </ModalField>
         {yieldError && <p className={styles.fieldError}>{yieldError}</p>}
 
-        <label htmlFor="gm-status" className={`${styles.modalLabel} ${dm}`}>
-          Status
-        </label>
-        <select
-          id="gm-status"
-          className={`${styles.modalInput} ${dm}`}
-          value={newEvent.status}
-          onChange={e => setNewEvent({ ...newEvent, status: e.target.value })}
-        >
-          <option value="upcoming">Upcoming</option>
-          <option value="growing">Growing</option>
-        </select>
+        <ModalField id="gm-status" label="Status" dm={dm}>
+          <select
+            id="gm-status"
+            className={`${styles.modalInput} ${dm}`}
+            value={newEvent.status}
+            onChange={e => setNewEvent({ ...newEvent, status: e.target.value })}
+          >
+            <option value="upcoming">Upcoming</option>
+            <option value="growing">Growing</option>
+          </select>
+        </ModalField>
 
         <div className={styles.modalBtns}>
           <button type="button" className={`${styles.modalCancelBtn} ${dm}`} onClick={onClose}>

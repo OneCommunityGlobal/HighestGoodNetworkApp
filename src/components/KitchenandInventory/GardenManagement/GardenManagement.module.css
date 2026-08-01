@@ -443,6 +443,10 @@
   border-color: #5d8a52;
 }
 
+.modalInputDark {
+  color-scheme: dark;
+}
+
 .fieldError {
   color: #c0392b;
   font-size: 12px;
