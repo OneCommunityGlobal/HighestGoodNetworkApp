@@ -108,12 +108,6 @@ function LogAttendance() {
           setUseMockData(true);
         }
 
-        const getStatusLabel = s => {
-          if (s === 'checked_in') return 'Checked In';
-          if (s === 'no_show') return 'No Show';
-          return 'Pending';
-        };
-
         // Transform attendance records
         const records = (attendanceResponse.data || []).map(record => ({
           id: record.attendanceCode || record._id,

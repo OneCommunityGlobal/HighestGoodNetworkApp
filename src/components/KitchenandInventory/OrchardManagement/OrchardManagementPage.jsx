@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import styles from './OrchardManagementPage.module.css';
 
 const initOrders = [
@@ -70,7 +71,7 @@ const NAV_LINKS = [
 ];
 
 export default function OrchardManagementPage() {
-  const [dark, setDark] = useState(false);
+  const dark = useSelector(state => state.theme.darkMode);
   const [tab, setTab] = useState('Orders');
   const [orders, setOrders] = useState(initOrders);
   const [planting, setPlanting] = useState(initPlanting);
@@ -79,14 +80,6 @@ export default function OrchardManagementPage() {
   const [showDetail, setShowDetail] = useState(null);
   const [newOrder, setNewOrder] = useState({ supplier: '', items: '', ordered: '', expected: '' });
   const [newPlant, setNewPlant] = useState({ qty: '', location: '', notes: '', date: '' });
-
-  useEffect(() => {
-    const mq = globalThis.matchMedia('(prefers-color-scheme: dark)');
-    setDark(mq.matches);
-    const handler = e => setDark(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, []);
 
   const pending = orders.filter(o => o.status !== 'delivered').length;
   const d = dark ? styles.dark : '';
@@ -207,7 +200,7 @@ export default function OrchardManagementPage() {
           <div className={styles.cardTitle}>🌿 Tree & Bush Orders</div>
           <div className={styles.cardSub}>Track orders from nurseries and suppliers</div>
         </div>
-        <button className={styles.btnGreen} onClick={() => setShowOrderForm(true)}>
+        <button type="button" className={styles.btnGreen} onClick={() => setShowOrderForm(true)}>
           + New Order
         </button>
       </div>
@@ -225,16 +218,20 @@ export default function OrchardManagementPage() {
           <div className={styles.orderMeta}>📅 Ordered: {o.ordered}</div>
           <div className={styles.orderMeta}>🚚 Expected: {o.expected}</div>
           <div className={styles.orderActions}>
-            <button className={`${styles.btnOutline} ${d}`} onClick={() => setShowDetail(o)}>
+            <button
+              type="button"
+              className={`${styles.btnOutline} ${d}`}
+              onClick={() => setShowDetail(o)}
+            >
               View Details
             </button>
             {o.status === 'ordered' && (
-              <button className={styles.btnGreen} onClick={() => advanceStatus(o.id)}>
+              <button type="button" className={styles.btnGreen} onClick={() => advanceStatus(o.id)}>
                 Mark as Shipped
               </button>
             )}
             {o.status === 'shipped' && (
-              <button className={styles.btnGreen} onClick={() => advanceStatus(o.id)}>
+              <button type="button" className={styles.btnGreen} onClick={() => advanceStatus(o.id)}>
                 Mark as Delivered
               </button>
             )}
@@ -262,7 +259,11 @@ export default function OrchardManagementPage() {
           <div className={styles.plantDateBadge}>{p.date}</div>
         </div>
       ))}
-      <button className={`${styles.addPlantBtn} ${d}`} onClick={() => setShowPlantForm(true)}>
+      <button
+        type="button"
+        className={`${styles.addPlantBtn} ${d}`}
+        onClick={() => setShowPlantForm(true)}
+      >
         + Add Planting Task
       </button>
     </div>
@@ -294,9 +295,6 @@ export default function OrchardManagementPage() {
               {n === 'Production' ? ' ▾' : ''}
             </span>
           ))}
-          <button className={`${styles.darkToggle} ${d}`} onClick={() => setDark(!dark)}>
-            {dark ? '☀️ Light' : '🌙 Dark'}
-          </button>
         </div>
       </div>
 
@@ -325,6 +323,7 @@ export default function OrchardManagementPage() {
           {TABS.map(tb => (
             <button
               key={tb}
+              type="button"
               className={`${styles.tabBtn} ${d} ${tab === tb ? styles.tabBtnActive : ''}`}
               onClick={() => setTab(tb)}
             >
@@ -366,7 +365,11 @@ export default function OrchardManagementPage() {
               <span className={getBadgeClass(showDetail.status)}>{showDetail.status}</span>
             </div>
             <div className={styles.modalBtns}>
-              <button className={`${styles.btnOutline} ${d}`} onClick={() => setShowDetail(null)}>
+              <button
+                type="button"
+                className={`${styles.btnOutline} ${d}`}
+                onClick={() => setShowDetail(null)}
+              >
                 Close
               </button>
             </div>
@@ -421,12 +424,13 @@ export default function OrchardManagementPage() {
             />
             <div className={styles.modalBtns}>
               <button
+                type="button"
                 className={`${styles.btnOutline} ${d}`}
                 onClick={() => setShowOrderForm(false)}
               >
                 Cancel
               </button>
-              <button className={styles.btnGreen} onClick={addOrder}>
+              <button type="button" className={styles.btnGreen} onClick={addOrder}>
                 Add Order
               </button>
             </div>
@@ -481,12 +485,13 @@ export default function OrchardManagementPage() {
             />
             <div className={styles.modalBtns}>
               <button
+                type="button"
                 className={`${styles.btnOutline} ${d}`}
                 onClick={() => setShowPlantForm(false)}
               >
                 Cancel
               </button>
-              <button className={styles.btnGreen} onClick={addPlant}>
+              <button type="button" className={styles.btnGreen} onClick={addPlant}>
                 Add Task
               </button>
             </div>
