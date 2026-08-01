@@ -4,7 +4,6 @@ import axios from 'axios';
 import DatePicker, { CalendarContainer } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import * as d3 from 'd3';
-import { FaTrash } from 'react-icons/fa';
 import styles from './MostFrequentKeywords.module.css';
 import Select, { components as selectComponents } from 'react-select';
 import PropTypes from 'prop-types';

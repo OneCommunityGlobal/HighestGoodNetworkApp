@@ -2,7 +2,7 @@
   width: 100%;
   max-width: 419px;
   transform: translateY(-1rem);
-  animation: fadeIn 1s 0.2s ease forwards;
+  animation: fade-in 1s 0.2s ease forwards;
   opacity: 0;
 }
 
@@ -14,7 +14,7 @@
 }
 
 .monthTitle {
-  font-family: 'Inter', Helvetica, sans-serif;
+  font-family: Inter, Helvetica, sans-serif;
   font-weight: 600;
   color: black;
   font-size: 0.875rem;
@@ -30,12 +30,11 @@
 .calendarGrid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  column-gap: 30px;
-  row-gap: 1.5rem;
+  gap: 1.5rem 30px;
 }
 
 .weekDay {
-  font-family: 'Inter', Helvetica, sans-serif;
+  font-family: Inter, Helvetica, sans-serif;
   font-weight: 400;
   color: black;
   font-size: 0.875rem;
@@ -66,7 +65,7 @@
 }
 
 .dateNumber {
-  font-family: 'Inter', Helvetica, sans-serif;
+  font-family: Inter, Helvetica, sans-serif;
   font-weight: 400;
   font-size: 0.875rem;
   line-height: normal;
@@ -118,6 +117,12 @@
   border-radius: 4px;
 }
 
+.dateCellButton {
+  background: none;
+  border: none;
+  padding: 0;
+}
+
 .availableDate:hover .dateNumber {
   text-decoration: underline;
 }
@@ -126,11 +131,12 @@
   cursor: default;
 }
 
-@keyframes fadeIn {
+@keyframes fade-in {
   0% {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);

@@ -50,6 +50,56 @@ function buildCalendarDates(year, month) {
   return dates;
 }
 
+function dateNumberClass(isCurrentMonth, darkMode) {
+  if (!isCurrentMonth) return styles.otherMonth;
+  return darkMode ? styles.currentMonthDark : styles.currentMonth;
+}
+
+function DateCell({ date, isAvailable, isSelected, darkMode, onDateSelect }) {
+  const cellClass = `${styles.dateCell} ${isAvailable ? styles.availableDate : ''} ${
+    isSelected ? styles.selectedDate : ''
+  }`;
+  const numberClass = `${styles.dateNumber} ${dateNumberClass(date.isCurrentMonth, darkMode)}`;
+  const inner = (
+    <>
+      {isSelected && (
+        <div className={styles.dateHighlight}>
+          <div className={styles.highlightCircle} />
+        </div>
+      )}
+      <span className={numberClass}>{date.day}</span>
+    </>
+  );
+
+  if (isAvailable && onDateSelect) {
+    return (
+      <button
+        type="button"
+        className={`${cellClass} ${styles.dateCellButton}`}
+        onClick={() => onDateSelect(date.iso)}
+        aria-label={date.iso}
+        aria-pressed={isSelected}
+      >
+        {inner}
+      </button>
+    );
+  }
+
+  return <div className={cellClass}>{inner}</div>;
+}
+
+DateCell.propTypes = {
+  date: PropTypes.shape({
+    day: PropTypes.number,
+    isCurrentMonth: PropTypes.bool,
+    iso: PropTypes.string,
+  }),
+  isAvailable: PropTypes.bool,
+  isSelected: PropTypes.bool,
+  darkMode: PropTypes.bool,
+  onDateSelect: PropTypes.func,
+};
+
 export const ScheduleSection = ({
   availableDates = [],
   selectedDate = '',
@@ -128,45 +178,16 @@ export const ScheduleSection = ({
                   </div>
                 ))}
 
-                {calendarDates.map((date, index) => {
-                  const isAvailable = availableSet.has(date.iso);
-                  const isSelected = date.iso === selectedDate;
-                  return (
-                    <div
-                      key={`date-${date.isCurrentMonth ? 'cur' : 'other'}-${date.day}-${index}`}
-                      className={`${styles.dateCell} ${isAvailable ? styles.availableDate : ''} ${
-                        isSelected ? styles.selectedDate : ''
-                      }`}
-                      onClick={
-                        isAvailable && onDateSelect ? () => onDateSelect(date.iso) : undefined
-                      }
-                      onKeyDown={
-                        isAvailable && onDateSelect
-                          ? e => e.key === 'Enter' && onDateSelect(date.iso)
-                          : undefined
-                      }
-                      role={isAvailable && onDateSelect ? 'button' : undefined}
-                      tabIndex={isAvailable && onDateSelect ? 0 : undefined}
-                    >
-                      {isSelected && (
-                        <div className={styles.dateHighlight}>
-                          <div className={styles.highlightCircle} />
-                        </div>
-                      )}
-                      <span
-                        className={`${styles.dateNumber} ${
-                          date.isCurrentMonth
-                            ? darkMode
-                              ? styles.currentMonthDark
-                              : styles.currentMonth
-                            : styles.otherMonth
-                        }`}
-                      >
-                        {date.day}
-                      </span>
-                    </div>
-                  );
-                })}
+                {calendarDates.map((date, index) => (
+                  <DateCell
+                    key={`date-${date.isCurrentMonth ? 'cur' : 'other'}-${date.day}-${index}`}
+                    date={date}
+                    isAvailable={availableSet.has(date.iso)}
+                    isSelected={date.iso === selectedDate}
+                    darkMode={darkMode}
+                    onDateSelect={onDateSelect}
+                  />
+                ))}
               </div>
             </div>
           </div>
