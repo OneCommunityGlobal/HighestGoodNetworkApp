@@ -782,6 +782,7 @@ function LessonList(props) {
                     <LessonListRemovableTag
                       key={`delete-tag-${tag}-${index}`}
                       tag={tag}
+                      darkMode={darkMode}
                       onRemove={removeDeleteTag}
                       variant="delete"
                     />
@@ -802,6 +803,7 @@ function LessonList(props) {
                 handleDeleteTags={handleDeleteTags}
                 showConfirmModal={confirmModal}
                 setConfirmModal={setConfirmModal}
+                darkMode={darkMode}
               />
             </div>
           </Form.Group>
