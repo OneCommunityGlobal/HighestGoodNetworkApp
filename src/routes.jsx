@@ -78,6 +78,7 @@ import EPDashboard from './components/EductionPortal';
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 
 import ApplicantSourceDonutChart from './components/ApplicantSourceDonutChart/ApplicantSourceDonutChart';
+import PlannedCostDonutChart from './components/PlannedCostDonutChart/PlannedCostDonutChart';
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
 import PRDashboardOverview from './components/HGNPRDashboard/PRDashboardOverview';
 import PRDashboardPromotionEligibility from './components/HGNPRDashboard/PRDashboardPromotionEligibility';
