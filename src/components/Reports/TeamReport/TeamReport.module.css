@@ -69,6 +69,19 @@
   background: white;
 }
 
+/* Dark-mode row/header backgrounds. These have to live here rather than come
+   from the shared `bg-yinmn-blue` / `bg-space-cadet` helpers: those are defined
+   in src/App.module.css, which Vite scopes as a CSS module, so passing them as
+   plain strings from JSX is a no-op. Without a background the rows stay white
+   and `body.dark-mode * { color: #fff }` renders the text invisible. */
+.table-row-dark {
+  background: #2f4157;
+}
+
+.table-head-dark {
+  background: #1c2541;
+}
+
 .table-hover-dark:hover {
   background-color: #162e4c !important;
 }
@@ -113,5 +126,5 @@
 :global(.report-page-wrapper.bg-oxford-blue .tableHeader thead tr td),
 :global(.report-page-wrapper.bg-oxford-blue .tableHeader thead tr th),
 :global(.report-page-wrapper.bg-oxford-blue .tableHeader thead tr strong) {
-  color: #ffffff !important;
+  color: #fff !important;
 }

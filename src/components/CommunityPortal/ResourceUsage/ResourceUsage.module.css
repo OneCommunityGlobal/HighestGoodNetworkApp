@@ -228,42 +228,20 @@
   font-weight: 600;
 }
 
-/* DARK MODE DROPDOWN */
-.dark-mode .customDropdown,
-.dark-mode .dropdown-toggle.customDropdown {
-  background-color: #1C2541 !important;
-  color: #fff !important;
-  border-color: #3A506B !important;
-}
-
-.dark-mode .dropdown-toggle.customDropdown.show,
-.dark-mode .show > .customDropdown.dropdown-toggle {
-  background-color: #243B5A !important;
-}
-
-.dark-mode .dropdown-menu {
-  background-color: #1C2541 !important;
-  border-color: #3A506B !important;
-}
-
-.dark-mode .dropdown-item {
-  color: #fff !important;
-}
-
-.dark-mode .dropdown-item:hover {
-  background-color: #3A506B !important;
-}
-
-/* Chart ticks */
-.recharts-cartesian-axis-tick-value {
-  font-size: 12px;
-  font-weight: 700;
-  fill: #666;
-}
-
-/* Shreya's dark module classes for dropdowns */
+/* Dark module classes for dropdowns */
 .customDropdownDark {
   background-color: #1c2541 !important;
+  color: #fff !important;
+  border-color: #3a506b !important;
+}
+
+/* Two classes so this outranks `.customDropdown:hover/:focus` above, which is
+   also (0,2,0) !important and would otherwise turn the toggle light grey while
+   the menu is open (`:focus` sticks after the click). */
+.customDropdown.customDropdownDark:hover,
+.customDropdown.customDropdownDark:focus,
+.customDropdown.customDropdownDark:global(.show) {
+  background-color: #243b5a !important;
   color: #fff !important;
   border-color: #3a506b !important;
 }
