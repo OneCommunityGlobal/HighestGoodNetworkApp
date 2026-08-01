@@ -503,6 +503,10 @@ body {
     gap: 1rem;
     width: 100%;
   }
+
+  .userProfile {
+    width: 100%;
+  }
 }
 
 .peopleTasksPieChartWrapper {
@@ -544,7 +548,7 @@ body {
     }
 
     .userProfile {
-      min-width: 20rem;
+      max-width: 20rem;
     }
 
     .metrics.fourMetrics {
@@ -566,7 +570,7 @@ body {
 @media (width >= 1536px) {
   .peopleReportPage {
     .userProfile {
-     min-width: 30rem;
+     max-width: 30rem;
     }
   }
 }
