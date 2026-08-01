@@ -7,28 +7,23 @@ export const dashboardStats = [
 
 export const sectionTabs = ['Calendars', 'Seed Inventory', 'Seed Orders', 'Online Tools'];
 
+const mkEvent = (id, crop, dateRange, location, yieldEst, status) => ({
+  id,
+  crop,
+  dateRange,
+  location,
+  yield: yieldEst,
+  status,
+});
+
 export const calendarSections = [
   {
     id: 'seeding',
     title: 'Seeding',
     addLabel: 'Add Seeding',
     events: [
-      {
-        id: 1,
-        crop: 'Tomatoes',
-        dateRange: 'Jun 1 – Jun 15',
-        location: 'Greenhouse A',
-        yield: 'Est. 40 kg',
-        status: 'upcoming',
-      },
-      {
-        id: 2,
-        crop: 'Basil',
-        dateRange: 'Jun 5 – Jun 20',
-        location: 'Greenhouse B',
-        yield: 'Est. 12 kg',
-        status: 'upcoming',
-      },
+      mkEvent(1, 'Tomatoes', 'Jun 1 – Jun 15', 'Greenhouse A', 'Est. 40 kg', 'upcoming'),
+      mkEvent(2, 'Basil', 'Jun 5 – Jun 20', 'Greenhouse B', 'Est. 12 kg', 'upcoming'),
     ],
   },
   {
@@ -36,22 +31,8 @@ export const calendarSections = [
     title: 'Transplanting',
     addLabel: 'Schedule Transplanting',
     events: [
-      {
-        id: 1,
-        crop: 'Peppers',
-        dateRange: 'Jun 10 – Jun 12',
-        location: 'Field 2',
-        yield: 'Est. 28 kg',
-        status: 'growing',
-      },
-      {
-        id: 2,
-        crop: 'Zucchini',
-        dateRange: 'Jun 14 – Jun 16',
-        location: 'Field 3',
-        yield: 'Est. 35 kg',
-        status: 'upcoming',
-      },
+      mkEvent(1, 'Peppers', 'Jun 10 – Jun 12', 'Field 2', 'Est. 28 kg', 'growing'),
+      mkEvent(2, 'Zucchini', 'Jun 14 – Jun 16', 'Field 3', 'Est. 35 kg', 'upcoming'),
     ],
   },
   {
@@ -59,22 +40,8 @@ export const calendarSections = [
     title: 'Succession',
     addLabel: 'Add Succession Plan',
     events: [
-      {
-        id: 1,
-        crop: 'Lettuce',
-        dateRange: 'Jun 7 – Jun 28',
-        location: 'Raised Beds',
-        yield: 'Est. 20 kg',
-        status: 'growing',
-      },
-      {
-        id: 2,
-        crop: 'Spinach',
-        dateRange: 'Jun 14 – Jul 5',
-        location: 'Row B',
-        yield: 'Est. 15 kg',
-        status: 'upcoming',
-      },
+      mkEvent(1, 'Lettuce', 'Jun 7 – Jun 28', 'Raised Beds', 'Est. 20 kg', 'growing'),
+      mkEvent(2, 'Spinach', 'Jun 14 – Jul 5', 'Row B', 'Est. 15 kg', 'upcoming'),
     ],
   },
   {
@@ -82,30 +49,9 @@ export const calendarSections = [
     title: 'Harvesting',
     addLabel: 'Add Harvest',
     events: [
-      {
-        id: 1,
-        crop: 'Strawberries',
-        dateRange: 'Jun 3 – Jun 17',
-        location: 'Patch A',
-        yield: 'Est. 22 kg',
-        status: 'growing',
-      },
-      {
-        id: 2,
-        crop: 'Peas',
-        dateRange: 'Jun 18 – Jun 25',
-        location: 'Field 1',
-        yield: 'Est. 18 kg',
-        status: 'upcoming',
-      },
-      {
-        id: 3,
-        crop: 'Radishes',
-        dateRange: 'Jun 22 – Jun 28',
-        location: 'Row C',
-        yield: 'Est. 9 kg',
-        status: 'upcoming',
-      },
+      mkEvent(1, 'Strawberries', 'Jun 3 – Jun 17', 'Patch A', 'Est. 22 kg', 'growing'),
+      mkEvent(2, 'Peas', 'Jun 18 – Jun 25', 'Field 1', 'Est. 18 kg', 'upcoming'),
+      mkEvent(3, 'Radishes', 'Jun 22 – Jun 28', 'Row C', 'Est. 9 kg', 'upcoming'),
     ],
   },
 ];
