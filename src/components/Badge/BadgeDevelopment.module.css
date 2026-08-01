@@ -1,0 +1,43 @@
+.headerButton {
+  margin: 20px;
+  box-shadow: 2px 2px 4px 1px #d3d3d3;
+}
+
+.headerButtonDark {
+  margin: 20px;
+  box-shadow: 0.5px 0.5px 5px #000;
+}
+
+.filterSection {
+  margin-top: 20px;
+  padding-left: 20px;
+}
+
+.filterRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.filterLabel {
+  margin: 0;
+  margin-right: 8px;
+}
+
+.rankRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rankInput {
+  width: 80px;
+  text-align: center;
+}
+
+.filterSection input::placeholder,
+.filterSection select::placeholder {
+  color: inherit;
+  opacity: 1;
+}
