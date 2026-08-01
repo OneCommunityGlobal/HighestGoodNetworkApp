@@ -23,7 +23,7 @@ export const formatChartLabelValue = value => {
   }).format(rounded);
 };
 
-const parseHexColor = color => {
+export const parseHexColor = color => {
   if (!color || typeof color !== 'string' || !color.startsWith('#')) return null;
   const hex = color.replace('#', '');
   const normalizedHex =
@@ -39,21 +39,21 @@ const parseHexColor = color => {
   return { r, g, b };
 };
 
-const channelToLinear = c => {
+export const channelToLinear = c => {
   const normalized = c / 255;
   return normalized <= 0.03928 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
 };
 
-const relativeLuminance = ({ r, g, b }) =>
+export const relativeLuminance = ({ r, g, b }) =>
   0.2126 * channelToLinear(r) + 0.7152 * channelToLinear(g) + 0.0722 * channelToLinear(b);
 
-const contrastRatio = (l1, l2) => {
+export const contrastRatio = (l1, l2) => {
   const brightest = Math.max(l1, l2);
   const darkest = Math.min(l1, l2);
   return (brightest + 0.05) / (darkest + 0.05);
 };
 
-const getReadableTextColor = (bgColor, fallbackDarkMode) => {
+export const getReadableTextColor = (bgColor, fallbackDarkMode) => {
   const rgb = parseHexColor(bgColor);
   if (!rgb) return fallbackDarkMode ? '#F8FAFC' : '#111827';
 
@@ -258,7 +258,10 @@ export default function HoursWorkedPieChart({
               ))}
           </Pie>
           {renderCenterLabel({ darkMode, isMobile, totalHours: displayTotalHours })}
-          <Tooltip content={<CustomTooltip tooltipType="hoursDistribution" />} />
+          {/* <Tooltip content={<CustomTooltip tooltipType="hoursDistribution" />} /> */}
+          <Tooltip
+            content={<CustomTooltip tooltipType="hoursDistribution" darkMode={darkMode} />}
+          />
         </PieChart>
       </ResponsiveContainer>
     </div>

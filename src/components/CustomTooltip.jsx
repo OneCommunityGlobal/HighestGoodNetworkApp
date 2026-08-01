@@ -1,5 +1,6 @@
 // Universal Custom Tooltip with dark mode support and all values
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const formatNumber = value => {
   if (!Number.isFinite(value)) return '0';
@@ -31,16 +32,20 @@ const getTooltipData = (payload, label) => {
     name: data._id || data.name || label || '',
     percentage: data.percentage,
     hoursValue: data.value,
+    valueType: data.valueType,
     totalHours: data.totalHours !== undefined ? data.totalHours : data.value,
     change: data.change,
   };
 };
 
-function CustomTooltip({ active, payload, label, tooltipType }) {
+function CustomTooltip({ active, payload, label, tooltipType, darkMode = false }) {
   if (!active || !payload || !payload.length) return null;
 
-  const isDarkMode = getIsDarkMode();
-  const { name, percentage, hoursValue, totalHours, change } = getTooltipData(payload, label);
+  const isDarkMode = darkMode;
+  const { name, percentage, hoursValue, valueType, totalHours, change } = getTooltipData(
+    payload,
+    label,
+  );
   const textColor = isDarkMode ? '#fff' : '#222';
 
   const renderMainValue = () => {
@@ -48,9 +53,11 @@ function CustomTooltip({ active, payload, label, tooltipType }) {
       const exactHours = formatNumber(hoursValue);
       const compactHours = formatCompactNumber(hoursValue);
       const showCompactAndExact = compactHours.toLowerCase().includes('k');
+      const displayValue = showCompactAndExact ? `${compactHours} (${exactHours})` : exactHours;
+      const valueLabel = valueType === 'volunteers' ? 'Volunteers' : 'Hours';
       return (
         <div style={{ color: textColor, fontWeight: 'bold' }}>
-          Hours: {showCompactAndExact ? `${compactHours} (${exactHours})` : exactHours}
+          {valueLabel}: {displayValue}
         </div>
       );
     }
@@ -88,5 +95,21 @@ function CustomTooltip({ active, payload, label, tooltipType }) {
     </div>
   );
 }
+
+CustomTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.arrayOf(PropTypes.object),
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  tooltipType: PropTypes.string,
+  darkMode: PropTypes.bool,
+};
+
+CustomTooltip.defaultProps = {
+  active: false,
+  payload: null,
+  label: '',
+  tooltipType: undefined,
+  darkMode: false,
+};
 
 export default CustomTooltip;

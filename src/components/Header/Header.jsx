@@ -7,7 +7,6 @@ import { toast } from 'react-toastify';
 import {
   Button,
   Card,
-  NavbarToggler,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
@@ -17,6 +16,7 @@ import {
   ModalHeader,
   Nav,
   Navbar,
+  NavbarToggler,
   NavItem,
   NavLink,
   UncontrolledDropdown
@@ -57,6 +57,7 @@ import {
   VIEW_PROFILE,
   WEEKLY_SUMMARIES_REPORT,
   WELCOME,
+  BM_DASHBOARD
 } from '../../languages/en/ui';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import PermissionWatcher from '../Auth/PermissionWatcher';
@@ -110,7 +111,8 @@ export function Header(props) {
     props.hasPermission('deleteUserProfile', !isAuthUser ) ||
     props.hasPermission('changeUserStatus', !isAuthUser ) ||
     props.hasPermission('getUserProfiles', !isAuthUser ) ||
-    props.hasPermission('setFinalDay', !isAuthUser);
+    props.hasPermission('setFinalDay', !isAuthUser) ||
+    props.hasPermission('interactWithPauseUserButton', !isAuthUser);
 
   // Badges
   const canAccessBadgeManagement =
@@ -406,11 +408,17 @@ export function Header(props) {
   if (location.pathname === '/login') return null;
 
   const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
+
+  const showBMDashboard = location.pathname.startsWith('/bmdashboard');
+
   return (
     <div className={`${styles.headerWrapper}`} data-testid="header">
       <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
-        {showPromotionsPopup && <DisplayBox onClose={() => setShowPromotionsPopup(false)} />}
+        {showPromotionsPopup && (
+          // Header launches this modal outside the PR Promotions page, so pass the theme explicitly.
+          <DisplayBox onClose={() => setShowPromotionsPopup(false)} darkMode={darkMode} />
+        )}
 
         <div className={styles.headerRow}>
             <div className={styles.leftSection}>
@@ -424,7 +432,7 @@ export function Header(props) {
             <NavbarToggler onClick={toggle} ref={toggleRef} className={styles.navbarToggler} />
             <div
               ref={collapseRef}
-              className={`${styles.navCollapse} ${isOpen ? styles.navCollapseOpen : styles.navCollapseHidden}`}
+              className={`${styles.navCollapse} ${isOpen ? styles.navCollapseOpen : ''}`}
               role="menu"
               tabIndex={-1}
               onKeyDown={(e) => {
@@ -502,6 +510,13 @@ export function Header(props) {
                   </NavLink>
                 </NavItem>
 
+                {showBMDashboard && (<NavItem>
+                  <NavLink tag={Link} to="/bmdashboard" disabled={headerDisabled}>
+                    <span>{BM_DASHBOARD}</span>
+                  </NavLink>
+                </NavItem>
+                )}
+  
                 <NavItem>
                   <NavLink tag={Link} to="/timelog#currentWeek" disabled={headerDisabled}>
                     <span>{TIMELOG}</span>
@@ -519,6 +534,9 @@ export function Header(props) {
                       }`}
                       disabled={headerDisabled}
                     >
+                      <DropdownItem tag={Link} to="/bmdashboard/inventorytypes" className={fontColor}>
+                        All Inventory Types
+                      </DropdownItem>
                       <DropdownItem tag={Link} to="/bmdashboard/materials/add" className={fontColor}>
                         Add Material
                       </DropdownItem>
@@ -544,7 +562,15 @@ export function Header(props) {
                         className={fontColor}
                         disabled={headerDisabled}
                       >
-                        Add Equipment/Tool
+                        Add Equipment
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/tools/add"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        Add Tool
                       </DropdownItem>
                       <DropdownItem
                         tag={Link}
@@ -570,12 +596,7 @@ export function Header(props) {
                       >
                         Equipment/Tool List
                       </DropdownItem>
-                      <DropdownItem
-                        tag={Link}
-                        to="/bmdashboard/Issue"
-                        className={fontColor}
-                        disabled={headerDisabled}
-                      >
+                      <DropdownItem tag={Link} to="/bmdashboard/issues" className={fontColor}  disabled={headerDisabled}>
                         Issue
                       </DropdownItem>
                       <DropdownItem
@@ -804,22 +825,12 @@ export function Header(props) {
                       <DropdownItem divider />
                       <DropdownItem
                         tag={Link}
-                        to="/pr-dashboard/analytics"
+                        to="/pr-dashboard/overview"
                         className={fontColor}
                         disabled={headerDisabled}
                       >
                         PR Team Analytics
                       </DropdownItem>
-                      {canAccessBlueSquareEmailManagement && (
-                        <DropdownItem
-                          tag={Link}
-                          to="/bluesquare-email-management"
-                          className={fontColor}
-                          disabled={headerDisabled}
-                        >
-                          {BLUE_SQUARE_EMAIL_MANAGEMENT}
-                        </DropdownItem>
-                      )}
                       <DropdownItem
                         tag={Link}
                         to="/pr-dashboard/analytics"

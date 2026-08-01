@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import { Avatar, AvatarFallback, AvatarImage } from './components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 import { DescriptionSection } from './sections/DescriptionSection';
@@ -213,8 +214,15 @@ export const EventPageOrganizer = () => {
             </div>
 
             <div className={styles.calendarSection}>
-              <div className={styles.calendarDivider} />
-              <ScheduleSection />
+              <ScheduleSection
+                availableDates={evt?.availableDates ?? []}
+                selectedDate={evt?.selectedDate ?? ''}
+                onDateSelect={async date => {
+                  await updateSelectedDate(activityId, date);
+                  setEvt(prev => ({ ...prev, selectedDate: date }));
+                }}
+                darkMode={darkMode}
+              />
             </div>
           </div>
         </div>
@@ -238,7 +246,7 @@ export const EventPageOrganizer = () => {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="description" className="mt-8">
+          <TabsContent value="description" className={`mt-8 ${styles.tabContent}`} forceMount>
             <DescriptionSection
               activityId={activityId}
               initialDescription={evt?.description ?? ''}
@@ -246,7 +254,9 @@ export const EventPageOrganizer = () => {
                 try {
                   await updateDescription(activityId, next);
                   setEvt(prev => ({ ...prev, description: next }));
+                  toast.success('Description saved');
                 } catch (err) {
+                  toast.error('Failed to save description');
                   if (process.env.NODE_ENV === 'development') {
                     // eslint-disable-next-line no-console
                     console.error('updateDescription failed', err);

@@ -105,6 +105,57 @@
   background-color: #1a1a1a;
 }
 
+.hiddenFileInput {
+  display: none;
+}
+
+.mediaPreviewList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.mediaThumbnailWrapper {
+  position: relative;
+}
+
+.mediaThumbnail {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  display: block;
+}
+
+.mediaRemoveButton {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 22px;
+  height: 22px;
+  background-color: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.mediaThumbnailWrapper:hover .mediaRemoveButton {
+  opacity: 1;
+}
+
+.mediaRemoveIcon {
+  width: 12px;
+  height: 12px;
+}
+
 @keyframes fadeIn {
   0% {
     opacity: 0;

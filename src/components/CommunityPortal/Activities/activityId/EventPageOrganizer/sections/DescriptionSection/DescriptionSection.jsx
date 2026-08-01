@@ -2,6 +2,7 @@ import { ImageIcon, XIcon } from 'lucide-react';
 import PropTypes from 'prop-types';
 import React, { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import { Button } from '../../components/ui/button';
 import { Textarea } from '../../components/ui/textarea';
 import styles from './DescriptionSection.module.css';
@@ -37,9 +38,17 @@ export const DescriptionSection = ({
   const addMediaLabelClassName = `${styles.buttonLabel} ${darkMode ? styles.buttonLabelDark : ''}`;
 
   const handleFileChange = async e => {
-    const files = Array.from(e.target.files);
-    if (!files.length) return;
+    const MAX_SIZE_MB = 5;
+    const allFiles = Array.from(e.target.files);
     e.target.value = '';
+    const files = allFiles.filter(f => {
+      if (f.size > MAX_SIZE_MB * 1024 * 1024) {
+        toast.error(`${f.name} exceeds the ${MAX_SIZE_MB}MB limit and was skipped.`);
+        return false;
+      }
+      return true;
+    });
+    if (!files.length) return;
 
     if (uploadMediaFn) {
       try {
@@ -116,19 +125,17 @@ export const DescriptionSection = ({
         />
 
         {selectedMedia.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-4">
+          <div className={styles.mediaPreviewList}>
             {selectedMedia.map(media => (
-              <div key={media.id} className="relative group">
-                <img
-                  src={media.url}
-                  alt={media.name}
-                  className="w-24 h-24 object-cover rounded-lg"
-                />
+              <div key={media.id} className={styles.mediaThumbnailWrapper}>
+                <img src={media.url} alt={media.name} className={styles.mediaThumbnail} />
                 <button
+                  type="button"
                   onClick={() => handleRemoveMedia(media.id)}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className={styles.mediaRemoveButton}
+                  aria-label={`Remove ${media.name}`}
                 >
-                  <XIcon className="w-4 h-4" />
+                  <XIcon className={styles.mediaRemoveIcon} />
                 </button>
               </div>
             ))}
@@ -140,7 +147,7 @@ export const DescriptionSection = ({
           type="file"
           multiple
           accept="image/*"
-          style={{ display: 'none' }}
+          className={styles.hiddenFileInput}
           onChange={handleFileChange}
         />
 

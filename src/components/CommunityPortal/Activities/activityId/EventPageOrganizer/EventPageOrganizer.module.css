@@ -279,6 +279,10 @@
   background-color: #e5e5e5;
 }
 
+.tabContent[data-state='inactive'] {
+  display: none;
+}
+
 .tabsContainer {
   width: 100%;
   transform: translateY(-1rem);

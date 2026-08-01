@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+﻿import { useState, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import styles from './DescriptionSection.module.css';
 
@@ -22,7 +23,7 @@ const DEFAULT_TAB_CONTENT = {
     { author: 'Alice Brown', comment: 'Excited to collaborate with everyone.' },
   ],
   FAQs: [
-    'Q: What should I bring to the event? `\n` A: Just bring yourself and a positive attitude! All materials will be provided.',
+    'Q: What should I bring to the event?\nA: Just bring yourself and a positive attitude! All materials will be provided.',
     'Q: Is parking available?\nA: Yes, free parking is available in the adjacent lot.',
     'Q: Will there be refreshments?\nA: Light refreshments and coffee will be provided during breaks.',
     'Q: Can I bring a guest?\nA: Unfortunately, this event is for registered participants only.',
@@ -37,7 +38,7 @@ function DescriptionSection({ activity, registrants = [] }) {
     if (Array.isArray(activity?.descriptionParagraphs) && activity.descriptionParagraphs.length) {
       return activity.descriptionParagraphs;
     }
-    if (typeof activity?.description === 'string') {
+    if (typeof activity?.description === 'string' && activity.description.trim()) {
       return activity.description
         .split('\n')
         .map(line => line.trim())
@@ -54,16 +55,10 @@ function DescriptionSection({ activity, registrants = [] }) {
 
     const dynamicEntries = registrants
       .map(reg => {
-        if (!reg?.name) return null;
-        const trimmedName = reg.name.trim();
-        if (!trimmedName) return null;
+        if (!reg?.name?.trim()) return null;
         const title = reg.jobTitle && reg.jobTitle !== 'Participant' ? ` - ${reg.jobTitle}` : '';
-        const label = `${trimmedName}${title}`;
-        return {
-          label,
-          isNew: true,
-          key: label.toLowerCase(),
-        };
+        const label = `${reg.name.trim()}${title}`;
+        return { label, isNew: true, key: label.toLowerCase() };
       })
       .filter(Boolean);
 
@@ -71,29 +66,24 @@ function DescriptionSection({ activity, registrants = [] }) {
       .map(participant => {
         const label = typeof participant === 'string' ? participant.trim() : '';
         if (!label) return null;
-        return {
-          label,
-          isNew: false,
-          key: label.toLowerCase(),
-        };
+        return { label, isNew: false, key: label.toLowerCase() };
       })
       .filter(Boolean);
 
-    const combined = [...dynamicEntries, ...baseEntries];
     const seen = new Set();
-
-    return combined
+    return [...dynamicEntries, ...baseEntries]
       .filter(entry => {
         if (seen.has(entry.key)) return false;
         seen.add(entry.key);
         return true;
       })
       .map(({ label, isNew }) => ({ label, isNew }));
-  }, [activity?.resources, registrants]);
+  }, [activity?.participants, registrants]);
 
-  const participantNameSet = useMemo(() => {
-    return new Set(participantEntries.map(p => p.label.split(' - ')[0].toLowerCase()));
-  }, [participantEntries]);
+  const participantNameSet = useMemo(
+    () => new Set(participantEntries.map(p => p.label.split(' - ')[0].toLowerCase())),
+    [participantEntries],
+  );
 
   const commentEntries = useMemo(() => {
     const baseComments =
@@ -103,19 +93,12 @@ function DescriptionSection({ activity, registrants = [] }) {
 
     return baseComments.map((comment, idx) => {
       if (typeof comment !== 'object') {
-        return {
-          comment,
-          author: `User ${idx + 1}`,
-          isParticipant: false,
-        };
+        return { comment, author: `User ${idx + 1}`, isParticipant: false };
       }
-
-      const isParticipant = participantNameSet.has(comment.author?.toLowerCase().trim());
-
       return {
         comment: comment.comment,
         author: comment.author,
-        isParticipant,
+        isParticipant: participantNameSet.has(comment.author?.toLowerCase().trim()),
       };
     });
   }, [activity?.comments, participantNameSet]);
@@ -125,15 +108,13 @@ function DescriptionSection({ activity, registrants = [] }) {
       return activity.faqs
         .map(faq => {
           if (typeof faq === 'string') return faq;
-          if (faq?.question && faq?.answer) {
-            return `Q: ${faq.question}\nA: ${faq.answer}`;
-          }
+          if (faq?.question && faq?.answer) return `Q: ${faq.question}\nA: ${faq.answer}`;
           return null;
         })
         .filter(Boolean);
     }
     return DEFAULT_TAB_CONTENT.FAQs;
-  }, [activity]);
+  }, [activity?.faqs]);
 
   const tabContent = useMemo(
     () => ({
@@ -144,6 +125,138 @@ function DescriptionSection({ activity, registrants = [] }) {
     }),
     [descriptionParagraphs, participantEntries, commentEntries, faqEntries],
   );
+
+  const keyUsageMap = new Map();
+  const buildUniqueKey = rawKey => {
+    const baseKey = String(rawKey || 'item')
+      .trim()
+      .toLowerCase()
+      .replaceAll(/\s+/gu, '-');
+    const seenCount = keyUsageMap.get(baseKey) || 0;
+    keyUsageMap.set(baseKey, seenCount + 1);
+    return seenCount === 0 ? baseKey : `${baseKey}-${seenCount + 1}`;
+  };
+
+  const renderFaqItem = (label, key) => {
+    const lines = label.split('\n');
+    const question = lines
+      .find(l => l.startsWith('Q:'))
+      ?.replaceAll('Q:', '')
+      .trim();
+    const answer = lines
+      .find(l => l.startsWith('A:'))
+      ?.replaceAll('A:', '')
+      .trim();
+    const faqKey = buildUniqueKey(`faq-${question || 'unknown'}-${answer || 'unknown'}`);
+    return (
+      <div
+        key={key || faqKey}
+        className={`${styles.faqCard} ${darkMode ? styles.faqCardDark : ''}`}
+      >
+        <div className={styles.faqQuestionRow}>
+          <span className={styles.faqQBadge}>Q</span>
+          <p className={`${styles.faqQuestionText} ${darkMode ? styles.faqQuestionTextDark : ''}`}>
+            {question}
+          </p>
+        </div>
+        <div className={styles.faqAnswerRow}>
+          <span className={styles.faqABadge}>A</span>
+          <p className={`${styles.faqAnswerText} ${darkMode ? styles.faqAnswerTextDark : ''}`}>
+            {answer}
+          </p>
+        </div>
+      </div>
+    );
+  };
+
+  const renderCommentItem = item => {
+    const commentText = item.comment || item;
+    const commentAuthor = item.author || 'User';
+    const commentKey = buildUniqueKey(`comment-${commentAuthor}-${commentText}`);
+    const initials = commentAuthor
+      .split(' ')
+      .map(s => s[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+    return (
+      <div
+        key={commentKey}
+        className={`${styles.commentEntry} ${darkMode ? styles.commentEntryDark : ''}`}
+      >
+        <div className={styles.commentAvatar}>
+          <span>{initials}</span>
+        </div>
+        <div className={styles.commentContent}>
+          <p className={`${styles.commentAuthor} ${darkMode ? styles.commentAuthorDark : ''}`}>
+            {commentAuthor}
+          </p>
+          <p className={`${styles.commentText} ${darkMode ? styles.commentTextDark : ''}`}>
+            {commentText}
+          </p>
+        </div>
+      </div>
+    );
+  };
+
+  const renderParticipantItem = (label, isNewParticipant) => {
+    const nameOnly = label.split(' - ')[0];
+    const participantKey = buildUniqueKey(`participant-${nameOnly}-${label}`);
+    const initials = nameOnly
+      .split(' ')
+      .map(s => s[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+    return (
+      <div
+        key={participantKey}
+        className={`${styles.participantRow} ${darkMode ? styles.participantRowDark : ''}`}
+      >
+        <div
+          className={`${styles.participantAvatar} ${darkMode ? styles.participantAvatarDark : ''}`}
+        >
+          {initials}
+        </div>
+        <div className={styles.participantInfo}>
+          <span className={styles.participantName}>{label}</span>
+          {isNewParticipant && (
+            <span
+              className={`${styles.participantBadge} ${
+                darkMode ? styles.participantBadgeDark : ''
+              }`}
+            >
+              New
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderTabItem = item => {
+    const isParticipantTab = activeTab === 'Participants';
+    const isCommentTab = activeTab === 'Comments';
+    const isFaqTab = activeTab === 'FAQs';
+    const label = typeof item === 'string' ? item : item.label;
+    const isNewParticipant = isParticipantTab && typeof item === 'object' && item.isNew;
+
+    if (isFaqTab) return renderFaqItem(label);
+    if (isCommentTab) return renderCommentItem(item);
+    if (isParticipantTab) return renderParticipantItem(label, isNewParticipant);
+
+    const descriptionKey = buildUniqueKey(`description-${label}`);
+    return (
+      <p
+        key={descriptionKey}
+        className={`${styles.descriptionParagraph} ${
+          darkMode ? styles.descriptionParagraphDark : ''
+        }`}
+      >
+        {label}
+      </p>
+    );
+  };
 
   return (
     <div
@@ -168,157 +281,7 @@ function DescriptionSection({ activity, registrants = [] }) {
 
       <div className={styles.tabContent}>
         {tabContent[activeTab]?.length > 0 ? (
-          tabContent[activeTab].map((item, index) => {
-            const isParticipantTab = activeTab === 'Participants';
-            const isCommentTab = activeTab === 'Comments';
-            const isFaqTab = activeTab === 'FAQs';
-
-            const label = typeof item === 'string' ? item : item.label;
-            const isNewParticipant = isParticipantTab && typeof item === 'object' && item.isNew;
-
-            // Handle FAQ formatting
-            if (isFaqTab) {
-              const lines = label.split('\n');
-              const question = lines
-                .find(line => line.startsWith('Q:'))
-                ?.replace('Q:', '')
-                .trim();
-              const answer = lines
-                .find(line => line.startsWith('A:'))
-                ?.replace('A:', '')
-                .trim();
-
-              return (
-                <div
-                  key={`${activeTab}-${index}`}
-                  className={`${styles.faqCard} ${darkMode ? styles.faqCardDark : ''}`}
-                >
-                  <div className={styles.faqQuestionRow}>
-                    <span className={styles.faqQBadge}>Q</span>
-                    <p
-                      className={`${styles.faqQuestionText} ${
-                        darkMode ? styles.faqQuestionTextDark : ''
-                      }`}
-                    >
-                      {question}
-                    </p>
-                  </div>
-
-                  <div className={styles.faqAnswerRow}>
-                    <span className={styles.faqABadge}>A</span>
-                    <p
-                      className={`${styles.faqAnswerText} ${
-                        darkMode ? styles.faqAnswerTextDark : ''
-                      }`}
-                    >
-                      {answer}
-                    </p>
-                  </div>
-                </div>
-              );
-            }
-
-            // Handle Comments with avatars
-            if (isCommentTab) {
-              const commentText = item.comment || item;
-              const commentAuthor = item.author || `User ${index + 1}`;
-              const initials = commentAuthor
-                .split(' ')
-                .map(s => s[0])
-                .slice(0, 2)
-                .join('')
-                .toUpperCase();
-
-              return (
-                <div
-                  key={`${activeTab}-${index}`}
-                  className={`${styles.commentEntry} ${darkMode ? styles.commentEntryDark : ''}`}
-                >
-                  <div className={styles.commentAvatar}>
-                    <span>{initials}</span>
-                  </div>
-                  <div className={styles.commentContent}>
-                    <p
-                      className={`${styles.commentAuthor} ${
-                        darkMode ? styles.commentAuthorDark : ''
-                      }`}
-                    >
-                      {commentAuthor}
-                    </p>
-                    <p
-                      className={`${styles.commentText} ${darkMode ? styles.commentTextDark : ''}`}
-                    >
-                      {commentText}
-                    </p>
-                  </div>
-                </div>
-              );
-            }
-
-            // Handle Participants
-            if (isParticipantTab) {
-              const nameOnly = label.split(' - ')[0];
-              const initials = nameOnly
-                .split(' ')
-                .map(s => s[0])
-                .slice(0, 2)
-                .join('')
-                .toUpperCase();
-              const paragraphClasses = [styles.descriptionParagraph];
-              if (darkMode) paragraphClasses.push(styles.descriptionParagraphDark);
-              if (isParticipantTab) {
-                paragraphClasses.push(styles.participantEntry);
-                if (darkMode) paragraphClasses.push(styles.participantEntryDark);
-                if (isNewParticipant) paragraphClasses.push(styles.participantEntryNew);
-              }
-
-              return (
-                <div
-                  key={`${activeTab}-${index}`}
-                  className={`${styles.participantRow} ${
-                    darkMode ? styles.participantRowDark : ''
-                  }`}
-                >
-                  {/* Avatar */}
-                  <div
-                    className={`${styles.participantAvatar} ${
-                      darkMode ? styles.participantAvatarDark : ''
-                    }`}
-                  >
-                    {initials}
-                  </div>
-
-                  {/* Name + badge */}
-                  <div className={styles.participantInfo}>
-                    <span className={styles.participantName}>{label}</span>
-
-                    {isNewParticipant && (
-                      <span
-                        className={`${styles.participantBadge} ${
-                          darkMode ? styles.participantBadgeDark : ''
-                        }`}
-                      >
-                        New
-                      </span>
-                    )}
-                  </div>
-                </div>
-              );
-            }
-
-            // Default: Description paragraphs
-            const paragraphClasses = [styles.descriptionParagraph];
-            if (darkMode) paragraphClasses.push(styles.descriptionParagraphDark);
-
-            return (
-              <p
-                key={`${activeTab}-${index}`}
-                className={paragraphClasses.filter(Boolean).join(' ')}
-              >
-                {label}
-              </p>
-            );
-          })
+          tabContent[activeTab].map(item => renderTabItem(item))
         ) : (
           <div className={`${styles.emptyState} ${darkMode ? styles.emptyStateDark : ''}`}>
             No {activeTab.toLowerCase()} available at the moment.
@@ -328,5 +291,37 @@ function DescriptionSection({ activity, registrants = [] }) {
     </div>
   );
 }
+
+DescriptionSection.propTypes = {
+  activity: PropTypes.shape({
+    descriptionParagraphs: PropTypes.arrayOf(PropTypes.string),
+    description: PropTypes.string,
+    participants: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.object])),
+    comments: PropTypes.arrayOf(
+      PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.shape({
+          author: PropTypes.string,
+          comment: PropTypes.string,
+        }),
+      ]),
+    ),
+    faqs: PropTypes.arrayOf(
+      PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.shape({
+          question: PropTypes.string,
+          answer: PropTypes.string,
+        }),
+      ]),
+    ),
+  }),
+  registrants: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string,
+      jobTitle: PropTypes.string,
+    }),
+  ),
+};
 
 export default DescriptionSection;

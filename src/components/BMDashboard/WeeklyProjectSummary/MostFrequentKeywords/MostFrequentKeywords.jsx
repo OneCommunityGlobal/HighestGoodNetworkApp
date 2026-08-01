@@ -4,6 +4,7 @@ import axios from 'axios';
 import DatePicker, { CalendarContainer } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import * as d3 from 'd3';
+import { FaTrash } from 'react-icons/fa';
 import styles from './MostFrequentKeywords.module.css';
 import Select, { components as selectComponents } from 'react-select';
 import PropTypes from 'prop-types';
@@ -444,7 +445,52 @@ const DropdownIndicator = props => (
   </selectComponents.DropdownIndicator>
 );
 
-function MostFrequentKeywords({ darkMode: propDarkMode }) {
+// Pick the most recent unique-tag items, capped at maxItems.
+function getLatestData(data, isMobile) {
+  if (!data || data.length === 0) return [];
+
+  const sorted = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
+  const maxItems = isMobile ? 6 : 8;
+
+  if (sorted.length < maxItems) return sorted;
+
+  const latestItems = [];
+  const usedTags = new Set();
+
+  for (const item of sorted) {
+    if (!usedTags.has(item.tag)) {
+      latestItems.push(item);
+      usedTags.add(item.tag);
+      if (latestItems.length >= maxItems) break;
+    }
+  }
+
+  return latestItems;
+}
+
+// Items without a real date are always included; otherwise check the bounds.
+function isWithinDateRange(item, startDate, endDate) {
+  if (!item.date) return true;
+
+  const itemDate = new Date(item.date);
+  itemDate.setHours(0, 0, 0, 0);
+
+  if (startDate) {
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    if (itemDate < start) return false;
+  }
+
+  if (endDate) {
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+    if (itemDate > end) return false;
+  }
+
+  return true;
+}
+
+function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
   const svgRef = useRef();
   const containerRef = useRef();
   const [projects, setProjects] = useState([]);
@@ -475,7 +521,8 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       });
       setProjects(res.data || []);
     } catch (err) {
-      if (process.env.NODE_ENV !== 'production') {
+      if (process.env.NODE_ENV === 'development') {
+        // eslint-disable-next-line no-console
         console.error('Failed to fetch projects', err);
       }
     }
@@ -499,29 +546,21 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
 
         const responseData = response?.data?.data;
         if (responseData && responseData.length > 0) {
-          const dataWithDates = responseData.slice(0, 8).map((item, index) => {
-            const years = [2023, 2024, 2025, 2026];
-            const year = years[index % 4];
-            const month = ((index * 3) % 12) + 1;
-            const day = ((index * 5) % 28) + 1;
-            return {
-              ...item,
-              count: item.count || 50 + index * 5,
-              date: `${year}-${month.toString().padStart(2, '0')}-${day
-                .toString()
-                .padStart(2, '0')}`,
-            };
-          });
-          setAllTags(dataWithDates);
+          const normalizedData = responseData.slice(0, 8).map(item => ({
+            tag: item.tag,
+            count: item.count || 1,
+            date: item.date || null,
+          }));
+          setAllTags(normalizedData);
           return;
         }
-      } catch {
-        // Use generated data when API fails
-      }
 
-      // Fallback to generated data
-      const generatedData = generateProjectSpecificData(projectName);
-      setAllTags(generatedData);
+        // API returned empty — no keywords for this project
+        setAllTags([]);
+      } catch {
+        setError('Failed to load keywords. Please try again.');
+        setAllTags([]);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -541,7 +580,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     } else if (selected.type === 'project') {
       const project = projects.find(p => p._id === selected.value);
       if (project) {
-        fetchProjectData(project._id, project.projectName);
+        fetchProjectData(project._id);
       }
     }
   };
@@ -603,7 +642,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       if (!tagsToFilter || tagsToFilter.length === 0) return [];
 
       if (!startDate && !endDate) {
-        return getLatestData(tagsToFilter);
+        return getLatestData(tagsToFilter, isMobile);
       }
 
       const filtered = tagsToFilter.filter(item => {
@@ -616,15 +655,11 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
       const maxItems = isMobile ? 6 : 8;
       const result = sorted.slice(0, maxItems);
 
-      if (result.length === 0) {
-        setError('No data for selected range');
-      } else {
-        setError('');
-      }
+      setError(result.length === 0 ? 'No keywords available for selected filters' : '');
 
       return result;
     },
-    [startDate, endDate, getLatestData, isMobile],
+    [startDate, endDate, isMobile],
   );
 
   useEffect(() => {
@@ -1290,13 +1325,5 @@ function MostFrequentKeywords({ darkMode: propDarkMode }) {
     </div>
   );
 }
-
-MostFrequentKeywords.propTypes = {
-  darkMode: PropTypes.bool,
-};
-
-MostFrequentKeywords.defaultProps = {
-  darkMode: false,
-};
 
 export default MostFrequentKeywords;

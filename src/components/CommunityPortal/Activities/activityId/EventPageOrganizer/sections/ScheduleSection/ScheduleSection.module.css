@@ -93,6 +93,39 @@
   border-radius: 1.51px;
 }
 
+.monthTitleDark {
+  color: #e5e7eb;
+}
+
+.weekDayDark {
+  color: #9ca3af;
+}
+
+.currentMonthDark {
+  color: #e5e7eb;
+}
+
+.chevronLight {
+  color: #000;
+}
+
+.chevronDark {
+  color: #e5e7eb;
+}
+
+.availableDate {
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.availableDate:hover .dateNumber {
+  text-decoration: underline;
+}
+
+.selectedDate {
+  cursor: default;
+}
+
 @keyframes fadeIn {
   0% {
     opacity: 0;
