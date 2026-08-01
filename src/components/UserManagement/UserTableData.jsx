@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Tooltip, UncontrolledTooltip } from 'reactstrap';
 import { connect, useSelector, useDispatch } from 'react-redux';
+import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
@@ -29,7 +30,10 @@ import { boxStyle } from '../../styles';
 import { formatDate, formatDateLocal } from '../../utils/formatDate';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import SetUpFinalDayButton from './SetUpFinalDayButton';
+import { ENDPOINTS } from '../../utils/URL';
 import styles from './usermanagement.module.css';
+
+const reportTaskVisibilityCache = new Map();
 
 /**
  * The body row of the user table
@@ -44,6 +48,7 @@ const UserTableDataComponent = props => {
   const [tooltipReportsOpen, setTooltipReports] = useState(false);
 
   const [isChanging, onReset] = useState(false);
+  const [hasTasksFromApi, setHasTasksFromApi] = useState(null);
 
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
   const dispatch = useDispatch();
@@ -86,6 +91,66 @@ const UserTableDataComponent = props => {
   const canInteractWithPauseUserButton = props.hasPermission('interactWithPauseUserButton');
   const canSetFinalDay = props.hasPermission('setFinalDay');
   const canSeeReports = props.hasPermission('getReports');
+
+  const userTaskCount =
+    props.user.taskCount ??
+    props.user.tasksCount ??
+    props.user.completedTasksCount ??
+    props.user.totalTaskCount;
+  const hasTaskArray = Array.isArray(props.user.tasks);
+  const hasTaskMetadata = hasTaskArray || userTaskCount != null;
+
+  const hasTasksForReportFromMetadata = hasTaskArray
+    ? props.user.tasks.length > 0
+    : userTaskCount > 0;
+
+  const hasTasksForReport = hasTaskMetadata ? hasTasksForReportFromMetadata : hasTasksFromApi === true;
+
+  useEffect(() => {
+    if (hasTaskMetadata) {
+      setHasTasksFromApi(null);
+      return;
+    }
+
+    const userId = props.user?._id;
+    if (!userId) {
+      setHasTasksFromApi(false);
+      return;
+    }
+
+    if (reportTaskVisibilityCache.has(userId)) {
+      setHasTasksFromApi(reportTaskVisibilityCache.get(userId));
+      return;
+    }
+
+    let isCancelled = false;
+
+    const loadTaskVisibility = async () => {
+      try {
+        const response = await axios.get(ENDPOINTS.TASKS_BY_USERID(userId));
+        const rawTasks = Array.isArray(response?.data)
+          ? response.data
+          : Array.isArray(response?.data?.tasks)
+            ? response.data.tasks
+            : [];
+        const hasTasks = rawTasks.length > 0;
+        reportTaskVisibilityCache.set(userId, hasTasks);
+        if (!isCancelled) {
+          setHasTasksFromApi(hasTasks);
+        }
+      } catch (error) {
+        if (!isCancelled) {
+          setHasTasksFromApi(false);
+        }
+      }
+    };
+
+    loadTaskVisibility();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [hasTaskMetadata, props.user?._id]);
 
   const toggleDeleteTooltip = () => setTooltipDelete(!tooltipDeleteOpen);
   const togglePauseTooltip = () => setTooltipPause(!tooltipPauseOpen);
@@ -188,7 +253,7 @@ const UserTableDataComponent = props => {
     </div>
 
     {/* Permission tooltip remains exactly the same */}
-    {!canSeeReports ? (
+    {!canSeeReports && hasTasksForReport ? (
       <Tooltip
         placement="bottom"
         isOpen={tooltipReportsOpen}
@@ -203,32 +268,34 @@ const UserTableDataComponent = props => {
 
     {/* Right stack */}
     <div className={styles.activeCellRightTop}>
-      <Link
-        to={`/peoplereport/${props.user._id}`}
-        onClick={event => {
-          if (!canSeeReports) {
+      {hasTasksForReport && (
+        <Link
+          to={`/peoplereport/${props.user._id}`}
+          onClick={event => {
+            if (!canSeeReports) {
+              event.preventDefault();
+              return;
+            }
+
+            if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) {
+              return;
+            }
+
             event.preventDefault();
-            return;
-          }
-
-          if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) {
-            return;
-          }
-
-          event.preventDefault();
-          history.push(`/peoplereport/${props.user._id}`);
-        }}
-        className={styles.iconLink}
-        title="Click to view user report"
-      >
-        <img
-          src="/report_icon.png"
-          alt="reportsicon"
-          className="team-member-tasks-user-report-link-image"
-          id={`report-icon-${props.user._id}`}
-          style={{ width: 16, height: 16 }}
-        />
-      </Link>
+            history.push(`/peoplereport/${props.user._id}`);
+          }}
+          className={styles.iconLink}
+          title="Click to view user report"
+        >
+          <img
+            src="/report_icon.png"
+            alt="reportsicon"
+            className="team-member-tasks-user-report-link-image"
+            id={`report-icon-${props.user._id}`}
+            style={{ width: 16, height: 16 }}
+          />
+        </Link>
+      )}
     </div>
 
     <div className={styles.activeCellRightBottom}>
@@ -671,6 +738,11 @@ UserTableDataComponent.propTypes = {
     infringementCount: PropTypes.number,
     isActive: PropTypes.bool,
     reactivationDate: PropTypes.string,
+    taskCount: PropTypes.number,
+    tasksCount: PropTypes.number,
+    completedTasksCount: PropTypes.number,
+    totalTaskCount: PropTypes.number,
+    tasks: PropTypes.array,
   }).isRequired,
   index: PropTypes.number,
   isActive: PropTypes.bool,

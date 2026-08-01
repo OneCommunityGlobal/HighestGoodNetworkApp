@@ -466,12 +466,19 @@ class PeopleReport extends Component {
       }
     };
 
-    const activeTasks = userTask.reduce((accumulator, item) => {
-      const incompleteTasks = item.resources.filter(
-        task => task.completedTask === false && task.userID === userProfile._id,
-      );
-      return accumulator.concat(incompleteTasks);
-    }, []);
+    const hasTasksContributedFromAssignments = Array.isArray(userTask)
+      && userTask.some(task => {
+        if (!Array.isArray(task.resources)) return false;
+        return task.resources.some(resource => resource.userID === userProfile._id);
+      });
+
+    const hasTasksContributedFromTimeEntries = Array.isArray(timeEntries?.period)
+      && timeEntries.period.some(entry => {
+        const entryUserId = entry.personId ?? entry.userId;
+        return entryUserId === userProfile._id && Boolean(entry.taskId);
+      });
+
+    const hasTasksContributed = hasTasksContributedFromAssignments || hasTasksContributedFromTimeEntries;
     const visibleBlocks = [
       'weeklycommittedHours',
       userProfile.isActive ? 'hoursLogged' : null,
@@ -547,15 +554,15 @@ class PeopleReport extends Component {
                     >
                       Loading tasks: &nbsp; <Spinner color={`${darkMode ? 'light' : 'dark'}`} />
                     </p>
-                  ) : activeTasks.length > 0 ? (
+                  ) : hasTasksContributed ? (
                     <>
                       <div className={`intro_date ${darkMode ? styles.textLight : ''}`}>
-                        <h4>Tasks contributed</h4>
+                        <h4>Tasks Contributed</h4>
                       </div>
                       <PeopleDataTable />
                     </>
                   ) : (
-                    <Alert color="danger" style={{ margin: '0 35% ' }}>You have no tasks.</Alert>
+                    <Alert color="danger" style={{ margin: '0 35% ' }}>No task contributions found.</Alert>
                   )}
                   <div className={`${styles.infringementContainer}`}>
                     <div className={`${styles.infringementContainerInner}`}>
