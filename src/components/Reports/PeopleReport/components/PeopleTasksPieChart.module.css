@@ -2,7 +2,7 @@
   display: grid;
   grid-auto-flow: row;
   row-gap: 8px; 
-  color: rgba(0, 0, 0, 0.5);
+  color: rgb(0 0 0 / 50%);
 }
 
 .pie-no-scroll,
@@ -30,7 +30,7 @@
   height: 100% !important;
 }
 
-@media (min-width: 2000px) {
+@media (width >= 2000px) {
   .people-pie-charts-wrapper {
     grid-auto-flow: column;
     column-gap: 24px;
@@ -65,4 +65,10 @@
   align-items: center;
   gap: 2rem;
   width: 100%;
+}
+
+/* Sits on the same element as .people-pie-charts-wrapper, so it must stay below it
+   to win on source order and override that rule's hardcoded rgba(0, 0, 0, 0.5). */
+.text-light {
+  color: #f5f5f5;
 }

@@ -198,9 +198,9 @@ export function PieChart({
       <div className={styles['pie-chart-legend-container']}>
         <div className={styles['pie-chart-legend-table-wrapper']}>
           <table
-            className={
-              darkMode ? styles['pie-chart-legend-table-dark'] : styles['pie-chart-legend-table']
-            }
+            className={`${styles['pie-chart-legend-table']} ${
+              darkMode ? styles['pie-chart-legend-table-dark'] : ''
+            }`}
           >
             <thead>
               <tr>

@@ -2,12 +2,12 @@
   position: absolute;
   text-align: center;
   padding: 0.5rem;
-  background: #ffffff;
+  background: #fff;
   color: #313639;
   border-radius: 8px;
   pointer-events: none;
   font-size: 1rem;
-  word-wrap: break-word; /* Ensures long text wraps within the tooltip */
+  overflow-wrap: break-word; /* Ensures long text wraps within the tooltip */
   white-space: normal;
 }
 
@@ -27,16 +27,13 @@
 :global(.slider) {
   position: absolute;
   cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background-color: #baaeae;
   transition: 0.4s;
   border-radius: 34px;
 }
 
-:global(.slider:before) {
+:global(.slider::before) {
   position: absolute;
   content: "";
   height: 14px;
@@ -52,7 +49,7 @@
   background-color: #2196f3;
 }
 
-:global(.switch input:checked + .slider:before) {
+:global(.switch input:checked + .slider::before) {
   transform: translateX(14px);
 }
 
@@ -95,7 +92,6 @@
   min-width: 20px;
   min-height: 20px;
   margin-right: 12px;
-
   border-radius: 50%;
 }
 
@@ -103,15 +99,14 @@
   width: 240px;
   display: flex;
   justify-content: space-between;
-
-  color: rgba(0, 0, 0, 0.5);
+  color: rgb(0 0 0 / 50%);
 }
 
 .data-legend-info-part:not(:last-child) {
   margin-right: 24px;
 }
 
-@media (max-width: 670px) {
+@media (width <= 670px) {
   .pie-chart-wrapper {
     flex-direction: column;
   }
@@ -134,11 +129,56 @@ div.pie-chart-legend-container {
 
 /* Optional: Dark mode adjustments */
 .text-light .slider {
-  background-color: #ffffff;
+  background-color: #fff;
 }
 
 .text-light input:checked + .slider {
   background-color: #4CAF50;
+}
+
+/* Dark mode mirrors the "Time Logged to Projects/Non-tasks" legend
+   (UserProjectPieChart.module.css) so the two charts read as one component:
+   auto layout, left-aligned cells, 8px padding, same #ece9e9 text. The flat
+   #1f2a40 block there becomes a blue gradient so the table reads as its own
+   surface rather than the grey of the card behind it.
+
+   Everything below is ordered by ascending specificity, which is both what
+   stylelint's no-descending-specificity wants and what the cascade needs: the
+   dark rules tie with their light counterparts, so they only win by coming
+   after them. Reordering this block will silently un-fix dark mode. */
+.pie-chart-legend-table-dark {
+  table-layout: auto;
+  border-collapse: collapse;
+  background: linear-gradient(to bottom right, #1f2a40, #2f4157);
+  border-radius: 8px;
+}
+
+.pie-chart-legend-table th {
+  background-color: white;
+}
+
+.pie-chart-legend-table td {
+  padding: 8px 0;
+}
+
+/* `Teams/Team.module.css` opens with a bare `thead { background: aliceblue }` and
+   `Projects/projects.module.css` with `:global(thead)` doing the same - CSS Modules
+   scopes class names but NOT element selectors, so both leak onto every table in the
+   app. PeopleTable.jsx pulls the former onto this page. Clearing the thead is what
+   lets the gradient show; a transparent `th` alone just exposes the aliceblue. */
+.pie-chart-legend-table-dark thead {
+  background: transparent;
+}
+
+.pie-chart-legend-table-dark th,
+.pie-chart-legend-table-dark td {
+  padding: 8px;
+  color: #ece9e9;
+  background-color: transparent;
+}
+
+.pie-chart-legend-table-dark th {
+  font-weight: bold;
 }
 
 .pie-chart-legend-table th:nth-child(1),
@@ -159,15 +199,27 @@ div.pie-chart-legend-container {
   text-align: right;
 }
 
+/* Restates the sibling's left-aligned layout at the same specificity as the
+   light column rules above, so it needs to stay below them. */
+.pie-chart-legend-table-dark th:nth-child(1),
+.pie-chart-legend-table-dark td:nth-child(1) {
+  text-align: left;
+  width: 40px;
+}
+
+.pie-chart-legend-table-dark th:nth-child(2),
+.pie-chart-legend-table-dark td:nth-child(2) {
+  text-align: left;
+  width: auto;
+}
+
+.pie-chart-legend-table-dark th:nth-child(3),
+.pie-chart-legend-table-dark td:nth-child(3) {
+  text-align: left;
+  width: auto;
+}
+
 .pie-chart-legend-table tr:hover,
 .pie-chart-legend-table-dark tr:hover {
   background-color: transparent !important;
-}
-
-.pie-chart-legend-table th {
-  background-color: white;
-}
-
-.pie-chart-legend-table td {
-  padding: 8px 0;
 }

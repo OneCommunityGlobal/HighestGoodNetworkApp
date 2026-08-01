@@ -198,8 +198,12 @@ describe('PeopleTableDetails component', () => {
     );
     expect(toggleButton).toBeInTheDocument();
 
+    // Anchored to the id the component itself toggles via getElementById, rather than
+    // the CSS module class, which is hashed in the real build. The div is styled-only
+    // with no role or accessible name, so there is no Testing Library query for it -
+    // same reason the original querySelector here carried this disable.
     // eslint-disable-next-line testing-library/no-node-access
-    const extraDiv = toggleButton.parentElement.querySelector('.extra');
+    const extraDiv = document.getElementById('1');
     expect(extraDiv).toBeInTheDocument();
 
     fireEvent.click(toggleButton);
