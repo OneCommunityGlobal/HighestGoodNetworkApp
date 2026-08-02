@@ -47,16 +47,8 @@
   padding-right: 8px !important;
 }
 
-.volunteeringTimeTabTablet {
-  display: none;
-}
-
 @media (width <= 1024px) {
   .volunteeringTimeTabDesktop {
-    display: none;
-  }
-
-  .volunteeringTimeTabTablet {
     display: block;
   }
 

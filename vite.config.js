@@ -12,10 +12,11 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
+      host: '127.0.0.1',
       port: 5173,
       proxy: {
         '/api': {
-          target: 'http://localhost:4500',
+          target: 'http://127.0.0.1:4500',
           changeOrigin: true,
           secure: false,
           rewrite: path => path.replace(/^\/api/, ''),

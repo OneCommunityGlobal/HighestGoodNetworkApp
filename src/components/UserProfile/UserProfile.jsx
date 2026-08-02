@@ -2039,7 +2039,8 @@ setUpdatedTasks(prev => {
               <Modal
                 isOpen={menuModalTabletScreen === 'Volunteering Times'}
                 toggle={toggle}
-                className={darkMode ? 'text-light dark-mode' : ''}
+                scrollable
+                className={`volunteering-times-modal ${darkMode ? 'text-light dark-mode' : ''}`}
               >
                 <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>
                   Volunteering Times
@@ -2051,6 +2052,7 @@ setUpdatedTasks(prev => {
                     isUserSelf={isUserSelf}
                     role={requestorRole}
                     onEndDate={handleEndDate}
+                    loadUserProfile={loadUserProfile}
                     canEdit={canEditUserProfile}
                     canUpdateSummaryRequirements={canUpdateSummaryRequirements}
                     onStartDate={handleStartDate}
