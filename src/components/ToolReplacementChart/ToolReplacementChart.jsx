@@ -1,23 +1,6 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  LabelList,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import { Bar, BarChart, CartesianGrid, LabelList, Tooltip, XAxis, YAxis } from 'recharts';
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -26,7 +9,7 @@ import { fetchBMProjects } from '../../actions/bmdashboard/projectActions';
 import styles from './ToolReplacementChart.module.css';
 
 const ALL_PROJECTS_OPTION = { value: 'all', label: 'All Projects' };
-const ChartUiContext = createContext({ darkMode: false, isMobile: false });
+const MIN_CHART_WIDTH = 40;
 
 const getRecordProjectId = item => {
   if (!item?.projectId && !item?.project) return '';
@@ -187,8 +170,12 @@ function useChartWidth(containerRef) {
 }
 
 function CustomYAxisTick({ x, y, payload, darkMode, isMobile }) {
-  const text = payload?.value || '';
-  const words = text.split(' ');
+  if (x == null || y == null || Number.isNaN(x) || Number.isNaN(y)) return null;
+
+  const text = String(payload?.value ?? '');
+  if (!text) return null;
+
+  const words = text.split(' ').filter(Boolean);
   let lines = [text];
   if (words.length > 2) {
     lines = [words.slice(0, 2).join(' '), words.slice(2).join(' ')];
@@ -198,9 +185,10 @@ function CustomYAxisTick({ x, y, payload, darkMode, isMobile }) {
 
   return (
     <g transform={`translate(${x},${y})`}>
+      <title>{text}</title>
       {lines.map((line, index) => (
         <text
-          key={`${text}-${line}`}
+          key={`${text}-${index}-${line}`}
           x={0}
           y={0}
           dy={index * 14 - (lines.length - 1) * 7}
@@ -208,7 +196,6 @@ function CustomYAxisTick({ x, y, payload, darkMode, isMobile }) {
           fill={darkMode ? '#e5e5e5' : '#666'}
           fontSize={isMobile ? 10 : 12}
         >
-          <title>{text}</title>
           {line}
         </text>
       ))}
@@ -240,9 +227,12 @@ function ChartTooltip({ active, payload, darkMode }) {
 }
 
 function PercentageLabel({ x, y, width, height, value, darkMode, isMobile }) {
-  if ([x, y, width, height, value].some(item => item == null)) return null;
+  if ([x, y, width, height, value].some(item => item == null || Number.isNaN(item))) return null;
 
-  const text = `${Number(value).toFixed(1)}%`;
+  const numericValue = Number(value);
+  if (Number.isNaN(numericValue)) return null;
+
+  const text = `${numericValue.toFixed(1)}%`;
   const fontSize = isMobile ? 11 : 12;
   const fitsInsideBar = width > text.length * fontSize * 0.62 + 14;
   const renderInside = isMobile && fitsInsideBar;
@@ -263,16 +253,6 @@ function PercentageLabel({ x, y, width, height, value, darkMode, isMobile }) {
       {text}
     </text>
   );
-}
-
-function YAxisTick(props) {
-  const { darkMode, isMobile } = useContext(ChartUiContext);
-  return <CustomYAxisTick {...props} darkMode={darkMode} isMobile={isMobile} />;
-}
-
-function PercentageLabelRenderer(props) {
-  const { darkMode, isMobile } = useContext(ChartUiContext);
-  return <PercentageLabel {...props} darkMode={darkMode} isMobile={isMobile} />;
 }
 
 function ChartFilters({
@@ -373,68 +353,82 @@ function ChartFilters({
   );
 }
 
-function ToolsBarChart({ chartData, darkMode, isMobile, yAxisWidth, chartMargin }) {
+function ToolsBarChart({ chartData, darkMode, isMobile, yAxisWidth, chartMargin, width, height }) {
   const axisFill = getAxisFill(darkMode);
   const axisStroke = getAxisStroke(darkMode);
   const fontSize = isMobile ? 10 : 12;
   const labelFontSize = isMobile ? 12 : 14;
 
+  const renderTick = useCallback(
+    props => <CustomYAxisTick {...props} darkMode={darkMode} isMobile={isMobile} />,
+    [darkMode, isMobile],
+  );
+
+  const renderPercentageLabel = useCallback(
+    props => <PercentageLabel {...props} darkMode={darkMode} isMobile={isMobile} />,
+    [darkMode, isMobile],
+  );
+
+  if (width < MIN_CHART_WIDTH || height < MIN_CHART_WIDTH) {
+    return <div className={styles.statusMessage}>Loading chart...</div>;
+  }
+
   return (
-    <ResponsiveContainer className={styles.chart} width="100%" height="100%">
-      <BarChart layout="vertical" data={chartData} margin={chartMargin}>
-        <CartesianGrid
-          strokeDasharray="3 3"
-          horizontal={false}
-          stroke={darkMode ? '#44556b' : '#e5e5e5'}
-        />
-        <XAxis
-          type="number"
-          domain={[0, 100]}
-          ticks={[0, 25, 50, 75, 100]}
-          tick={{ fill: axisFill, fontSize }}
-          axisLine={{ stroke: axisStroke }}
-          tickLine={{ stroke: axisStroke }}
-          label={{
-            value: '% of requirement satisfied',
-            position: 'insideBottom',
-            offset: isMobile ? -16 : -12,
-            fill: axisFill,
-            fontSize: labelFontSize,
-          }}
-        />
-        <YAxis
-          type="category"
-          dataKey="toolName"
-          width={yAxisWidth}
-          tick={YAxisTick}
-          tickLine={false}
-          axisLine={{ stroke: axisStroke }}
-        />
-        <Tooltip
-          content={<ChartTooltip darkMode={darkMode} />}
-          cursor={{
-            fill: darkMode ? 'rgba(147, 197, 253, 0.12)' : 'rgba(30, 64, 175, 0.08)',
-          }}
-        />
-        <Bar
-          dataKey="requirementSatisfiedPercentage"
-          name="% of requirement satisfied"
-          fill={getBarFill(darkMode)}
-          stroke={getBarStroke(darkMode)}
-          strokeWidth={1.5}
-          barSize={chartData.length === 1 ? 28 : undefined}
-          isAnimationActive={false}
-        >
-          <LabelList dataKey="requirementSatisfiedPercentage" content={PercentageLabelRenderer} />
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
+    <BarChart width={width} height={height} layout="vertical" data={chartData} margin={chartMargin}>
+      <CartesianGrid
+        strokeDasharray="3 3"
+        horizontal={false}
+        stroke={darkMode ? '#44556b' : '#e5e5e5'}
+      />
+      <XAxis
+        type="number"
+        domain={[0, 100]}
+        ticks={[0, 25, 50, 75, 100]}
+        tick={{ fill: axisFill, fontSize }}
+        axisLine={{ stroke: axisStroke }}
+        tickLine={{ stroke: axisStroke }}
+        label={{
+          value: '% of requirement satisfied',
+          position: 'insideBottom',
+          offset: isMobile ? -16 : -12,
+          fill: axisFill,
+          fontSize: labelFontSize,
+        }}
+      />
+      <YAxis
+        type="category"
+        dataKey="toolName"
+        width={yAxisWidth}
+        tick={renderTick}
+        interval={0}
+        tickLine={false}
+        axisLine={{ stroke: axisStroke }}
+      />
+      <Tooltip
+        content={<ChartTooltip darkMode={darkMode} />}
+        cursor={{
+          fill: darkMode ? 'rgba(147, 197, 253, 0.12)' : 'rgba(30, 64, 175, 0.08)',
+        }}
+      />
+      <Bar
+        dataKey="requirementSatisfiedPercentage"
+        name="% of requirement satisfied"
+        fill={getBarFill(darkMode)}
+        stroke={getBarStroke(darkMode)}
+        strokeWidth={1.5}
+        barSize={chartData.length === 1 ? 28 : undefined}
+        isAnimationActive={false}
+      >
+        <LabelList dataKey="requirementSatisfiedPercentage" content={renderPercentageLabel} />
+      </Bar>
+    </BarChart>
   );
 }
 
 function ChartPanel({
   chartContainerRef,
   chartHeight,
+  chartWidth,
   loading,
   error,
   chartData,
@@ -459,6 +453,8 @@ function ChartPanel({
         isMobile={isMobile}
         yAxisWidth={yAxisWidth}
         chartMargin={chartMargin}
+        width={chartWidth}
+        height={chartHeight}
       />
     );
   }
@@ -511,7 +507,6 @@ export const ToolReplacementChart = () => {
   const isCompact = chartWidth > 0 && chartWidth < 900;
   const yAxisWidth = getYAxisWidth(isMobile, isCompact);
   const chartMargin = getChartMargin(isMobile);
-  const chartUiValue = useMemo(() => ({ darkMode, isMobile }), [darkMode, isMobile]);
 
   const handleStartDateChange = useCallback(
     date => {
@@ -547,43 +542,42 @@ export const ToolReplacementChart = () => {
     Boolean(startDate) || Boolean(endDate) || selectedProject?.value !== 'all';
 
   return (
-    <ChartUiContext.Provider value={chartUiValue}>
-      <div className={`${styles.mainContainer} ${darkMode ? styles.bgDark : ''}`}>
-        <h2 className={`${styles.title} ${darkMode ? styles.titleDark : ''}`}>
-          Tools Most Susceptible to Breakdown
-        </h2>
-        <p className={`${styles.subtitle} ${darkMode ? styles.subtitleDark : ''}`}>
-          Choose a project to view its tools ranked by % of requirement satisfied. Lower % means
-          higher replacement risk.
-        </p>
+    <div className={`${styles.mainContainer} ${darkMode ? styles.bgDark : ''}`}>
+      <h2 className={`${styles.title} ${darkMode ? styles.titleDark : ''}`}>
+        Tools Most Susceptible to Breakdown
+      </h2>
+      <p className={`${styles.subtitle} ${darkMode ? styles.subtitleDark : ''}`}>
+        Choose a project to view its tools ranked by % of requirement satisfied. Lower % means
+        higher replacement risk.
+      </p>
 
-        <ChartFilters
-          darkMode={darkMode}
-          projectOptions={projectOptions}
-          selectedProject={selectedProject}
-          onProjectChange={handleProjectChange}
-          startDate={startDate}
-          endDate={endDate}
-          onStartDateChange={handleStartDateChange}
-          onEndDateChange={handleEndDateChange}
-          onResetFilters={handleResetFilters}
-          hasActiveFilters={hasActiveFilters}
-        />
+      <ChartFilters
+        darkMode={darkMode}
+        projectOptions={projectOptions}
+        selectedProject={selectedProject}
+        onProjectChange={handleProjectChange}
+        startDate={startDate}
+        endDate={endDate}
+        onStartDateChange={handleStartDateChange}
+        onEndDateChange={handleEndDateChange}
+        onResetFilters={handleResetFilters}
+        hasActiveFilters={hasActiveFilters}
+      />
 
-        <ChartPanel
-          chartContainerRef={chartContainerRef}
-          chartHeight={chartHeight}
-          loading={loading}
-          error={error}
-          chartData={chartData}
-          selectedProject={selectedProject}
-          darkMode={darkMode}
-          isMobile={isMobile}
-          yAxisWidth={yAxisWidth}
-          chartMargin={chartMargin}
-        />
-      </div>
-    </ChartUiContext.Provider>
+      <ChartPanel
+        chartContainerRef={chartContainerRef}
+        chartHeight={chartHeight}
+        chartWidth={chartWidth}
+        loading={loading}
+        error={error}
+        chartData={chartData}
+        selectedProject={selectedProject}
+        darkMode={darkMode}
+        isMobile={isMobile}
+        yAxisWidth={yAxisWidth}
+        chartMargin={chartMargin}
+      />
+    </div>
   );
 };
 
