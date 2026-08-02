@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import * as d3 from 'd3';
+import { FiFolder } from 'react-icons/fi';
 import { CHART_RADIUS, CHART_SIZE } from '../../common/PieChart/constants';
 import { generateArrayOfUniqColors } from '../../common/PieChart/colorsGenerator';
 import { peopleTasksPieChartViewData } from './selectors';
@@ -114,13 +115,26 @@ function CompletedTasksPieChart({ darkMode }) {
   const hiddenCount = expanded ? 0 : Math.max(0, tasks.length - visibleCount);
   const renderedTasks = expanded ? tasks : tasks.slice(0, visibleCount);
 
-  if(tasksWithLoggedHoursById == 0) return null;
+  if (tasks.length === 0) {
+    return (
+      <div className={styles.completedTasksPieChartEmpty}>
+        <div className={`${styles['report-block']} ${styles['pie-empty-state']}`}>
+          <div className={styles['pie-empty-state-inner']} role="status">
+            <div className={styles['pie-empty-state-icon']} aria-hidden="true">
+              <FiFolder size={20} />
+            </div>
+            <h5 className={styles['pie-empty-state-title']}>No completed task hours yet</h5>
+            <p className={styles['pie-empty-state-body']}>
+              Once this person completes a task with logged hours, a breakdown of where their time is going will appear here.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div
-    className={styles.completedTasksPieChart}
-    //  className={styles['tasks-block-wrapper']}
-    >
+    <div className={styles.completedTasksPieChart}>
       <div
         className={styles['report-block']}
       >
