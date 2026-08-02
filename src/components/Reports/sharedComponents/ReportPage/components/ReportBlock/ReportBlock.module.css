@@ -3,9 +3,11 @@
   border-radius: 12px;
   box-shadow: 0 0 12px #eae1f6;
   text-align: center;
+  height: 100%;
 }
 
 .report-block-content {
+  height: 100%;
   padding: 1rem;
   border-radius: 12px;
   margin: 2px;
