@@ -80,9 +80,14 @@ function UserSearchPanel({
         {CREATE_NEW_USER}
       </button>
 
-      {/* SEARCH Label Box - explicitly forced text-dark or clear color styling */}
+      {/* SEARCH Label Box - dark background comes from the local module class; the text is
+          already forced white by the global `body.dark-mode *` rule in public/index.css */}
       <div className="input-group-prepend">
-        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-dark font-weight-bold' : ''}`}>
+        <span
+          className={`input-group-text ${
+            darkMode ? `${styles['dark-input-label']} font-weight-bold` : ''
+          }`}
+        >
           {SEARCH}
         </span>
       </div>
@@ -101,9 +106,13 @@ function UserSearchPanel({
         style={{ marginRight: '5px' }}
       />
 
-      {/* SHOW Label Box - changed text-light to text-dark so it pops on the white background label */}
+      {/* SHOW Label Box - same dark treatment as the SEARCH label above */}
       <div className="input-group-prepend">
-        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-dark font-weight-bold' : ''}`}>
+        <span
+          className={`input-group-text ${
+            darkMode ? `${styles['dark-input-label']} font-weight-bold` : ''
+          }`}
+        >
           {SHOW}
         </span>
       </div>

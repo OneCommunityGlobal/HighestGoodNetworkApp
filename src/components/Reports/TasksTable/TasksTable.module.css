@@ -6,8 +6,14 @@
   margin-bottom: 24px;
 }
 
-/* Filter wrapper styling */
+/* Filter wrapper styling. Owns the single source of truth for how tall every
+   control on this row is - selects, the search box and both buttons. The value
+   is set by the selects: react-select's control has a 30px min-height and sits
+   inside .tasks-table-filter-item's 4px vertical padding, so 38px. Anything new
+   added to this row should use the variable rather than its own number. */
 .tasks-table-filters-wrapper {
+  --filter-control-height: 38px;
+
   display: flex;
   justify-content: space-between;
 }
@@ -19,40 +25,24 @@
   margin-bottom: 24px;
 }
 
-/* Filter item styling */
+/* Filter item styling. Shared by the selects and the Active/Assign checkboxes.
+   min-height rather than height: a fixed height clipped anything that needed to
+   grow, which is half of why the wider select labels spilled out of their box. */
 .tasks-table-filter-item {
   display: flex;
   align-items: center;
+  box-sizing: border-box;
   border-radius: 4px;
   padding: 4px 10px;
-  height: 30px;
+  min-height: var(--filter-control-height);
   margin-right: 8px;
   margin-bottom: 12px;
   flex-wrap: nowrap;
 }
 
-/* Input styling */
-.tasks-table-filter-input .select__control {
-  width: 140px;
-  border: 2px solid #d1cfd4;
-  border-radius: 4px;
-  min-height: 30px;
-  height: 30px;
-  box-shadow: none;
-}
-
-.tasks-table-filter-input .select__control--is-focused {
-  border-color: #80bdff;
-  box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
-}
-
-.tasks-table-filter-input .select__placeholder {
-  color: #545b62;
-}
-
-.tasks-table-filter-input .select__single-value {
-  color: #495057;
-}
+/* react-select sizing/colors live in the `selectStyles` object in TasksTable.jsx,
+   not here: `select__*` class names are only emitted when react-select is given a
+   classNamePrefix (it isn't), and CSS Modules would hash them anyway. */
 
 .tasks-table-text-search-box {
   background-color: white;
@@ -61,9 +51,11 @@
   color: #495057;
   display: flex;
   align-items: center;
+  box-sizing: border-box;
   border-radius: 4px;
   padding: 4px 10px;
-  height: 30px;
+  height: var(--filter-control-height);
+  min-width: 140px;
   margin-right: 8px;
   margin-bottom: 12px;
 }
@@ -82,24 +74,26 @@
   outline-color: #e7b1ef;
   color: #9b1fb0;
   border-radius: 4px;
+  box-sizing: border-box;
   margin-left: 20px;
-  width: 100px;
-  min-width: 100px;
-  height: 30px;
+  width: 120px;
+  min-width: 120px;
+  height: var(--filter-control-height);
   cursor: pointer;
 }
 
-.tasks-table-edit-tasks-button{
+.tasks-table-edit-tasks-button {
   display: block;
   background-color: white;
   border: 2px solid #007bff;
   outline-color: #007bff;
   color: #5750db;
   border-radius: 4px;
+  box-sizing: border-box;
   margin-left: 0;
-  width: 100px;
-  min-width: 100px;
-  height: 30px;
+  width: 120px;
+  min-width: 120px;
+  height: var(--filter-control-height);
   cursor: pointer;
 }
 
@@ -115,4 +109,33 @@
 .tasks-table-edit-tasks-button:active {
   border-color: #5750db;
   outline-color: #5750db;
+}
+
+/* ─── Dark mode ─── */
+
+/* Passed to `Checkbox` via its backgroundColorCN/textColorCN props, mirroring
+   PeopleReport.module.css:459-465. `!important` is required: these have to beat
+   `.checkboxWrapper { background-color: #f8f7f8 }` in Checkbox.module.css, and
+   equal-specificity rules in a different stylesheet have no guaranteed order. */
+.bgYinmnBlue {
+  background-color: #2c3e50 !important;
+}
+
+.textLight {
+  color: #fff !important;
+}
+
+.tasks-table-text-search-box-dark {
+  background-color: #1c2541;
+  border-color: #3a506b;
+  color: #fff;
+}
+
+.tasks-table-text-search-box-dark::placeholder {
+  color: #94a3b8;
+}
+
+.tasks-table-button-dark {
+  background-color: #1c2541;
+  color: #fff;
 }

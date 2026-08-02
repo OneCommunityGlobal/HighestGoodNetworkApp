@@ -274,23 +274,6 @@
   padding-left: 10px;
 }
 
-.darkUsermanagementData {
-  background-color: #3a506b;
-}
-
-.darkUsermanagementData:hover {
-  background-color: #111831 !important;
-  color: #fff !important;
-}
-
-.lightUsermanagementData {
-  background-color: white;
-}
-
-.lightUsermanagementData:hover {
-  background-color: #e9f6ff;
-}
-
 .tooltipContainer::after {
   visibility: hidden;
   opacity: 0;
@@ -652,4 +635,14 @@
 #user-profiles-wild-card-search.text-light::placeholder {
   color: #b0b0b0 !important;
   opacity: 1;
+}
+
+/* Dark background for the "Search"/"Show" `.input-group-text` labels. This has to live
+   here rather than come from the shared `bg-yinmn-blue` helper: that class is defined in
+   src/App.module.css, which Vite scopes as a CSS module, so passing it as a plain string
+   from JSX is a no-op. Without it the labels keep Bootstrap's light-grey background while
+   `body.dark-mode * { color: #fff }` renders their text invisible. */
+.dark-input-label {
+  background-color: #3a506b !important;
+  border-color: #334155 !important;
 }

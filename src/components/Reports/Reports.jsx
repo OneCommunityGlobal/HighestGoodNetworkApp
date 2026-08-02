@@ -810,7 +810,7 @@ endDate: moment()
                           />
                         </div>
                       </div>
-                      <div className="lost-time-item">
+                      <div className={styles['lost-time-item']}>
                         <Button color="info" onClick={this.showAddPersonHistory}>
                           {this.state.showAddPersonHistory
                             ? 'Hide Person Lost Time'
@@ -827,7 +827,7 @@ endDate: moment()
                           />
                         </div>
                       </div>
-                      <div className="lost-time-item">
+                      <div className={styles['lost-time-item']}>
                         <Button color="info" onClick={this.showAddTeamHistory}>
                           {this.state.showAddTeamHistory
                             ? 'Hide Team Lost Time'
@@ -849,7 +849,7 @@ endDate: moment()
                 )}
               </div>
               {this.state.showCharts && (
-                <div className="table-data-container" style={(this.state.showPeople || this.state.showProjects || this.state.showTeams) ? { overflowY: 'auto' } : {overflowY: 'none'}}>
+                <div className={styles['table-data-container']} style={(this.state.showPeople || this.state.showProjects || this.state.showTeams) ? { overflowY: 'auto' } : {overflowY: 'none'}}>
                   {this.state.showPeople && (
                     <PeopleTable userProfiles={this.state.peopleSearchData} darkMode={darkMode} />
                   )}

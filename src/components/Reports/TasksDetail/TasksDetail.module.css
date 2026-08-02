@@ -15,9 +15,15 @@
 }
 
 .tasks-detail-table th, .tasks-detail-table td {
-  padding: 5px;
+  padding: 5px 8px;
   border: 1px solid #ddd;
   text-align: left;
+}
+
+/* Headers are short labels ("Estimated Hours", "Start Date"); letting them wrap
+   is what made the header row read as one run-on string. */
+.tasks-detail-table th {
+  white-space: nowrap;
 }
 
 .tasks-detail-table-head {
@@ -41,9 +47,39 @@
   color: red;
 }
 
-.dark-mode-row {
-  background-color: #3A506B ;
+/* Dark mode hangs off a single class on the <table> and cascades to rows/cells,
+   so adding a column or a row variant needs no extra dark className plumbing.
+   Ordered by ascending specificity, which is both what stylelint's
+   no-descending-specificity wants and what the cascade needs. */
+.dark-mode-table th,
+.dark-mode-table td {
+  border-color: #3a506b;
+}
+
+.dark-mode-table thead tr {
+  background-color: #1c2541;
   color: #fff;
+}
+
+.dark-mode-table tbody tr {
+  background-color: #3a506b;
+  color: #fff;
+}
+
+/* Both hover rules live here, last and in this order, for two reasons.
+   1. `Teams/Team.module.css` has a bare `tr:hover { background: #e9f6ff }` - CSS
+      Modules scopes class names but NOT element selectors, so it leaks onto every
+      table in the app and was painting a light row under white dark-mode text.
+      At (0,2,2) vs the leak's (0,1,1) these win deterministically, not by import
+      order.
+   2. The two are equal specificity, so dark must come after light to win. Keep
+      them adjacent and last; splitting them would silently un-fix dark hover. */
+.tasks-detail-table tbody tr:hover {
+  background-color: #e9f6ff;
+}
+
+.dark-mode-table tbody tr:hover {
+  background-color: #2f4157;
 }
 
 /* Responsive design */
