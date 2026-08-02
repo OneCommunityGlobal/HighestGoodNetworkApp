@@ -1,0 +1,169 @@
+.page {
+  min-height: 100vh;
+  padding: 1.5rem;
+}
+
+.pageDark {
+  background-color: #1b2a41;
+  color: #f8f9fa;
+}
+
+.title {
+  margin-bottom: 1rem;
+}
+
+.statusMessage {
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.errorMessage {
+  color: #dc3545;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.table {
+  width: 100%;
+  margin-bottom: 1rem;
+  border-collapse: collapse;
+  background-color: #fff;
+}
+
+.tableDark {
+  background-color: #3a506b;
+  color: #f8f9fa;
+}
+
+.table th,
+.table td {
+  padding: 0.75rem;
+  border: 1px solid #dee2e6;
+  vertical-align: top;
+}
+
+.tableDark th,
+.tableDark td {
+  border-color: #1c2541;
+}
+
+.table thead th {
+  background-color: #e3f0fb;
+  font-weight: 600;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.tableDark thead th {
+  background-color: #1c2541;
+  color: #f8f9fa;
+  border-bottom-color: #1b2a41;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.tableDark tbody tr:nth-child(even) {
+  background-color: #2f4157;
+}
+
+.table tbody tr:hover {
+  background-color: #eef5fb;
+}
+
+.tableDark tbody tr:hover {
+  background-color: #243447;
+}
+
+.taskLink {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.taskLink:hover {
+  text-decoration: underline;
+}
+
+.taskLinkDark {
+  color: #7ec8ff;
+}
+
+.taskLinkDark:hover {
+  color: #a8dbff;
+}
+
+.mutedText {
+  color: #6c757d;
+  font-size: 0.875rem;
+}
+
+.mutedTextDark {
+  color: #c5d0db;
+}
+
+.resourceBlock {
+  margin-bottom: 0.35rem;
+}
+
+.resourceBlock:last-child {
+  margin-bottom: 0;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.pageButton {
+  min-width: 2.25rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #212529;
+  cursor: pointer;
+}
+
+.pageButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.pageButton:hover:not(:disabled) {
+  background-color: #e9ecef;
+}
+
+.pageButtonActive {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: #fff;
+}
+
+.pageButtonDark {
+  background-color: #1c2541;
+  border-color: #3a506b;
+  color: #f8f9fa;
+}
+
+.pageButtonDark:hover:not(:disabled) {
+  background-color: #2f4157;
+}
+
+.pageButtonActiveDark {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: #fff;
+}
+
+.pageInfo {
+  margin: 0 0.25rem;
+  font-size: 0.9rem;
+}

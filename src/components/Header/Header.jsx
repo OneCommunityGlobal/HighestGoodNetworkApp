@@ -55,6 +55,7 @@ import {
   REPORTS,
   SEND_EMAILS,
   SCHEDULE_MEETINGS,
+  TASKS,
   TEAM_LOCATIONS,
   TEAMS,
   TIMELOG,
@@ -1128,6 +1129,7 @@ export function Header(props) {
                 {(canAccessUserManagement ||
                   canAccessBadgeManagement ||
                   canAccessProjects ||
+                  canUpdateTask ||
                   canAccessTeams ||
                   canAccessPopups ||
                   canAccessSendEmails ||
@@ -1171,6 +1173,16 @@ export function Header(props) {
                           disabled={headerDisabled}
                         >
                           {PROJECTS}
+                        </DropdownItem>
+                      )}
+                      {(canAccessProjects || canUpdateTask) && (
+                        <DropdownItem
+                          tag={Link}
+                          to="/resolvedtasks"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
+                          {TASKS}
                         </DropdownItem>
                       )}
                       {canAccessTeams && (
