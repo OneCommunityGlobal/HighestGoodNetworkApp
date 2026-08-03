@@ -43,14 +43,8 @@ import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import NotFoundPage from './components/NotFound/NotFoundPage';
 import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
-import SuggestedJobsList from './components/Collaboration/SuggestedJobsList';
-import TestEventRegistration from './components/EventRegistration/TestEventRegistration';
-import MemberList from './components/QuestionnaireDashboard/MemberList';
-import PromotionTable from './components/QuestionnaireDashboard/PromotionTable';
 import EventPopularity from './components/EventPopularity/EventPopularity';
 import ApplicantSourceDonutChart from './components/ApplicantSourceDonutChart/ApplicantSourceDonutChart';
-import ApplicantVolunteerRatio from './components/ApplicantVolunteerRatio/ApplicantVolunteerRatio';
-import { JobAnalyticsCompetitiveRolesPage } from './components/Reports/JobAnalytics';
 // LB Dashboard
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute/LBProtectedRoute';
 import LBHome from './components/LBDashboard/Home/Home';
@@ -86,11 +80,7 @@ import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
-import Register from './components/CommunityPortal/Activities/Register/Register';
-import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
-import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
 // Community Calendar
-import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
 // Kicthen and Inventory Portal
 import KitchenandInventoryLogin from './components/KitchenandInventory/Login';
 import OrchardManagement from './components/KitchenandInventory/OrchardManagement/OrchardManagement';
