@@ -173,12 +173,6 @@
 .trackingFilters {
   display: flex;
   flex-wrap: nowrap;
-  gap: 12px;
-}
-
-.trackingFilters {
-  display: flex;
-  flex-wrap: nowrap;
   gap: 12px; /* spacing between dropdowns */
 }
 
@@ -388,23 +382,8 @@
   border-color: #555;
 }
 
-.insightsDark .insightsTab {
-  color: #fff;
-  background-color: #3a506b;
-}
-
 .insightsDark .insightsTab:not(:last-child) {
   border-right-color: #555;
-}
-
-.insightsDark .insightsTab.activeTab {
-  background-color: #007bff;
-  color: #fff;
-  font-weight: bold;
-}
-
-.insightsDark .insightsTab:hover {
-  background-color: #4a5f7a;
 }
 
 .insightsContent {
