@@ -167,7 +167,7 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
 
   React.useEffect(() => {
     generateGraph();
-  }, [graphVisible, fromDate, toDate, focusedInf]);
+  }, [graphVisible, fromDate, toDate, focusedInf, darkMode]);
 
   return (
     <div>
