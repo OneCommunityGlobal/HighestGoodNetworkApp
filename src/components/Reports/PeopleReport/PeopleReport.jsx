@@ -95,11 +95,10 @@ function PeopleReport(props) {
     [userProfile],
   );
 
-  const totalTangibleHrsRound = (
-    timeEntries.period?.reduce((total, entry) => {
-      return total + (entry.hours + (entry.minutes / 60));
-    }, 0) || 0
-  ).toFixed(2);
+  const totalTangibleHrs = timeEntries.period?.reduce((total, entry) => {
+    return total + (entry.hours + (entry.minutes / 60));
+  }, 0) || 0;
+  const totalTangibleHrsRound = totalTangibleHrs === 0 ? '0' : totalTangibleHrs.toFixed(2);
 
   const { firstName, lastName, weeklycommittedHours } = userProfile;
   const { profilePic, role, jobTitle, endDate, _id, startDate } = userProfile;
