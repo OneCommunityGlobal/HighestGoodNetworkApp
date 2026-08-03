@@ -494,7 +494,7 @@ body {
 
 .peopleReportPage {
   display: flex;
-  min-height: 94vh;
+  min-height: 97vh;
 
   .peopleReportContainer {
     display: flex;
@@ -511,6 +511,7 @@ body {
 
 .peopleTasksPieChartWrapper {
   display: block;
+  flex: 1;
 }
 
 .reportLoading {
