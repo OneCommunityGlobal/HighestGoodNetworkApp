@@ -339,6 +339,14 @@ export const ENDPOINTS = {
   SET_USER_FOLLOWUP: (userId, taskId) => `${APIEndpoint}/followup/${userId}/${taskId}`,
   GET_PROJECT_BY_PERSON: searchName => `${APIEndpoint}/userProfile/projects/${searchName}`,
 
+  MEETING_POST: () => `${APIEndpoint}/meetings/new`,
+  MEETING_GET: (startTime, endTime) =>
+    `${APIEndpoint}/meetings?startTime=${startTime}&endTime=${endTime}`,
+  MEETING_MARK_READ: (meetingId, recipient) =>
+    `${APIEndpoint}/meetings/markRead/${meetingId}/${recipient}`,
+  MEETING_GET_BY_PARTICIPANT: userId => `${APIEndpoint}/meetings/participant/${userId}`,
+  MEETING_CALENDAR: meetingId => `${APIEndpoint}/meeting/${meetingId}/calendar`,
+
   FAQS: `${APIEndpoint}/faqs`,
   FAQ_BY_ID: faqId => `${APIEndpoint}/faqs/${faqId}`,
   SEARCH_FAQS: searchQuery => `${APIEndpoint}/faqs/search?q=${searchQuery}`,
@@ -407,6 +415,9 @@ export const ENDPOINTS = {
   BM_TOOL_AVAILABILITY: (toolId = '', projectId = '') =>
     `${APIEndpoint}/tools/availability?toolId=${toolId}&projectId=${projectId}`,
   BM_LOG_TOOLS: `${APIEndpoint}/bm/tools/log`,
+  BM_TOOL_UTILIZATION: `${APIEndpoint}/tools/utilization`,
+  BM_TOOL_UTILIZATION_INSIGHTS: `${APIEndpoint}/tools/utilization/insights`,
+  BM_TOOL_UTILIZATION_EXPORT: `${APIEndpoint}/tools/utilization/export`,
   BM_EQUIPMENT_BY_ID: singleEquipmentId => `${APIEndpoint}/bm/equipment/${singleEquipmentId}`,
   BM_EQUIPMENT_STATUS_UPDATE: (equipmentId) => `${APIEndpoint}/bm/equipment/${equipmentId}/status`,
   BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
@@ -565,18 +576,17 @@ export const ENDPOINTS = {
   // event endpoint
   EVENTS: `${APIEndpoint}/events`,
   EVENT_BY_ID: eventId => `${APIEndpoint}/events/${eventId}`,
+  EVENTS_BY_ID: activityId => `${APIEndpoint}/events/${activityId}`,
+  REGISTER_FOR_EVENT: activityId => `${APIEndpoint}/events/${activityId}/register`,
   EVENT_TYPES: `${APIEndpoint}/events/types`,
   EVENT_LOCATIONS: `${APIEndpoint}/events/locations`,
-
+  EVENT_ATTENDANCE_STATS: `${APIEndpoint}/events/attendance/stats`,
   ATTENDANCE: `${APIEndpoint}/attendance`,
   ATTENDANCE_BY_EVENT: eventId => `${APIEndpoint}/attendance/event/${eventId}`,
   ATTENDANCE_SUMMARY: eventId => `${APIEndpoint}/attendance/event/${eventId}/summary`,
   ATTENDANCE_BY_ID: attendanceId => `${APIEndpoint}/attendance/${attendanceId}`,
   ATTENDANCE_SEED: eventId => `${APIEndpoint}/attendance/event/${eventId}/seed`,
   ATTENDANCE_MOCK: eventId => `${APIEndpoint}/attendance/event/${eventId}/mock`,
-  EVENTS_BY_ID: (activityId) => `${APIEndpoint}/events/${activityId}`,
-  REGISTER_FOR_EVENT: (activityId) => `${APIEndpoint}/events/${activityId}/register`,
-  EVENT_ATTENDANCE_STATS: `${APIEndpoint}/events/attendance/stats`,
   LB_SEND_MESSAGE: `${APIEndpoint}/lb/messages`,
   LB_READ_MESSAGE: `${APIEndpoint}/lb/messages/conversation`,
   LB_UPDATE_MESSAGE_STATUS: `${APIEndpoint}/lb/messages/statuses`,
@@ -585,6 +595,8 @@ export const ENDPOINTS = {
   LB_GET_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
   LB_UPDATE_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
   LB_MARK_MESSAGES_AS_READ: `${APIEndpoint}/lb/messages/mark-as-read`,
+  LB_VILLAGES: `${APIEndpoint}/villages`,
+  LB_VILLAGE_BY_ID: id => `${APIEndpoint}/villages/${id}`,
 
   // Injuries endpoints
   INJURIES: `${APIEndpoint}/injuries`,
@@ -685,6 +697,16 @@ export const ENDPOINTS = {
 
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
+  GITHUB_REVIEW_SUMMARY: (duration, sort = 'desc', team) => {
+    const params = new URLSearchParams({
+      duration,
+      sort,
+    });
+    if (team) {
+      params.set('team', team);
+    }
+    return `${APIEndpoint}/analytics/review-summary?${params.toString()}`;
+  },
   PR_GRADING_CONFIG: `${APIEndpoint}/pr-grading-config`,
   WEEKLY_GRADING: `${APIEndpoint}/weekly-grading`,
   WEEKLY_GRADING_SAVE: `${APIEndpoint}/weekly-grading/save`,
@@ -729,13 +751,13 @@ export const ENDPOINTS = {
   FEEDBACK_CLOSE_PERMANENTLY: `${APIEndpoint}/feedback/close-permanently`,
   FEEDBACK_SUBMIT: `${APIEndpoint}/feedback/submit`,
   // application time analytics
-  APPLICATION_TIME_DATA: (startDate, endDate, roles) => {
+  APPLICATION_TIME_DATA: (startDate, roles) => {
     let url = `${APIEndpoint}/analytics/application-time?`;
     if (startDate) url += `startDate=${encodeURIComponent(startDate)}&`;
-    if (endDate) url += `endDate=${encodeURIComponent(endDate)}&`;
-    if (roles && roles.length > 0) url += `roles=${encodeURIComponent(roles.join(','))}&`;
-    return url.slice(0, -1);
+    if (roles && roles.length > 0) url += `roles=${encodeURIComponent(roles.join(','))}`;
+    return url.slice(0);
   },
+  APPLICATION_TIME_DATA_ROLES: `${APIEndpoint}/analytics/application-time/roles`,
 };
 
 export const ApiEndpoint = APIEndpoint;
