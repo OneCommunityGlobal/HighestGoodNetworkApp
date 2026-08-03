@@ -259,7 +259,11 @@ function PermissionListItem(props) {
                 props.onChange();
                 updateModalStatus(true);
               }}
-              disabled={!props.hasPermission('putRole')}
+              disabled={
+                !(
+                  props.hasPermission('putRole') || props.hasPermission('putUserProfilePermissions')
+                )
+              }
               style={darkMode ? boxStyleDark : boxStyle}
             >
               {howManySubpermsInRole === 'All' ? 'Delete' : 'Add'}
@@ -274,7 +278,10 @@ function PermissionListItem(props) {
                   updateModalStatus(true);
                 }}
                 disabled={
-                  !props.hasPermission('putRole') ||
+                  !(
+                    props.hasPermission('putRole') ||
+                    props.hasPermission('putUserProfilePermissions')
+                  ) ||
                   (immutablePermissions.includes(permission) &&
                     !props.hasPermission('putUserProfilePermissions')) ||
                   shouldDisableForRestriction
