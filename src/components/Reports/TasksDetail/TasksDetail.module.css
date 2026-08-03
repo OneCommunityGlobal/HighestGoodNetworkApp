@@ -46,6 +46,12 @@
   color: #fff;
 }
 
+.dark-mode-row:hover,
+.dark-mode-row:hover td {
+  background-color: #2f4157;
+  color: #fff;
+}
+
 /* Responsive design */
 @media screen and (width <= 1100px) {
   .collapse-column {
@@ -84,5 +90,13 @@
 
   .tasks-detail-center-cells {
     font-size: 10px;
+  }
+
+  .show-more-button {
+    max-width: 100%;
+    padding: 2px 4px;
+    font-size: 10px;
+    line-height: 1.2;
+    white-space: normal;
   }
 }

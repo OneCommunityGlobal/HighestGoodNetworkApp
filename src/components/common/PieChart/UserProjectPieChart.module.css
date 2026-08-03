@@ -319,4 +319,15 @@
   .pie-chart-legend-container {
     overflow-x: auto;
   }
+
+  .pie-chart-legend-container table {
+    width: max-content;
+    min-width: 100%;
+    table-layout: auto;
+  }
+
+  .pie-chart-legend-container th:nth-child(2),
+  .pie-chart-legend-container td:nth-child(2) {
+    text-align: left;
+  }
 }

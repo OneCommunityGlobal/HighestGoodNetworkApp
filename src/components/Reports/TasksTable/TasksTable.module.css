@@ -19,6 +19,10 @@
   margin-bottom: 24px;
 }
 
+.tasks-table-actions {
+  display: flex;
+}
+
 /* Filter item styling */
 .tasks-table-filter-item {
   display: flex;
@@ -78,9 +82,9 @@
 .tasks-table-clear-filter-button {
   display: block;
   background-color: white;
-  border: 2px solid #e7b1ef;
-  outline-color: #e7b1ef;
-  color: #9b1fb0;
+  border: 2px solid #007bff;
+  outline-color: #007bff;
+  color: #5750db;
   border-radius: 4px;
   margin-left: 20px;
   width: 100px;
@@ -106,13 +110,52 @@
 .tasks-table-clear-filter-button:hover,
 .tasks-table-clear-filter-button:focus,
 .tasks-table-clear-filter-button:active {
-  border-color: #ca50db;
-  outline-color: #ca50db;
+  background-color: #007bff;
+  border-color: #007bff;
+  outline-color: #007bff;
+  color: white;
 }
 
 .tasks-table-edit-tasks-button:hover,
 .tasks-table-edit-tasks-button:focus,
 .tasks-table-edit-tasks-button:active {
-  border-color: #5750db;
-  outline-color: #5750db;
+  background-color: #007bff;
+  border-color: #007bff;
+  outline-color: #007bff;
+  color: white;
+}
+
+@media screen and (width <= 645px) {
+  .tasks-table-filters-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tasks-table-filters {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .tasks-table-filter-item,
+  .tasks-table-text-search-box {
+    width: 100%;
+    max-width: 260px;
+    margin-right: 0;
+  }
+
+  .tasks-table-filter-input :global(.select__control) {
+    width: 100%;
+  }
+
+  .tasks-table-actions {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    margin-bottom: 16px;
+  }
+
+  .tasks-table-clear-filter-button {
+    margin-left: 0;
+  }
 }
