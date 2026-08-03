@@ -43,11 +43,28 @@ import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import NotFoundPage from './components/NotFound/NotFoundPage';
 import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
-
+import SuggestedJobsList from './components/Collaboration/SuggestedJobsList';
+import TestEventRegistration from './components/EventRegistration/TestEventRegistration';
+import MemberList from './components/QuestionnaireDashboard/MemberList';
+import PromotionTable from './components/QuestionnaireDashboard/PromotionTable';
+import EventPopularity from './components/EventPopularity/EventPopularity';
+import ApplicantSourceDonutChart from './components/ApplicantSourceDonutChart/ApplicantSourceDonutChart';
+import ApplicantVolunteerRatio from './components/ApplicantVolunteerRatio/ApplicantVolunteerRatio';
+import { JobAnalyticsCompetitiveRolesPage } from './components/Reports/JobAnalytics';
 // LB Dashboard
-import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute';
-import LBLogin from './components/LBDashboard/Login';
+import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute/LBProtectedRoute';
+import LBHome from './components/LBDashboard/Home/Home';
 import LBDashboard from './components/LBDashboard';
+import LBLogin from './components/LBDashboard/Login';
+import VillageDetails from './components/LBDashboard/Map/VillageDetails/VillageDetails';
+import LBRegister from './components/LBDashboard/Register/LBRegister';
+import LBMessaging from './components/LBDashboard/Messaging/LBMessaging';
+import MasterPlan from './components/LBDashboard/Map/MasterPlan/MasterPlan';
+import ListOveriew from './components/LBDashboard/ListingOverview/ListOverview';
+import LBBidOverview from './components/LBDashboard/BiddingOverview/BiddingOverview';
+import BiddingHomepage from './components/LBDashboard/BiddingHomepage/BiddingHomepage';
+import WishList from './components/LBDashboard/WishList/WishList';
+import WishListItem from './components/LBDashboard/WishList/ItemOverview';
 
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
@@ -69,7 +86,23 @@ import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
+import Register from './components/CommunityPortal/Activities/Register/Register';
+import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
+import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
+// Community Calendar
+import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
+// Kicthen and Inventory Portal
+import KitchenandInventoryLogin from './components/KitchenandInventory/Login';
+import OrchardManagement from './components/KitchenandInventory/OrchardManagement/OrchardManagement';
+import OrchardManagementPage from './components/KitchenandInventory/OrchardManagement/OrchardManagementPage';
+import GardenManagement from './components/KitchenandInventory/GardenManagement/GardenManagement';
+import RecipesLandingPage from './components/KitchenandInventory/Recipes';
 
+import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
+import KIINVENTORY from './components/KitchenandInventory/KIInventory/KIInventory';
+import KICalendar from './components/KitchenandInventory/KICalendar/KICalendar';
+
+// Education Portal
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
@@ -77,7 +110,6 @@ import EPDashboard from './components/EductionPortal';
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 
-import ApplicantSourceDonutChart from './components/ApplicantSourceDonutChart/ApplicantSourceDonutChart';
 import PlannedCostDonutChart from './components/PlannedCostDonutChart/PlannedCostDonutChart';
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
 import PRDashboardOverview from './components/HGNPRDashboard/PRDashboardOverview';
@@ -156,6 +188,53 @@ export default (
   <Switch>
     {/* ----- LB Dashboard Routing ----- */}
     {/* If it's possible incorporate this route with others without the header, please do */}
+    <Route path="/lbdashboard/login" component={LBLogin} />
+    <Route path="/lbdashboard/register" component={LBRegister} />
+    {/* Protected Routes for lbdashboard */}
+    <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
+    <LBProtectedRoute
+      path="/lbdashboard/listingshome"
+      render={() => (
+        <>
+          <AutoUpdate />
+          <LBHome />
+        </>
+      )}
+    />
+    <LBProtectedRoute path="/lbdashboard/listOverview" exact component={ListOveriew} />
+    <LBProtectedRoute path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
+    <LBProtectedRoute path="/lbdashboard/bidding" exact component={BiddingHomepage} />
+    <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} />
+    <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
+    <LBProtectedRoute path="/lbdashboard/village/:value" exact component={VillageDetails} />
+    <LBProtectedRoute
+      exact
+      path="/lbdashboard/wishlists"
+      render={() => (
+        <>
+          <AutoUpdate />
+          <ToastContainer />
+          <WishList />
+        </>
+      )}
+    />
+    <LBProtectedRoute
+      exact
+      path="/lbdashboard/wishlist/:id"
+      render={() => (
+        <>
+          <AutoUpdate />
+          <ToastContainer />
+          <WishListItem />
+        </>
+      )}
+    />
+
+    <LBProtectedRoute path="/lbdashboard/home" component={LBHome} />
+    {/* ----- LB Dashboard Routing Ends----- */}
+
+    <Route path="/EventPopularity" component={EventPopularity} />
+    <Route path="/MaterialSummary" component={MaterialSummary} />
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
@@ -456,6 +535,34 @@ export default (
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
         {/* ----- END BM Dashboard Routing ----- */}
+        {/* ----- Kitchen and Inventory Portal Routes ----- */}
+        <ProtectedRoute path="/kitchenandinventory" exact component={KIDashboard} />
+        <ProtectedRoute path="/kitchenandinventory/inventory" exact component={KIINVENTORY} />
+        <ProtectedRoute path="/kitchenandinventory/calendar" exact component={KICalendar} />
+        <ProtectedRoute
+          path="/kitchenandinventory/animalmanagement"
+          exact
+          component={AnimalManagement}
+        />
+        <ProtectedRoute
+          path="/kitchenandinventory/orchardmanagement"
+          exact
+          component={OrchardManagement}
+        />
+        <ProtectedRoute
+          path="/kitchenandinventory/orchardmanagementpage"
+          exact
+          component={OrchardManagementPage}
+        />
+        <ProtectedRoute
+          path="/kitchenandinventory/gardenmanagement"
+          exact
+          component={GardenManagement}
+        />
+        <Route path="/kitchenandinventory/orders" component={OrdersPage} />
+        <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} />
+        <ProtectedRoute path="/kitchenandinventory/recipes" exact component={RecipesLandingPage} />
+        {/* ----- End of Kitchen and Inventory Portal Routes ----- */}
         <Route path="/login" component={Login} />
         <Route path="/forgotpassword" component={ForgotPassword} />
         <Route path="/email-subscribe" component={EmailSubscribeForm} />

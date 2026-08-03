@@ -576,18 +576,17 @@ export const ENDPOINTS = {
   // event endpoint
   EVENTS: `${APIEndpoint}/events`,
   EVENT_BY_ID: eventId => `${APIEndpoint}/events/${eventId}`,
+  EVENTS_BY_ID: activityId => `${APIEndpoint}/events/${activityId}`,
+  REGISTER_FOR_EVENT: activityId => `${APIEndpoint}/events/${activityId}/register`,
   EVENT_TYPES: `${APIEndpoint}/events/types`,
   EVENT_LOCATIONS: `${APIEndpoint}/events/locations`,
-
+  EVENT_ATTENDANCE_STATS: `${APIEndpoint}/events/attendance/stats`,
   ATTENDANCE: `${APIEndpoint}/attendance`,
   ATTENDANCE_BY_EVENT: eventId => `${APIEndpoint}/attendance/event/${eventId}`,
   ATTENDANCE_SUMMARY: eventId => `${APIEndpoint}/attendance/event/${eventId}/summary`,
   ATTENDANCE_BY_ID: attendanceId => `${APIEndpoint}/attendance/${attendanceId}`,
   ATTENDANCE_SEED: eventId => `${APIEndpoint}/attendance/event/${eventId}/seed`,
   ATTENDANCE_MOCK: eventId => `${APIEndpoint}/attendance/event/${eventId}/mock`,
-  EVENTS_BY_ID: (activityId) => `${APIEndpoint}/events/${activityId}`,
-  REGISTER_FOR_EVENT: (activityId) => `${APIEndpoint}/events/${activityId}/register`,
-  EVENT_ATTENDANCE_STATS: `${APIEndpoint}/events/attendance/stats`,
   LB_SEND_MESSAGE: `${APIEndpoint}/lb/messages`,
   LB_READ_MESSAGE: `${APIEndpoint}/lb/messages/conversation`,
   LB_UPDATE_MESSAGE_STATUS: `${APIEndpoint}/lb/messages/statuses`,
@@ -596,6 +595,8 @@ export const ENDPOINTS = {
   LB_GET_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
   LB_UPDATE_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
   LB_MARK_MESSAGES_AS_READ: `${APIEndpoint}/lb/messages/mark-as-read`,
+  LB_VILLAGES: `${APIEndpoint}/villages`,
+  LB_VILLAGE_BY_ID: id => `${APIEndpoint}/villages/${id}`,
 
   // Injuries endpoints
   INJURIES: `${APIEndpoint}/injuries`,

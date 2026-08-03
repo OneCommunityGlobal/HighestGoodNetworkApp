@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { createPortal } from 'react-dom';
 import { toast } from 'react-toastify';
@@ -87,6 +88,10 @@ const StatusBadge = ({ status }) => {
   );
 };
 
+StatusBadge.propTypes = {
+  status: PropTypes.string.isRequired,
+};
+
 const StatCard = ({ label, value, bgColor, icon }) => (
   <div className={styles.statCard}>
     <div>
@@ -98,6 +103,13 @@ const StatCard = ({ label, value, bgColor, icon }) => (
     </div>
   </div>
 );
+
+StatCard.propTypes = {
+  label: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  bgColor: PropTypes.string,
+  icon: PropTypes.node,
+};
 
 const OrderCard = ({ order, onStatusChange, darkMode }) => {
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -547,6 +559,30 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
       </ModalFooter>
     </Modal>
   );
+};
+
+const orderItemShape = PropTypes.shape({
+  name: PropTypes.string,
+  quantity: PropTypes.string,
+  unitPrice: PropTypes.number,
+  total: PropTypes.number,
+});
+
+const orderShape = PropTypes.shape({
+  id: PropTypes.string,
+  status: PropTypes.string,
+  supplier: PropTypes.string,
+  orderDate: PropTypes.string,
+  expectedDelivery: PropTypes.string,
+  itemCount: PropTypes.number,
+  total: PropTypes.number,
+  urgent: PropTypes.string,
+  items: PropTypes.arrayOf(orderItemShape),
+});
+
+OrderCard.propTypes = {
+  order: orderShape,
+  onStatusChange: PropTypes.func,
 };
 
 function OrdersPage() {
