@@ -93,10 +93,6 @@
 
 /* Dark mode */
 
-.viewSwitcher button:hover {
-  background-color: #f5f5f5;
-}
-
 .viewSwitcher button.active {
   background-color: #0056b3;
   color: #fff;
@@ -146,12 +142,6 @@
   border: 1px solid #555;
 }
 
-.filterDropdown:hover,
-.filterDropdown:focus {
-  border-color: #007bff;
-  outline: none;
-}
-
 /* Dark mode dropdown (component-level) */
 .filterDropdownDarkMode {
   padding: 8px 16px;
@@ -174,12 +164,6 @@
 }
 
 /* Hover and focus */
-.filterDropdownDarkMode:hover,
-.filterDropdownDarkMode:focus {
-  border-color: #3b82f6;
-  outline: none;
-}
-
 /* Dropdown options */
 .filterDropdownDarkMode option {
   background-color: #1e293b;
@@ -207,12 +191,6 @@
   cursor: pointer;
   font-size: 14px;
   transition: background-color 0.2s, color 0.2s;
-}
-
-.createNew:hover {
-  background-color: #007bff;
-  color: #fff;
-  border-color: #007bff;
 }
 
 /* Dark mode */
@@ -263,10 +241,6 @@
   min-height: 180px;
 }
 
-.caseCard:hover {
-  box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
-}
-
 .caseCardDark > * {
   color: #fff;
 }
@@ -311,26 +285,6 @@
 .caseListItemDark .eventBadge,
 .selectedEventCardDark .eventBadge {
   /* Colors are already set above with !important, but ensure background is visible */
-}
-
-.caseCardDark .eventBadge[data-type='Yoga Class'] {
-  background-color: #e9f7ef;
-  color: #28a745 !important;
-}
-
-.caseCardDark .eventBadge[data-type='Cooking Workshop'] {
-  background-color: #fdecea;
-  color: #e74c3c !important;
-}
-
-.caseCardDark .eventBadge[data-type='Dance Class'] {
-  background-color: #fff5e6;
-  color: #f39c12 !important;
-}
-
-.caseCardDark .eventBadge[data-type='Fitness Bootcamp'] {
-  background-color: #f5e6ff;
-  color: #9b59b6 !important;
 }
 
 .eventTime {
@@ -489,13 +443,6 @@
 .attendeesCountDark {
   font-size: 14px;
   color: #fff !important;
-}
-
-.caseListItem:hover {
-  background-color: #d2cfcf;
-  box-shadow: 0 2px 10px rgb(0 0 0 / 10%);
-  margin-bottom: 8px;
-  border-radius: 6px;
 }
 
 .caseListItemDark {
