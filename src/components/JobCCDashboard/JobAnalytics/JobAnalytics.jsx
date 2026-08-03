@@ -1,8 +1,8 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react/no-unescaped-entities */
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { connect } from 'react-redux';
+import React, { useState, useMemo, useEffect, useCallback, useId } from 'react';
+import { connect, useSelector } from 'react-redux';
 import {
   LineChart,
   Line,
@@ -31,10 +31,19 @@ import {
   PieChartIcon,
   Lock,
   TrendingDown,
+  Monitor,
+  Smartphone,
+  Tablet,
+  Info,
+  X,
 } from 'lucide-react';
 import styles from './JobAnalytics.module.css';
 import hasPermission from '../../../utils/permissions';
 import { ENDPOINTS } from '../../../utils/URL';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import Select from 'react-select';
+import clsx from 'clsx';
 
 const ROLE_OPTIONS = [
   'All Roles',
@@ -73,6 +82,25 @@ const CONFIG = {
     display: { month: 'short', day: 'numeric' },
     api: 'YYYY-MM-DD',
   },
+};
+
+// Device multipliers for generating device-specific mock data
+const DEVICE_MULTIPLIERS = {
+  Desktop: { users: 0.45, pageViews: 0.5, sessions: 0.45, bounceRate: 0.85, avgDuration: 1.2 },
+  Mobile: { users: 0.38, pageViews: 0.35, sessions: 0.38, bounceRate: 1.15, avgDuration: 0.75 },
+  Tablet: { users: 0.17, pageViews: 0.15, sessions: 0.17, bounceRate: 1.0, avgDuration: 1.0 },
+};
+
+const DEVICE_ICONS = { Desktop: Monitor, Mobile: Smartphone, Tablet };
+
+const METRIC_TOOLTIPS = {
+  users: 'Total number of unique visitors who accessed the site in the selected period.',
+  pageViews: 'Total number of pages viewed. Repeated views of a single page are counted.',
+  sessions:
+    'A session is a group of user interactions within a given time frame (30 min idle = new session).',
+  bounceRate:
+    'Percentage of sessions where the user left without interacting further. Lower is better.',
+  avgEngagementTime: 'Average time (in seconds) a user actively engaged with the page per session.',
 };
 
 // ======================== SHARED CONSTANTS ========================
@@ -127,6 +155,12 @@ function useMediaQuery(query) {
   return matches;
 }
 
+const toIsoDate = d => {
+  if (!d) return '';
+  if (typeof d === 'string') return d.split('T')[0];
+  return d.toISOString().split('T')[0];
+};
+
 // ======================== API SERVICE ========================
 class AnalyticsService {
   static getAuthToken() {
@@ -154,6 +188,7 @@ class AnalyticsService {
   }
 
   // Secure pseudo-random helper for UI demo analytics data only.
+  // Secure pseudo-random helper for UI demo analytics data only.
   // NOTE: Not used for authentication, cryptography, or access control.
   static secureRandom(min, max) {
     const array = new Uint32Array(1);
@@ -170,53 +205,50 @@ class AnalyticsService {
       for (let i = 0; i <= diffDays; i += 1) {
         const date = new Date(start);
         date.setDate(date.getDate() + i);
-        let roleOffset = 0;
-        switch (role) {
-          case 'Frontend Developer':
-            roleOffset = 50;
-            break;
-          case 'Backend Developer':
-            roleOffset = 30;
-            break;
-          case 'Data Analyst':
-            roleOffset = 20;
-            break;
-          case 'Product Manager':
-            roleOffset = 10;
-            break;
-          case 'UX Designer':
-            roleOffset = 15;
-            break;
-          default:
-            break;
-        }
+        const baseUsers = this.secureRandom(700 + offset, 1000 + offset);
+        const basePageViews = this.secureRandom(4000 + offset * 5, 6000 + offset * 5);
+        const baseSessions = this.secureRandom(
+          Math.floor(600 + offset * 0.8),
+          Math.floor(1000 + offset * 0.8),
+        );
+        const baseBounceRate = this.secureRandom(35, 55);
+        const baseAvgDuration = this.secureRandom(180, 300);
+
+        const deviceData = {};
+        ['Desktop', 'Mobile', 'Tablet'].forEach(device => {
+          const m = DEVICE_MULTIPLIERS[device];
+          deviceData[device] = {
+            users: Math.round(baseUsers * m.users),
+            pageViews: Math.round(basePageViews * m.pageViews),
+            sessions: Math.round(baseSessions * m.sessions),
+            bounceRate: Math.round(baseBounceRate * m.bounceRate),
+            avgDuration: Math.round(baseAvgDuration * m.avgDuration),
+          };
+        });
+
         data.push({
           date: date.toISOString().split('T')[0],
           displayDate: date.toLocaleDateString('en-US', CONFIG.DATE_FORMAT.display),
-          users: this.secureRandom(700 + offset + roleOffset, 1000 + offset + roleOffset),
-          pageViews: this.secureRandom(
-            4000 + offset * 5 + roleOffset * 10,
-            6000 + offset * 5 + roleOffset * 10,
-          ),
-          sessions: this.secureRandom(
-            Math.floor(600 + offset * 0.8 + roleOffset * 0.5),
-            Math.floor(1000 + offset * 0.8 + roleOffset * 0.5),
-          ),
-          bounceRate: this.secureRandom(35, 55),
-          avgDuration: this.secureRandom(180, 300),
+          users: baseUsers,
+          pageViews: basePageViews,
+          sessions: baseSessions,
+          bounceRate: baseBounceRate,
+          avgDuration: baseAvgDuration,
+          deviceData,
         });
       }
       return data;
     };
 
-    const { start, end } =
-      dateRange ??
-      (() => {
-        const e = new Date();
-        const s = new Date();
-        s.setDate(e.getDate() - 30);
-        return { start: s.toISOString().split('T')[0], end: e.toISOString().split('T')[0] };
-      })();
+    const isValidRange = dateRange && dateRange.start && dateRange.end;
+    const { start, end } = isValidRange
+      ? dateRange
+      : (() => {
+          const e = new Date();
+          const s = new Date();
+          s.setDate(e.getDate() - 30);
+          return { start: s.toISOString().split('T')[0], end: e.toISOString().split('T')[0] };
+        })();
 
     return {
       currentPeriod: genSeries(start, end, 100),
@@ -238,9 +270,30 @@ class AnalyticsService {
         },
       },
       deviceBreakdown: [
-        { name: 'Desktop', value: 45, previousValue: 42, sessions: 8520 },
-        { name: 'Mobile', value: 38, previousValue: 40, sessions: 7195 },
-        { name: 'Tablet', value: 17, previousValue: 18, sessions: 3219 },
+        {
+          name: 'Desktop',
+          value: 45,
+          previousValue: 42,
+          sessions: 8520,
+          bounceRate: 36.0,
+          avgEngagementTime: 294,
+        },
+        {
+          name: 'Mobile',
+          value: 38,
+          previousValue: 40,
+          sessions: 7195,
+          bounceRate: 48.6,
+          avgEngagementTime: 184,
+        },
+        {
+          name: 'Tablet',
+          value: 17,
+          previousValue: 18,
+          sessions: 3219,
+          bounceRate: 42.3,
+          avgEngagementTime: 245,
+        },
       ],
       trafficSources: [
         { source: 'Organic Search', current: 3500, previous: 3200 },
@@ -263,7 +316,14 @@ function useAnalyticsData(dateRange, comparisonPeriod, selectedRole) {
     setLoading(true);
     setError(null);
     try {
-      const res = await AnalyticsService.fetchData(dateRange, comparisonPeriod, selectedRole);
+      const apiDateRange =
+        dateRange && (dateRange.start || dateRange.end)
+          ? {
+              start: dateRange.start ? toIsoDate(dateRange.start) : '',
+              end: dateRange.end ? toIsoDate(dateRange.end) : '',
+            }
+          : dateRange;
+      const res = await AnalyticsService.fetchData(apiDateRange, comparisonPeriod, selectedRole);
       setData(res);
     } catch (e) {
       setError(e.message || 'Failed to load analytics');
@@ -295,7 +355,7 @@ function ErrorMessage({ error, onRetry }) {
     <div className={styles.errorBox}>
       <p className={styles.errorText}>{error}</p>
       {onRetry && (
-        <button className={`${styles.btn} ${styles.btnLink}`} onClick={onRetry}>
+        <button className={styles.buttonDanger} onClick={onRetry}>
           Try again
         </button>
       )}
@@ -318,16 +378,37 @@ function AccessDenied() {
   );
 }
 
-function MetricCard({ icon: Icon, title, value, change }) {
-  const isPositive = change?.isPositive ?? false;
+function MetricTooltip({ text }) {
+  const [visible, setVisible] = useState(false);
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   return (
-    <div className={styles.metricCard}>
+    <span className={clsx(styles.tooltipWrap, darkMode && styles.darkMode)}>
+      <Info
+        size={13}
+        className={styles.tooltipIcon}
+        onMouseEnter={() => setVisible(true)}
+        onMouseLeave={() => setVisible(false)}
+      />
+      {visible && (
+        <span className={clsx(styles.tooltipBox, darkMode && styles.darkMode)}>{text}</span>
+      )}
+    </span>
+  );
+}
+
+function MetricCard({ icon: Icon, title, value, change, tooltipText }) {
+  const isPositive = change?.isPositive ?? false;
+  const darkMode = useSelector(state => state.theme.darkMode);
+
+  return (
+    <div className={clsx(styles.metricCard, darkMode && styles.darkMode)}>
       <div className={styles.metricTop}>
-        <div className={styles.metricIconWrap}>
+        <div className={clsx(styles.metricIconWrap, darkMode && styles.darkMode)}>
           <Icon className={styles.metricIcon} />
         </div>
         {change && change.formatted !== '0%' && (
-          <div className={`${styles.change} ${isPositive ? styles.positive : styles.negative}`}>
+          <div className={clsx(styles.change, isPositive ? styles.positive : styles.negative)}>
             {isPositive ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
             <span>{change.formatted}</span>
           </div>
@@ -336,17 +417,22 @@ function MetricCard({ icon: Icon, title, value, change }) {
       <div className={styles.metricValue}>
         {typeof value === 'string' ? value : formatNumber(value)}
       </div>
-      <div className={styles.metricTitle}>{title}</div>
+      <div className={styles.metricTitle}>
+        {title}
+        {tooltipText && <MetricTooltip text={tooltipText} />}
+      </div>
     </div>
   );
 }
 
 function ChartCard({ title, icon: Icon, children, className }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   return (
-    <div className={`${styles.chartCard} ${className || ''}`}>
+    <div className={clsx(styles.chartCard, darkMode && styles.darkMode)}>
       <div className={styles.chartHeader}>
         {Icon && (
-          <div className={styles.chartIconWrap}>
+          <div className={clsx(styles.chartIconWrap, darkMode && styles.darkMode)}>
             <Icon className={styles.chartIcon} />
           </div>
         )}
@@ -354,6 +440,131 @@ function ChartCard({ title, icon: Icon, children, className }) {
       </div>
       <div className={styles.chartBody}>{children}</div>
     </div>
+  );
+}
+
+// ======================== DEVICE FILTER BANNER ========================
+function DeviceFilterBanner({ selectedDevice, onClear }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+  if (!selectedDevice) return null;
+  const DevIcon = DEVICE_ICONS[selectedDevice] || Monitor;
+  return (
+    <div className={clsx(styles.deviceBanner, darkMode && styles.darkMode)}>
+      <DevIcon size={16} />
+      <p className={clsx(styles.description, darkMode && styles.darkMode)}>
+        Showing data for <span>{selectedDevice}</span> only
+      </p>
+      <button className={styles.deviceBannerClear} onClick={onClear} title="Clear device filter">
+        <X size={14} />
+        Clear filter
+      </button>
+    </div>
+  );
+}
+
+// ======================== DEVICE ENGAGEMENT PANEL ========================
+function DeviceEngagementPanel({ device, darkMode }) {
+  if (!device) return null;
+  const DevIcon = DEVICE_ICONS[device.name] || Monitor;
+  const colors = darkMode ? CONFIG.CHART_COLORS.dark : CONFIG.CHART_COLORS;
+
+  const engagementItems = [
+    {
+      label: 'Sessions',
+      value: formatNumber(device.sessions),
+      tooltip: METRIC_TOOLTIPS.sessions,
+      color: colors.primary,
+    },
+    {
+      label: 'Bounce Rate',
+      value: `${device.bounceRate.toFixed(1)}%`,
+      tooltip: METRIC_TOOLTIPS.bounceRate,
+      color: colors.danger,
+    },
+    {
+      label: 'Avg. Engagement Time',
+      value: `${Math.floor(device.avgEngagementTime / 60)}m ${device.avgEngagementTime % 60}s`,
+      tooltip: METRIC_TOOLTIPS.avgEngagementTime,
+      color: colors.success,
+    },
+    {
+      label: 'Traffic Share',
+      value: `${device.value}%`,
+      tooltip: 'Percentage of total traffic from this device type.',
+      color: colors.purple,
+    },
+  ];
+
+  return (
+    <div className={clsx(styles.engagementPanel, darkMode && styles.darkMode)}>
+      <div className={styles.engagementHeader}>
+        <div className={styles.engagementDeviceLabel}>
+          <DevIcon size={18} />
+          <span>{device.name} Engagement</span>
+        </div>
+        <span className={styles.engagementSubtitle}>Detailed metrics for selected device</span>
+      </div>
+      <div className={styles.engagementGrid}>
+        {engagementItems.map(item => (
+          <div
+            key={item.label}
+            className={clsx(styles.engagementItem, darkMode && styles.darkMode)}
+          >
+            <div className={styles.engagementValue} style={{ color: item.color }}>
+              {item.value}
+            </div>
+            <div className={styles.engagementLabel}>
+              {item.label}
+              <MetricTooltip text={item.tooltip} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ======================== CUSTOM PIE LABEL ========================
+function DevicePieLabel({ cx, cy, midAngle, outerRadius, name, value, previousValue }) {
+  const RADIAN = Math.PI / 180;
+  // Render the label inside the slice (≈ 65% of outerRadius)
+  const radius = outerRadius * 0.9;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+  const change = calculatePercentageChange(value, previousValue);
+
+  const mainText = `${name} ${value}%`;
+  const tspanText = ` ${change.formatted}`;
+  const mainWidth = mainText.length * 6.2 + 2;
+  const tspanWidth = tspanText.length * 5.6;
+  const bgWidth = mainWidth + tspanWidth + 4;
+  const bgHeight = 22;
+  const bgX = x - bgWidth / 2;
+  const bgY = y - bgHeight / 2;
+  const radiusBg = 4;
+
+  return (
+    <g style={{ pointerEvents: 'none' }}>
+      <rect
+        x={bgX}
+        y={bgY}
+        width={bgWidth}
+        height={bgHeight}
+        rx={radiusBg}
+        ry={radiusBg}
+        strokeWidth={1}
+        className={styles.pieChartLabelContainer}
+      />
+      <text x={x} y={y} textAnchor="middle" dominantBaseline="central" fontSize={11}>
+        {mainText}
+        <tspan
+          fontSize={10}
+          className={clsx(change.isPositive ? styles.positive : styles.negative)}
+        >
+          {tspanText}
+        </tspan>
+      </text>
+    </g>
   );
 }
 
@@ -396,8 +607,15 @@ const DATE_RANGE_PRESETS = {
   },
 };
 
+const COMPARISON_PERIOD_OPTIONS = [
+  { value: 'previous-week', label: 'Previous Week' },
+  { value: 'previous-month', label: 'Previous Month' },
+  { value: 'previous-year', label: 'Same Period Last Year' },
+];
+
 function DateRangeSelector({ dateRange, setDateRange, comparisonPeriod, setComparisonPeriod }) {
   const [active, setActive] = useState('last30Days');
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
     if (!dateRange) {
@@ -406,15 +624,15 @@ function DateRangeSelector({ dateRange, setDateRange, comparisonPeriod, setCompa
   }, [dateRange, setDateRange]);
 
   return (
-    <div className={styles.selectorCard}>
-      <div className={styles.selectorRow}>
-        <div className={styles.selectorCol}>
-          <label className={styles.label}>Quick Select</label>
-          <div className={styles.quickRow}>
+    <div className={clsx(styles.filters, darkMode && styles.darkMode)}>
+      <div className={styles.filtersRow}>
+        <div>
+          <p className={styles.label}>Quick Select</p>
+          <div className={styles.quickSelectButtonList}>
             {Object.entries(DATE_RANGE_PRESETS).map(([key, preset]) => (
               <button
                 key={key}
-                className={`${styles.btn} ${active === key ? styles.btnPrimary : styles.btnGhost}`}
+                className={clsx(styles.quickSelectButton, active === key && styles.active)}
                 onClick={() => {
                   setDateRange(preset.getValue());
                   setActive(key);
@@ -426,42 +644,66 @@ function DateRangeSelector({ dateRange, setDateRange, comparisonPeriod, setCompa
           </div>
         </div>
 
-        <div className={styles.selectorCol}>
-          <label className={styles.label}>Custom Date Range</label>
-          <div className={styles.datesRow}>
-            <input
-              type="date"
-              className={styles.input}
-              value={dateRange?.start || ''}
-              onChange={e => {
-                setDateRange({ ...dateRange, start: e.target.value });
+        <div>
+          <p className={styles.label}>Custom Date Range</p>
+          <div className={styles.dateRange}>
+            <DatePicker
+              selected={dateRange?.start ? new Date(dateRange.start) : null}
+              onChange={date => {
+                setDateRange({
+                  ...dateRange,
+                  start: date,
+                });
                 setActive(null);
               }}
+              selectsStart
+              startDate={dateRange.start}
+              endDate={dateRange.end}
+              dateFormat="yyyy-MM-dd"
+              isClearable={dateRange.start !== null}
+              placeholderText="Start date"
+              className={styles.input}
+              calendarClassName={clsx(
+                'job-analytics-datepicker',
+                darkMode ? 'job-analytics-datepicker-dark' : 'job-analytics-datepicker-light',
+              )}
             />
             <span className={styles.to}>to</span>
-            <input
-              type="date"
-              className={styles.input}
-              value={dateRange?.end || ''}
-              onChange={e => {
-                setDateRange({ ...dateRange, end: e.target.value });
+            <DatePicker
+              selected={dateRange?.end ? new Date(dateRange.end) : null}
+              onChange={date => {
+                setDateRange({
+                  ...dateRange,
+                  end: date,
+                });
                 setActive(null);
               }}
+              selectsEnd
+              startDate={dateRange.start}
+              endDate={dateRange.end}
+              dateFormat="yyyy-MM-dd"
+              minDate={dateRange?.start ? new Date(dateRange.start) : undefined}
+              isClearable={dateRange.end !== null}
+              placeholderText="End date"
+              className={styles.input}
+              calendarClassName={clsx(
+                'job-analytics-datepicker',
+                darkMode ? 'job-analytics-datepicker-dark' : 'job-analytics-datepicker-light',
+              )}
             />
           </div>
         </div>
 
-        <div className={styles.selectorColNarrow}>
-          <label className={styles.label}>Compare with</label>
-          <select
-            className={`${styles.input} ${styles.select}`}
-            value={comparisonPeriod}
-            onChange={e => setComparisonPeriod(e.target.value)}
-          >
-            <option value="previous-week">Previous Week</option>
-            <option value="previous-month">Previous Month</option>
-            <option value="previous-year">Same Period Last Year</option>
-          </select>
+        <div>
+          <p className={styles.label}>Compare with</p>
+          <Select
+            classNamePrefix="job-analytics-compare-select"
+            className={styles.compareSelect}
+            value={COMPARISON_PERIOD_OPTIONS.find(opt => opt.value === comparisonPeriod)}
+            onChange={option => setComparisonPeriod(option.value)}
+            options={COMPARISON_PERIOD_OPTIONS}
+            isSearchable={false}
+          />
         </div>
       </div>
     </div>
@@ -495,117 +737,126 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
 
   const isMobile = useMediaQuery('(max-width: 640px)');
 
-  const [dateRange, setDateRange] = useState(null);
+  const [dateRange, setDateRange] = useState(() => {
+    const end = new Date();
+    const start = new Date();
+    start.setDate(start.getDate() - 30);
+    return { start, end };
+  });
   const [comparisonPeriod, setComparisonPeriod] = useState('previous-month');
-  const [selectedRole, setSelectedRole] = useState(ROLE_OPTIONS[0]);
+  const [selectedDevice, setSelectedDevice] = useState(null);
 
-  const { data: analyticsData, loading, error, refetch } = useAnalyticsData(
+  const { data: analyticsData, loading, error, refetch: originalRefetch } = useAnalyticsData(
     dateRange,
     comparisonPeriod,
-    selectedRole,
+    'All Roles',
   );
 
-  const mergedData = useMemo(() => {
-    if (!analyticsData?.currentPeriod || !analyticsData?.previousPeriod) return [];
-    return analyticsData.currentPeriod.map((d, i) => ({
+  const handleRefresh = useCallback(() => {
+    setSelectedDevice(null);
+    originalRefetch();
+  }, [originalRefetch]);
+
+  const selectedDeviceData = useMemo(() => {
+    if (!selectedDevice || !analyticsData?.deviceBreakdown) return null;
+    return analyticsData.deviceBreakdown.find(d => d.name === selectedDevice) || null;
+  }, [selectedDevice, analyticsData]);
+
+  const filteredCurrentPeriod = useMemo(() => {
+    if (!analyticsData?.currentPeriod) return [];
+    if (!selectedDevice) return analyticsData.currentPeriod;
+    return analyticsData.currentPeriod.map(d => ({
       ...d,
-      prevUsers: analyticsData.previousPeriod[i]?.users ?? null,
+      users: d.deviceData?.[selectedDevice]?.users ?? d.users,
+      pageViews: d.deviceData?.[selectedDevice]?.pageViews ?? d.pageViews,
+      sessions: d.deviceData?.[selectedDevice]?.sessions ?? d.sessions,
+      bounceRate: d.deviceData?.[selectedDevice]?.bounceRate ?? d.bounceRate,
+      avgDuration: d.deviceData?.[selectedDevice]?.avgDuration ?? d.avgDuration,
     }));
-  }, [analyticsData]);
+  }, [analyticsData, selectedDevice]);
+
+  const mergedData = useMemo(() => {
+    if (!filteredCurrentPeriod.length || !analyticsData?.previousPeriod) return [];
+    return filteredCurrentPeriod.map((d, i) => {
+      const prevBase = analyticsData.previousPeriod[i];
+      const prevUsers = selectedDevice
+        ? prevBase?.deviceData?.[selectedDevice]?.users ?? null
+        : prevBase?.users ?? null;
+      return { ...d, prevUsers };
+    });
+  }, [filteredCurrentPeriod, analyticsData, selectedDevice]);
 
   const metrics = useMemo(() => {
     if (!analyticsData) return null;
     const { current, previous } = analyticsData.metrics;
+    const m = selectedDevice ? DEVICE_MULTIPLIERS[selectedDevice] : null;
+
+    const scale = (val, key) => (m ? Math.round(val * m[key]) : val);
+    const scaleRate = (val, key) => (m ? parseFloat((val * m[key]).toFixed(1)) : val);
+
+    const curUsers = scale(current.totalUsers, 'users');
+    const prevUsers = scale(previous.totalUsers, 'users');
+    const curViews = scale(current.totalPageViews, 'pageViews');
+    const prevViews = scale(previous.totalPageViews, 'pageViews');
+    const curSessions = scale(current.totalSessions, 'sessions');
+    const prevSessions = scale(previous.totalSessions, 'sessions');
+    const curBounce = scaleRate(current.avgBounceRate, 'bounceRate');
+    const prevBounce = scaleRate(previous.avgBounceRate, 'bounceRate');
+
     return {
-      users: {
-        value: current.totalUsers,
-        change: calculatePercentageChange(current.totalUsers, previous.totalUsers),
-      },
-      pageViews: {
-        value: current.totalPageViews,
-        change: calculatePercentageChange(current.totalPageViews, previous.totalPageViews),
-      },
+      users: { value: curUsers, change: calculatePercentageChange(curUsers, prevUsers) },
+      pageViews: { value: curViews, change: calculatePercentageChange(curViews, prevViews) },
       sessions: {
-        value: current.totalSessions,
-        change: calculatePercentageChange(current.totalSessions, previous.totalSessions),
+        value: curSessions,
+        change: calculatePercentageChange(curSessions, prevSessions),
       },
       bounceRate: {
-        value: `${current.avgBounceRate.toFixed(1)}%`,
-        change: calculatePercentageChange(current.avgBounceRate, previous.avgBounceRate),
+        value: `${curBounce.toFixed(1)}%`,
+        change: calculatePercentageChange(curBounce, prevBounce),
       },
     };
-  }, [analyticsData]);
+  }, [analyticsData, selectedDevice]);
 
-  const filteredDeviceBreakdown = useMemo(() => {
-    if (!analyticsData?.deviceBreakdown) return [];
-    const multiplier =
-      selectedRole === 'All Roles' ? 1 : 1 + ROLE_OPTIONS.indexOf(selectedRole) * 0.05;
-    const dateFactor = dateRange ? 1 + AnalyticsService.secureRandom(0, 10) / 100 : 1;
-    return analyticsData.deviceBreakdown.map(d => ({
-      ...d,
-      value: Math.round(d.value * multiplier * dateFactor),
-      previousValue: Math.round(d.previousValue * multiplier * dateFactor),
-      sessions: Math.round(d.sessions * multiplier * dateFactor),
-    }));
-  }, [analyticsData, selectedRole, dateRange]);
-
-  const filteredTrafficSources = useMemo(() => {
-    if (!analyticsData?.trafficSources) return [];
-    const multiplier =
-      selectedRole === 'All Roles' ? 1 : 1 + ROLE_OPTIONS.indexOf(selectedRole) * 0.05;
-    const dateFactor = dateRange ? 1 + AnalyticsService.secureRandom(0, 10) / 100 : 1;
-    return analyticsData.trafficSources.map(t => ({
-      ...t,
-      current: Math.round(t.current * multiplier * dateFactor),
-      previous: Math.round(t.previous * multiplier * dateFactor),
-    }));
-  }, [analyticsData, selectedRole, dateRange]);
-
-  const handleResetAndRefresh = () => {
-    setSelectedRole('All Roles');
-    setDateRange(DATE_RANGE_PRESETS.last30Days.getValue());
-    setComparisonPeriod('previous-month');
-    refetch();
-  };
-
-  // Chart colors driven by darkMode prop — already correct
   const colors = darkMode ? CONFIG.CHART_COLORS.dark : CONFIG.CHART_COLORS;
 
   // Recharts injects inline styles into its tooltip, so CSS classes have no effect.
   // Pass these props to every <Tooltip> so it respects dark mode.
+  const handlePieClick = useCallback(
+    (_, index) => {
+      const clicked = analyticsData?.deviceBreakdown?.[index]?.name;
+      if (!clicked) return;
+      setSelectedDevice(prev => (prev === clicked ? null : clicked));
+    },
+    [analyticsData],
+  );
 
   return (
-    // FIX: darkMode applied as a CSS class on the root div (same pattern as HoursPledgedChart).
-    // Removed the document.documentElement side-effect — that bleeds into other pages.
-    <div className={`${styles.page} ${darkMode ? styles.darkMode : ''}`}>
-      <header className={styles.header}>
-        <h2 className={styles.title}>Job Analytics</h2>
-
-        <div className={styles.headerActions}>
-          <select
-            className={`${styles.input} ${styles.select}`}
-            value={selectedRole}
-            onChange={e => setSelectedRole(e.target.value)}
-            aria-label="Filter by role"
-            disabled={loading}
-          >
-            {ROLE_OPTIONS.map(roleOption => (
-              <option key={roleOption} value={roleOption}>
-                {roleOption}
-              </option>
-            ))}
-          </select>
-
-          <button
-            className={`${styles.btn} ${styles.btnPrimary}`}
-            onClick={handleResetAndRefresh}
-            disabled={loading}
-            style={{ whiteSpace: 'nowrap' }}
-          >
-            <RefreshCw className={loading ? styles.spin : ''} size={16} />
-            <span>Refresh</span>
-          </button>
-        </div>
+    <div
+      className={clsx(
+        styles.bmDashboardJobAnalytics,
+        styles.jobAnalytics,
+        darkMode && styles.darkMode,
+      )}
+    >
+      <header className={clsx(styles.header, darkMode && styles.darkMode)}>
+        <h2 className={styles.title}>
+          Job Analytics
+          {selectedDevice && (
+            <span className={styles.deviceBadge}>
+              {React.createElement(DEVICE_ICONS[selectedDevice] || Monitor, { size: 16 })}
+              {selectedDevice}
+            </span>
+          )}
+        </h2>
+        <button
+          className={styles.refreshButton}
+          onClick={handleRefresh}
+          disabled={loading}
+          title="Refresh data and reset device filter"
+        >
+          <RefreshCw className={loading ? styles.refreshLoader : ''} size={16} />
+          <span>Refresh</span>
+        </button>
       </header>
 
       <DateRangeSelector
@@ -615,36 +866,46 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
         setComparisonPeriod={setComparisonPeriod}
       />
 
-      {error && <ErrorMessage error={error} onRetry={refetch} />}
+      <DeviceFilterBanner selectedDevice={selectedDevice} onClear={() => setSelectedDevice(null)} />
+
+      {error && <ErrorMessage error={error} onRetry={handleRefresh} />}
 
       {loading && !analyticsData ? (
         <LoadingSpinner message="Loading analytics data..." />
       ) : (
         <>
+          {selectedDeviceData && (
+            <DeviceEngagementPanel device={selectedDeviceData} darkMode={darkMode} />
+          )}
+
           <section className={styles.metricsGrid}>
             <MetricCard
               icon={Users}
               title="Total Users"
               value={metrics?.users.value || 0}
               change={metrics?.users.change}
+              tooltipText={METRIC_TOOLTIPS.users}
             />
             <MetricCard
               icon={Eye}
               title="Page Views"
               value={metrics?.pageViews.value || 0}
               change={metrics?.pageViews.change}
+              tooltipText={METRIC_TOOLTIPS.pageViews}
             />
             <MetricCard
               icon={Activity}
               title="Sessions"
               value={metrics?.sessions.value || 0}
               change={metrics?.sessions.change}
+              tooltipText={METRIC_TOOLTIPS.sessions}
             />
             <MetricCard
               icon={ChevronDown}
               title="Bounce Rate"
               value={metrics?.bounceRate.value || '0.0%'}
               change={metrics?.bounceRate.change}
+              tooltipText={METRIC_TOOLTIPS.bounceRate}
             />
           </section>
 
@@ -652,7 +913,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
             <ChartCard title="User Trend Comparison" icon={TrendingUp}>
               <ResponsiveContainer width="100%" height={320}>
                 <LineChart data={mergedData} margin={CHART_MARGIN}>
-                  <CartesianGrid {...GRID_PROPS} className={styles.gridStroke} />
+                  <CartesianGrid {...GRID_PROPS} />
                   <XAxis dataKey="displayDate" tick={AXIS_TICK} />
                   <YAxis tick={AXIS_TICK} domain={['dataMin - 100', 'dataMax + 100']} />
                   <Tooltip {...getTooltipStyles(darkMode)} />
@@ -664,7 +925,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                     strokeWidth={3}
                     dot={false}
                     activeDot={{ r: 6 }}
-                    name="Current Period"
+                    name={selectedDevice ? `${selectedDevice} — Current` : 'Current Period'}
                   />
                   <Line
                     type="monotone"
@@ -673,7 +934,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                     strokeWidth={2}
                     strokeDasharray="5 5"
                     dot={false}
-                    name="Previous Period"
+                    name={selectedDevice ? `${selectedDevice} — Previous` : 'Previous Period'}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -682,7 +943,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
             <ChartCard title="Page Views Over Time" icon={Eye}>
               <ResponsiveContainer width="100%" height={320}>
                 <AreaChart
-                  data={analyticsData?.currentPeriod || []}
+                  data={filteredCurrentPeriod}
                   margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
                 >
                   <defs>
@@ -691,7 +952,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                       <stop offset="95%" stopColor={colors.success} stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" className={styles.gridStroke} />
+                  <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="displayDate" tick={{ fontSize: 12 }} />
                   <YAxis tick={{ fontSize: 12 }} domain={['dataMin - 500', 'dataMax + 500']} />
                   <Tooltip {...getTooltipStyles(darkMode)} />
@@ -703,6 +964,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                     fill="url(#colorPageViews)"
                     strokeWidth={3}
                     activeDot={{ r: 6 }}
+                    name={selectedDevice ? `${selectedDevice} Page Views` : 'Page Views'}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -711,10 +973,10 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
             <ChartCard title="Traffic Sources" icon={BarChart3}>
               <ResponsiveContainer width="100%" height={320}>
                 <BarChart
-                  data={filteredTrafficSources}
+                  data={analyticsData?.trafficSources ?? []}
                   margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" className={styles.gridStroke} />
+                  <CartesianGrid strokeDasharray="3 3" />
                   <XAxis
                     dataKey="source"
                     tick={{ fontSize: 12 }}
@@ -741,41 +1003,66 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
               </ResponsiveContainer>
             </ChartCard>
 
-            <ChartCard title="Device Breakdown" icon={PieChartIcon}>
+            <ChartCard
+              title={
+                selectedDevice
+                  ? `Device Breakdown — ${selectedDevice} selected`
+                  : 'Device Breakdown (click a slice to filter)'
+              }
+              icon={PieChartIcon}
+            >
               <ResponsiveContainer width="100%" height={320}>
                 <PieChart>
                   <Pie
-                    data={filteredDeviceBreakdown}
+                    data={analyticsData?.deviceBreakdown ?? []}
                     cx="50%"
                     cy="50%"
                     outerRadius={110}
                     dataKey="value"
                     labelLine={false}
-                    label={({ name, value, previousValue }) => {
-                      const change = calculatePercentageChange(value, previousValue);
-                      return `${name}: ${value}% (${change.formatted})`;
-                    }}
+                    label={<DevicePieLabel />}
+                    onClick={handlePieClick}
+                    cursor="pointer"
                   >
-                    {(analyticsData?.deviceBreakdown || []).map((_, i) => (
-                      <Cell
-                        key={`c-${i}`}
-                        fill={[colors.primary, colors.success, colors.warning][i]}
-                      />
-                    ))}
+                    {(analyticsData?.deviceBreakdown || []).map((entry, i) => {
+                      const isSelected = selectedDevice === entry.name;
+                      const isAnySelected = !!selectedDevice;
+                      const baseColor = [colors.primary, colors.success, colors.warning][i];
+                      return (
+                        <Cell
+                          key={`c-${i}`}
+                          fill={baseColor}
+                          opacity={isAnySelected && !isSelected ? 0.3 : 1}
+                          stroke={isSelected ? '#ffffff' : 'none'}
+                          strokeWidth={isSelected ? 3 : 0}
+                          style={{
+                            filter: isSelected ? 'drop-shadow(0 0 6px rgb(0 0 0 / 30%))' : 'none',
+                          }}
+                        />
+                      );
+                    })}
                   </Pie>
                   <Tooltip {...getTooltipStyles(darkMode)} />
                 </PieChart>
               </ResponsiveContainer>
+              <p className={styles.pieHint}>
+                {selectedDevice
+                  ? `Click the ${selectedDevice} slice again or another slice to change filter`
+                  : 'Click a slice to filter all charts by device type'}
+              </p>
             </ChartCard>
 
             <ChartCard
-              title="Sessions & Bounce Rate Analysis"
+              title={
+                selectedDevice
+                  ? `Sessions & Bounce Rate — ${selectedDevice}`
+                  : 'Sessions & Bounce Rate Analysis'
+              }
               icon={Activity}
-              className={styles.fullWidth}
             >
               <ResponsiveContainer width="100%" height={380}>
                 <LineChart
-                  data={analyticsData?.currentPeriod || []}
+                  data={filteredCurrentPeriod}
                   margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" className={styles.gridStroke} />
@@ -799,7 +1086,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                     dataKey="sessions"
                     stroke={colors.purple}
                     strokeWidth={3}
-                    name="Sessions"
+                    name={selectedDevice ? `${selectedDevice} Sessions` : 'Sessions'}
                     dot={false}
                     activeDot={{ r: 6 }}
                   />
@@ -809,7 +1096,7 @@ function JobAnalytics({ darkMode, role, hasPermission: hasPerm }) {
                     dataKey="bounceRate"
                     stroke={colors.danger}
                     strokeWidth={3}
-                    name="Bounce Rate (%)"
+                    name={selectedDevice ? `${selectedDevice} Bounce Rate (%)` : 'Bounce Rate (%)'}
                     dot={false}
                     strokeDasharray="3 3"
                     activeDot={{ r: 6 }}
