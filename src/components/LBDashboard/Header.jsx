@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import { connect, useSelector } from 'react-redux';
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import Navbar from 'react-bootstrap/Navbar';
@@ -13,18 +12,15 @@ import { IoNotificationsOutline } from 'react-icons/io5';
 
 import itemStyles from './WishList/ItemOverview.module.css';
 import ThemeIconToggle from './ThemeIconToggle';
+import VillageDropdownFilter from './DropdownFilter/DropdownFilter';
 
 const cx = (base, darkClass, darkMode) => `${base} ${darkMode ? darkClass : ''}`.trim();
 
 const getUserProfilePath = authUser => (authUser?.userid ? `/userprofile/${authUser.userid}` : '/');
 
-function LBDashboardHeader({ authUser, villages, onVillageChange }) {
-  const [selectedVillage, setSelectedVillage] = useState('');
+function LBDashboardHeader(props) {
+  const { authUser } = props;
   const darkMode = useSelector(state => state.theme.darkMode);
-
-  const handleGoClick = () => {
-    onVillageChange(selectedVillage);
-  };
 
   return (
     <Navbar
@@ -34,34 +30,7 @@ function LBDashboardHeader({ authUser, villages, onVillageChange }) {
       <Container fluid className={itemStyles.item__navbarContainer}>
         <div className={itemStyles.item__navbarToolbar}>
           <div className={itemStyles['item__navbar-left']}>
-            <div
-              className={`${itemStyles.item__selector} ${
-                darkMode ? itemStyles['item__selector--dark'] : ''
-              }`}
-            >
-              <select
-                value={selectedVillage}
-                onChange={e => setSelectedVillage(e.target.value)}
-                aria-label="Filter by village"
-              >
-                <option value="">All Villages</option>
-                {villages.map(village => (
-                  <option key={village} value={village}>
-                    {village}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <button
-              type="button"
-              className={`${itemStyles.item__button} ${
-                darkMode ? itemStyles['item__button--dark'] : ''
-              }`}
-              onClick={handleGoClick}
-            >
-              <p>Go</p>
-            </button>
+            <VillageDropdownFilter />
           </div>
 
           <ThemeIconToggle
@@ -136,14 +105,10 @@ LBDashboardHeader.propTypes = {
     name: PropTypes.string,
     userid: PropTypes.string,
   }),
-  villages: PropTypes.arrayOf(PropTypes.string),
-  onVillageChange: PropTypes.func,
 };
 
 LBDashboardHeader.defaultProps = {
   authUser: null,
-  villages: [],
-  onVillageChange: () => {},
 };
 
 const mapStateToProps = state => ({
