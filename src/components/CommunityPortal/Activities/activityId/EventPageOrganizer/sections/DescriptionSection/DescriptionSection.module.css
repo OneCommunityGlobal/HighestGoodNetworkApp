@@ -23,8 +23,8 @@
 }
 
 .textarea {
-  min-height: 630px;
-  resize: none;
+  min-height: 120px;
+  resize: vertical;
   background-color: transparent;
   border: none;
   font-family: Manrope, Helvetica, sans-serif;
