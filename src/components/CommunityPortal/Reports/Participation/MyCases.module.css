@@ -93,25 +93,6 @@
 
 /* Dark mode */
 
-.viewSwitcherDarkMode {
-  display: flex;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.viewSwitcherDarkMode button,
-.createNewDarkMode {
-  background-color: #1e293b;
-  border-radius: 6px;
-  padding: 10px 20px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  color: #f1f5f9;
-  border: 1px solid #555;
-  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
-}
-
 .viewSwitcher button:hover {
   background-color: #f5f5f5;
 }
@@ -286,26 +267,8 @@
   box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
 }
 
-.caseCardDark {
-  background-color: #3a506b;
-  border: 1px solid #555;
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 180px;
-}
-
-/* Set text colors explicitly for dark mode card children */
 .caseCardDark > * {
   color: #fff;
-}
-
-.caseCardDark .eventBadge {
-  /* Event badges have their own colors, don't inherit white */
-  color: inherit;
 }
 
 .caseCardDark:hover {
@@ -443,18 +406,6 @@
   color: #333;
 }
 
-.eventType {
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.moreBtn {
-  background-color: #0056b3;
-  color: #fff;
-  border: none;
-  transition: background-color 0.2s;
-}
-
 .caseCards.expanded,
 .caseList.expanded {
   max-height: 500px;
@@ -472,53 +423,10 @@
 }
 
 .viewSwitcherDarkMode button,
-.createNewDarkMode {
-  background-color: #1e293b;
-  border-radius: 6px;
-  padding: 10px 20px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  color: #f1f5f9;
-  border: 1px solid #555;
-}
-
 .viewSwitcherDarkMode button.active {
   background-color: #1d4ed8;
   color: #fff;
   border-color: #1d4ed8;
-}
-
-.filterDropdownDarkMode {
-  padding: 8px;
-  font-size: 14px;
-  border: 1px solid #555;
-  border-radius: 4px;
-  cursor: pointer;
-  background-color: #1e293b;
-  color: #fff;
-}
-
-.createNewDarkMode {
-  font-weight: bold;
-  border: 1px solid #555;
-  border-radius: 4px;
-  background-color: #1e293b;
-  color: #f1f5f9;
-  padding: 8px 16px;
-  cursor: pointer;
-}
-
-.myCasesPageDark .filterDropdown {
-  background-color: #3a506b;
-  color: #fff;
-  border: 1px solid #555;
-}
-
-.myCasesPageDark .createNew {
-  background-color: #3a506b;
-  color: #fff;
-  border: 1px solid #555;
 }
 
 .caseCardDark {
