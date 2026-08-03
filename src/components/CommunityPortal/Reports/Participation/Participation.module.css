@@ -498,6 +498,7 @@
 .insightsDark .insightsTab.activeTab {
   background-color: #007bff;
   color: var(--color-text-dark);
+  font-weight: bold;
 }
 
 .insightsTab:not(:last-child) {
@@ -541,19 +542,8 @@
   border-color: #555;
 }
 
-.insightsDark .insightsTab {
-  color: #fff;
-  background-color: #3a506b;
-}
-
 .insightsDark .insightsTab:not(:last-child) {
   border-right-color: #555;
-}
-
-.insightsDark .insightsTab.activeTab {
-  background-color: #007bff;
-  color: #fff;
-  font-weight: bold;
 }
 
 .insightsContent {
