@@ -207,18 +207,16 @@ function MyCases({ darkMode }) {
               {eventsForDate.length > 3 ? (
                 <span className={styles.eventCountBadge}>+{eventsForDate.length}</span>
               ) : (
-                eventsForDate
-                  .slice(0, 3)
-                  .map((event, idx) => {
-                    const eventTypeClass = styles[`eventType${idx}`];
-                    return (
-                      <div
-                        key={event.id}
-                        className={`${styles.calendarEventDot} ${eventTypeClass}`}
-                        title={event.eventName}
-                      />
-                    );
-                  })
+                eventsForDate.slice(0, 3).map((event, idx) => {
+                  const eventTypeClass = styles[`eventType${idx}`];
+                  return (
+                    <div
+                      key={event.id}
+                      className={`${styles.calendarEventDot} ${eventTypeClass}`}
+                      title={event.eventName}
+                    />
+                  );
+                })
               )}
             </div>
           );
