@@ -58,6 +58,17 @@
   color: #495057;
 }
 
+/* Keep TasksTable select text readable against light controls in global dark mode. */
+.tasks-table-filter-input :global(.tasks-table-select__placeholder) {
+  color: #545b62 !important;
+}
+
+.tasks-table-filter-input :global(.tasks-table-select__single-value),
+.tasks-table-filter-input :global(.tasks-table-select__input),
+.tasks-table-filter-input :global(.tasks-table-select__input-container) {
+  color: #495057 !important;
+}
+
 .tasks-table-text-search-box {
   background-color: white;
   border: 2px solid #d1cfd4;
@@ -84,7 +95,7 @@
   background-color: white;
   border: 2px solid #007bff;
   outline-color: #007bff;
-  color: #5750db;
+  color: #5750db !important;
   border-radius: 4px;
   margin-left: 20px;
   width: 100px;
@@ -98,7 +109,7 @@
   background-color: white;
   border: 2px solid #007bff;
   outline-color: #007bff;
-  color: #5750db;
+  color: #5750db !important;
   border-radius: 4px;
   margin-left: 0;
   width: 100px;
@@ -113,7 +124,7 @@
   background-color: #007bff;
   border-color: #007bff;
   outline-color: #007bff;
-  color: white;
+  color: white !important;
 }
 
 .tasks-table-edit-tasks-button:hover,
@@ -122,7 +133,30 @@
   background-color: #007bff;
   border-color: #007bff;
   outline-color: #007bff;
-  color: white;
+  color: white !important;
+}
+
+/* Match the global dark-mode selector specificity without affecting other buttons. */
+:global(body.dark-mode) .tasks-table-clear-filter-button,
+:global(body.dark-mode) .tasks-table-edit-tasks-button,
+:global(body.bm-dashboard-dark) .tasks-table-clear-filter-button,
+:global(body.bm-dashboard-dark) .tasks-table-edit-tasks-button {
+  color: #5750db !important;
+}
+
+:global(body.dark-mode) .tasks-table-clear-filter-button:hover,
+:global(body.dark-mode) .tasks-table-clear-filter-button:focus,
+:global(body.dark-mode) .tasks-table-clear-filter-button:active,
+:global(body.dark-mode) .tasks-table-edit-tasks-button:hover,
+:global(body.dark-mode) .tasks-table-edit-tasks-button:focus,
+:global(body.dark-mode) .tasks-table-edit-tasks-button:active,
+:global(body.bm-dashboard-dark) .tasks-table-clear-filter-button:hover,
+:global(body.bm-dashboard-dark) .tasks-table-clear-filter-button:focus,
+:global(body.bm-dashboard-dark) .tasks-table-clear-filter-button:active,
+:global(body.bm-dashboard-dark) .tasks-table-edit-tasks-button:hover,
+:global(body.bm-dashboard-dark) .tasks-table-edit-tasks-button:focus,
+:global(body.bm-dashboard-dark) .tasks-table-edit-tasks-button:active {
+  color: white !important;
 }
 
 @media screen and (width <= 645px) {

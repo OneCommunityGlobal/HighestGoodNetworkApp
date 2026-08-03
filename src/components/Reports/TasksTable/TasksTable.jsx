@@ -81,6 +81,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             placeholder="Any user"
             onChange={(selectedOption) => handleSelectChange(selectedOption, 'users')}
             className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']}`}
+            classNamePrefix="tasks-table-select"
             value={filters.users ? { value: filters.users, label: filters.users } : null}
           />
           <Select
@@ -88,6 +89,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             placeholder="Any classification"
             onChange={(selectedOption) => handleSelectChange(selectedOption, 'classification')}
             className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']}`}
+            classNamePrefix="tasks-table-select"
             value={filters.classification ? { value: filters.classification, label: filters.classification } : null}
           />
           <Select
@@ -95,6 +97,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             placeholder="Any priority"
             onChange={(selectedOption) => handleSelectChange(selectedOption, 'priority')}
             className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']}`}
+            classNamePrefix="tasks-table-select"
             value={filters.priority ? { value: filters.priority, label: filters.priority } : null}
           />
           <Select
@@ -102,6 +105,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             placeholder="Any status"
             onChange={(selectedOption) => handleSelectChange(selectedOption, 'status')}
             className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']}`}
+            classNamePrefix="tasks-table-select"
             value={filters.status ? { value: filters.status, label: filters.status } : null}
           />
           <TextSearchBox
