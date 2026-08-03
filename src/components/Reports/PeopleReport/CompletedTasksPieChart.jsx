@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useTable } from 'react-table';
 import * as d3 from 'd3';
 import { FiFolder } from 'react-icons/fi';
 import { CHART_RADIUS, CHART_SIZE } from '../../common/PieChart/constants';
@@ -113,7 +114,46 @@ function CompletedTasksPieChart({ darkMode }) {
   }, [tasks.length, expanded]);
 
   const hiddenCount = expanded ? 0 : Math.max(0, tasks.length - visibleCount);
-  const renderedTasks = expanded ? tasks : tasks.slice(0, visibleCount);
+  const tasksView = expanded ? tasks : tasks.slice(0, visibleCount);
+
+  const columns = useMemo(
+    () => [
+      {
+        Header: 'Color',
+        accessor: 'projectId',
+        headerClassName: styles.colorColumn,
+        cellClassName: styles.colorRow,
+        Cell: ({ value }) => (
+          <div
+            className={styles['project-chart-legend']}
+            style={{ backgroundColor: `${colorScale(value)}` }}
+          />
+        ),
+      },
+      {
+        Header: 'Task Name',
+        accessor: 'projectName',
+        Cell: ({ value }) => `${value}`,
+        headerClassName: styles.taskNameColumn,
+        cellClassName: styles.taskNameRow,
+      },
+      {
+        Header: 'Hours',
+        accessor: 'totalTime',
+        headerClassName: styles.hoursColumn,
+        cellClassName: styles.hoursRow,
+        Cell: ({ value }) => value.toFixed(2),
+      },
+    ],
+    [colorScale],
+  );
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+  } = useTable({ columns, data: tasksView });
 
   if (tasks.length === 0) {
     return (
@@ -146,31 +186,54 @@ function CompletedTasksPieChart({ darkMode }) {
             className={styles['pie-chart-legend-container']}
           >
             <div
-              className={styles['legend-scroll-area']}
+              className={expanded ? undefined : styles['legend-scroll-area']}
             >
               <table
-                className={styles['pie-chart-legend-table']}
+                {...getTableProps()}
+                className={styles.completedTasksTable}
               >
                 <thead>
-                  <tr>
-                    <th className={styles.colorColumn}>Color</th>
-                    <th className={styles.taskNameColumn}>Task Name</th>
-                    <th className={styles.hoursColumn}>Hours</th>
-                  </tr>
+                  {headerGroups.map(headerGroup => {
+                    const { key, ...headerGroupProps } = headerGroup.getHeaderGroupProps();
+                    return (
+                      <tr key={key} {...headerGroupProps}>
+                        {headerGroup.headers.map(column => {
+                          const { key: headerKey, ...headerProps } = column.getHeaderProps();
+                          return (
+                            <th
+                              key={headerKey}
+                              {...headerProps}
+                              className={column.headerClassName}
+                            >
+                              {column.render('Header')}
+                            </th>
+                          );
+                        })}
+                      </tr>
+                    );
+                  })}
                 </thead>
-                <tbody ref={tbodyRef}>
-                  {renderedTasks.map(project => (
-                    <tr key={project.projectId}>
-                      <td className={styles.colorRow}>
-                        <div
-                          className={styles['project-chart-legend']}
-                          style={{ backgroundColor: `${colorScale(project.projectId)}` }}
-                        />
-                      </td>
-                      <td className={styles.projectNameRow}>{project.projectName}</td>
-                      <td className={styles.totalTimeRow}>{project.totalTime.toFixed(2)}</td>
-                    </tr>
-                  ))}
+                <tbody {...getTableBodyProps()} ref={tbodyRef}>
+                  {rows.map(row => {
+                    prepareRow(row);
+                    const { key, ...rowProps } = row.getRowProps();
+                    return (
+                      <tr key={key} {...rowProps}>
+                        {row.cells.map(cell => {
+                          const { key: cellKey, ...cellProps } = cell.getCellProps();
+                          return (
+                            <td
+                              key={cellKey}
+                              {...cellProps}
+                              className={cell.column.cellClassName}
+                            >
+                              {cell.render('Cell')}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

@@ -37,81 +37,59 @@
 }
 
 .pie-chart-legend-container {
-  flex: 1 1 auto;
-  min-width: 0;
+  width: 100%;
   display: flex;
   flex-direction: column;
   height: 100%;
   row-gap: 0.5rem;
 }
 
-.pie-chart-legend-table {
-  height: 100%;
+.legend-scroll-area {
   width: 100%;
-  border-collapse: collapse;
 }
 
-.pie-chart-legend-table td {
+.completedTasksTable {
+  width: 100%;
+}
+
+.completedTasksTable td {
   padding: 8px;
 }
 
-.pie-chart-legend-table th {
+.completedTasksTable th {
   padding: 8px;
 }
 
 .colorColumn {
-  width: 150px;
-}
-
-.colorRow {
-  width: 150px;
+  text-align: center;
 }
 
 .hoursColumn {
   text-align: right;
-  width: 150px;
 }
 
-.projectNameRow {
+.completedTasksTable .taskNameRow {
   color: #888;
-  text-overflow: ellipsis;
   overflow: hidden;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  padding: 0;
+  margin: 8px;
 }
 
-.totalTimeRow {
+.hoursRow {
   text-align: right;
   color: #888;
-  width: 150px;
 }
 
-.pie-chart-legend-table tr:hover {
+.completedTasksTable tr:hover {
   background-color: transparent;
 }
 
-.legend-scroll-area {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
 .legend-scroll-area tbody {
-  display: block;
-  overflow: hidden;
   max-height: calc(70vh);
-}
-
-.legend-scroll-area thead,
-.legend-scroll-area tbody,
-.legend-scroll-area tr {
-  display: table;
-  width: 100%;
-  table-layout: fixed;
-}
-
-.legend-scroll-area thead {
-  position: relative;
-  z-index: 1;
 }
 
 .more-rows-footer {
@@ -147,7 +125,7 @@
 }
 
 .project-chart-legend {
-  display: inline-block;
+  margin-inline: auto;
   width: 16px;
   height: 16px;
   border-radius: 50%;
@@ -162,22 +140,31 @@
 
 @media(width >= 768px) {
   .pie-chart-wrapper {
+    justify-content: center;
     flex-direction: row;
     column-gap: 1rem;
-  }
-  
-  .pie-chart-legend-container {
-    width: 60%;
   }
 }
 
 @media(width >= 1440px) {
+  .pie-chart-legend-container {
+    width: auto;
+  }
+
+  .legend-scroll-area {
+    width: auto;
+  }
+
   .pie-chart-wrapper {
-    column-gap: 8.5rem;
+    column-gap: 3rem;
   }
 
   .report-block {
     padding: 2rem;
+  }
+
+  .colorColumn {
+    width: 100px;
   }
 }
 
