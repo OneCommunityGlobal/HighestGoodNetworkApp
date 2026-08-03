@@ -44,6 +44,7 @@ import NotFoundPage from './components/NotFound/NotFoundPage';
 import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
 import EventPopularity from './components/EventPopularity/EventPopularity';
+import MaterialSummary from './components/MaterialSummary/MaterialSummary';
 import ApplicantSourceDonutChart from './components/ApplicantSourceDonutChart/ApplicantSourceDonutChart';
 // LB Dashboard
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute/LBProtectedRoute';
