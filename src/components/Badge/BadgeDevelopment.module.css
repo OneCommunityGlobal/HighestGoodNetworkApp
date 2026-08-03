@@ -56,3 +56,18 @@
   color: inherit;
   opacity: 1;
 }
+
+.filterInputDark {
+  background-color: #1c1c1c;
+  color: #fff;
+  border: 1px solid #555;
+}
+
+.filterInputDark::placeholder {
+  color: #bbb;
+}
+
+.filterInputDark option {
+  background-color: #1c1c1c;
+  color: #fff;
+}

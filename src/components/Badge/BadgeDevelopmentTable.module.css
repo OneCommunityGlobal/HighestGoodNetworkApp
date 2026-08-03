@@ -1,7 +1,7 @@
 .tableDark tbody tr:hover,
 .tableDark tbody tr:hover td {
-  background-color: #2b3553;
-  color: #fff;
+  background-color: #2b3553 !important;
+  color: #fff !important;
 }
 
 .tableDark tbody tr td::selection,

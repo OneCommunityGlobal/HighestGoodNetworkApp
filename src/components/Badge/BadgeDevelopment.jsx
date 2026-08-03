@@ -42,10 +42,7 @@ function BadgeDevelopment(props) {
   );
 
   const labelClass = `${styles.filterLabel} ${getDark(darkMode, 'text-light', 'text-dark')}`;
-  const inputClass = `${styles.filterInput} ${getDark(
-    darkMode,
-    'bg-darkmode-liblack text-light border-0',
-  )}`;
+  const inputClass = `${styles.filterInput} ${getDark(darkMode, styles.filterInputDark)}`;
 
   return (
     <div className={getDark(darkMode, 'bg-yinmn-blue text-light')}>
@@ -108,10 +105,7 @@ function BadgeDevelopment(props) {
               placeholder="Rank Number"
               value={chooseRankFilter}
               onChange={e => setChooseRankFilter(e.target.value)}
-              className={`${styles.rankInput} ${getDark(
-                darkMode,
-                'bg-darkmode-liblack text-light border-0',
-              )}`}
+              className={`${styles.rankInput} ${getDark(darkMode, styles.filterInputDark)}`}
             />
           </div>
         </div>
