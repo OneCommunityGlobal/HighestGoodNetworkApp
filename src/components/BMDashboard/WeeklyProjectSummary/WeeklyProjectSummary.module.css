@@ -146,6 +146,12 @@
   transition: background 0.2s ease-in-out;
 }
 
+/* Bootstrap .btn can add vertical offset; align with selects */
+.weeklySummaryHeaderControls :global(button.btn) {
+  margin: 0 !important;
+  vertical-align: middle;
+}
+
 .darkMode .weeklySummaryShareBtn {
   background-color: var(--button-bg) !important;
 }
@@ -160,10 +166,8 @@
   cursor: not-allowed;
 }
 
-/* Bootstrap .btn can add vertical offset; align with selects */
-.weeklySummaryHeaderControls :global(button.btn) {
-  margin: 0 !important;
-  vertical-align: middle;
+.darkMode .weeklySummaryShareBtn:hover {
+  background-color: var(--button-hover) !important;
 }
 
 .weeklySummaryShareBtn:hover:not(:disabled) {
@@ -226,6 +230,9 @@
   max-width: 100%;
   box-sizing: border-box;
   overflow: hidden visible;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .darkMode .weeklyProjectSummaryCard {
@@ -307,7 +314,7 @@
 
 .wideCard {
   width: 100%;
-  min-height: 250px;
+  min-height: auto; /* Let content determine height instead of forcing 250px */
   grid-column: span 2;
 }
 
@@ -319,8 +326,8 @@
 .normalCard {
   width: 100%;
   max-width: 100%;
-  min-height: 250px;
   box-sizing: border-box;
+  min-height: auto; /* Let content determine height instead of forcing 250px */
 }
 
 .mapCard {
@@ -360,6 +367,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
+  align-items: stretch; /* Make all cards in a row the same height */
   border-top: 1px solid var(--card-shadow);
   animation: fade-in 0.3s ease-in-out;
   background: var(--section-bg);
@@ -505,10 +513,6 @@
   color: var(--text-color);
 }
 
-.darkMode .weeklySummaryShareBtn:hover {
-  background-color: var(--button-hover) !important;
-}
-
 /* ---------------- STATUS CARD (base) ---------------- */
 .statusCard {
   display: flex;
@@ -621,13 +625,6 @@
   margin: auto;
 }
 
-/* .projectStatusGrid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(2, auto);
-  gap: 10px;
-} */
-
 /* ---------------- OVAL STATUS BUTTON ---------------- */
 .weeklyStatusButton {
   width: 130px;
@@ -685,7 +682,26 @@
   }
 }
 
-/* Medium Screens */
+/* Large screens - Tools section layout optimization */
+@media (width <= 1366px) {
+  /* Tools and Equipment Tracking - Switch to 2 column layout earlier for better chart visibility */
+  .weeklyProjectSummaryDashboardCategoryContent {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding: 12px;
+  }
+
+  /* Wide card spans 2 columns, normal cards span 1 column each */
+  .weeklyProjectSummaryDashboardCategoryContent .wideCard {
+    grid-column: span 2;
+  }
+
+  .weeklyProjectSummaryDashboardCategoryContent .normalCard {
+    grid-column: span 1;
+  }
+}
+
+/* Medium Screens - Wrap Items */
 @media (width <= 1024px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
@@ -701,9 +717,83 @@
   .weeklyProjectSummaryDashboardGrid {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  /* Tools and Equipment Tracking - 2 column layout on tablet */
+  .weeklyProjectSummaryDashboardCategoryContent {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding: 12px;
+  }
+
+  /* Cards span full width on tablet */
+  .weeklyProjectSummaryDashboardCategoryContent .wideCard,
+  .weeklyProjectSummaryDashboardCategoryContent .normalCard {
+    grid-column: span 2;
+  }
 }
 
-/* Small Screens */
+/* Extra Small Screens - Small phones */
+@media (width <= 375px) {
+  .weeklyProjectSummaryDashboardCategoryContent {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .weeklyProjectSummaryCard {
+    padding: 6px;
+  }
+
+  /* Ensure charts are fully visible on small mobile - prevent clipping */
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-chart-container,
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-bar-chart-content,
+  .weeklyProjectSummaryDashboardCategoryContent .tool-donut-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+}
+
+/* Small Screens - Medium phones */
+@media (width >= 376px) and (width <= 428px) {
+  .weeklyProjectSummaryDashboardCategoryContent {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .weeklyProjectSummaryCard {
+    padding: 7px;
+  }
+
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-chart-container,
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-bar-chart-content,
+  .weeklyProjectSummaryDashboardCategoryContent .tool-donut-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+}
+
+/* Small Screens - Large phones and tablets */
+@media (width >= 429px) and (width <= 768px) {
+  .weeklyProjectSummaryDashboardCategoryContent {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .weeklyProjectSummaryCard {
+    padding: 8px;
+  }
+
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-chart-container,
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-bar-chart-content,
+  .weeklyProjectSummaryDashboardCategoryContent .tool-donut-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+}
+
+/* Small Screens - Make Dropdowns Vertical */
 @media (width <= 768px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
@@ -785,6 +875,27 @@
   
   .financialsTrackingGrid {
     grid-template-columns: 1fr;
+  }
+
+  /* Ensure charts are fully visible on mobile - prevent clipping */
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-chart-container,
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-bar-chart-content,
+  .weeklyProjectSummaryDashboardCategoryContent .tool-donut-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow: visible;
+  }
+}
+
+/* Extra small screens */
+@media (width <= 576px) {
+  .weeklyProjectSummaryDashboardCategoryContent {
+    padding: 8px;
+    gap: 10px;
+  }
+
+  .weeklyProjectSummaryCard {
+    padding: 6px;
   }
 }
 
