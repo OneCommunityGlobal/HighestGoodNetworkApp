@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Form } from 'react-bootstrap';
+import { Button, Form, Modal } from 'react-bootstrap';
 import styles from './TypesList.module.css';
 import { connect } from 'react-redux';
 import { deleteInvType, updateInvType } from '../../../actions/bmdashboard/invTypeActions';
@@ -7,6 +7,7 @@ import { deleteInvType, updateInvType } from '../../../actions/bmdashboard/invTy
 function TypeRow(props) {
   const { itemType, id, category, dispatch, requiresUnit } = props;
   const [isEditing, setIsEditing] = useState(false);
+  const [showConfirmDeleteDialog, setShowConfirmDeleteDialog] = useState(false);
   const [editType, setEditType] = useState({
     name: itemType.name,
     description: itemType.description,
@@ -19,10 +20,15 @@ function TypeRow(props) {
   };
 
   const handleDelete = () => {
+    setShowConfirmDeleteDialog(true);
+  };
+
+  const confirmDelete = () => {
+    setShowConfirmDeleteDialog(false);
     dispatch(deleteInvType(category, itemType._id));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (editType.name.trim() && (!requiresUnit || editType.unit.trim())) {
       let payload;
       if (category === 'Equipments') {
@@ -36,8 +42,17 @@ function TypeRow(props) {
       } else {
         payload = { name: editType.name, description: editType.description };
       }
-      dispatch(updateInvType(category, itemType._id, payload));
-      setIsEditing(false);
+      const result = await dispatch(updateInvType(category, itemType._id, payload));
+
+      if (!result.success) {
+        setIsEditing(false);
+        setEditType({
+          name: itemType.name,
+          description: itemType.description,
+          unit: itemType.unit || '',
+          fuel: itemType.fuelType || '',
+        });
+      }
     }
   };
 
@@ -124,15 +139,40 @@ function TypeRow(props) {
       {requiresUnit && <td>{itemType.unit || '-'}</td>}
       {category === 'Equipments' && <td>{itemType.fuelType || '-'}</td>}
       <td>
-        <Button size="sm" className={`${styles.btnTypes}`} onClick={handleEdit}>
+        <Button size="sm" className={styles.btnTypes} onClick={handleEdit}>
           Edit
         </Button>
       </td>
       <td>
-        <Button size="sm" className={`${styles.btnTypes}`} onClick={handleDelete}>
+        <Button size="sm" className={styles.btnTypes} onClick={handleDelete}>
           Delete
         </Button>
       </td>
+      <Modal
+        show={showConfirmDeleteDialog}
+        onHide={() => setShowConfirmDeleteDialog(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title className={styles.typeRowDeleteModalTitle}>Confirm Delete</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to delete "<strong>{itemType.name}</strong>"? This action cannot be
+          undone.
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            className={styles.typeRowCancelButton}
+            onClick={() => setShowConfirmDeleteDialog(false)}
+          >
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={confirmDelete}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </tr>
   );
 }
