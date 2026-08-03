@@ -372,11 +372,6 @@
   background-color: #e0e0e0;
 }
 
-/* Dark mode hover states */
-.navigationCardDark:hover {
-  background: #465d7b;
-}
-
 .case-list-item-dark:hover {
   background-color: #2b3f59;
 }
@@ -1254,4 +1249,133 @@
 .darkMode .insights .insightsFilters select:hover,
 .insights.darkMode .insightsFilters select:hover {
   border-color: #60a5fa;
+}
+
+/* Analytics Navigation Styles */
+.analyticsNavigation {
+  margin-top: 2rem;
+}
+
+.analyticsNavigationDark {
+  background-color: #1c2541;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #3a506b;
+}
+
+.sectionSubtitle {
+  color: #666;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
+.analyticsNavigationDark .sectionSubtitle {
+  color: #ccc;
+}
+
+.navigationGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.navigationCard {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+  border: 1px solid #eee;
+}
+
+.navigationCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 15%);
+  text-decoration: none;
+  color: inherit;
+}
+
+.navigationCardDark {
+  background: #3a506b;
+  color: #fff;
+  border-color: #5a6b7d;
+}
+
+.navigationCardDark:hover {
+  background: #465d7b;
+}
+
+.navigationCard .cardIcon {
+  font-size: 2rem;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.navigationCardDark .cardIcon {
+  background: #5a6b7d;
+}
+
+.navigationCard .cardContent {
+  flex: 1;
+}
+
+.navigationCard .cardTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.navigationCardDark .cardTitle {
+  color: #fff;
+}
+
+.navigationCard .cardDescription {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.navigationCardDark .cardDescription {
+  color: #ccc;
+}
+
+.navigationCard .cardStats {
+  font-size: 0.8rem;
+  color: #888;
+  font-weight: 600;
+}
+
+.navigationCardDark .cardStats {
+  color: #aaa;
+}
+
+.navigationCard .cardArrow {
+  font-size: 1.2rem;
+  color: #666;
+  font-weight: bold;
+}
+
+.navigationCardDark .cardArrow {
+  color: #ccc;
+}
+
+@media (width <= 768px) {
+  .navigationGrid {
+    grid-template-columns: 1fr;
+  }
 }
