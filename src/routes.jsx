@@ -87,6 +87,8 @@ import KitchenandInventoryLogin from './components/KitchenandInventory/Login';
 import OrchardManagement from './components/KitchenandInventory/OrchardManagement/OrchardManagement';
 import OrchardManagementPage from './components/KitchenandInventory/OrchardManagement/OrchardManagementPage';
 import GardenManagement from './components/KitchenandInventory/GardenManagement/GardenManagement';
+import AnimalManagement from './components/KitchenandInventory/AnimalManagement';
+import OrdersPage from './components/KitchenInventory/Orders/OrdersPage';
 import RecipesLandingPage from './components/KitchenandInventory/Recipes';
 
 import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
