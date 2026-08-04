@@ -17,7 +17,13 @@
   flex-direction: column;
   gap: 1rem;
   padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
   box-sizing: border-box;
+}
+
+:global(.darkMode.injury-chart-container) {
+  border-color: #4a5a77;
 }
 
 :global(.injury-chart-header) {
@@ -198,6 +204,7 @@
 :global(.filter .react-datepicker__input-container input) {
   width: 180px;
   max-width: 180px;
+  cursor: pointer;
 }
 
 :global(.filter .injurySelect__control) {
@@ -324,33 +331,33 @@
   box-shadow: 0 0 0 1px #0d55b3 !important;
 }
 
-.darkMode :global(.react-datepicker) {
+:global(.darkMode .react-datepicker) {
   background-color: #3A506B !important;
   border-color: #555 !important;
   color: #ffffff !important;
 }
 
-.darkMode :global(.react-datepicker__header) {
+:global(.darkMode .react-datepicker__header) {
   background-color: #1C2541 !important;
   border-bottom-color: #555 !important;
 }
 
-.darkMode :global(.react-datepicker__current-month),
-.darkMode :global(.react-datepicker__day-name),
-.darkMode :global(.react-datepicker__day),
-.darkMode :global(.react-datepicker__time-name) {
+:global(.darkMode .react-datepicker__current-month),
+:global(.darkMode .react-datepicker__day-name),
+:global(.darkMode .react-datepicker__day),
+:global(.darkMode .react-datepicker__time-name) {
   color: #ffffff !important;
 }
 
-.darkMode :global(.react-datepicker__day:hover),
-.darkMode :global(.react-datepicker__day--keyboard-selected) {
+:global(.darkMode .react-datepicker__day:hover),
+:global(.darkMode .react-datepicker__day--keyboard-selected) {
   background-color: #0d55b3 !important;
   color: #ffffff !important;
 }
 
-.darkMode :global(.react-datepicker__day--selected),
-.darkMode :global(.react-datepicker__day--in-selecting-range),
-.darkMode :global(.react-datepicker__day--in-range) {
+:global(.darkMode .react-datepicker__day--selected),
+:global(.darkMode .react-datepicker__day--in-selecting-range),
+:global(.darkMode .react-datepicker__day--in-range) {
   background-color: #0d55b3 !important;
   color: #ffffff !important;
 }

@@ -296,7 +296,7 @@ function InjuryCategoryBarChart() {
       {!loading && error && <p className={styles.error}>Error: {String(error)}</p>}
 
       {!loading && !error && chartData.length > 0 && (
-        <ResponsiveContainer key={chartKey} width="100%" height={420}>
+        <ResponsiveContainer key={chartKey} width="100%" height={560}>
           <BarChart
             data={chartData}
             margin={{ top: 16, right: 24, bottom: 8, left: 8 }}
@@ -340,8 +340,6 @@ function InjuryCategoryBarChart() {
             />
             <Legend
               wrapperStyle={{
-                maxHeight: 72,
-                overflowY: 'auto',
                 color: darkMode ? '#fff' : '#000',
               }}
               payload={allSeriesProjectIds.map((pid, index) => ({

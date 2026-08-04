@@ -283,6 +283,9 @@ function LessonsLearntChart({ darkMode: propDarkMode }) {
             dateFormat="MM/dd/yyyy"
             isClearable
             maxDate={endDate || today}
+            // Keep the popup theme aligned with the dark-mode input styling.
+            calendarClassName={darkMode ? 'lessons-dark-calendar' : ''}
+            popperClassName={darkMode ? 'lessons-dark-popper' : ''}
           />
         </div>
         <div className={styles.filter}>
@@ -298,6 +301,9 @@ function LessonsLearntChart({ darkMode: propDarkMode }) {
             isClearable
             minDate={startDate}
             maxDate={today}
+            // Keep the popup theme aligned with the dark-mode input styling.
+            calendarClassName={darkMode ? 'lessons-dark-calendar' : ''}
+            popperClassName={darkMode ? 'lessons-dark-popper' : ''}
           />
         </div>
       </div>
