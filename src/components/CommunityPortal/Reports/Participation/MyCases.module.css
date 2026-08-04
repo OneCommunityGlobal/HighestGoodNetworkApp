@@ -110,9 +110,9 @@
 }
 
 .myCasesPageDark .viewSwitcher button.active {
-  background-color: #007bff;
+  background-color: #0069d9;
   color: #fff;
-  border-color: #007bff;
+  border-color: #0069d9;
 }
 
 .filterWrapper {
@@ -257,27 +257,27 @@
   border-radius: 20px;
   margin-bottom: 10px;
   background-color: #e9f7ef;
-  color: #28a745;
+  color: #1e7e34;
 }
 
 .eventBadge[data-type='Yoga Class'] {
   background-color: #e9f7ef;
-  color: #28a745 !important;
+  color: #1e7e34 !important;
 }
 
 .eventBadge[data-type='Cooking Workshop'] {
   background-color: #fdecea;
-  color: #e74c3c !important;
+  color: #c23f32 !important;
 }
 
 .eventBadge[data-type='Dance Class'] {
   background-color: #fff5e6;
-  color: #f39c12 !important;
+  color: #9b630b !important;
 }
 
 .eventBadge[data-type='Fitness Bootcamp'] {
   background-color: #f5e6ff;
-  color: #9b59b6 !important;
+  color: #8e51a7 !important;
 }
 
 /* Ensure event badges maintain their colors in dark mode */
@@ -567,7 +567,7 @@
 }
 
 .calendarDark .react-calendar__tile--active {
-  background-color: #007bff;
+  background-color: #0069d9;
   color: #fff;
 }
 
@@ -637,7 +637,7 @@
 .eventCountBadge {
   font-size: 10px;
   font-weight: bold;
-  color: #007bff;
+  color: #0069db;
   background-color: #e7f3ff;
   padding: 2px 4px;
   border-radius: 4px;
@@ -657,7 +657,7 @@
 }
 
 .selectedDate {
-  background-color: #007bff !important;
+  background-color: #0069d9 !important;
   color: #fff !important;
 }
 
@@ -781,7 +781,7 @@
 
 /* ---------- More button ---------- */
 .moreBtn {
-  background-color: #007bff;
+  background-color: #0069d9;
   color: #fff;
   border: none;
   padding: 8px 16px;
@@ -986,22 +986,22 @@
 
   .eventBadge[data-type='Yoga Class'] {
     background-color: #e9f7ef !important;
-    color: #28a745 !important;
+    color: #1e7e34 !important;
   }
 
   .eventBadge[data-type='Cooking Workshop'] {
     background-color: #fdecea !important;
-    color: #e74c3c !important;
+    color: #c23f32 !important;
   }
 
   .eventBadge[data-type='Dance Class'] {
     background-color: #fff5e6 !important;
-    color: #f39c12 !important;
+    color: #9b630b !important;
   }
 
   .eventBadge[data-type='Fitness Bootcamp'] {
     background-color: #f5e6ff !important;
-    color: #9b59b6 !important;
+    color: #8e51a7 !important;
   }
 
   .myCasesPage.darkMode {
