@@ -32,7 +32,6 @@ export function PeopleTasksPieChart({ darkMode }) {
         </div>
       )}
       {!hasProjectData && (
-        <ReportPage.ReportBlock darkMode={darkMode} className={styles['pie-empty-state']}>
           <div className={styles['pie-empty-state-inner']} role="status">
             <div className={styles['pie-empty-state-icon']} aria-hidden="true">
               <FiFolder size={20}/>
@@ -42,7 +41,6 @@ export function PeopleTasksPieChart({ darkMode }) {
               Once this person logs hours to a project, a breakdown of where their time is going will appear here.
             </p>
           </div>
-        </ReportPage.ReportBlock>
       )}
     </div>
   );
