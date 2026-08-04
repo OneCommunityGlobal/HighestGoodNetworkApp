@@ -12,6 +12,7 @@ import jb from '../Collaboration/JobFormBuilder.module.css';
 import styles from './EnhancedJobFormBuilder.module.css';
 import OneCommunityImage from '../Collaboration/One-Community-Horizontal-Homepage-Header-980x140px-2.png';
 
+import { permissions } from '../../utils/constants';
 const QUESTION_TYPES = [
   { value: 'textbox', label: 'Short text' },
   { value: 'textarea', label: 'Long text' },
@@ -392,12 +393,12 @@ const EnhancedJobFormBuilder = () => {
   };
 
   const canManageForms = useMemo(
-    () => userRole === 'Owner' || dispatch(hasPermission('manageJobForms')),
+    () => userRole === 'Owner' || dispatch(hasPermission(permissions.manageJobForms)),
     [dispatch, userRole, frontPermissions, rolePermissions],
   );
 
   const canCreateQuestionSets = useMemo(
-    () => userRole === 'Owner' || dispatch(hasPermission('createFormQuestions')),
+    () => userRole === 'Owner' || dispatch(hasPermission(permissions.createFormQuestions)),
     [dispatch, userRole, frontPermissions, rolePermissions],
   );
 

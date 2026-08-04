@@ -21,13 +21,14 @@ import BadgeTableFilter from './BadgeTableFilter';
 import EditBadgePopup from './EditBadgePopup';
 import DeleteBadgePopup from './DeleteBadgePopup';
 import hasPermission from '../../utils/permissions';
+import { permissions } from '../../utils/constants';
 import './Badge.module.css';
 
 function BadgeDevelopmentTable(props) {
   const { darkMode } = props;
 
-  const canUpdateBadges = hasPermission('update:badges');
-  const canDeleteBadges = hasPermission('delete:badges');
+  const canUpdateBadges = hasPermission(permissions['update:badges']);
+  const canDeleteBadges = hasPermission(permissions['delete:badges']);
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');

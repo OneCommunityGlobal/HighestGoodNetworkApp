@@ -9,6 +9,7 @@ import { updateWeeklySummaries } from '../../actions/weeklySummaries';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import styles from './Timelog.module.css';
 
+import { permissions } from '../../utils/constants';
 function WeeklySummaries({ userProfile, onEditSummary }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -30,7 +31,7 @@ function WeeklySummaries({ userProfile, onEditSummary }) {
   const [modalTab, setModalTab] = useState('1');
 
   const dispatch = useDispatch();
-  const canEdit = dispatch(hasPermission('putUserProfile'));
+  const canEdit = dispatch(hasPermission(permissions.putUserProfile));
 
   useEffect(() => {
     setEditedSummaries([

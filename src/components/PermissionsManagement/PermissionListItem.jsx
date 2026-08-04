@@ -9,6 +9,7 @@ import PermissionList from './PermissionList';
 import hasPermission from '../../utils/permissions';
 import styles from './UserRoleTab.module.css';
 
+import { permissions } from '../../utils/constants';
 function PermissionListItem(props) {
   const {
     rolePermissions,
@@ -229,7 +230,7 @@ function PermissionListItem(props) {
                 props.onChange();
                 updateModalStatus(true);
               }}
-              disabled={!props.hasPermission('putRole')}
+              disabled={!props.hasPermission(permissions.putRole)}
               style={darkMode ? boxStyleDark : boxStyle}
             >
               {howManySubpermsInRole === 'All' ? 'Delete' : 'Add'}
@@ -243,9 +244,9 @@ function PermissionListItem(props) {
                 updateModalStatus(true);
               }}
               disabled={
-                !props.hasPermission('putRole') ||
+                !props.hasPermission(permissions.putRole) ||
                 (immutablePermissions.includes(permission) &&
-                  !props.hasPermission('putUserProfilePermissions')) ||
+                  !props.hasPermission(permissions.putUserProfilePermissions)) ||
                 shouldDisableForRestriction
               }
               style={darkMode ? boxStyleDark : boxStyle}

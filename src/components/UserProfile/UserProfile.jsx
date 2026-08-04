@@ -82,6 +82,7 @@ import SetUpFinalDayPopUp from '../UserManagement/SetUpFinalDayPopUp';
 import AccessManagementModal from './UserProfileModal/AccessManagementModal';
 import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 
+import { permissions } from '../../utils/constants';
 function UserProfile(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
   /* Constant values */
@@ -204,7 +205,7 @@ function UserProfile(props) {
 
   const { userid: requestorId, role: requestorRole } = props.auth.user;
 
-  const canEditTeamCode = props.hasPermission('editTeamCode');
+  const canEditTeamCode = props.hasPermission(permissions.editTeamCode);
   const [titleOnSet, setTitleOnSet] = useState(false); // added by development
 
   /* useEffect functions */ // added by luis, the below useEffect
@@ -1200,21 +1201,21 @@ setUpdatedTasks(prev => {
   const authEmail = props.auth?.user?.email;
   const isUserSelf = targetUserId === requestorId;
 
-  const canChangeUserStatus = props.hasPermission('changeUserStatus');
-  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
-  const canPutUserProfile = props.hasPermission('putUserProfile');
-  const canUpdatePassword = props.hasPermission('updatePassword');
-  const canGetProjectMembers = props.hasPermission('getProjectMembers');
-  const canChangeRehireableStatus = props.hasPermission('changeUserRehireableStatus');
-  const canUpdateSummaryRequirements = props.hasPermission('updateSummaryRequirements');
-  const canManageAdminLinks = props.hasPermission('manageAdminLinks');
-  const canSeeQSC = props.hasPermission('seeQSC');
-  const canManageHGNAccessSetup = props.hasPermission('manageHGNAccessSetup');
-  const canEditVisibility = props.hasPermission('toggleInvisibility');
-  const canSeeReports = props.hasPermission('getReports');
+  const canChangeUserStatus = props.hasPermission(permissions.changeUserStatus);
+  const canAddDeleteEditOwners = props.hasPermission(permissions.addDeleteEditOwners);
+  const canPutUserProfile = props.hasPermission(permissions.putUserProfile);
+  const canUpdatePassword = props.hasPermission(permissions.updatePassword);
+  const canGetProjectMembers = props.hasPermission(permissions.getProjectMembers);
+  const canChangeRehireableStatus = props.hasPermission(permissions.changeUserRehireableStatus);
+  const canUpdateSummaryRequirements = props.hasPermission(permissions.updateSummaryRequirements);
+  const canManageAdminLinks = props.hasPermission(permissions.manageAdminLinks);
+  const canSeeQSC = props.hasPermission(permissions.seeQSC);
+  const canManageHGNAccessSetup = props.hasPermission(permissions.manageHGNAccessSetup);
+  const canEditVisibility = props.hasPermission(permissions.toggleInvisibility);
+  const canSeeReports = props.hasPermission(permissions.getReports);
   const { role: userRole } = userProfile;
   const canResetPassword =
-    props.hasPermission('updatePassword')&& !(userProfile.role === 'Administrator' || userProfile.role === 'Owner');
+    props.hasPermission(permissions.updatePassword)&& !(userProfile.role === 'Administrator' || userProfile.role === 'Owner');
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
   const canEditUserProfile = targetIsDevAdminUneditable
     ? false

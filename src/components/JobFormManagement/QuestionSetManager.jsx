@@ -24,6 +24,7 @@ import { toast } from 'react-toastify';
 import { ENDPOINTS } from '~/utils/URL';
 import hasPermission from '~/utils/permissions';
 
+import { permissions } from '../../utils/constants';
 function reportQuestionSetError(message, error) {
   console.error(message, error);
   toast.error(message);
@@ -247,17 +248,17 @@ const QuestionSetManager = ({
   };
 
   const canCreateQuestionSets = useMemo(
-    () => userRole === 'Owner' || dispatch(hasPermission('createFormQuestions')),
+    () => userRole === 'Owner' || dispatch(hasPermission(permissions.createFormQuestions)),
     [dispatch, userRole, frontPermissions, rolePermissions],
   );
 
   const canEditQuestionSets = useMemo(
-    () => userRole === 'Owner' || dispatch(hasPermission('editFormQuestions')),
+    () => userRole === 'Owner' || dispatch(hasPermission(permissions.editFormQuestions)),
     [dispatch, userRole, frontPermissions, rolePermissions],
   );
 
   const canDeleteQuestionSets = useMemo(
-    () => userRole === 'Owner' || dispatch(hasPermission('deleteFormQuestions')),
+    () => userRole === 'Owner' || dispatch(hasPermission(permissions.deleteFormQuestions)),
     [dispatch, userRole, frontPermissions, rolePermissions],
   );
 

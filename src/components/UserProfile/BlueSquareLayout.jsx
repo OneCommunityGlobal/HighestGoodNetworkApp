@@ -13,6 +13,7 @@ import './UserProfileEdit/UserProfileEdit.scss';
 import {useHistory } from 'react-router-dom';
 
 
+import { permissions } from '../../utils/constants';
 const BlueSquareLayout = ({
   userProfile,
   handleUserProfile,
@@ -24,7 +25,7 @@ const BlueSquareLayout = ({
     const history = useHistory();
   const dispatch = useDispatch();
   const allRequests = useSelector(state => state.timeOffRequests.requests);
-  const canManageTimeOffRequests = dispatch(hasPermission('manageTimeOffRequests'));
+  const canManageTimeOffRequests = dispatch(hasPermission(permissions.manageTimeOffRequests));
 
   const { privacySettings } = userProfile;
   const [show, setShow] = useState(false);

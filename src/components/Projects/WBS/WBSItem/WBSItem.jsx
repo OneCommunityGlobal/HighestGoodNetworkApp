@@ -16,11 +16,12 @@ import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
 
 
+import { permissions } from '../../../../utils/constants';
 const WBSItem = ({ darkMode, index, name, wbsId, projectId, getPopupById, deleteWbs, hasPermission, popupEditor, taskSelectionMode, taskSelectionReturnPath }) => {
 
   const [showModalDelete, setShowModalDelete] = useState(false);
 
-  const canDeleteWBS = hasPermission('deleteWbs');
+  const canDeleteWBS = hasPermission(permissions.deleteWbs);
 
   const handleDelete = () => {
     deleteWbs(wbsId);

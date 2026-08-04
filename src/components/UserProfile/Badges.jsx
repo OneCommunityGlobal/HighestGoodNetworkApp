@@ -31,6 +31,7 @@ import AssignBadgePopup from './AssignBadgePopup';
 import styles from './Badge.module.css';
 import FeaturedBadges from './FeaturedBadges';
 
+import { permissions } from '../../utils/constants';
 export const Badges = (props) => {
   const {auth, darkMode, displayUserId, authUser} = props;
 
@@ -38,15 +39,15 @@ export const Badges = (props) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isAssignOpen, setAssignOpen] = useState(false);
 
-  const canAssignBadges = props.hasPermission('assignBadges') || props.hasPermission('assignBadgeOthers');
+  const canAssignBadges = props.hasPermission(permissions.assignBadges) || props.hasPermission(permissions.assignBadgeOthers);
   
   const [sortedBadges, setSortedBadges] = useState([]);
   const [isBadgeOpen, setIsBadgeOpen] = useState(false);
 
   // Added restriction: Jae's badges only editable by Jae or Owner
   const isRecordBelongsToJaeAndUneditable = props.isRecordBelongsToJaeAndUneditable && props.role !== 'Owner';
-  // const canAssignBadges = props.hasPermission('assignBadges');
-  const canModifyBadgeAmount = props.hasPermission('modifyBadgeAmount');
+  // const canAssignBadges = props.hasPermission(permissions.assignBadges);
+  const canModifyBadgeAmount = props.hasPermission(permissions.modifyBadgeAmount);
 
   const toggle = () => setOpen(!isOpen);
   

@@ -33,6 +33,7 @@ import { getBadgeCount, resetBadgeCount } from '../../actions/badgeManagement';
 
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 
+import { permissions } from '../../utils/constants';
 const SummaryBar = React.forwardRef((props, ref) => {
   // from parent
   const { displayUserId, summaryBarData } = props;
@@ -166,7 +167,9 @@ const SummaryBar = React.forwardRef((props, ref) => {
     }
   };
 
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const canPutUserProfileImportantInfo = props.hasPermission(
+    permissions.putUserProfileImportantInfo,
+  );
   const [weeklySummaryNotReq, setweeklySummaryNotReq] = useState(
     displayUserProfile?.weeklySummaryOption === 'Not Required',
   );

@@ -16,7 +16,7 @@ import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
-} from '../../utils/constants';
+ permissions } from '../../utils/constants';
 import {
   getAllUserProfile,
   deleteUser,
@@ -459,7 +459,7 @@ class UserManagement extends React.PureComponent {
       }
       return;
     }
-    const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests');
+    const canManageTimeOffRequests = this.props.hasPermission(permissions.manageTimeOffRequests);
     const hasRolePermission =
       this.props.state.auth.user.role === 'Administrator' || this.props.state.auth.user.role === 'Owner';
     if (canManageTimeOffRequests || hasRolePermission) {

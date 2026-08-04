@@ -26,6 +26,7 @@ import httpService from '../../services/httpService';
 import { ApiEndpoint } from '~/utils/URL';
 import hasPermission from '~/utils/permissions';
 
+import { permissions } from '../../utils/constants';
 function ReviewButton({ user, task, updateTask, onTimeOff }) {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -35,7 +36,7 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
   const [link, setLink] = useState('');
   const [verifyModal, setVerifyModal] = useState(false);
   const [selectedAction, setSelectedAction] = useState(null);
-  const canReview = dispatch(hasPermission('putReviewStatus'));
+  const canReview = dispatch(hasPermission(permissions.putReviewStatus));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmSubmitModal, setConfirmSubmitModal] = useState(false);
   const [editLinkState, setEditLinkState] = useState({
