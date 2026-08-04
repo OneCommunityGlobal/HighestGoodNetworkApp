@@ -4,6 +4,9 @@ import { useRef, useState, useCallback } from 'react';
 import MyCases from './MyCases';
 import DropOffTracking from './DropOffTracking';
 import NoShowInsights from './NoShowInsights';
+import EventPopularityBreakdown from './EventPopularityBreakdown';
+import EngagementVisuals from './EngagementVisuals';
+import AnalyticsNavigation from './AnalyticsNavigation';
 import styles from './Participation.module.css';
 
 function EventParticipation() {
@@ -68,6 +71,12 @@ function EventParticipation() {
           <NoShowInsights darkMode={darkMode} />
         </div>
       </div>
+
+      <EventPopularityBreakdown />
+
+      <EngagementVisuals />
+
+      <AnalyticsNavigation />
 
       {/* Print-only footer note */}
     </div>

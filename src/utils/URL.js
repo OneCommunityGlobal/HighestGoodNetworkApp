@@ -587,6 +587,35 @@ export const ENDPOINTS = {
   ATTENDANCE_BY_ID: attendanceId => `${APIEndpoint}/attendance/${attendanceId}`,
   ATTENDANCE_SEED: eventId => `${APIEndpoint}/attendance/event/${eventId}/seed`,
   ATTENDANCE_MOCK: eventId => `${APIEndpoint}/attendance/event/${eventId}/mock`,
+  EVENT_POPULARITY: (startDate, endDate) => {
+    const params = [];
+    if (startDate) params.push(`startDate=${encodeURIComponent(startDate)}`);
+    if (endDate) params.push(`endDate=${encodeURIComponent(endDate)}`);
+    const queryString = params.length ? `?${params.join('&')}` : '';
+    return `${APIEndpoint}/events/popularity${queryString}`;
+  },
+  EVENT_ENGAGEMENT: (startDate, endDate, format) => {
+    const params = [];
+    if (startDate) params.push(`startDate=${encodeURIComponent(startDate)}`);
+    if (endDate) params.push(`endDate=${encodeURIComponent(endDate)}`);
+    if (format) params.push(`format=${encodeURIComponent(format)}`);
+    const queryString = params.length ? `?${params.join('&')}` : '';
+    return `${APIEndpoint}/events/engagement${queryString}`;
+  },
+  EVENT_VALUE: (startDate, endDate) => {
+    const params = [];
+    if (startDate) params.push(`startDate=${encodeURIComponent(startDate)}`);
+    if (endDate) params.push(`endDate=${encodeURIComponent(endDate)}`);
+    const queryString = params.length ? `?${params.join('&')}` : '';
+    return `${APIEndpoint}/events/value${queryString}`;
+  },
+  EVENT_FORMAT_COMPARISON: (startDate, endDate) => {
+    const params = [];
+    if (startDate) params.push(`startDate=${encodeURIComponent(startDate)}`);
+    if (endDate) params.push(`endDate=${encodeURIComponent(endDate)}`);
+    const queryString = params.length ? `?${params.join('&')}` : '';
+    return `${APIEndpoint}/events/format-comparison${queryString}`;
+  },
   LB_SEND_MESSAGE: `${APIEndpoint}/lb/messages`,
   LB_READ_MESSAGE: `${APIEndpoint}/lb/messages/conversation`,
   LB_UPDATE_MESSAGE_STATUS: `${APIEndpoint}/lb/messages/statuses`,
