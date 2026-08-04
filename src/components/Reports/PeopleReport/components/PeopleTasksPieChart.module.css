@@ -117,7 +117,14 @@
   color: #555;
 }
 
-:global(.dark-mode) .pie-empty-state-icon {
-  background-color: #1f2a44;
-  color: #b8c4e0;
+:global(.dark-mode) {
+  .people-pie-charts-wrapper {
+    background-color: #1a2639;
+    box-shadow: 0 0 12px black;
+  }
+
+  .pie-empty-state-icon {
+    background-color: #1f2a44;
+    color: #b8c4e0;
+  }
 }
