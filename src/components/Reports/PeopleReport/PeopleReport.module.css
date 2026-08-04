@@ -5,6 +5,10 @@ body {
   /* font-family: 'Lato', sans-serif; */
 }
 
+.mobilePeopleTable {
+  flex: 1;
+}
+
 .teams__tr {
   text-align: start;
 }
