@@ -3,6 +3,9 @@
   display: grid;
   grid-auto-flow: row;
   row-gap: 8px;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 0 12px #eae1f6;
 }
 
 .people-pie-charts-wrapper.full-height {
@@ -30,21 +33,21 @@
   padding-bottom: 0 !important;
 }
 
-.people-report-pie-wrapper {
-  height: 100% !important;
-}
-
 @media (width >= 1280px) {
   .people-pie-charts-wrapper {
     display: block;
-    grid-auto-flow: column;
-    column-gap: 24px;
+  }
+}
+
+@media (width >= 1440px) {
+  .people-pie-charts-wrapper {
+    padding: 2rem;
   }
 }
 
 .people-pie-charts-header {
   text-align: start;
-  margin-bottom: 12px;
+  margin-bottom: 0.5rem;
 }
 
 .show-all-tasks-button {

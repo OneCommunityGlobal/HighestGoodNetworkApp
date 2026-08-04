@@ -20,21 +20,17 @@ export function PeopleTasksPieChart({ darkMode }) {
     className={clsx(styles['people-pie-charts-wrapper'], !hasProjectData && styles['full-height'])}
     >
       {hasProjectData && (
-        <ReportPage.ReportBlock darkMode={darkMode} style={{ overflow: 'visible' }} className={styles['pie-no-scroll']}>
+        <div>
           <h5 className={styles['people-pie-charts-header']}>Time Logged to Projects/Non-tasks</h5>
-          <div style={{ width: '100%' }}>
-            <div className={styles['people-report-pie-wrapper']}>
-              <UserProjectD3PieChart
-                pieChartId="projectsPieChart"
-                darkMode={darkMode}
-                projectsData={hoursLoggedToProjectsOnly}
-                tasksData={tasksLegend}
-              />
-            </div>
-          </div>
-        </ReportPage.ReportBlock>
-      )}
 
+          <UserProjectD3PieChart
+            pieChartId="projectsPieChart"
+            darkMode={darkMode}
+            projectsData={hoursLoggedToProjectsOnly}
+            tasksData={tasksLegend}
+          />
+        </div>
+      )}
       {!hasProjectData && (
         <ReportPage.ReportBlock darkMode={darkMode} className={styles['pie-empty-state']}>
           <div className={styles['pie-empty-state-inner']} role="status">
