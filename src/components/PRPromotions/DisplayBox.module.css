@@ -347,6 +347,18 @@
   color: #f9fafb;
 }
 
+.popupTable tbody tr {
+  cursor: pointer;
+}
+
+.popupTable tbody tr:hover td {
+  background-color: #f0f8ff;
+}
+
+.popupDark .popupTable tbody tr:hover td {
+  background-color: #2f4157;
+}
+
 .prBadgeRow {
   display: flex;
   flex-wrap: wrap;
