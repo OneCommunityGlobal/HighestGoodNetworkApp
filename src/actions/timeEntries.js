@@ -254,7 +254,8 @@ export const postTimeEntry = (timeEntry, { displayedUserId } = {}) => {
       return res.status;
 
     } catch (e) {
-      return e.response.status;
+      toast.error('Unable to verify server time. Please try again.');
+      return e.response?.status ?? 500;
     }
   };
 };
