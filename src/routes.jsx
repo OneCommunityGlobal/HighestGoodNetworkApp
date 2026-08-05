@@ -88,6 +88,9 @@ import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgen
 import EventList from './components/CommunityPortal/Event/EventList/EventList';
 import ResourcesUsage from './components/CommunityPortal/Activities/activityId/ResourcesUsage';
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
+import Demographics from './components/CommunityPortal/Reports/Participation/Demographics';
+import Personalization from './components/CommunityPortal/Reports/Participation/Personalization';
+
 import LogAttendance from './components/CommunityPortal/Activities/LogAttendance';
 import NoShowList from './components/CommunityPortal/Activities/NoShow/NoShowList';
 import MaterialSummary from './components/MaterialSummary/MaterialSummary';
@@ -151,6 +154,7 @@ import CPLogin from './components/CommunityPortal/Login';
 import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 import ActivityComments from './components/CommunityPortal/Activities/activityId/ActivityComments';
+import ActivityFeedback from './components/CommunityPortal/Activities/activityId/ActivityFeedback';
 import Feedbackform from './components/CommunityPortal/Activities/Feedbackform';
 import FollowUpEmailTemplate from './components/CommunityPortal/Activities/FollowUpEmailTemplate';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
@@ -177,8 +181,10 @@ import EPLogin from './components/EductionPortal/Login';
 import BrowseLessonPlan from './components/EductionPortal/BrowseLessonPlan/BrowseLP';
 import EPDashboard from './components/EductionPortal';
 import TaskSubmissions from './components/EductionPortal/Educators/TaskSubmissions';
+import AnnouncementsPage from './components/EductionPortal/Announcements/AnnouncementsPage';
 
 import StudentProfilePage from './components/EductionPortal/StudentProfile/StudentProfilePage';
+import StudentProfile from './components/EductionPortal/StudentProfile/StudentProfile';
 import AssignAtoms from './components/EductionPortal/AssignAtoms/AssignAtoms';
 import ReportDownloadButton from './components/EductionPortal/AnalyticsDashboard/ReportDownloadButton';
 import GroupList from './components/EductionPortal/GroupList/GroupList';
@@ -1025,6 +1031,75 @@ export default (
         <Route path="/kitchenandinventory/orders" component={OrdersPage} />
         <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} />
         <ProtectedRoute path="/kitchenandinventory/recipes" exact component={RecipesLandingPage} />
+
+        <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
+        <Route path="/educationportal/login" component={EPLogin} />
+        <ProtectedRoute
+          path="/educationportal/student/:studentId"
+          exact
+          component={StudentProfile}
+        />
+        <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
+        <EPProtectedRoute
+          path="/educationportal/announcements"
+          exact
+          component={AnnouncementsPage}
+        />
+        <EPProtectedRoute
+          path="/educationportal/educator/task-submissions"
+          exact
+          component={TaskSubmissions}
+        />
+        <EPProtectedRoute path="/student/profile" exact component={StudentProfilePage} />
+        <EPProtectedRoute
+          path="/educationportal/evaluation-results"
+          exact
+          component={EvaluationResultsWrapper}
+        />
+        <Route path="/educationportal/InsightWidget" component={InsightWidget} />
+        <Route path="/educationportal/lesson-library" exact component={BrowseLessonPlan} />
+        <Route path="/educationportal/reportButton" component={ReportDownloadButton} />
+        <Route path="/educator/groups" exact component={GroupList} />
+        <EPProtectedRoute
+          path="/educationportal/tasks/intermediate"
+          exact
+          component={IntermediateTaskList}
+        />
+        <EPProtectedRoute path="/educationportal/dashboard" exact component={StudentDashboard} />
+        <EPProtectedRoute path="/educationportal/student/tasks" exact component={StudentTasks} />
+        <EPProtectedRoute path="/educationportal/student/tasks/:id" exact component={TaskDetails} />
+        <Redirect exact from="/student/tasks" to="/educationportal/student/tasks" />
+        <Redirect exact from="/student/tasks/:id" to="/educationportal/student/tasks/:id" />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityid/comments"
+          exact
+          render={() => <ActivityFeedback initialTab="FAQs" />}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityid/Comments"
+          exact
+          render={() => <ActivityFeedback initialTab="FAQs" />}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityId"
+          exact
+          component={ActivityFeedback}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation/demographics"
+          exact
+          component={Demographics}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation/personalization"
+          exact
+          component={Personalization}
+        />
+        <CPProtectedRoute
+          path="/communityportal/events/create"
+          exact
+          component={TestEventRegistration}
+        />
         {/* ----- End of Kitchen and Inventory Portal Routes ----- */}
         <Route path="/login" component={Login} />
         <Route path="/forgotpassword" component={ForgotPassword} />
