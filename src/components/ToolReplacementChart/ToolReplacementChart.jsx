@@ -34,40 +34,71 @@ const getRecordProjectName = item => {
 const getProjectDisplayName = project =>
   project?.name || project?.projectName || project?.projectId || '';
 
-const getSelectStyles = darkMode => {
-  if (!darkMode) return undefined;
+const getSelectOptionBackground = (darkMode, state) => {
+  if (state.isFocused || state.isSelected) {
+    return darkMode ? '#2e4057' : '#e5e7eb';
+  }
+  return darkMode ? '#3a506b' : '#fff';
+};
 
-  return {
-    control: base => ({
-      ...base,
-      backgroundColor: '#3a506b',
-      borderColor: '#5a7a9b',
-      minHeight: '42px',
-      color: '#e5e5e5',
-    }),
-    menu: base => ({
-      ...base,
-      backgroundColor: '#3a506b',
-      zIndex: 5,
-    }),
-    option: (base, state) => ({
-      ...base,
-      backgroundColor: state.isFocused || state.isSelected ? '#2e4057' : '#3a506b',
-      color: '#ffffff',
-    }),
-    singleValue: base => ({
-      ...base,
-      color: '#ffffff',
-    }),
-    input: base => ({
-      ...base,
-      color: '#ffffff',
-    }),
-    placeholder: base => ({
-      ...base,
-      color: '#a0b4c8',
-    }),
-  };
+const getSelectStyles = darkMode => ({
+  control: base => ({
+    ...base,
+    minHeight: 42,
+    height: 42,
+    backgroundColor: darkMode ? '#3a506b' : '#fff',
+    borderColor: darkMode ? '#5a7a9b' : '#d1d5db',
+    color: darkMode ? '#e5e5e5' : '#111',
+    boxShadow: 'none',
+  }),
+  valueContainer: base => ({
+    ...base,
+    minHeight: 42,
+    height: 42,
+    padding: '0 8px',
+  }),
+  indicatorsContainer: base => ({
+    ...base,
+    height: 42,
+  }),
+  menu: base => ({
+    ...base,
+    backgroundColor: darkMode ? '#3a506b' : '#fff',
+    zIndex: 5,
+  }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: getSelectOptionBackground(darkMode, state),
+    color: darkMode ? '#ffffff' : '#111',
+  }),
+  singleValue: base => ({
+    ...base,
+    color: darkMode ? '#ffffff' : '#111',
+  }),
+  input: base => ({
+    ...base,
+    color: darkMode ? '#ffffff' : '#111',
+    margin: 0,
+    padding: 0,
+  }),
+  placeholder: base => ({
+    ...base,
+    color: darkMode ? '#a0b4c8' : '#6b7280',
+  }),
+});
+
+const toStartOfDay = date => {
+  if (!date) return null;
+  const next = new Date(date);
+  next.setHours(0, 0, 0, 0);
+  return next;
+};
+
+const toEndOfDay = date => {
+  if (!date) return null;
+  const next = new Date(date);
+  next.setHours(23, 59, 59, 999);
+  return next;
 };
 
 const getYAxisWidth = (isMobile, isCompact) => {
@@ -107,34 +138,27 @@ const buildProjectOptions = (bmProjects, data) => {
   return [ALL_PROJECTS_OPTION, ...optionsById.values()];
 };
 
-const buildChartData = (data, selectedProject) => {
+const buildChartData = data => {
   if (!Array.isArray(data) || data.length === 0) return [];
 
-  let filtered = data;
-  if (selectedProject?.value && selectedProject.value !== 'all') {
-    filtered = data.filter(item => getRecordProjectId(item) === String(selectedProject.value));
-  }
-
+  // Use the lowest % across projects so "All Projects" surfaces the most at-risk tools.
   const toolMap = {};
-  filtered.forEach(item => {
+  data.forEach(item => {
     const name = item.toolName;
     const percentage = Number(item.requirementSatisfiedPercentage);
     if (!name || Number.isNaN(percentage)) return;
 
-    if (!toolMap[name]) {
-      toolMap[name] = { total: percentage, count: 1 };
+    if (toolMap[name] == null) {
+      toolMap[name] = percentage;
     } else {
-      toolMap[name].total += percentage;
-      toolMap[name].count += 1;
+      toolMap[name] = Math.min(toolMap[name], percentage);
     }
   });
 
   return Object.keys(toolMap)
     .map(toolName => ({
       toolName,
-      requirementSatisfiedPercentage: Number(
-        (toolMap[toolName].total / toolMap[toolName].count).toFixed(1),
-      ),
+      requirementSatisfiedPercentage: Number(toolMap[toolName].toFixed(1)),
     }))
     .sort((a, b) => a.requirementSatisfiedPercentage - b.requirementSatisfiedPercentage);
 };
@@ -270,6 +294,9 @@ function ChartFilters({
   const labelClass = `${styles.filterLabel} ${darkMode ? styles.filterLabelDark : ''}`;
   const dateClass = `${styles.datePicker} ${darkMode ? styles.datePickerDark : ''}`;
   const calendarClass = darkMode ? styles.calendarDark : styles.calendar;
+  const dateWrapperClass = `${styles.datePickerWrapper} ${
+    darkMode ? 'darkThemeDatePickerWrapper' : ''
+  }`;
 
   return (
     <div className={styles.filters}>
@@ -302,7 +329,7 @@ function ChartFilters({
           endDate={endDate}
           placeholderText="Start Date"
           className={dateClass}
-          wrapperClassName={styles.datePickerWrapper}
+          wrapperClassName={dateWrapperClass}
           calendarClassName={calendarClass}
           popperClassName={styles.datePickerPopper}
           dateFormat="MMM d, yyyy"
@@ -327,7 +354,7 @@ function ChartFilters({
           minDate={startDate}
           placeholderText="End Date"
           className={dateClass}
-          wrapperClassName={styles.datePickerWrapper}
+          wrapperClassName={dateWrapperClass}
           calendarClassName={calendarClass}
           popperClassName={styles.datePickerPopper}
           dateFormat="MMM d, yyyy"
@@ -485,10 +512,17 @@ export const ToolReplacementChart = () => {
 
   useEffect(() => {
     const queryParams = new URLSearchParams();
-    if (startDate) queryParams.append('startDate', startDate.toISOString());
-    if (endDate) queryParams.append('endDate', endDate.toISOString());
+    const rangeStart = toStartOfDay(startDate);
+    const rangeEnd = toEndOfDay(endDate);
+
+    if (rangeStart) queryParams.append('startDate', rangeStart.toISOString());
+    if (rangeEnd) queryParams.append('endDate', rangeEnd.toISOString());
+    if (selectedProject?.value && selectedProject.value !== 'all') {
+      queryParams.append('projectId', selectedProject.value);
+    }
+
     dispatch(fetchToolReplacements(queryParams.toString()));
-  }, [startDate, endDate, dispatch]);
+  }, [startDate, endDate, selectedProject, dispatch]);
 
   const projectOptions = useMemo(() => buildProjectOptions(bmProjects, data), [bmProjects, data]);
 
@@ -500,7 +534,7 @@ export const ToolReplacementChart = () => {
     }
   }, [projectOptions, selectedProject]);
 
-  const chartData = useMemo(() => buildChartData(data, selectedProject), [data, selectedProject]);
+  const chartData = useMemo(() => buildChartData(data), [data]);
 
   const chartHeight = Math.max(280, chartData.length * 48 + 80);
   const isMobile = chartWidth > 0 && chartWidth < 600;
