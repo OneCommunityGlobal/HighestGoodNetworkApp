@@ -1005,6 +1005,14 @@ export function Header(props) {
                       <DropdownItem divider />
                       <DropdownItem tag={Link} to="/pr-dashboard/overview" className={fontColor} disabled={headerDisabled}>PR Team Analytics</DropdownItem>
                       <DropdownItem tag={Link} to="/pr-dashboard/analytics" className={fontColor} disabled={headerDisabled}>PR Analytics</DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/pr-dashboard/reviewers"
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        Reviewers by Requirement
+                      </DropdownItem>
                       <DropdownItem tag={Link} to="/pr-dashboard/promotion-eligibility" className={fontColor} disabled={headerDisabled}>Promotion Eligibility</DropdownItem>
                       <DropdownItem tag={Link} to="/pr-dashboard/top-reviewed-prs" className={fontColor} disabled={headerDisabled}>Top Reviewed PRs</DropdownItem>
                       <DropdownItem tag={Link} to="/pr-dashboard/details" className={fontColor} disabled={headerDisabled}>PR Details</DropdownItem>
