@@ -230,8 +230,8 @@ export const postTimeEntry = (timeEntry, { displayedUserId } = {}) => {
 
       const selectedDate = moment(timeEntry.dateOfWork);
 
-      console.log('Server time:', serverNow.format());
-      console.log('Selected time entry date:', selectedDate.format());
+      // console.log('Server time:', serverNow.format());
+      // console.log('Selected time entry date:', selectedDate.format());
 
       // // Prevent future date/time logging
       // if (selectedDate.isAfter(serverNow)) {
