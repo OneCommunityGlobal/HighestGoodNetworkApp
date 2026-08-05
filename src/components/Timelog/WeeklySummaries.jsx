@@ -1,16 +1,47 @@
 import { useState, useEffect } from 'react';
 import parse from 'html-react-parser';
-import { getUserProfile, updateUserProfile } from '../../actions/userProfile';
 import hasPermission from '../../utils/permissions';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
 import Spinner from 'react-bootstrap/Spinner';
+import { Button } from 'reactstrap';
 import { updateWeeklySummaries } from '../../actions/weeklySummaries';
-import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import styles from './Timelog.module.css';
 
 import { permissions } from '../../utils/constants';
-function WeeklySummaries({ userProfile, onEditSummary }) {
+
+export const moveWeeklySummary = (
+  weeklySummaries,
+  sourceIndex,
+  destinationIndex,
+  uploadDate = new Date().toISOString(),
+) => {
+  if (
+    !Array.isArray(weeklySummaries) ||
+    sourceIndex === destinationIndex ||
+    !weeklySummaries[sourceIndex]?.summary ||
+    weeklySummaries[destinationIndex]?.summary
+  ) {
+    return null;
+  }
+
+  return weeklySummaries.map((item, index) => {
+    if (index === sourceIndex) {
+      const { uploadDate: _uploadDate, ...sourceWithoutUploadDate } = item;
+      return { ...sourceWithoutUploadDate, summary: '' };
+    }
+    if (index === destinationIndex) {
+      return {
+        ...item,
+        summary: weeklySummaries[sourceIndex].summary,
+        uploadDate,
+      };
+    }
+    return item;
+  });
+};
+
+function WeeklySummaries({ userProfile }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   // Initialize state variables for editing and original summaries
@@ -24,11 +55,11 @@ function WeeklySummaries({ userProfile, onEditSummary }) {
   ]);
 
   const [LoadingHandleSave, setLoadingHandleSave] = useState(null);
+  const [moveSourceIndex, setMoveSourceIndex] = useState(null);
+  const [moveDestinationIndex, setMoveDestinationIndex] = useState('');
+  const [isMoving, setIsMoving] = useState(false);
 
   const [wordCount, setWordCount] = useState(0);
-
-  const [showModal, setShowModal] = useState(false);
-  const [modalTab, setModalTab] = useState('1');
 
   const dispatch = useDispatch();
   const canEdit = dispatch(hasPermission(permissions.putUserProfile));
@@ -85,16 +116,12 @@ function WeeklySummaries({ userProfile, onEditSummary }) {
         ),
       };
 
-      // This code updates the summary.
-      await dispatch(updateUserProfile(userProfile));
-
-      // This code saves edited weekly summaries in MongoDB.
-      await dispatch(updateWeeklySummaries(userProfile._id, updatedUserProfile));
-      await dispatch(getUserProfile(userProfile._id));
-      await setLoadingHandleSave(null);
+      const status = await dispatch(updateWeeklySummaries(userProfile._id, updatedUserProfile));
+      if (status === 200) {
+        // Toggle off editing mode only after the update succeeds.
+        toggleEdit(index);
+      }
       setLoadingHandleSave(null);
-      // Toggle off editing mode
-      toggleEdit(index);
     } else {
       // Invalid summary, show an error message or handle it as needed
       // eslint-disable-next-line no-alert
@@ -102,17 +129,38 @@ function WeeklySummaries({ userProfile, onEditSummary }) {
     }
   };
 
-  const handleEditSummary = (tabIndex) => {
-    // Map the tab index to the correct tab number
-    const tabNumber = String(tabIndex + 1);
-    setModalTab(tabNumber);
-    setShowModal(true);
+  const handleMove = async () => {
+    const destinationIndex = Number(moveDestinationIndex);
+    const weeklySummaries = moveWeeklySummary(
+      userProfile.weeklySummaries,
+      moveSourceIndex,
+      destinationIndex,
+    );
+
+    if (!weeklySummaries) return;
+
+    const mediaFolderUrl = userProfile.adminLinks?.find(
+      link => link.Name === 'Media Folder',
+    )?.Link;
+
+    setIsMoving(true);
+    const status = await dispatch(
+      updateWeeklySummaries(userProfile._id, {
+        mediaUrl: mediaFolderUrl || userProfile.mediaUrl || '',
+        weeklySummaries,
+        weeklySummariesCount: userProfile.weeklySummariesCount || 0,
+      }),
+    );
+    if (status === 200) {
+      setMoveSourceIndex(null);
+      setMoveDestinationIndex('');
+    }
+    setIsMoving(false);
   };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-    // Refresh the user profile to get updated summaries
-    dispatch(getUserProfile(userProfile._id));
+  const cancelMove = () => {
+    setMoveSourceIndex(null);
+    setMoveDestinationIndex('');
   };
 
   // Images are not allowed while editing weekly summaries
@@ -153,22 +201,28 @@ function WeeklySummaries({ userProfile, onEditSummary }) {
           />
 
           <div style={{ marginTop: '10px' }}>
-            <button
-              type="button"
-              className={`${styles.button} ${styles.saveButton}`}
+            <Button
+              color="success"
+              size="sm"
+              className={`${styles.actionButton} ${styles.saveButton} ${
+                darkMode ? styles.actionButtonDark : ''
+              }`}
               onClick={() => handleSave(index)}
               disabled={LoadingHandleSave === index}
             >
               {LoadingHandleSave === index ? <Spinner animation="border" size="sm" /> : 'Save'}
-            </button>
+            </Button>
 
-            <button
-              type="button"
-              className={`${styles.button} ${styles.cancelButton}`}
+            <Button
+              color="danger"
+              size="sm"
+              className={`${styles.actionButton} ${styles.cancelButton} ${
+                darkMode ? styles.actionButtonDark : ''
+              }`}
               onClick={() => handleCancel(index)}
             >
               Cancel
-            </button>
+            </Button>
           </div>
         </div>
       );
@@ -179,9 +233,89 @@ function WeeklySummaries({ userProfile, onEditSummary }) {
         <div className={darkMode ? 'bg-yinmn-blue summary-text-light' : ''}>
           <h3>{title}</h3>
           {parse(editedSummaries[index])}
-          <button type="button" className={`${styles.button} ${styles.editButton}`} onClick={() => toggleEdit(index)}>
+          <Button
+            color="primary"
+            size="sm"
+            className={`${styles.actionButton} ${styles.editButton} ${
+              darkMode ? styles.actionButtonDark : ''
+            }`}
+            onClick={() => toggleEdit(index)}
+          >
             Edit
-          </button>
+          </Button>
+          <Button
+            color="secondary"
+            size="sm"
+            className={`${styles.actionButton} ${styles.moveButton} ${
+              darkMode ? styles.actionButtonDark : ''
+            }`}
+            onClick={() => {
+              setMoveSourceIndex(index);
+              setMoveDestinationIndex('');
+            }}
+          >
+            Move
+          </Button>
+          {moveSourceIndex === index && (
+            <div
+              className={`${styles.moveControls} ${
+                darkMode ? styles.moveControlsDark : ''
+              }`}
+            >
+              <label htmlFor={`move-summary-${index}`}>
+                Move to
+                <select
+                  id={`move-summary-${index}`}
+                  className={`${styles.moveSelect} ${
+                    darkMode ? styles.moveSelectDark : ''
+                  }`}
+                  value={moveDestinationIndex}
+                  onChange={event => setMoveDestinationIndex(event.target.value)}
+                  disabled={isMoving}
+                >
+                  <option value="">Select a week</option>
+                  {[
+                    "This week's summary",
+                    "Last week's summary",
+                    "The week before last's summary",
+                  ].map((weekTitle, destinationIndex) => (
+                    <option
+                      key={weekTitle}
+                      value={destinationIndex}
+                      disabled={
+                        destinationIndex === index ||
+                        Boolean(userProfile.weeklySummaries[destinationIndex]?.summary)
+                      }
+                    >
+                      {weekTitle}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <Button
+                color="success"
+                size="sm"
+                className={`${styles.actionButton} ${styles.saveButton} ${
+                  darkMode ? styles.actionButtonDark : ''
+                }`}
+                onClick={handleMove}
+                disabled={moveDestinationIndex === '' || isMoving}
+              >
+                {isMoving ? <Spinner animation="border" size="sm" /> : 'Confirm Move'}
+              </Button>
+              <Button
+                color="danger"
+                size="sm"
+                className={`${styles.actionButton} ${styles.cancelButton} ${
+                  darkMode ? styles.actionButtonDark : ''
+                }`}
+                onClick={cancelMove}
+                disabled={isMoving}
+              >
+                Cancel
+              </Button>
+            </div>
+          )}
         </div>
       );
     }
@@ -194,30 +328,25 @@ function WeeklySummaries({ userProfile, onEditSummary }) {
         </div>
       );
     }
-    // Display a message when there's no summary with an edit button (always show edit button for missing summaries)
+    // Display a message and allow authorized users to add a missing summary.
     return (
       <div>
         <h3>{title}</h3>
         <p className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
           {userProfile.firstName} {userProfile.lastName} did not submit a summary.
         </p>
-        <button 
-          type="button" 
-          className={`${styles.button} ${styles.editButton}`}
-          style={{
-                  marginLeft: '10px',
-                  padding: '5px 10px',
-                  border: 'none',
-                  borderRadius: '5px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  backgroundColor: 'blue',
-                  color: 'white',
-                }}
-          onClick={() => handleEditSummary(index)}
-        >
-          Edit
-        </button>
+        {(canEdit || currentUserID === loggedInUserId) && (
+          <Button
+            color="primary"
+            size="sm"
+            className={`${styles.actionButton} ${styles.editButton} ${
+              darkMode ? styles.actionButtonDark : ''
+            }`}
+            onClick={() => toggleEdit(index)}
+          >
+            Edit
+          </Button>
+        )}
       </div>
     );
   };
@@ -227,18 +356,6 @@ function WeeklySummaries({ userProfile, onEditSummary }) {
       {renderSummary("This week's summary", userProfile.weeklySummaries[0]?.summary, 0)}
       {renderSummary("Last week's summary", userProfile.weeklySummaries[1]?.summary, 1)}
       {renderSummary("The week before last's summary", userProfile.weeklySummaries[2]?.summary, 2)}
-      
-      {showModal && (
-        <WeeklySummary
-          isModal={true}
-          displayUserId={userProfile._id}
-          setPopup={handleCloseModal}
-          userRole={userProfile.role}
-          isNotAllowedToEdit={false}
-          darkMode={darkMode}
-          initialActiveTab={modalTab}
-        />
-      )}
     </div>
   );
 }
