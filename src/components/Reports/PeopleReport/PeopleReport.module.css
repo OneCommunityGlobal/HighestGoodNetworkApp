@@ -528,6 +528,11 @@ body {
   box-shadow: 0 0 12px #eae1f6;
 }
 
+:global(.dark-mode) .graphContainer {
+  background-color: #1a2639;
+  box-shadow: 0 12px black;
+}
+
 .alertText {
   justify-content: center;
 }
