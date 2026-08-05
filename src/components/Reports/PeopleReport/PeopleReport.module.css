@@ -5,11 +5,6 @@ body {
   /* font-family: 'Lato', sans-serif; */
 }
 
-.mobilePeopleTable {
-  flex: 1;
-  padding: 0 1rem 1rem 1rem;
-}
-
 .teams__tr {
   text-align: start;
 }
@@ -203,10 +198,6 @@ body {
   padding-left: 1%;
 }
 
-.badgeSummaryDiv {
-  padding-right: 1%;
-}
-
 #inf td,
 #inf th {
   border: 1px solid #ddd;
@@ -316,10 +307,12 @@ body {
 .infringementContainerInner {
   display: flex;
   flex-direction: column;
+  align-items: center;
   width: 100%;
 }
 
 .visualizationDivRow {
+  width: 100%;
   padding-top: 20px;
   display: flex;
   justify-content: center;
@@ -367,15 +360,6 @@ body {
 
 .textLight .rehireable {
   color: #e9ecef;
-}
-
-@media (width <= 1100px) {
-  .mobilePeopleTable {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-  }
 }
 
 .orderColumn {
@@ -529,6 +513,31 @@ body {
   width: 100%;
 }
 
+.mobilePeopleTable {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0 1rem 1rem 1rem;
+}
+
+.graphContainer {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 0 12px #eae1f6;
+}
+
+.alertText {
+  justify-content: center;
+}
+
+@media (width <= 1100px) {
+  .mobilePeopleTable {
+    
+  }
+}
+
 @media (width >= 768px) {
   .peopleReportPage {
     .metrics.threeMetrics {
@@ -545,6 +554,11 @@ body {
 
   .reportLoading {
     min-height: calc(100vh - 104px);
+  }
+
+  .alertText {
+    max-width: 30rem;
+    margin-inline: auto;
   }
 }
 

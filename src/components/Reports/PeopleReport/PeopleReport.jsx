@@ -305,7 +305,7 @@ function PeopleReport(props) {
       </div>
 
       <div className={`${styles.mobilePeopleTable}`}>
-        <ReportPage.ReportBlock darkMode={darkMode}>
+        <div className={styles.graphContainer}>
           {isLoading ? (
             <p
               className={`${darkMode ? styles.textLight : ''}
@@ -321,7 +321,7 @@ function PeopleReport(props) {
               <PeopleDataTable />
             </>
           ) : (
-            <Alert color="danger" style={{ margin: '0 35% ' }}>You have no tasks.</Alert>
+            <Alert color="danger" className={styles.alertText}>You have no tasks.</Alert>
           )}
           <div className={`${styles.infringementContainer}`}>
             <div className={`${styles.infringementContainerInner}`}>
@@ -357,7 +357,7 @@ function PeopleReport(props) {
               </div>
             </div>
           </div>
-        </ReportPage.ReportBlock>
+        </div>
       </div>
     </div>
   );
