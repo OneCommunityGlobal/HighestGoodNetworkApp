@@ -221,6 +221,9 @@ import SupportDashboard from './components/SupportPortal/SupportDashboard';
 import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
 import MaterialUtilizationChart from './components/MaterialUtilization/MaterialUtilizationChart';
 
+// High Good Education
+import StudentBadgeGallery from './components/StudentBadgeGallery/StudentBadgeGallery';
+
 // Social Architecture
 
 // Social Architecture
@@ -384,6 +387,11 @@ export default (
         <ProtectedRoute path="/weekly-summary" exact component={WeeklySummaryPage} />
         <ProtectedRoute path="/hgnhelp" exact component={HelpPage} />
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
+        <ProtectedRoute
+          path="/kitchenandinventory/processing"
+          component={ProcessingLandingPage}
+          fallback
+        />
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <Route path="/logattendance" component={AttendanceNoShow} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
@@ -696,13 +704,11 @@ export default (
           fallback
           // allowedRoles={[UserRole.Administrator, UserRole.Owner]}
         />
-
         <ProtectedRoute
           path="/analytics/roles-hits-and-applications"
           exact
           component={JobsHitsApplicationsChart}
         />
-
         <ProtectedRoute
           path="/schedulemeetings"
           exact
@@ -717,7 +723,6 @@ export default (
           ]}
           routePermissions={RoutePermissions.meetings}
         />
-
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
@@ -775,7 +780,6 @@ export default (
           fallback
           component={PurchaseConsumable}
         />
-
         <BMProtectedRoute path="/bmdashboard/cost-prediction" component={CostPredictionPage} />
         <BMProtectedRoute path="/bmdashboard/rentalchart" component={RentalChart} />
         <BMProtectedRoute path="/bmdashboard/returned-late-chart" component={ReturnedLateChart} />
@@ -978,7 +982,6 @@ export default (
           exact
           component={TaskSubmissions}
         />
-
         <EPProtectedRoute path="/student/profile" exact component={StudentProfilePage} />
         {/* PR Analytics Dashboard */}
         <Route path="/pull-request-analytics/reviews-insight" component={ReviewsInsight} />
@@ -1069,6 +1072,13 @@ export default (
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
+        <ProtectedRoute
+          path="/student/profile/badges"
+          exact
+          component={StudentBadgeGallery}
+          fallback
+        />{' '}
+        {/*Student Page Badge component*/}
         <ProtectedRoute path="/promotiontable" exact component={PromotionTable} />
         <ProtectedRoute path="/memberlist" exact component={MemberList} />
         <Route path="/Logout" component={Logout} />
