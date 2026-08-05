@@ -170,6 +170,10 @@
   width: var(--report-filter-label-width);
 }
 
+:global(.dark-mode) .report-filter-label-action {
+  background-color: #3a506b;
+}
+
 .date-picker-container {
   display: flex;
   flex-direction: column;
