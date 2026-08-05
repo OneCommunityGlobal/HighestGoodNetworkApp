@@ -158,7 +158,7 @@ import ActivityComments from './components/CommunityPortal/Activities/activityId
 import Feedbackform from './components/CommunityPortal/Activities/Feedbackform';
 import FollowUpEmailTemplate from './components/CommunityPortal/Activities/FollowUpEmailTemplate';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
-// import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
+import ActivityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
 import Register from './components/CommunityPortal/Activities/Register/Register';
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
@@ -210,6 +210,8 @@ import PRGradingScreen from './components/PRGradingScreen';
 import PRGradingTest from './components/PRGradingScreen/PRGradingTest'; //temporary route for testing - delete after testing
 import ProtectedRoute from './components/common/ProtectedRoute';
 import { UserRole } from './utils/enums';
+
+import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
 import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
 import IntermediateTaskList from './components/EductionPortal/IntermediateTasks/IntermediateTaskList';
 import InteractiveMap from './components/BMDashboard/InteractiveMap/InteractiveMap';
@@ -221,7 +223,6 @@ import MaterialUtilizationChart from './components/MaterialUtilization/MaterialU
 
 // Social Architecture
 
-import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
@@ -910,7 +911,12 @@ export default (
           exact
           component={EventStats}
         />
-        <CPProtectedRoute path="/communityportal/AcrivitiesPage" exact component={ActivitiesPage} />
+        <CPProtectedRoute
+          path="/communityportal/activities/:activityid"
+          exact
+          component={ActivityDetailPage}
+        />
+        <CPProtectedRoute path="/communityportal/ActivitiesPage" exact component={ActivitiesPage} />
         <CPProtectedRoute
           path="/communityportal/Activities/Register/:activityId"
           exact
