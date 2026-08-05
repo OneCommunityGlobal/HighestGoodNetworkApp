@@ -564,7 +564,7 @@ endDate: moment()
               </div>
             </h2>
             <div>
-              <p>Select a Category</p>
+              <p className={darkMode ? styles['text-light'] : undefined}>Select a Category</p>
             </div>
             <div className={styles['report-container-data']}>
               <div className={styles['data-container']} style={this.state.showCharts ? {width: '50%'} : {width: '100%'}}>
@@ -849,7 +849,7 @@ endDate: moment()
                 )}
               </div>
               {this.state.showCharts && (
-                <div className="table-data-container" style={(this.state.showPeople || this.state.showProjects || this.state.showTeams) ? { overflowY: 'auto' } : {overflowY: 'none'}}>
+                <div className={styles['table-data-container']} style={(this.state.showPeople || this.state.showProjects || this.state.showTeams) ? { overflowY: 'auto' } : {overflowY: 'none'}}>
                   {this.state.showPeople && (
                     <PeopleTable userProfiles={this.state.peopleSearchData} darkMode={darkMode} />
                   )}
