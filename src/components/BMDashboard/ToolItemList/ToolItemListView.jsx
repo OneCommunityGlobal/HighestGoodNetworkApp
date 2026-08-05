@@ -1,8 +1,6 @@
-// ToolItemListView.jsx
-
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux'; // Added to tap into your application theme state
+import { useSelector } from 'react-redux';
 import BMError from '../shared/BMError';
 import SelectForm from '../ItemList/SelectForm';
 import SelectItem from '../ItemList/SelectItem';
@@ -26,18 +24,15 @@ export function ToolItemListView({
   const [isError, setIsError] = useState(false);
   const [localValues, setLocalValues] = useState([]);
 
-  // Safely grab current theme state configuration
-  const darkMode = useSelector(state => state.theme?.darkMode);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const themeClass = darkMode ? styles.darkTheme : styles.lightTheme;
 
-  // Load initial items
   useEffect(() => {
     if (Array.isArray(items)) {
       setFilteredItems([...items]);
     }
   }, [items]);
 
-  // FULL multi-select compatible filtering
   useEffect(() => {
     if (!Array.isArray(items)) return;
 
@@ -49,14 +44,12 @@ export function ToolItemListView({
 
     let result = [...items];
 
-    // Project filter (single + multi)
     if (hasProjects) {
       result = result.filter(item => selectedProject.includes(item.project?.name));
     } else if (!projectIsMulti && selectedProject !== 'all') {
       result = result.filter(item => item.project?.name === selectedProject);
     }
 
-    // Item / Tool filter (single + multi)
     if (hasItems) {
       result = result.filter(item => selectedItem.includes(item.itemType?.name));
     } else if (!itemIsMulti && selectedItem !== 'all') {
@@ -66,18 +59,16 @@ export function ToolItemListView({
     setFilteredItems(result);
   }, [selectedProject, selectedItem, items]);
 
-  // Error handling
   useEffect(() => {
     setIsError(Object.entries(errors).length > 0);
   }, [errors]);
 
-  // The Reset Handler
   const handleReset = () => {
-    setLocalValues([]); // Clear React-Select UI
-    setSelectedProject([]); // Clear parent project state
-    setSelectedItem([]); // Clear parent item state
-    localStorage.removeItem(PROJECT_KEY); // Clear localStorage cache
-    localStorage.removeItem(ITEM_KEY); // Clear item filter cache as well
+    setLocalValues([]);
+    setSelectedProject([]);
+    setSelectedItem([]);
+    localStorage.removeItem(PROJECT_KEY);
+    localStorage.removeItem(ITEM_KEY);
   };
 
   if (isError) {
@@ -135,7 +126,6 @@ export function ToolItemListView({
         </div>
 
         {filteredItems && (
-          /* Removed the manual inline ternary condition to keep styles unified */
           <div className={styles.tableResponsiveWrapper}>
             <ToolItemsTable
               selectedProject={selectedProject}
