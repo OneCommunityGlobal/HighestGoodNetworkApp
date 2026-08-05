@@ -7,6 +7,7 @@ body {
 
 .mobilePeopleTable {
   flex: 1;
+  padding: 0 1rem 1rem 1rem;
 }
 
 .teams__tr {
@@ -498,6 +499,7 @@ body {
 
 .peopleReportPage {
   display: flex;
+  flex-direction: column;
   min-height: 97vh;
 
   .peopleReportContainer {

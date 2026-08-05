@@ -301,63 +301,63 @@ function PeopleReport(props) {
 
           <PeopleTasksPieChart darkMode={darkMode} />
           <CompletedTasksPieChart darkMode={darkMode} />
+        </div>
+      </div>
 
-          <div className={`${styles.mobilePeopleTable}`}>
-            <ReportPage.ReportBlock darkMode={darkMode}>
-              {isLoading ? (
-                <p
-                  className={`${darkMode ? styles.textLight : ''}
-                d-flex align-items-center flex-row justify-content-center`}
-                >
-                  Loading tasks: &nbsp; <Spinner color={`${darkMode ? 'light' : 'dark'}`} />
-                </p>
-              ) : activeTasks.length > 0 ? (
-                <>
-                  <div className={`intro_date ${darkMode ? styles.textLight : ''}`}>
-                    <h4>Tasks contributed</h4>
-                  </div>
-                  <PeopleDataTable />
-                </>
-              ) : (
-                <Alert color="danger" style={{ margin: '0 35% ' }}>You have no tasks.</Alert>
-              )}
-              <div className={`${styles.infringementContainer}`}>
-                <div className={`${styles.infringementContainerInner}`}>
-                  <UserProject userProjects={userProjects} />
-                  <Infringements
-                    infringements={infringements}
-                    fromDate={fromDate}
-                    toDate={toDate}
-                    timeEntries={timeEntries}
+      <div className={`${styles.mobilePeopleTable}`}>
+        <ReportPage.ReportBlock darkMode={darkMode}>
+          {isLoading ? (
+            <p
+              className={`${darkMode ? styles.textLight : ''}
+            d-flex align-items-center flex-row justify-content-center`}
+            >
+              Loading tasks: &nbsp; <Spinner color={`${darkMode ? 'light' : 'dark'}`} />
+            </p>
+          ) : activeTasks.length > 0 ? (
+            <>
+              <div className={`intro_date ${darkMode ? styles.textLight : ''}`}>
+                <h4>Tasks contributed</h4>
+              </div>
+              <PeopleDataTable />
+            </>
+          ) : (
+            <Alert color="danger" style={{ margin: '0 35% ' }}>You have no tasks.</Alert>
+          )}
+          <div className={`${styles.infringementContainer}`}>
+            <div className={`${styles.infringementContainerInner}`}>
+              <UserProject userProjects={userProjects} />
+              <Infringements
+                infringements={infringements}
+                fromDate={fromDate}
+                toDate={toDate}
+                timeEntries={timeEntries}
+              />
+              <div className={`${styles.visualizationDiv}`}>
+                <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} darkMode={darkMode} />
+              </div>
+              <div className={`${styles.visualizationDiv}`}>
+                <InfringementsViz
+                  infringements={infringements}
+                  fromDate={fromDate}
+                  toDate={toDate}
+                  darkMode={darkMode}
+                />
+              </div>
+              <div className={`${styles.visualizationDivRow}`}>
+                <div className={`${styles.badgeSummaryDiv}`}>
+                  <BadgeSummaryViz
+                    authId={auth.user.userid}
+                    userId={match.params.userId}
+                    badges={userProfile.badgeCollection}
                   />
-                  <div className={`${styles.visualizationDiv}`}>
-                    <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} darkMode={darkMode} />
-                  </div>
-                  <div className={`${styles.visualizationDiv}`}>
-                    <InfringementsViz
-                      infringements={infringements}
-                      fromDate={fromDate}
-                      toDate={toDate}
-                      darkMode={darkMode}
-                    />
-                  </div>
-                  <div className={`${styles.visualizationDivRow}`}>
-                    <div className={`${styles.badgeSummaryDiv}`}>
-                      <BadgeSummaryViz
-                        authId={auth.user.userid}
-                        userId={match.params.userId}
-                        badges={userProfile.badgeCollection}
-                      />
-                    </div>
-                    <div className={`${styles.badgeSummaryPreviewDiv}`}>
-                      <BadgeSummaryPreview badges={userProfile.badgeCollection} darkMode={darkMode} />
-                    </div>
-                  </div>
+                </div>
+                <div className={`${styles.badgeSummaryPreviewDiv}`}>
+                  <BadgeSummaryPreview badges={userProfile.badgeCollection} darkMode={darkMode} />
                 </div>
               </div>
-            </ReportPage.ReportBlock>
+            </div>
           </div>
-        </div>
+        </ReportPage.ReportBlock>
       </div>
     </div>
   );
