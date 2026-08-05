@@ -101,10 +101,10 @@ const toEndOfDay = date => {
   return next;
 };
 
-const getYAxisWidth = (isMobile, isCompact) => {
-  if (isMobile) return 92;
-  if (isCompact) return 112;
-  return 145;
+const getYAxisWidth = (isMobile, isCompact, includeProjectLabels) => {
+  if (isMobile) return includeProjectLabels ? 110 : 92;
+  if (isCompact) return includeProjectLabels ? 150 : 112;
+  return includeProjectLabels ? 190 : 145;
 };
 
 const getChartMargin = isMobile => ({
@@ -138,27 +138,47 @@ const buildProjectOptions = (bmProjects, data) => {
   return [ALL_PROJECTS_OPTION, ...optionsById.values()];
 };
 
-const buildChartData = data => {
+const buildChartLabel = (toolName, projectName, includeProject) => {
+  if (!includeProject || !projectName) return toolName;
+  return `${toolName} (${projectName})`;
+};
+
+const buildChartData = (data, selectedProject) => {
   if (!Array.isArray(data) || data.length === 0) return [];
 
-  // Use the lowest % across projects so "All Projects" surfaces the most at-risk tools.
+  // All Projects: keep each project’s tools separate (Pliers @ 42% and Pliers @ 96% both show).
+  // Single project: collapse by tool name only.
+  const includeProject = !selectedProject?.value || selectedProject.value === 'all';
   const toolMap = {};
+
   data.forEach(item => {
     const name = item.toolName;
     const percentage = Number(item.requirementSatisfiedPercentage);
     if (!name || Number.isNaN(percentage)) return;
 
-    if (toolMap[name] == null) {
-      toolMap[name] = percentage;
+    const projectId = getRecordProjectId(item) || 'unknown';
+    const projectName = getRecordProjectName(item) || 'Unknown Project';
+    const key = includeProject ? `${name}::${projectId}` : name;
+
+    if (toolMap[key] == null) {
+      toolMap[key] = {
+        toolName: buildChartLabel(name, projectName, includeProject),
+        baseToolName: name,
+        projectName: includeProject ? projectName : '',
+        percentage,
+      };
     } else {
-      toolMap[name] = Math.min(toolMap[name], percentage);
+      // Multiple rows for the same tool+project (e.g. date range): keep the lowest %.
+      toolMap[key].percentage = Math.min(toolMap[key].percentage, percentage);
     }
   });
 
-  return Object.keys(toolMap)
-    .map(toolName => ({
-      toolName,
-      requirementSatisfiedPercentage: Number(toolMap[toolName].toFixed(1)),
+  return Object.values(toolMap)
+    .map(entry => ({
+      toolName: entry.toolName,
+      baseToolName: entry.baseToolName,
+      projectName: entry.projectName,
+      requirementSatisfiedPercentage: Number(entry.percentage.toFixed(1)),
     }))
     .sort((a, b) => a.requirementSatisfiedPercentage - b.requirementSatisfiedPercentage);
 };
@@ -201,7 +221,10 @@ function CustomYAxisTick({ x, y, payload, darkMode, isMobile }) {
 
   const words = text.split(' ').filter(Boolean);
   let lines = [text];
-  if (words.length > 2) {
+  if (text.includes(' (')) {
+    const splitAt = text.lastIndexOf(' (');
+    lines = [text.slice(0, splitAt), text.slice(splitAt + 1)];
+  } else if (words.length > 2) {
     lines = [words.slice(0, 2).join(' '), words.slice(2).join(' ')];
   } else if (isMobile && text.length > 15 && words.length > 1) {
     lines = [words[0], words.slice(1).join(' ')];
@@ -242,7 +265,12 @@ function ChartTooltip({ active, payload, darkMode }) {
         boxShadow: '0 6px 18px rgba(0, 0, 0, 0.25)',
       }}
     >
-      <div style={{ fontWeight: 700, marginBottom: 4 }}>{point.toolName}</div>
+      <div style={{ fontWeight: 700, marginBottom: 4 }}>{point.baseToolName || point.toolName}</div>
+      {point.projectName ? (
+        <div style={{ fontSize: 12, marginBottom: 4, opacity: 0.9 }}>
+          Project: {point.projectName}
+        </div>
+      ) : null}
       <div style={{ fontSize: 13 }}>
         % of requirement satisfied: <strong>{point.requirementSatisfiedPercentage}%</strong>
       </div>
@@ -534,12 +562,13 @@ export const ToolReplacementChart = () => {
     }
   }, [projectOptions, selectedProject]);
 
-  const chartData = useMemo(() => buildChartData(data), [data]);
+  const chartData = useMemo(() => buildChartData(data, selectedProject), [data, selectedProject]);
 
   const chartHeight = Math.max(280, chartData.length * 48 + 80);
   const isMobile = chartWidth > 0 && chartWidth < 600;
   const isCompact = chartWidth > 0 && chartWidth < 900;
-  const yAxisWidth = getYAxisWidth(isMobile, isCompact);
+  const includeProjectLabels = !selectedProject?.value || selectedProject.value === 'all';
+  const yAxisWidth = getYAxisWidth(isMobile, isCompact, includeProjectLabels);
   const chartMargin = getChartMargin(isMobile);
 
   const handleStartDateChange = useCallback(
@@ -582,7 +611,7 @@ export const ToolReplacementChart = () => {
       </h2>
       <p className={`${styles.subtitle} ${darkMode ? styles.subtitleDark : ''}`}>
         Choose a project to view its tools ranked by % of requirement satisfied. Lower % means
-        higher replacement risk.
+        higher replacement risk. All Projects lists each tool per project separately.
       </p>
 
       <ChartFilters

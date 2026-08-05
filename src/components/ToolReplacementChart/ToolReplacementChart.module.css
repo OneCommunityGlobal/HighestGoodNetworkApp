@@ -126,11 +126,11 @@
   font-weight: 600;
 }
 
-.calendar :global(.react-datepicker__day) {
+.calendar :global(.react-datepicker__month .react-datepicker__day) {
   color: #111827 !important;
 }
 
-.calendar :global(.react-datepicker__day--outside-month) {
+.calendar :global(.react-datepicker__month .react-datepicker__day--outside-month) {
   color: #6b7280 !important;
 }
 
@@ -162,11 +162,25 @@
   color: #111827;
 }
 
-.calendar :global(.react-datepicker__day--selected),
-.calendar :global(.react-datepicker__day--in-range),
-.calendar :global(.react-datepicker__day--in-selecting-range),
-.calendar :global(.react-datepicker__day--keyboard-selected) {
+/* Compound selectors so white text beats the base day color !important rule */
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--selected),
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--keyboard-selected),
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--in-range),
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--in-selecting-range),
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--range-start),
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--range-end),
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--selecting-range-start),
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--selecting-range-end) {
   background-color: #1d4ed8 !important;
+  color: #fff !important;
+}
+
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--selected:hover),
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--in-range:hover),
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--in-selecting-range:hover),
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--range-start:hover),
+.calendar :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--range-end:hover) {
+  background-color: #1e40af !important;
   color: #fff !important;
 }
 
@@ -191,14 +205,16 @@
   color: #cbd5e1 !important;
 }
 
-.calendarDark :global(.react-datepicker__day:hover),
-.calendarDark :global(.react-datepicker__day--keyboard-selected) {
+.calendarDark :global(.react-datepicker__day:hover) {
   background-color: #475569 !important;
 }
 
-.calendarDark :global(.react-datepicker__day--selected),
-.calendarDark :global(.react-datepicker__day--in-range),
-.calendarDark :global(.react-datepicker__day--in-selecting-range) {
+.calendarDark :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--selected),
+.calendarDark :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--keyboard-selected),
+.calendarDark :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--in-range),
+.calendarDark :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--in-selecting-range),
+.calendarDark :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--range-start),
+.calendarDark :global(.react-datepicker__month .react-datepicker__day.react-datepicker__day--range-end) {
   background-color: #1d4ed8 !important;
   color: #fff !important;
 }
