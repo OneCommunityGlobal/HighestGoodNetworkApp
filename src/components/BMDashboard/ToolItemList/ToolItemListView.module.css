@@ -432,13 +432,12 @@ table td {
 }
 
 .darkTheme .returnBtn {
-  background-color: #1a3a4d;
+  background-color: #2e5061;
   color: #fff;
 }
 
 .darkTheme .returnBtn:hover {
   background-color: #1a73c0;
-  color: #0f172a;
 }
 
 .darkTheme .categoryIconLink {
