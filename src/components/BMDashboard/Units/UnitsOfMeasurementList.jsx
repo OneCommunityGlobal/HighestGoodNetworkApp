@@ -35,7 +35,7 @@ function UnitsOfMeasurementList() {
       <h3 className={styles.pageTitle}>
         <span className={styles.pageTitleIcon}>
           <FaRulerCombined />
-        </span>
+        </span>{' '}
         Unit of Measurement
       </h3>
 
