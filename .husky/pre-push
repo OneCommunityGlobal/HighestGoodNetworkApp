@@ -18,6 +18,8 @@ if [ -z "$changed_files" ]; then
   changed_files=$(git diff --name-only HEAD~1..HEAD 2>/dev/null)
 fi
 
+changed_files=$(git diff --name-only "$upstream_ref"...HEAD 2>/dev/null || true)
+
 if [ -z "$changed_files" ]; then
   echo "No outgoing changes to validate. Skipping pre-push checks."
   exit 0
@@ -57,10 +59,9 @@ fi
 
 if [ -n "$style_files" ]; then
   echo "🎨 Running Stylelint on changed files before push..."
-  echo "$style_files" | tr ' ' '\n' | xargs npx stylelint
+  printf '%s\n' "$style_files" | xargs -s 6000 npx stylelint
   style_status=$?
 fi
-
 
 # Block push if either fails
 if [ $test_status -ne 0 ] || [ $lint_status -ne 0 ] || [ $style_status -ne 0 ]; then
