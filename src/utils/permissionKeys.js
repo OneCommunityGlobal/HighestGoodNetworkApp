@@ -22,6 +22,7 @@ const collectKeys = (perms, out = []) => {
 /** Keys used in the codebase but not (yet) listed in Permissions.json */
 const LEGACY_OR_EXTRA_KEYS = [
   'addDeleteEditOwners',
+  'announcements_manage',
   'assignBadgeOthers',
   'createPopup',
   'delete:badges',
@@ -41,6 +42,7 @@ const LEGACY_OR_EXTRA_KEYS = [
   'seeVisibilityIcon',
   'unassignUserInProject',
   'update:badges',
+  'updateUserSkillsProfileFollowUp',
 ];
 
 const allKeys = [...new Set([...collectKeys(permissionLabels), ...LEGACY_OR_EXTRA_KEYS])].sort();

@@ -8,6 +8,7 @@ import AutoUpdate from './components/AutoUpdate';
 import AnimalManagement from './components/KitchenandInventory/AnimalManagement';
 import TaskEditSuggestions from './components/TaskEditSuggestions/TaskEditSuggestions';
 import RoutePermissions from './utils/routePermissions';
+import { permissions } from './utils/constants';
 import Dashboard from './components/Dashboard';
 import Login from './components/Login';
 import Logout from './components/Logout/Logout';
@@ -548,7 +549,7 @@ export default (
           exact
           component={BlueSquareEmailManagement}
           fallback
-          routePermissions={['resendBlueSquareAndSummaryEmails']}
+          routePermissions={[permissions.resendBlueSquareAndSummaryEmails]}
         />
         <ProtectedRoute
           path="/teams"

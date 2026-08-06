@@ -7,6 +7,7 @@ import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableIn
 import AssignBadge from './AssignBadge';
 import BadgeDevelopment from './BadgeDevelopment';
 import { fetchAllBadges, setActiveTab } from '../../actions/badgeManagement';
+import { permissions as permissionKeys } from '../../utils/constants';
 
 function BadgeManagement(props) {
   const { darkMode, activeTab, setActiveTab, role } = props;
@@ -98,7 +99,7 @@ const mapDispatchToProps = dispatch => ({
 
 function checkIfBadgeAssignmentIsAllowed(permissions, role) {
   if (role === 'Administrator' || role === 'Owner') return true;
-  return permissions?.frontPermissions.includes('assignBadges');
+  return permissions?.frontPermissions.includes(permissionKeys.assignBadges);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(BadgeManagement);

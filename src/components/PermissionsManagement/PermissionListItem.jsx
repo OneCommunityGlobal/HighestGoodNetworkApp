@@ -39,9 +39,9 @@ function PermissionListItem(props) {
   const currentUserRole = useSelector(state => state.auth?.user?.role || '');
 
   // Only restrict the specific Blue Square Email Management permissio
-  const isRestrictedPermission = permission === 'resendBlueSquareAndSummaryEmails';
+  const isRestrictedPermission = permission === permissions.resendBlueSquareAndSummaryEmails;
   const userHasRestrictedPermission = currentUserPermissions.includes(
-    'resendBlueSquareAndSummaryEmails',
+    permissions.resendBlueSquareAndSummaryEmails,
   );
   const userHasRoleWithRestrictedPermission = currentUserRole === 'Owner';
   const shouldDisableForRestriction =
