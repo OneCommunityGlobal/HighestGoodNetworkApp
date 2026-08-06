@@ -201,7 +201,7 @@ class App extends Component {
           >
             Refresh Page
           </button>
-          {process.env.NODE_ENV === 'development' && this.state.error && (
+          {import.meta.env.DEV && this.state.error && (
             <details style={{ marginTop: '20px', textAlign: 'left', maxWidth: '800px' }}>
               <summary style={{ cursor: 'pointer', color: '#dc3545' }}>
                 Error Details (Development Only)

@@ -299,8 +299,15 @@ function PeopleTableDetails(props) {
           UpdateStartDate={updateStartDate}
           EndDate={endDate}
           UpdateEndDate={updateEndDate}
+          darkMode={darkMode}
         />
-        <button type="button" onClick={resetFilters} className={styles['tasks-table-clear-filter-button']}>
+        <button
+          type="button"
+          onClick={resetFilters}
+          className={`${styles['tasks-table-clear-filter-button']} ${
+            darkMode ? styles['tasks-table-clear-filter-button-dark'] : ''
+          }`}
+        >
           Clear Filters
         </button>
       </div>

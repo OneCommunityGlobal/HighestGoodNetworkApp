@@ -217,6 +217,15 @@
   margin-left: auto;
 }
 
+/* The light button sets `color: #ca50db`, but `public/index.css` has
+   `body.dark-mode * { color: #fff !important }`, which repainted the label white on a
+   white background - the button looked empty. Rather than fight that !important, give
+   the button a dark background so the forced-white label is legible. */
+.tasks-table-clear-filter-button-dark {
+  background-color: #1c2541;
+  border-color: #3a506b;
+}
+
 .people-report-task-name {
   overflow-wrap: break-word;
   min-width: 200px;

@@ -2,7 +2,7 @@ import { useState, forwardRef } from 'react';
 import DatePicker from 'react-datepicker';
 import { FiCalendar } from 'react-icons/fi';
 import 'react-datepicker/dist/react-datepicker.css';
-import './TableFilter.module.css';
+import styles from './TableFilter.module.css';
 import { Checkbox } from '~/components/common/Checkbox';
 import TextSuggestion from '../../UserManagement/TextSuggestion';
 import DropDownSearchBox from '../../UserManagement/DropDownSearchBox';
@@ -12,13 +12,13 @@ const InputWithCalendarIcon = forwardRef(({ value, onClick }, ref) => {
     <>
       <input
         type="text"
-        className="table-filter-datePicker table-filter-item table-filter-input"
+        className={`${styles['table-filter-datePicker']} ${styles['table-filter-item']} ${styles['table-filter-input']}`}
         value={value}
         onClick={onClick}
         ref={ref}
         readOnly
       />
-      <FiCalendar className="date-picker-icon" onClick={onClick} />
+      <FiCalendar className={styles['date-picker-icon']} onClick={onClick} />
     </>
   );
 });
@@ -41,6 +41,7 @@ function TableFilter({
   EndDate,
   UpdateStartDate,
   UpdateEndDate,
+  darkMode,
 }) {
   const taskPriority = ['Primary', 'Secondary', 'Tertiary'];
   const taskStatus = ['Paused', 'Complete', 'Active'];
@@ -55,14 +56,16 @@ function TableFilter({
   });
   const uniquetaskHour = [...new Set(taskHour)];
   const uniquetaskResource = [...new Set(taskResource)];
+  // All five filter controls take the same pair of classes.
+  const filterInputCN = `${styles['table-filter-item']} ${styles['table-filter-input']}`;
 
   return (
-    <div className="table-filter-wrapper">
+    <div className={`${styles['table-filter-wrapper']} ${darkMode ? styles.dark : ''}`}>
       <TextSuggestion
         id="name_search"
         list={taskName}
         searchCallback={onTaskNameSearch}
-        className="table-filter-input table-filter-item"
+        className={filterInputCN}
         value={name}
         placeholder="Task name"
       />
@@ -72,28 +75,28 @@ function TableFilter({
         searchCallback={searchEstimatedHours}
         value={estimatedHours}
         placeholder="Estimated Hours"
-        className="table-filter-item table-filter-input"
+        className={filterInputCN}
       />
       <TextSuggestion
         list={uniquetaskResource}
         searchCallback={searchResources}
         value={resources}
         placeholder="Resources"
-        className="table-filter-item table-filter-input"
+        className={filterInputCN}
       />
       <DropDownSearchBox
         items={taskStatus}
         searchCallback={searchStatus}
         value={status}
         placeholder="Any status"
-        className="table-filter-item table-filter-input"
+        className={filterInputCN}
       />
       <DropDownSearchBox
         items={taskPriority}
         searchCallback={searchPriority}
         value={priority}
         placeholder="Any priority"
-        className="table-filter-item table-filter-input"
+        className={filterInputCN}
       />
       <DatePicker
         customInput={<InputWithCalendarIcon />}
@@ -116,7 +119,7 @@ function TableFilter({
           searchActive(checked ? 'Yes' : 'No');
         }}
         id="active"
-        wrapperClassname="table-filter-item"
+        wrapperClassname={styles['table-filter-item']}
         label="Active"
       />
       <Checkbox
@@ -126,7 +129,7 @@ function TableFilter({
           searchAssign(checked ? 'Yes' : 'No');
         }}
         id="assign"
-        wrapperClassname="table-filter-item"
+        wrapperClassname={styles['table-filter-item']}
         label="Assign"
       />
     </div>
