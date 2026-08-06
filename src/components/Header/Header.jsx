@@ -55,6 +55,7 @@ import {
   PROJECTS,
   REPORTS,
   SEND_EMAILS,
+  SCHEDULE_MEETINGS,
   TEAM_LOCATIONS,
   TEAMS,
   TIMELOG,
@@ -847,7 +848,7 @@ export function Header(props) {
                   </NavItem>
                 )}
 
-                {(canAccessUserManagement || canAccessBadgeManagement || canAccessProjects || canAccessTeams || canAccessPopups || canAccessSendEmails || canAccessPermissionsManagement || canAccessBlueSquareEmailManagement) && (
+                {(canAccessUserManagement || canAccessBadgeManagement || canAccessProjects || canAccessTeams || canAccessPopups || canAccessSendEmails || canAccessScheduleMeetings || canAccessPermissionsManagement || canAccessBlueSquareEmailManagement) && (
                   <UncontrolledDropdown
                     nav
                     inNavbar
@@ -860,6 +861,16 @@ export function Header(props) {
                       {canAccessProjects && <DropdownItem tag={Link} to="/projects" className={fontColor} disabled={headerDisabled}>{PROJECTS}</DropdownItem>}
                       {canAccessTeams && <DropdownItem tag={Link} to="/teams" className={fontColor} disabled={headerDisabled}>{TEAMS}</DropdownItem>}
                       {canAccessSendEmails && <DropdownItem tag={Link} to="/announcements" className={fontColor} disabled={headerDisabled}>{SEND_EMAILS}</DropdownItem>}
+                      {canAccessScheduleMeetings && (
+                        <DropdownItem
+                          tag={Link}
+                          to="/schedulemeetings"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
+                          {SCHEDULE_MEETINGS}
+                        </DropdownItem>
+                      )}
                       {canAccessPermissionsManagement && (
                         <>
                           <DropdownItem divider className={styles.hideInMobile} />

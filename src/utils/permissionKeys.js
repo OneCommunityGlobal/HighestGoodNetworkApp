@@ -45,7 +45,9 @@ const LEGACY_OR_EXTRA_KEYS = [
   'updateUserSkillsProfileFollowUp',
 ];
 
-const allKeys = [...new Set([...collectKeys(permissionLabels), ...LEGACY_OR_EXTRA_KEYS])].sort();
+const allKeys = [...new Set([...collectKeys(permissionLabels), ...LEGACY_OR_EXTRA_KEYS])].sort(
+  (a, b) => a.localeCompare(b),
+);
 
 /**
  * Flat map of permission key -> same string value.

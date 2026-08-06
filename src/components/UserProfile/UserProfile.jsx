@@ -1209,7 +1209,6 @@ setUpdatedTasks(prev => {
   const canChangeRehireableStatus = props.hasPermission(permissions.changeUserRehireableStatus);
   const canUpdateSummaryRequirements = props.hasPermission(permissions.updateSummaryRequirements);
   const canManageAdminLinks = props.hasPermission(permissions.manageAdminLinks);
-  const canSeeQSC = props.hasPermission(permissions.seeQSC);
   const canManageHGNAccessSetup = props.hasPermission(permissions.manageHGNAccessSetup);
   const canEditVisibility = props.hasPermission(permissions.toggleInvisibility);
   const canSeeReports = props.hasPermission(permissions.getReports);

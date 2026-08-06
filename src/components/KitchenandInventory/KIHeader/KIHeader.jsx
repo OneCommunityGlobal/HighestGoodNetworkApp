@@ -83,61 +83,10 @@ export function Header(props) {
     [ALLOWED_ROLES_TO_INTERACT, props.auth.user.role],
   );
 
-  // Users
-  const canAccessUserManagement =
-    props.hasPermission(permissions.postUserProfile, !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission(permissions.deleteUserProfile, !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission(permissions.changeUserStatus, !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission(permissions.getUserProfiles, !isAuthUser && canInteractWithViewingUser);
-
-  // Badges
-  const canAccessBadgeManagement =
-    props.hasPermission(permissions.seeBadges, !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission(permissions.createBadges, !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission(permissions.updateBadges, !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission(permissions.deleteBadges, !isAuthUser && canInteractWithViewingUser);
-
-  // Projects
-  const canAccessProjects =
-    props.hasPermission(permissions.postProject, !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission(permissions.deleteProject, !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission(permissions.putProject, !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission(permissions.getProjectMembers, !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission(
-      permissions.assignProjectToUsers,
-      !isAuthUser && canInteractWithViewingUser,
-    ) ||
-    props.hasPermission(permissions.postWbs, !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission(permissions.deleteWbs, !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission(permissions.postTask, !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission(permissions.updateTask, !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission(permissions.deleteTask, !isAuthUser && canInteractWithViewingUser);
-  // Tasks
   const canUpdateTask = props.hasPermission(
     permissions.updateTask,
     !isAuthUser && canInteractWithViewingUser,
   );
-  // Teams
-  const canAccessTeams =
-    props.hasPermission(permissions.postTeam, !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission(permissions.putTeam, !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission(permissions.deleteTeam, !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission(permissions.assignTeamToUsers, !isAuthUser && canInteractWithViewingUser);
-  // Popups
-  const canAccessPopups =
-    props.hasPermission(permissions.createPopup, !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission(permissions.updatePopup, !isAuthUser && canInteractWithViewingUser);
-  // SendEmails
-  const canAccessSendEmails = props.hasPermission(permissions.sendEmails, !isAuthUser);
-  // Permissions
-  const canAccessPermissionsManagement =
-    props.hasPermission(permissions.postRole, !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission(permissions.putRole, !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission(permissions.deleteRole, !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission(
-      permissions.putUserProfilePermissions,
-      !isAuthUser && canInteractWithViewingUser,
-    );
 
   const dispatch = useDispatch();
   const { darkMode } = props;

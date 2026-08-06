@@ -15,8 +15,6 @@ import { permissions } from '../../../../utils/constants';
 const Member = ({ index = 0, ...props }) => {
   const { darkMode } = props;
   const canGetProjectMembers = hasPermission(permissions.getProjectMembers);
-  const canUnassignUserInProject = hasPermission(permissions.unassignUserInProject);
-
 
   return (
     <React.Fragment>
