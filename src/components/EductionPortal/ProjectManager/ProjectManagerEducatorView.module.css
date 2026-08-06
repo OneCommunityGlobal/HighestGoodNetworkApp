@@ -2,7 +2,7 @@
   --bg: #f6f7fb;
   --text: #111827;
   --muted: #6b7280;
-  --card-bg: #ffffff;
+  --card-bg: #fff;
   --border: #e5e7eb;
   --badge-bg: #eef2ff;
   --badge-text: #3730a3;
@@ -22,7 +22,7 @@
   --badge-bg: #27314a;
   --badge-text: #c7d2fe;
   --primary: #4f46e5;
-  --primary-100: rgba(79, 70, 229, 0.25);
+  --primary-100: rgb(79 70 229 / 25%);
   --progress-bg: #27324a;
 }
 
@@ -40,7 +40,7 @@
   gap: 8px;
   color: var(--muted);
   font-size: .9rem;
-  margin: 0 0 8px 0
+  margin: 0 0 8px
 }
 
 .sep {
@@ -70,7 +70,7 @@
 .subtitle {
   color: var(--muted);
   font-size: 1rem;
-  margin: .35rem 0 0 0
+  margin: .35rem 0 0
 }
 
 .toolbar {
@@ -111,6 +111,35 @@
 .searchInput:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px var(--primary-100)
+}
+
+@media (width <= 768px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .titleBlock,
+  .toolbar {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .searchInput {
+    width: 100%;
+    max-width: 100%;
+    flex: 1 1 160px;
+  }
+
+  .select,
+  .ghostBtn,
+  .primaryBtn {
+    flex: 1 1 auto;
+  }
+
+  .pushRight {
+    margin-left: 0;
+  }
 }
 
 .select {
@@ -171,7 +200,7 @@
   background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 16px;
-  box-shadow: 0 1px 3px rgba(17, 24, 39, .06);
+  box-shadow: 0 1px 3px rgb(17 24 39 / 6%);
   overflow: hidden
 }
 
@@ -261,7 +290,7 @@
 }
 
 .studentsWrap {
-  padding: 0 16px 16px 16px
+  padding: 0 16px 16px
 }
 
 .students {
@@ -271,13 +300,13 @@
   margin-top: 8px
 }
 
-@media (min-width:640px) {
+@media (width >= 640px) {
   .students {
     grid-template-columns: repeat(2, 1fr)
   }
 }
 
-@media (min-width:1024px) {
+@media (width >= 1024px) {
   .students {
     grid-template-columns: repeat(3, 1fr)
   }
