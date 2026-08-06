@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import styles from './LBMessaging.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faLocationArrow, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faLocationArrow, faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserProfileBasicInfo } from '~/actions/userManagement';
 import {
@@ -38,7 +38,7 @@ export default function LBMessaging() {
   const [bellDropdownActive, setBellDropdownActive] = useState(false);
   const [showContacts, setShowContacts] = useState(false);
   const [selectedOption, setSelectedOption] = useState({});
-  const messageEndRef = useRef(null);
+  const messageListRef = useRef(null);
   const menuRef = useRef(null);
   const appliedListingSelectionRef = useRef(null);
 
@@ -71,8 +71,8 @@ export default function LBMessaging() {
   }, [existingChats, selectedUser]);
 
   useEffect(() => {
-    if (messageEndRef.current) {
-      messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (messageListRef.current) {
+      messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
     }
   }, [messages]);
 
@@ -376,7 +376,7 @@ export default function LBMessaging() {
     }
 
     return (
-      <div className={styles.messageList}>
+      <div className={styles.messageList} ref={messageListRef}>
         <div className={styles.messageSpacer} />
         {filteredMessages.map(message => (
           <div
@@ -397,14 +397,13 @@ export default function LBMessaging() {
             </p>
           </div>
         ))}
-        <div ref={messageEndRef} />
       </div>
     );
   };
 
   return (
     (users?.userProfilesBasicInfo?.length ?? 0) !== 0 && (
-      <div className={`${darkMode ? styles.darkMode : ''}`}>
+      <div className={`${styles.messagingPage} ${darkMode ? styles.darkMode : ''}`}>
         <Header />
         <div className={styles.mainContainer}>
           <div className={styles.logoContainer}>
@@ -447,12 +446,9 @@ export default function LBMessaging() {
                                 type="button"
                                 onClick={() => setShowContacts(prev => !prev)}
                                 className={styles.lbMsgIconBtn}
+                                aria-label="Close search"
                               >
-                                <img
-                                  src="https://img.icons8.com/metro/26/multiply.png"
-                                  alt="Close"
-                                  className={styles.lbMsgIcon}
-                                />
+                                <FontAwesomeIcon icon={faTimes} aria-hidden="true" />
                               </button>
                             </div>
                           ) : (
@@ -503,12 +499,9 @@ export default function LBMessaging() {
                         type="button"
                         onClick={() => setShowContacts(prev => !prev)}
                         className={styles.lbMsgIconBtn}
+                        aria-label="Close search"
                       >
-                        <img
-                          src="https://img.icons8.com/metro/26/multiply.png"
-                          alt="Close"
-                          className={styles.lbMsgIcon}
-                        />
+                        <FontAwesomeIcon icon={faTimes} aria-hidden="true" />
                       </button>
                     </div>
                   ) : (
