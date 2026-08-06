@@ -482,7 +482,7 @@ table td {
 }
 
 .darkDatePicker :global(.react-datepicker__time-list-item--selected) {
-  background-color: #468ef9 !important;
+  background-color: #1a56db !important;
   color: #fff !important;
 }
 
@@ -571,7 +571,7 @@ table td {
 }
 
 .lightDatePicker :global(.react-datepicker__time-list-item--selected) {
-  background-color: #468ef9 !important;
+  background-color: #1a56db !important;
   color: #fff !important;
 }
 

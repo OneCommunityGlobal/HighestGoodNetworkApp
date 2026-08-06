@@ -55,7 +55,6 @@ import {
   PROJECTS,
   REPORTS,
   SEND_EMAILS,
-  SCHEDULE_MEETINGS,
   TEAM_LOCATIONS,
   TEAMS,
   TIMELOG,
@@ -219,7 +218,6 @@ export function Header(props) {
     props.hasPermission('updatePopup', !isAuthUser);
 
   const canAccessSendEmails = props.hasPermission('sendEmails', !isAuthUser);
-  const canAccessScheduleMeetings = props.hasPermission('scheduleMeetings', !isAuthUser);
 
   const canAccessPermissionsManagement =
     props.hasPermission('postRole', !isAuthUser) ||
@@ -697,12 +695,10 @@ export function Header(props) {
   };
 
   const handlePermissionChangeAck = async () => {
-    try {
       setIsAckLoading(true);
       const { firstName: name, lastName, personalLinks, adminLinks, _id } = props.userProfile;
       axios.put(ENDPOINTS.USER_PROFILE(_id), { firstName: name, lastName, personalLinks, adminLinks, isAcknowledged: true })
         .then(() => { setIsAckLoading(false); dispatch(getUserProfile(_id)); });
-    } catch (e) { /* silent */ }
   };
 
   const removeViewingUser = () => {

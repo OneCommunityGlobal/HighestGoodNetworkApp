@@ -391,7 +391,7 @@ table td {
 }
 
 .returnBtn:hover {
-  background-color: #4dabf7;
+  background-color: #1a73c0;
   color: #fff;
 }
 
@@ -437,7 +437,7 @@ table td {
 }
 
 .darkTheme .returnBtn:hover {
-  background-color: #4dabf7;
+  background-color: #1a73c0;
   color: #0f172a;
 }
 
