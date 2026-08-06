@@ -167,10 +167,12 @@ function InjuryCategoryBarChart() {
   ];
 
   const projectColorById = new Map();
-  [...allSeriesProjectIds].sort().forEach((pid, index) => {
-    // Sort by project ID so colors do not depend on API or filter response order.
-    projectColorById.set(pid, COLOR_PALETTE[index % COLOR_PALETTE.length]);
-  });
+  [...allSeriesProjectIds]
+    .sort((a, b) => a.localeCompare(b))
+    .forEach((pid, index) => {
+      // Sort by project ID so colors do not depend on API or filter response order.
+      projectColorById.set(pid, COLOR_PALETTE[index % COLOR_PALETTE.length]);
+    });
 
   // Force a resize/reflow after data/filter changes so chart draws immediately (no hover needed)
   useEffect(() => {
