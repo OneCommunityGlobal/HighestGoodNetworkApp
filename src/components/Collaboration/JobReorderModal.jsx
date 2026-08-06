@@ -61,6 +61,7 @@ function JobReorderModal({ isOpen, toggle, onJobsReordered, darkMode, checkPermi
   };
 
   const saveNewOrder = async () => {
+    debugger;
     if (!canReorderJobs) {
       setError('You do not have permission to reorder jobs');
       return;
@@ -89,6 +90,7 @@ function JobReorderModal({ isOpen, toggle, onJobsReordered, darkMode, checkPermi
         throw new Error('Failed to reorder jobs');
       }
     } catch (err) {
+      console.error('Save error:', err);
       setError(err.response?.data?.error || 'Failed to save new order. Please try again.');
     } finally {
       setLoading(false);
@@ -124,7 +126,7 @@ function JobReorderModal({ isOpen, toggle, onJobsReordered, darkMode, checkPermi
             <p>Loading jobs...</p>
           </div>
         ) : (
-          <div className="reorder-instructions mb-3">
+          <div className={`${styles.reorderInstructions} mb-3`}>
             <p>
               <i className="fa fa-info-circle mr-2" aria-hidden="true" />
               Drag and drop jobs to change their order on the landing page. Jobs will appear in the
@@ -163,11 +165,11 @@ function JobReorderModal({ isOpen, toggle, onJobsReordered, darkMode, checkPermi
                         >
                           <div className={styles.positionNumber}>{job.originalPosition}</div>
                           <div className={styles.jobTtemContent}>
-                            {job.featured && <span className="featured-badge">Featured</span>}
+                            {job.featured && <span className={styles.featuredBadge}>Featured</span>}
                             <h4>{job.title}</h4>
-                            <div className="job-details">
-                              <span className="job-category">{job.category}</span>
-                              <span className="job-date">
+                            <div className={styles.jobDetails}>
+                              <span className={styles.jobCategory}>{job.category}</span>
+                              <span className={styles.jobDate}>
                                 <i className="fa fa-calendar-o mr-1" aria-hidden="true" />
                                 {new Date(job.datePosted).toLocaleDateString()}
                               </span>

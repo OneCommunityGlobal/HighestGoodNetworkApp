@@ -71,7 +71,7 @@
   background-color: #f9fff0;
 }
 
-.jobs-item h4 {
+.jobsItem h4 {
   margin-top: 0;
   margin-bottom: 12px;
   font-size: 1.15rem;
@@ -79,7 +79,7 @@
   color: #333;
 }
 
-.job-details {
+.jobDetails {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
@@ -87,7 +87,7 @@
   color: #555;
 }
 
-.job-category {
+.jobCategory {
   padding: 4px 10px;
   background-color: #f0f5e6;
   border: 1px solid #dbebc0;
@@ -96,7 +96,7 @@
   color: #547c10;
 }
 
-.featured-badge {
+.featuredBadge {
   position: absolute;
   top: -10px;
   right: 0;
@@ -110,7 +110,7 @@
   z-index: 5;
 }
 
-.reorder-instructions {
+.reorderInstructions {
   margin-bottom: 20px;
   padding: 15px;
   background-color: #f0f5e6;
@@ -121,13 +121,13 @@
 }
 
 /* Modal styling */
-.modal-content {
+:global(.modal-content) {
   border-radius: 8px;
   border: none;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
-.modal-header {
+:global(.modal-header) {
   background-color: #f8f9fa;
   border-bottom: 1px solid #e9ecef;
   border-top-left-radius: 8px;
@@ -135,29 +135,29 @@
   padding: 15px 20px;
 }
 
-.modal-header .modal-title {
+:global(.modal-header) :global(.modal-title) {
   font-weight: 600;
   color: #333;
 }
 
-.modal-body {
+:global(.modal-body) {
   padding: 20px;
 }
 
-.modal-dialog {
+:global(.modal-dialog) {
   max-width: 800px;
 }
 
-.modal-lg {
+:global(.modal-lg) {
   max-width: 800px;
 }
 
-.modal-footer {
+:global(.modal-footer) {
   border-top: 1px solid #e9ecef;
   padding: 15px 20px;
 }
 
-.modal-footer .btn-primary {
+:global(.modal-footer) :global(.btn-primary) {
   background-color: #9c0;
   border-color: #9c0;
 }
@@ -208,60 +208,83 @@
 }
 
 /* Modal dark mode styles */
-.dark-mode .modal-header {
-  background-color: #1e2b38;
+:global(.dark-mode) .jobsItem {
+  background-color: #2c3e50;
   border-color: #445566;
   color: #f8f9fa;
 }
 
-.dark-mode .modal-header .modal-title {
-  color: #ffffff;
-  font-weight: 600;
+:global(.dark-mode) .jobsItem h4 {
+  color: #f8f9fa;
 }
 
-.dark-mode .modal-header h5 {
-  color: #ffffff;
+:global(.dark-mode) .jobDetails {
+  color: #ddd;
 }
 
-.dark-mode .modal-footer {
+:global(.dark-mode) .jobCategory {
+  background-color: #405224;
+  color: #e0e9d0;
+  border-color: #536b2f;
+}
+
+:global(.dark-mode) .featured {
+  border-left-color: #9c0;
+  background-color: #2a3d1a;
+}
+
+:global(.dark-mode) .dragging {
+  background-color: #34495e;
+  border-color: #9c0;
+}
+
+:global(.dark-mode) .positionNumber {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+:global(.dark-mode) .featuredBadge {
+  background-color: #9c0;
+}
+
+:global(.dark-mode) .reorderInstructions {
+  background-color: #263c17;
+  color: #fff;
+  border-left: 4px solid #9c0;
+}
+
+:global(.dark-mode) .reorderInstructions p {
+  color: #fff;
+  margin-bottom: 0;
+}
+
+:global(.dark-mode) .reorderInstructions i {
+  color: #9c0;
+}
+
+:global(.dark-mode) :global(.modal-content) {
+  background-color: #1e2b38;
+  border: 1px solid #445566;
+}
+
+:global(.dark-mode) :global(.modal-header) {
+  background-color: #1e2b38;
+  border-color: #445566;
+  color: white;
+}
+
+:global(.dark-mode) :global(.modal-title) {
+  color: white;
+}
+
+:global(.dark-mode) :global(.modal-footer) {
   background-color: #1e2b38;
   border-color: #445566;
 }
 
-.dark-mode .modal-content {
-  background-color: #1e2b38;
-  border: 1px solid #445566;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+:global(.dark-mode) :global(.close) {
+  color: white;
 }
 
-.dark-mode .modal-header .close {
-  color: #ffffff;
-  opacity: 0.8;
-  text-shadow: none;
-}
-
-.dark-mode .modal-header .close:hover {
-  opacity: 1;
-}
-
-.dark-mode .modal-header i {
+:global(.dark-mode) :global(.modal-header i) {
   color: #9c0;
-}
-
-.dark-mode .reorder-instructions {
-  background-color: #263c17;
-  color: #ffffff;
-  border-left: 4px solid #9c0;
-  border-radius: 6px;
-  padding: 15px;
-  margin-bottom: 20px;
-}
-
-.dark-mode .reorder-instructions i {
-  color: #9c0;
-}
-
-.dark-mode .reorder-instructions p {
-  color: #ffffff;
-  margin-bottom: 0;
 }
