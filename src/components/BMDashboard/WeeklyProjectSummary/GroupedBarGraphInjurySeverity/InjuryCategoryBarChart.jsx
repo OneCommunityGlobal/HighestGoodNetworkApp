@@ -71,17 +71,35 @@ function InjuryCategoryBarChart() {
   const sevList = Array.isArray(severities) ? severities : [];
   const typeList = Array.isArray(injuryTypes) ? injuryTypes : [];
 
-  const projectNameOptions = useMemo(() => {
-    const seen = new Set();
-    const opts = [];
+  const projectLabelById = useMemo(() => {
+    const nameCounts = new Map();
     for (const p of projects) {
       const name = p?.name ?? '';
-      if (!name || seen.has(name)) continue;
-      seen.add(name);
-      opts.push({ value: name, label: name });
+      if (name) nameCounts.set(name, (nameCounts.get(name) || 0) + 1);
+    }
+
+    const labels = new Map();
+    for (const p of projects) {
+      const name = p?.name ?? '';
+      const id = String(p?._id ?? '');
+      if (!name || !id) continue;
+
+      // Use a short ID only when duplicate project names need disambiguation.
+      labels.set(id, nameCounts.get(name) > 1 ? `${name} (${id.slice(0, 6)})` : name);
+    }
+    return labels;
+  }, [projects]);
+
+  const projectNameOptions = useMemo(() => {
+    const opts = [];
+    for (const p of projects) {
+      const id = String(p?._id ?? '');
+      const label = projectLabelById.get(id);
+      if (!id || !label) continue;
+      opts.push({ value: id, label });
     }
     return opts.sort((a, b) => a.label.localeCompare(b.label));
-  }, [projects]);
+  }, [projects, projectLabelById]);
 
   useEffect(() => {
     if (!projectNameFilter.length) return;
@@ -95,7 +113,7 @@ function InjuryCategoryBarChart() {
 
   useEffect(() => {
     const params = {
-      projectNames: projectNameFilter.length ? projectNameFilter.map(p => p.value).join(',') : '',
+      projectIds: projectNameFilter.length ? projectNameFilter.map(p => p.value).join(',') : '',
       startDate: toYMD(startDate),
       endDate: toYMD(endDate),
       severities: severityFilter.map(s => s.value).join(','),
@@ -139,14 +157,20 @@ function InjuryCategoryBarChart() {
 
   const COLOR_PALETTE = [
     '#34D399', // green
-    '#60A5FA', // blue
+    '#2563EB', // blue
     '#F472B6', // pink
     '#FBBF24', // amber
     '#A78BFA', // purple
-    '#4ADE80', // light green
+    '#FB923C', // orange
     '#F87171', // red
     '#38BDF8', // cyan
   ];
+
+  const projectColorById = new Map();
+  [...allSeriesProjectIds].sort().forEach((pid, index) => {
+    // Sort by project ID so colors do not depend on API or filter response order.
+    projectColorById.set(pid, COLOR_PALETTE[index % COLOR_PALETTE.length]);
+  });
 
   // Force a resize/reflow after data/filter changes so chart draws immediately (no hover needed)
   useEffect(() => {
@@ -335,25 +359,27 @@ function InjuryCategoryBarChart() {
               }}
               formatter={(value, name) => [
                 value,
-                projectNameById.get(String(name)) || 'Unknown Project',
+                projectLabelById.get(String(name)) ||
+                  projectNameById.get(String(name)) ||
+                  'Unknown Project',
               ]}
             />
             <Legend
               wrapperStyle={{
                 color: darkMode ? '#fff' : '#000',
               }}
-              payload={allSeriesProjectIds.map((pid, index) => ({
+              payload={allSeriesProjectIds.map(pid => ({
                 id: pid,
                 type: 'square',
-                color: COLOR_PALETTE[index % COLOR_PALETTE.length],
-                value: projectNameById.get(pid) || 'Unknown Project',
+                color: projectColorById.get(pid),
+                value: projectLabelById.get(pid) || projectNameById.get(pid) || 'Unknown Project',
               }))}
             />
-            {seriesProjectIds.map((pid, index) => (
+            {seriesProjectIds.map(pid => (
               <Bar
                 key={pid}
                 dataKey={pid}
-                fill={COLOR_PALETTE[index % COLOR_PALETTE.length]}
+                fill={projectColorById.get(pid)}
                 stroke={darkMode ? '#E5E7EB' : '#ffffff'}
                 strokeWidth={1}
               >

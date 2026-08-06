@@ -267,7 +267,7 @@ function InjurySeverityDashboard(props) {
 
         <RangePicker
           className={styles.filterSelect}
-          popupClassName={darkMode ? styles.oxideDark : ''}
+          popupClassName={darkMode ? styles.oxideDark : styles.lightCalendar}
           value={dateRange}
           onChange={dates => setDateRange(dates || [null, null])}
           style={filterStyle}
