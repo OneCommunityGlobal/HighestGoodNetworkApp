@@ -48,11 +48,30 @@
   width: 0;
 }
 
+.progressOvertime {
+  background: #b45309;
+}
+
 .timeLabel {
   font-weight: 600;
   font-size: 0.85rem;
   color: #1a1a1a;
   text-align: center;
+}
+
+.compactOvertime {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #b45309;
+  text-align: center;
+  margin-top: 2px;
+}
+
+.compactError {
+  font-size: 0.7rem;
+  color: #dc2626;
+  text-align: center;
+  margin-top: 2px;
 }
 
 .compactControlsRow {
@@ -85,7 +104,6 @@
   font-weight: 700;
 }
 
-
 .backdrop {
   position: fixed;
   inset: 0;
@@ -105,7 +123,6 @@
   z-index: 9999;
 }
 
-
 .card {
   background: #fff;
   color: #1f2937;
@@ -118,6 +135,11 @@
   flex-direction: column;
   gap: 14px;
   border: none;
+
+  /* The UA stylesheet positions an open <dialog>, so without an explicit
+     stacking level the full-viewport .backdrop (z-index 9999) paints over the
+     card and swallows every click meant for the controls inside it. */
+  z-index: 10000;
 }
 
 /* Header */
@@ -145,7 +167,6 @@
 .iconGhost:hover {
   background: #f3f4f6;
 }
-
 
 .circleWrapper {
   display: flex;
@@ -219,6 +240,16 @@
   color: #6b7280;
 }
 
+.overtimeBadge {
+  margin-top: 6px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: #fef3c7;
+  color: #92400e;
+}
+
 .circleControls {
   display: flex;
   gap: 10px;
@@ -271,6 +302,36 @@
 .quickBtn:disabled {
   opacity: 0.5;
   cursor: default;
+}
+
+/* Task selector */
+.taskSelectRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.taskSelectLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+}
+
+.taskSelect {
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  background: #fff;
+  color: #1a1a1a;
+}
+
+.taskSelectEmpty {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: #6b7280;
 }
 
 /* Time Editor */
@@ -425,4 +486,27 @@
 
 .darkCard .colon {
   color: #f8fafc;
+}
+
+.darkCard .taskSelectLabel {
+  color: #cbd5f5;
+}
+
+.darkCard .taskSelect {
+  background: #020617;
+  color: #f8fafc;
+  border-color: #334155;
+}
+
+.darkCard .taskSelectEmpty {
+  color: #cbd5f5;
+}
+
+.dark .compactOvertime {
+  color: #fbbf24;
+}
+
+.darkCard .overtimeBadge {
+  background: #422006;
+  color: #fcd34d;
 }

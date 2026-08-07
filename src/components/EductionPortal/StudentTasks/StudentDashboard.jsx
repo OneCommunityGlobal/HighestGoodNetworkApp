@@ -1,13 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import styles from './StudentDashboard.module.css';
+import TaskTimer from '../StudentDashboard/TaskTimer';
+import { fetchStudentTasks } from '~/actions/studentTasks';
 
 const LIFE_CARD_IDS = ['lc-a', 'lc-b', 'lc-c', 'lc-d', 'lc-e', 'lc-f'];
 
 export default function StudentDashboard() {
   const history = useHistory();
+  const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme?.darkMode);
+
+  // The timer records against real assigned tasks, so it needs the same
+  // Redux-backed source the rest of the student task UI uses. The hardcoded
+  // `tasks` below drive this page's existing To Do list and are display-only
+  // (their ids are not task ObjectIds), so they are left untouched.
+  const timerTasks = useSelector(state => state.studentTasks?.taskItems);
+
+  useEffect(() => {
+    dispatch(fetchStudentTasks());
+  }, [dispatch]);
 
   const tasks = [
     {
@@ -48,6 +61,7 @@ export default function StudentDashboard() {
           <h1 className={styles.title}>Dashboard</h1>
           <div className={styles.welcomeArea}>
             <span className={styles.welcomeLabel}>Welcome, Student Name</span>
+            <TaskTimer tasks={timerTasks || []} />
             <div className={styles.icons}>
               <span className={styles.icon} aria-hidden="true">
                 👤

@@ -25,7 +25,6 @@ const StudentDashboard = () => {
   const [activeLogTask, setActiveLogTask] = useState(null);
 
   const dispatch = useDispatch();
-  const authUser = useSelector(state => state.auth.user);
   const { taskItems: tasks, fetching: loading, error } = useSelector(state => state.studentTasks);
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -155,7 +154,7 @@ const StudentDashboard = () => {
             <p className={styles.subtitle}>Track your learning progress and manage your logs</p>
           </div>
           <div className={styles.headerRight}>
-            <TaskTimer userid={authUser?.userid} />
+            <TaskTimer tasks={tasks} />
           </div>
         </div>
 

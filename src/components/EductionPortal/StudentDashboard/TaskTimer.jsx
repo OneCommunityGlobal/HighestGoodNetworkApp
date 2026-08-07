@@ -1,32 +1,86 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 import styles from './timer.module.css';
+import httpService from '~/services/httpService';
+import { ENDPOINTS } from '~/utils/URL';
 
-import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
-import PauseRoundedIcon from '@mui/icons-material/PauseRounded';
-import StopRoundedIcon from '@mui/icons-material/StopRounded';
-import RestartAltRoundedIcon from '@mui/icons-material/RestartAltRounded';
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import AccessAlarmRoundedIcon from '@mui/icons-material/AccessAlarmRounded';
+import {
+  Play as PlayIcon,
+  Pause as PauseIcon,
+  Square as StopIcon,
+  RotateCcw as ResetIcon,
+  X as CloseIcon,
+  AlarmClock as AlarmIcon,
+} from 'lucide-react';
+
+const ICON_SIZE = 18;
 
 const pad2 = n => String(n).padStart(2, '0');
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') || 'http://localhost:4500';
-
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
-export default function TaskTimer({ userid }) {
+// The id the timer would send as `taskId`. Precedence is deliberately the same
+// as the option values so what is validated is exactly what gets submitted.
+const timerTaskIdOf = task => task.id ?? task._id;
+
+// A timer session is recorded against a real EducationTask, so the backend
+// requires a genuine ObjectId. Demo/fallback tasks carry sequential numeric ids
+// and would be rejected with "taskId is required and must be a valid ObjectId",
+// so they must never be offered as startable timer tasks.
+const isRealTaskId = value => typeof value === 'string' && /^[0-9a-f]{24}$/i.test(value);
+
+export default function TaskTimer({ tasks }) {
   const [open, setOpen] = useState(false);
   const [hours, setHours] = useState(2);
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
   const [timerInfo, setTimerInfo] = useState(null);
   const [error, setError] = useState('');
-  const [displayRemaining, setDisplayRemaining] = useState(null);
+  const [liveElapsedMs, setLiveElapsedMs] = useState(null);
+  const [selectedTaskId, setSelectedTaskId] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const darkMode = useSelector(state => state.theme.darkMode);
+  const isMountedRef = useRef(true);
 
-  const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  // Recover any session still running/paused on the server after a refresh or
+  // navigation. summarize() recomputes elapsed from the stored timestamps, so
+  // overtime accrued while the page was closed is restored accurately.
+  useEffect(() => {
+    let cancelled = false;
+
+    const recoverStatus = async () => {
+      try {
+        const response = await httpService.get(ENDPOINTS.STUDENT_TIMER_STATUS);
+        const data = response.data?.data;
+        if (!cancelled && isMountedRef.current && data && data.status !== 'idle') {
+          setTimerInfo(data);
+          if (data.taskId) setSelectedTaskId(String(data.taskId));
+        }
+      } catch {
+        // A failed recovery must not block the dashboard; the timer simply
+        // presents as idle and the student can start a new session.
+      }
+    };
+
+    recoverStatus();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const loggableTasks = tasks.filter(
+    t =>
+      t.status !== 'completed' && t.status !== 'graded' && isRealTaskId(String(timerTaskIdOf(t))),
+  );
 
   const incH = useCallback(() => setHours(h => (h + 1) % 24), []);
   const decH = useCallback(() => setHours(h => (h + 23) % 24), []);
@@ -50,95 +104,136 @@ export default function TaskTimer({ userid }) {
     setSeconds(clamp(Number(v || 0), 0, 59));
   }, []);
 
-  const callTimerApi = useCallback(
-    async (path, method = 'GET', body = null) => {
-      setError('');
+  const callTimerApi = useCallback(async (url, body = null) => {
+    if (isMountedRef.current) setError('');
 
-      try {
-        const url = `${BASE_URL}${path}`;
-        const options = {
-          method,
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: token,
-            'x-user-id': userid,
-          },
-        };
-
-        if (body) options.body = JSON.stringify(body);
-
-        const response = await fetch(url, options);
-        const contentType = response.headers.get('content-type') || '';
-        const text = await response.text();
-        const data = contentType.includes('application/json') && text ? JSON.parse(text) : {};
-
-        if (!response.ok) {
-          throw new Error(data.error || data.message || 'Request failed');
-        }
-
-        return data;
-      } catch (err) {
-        setError(err.message);
-        throw err;
-      }
-    },
-    [token, userid],
-  );
+    try {
+      const response = await httpService.post(url, body || {});
+      return response.data;
+    } catch (err) {
+      const message = err.response?.data?.error || err.message || 'Request failed';
+      if (isMountedRef.current) setError(message);
+      throw err;
+    }
+  }, []);
 
   const handleTogglePlay = useCallback(async () => {
     const status = timerInfo?.status || 'idle';
+    if (submitting) return;
+    if (status === 'idle' && !selectedTaskId) {
+      setError('Select a task before starting the timer.');
+      return;
+    }
 
+    setSubmitting(true);
     try {
       if (status === 'running') {
-        const res = await callTimerApi('/api/student/timer/pause', 'POST');
-        setTimerInfo(res.data);
+        const res = await callTimerApi(ENDPOINTS.STUDENT_TIMER_PAUSE);
+        if (isMountedRef.current) setTimerInfo(res.data);
       } else if (status === 'paused') {
-        const res = await callTimerApi('/api/student/timer/resume', 'POST');
-        setTimerInfo(res.data);
+        const res = await callTimerApi(ENDPOINTS.STUDENT_TIMER_RESUME);
+        if (isMountedRef.current) setTimerInfo(res.data);
       } else {
-        const totalMinutes = hours * 60 + minutes + (seconds > 0 ? 1 : 0);
-        const res = await callTimerApi('/api/student/timer/start', 'POST', {
-          hours,
-          minutes: totalMinutes,
+        let m = minutes;
+        let h = hours;
+        if (seconds > 0) {
+          m += 1;
+          if (m >= 60) {
+            m -= 60;
+            h = (h + 1) % 24;
+          }
+        }
+        const res = await callTimerApi(ENDPOINTS.STUDENT_TIMER_START, {
+          hours: h,
+          minutes: m,
+          taskId: selectedTaskId,
         });
-        setTimerInfo(res.data);
+        if (isMountedRef.current) setTimerInfo(res.data);
       }
     } catch {
-      setError('Failed to toggle timer');
+      // error already recorded by callTimerApi
+    } finally {
+      if (isMountedRef.current) setSubmitting(false);
     }
-  }, [timerInfo, callTimerApi, hours, minutes, seconds]);
+  }, [timerInfo, callTimerApi, hours, minutes, seconds, selectedTaskId, submitting]);
 
   const handleStop = useCallback(async () => {
+    if (submitting) return;
+    setSubmitting(true);
     try {
-      await callTimerApi('/api/student/timer/stop', 'POST');
-      setTimerInfo(null);
-      setHours(2);
-      setMinutes(0);
-      setSeconds(0);
-      setDisplayRemaining(null);
-    } catch {
-      setError('Failed to stop timer');
+      // A single request: the backend stops the timer and writes the
+      // authoritative time_logged Daily Log entry from its own stored values.
+      const res = await callTimerApi(ENDPOINTS.STUDENT_TIMER_STOP);
+      const stopped = res.data;
+
+      // Only claim success once the server confirms it persisted the activity
+      // record for a session that had measurable time.
+      if ((stopped?.elapsedMs || 0) > 0 && !stopped?.activityLogId) {
+        if (isMountedRef.current) {
+          setError('Timer stopped, but the session could not be saved to the Daily Log.');
+        }
+        return;
+      }
+
+      if (isMountedRef.current) {
+        setTimerInfo(null);
+        setHours(2);
+        setMinutes(0);
+        setSeconds(0);
+        setLiveElapsedMs(null);
+        setSelectedTaskId('');
+      }
+    } catch (err) {
+      // A 409 means the backend has no active timer, so the session is
+      // definitively already stopped: settle the UI to idle rather than
+      // leaving a stale running state on screen.
+      if (err.response?.status === 409 && isMountedRef.current) {
+        setTimerInfo(null);
+        setLiveElapsedMs(null);
+        setSelectedTaskId('');
+      }
+      // Any other failure keeps the error surfaced by callTimerApi visible.
+    } finally {
+      if (isMountedRef.current) setSubmitting(false);
     }
-  }, [callTimerApi]);
+  }, [callTimerApi, submitting]);
 
   const handleReset = useCallback(async () => {
-    try {
-      const res = await callTimerApi('/api/student/timer/reset', 'POST');
-      setTimerInfo(res.data || null);
-    } catch {
-      setError('Failed to reset timer');
+    if (submitting) return;
+    const status = timerInfo?.status || 'idle';
+    const hasMeaningfulElapsed = (timerInfo?.elapsedMs || 0) >= 60000;
+
+    if (
+      (status === 'running' || status === 'paused') &&
+      hasMeaningfulElapsed &&
+      // eslint-disable-next-line no-alert
+      !window.confirm('Resetting will discard the current unsaved timer session. Continue?')
+    ) {
+      return;
     }
 
-    setHours(2);
-    setMinutes(0);
-    setSeconds(0);
-    setDisplayRemaining(null);
-  }, [callTimerApi]);
+    setSubmitting(true);
+    try {
+      const res = await callTimerApi(ENDPOINTS.STUDENT_TIMER_RESET);
+      if (isMountedRef.current) setTimerInfo(res.data || null);
+    } catch {
+      // error already recorded by callTimerApi
+    } finally {
+      if (isMountedRef.current) {
+        setHours(2);
+        setMinutes(0);
+        setSeconds(0);
+        setLiveElapsedMs(null);
+        setSelectedTaskId('');
+        setSubmitting(false);
+      }
+    }
+  }, [callTimerApi, submitting, timerInfo]);
 
   const handleMiniAdjust = useCallback(
     deltaMinutes => {
       if (timerInfo && (timerInfo.status === 'running' || timerInfo.status === 'paused')) {
-        callTimerApi('/api/student/timer/adjust', 'POST', { deltaMinutes }).then(res =>
+        callTimerApi(ENDPOINTS.STUDENT_TIMER_ADJUST, { deltaMinutes }).then(res =>
           setTimerInfo(res.data),
         );
         return;
@@ -153,63 +248,83 @@ export default function TaskTimer({ userid }) {
     [timerInfo, callTimerApi, hours, minutes],
   );
 
+  // Anchor the live display to the server's authoritative elapsedMs and tick
+  // upward from there. Counting elapsed (rather than counting a remaining
+  // value down to zero) is what lets the display continue into overtime, and
+  // it re-anchors correctly after a refresh or a pause/resume round trip.
   useEffect(() => {
-    if (timerInfo?.remainingMs) setDisplayRemaining(timerInfo.remainingMs);
+    setLiveElapsedMs(timerInfo?.elapsedMs ?? null);
   }, [timerInfo]);
 
   useEffect(() => {
-    if (timerInfo?.status !== 'running' || displayRemaining == null) return;
+    if (timerInfo?.status !== 'running') return undefined;
 
-    const id = setInterval(
-      () => setDisplayRemaining(prev => (prev && prev > 1000 ? prev - 1000 : 0)),
-      1000,
-    );
+    const id = setInterval(() => {
+      setLiveElapsedMs(prev => (prev == null ? prev : prev + 1000));
+    }, 1000);
 
     return () => clearInterval(id);
-  }, [timerInfo, displayRemaining]);
+    // Keyed on status only: a single interval per running session, never one
+    // re-created on every tick.
+  }, [timerInfo?.status]);
 
   const currentStatus = timerInfo?.status || 'idle';
   const isActive = currentStatus === 'running' || currentStatus === 'paused';
 
-  const totalMs =
-    timerInfo?.durationMs || (hours * 60 + minutes + (seconds > 0 ? 1 : 0)) * 60 * 1000 || 0;
-  const elapsedMs = timerInfo?.elapsedMs || Math.max(0, totalMs - (displayRemaining || 0));
+  const plannedMs = (hours * 60 + minutes + (seconds > 0 ? 1 : 0)) * 60 * 1000;
+  const totalMs = timerInfo?.durationMs ?? plannedMs;
+  const effectiveElapsedMs = liveElapsedMs ?? 0;
 
-  const progressPct = totalMs ? Math.min(100, (elapsedMs / totalMs) * 100) : 0;
+  const remainingMs = Math.max(0, totalMs - effectiveElapsedMs);
+  const overtimeMs = Math.max(0, effectiveElapsedMs - totalMs);
+  const isOvertime = overtimeMs > 0;
 
-  const displayH = displayRemaining != null ? Math.floor(displayRemaining / 3600000) : hours;
-  const displayM =
-    displayRemaining != null ? Math.floor((displayRemaining % 3600000) / 60000) : minutes;
-  const displayS =
-    displayRemaining != null ? Math.floor((displayRemaining % 60000) / 1000) : seconds;
+  const progressPct = totalMs ? Math.min(100, (effectiveElapsedMs / totalMs) * 100) : 0;
+
+  // While a session exists show the countdown (floored at zero during
+  // overtime); when idle show the duration the student is about to set.
+  const clockMs = liveElapsedMs != null ? remainingMs : null;
+  const displayH = clockMs != null ? Math.floor(clockMs / 3600000) : hours;
+  const displayM = clockMs != null ? Math.floor((clockMs % 3600000) / 60000) : minutes;
+  const displayS = clockMs != null ? Math.floor((clockMs % 60000) / 1000) : seconds;
+
+  const overtimeLabel = `+${pad2(Math.floor(overtimeMs / 3600000))}:${pad2(
+    Math.floor((overtimeMs % 3600000) / 60000),
+  )}:${pad2(Math.floor((overtimeMs % 60000) / 1000))}`;
 
   const primaryIcon =
-    currentStatus === 'running' ? (
-      <PauseRoundedIcon fontSize="small" />
-    ) : (
-      <PlayArrowRoundedIcon fontSize="small" />
-    );
+    currentStatus === 'running' ? <PauseIcon size={ICON_SIZE} /> : <PlayIcon size={ICON_SIZE} />;
 
   const circleRadius = 105;
   const circleCircumference = 2 * Math.PI * circleRadius;
   const dashOffset = circleCircumference * (1 - progressPct / 100);
 
   const isIdle = currentStatus === 'idle';
+  const canStart = !submitting && (!isIdle || Boolean(selectedTaskId));
 
   return (
     <>
       <div className={`${styles.compactWrapper} ${darkMode ? styles.dark : ''}`}>
         <button type="button" className={styles.compactIconBtn} onClick={() => setOpen(true)}>
-          <AccessAlarmRoundedIcon fontSize="small" />
+          <AlarmIcon size={ICON_SIZE} />
         </button>
 
         <div className={styles.compactBody}>
           <div className={styles.progressBar}>
-            <div className={styles.progressFill} style={{ width: `${progressPct}%` }} />
+            <div
+              className={`${styles.progressFill} ${isOvertime ? styles.progressOvertime : ''}`}
+              style={{ width: `${progressPct}%` }}
+            />
           </div>
           <div className={styles.timeLabel}>
             {pad2(displayH)}:{pad2(displayM)}:{pad2(displayS)}
           </div>
+          {isOvertime && <div className={styles.compactOvertime}>Overtime {overtimeLabel}</div>}
+          {error && (
+            <div className={styles.compactError} role="alert">
+              {error}
+            </div>
+          )}
         </div>
 
         <div className={styles.compactControlsRow}>
@@ -233,6 +348,7 @@ export default function TaskTimer({ userid }) {
             type="button"
             className={styles.compactCtrlBtn}
             onClick={handleTogglePlay}
+            disabled={!canStart}
             aria-label="Play/Pause"
           >
             {primaryIcon}
@@ -241,18 +357,19 @@ export default function TaskTimer({ userid }) {
             type="button"
             className={styles.compactCtrlBtn}
             onClick={handleStop}
-            disabled={!isActive}
+            disabled={!isActive || submitting}
             aria-label="Stop"
           >
-            <StopRoundedIcon fontSize="small" />
+            <StopIcon size={ICON_SIZE} />
           </button>
           <button
             type="button"
             className={styles.compactCtrlBtn}
             onClick={handleReset}
+            disabled={submitting}
             aria-label="Reset"
           >
-            <RestartAltRoundedIcon fontSize="small" />
+            <ResetIcon size={ICON_SIZE} />
           </button>
         </div>
       </div>
@@ -274,9 +391,37 @@ export default function TaskTimer({ userid }) {
                 onClick={() => setOpen(false)}
                 aria-label="Close"
               >
-                <CloseRoundedIcon fontSize="small" />
+                <CloseIcon size={ICON_SIZE} />
               </button>
             </div>
+
+            {isIdle && (
+              <div className={styles.taskSelectRow}>
+                <label className={styles.taskSelectLabel} htmlFor="timer-task-select">
+                  Task
+                </label>
+                {loggableTasks.length > 0 ? (
+                  <select
+                    id="timer-task-select"
+                    className={styles.taskSelect}
+                    value={selectedTaskId}
+                    onChange={e => setSelectedTaskId(e.target.value)}
+                  >
+                    <option value="">Select a task…</option>
+                    {loggableTasks.map(t => (
+                      <option key={timerTaskIdOf(t)} value={timerTaskIdOf(t)}>
+                        {t.course_name || t.title}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <p className={styles.taskSelectEmpty}>
+                    No assigned tasks available. Time can only be tracked against a task assigned to
+                    you.
+                  </p>
+                )}
+              </div>
+            )}
 
             {isIdle && (
               <div className={styles.timeGrid}>
@@ -457,11 +602,28 @@ export default function TaskTimer({ userid }) {
                     <span>Min</span>
                     <span>Sec</span>
                   </div>
+                  {isOvertime && (
+                    <span className={styles.overtimeBadge}>Overtime {overtimeLabel}</span>
+                  )}
                 </div>
               </div>
             </div>
 
             {error && <p className={styles.errorText}>{error}</p>}
+
+            {isIdle && (
+              <div className={styles.circleControls}>
+                <button
+                  type="button"
+                  className={styles.circleCtrlBtn}
+                  onClick={handleTogglePlay}
+                  disabled={!canStart}
+                  aria-label="Start"
+                >
+                  <PlayIcon size={ICON_SIZE} />
+                </button>
+              </div>
+            )}
 
             {!isIdle && (
               <div className={styles.circleControls}>
@@ -469,6 +631,7 @@ export default function TaskTimer({ userid }) {
                   type="button"
                   className={styles.circleCtrlBtn}
                   onClick={handleTogglePlay}
+                  disabled={submitting}
                   aria-label="Play/Pause"
                 >
                   {primaryIcon}
@@ -477,18 +640,19 @@ export default function TaskTimer({ userid }) {
                   type="button"
                   className={styles.circleCtrlBtn}
                   onClick={handleStop}
-                  disabled={!isActive}
+                  disabled={!isActive || submitting}
                   aria-label="Stop"
                 >
-                  <StopRoundedIcon fontSize="small" />
+                  <StopIcon size={ICON_SIZE} />
                 </button>
                 <button
                   type="button"
                   className={styles.circleCtrlBtn}
                   onClick={handleReset}
+                  disabled={submitting}
                   aria-label="Reset"
                 >
-                  <RestartAltRoundedIcon fontSize="small" />
+                  <ResetIcon size={ICON_SIZE} />
                 </button>
               </div>
             )}
@@ -504,3 +668,19 @@ export default function TaskTimer({ userid }) {
     </>
   );
 }
+
+TaskTimer.propTypes = {
+  tasks: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      _id: PropTypes.string,
+      course_name: PropTypes.string,
+      title: PropTypes.string,
+      status: PropTypes.string,
+    }),
+  ),
+};
+
+TaskTimer.defaultProps = {
+  tasks: [],
+};
