@@ -1,14 +1,40 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import {
+  FaCubes,
+  FaShoppingCart,
+  FaTools,
+  FaRecycle,
+  FaWrench,
+  FaRulerCombined,
+} from 'react-icons/fa';
 import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
 import MaterialSummaryPanel from '../MaterialList/MaterialSummaryPanel';
 import styles from './ItemListView.module.css';
-import { useSelector } from 'react-redux';
+import { Form, FormGroup, Label } from 'reactstrap';
+
+const allCategories = [
+  { label: 'Materials', route: '/bmdashboard/materials', icon: <FaCubes /> },
+  { label: 'Consumables', route: '/bmdashboard/consumables', icon: <FaShoppingCart /> },
+  { label: 'Equipment', route: '/bmdashboard/equipment', icon: <FaTools /> },
+  { label: 'Reusables', route: '/bmdashboard/reusables', icon: <FaRecycle /> },
+  { label: 'Tools', route: '/bmdashboard/tools', icon: <FaWrench /> },
+  { label: 'Units', route: '/bmdashboard/units', icon: <FaRulerCombined /> },
+];
+
+const categoryIcons = {
+  Materials: <FaCubes />,
+  Consumables: <FaShoppingCart />,
+  Equipment: <FaTools />,
+  Reusables: <FaRecycle />,
+  Tools: <FaWrench />,
+};
 
 export function ItemListView({
   itemType,
@@ -18,9 +44,11 @@ export function ItemListView({
   dynamicColumns,
   children,
 }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [filteredItems, setFilteredItems] = useState([]);
   const [selectedProject, setSelectedProject] = useState([]); // Array of strings
   const [selectedItem, setSelectedItem] = useState([]); // Array of strings
+  const [localValues, setLocalValues] = useState([]);
   const [isError, setIsError] = useState(false);
   const [selectedTime, setSelectedTime] = useState(new Date());
 
@@ -29,8 +57,6 @@ export function ItemListView({
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(25);
-
-  const darkMode = useSelector(state => state.theme.darkMode);
 
   // Sync initial items load
   useEffect(() => {
@@ -167,7 +193,16 @@ export function ItemListView({
 
   return (
     <main className={`${styles.itemsListContainer} ${darkMode ? styles.darkMode : ''}`}>
-      <h3>{itemType}</h3>
+      <h3 className={styles.pageTitle}>
+        <span className={styles.pageTitleIcon}>{categoryIcons[itemType]}</span>
+        {itemType}
+      </h3>
+
+      {/* Inventory Navigation Bar */}
+      <InventoryNavBar
+        categories={allCategories.filter(cat => cat.label !== itemType)}
+        styles={styles}
+      />
 
       <section>
         <span>
@@ -197,7 +232,9 @@ export function ItemListView({
               <SelectForm
                 items={items}
                 setSelectedProject={setSelectedProject}
-                setSelectedItem={setSelectedItem}
+                localValues={localValues}
+                setLocalValues={setLocalValues}
+                itemType={itemType}
               />
 
               <SelectItem
@@ -208,6 +245,25 @@ export function ItemListView({
                 label={isMaterialsView ? 'Material' : itemType}
                 darkMode={darkMode}
               />
+
+              <div className={styles.resetContainer}>
+                <Form onSubmit={e => e.preventDefault()}>
+                  <FormGroup>
+                    <Label>&nbsp;</Label>
+                    <button
+                      type="button"
+                      className={styles.btnReset}
+                      onClick={handleReset}
+                      disabled={
+                        localStorage.getItem(projectKey) === null &&
+                        localStorage.getItem(itemKey) === null
+                      }
+                    >
+                      Reset
+                    </button>
+                  </FormGroup>
+                </Form>
+              </div>
             </div>
           )}
 
@@ -323,10 +379,12 @@ ItemListView.propTypes = {
       key: PropTypes.string.isRequired,
     }),
   ).isRequired,
+  children: PropTypes.node,
 };
 
 ItemListView.defaultProps = {
   errors: {},
+  children: null,
 };
 
 export default ItemListView;

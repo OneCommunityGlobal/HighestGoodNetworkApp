@@ -188,6 +188,7 @@ import ReportDownloadButton from './components/EductionPortal/AnalyticsDashboard
 import GroupList from './components/EductionPortal/GroupList/GroupList';
 import EvaluationResultsWrapper from './components/EductionPortal/EvaluationResultsWrapper';
 import InsightWidget from './components/EductionPortal/AnalyticsDashboard/InsightsWidget';
+import ProjectManagerEducatorView from './components/EductionPortal/ProjectManager/ProjectManagerEducatorView';
 import StudentDashboard from './components/EductionPortal/StudentTasks/StudentDashboard';
 import StudentTasks from './components/EductionPortal/StudentTasks/StudentTasks';
 import TaskDetails from './components/EductionPortal/StudentTasks/TaskDetails';
@@ -255,6 +256,9 @@ const UpdateReusablesBulk = lazy(() =>
 const InjuryChart = lazy(() => import('./components/BMDashboard/InjuryChart/InjuryChart'));
 const PurchaseConsumable = lazy(() => import('./components/BMDashboard/ConsumablePurchaseRequest'));
 const InventoryTypesList = lazy(() => import('./components/BMDashboard/InventoryTypesList'));
+const UnitsOfMeasurementList = lazy(() =>
+  import('./components/BMDashboard/Units/UnitsOfMeasurementList'),
+);
 const PurchaseTools = lazy(() => import('./components/BMDashboard/ToolPurchaseRequest'));
 const PurchaseEquipment = lazy(() => import('./components/BMDashboard/EquipmentPurchaseRequest'));
 const AddMaterial = lazy(() => import('./components/BMDashboard/AddMaterial/AddMaterial'));
@@ -296,6 +300,7 @@ const PopularityTimelineChart = lazy(() =>
 const MonthsPledgedChart = lazy(() =>
   import('./components/MonthsPledgedAnalytics/MonthsPledgedChart'),
 );
+
 const EnhancedPopularityTimelineChart = lazy(() =>
   import('./components/EnhancedPopularityTimelineAnalytics/EnhancedPopularityTimelineChart'),
 );
@@ -786,9 +791,9 @@ export default (
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
         <BMProtectedRoute path="/bmdashboard/equipment" fallback exact component={EquipmentList} />
         <BMProtectedRoute path="/bmdashboard/equipment/:equipmentId" component={EquipmentDetail} />
+        <BMProtectedRoute path="/bmdashboard/consumables/add" fallback component={AddConsumable} />
         <BMProtectedRoute path="/bmdashboard/consumables" fallback component={ConsumableListView} />
         <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialListView} />
-        <BMProtectedRoute path="/bmdashboard/consumables/add" fallback component={AddConsumable} />
         <BMProtectedRoute path="/bmdashboard/reusables" fallback component={ReusableListView} />
         {/* Note: equipment detail route defined above; duplicates removed */}
         <BMProtectedRoute
@@ -812,6 +817,7 @@ export default (
           fallback
           component={InventoryTypesList}
         />
+        <BMProtectedRoute path="/bmdashboard/units" fallback component={UnitsOfMeasurementList} />
         <BMProtectedRoute path="/bmdashboard/AddNewTeam" fallback component={CreateNewTeam} />
         <BMProtectedRoute
           path="/bmdashboard/totalconstructionsummary"
@@ -1012,6 +1018,11 @@ export default (
         <EPProtectedRoute path="/educationportal/student/tasks/:id" exact component={TaskDetails} />
         <Redirect exact from="/student/tasks" to="/educationportal/student/tasks" />
         <Redirect exact from="/student/tasks/:id" to="/educationportal/student/tasks/:id" />
+        <EPProtectedRoute
+          path="/educationportal/pm/dashboard"
+          exact
+          component={ProjectManagerEducatorView}
+        />
         <CPProtectedRoute
           path="/communityportal/reports/resourceusage"
           exact
