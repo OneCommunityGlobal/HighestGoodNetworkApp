@@ -710,6 +710,10 @@ export const ENDPOINTS = {
   WEEKLY_GRADING: `${APIEndpoint}/weekly-grading`,
   WEEKLY_GRADING_SAVE: `${APIEndpoint}/weekly-grading/save`,
 
+  PM_EDUCATORS: () => `${APIEndpoint}/pm/educators`,
+  PM_EDUCATOR_STUDENTS: (educatorId) => `${APIEndpoint}/pm/educators/${encodeURIComponent(educatorId)}/students`,
+  PM_NOTIFICATIONS: () => `${APIEndpoint}/pm/notifications`,
+
   // Education Portal endpoints
   PROGRESS_EDUCATOR_STUDENT: studentId => `${APIEndpoint}/progress/educator/student-progress/${studentId}`,
   EDUCATION_TASKS_BY_STUDENT: studentId => `${APIEndpoint}/education-tasks/student/${studentId}`,
