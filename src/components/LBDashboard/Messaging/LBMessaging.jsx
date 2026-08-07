@@ -306,7 +306,7 @@ export default function LBMessaging() {
       setMobileView(getView());
     };
 
-    setMobileView(getView());
+    handleResize();
 
     window.addEventListener('resize', handleResize);
 
