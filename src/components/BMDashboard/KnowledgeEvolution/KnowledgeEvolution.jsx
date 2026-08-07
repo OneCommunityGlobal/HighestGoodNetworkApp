@@ -14,6 +14,7 @@ const KnowledgeEvolution = () => {
   const userId = user ? user.userid : null;
 
   useEffect(() => {
+    if (!userId) return;
     dispatch(fetchKnowledgeEvolutionData(userId));
   }, [dispatch, userId]);
 

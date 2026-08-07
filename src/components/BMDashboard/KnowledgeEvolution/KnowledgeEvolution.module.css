@@ -122,6 +122,10 @@
   background-color: #e6e6e6;
 }
 
+.pageContainerDarkMode .filterButton:hover {
+  background-color: #2a3b55;
+}
+
 .filterWrapper {
   position: relative;
 }
@@ -411,4 +415,19 @@
 .notStartedText {
   color: #6c757d;
   font-weight: 600;
+}
+
+.pageContainerDarkMode .completedText,
+.pageContainerDarkMode .statBox .completedText {
+  color: #28a745 !important;
+}
+
+.pageContainerDarkMode .inProgressText,
+.pageContainerDarkMode .statBox .inProgressText {
+  color: #ffc107 !important;
+}
+
+.pageContainerDarkMode .notStartedText,
+.pageContainerDarkMode .statBox .notStartedText {
+  color: #adb5bd !important;
 }
