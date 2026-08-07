@@ -17,6 +17,22 @@ import styles from './FeedbackModal.module.css';
 import MemberSearchBar from './MemberSearchBar';
 import StarRating from './StarRating';
 
+const getFullName = user => `${user.firstName} ${user.lastName}`;
+
+const isValidMemberName = (member, allUsers) =>
+  member.name.trim() !== '' &&
+  !allUsers.some(u => getFullName(u).toLowerCase() === member.name.trim().toLowerCase());
+
+const openFeedbackSuggestions = () => {
+  localStorage.setItem('openSuggestionsModal', Date.now().toString());
+
+  if (globalThis.location.hash.includes('/dashboard')) {
+    globalThis.dispatchEvent(new CustomEvent('openSuggestionModal'));
+  } else {
+    globalThis.location.href = '/#/dashboard';
+  }
+};
+
 function FeedbackModal() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const userProfile = useSelector(state => state.userProfile);
@@ -61,7 +77,7 @@ function FeedbackModal() {
     const fetchUserNames = async () => {
       try {
         const response = await axios.get(ENDPOINTS.QUESTIONNAIRE_USER_NAMES_LIST());
-        if (response.data && response.data.users) {
+        if (response.data?.users) {
           const { users } = response.data;
           setActiveUsers(users.filter(user => user.isActive));
           setInactiveUsers(users.filter(user => !user.isActive));
@@ -76,7 +92,7 @@ function FeedbackModal() {
   }, []);
 
   const handleSubmit = async () => {
-    if (!userProfile || !userProfile._id) {
+    if (!userProfile?._id) {
       // eslint-disable-next-line no-console
       console.error('User ID not available');
       return;
@@ -85,21 +101,8 @@ function FeedbackModal() {
     // Validate that all filled member names are valid users from the list
     const allUsers = [...activeUsers, ...inactiveUsers];
 
-    const invalidActive = ratedMembers.find(
-      m =>
-        m.name.trim() !== '' &&
-        !allUsers.some(
-          u => `${u.firstName} ${u.lastName}`.toLowerCase() === m.name.trim().toLowerCase(),
-        ),
-    );
-
-    const invalidInactive = inactiveRatedMembers.find(
-      m =>
-        m.name.trim() !== '' &&
-        !allUsers.some(
-          u => `${u.firstName} ${u.lastName}`.toLowerCase() === m.name.trim().toLowerCase(),
-        ),
-    );
+    const invalidActive = ratedMembers.find(m => isValidMemberName(m, allUsers));
+    const invalidInactive = inactiveRatedMembers.find(m => isValidMemberName(m, allUsers));
 
     if (invalidActive || invalidInactive) {
       toast.warn('Please select valid members from the dropdown only.');
@@ -141,7 +144,7 @@ function FeedbackModal() {
   };
 
   const handleCloseForever = async () => {
-    if (!userProfile || !userProfile._id) {
+    if (!userProfile?._id) {
       // eslint-disable-next-line no-console
       console.error('User ID not available');
       return;
@@ -165,63 +168,55 @@ function FeedbackModal() {
     }
   };
 
-  const addNewMember = (isInactive = false) => {
-    if (isInactive) {
-      const newId = `inactive-${nextInactiveIdRef.current}`;
-      nextInactiveIdRef.current += 1;
-      setInactiveRatedMembers([...inactiveRatedMembers, { id: newId, name: '', rating: 0 }]);
-    } else {
-      const newId = `active-${nextActiveIdRef.current}`;
-      nextActiveIdRef.current += 1;
-      setRatedMembers([...ratedMembers, { id: newId, name: '', rating: 0 }]);
-    }
+  const addActiveMember = () => {
+    const newId = `active-${nextActiveIdRef.current}`;
+    nextActiveIdRef.current += 1;
+    setRatedMembers([...ratedMembers, { id: newId, name: '', rating: 0 }]);
   };
 
-  const removeMember = (id, isInactive = false) => {
-    if (isInactive) {
-      if (inactiveRatedMembers.length <= 1) return;
-      setInactiveRatedMembers(inactiveRatedMembers.filter(member => member.id !== id));
-    } else {
-      if (ratedMembers.length <= 1) return;
-      setRatedMembers(ratedMembers.filter(member => member.id !== id));
-    }
+  const addInactiveMember = () => {
+    const newId = `inactive-${nextInactiveIdRef.current}`;
+    nextInactiveIdRef.current += 1;
+    setInactiveRatedMembers([...inactiveRatedMembers, { id: newId, name: '', rating: 0 }]);
   };
 
-  const handleMemberChange = (id, value, isInactive = false) => {
-    if (isInactive) {
-      setInactiveRatedMembers(
-        inactiveRatedMembers.map(member =>
-          member.id === id ? { ...member, name: value } : member,
-        ),
-      );
-    } else {
-      setRatedMembers(
-        ratedMembers.map(member => (member.id === id ? { ...member, name: value } : member)),
-      );
-    }
+  const removeActiveMember = id => {
+    if (ratedMembers.length <= 1) return;
+    setRatedMembers(ratedMembers.filter(member => member.id !== id));
   };
 
-  const handleRatingChange = (id, rating, isInactive = false) => {
-    if (isInactive) {
-      setInactiveRatedMembers(
-        inactiveRatedMembers.map(member => (member.id === id ? { ...member, rating } : member)),
-      );
-    } else {
-      setRatedMembers(
-        ratedMembers.map(member => (member.id === id ? { ...member, rating } : member)),
-      );
-    }
+  const removeInactiveMember = id => {
+    if (inactiveRatedMembers.length <= 1) return;
+    setInactiveRatedMembers(inactiveRatedMembers.filter(member => member.id !== id));
   };
 
-  const openFeedbackSuggestions = () => {
-    localStorage.setItem('openSuggestionsModal', Date.now().toString());
+  const handleActiveMemberChange = (id, value) => {
+    setRatedMembers(
+      ratedMembers.map(member => (member.id === id ? { ...member, name: value } : member)),
+    );
+  };
+
+  const handleInactiveMemberChange = (id, value) => {
+    setInactiveRatedMembers(
+      inactiveRatedMembers.map(member => (member.id === id ? { ...member, name: value } : member)),
+    );
+  };
+
+  const handleActiveRatingChange = (id, rating) => {
+    setRatedMembers(
+      ratedMembers.map(member => (member.id === id ? { ...member, rating } : member)),
+    );
+  };
+
+  const handleInactiveRatingChange = (id, rating) => {
+    setInactiveRatedMembers(
+      inactiveRatedMembers.map(member => (member.id === id ? { ...member, rating } : member)),
+    );
+  };
+
+  const handleOpenFeedbackSuggestions = () => {
     setIsOpen(false);
-
-    if (!window.location.hash.includes('/dashboard')) {
-      window.location.href = '/#/dashboard';
-    } else {
-      window.dispatchEvent(new CustomEvent('openSuggestionModal'));
-    }
+    openFeedbackSuggestions();
   };
 
   if (!isOpen) return null;
@@ -275,7 +270,7 @@ function FeedbackModal() {
                   <MemberSearchBar
                     id={member.id}
                     value={member.name}
-                    onChange={value => handleMemberChange(member.id, value)}
+                    onChange={value => handleActiveMemberChange(member.id, value)}
                     usersList={activeUsers}
                   />
                 </div>
@@ -283,14 +278,14 @@ function FeedbackModal() {
                   <StarRating
                     id={member.id}
                     rating={member.rating}
-                    onChange={rating => handleRatingChange(member.id, rating)}
+                    onChange={rating => handleActiveRatingChange(member.id, rating)}
                   />
                 </div>
                 <div className={`${styles.removeBtnContainer}`}>
                   <button
                     type="button"
                     className={`${styles.removeEntryBtn}`}
-                    onClick={() => removeMember(member.id)}
+                    onClick={() => removeActiveMember(member.id)}
                     disabled={ratedMembers.length <= 1}
                     aria-label="Remove entry"
                   >
@@ -304,7 +299,7 @@ function FeedbackModal() {
               <Button
                 color="primary"
                 className={`${styles.addMemberBtn}`}
-                onClick={() => addNewMember(false)}
+                onClick={addActiveMember}
               >
                 Add another entry
               </Button>
@@ -320,7 +315,7 @@ function FeedbackModal() {
                   <MemberSearchBar
                     id={member.id}
                     value={member.name}
-                    onChange={value => handleMemberChange(member.id, value, true)}
+                    onChange={value => handleInactiveMemberChange(member.id, value)}
                     inactive
                     usersList={inactiveUsers}
                   />
@@ -329,14 +324,14 @@ function FeedbackModal() {
                   <StarRating
                     id={member.id}
                     rating={member.rating}
-                    onChange={rating => handleRatingChange(member.id, rating, true)}
+                    onChange={rating => handleInactiveRatingChange(member.id, rating)}
                   />
                 </div>
                 <div className={`${styles.removeBtnContainer}`}>
                   <button
                     type="button"
                     className={`${styles.removeEntryBtn}`}
-                    onClick={() => removeMember(member.id, true)}
+                    onClick={() => removeInactiveMember(member.id)}
                     disabled={inactiveRatedMembers.length <= 1}
                     aria-label="Remove entry"
                   >
@@ -350,7 +345,7 @@ function FeedbackModal() {
               <Button
                 color="primary"
                 className={`${styles.addMemberBtn}`}
-                onClick={() => addNewMember(true)}
+                onClick={addInactiveMember}
               >
                 Add another entry
               </Button>
@@ -376,7 +371,7 @@ function FeedbackModal() {
               <button
                 type="button"
                 className={`${styles.linkButton}`}
-                onClick={openFeedbackSuggestions}
+                onClick={handleOpenFeedbackSuggestions}
               >
                 here
               </button>
