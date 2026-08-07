@@ -1,30 +1,47 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import styles from './MyCases.module.css';
 import mockEvents from './mockData';
 import CreateEventModal from './CreateEventModal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import { filterEventsByDate } from './FilterByDate';
 
-function MyCases({ darkMode }) {
+function MyCases() {
   const [view, setView] = useState('card');
   const [filter, setFilter] = useState('All Time');
   const [expanded, setExpanded] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const isExporting =
-    typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true'; // Sonar: prefer .dataset
+    typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true';
 
   const now = new Date();
+
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const filteredEvents = filterEventsByDate(mockEvents, filter).filter(
     event => new Date(event.eventDate).getTime() >= now.getTime(),
   );
 
-  // Limit to 10 events by default, but show all when expanded.
   let visibleEvents = filteredEvents;
+
   if (!isExporting) {
     visibleEvents = expanded ? filteredEvents : filteredEvents.slice(0, 10);
   }
 
   const placeholderAvatar = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+
+  const isEventToday = dateString => {
+    const eventDate = new Date(dateString);
+    const now = new Date();
+
+    return (
+      eventDate.getDate() === now.getDate() &&
+      eventDate.getMonth() === now.getMonth() &&
+      eventDate.getFullYear() === now.getFullYear()
+    );
+  };
 
   const renderCardView = () => (
     <div
@@ -33,13 +50,24 @@ function MyCases({ darkMode }) {
       }`}
     >
       {visibleEvents.map(event => (
-        <div className={`case-card-global ${styles.caseCard}`} key={event.id}>
+        <div
+          className={`case-card-global ${styles.caseCard} ${darkMode ? styles.caseCardDark : ''}`}
+          key={event.id}
+        >
           <span className={styles.eventBadge} data-type={event.eventType}>
             {event.eventType}
           </span>
-          <span className={styles.eventTime}>{event.eventTime}</span>
-          <div className={styles.eventName}>{event.eventName}</div>
-          <div className={styles.attendeesInfo}>
+
+          <span className={`${styles.eventTime} ${darkMode ? styles.eventTimeDark : ''}`}>
+            {event.eventTime}
+          </span>
+
+          <span className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
+            {isEventToday(event.eventDate) ? "Today's " : ''}
+            {event.eventName}
+          </span>
+
+          <div className={`${styles.attendeesInfo} ${darkMode ? styles.attendeesInfoDark : ''}`}>
             <div className={styles.avatars}>
               <img
                 alt="profile img"
@@ -50,7 +78,15 @@ function MyCases({ darkMode }) {
                 loading="lazy"
               />
             </div>
-            <span className={styles.attendeesCount}>{`+${event.attendees}`}</span>
+
+            <span
+              className={`${styles.attendeesCount} ${darkMode ? styles.attendeesCountDark : ''}`}
+              title="Number of members who attended this event"
+              data-tooltip="Members Attended"
+            >
+              <FontAwesomeIcon icon={faUsers} className="me-2" />
+              {`+${event.attendees}`} Attendees
+            </span>
           </div>
         </div>
       ))}
@@ -64,28 +100,46 @@ function MyCases({ darkMode }) {
       }`}
     >
       {visibleEvents.map(event => (
-        <li className={`case-list-item-global ${styles.caseListItem}`} key={event.id}>
+        <li
+          className={`case-list-item-global ${styles.caseListItem} ${
+            darkMode ? styles.caseListItemDark : ''
+          }`}
+          key={event.id}
+        >
           <span className={styles.eventType}>{event.eventType}</span>
           <span className={styles.eventTime}>{event.eventTime}</span>
           <span className={styles.eventName}>{event.eventName}</span>
-          <span className={styles.attendeesCount}>{`+${event.attendees}`}</span>
+
+          <span
+            className={styles.attendeesCount}
+            title="Number of members who attended this event"
+            data-tooltip="Members Attended"
+          >
+            <FontAwesomeIcon icon={faUsers} className="me-2" />
+            {`+${event.attendees}`} Attendees
+          </span>
         </li>
       ))}
     </ul>
   );
 
   const renderCalendarView = () => (
-    <div className={styles.calendarView}>
+    <div className={`${styles.calendarView} ${darkMode ? styles.calendarViewDark : ''}`}>
       <p>Calendar View is under construction...</p>
     </div>
   );
 
   return (
-    <div className={`my-cases-global ${styles.myCasesPage} ${darkMode ? styles.darkMode : ''}`}>
+    <div
+      className={`my-cases-global ${styles.myCasesPage} ${darkMode ? styles.myCasesPageDark : ''}`}
+    >
       <header className={styles.header}>
-        <h2 className={styles.sectionTitle}>Upcoming Events</h2>
+        <h2 className={`${styles.sectionTitle} ${darkMode ? styles.sectionTitleDark : ''}`}>
+          Upcoming Events
+        </h2>
+
         <div className={styles.headerActions}>
-          <div className={`view-switcher-global ${styles.viewSwitcher}`}>
+          <div className={`${styles.viewSwitcher} ${darkMode ? styles.viewSwitcherDarkMode : ''}`}>
             <button
               type="button"
               className={view === 'calendar' ? styles.active : ''}
@@ -93,6 +147,7 @@ function MyCases({ darkMode }) {
             >
               Calendar
             </button>
+
             <button
               type="button"
               className={view === 'card' ? styles.active : ''}
@@ -100,6 +155,7 @@ function MyCases({ darkMode }) {
             >
               Card
             </button>
+
             <button
               type="button"
               className={view === 'list' ? styles.active : ''}
@@ -111,7 +167,9 @@ function MyCases({ darkMode }) {
 
           <div className={`filter-wrapper-global ${styles.filterWrapper}`}>
             <select
-              className={styles.filterDropdown}
+              className={`${styles.filterDropdown} ${
+                darkMode ? styles.filterDropdownDarkMode : ''
+              }`}
               value={filter}
               onChange={e => setFilter(e.target.value)}
             >
@@ -121,14 +179,16 @@ function MyCases({ darkMode }) {
               <option value="This Month">This Month</option>
             </select>
           </div>
+
           <button
             type="button"
-            className={`create-new-global ${styles.createNew}`}
+            className={`${styles.createNew} ${darkMode ? styles.createNewDarkMode : ''}`}
             onClick={() => setIsCreateModalOpen(true)}
           >
             + Create New
           </button>
-          {filteredEvents.length > 10 && (
+
+          {filteredEvents.length > 10 && !isExporting && (
             <button
               type="button"
               className={`more-btn-global ${styles.moreBtn}`}
@@ -139,11 +199,13 @@ function MyCases({ darkMode }) {
           )}
         </div>
       </header>
+
       <main className={styles.content}>
         {view === 'card' && renderCardView()}
         {view === 'list' && renderListView()}
         {view === 'calendar' && renderCalendarView()}
       </main>
+
       <CreateEventModal
         isOpen={isCreateModalOpen}
         toggle={() => setIsCreateModalOpen(!isCreateModalOpen)}
