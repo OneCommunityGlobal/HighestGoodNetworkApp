@@ -9,25 +9,25 @@ export function formateDate(date) {
   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
 }
 
+function formatTime(date) {
+  let hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const ampm = hours >= 12 ? 'pm' : 'am';
+
+  hours %= 12;
+  hours = hours || 12; // 0 → 12
+
+  return `${String(hours).padStart(2, '0')}:${minutes} ${ampm}`;
+}
+
+function getOrdinal(n) {
+  if (n > 3 && n < 21) return 'th';
+  return ['st', 'nd', 'rd'][(n % 10) - 1] || 'th';
+}
+
 export function formatEventDisplay(event) {
   const start = new Date(event.eventStartTime);
   const end = new Date(event.eventEndTime);
-
-  function formatTime(date) {
-    let hours = date.getHours();
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const ampm = hours >= 12 ? 'pm' : 'am';
-
-    hours = hours % 12;
-    hours = hours ? hours : 12; // 0 → 12
-
-    return `${String(hours).padStart(2, '0')}:${minutes} ${ampm}`;
-  }
-
-  function getOrdinal(n) {
-    if (n > 3 && n < 21) return 'th';
-    return ['st', 'nd', 'rd'][(n % 10) - 1] || 'th';
-  }
 
   const monthNames = [
     'Jan',

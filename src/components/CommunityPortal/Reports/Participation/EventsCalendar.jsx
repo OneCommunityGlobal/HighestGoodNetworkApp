@@ -37,7 +37,7 @@ export const EventsCalendar = () => {
         setPrevDate(normalizeDate(month - 3, year));
         setNextDate(normalizeDate(month + 3, year));
         dispatch(fetchCalendarEventDetails(token, queryParams));
-      } else if (fetchCalendarEvent.data && fetchCalendarEvent.data.events) {
+      } else if (fetchCalendarEvent.data?.events) {
         setEventsData(transformEvents(fetchCalendarEvent.data.events));
       } /*else if (error) {
   

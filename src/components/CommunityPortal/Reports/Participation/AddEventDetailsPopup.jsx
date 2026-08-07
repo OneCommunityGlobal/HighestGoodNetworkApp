@@ -1,9 +1,7 @@
 import ReactDOM from 'react-dom';
 import styles from './AddEventDetailsPopup.module.css';
-import { end } from '@popperjs/core';
 import { useState } from 'react';
 import { formatEventDisplay } from './HelperFunctions';
-import { event } from 'jquery';
 import { useSelector } from 'react-redux';
 
 const eventDetailsPopupId = document.getElementById('event-details-pop-up');
@@ -33,7 +31,7 @@ export const AddEventDetailsPopup = ({ handlePopup, addEventDetails }) => {
 
   return ReactDOM.createPortal(
     <div className={styles.popupContainer}>
-      <button className={styles.popupClose} onClick={handlePopup}>
+      <button type="button" className={styles.popupClose} onClick={handlePopup}>
         X
       </button>
       <div

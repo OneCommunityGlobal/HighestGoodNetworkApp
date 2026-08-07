@@ -16,7 +16,7 @@
 
 .myCasesPageDark {
   background-color: #1C2541;
-  color: #ffffff;
+  color: #fff;
 }
 
 /* ---------- Header ---------- */
@@ -63,7 +63,7 @@
 
 .colorBlack {
   background-color: #3A506B !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border: none;
   padding: 6px 14px;
   border-radius: 4px;
@@ -76,7 +76,7 @@
 
 .filterDropdownDark {
   background-color: #3A506B;
-  color: #ffffff;
+  color: #fff;
   border: none;
   padding: 6px 12px;
   border-radius: 4px;
@@ -85,7 +85,7 @@
 
 .filterDropdownDark option {
   background-color: #1a1a1a; /* dark background for options */
-  color: #ffffff;
+  color: #fff;
 }
 
 
@@ -95,7 +95,7 @@
     align-items: center;
     gap: 15px;
     flex-wrap: wrap;
-    margin: 0px 10px;
+    margin: 0 10px;
   }
 
   .myCasesPage .header {
@@ -144,12 +144,12 @@
 }
 
 .viewSwitcher button.active {
-  background-color: #007bff;
+  background-color: #0056b3;
   color: #fff;
 }
 
 .viewSwitcherDarkMode button.active {
-  background-color: #3b82f6;
+  background-color: #1d4ed8;
   color: #fff;
 }
 
@@ -525,21 +525,6 @@
 }
 
 /* ---------- More button ---------- */
-/*.moreBtn {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 6px 12px;
-  font-size: 14px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.moreBtn:hover {
-  background-color: #0056b3;
-}*/
-
 .moreBtn {
   font-size: 12px;
   margin-top: 8px;
@@ -572,12 +557,10 @@
 }
 
 .card {
-  border-radius: 0px;
+  border-radius: 0;
   background-color: tomato;
 }
 
-
-/* Print styles for case cards */
 /* Print styles for case cards */
 @media print {
   .myCasesPage {
@@ -641,26 +624,26 @@
 
   .eventBadge[data-type='Yoga Class'] {
     background-color: #e9f7ef !important;
-    color: #28a745 !important;
+    color: #1e7e34 !important;
   }
 
   .eventBadge[data-type='Cooking Workshop'] {
     background-color: #fdecea !important;
-    color: #e74c3c !important;
+    color: #c0392b !important;
   }
 
   .eventBadge[data-type='Dance Class'] {
     background-color: #fff5e6 !important;
-    color: #f39c12 !important;
+    color: #8a5300 !important;
   }
 
   .eventBadge[data-type='Fitness Bootcamp'] {
     background-color: #f5e6ff !important;
-    color: #9b59b6 !important;
+    color: #6c3483 !important;
   }
 }
 
-@media (max-width: 460px) {
+@media (width <= 460px) {
   .headerActions {
     flex-direction: column;
     align-items: flex-start;

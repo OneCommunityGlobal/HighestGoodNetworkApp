@@ -1,13 +1,10 @@
 .popupContainer {
   position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  inset: 0;
   display: grid;
   justify-content: center;
   align-items: center;
-  background-color: rgba(0,0,0,0.3);
+  background-color: rgb(0 0 0 / 30%);
 }
 
 .popupClose {
@@ -53,7 +50,7 @@
   padding: 8px 10px;
   border-radius: 8px;
   width: 100%;
-  margin: 8px 0px;
+  margin: 8px 0;
 }
 
 .dateContainer {
@@ -69,11 +66,11 @@
 .addEventBtn {
   margin-top: 8px;
   padding: 10px 15px;
-  background-color: #007bff;
+  background-color: #0056b3;
   border-radius: 8px;
   color: white;
 }
 
 .addEventBtn:hover {
-  background-color: #0056b3;
+  background-color: #004494;
 }

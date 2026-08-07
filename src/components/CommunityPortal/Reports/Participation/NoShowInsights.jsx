@@ -1,6 +1,5 @@
 import { useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { ArrowUpDown, ArrowUp, ArrowDown, SquareArrowOutUpRight } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import mockEvents from './mockData';
@@ -10,40 +9,13 @@ import { filterEventsByDate } from './FilterByDate';
 function NoShowInsights() {
   const [dateFilter, setDateFilter] = useState('All');
   const [activeTab, setActiveTab] = useState('Event type');
-  const [sortOrder, setSortOrder] = useState('none');
+  const [sortOrder] = useState('none');
   const darkMode = useSelector(state => state.theme.darkMode);
   const [demographicType, setDemographicType] = useState('Age');
   const insightsRef = useRef(null);
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [exportError, setExportError] = useState('');
   const [isExporting, setIsExporting] = useState(false);
-
-
-  const filterByDate = events => {
-    const today = new Date();
-    return events.filter(event => {
-      const eventDate = new Date(event.eventDate);
-      switch (dateFilter) {
-        case 'Today':
-          return eventDate.toDateString() === today.toDateString();
-        case 'This Week': {
-          const startOfWeek = new Date(today);
-          startOfWeek.setDate(today.getDate() - today.getDay());
-          const endOfWeek = new Date(startOfWeek);
-          endOfWeek.setDate(startOfWeek.getDate() + 6);
-          return eventDate >= startOfWeek && eventDate <= endOfWeek;
-        }
-        case 'This Month':
-          return (
-            eventDate.getMonth() === today.getMonth() &&
-            eventDate.getFullYear() === today.getFullYear()
-          );
-        default:
-          return true;
-      }
-    });
-  };
-  const SortIcon = sortOrder === 'none' ? ArrowUpDown : sortOrder === 'asc' ? ArrowUp : ArrowDown;
 
   const calculateStats = filteredEvents => {
     const statsMap = new Map();
@@ -306,33 +278,33 @@ function NoShowInsights() {
           </div>
         </div>
 
-      <div className={styles.insightsTabs}>
-        {['Demographics', 'Event type', 'Time', 'Location'].map(tab => (
-          <button
-            key={tab}
-            type="button"
-            className={`${styles.insightsTab} ${activeTab === tab ? styles.activeTab : ''}`}
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
+        <div className={styles.insightsTabs}>
+          {['Demographics', 'Event type', 'Time', 'Location'].map(tab => (
+            <button
+              key={tab}
+              type="button"
+              className={`${styles.insightsTab} ${activeTab === tab ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
 
-      {activeTab === 'Demographics' && (
-        <select
-          value={demographicType}
-          onChange={e => setDemographicType(e.target.value)}
-          className={styles.selectDemographic}
-        >
-          <option value="Age">Age</option>
-          <option value="Gender">Gender</option>
-          <option value="Income">Income</option>
-          <option value="Occupation">Occupation</option>
-          <option value="Education">Education</option>
-          <option value="Segment">User Segment</option>
-        </select>
-      )}
+        {activeTab === 'Demographics' && (
+          <select
+            value={demographicType}
+            onChange={e => setDemographicType(e.target.value)}
+            className={styles.selectDemographic}
+          >
+            <option value="Age">Age</option>
+            <option value="Gender">Gender</option>
+            <option value="Income">Income</option>
+            <option value="Occupation">Occupation</option>
+            <option value="Education">Education</option>
+            <option value="Segment">User Segment</option>
+          </select>
+        )}
 
         <div className={styles.insightsContent}>{renderStats()}</div>
       </div>

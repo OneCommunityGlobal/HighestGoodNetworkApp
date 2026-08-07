@@ -1,4 +1,4 @@
-import { useState, Fragment, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './MyCases.module.css';
 import { AddEventDetailsPopup } from './AddEventDetailsPopup';
@@ -60,7 +60,7 @@ function MyCases() {
         const params = { limit: 16 };
         const queryParams = constructQueryParams(params);
         dispatch(fetchEventDetails(token, queryParams));
-      } else if (fetchEventState.data && fetchEventState.data.events) {
+      } else if (fetchEventState.data?.events) {
         setEventsData(transformEvents(fetchEventState.data.events));
       }
     }
@@ -96,11 +96,7 @@ function MyCases() {
   }, [eventsData]);
 
   useEffect(() => {
-    if (
-      !createEventState.loading &&
-      createEventState.status &&
-      createEventState.status.status === 'success'
-    ) {
+    if (!createEventState.loading && createEventState.status?.status === 'success') {
       const params = more ? {} : { limit: 16 };
       const queryParams = constructQueryParams(params);
       dispatch(fetchEventDetails(token, queryParams));
@@ -155,95 +151,90 @@ function MyCases() {
   );
 
   return (
-    <Fragment>
-      <div className={`${styles.myCasesPage} ${darkMode ? styles.myCasesPageDark : ''}`}>
-        <header className={styles.header}>
-          <div className={styles.eventsTitle}>
-            <h2 className={`${styles.sectionTitle} ${darkMode ? styles.sectionTitleDark : ''}`}>
-              Upcoming Events
-            </h2>
-            {view === 'card' && (
-              <button
-                className={darkMode ? styles.moreBtnDark : styles.moreBtn}
-                onClick={() => setMore(prev => !prev)}
-              >
-                {more ? 'Less ˄' : 'More ˅'}
-              </button>
-            )}
-          </div>
-          <div className={styles.headerActions}>
-            <div className={`view-switcher-global ${styles.viewSwitcher}`}>
-              <div>
-                <button
-                  type="button"
-                  className={`${view === 'calendar' ? styles.active : ''} ${
-                    darkMode ? styles.colorBlack : ''
-                  }`}
-                  onClick={() => setView('calendar')}
-                >
-                  Calendar
-                </button>
-                <button
-                  type="button"
-                  className={`${styles.cardBtn} ${view === 'card' ? styles.active : ''} ${
-                    darkMode ? styles.colorBlack : ''
-                  }`}
-                  onClick={() => setView('card')}
-                >
-                  Card
-                </button>
-                <button
-                  type="button"
-                  className={`${view === 'list' ? styles.active : ''} ${
-                    darkMode ? styles.colorBlack : ''
-                  }`}
-                  onClick={() => setView('list')}
-                >
-                  List
-                </button>
-              </div>
-            </div>
-            {view !== 'calendar' && (
-              <div className={`filter-wrapper-global ${styles.filterWrapper}`}>
-                <select
-                  className={`${styles.filterDropdown} ${
-                    darkMode ? styles.filterDropdownDark : ''
-                  }`}
-                  value={filter}
-                  onChange={e => setFilter(e.target.value)}
-                >
-                  <option value="all">All Time</option>
-                  <option value="today">Today</option>
-                  <option value="thisWeek">This Week</option>
-                  <option value="thisMonth">This Month</option>
-                </select>
-              </div>
-            )}
+    <div className={`${styles.myCasesPage} ${darkMode ? styles.myCasesPageDark : ''}`}>
+      <header className={styles.header}>
+        <div className={styles.eventsTitle}>
+          <h2 className={`${styles.sectionTitle} ${darkMode ? styles.sectionTitleDark : ''}`}>
+            Upcoming Events
+          </h2>
+          {view === 'card' && (
             <button
               type="button"
-              className={`create-new-global ${styles.createNew}`}
-              onClick={() => setAddEventDetailsPopup(true)}
+              className={darkMode ? styles.moreBtnDark : styles.moreBtn}
+              onClick={() => setMore(prev => !prev)}
             >
-              + Create New
+              {more ? 'Less ˄' : 'More ˅'}
             </button>
-            {addEventDetailsPopup && (
-              <AddEventDetailsPopup handlePopup={handlePopup} addEventDetails={addEventDetails} />
-            )}
+          )}
+        </div>
+        <div className={styles.headerActions}>
+          <div className={`view-switcher-global ${styles.viewSwitcher}`}>
+            <div>
+              <button
+                type="button"
+                className={`${view === 'calendar' ? styles.active : ''} ${
+                  darkMode ? styles.colorBlack : ''
+                }`}
+                onClick={() => setView('calendar')}
+              >
+                Calendar
+              </button>
+              <button
+                type="button"
+                className={`${styles.cardBtn} ${view === 'card' ? styles.active : ''} ${
+                  darkMode ? styles.colorBlack : ''
+                }`}
+                onClick={() => setView('card')}
+              >
+                Card
+              </button>
+              <button
+                type="button"
+                className={`${view === 'list' ? styles.active : ''} ${
+                  darkMode ? styles.colorBlack : ''
+                }`}
+                onClick={() => setView('list')}
+              >
+                List
+              </button>
+            </div>
           </div>
-        </header>
-        <main className={styles.content}>
-          {events.length === 0 && !fetchEventState.loading && (
-            <div className={styles.retrievalStatus}>No events found</div>
+          {view !== 'calendar' && (
+            <div className={`filter-wrapper-global ${styles.filterWrapper}`}>
+              <select
+                className={`${styles.filterDropdown} ${darkMode ? styles.filterDropdownDark : ''}`}
+                value={filter}
+                onChange={e => setFilter(e.target.value)}
+              >
+                <option value="all">All Time</option>
+                <option value="today">Today</option>
+                <option value="thisWeek">This Week</option>
+                <option value="thisMonth">This Month</option>
+              </select>
+            </div>
           )}
-          {fetchEventState.loading && (
-            <div className={styles.retrievalStatus}>Loading events...</div>
+          <button
+            type="button"
+            className={`create-new-global ${styles.createNew}`}
+            onClick={() => setAddEventDetailsPopup(true)}
+          >
+            + Create New
+          </button>
+          {addEventDetailsPopup && (
+            <AddEventDetailsPopup handlePopup={handlePopup} addEventDetails={addEventDetails} />
           )}
-          {view === 'calendar' && <EventsCalendar />}
-          {view === 'card' && renderCardView()}
-          {view === 'list' && renderListView()}
-        </main>
-      </div>
-    </Fragment>
+        </div>
+      </header>
+      <main className={styles.content}>
+        {events.length === 0 && !fetchEventState.loading && (
+          <div className={styles.retrievalStatus}>No events found</div>
+        )}
+        {fetchEventState.loading && <div className={styles.retrievalStatus}>Loading events...</div>}
+        {view === 'calendar' && <EventsCalendar />}
+        {view === 'card' && renderCardView()}
+        {view === 'list' && renderListView()}
+      </main>
+    </div>
   );
 }
 
