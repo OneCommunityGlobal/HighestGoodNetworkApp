@@ -35,7 +35,23 @@
 
 .modal-label-dark.modal-label-dark {
   color: black !important;
-} 
+}
+
+/* .customEdit / .customInput are defined in UserProfileModal.module.css and pulled
+   in via the @import above — that file is shared by other modals too, so the dark
+   override lives here instead of there, scoped to just this one. Same specificity
+   as the imported rule, declared later in the cascade, so no !important needed. */
+.customEdit-dark,
+.customInput-dark {
+  background-color: #1c2541;
+  border-color: #3a506b;
+  color: #fff;
+}
+
+.customEdit-dark::placeholder,
+.customInput-dark::placeholder {
+  color: #94a3b8;
+}
 
 :global(body.bm-dashboard-dark) .edit-links-modal-header {
   filter: none !important;

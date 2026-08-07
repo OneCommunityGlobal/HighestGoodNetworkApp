@@ -90,6 +90,7 @@ import ResourcesUsage from './components/CommunityPortal/Activities/activityId/R
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
 import LogAttendance from './components/CommunityPortal/Activities/LogAttendance';
 import NoShowList from './components/CommunityPortal/Activities/NoShow/NoShowList';
+import EventNoShowChart from './components/CommunityPortal/Attendence/NoshowViz';
 import MaterialSummary from './components/MaterialSummary/MaterialSummary';
 // Activity Feedback Modal
 import FeedbackRatingEntry from './components/FeedbackActivityModal/FeedbackActivityEntry';
@@ -975,6 +976,10 @@ export default (
         <EPProtectedRoute path="/educationportal/student/tasks/:id" exact component={TaskDetails} />
         <Redirect exact from="/student/tasks" to="/educationportal/student/tasks" />
         <Redirect exact from="/student/tasks/:id" to="/educationportal/student/tasks/:id" />
+        <CPProtectedRoute
+          path="/communityportal/reports/EventNoShowChart"
+          component={EventNoShowChart}
+        />
         <CPProtectedRoute
           path="/communityportal/reports/resourceusage"
           exact

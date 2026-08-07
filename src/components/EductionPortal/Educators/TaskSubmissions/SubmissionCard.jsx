@@ -34,7 +34,7 @@ const getTaskTypeLabel = type => {
   return labels[type] || 'Task';
 };
 
-const SubmissionCard = ({ submission }) => {
+const SubmissionCard = ({ submission, darkMode }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const { studentName, taskType, status, submittedAt, dueAt, grade } = submission;
 
@@ -97,7 +97,11 @@ const SubmissionCard = ({ submission }) => {
   const avatarColor = getAvatarColor(studentName);
 
   return (
-    <div className={`${styles.card} ${statusDetails.cardClass || ''}`}>
+    <div
+      className={`${styles.card} ${statusDetails.cardClass || ''} ${
+        darkMode ? styles.darkMode : ''
+      }`}
+    >
       <div className={styles.cardHeader}>
         <div className={styles.studentInfo}>
           <div

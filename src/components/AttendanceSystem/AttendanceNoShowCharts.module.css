@@ -481,6 +481,31 @@
   border-bottom: 1px solid #f1f5f9;
 }
 
+/* Dragging a text selection across a row uses the browser's default pale-blue
+   highlight. public/index.css forces every text node white in dark mode
+   (`body.dark-mode * { color: #fff !important }`), so selected text kept that
+   white color against the light selection background and disappeared. Give
+   the table its own selection colors so it stays readable regardless of theme. */
+.darkMode .table ::selection {
+  background: #3a506b;
+  color: #fff;
+}
+
+/* ponytail: real root cause is Teams/Team.module.css:110's bare, unscoped
+   `tr:hover { background: #e9f6ff }` — CSS Modules only hashes class selectors,
+   not element selectors, so that rule leaks onto every <tr> in the app. Harmless
+   in light mode (dark text on pale blue), but in dark mode the global
+   `body.dark-mode * { color:#fff !important }` keeps the row text white against
+   that same pale background, so it disappears on hover. TasksDetail.module.css
+   already hit this and worked around it locally (see its comment at line 66) —
+   same approach here rather than editing a page outside this task's scope.
+   `.darkMode .table tbody tr:hover` is (0,3,2), well past the leak's (0,1,1), so
+   no !important needed. Upgrade path: scope the leak at its source in
+   Team.module.css and delete every one of these local overrides. */
+.darkMode .table tbody tr:hover {
+  background-color: #374151;
+}
+
 .tableStatus {
   display: inline-flex;
   padding: 6px 10px;
@@ -581,6 +606,19 @@
   background: #374151;
   border-color: #4b5563;
   color: #f9fafb;
+}
+
+/* Attended/No-Show pills (.attendedStatus / .noShowStatus) keep light-mode pastel
+   colors by default; give them a darker fill + lighter text pair so the same
+   green/red semantic stays legible against the dark table background. */
+.darkMode .attendedStatus {
+  background: #14532d;
+  color: #86efac;
+}
+
+.darkMode .noShowStatus {
+  background: #7f1d1d;
+  color: #fca5a5;
 }
 
 .darkMode .metricCenterLabel {
