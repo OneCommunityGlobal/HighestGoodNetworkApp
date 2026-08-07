@@ -415,6 +415,8 @@ export const ENDPOINTS = {
   },
   BM_TOOL_AVAILABILITY: (toolId = '', projectId = '') =>
     `${APIEndpoint}/tools/availability?toolId=${toolId}&projectId=${projectId}`,
+  // Tool replacement / breakdown susceptibility chart (backend PR #2037)
+  TOOL_REPLACEMENTS: `${APIEndpoint}/tools/replacements`,
   BM_LOG_TOOLS: `${APIEndpoint}/bm/tools/log`,
   BM_TOOL_UTILIZATION: `${APIEndpoint}/tools/utilization`,
   BM_TOOL_UTILIZATION_INSIGHTS: `${APIEndpoint}/tools/utilization/insights`,
