@@ -82,7 +82,7 @@ function MaterialListView() {
   ];
 
   return (
-    <Container fluid className="p-0 mt-3">
+    <Container fluid className="p-0">
       <ItemListView
         itemType="Materials"
         items={filteredMaterials}
