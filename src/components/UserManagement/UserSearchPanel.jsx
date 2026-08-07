@@ -35,7 +35,7 @@ function UserSearchPanel({
       <button
         type="button"
         disabled={!canCreateUsers}
-        className="btn btn-info mr-2 mb-2"
+        className="btn btn-info mr-2"
         onClick={handleNewUserSetupPopup}
         style={darkMode ? boxStyleDark : boxStyle}
       >
@@ -44,7 +44,7 @@ function UserSearchPanel({
       <OverlayTrigger placement="bottom" overlay={setupHistoryTooltip}>
         <button
           type="button"
-          className="btn btn-info mr-2 mb-2"
+          className="btn btn-info mr-2"
           onClick={handleSetupHistoryPopup}
           style={darkMode ? boxStyleDark : boxStyle}
           aria-label="Setup History"
@@ -69,7 +69,7 @@ function UserSearchPanel({
       <button
         type="button"
         disabled={!canCreateUsers}
-        className="btn btn-info mr-2 mb-2"
+        className="btn btn-info mr-2"
         onClick={() => {
           onNewUserClick();
         }}
@@ -113,6 +113,7 @@ function UserSearchPanel({
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
           <option value="paused">Paused</option>
+          <option value="production-sync">Prod Auto-Deactivated</option>
         </select>
       </div>
 

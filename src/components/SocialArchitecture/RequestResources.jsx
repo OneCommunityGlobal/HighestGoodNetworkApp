@@ -282,7 +282,7 @@ function RequestResources() {
             htmlFor="materialImage"
             className={`${styles.uploadBox} ${darkMode ? styles.darkUploadBox : ''}`}
           >
-            Drag and drop your picture here
+            Drag and drop your picture here{' '}
             <input
               key={fileInputKey}
               type="file"

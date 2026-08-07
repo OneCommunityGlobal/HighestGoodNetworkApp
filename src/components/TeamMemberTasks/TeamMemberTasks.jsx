@@ -3,6 +3,7 @@ import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { MultiSelect } from 'react-multi-select-component';
 import { connect, useDispatch, useSelector } from 'react-redux';
@@ -49,6 +50,8 @@ const TeamMemberTasks = React.memo(props => {
   const [isTimeFilterActive, setIsTimeFilterActive] = useState(false);
   const [taskModalOption, setTaskModalOption] = useState('');
   const [showWhoHasTimeOff, setShowWhoHasTimeOff] = useState(true);
+  const [showTrackers, setShowTrackers] = useState(false);
+  const [showTasks, setShowTasks] = useState(true);
 
   const userOnTimeOff = useSelector(state => state.timeOffRequests.onTimeOff);
   const userGoingOnTimeOff = useSelector(state => state.timeOffRequests.goingOnTimeOff);
@@ -68,6 +71,7 @@ const TeamMemberTasks = React.memo(props => {
   const [userStateCatalog, setUserStateCatalog] = useState([]);
   const [userStateSelections, setUserStateSelections] = useState({});
   const [selectionsLoaded, setSelectionsLoaded] = useState(false);
+  const [expandAll, setExpandAll] = useState(false);
 
   useEffect(() => {
     axios
@@ -78,7 +82,10 @@ const TeamMemberTasks = React.memo(props => {
 
   // Fetch all selections in ONE call once teamList is ready
   useEffect(() => {
-    if (usersWithTasks.length === 0) return;
+    if (usersWithTasks.length === 0) {
+      setSelectionsLoaded(true);
+      return;
+    }
     const userIds = usersWithTasks.map(u => u.personId);
     axios
       .post(ENDPOINTS.USER_STATE_SELECTIONS_BATCH, { userIds })
@@ -384,6 +391,14 @@ const TeamMemberTasks = React.memo(props => {
     setShowWhoHasTimeOff(prev => !prev);
   };
 
+  function handleShowTrackers() {
+    setShowTrackers(prev => !prev);
+  }
+
+  function handleHideTasks() {
+    setShowTasks(prev => !prev);
+  }
+
   const handleSelectTeamNames = event => {
     filteredUserTeamIds?.length > 0 && setTeamList(usersWithTasks);
     setSelectedTeamNames(event);
@@ -448,6 +463,13 @@ const TeamMemberTasks = React.memo(props => {
       <header className={styles['header-box']}>
         <section className={[styles.dFlex, styles.flexColumn].join(' ')}>
           <h1 className={darkMode ? styles.textLight : ''}>Team Member Tasks</h1>
+          <button
+            type="button"
+            className={`btn btn-sm ${darkMode ? 'btn-outline-light' : 'btn-outline-secondary'}`}
+            onClick={() => setExpandAll(prev => !prev)}
+          >
+            {expandAll ? 'Truncate All' : 'Expand All'}
+          </button>
         </section>
 
         {finishLoading ? (
@@ -646,12 +668,18 @@ const TeamMemberTasks = React.memo(props => {
                 >
                   <thead className={darkMode ? styles.darkStickyHeader : ''}>
                     <tr>
-                      <th className={darkMode ? styles.darkStickyHeader : ''}>User Status</th>
+                      <th
+                        className={darkMode ? styles.darkStickyHeader : ''}
+                        style={{ background: 'transparent' }}
+                      >
+                        User Status
+                      </th>
                       <th
                         className={[
                           styles['team-member-tasks-headers'],
                           styles['team-member-tasks-user-name'],
                           darkMode ? styles.darkStickyHeader : '',
+                          darkMode ? styles.transparentHeader : '',
                         ].join(' ')}
                       >
                         Team Member
@@ -681,6 +709,50 @@ const TeamMemberTasks = React.memo(props => {
                           icon={faClock}
                           title="Total Remaining Hours"
                         />
+                        <div style={{ background: 'transparent', display: 'flex', gap: '4px' }}>
+                          <button
+                            type="button"
+                            onClick={handleShowTrackers}
+                            className={[
+                              styles.m1,
+                              darkMode ? styles.boxShadowDark : styles.boxShadowLight,
+                            ].join(' ')}
+                            style={{
+                              marginTop: '6px',
+                              padding: '2px 8px',
+                              fontSize: '12px',
+                              borderRadius: '4px',
+                              border: '1px solid #17a2b8',
+                              backgroundColor: showTrackers ? '#17a2b8' : 'white',
+                              color: showTrackers ? 'white' : '#17a2b8',
+                              cursor: 'pointer',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {showTrackers ? 'Hide Trackers' : 'Show Trackers'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleHideTasks}
+                            className={[
+                              styles.m1,
+                              darkMode ? styles.boxShadowDark : styles.boxShadowLight,
+                            ].join(' ')}
+                            style={{
+                              marginTop: '6px',
+                              padding: '2px 8px',
+                              fontSize: '12px',
+                              borderRadius: '4px',
+                              border: '1px solid #17a2b8',
+                              backgroundColor: showTasks ? 'white' : '#17a2b8',
+                              color: showTasks ? '#17a2b8' : 'white',
+                              cursor: 'pointer',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {showTasks ? 'Hide Tasks' : 'Show Tasks'}
+                          </button>
+                        </div>
                       </th>
                     </tr>
                   </thead>
@@ -723,78 +795,50 @@ const TeamMemberTasks = React.memo(props => {
           </thead>
 
           <tbody className={darkMode ? styles.darkTbody : ''}>
-            {teamList.length === 0 || !selectionsLoaded ? (
-              <SkeletonLoading
-                template="TeamMemberTasks"
-                data-testid="skeleton-loading-team-member-tasks-row"
-              />
-            ) : (
+            {selectionsLoaded && teamList.length > 0 ? (
               teamList
                 .filter(user => filterByUserFeatures(user))
                 .map(user => {
+                  const taskNode = (
+                    <TeamMemberTask
+                      key={!isTimeFilterActive ? user.personId : undefined}
+                      user={user}
+                      userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes(
+                        'putReviewStatus',
+                      )}
+                      teamRoles={
+                        user.teams !== undefined && user.teams.length > 0
+                          ? filteredTeamRoles(user.teams)
+                          : ''
+                      }
+                      handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                      handleMarkAsDoneModal={handleMarkAsDoneModal}
+                      handleRemoveFromTaskModal={handleRemoveFromTaskModal}
+                      handleTaskModalOption={handleTaskModalOption}
+                      userRole={displayUser.role}
+                      updateTaskStatus={updateTaskStatus}
+                      userId={displayUser._id}
+                      showWhoHasTimeOff={showWhoHasTimeOff}
+                      showTrackers={showTrackers}
+                      showTasks={showTasks}
+                      onTimeOff={userOnTimeOff[user.personId]}
+                      goingOnTimeOff={userGoingOnTimeOff[user.personId]}
+                      displayUser={displayUser}
+                      userStateCatalog={userStateCatalog}
+                      onCatalogChange={setUserStateCatalog}
+                      userStateSelection={userStateSelections[user.personId] || []}
+                      onSelectionChange={(uid, updated) =>
+                        setUserStateSelections(prev => ({ ...prev, [uid]: updated }))
+                      }
+                      expandAll={expandAll}
+                    />
+                  );
                   if (!isTimeFilterActive) {
-                    return (
-                      <TeamMemberTask
-                        key={user.personId}
-                        user={user}
-                        userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes(
-                          'putReviewStatus',
-                        )}
-                        teamRoles={
-                          user.teams !== undefined && user.teams.length > 0
-                            ? filteredTeamRoles(user.teams)
-                            : ''
-                        }
-                        handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
-                        handleMarkAsDoneModal={handleMarkAsDoneModal}
-                        handleRemoveFromTaskModal={handleRemoveFromTaskModal}
-                        handleTaskModalOption={handleTaskModalOption}
-                        userRole={displayUser.role}
-                        updateTaskStatus={updateTaskStatus}
-                        userId={displayUser._id}
-                        showWhoHasTimeOff={showWhoHasTimeOff}
-                        onTimeOff={userOnTimeOff[user.personId]}
-                        goingOnTimeOff={userGoingOnTimeOff[user.personId]}
-                        displayUser={displayUser}
-                        userStateCatalog={userStateCatalog}
-                        onCatalogChange={setUserStateCatalog}
-                        userStateSelection={userStateSelections[user.personId] || []}
-                        onSelectionChange={(uid, updated) =>
-                          setUserStateSelections(prev => ({ ...prev, [uid]: updated }))
-                        }
-                      />
-                    );
+                    return taskNode;
                   }
-
                   return (
                     <Fragment key={user.personId}>
-                      <TeamMemberTask
-                        user={user}
-                        userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes(
-                          'putReviewStatus',
-                        )}
-                        teamRoles={
-                          user.teams !== undefined && user.teams.length > 0
-                            ? filteredTeamRoles(user.teams)
-                            : ''
-                        }
-                        handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
-                        handleMarkAsDoneModal={handleMarkAsDoneModal}
-                        handleRemoveFromTaskModal={handleRemoveFromTaskModal}
-                        handleTaskModalOption={handleTaskModalOption}
-                        userRole={displayUser.role}
-                        updateTaskStatus={updateTaskStatus}
-                        userId={displayUser._id}
-                        showWhoHasTimeOff={showWhoHasTimeOff}
-                        onTimeOff={userOnTimeOff[user.personId]}
-                        goingOnTimeOff={userGoingOnTimeOff[user.personId]}
-                        userStateCatalog={userStateCatalog}
-                        onCatalogChange={setUserStateCatalog}
-                        userStateSelection={userStateSelections[user.personId] || []}
-                        onSelectionChange={(uid, updated) =>
-                          setUserStateSelections(prev => ({ ...prev, [uid]: updated }))
-                        }
-                      />
+                      {taskNode}
 
                       {timeEntriesList.length > 0 &&
                         timeEntriesList
@@ -819,6 +863,11 @@ const TeamMemberTasks = React.memo(props => {
                     </Fragment>
                   );
                 })
+            ) : (
+              <SkeletonLoading
+                template="TeamMemberTasks"
+                data-testid="skeleton-loading-team-member-tasks-row"
+              />
             )}
           </tbody>
         </Table>
@@ -826,6 +875,31 @@ const TeamMemberTasks = React.memo(props => {
     </div>
   );
 });
+
+const userShape = PropTypes.shape({
+  _id: PropTypes.string,
+  role: PropTypes.string,
+  userid: PropTypes.string,
+  permissions: PropTypes.shape({
+    frontPermissions: PropTypes.arrayOf(PropTypes.string),
+  }),
+});
+
+TeamMemberTasks.propTypes = {
+  authUser: userShape,
+  displayUser: userShape,
+  usersWithTasks: PropTypes.arrayOf(PropTypes.object),
+  usersWithTimeEntries: PropTypes.arrayOf(PropTypes.object),
+  darkMode: PropTypes.bool,
+  filteredUserTeamIds: PropTypes.arrayOf(PropTypes.string),
+  auth: PropTypes.shape({
+    user: PropTypes.shape({
+      permissions: PropTypes.shape({
+        frontPermissions: PropTypes.arrayOf(PropTypes.string),
+      }),
+    }),
+  }),
+};
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,

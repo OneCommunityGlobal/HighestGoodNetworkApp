@@ -3,12 +3,38 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-
+import {
+  FaCubes,
+  FaShoppingCart,
+  FaTools,
+  FaRecycle,
+  FaWrench,
+  FaRulerCombined,
+} from 'react-icons/fa';
 import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
+import InventoryNavBar from '../InventoryTypesList/InventoryNavBar';
 import styles from './ItemListView.module.css';
+import { Form, FormGroup, Label } from 'reactstrap';
+
+const allCategories = [
+  { label: 'Materials', route: '/bmdashboard/materials', icon: <FaCubes /> },
+  { label: 'Consumables', route: '/bmdashboard/consumables', icon: <FaShoppingCart /> },
+  { label: 'Equipment', route: '/bmdashboard/equipment', icon: <FaTools /> },
+  { label: 'Reusables', route: '/bmdashboard/reusables', icon: <FaRecycle /> },
+  { label: 'Tools', route: '/bmdashboard/tools', icon: <FaWrench /> },
+  { label: 'Units', route: '/bmdashboard/units', icon: <FaRulerCombined /> },
+];
+
+const categoryIcons = {
+  Materials: <FaCubes />,
+  Consumables: <FaShoppingCart />,
+  Equipment: <FaTools />,
+  Reusables: <FaRecycle />,
+  Tools: <FaWrench />,
+};
 
 export function ItemListView({
   itemType,
@@ -19,43 +45,60 @@ export function ItemListView({
   children,
 }) {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const [filteredItems, setFilteredItems] = useState(items);
-  const [selectedProject, setSelectedProject] = useState('all');
-  const [selectedItem, setSelectedItem] = useState('all');
+  const [filteredItems, setFilteredItems] = useState([]);
+  const [selectedProject, setSelectedProject] = useState([]); // Array of strings
+  const [selectedItem, setSelectedItem] = useState([]); // Array of strings
+  const [localValues, setLocalValues] = useState([]);
   const [isError, setIsError] = useState(false);
   const [selectedTime, setSelectedTime] = useState(new Date());
+
+  const projectKey = `${itemType}_selected_projects`;
+  const itemKey = `${itemType}_selected_items`;
+
+  const handleReset = () => {
+    setLocalValues([]);
+    setSelectedProject([]);
+    setSelectedItem([]);
+    localStorage.removeItem(projectKey);
+    localStorage.removeItem(itemKey);
+  };
 
   const [searchQuery, setSearchQuery] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(25);
 
+  // Sync initial items load
   useEffect(() => {
     if (items) setFilteredItems([...items]);
   }, [items]);
 
+  // Unified Filtering Logic (Treats empty arrays as 'unfiltered/show all')
   useEffect(() => {
-    let filterItems;
     if (!items) return;
 
-    if (selectedProject === 'all' && selectedItem === 'all') {
-      setFilteredItems([...items]);
-    } else if (selectedProject !== 'all' && selectedItem === 'all') {
-      filterItems = items.filter(item => item.project?.name === selectedProject);
-      setFilteredItems([...filterItems]);
-    } else if (selectedProject === 'all' && selectedItem !== 'all') {
-      filterItems = items.filter(item => item.itemType?.name === selectedItem);
-      setFilteredItems([...filterItems]);
-    } else {
-      filterItems = items.filter(
-        item => item.project?.name === selectedProject && item.itemType?.name === selectedItem,
+    const hasProjectFilter = selectedProject.length > 0;
+    const hasItemFilter = selectedItem.length > 0;
+
+    let matchedItems = items;
+
+    if (hasProjectFilter && !hasItemFilter) {
+      matchedItems = items.filter(item => selectedProject.includes(item.project?.name));
+    } else if (!hasProjectFilter && hasItemFilter) {
+      matchedItems = items.filter(item => selectedItem.includes(item.itemType?.name));
+    } else if (hasProjectFilter && hasItemFilter) {
+      matchedItems = items.filter(
+        item =>
+          selectedProject.includes(item.project?.name) &&
+          selectedItem.includes(item.itemType?.name),
       );
-      setFilteredItems([...filterItems]);
     }
+
+    setFilteredItems(matchedItems);
   }, [selectedProject, selectedItem, items]);
 
   useEffect(() => {
-    setIsError(Object.entries(errors).length > 0);
+    setIsError(Object.entries(errors || {}).length > 0);
   }, [errors]);
 
   useEffect(() => {
@@ -152,10 +195,7 @@ export function ItemListView({
   if (isError) {
     return (
       <main className={`${styles.itemsListContainer} ${darkMode ? styles.darkMode : ''}`}>
-        <h2>
-          {itemType}
-          {' List'}
-        </h2>
+        <h2>{itemType} List</h2>
         <BMError errors={errors} />
       </main>
     );
@@ -163,7 +203,16 @@ export function ItemListView({
 
   return (
     <main className={`${styles.itemsListContainer} ${darkMode ? styles.darkMode : ''}`}>
-      <h3>{itemType}</h3>
+      <h3 className={styles.pageTitle}>
+        <span className={styles.pageTitleIcon}>{categoryIcons[itemType]}</span>
+        {itemType}
+      </h3>
+
+      {/* Inventory Navigation Bar */}
+      <InventoryNavBar
+        categories={allCategories.filter(cat => cat.label !== itemType)}
+        styles={styles}
+      />
 
       <section>
         <span>
@@ -189,7 +238,9 @@ export function ItemListView({
               <SelectForm
                 items={items}
                 setSelectedProject={setSelectedProject}
-                setSelectedItem={setSelectedItem}
+                localValues={localValues}
+                setLocalValues={setLocalValues}
+                itemType={itemType}
               />
 
               <SelectItem
@@ -198,19 +249,50 @@ export function ItemListView({
                 selectedItem={selectedItem}
                 setSelectedItem={setSelectedItem}
                 label={itemType === 'Materials' ? 'Material' : itemType}
-                darkMode={darkMode}
+                itemType={itemType}
               />
+
+              <div className={styles.resetContainer}>
+                <Form onSubmit={e => e.preventDefault()}>
+                  <FormGroup>
+                    <Label>&nbsp;</Label>
+                    <button
+                      type="button"
+                      className={styles.btnReset}
+                      onClick={handleReset}
+                      disabled={
+                        localStorage.getItem(projectKey) === null &&
+                        localStorage.getItem(itemKey) === null
+                      }
+                    >
+                      Reset
+                    </button>
+                  </FormGroup>
+                </Form>
+              </div>
             </div>
           )}
 
           <div className={`${styles.buttonsRow}`}>
-            <button type="button" className={`${styles.btnPrimary}`}>
+            <button
+              type="button"
+              className={`${styles.btnPrimary}`}
+              onClick={() => console.log('Add Material clicked')}
+            >
               Add Material
             </button>
-            <button type="button" className={`${styles.btnPrimary}`}>
+            <button
+              type="button"
+              className={`${styles.btnPrimary}`}
+              onClick={() => console.log('Edit Name/Measurement clicked')}
+            >
               Edit Name/Measurement
             </button>
-            <button type="button" className={`${styles.btnPrimary}`}>
+            <button
+              type="button"
+              className={`${styles.btnPrimary}`}
+              onClick={() => console.log('View Update History clicked')}
+            >
               View Update History
             </button>
           </div>
@@ -253,6 +335,7 @@ export function ItemListView({
             UpdateItemModal={UpdateItemModal}
             dynamicColumns={dynamicColumns}
             darkMode={darkMode}
+            itemType={itemType}
             sortConfig={sortConfig}
             onSort={handleSort}
             totalItems={totalItems}
@@ -293,7 +376,7 @@ ItemListView.propTypes = {
   errors: PropTypes.shape({
     message: PropTypes.string,
   }),
-  UpdateItemModal: PropTypes.elementType.isRequired,
+  UpdateItemModal: PropTypes.elementType,
   dynamicColumns: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string.isRequired,

@@ -162,6 +162,7 @@ export default function ResourceUsage() {
   const [insightsTimePeriod, setInsightsTimePeriod] = useState('Last Week');
   const [data, setData] = useState(allData.material);
   const [insights, setInsights] = useState(allInsights['Last Week']);
+  const [showScroll, setShowScroll] = useState(false);
 
   const darkMode = useSelector(state => state.theme.darkMode);
   const badgeRefs = useRef([]);
@@ -184,6 +185,19 @@ export default function ResourceUsage() {
     setInsights(allInsights[insightsTimePeriod]);
   }, [insightsTimePeriod]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScroll(window.scrollY < 200);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div
       data-testid="resource-usage-container"
@@ -191,6 +205,14 @@ export default function ResourceUsage() {
         darkMode ? 'dark-mode bg-oxford-blue text-light' : ''
       }`}
     >
+      {showScroll && (
+        <button
+          onClick={scrollToTop}
+          className={`${styles.scrollButton} ${darkMode ? styles.dark : ''}`}
+        >
+          ↑
+        </button>
+      )}
       {/* LEFT SECTION */}
       <div className={`${styles.chartSection} ${darkMode ? 'bg-space-cadet' : ''}`}>
         <div className={styles.headerSection}>
@@ -229,10 +251,14 @@ export default function ResourceUsage() {
 
           {data && data.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data} margin={{ top: 20, right: 30, left: 30, bottom: 80 }}>
+              <BarChart
+                data={data}
+                margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                barCategoryGap="15%"
+              >
                 <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke={darkMode ? '#3A506B' : '#eee'}
+                  strokeDasharray="0"
+                  stroke={darkMode ? '#3A506B' : '#e5e7eb'}
                   vertical={false}
                 />
 
@@ -250,6 +276,9 @@ export default function ResourceUsage() {
                 <YAxis
                   axisLine={false}
                   tickLine={false}
+                  tickCount={5}
+                  domain={[0, 'auto']}
+                  width={40}
                   tick={{
                     fill: darkMode ? '#ffffff' : '#666',
                     fontWeight: 700,
@@ -265,11 +294,28 @@ export default function ResourceUsage() {
                   iconType="circle"
                   iconSize={8}
                   wrapperStyle={{
+                    top: 0,
+                    right: 0,
+                    paddingBottom: '4px',
                     color: darkMode ? '#ffffff' : '#666',
+                    fontSize: '0.875rem',
+                    lineHeight: '1.5',
                   }}
+                  formatter={value => (
+                    <span
+                      style={{
+                        color: darkMode ? '#ffffff' : '#666',
+                        marginLeft: '1px',
+                        marginRight: '0px',
+                        fontSize: '0.875rem',
+                      }}
+                    >
+                      {value.charAt(0).toUpperCase() + value.slice(1)}
+                    </span>
+                  )}
                 />
 
-                <Bar dataKey="returned" stackId="a" fill="#22c55e" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="returned" stackId="a" fill="#22c55e" radius={[0, 0, 0, 0]} />
                 <Bar dataKey="loaned" stackId="a" fill="#fca5a5" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>

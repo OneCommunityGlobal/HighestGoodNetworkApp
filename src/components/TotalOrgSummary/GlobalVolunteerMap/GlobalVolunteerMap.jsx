@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import PropTypes from 'prop-types';
 import L from 'leaflet';
 import { MapContainer, TileLayer, useMap, CircleMarker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -94,5 +95,24 @@ function MapComponent({ locations = [], isLoading, error }) {
     </div>
   );
 }
+
+HeatMap.propTypes = {
+  points: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired,
+};
+
+MapComponent.propTypes = {
+  locations: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.shape({
+        lat: PropTypes.number,
+        lng: PropTypes.number,
+      }),
+      count: PropTypes.number,
+      status: PropTypes.string,
+    }),
+  ),
+  isLoading: PropTypes.bool,
+  error: PropTypes.string,
+};
 
 export default MapComponent;

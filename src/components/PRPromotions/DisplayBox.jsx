@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styles from './DisplayBox.module.css';
 
@@ -52,14 +52,46 @@ export default function DisplayBox({ onClose, darkMode = false }) {
     onClose();
   };
 
+  const tableClassName = [
+    styles.popupTable,
+    darkMode ? styles.popupTableDark : '',
+    darkMode ? styles['popup-table-dark'] : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const getBadgeClassName = index =>
+    [
+      styles.prCountBadge,
+      styles['pr-count-badge'],
+      styles[`color-${index}`] || styles[`color${index}`],
+    ]
+      .filter(Boolean)
+      .join(' ');
+  const modalRef = useRef(null);
+  const overlayRef = useRef(null);
+
+  useEffect(() => {
+    const overlayClickHandler = e => {
+      if (e.target.id === 'overlay') onClose();
+    };
+
+    document.addEventListener('click', overlayClickHandler);
+    return () => document.removeEventListener('click', overlayClickHandler);
+  }, []);
+
   return (
-    <div className={styles.overlay}>
-      <div className={`${styles.popup} ${darkMode ? styles.popupDark : ''}`}>
+    <div className={styles.overlay} ref={overlayRef} id="overlay">
+      <div
+        className={`${styles.popup} ${darkMode ? styles.popupDark : ''}`}
+        ref={modalRef}
+        id="modal"
+      >
         <h2 className={`${styles.popupHeading} ${darkMode ? styles.popupHeadingDark : ''}`}>
           Are you sure you want to promote these PR reviewers?
         </h2>
 
-        <table className={`${styles.popupTable} ${darkMode ? styles.popupTableDark : ''}`}>
+        <table className={tableClassName}>
           <thead>
             <tr>
               <th>
@@ -92,28 +124,33 @@ export default function DisplayBox({ onClose, darkMode = false }) {
                 <td>{promotion.teamCode}</td>
                 <td>{promotion.teamReviewerName}</td>
                 <td>
-                  {promotion.weeklyPRs.map((pr, prIndex) => (
-                    <span
-                      key={`${promotion.prReviewer}-${pr.week}`}
-                      className={`${styles.prCountBadge} ${styles[`color${prIndex}`] || ''}`}
-                    >
-                      {pr.prCount}
-                    </span>
-                  ))}
+                  <div className={styles.prBadgeRow}>
+                    {promotion.weeklyPRs.map((pr, prIndex) => (
+                      <span
+                        key={`${promotion.prReviewer}-${pr.week}`}
+                        className={getBadgeClassName(prIndex)}
+                      >
+                        {pr.prCount}
+                      </span>
+                    ))}
+                  </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-
         <div className={styles.buttonRow}>
-          <button type="button" className={styles.button} onClick={onClose}>
+          <button
+            type="button"
+            className={`${styles.button} ${styles.cancelButton}`}
+            onClick={onClose}
+          >
             Cancel
           </button>
 
           <button
             type="button"
-            className={styles.button}
+            className={`${styles.button} ${styles.confirmButton}`}
             disabled={!checkedItems.some(Boolean)}
             onClick={handleConfirm}
           >
