@@ -38,7 +38,7 @@ export default function StockHealthIndicator({ material, darkMode = false }) {
         className={darkMode ? styles.darkTooltip : ''}
       >
         {tooltipText.split('\n').map((line, idx) => (
-          <div key={idx}>{line}</div>
+          <div key={`${material._id}-${idx}`}>{line}</div>
         ))}
       </Tooltip>
     </>

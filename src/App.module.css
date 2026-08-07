@@ -2,12 +2,14 @@
 html {
   overflow-x: hidden;
   height: 100%;
+  background-color: #fff;
 }
 
 body {
   display: grid;
   grid-template-columns: auto 0;
   height: 100%;
+  background-color: #fff;
 }
 
 button {
@@ -21,14 +23,6 @@ button {
 
   /* background-color: var(--background-color); */
   overflow: auto;
-  background-color: #fff;
-}
-
-html {
-  background-color: #fff;
-}
-
-body {
   background-color: #fff;
 }
 

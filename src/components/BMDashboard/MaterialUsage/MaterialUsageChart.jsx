@@ -182,6 +182,7 @@ export default function MaterialUsageChart({ projectId, toggle, darkMode = false
           <div className={styles.statusContainer}>
             <p className={darkMode ? styles.errorTextDark : styles.errorTextLight}>{error}</p>
             <button
+              type="button"
               className={`${styles.chartRetryButton} ${
                 darkMode ? styles.btnDark : styles.btnLight
               }`}
