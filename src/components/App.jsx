@@ -13,6 +13,7 @@ import '../App.module.css';
 import { initMessagingSocket } from '../utils/messagingSocket';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ThemeManager from './common/ThemeManager';
+import ScrollToTopButton from './common/ScrollToTopButton';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,6 +25,12 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+function GlobalScrollToTopButton() {
+  const { pathname } = useLocation();
+
+  return <ScrollToTopButton key={pathname} />;
+}
 
 // Check for token
 if (process.env.NODE_ENV !== 'test') {
@@ -235,6 +242,7 @@ class App extends Component {
                 <ThemeManager />
                 <UpdateDocumentTitle />
                 <Suspense fallback={<Loading />}>{routes}</Suspense>
+                <GlobalScrollToTopButton />
               </Router>
             </ModalProvider>
           </QueryClientProvider>
