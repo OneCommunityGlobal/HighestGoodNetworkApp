@@ -1,8 +1,12 @@
 import { Container, Row, Col, ListGroup, ListGroupItem } from 'reactstrap';
+import { useSelector } from 'react-redux';
+import styles from './PRDashboardTopReviewedPRs.module.css';
 
 function PRDashboardTopReviewedPRs() {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   return (
-    <Container fluid>
+    <Container fluid className={`${styles.wrapper} ${darkMode ? styles.dark : ''}`}>
       <Row>
         <Col xs="12">
           <h1>Top Reviewed PRs</h1>

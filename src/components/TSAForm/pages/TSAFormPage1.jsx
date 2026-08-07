@@ -1,6 +1,7 @@
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import styles from '../TSAForm.module.css';
 
 function TSAFormPage1() {
   const history = useHistory();
@@ -13,10 +14,7 @@ function TSAFormPage1() {
     professionalExperience: false,
     areaofExpertise: false,
   });
-
-  // Dark mode color tokens
-  const pageBg = darkMode ? '#1a2634' : '#e6f5fb';
-  const cardBg = darkMode ? '#1e2d3d' : '#ffffff';
+  // Inline tokens for state-dependent colours; surfaces live in TSAForm.module.css
   const cardBorder = darkMode ? '1px solid #3a506b' : '1px solid #ccc';
   const textColor = darkMode ? '#e2e8f0' : '#000000';
   const inputBorderBottom = darkMode ? '1px solid #5a7a96' : '1px solid #ccc';
@@ -77,13 +75,13 @@ function TSAFormPage1() {
 
   return (
     <div
+      className={`${styles.page} ${darkMode ? styles.dark : ''}`}
       style={{
         position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: pageBg,
         fontFamily: 'Arial, sans-serif',
         overflowY: 'auto',
         zIndex: 1000,
@@ -93,8 +91,8 @@ function TSAFormPage1() {
     >
       {/* Banner Box */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: cardBg,
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -119,8 +117,8 @@ function TSAFormPage1() {
 
       {/* Introduction Content Box */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: cardBg,
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -193,8 +191,8 @@ function TSAFormPage1() {
 
       {/* General Questions Section */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: cardBg,
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -231,8 +229,8 @@ function TSAFormPage1() {
 
       {/* Email */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: cardBg,
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -282,8 +280,8 @@ function TSAFormPage1() {
 
       {/* Full Name */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: cardBg,
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -334,8 +332,8 @@ function TSAFormPage1() {
 
       {/* Professional Title */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: cardBg,
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -385,8 +383,8 @@ function TSAFormPage1() {
 
       {/* Years of Professional Experience */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: cardBg,
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -447,8 +445,8 @@ function TSAFormPage1() {
 
       {/* Areas of Expertise */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: cardBg,
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',

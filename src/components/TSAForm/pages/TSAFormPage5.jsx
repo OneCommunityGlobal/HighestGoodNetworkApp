@@ -1,8 +1,11 @@
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import styles from '../TSAForm.module.css';
 
 function TSAFormPage5() {
   const history = useHistory();
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const [errors, setErrors] = useState({
     agreementone: false,
@@ -43,13 +46,13 @@ function TSAFormPage5() {
 
   return (
     <div
+      className={`${styles.page} ${darkMode ? styles.dark : ''}`}
       style={{
         position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: '#e6f5fb',
         fontFamily: 'Arial, sans-serif',
         overflowY: 'auto',
         zIndex: 1000,
@@ -58,8 +61,8 @@ function TSAFormPage5() {
     >
       {/* Banner */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: 'auto',
@@ -83,8 +86,8 @@ function TSAFormPage5() {
 
       {/* Title + Intro */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: 'auto',
@@ -131,8 +134,8 @@ function TSAFormPage5() {
 
       {/* Scope */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -165,8 +168,8 @@ function TSAFormPage5() {
 
       {/* Agreement 1 */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -226,8 +229,8 @@ function TSAFormPage5() {
 
       {/* Task */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -253,8 +256,8 @@ function TSAFormPage5() {
 
       {/* Agreement 2 */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -314,8 +317,8 @@ function TSAFormPage5() {
 
       {/* Period of Engagement */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -341,8 +344,8 @@ function TSAFormPage5() {
 
       {/* Agreement 3 */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -402,8 +405,8 @@ function TSAFormPage5() {
 
       {/* Termination */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -439,8 +442,8 @@ function TSAFormPage5() {
 
       {/* Agreement 4 */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',

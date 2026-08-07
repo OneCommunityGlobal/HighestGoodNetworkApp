@@ -1,0 +1,32 @@
+.wrapper {
+  padding-top: 1rem;
+}
+
+/* ─── Dark mode ─── */
+
+/* Keyed off `.dark`, applied to the wrapper by PRDashboardTopReviewedPRs.jsx.
+   Only backgrounds are set here: `public/index.css` has
+   `body.dark-mode * { color: #fff !important }`, so text colour is already
+   forced and fighting it with `color:` would lose. Same approach as
+   PromotionEligibility.module.css in this folder. */
+.dark {
+  background-color: #1a1d23;
+}
+
+/* `list-group-item` and `text-muted` come from Bootstrap, not this module, so
+   they must stay :global() or CSS Modules hashes them and they match nothing. */
+.dark :global(.list-group-item) {
+  background-color: #1c2541;
+  border-color: #3a506b;
+}
+
+.dark :global(.list-group-item):hover {
+  background-color: #232946;
+}
+
+/* The sub-labels use Bootstrap's `.text-muted` (#6c757d), which is unreadable on
+   a dark row. The global !important white would win anyway, but stating it here
+   keeps the intent legible and survives the global sheet being cleaned up. */
+.dark :global(.text-muted) {
+  color: #94a3b8 !important;
+}
