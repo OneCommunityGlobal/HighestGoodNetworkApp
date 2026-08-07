@@ -330,6 +330,7 @@
 @media (width <= 768px) {
   .wrapper {
     flex-direction: column;
+    align-items: stretch;
     gap: 1.5rem;
     padding: 1rem;
   }
@@ -339,8 +340,14 @@
     min-width: 0;
   }
 
+  .header {
+    align-items: center;
+    text-align: center;
+  }
+
   .controls {
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
   }
 
   .chartWrapper {

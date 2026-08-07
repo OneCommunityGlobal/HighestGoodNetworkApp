@@ -138,6 +138,16 @@ export default function ProjectStatus() {
   const onApply = () => {
     setDateError('');
 
+    const today = dayjs().endOf('day');
+    if (from && dayjs(from).isAfter(today)) {
+      setDateError('From date cannot be in the future.');
+      return;
+    }
+    if (to && dayjs(to).isAfter(today)) {
+      setDateError('To date cannot be in the future.');
+      return;
+    }
+
     // Validate dates: end date cannot be before start date
     if (from && to && dayjs(to).isBefore(dayjs(from))) {
       setDateError('End date cannot be before start date. Please select a valid date range.');
@@ -166,6 +176,7 @@ export default function ProjectStatus() {
               onChange={d => setFrom(d)}
               placeholderText="From Date"
               dateFormat="yyyy-MM-dd"
+              maxDate={new Date()}
               isClearable
             />
             <DatePicker
@@ -173,6 +184,7 @@ export default function ProjectStatus() {
               onChange={d => setTo(d)}
               placeholderText="To Date"
               dateFormat="yyyy-MM-dd"
+              maxDate={new Date()}
               isClearable
             />
             <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={onApply}>
