@@ -174,7 +174,8 @@
    PR BADGES
    ====================================================== */
 
-.prCountBadge {
+.prCountBadge,
+.pr-count-badge {
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -193,13 +194,18 @@
 
 /* COLORS */
 
-.color0 {
+/* Keep both CSS Module lookup styles aligned with getBadgeClassName. */
+
+.color0,
+.color-0 {
   color: #fff;
   background-color: #9400d3;
 }
 
+.color1,
 .color-1 {
-  background-color: rgb(77 82 174);
+  background-color: #4b0082;
+  color: #fff;
 }
 
 .color-2 {
@@ -232,7 +238,8 @@
   background-color: #ff0;
 }
 
-.color5 {
+.color5,
+.color-5 {
   color: #fff;
   background-color: #c45c00;
 }
@@ -338,6 +345,18 @@
 .popupDark .popupTable thead th {
   background-color: #374151;
   color: #f9fafb;
+}
+
+.popupTable tbody tr {
+  cursor: pointer;
+}
+
+.popupTable tbody tr:hover td {
+  background-color: #f0f8ff;
+}
+
+.popupDark .popupTable tbody tr:hover td {
+  background-color: #2f4157;
 }
 
 .prBadgeRow {
