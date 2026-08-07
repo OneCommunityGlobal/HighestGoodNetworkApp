@@ -47,21 +47,42 @@ const buildMultiDeptEntry = (sev, projects, depts, dataMap) => {
   return entry;
 };
 
-function CustomTooltip({ active, payload, label, darkMode }) {
+function CustomTooltip({ active, payload, label, darkMode, visubleDepartments }) {
   if (!active || !payload || payload.length === 0) return null;
 
   // Group data by project
   const projectData = {};
 
   payload.forEach(entry => {
-    if (entry.value > 0) {
-      // Extract project and department from dataKey
-      const match = entry.dataKey.match(/^([^_]+)_(.+)$/);
-      if (match) {
-        const [, projectName, department] = match;
-        if (!projectData[projectName]) projectData[projectName] = [];
-        projectData[projectName].push({ department, value: entry.value, color: entry.color });
-      }
+    if (entry.value <= 0) return;
+
+    const match = entry.dataKey.match(/^([^_]+)_(.+)$/);
+
+    if (match) {
+      const [, projectName, department] = match;
+
+      if (!projectData[projectName]) projectData[projectName] = [];
+
+      projectData[projectName].push({
+        department,
+        value: entry.value,
+        color: entry.color,
+      });
+
+      return;
+    }
+
+    if (visibleDepartments.length === 1) {
+      const projectName = entry.dataKey;
+      const department = visibleDepartments[0];
+
+      if (!projectData[projectName]) projectData[projectName] = [];
+
+      projectData[projectName].push({
+        department,
+        value: entry.value,
+        color: entry.color,
+      });
     }
   });
 
@@ -170,27 +191,9 @@ function InjurySeverityDashboard(props) {
 
     return SEVERITY_ORDER.map(sev => {
       if (visibleDepartments.length <= 1) {
-        // Single department - show total injuries per project
-        visibleProjects.forEach(project => {
-          const rec = rawData.find(r => r.severity === sev && r.projectName === project.name);
-
-          entry[project.name] = rec ? rec.totalInjuries : 0;
-        });
-      } else {
-        // Multiple departments - show department breakdown per project
-        visibleProjects.forEach(project => {
-          visibleDepartments.forEach(dept => {
-            const key = `${project.name}_${dept}`;
-
-            const rec = rawData.find(
-              r => r.severity === sev && r.projectName === project.name && r.department === dept,
-            );
-
-            entry[key] = rec ? rec.totalInjuries : 0;
-          });
-        });
         return buildSingleDeptEntry(sev, visibleProjects, dataMap);
       }
+
       return buildMultiDeptEntry(sev, visibleProjects, visibleDepartments, dataMap);
     });
   }, [rawData, visibleProjects, visibleDepartments]);
@@ -352,6 +355,7 @@ function InjurySeverityDashboard(props) {
             <XAxis dataKey="severity" />
             <YAxis />
             <Tooltip
+              cursor={false}
               content={
                 <CustomTooltip
                   visibleProjects={visibleProjects}
@@ -360,22 +364,16 @@ function InjurySeverityDashboard(props) {
                 />
               }
             />
+
             <Legend
               verticalAlign="bottom"
               wrapperStyle={{ paddingTop: 30 }}
-              payload={
-                visibleDepartments.length > 1
-                  ? visibleDepartments.map((dept, idx) => ({
-                      value: dept,
-                      type: 'rect',
-                      color: DEPARTMENT_COLOR_MAP[dept],
-                    }))
-                  : undefined
-              }
-              content={<CustomTooltip darkMode={darkMode} />}
-              cursor={{ fill: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)' }}
+              payload={visibleDepartments.map(dept => ({
+                value: dept,
+                type: 'rect',
+                color: DEPARTMENT_COLOR_MAP[dept],
+              }))}
             />
-            <Legend />
 
             {chartBars.map(bar => (
               <Bar
