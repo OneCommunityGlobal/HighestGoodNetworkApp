@@ -68,7 +68,7 @@ export function buildChartSelectStyles(darkMode) {
     }),
     placeholder: base => ({
       ...base,
-      color: darkMode ? '#aaaaaa' : '#718096',
+      color: darkMode ? '#aaa' : '#5f6b7a',
     }),
     input: base => ({
       ...base,
