@@ -61,7 +61,9 @@ function AssignBadgePopup(props) {
       const response = await axios.get(ENDPOINTS.BADGE());
       setBadgeList(response.data);
       setisLoadingBadge(false);
-    } catch (error) {}
+    } catch (error) {
+      toast.error(`Failed to load badges: ${error.message}`);
+    }
   };
 
  const formatSearchInput = text => {
@@ -83,15 +85,10 @@ function AssignBadgePopup(props) {
     return filterBadges(badgeList);
   }, [badgeList, searchedName]);
 
-  const addExistBadges = () => {
-  if (props.userProfile?.badgeCollection) {
-    const existBadges = props.userProfile.badgeCollection
-      .filter(b => b && b.badge && typeof b.badge === 'object' && b.badge._id)
-      .map(b => b.badge._id);
-    return existBadges;
-  }
-  return [];
-};
+  const addExistBadges = () =>
+    props.userProfile?.badgeCollection
+      ?.filter(b => b?.badge?._id && typeof b.badge === 'object')
+      .map(b => b.badge._id) ?? [];
   let existBadges = addExistBadges();
 
   return (
