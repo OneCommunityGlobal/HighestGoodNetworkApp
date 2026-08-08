@@ -17,7 +17,6 @@ import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
 import InventoryNavBar from '../InventoryTypesList/InventoryNavBar';
 import styles from './ItemListView.module.css';
-import { Form, FormGroup, Label } from 'reactstrap';
 
 const allCategories = [
   { label: 'Materials', route: '/bmdashboard/materials', icon: <FaCubes /> },
@@ -218,22 +217,24 @@ export function ItemListView({
         <span>
           {items && (
             <div className={`${styles.selectInput}`}>
-              <label htmlFor="itemListTime">Time:</label>
-              <DatePicker
-                selected={selectedTime}
-                onChange={date => setSelectedTime(date)}
-                showTimeSelect
-                timeFormat="HH:mm"
-                timeIntervals={15}
-                dateFormat="yyyy-MM-dd HH:mm:ss"
-                placeholderText="Select date and time"
-                inputId="itemListTime"
-                className={darkMode ? styles.darkDatePickerInput : styles.lightDatePickerInput}
-                calendarClassName={darkMode ? styles.darkDatePicker : styles.lightDatePicker}
-                popperClassName={
-                  darkMode ? styles.darkDatePickerPopper : styles.lightDatePickerPopper
-                }
-              />
+              <div className={styles.filterGroup}>
+                <label htmlFor="itemListTime">Time:</label>
+                <DatePicker
+                  selected={selectedTime}
+                  onChange={date => setSelectedTime(date)}
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  dateFormat="yyyy-MM-dd HH:mm:ss"
+                  placeholderText="Select date and time"
+                  inputId="itemListTime"
+                  className={darkMode ? styles.darkDatePickerInput : styles.lightDatePickerInput}
+                  calendarClassName={darkMode ? styles.darkDatePicker : styles.lightDatePicker}
+                  popperClassName={
+                    darkMode ? styles.darkDatePickerPopper : styles.lightDatePickerPopper
+                  }
+                />
+              </div>
 
               <SelectForm
                 items={items}
@@ -253,22 +254,17 @@ export function ItemListView({
               />
 
               <div className={styles.resetContainer}>
-                <Form onSubmit={e => e.preventDefault()}>
-                  <FormGroup>
-                    <Label>&nbsp;</Label>
-                    <button
-                      type="button"
-                      className={styles.btnReset}
-                      onClick={handleReset}
-                      disabled={
-                        localStorage.getItem(projectKey) === null &&
-                        localStorage.getItem(itemKey) === null
-                      }
-                    >
-                      Reset
-                    </button>
-                  </FormGroup>
-                </Form>
+                <button
+                  type="button"
+                  className={styles.btnReset}
+                  onClick={handleReset}
+                  disabled={
+                    localStorage.getItem(projectKey) === null &&
+                    localStorage.getItem(itemKey) === null
+                  }
+                >
+                  Reset
+                </button>
               </div>
             </div>
           )}

@@ -70,7 +70,7 @@ export default function SelectItem({
 
   return (
     <Form className={styles.filterItem} onSubmit={e => e.preventDefault()}>
-      <FormGroup className={styles.selectInput}>
+      <FormGroup className={styles.filterGroup}>
         <Label htmlFor="select-item">{label ? `${label}:` : 'Item:'}</Label>
         <Select
           inputId="select-item"

@@ -43,7 +43,7 @@ export default function SelectForm({
 
   return (
     <Form className={styles.filterForm} onSubmit={e => e.preventDefault()}>
-      <FormGroup className={styles.selectInput}>
+      <FormGroup className={styles.filterGroup}>
         <Label htmlFor="select-project">Project:</Label>
         <Select
           inputId="select-project"
