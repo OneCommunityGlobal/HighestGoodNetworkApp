@@ -1057,7 +1057,6 @@ function QuantityOfMaterialsUsed({ data }) {
 
 QuantityOfMaterialsUsed.propTypes = {
   data: PropTypes.array.isRequired,
-  selectStyles: PropTypes.object.isRequired,
 };
 
 export default QuantityOfMaterialsUsed;
