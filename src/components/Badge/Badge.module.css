@@ -171,7 +171,7 @@
   }
 }
 
-:global(.dark-mode) tbody tr:hover td {
+:global(.dark-mode) .badge-development-table tbody tr:hover td {
   background-color: #1e3a5f !important;
   color: #fff !important;
 }

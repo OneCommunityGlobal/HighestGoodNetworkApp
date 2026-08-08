@@ -21,7 +21,7 @@ import BadgeTableFilter from './BadgeTableFilter';
 import EditBadgePopup from './EditBadgePopup';
 import DeleteBadgePopup from './DeleteBadgePopup';
 import hasPermission from '../../utils/permissions';
-import './Badge.module.css';
+import styles from './Badge.module.css';
 
 function BadgeDevelopmentTable(props) {
   const { darkMode } = props;
@@ -204,7 +204,7 @@ function BadgeDevelopmentTable(props) {
     });
   };
 
-  const filteredBadges = sortedBadges.filter(item => item.imageUrl != null);
+  const filteredBadges = filterBadges(sortedBadges);
 
   const toggleCheckbox = id => {
     // prettier-ignore
@@ -271,7 +271,9 @@ function BadgeDevelopmentTable(props) {
   return (
     <Container fluid>
       <table
-        className={`table table-bordered ${darkMode ? 'bg-yinmn-blue text-light dark-mode' : ''}`}
+        className={`table table-bordered ${styles['badge-development-table']} ${
+          darkMode ? 'bg-yinmn-blue text-light dark-mode' : ''
+        }`}
       >
         <thead>
           <BadgeTableHeader
@@ -288,9 +290,9 @@ function BadgeDevelopmentTable(props) {
               <td className="badge_image_sm">
                 {' '}
                 <img
-                  src={value.imageUrl}
+                  src={value.imageUrl ?? ''}
                   id={`popover_${value._id}`}
-                  alt=""
+                  alt={value.imageUrl ? '' : 'No image'}
                   data-testid={`badge-image-${value._id}`}
                 />
                 <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
