@@ -29,11 +29,17 @@ function NotFoundPage() {
         {validateUserLogin ? (
           <p className={styles.notFoundText}>
             The rabbits have been nibbling the cables again... ... Maybe this will help
-            <Link className={styles.linkSpacing} to="/dashboard">
+            <Link
+              className={cn(styles.linkSpacing, darkMode ? styles.linkDark : '')}
+              to="/dashboard"
+            >
               home
             </Link>{' '}
             or you can report this page by clicking
-            <Link className={styles.linkSpacing} to="/dashboard?openModalReport">
+            <Link
+              className={cn(styles.linkSpacing, darkMode ? styles.linkDark : '')}
+              to="/dashboard?openModalReport"
+            >
               here
             </Link>
           </p>
@@ -47,7 +53,7 @@ function NotFoundPage() {
           >
             It seems like you&apos;ve reached a page that doesn&apos;t exist. In addition
             You&apos;re not currently logged in. Please go back to the
-            <Link className={styles.linkSpacingLg} to="/login">
+            <Link className={cn(styles.linkSpacingLg, darkMode ? styles.linkDark : '')} to="/login">
               login page
             </Link>
           </p>

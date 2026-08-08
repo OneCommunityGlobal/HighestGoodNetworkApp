@@ -44,6 +44,14 @@
   margin-left: 8px;
 }
 
+.linkDark {
+  color: #90caf9;
+}
+
+.linkDark:hover {
+  color: #64b5f6;
+}
+
 .loggedOutText {
   margin: 10px 20px;
 }
