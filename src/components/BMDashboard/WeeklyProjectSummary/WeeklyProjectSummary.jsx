@@ -32,6 +32,7 @@ import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHo
 import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
 import IssueCharts from '../Issues/openIssueCharts';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
+import ToolReplacementChart from '../../ToolReplacementChart/ToolReplacementChart';
 
 const projectStatusButtons = [
   {
@@ -263,25 +264,22 @@ function WeeklyProjectSummary() {
         title: 'Material Consumption',
         key: 'Material Consumption',
         className: 'full',
-        content: [1, 2, 3].map((_, index) => {
-          let content;
-          if (index === 1) {
-            content = <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />;
-          } else if (index === 2) {
-            content = <TotalMaterialCostPerProject />;
-          } else {
-            content = <p>📊 Card</p>;
-          }
-          const uniqueId = uuidv4();
-          return (
+        content: (
+          <>
             <div
-              key={uniqueId}
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+              className={`${styles.weeklyProjectSummaryCard} ${styles.toolReplacementCard}`}
+              style={{ minHeight: '520px' }}
             >
-              {content}
+              <ToolReplacementChart />
             </div>
-          );
-        }),
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <TotalMaterialCostPerProject />
+            </div>
+          </>
+        ),
       },
       {
         title: 'Issue Tracking',
