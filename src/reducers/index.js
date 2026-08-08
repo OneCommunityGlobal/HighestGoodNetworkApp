@@ -29,6 +29,7 @@ import { infoCollectionsReducer } from './informationReducer';
 import { managingTeamsReducer } from './managingTeamsReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
 import notificationReducer from './notificationReducer';
+import meetingNotificationReducer from './meetingNotificationReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
 import { popupEditorReducer } from './popupEditorReducer';
 import { rolePresetReducer } from './rolePresetReducer';
@@ -88,6 +89,7 @@ import { jobApplicationReducer } from './jobApplication/jobApplicationReducer';
 import emailOutboxReducer from './emailOutboxReducer';
 import emailTemplateReducer from './emailTemplateReducer';
 import wishListReducer from './listBidDashboard/wishListItemReducer';
+import villageDetailsReducer from './listBidDashboard/villageDetailsReducer';
 
 import { optStatusBreakdownReducer } from './optStatusBreakdownReducer';
 
@@ -144,6 +146,7 @@ const localReducers = {
   mouseoverText: mouseoverTextReducer,
   weeklySummaryRecipients: weeklySummaryRecipientsReducer,
   notification: notificationReducer,
+  meetingNotification: meetingNotificationReducer,
   userFollowUp: followUpReducer,
   userProjectsByUserNameReducer,
   teamCodes: teamCodesReducer,
@@ -177,6 +180,7 @@ const localReducers = {
 
   // lbdashboard
   wishlistItem: wishListReducer,
+  villageDetails: villageDetailsReducer,
 
   bmissuechart: issueReducer,
   noShowViz: noShowVizReducer,

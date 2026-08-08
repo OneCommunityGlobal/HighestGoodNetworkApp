@@ -368,7 +368,6 @@ let testProps= {
      handleUserProfile:vi.fn(),
      roles:['Admin','Owner','Volunteer','Manager'],
      canEditRole:true,
-   
    };
   
 
@@ -505,7 +504,7 @@ it('Test case 9: Renders the role  component with a combo box  when canEditRole 
     </Provider>,
   );
   expect(screen.getByText("Role")).toBeInTheDocument(); // Label
-  expect(screen.getByRole('combobox')).toBeInTheDocument(); // combo box
+  expect(screen.getByRole('button', { name: 'Manage Role & Permissions' })).toBeInTheDocument(); // Role Modal button
 });
 it('Test case 10 : Does not render a combo box for role component   when canEditRole is false', () => {
   testProps.canEditRole=false;

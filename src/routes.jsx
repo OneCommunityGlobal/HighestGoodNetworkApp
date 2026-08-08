@@ -111,6 +111,7 @@ import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute/L
 import LBHome from './components/LBDashboard/Home/Home';
 import LBDashboard from './components/LBDashboard';
 import LBLogin from './components/LBDashboard/Login';
+import VillageDetails from './components/LBDashboard/Map/VillageDetails/VillageDetails';
 import LBRegister from './components/LBDashboard/Register/LBRegister';
 import LBMessaging from './components/LBDashboard/Messaging/LBMessaging';
 import MasterPlan from './components/LBDashboard/Map/MasterPlan/MasterPlan';
@@ -160,12 +161,14 @@ import EventStats from './components/CommunityPortal/EventPersonalization/EventS
 import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
 // Kicthen and Inventory Portal
 import KitchenandInventoryLogin from './components/KitchenandInventory/Login';
+import OrchardManagement from './components/KitchenandInventory/OrchardManagement/OrchardManagement';
+import OrchardManagementPage from './components/KitchenandInventory/OrchardManagement/OrchardManagementPage';
+import GardenManagement from './components/KitchenandInventory/GardenManagement/GardenManagement';
+import RecipesLandingPage from './components/KitchenandInventory/Recipes';
 
 import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
-import RecipesLandingPage from './components/KitchenandInventory/Recipes';
 import KIINVENTORY from './components/KitchenandInventory/KIInventory/KIInventory';
 import KICalendar from './components/KitchenandInventory/KICalendar/KICalendar';
-import OrchardManagement from './components/KitchenandInventory/OrchardManagement/OrchardManagement';
 
 // Education Portal
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
@@ -194,6 +197,9 @@ import BookingPage from './components/Booking/BookingPage';
 import BookingConfirmPage from './components/Booking/BookingConfirmPage';
 import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
 import ReviewersStackedBarChart from './components/HGNPRDashboard/ReviewersStackedBarChart/ReviewersStackedBarChart';
+import PRReviewTeamAnalyticsDashboard from './components/Analytics/AnalyticsDashboard';
+import PopularPRChart from './components/Analytics/PopularPRChart';
+import ReviewersRequirementChart from './components/Analytics/ReviewersRequirementChart';
 import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
 import PRGradingScreen from './components/PRGradingScreen';
 import PRGradingTest from './components/PRGradingScreen/PRGradingTest'; //temporary route for testing - delete after testing
@@ -269,6 +275,10 @@ const PermissionsManagement = lazy(() =>
   import('./components/PermissionsManagement/PermissionsManagement'),
 );
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
+const MeetingScheduling = lazy(() => import('./components/MeetingScheduling'));
+const BlueSquareEmailManagement = lazy(() =>
+  import('./components/BlueSquareEmailManagement/BlueSquareEmailManagement'),
+);
 const Teams = lazy(() => import('./components/Teams/Teams'));
 const JobFormBuilder = lazy(() => import('./components/Collaboration/JobFormbuilder'));
 const PopularityTimelineChart = lazy(() =>
@@ -319,6 +329,7 @@ export default (
     <LBProtectedRoute path="/lbdashboard/bidding" exact component={BiddingHomepage} />
     <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} />
     <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
+    <LBProtectedRoute path="/lbdashboard/village/:value" exact component={VillageDetails} />
     <LBProtectedRoute
       exact
       path="/lbdashboard/wishlists"
@@ -516,6 +527,13 @@ export default (
           routePermissions={RoutePermissions.permissionsManagement}
         />
         <ProtectedRoute
+          path="/bluesquare-email-management"
+          exact
+          component={BlueSquareEmailManagement}
+          fallback
+          routePermissions={['resendBlueSquareAndSummaryEmails']}
+        />
+        <ProtectedRoute
           path="/teams"
           exact
           component={Teams}
@@ -677,6 +695,21 @@ export default (
           path="/analytics/roles-hits-and-applications"
           exact
           component={JobsHitsApplicationsChart}
+        />
+
+        <ProtectedRoute
+          path="/schedulemeetings"
+          exact
+          component={MeetingScheduling}
+          fallback
+          allowedRoles={[
+            UserRole.Administrator,
+            UserRole.Manager,
+            UserRole.CoreTeam,
+            UserRole.Owner,
+            UserRole.Mentor,
+          ]}
+          routePermissions={RoutePermissions.meetings}
         />
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}
@@ -984,6 +1017,17 @@ export default (
           exact
           component={OrchardManagement}
         />
+        <ProtectedRoute
+          path="/kitchenandinventory/orchardmanagementpage"
+          exact
+          component={OrchardManagementPage}
+        />
+        <ProtectedRoute
+          path="/kitchenandinventory/gardenmanagement"
+          exact
+          component={GardenManagement}
+        />
+        <Route path="/kitchenandinventory/orders" component={OrdersPage} />
         <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} />
         <ProtectedRoute path="/kitchenandinventory/recipes" exact component={RecipesLandingPage} />
         {/* ----- End of Kitchen and Inventory Portal Routes ----- */}
@@ -1072,6 +1116,25 @@ export default (
           path="/pr-team-analytics/reviewers-stacked-bar-chart"
           exact
           component={ReviewersStackedBarChart}
+        />
+        <ProtectedRoute
+          path="/analytics/dashboard"
+          exact
+          component={PRReviewTeamAnalyticsDashboard}
+          fallback
+        />
+        <ProtectedRoute
+          path="/pr-dashboard/reviewers"
+          exact
+          component={PRReviewTeamAnalyticsDashboard}
+          fallback
+        />
+        <ProtectedRoute path="/analytics/popular-prs" exact component={PopularPRChart} fallback />
+        <ProtectedRoute
+          path="/analytics/review-summary"
+          exact
+          component={ReviewersRequirementChart}
+          fallback
         />
         {/* /*  for support team*/}
         <Route path="/support/login" component={SupportLogin} />
