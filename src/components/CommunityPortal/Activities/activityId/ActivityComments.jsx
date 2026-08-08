@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styles from './ActivityComments.module.css';
 import StatusBadge from './StatusBadge';
-import { useDispatch, useSelector } from 'react-redux';
 import { fetchMembersList } from '../../../../actions//communityPortal/activities/activityId/MembersListActions';
-//import { fetchMembersList } from 'actions/communityPortal/activities/activityId/MembersListActions';
 
 // Utility function to calculate relative time
 const getRelativeTime = createdAt => {
@@ -689,7 +687,7 @@ function ActivityComments() {
 
   useEffect(() => {
     dispatch(fetchMembersList());
-  }, []);
+  }, [dispatch]);
 
   const [sortBy, setSortBy] = useState('name-asc');
 
@@ -1141,23 +1139,25 @@ function ActivityComments() {
 
       {/* Members List */}
       {activeTab === 'Members List' && (
-        <div className={`${styles.container} ${darkMode ? styles.bgOxfordBlue : ''}`}>
+        <div
+          className={`${styles.membersListContainer} ${darkMode ? styles.membersListDarkMode : ''}`}
+        >
           <div className={styles.headerRow}>
             <h2 className={styles.title}>Members List</h2>
 
             <select
               value={sortBy}
               onChange={e => setSortBy(e.target.value)}
-              className={`${styles.select} ${darkMode ? styles.bgOxfordBlue : ''}`}
+              className={styles.select}
             >
               <option value="name-asc">Name A–Z</option>
               <option value="name-desc">Name Z–A</option>
             </select>
           </div>
 
-          <table className={`${styles.table} ${darkMode ? styles.bgOxfordBlue : ''}`}>
+          <table className={styles.table}>
             <thead>
-              <tr className={`${darkMode ? styles.bgOxfordBlue : ''}`}>
+              <tr>
                 <th>Name</th>
                 <th>Role</th>
                 <th>Status</th>

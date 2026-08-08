@@ -949,8 +949,9 @@
   color: #b8c5d1 !important;
 }
 
-.container {
-  max-width: 900px;
+.membersListContainer {
+  width: 100%;
+  max-width: 1100px;
   margin: 24px auto;
   font-family: Arial, sans-serif;
 }
@@ -959,7 +960,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .title {
@@ -970,6 +971,7 @@
 .select {
   padding: 6px 10px;
   border-radius: 6px;
+  min-width: 120px;
   border: 1px solid #ccc;
   background: white;
 }
@@ -996,6 +998,50 @@
   border-bottom: 1px solid #f0f0f0;
 }
 
-.bgOxfordBlue {
-  background-color: #1b2a41
+/* Members List - Dark Mode */
+
+.membersListDarkMode {
+  color: #fff;
+}
+
+.membersListDarkMode .title {
+  color: #fff;
+}
+
+.membersListDarkMode .select {
+  background-color: #1b2a41;
+  color: #fff;
+  border: 1px solid #50657d;
+}
+
+.membersListDarkMode .table {
+  background-color: #1b2a41;
+  color: #fff;
+}
+
+.membersListDarkMode .table thead {
+  background-color: #24364f;
+}
+
+.membersListDarkMode .table th {
+  color: #fff;
+  border-bottom: 1px solid #50657d;
+}
+
+.membersListDarkMode .table td {
+  color: #e6edf5;
+  border-bottom: 1px solid #3a506b;
+}
+
+.membersListDarkMode .table tbody tr:hover {
+  background-color: #2b405b;
+}
+
+.membersListDarkMode .table thead tr {
+    background-color: #24364f;
+}
+
+.membersListDarkMode .table th {
+    background-color: #24364f;
+    color: #ffffff;
 }
