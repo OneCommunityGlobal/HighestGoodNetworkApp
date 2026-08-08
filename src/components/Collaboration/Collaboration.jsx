@@ -184,6 +184,14 @@ function Collaboration() {
         <div className={`${styles.userCollaborationContainer} ${darkMode ? styles.dark : ''}`}>
           <h2>Job Summaries</h2>
 
+          <button
+            className="btn btn-secondary"
+            style={{ marginBottom: '24px' }}
+            onClick={() => setSummaries(null)}
+          >
+            ← Back to Job Listings
+          </button>
+
           {summaries.jobs?.length ? (
             summaries.jobs.map(job => (
               <div key={job._id}>
