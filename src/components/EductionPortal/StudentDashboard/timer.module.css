@@ -124,6 +124,15 @@
 }
 
 .card {
+  /* The UA stylesheet lays an open <dialog> out as `position: absolute` with
+     `inset-inline: 0; margin: auto`. That takes it out of .modalOverlay's flow,
+     so it is not centred by the overlay at all — it only looks centred while
+     those UA auto margins survive, and collapses to the viewport's left edge
+     if anything resets them. Making the card an ordinary in-flow flex item
+     lets .modalOverlay's own align/justify centring position it instead. */
+  position: relative;
+  inset: auto;
+  margin: 0;
   background: #fff;
   color: #1f2937;
   border-radius: 20px;
@@ -136,9 +145,8 @@
   gap: 14px;
   border: none;
 
-  /* The UA stylesheet positions an open <dialog>, so without an explicit
-     stacking level the full-viewport .backdrop (z-index 9999) paints over the
-     card and swallows every click meant for the controls inside it. */
+  /* Keeps the card above the full-viewport .backdrop (z-index 9999), which
+     would otherwise paint over it and swallow every click on the controls. */
   z-index: 10000;
 }
 
