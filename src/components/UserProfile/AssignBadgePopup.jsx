@@ -1,18 +1,18 @@
-import axios from 'axios';
+import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { useEffect, useMemo, useState } from 'react';
+import { Table, Button, UncontrolledTooltip , Spinner } from 'reactstrap';
 import { connect } from 'react-redux';
-import { toast } from 'react-toastify';
-import { Button, Spinner, Table, UncontrolledTooltip } from 'reactstrap';
-import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
-import { ENDPOINTS } from '~/utils/URL';
+import axios from 'axios';
+import AssignTableRow from '../Badge/AssignTableRow';
 import {
   assignBadgesByUserID,
   clearNameAndSelected,
 } from '../../actions/badgeManagement';
+import { ENDPOINTS } from '~/utils/URL';
 import { boxStyle, boxStyleDark } from '../../styles';
-import AssignTableRow from '../Badge/AssignTableRow';
 import styles from './AssignBadgePopup.module.css';
+import { toast } from 'react-toastify';
+import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
 
 
 function AssignBadgePopup(props) {
@@ -104,8 +104,8 @@ function AssignBadgePopup(props) {
       />
       <div style={{ overflowY: 'scroll', height: '75vh' }}>
         {!isLoadingBadge && (props.isTableOpen !== undefined ? props.isTableOpen : filteredBadges.length > 0) ? (
-          <Table 
-            data-testid="test-badgeResults" 
+          <Table
+            data-testid="test-badgeResults"
             className={darkMode ? styles.tableDark : ''}
           >
             <thead
@@ -141,7 +141,7 @@ function AssignBadgePopup(props) {
             </thead>
             <tbody>
               {filteredBadges.map((value, index) => (
-                <AssignTableRow badge={value} index={index} key={value._id || index} propExistBadges={existBadges} />
+                <AssignTableRow badge={value} index={index} key={value._id ?? index} existBadges={existBadges} />
               ))}
             </tbody>
           </Table>
@@ -177,6 +177,26 @@ function AssignBadgePopup(props) {
   );
 }
 
+AssignBadgePopup.propTypes = {
+  darkMode: PropTypes.bool,
+  isRecordBelongsToJaeAndUneditable: PropTypes.bool,
+  isTableOpen: PropTypes.bool,
+  userProfile: PropTypes.shape({
+    _id: PropTypes.string,
+    badgeCollection: PropTypes.arrayOf(
+      PropTypes.shape({
+        badge: PropTypes.shape({ _id: PropTypes.string }),
+      }),
+    ),
+  }),
+  selectedBadges: PropTypes.arrayOf(PropTypes.object),
+  setUserProfile: PropTypes.func,
+  handleSubmit: PropTypes.func,
+  close: PropTypes.func,
+  assignBadgesByUserID: PropTypes.func,
+  clearNameAndSelected: PropTypes.func,
+};
+
 const mapStateToProps = state => ({
   selectedBadges: state.badge.selectedBadges,
   darkMode: state.theme.darkMode,
@@ -188,22 +208,6 @@ const mapDispatchToProps = dispatch => {
       assignBadgesByUserID(userId, selectedBadge)(dispatch),
     clearNameAndSelected: () => dispatch(clearNameAndSelected()),
   };
-};
-
-AssignBadgePopup.propTypes = {
-  userProfile: PropTypes.shape({
-    _id: PropTypes.string,
-    badgeCollection: PropTypes.array,
-  }),
-  selectedBadges: PropTypes.array,
-  darkMode: PropTypes.bool,
-  isRecordBelongsToJaeAndUneditable: PropTypes.bool,
-  isTableOpen: PropTypes.bool,
-  setUserProfile: PropTypes.func,
-  handleSubmit: PropTypes.func,
-  close: PropTypes.func,
-  assignBadgesByUserID: PropTypes.func,
-  clearNameAndSelected: PropTypes.func,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AssignBadgePopup);

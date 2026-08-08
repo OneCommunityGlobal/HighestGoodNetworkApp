@@ -240,6 +240,14 @@
   box-shadow: 0 2px 5px rgb(255 255 255 / 10%);
 }
 
+.toolReplacementCard {
+  grid-column: 1 / -1;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow: visible;
+}
+
 .weeklyProjectSummaryCard :global(.container) {
   background: #fff !important;
   width: 100% !important;
