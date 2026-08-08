@@ -5,6 +5,7 @@ import styles from './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
+import WhatWeDoSection from '../WhatWeDo/WhatWeDo';
 
 function getColumnsFromMQ() {
   if (typeof globalThis.matchMedia !== 'function') return 1;
@@ -65,9 +66,27 @@ function Collaboration() {
   const [columns, setColumns] = useState(() => getColumnsFromMQ());
   const [loadingJobs, setLoadingJobs] = useState(true);
   const [jobsFetchError, setJobsFetchError] = useState(null);
+  // KEEP ACTIVE TAB (required)
+  const [activeTab, setActiveTab] = useState('jobPostings');
 
   const darkMode = useSelector(state => state.theme?.darkMode);
   const history = useHistory();
+
+  const handleTabChange = tab => {
+    setActiveTab(tab);
+
+    if (tab === 'whatWeDo') {
+      // Leaving job/summaries view
+      setSummaries(null);
+    }
+
+    if (tab === 'jobPostings') {
+      // Returning to job postings
+      setSummaries(null);
+    }
+
+    globalThis.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const calculateAdsPerPage = () => {
     const rows = 5;
@@ -215,8 +234,11 @@ function Collaboration() {
 
   const handleSubmit = e => {
     e.preventDefault();
+
     setSummaries(null);
+    setActiveTab('jobPostings');
     setCurrentPage(1);
+
     fetchJobAds();
   };
 
@@ -225,6 +247,7 @@ function Collaboration() {
     setSelectedCategory(selectedValue || '');
     setCurrentPage(1);
     setSummaries(null);
+    setActiveTab('jobPostings');
     fetchJobAds({ category: selectedValue || '', page: 1 });
   };
 
@@ -247,6 +270,7 @@ function Collaboration() {
       setSummariesAll([]);
       setSummariesPage(1);
       setSummariesTotalPages(0);
+      setActiveTab('jobPostings');
       globalThis.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
       console.error('Error resetting filters:', error);
@@ -262,6 +286,7 @@ function Collaboration() {
 
   const handleShowSummaries = async () => {
     try {
+      setActiveTab('jobPostings');
       const response = await fetch(
         `${ApiEndpoint}/jobs/summaries?search=${encodeURIComponent(searchTerm)}` +
           `&category=${encodeURIComponent(selectedCategory)}`,
@@ -363,6 +388,13 @@ function Collaboration() {
 
         <div className={styles.collabContainer}>
           <nav className={styles.navbar}>
+            <button
+              type="button"
+              className={activeTab === 'whatWeDo' ? styles.activeTab : styles.tabButton}
+              onClick={() => handleTabChange('whatWeDo')}
+            >
+              What We Do
+            </button>
             <div className={styles.navbarLeft}>
               <form className={styles.searchForm} onSubmit={handleSubmit}>
                 <input
@@ -461,6 +493,13 @@ function Collaboration() {
 
       <div className={styles.collabContainer}>
         <nav className={styles.navbar}>
+          <button
+            type="button"
+            className={activeTab === 'whatWeDo' ? styles.activeTab : styles.tabButton}
+            onClick={() => handleTabChange('whatWeDo')}
+          >
+            What We Do
+          </button>
           <div className={styles.navbarLeft}>
             <form className={styles.searchForm} onSubmit={handleSubmit}>
               <input
@@ -492,109 +531,116 @@ function Collaboration() {
             </select>
           </div>
         </nav>
+        {activeTab === 'whatWeDo' ? (
+          <WhatWeDoSection />
+        ) : (
+          <>
+            <div className={styles.headings}>
+              <h1 className={styles.mainHeading}>LIKE TO WORK WITH US? APPLY NOW!</h1>
+            </div>
 
-        <div className={styles.headings}>
-          <h1 className={styles.mainHeading}>LIKE TO WORK WITH US? APPLY NOW!</h1>
-        </div>
+            <div className={styles.jobList}>
+              {(() => {
+                if (loadingJobs) {
+                  return <p className={styles.noJobads}>Loading jobs...</p>;
+                }
 
-        <div className={styles.jobList}>
-          {(() => {
-            if (loadingJobs) {
-              return <p className={styles.noJobads}>Loading jobs...</p>;
-            }
+                if (jobsFetchError) {
+                  return <p className={styles.noJobads}>{jobsFetchError}</p>;
+                }
 
-            if (jobsFetchError) {
-              return <p className={styles.noJobads}>{jobsFetchError}</p>;
-            }
+                // Show categories if no search term and no category filter
+                const shouldShowCategories = !searchTerm && !selectedCategory && jobAds.length > 0;
 
-            // Show categories if no search term and no category filter
-            const shouldShowCategories = !searchTerm && !selectedCategory && jobAds.length > 0;
+                if (shouldShowCategories) {
+                  const uniqueCategories = getUniqueCategories();
+                  if (uniqueCategories.length > 0) {
+                    return uniqueCategories.map(catInfo => {
+                      const categoryName = catInfo.category || 'General';
+                      const categoryImage = getCategoryImage(categoryName);
 
-            if (shouldShowCategories) {
-              const uniqueCategories = getUniqueCategories();
-              if (uniqueCategories.length > 0) {
-                return uniqueCategories.map(catInfo => {
-                  const categoryName = catInfo.category || 'General';
-                  const categoryImage = getCategoryImage(categoryName);
+                      return (
+                        <button
+                          type="button"
+                          key={categoryName}
+                          className={styles.jobAd}
+                          onClick={() => {
+                            setSelectedCategory(categoryName);
+                            setCurrentPage(1);
+                            setSummaries(null);
+                            setActiveTab('jobPostings');
+                            fetchJobAds({ category: categoryName, page: 1 });
+                          }}
+                        >
+                          <img
+                            src={categoryImage}
+                            alt={categoryName}
+                            loading="lazy"
+                            onError={e => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src =
+                                'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=640&h=480&fit=crop&q=80';
+                            }}
+                          />
+                          <h3 className={styles.categoryTitle}>{categoryName.toUpperCase()}</h3>
+                        </button>
+                      );
+                    });
+                  }
+                }
 
-                  return (
-                    <button
-                      type="button"
-                      key={categoryName}
-                      className={styles.jobAd}
-                      onClick={() => {
-                        setSelectedCategory(categoryName);
-                        setCurrentPage(1);
-                        fetchJobAds({ category: categoryName, page: 1 });
-                      }}
-                    >
-                      <img
-                        src={categoryImage}
-                        alt={categoryName}
-                        loading="lazy"
-                        onError={e => {
-                          e.currentTarget.onerror = null;
-                          e.currentTarget.src =
-                            'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=640&h=480&fit=crop&q=80';
-                        }}
-                      />
-                      <h3 className={styles.categoryTitle}>{categoryName.toUpperCase()}</h3>
-                    </button>
-                  );
-                });
-              }
-            }
+                if (jobAds.length > 0) {
+                  return jobAds.map(ad => {
+                    if (!ad?._id) return null;
+                    const jobTitle = ad.title || 'Untitled Position';
+                    const jobCategory = ad.category || 'General';
+                    const jobImageUrl = getCategoryImage(jobCategory);
 
-            if (jobAds.length > 0) {
-              return jobAds.map(ad => {
-                if (!ad?._id) return null;
-                const jobTitle = ad.title || 'Untitled Position';
-                const jobCategory = ad.category || 'General';
-                const jobImageUrl = getCategoryImage(jobCategory);
+                    return (
+                      <button
+                        type="button"
+                        key={ad._id}
+                        className={styles.jobAd}
+                        onClick={() => navigateToJobApplication(ad, jobTitle, jobCategory)}
+                      >
+                        <img
+                          src={jobImageUrl}
+                          alt={jobTitle}
+                          loading="lazy"
+                          onError={e => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src =
+                              'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=640&h=480&fit=crop&q=80';
+                          }}
+                        />
+                        <h3>
+                          {jobTitle} - {jobCategory}
+                        </h3>
+                      </button>
+                    );
+                  });
+                }
 
-                return (
+                return <p className={styles.noJobads}>No matching jobs found.</p>;
+              })()}
+            </div>
+
+            {totalPages > 1 && (
+              <div className={styles.pagination}>
+                {Array.from({ length: totalPages }, (_, i) => (
                   <button
                     type="button"
-                    key={ad._id}
-                    className={styles.jobAd}
-                    onClick={() => navigateToJobApplication(ad, jobTitle, jobCategory)}
+                    key={i}
+                    onClick={() => setPage(i + 1)}
+                    disabled={currentPage === i + 1}
+                    className={darkMode ? 'bg-space-cadet text-light border-0' : ''}
                   >
-                    <img
-                      src={jobImageUrl}
-                      alt={jobTitle}
-                      loading="lazy"
-                      onError={e => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src =
-                          'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=640&h=480&fit=crop&q=80';
-                      }}
-                    />
-                    <h3>
-                      {jobTitle} - {jobCategory}
-                    </h3>
+                    {i + 1}
                   </button>
-                );
-              });
-            }
-
-            return <p className={styles.noJobads}>No matching jobs found.</p>;
-          })()}
-        </div>
-
-        {totalPages > 1 && (
-          <div className={styles.pagination}>
-            {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                type="button"
-                key={i}
-                onClick={() => setPage(i + 1)}
-                disabled={currentPage === i + 1}
-                className={darkMode ? 'bg-space-cadet text-light border-0' : ''}
-              >
-                {i + 1}
-              </button>
-            ))}
-          </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

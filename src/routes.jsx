@@ -1193,11 +1193,11 @@ export default (
         />
         <ProtectedRoute path="/pr-dashboard/overview" exact component={PRDashboardOverview} />
         <ProtectedRoute path="/pr-dashboard/analytics" exact component={PRReviewTeamAnalytics} />
-        <ProtectedRoute
+        {/* <ProtectedRoute
           path="/pr-dashboard/promotion-eligibility"
           exact
           component={PRDashboardPromotionEligibility}
-        />
+        /> */}
         <ProtectedRoute
           path="/pr-dashboard/top-reviewed-prs"
           exact
