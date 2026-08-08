@@ -16,7 +16,6 @@ import axios from 'axios';
 import styles from './TotalMaterialCostPerProject.module.css';
 import { ENDPOINTS } from '~/utils/URL';
 import Loading from '~/components/common/Loading';
-import PropTypes from 'prop-types';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -259,7 +258,5 @@ function TotalMaterialCostPerProject() {
     </div>
   );
 }
-
-TotalMaterialCostPerProject.propTypes = {};
 
 export default TotalMaterialCostPerProject;
