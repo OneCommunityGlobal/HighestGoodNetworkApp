@@ -349,6 +349,7 @@ setSelectTeam(team);        // optional, remove if unused
 
     setInputs(initialForm);
     setErrors({});
+    toast.success('Lost time entry added successfully.');
     if (props.isOpen) props.toggle();
   };
 
