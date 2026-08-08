@@ -8,6 +8,14 @@
   align-items: center;
 }
 
+.badgeBoxShadow {
+  box-shadow: 2px 2px 4px 1px lightgray;
+}
+
+.badgeBoxShadowDark {
+  box-shadow: 2px 2px 4px 1px black;
+}
+
 .title {
   font-size: 1.5rem;
   font-weight: 600;

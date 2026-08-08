@@ -87,7 +87,6 @@
   min-width: 128px;
   font-size: 14px;
   background: var(--section-bg);
-<<<<<<< HEAD
   color: var(--text-color);
   transition: all 0.3s ease;
   appearance: none;
@@ -107,8 +106,6 @@
 .weeklySummaryHeaderControls select:focus {
   outline: none;
   border-color: var(--focus-border-color, #3b82f6);
-=======
->>>>>>> ee8e13e31 (fix sonarqube: duplicate & commented code)
 }
 
 .weeklySummaryHeaderControls select:hover {

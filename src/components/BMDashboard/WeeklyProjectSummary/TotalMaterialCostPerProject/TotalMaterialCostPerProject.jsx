@@ -260,8 +260,6 @@ function TotalMaterialCostPerProject() {
   );
 }
 
-TotalMaterialCostPerProject.propTypes = {
-  selectStyles: PropTypes.object.isRequired,
-};
+TotalMaterialCostPerProject.propTypes = {};
 
 export default TotalMaterialCostPerProject;
