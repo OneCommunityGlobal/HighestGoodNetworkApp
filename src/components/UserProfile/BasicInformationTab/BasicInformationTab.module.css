@@ -79,3 +79,7 @@
 :global(.bg-yinmn-blue) .dark-label-col {
   background-color: #1c2541 !important;
 }
+
+.darkModeText {
+  color: white;
+}
