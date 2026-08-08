@@ -795,12 +795,7 @@ const TeamMemberTasks = React.memo(props => {
           </thead>
 
           <tbody className={darkMode ? styles.darkTbody : ''}>
-            {teamList.length === 0 || !selectionsLoaded ? (
-              <SkeletonLoading
-                template="TeamMemberTasks"
-                data-testid="skeleton-loading-team-member-tasks-row"
-              />
-            ) : (
+            {selectionsLoaded && teamList.length > 0 ? (
               teamList
                 .filter(user => filterByUserFeatures(user))
                 .map(user => {
@@ -868,6 +863,11 @@ const TeamMemberTasks = React.memo(props => {
                     </Fragment>
                   );
                 })
+            ) : (
+              <SkeletonLoading
+                template="TeamMemberTasks"
+                data-testid="skeleton-loading-team-member-tasks-row"
+              />
             )}
           </tbody>
         </Table>
@@ -876,20 +876,29 @@ const TeamMemberTasks = React.memo(props => {
   );
 });
 
+const userShape = PropTypes.shape({
+  _id: PropTypes.string,
+  role: PropTypes.string,
+  userid: PropTypes.string,
+  permissions: PropTypes.shape({
+    frontPermissions: PropTypes.arrayOf(PropTypes.string),
+  }),
+});
+
 TeamMemberTasks.propTypes = {
-  authUser: PropTypes.shape({
-    userid: PropTypes.string,
-    role: PropTypes.string,
-  }),
-  displayUser: PropTypes.shape({
-    _id: PropTypes.string,
-    role: PropTypes.string,
-    email: PropTypes.string,
-  }),
+  authUser: userShape,
+  displayUser: userShape,
   usersWithTasks: PropTypes.arrayOf(PropTypes.object),
   usersWithTimeEntries: PropTypes.arrayOf(PropTypes.object),
   darkMode: PropTypes.bool,
   filteredUserTeamIds: PropTypes.arrayOf(PropTypes.string),
+  auth: PropTypes.shape({
+    user: PropTypes.shape({
+      permissions: PropTypes.shape({
+        frontPermissions: PropTypes.arrayOf(PropTypes.string),
+      }),
+    }),
+  }),
 };
 
 const mapStateToProps = state => ({

@@ -596,7 +596,10 @@ class UserProfileEdit extends Component {
       adminLinks,
       infringements,
       privacySettings,
+      identityLocked,
     } = userProfile;
+
+    const identityFieldsLocked = Boolean(identityLocked);
 
     const isUserSelf = targetUserId === requestorId;
     let canEditFields;
@@ -819,6 +822,8 @@ class UserProfileEdit extends Component {
                               className={styleProfile.profileText}
                               onChange={this.handleUserProfile}
                               placeholder="First Name"
+                              disabled={!canEditFields || identityFieldsLocked}
+                              readOnly={identityFieldsLocked}
                               invalid={!this.state.formValid.firstName}
                             />
                             <FormFeedback>First Name Can&apos;t be null</FormFeedback>
@@ -834,6 +839,8 @@ class UserProfileEdit extends Component {
                               className={styleProfile.profileText}
                               onChange={this.handleUserProfile}
                               placeholder="Last Name"
+                              disabled={!canEditFields || identityFieldsLocked}
+                              readOnly={identityFieldsLocked}
                               invalid={!this.state.formValid.lastName}
                             />
                             <FormFeedback>Last Name Can&apos;t be Null</FormFeedback>
@@ -859,6 +866,8 @@ class UserProfileEdit extends Component {
                               value={email}
                               onChange={this.handleUserProfile}
                               placeholder="Email"
+                              disabled={!canEditFields || identityFieldsLocked}
+                              readOnly={identityFieldsLocked}
                               invalid={!this.state.formValid.email}
                             />
                             <FormFeedback>Email is not Valid</FormFeedback>

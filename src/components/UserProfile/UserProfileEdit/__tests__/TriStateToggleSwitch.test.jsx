@@ -1,97 +1,133 @@
 import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import TriStateToggleSwitch from '../ToggleSwitch/TriStateToggleSwitch';
 
 describe('TriStateToggleSwitch Component', () => {
   it('initializes state based on pos prop and applies correct background color', () => {
-    const { rerender } = render(<TriStateToggleSwitch pos="posted" />);
-
-    expect(screen.getByTestId('toggle-switch').className).toMatch(/bg-blue/);
-    expect(screen.getByTestId('knob').className).toMatch(/posted/);
+    const { container, rerender } = render(<TriStateToggleSwitch pos="posted" />);
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    const wrapper = container.querySelector('.toggle-switch');
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    const knob = container.querySelector('.knob');
+    
+    expect(wrapper).toHaveClass('toggle-switch', 'bg-blue');
+    expect(knob).toHaveClass('posted');
 
     rerender(<TriStateToggleSwitch pos="default" />);
-    expect(screen.getByTestId('toggle-switch').className).toMatch(/bg-darkgray/);
-    expect(screen.getByTestId('knob').className).toMatch(/default/);
+    expect(wrapper).toHaveClass('toggle-switch', 'bg-darkgray');
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    expect(container.querySelector('.knob')).toHaveClass('default');
 
+    
     rerender(<TriStateToggleSwitch pos="requested" />);
-    expect(screen.getByTestId('toggle-switch').className).toMatch(/bg-green/);
-    expect(screen.getByTestId('knob').className).toMatch(/requested/);
+    expect(wrapper).toHaveClass('toggle-switch', 'bg-green');
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    expect(container.querySelector('.knob')).toHaveClass('requested');
   });
 
   it('calls onChange and updates state and bgColor on click for all states', () => {
     const handleChange = vi.fn();
-    render(<TriStateToggleSwitch pos="default" onChange={handleChange} />);
+    const { container } = render(<TriStateToggleSwitch pos="default" onChange={handleChange} />);
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    const wrapper = container.querySelector('.toggle-switch');
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    const options = container.querySelectorAll('.knob-area button');
 
-    fireEvent.click(screen.getByTestId('option-posted'));
+
+    fireEvent.click(options[0]);
     expect(handleChange).toHaveBeenCalledWith('posted');
-    expect(screen.getByTestId('toggle-switch').className).toMatch(/bg-blue/);
-    expect(screen.getByTestId('knob').className).toMatch(/posted/);
+    expect(wrapper).toHaveClass('bg-blue');
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    expect(container.querySelector('.knob')).toHaveClass('posted');
 
-    handleChange.mockClear();
-    fireEvent.click(screen.getByTestId('option-default'));
+     handleChange.mockClear();
+    fireEvent.click(options[1]);
     expect(handleChange).toHaveBeenCalledWith('default');
-    expect(screen.getByTestId('toggle-switch').className).toMatch(/bg-darkgray/);
-    expect(screen.getByTestId('knob').className).toMatch(/default/);
+    expect(wrapper).toHaveClass('bg-darkgray');
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    expect(container.querySelector('.knob')).toHaveClass('default');
 
     handleChange.mockClear();
-    fireEvent.click(screen.getByTestId('option-requested'));
+    fireEvent.click(options[2]);
     expect(handleChange).toHaveBeenCalledWith('requested');
-    expect(screen.getByTestId('toggle-switch').className).toMatch(/bg-green/);
-    expect(screen.getByTestId('knob').className).toMatch(/requested/);
+    expect(wrapper).toHaveClass('bg-green');
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    expect(container.querySelector('.knob')).toHaveClass('requested');
   });
 
   it('does not throw if onChange is not provided', () => {
-    render(<TriStateToggleSwitch pos="default" />);
-    expect(() => fireEvent.click(screen.getByTestId('option-posted'))).not.toThrow();
-    expect(screen.getByTestId('toggle-switch').className).toMatch(/bg-blue/);
-    expect(screen.getByTestId('knob').className).toMatch(/posted/);
+    const { container } = render(<TriStateToggleSwitch pos="default" />);
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    const options = container.querySelectorAll('.knob-area button');
+
+    expect(() => fireEvent.click(options[0])).not.toThrow();
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    const wrapper = container.querySelector('.toggle-switch');
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    expect(wrapper).toHaveClass('bg-blue');
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    expect(container.querySelector('.knob')).toHaveClass('posted');
   });
 
   it('does not call onChange on mount or prop change', () => {
     const handleChange = vi.fn();
     const { rerender } = render(<TriStateToggleSwitch pos="posted" onChange={handleChange} />);
+    
     expect(handleChange).not.toHaveBeenCalled();
 
+    
     rerender(<TriStateToggleSwitch pos="default" onChange={handleChange} />);
     expect(handleChange).not.toHaveBeenCalled();
   });
 
   it('renders exactly three clickable areas for each state option', () => {
-    render(<TriStateToggleSwitch pos="requested" />);
-    // eslint-disable-next-line
-    expect(screen.getByTestId('knob-area').children.length).toBe(3);
+    const { container } = render(<TriStateToggleSwitch pos="requested" />);
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    const options = container.querySelectorAll('.knob-area button');
+    expect(options).toHaveLength(3);
   });
 
   it('wrapper always includes the toggle-switch class', () => {
-    render(<TriStateToggleSwitch pos="default" />);
-    expect(screen.getByTestId('toggle-switch')).toBeInTheDocument();
+    const { container } = render(<TriStateToggleSwitch pos="default" />);
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    const wrapper = container.querySelector('.toggle-switch');
+    expect(wrapper).toBeInTheDocument();
   });
 
   it('wrapper has exactly two classes (toggle-switch and bg-color) for each state', () => {
-    const { rerender } = render(<TriStateToggleSwitch pos="default" />);
+    const { container, rerender } = render(<TriStateToggleSwitch pos="default" />);
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    const wrapper = container.querySelector('.toggle-switch');
+    
+    expect(wrapper.classList).toHaveLength(2);
+    expect(wrapper.classList.contains('toggle-switch')).toBe(true);
+    expect(wrapper.classList.contains('bg-darkgray')).toBe(true);
 
-    expect(screen.getByTestId('toggle-switch').classList).toHaveLength(2);
-    expect(screen.getByTestId('toggle-switch').className).toMatch(/toggle-switch/);
-    expect(screen.getByTestId('toggle-switch').className).toMatch(/bg-darkgray/);
-
+    
     rerender(<TriStateToggleSwitch pos="posted" />);
-    expect(screen.getByTestId('toggle-switch').classList).toHaveLength(2);
-    expect(screen.getByTestId('toggle-switch').className).toMatch(/bg-blue/);
+    expect(wrapper.classList).toHaveLength(2);
+    expect(wrapper.classList.contains('bg-blue')).toBe(true);
 
+    
     rerender(<TriStateToggleSwitch pos="requested" />);
-    expect(screen.getByTestId('toggle-switch').classList).toHaveLength(2);
-    expect(screen.getByTestId('toggle-switch').className).toMatch(/bg-green/);
+    expect(wrapper.classList).toHaveLength(2);
+    expect(wrapper.classList.contains('bg-green')).toBe(true);
   });
 
   it('allows sequential clicking through all states', () => {
     const handleChange = vi.fn();
-    render(<TriStateToggleSwitch pos="default" onChange={handleChange} />);
+    const { container } = render(<TriStateToggleSwitch pos="default" onChange={handleChange} />);
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    const options = container.querySelectorAll('.knob-area button');
 
-    ['posted', 'default', 'requested'].forEach(state => {
-      fireEvent.click(screen.getByTestId(`option-${state}`));
-      expect(handleChange).toHaveBeenLastCalledWith(state);
-      expect(screen.getByTestId('knob').className).toMatch(new RegExp(state));
+    options.forEach((option, idx) => {
+      fireEvent.click(option);
+      const expected = ['posted', 'default', 'requested'][idx];
+      expect(handleChange).toHaveBeenLastCalledWith(expected);
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+      expect(container.querySelector('.knob')).toHaveClass(expected);
     });
   });
+
 });
