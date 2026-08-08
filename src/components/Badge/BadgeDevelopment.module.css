@@ -71,3 +71,8 @@
   background-color: #1c1c1c;
   color: #fff;
 }
+
+.rangeInputDark {
+  accent-color: #90caf9;
+  filter: brightness(0.8);
+}

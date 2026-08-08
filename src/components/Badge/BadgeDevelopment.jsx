@@ -56,7 +56,7 @@ function BadgeDevelopment(props) {
         className={`btn--dark-sea-green ${getDark(darkMode, styles.btnDark, styles.btn)}`}
         onClick={toggleFilters}
       >
-        {isAddFiltersOpen ? 'Remove Filters' : 'Add Filters'}
+        {isAddFiltersOpen ? 'Hide Filters' : 'Add Filters'}
       </Button>
       {isAddFiltersOpen && (
         <div className={styles.filtersContainer}>
@@ -94,6 +94,7 @@ function BadgeDevelopment(props) {
               max="300"
               value={rankFilter}
               onChange={e => setRankFilter(e.target.value)}
+              className={getDark(darkMode, styles.rangeInputDark)}
             />
             <p
               className={`${styles.filterLabelMid} ${getDark(darkMode, 'text-light', 'text-dark')}`}
@@ -124,7 +125,10 @@ function BadgeDevelopment(props) {
       </Modal>
       <br />
       {filteredBadgeData.length === 0 ? (
-        <p> No badges match the current filters.</p>
+        <p className={getDark(darkMode, 'text-light', 'text-dark')}>
+          {' '}
+          No badges match the current filters.
+        </p>
       ) : (
         <BadgeDevelopmentTable allBadgeData={filteredBadgeData} />
       )}

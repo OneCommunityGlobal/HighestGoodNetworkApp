@@ -77,7 +77,6 @@ describe('Weekly Summaries', () => {
       };
 
       axios.get.mockResolvedValue({ data: mockData, status: 200 });
-      axios.get.mockResolvedValue({ data: mockData, status: 200 });
 
       const result = await getWeeklySummaries(1)(dispatch);
 
