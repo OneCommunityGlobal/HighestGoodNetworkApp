@@ -7,6 +7,40 @@ import { useSelector } from 'react-redux';
 import { ApiEndpoint } from '~/utils/URL';
 import styles from './RescheduleEvent.module.css';
 
+export async function postRescheduleNotify(baseApi, id, payload) {
+  const token = localStorage.getItem('token');
+  const headers = { 'Content-Type': 'application/json' };
+  if (token) headers.Authorization = token;
+
+  const res = await fetch(`${baseApi}/communityportal/activities/${id}/reschedule/notify`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const contentType = (res.headers.get('content-type') || '').toLowerCase();
+    if (contentType.includes('application/json')) {
+      const body = await res.json().catch(() => null);
+      if (body && typeof body.message === 'string') {
+        throw new Error(body.message);
+      }
+      if (body && typeof body.error === 'string') {
+        throw new Error(body.error);
+      }
+
+      // Do not expose raw objects to users; show a safe generic message
+      throw new Error('Unable to send the reschedule notification. Please try again.');
+    }
+
+    const text = await res.text().catch(() => null);
+    if (process.env.NODE_ENV !== 'production') console.error('Non-JSON error response:', text);
+    throw new Error('Unable to send the reschedule notification. Please try again.');
+  }
+
+  return res.json();
+}
+
 function RescheduleEvent({ activity }) {
   const { activityId: routeActivityId } = useParams();
   const history = useHistory();
@@ -124,24 +158,7 @@ function RescheduleEvent({ activity }) {
     });
 
   const sendRescheduleRequest = async (id, payload) => {
-    const token = localStorage.getItem('token');
-    const headers = { 'Content-Type': 'application/json' };
-    if (token) {
-      headers.Authorization = token;
-    }
-
-    const res = await fetch(`${ApiEndpoint}/communityportal/activities/${id}/reschedule/notify`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(payload),
-    });
-
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(text || `HTTP ${res.status}`);
-    }
-
-    return res.json();
+    return postRescheduleNotify(ApiEndpoint, id, payload);
   };
 
   const handleCreateAndNotify = async () => {
@@ -161,7 +178,6 @@ function RescheduleEvent({ activity }) {
           ? `Poll created successfully. Email delivery was skipped locally for ${json.skipped} participants.`
           : `Notification sent to ${json.notified} participants.`;
 
-      setLoading(false);
       history.replace('/communityportal/activities');
 
       window.setTimeout(() => {
@@ -169,10 +185,11 @@ function RescheduleEvent({ activity }) {
         alert(successMessage);
       }, 0);
     } catch (e) {
-      setLoading(false);
-
+      // Prefer the safe message already thrown from the request helper. Avoid rendering raw HTML.
       // eslint-disable-next-line no-alert
-      alert(`Error: ${e.message}`);
+      alert(e?.message || 'Unable to send the reschedule notification. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
