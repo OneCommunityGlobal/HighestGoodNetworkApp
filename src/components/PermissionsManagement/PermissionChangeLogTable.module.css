@@ -7,13 +7,13 @@
 }
 
 .highlight-row {
-  background-color: #e0f7fa;
-  border-left: 4px solid #00bcd4;
+  background-color: #e0f7fa;           
+  border-left: 4px solid #00bcd4;      
   transition: background 0.2s ease;
 }
 
 .highlight-row:hover {
-  background-color: #b2ebf2;
+  background-color: #b2ebf2;           
 }
 
 .darkModeRow:hover {
@@ -22,7 +22,7 @@
 
 .dark-highlight-row {
   background-color: #012758;
-  border-left: 4px solid #007281;
+  border-left: 4px solid #007281;      
   transition: background 0.2s ease;
 }
 
