@@ -15,6 +15,7 @@ import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
+import InventoryNavBar from '../InventoryTypesList/InventoryNavBar';
 import MaterialSummaryPanel from '../MaterialList/MaterialSummaryPanel';
 import styles from './ItemListView.module.css';
 import { Form, FormGroup, Label } from 'reactstrap';
@@ -51,6 +52,17 @@ export function ItemListView({
   const [localValues, setLocalValues] = useState([]);
   const [isError, setIsError] = useState(false);
   const [selectedTime, setSelectedTime] = useState(new Date());
+
+  const projectKey = `${itemType}_selected_projects`;
+  const itemKey = `${itemType}_selected_items`;
+
+  const handleReset = () => {
+    setLocalValues([]);
+    setSelectedProject([]);
+    setSelectedItem([]);
+    localStorage.removeItem(projectKey);
+    localStorage.removeItem(itemKey);
+  };
 
   const isMaterialsView = itemType === 'Materials';
   const [searchQuery, setSearchQuery] = useState('');
@@ -317,31 +329,20 @@ export function ItemListView({
             {totalItems} {totalItems === 1 ? 'material' : 'materials'} found
           </div>
         </div>
-        {children}
-        <>
-          {isMaterialsView && (
+
+        {filteredItems && (
+          <>
             <MaterialSummaryPanel materials={filteredItems} darkMode={darkMode} />
-          )}
-          <ItemsTable
-            selectedProject={selectedProject}
-            selectedItem={selectedItem}
-            filteredItems={paginatedItems}
-            UpdateItemModal={UpdateItemModal}
-            dynamicColumns={dynamicColumns}
-            darkMode={darkMode}
-            itemType={itemType}
-            sortConfig={sortConfig}
-            onSort={handleSort}
-            totalItems={totalItems}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            rowsPerPage={rowsPerPage}
-            startRow={startRow}
-            endRow={endRow}
-            onPageChange={setCurrentPage}
-            onRowsPerPageChange={setRowsPerPage}
-          />
-        </>
+            <ItemsTable
+              selectedProject={selectedProject}
+              selectedItem={selectedItem}
+              filteredItems={filteredItems}
+              UpdateItemModal={UpdateItemModal}
+              dynamicColumns={dynamicColumns}
+              darkMode={darkMode}
+            />
+          </>
+        )}
       </section>
     </main>
   );

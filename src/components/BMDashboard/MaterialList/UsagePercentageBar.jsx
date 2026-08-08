@@ -55,15 +55,14 @@ export default function UsagePercentageBar({ material, darkMode = false }) {
     <>
       <div id={tooltipId} className={`${styles.usageContainer} ${darkMode ? styles.darkMode : ''}`}>
         <div className={`${styles.barWrapper}`}>
-          <div
+          <progress
             className={`${styles.progressBar} ${styles[usageColor]}`}
-            style={{ width: `${usagePctClamped}%` }}
-            role="progressbar"
-            aria-valuenow={usagePctClamped}
-            aria-valuemin={0}
-            aria-valuemax={100}
+            value={usagePctClamped}
+            max={100}
             aria-label={`Usage: ${usagePct}%`}
-          />
+          >
+            {usagePct}%
+          </progress>
         </div>
         <span className={`${styles.usageLabel}`}>
           {used} / {bought} ({usagePct}%)
