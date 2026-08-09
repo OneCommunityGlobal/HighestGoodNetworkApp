@@ -9,17 +9,16 @@ import clsx from 'clsx';
 
 export function PeopleTasksPieChart({ darkMode }) {
   const {
+    showProjectsPieChart,
     tasksLegend,
     hoursLoggedToProjectsOnly,
   } = useSelector(peopleTasksPieChartViewData);
-
-  const hasProjectData = hoursLoggedToProjectsOnly.length > 0;
-
+  
   return (
     <div
-    className={clsx(styles['people-pie-charts-wrapper'], !hasProjectData && styles['full-height'])}
+    className={clsx(styles['people-pie-charts-wrapper'], !showProjectsPieChart && styles['full-height'])}
     >
-      {hasProjectData && (
+      {showProjectsPieChart && (
         <div>
           <h5 className={styles['people-pie-charts-header']}>Time Logged to Projects/Non-tasks</h5>
 
@@ -31,7 +30,7 @@ export function PeopleTasksPieChart({ darkMode }) {
           />
         </div>
       )}
-      {!hasProjectData && (
+      {!showProjectsPieChart && (
           <div className={styles['pie-empty-state-inner']} role="status">
             <div className={styles['pie-empty-state-icon']} aria-hidden="true">
               <FiFolder size={20}/>
