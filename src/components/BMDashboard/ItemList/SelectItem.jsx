@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Form, FormGroup, Label } from 'reactstrap';
+
 import Select from 'react-select';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
@@ -69,24 +69,24 @@ export default function SelectItem({
   };
 
   return (
-    <Form className={styles.filterItem} onSubmit={e => e.preventDefault()}>
-      <FormGroup className={styles.selectInput}>
-        <Label htmlFor="select-item">{label ? `${label}:` : 'Item:'}</Label>
-        <Select
-          inputId="select-item"
-          isMulti
-          isSearchable
-          isClearable
-          options={itemOptions}
-          value={localValues}
-          onChange={handleChange}
-          isDisabled={!items?.length}
-          placeholder={`Search or select ${label || 'items'}...`}
-          classNamePrefix="react-select"
-          styles={getReactSelectStyles(darkMode)}
-        />
-      </FormGroup>
-    </Form>
+    <div className={styles.filterItem}>
+      <label htmlFor="select-item" style={{ fontWeight: 'bold' }}>
+        {label ? `${label}:` : 'Item:'}
+      </label>
+      <Select
+        inputId="select-item"
+        isMulti
+        isSearchable
+        isClearable
+        options={itemOptions}
+        value={localValues}
+        onChange={handleChange}
+        isDisabled={!items?.length}
+        placeholder={`Search or select ${label || 'items'}...`}
+        classNamePrefix="react-select"
+        styles={getReactSelectStyles(darkMode)}
+      />
+    </div>
   );
 }
 

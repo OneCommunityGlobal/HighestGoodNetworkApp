@@ -104,6 +104,11 @@ export default function ItemsTable({
     return base;
   };
 
+  // Remove Project and Name from the dynamic list so they don't render twice
+  const filteredDynamicColumns = (dynamicColumns || []).filter(
+    col => col.label !== 'Project' && col.label !== 'Name',
+  );
+
   return (
     <>
       <RecordsModal
@@ -162,7 +167,7 @@ export default function ItemsTable({
               >
                 Name <FontAwesomeIcon icon={getIconFor('name')} size="lg" />
               </th>
-              {(dynamicColumns || []).map(({ label, key }) => {
+              {(filteredDynamicColumns || []).map(({ label, key }) => {
                 const sortKey = dynamicSortKeyByLabel[label];
                 const clickable = Boolean(sortKey);
                 return (
@@ -213,7 +218,7 @@ export default function ItemsTable({
                 >
                   <td style={darkMode ? { color: '#ffffff' } : {}}>{el.project?.name}</td>
                   <td style={darkMode ? { color: '#ffffff' } : {}}>{el.itemType?.name}</td>
-                  {dynamicColumns.map(({ label, key }) => (
+                  {filteredDynamicColumns.map(({ label, key }) => (
                     <td key={label} style={darkMode ? { color: '#ffffff' } : {}}>
                       {getNestedValue(el, key) ?? 'N/A'}
                     </td>

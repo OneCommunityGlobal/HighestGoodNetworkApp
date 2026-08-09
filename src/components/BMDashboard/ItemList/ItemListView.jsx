@@ -18,7 +18,6 @@ import ItemsTable from './ItemsTable';
 import InventoryNavBar from '../InventoryTypesList/InventoryNavBar';
 import MaterialSummaryPanel from '../MaterialList/MaterialSummaryPanel';
 import styles from './ItemListView.module.css';
-import { Form, FormGroup, Label } from 'reactstrap';
 
 const allCategories = [
   { label: 'Materials', route: '/bmdashboard/materials', icon: <FaCubes /> },
@@ -220,8 +219,10 @@ export function ItemListView({
         <span>
           {items && (
             <div className={`${styles.selectInput}`}>
-              <div className={styles.inlineField}>
-                <label htmlFor="itemListTime">Time:</label>
+              <div className={styles.filterItem}>
+                <label htmlFor="itemListTime" style={{ fontWeight: 'bold' }}>
+                  Time:
+                </label>
                 <div className={styles.datePickerCell}>
                   <DatePicker
                     selected={selectedTime}
@@ -258,23 +259,21 @@ export function ItemListView({
                 darkMode={darkMode}
               />
 
-              <div className={styles.resetContainer}>
-                <Form onSubmit={e => e.preventDefault()}>
-                  <FormGroup>
-                    <Label>&nbsp;</Label>
-                    <button
-                      type="button"
-                      className={styles.btnReset}
-                      onClick={handleReset}
-                      disabled={
-                        localStorage.getItem(projectKey) === null &&
-                        localStorage.getItem(itemKey) === null
-                      }
-                    >
-                      Reset
-                    </button>
-                  </FormGroup>
-                </Form>
+              <div className={styles.filterItem}>
+                <span style={{ fontWeight: 'bold' }} aria-hidden="true">
+                  &nbsp;
+                </span>
+                <button
+                  type="button"
+                  className={styles.btnReset}
+                  onClick={handleReset}
+                  disabled={
+                    localStorage.getItem(projectKey) === null &&
+                    localStorage.getItem(itemKey) === null
+                  }
+                >
+                  Reset
+                </button>
               </div>
             </div>
           )}
