@@ -1,5 +1,5 @@
 /* stylelint-disable declaration-property-value-no-unknown, no-descending-specificity */
-.wrapper.container-fluid {
+.wrapper {
   overflow-x: auto;
   width: 100%;
   max-width: 100%;
@@ -56,7 +56,7 @@
 }
 
 /* Profile picture styling */
-.people-table-row .img-circle {
+.img-circle {
   border-radius: 50%;
   height: 30px;
   width: 30px;
@@ -64,6 +64,30 @@
   display: inline-block;
   margin-right: 4px;
   vertical-align: middle;
+}
+
+.name {
+  display: inline-block;
+  margin-right: 4px;
+}
+
+.resourceMoreToggle {
+  display: inline-block;
+  margin-left: 4px;
+  cursor: pointer;
+}
+
+.dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #bbb;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
 }
 
 .people-table-row:hover {
@@ -190,7 +214,7 @@
   overflow: hidden;
 }
 
-.text-dark {
+.task-card-dark {
   color: black;
 }
 
@@ -261,13 +285,13 @@
 }
 
 /* Dark mode styling for Clear Filters button */
-.text-light .tasks-table-clear-filter-button {
+.wrapperDark .tasks-table-clear-filter-button {
   background-color: #232946 !important;
   border: 2px solid #5A67D8 !important;
   color: #fff !important;
 }
 
-.text-light .tasks-table-clear-filter-button:hover {
+.wrapperDark .tasks-table-clear-filter-button:hover {
   background-color: #1C2541 !important;
   border-color: #ca50db !important;
 }
@@ -288,7 +312,7 @@
   width: 100%;
 }
 
-.wrapperDark :global(.people-table-scrollable) {
+.wrapperDark .people-table-scrollable {
   background-color: #162032;
   border: 1px solid #3a4460;
   border-radius: 8px;
@@ -296,40 +320,40 @@
 }
 
 /* Dark mode for mobile modal cards */
-.task-card.text-dark {
+.task-card.task-card-dark {
   background-color: #232946;
   color: #fff;
   border: 1px solid #444;
 }
 
-.task-card.text-dark .task-header {
+.task-card.task-card-dark .task-header {
   background-color: #1a1a2e;
   color: #fff;
 }
 
-.task-card.text-dark .task-status {
+.task-card.task-card-dark .task-status {
   background-color: #ca50db;
   color: #fff;
 }
 
-.task-card.text-dark .task-info {
+.task-card.task-card-dark .task-info {
   color: #fff;
 }
 
-.task-card.text-dark .sub-head,
-.task-card.text-dark .sub-details {
+.task-card.task-card-dark .sub-head,
+.task-card.task-card-dark .sub-details {
   color: #fff;
 }
 
 /* Modal textarea dark mode */
-.text-dark .rectangle {
+.task-card-dark .rectangle {
   background: #232946;
   color: #fff;
   border: 1.5px solid #444;
 }
 
 /* Desktop table dark mode */
-.bg-space-cadet {
+.reports-table-head-dark {
   background-color: #1a1a2e !important;
   color: #fff !important;
 }
@@ -340,7 +364,7 @@
 }
 
 .people-table-row-dark > div,
-.bg-space-cadet > div {
+.reports-table-head-dark > div {
   color: #fff !important;
 }
 
@@ -351,13 +375,13 @@
 
 /* Table cell border for dark mode */
 .people-table-row-dark,
-.bg-space-cadet {
+.reports-table-head-dark {
   border-bottom: 2px solid #444 !important;
 }
 
 /* Table textarea dark mode */
 .people-table-row-dark .rectangle,
-.bg-space-cadet .rectangle {
+.reports-table-head-dark .rectangle {
   background: #232946;
   color: #fff;
   border: 1.5px solid #444;
