@@ -5,7 +5,7 @@ import httpService from '~/services/httpService';
 import { getDateRange, dateOptions } from './filters';
 import ConvertedApplicationGraph from './ConvertedApplicationGraph';
 import NonConvertedApplicationsGraph from './NonConvertedApplicationsGraph';
-import styles from '../JobAnalytics/jobanalyticspage.module.css';
+import styles from '../JobAnalytics/JobAnalyticsPage.module.css';
 
 function JobAnalyticsPage() {
   const [convertedData, setConvertedData] = useState([]);
