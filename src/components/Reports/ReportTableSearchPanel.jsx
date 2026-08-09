@@ -62,7 +62,7 @@ function ReportTableSearchPanel({ onSearch, wildCardSearchText, onSearchClick })
 
   return (
     <div>
-      <div className={`input-group ${styles['report-filter-form-row']}`} id="new_team">
+      <div className={`input-group`} id="new_team">
         <div className="input-group-prepend">
           <button
             type="button"
