@@ -3,35 +3,26 @@ import { Button } from 'reactstrap';
 import EditConfirmModal from '../UserProfileModal/EditConfirmModal';
 import { boxStyle, boxStyleDark } from '~/styles';
 
-const restoreScrollPosition = scrollY => {
-  requestAnimationFrame(() => {
-   requestAnimationFrame(() => {
-      window.scrollTo(0, scrollY);
-    });
-   });
-};
-
 /**
- *
  * @returns A random message displayed to the user after saving changes to a user profile
  */
 const getRandomMessage = () => {
-  const messages = [
-    'If you are one of those people who are secure in your belief that your updates were saved, you don’t need this. Otherwise, know that, despite the best efforts of hoards of computer gremlins, hackers, and any lingering bad computer karma you may have, your updates have been successfully saved! Way to go!',
-    'Research has shown that a fun workplace is not only more enjoyable, but also more productive. So, enjoy a little chuckle knowing the HGN electronic minions have reviewed your updated information, approved it, and stamped it on their foreheads so they won’t forget… or so they think. Their lives are complete now, and it’s all because of this successful update and save! \n' +
-      '✺◟( ͡° ͜ʖ ͡°)◞✺\n',
-    'Walla! YOU are a Super Saver. You clicked the “save” button and it worked! Well done, Jedi masters salute you!',
-    'Way to go Champion, your update has been saved! Before you close this window, take a moment to bask in your own awesomeness. Think you dont deserve it? Think again! Many people forget to save their changes, you, however, are not one of them. Well done!',
-  ];
-  return messages[Date.now() % messages.length];
+  const messages = [
+    'If you are one of those people who are secure in your belief that your updates were saved, you don’t need this. Otherwise, know that, despite the best efforts of hoards of computer gremlins, hackers, and any lingering bad computer karma you may have, your updates have been successfully saved! Way to go!',
+    'Research has shown that a fun workplace is not only more enjoyable, but also more productive. So, enjoy a little chuckle knowing the HGN electronic minions have reviewed your updated information, approved it, and stamped it on their foreheads so they won’t forget… or so they think. Their lives are complete now, and it’s all because of this successful update and save! \n' +
+      '✺◟( ͡° ͜ʖ ͡°)◞✺\n',
+    'Walla! YOU are a Super Saver. You clicked the “save” button and it worked! Well done, Jedi masters salute you!',
+    'Way to go Champion, your update has been saved! Before you close this window, take a moment to bask in your own awesomeness. Think you dont deserve it? Think again! Many people forget to save their changes, you, however, are not one of them. Well done!',
+  ];
+  return messages[Date.now() % messages.length];
 };
 
-const invalidCodemessage = 'Nice save! It seems you do not have a valid team code. It would be a lot cooler if you did. You can add one in the teams tab.';
+const invalidCodemessage =
+  'Nice save! It seems you do not have a valid team code. It would be a lot cooler if you did. You can add one in the teams tab.';
 const validTeamCodeRegex = /^.{5,7}$/;
 const stillSavingMessage = 'Saving, will take just a second...';
 
 /**
- *
  * @param {func} props.handleSubmit
  * @param {bool} props.disabled
  * @param {*} props.userProfile
@@ -39,97 +30,132 @@ const stillSavingMessage = 'Saving, will take just a second...';
  * @returns
  */
 const SaveButton = props => {
-  const {handleSubmit, disabled, userProfile, setSaved, darkMode} = props;
-  const [modal, setModal] = useState(false);
-  const [randomMessage, setRandomMessage] = useState(getRandomMessage());
-  const [isLoading,setIsLoading] = useState(false);
-  const [isErr, setIsErr] = useState(false);
-  const savedScrollY = useRef(0);
+  const { handleSubmit, disabled, userProfile, setSaved, darkMode } = props;
+  const [modal, setModal] = useState(false);
+  const [randomMessage, setRandomMessage] = useState(getRandomMessage());
+  const [isLoading, setIsLoading] = useState(false);
+  const [isErr, setIsErr] = useState(false);
+  const scrollSnapshot = useRef([]);
 
-  const handleSave = async () => {
-    savedScrollY.current = window.scrollY;
-    setModal(true);
-    setIsLoading(true);
-    try {
-      const getReturnVal = await handleSubmit();
-      if (getReturnVal) throw new Error(getReturnVal); // shouldn't return anything if save was success but should return error if it fails
+  const captureScrollPosition = event => {
+    const buttonAncestors = [];
+    let ancestor = event?.currentTarget?.parentElement;
 
-      setIsLoading(false);
-      setIsErr(false);
-      setSaved();
-      restoreScrollPosition(savedScrollY.current);
-    } catch (err) {
-      setIsErr(true);
-      setIsLoading(false);
-      restoreScrollPosition(savedScrollY.current);
-    }
-  };
+    while (ancestor) {
+      buttonAncestors.push(ancestor);
+      ancestor = ancestor.parentElement;
+    }
 
-  const closeModal = () => {
-    setModal(false);
-  };
+    const scrollContainers = [
+      document.scrollingElement,
+      document.documentElement,
+      document.body,
+      document.getElementById('root'),
+      ...document.querySelectorAll('.modal-body'),
+      ...buttonAncestors,
+    ].filter(Boolean);
 
-  const getMessage = (type) => {
-    if (type == 'message') {
-      if (!isErr) {
-        return isLoading ? stillSavingMessage : randomMessage;
-      }
+    scrollSnapshot.current = [...new Set(scrollContainers)].map(element => ({
+      element,
+      left: element.scrollLeft,
+      top: element.scrollTop,
+    }));
+  };
 
-      return 'Sorry an error occured while trying to save. Please try again another time.';
-    } else {
-      if (!isErr){
-        return isLoading ? 'Saving...' : 'Success!';
-      }
+  const restoreScrollPosition = () => {
+    const restore = () => {
+      scrollSnapshot.current.forEach(({ element, left, top }) => {
+        element.scrollLeft = left;
+        element.scrollTop = top;
+      });
+    };
 
-      return 'Error occured';
-    }
-  };
+    restore();
+    requestAnimationFrame(() => requestAnimationFrame(restore));
+  };
 
-  useEffect(() => {
-    if (modal === true) {
-      const regexTest = validTeamCodeRegex.test(userProfile.teamCode);
-      if (!regexTest) {
-        setRandomMessage(invalidCodemessage);
-      }
-      else {
-        setRandomMessage(getRandomMessage());
-      }
-    }
-  }, [modal]);
+  const handleSave = async event => {
+    event.preventDefault();
+    event.stopPropagation();
+    captureScrollPosition(event);
+    setModal(true);
+    setIsLoading(true);
 
-  useEffect(() => {
-    if (modal) {
-      restoreScrollPosition(savedScrollY.current);
-    }
-  }, [modal, isLoading]);
+    try {
+      const getReturnVal = await handleSubmit();
+      if (getReturnVal) throw new Error(getReturnVal);
 
-  return (
-    <React.Fragment>
-      <EditConfirmModal
-        isOpen={modal}
-        closeModal={closeModal}
-        userProfile={userProfile}
-        modalTitle={getMessage('title')}
-        modalMessage={getMessage('message')}
-        disabled={isLoading}
-        darkMode={darkMode}
-      />
-      <Button
-        type="button"
-        {...(darkMode ? { outline: false } : {outline: true})}
-        color='primary'
-        // to={`/userprofile/${this.state.userProfile._id}`}
-        //the line below caused the mouse over issue, so I commented it out
-        //className='btn btn-outline-primary mr-1 bg-white'
-        onClick={handleSave}
-        disabled={disabled}
-        className='mr-1'
-        style={darkMode ? { ...boxStyleDark, backgroundColor: '#F8F9FA', color: '#000', border: '1px solid #ADB5BD' } : boxStyle}
-      >
-        Save Changes
-      </Button>
-    </React.Fragment>
-  );
+      setIsLoading(false);
+      setIsErr(false);
+      setSaved();
+    } catch (err) {
+      setIsErr(true);
+      setIsLoading(false);
+    } finally {
+      restoreScrollPosition();
+    }
+  };
+
+  const closeModal = () => {
+    setModal(false);
+    restoreScrollPosition();
+  };
+
+  const getMessage = type => {
+    if (type === 'message') {
+      if (!isErr) return isLoading ? stillSavingMessage : randomMessage;
+
+      return 'Sorry an error occurred while trying to save. Please try again another time.';
+    }
+
+    if (!isErr) return isLoading ? 'Saving...' : 'Success!';
+
+    return 'Error occurred';
+  };
+
+  useEffect(() => {
+    if (modal) {
+      setRandomMessage(
+        validTeamCodeRegex.test(userProfile.teamCode) ? getRandomMessage() : invalidCodemessage,
+      );
+    }
+  }, [modal, userProfile.teamCode]);
+
+  return (
+    <React.Fragment>
+      <EditConfirmModal
+        isOpen={modal}
+        closeModal={closeModal}
+        userProfile={userProfile}
+        modalTitle={getMessage('title')}
+        modalMessage={getMessage('message')}
+        disabled={isLoading}
+        darkMode={darkMode}
+        preserveScroll={restoreScrollPosition}
+      />
+      <Button
+        type="button"
+        {...(darkMode ? { outline: false } : { outline: true })}
+        color="primary"
+        onMouseDown={captureScrollPosition}
+        onClick={handleSave}
+        disabled={disabled}
+        className="mr-1"
+        style={
+          darkMode
+            ? {
+                ...boxStyleDark,
+                backgroundColor: '#f8f9fa',
+                color: '#000',
+                border: '1px solid #adb5bd',
+              }
+            : boxStyle
+        }
+      >
+        Save Changes
+      </Button>
+    </React.Fragment>
+  );
 };
 
 export default SaveButton;
