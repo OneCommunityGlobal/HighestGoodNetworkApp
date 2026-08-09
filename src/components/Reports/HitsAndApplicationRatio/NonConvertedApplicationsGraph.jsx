@@ -160,23 +160,37 @@ function NonConvertedApplicationsGraph({ data = [], usePercentage, isDark, dateR
             </YAxis>
 
             <Tooltip
-              wrapperStyle={{
-                backgroundColor: isDark ? '#374151' : '#ffffff',
-                border: 'none'
-              }}
-              content={<CustomTooltip usePercentage={usePercentage} isDark={isDark} />} />
-
-            <Bar dataKey={metricKey} fill="#F44336" minPointSize={3}>
-              <LabelList
-                dataKey={metricKey}
-                position="right"
-                formatter={xTickFormatter}
-                style={{
-                  fill: isDark ? '#FFFFFF' : '#374151',
-                  fontWeight: 600,
-                }}
-              />
-            </Bar>
+                  cursor={{
+                    fill: isDark
+                      ? 'rgba(255, 255, 255, 0.06)'
+                      : 'rgba(59, 130, 246, 0.06)',
+                  }}
+                  wrapperStyle={{
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                  }}
+                  content={
+                    <CustomTooltip
+                      isDark={isDark}
+                      usePercentage={usePercentage}
+                    />
+                  }
+                />
+              <Bar
+                dataKey={usePercentage ? 'conversionRate' : 'applications'}
+                fill="#F44336"
+                barSize={22}
+                radius={[0, 4, 4, 0]}
+              >
+                <LabelList
+                  dataKey={usePercentage ? 'conversionRate' : 'applications'}
+                  position="right"
+                  style={{
+                    fill: isDark ? '#FFFFFF' : '#374151',
+                    fontWeight: 600,
+                  }}
+                />
+              </Bar>
           </BarChart>
         </ResponsiveContainer>
       )}

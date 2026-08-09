@@ -117,17 +117,35 @@ function ConvertedApplicationGraph({ data = [], usePercentage, isDark, dateRange
             </YAxis>
 
             <Tooltip
-              wrapperStyle={{
-                backgroundColor: isDark ? '#374151' : '#ffffff',
-                border: 'none'
-              }}
-              content={<CustomTooltip isDark={isDark} usePercentage={usePercentage} />} />
-
-            <Bar dataKey={usePercentage ? 'conversionRate' : 'applications'} fill="#4CAF50">
+                cursor={{
+                  fill: isDark
+                    ? 'rgba(255, 255, 255, 0.06)'
+                    : 'rgba(59, 130, 246, 0.06)',
+                }}
+                wrapperStyle={{
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                }}
+                content={
+                  <CustomTooltip
+                    isDark={isDark}
+                    usePercentage={usePercentage}
+                  />
+                }
+              />
+            <Bar
+              dataKey={usePercentage ? 'conversionRate' : 'applications'}
+              fill="#4CAF50"
+              barSize={22}
+              radius={[0, 4, 4, 0]}
+            >
               <LabelList
                 dataKey={usePercentage ? 'conversionRate' : 'applications'}
                 position="right"
-                style={{ fill: isDark ? '#FFFFFF' : '#374151', fontWeight: 600 }}
+                style={{
+                  fill: isDark ? '#FFFFFF' : '#374151',
+                  fontWeight: 600,
+                }}
               />
             </Bar>
           </BarChart>
@@ -141,6 +159,7 @@ ConvertedApplicationGraph.propTypes = {
   data: PropTypes.arrayOf(
     PropTypes.shape({
       title: PropTypes.string,
+      dateRange: PropTypes.string.isRequired,
       hits: PropTypes.number,
       applications: PropTypes.number,
       conversionRate: PropTypes.number,
