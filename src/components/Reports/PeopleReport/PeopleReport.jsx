@@ -36,6 +36,7 @@ function PeopleReport(props) {
     getUserProjects,
     getWeeklySummaries,
     getTimeEntriesForPeriod,
+    updateRehireableStatus,
     userProfile,
     timeEntries,
     infringements,
@@ -81,18 +82,25 @@ function PeopleReport(props) {
     getTimeEntriesForPeriod,
   ]);
 
+  useEffect(() => {
+    if (userProfile) {
+      setIsRehireableState(userProfile.isRehireable ?? false);
+    }
+  }, [userProfile?._id, userProfile?.isRehireable]);
+
   const setRehireable = useCallback(
     async rehireValue => {
+      const previousValue = isRehireable;
       setIsRehireableState(rehireValue);
       try {
         await updateRehireableStatus(userProfile, rehireValue);
         toast.success(`You have changed the rehireable status of this user to ${rehireValue}`);
       } catch (err) {
-        // eslint-disable-next-line no-alert
+        setIsRehireableState(previousValue);
         alert('An error occurred while attempting to save the rehireable status of this user.');
       }
     },
-    [userProfile],
+    [isRehireable, updateRehireableStatus, userProfile],
   );
 
   const totalTangibleHrs = timeEntries.period?.reduce((total, entry) => {
@@ -253,7 +261,7 @@ function PeopleReport(props) {
               <div className={styles.rehireable}>
                 <Checkbox
                   value={isRehireable}
-                  onChange={() => setRehireable(!isRehireable)}
+                  onChange={event => setRehireable(event.target.checked)}
                   label="Rehireable"
                   darkMode={darkMode}
                   className={`${styles.reportStats} ${darkMode ? `${styles.bgYinmnBlue} ${styles.textLight}` : ''}`}
@@ -370,4 +378,5 @@ export default connect(getPeopleReportData, {
   getUserTasks,
   getUserProjects,
   getTimeEntriesForPeriod,
+  updateRehireableStatus,
 })(PeopleReport);
