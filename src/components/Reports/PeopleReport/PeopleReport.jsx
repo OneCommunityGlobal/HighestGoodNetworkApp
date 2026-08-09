@@ -65,9 +65,6 @@ function PeopleReport(props) {
       getWeeklySummaries(userId),
       getTimeEntriesForPeriod(userId, fromDate, toDate),
     ])
-      .catch(() => {
-        // Errors are surfaced by the individual action creators; nothing to do here.
-      })
       .finally(() => {
         setIsLoading(false);
       });
