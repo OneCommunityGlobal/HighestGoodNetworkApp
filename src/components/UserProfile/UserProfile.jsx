@@ -449,9 +449,14 @@ function UserProfile(props) {
         );
         const normalized = (data || []).map(row => {
           // common shapes: {project: {...}}, {projectId: {...}}, or already {...}
-          if (row?.project?.projectName) return row.project;
-          if (row?.projectId?.projectName) return row.projectId;
-          return row; // fallback if API already returns the project document
+          let project;
+          if (row?.project?.projectName) project = row.project;
+          else if (row?.projectId?.projectName) project = row.projectId;
+          else project = row; // fallback if API already returns the project document
+          return {
+            ...project,
+            projectId: project?._id || project?.projectId,
+          };
         });
         setProjects(normalized);
         setOriginalProjects(normalized);
@@ -593,7 +598,12 @@ const onAssignProject = async (assignedProject) => {
     return;
   }
 
-  const updatedProjects = [...currentProjects, assignedProject];
+  const normalizedProject = {
+    ...assignedProject,
+    projectId: assignedProject._id || assignedProject.projectId,
+  };
+
+  const updatedProjects = [...currentProjects, normalizedProject];
   setProjects(updatedProjects);
 
   const updatedUserProfile = {
@@ -957,26 +967,8 @@ setUpdatedTasks(prev => {
     // eslint-disable-next-line no-console
     axios.put(url, updatedTask.updatedTask).catch(err => console.error(err));
   }
-  const userId = userProfileToUpdate._id;
-  const permissionURL = `${ENDPOINTS.PERMISSION_MANAGEMENT_UPDATE()}/user/${userId}`;
-  const frontPermissions = userProfileToUpdate.permissions.frontPermissions;
-  const removedDefaultPermissions = userProfileToUpdate.permissions.removedDefaultPermissions;
-  const defaultPermissions = userProfileToUpdate.permissions.defaultPermissions;
-  const permissions = {
-      frontPermissions: frontPermissions,
-      removedDefaultPermissions: removedDefaultPermissions,
-      defaultPermissions: defaultPermissions,
-  };
-  const requestor = props.auth.user;
-  // Ensures a change log with reason and user's modified permissions when their role is changed
-  const permissionData = {
-    reason: `Role Changed to **${userProfileToUpdate.role}**.`,
-    permissions: permissions,
-    requestor: requestor,
-  };
-  try {
 
-    await axios.patch(permissionURL, permissionData) // my code, need to check how it works with below added line
+  try {
     await props.updateUserProfile(userProfileToUpdate);
     clearCachedTeamMembers(); // clear all team caches on any profile save
     if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {

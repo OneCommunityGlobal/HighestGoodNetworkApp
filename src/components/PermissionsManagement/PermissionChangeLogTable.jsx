@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useState } from 'react';
 import styles from './PermissionChangeLogTable.module.css';
-import appStyles from '~/App.module.css';
 import { FiChevronLeft, FiChevronRight, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { formatDate, formattedAmPmTime } from '~/utils/formatDate';
 import { permissionLabelKeyMappingObj } from './PermissionsConst';
@@ -15,7 +14,7 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = changeLogs.slice(indexOfFirstItem, indexOfLastItem);
   const fontColor = darkMode ? 'text-light' : '';
-  const bgYinmnBlue = darkMode ? appStyles['bg-yinmn-blue'] : '';
+  const bgYinmnBlue = darkMode ? 'bg-yinmn-blue' : '';
   const headerClass = darkMode
     ? styles.permissionChangeLogTableHeaderDark
     : styles.permissionChangeLogTableHeader;
@@ -137,13 +136,14 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
       return undefined;
     }
 
-    return darkMode ? 'cyan' : 'blue';
+    return darkMode ? styles.cyan : '';
   };
-  const getHighlightValue = highlight => {
-    if (!highlight) {
-      return darkMode ? styles.permissionRowDarkMode : '';
-    }
-    return darkMode ? styles.highlightRowDarkMode : styles.highlightRow;
+
+  const getHighLightValue = shouldHighlight => {
+    const darkClass = shouldHighlight ? styles.darkHighlightRow : styles.darkModeRow;
+    const lightClass = shouldHighlight ? styles.highlightRow : '';
+
+    return darkMode ? darkClass : lightClass;
   };
 
   return (
@@ -169,7 +169,7 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
               const nameValue = log?.individualName ? formatName(log.individualName) : log.roleName;
               const shouldHighlight = roleSet.has(normalize(nameValue));
               return (
-                <tr key={log._id} className={getHighlightValue(shouldHighlight)}>
+                <tr key={log._id} className={getHighLightValue(shouldHighlight)}>
                   <td className={`${styles.permissionChangeLogTableCell} ${bgYinmnBlue}`}>
                     {`${formatDate(log.logDateTime)} ${formattedAmPmTime(log.logDateTime)}`}
                   </td>
@@ -184,10 +184,9 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
                   </td>
 
                   <td
-                    className={`${styles.permissionChangeLogTableCell} ${bgYinmnBlue}`}
-                    style={{
-                      color: getReasonTextColor(log?.reason),
-                    }}
+                    className={`${styles.permissionChangeLogTableCell} ${getReasonTextColor(
+                      log?.reason,
+                    )} ${bgYinmnBlue}`}
                   >
                     {log?.reason ? renderRoleChange(log.reason) : 'Permissions changed.'}
                   </td>

@@ -153,6 +153,11 @@
   background-color: #203844 !important;
 }
 
+.darkMain h2,
+.darkMain > p {
+  color: #e2e8f0;
+}
+
 .darkPswd{
   background-color: #1a1a1a !important ;
   border-color:  #404040 !important;

@@ -1,6 +1,9 @@
 /* stylelint-disable declaration-property-value-no-unknown */
-.tableResponsive {
+.tableResponsive,
+.table-responsive {
   overflow-x: auto;
+  width: 100%;
+  max-width: 100%;
 }
 
 .highlightRow {
@@ -9,23 +12,27 @@
   transition: background 0.2s ease;
 }
 
-.highlightRowDarkMode > td {
-  background-color: #00bcd4 !important;
-  border-left: 4px solid #e0f7fa;
-  transition: background 0.2s ease;
-}
-
 .highlightRow:hover {
   background-color: #b2ebf2;
-}
-
-.highlightRowDarkMode:hover > td, .permissionRowDarkMode:hover > td {
-  background-color: #213369 !important;
 }
 
 .permissionChangeLogTable {
   border-collapse: collapse;
   width: 100%;
+}
+
+.darkModeRow:hover {
+  background-color: #1c2541 !important;
+}
+
+.darkHighlightRow {
+  background-color: #012758;
+  border-left: 4px solid #007281;      
+  transition: background 0.2s ease;
+}
+
+.darkHighlightRow:hover {
+  background-color: #12328a;
 }
 
 .permissionsCell {
@@ -66,6 +73,10 @@
 .permissionChangeLogTableCell {
   border: 1px solid #ddd;
   padding: 8px;
+}
+
+.permissionChangeLogTableCell.cyan > span, .permissionChangeLogTableCell.cyan > strong {
+  color: cyan !important;
 }
 
 /* .table-row:hover { */

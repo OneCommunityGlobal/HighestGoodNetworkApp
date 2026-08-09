@@ -24,6 +24,50 @@ import PropTypes from 'prop-types';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
+const barValueLabelPlugin = {
+  id: 'barValueLabelPlugin',
+  afterDatasetsDraw(chart, _args, pluginOptions) {
+    const { ctx, chartArea } = chart;
+    if (!chartArea) return;
+
+    const { darkMode } = pluginOptions;
+
+    ctx.save();
+    ctx.font = '600 11px Arial';
+    ctx.textAlign = 'center';
+
+    chart.data.datasets.forEach((dataset, datasetIndex) => {
+      const meta = chart.getDatasetMeta(datasetIndex);
+      if (meta.hidden) return;
+
+      meta.data.forEach((bar, index) => {
+        const value = dataset.data[index];
+        if (!value) return;
+
+        const label = `$${(value * 1000).toLocaleString()}`;
+        const { x, y, base } = bar.getProps(['x', 'y', 'base'], true);
+
+        const barHeight = Math.abs(base - y);
+        const isSmallBar = barHeight < 28;
+
+        const insideColor = darkMode ? '#ffffff' : '#111111';
+        const outsideColor = darkMode ? '#f5f5f5' : '#666666';
+
+        ctx.fillStyle = isSmallBar ? outsideColor : insideColor;
+
+        const textY = isSmallBar ? y - 8 : y + 8;
+        ctx.textBaseline = isSmallBar ? 'bottom' : 'top';
+
+        ctx.fillText(label, x, textY);
+      });
+    });
+
+    ctx.restore();
+  },
+};
+
+ChartJS.register(barValueLabelPlugin);
+
 const isValidISODate = dateString => {
   if (!dateString) return false;
   return moment(dateString).isValid();
