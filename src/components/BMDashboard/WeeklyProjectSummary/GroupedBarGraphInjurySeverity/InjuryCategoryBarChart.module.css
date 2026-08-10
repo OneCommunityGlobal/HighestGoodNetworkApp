@@ -13,6 +13,8 @@
 /* ===== LAYOUT FIX ===== */
 :global(.injury-chart-container) {
   width: 100%;
+  height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -55,6 +57,13 @@
   min-width: 160px;
   flex: 1 1 160px;
   max-width: 220px;
+}
+
+.chartArea {
+  /* Fills the card space left after filters while keeping Recharts responsive. */
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: clamp(560px, 62vh, 760px);
 }
 
 

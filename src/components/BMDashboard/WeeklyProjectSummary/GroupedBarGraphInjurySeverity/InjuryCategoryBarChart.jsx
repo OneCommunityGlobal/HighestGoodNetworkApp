@@ -47,6 +47,7 @@ function InjuryCategoryBarChart() {
   const [injuryTypeFilter, setInjuryTypeFilter] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [unfilteredProjects, setUnfilteredProjects] = useState([]);
 
   // ✅ NEW: key to force Recharts remount when needed (fixes "renders only on hover")
   const [chartKey, setChartKey] = useState(0);
@@ -70,30 +71,41 @@ function InjuryCategoryBarChart() {
   const projects = Array.isArray(injuryProjects) ? injuryProjects : [];
   const sevList = Array.isArray(severities) ? severities : [];
   const typeList = Array.isArray(injuryTypes) ? injuryTypes : [];
+  const hasProjectListFilters =
+    severityFilter.length > 0 || injuryTypeFilter.length > 0 || startDate || endDate;
+
+  useEffect(() => {
+    if (!hasProjectListFilters && projects.length) {
+      // Keep the original project set so duplicate-name labels do not change after filtering.
+      setUnfilteredProjects(projects);
+    }
+  }, [hasProjectListFilters, projects]);
 
   const projectLabelById = useMemo(() => {
+    const labelSourceProjects = unfilteredProjects.length ? unfilteredProjects : projects;
     const nameCounts = new Map();
-    for (const p of projects) {
+    for (const p of labelSourceProjects) {
       const name = p?.name ?? '';
       if (name) nameCounts.set(name, (nameCounts.get(name) || 0) + 1);
     }
 
     const labels = new Map();
-    for (const p of projects) {
+    for (const p of labelSourceProjects) {
       const name = p?.name ?? '';
       const id = String(p?._id ?? '');
       if (!name || !id) continue;
 
-      // Use a short ID only when duplicate project names need disambiguation.
+      // Use project identity from the unfiltered set so duplicate labels stay stable.
       labels.set(id, nameCounts.get(name) > 1 ? `${name} (${id.slice(0, 6)})` : name);
     }
     return labels;
-  }, [projects]);
+  }, [projects, unfilteredProjects]);
 
   const projectNameOptions = useMemo(() => {
     const opts = [];
     for (const p of projects) {
       const id = String(p?._id ?? '');
+      // Reuse the stable label when filtered options are rebuilt from project IDs.
       const label = projectLabelById.get(id);
       if (!id || !label) continue;
       opts.push({ value: id, label });
@@ -322,81 +334,84 @@ function InjuryCategoryBarChart() {
       {!loading && error && <p className={styles.error}>Error: {String(error)}</p>}
 
       {!loading && !error && chartData.length > 0 && (
-        <ResponsiveContainer key={chartKey} width="100%" height={560}>
-          <BarChart
-            data={chartData}
-            margin={{ top: 16, right: 24, bottom: 8, left: 8 }}
-            style={{
-              backgroundColor: darkMode ? '#1e2a3a' : '#fff',
-              borderRadius: '8px',
-              padding: '8px',
-            }}
-          >
-            <XAxis
-              dataKey="workerCategory"
-              interval={0}
-              angle={-45}
-              textAnchor="end"
-              height={80}
-              tick={{ fill: darkMode ? '#fff' : '#000' }}
-              axisLine={{ stroke: darkMode ? '#888' : '#000' }}
-              tickLine={{ stroke: darkMode ? '#888' : '#000' }}
-            />
-            <YAxis
-              allowDecimals={false}
-              tick={{ fill: darkMode ? '#fff' : '#000' }}
-              axisLine={{ stroke: darkMode ? '#888' : '#000' }}
-              tickLine={{ stroke: darkMode ? '#888' : '#000' }}
-            />
-            <Tooltip
-              //tooltip only; no shaded hover overlay across the chart
-              cursor={false}
-              contentStyle={{
-                backgroundColor: darkMode ? '#2b3e59' : '#fff',
-                color: darkMode ? '#fff' : '#000',
-                border: darkMode ? '1px solid #555' : '1px solid #ccc',
+        <div className={styles.chartArea}>
+          <ResponsiveContainer key={chartKey} width="100%" height="100%">
+            <BarChart
+              data={chartData}
+              margin={{ top: 8, right: 16, bottom: 0, left: 0 }}
+              style={{
+                backgroundColor: darkMode ? '#1e2a3a' : '#fff',
+                borderRadius: '8px',
+                padding: '8px',
               }}
-              labelStyle={{
-                color: darkMode ? '#fff' : '#000',
-              }}
-              formatter={(value, name) => [
-                value,
-                projectLabelById.get(String(name)) ||
-                  projectNameById.get(String(name)) ||
-                  'Unknown Project',
-              ]}
-            />
-            <Legend
-              wrapperStyle={{
-                color: darkMode ? '#fff' : '#000',
-              }}
-              payload={allSeriesProjectIds.map(pid => ({
-                id: pid,
-                type: 'square',
-                color: projectColorById.get(pid),
-                value: projectLabelById.get(pid) || projectNameById.get(pid) || 'Unknown Project',
-              }))}
-            />
-            {seriesProjectIds.map(pid => (
-              <Bar
-                key={pid}
-                dataKey={pid}
-                fill={projectColorById.get(pid)}
-                stroke={darkMode ? '#E5E7EB' : '#ffffff'}
-                strokeWidth={1}
-              >
-                {showLabels && (
-                  <LabelList
-                    dataKey={pid}
-                    position="top"
-                    formatter={v => (v > 0 ? v : '')}
-                    // fill={darkMode ? '#fff' : '#000'}
-                  />
-                )}
-              </Bar>
-            ))}
-          </BarChart>
-        </ResponsiveContainer>
+            >
+              <XAxis
+                dataKey="workerCategory"
+                interval={0}
+                angle={-45}
+                textAnchor="end"
+                height={80}
+                tick={{ fill: darkMode ? '#fff' : '#000' }}
+                axisLine={{ stroke: darkMode ? '#888' : '#000' }}
+                tickLine={{ stroke: darkMode ? '#888' : '#000' }}
+              />
+              <YAxis
+                allowDecimals={false}
+                tick={{ fill: darkMode ? '#fff' : '#000' }}
+                axisLine={{ stroke: darkMode ? '#888' : '#000' }}
+                tickLine={{ stroke: darkMode ? '#888' : '#000' }}
+              />
+              <Tooltip
+                //tooltip only; no shaded hover overlay across the chart
+                cursor={false}
+                contentStyle={{
+                  backgroundColor: darkMode ? '#2b3e59' : '#fff',
+                  color: darkMode ? '#fff' : '#000',
+                  border: darkMode ? '1px solid #555' : '1px solid #ccc',
+                }}
+                labelStyle={{
+                  color: darkMode ? '#fff' : '#000',
+                }}
+                formatter={(value, name) => [
+                  value,
+                  projectLabelById.get(String(name)) ||
+                    projectNameById.get(String(name)) ||
+                    'Unknown Project',
+                ]}
+              />
+              <Legend
+                wrapperStyle={{
+                  color: darkMode ? '#fff' : '#000',
+                  paddingBottom: 10,
+                }}
+                payload={allSeriesProjectIds.map(pid => ({
+                  id: pid,
+                  type: 'square',
+                  color: projectColorById.get(pid),
+                  value: projectLabelById.get(pid) || projectNameById.get(pid) || 'Unknown Project',
+                }))}
+              />
+              {seriesProjectIds.map(pid => (
+                <Bar
+                  key={pid}
+                  dataKey={pid}
+                  fill={projectColorById.get(pid)}
+                  stroke={darkMode ? '#E5E7EB' : '#ffffff'}
+                  strokeWidth={1}
+                >
+                  {showLabels && (
+                    <LabelList
+                      dataKey={pid}
+                      position="top"
+                      formatter={v => (v > 0 ? v : '')}
+                      // fill={darkMode ? '#fff' : '#000'}
+                    />
+                  )}
+                </Bar>
+              ))}
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       )}
 
       {!loading && !error && chartData.length === 0 && (
