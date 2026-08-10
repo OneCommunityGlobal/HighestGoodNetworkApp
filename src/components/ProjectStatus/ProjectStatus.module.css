@@ -42,15 +42,50 @@
 }
 
 .chartWrapper {
+  position: relative;
   width: 400px;
   height: 400px;
   margin: 0 auto;
 }
 
+.customTooltip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  pointer-events: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+  background: rgb(0 0 0 / 80%);
+  color: #fff;
+  border: 1px solid rgb(0 0 0 / 10%);
+}
+
+.customTooltip .tooltipTitle {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.customTooltip .tooltipSwatch {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  margin-right: 6px;
+}
+
+.darkMode .customTooltip {
+  background: rgb(30 41 59 / 95%);
+  color: #e2e8f0;
+  border-color: #475569;
+}
+
 .legend {
   display: flex;
   justify-content: center;
-  margin-top: 12px;
+  margin-top: 84px;
   gap: 1rem;
 }
 

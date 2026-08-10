@@ -47,6 +47,7 @@ export default function ProjectStatus() {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
   const [dateError, setDateError] = useState('');
+  const [hoverInfo, setHoverInfo] = useState(null);
 
   const load = async (opts = {}) => {
     setPending(true);
@@ -83,6 +84,60 @@ export default function ProjectStatus() {
     };
   }, [data]);
 
+  // Chart.js's built-in tooltip anchors to the arc's mid-radius point and then
+  // clamps itself to stay within the canvas, which on a doughnut keeps pulling
+  // it back in toward the cutout hole. Rendering our own HTML tooltip (via the
+  // `external` callback) instead lets us place it fully outside the ring, with
+  // no canvas clamping to fight.
+  const externalTooltipHandler = context => {
+    const { chart, tooltip: tooltipModel } = context;
+
+    if (!tooltipModel || tooltipModel.opacity === 0 || !tooltipModel.dataPoints?.length) {
+      setHoverInfo(null);
+      return;
+    }
+
+    const dp = tooltipModel.dataPoints[0];
+    const el = chart.getDatasetMeta(dp.datasetIndex).data[dp.dataIndex];
+    if (!el) {
+      setHoverInfo(null);
+      return;
+    }
+
+    const angle = (el.startAngle + el.endAngle) / 2;
+    const gap = 14;
+    const x = el.x + Math.cos(angle) * (el.outerRadius + gap);
+    const y = el.y + Math.sin(angle) * (el.outerRadius + gap);
+
+    // Anchor the box away from the point based on which side of the ring
+    // it's on, so the box itself never overlaps the slice.
+    const deg = (angle * 180) / Math.PI;
+    let transform;
+    if (deg >= -45 && deg <= 45) {
+      transform = 'translate(10px, -50%)'; // right
+    } else if (deg > 45 && deg <= 135) {
+      transform = 'translate(-50%, 10px)'; // bottom
+    } else if (deg > 135 || deg < -135) {
+      transform = 'translate(calc(-100% - 10px), -50%)'; // left
+    } else {
+      transform = 'translate(-50%, calc(-100% - 10px))'; // top
+    }
+
+    const pctMap = data?.percentages || {};
+    const keys = ['active', 'completed', 'delayed'];
+    const pct = Number(pctMap[keys[dp.dataIndex]] ?? 0);
+
+    setHoverInfo({
+      x,
+      y,
+      transform,
+      label: dp.label || '',
+      value: dp.formattedValue || '0',
+      pct: pct.toFixed(1),
+      color: dp.dataset.backgroundColor[dp.dataIndex],
+    });
+  };
+
   const chartOptions = useMemo(
     () => ({
       responsive: true,
@@ -94,23 +149,8 @@ export default function ProjectStatus() {
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: darkMode ? 'rgba(30, 41, 59, 0.95)' : 'rgba(0, 0, 0, 0.8)',
-          titleColor: '#ffffff',
-          bodyColor: darkMode ? '#e2e8f0' : '#ffffff',
-          borderColor: darkMode ? '#475569' : 'rgba(0, 0, 0, 0.1)',
-          borderWidth: 1,
-          callbacks: {
-            label: ctx => {
-              const label = ctx.label || '';
-              const value = ctx.formattedValue || '0';
-
-              const pctMap = data?.percentages || {};
-              const keys = ['active', 'completed', 'delayed'];
-              const pct = Number(pctMap[keys[ctx.dataIndex]] ?? 0);
-
-              return `${label}: ${value} (${pct.toFixed(1)}%)`;
-            },
-          },
+          enabled: false,
+          external: externalTooltipHandler,
         },
         title: { display: false },
         centerText: {
@@ -239,6 +279,23 @@ export default function ProjectStatus() {
               <>
                 <div className={styles.chartWrapper}>
                   <Doughnut data={chartData} options={chartOptions} />
+                  {hoverInfo && (
+                    <div
+                      className={styles.customTooltip}
+                      style={{
+                        transform: `translate(${hoverInfo.x}px, ${hoverInfo.y}px) ${hoverInfo.transform}`,
+                      }}
+                    >
+                      <div className={styles.tooltipTitle}>{hoverInfo.label}</div>
+                      <div>
+                        <span
+                          className={styles.tooltipSwatch}
+                          style={{ background: hoverInfo.color }}
+                        />
+                        {hoverInfo.value} ({hoverInfo.pct}%)
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className={styles.legend}>
                   <span className={styles.legendItem}>
