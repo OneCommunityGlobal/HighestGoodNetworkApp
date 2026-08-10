@@ -190,7 +190,7 @@ export default function ProjectStatus() {
             <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={onApply}>
               Apply
             </button>
-            <button className={`${styles.btn} ${styles.btnSecondary}`} onClick={onReset}>
+            <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={onReset}>
               Reset
             </button>
           </div>
