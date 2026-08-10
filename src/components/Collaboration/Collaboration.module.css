@@ -96,7 +96,7 @@
   white-space: nowrap;
   line-height: normal;
   vertical-align: middle;
-  transition: filter .15s ease, transform .02s ease;
+  transition: filter 0.15s ease, transform 0.02s ease;
 }
 
 .showSummaries {
@@ -201,7 +201,7 @@
   box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
   overflow: hidden;
   background: #fff;
-  transition: transform .3s, box-shadow .3s;
+  transition: transform 0.3s, box-shadow 0.3s;
   padding-bottom: 8px;
   display: flex;
   flex-direction: column;
@@ -228,7 +228,7 @@
   font-weight: 700;
   color: #333;
   padding: 12px;
-  transition: color .3s;
+  transition: color 0.3s;
   text-align: center;
 }
 
@@ -532,7 +532,7 @@
 .jobLandingDark .collabContainer {
   background-color: #2e3b55;
   color: #f1f1f1;
-  box-shadow: 0 0 8px rgb(0 0 0 / 30%);
+  box-shadow: 0 0 8px #0000004d;
   border-radius: 6px;
   padding: 0;
 }
@@ -574,10 +574,10 @@
   background-color: #1c2541 !important;
   color: #fff !important;
   border-radius: 6px;
-  box-shadow: 0 2px 6px rgb(255 255 255 / 5%);
+  box-shadow: 0 2px 6px #ffffff0d;
   border: 1px solid #444;
   padding: 1rem;
-  transition: background-color .3s ease;
+  transition: background-color 0.3s ease;
 }
 
 .jobLandingDark .jobAd:hover {
@@ -601,7 +601,7 @@
 }
 
 .jobLandingDark .summariesItem {
-  border-bottom: 1px solid rgb(255 255 255 / 12%);
+  border-bottom: 1px solid #ffffff1f;
 }
 
 .jobLandingDark .summariesItem h3 a {
@@ -650,7 +650,26 @@
   background-color: #fff !important;
   color: black !important;
   border: none !important;
-  box-shadow: 0 0 0 2px rgb(14 94 215 / 35%) inset;
+  box-shadow: 0 0 0 2px #0e5ed759 inset;
   cursor: default;
   opacity: 1;
+}
+
+.activeTab {
+  font-size: large;
+  font-weight: bold;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.tabButton {
+  font-size: large;
+  font-weight: bold;
+  color: #808080;
+  text-transform: uppercase;
+}
+
+:global(body.dark-mode) .tabButton,
+:global(body.bm-dashboard-dark) .tabButton {
+  color: #808080 !important;
 }
