@@ -187,10 +187,18 @@ export default function ProjectStatus() {
               maxDate={new Date()}
               isClearable
             />
-            <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={onApply}>
+            <button
+              type="button"
+              className={`${styles.btn} ${styles.btnPrimary}`}
+              onClick={onApply}
+            >
               Apply
             </button>
-            <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={onReset}>
+            <button
+              type="button"
+              className={`${styles.btn} ${styles.btnPrimary}`}
+              onClick={onReset}
+            >
               Reset
             </button>
           </div>
@@ -214,7 +222,11 @@ export default function ProjectStatus() {
         {error && (
           <div className={styles.error}>
             <div className={styles.errorText}>{error}</div>
-            <button className={`${styles.btn} ${styles.btnSecondary}`} onClick={() => load({})}>
+            <button
+              type="button"
+              className={`${styles.btn} ${styles.btnSecondary}`}
+              onClick={() => load({})}
+            >
               Retry
             </button>
           </div>
