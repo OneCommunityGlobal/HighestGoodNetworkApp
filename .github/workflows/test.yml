@@ -19,7 +19,7 @@ jobs:
           cache: yarn
 
       - name: Install dependencies
-        run: yarn install --ignore-platform
+        run: yarn install
 
       - name: Run tests
         run: NODE_OPTIONS="--max-old-space-size=4096" yarn test
