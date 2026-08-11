@@ -258,7 +258,8 @@ export function Header(props) {
   const history = useHistory();
 
   useEffect(() => {
-    setShowProjectDropdown(location.pathname.startsWith('/bmdashboard/'));
+    const path = location.pathname;
+    setShowProjectDropdown(path === '/bmdashboard' || path.startsWith('/bmdashboard/'));
   }, [location.pathname]);
   const MeetingNotificationAudioRef = useRef(null);
   const dismissedMeetingModalIdRef = useRef(null);
@@ -887,6 +888,17 @@ export function Header(props) {
                         BM Dashboard
                       </DropdownItem>
 
+                      {/* Visible while on BM Dashboard; route stays /bmdashboard/injurychart (BMProtectedRoute). */}
+                      {showProjectDropdown && (
+                        <DropdownItem
+                          tag={Link}
+                          to="/bmdashboard/injurychart"
+                          className={`${fontColor} ${styles.bmSubItem}`}
+                        >
+                          Injuries Tracking
+                        </DropdownItem>
+                      )}
+
                       {/* BM Projects accordion — only shown when on a bmdashboard route */}
                       {showProjectDropdown && (
                         <>
@@ -982,9 +994,6 @@ export function Header(props) {
 
 
                               {/* Other BM pages */}
-                              <DropdownItem tag={Link} to="/bmdashboard/injurychart" className={`${fontColor} ${styles.bmSubItem}`}>
-                                Injuries Tracking
-                              </DropdownItem>
                               <DropdownItem tag={Link} to="/bmdashboard/Issue" className={`${fontColor} ${styles.bmSubItem}`}>Issues</DropdownItem>
                               <DropdownItem tag={Link} to="/bmdashboard/lessonform" className={`${fontColor} ${styles.bmSubItem}`}>Lessons</DropdownItem>
                               <DropdownItem tag={Link} to="/teams" className={`${fontColor} ${styles.bmSubItem}`}>Teams</DropdownItem>
