@@ -8,8 +8,6 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { toast } from 'react-toastify';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
-import InjurySeverityChart from '../Injuries/InjurySeverityChart';
-import CostPredictionChart from './CostPredictionChart';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
@@ -32,6 +30,7 @@ import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHo
 import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
 import IssueCharts from '../Issues/openIssueCharts';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
+import ToolReplacementChart from '../../ToolReplacementChart/ToolReplacementChart';
 
 const projectStatusButtons = [
   {
@@ -72,7 +71,7 @@ const projectStatusButtons = [
     change: '+13% week over week',
     bgColor: '#FFF6EE',
     buttonColor: '#FFD8A5',
-    textColor: '#328D1B',
+    textColor: '#FFD8A5',
   },
   {
     title: 'Total Material Cost',
@@ -263,25 +262,22 @@ function WeeklyProjectSummary() {
         title: 'Material Consumption',
         key: 'Material Consumption',
         className: 'full',
-        content: [1, 2, 3].map((_, index) => {
-          let content;
-          if (index === 1) {
-            content = <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />;
-          } else if (index === 2) {
-            content = <TotalMaterialCostPerProject />;
-          } else {
-            content = <p>📊 Card</p>;
-          }
-          const uniqueId = uuidv4();
-          return (
+        content: (
+          <>
             <div
-              key={uniqueId}
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+              className={`${styles.weeklyProjectSummaryCard} ${styles.toolReplacementCard}`}
+              style={{ minHeight: '520px' }}
             >
-              {content}
+              <ToolReplacementChart />
             </div>
-          );
-        }),
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <TotalMaterialCostPerProject />
+            </div>
+          </>
+        ),
       },
       {
         title: 'Issue Tracking',
@@ -290,19 +286,6 @@ function WeeklyProjectSummary() {
         content: (
           <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
             <IssueCharts />
-          </div>
-        ),
-      },
-      {
-        title: 'Injury Severity by Category of Worker Injured',
-        key: 'Injury Severity',
-        className: 'full',
-        content: (
-          <div
-            className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}
-            style={{ minHeight: '450px' }}
-          >
-            <InjurySeverityChart />
           </div>
         ),
       },
