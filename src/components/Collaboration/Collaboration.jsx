@@ -28,13 +28,6 @@ function Collaboration() {
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const slugify = s =>
-    (s || '')
-      .toLowerCase()
-      .replace(/&/g, 'and')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
-
   /* ================= FETCH JOBS ================= */
   const fetchJobs = async (page = currentPage) => {
     try {
@@ -185,6 +178,7 @@ function Collaboration() {
           <h2>Job Summaries</h2>
 
           <button
+            type="button"
             className="btn btn-secondary"
             style={{ marginBottom: '24px' }}
             onClick={() => setSummaries(null)}
@@ -205,7 +199,7 @@ function Collaboration() {
             <p>No summaries found.</p>
           )}
 
-          <button className="btn btn-secondary" onClick={() => setSummaries(null)}>
+          <button type="button" className="btn btn-secondary" onClick={() => setSummaries(null)}>
             ← Back to Job Listings
           </button>
         </div>
@@ -232,7 +226,9 @@ function Collaboration() {
               value={query}
               onChange={e => setQuery(e.target.value)}
             />
-            <button className="btn btn-secondary">Go</button>
+            <button type="submit" className="btn btn-secondary">
+              Go
+            </button>
           </form>
 
           <div ref={dropdownRef} style={{ position: 'relative' }}>
@@ -265,7 +261,7 @@ function Collaboration() {
         {/* QUERY TEXT */}
         <div className="job-queries">
           <p>{getListingText()}</p>
-          <button className="btn btn-secondary" onClick={handleShowSummaries}>
+          <button type="button" className="btn btn-secondary" onClick={handleShowSummaries}>
             Show Summaries
           </button>
         </div>
@@ -278,7 +274,7 @@ function Collaboration() {
                 {cat}
               </span>
             ))}
-            <button className={styles.clearAllButton} onClick={handleClearAllFilters}>
+            <button type="button" className={styles.clearAllButton} onClick={handleClearAllFilters}>
               Clear All
             </button>
           </div>
@@ -308,7 +304,7 @@ function Collaboration() {
             <div className={styles.emptyState}>
               <p>No job listings found matching your criteria.</p>
               <p>Try clearing filters or adjusting your search terms.</p>
-              <button className="btn btn-secondary" onClick={handleClearAllFilters}>
+              <button type="button" className="btn btn-secondary" onClick={handleClearAllFilters}>
                 Clear All Filters
               </button>
             </div>
@@ -320,6 +316,7 @@ function Collaboration() {
           {Array.from({ length: totalPages }, (_, i) => (
             <button
               key={i}
+              type="button"
               onClick={() => goToPage(i + 1)}
               className={
                 currentPage === i + 1 ? styles.paginationButtonActive : styles.paginationButton
@@ -335,7 +332,11 @@ function Collaboration() {
       {selectedJob && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
-            <button className={styles.closeButton} onClick={() => setSelectedJob(null)}>
+            <button
+              type="button"
+              className={styles.closeButton}
+              onClick={() => setSelectedJob(null)}
+            >
               ×
             </button>
 
