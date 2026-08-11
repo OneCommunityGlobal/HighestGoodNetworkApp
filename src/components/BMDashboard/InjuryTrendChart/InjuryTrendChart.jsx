@@ -143,30 +143,20 @@ const buildMonthWindow = (startDate, endDate) => {
       ? new Date(startDate.getFullYear(), startDate.getMonth(), 1)
       : new Date(end.getFullYear(), end.getMonth() - 11, 1);
 
-  const months = [];
-  const cursor = new Date(start.getFullYear(), start.getMonth(), 1);
-  const last = new Date(end.getFullYear(), end.getMonth(), 1);
-  let guard = 0;
+  const startMonthIndex = start.getFullYear() * 12 + start.getMonth();
+  const endMonthIndex = end.getFullYear() * 12 + end.getMonth();
+  const monthCount = Math.min(Math.max(endMonthIndex - startMonthIndex + 1, 1), 36);
 
-  while (cursor <= last && guard < 36) {
-    months.push({
-      key: `${cursor.getFullYear()}-${cursor.getMonth()}`,
-      label: `${MONTH_LABELS[cursor.getMonth()]} ${cursor.getFullYear()}`,
-      monthIndex: cursor.getMonth(),
-    });
-    cursor.setMonth(cursor.getMonth() + 1);
-    guard += 1;
-  }
-
-  return months.length
-    ? months
-    : [
-        {
-          key: `${end.getFullYear()}-${end.getMonth()}`,
-          label: `${MONTH_LABELS[end.getMonth()]} ${end.getFullYear()}`,
-          monthIndex: end.getMonth(),
-        },
-      ];
+  return Array.from({ length: monthCount }, (_, offset) => {
+    const absoluteMonth = startMonthIndex + offset;
+    const year = Math.floor(absoluteMonth / 12);
+    const monthIndex = absoluteMonth % 12;
+    return {
+      key: `${year}-${monthIndex}`,
+      label: `${MONTH_LABELS[monthIndex]} ${year}`,
+      monthIndex,
+    };
+  });
 };
 
 const fitProfileToMonths = (profile, months) => ({
@@ -257,7 +247,7 @@ function InjuryTrendTooltip({ active, payload, label, projectLabel, darkMode }) 
 function InjuryTrendChart() {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme?.darkMode);
-  const { projects = [], loading, error } = useSelector(state => state.bmInjury || {});
+  const { projects = [] } = useSelector(state => state.bmInjury || {});
 
   const [selectedProjectId, setSelectedProjectId] = useState('all');
   const [startDate, setStartDate] = useState(null);
@@ -296,6 +286,7 @@ function InjuryTrendChart() {
       params.projectId = projectIds.join(',');
     }
 
+    // Keep API warm for backend pairing; chart still renders project-linked demo series.
     dispatch(fetchInjuryTrend(params));
     return undefined;
   }, [dispatch, projectOptions, selectedProjectId, startDate, endDate]);
@@ -336,8 +327,6 @@ function InjuryTrendChart() {
 
   // Always render project-linked demo series so each project is distinct and
   // ALL is the true sum of every project's injuries (API may not filter yet).
-  const usingDummyData = true;
-
   const activeTrend = useMemo(() => {
     if (selectedProjectId === 'all') return allProjectsDummyTrend;
     return linkedDummyTrend;
@@ -443,18 +432,10 @@ function InjuryTrendChart() {
           <span>
             <strong>Dates:</strong> {dateFilterLabel}
           </span>
-          {usingDummyData && <span className={styles.demoBadge}>Demo data</span>}
+          <span className={styles.demoBadge}>Demo data</span>
         </div>
 
-        {loading && !usingDummyData && (
-          <div className={styles.statusMessage}>Loading injury trend…</div>
-        )}
-        {error && !usingDummyData && (
-          <div className={`${styles.statusMessage} ${styles.statusError}`}>
-            Failed to load injury trend: {String(error)}
-          </div>
-        )}
-        {!loading && !error && !hasAnyData && (
+        {!hasAnyData && (
           <div className={styles.statusMessage}>No injuries recorded for the selected filters.</div>
         )}
 
