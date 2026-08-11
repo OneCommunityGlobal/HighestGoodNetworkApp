@@ -886,13 +886,6 @@ export function Header(props) {
                       <DropdownItem tag={Link} to="/bmdashboard" className={fontColor}>
                         BM Dashboard
                       </DropdownItem>
-                      <DropdownItem
-                        tag={Link}
-                        to="/bmdashboard/injurychart"
-                        className={`${fontColor} ${styles.bmSubItem}`}
-                      >
-                        Injuries Tracking
-                      </DropdownItem>
 
                       {/* BM Projects accordion — only shown when on a bmdashboard route */}
                       {showProjectDropdown && (
@@ -989,6 +982,9 @@ export function Header(props) {
 
 
                               {/* Other BM pages */}
+                              <DropdownItem tag={Link} to="/bmdashboard/injurychart" className={`${fontColor} ${styles.bmSubItem}`}>
+                                Injuries Tracking
+                              </DropdownItem>
                               <DropdownItem tag={Link} to="/bmdashboard/Issue" className={`${fontColor} ${styles.bmSubItem}`}>Issues</DropdownItem>
                               <DropdownItem tag={Link} to="/bmdashboard/lessonform" className={`${fontColor} ${styles.bmSubItem}`}>Lessons</DropdownItem>
                               <DropdownItem tag={Link} to="/teams" className={`${fontColor} ${styles.bmSubItem}`}>Teams</DropdownItem>
