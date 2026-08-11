@@ -15,6 +15,13 @@ function ResourceRequestsTab({ darkMode }) {
     searchTerm: '',
   });
 
+  const parseDateOnlyAsLocal = dateString => {
+    const [year, month, day] = dateString.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  };
+
+  const formatDateOnly = dateString => parseDateOnlyAsLocal(dateString).toLocaleDateString();
+
   // Mock data - Replace with actual API call when backend is ready
   useEffect(() => {
     // Simulate API call
@@ -268,7 +275,7 @@ function ResourceRequestsTab({ darkMode }) {
                   <td>{request.resourceType}</td>
                   <td>{request.quantity}</td>
                   <td className={styles.description}>{request.description}</td>
-                  <td>{new Date(request.requestDate).toLocaleDateString()}</td>
+                  <td>{formatDateOnly(request.requestDate)}</td>
                   <td>{getPriorityBadge(request.priority)}</td>
                   <td>{getStatusBadge(request.status)}</td>
                   <td className={styles.actionsCell}>

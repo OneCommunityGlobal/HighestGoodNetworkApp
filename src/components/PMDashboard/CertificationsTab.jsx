@@ -15,6 +15,13 @@ function CertificationsTab({ darkMode }) {
     searchTerm: '',
   });
 
+  const parseDateOnlyAsLocal = dateString => {
+    const [year, month, day] = dateString.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  };
+
+  const formatDateOnly = dateString => parseDateOnlyAsLocal(dateString).toLocaleDateString();
+
   // Mock data - Replace with actual API call when backend is ready
   useEffect(() => {
     // Simulate API call
@@ -108,11 +115,6 @@ function CertificationsTab({ darkMode }) {
   useEffect(() => {
     let filtered = [...certifications];
 
-    // Filter by status
-    if (filters.status !== 'all') {
-      filtered = filtered.filter(cert => cert.status === filters.status);
-    }
-
     // Filter by teacher ID
     if (filters.teacherId.trim()) {
       filtered = filtered.filter(cert =>
@@ -134,8 +136,27 @@ function CertificationsTab({ darkMode }) {
       );
     }
 
+    // Filter by status
+    if (filters.status !== 'all') {
+      filtered = filtered.filter(cert => getDerivedStatus(cert.expiryDate) === filters.status);
+    }
+
     setFilteredCertifications(filtered);
   }, [filters, certifications]);
+
+  const getDerivedStatus = expiryDate => {
+    const daysLeft = getDaysUntilExpiry(expiryDate);
+
+    if (daysLeft < 0) {
+      return 'expired';
+    }
+
+    if (daysLeft <= 30) {
+      return 'expiring_soon';
+    }
+
+    return 'active';
+  };
 
   const getStatusBadge = status => {
     const statusConfig = {
@@ -153,7 +174,7 @@ function CertificationsTab({ darkMode }) {
 
   const getDaysUntilExpiry = expiryDate => {
     const today = new Date();
-    const expiry = new Date(expiryDate);
+    const expiry = parseDateOnlyAsLocal(expiryDate);
     const diffTime = expiry - today;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays;
@@ -193,7 +214,7 @@ function CertificationsTab({ darkMode }) {
       cert.certificationType,
       cert.issueDate,
       cert.expiryDate,
-      cert.status,
+      getDerivedStatus(cert.expiryDate),
       cert.trainingHours,
       cert.certifyingBody,
     ]);
@@ -331,9 +352,9 @@ function CertificationsTab({ darkMode }) {
                   <td>{cert.certificationType}</td>
                   <td>{cert.certifyingBody}</td>
                   <td>{cert.trainingHours}h</td>
-                  <td>{new Date(cert.issueDate).toLocaleDateString()}</td>
-                  <td>{new Date(cert.expiryDate).toLocaleDateString()}</td>
-                  <td>{getStatusBadge(cert.status)}</td>
+                  <td>{formatDateOnly(cert.issueDate)}</td>
+                  <td>{formatDateOnly(cert.expiryDate)}</td>
+                  <td>{getStatusBadge(getDerivedStatus(cert.expiryDate))}</td>
                   <td>{getExpiryWarning(cert.expiryDate)}</td>
                 </tr>
               ))

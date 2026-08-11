@@ -41,9 +41,15 @@ function PMResourceDashboard() {
       {/* Tabs Navigation */}
       <Row>
         <Col lg={12}>
-          <Nav tabs className={styles.tabNav}>
+          <Nav tabs className={styles.tabNav} role="tablist">
             <NavItem>
               <NavLink
+                id="resource-requests-tab"
+                tag="button"
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'requests'}
+                aria-controls="resource-requests-panel"
                 className={classnames(styles.tabLink, {
                   [styles.tabLinkActive]: activeTab === 'requests',
                 })}
@@ -54,6 +60,12 @@ function PMResourceDashboard() {
             </NavItem>
             <NavItem>
               <NavLink
+                id="certifications-tab"
+                tag="button"
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'certifications'}
+                aria-controls="certifications-panel"
                 className={classnames(styles.tabLink, {
                   [styles.tabLinkActive]: activeTab === 'certifications',
                 })}
@@ -69,10 +81,20 @@ function PMResourceDashboard() {
             activeTab={activeTab}
             className={`${styles.tabContent} ${darkMode ? styles.tabContentDark : ''}`}
           >
-            <TabPane tabId="requests">
+            <TabPane
+              tabId="requests"
+              id="resource-requests-panel"
+              role="tabpanel"
+              aria-labelledby="resource-requests-tab"
+            >
               {activeTab === 'requests' && <ResourceRequestsTab darkMode={darkMode} />}
             </TabPane>
-            <TabPane tabId="certifications">
+            <TabPane
+              tabId="certifications"
+              id="certifications-panel"
+              role="tabpanel"
+              aria-labelledby="certifications-tab"
+            >
               {activeTab === 'certifications' && <CertificationsTab darkMode={darkMode} />}
             </TabPane>
           </TabContent>
