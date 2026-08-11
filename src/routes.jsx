@@ -1017,7 +1017,7 @@ export default (
           component={PMResourceDashboard}
           fallback
           allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
-          routePermissions={RoutePermissions.accessHgnSkillsDashboard}
+          routePermissions={RoutePermissions.accessPMResourceDashboard}
         />
         <EPProtectedRoute path="/educationportal/dashboard" exact component={StudentDashboard} />
         <EPProtectedRoute path="/educationportal/student/tasks" exact component={StudentTasks} />

@@ -45,6 +45,7 @@ const RoutePermissions = {
   faqManagement: ['manageFAQs'],
   meetings: ['scheduleMeetings'],
   accessHgnSkillsDashboard: ['accessHgnSkillsDashboard'],
+  accessPMResourceDashboard: ['accessPMResourceDashboard'],
   jobFormManagement: [
     'manageJobForms',
     'createFormQuestions',
