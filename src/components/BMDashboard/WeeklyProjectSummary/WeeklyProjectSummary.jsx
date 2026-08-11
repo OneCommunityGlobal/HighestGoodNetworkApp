@@ -24,6 +24,8 @@ import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 
 import styles from './WeeklyProjectSummary.module.css';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
+import InjurySeverityChart from '../Injuries/InjurySeverityChart';
+import CostPredictionChart from './CostPredictionChart';
 
 const projectStatusButtons = [
   {
