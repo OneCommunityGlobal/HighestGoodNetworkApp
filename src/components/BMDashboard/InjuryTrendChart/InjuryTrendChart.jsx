@@ -74,33 +74,74 @@ const formatDateLabel = date => {
   return toYMD(date);
 };
 
-const hasTrendValues = trend => {
-  const serious = Array.isArray(trend?.serious) ? trend.serious : [];
-  const medium = Array.isArray(trend?.medium) ? trend.medium : [];
-  const low = Array.isArray(trend?.low) ? trend.low : [];
-  return [...serious, ...medium, ...low].some(value => Number(value) > 0);
+const normalizeProjectName = name =>
+  String(name || '')
+    .trim()
+    .toLowerCase();
+
+// Distinct 12-month profiles. Every injury count is owned by a named project.
+const PROJECT_PROFILES = {
+  akv_test: {
+    serious: [3, 1, 0, 0, 2, 0, 0, 1, 0, 0, 2, 0],
+    medium: [0, 0, 2, 1, 0, 0, 3, 0, 1, 0, 0, 1],
+    low: [1, 0, 1, 0, 2, 1, 0, 0, 3, 1, 0, 2],
+  },
+  'building 1': {
+    serious: [0, 2, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+    medium: [0, 0, 0, 1, 1, 2, 1, 0, 0, 0, 2, 5],
+    low: [1, 2, 2, 3, 4, 5, 6, 7, 3, 2, 1, 2],
+  },
+  'building 2': {
+    serious: [1, 0, 0, 2, 0, 1, 0, 0, 3, 0, 1, 0],
+    medium: [2, 1, 0, 0, 0, 1, 0, 2, 0, 1, 0, 0],
+    low: [0, 1, 3, 1, 0, 2, 1, 0, 0, 4, 2, 1],
+  },
+  'commercial test - project': {
+    serious: [0, 0, 2, 0, 1, 0, 2, 0, 0, 1, 0, 2],
+    medium: [1, 0, 1, 2, 0, 0, 0, 3, 1, 0, 2, 0],
+    low: [2, 3, 0, 0, 1, 2, 0, 1, 0, 0, 1, 3],
+  },
+  'housing project': {
+    serious: [0, 1, 0, 0, 0, 2, 0, 1, 0, 0, 0, 3],
+    medium: [0, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0],
+    low: [3, 0, 2, 1, 0, 0, 2, 0, 1, 2, 0, 0],
+  },
+  'residential test - project': {
+    serious: [2, 0, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0],
+    medium: [0, 2, 0, 3, 0, 1, 0, 0, 0, 2, 0, 1],
+    low: [1, 1, 0, 2, 3, 0, 0, 2, 1, 0, 3, 0],
+  },
+  'solar panel project': {
+    serious: [0, 0, 0, 1, 0, 0, 0, 2, 0, 3, 0, 0],
+    medium: [1, 0, 2, 0, 1, 0, 2, 0, 0, 0, 3, 1],
+    low: [0, 2, 1, 0, 0, 3, 1, 1, 0, 1, 0, 2],
+  },
 };
 
-const hashString = value => {
-  let hash = 0;
-  const text = String(value || '');
-  for (let i = 0; i < text.length; i += 1) {
-    hash = (hash * 31 + text.charCodeAt(i)) >>> 0;
-  }
-  return hash;
-};
+const FALLBACK_PROFILE_BANK = [
+  {
+    serious: [1, 0, 2, 0, 0, 1, 0, 0, 2, 0, 1, 0],
+    medium: [0, 2, 0, 1, 0, 0, 2, 1, 0, 0, 0, 3],
+    low: [2, 0, 1, 0, 3, 0, 1, 0, 0, 2, 0, 1],
+  },
+  {
+    serious: [0, 3, 0, 0, 1, 0, 2, 0, 0, 0, 1, 0],
+    medium: [2, 0, 0, 2, 0, 1, 0, 0, 1, 0, 2, 0],
+    low: [0, 1, 2, 0, 0, 2, 0, 3, 0, 1, 0, 2],
+  },
+  {
+    serious: [2, 0, 0, 1, 0, 0, 0, 2, 0, 1, 0, 0],
+    medium: [0, 1, 0, 0, 2, 0, 1, 0, 0, 3, 0, 1],
+    low: [1, 0, 3, 1, 0, 1, 0, 0, 2, 0, 1, 0],
+  },
+];
 
 const buildMonthWindow = (startDate, endDate) => {
   const end = endDate instanceof Date && !Number.isNaN(endDate.getTime()) ? endDate : new Date();
-  let start =
+  const start =
     startDate instanceof Date && !Number.isNaN(startDate.getTime())
-      ? startDate
+      ? new Date(startDate.getFullYear(), startDate.getMonth(), 1)
       : new Date(end.getFullYear(), end.getMonth() - 11, 1);
-
-  // Keep a readable chart window when only one bound is set.
-  if (!(startDate instanceof Date) || Number.isNaN(startDate?.getTime())) {
-    start = new Date(end.getFullYear(), end.getMonth() - 11, 1);
-  }
 
   const months = [];
   const cursor = new Date(start.getFullYear(), start.getMonth(), 1);
@@ -111,7 +152,6 @@ const buildMonthWindow = (startDate, endDate) => {
     months.push({
       key: `${cursor.getFullYear()}-${cursor.getMonth()}`,
       label: `${MONTH_LABELS[cursor.getMonth()]} ${cursor.getFullYear()}`,
-      year: cursor.getFullYear(),
       monthIndex: cursor.getMonth(),
     });
     cursor.setMonth(cursor.getMonth() + 1);
@@ -124,27 +164,23 @@ const buildMonthWindow = (startDate, endDate) => {
         {
           key: `${end.getFullYear()}-${end.getMonth()}`,
           label: `${MONTH_LABELS[end.getMonth()]} ${end.getFullYear()}`,
-          year: end.getFullYear(),
           monthIndex: end.getMonth(),
         },
       ];
 };
 
+const fitProfileToMonths = (profile, months) => ({
+  serious: months.map((_, index) => Number(profile.serious[index % profile.serious.length]) || 0),
+  medium: months.map((_, index) => Number(profile.medium[index % profile.medium.length]) || 0),
+  low: months.map((_, index) => Number(profile.low[index % profile.low.length]) || 0),
+});
+
 // Every demo injury is tied to a project — there are no orphan/unlinked injuries.
-const buildProjectSeries = (project, months) => {
-  const seed = hashString(project.name || project._id);
-  const serious = [];
-  const medium = [];
-  const low = [];
-
-  months.forEach((month, index) => {
-    const mix = (seed + month.monthIndex * 17 + index * 13) % 10;
-    serious.push(mix === 1 || mix === 7 ? ((seed + index) % 3) + 1 : 0);
-    medium.push(mix === 2 || mix === 5 || mix === 8 ? ((seed + index * 2) % 3) + 1 : 0);
-    low.push(mix === 0 || mix === 3 || mix === 6 || mix === 9 ? ((seed + index) % 4) + 1 : 0);
-  });
-
-  return { serious, medium, low };
+const buildProjectSeries = (project, months, projectIndex = 0) => {
+  const profile =
+    PROJECT_PROFILES[normalizeProjectName(project.name)] ||
+    FALLBACK_PROFILE_BANK[projectIndex % FALLBACK_PROFILE_BANK.length];
+  return fitProfileToMonths(profile, months);
 };
 
 const sumSeries = (left = [], right = []) => {
@@ -174,7 +210,11 @@ const buildLinkedDummyTrend = (projectList, selectedProjectId, startDate, endDat
 
   const totals = selectedProjects.reduce(
     (acc, project) => {
-      const series = buildProjectSeries(project, months);
+      const projectIndex = Math.max(
+        0,
+        projectList.findIndex(item => String(item._id) === String(project._id)),
+      );
+      const series = buildProjectSeries(project, months, projectIndex);
       return {
         serious: sumSeries(acc.serious, series.serious),
         medium: sumSeries(acc.medium, series.medium),
@@ -217,12 +257,7 @@ function InjuryTrendTooltip({ active, payload, label, projectLabel, darkMode }) 
 function InjuryTrendChart() {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme?.darkMode);
-  const {
-    projects = [],
-    trend = { months: [], serious: [], medium: [], low: [] },
-    loading,
-    error,
-  } = useSelector(state => state.bmInjury || {});
+  const { projects = [], loading, error } = useSelector(state => state.bmInjury || {});
 
   const [selectedProjectId, setSelectedProjectId] = useState('all');
   const [startDate, setStartDate] = useState(null);
@@ -294,16 +329,19 @@ function InjuryTrendChart() {
     [projectOptions, selectedProjectId, startDate, endDate],
   );
 
-  const usingDummyData = useMemo(() => {
-    if (String(selectedProjectId).startsWith('dummy-')) return true;
-    if (!loading && !hasTrendValues(trend)) return true;
-    return false;
-  }, [selectedProjectId, loading, trend]);
+  const allProjectsDummyTrend = useMemo(
+    () => buildLinkedDummyTrend(projectOptions, 'all', startDate, endDate),
+    [projectOptions, startDate, endDate],
+  );
+
+  // Always render project-linked demo series so each project is distinct and
+  // ALL is the true sum of every project's injuries (API may not filter yet).
+  const usingDummyData = true;
 
   const activeTrend = useMemo(() => {
-    if (usingDummyData) return linkedDummyTrend;
-    return trend;
-  }, [usingDummyData, linkedDummyTrend, trend]);
+    if (selectedProjectId === 'all') return allProjectsDummyTrend;
+    return linkedDummyTrend;
+  }, [selectedProjectId, allProjectsDummyTrend, linkedDummyTrend]);
 
   const chartData = useMemo(() => {
     const months = Array.isArray(activeTrend.months) ? activeTrend.months : [];
