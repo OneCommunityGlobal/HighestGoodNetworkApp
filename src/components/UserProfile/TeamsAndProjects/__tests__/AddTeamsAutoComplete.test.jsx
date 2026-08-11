@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom/extend-expect';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import AddTeamsAutoComplete from '../AddTeamsAutoComplete';
 import { toast } from 'react-toastify';
 
@@ -26,7 +26,7 @@ describe('AddTeamsAutoComplete Component', () => {
     ],
   };
 
-  const mockStore = configureStore([]);
+  const mockStore = configureMockStore([]);
   const initialState = {
     theme: { darkMode: false },
   };

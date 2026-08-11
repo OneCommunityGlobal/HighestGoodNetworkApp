@@ -8,8 +8,6 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { toast } from 'react-toastify';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
-import InjurySeverityChart from '../Injuries/InjurySeverityChart';
-import CostPredictionChart from './CostPredictionChart';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
@@ -73,7 +71,7 @@ const projectStatusButtons = [
     change: '+13% week over week',
     bgColor: '#FFF6EE',
     buttonColor: '#FFD8A5',
-    textColor: '#328D1B',
+    textColor: '#FFD8A5',
   },
   {
     title: 'Total Material Cost',
@@ -288,19 +286,6 @@ function WeeklyProjectSummary() {
         content: (
           <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
             <IssueCharts />
-          </div>
-        ),
-      },
-      {
-        title: 'Injury Severity by Category of Worker Injured',
-        key: 'Injury Severity',
-        className: 'full',
-        content: (
-          <div
-            className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}
-            style={{ minHeight: '450px' }}
-          >
-            <InjurySeverityChart />
           </div>
         ),
       },
