@@ -351,9 +351,16 @@ function Collaboration() {
     setIsReorderModalOpen(prevState => !prevState);
   };
 
-  const handleJobsReordered = () => {
+  const handleJobsReordered = async () => {
     // fetchJobAds(query, category);
-    fetchJobAds();
+    if (summaries) {
+      // We are currently on the Summary page,
+      // so refresh the summary data after reordering.
+      await handleShowSummaries();
+    } else {
+      // We are on the normal jobs page.
+      await fetchJobAds();
+    }
   };
 
   const renderSummaries = () => {
@@ -402,7 +409,7 @@ function Collaboration() {
                 </button>
                 {canReorderJobs && (
                   <button
-                    className={`btn btn-secondary ${styles.reorderButton}`}
+                    className={styles.reorderButton}
                     type="button"
                     onClick={toggleReorderModal}
                   >
@@ -518,7 +525,7 @@ function Collaboration() {
                   </button>
                   {canReorderJobs && (
                     <button
-                      className={`btn btn-secondary ${styles.reorderButton}`}
+                      className={styles.reorderButton}
                       type="button"
                       onClick={toggleReorderModal}
                     >
