@@ -253,7 +253,7 @@ const UpdateMaterialsBulk = lazy(() =>
 const UpdateReusablesBulk = lazy(() =>
   import('./components/BMDashboard/UpdateReusables/UpdateReusablesBulk/UpdateReusablesBulk'),
 );
-const InjuryChart = lazy(() => import('./components/BMDashboard/InjuryChart/InjuryChart'));
+const InjuryTrendChart = lazy(() => import('./components/BMDashboard/InjuryTrendChart'));
 const PurchaseConsumable = lazy(() => import('./components/BMDashboard/ConsumablePurchaseRequest'));
 const InventoryTypesList = lazy(() => import('./components/BMDashboard/InventoryTypesList'));
 const UnitsOfMeasurementList = lazy(() =>
@@ -825,7 +825,12 @@ export default (
           exact
           component={WeeklyProjectSummary}
         />
-        <BMProtectedRoute path="/bmdashboard/injurychart" fallback exact component={InjuryChart} />
+        <BMProtectedRoute
+          path="/bmdashboard/injurychart"
+          fallback
+          exact
+          component={InjuryTrendChart}
+        />
         <BMProtectedRoute
           path="/bmdashboard/injuries-severity"
           fallback
