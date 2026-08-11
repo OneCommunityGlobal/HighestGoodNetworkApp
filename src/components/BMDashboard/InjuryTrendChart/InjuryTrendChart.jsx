@@ -28,31 +28,37 @@ const LEGEND_ITEMS = [
   { key: 'low', label: 'Low Level', color: SEVERITY_COLORS.low },
 ];
 
-// Demo series used for All Projects when API has no data yet.
-const DUMMY_ALL_PROJECTS_TREND = {
-  months: [
-    'Jan 2024',
-    'Feb 2024',
-    'Mar 2024',
-    'Apr 2024',
-    'May 2024',
-    'Jun 2024',
-    'Jul 2024',
-    'Aug 2024',
-    'Sep 2024',
-    'Oct 2024',
-    'Nov 2024',
-    'Dec 2024',
-  ],
-  serious: [0, 2, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1],
-  medium: [0, 0, 0, 1, 1, 2, 1, 0, 0, 0, 2, 5],
-  low: [1, 2, 2, 3, 4, 5, 6, 7, 3, 2, 1, 2],
-};
+const MONTH_LABELS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
 
-const DUMMY_PROJECTS = [
+const FALLBACK_PROJECTS = [
+  { _id: 'dummy-akv-test', name: 'akv_test', projectIds: ['dummy-akv-test'] },
   { _id: 'dummy-building-1', name: 'Building 1', projectIds: ['dummy-building-1'] },
   { _id: 'dummy-building-2', name: 'Building 2', projectIds: ['dummy-building-2'] },
-  { _id: 'dummy-site-a', name: 'Site A', projectIds: ['dummy-site-a'] },
+  {
+    _id: 'dummy-commercial',
+    name: 'Commercial Test - Project',
+    projectIds: ['dummy-commercial'],
+  },
+  { _id: 'dummy-housing', name: 'Housing Project', projectIds: ['dummy-housing'] },
+  {
+    _id: 'dummy-residential',
+    name: 'Residential Test - Project',
+    projectIds: ['dummy-residential'],
+  },
+  { _id: 'dummy-solar', name: 'Solar Panel Project', projectIds: ['dummy-solar'] },
 ];
 
 const toYMD = date => {
@@ -73,6 +79,121 @@ const hasTrendValues = trend => {
   const medium = Array.isArray(trend?.medium) ? trend.medium : [];
   const low = Array.isArray(trend?.low) ? trend.low : [];
   return [...serious, ...medium, ...low].some(value => Number(value) > 0);
+};
+
+const hashString = value => {
+  let hash = 0;
+  const text = String(value || '');
+  for (let i = 0; i < text.length; i += 1) {
+    hash = (hash * 31 + text.charCodeAt(i)) >>> 0;
+  }
+  return hash;
+};
+
+const buildMonthWindow = (startDate, endDate) => {
+  const end = endDate instanceof Date && !Number.isNaN(endDate.getTime()) ? endDate : new Date();
+  let start =
+    startDate instanceof Date && !Number.isNaN(startDate.getTime())
+      ? startDate
+      : new Date(end.getFullYear(), end.getMonth() - 11, 1);
+
+  // Keep a readable chart window when only one bound is set.
+  if (!(startDate instanceof Date) || Number.isNaN(startDate?.getTime())) {
+    start = new Date(end.getFullYear(), end.getMonth() - 11, 1);
+  }
+
+  const months = [];
+  const cursor = new Date(start.getFullYear(), start.getMonth(), 1);
+  const last = new Date(end.getFullYear(), end.getMonth(), 1);
+  let guard = 0;
+
+  while (cursor <= last && guard < 36) {
+    months.push({
+      key: `${cursor.getFullYear()}-${cursor.getMonth()}`,
+      label: `${MONTH_LABELS[cursor.getMonth()]} ${cursor.getFullYear()}`,
+      year: cursor.getFullYear(),
+      monthIndex: cursor.getMonth(),
+    });
+    cursor.setMonth(cursor.getMonth() + 1);
+    guard += 1;
+  }
+
+  return months.length
+    ? months
+    : [
+        {
+          key: `${end.getFullYear()}-${end.getMonth()}`,
+          label: `${MONTH_LABELS[end.getMonth()]} ${end.getFullYear()}`,
+          year: end.getFullYear(),
+          monthIndex: end.getMonth(),
+        },
+      ];
+};
+
+// Every demo injury is tied to a project — there are no orphan/unlinked injuries.
+const buildProjectSeries = (project, months) => {
+  const seed = hashString(project.name || project._id);
+  const serious = [];
+  const medium = [];
+  const low = [];
+
+  months.forEach((month, index) => {
+    const mix = (seed + month.monthIndex * 17 + index * 13) % 10;
+    serious.push(mix === 1 || mix === 7 ? ((seed + index) % 3) + 1 : 0);
+    medium.push(mix === 2 || mix === 5 || mix === 8 ? ((seed + index * 2) % 3) + 1 : 0);
+    low.push(mix === 0 || mix === 3 || mix === 6 || mix === 9 ? ((seed + index) % 4) + 1 : 0);
+  });
+
+  return { serious, medium, low };
+};
+
+const sumSeries = (left = [], right = []) => {
+  const length = Math.max(left.length, right.length);
+  return Array.from(
+    { length },
+    (_, index) => (Number(left[index]) || 0) + (Number(right[index]) || 0),
+  );
+};
+
+const buildLinkedDummyTrend = (projectList, selectedProjectId, startDate, endDate) => {
+  const months = buildMonthWindow(startDate, endDate);
+  const selectedProjects =
+    selectedProjectId === 'all'
+      ? projectList
+      : projectList.filter(project => String(project._id) === String(selectedProjectId));
+
+  // Refuse to invent injuries that are not linked to a project.
+  if (!selectedProjects.length) {
+    return {
+      months: months.map(month => month.label),
+      serious: months.map(() => 0),
+      medium: months.map(() => 0),
+      low: months.map(() => 0),
+    };
+  }
+
+  const totals = selectedProjects.reduce(
+    (acc, project) => {
+      const series = buildProjectSeries(project, months);
+      return {
+        serious: sumSeries(acc.serious, series.serious),
+        medium: sumSeries(acc.medium, series.medium),
+        low: sumSeries(acc.low, series.low),
+      };
+    },
+    {
+      serious: months.map(() => 0),
+      medium: months.map(() => 0),
+      low: months.map(() => 0),
+    },
+  );
+
+  return {
+    months: months.map(month => month.label),
+    serious: totals.serious,
+    medium: totals.medium,
+    low: totals.low,
+  };
 };
 
 function InjuryTrendTooltip({ active, payload, label, projectLabel, darkMode }) {
@@ -107,20 +228,27 @@ function InjuryTrendChart() {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
+  const projectOptions = useMemo(() => {
+    if (projects.length) return projects;
+    return FALLBACK_PROJECTS;
+  }, [projects]);
+
   useEffect(() => {
     dispatch(fetchInjuryProjects({}));
   }, [dispatch]);
 
   useEffect(() => {
-    const selectedProject = projects.find(project => String(project._id) === selectedProjectId);
+    const selectedProject = projectOptions.find(
+      project => String(project._id) === selectedProjectId,
+    );
     let projectIds = [];
     if (selectedProject?.projectIds?.length) {
-      projectIds = selectedProject.projectIds;
+      projectIds = selectedProject.projectIds.filter(id => !String(id).startsWith('dummy-'));
     } else if (selectedProjectId !== 'all' && !String(selectedProjectId).startsWith('dummy-')) {
       projectIds = [selectedProjectId];
     }
 
-    // Skip API calls for local dummy project selections.
+    // Local fallback projects are demo-only and are not queried from the API.
     if (String(selectedProjectId).startsWith('dummy-')) {
       return undefined;
     }
@@ -135,7 +263,7 @@ function InjuryTrendChart() {
 
     dispatch(fetchInjuryTrend(params));
     return undefined;
-  }, [dispatch, projects, selectedProjectId, startDate, endDate]);
+  }, [dispatch, projectOptions, selectedProjectId, startDate, endDate]);
 
   useEffect(() => {
     if (darkMode) {
@@ -147,11 +275,6 @@ function InjuryTrendChart() {
       document.body.classList.remove('injury-dark-body');
     };
   }, [darkMode]);
-
-  const projectOptions = useMemo(() => {
-    if (projects.length) return projects;
-    return DUMMY_PROJECTS;
-  }, [projects]);
 
   const selectedProjectLabel = useMemo(() => {
     if (selectedProjectId === 'all') return 'ALL';
@@ -166,16 +289,21 @@ function InjuryTrendChart() {
     return `Until ${formatDateLabel(endDate)}`;
   }, [startDate, endDate]);
 
+  const linkedDummyTrend = useMemo(
+    () => buildLinkedDummyTrend(projectOptions, selectedProjectId, startDate, endDate),
+    [projectOptions, selectedProjectId, startDate, endDate],
+  );
+
   const usingDummyData = useMemo(() => {
     if (String(selectedProjectId).startsWith('dummy-')) return true;
-    if (selectedProjectId === 'all' && !loading && !hasTrendValues(trend)) return true;
+    if (!loading && !hasTrendValues(trend)) return true;
     return false;
   }, [selectedProjectId, loading, trend]);
 
   const activeTrend = useMemo(() => {
-    if (usingDummyData) return DUMMY_ALL_PROJECTS_TREND;
+    if (usingDummyData) return linkedDummyTrend;
     return trend;
-  }, [usingDummyData, trend]);
+  }, [usingDummyData, linkedDummyTrend, trend]);
 
   const chartData = useMemo(() => {
     const months = Array.isArray(activeTrend.months) ? activeTrend.months : [];
