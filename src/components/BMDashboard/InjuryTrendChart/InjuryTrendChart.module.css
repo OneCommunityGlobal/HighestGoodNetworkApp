@@ -2,60 +2,75 @@
   background-color: #1b2a41 !important;
 }
 
-.container {
+.page {
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1.5rem;
+  padding: 1.25rem;
+  box-sizing: border-box;
 }
 
-.header {
-  margin-bottom: 1rem;
+.panel {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 1.25rem 1.5rem 1.5rem;
+  border: 1px solid #c8c8c8;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.topBar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .title {
-  margin: 0 0 0.35rem;
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
-.subtitle {
   margin: 0;
-  color: #6b7280;
-  font-size: 0.95rem;
+  color: #4a4a4a;
+  font-size: clamp(1.35rem, 2.2vw, 1.85rem);
+  font-weight: 500;
+  line-height: 1.2;
 }
 
-.filters {
+.headerFilters {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  align-items: end;
-  margin-bottom: 1rem;
+  grid-template-columns: minmax(140px, 180px) minmax(220px, 320px);
+  gap: 0.85rem 1rem;
+  place-items: start stretch;
+  flex: 1 1 auto;
+  max-width: 520px;
 }
 
-.filterItem {
+.filterGroup {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  align-items: stretch;
+  gap: 0.35rem;
   min-width: 0;
 }
 
-.filterItem label {
-  font-size: 0.9rem;
-  font-weight: 600;
+.filterLabel {
+  margin: 0;
+  color: #333;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: left;
+  line-height: 1.2;
 }
 
 .select,
 .datepicker {
   width: 100%;
-  min-height: 38px;
-  padding: 0.375rem 0.75rem;
-  border: 1px solid #ced4da;
-  border-radius: 0.375rem;
+  min-height: 36px;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid #bfbfbf;
+  border-radius: 2px;
   background-color: #fff;
-  color: #212529;
-  font-size: 1rem;
-  line-height: 1.5;
+  color: #333;
+  font-size: 0.9rem;
+  line-height: 1.4;
   box-sizing: border-box;
 }
 
@@ -63,27 +78,84 @@
   appearance: auto;
 }
 
-.filters :global(.react-datepicker-wrapper),
-.filters :global(.react-datepicker__input-container) {
+.dateInputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem;
+  width: 100%;
+}
+
+.headerFilters :global(.react-datepicker-wrapper),
+.headerFilters :global(.react-datepicker__input-container) {
   display: block;
   width: 100%;
 }
 
-.filters :global(.react-datepicker__input-container input) {
-  width: 100%;
+.headerFilters :global(.react-datepicker__month-select),
+.headerFilters :global(.react-datepicker__year-select) {
+  margin: 0 0.15rem;
+  padding: 0.15rem 0.25rem;
+  border: 1px solid #bfbfbf;
+  border-radius: 2px;
+  background: #fff;
+  color: #333;
 }
 
-.chartCard {
+.legendRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 1.25rem 1.75rem;
+  margin: 0.35rem 0 0.75rem;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #444;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.legendLine {
+  display: inline-block;
+  width: 34px;
+  height: 3px;
+  border-radius: 1px;
+}
+
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin-bottom: 0.75rem;
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.metaRow strong {
+  color: #444;
+  font-weight: 600;
+}
+
+.demoBadge {
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #3730a3;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.chartArea {
   width: 100%;
-  min-height: 420px;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  background: #fff;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
+  min-height: 300px;
 }
 
 .statusMessage {
-  margin-bottom: 0.75rem;
+  margin: 0.5rem 0 0.75rem;
   color: #4b5563;
 }
 
@@ -137,8 +209,19 @@
   color: #cfd7e3;
 }
 
-.darkMode .subtitle,
-.darkMode .statusMessage {
+.darkMode .panel {
+  background: #1e2736;
+  border-color: #2d3a4d;
+}
+
+.darkMode .title,
+.darkMode .filterLabel,
+.darkMode .legendItem,
+.darkMode .metaRow strong {
+  color: #e5eaf1;
+}
+
+.darkMode .metaRow {
   color: #9aa6b8;
 }
 
@@ -149,9 +232,13 @@
   border-color: #2d3a4d;
 }
 
-.darkMode .chartCard {
-  background: #1e2736;
-  box-shadow: none;
+.darkMode .demoBadge {
+  background: #312e81;
+  color: #e0e7ff;
+}
+
+.darkMode .statusMessage {
+  color: #9aa6b8;
 }
 
 .darkMode :global(.react-datepicker) {
@@ -167,16 +254,54 @@
 
 .darkMode :global(.react-datepicker__day-name),
 .darkMode :global(.react-datepicker__day),
-.darkMode :global(.react-datepicker__current-month) {
+.darkMode :global(.react-datepicker__current-month),
+.darkMode :global(.react-datepicker__month-read-view--selected-month),
+.darkMode :global(.react-datepicker__year-read-view--selected-year) {
   color: #ddd;
 }
 
-@media (width <= 768px) {
-  .filters {
+.darkMode :global(.react-datepicker__month-dropdown),
+.darkMode :global(.react-datepicker__year-dropdown),
+.darkMode :global(.react-datepicker__month-select),
+.darkMode :global(.react-datepicker__year-select) {
+  background-color: #222;
+  color: #ddd;
+}
+
+@media (width <= 900px) {
+  .topBar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .headerFilters {
+    max-width: none;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (width <= 640px) {
+  .page {
+    padding: 0.75rem;
+  }
+
+  .panel {
+    padding: 1rem;
+  }
+
+  .headerFilters {
     grid-template-columns: 1fr;
   }
 
-  .container {
-    padding: 1rem;
+  .dateInputs {
+    grid-template-columns: 1fr;
+  }
+
+  .legendRow {
+    gap: 0.75rem 1rem;
+  }
+
+  .legendItem {
+    font-size: 0.85rem;
   }
 }

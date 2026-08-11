@@ -886,6 +886,13 @@ export function Header(props) {
                       <DropdownItem tag={Link} to="/bmdashboard" className={fontColor}>
                         BM Dashboard
                       </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/injurychart"
+                        className={`${fontColor} ${styles.bmSubItem}`}
+                      >
+                        Injuries Tracking
+                      </DropdownItem>
 
                       {/* BM Projects accordion — only shown when on a bmdashboard route */}
                       {showProjectDropdown && (
