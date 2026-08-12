@@ -105,7 +105,7 @@
   justify-content: center;
   padding: 3rem;
   text-align: center;
-  color: #666; 
+  color: #666;
   min-height: 250px;
   border-radius: 12px;
   background: transparent;
@@ -442,4 +442,3 @@
 .dark .closeButton {
   color: var(--text-primary);
 }
-
