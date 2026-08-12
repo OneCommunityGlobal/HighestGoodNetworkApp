@@ -141,6 +141,11 @@
   color: #ffffff;
 }
 
+.updateModalBackdropDark :global(.modal-content) .consumableFormError,
+.updateModalBackdropDark :global(.modal-content) .consumableFormErrorClr {
+  color: red !important;
+}
+
 @media (max-width: 992px) {
   :global(.modal-body) {
     padding: 0 !important;
