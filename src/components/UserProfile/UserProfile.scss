@@ -505,6 +505,22 @@ button.btn.btn-outline-primary {
   display: none;
 }
 
+/* Minimal Dark Mode Hover & Active Fix */
+body.dark-mode .nav-link:hover,
+body.dark-mode .nav-link.active,
+body.bm-dashboard-dark .nav-link:hover,
+body.bm-dashboard-dark .nav-link.active {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+body.dark-mode .nav-link:hover *,
+body.dark-mode .nav-link.active *,
+body.bm-dashboard-dark .nav-link:hover *,
+body.bm-dashboard-dark .nav-link.active * {
+  color: #000000 !important;
+}
+
 @media (max-width: 768px) {
   .desktop {
     display: none;

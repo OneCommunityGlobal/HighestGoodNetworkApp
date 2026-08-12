@@ -66,8 +66,8 @@ export const AutoCompleteTeamCode = props => {
             className="overflow-auto mb-2 scrollAutoComplete"
             style={{
               height: isLoading ? '7rem' : arrayInputAutoComplete.length <= 30 ? 'auto' : '23rem',
-              width: 'auto',
-              position: arrayInputAutoComplete.length <= 3 || isLoading ? '' : 'relative',
+              width: '100%',
+              position: 'relative',
             }}
           >
             {!isLoading ? (
@@ -94,8 +94,16 @@ export const AutoCompleteTeamCode = props => {
                 </p>
               ) : (
                 <div
-                  className={`${arrayInputAutoComplete.length > 3 &&
-                    'row row-cols-lg-5 row-cols-sm-4'}`}
+                  className={
+                    arrayInputAutoComplete.length > 3
+                      ? 'row row-cols-lg-5 row-cols-sm-4'
+                      : ''
+                  }
+                  style={{
+                    marginLeft: 0,
+                    marginRight: 0,
+                    width: '100%',
+                  }}
                 >
                   {arrayInputAutoComplete.map(item => (
                     <div
