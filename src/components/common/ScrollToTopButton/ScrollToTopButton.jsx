@@ -30,9 +30,11 @@ const resolveScrollTargets = scrollTarget => {
 function ScrollToTopButton({ threshold = 100, scrollTarget }) {
   const [isVisible, setIsVisible] = useState(false);
   const activeTargetRef = useRef(null);
+  const scrollTargetsRef = useRef([]);
 
   useEffect(() => {
     const targets = resolveScrollTargets(scrollTarget);
+    scrollTargetsRef.current = targets;
     if (!targets.length) {
       activeTargetRef.current = null;
       setIsVisible(false);
@@ -44,15 +46,37 @@ function ScrollToTopButton({ threshold = 100, scrollTarget }) {
         event?.target && event.target !== document && 'scrollTop' in event.target
           ? event.target
           : null;
-      const candidates = eventTarget ? [...new Set([eventTarget, ...targets])] : targets;
-      const activeTarget = candidates.reduce(
+      const eventTargetScrollTop = eventTarget ? getScrollTop(eventTarget) : 0;
+
+      if (eventTargetScrollTop > threshold) {
+        activeTargetRef.current = eventTarget;
+        setIsVisible(true);
+        return;
+      }
+
+      if (eventTarget && eventTarget === activeTargetRef.current) {
+        setIsVisible(false);
+        return;
+      }
+
+      const primaryTarget = targets.reduce(
         (currentTarget, target) =>
           getScrollTop(target) > getScrollTop(currentTarget) ? target : currentTarget,
-        candidates[0],
+        targets[0],
       );
+      const primaryScrollTop = getScrollTop(primaryTarget);
 
-      activeTargetRef.current = activeTarget;
-      setIsVisible(getScrollTop(activeTarget) > threshold);
+      if (primaryScrollTop > threshold) {
+        activeTargetRef.current = primaryTarget;
+        setIsVisible(true);
+        return;
+      }
+
+      if (!eventTarget) {
+        activeTargetRef.current = primaryTarget;
+        setIsVisible(false);
+        return;
+      }
     };
 
     updateVisibility();
@@ -74,16 +98,37 @@ function ScrollToTopButton({ threshold = 100, scrollTarget }) {
   }, [scrollTarget, threshold]);
 
   const handleClick = () => {
-    const target = activeTargetRef.current;
-    if (!target) return;
+    const candidates = new Set([...scrollTargetsRef.current, activeTargetRef.current]);
+
+    if (!scrollTarget) {
+      document.querySelectorAll('*').forEach(element => {
+        if (element.scrollTop > 0) candidates.add(element);
+      });
+    }
+
+    const connectedTargets = [...candidates].filter(
+      target => target && (target === window || target.isConnected !== false),
+    );
+    const scrolledTargets = connectedTargets.filter(target => getScrollTop(target) > 0);
+    const targets = scrolledTargets.length ? scrolledTargets : connectedTargets;
+
+    if (!targets.length) return;
 
     const prefersReducedMotion =
       typeof window.matchMedia === 'function' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    target.scrollTo({
+    const scrollOptions = {
       top: 0,
       behavior: prefersReducedMotion ? 'auto' : 'smooth',
+    };
+
+    targets.forEach(target => {
+      if (typeof target.scrollTo === 'function') {
+        target.scrollTo(scrollOptions);
+      } else {
+        target.scrollTop = 0;
+      }
     });
   };
 

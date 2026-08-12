@@ -131,6 +131,138 @@ describe('ScrollToTopButton', () => {
     root.remove();
   });
 
+  it('ignores unrelated nested scroll events after the page scroller passes the threshold', () => {
+    const root = document.createElement('div');
+    root.id = 'root';
+    Object.defineProperty(root, 'scrollTop', {
+      configurable: true,
+      writable: true,
+      value: 0,
+    });
+    const pageScroller = document.createElement('div');
+    pageScroller.scrollTo = vi.fn();
+    Object.defineProperty(pageScroller, 'scrollTop', {
+      configurable: true,
+      writable: true,
+      value: 101,
+    });
+    const widgetScroller = document.createElement('div');
+    Object.defineProperty(widgetScroller, 'scrollTop', {
+      configurable: true,
+      writable: true,
+      value: 0,
+    });
+    root.append(pageScroller, widgetScroller);
+    document.body.appendChild(root);
+
+    render(<ScrollToTopButton />);
+    fireEvent.scroll(pageScroller);
+    expect(screen.getByRole('button', { name: /scroll to top/i })).toBeInTheDocument();
+
+    fireEvent.scroll(widgetScroller);
+    expect(screen.getByRole('button', { name: /scroll to top/i })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /scroll to top/i }));
+    expect(pageScroller.scrollTo).toHaveBeenCalledWith({ top: 0, behavior: 'smooth' });
+
+    root.remove();
+  });
+
+  it('re-evaluates the page scroller before scrolling to the top', () => {
+    const root = document.createElement('div');
+    root.id = 'root';
+    Object.defineProperty(root, 'scrollTop', {
+      configurable: true,
+      writable: true,
+      value: 0,
+    });
+    const initialScroller = document.createElement('div');
+    initialScroller.scrollTo = vi.fn();
+    Object.defineProperty(initialScroller, 'scrollTop', {
+      configurable: true,
+      writable: true,
+      value: 101,
+    });
+    root.appendChild(initialScroller);
+    document.body.appendChild(root);
+
+    render(<ScrollToTopButton />);
+    fireEvent.scroll(initialScroller);
+    expect(screen.getByRole('button', { name: /scroll to top/i })).toBeInTheDocument();
+
+    initialScroller.scrollTop = 0;
+    const currentScroller = document.createElement('div');
+    currentScroller.scrollTo = vi.fn();
+    Object.defineProperty(currentScroller, 'scrollTop', {
+      configurable: true,
+      writable: true,
+      value: 101,
+    });
+    root.appendChild(currentScroller);
+    fireEvent.click(screen.getByRole('button', { name: /scroll to top/i }));
+
+    expect(currentScroller.scrollTo).toHaveBeenCalledWith({ top: 0, behavior: 'smooth' });
+    expect(initialScroller.scrollTo).not.toHaveBeenCalled();
+
+    root.remove();
+  });
+
+  it('hides when the active nested page scroller returns within the threshold', () => {
+    const root = document.createElement('div');
+    root.id = 'root';
+    Object.defineProperty(root, 'scrollTop', {
+      configurable: true,
+      writable: true,
+      value: 0,
+    });
+    const pageScroller = document.createElement('div');
+    Object.defineProperty(pageScroller, 'scrollTop', {
+      configurable: true,
+      writable: true,
+      value: 101,
+    });
+    root.appendChild(pageScroller);
+    document.body.appendChild(root);
+
+    render(<ScrollToTopButton />);
+    fireEvent.scroll(pageScroller);
+    expect(screen.getByRole('button', { name: /scroll to top/i })).toBeInTheDocument();
+
+    pageScroller.scrollTop = 100;
+    fireEvent.scroll(pageScroller);
+    expect(screen.queryByRole('button', { name: /scroll to top/i })).not.toBeInTheDocument();
+
+    root.remove();
+  });
+
+  it('hides at the top even when another container retains a stale scroll position', () => {
+    const root = document.createElement('div');
+    root.id = 'root';
+    Object.defineProperty(root, 'scrollTop', {
+      configurable: true,
+      writable: true,
+      value: 101,
+    });
+    const pageScroller = document.createElement('div');
+    Object.defineProperty(pageScroller, 'scrollTop', {
+      configurable: true,
+      writable: true,
+      value: 101,
+    });
+    root.appendChild(pageScroller);
+    document.body.appendChild(root);
+
+    render(<ScrollToTopButton />);
+    fireEvent.scroll(pageScroller);
+    expect(screen.getByRole('button', { name: /scroll to top/i })).toBeInTheDocument();
+
+    pageScroller.scrollTop = 0;
+    fireEvent.scroll(pageScroller);
+    expect(screen.queryByRole('button', { name: /scroll to top/i })).not.toBeInTheDocument();
+
+    root.remove();
+  });
+
   it('removes its scroll listener on unmount', () => {
     const removeEventListener = vi.spyOn(target, 'removeEventListener');
     const { unmount } = render(<ScrollToTopButton scrollTarget={resolveTarget} />);
