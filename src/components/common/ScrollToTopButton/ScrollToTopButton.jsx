@@ -45,8 +45,10 @@ function ScrollToTopButton({ threshold = 100, scrollTarget }) {
           ? event.target
           : null;
       const candidates = eventTarget ? [...new Set([eventTarget, ...targets])] : targets;
-      const activeTarget = candidates.reduce((currentTarget, target) =>
-        getScrollTop(target) > getScrollTop(currentTarget) ? target : currentTarget,
+      const activeTarget = candidates.reduce(
+        (currentTarget, target) =>
+          getScrollTop(target) > getScrollTop(currentTarget) ? target : currentTarget,
+        candidates[0],
       );
 
       activeTargetRef.current = activeTarget;
