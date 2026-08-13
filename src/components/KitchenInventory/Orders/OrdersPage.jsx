@@ -664,7 +664,7 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
       setSupplierId('');
       setOrderDate(getToday());
       setDeliveryDate('');
-      setItems([{ id: Date.now(), name: '', quantity: '', unit: 'lbs', unitPrice: '' }]);
+      setItems([{ id: crypto.randomUUID(), name: '', quantity: '', unit: 'lbs', unitPrice: '' }]);
     }
   }, [isOpen]);
 
@@ -686,7 +686,7 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
     setItems(currentItems => [
       ...currentItems,
       {
-        id: Date.now() + Math.random(),
+        id: crypto.randomUUID(),
         name: '',
         quantity: '',
         unit: 'lbs',
@@ -793,7 +793,7 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
               type="date"
               className={styles.input}
               value={deliveryDate}
-              min={orderDate ? orderDate : today}
+              min={orderDate || today}
               disabled={!orderDate}
               onChange={e => setDeliveryDate(e.target.value)}
             />
@@ -924,7 +924,7 @@ function OrdersPage() {
 
       setOrders(Array.isArray(orderRes.data) ? orderRes.data : []);
       setSupplierList(Array.isArray(supplierRes.data) ? supplierRes.data : []);
-    } catch (error) {
+    } catch {
       toast.error('Failed to load orders.');
     } finally {
       setLoading(false);
@@ -944,7 +944,7 @@ function OrdersPage() {
       );
 
       toast.success(`Order marked as ${newStatus}.`);
-    } catch (error) {
+    } catch {
       toast.error('Failed to update order status.');
     }
   };
@@ -963,7 +963,7 @@ function OrdersPage() {
 
       setCurrentPage(1);
       await loadOrders();
-    } catch (error) {
+    } catch {
       toast.error('Failed to create order.');
     }
   };
@@ -976,7 +976,7 @@ function OrdersPage() {
       setNewSupplierOpen(false);
 
       await loadOrders();
-    } catch (error) {
+    } catch {
       toast.error('Failed to create supplier.');
     }
   };
@@ -992,7 +992,7 @@ function OrdersPage() {
       setEditingSupplier(null);
 
       await loadOrders();
-    } catch (error) {
+    } catch {
       toast.error('Failed to update supplier.');
     }
   };
@@ -1278,6 +1278,11 @@ function OrdersPage() {
                   const avgDeliveryDays =
                     supplier.avgDeliveryDays ?? supplier.averageDeliveryDays ?? 'N/A';
 
+                  const avgDeliveryDisplay =
+                    avgDeliveryDays === 'N/A'
+                      ? 'N/A'
+                      : `${avgDeliveryDays} ${Number(avgDeliveryDays) === 1 ? 'day' : 'days'}`;
+
                   /*
                    * IMPORTANT:
                    * Use the count from the orders currently loaded instead of
@@ -1294,10 +1299,7 @@ function OrdersPage() {
 
                   const calculatedTotalOrders = supplierOrderCounts[supplier._id] ?? 0;
 
-                  const totalOrders = Object.prototype.hasOwnProperty.call(
-                    supplierOrderCounts,
-                    supplier._id,
-                  )
+                  const totalOrders = Object.hasOwn(supplierOrderCounts, supplier._id)
                     ? calculatedTotalOrders
                     : backendTotalOrders ?? 0;
 
@@ -1363,13 +1365,7 @@ function OrdersPage() {
                           </span>
                           <div>
                             <p className={styles.supplierStatLabel}>Avg Delivery</p>
-                            <p className={styles.supplierStatValue}>
-                              {avgDeliveryDays === 'N/A'
-                                ? 'N/A'
-                                : `${avgDeliveryDays} ${
-                                    Number(avgDeliveryDays) === 1 ? 'day' : 'days'
-                                  }`}
-                            </p>
+                            <p className={styles.supplierStatValue}>{avgDeliveryDisplay}</p>
                           </div>
                         </div>
 
