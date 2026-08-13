@@ -833,9 +833,11 @@
   color: #e0e0e0;
 }
 
-:global(body.bm-dashboard-dark) :global(.modal-title),
-:global(body.bm-dashboard-dark) :global(.modal-header) :global(.btn-close) {
+:global(body.bm-dashboard-dark) :global(.modal-title) {
   color: #e0e0e0;
+}
+
+:global(body.bm-dashboard-dark) :global(.modal-header) :global(.btn-close) {
   filter: invert(1);
 }
 
