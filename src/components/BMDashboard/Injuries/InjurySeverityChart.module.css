@@ -10,18 +10,20 @@
 
 .customTooltip.dark {
   background-color: #1c2541;
-  border: 1px solid rgb(222 19 19 / 20%) !important;
-}
-
-.oxideDark {
-  background-color: #1b2a41;
+  border: 1px solid rgb(255 255 255 / 20%);
 }
 
 /* =========================
    LIGHT MODE FILTERS
 ========================= */
 
-.filterSelect :global(.ant-select-selector),
+.filterSelect :global(.ant-select-selector) {
+  background-color: #fff !important;
+  border-color: #8c8c8c !important;
+  border-width: 1px !important;
+  color: #333 !important;
+}
+
 .filterSelect:global(.ant-picker) {
   background-color: #fff !important;
   border-color: #8c8c8c !important;
@@ -34,274 +36,403 @@
 }
 
 .filterSelect :global(.ant-select-selection-search-input),
-.filterSelect:global(.ant-picker)
-  :global(.ant-picker-input > input) {
+.filterSelect:global(.ant-picker) :global(.ant-picker-input > input) {
   color: #000 !important;
 }
 
 .filterSelect :global(.ant-select-selection-placeholder),
-.filterSelect:global(.ant-picker)
-  :global(.ant-picker-input > input::placeholder) {
-  color: #b2b2b2 !important;
+.filterSelect:global(.ant-picker) :global(.ant-picker-input > input::placeholder) {
+  color: #666 !important;
   opacity: 1 !important;
   font-weight: 500;
 }
 
 .filterSelect :global(.ant-select-arrow),
 .filterSelect :global(.ant-select-clear),
-.filterSelect:global(.ant-picker)
-  :global(.ant-picker-suffix),
-.filterSelect:global(.ant-picker)
-  :global(.ant-picker-clear),
-.filterSelect:global(.ant-picker)
-  :global(.ant-picker-range-separator),
-.filterSelect:global(.ant-picker)
-  :global(.ant-picker-separator) {
+.filterSelect:global(.ant-picker) :global(.ant-picker-suffix),
+.filterSelect:global(.ant-picker) :global(.ant-picker-clear),
+.filterSelect:global(.ant-picker) :global(.ant-picker-range-separator),
+.filterSelect:global(.ant-picker) :global(.ant-picker-separator) {
   color: #939393 !important;
+}
+
+/* =========================
+   CHART STATES
+========================= */
+
+.chartStateContainer {
+  width: 100%;
+}
+
+.chartStateCenter {
+  width: 100%;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: chartStateFadeIn 0.25s ease-in-out;
+}
+
+.chartPlaceholder {
+  background: transparent;
+  border: none;
+  padding: 24px;
+  border-radius: 12px;
+  cursor: default;
+  transition: background-color 0.25s ease;
+}
+
+.chartPlaceholder:hover,
+.chartPlaceholder:focus-visible {
+  background-color: rgb(0 0 0 / 3%);
+}
+
+.placeholderGraphic {
+  width: 60%;
+  max-width: 280px;
+  height: 120px;
+  border: 2px dashed #d0d0d0;
+  border-radius: 8px;
+  opacity: 0.4;
+  margin-bottom: 12px;
+  animation: placeholderPulse 2.2s ease-in-out infinite;
+}
+
+.placeholderTooltip {
+  padding: 6px 16px;
+  border-radius: 20px;
+  background-color: rgb(0 0 0 / 4%);
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.75;
+  transition: opacity 0.25s ease;
+}
+
+.chartPlaceholder:hover .placeholderTooltip,
+.chartPlaceholder:focus-visible .placeholderTooltip {
+  opacity: 1;
+}
+
+.noDataState {
+  color: #999;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* =========================
+   DARK MODE
+========================= */
+
+.oxideDark {
+  background-color: #1b2a41;
+}
+
+.oxideDark .chartPlaceholder:hover,
+.oxideDark .chartPlaceholder:focus-visible {
+  background-color: rgb(255 255 255 / 4%);
+}
+
+.oxideDark .placeholderGraphic {
+  border-color: rgb(255 255 255 / 25%);
+}
+
+.oxideDark .placeholderTooltip {
+  background-color: rgb(255 255 255 / 6%);
+  color: rgb(245 245 245 / 70%);
+}
+
+.oxideDark .noDataState {
+  color: rgb(245 245 245 / 55%);
 }
 
 /* =========================
    DARK MODE FILTERS
 ========================= */
 
-.oxideDark .filterSelect :global(.ant-select-selector),
-.oxideDark .filterSelect:global(.ant-picker) {
+.oxideDark .filterSelect :global(.ant-select-selector) {
   background-color: #1c2541 !important;
   border-color: rgb(255 255 255 / 35%) !important;
   color: #f5f5f5 !important;
 }
 
+.oxideDark .filterSelect :global(.ant-select-selection-placeholder) {
+  color: rgb(245 245 245 / 70%) !important;
+}
+
 .oxideDark .filterSelect :global(.ant-select-selection-item) {
-  background-color: #1677ff !important;
-  border-color: #1677ff !important;
-  color: #fff !important;
-}
-
-.oxideDark
-  .filterSelect
-  :global(.ant-select-selection-item-content) {
-  color: #fff !important;
-  font-weight: 500;
-}
-
-.oxideDark .filterSelect :global(.ant-select-selection-placeholder),
-.oxideDark .filterSelect:global(.ant-picker)
-  :global(.ant-picker-input > input),
-.oxideDark .filterSelect:global(.ant-picker)
-  :global(.ant-picker-input > input::placeholder) {
+  background-color: rgb(0 123 255 / 25%) !important;
+  border-color: rgb(0 123 255 / 55%) !important;
   color: #f5f5f5 !important;
-  opacity: 1 !important;
+}
+
+.oxideDark .filterSelect :global(.ant-select-selection-item-content) {
+  color: #f5f5f5 !important;
   font-weight: 500;
+}
+
+.oxideDark .filterSelect :global(.ant-select-selection-item-remove) {
+  color: rgb(245 245 245 / 70%) !important;
+}
+
+.oxideDark .filterSelect :global(.ant-select-selection-item-remove):hover {
+  color: #f5f5f5 !important;
 }
 
 .oxideDark .filterSelect :global(.ant-select-arrow),
-.oxideDark .filterSelect :global(.ant-select-clear),
-.oxideDark .filterSelect:global(.ant-picker)
-  :global(.ant-picker-suffix),
-.oxideDark .filterSelect:global(.ant-picker)
-  :global(.ant-picker-clear),
-.oxideDark .filterSelect:global(.ant-picker)
-  :global(.ant-picker-range-separator),
-.oxideDark .filterSelect:global(.ant-picker)
-  :global(.ant-picker-separator) {
+.oxideDark .filterSelect :global(.ant-select-clear) {
   color: #f5f5f5 !important;
 }
 
-.oxideDark .filterSelect:global(.ant-picker)
-  :global(.ant-picker-suffix) {
-  border-bottom: 1px solid rgb(255 255 255 / 10%) !important;
-}
-
-/* =========================
-   SELECT DROPDOWNS
-========================= */
-
-/* Light mode */
-:global(.ant-select-dropdown) {
-  background-color: #fff !important;
-}
-
-:global(.ant-select-dropdown)
-  :global(.ant-select-item-option-content) {
-  color: #333 !important;
-}
-
-/* Dark mode */
-.oxideDark:global(.ant-select-dropdown) {
+.oxideDark .filterSelect :global(.ant-select-clear) {
   background-color: #1c2541 !important;
 }
 
-.oxideDark:global(.ant-select-dropdown)
-  :global(.ant-select-item-option-content) {
+/* =========================
+   DARK MODE RANGE PICKER
+========================= */
+
+.oxideDark .filterSelect:global(.ant-picker) {
+  background-color: #1c2541 !important;
+  border-color: rgb(255 255 255 / 20%) !important;
   color: #f5f5f5 !important;
 }
 
-.oxideDark:global(.ant-select-dropdown)
-  :global(
-    .ant-select-item-option-active:not(.ant-select-item-option-disabled)
-  ) {
-  background-color: #2c3e50 !important;
+.oxideDark .filterSelect:global(.ant-picker) :global(.ant-picker-input > input),
+.oxideDark
+  .filterSelect:global(.ant-picker)
+  :global(.ant-picker-input > input::placeholder) {
+  color: #f5f5f5 !important;
 }
 
-.oxideDark:global(.ant-select-dropdown)
-  :global(
-    .ant-select-item-option-selected:not(.ant-select-item-option-disabled)
-  ) {
-  background-color: #3b5068 !important;
-  color: #fff !important;
+.oxideDark .filterSelect :global(.ant-picker-suffix),
+.oxideDark .filterSelect :global(.ant-picker-separator),
+.oxideDark .filterSelect :global(.ant-picker-range-separator) {
+  color: #f5f5f5 !important;
 }
 
-.oxideDark:global(.ant-select-dropdown)
-  :global(
-    .ant-select-item-option-selected
+.oxideDark .filterSelect :global(.ant-picker-suffix) {
+  border-bottom: 1px solid rgb(255 255 255 / 10%) !important;
+}
+
+.oxideDark .filterSelect :global(.ant-picker-clear) {
+  color: #f5f5f5 !important;
+  background-color: #1c2541 !important;
+}
+
+/* =========================
+   DARK MODE SELECT DROPDOWN
+========================= */
+
+/*
+ * Ant Design renders dropdowns in a portal attached to document.body.
+ * popupClassName="oxideDark-dropdown" is applied in the JSX so these
+ * selectors can style the popup outside the .oxideDark container.
+ */
+
+:global(.ant-select-dropdown.oxideDark-dropdown) {
+  background-color: #1c2541 !important;
+  border: 1px solid rgb(255 255 255 / 20%) !important;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 45%) !important;
+}
+
+:global(.ant-select-dropdown.oxideDark-dropdown .ant-select-item-option-content) {
+  color: #f5f5f5 !important;
+}
+
+:global(.ant-select-dropdown.oxideDark-dropdown .ant-select-item-option-active) {
+  background-color: rgb(0 123 255 / 15%) !important;
+}
+
+:global(.ant-select-dropdown.oxideDark-dropdown .ant-select-item-option-selected) {
+  background-color: rgb(0 123 255 / 28%) !important;
+}
+
+:global(
+    .ant-select-dropdown.oxideDark-dropdown
+      .ant-select-item-option-selected
       .ant-select-item-option-content
   ) {
   color: #fff !important;
 }
 
 /* =========================
-   DATE PICKER
+   DARK MODE DATE DROPDOWN
 ========================= */
 
-.oxideDark:global(.ant-picker-dropdown)
-  :global(.ant-picker-panel-container),
-.oxideDark:global(.ant-picker-dropdown)
-  :global(.ant-picker-panels),
-.oxideDark:global(.ant-picker-dropdown)
-  :global(.ant-picker-panel) {
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-panel-container),
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-panel),
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-header),
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-content),
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-footer) {
   background-color: #1c2541 !important;
   border-color: rgb(255 255 255 / 20%) !important;
 }
 
-.oxideDark:global(.ant-picker-dropdown)
-  :global(.ant-picker-content th) {
-  background-color: #1c2541 !important;
-  color: #a0a0a0 !important;
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-panel-container) {
+  box-shadow: 0 4px 16px rgb(0 0 0 / 45%) !important;
 }
 
-.oxideDark:global(.ant-picker-dropdown)
-  :global(.ant-picker-header) {
-  color: #f5f5f5 !important;
-  border-bottom: 1px solid rgb(255 255 255 / 10%) !important;
-}
-
-.oxideDark:global(.ant-picker-dropdown)
-  :global(.ant-picker-header-view),
-.oxideDark:global(.ant-picker-dropdown)
-  :global(.ant-picker-header button) {
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-header),
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-header button),
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-content th),
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-cell-in-view) {
   color: #f5f5f5 !important;
 }
 
-.oxideDark:global(.ant-picker-dropdown)
-  :global(.ant-picker-cell-in-view .ant-picker-cell-inner) {
-  color: #f5f5f5 !important;
-}
-
-.oxideDark:global(.ant-picker-dropdown)
-  :global(
-    .ant-picker-cell:not(.ant-picker-cell-in-view)
-      .ant-picker-cell-inner
-  ) {
-  color: #666 !important;
-}
-
-.oxideDark:global(.ant-picker-dropdown)
-  :global(.ant-picker-cell-today .ant-picker-cell-inner) {
-  color: #fff !important;
-  font-weight: 600;
-}
-
-.oxideDark:global(.ant-picker-dropdown)
-  :global(
-    .ant-picker-cell:hover:not(.ant-picker-cell-selected)
-      .ant-picker-cell-inner
-  ) {
-  background-color: #2c3e50 !important;
-}
-
-.oxideDark:global(.ant-picker-dropdown)
-  :global(.ant-picker-cell-range-hover::before),
-.oxideDark:global(.ant-picker-dropdown)
-  :global(.ant-picker-cell-range-hover-start::before),
-.oxideDark:global(.ant-picker-dropdown)
-  :global(.ant-picker-cell-range-hover-end::before) {
-  background-color: #3b5068 !important;
-}
-
-.oxideDark:global(.ant-picker-dropdown)
-  :global(.ant-picker-cell-range-hover .ant-picker-cell-inner) {
-  color: #fff !important;
-}
-
-.oxideDark:global(.ant-picker-dropdown)
-  :global(.ant-picker-cell-in-range::before) {
-  background-color: #3b5068 !important;
-}
-
-.oxideDark .filterSelect:global(.ant-picker) {
-  border: 1px solid rgb(255 255 255 / 20%) !important;
-}
-
-.oxideDark .filterSelect:global(.ant-picker)
-  :global(.ant-picker-input > input) {
-  color: #f5f5f5 !important;
-}
-
-.oxideDark .filterSelect:global(.ant-picker)
-  :global(.ant-picker-range-separator) {
-  color: #f5f5f5 !important;
-}
-
-.oxideDark .filterSelect:global(.ant-picker)
-  :global(.ant-picker-clear) {
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-content thead),
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-content thead tr),
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-content th),
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-content td) {
   background-color: transparent !important;
 }
 
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-cell-week) {
+  color: rgb(245 245 245 / 60%) !important;
+}
+
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-cell) {
+  color: rgb(245 245 245 / 40%) !important;
+}
+
+:global(.ant-picker-dropdown) :global(tr:hover) {
+  background: transparent !important;
+}
+
+:global(
+    .ant-picker-dropdown.oxideDark-dropdown
+      .ant-picker-cell:hover:not(
+        .ant-picker-cell-selected,
+        .ant-picker-cell-range-start,
+        .ant-picker-cell-range-end,
+        .ant-picker-cell-disabled
+      )
+      .ant-picker-cell-inner
+  ) {
+  background-color: rgb(0 123 255 / 20%) !important;
+}
+
+:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-cell-in-range::before) {
+  background-color: rgb(0 123 255 / 15%) !important;
+}
+
+:global(
+    .ant-picker-dropdown.oxideDark-dropdown
+      .ant-picker-cell-range-start:not(.ant-picker-cell-range-start-single)::before
+  ),
+:global(
+    .ant-picker-dropdown.oxideDark-dropdown
+      .ant-picker-cell-range-end:not(.ant-picker-cell-range-end-single)::before
+  ) {
+  background-color: rgb(0 123 255 / 15%) !important;
+}
+
+:global(
+    .ant-picker-dropdown.oxideDark-dropdown
+      .ant-picker-cell-selected
+      .ant-picker-cell-inner
+  ),
+:global(
+    .ant-picker-dropdown.oxideDark-dropdown
+      .ant-picker-cell-range-start
+      .ant-picker-cell-inner
+  ),
+:global(
+    .ant-picker-dropdown.oxideDark-dropdown
+      .ant-picker-cell-range-end
+      .ant-picker-cell-inner
+  ) {
+  background-color: #007bff !important;
+  color: #fff !important;
+}
+
+:global(
+    .ant-picker-dropdown.oxideDark-dropdown
+      .ant-picker-cell-today
+      .ant-picker-cell-inner::before
+  ) {
+  border-color: #007bff !important;
+}
+
 /* =========================
-   PLACEHOLDER / EMPTY STATE
+   RESPONSIVE DATE PICKER
 ========================= */
 
-.placeholderGraphic {
-  width: 60%;
-  height: 120px;
-  border: 2px dashed #d0d0d0;
-  opacity: 0.4;
-  margin-bottom: 12px;
-  animation: placeholderPulse 2.2s ease-in-out infinite;
+:global(.ant-picker-dropdown.injurySeverityDateDropdown) {
+  max-width: calc(100vw - 16px);
+  overflow-x: auto;
 }
 
-.chartPlaceholder:hover .placeholderTooltip,
-.chartPlaceholder:focus-visible .placeholderTooltip {
-  opacity: 0.9;
+:global(.ant-picker-dropdown.injurySeverityDateDropdown .ant-picker-panel-container) {
+  max-width: 100%;
+  overflow-x: auto;
 }
 
-.noDataState {
-  height: 400px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #efe8e8;
-  font-size: 16px;
-  font-weight: 500;
+:global(.ant-picker-dropdown.injurySeverityDateDropdown .ant-picker-panels) {
+  flex-wrap: wrap;
+}
+
+:global(.ant-picker-dropdown.injurySeverityDateDropdown .ant-picker-content) {
+  width: 100%;
+  table-layout: fixed;
+}
+
+@media (width <= 576px) {
+  :global(.ant-picker-dropdown.injurySeverityDateDropdown .ant-picker-panels) {
+    flex-direction: column;
+  }
+
+  :global(.ant-picker-dropdown.injurySeverityDateDropdown .ant-picker-panel) {
+    width: 100%;
+  }
+
+  :global(.ant-picker-dropdown.injurySeverityDateDropdown .ant-picker-header) {
+    padding: 0 8px;
+    height: 32px;
+    line-height: 32px;
+  }
+
+  :global(.ant-picker-dropdown.injurySeverityDateDropdown .ant-picker-header-view) {
+    font-size: 12px;
+  }
+
+  :global(.ant-picker-dropdown.injurySeverityDateDropdown .ant-picker-content th),
+  :global(.ant-picker-dropdown.injurySeverityDateDropdown .ant-picker-cell) {
+    font-size: 12px;
+  }
+
+  :global(.ant-picker-dropdown.injurySeverityDateDropdown .ant-picker-cell-inner) {
+    min-width: 20px;
+    height: 20px;
+    line-height: 20px;
+  }
 }
 
 /* =========================
-   CHART STYLING
+   DARK MODE CHART
 ========================= */
 
-.oxideDark :global(.recharts-text),
-.oxideDark :global(.recharts-cartesian-axis-tick-value),
-.oxideDark :global(.recharts-legend-item-text) {
+.oxideDark :global(.recharts-text):not(:global(.recharts-label)) {
   fill: #f5f5f5 !important;
+}
+
+.oxideDark :global(.recharts-cartesian-axis-tick-value) {
+  fill: #f5f5f5 !important;
+}
+
+.oxideDark :global(.recharts-legend-item-text) {
   color: #f5f5f5 !important;
 }
 
-.oxideDark
-  :global(.recharts-cartesian-grid-horizontal line),
-.oxideDark
-  :global(.recharts-cartesian-grid-vertical line) {
+.oxideDark :global(.recharts-cartesian-grid-horizontal line),
+.oxideDark :global(.recharts-cartesian-grid-vertical line) {
   stroke: rgb(255 255 255 / 20%) !important;
 }
+
+/* =========================
+   ANIMATIONS
+========================= */
 
 @keyframes placeholderPulse {
   0% {
@@ -314,5 +445,15 @@
 
   100% {
     opacity: 0.35;
+  }
+}
+
+@keyframes chartStateFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
   }
 }
