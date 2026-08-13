@@ -1,5 +1,5 @@
 /* stylelint-disable  */
-thead {
+.teamsTableHead {
   background: aliceblue;
 }
 
@@ -108,7 +108,7 @@ thead {
   display: none;
 }
 
-tr:hover {
+tr.teams__tr:hover {
   background: #e9f6ff;
 }
 
@@ -133,4 +133,12 @@ tr.darkModeRow:hover {
 .actionButtonsContainer {
   display: flex !important;
   gap: 10px;
+}
+
+.teamNotFoundContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
 }

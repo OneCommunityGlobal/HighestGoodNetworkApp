@@ -1,9 +1,18 @@
 /* stylelint-disable no-descending-specificity, selector-type-no-unknown */
 
+:global(body) {
+  display: block;
+  width: 100%;
+}
+
+:global(#root) {
+  width: 100%;
+}
+
 /* General Styling */
 .headerWrapper {
   height: fit-content;
-  width: clamp(100vw, 0.1rem + 1vw, 100%);
+  width: 100%;
 }
 
 .notificationOverlay {
@@ -22,8 +31,8 @@
 }
 
 .headerRow {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto; 
   align-items: center;
   width: 100%;
   gap: 0.5rem;
@@ -39,10 +48,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 1 1 200px;
   min-width: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .rightSection {
@@ -53,7 +60,6 @@
   position: relative;
 }
 
-/* max-width: 768px */
 @media (width <= 768px) {
   .headerRow {
     grid-template-columns: auto auto;
@@ -95,15 +101,15 @@
 }
 
 .headerCard {
-  margin-left: 0;
-  margin-right: 0;
-  width: 100vw;
-  max-width: 100vw;
+  margin-left: 0; /* Remove left margin */
+  margin-right: 0; /* Remove right margin */
+
+  /* Keep the card inside the page width */
+  width: 100%;
+  max-width: 100%;
   box-sizing: border-box;
   overflow: hidden;
   position: relative;
-  left: 0;
-  right: 0;
 }
 
 .cardWrapper {
@@ -116,6 +122,53 @@
 .navbar {
   z-index: 100;
   position: relative;
+}
+
+@media (width <= 906px) {
+  .navbar {
+    white-space: normal;
+  }
+
+  .headerRow {
+    grid-template-columns: 1fr;
+    row-gap: 0.5rem;
+  }
+
+  .leftSection,
+  .centerSection,
+  .rightSection {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .rightSection {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .menuContainer {
+    padding-left: 0;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .navbarOwnerMessage {
+    padding-left: 0;
+    padding-right: 0;
+    width: 100%;
+  }
+}
+
+@media (width <= 906px) {
+  .rightSection {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .navCollapse {
+  flex-basis: 100%;
+  width: 100%;
+ }
 }
 
 .redBackGroupHeader {
@@ -168,6 +221,22 @@
   background-color: #2f4157 !important;
 }
 
+.darkDropdownItem:active,
+.darkDropdownItem:focus {
+  color: white !important;
+  background-color: #2f4157 !important;
+}
+
+/* ── Desktop dropdown text styles ── */
+.mobileDropdownText {
+  color: #212529 !important;
+}
+
+.mobileDropdownItem:hover {
+  background-color: #f8f9fa !important;
+  color: #16181b !important;
+}
+
 .noMaxHeight {
   max-height: none !important;
   overflow: visible !important;
@@ -216,11 +285,45 @@
   }
 }
 
-/* max-width: 1199px */
-@media (width <= 1199px) {
+@media (907px <= width <= 1599px) {
+  .headerRow {
+    /* Preserve the compact desktop layout from 907px until the full header fits in one row. */
+    grid-template-columns: auto minmax(0, 1fr);
+    row-gap: 0.5rem;
+  }
+
+  .centerSection {
+    /* Keep the announcement readable instead of clipping it between timer and nav. */
+    overflow: visible;
+  }
+
+  .rightSection {
+    /* Keep desktop nav in normal flow and horizontally aligned above the mobile breakpoint. */
+    grid-column: 1 / -1;
+    justify-content: center;
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .menuContainer {
+    /* Override Bootstrap's below-xl column nav so desktop links do not stack vertically. */
+    align-items: center;
+    flex-direction: row !important;
+    flex-wrap: nowrap;
+    justify-content: center;
+    margin-right: 0 !important;
+    padding-left: 0;
+    width: 100%;
+  }
+}
+
+/* max-width: 906px */
+@media (width <= 906px) {
   .navbarToggler {
+    /* 906px and below uses the mobile hamburger layout. */
     display: flex !important;
     align-items: center;
+    margin-left: auto;
   }
 
   .navCollapse {
@@ -296,7 +399,7 @@
 
 .headerMargin {
   height: 20px;
-  background-color: #1b2a41;
+  background-color: #0f1b2b;
 }
 
 .headerMarginLight {
@@ -392,8 +495,8 @@
   }
 }
 
-/* max-width: 768px */
-@media (width <= 768px) {
+/* max-width: 906px */
+@media (width <= 906px) {
   .navbar .d-flex {
     flex-direction: column !important;
     align-items: center !important;
@@ -406,4 +509,199 @@
     width: 100% !important;
     justify-content: center !important;
   }
+
+  .rightSection {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  .navCollapse {
+    /* Keep the mobile menu in normal flow so it pushes page content down. */
+    position: static;
+    flex-basis: 100%;
+    width: 100%;
+    margin-top: 0.5rem;
+    padding-left: 0;
+  }
+
+  .navCollapseOpen {
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .menuContainer {
+    /* Full-width stacking prevents mobile nav links from compressing horizontally. */
+    align-items: stretch;
+    flex-direction: column !important;
+    justify-content: flex-start;
+    width: 100%;
+    margin-right: 0 !important;
+    padding-left: 0;
+  }
+
+  .centerSection {
+    /* Keep the announcement readable once the mobile header stacks. */
+    overflow: visible;
+    max-width: 100%;
+  }
+}
+
+@media (687px <= width <= 905px) {
+  .menuContainer {
+    /* Spacing prevents compact navigation labels from running together between 687px and 905px. */
+    flex-direction: row !important;
+    gap: 0.35rem 1rem;
+  }
+
+  .menuContainer :global(.nav-link) {
+    /* Bootstrap removes nav-link side padding below xl, so restore compact spacing here. */
+    padding-left: 0.55rem !important;
+    padding-right: 0.55rem !important;
+    white-space: nowrap;
+  }
+}
+
+/* Meeting notification modal (dark mode) */
+.meetingNotificationCustomHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background-color: #1c2541;
+  border-bottom: 1px solid #3a506b;
+  color: #fff;
+}
+
+.meetingNotificationCustomHeaderTitle {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #fff;
+}
+
+.meetingNotificationCustomHeaderClose {
+  padding: 0.25rem 0.5rem;
+  margin: -0.25rem -0.5rem -0.25rem auto;
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  opacity: 0.85;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.meetingNotificationCustomHeaderClose:hover {
+  opacity: 1;
+}
+
+:global(body.dark-mode) :global(.modal-content.meeting-notification-modal-panel--dark) :global(.modal-body),
+:global(body.dark-mode) :global(.modal-content.meeting-notification-modal-panel--dark) :global(.modal-footer),
+:global(body.dark-mode) :global(.modal-dialog.hgn-themed-modal--dark) :global(.modal-body),
+:global(body.dark-mode) :global(.modal-dialog.hgn-themed-modal--dark) :global(.modal-footer),
+:global(body.dark-mode) :global(.modal-dialog.meeting-notification-modal--dark) :global(.modal-body),
+:global(body.dark-mode) :global(.modal-dialog.meeting-notification-modal--dark) :global(.modal-footer) {
+  background-color: #3a506b !important;
+  border-color: #3a506b !important;
+  color: #f8f9fa !important;
+}
+
+.meetingNotificationModalBody {
+  line-height: 1.75;
+}
+
+.meetingNotificationModalActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgb(0 0 0 / 12%);
+}
+
+:global(.text-light) .meetingNotificationModalActions {
+  border-top-color: rgb(255 255 255 / 20%);
+}
+
+.meetingCalendarLink {
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.meetingNotificationModalFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.meetingNotificationNav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-right: auto;
+}
+
+.meetingNotificationNavCount {
+  min-width: 3.5rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.meetingNotificationCloseBtn {
+  margin-left: auto;
+}
+
+
+/* ── BM Dashboard Accordion Styles ── */
+.accordionToggle {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  cursor: pointer !important;
+}
+
+.accordionToggle:focus,
+.accordionToggle:active {
+  outline: none !important;
+}
+
+.accordionArrow {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 6px solid currentcolor;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.accordionArrowOpen {
+  transform: rotate(90deg);
+}
+
+.bmSubItem {
+  padding-left: 1.8rem !important;
+}
+
+.bmSubSubItem {
+  padding-left: 3rem !important;
+}
+
+.bmIconLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.bmIcon {
+  font-size: 0.85rem;
+  opacity: 0.75;
+  flex-shrink: 0;
 }
