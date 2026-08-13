@@ -4,21 +4,38 @@ import { useSelector } from 'react-redux';
 import { createPortal } from 'react-dom';
 import { toast } from 'react-toastify';
 import { FiChevronLeft, FiChevronRight, FiSearch, FiPlus } from 'react-icons/fi';
-import { fetchOrders, createOrder, updateOrderStatus, fetchSuppliers } from './mockOrdersData';
+
+import {
+  fetchOrders,
+  createOrder,
+  updateOrderStatus,
+  fetchSuppliers,
+  createSupplier,
+} from './ordersApi';
+
 import styles from './OrdersPage.module.css';
 
 const ORDERS_PER_PAGE = 5;
+
+/* -------------------------------------------------------------------------- */
+/*                                   MODAL                                    */
+/* -------------------------------------------------------------------------- */
 
 function Modal({ isOpen, toggle, size, className, children }) {
   const overlayRef = useRef(null);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) return undefined;
+
     const handleEscape = e => {
-      if (e.key === 'Escape') toggle();
+      if (e.key === 'Escape') {
+        toggle();
+      }
     };
+
     document.addEventListener('keydown', handleEscape);
     document.body.style.overflow = 'hidden';
+
     return () => {
       document.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = '';
@@ -28,7 +45,9 @@ function Modal({ isOpen, toggle, size, className, children }) {
   if (!isOpen) return null;
 
   const handleOverlayClick = e => {
-    if (e.target === overlayRef.current) toggle();
+    if (e.target === overlayRef.current) {
+      toggle();
+    }
   };
 
   const handleOverlayKeyDown = e => {
@@ -41,7 +60,7 @@ function Modal({ isOpen, toggle, size, className, children }) {
   const sizeClass = size === 'lg' ? styles.modalLg : '';
 
   return createPortal(
-    // eslint-disable-next-line jsx-a11y/no-static-element-interactions -- Modal overlay backdrop
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       className={styles.modalOverlay}
       ref={overlayRef}
@@ -54,33 +73,78 @@ function Modal({ isOpen, toggle, size, className, children }) {
   );
 }
 
+Modal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  toggle: PropTypes.func.isRequired,
+  size: PropTypes.string,
+  className: PropTypes.string,
+  children: PropTypes.node,
+};
+
+/* -------------------------------------------------------------------------- */
+/*                              MODAL HEADER                                  */
+/* -------------------------------------------------------------------------- */
+
 function ModalHeader({ toggle, children }) {
   return (
     <div className={styles.modalHeader}>
       <h3 className={styles.modalTitle}>{children}</h3>
-      <button type="button" className={styles.modalClose} onClick={toggle}>
+
+      <button type="button" className={styles.modalClose} onClick={toggle} aria-label="Close modal">
         &times;
       </button>
     </div>
   );
 }
 
+ModalHeader.propTypes = {
+  toggle: PropTypes.func.isRequired,
+  children: PropTypes.node,
+};
+
+/* -------------------------------------------------------------------------- */
+/*                               MODAL BODY                                   */
+/* -------------------------------------------------------------------------- */
+
 function ModalBody({ children }) {
   return <div className={styles.modalBody}>{children}</div>;
 }
+
+ModalBody.propTypes = {
+  children: PropTypes.node,
+};
+
+/* -------------------------------------------------------------------------- */
+/*                              MODAL FOOTER                                  */
+/* -------------------------------------------------------------------------- */
 
 function ModalFooter({ children }) {
   return <div className={styles.modalFooter}>{children}</div>;
 }
 
+ModalFooter.propTypes = {
+  children: PropTypes.node,
+};
+
+/* -------------------------------------------------------------------------- */
+/*                                STATUS BADGE                                */
+/* -------------------------------------------------------------------------- */
+
 const badgeClassForStatus = status => {
-  if (status === 'ordered') return styles.badgeOrdered;
-  if (status === 'received') return styles.badgeReceived;
+  if (status === 'Pending') {
+    return styles.badgeOrdered;
+  }
+
+  if (status === 'Ordered' || status === 'Shipped') {
+    return styles.badgeReceived;
+  }
+
   return styles.badgeStocked;
 };
 
 const StatusBadge = ({ status }) => {
   const cls = badgeClassForStatus(status);
+
   return (
     <span className={`${styles.badge} ${cls}`}>
       {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -92,12 +156,18 @@ StatusBadge.propTypes = {
   status: PropTypes.string.isRequired,
 };
 
+/* -------------------------------------------------------------------------- */
+/*                                 STAT CARD                                  */
+/* -------------------------------------------------------------------------- */
+
 const StatCard = ({ label, value, bgColor, icon }) => (
   <div className={styles.statCard}>
     <div>
       <p className={styles.statLabel}>{label}</p>
+
       <p className={styles.statValue}>{value}</p>
     </div>
+
     <div className={styles.statIcon} style={{ '--stat-bg': bgColor }}>
       {icon}
     </div>
@@ -111,15 +181,22 @@ StatCard.propTypes = {
   icon: PropTypes.node,
 };
 
+/* -------------------------------------------------------------------------- */
+/*                                ORDER CARD                                  */
+/* -------------------------------------------------------------------------- */
+
 const OrderCard = ({ order, onStatusChange, darkMode }) => {
   const [confirmOpen, setConfirmOpen] = useState(false);
+
   const [confirmTarget, setConfirmTarget] = useState(null);
+
   const [detailsOpen, setDetailsOpen] = useState(false);
 
   const handleConfirm = () => {
     if (confirmTarget) {
       onStatusChange(order._id, confirmTarget);
     }
+
     setConfirmOpen(false);
     setConfirmTarget(null);
   };
@@ -130,97 +207,129 @@ const OrderCard = ({ order, onStatusChange, darkMode }) => {
   };
 
   const getActionButton = () => {
-    if (order.status === 'ordered') {
+    if (order.status === 'Pending') {
       return (
         <button
+          type="button"
           className={`${styles.actionBtn} ${styles.actionReceive}`}
-          onClick={() => openConfirm('received')}
+          onClick={() => openConfirm('Ordered')}
         >
-          Mark as Received
+          Mark as Ordered
         </button>
       );
     }
-    if (order.status === 'received') {
+
+    if (order.status === 'Ordered') {
       return (
         <button
-          className={`${styles.actionBtn} ${styles.actionStock}`}
-          onClick={() => openConfirm('stocked')}
+          type="button"
+          className={`${styles.actionBtn} ${styles.actionReceive}`}
+          onClick={() => openConfirm('Shipped')}
         >
-          Mark as Stocked
+          Mark as Shipped
         </button>
       );
     }
+
+    if (order.status === 'Shipped') {
+      return (
+        <button
+          type="button"
+          className={`${styles.actionBtn} ${styles.actionStock}`}
+          onClick={() => openConfirm('Delivered')}
+        >
+          Mark as Delivered
+        </button>
+      );
+    }
+
     return null;
   };
 
-  const confirmLabel = confirmTarget === 'received' ? 'Mark as Received' : 'Mark as Stocked';
-  const confirmMessage =
-    confirmTarget === 'received'
-      ? `Mark order ${order.orderNumber} as received? This confirms delivery has arrived.`
-      : `Mark order ${order.orderNumber} as stocked? This confirms items are shelved in inventory.`;
+  const confirmLabel = confirmTarget ? `Mark as ${confirmTarget}` : '';
+
+  const displayOrderId = order._id || 'N/A';
+
+  const confirmMessage = confirmTarget
+    ? `Mark order ${displayOrderId} as ${confirmTarget.toLowerCase()}?`
+    : '';
 
   return (
     <>
       <div className={`${styles.orderCard} ${darkMode ? styles.cardDark : ''}`}>
         <div className={styles.orderHeader}>
           <div className={styles.orderIdRow}>
-            <span className={styles.orderId}>{order.orderNumber}</span>
+            <span className={styles.orderId}>{order._id || 'N/A'}</span>
+
             <StatusBadge status={order.status} />
           </div>
-          <span className={styles.orderTotal}>${order.total.toFixed(2)}</span>
+
+          <span className={styles.orderTotal}>${Number(order.totalAmount || 0).toFixed(2)}</span>
         </div>
 
         <div className={styles.supplier}>
           <span role="img" aria-label="supplier">
             🏢
           </span>{' '}
-          {order.supplier}
+          {order.supplier || order.supplierId?.name || 'N/A'}
         </div>
 
         <div className={styles.orderMeta}>
           <div>
             <p className={styles.metaLabel}>Order Date</p>
-            <p className={styles.metaValue}>📅 {new Date(order.orderDate).toLocaleDateString()}</p>
-          </div>
-          <div>
-            <p className={styles.metaLabel}>Expected Delivery</p>
+
             <p className={styles.metaValue}>
-              🚚 {new Date(order.expectedDelivery).toLocaleDateString()}
+              📅 {order.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'N/A'}
             </p>
           </div>
+
+          <div>
+            <p className={styles.metaLabel}>Expected Delivery</p>
+
+            <p className={styles.metaValue}>
+              🚚{' '}
+              {order.expectedDeliveryDate
+                ? new Date(order.expectedDeliveryDate).toLocaleDateString()
+                : 'N/A'}
+            </p>
+          </div>
+
           <div>
             <p className={styles.metaLabel}>Items</p>
-            <p className={styles.metaValue}>📦 {order.items.length} items</p>
+
+            <p className={styles.metaValue}>📦 {order.items?.length || 0} items</p>
           </div>
         </div>
 
         <div className={styles.itemsSection}>
           <p className={styles.itemsSectionTitle}>Order Items:</p>
-          {order.items.map(item => (
-            <div key={item.name} className={styles.itemRow}>
+
+          {order.items?.map((item, index) => (
+            <div key={item._id || item.itemName || index} className={styles.itemRow}>
               <div className={styles.itemInfo}>
                 <div className={styles.itemIcon}>✓</div>
+
                 <div>
-                  <div className={styles.itemName}>{item.name}</div>
+                  <div className={styles.itemName}>{item.itemName || 'Unnamed item'}</div>
+
                   <div className={styles.itemQty}>
-                    {item.quantity} {item.unit} × ${item.unitPrice.toFixed(2)}
+                    {item.quantity} × ${Number(item.pricePerItem || 0).toFixed(2)}
                   </div>
                 </div>
               </div>
-              <span className={styles.itemPrice}>${item.total.toFixed(2)}</span>
+
+              <span className={styles.itemPrice}>
+                ${(Number(item.quantity || 0) * Number(item.pricePerItem || 0)).toFixed(2)}
+              </span>
             </div>
           ))}
         </div>
 
-        {order.notes && (
-          <div className={styles.notesBanner}>
-            <span>📝</span> {order.notes}
-          </div>
-        )}
-
         <div className={styles.actions}>
           {getActionButton()}
+
           <button
+            type="button"
             className={`${styles.actionBtn} ${styles.actionView}`}
             onClick={() => setDetailsOpen(true)}
           >
@@ -229,23 +338,32 @@ const OrderCard = ({ order, onStatusChange, darkMode }) => {
         </div>
       </div>
 
+      {/* Confirmation Modal */}
       <Modal
         isOpen={confirmOpen}
         toggle={() => setConfirmOpen(false)}
         className={darkMode ? styles.modalDark : ''}
       >
         <ModalHeader toggle={() => setConfirmOpen(false)}>Confirm Status Change</ModalHeader>
+
         <ModalBody>{confirmMessage}</ModalBody>
+
         <ModalFooter>
-          <button className={styles.btnModalSecondary} onClick={() => setConfirmOpen(false)}>
+          <button
+            type="button"
+            className={styles.btnModalSecondary}
+            onClick={() => setConfirmOpen(false)}
+          >
             Cancel
           </button>
-          <button className={styles.btnModalPrimary} onClick={handleConfirm}>
+
+          <button type="button" className={styles.btnModalPrimary} onClick={handleConfirm}>
             {confirmLabel}
           </button>
         </ModalFooter>
       </Modal>
 
+      {/* Details Modal */}
       <Modal
         isOpen={detailsOpen}
         toggle={() => setDetailsOpen(false)}
@@ -253,81 +371,107 @@ const OrderCard = ({ order, onStatusChange, darkMode }) => {
         className={darkMode ? styles.modalDark : ''}
       >
         <ModalHeader toggle={() => setDetailsOpen(false)}>
-          Order Details — {order.orderNumber}
+          Order Details — {order._id || 'N/A'}
         </ModalHeader>
+
         <ModalBody>
           <div className={styles.detailSection}>
             <p className={styles.detailLabel}>Status</p>
+
             <StatusBadge status={order.status} />
           </div>
+
           <div className={styles.detailSection}>
             <p className={styles.detailLabel}>Supplier</p>
-            <p className={styles.detailValue}>{order.supplier}</p>
+
+            <p className={styles.detailValue}>
+              {order.supplier || order.supplierId?.name || 'N/A'}
+            </p>
           </div>
+
           <div className={styles.detailRow}>
             <div className={styles.detailSection}>
               <p className={styles.detailLabel}>Order Date</p>
-              <p className={styles.detailValue}>{new Date(order.orderDate).toLocaleDateString()}</p>
-            </div>
-            <div className={styles.detailSection}>
-              <p className={styles.detailLabel}>Expected Delivery</p>
+
               <p className={styles.detailValue}>
-                {new Date(order.expectedDelivery).toLocaleDateString()}
+                {order.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'N/A'}
               </p>
             </div>
-            {order.deliveredDate && (
+
+            <div className={styles.detailSection}>
+              <p className={styles.detailLabel}>Expected Delivery</p>
+
+              <p className={styles.detailValue}>
+                {order.expectedDeliveryDate
+                  ? new Date(order.expectedDeliveryDate).toLocaleDateString()
+                  : 'N/A'}
+              </p>
+            </div>
+
+            {order.actualDeliveryDate && (
               <div className={styles.detailSection}>
                 <p className={styles.detailLabel}>Delivered On</p>
+
                 <p className={styles.detailValue}>
-                  {new Date(order.deliveredDate).toLocaleDateString()}
+                  {new Date(order.actualDeliveryDate).toLocaleDateString()}
                 </p>
               </div>
             )}
           </div>
 
           <div className={styles.detailItemsHeader}>Order Items</div>
+
           <div className={styles.detailTableWrap}>
             <table className={styles.detailTable}>
               <thead>
                 <tr>
                   <th>Item</th>
                   <th>Qty</th>
-                  <th>Unit</th>
                   <th>Unit Price</th>
                   <th>Total</th>
                 </tr>
               </thead>
+
               <tbody>
-                {order.items.map(item => (
-                  <tr key={item.name}>
-                    <td>{item.name}</td>
+                {order.items?.map((item, index) => (
+                  <tr key={item._id || item.itemName || index}>
+                    <td>{item.itemName || 'Unnamed item'}</td>
+
                     <td>{item.quantity}</td>
-                    <td>{item.unit}</td>
-                    <td>${item.unitPrice.toFixed(2)}</td>
-                    <td>${item.total.toFixed(2)}</td>
+
+                    <td>${Number(item.pricePerItem || 0).toFixed(2)}</td>
+
+                    <td>
+                      $
+                      {Number(Number(item.quantity || 0) * Number(item.pricePerItem || 0)).toFixed(
+                        2,
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
+
               <tfoot>
                 <tr>
-                  <td colSpan="4" className={styles.detailTotalLabel}>
+                  <td colSpan="3" className={styles.detailTotalLabel}>
                     Order Total
                   </td>
-                  <td className={styles.detailTotalValue}>${order.total.toFixed(2)}</td>
+
+                  <td className={styles.detailTotalValue}>
+                    ${Number(order.totalAmount || 0).toFixed(2)}
+                  </td>
                 </tr>
               </tfoot>
             </table>
           </div>
-
-          {order.notes && (
-            <div className={styles.detailNotes}>
-              <p className={styles.detailLabel}>Notes</p>
-              <p className={styles.detailValue}>{order.notes}</p>
-            </div>
-          )}
         </ModalBody>
+
         <ModalFooter>
-          <button className={styles.btnModalSecondary} onClick={() => setDetailsOpen(false)}>
+          <button
+            type="button"
+            className={styles.btnModalSecondary}
+            onClick={() => setDetailsOpen(false)}
+          >
             Close
           </button>
         </ModalFooter>
@@ -336,42 +480,282 @@ const OrderCard = ({ order, onStatusChange, darkMode }) => {
   );
 };
 
+const orderItemShape = PropTypes.shape({
+  _id: PropTypes.string,
+  itemName: PropTypes.string.isRequired,
+  quantity: PropTypes.number.isRequired,
+  pricePerItem: PropTypes.number.isRequired,
+});
+
+const supplierReferenceShape = PropTypes.shape({
+  _id: PropTypes.string,
+  name: PropTypes.string,
+});
+
+const orderShape = PropTypes.shape({
+  _id: PropTypes.string,
+  status: PropTypes.oneOf(['Pending', 'Ordered', 'Shipped', 'Delivered', 'Cancelled']).isRequired,
+  supplierId: PropTypes.oneOfType([PropTypes.string, supplierReferenceShape]).isRequired,
+  orderDate: PropTypes.string,
+  expectedDeliveryDate: PropTypes.string,
+  actualDeliveryDate: PropTypes.string,
+  totalAmount: PropTypes.number,
+  items: PropTypes.arrayOf(orderItemShape),
+});
+
+OrderCard.propTypes = {
+  order: orderShape.isRequired,
+  onStatusChange: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool.isRequired,
+};
+
+/* -------------------------------------------------------------------------- */
+/*                              NEW SUPPLIER MODAL                            */
+/* -------------------------------------------------------------------------- */
+
+const NewSupplierModal = ({ isOpen, onClose, onSubmit, darkMode }) => {
+  const [name, setName] = useState('');
+  const [contact, setContact] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [website, setWebsite] = useState('');
+  const [specialties, setSpecialties] = useState('');
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    setName('');
+    setContact('');
+    setEmail('');
+    setPhone('');
+    setWebsite('');
+    setSpecialties('');
+  }, [isOpen]);
+
+  const handleSubmit = () => {
+    if (!name.trim() || !email.trim() || !phone.trim()) {
+      toast.error('Please fill in all required fields.');
+      return;
+    }
+
+    const supplierData = {
+      name: name.trim(),
+      contact: contact.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+      specialities: specialties
+        .split(',')
+        .map(item => item.trim())
+        .filter(Boolean),
+      website: website.trim(),
+      isActive: true,
+    };
+
+    onSubmit(supplierData);
+
+    setName('');
+    setContact('');
+    setEmail('');
+    setPhone('');
+    setWebsite('');
+    setSpecialties('');
+  };
+
+  return (
+    <Modal isOpen={isOpen} toggle={onClose} size="lg" className={darkMode ? styles.modalDark : ''}>
+      <ModalHeader toggle={onClose}>Add New Supplier</ModalHeader>
+
+      <ModalBody>
+        <div className={styles.formGroup}>
+          <label className={styles.label} htmlFor="supplierName">
+            Supplier Name <span className={styles.required}>*</span>
+          </label>
+
+          <input
+            id="supplierName"
+            type="text"
+            className={styles.input}
+            placeholder="Enter supplier name"
+            value={name}
+            onChange={e => setName(e.target.value)}
+          />
+        </div>
+
+        <div className={styles.formRow}>
+          <div className={styles.formGroup}>
+            <label className={styles.label} htmlFor="supplierContact">
+              Contact Person
+            </label>
+
+            <input
+              id="supplierContact"
+              type="text"
+              className={styles.input}
+              placeholder="Contact name"
+              value={contact}
+              onChange={e => setContact(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className={styles.formRow}>
+          <div className={styles.formGroup}>
+            <label className={styles.label} htmlFor="supplierEmail">
+              Email
+            </label>
+
+            <input
+              id="supplierEmail"
+              type="email"
+              className={styles.input}
+              placeholder="supplier@example.com"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label} htmlFor="supplierPhone">
+              Phone
+            </label>
+
+            <input
+              id="supplierPhone"
+              type="tel"
+              className={styles.input}
+              placeholder="Phone number"
+              value={phone}
+              onChange={e => setPhone(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className={styles.formGroup}>
+          <label className={styles.label} htmlFor="supplierWebsite">
+            Website
+          </label>
+
+          <input
+            id="supplierWebsite"
+            type="url"
+            className={styles.input}
+            placeholder="https://example.com"
+            value={website}
+            onChange={e => setWebsite(e.target.value)}
+          />
+        </div>
+
+        <div className={styles.formGroup}>
+          <label className={styles.label} htmlFor="supplierSpecialties">
+            Specialties
+          </label>
+
+          <input
+            id="supplierSpecialties"
+            type="text"
+            className={styles.input}
+            placeholder="Produce, Organic, Local"
+            value={specialties}
+            onChange={e => setSpecialties(e.target.value)}
+          />
+
+          <small>Separate multiple specialties with commas.</small>
+        </div>
+      </ModalBody>
+
+      <ModalFooter>
+        <button type="button" className={styles.btnModalSecondary} onClick={onClose}>
+          Cancel
+        </button>
+
+        <button type="button" className={styles.btnModalPrimary} onClick={handleSubmit}>
+          <FiPlus size={15} />
+          Add Supplier
+        </button>
+      </ModalFooter>
+    </Modal>
+  );
+};
+
+NewSupplierModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool.isRequired,
+};
+
+/* -------------------------------------------------------------------------- */
+/*                             NEW ORDER MODAL                                */
+/* -------------------------------------------------------------------------- */
+
 const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, darkMode }) => {
   const [supplierId, setSupplierId] = useState('');
+
   const [orderDate, setOrderDate] = useState('');
+
   const [deliveryDate, setDeliveryDate] = useState('');
-  const [notes, setNotes] = useState('');
+
   const [items, setItems] = useState([
-    { id: 1, name: '', quantity: '', unit: 'lbs', unitPrice: '' },
+    {
+      id: 1,
+      name: '',
+      quantity: '',
+      unit: 'lbs',
+      unitPrice: '',
+    },
   ]);
 
-  const today = new Date().toISOString().split('T')[0];
+  const getToday = () => new Date().toISOString().split('T')[0];
+
+  const today = getToday();
 
   useEffect(() => {
     if (isOpen) {
-      setOrderDate(today);
+      setOrderDate(getToday());
       setDeliveryDate('');
     }
-  }, [isOpen, today]);
+  }, [isOpen]);
 
   const handleOrderDateChange = value => {
     setOrderDate(value);
+
     if (deliveryDate && value && deliveryDate <= value) {
       setDeliveryDate('');
     }
   };
 
   const handleItemChange = (itemId, field, value) => {
-    setItems(items.map(item => (item.id === itemId ? { ...item, [field]: value } : item)));
+    setItems(currentItems =>
+      currentItems.map(item =>
+        item.id === itemId
+          ? {
+              ...item,
+              [field]: value,
+            }
+          : item,
+      ),
+    );
   };
 
   const addItem = () => {
-    setItems([...items, { id: Date.now(), name: '', quantity: '', unit: 'lbs', unitPrice: '' }]);
+    setItems(currentItems => [
+      ...currentItems,
+      {
+        id: Date.now(),
+        name: '',
+        quantity: '',
+        unit: 'lbs',
+        unitPrice: '',
+      },
+    ]);
   };
 
   const removeItem = itemId => {
-    if (items.length <= 1) return;
-    setItems(items.filter(item => item.id !== itemId));
+    if (items.length <= 1) {
+      return;
+    }
+
+    setItems(currentItems => currentItems.filter(item => item.id !== itemId));
   };
 
   const handleSubmit = () => {
@@ -379,53 +763,62 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
       toast.error('Please fill in all required fields.');
       return;
     }
+
     if (orderDate < today) {
       toast.error('Order date cannot be in the past.');
       return;
     }
+
     if (deliveryDate <= orderDate) {
       toast.error('Expected delivery must be after the order date.');
       return;
     }
-    const supplier = supplierList.find(s => s._id === supplierId);
-    const validItems = items.filter(i => i.name && i.quantity && i.unitPrice);
+
+    const validItems = items.filter(
+      item => item.name.trim() && Number(item.quantity) >= 1 && Number(item.unitPrice) >= 0,
+    );
+
     if (validItems.length === 0) {
       toast.error('Add at least one valid item.');
       return;
     }
 
-    const computed = validItems.map(item => ({
-      ...item,
-      quantity: Number(item.quantity),
-      unitPrice: Number(item.unitPrice),
-      total: Number(item.quantity) * Number(item.unitPrice),
-    }));
-
     onSubmit({
       supplierId,
-      supplier: supplier?.name || '',
+      status: 'Pending',
       orderDate: new Date(orderDate).toISOString(),
-      expectedDelivery: new Date(deliveryDate).toISOString(),
-      items: computed,
-      total: computed.reduce((sum, i) => sum + i.total, 0),
-      notes,
+      expectedDeliveryDate: new Date(deliveryDate).toISOString(),
+      items: validItems.map(item => ({
+        itemName: item.name.trim(),
+        quantity: Number(item.quantity),
+        pricePerItem: Number(item.unitPrice),
+      })),
     });
 
     setSupplierId('');
     setOrderDate(today);
     setDeliveryDate('');
-    setNotes('');
-    setItems([{ id: 1, name: '', quantity: '', unit: 'lbs', unitPrice: '' }]);
+    setItems([
+      {
+        id: 1,
+        name: '',
+        quantity: '',
+        unit: 'lbs',
+        unitPrice: '',
+      },
+    ]);
   };
 
   return (
     <Modal isOpen={isOpen} toggle={onClose} size="lg" className={darkMode ? styles.modalDark : ''}>
       <ModalHeader toggle={onClose}>New Purchase Order</ModalHeader>
+
       <ModalBody>
         <div className={styles.formGroup}>
           <label className={styles.label} htmlFor="supplier">
             Supplier <span className={styles.required}>*</span>
           </label>
+
           <select
             id="supplier"
             className={styles.select}
@@ -433,12 +826,19 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
             onChange={e => setSupplierId(e.target.value)}
           >
             <option value="">Select a supplier…</option>
-            {supplierList.map(s => (
-              <option key={s._id} value={s._id}>
-                {s.name} ({s.category})
+
+            {supplierList.map(supplier => (
+              <option key={supplier._id} value={supplier._id}>
+                {supplier.name}
               </option>
             ))}
           </select>
+
+          {supplierList.length === 0 && (
+            <small>
+              No suppliers are available. Create a supplier first from the Suppliers tab.
+            </small>
+          )}
         </div>
 
         <div className={styles.formRow}>
@@ -446,6 +846,7 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
             <label className={styles.label} htmlFor="orderDate">
               Order Date <span className={styles.required}>*</span>
             </label>
+
             <input
               id="orderDate"
               type="date"
@@ -455,10 +856,12 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
               onChange={e => handleOrderDateChange(e.target.value)}
             />
           </div>
+
           <div className={styles.formGroup}>
             <label className={styles.label} htmlFor="deliveryDate">
               Expected Delivery <span className={styles.required}>*</span>
             </label>
+
             <input
               id="deliveryDate"
               type="date"
@@ -474,13 +877,19 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
         <p className={styles.label}>
           Order Items <span className={styles.required}>*</span>
         </p>
+
         <div className={styles.itemsFormHeader}>
           <span className={styles.itemFormColName}>Item Name</span>
+
           <span className={styles.itemFormColSm}>Qty</span>
+
           <span className={styles.itemFormColSm}>Unit</span>
+
           <span className={styles.itemFormColSm}>Unit Price</span>
+
           <span />
         </div>
+
         {items.map(item => (
           <div key={item.id} className={styles.itemFormRow}>
             <input
@@ -489,6 +898,7 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
               value={item.name}
               onChange={e => handleItemChange(item.id, 'name', e.target.value)}
             />
+
             <input
               className={`${styles.input} ${styles.itemFormColSm}`}
               type="number"
@@ -498,20 +908,29 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
               value={item.quantity}
               onChange={e => handleItemChange(item.id, 'quantity', e.target.value)}
             />
+
             <select
               className={`${styles.select} ${styles.itemFormColSm}`}
               value={item.unit}
               onChange={e => handleItemChange(item.id, 'unit', e.target.value)}
             >
               <option value="lbs">lbs</option>
+
               <option value="kg">kg</option>
+
               <option value="bottles">bottles</option>
+
               <option value="dozen">dozen</option>
+
               <option value="bunches">bunches</option>
+
               <option value="gallons">gallons</option>
+
               <option value="containers">containers</option>
+
               <option value="pcs">pcs</option>
             </select>
+
             <input
               className={`${styles.input} ${styles.itemFormColSm}`}
               type="number"
@@ -521,39 +940,30 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
               value={item.unitPrice}
               onChange={e => handleItemChange(item.id, 'unitPrice', e.target.value)}
             />
+
             <button
               type="button"
               className={styles.removeItemBtn}
               onClick={() => removeItem(item.id)}
               disabled={items.length <= 1}
+              aria-label="Remove item"
             >
               ✕
             </button>
           </div>
         ))}
+
         <button type="button" className={styles.addItemBtn} onClick={addItem}>
           + Add Item
         </button>
-
-        <div className={styles.formGroup}>
-          <label className={styles.label} htmlFor="notes">
-            Notes
-          </label>
-          <textarea
-            id="notes"
-            className={styles.textarea}
-            rows="2"
-            placeholder="Optional notes…"
-            value={notes}
-            onChange={e => setNotes(e.target.value)}
-          />
-        </div>
       </ModalBody>
+
       <ModalFooter>
-        <button className={styles.btnModalSecondary} onClick={onClose}>
+        <button type="button" className={styles.btnModalSecondary} onClick={onClose}>
           Cancel
         </button>
-        <button className={styles.btnModalPrimary} onClick={handleSubmit}>
+
+        <button type="button" className={styles.btnModalPrimary} onClick={handleSubmit}>
           Create Order
         </button>
       </ModalFooter>
@@ -561,47 +971,63 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
   );
 };
 
-const orderItemShape = PropTypes.shape({
-  name: PropTypes.string,
-  quantity: PropTypes.string,
-  unitPrice: PropTypes.number,
-  total: PropTypes.number,
-});
-
-const orderShape = PropTypes.shape({
-  id: PropTypes.string,
-  status: PropTypes.string,
-  supplier: PropTypes.string,
-  orderDate: PropTypes.string,
-  expectedDelivery: PropTypes.string,
-  itemCount: PropTypes.number,
-  total: PropTypes.number,
-  urgent: PropTypes.string,
-  items: PropTypes.arrayOf(orderItemShape),
-});
-
-OrderCard.propTypes = {
-  order: orderShape,
-  onStatusChange: PropTypes.func,
+NewOrderModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  suppliers: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string,
+      name: PropTypes.string,
+    }),
+  ).isRequired,
+  darkMode: PropTypes.bool.isRequired,
 };
+
+/* -------------------------------------------------------------------------- */
+/*                              ORDERS PAGE                                   */
+/* -------------------------------------------------------------------------- */
 
 function OrdersPage() {
   const darkMode = useSelector(state => state.theme?.darkMode ?? false);
 
   const [orders, setOrders] = useState([]);
+
   const [supplierList, setSupplierList] = useState([]);
+
   const [activeTab, setActiveTab] = useState('purchase-orders');
+
   const [searchQuery, setSearchQuery] = useState('');
+
   const [currentPage, setCurrentPage] = useState(1);
+
   const [loading, setLoading] = useState(true);
+
   const [newOrderOpen, setNewOrderOpen] = useState(false);
+
+  const [newSupplierOpen, setNewSupplierOpen] = useState(false);
 
   const loadOrders = useCallback(async () => {
     try {
       setLoading(true);
+
       const [orderRes, supplierRes] = await Promise.all([fetchOrders(), fetchSuppliers()]);
-      setOrders(orderRes.data);
-      setSupplierList(supplierRes.data);
+
+      console.log('orderRes:', orderRes);
+
+      console.log('orderRes.data:', orderRes.data);
+
+      console.log('Is orders array:', Array.isArray(orderRes.data));
+
+      console.log('supplierRes:', supplierRes);
+
+      console.log('supplierRes.data:', supplierRes.data);
+
+      console.log('Is suppliers array:', Array.isArray(supplierRes.data));
+
+      setOrders(Array.isArray(orderRes.data) ? orderRes.data : []);
+
+      setSupplierList(Array.isArray(supplierRes.data) ? supplierRes.data : []);
     } catch {
       toast.error('Failed to load orders.');
     } finally {
@@ -616,7 +1042,18 @@ function OrdersPage() {
   const handleStatusChange = async (orderId, newStatus) => {
     try {
       await updateOrderStatus(orderId, newStatus);
-      setOrders(prev => prev.map(o => (o._id === orderId ? { ...o, status: newStatus } : o)));
+
+      setOrders(prev =>
+        prev.map(order =>
+          order._id === orderId
+            ? {
+                ...order,
+                status: newStatus,
+              }
+            : order,
+        ),
+      );
+
       toast.success(`Order marked as ${newStatus}.`);
     } catch {
       toast.error('Failed to update order status.');
@@ -626,11 +1063,35 @@ function OrdersPage() {
   const handleCreateOrder = async orderData => {
     try {
       await createOrder(orderData);
+
       toast.success('Purchase order created.');
+
       setNewOrderOpen(false);
-      loadOrders();
+
+      await loadOrders();
     } catch {
       toast.error('Failed to create order.');
+    }
+  };
+
+  const handleCreateSupplier = async supplierData => {
+    try {
+      await createSupplier(supplierData);
+
+      toast.success('Supplier created successfully.');
+
+      setNewSupplierOpen(false);
+
+      /*
+       * Reload both orders and suppliers
+       * so the newly-created supplier
+       * immediately appears in the
+       * Suppliers tab and New Order
+       * dropdown.
+       */
+      await loadOrders();
+    } catch {
+      toast.error('Failed to create supplier.');
     }
   };
 
@@ -640,27 +1101,64 @@ function OrdersPage() {
     );
   };
 
-  const pendingCount = orders.filter(o => o.status === 'ordered').length;
-  const awaitingStock = orders.filter(o => o.status === 'received').length;
-  const monthlySpend = orders.reduce((sum, o) => sum + o.total, 0);
+  const pendingCount = orders.filter(
+    order => order.status === 'Pending' || order.status === 'Ordered',
+  ).length;
 
-  const filteredOrders = orders.filter(
-    order =>
-      order.orderNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.supplier.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.items.some(i => i.name.toLowerCase().includes(searchQuery.toLowerCase())),
-  );
+  const awaitingStock = orders.filter(order => order.status === 'Delivered').length;
+
+  const now = new Date();
+
+  const monthlySpend = orders
+    .filter(order => {
+      const orderDate = new Date(order.orderDate);
+
+      return (
+        orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear()
+      );
+    })
+    .reduce((sum, order) => sum + Number(order.totalAmount || 0), 0);
+
+  const filteredOrders = orders.filter(order => {
+    const query = searchQuery.trim().toLowerCase();
+
+    if (!query) {
+      return true;
+    }
+
+    const orderId = order._id?.toLowerCase() || '';
+
+    const supplierName = order.supplierId?.name?.toLowerCase() || '';
+
+    const itemMatches = order.items?.some(item => {
+      const itemName = item.itemName?.toLowerCase() || '';
+
+      return itemName.includes(query);
+    });
+
+    return orderId.includes(query) || supplierName.includes(query) || itemMatches;
+  });
 
   const sortedOrders = [...filteredOrders].sort((a, b) => {
-    const statusOrder = { ordered: 0, received: 1, stocked: 2 };
+    const statusOrder = {
+      Pending: 0,
+      Ordered: 1,
+      Shipped: 2,
+      Delivered: 3,
+      Cancelled: 4,
+    };
+
     if (statusOrder[a.status] !== statusOrder[b.status]) {
       return statusOrder[a.status] - statusOrder[b.status];
     }
+
     return new Date(b.orderDate) - new Date(a.orderDate);
   });
 
   const totalPages = Math.max(1, Math.ceil(sortedOrders.length / ORDERS_PER_PAGE));
+
   const safePage = Math.min(currentPage, totalPages);
+
   const paginatedOrders = sortedOrders.slice(
     (safePage - 1) * ORDERS_PER_PAGE,
     safePage * ORDERS_PER_PAGE,
@@ -672,10 +1170,12 @@ function OrdersPage() {
     if (loading) {
       return (
         <div className={`${styles.orderCard} ${styles.emptyState}`}>
-          <div className={styles.spinner} /> Loading orders…
+          <div className={styles.spinner} />
+          Loading orders…
         </div>
       );
     }
+
     if (paginatedOrders.length === 0) {
       return (
         <div className={`${styles.orderCard} ${styles.emptyState}`}>
@@ -683,6 +1183,7 @@ function OrdersPage() {
         </div>
       );
     }
+
     return (
       <>
         {paginatedOrders.map(order => (
@@ -697,14 +1198,22 @@ function OrdersPage() {
         {totalPages > 1 && (
           <div className={styles.pagination}>
             <button
+              type="button"
               className={styles.pageBtn}
               disabled={safePage <= 1}
-              onClick={() => setCurrentPage(p => p - 1)}
+              onClick={() => setCurrentPage(page => page - 1)}
             >
               <FiChevronLeft size={16} />
             </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+
+            {Array.from(
+              {
+                length: totalPages,
+              },
+              (_, i) => i + 1,
+            ).map(page => (
               <button
+                type="button"
                 key={page}
                 className={`${styles.pageBtn} ${page === safePage ? styles.pageBtnActive : ''}`}
                 onClick={() => setCurrentPage(page)}
@@ -712,10 +1221,12 @@ function OrdersPage() {
                 {page}
               </button>
             ))}
+
             <button
+              type="button"
               className={styles.pageBtn}
               disabled={safePage >= totalPages}
-              onClick={() => setCurrentPage(p => p + 1)}
+              onClick={() => setCurrentPage(page => page + 1)}
             >
               <FiChevronRight size={16} />
             </button>
@@ -729,6 +1240,7 @@ function OrdersPage() {
     <div className={containerClass}>
       <main className={styles.main}>
         <h1 className={styles.pageTitle}>Ordering & Procurement</h1>
+
         <p className={styles.pageSubtitle}>
           Manage purchase orders, supplier relationships, and procurement budget
         </p>
@@ -740,18 +1252,21 @@ function OrdersPage() {
             bgColor={darkMode ? '#3d2c00' : '#fff3e0'}
             icon="🕐"
           />
+
           <StatCard
             label="Awaiting Stock"
             value={awaitingStock}
             bgColor={darkMode ? '#1b4332' : '#e8f5e9'}
             icon="📦"
           />
+
           <StatCard
             label="Monthly Spend"
             value={`$${monthlySpend.toFixed(2)}`}
             bgColor={darkMode ? '#0d3b66' : '#e3f2fd'}
             icon="💰"
           />
+
           <StatCard
             label="Surplus Savings"
             value="$306"
@@ -762,11 +1277,21 @@ function OrdersPage() {
 
         <div className={styles.tabs}>
           {[
-            { id: 'purchase-orders', label: '📋 Purchase Orders' },
-            { id: 'suppliers', label: '🏢 Suppliers' },
-            { id: 'surplus', label: '↗️ Surplus Opportunities' },
+            {
+              id: 'purchase-orders',
+              label: '📋 Purchase Orders',
+            },
+            {
+              id: 'suppliers',
+              label: '🏢 Suppliers',
+            },
+            {
+              id: 'surplus',
+              label: '↗️ Surplus Opportunities',
+            },
           ].map(tab => (
             <button
+              type="button"
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`${styles.tab} ${activeTab === tab.id ? styles.tabActive : ''}`}
@@ -776,11 +1301,16 @@ function OrdersPage() {
           ))}
         </div>
 
+        {/* ---------------------------------------------------------------- */}
+        {/*                         PURCHASE ORDERS                          */}
+        {/* ---------------------------------------------------------------- */}
+
         {activeTab === 'purchase-orders' && (
           <>
             <div className={styles.toolbar}>
               <div className={styles.searchWrapper}>
                 <FiSearch className={styles.searchIcon} size={16} />
+
                 <input
                   type="text"
                   placeholder="Search by order #, supplier, or item…"
@@ -792,10 +1322,17 @@ function OrdersPage() {
                   className={`${styles.searchInput} ${darkMode ? styles.searchInputDark : ''}`}
                 />
               </div>
-              <button className={styles.btnPrimary} onClick={() => setNewOrderOpen(true)}>
-                <FiPlus size={16} /> New Order
+
+              <button
+                type="button"
+                className={styles.btnPrimary}
+                onClick={() => setNewOrderOpen(true)}
+              >
+                <FiPlus size={16} />
+                New Order
               </button>
-              <button className={styles.btnSecondary} onClick={handleAutoGenerate}>
+
+              <button type="button" className={styles.btnSecondary} onClick={handleAutoGenerate}>
                 🔄 Auto-Generate from Shortages
               </button>
             </div>
@@ -804,48 +1341,237 @@ function OrdersPage() {
           </>
         )}
 
+        {/* ---------------------------------------------------------------- */}
+        {/*                             SUPPLIERS                            */}
+        {/* ---------------------------------------------------------------- */}
+
         {activeTab === 'suppliers' && (
-          <div>
-            {supplierList.length > 0 ? (
-              supplierList.map(supplier => (
-                <div
-                  key={supplier._id}
-                  className={`${styles.orderCard} ${darkMode ? styles.cardDark : ''}`}
+          <section className={styles.suppliersSection} aria-labelledby="suppliers-heading">
+            <div className={styles.suppliersHeader}>
+              <div>
+                <h2 id="suppliers-heading" className={styles.sectionTitle}>
+                  Suppliers
+                </h2>
+
+                <p className={styles.sectionSubtitle}>
+                  Manage your suppliers and supplier information
+                </p>
+              </div>
+
+              <div className={styles.suppliersHeaderActions}>
+                <span className={styles.supplierCount}>
+                  {supplierList.length} {supplierList.length === 1 ? 'Supplier' : 'Suppliers'}
+                </span>
+
+                <button
+                  type="button"
+                  className={styles.btnPrimary}
+                  onClick={() => setNewSupplierOpen(true)}
                 >
-                  <div className={styles.supplierCardHeader}>
-                    <div className={styles.supplierCardName}>
-                      <span role="img" aria-label="supplier">
-                        🏢
-                      </span>{' '}
-                      {supplier.name}
-                    </div>
-                    {supplier.trusted && <span className={styles.trustedBadge}>Trusted</span>}
-                  </div>
-                  <div className={styles.supplierCardGrid}>
-                    <div className={styles.supplierCardField}>
-                      <p className={styles.metaLabel}>Category</p>
-                      <p className={styles.metaValue}>{supplier.category}</p>
-                    </div>
-                    <div className={styles.supplierCardField}>
-                      <p className={styles.metaLabel}>Contact</p>
-                      <p className={styles.metaValue}>{supplier.contact}</p>
-                    </div>
-                    <div className={styles.supplierCardField}>
-                      <p className={styles.metaLabel}>Phone</p>
-                      <p className={styles.metaValue}>{supplier.phone}</p>
-                    </div>
-                    <div className={styles.supplierCardField}>
-                      <p className={styles.metaLabel}>Email</p>
-                      <p className={styles.metaValue}>{supplier.email}</p>
-                    </div>
-                  </div>
-                </div>
-              ))
+                  <FiPlus size={16} />
+                  Add Supplier
+                </button>
+              </div>
+            </div>
+
+            {supplierList.length > 0 ? (
+              <div className={styles.supplierGrid}>
+                {supplierList.map(supplier => {
+                  const specialties = Array.isArray(supplier.specialities)
+                    ? supplier.specialities
+                    : [];
+
+                  const avgDeliveryDays =
+                    supplier.avgDeliveryDays ?? supplier.averageDeliveryDays ?? 'N/A';
+
+                  const totalOrders = supplier.totalOrders ?? supplier.orderCount ?? 0;
+
+                  const websiteUrl = supplier.websiteUrl || supplier.website || supplier.url;
+
+                  return (
+                    <article
+                      key={supplier._id}
+                      className={`${styles.supplierCard} ${darkMode ? styles.cardDark : ''}`}
+                    >
+                      <div className={styles.supplierCardHeader}>
+                        <div className={styles.supplierIdentity}>
+                          <div className={styles.supplierIcon} aria-hidden="true">
+                            🏢
+                          </div>
+
+                          <div>
+                            <h3 className={styles.supplierCardName}>{supplier.name}</h3>
+                          </div>
+                        </div>
+
+                        {supplier.trusted && <span className={styles.trustedBadge}>Trusted</span>}
+                      </div>
+
+                      <div className={styles.supplierDetails}>
+                        <div className={styles.supplierDetail}>
+                          <span className={styles.detailIcon} aria-hidden="true">
+                            👤
+                          </span>
+
+                          <div>
+                            <p className={styles.supplierDetailLabel}>Contact</p>
+
+                            <p className={styles.supplierDetailValue}>
+                              {supplier.contact || 'N/A'}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className={styles.supplierDetail}>
+                          <span className={styles.detailIcon} aria-hidden="true">
+                            ✉
+                          </span>
+
+                          <div>
+                            <p className={styles.supplierDetailLabel}>Email</p>
+
+                            <p className={styles.supplierDetailValue}>{supplier.email || 'N/A'}</p>
+                          </div>
+                        </div>
+
+                        <div className={styles.supplierDetail}>
+                          <span className={styles.detailIcon} aria-hidden="true">
+                            ☎
+                          </span>
+
+                          <div>
+                            <p className={styles.supplierDetailLabel}>Phone</p>
+
+                            <p className={styles.supplierDetailValue}>{supplier.phone || 'N/A'}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className={styles.supplierStats}>
+                        <div className={styles.supplierStat}>
+                          <span className={styles.supplierStatIcon} aria-hidden="true">
+                            🚚
+                          </span>
+
+                          <div>
+                            <p className={styles.supplierStatLabel}>Avg Delivery</p>
+
+                            <p className={styles.supplierStatValue}>
+                              {avgDeliveryDays === 'N/A'
+                                ? 'N/A'
+                                : `${avgDeliveryDays} ${
+                                    Number(avgDeliveryDays) === 1 ? 'day' : 'days'
+                                  }`}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className={styles.supplierStat}>
+                          <span className={styles.supplierStatIcon} aria-hidden="true">
+                            📦
+                          </span>
+
+                          <div>
+                            <p className={styles.supplierStatLabel}>Total Orders</p>
+
+                            <p className={styles.supplierStatValue}>{totalOrders}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className={styles.specialtiesSection}>
+                        <p className={styles.specialtiesLabel}>Specialties</p>
+
+                        {specialties.length > 0 ? (
+                          <div className={styles.specialtiesList}>
+                            {specialties.map((specialty, index) => (
+                              <span key={`${specialty}-${index}`} className={styles.specialtyTag}>
+                                {specialty}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className={styles.noSpecialties}>No specialties listed</span>
+                        )}
+                      </div>
+
+                      <div className={styles.supplierActions}>
+                        <button
+                          type="button"
+                          className={`${styles.supplierActionBtn} ${styles.pricingBtn}`}
+                          onClick={() =>
+                            toast.info(
+                              `Pricing history for ${supplier.name} will be available soon.`,
+                            )
+                          }
+                        >
+                          View Pricing History
+                        </button>
+
+                        <button
+                          type="button"
+                          className={`${styles.supplierActionBtn} ${styles.editSupplierBtn}`}
+                          onClick={() =>
+                            toast.info(
+                              `Edit supplier information for ${supplier.name} will be available soon.`,
+                            )
+                          }
+                        >
+                          Edit Supplier Info
+                        </button>
+
+                        <button
+                          type="button"
+                          className={`${styles.supplierActionBtn} ${styles.newOrderBtn}`}
+                          onClick={() => {
+                            setActiveTab('purchase-orders');
+
+                            setNewOrderOpen(true);
+                          }}
+                        >
+                          <FiPlus size={15} />
+                          New Order
+                        </button>
+
+                        {websiteUrl && (
+                          <a
+                            href={websiteUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.supplierWebsiteLink}
+                          >
+                            Visit Website
+                          </a>
+                        )}
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
             ) : (
-              <div className={`${styles.orderCard} ${styles.emptyState}`}>No suppliers found.</div>
+              <div className={`${styles.orderCard} ${styles.emptyState}`}>
+                <span className={styles.emptyStateIcon} aria-hidden="true">
+                  🏢
+                </span>
+
+                <p>No suppliers found.</p>
+
+                <button
+                  type="button"
+                  className={styles.btnPrimary}
+                  onClick={() => setNewSupplierOpen(true)}
+                >
+                  <FiPlus size={16} />
+                  Add Your First Supplier
+                </button>
+              </div>
             )}
-          </div>
+          </section>
         )}
+
+        {/* ---------------------------------------------------------------- */}
+        {/*                             SURPLUS                              */}
+        {/* ---------------------------------------------------------------- */}
 
         {activeTab === 'surplus' && (
           <div className={`${styles.orderCard} ${styles.emptyState}`}>
@@ -859,6 +1585,13 @@ function OrdersPage() {
         onClose={() => setNewOrderOpen(false)}
         onSubmit={handleCreateOrder}
         suppliers={supplierList}
+        darkMode={darkMode}
+      />
+
+      <NewSupplierModal
+        isOpen={newSupplierOpen}
+        onClose={() => setNewSupplierOpen(false)}
+        onSubmit={handleCreateSupplier}
         darkMode={darkMode}
       />
     </div>
