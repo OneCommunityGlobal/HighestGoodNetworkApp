@@ -1334,13 +1334,15 @@
 }
 
 .containerDark .editSupplierBtn {
-  background-color: #16213e;
-  border-color: #3a3a5a;
-  color: #ccc;
+  background-color: #1c2541;
+  border-color: #6b7280;
+  color: #f1f5f9;
 }
 
 .containerDark .editSupplierBtn:hover {
-  background-color: #1c2541;
+  background-color: #26324f;
+  border-color: #9ca3af;
+  color: #fff;
 }
 
 .newOrderBtn {

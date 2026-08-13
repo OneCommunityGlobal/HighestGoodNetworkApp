@@ -13,3 +13,6 @@ export const updateOrderStatus = (orderId, status) =>
 export const fetchSuppliers = () => axios.get(SUPPLIERS_BASE_URL);
 
 export const createSupplier = supplierData => axios.post(SUPPLIERS_BASE_URL, supplierData);
+
+export const updateSupplier = (supplierId, supplierData) =>
+  axios.put(`${SUPPLIERS_BASE_URL}/${supplierId}`, supplierData);
