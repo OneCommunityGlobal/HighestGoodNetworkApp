@@ -47,13 +47,6 @@ function Modal({ isOpen, toggle, size, className, children }) {
     if (e.target === overlayRef.current) toggle();
   };
 
-  const handleOverlayKeyDown = e => {
-    if (e.target === overlayRef.current && (e.key === 'Enter' || e.key === ' ')) {
-      e.preventDefault();
-      toggle();
-    }
-  };
-
   const sizeClass = size === 'lg' ? styles.modalLg : '';
 
   return createPortal(
@@ -61,7 +54,11 @@ function Modal({ isOpen, toggle, size, className, children }) {
       className={styles.modalOverlay}
       ref={overlayRef}
       onClick={handleOverlayClick}
-      onKeyDown={handleOverlayKeyDown}
+      onKeyDown={e => {
+        if (e.key === 'Escape') {
+          toggle();
+        }
+      }}
       role="presentation"
     >
       <div className={`${styles.modalContent} ${sizeClass} ${className || ''}`}>{children}</div>
@@ -928,7 +925,6 @@ function OrdersPage() {
       setOrders(Array.isArray(orderRes.data) ? orderRes.data : []);
       setSupplierList(Array.isArray(supplierRes.data) ? supplierRes.data : []);
     } catch (error) {
-      console.error('Failed to load orders/suppliers:', error);
       toast.error('Failed to load orders.');
     } finally {
       setLoading(false);
@@ -949,7 +945,6 @@ function OrdersPage() {
 
       toast.success(`Order marked as ${newStatus}.`);
     } catch (error) {
-      console.error('Failed to update order status:', error);
       toast.error('Failed to update order status.');
     }
   };
@@ -969,7 +964,6 @@ function OrdersPage() {
       setCurrentPage(1);
       await loadOrders();
     } catch (error) {
-      console.error('Failed to create order:', error);
       toast.error('Failed to create order.');
     }
   };
@@ -983,7 +977,6 @@ function OrdersPage() {
 
       await loadOrders();
     } catch (error) {
-      console.error('Failed to create supplier:', error);
       toast.error('Failed to create supplier.');
     }
   };
@@ -1000,7 +993,6 @@ function OrdersPage() {
 
       await loadOrders();
     } catch (error) {
-      console.error('Error updating supplier:', error);
       toast.error('Failed to update supplier.');
     }
   };
