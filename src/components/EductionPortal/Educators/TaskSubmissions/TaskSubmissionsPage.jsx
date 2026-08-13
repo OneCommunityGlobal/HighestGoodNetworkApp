@@ -45,16 +45,29 @@ const TaskSubmissionsPage = () => {
           const uniqueClassIds = [
             ...new Set(fetchedSubmissions.map(sub => sub.lessonPlanId)),
           ].filter(Boolean);
-          if (uniqueClassIds.length > 0) {
-            setActiveClassId(uniqueClassIds[0]);
-          }
 
-          const firstClassTasks = fetchedSubmissions.filter(
-            sub => sub.lessonPlanId === uniqueClassIds[0],
-          );
-          if (firstClassTasks.length > 0) {
-            setExpandedTasks({ [firstClassTasks[0].taskName]: true });
-          }
+          const nextActiveClassId =
+            activeClassId && uniqueClassIds.includes(activeClassId)
+              ? activeClassId
+              : uniqueClassIds[0] || '';
+          setActiveClassId(nextActiveClassId);
+
+          setExpandedTasks(prevExpandedTasks => {
+            const availableTaskNames = new Set(fetchedSubmissions.map(sub => sub.taskName));
+            const preserved = Object.fromEntries(
+              Object.entries(prevExpandedTasks).filter(([taskName]) =>
+                availableTaskNames.has(taskName),
+              ),
+            );
+            if (Object.keys(preserved).length > 0) {
+              return preserved;
+            }
+
+            const firstClassTasks = fetchedSubmissions.filter(
+              sub => sub.lessonPlanId === nextActiveClassId,
+            );
+            return firstClassTasks.length > 0 ? { [firstClassTasks[0].taskName]: true } : {};
+          });
         } else {
           setActiveClassId('');
           setExpandedTasks({});
