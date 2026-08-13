@@ -108,6 +108,7 @@ import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
 import { JobsHitsApplicationsReducer } from './jobAnalytics/JobsHitsApplicationsReducer';
 import { studentTasksReducer } from './studentTasksReducer';
+import { toolReplacementReducer } from './toolReplacementReducer';
 
 // Education Dashboard Reducers
 import { weeklySummariesFiltersApi } from '../actions/weeklySummariesFilterAction';
@@ -119,6 +120,12 @@ import { studentReducer } from './studentProfileReducer';
 
 // Kitchen and Inventory Management
 import { kiCalendarApi } from '../actions/kiCalendarAction';
+
+// Popularity Enhanced
+import {
+  enhancedPopularityAnalyticsReducer,
+  enchancedPopularityRolesReducer,
+} from './EnhancedPopularityAnalytics/EnchancedPopularityReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -211,6 +218,7 @@ const localReducers = {
   // student tasks
   studentTasks: studentTasksReducer,
   jobApplication: jobApplicationReducer,
+  toolReplacement: toolReplacementReducer,
 
   // education portal
   atom: atomReducer,
@@ -218,6 +226,11 @@ const localReducers = {
   // education portal
   browseLessonPlan: browseLessonPlanReducer,
   kiInventory: KIInventoryReducer,
+
+  // enchanced popularity analytics
+  enhancedPopularityAnalytics: enhancedPopularityAnalyticsReducer,
+
+  enhancedPopularityRoles: enchancedPopularityRolesReducer,
 
   // Kitchen and Inventory Management
   [kiCalendarApi.reducerPath]: kiCalendarApi.reducer,

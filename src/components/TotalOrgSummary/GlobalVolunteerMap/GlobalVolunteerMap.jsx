@@ -1,10 +1,9 @@
-/* eslint-disable react/no-array-index-key */
 import { useEffect, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import L from 'leaflet';
 import { MapContainer, TileLayer, useMap, CircleMarker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.heat';
-
 import Loading from '~/components/common/Loading';
 
 const volunteerColors = {
@@ -23,27 +22,26 @@ function HeatMap({ points }) {
   const map = useMap();
 
   useEffect(() => {
-    if (!map || !points.length) return undefined;
+    if (points.length > 0) {
+      const heat = L.heatLayer(points, {
+        radius: 20,
+        blur: 20,
+        maxZoom: 2,
+        gradient: {
+          0.4: '#00f',
+          0.6: '#0f0',
+          0.7: '#ff0',
+          0.8: '#ffa500',
+          1.0: '#f00',
+        },
+      }).addTo(map);
 
-    const heatLayer = L.heatLayer(points, {
-      radius: 20,
-      blur: 20,
-      maxZoom: 4,
-      gradient: {
-        0.2: '#00f',
-        0.4: '#0f0',
-        0.6: '#ff0',
-        0.8: '#ffa500',
-        1.0: '#f00',
-      },
-    });
-
-    heatLayer.addTo(map);
-
-    return () => {
-      map.removeLayer(heatLayer);
-    };
-  }, [map, points]);
+      return () => {
+        map.removeLayer(heat);
+      };
+    }
+    return undefined;
+  }, [points, map]);
 
   return null;
 }
@@ -152,7 +150,6 @@ function GlobalVolunteerMap({ locations = [], isLoading, darkMode = false, error
           url={darkMode ? DARK_TILE_URL : LIGHT_TILE_URL}
           attribution={darkMode ? DARK_TILE_ATTRIBUTION : LIGHT_TILE_ATTRIBUTION}
         />
-
         <HeatMap points={heatMapPoints} />
 
         {normalizedLocations.map((location, index) => (
@@ -171,5 +168,29 @@ function GlobalVolunteerMap({ locations = [], isLoading, darkMode = false, error
     </div>
   );
 }
+
+HeatMap.propTypes = {
+  points: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired,
+};
+
+GlobalVolunteerMap.propTypes = {
+  locations: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.shape({
+        lat: PropTypes.number,
+        lng: PropTypes.number,
+      }),
+      lat: PropTypes.number,
+      lng: PropTypes.number,
+      latitude: PropTypes.number,
+      longitude: PropTypes.number,
+      count: PropTypes.number,
+      status: PropTypes.string,
+    }),
+  ),
+  isLoading: PropTypes.bool,
+  darkMode: PropTypes.bool,
+  error: PropTypes.oneOfType([PropTypes.string, PropTypes.object, PropTypes.bool]),
+};
 
 export default GlobalVolunteerMap;
