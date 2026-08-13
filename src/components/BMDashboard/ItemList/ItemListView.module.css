@@ -389,9 +389,6 @@ table td {
 .darkMode {
   color: #e8edf4;
   background-color: #0f1b2b !important;
-  min-height: 100vh;
-  padding-top: 1rem;
-  padding-bottom: 2rem;
 }
 
 .darkMode table {
