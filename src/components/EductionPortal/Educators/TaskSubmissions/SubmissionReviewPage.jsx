@@ -57,6 +57,7 @@ const SubmissionReviewPage = () => {
       setMaxMarks(data.maxMarks ?? 100);
       setFeedback(data.feedback ?? '');
     } catch (err) {
+      console.error('Failed to load submission for review:', err);
       setError('Failed to load this submission. Please try again.');
     } finally {
       setLoading(false);
@@ -91,6 +92,7 @@ const SubmissionReviewPage = () => {
       setTask(res.data);
       setSaveMessage(action === 'publish' ? 'Grade published to student.' : 'Draft saved.');
     } catch (err) {
+      console.error('Failed to save submission grade:', err);
       setSaveError('Failed to save. Please try again.');
     } finally {
       setSaving(false);
@@ -247,7 +249,7 @@ const SubmissionReviewPage = () => {
 
             <div className={styles.marksRow}>
               <label className={styles.fieldLabel} htmlFor="review-marks">
-                Marks
+                <span>Marks</span>
                 <input
                   id="review-marks"
                   type="number"
@@ -259,7 +261,7 @@ const SubmissionReviewPage = () => {
                 />
               </label>
               <label className={styles.fieldLabel} htmlFor="review-max-marks">
-                Out of
+                <span>Out of</span>
                 <input
                   id="review-max-marks"
                   type="number"
@@ -273,7 +275,7 @@ const SubmissionReviewPage = () => {
             </div>
 
             <label className={styles.fieldLabel} htmlFor="review-feedback">
-              Feedback
+              <span>Feedback</span>
               <textarea
                 id="review-feedback"
                 className={styles.feedbackInput}

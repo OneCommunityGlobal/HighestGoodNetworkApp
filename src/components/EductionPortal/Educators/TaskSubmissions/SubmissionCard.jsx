@@ -46,13 +46,6 @@ const SubmissionCard = ({ submission }) => {
     }
   };
 
-  const handleCardKeyPress = e => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      goToReview();
-    }
-  };
-
   const statusDetails = useMemo(() => {
     const isLate =
       submittedAt &&
@@ -99,12 +92,10 @@ const SubmissionCard = ({ submission }) => {
   const avatarColor = getAvatarColor(studentName);
 
   return (
-    <div
+    <button
+      type="button"
       className={`${styles.card} ${statusDetails.cardClass || ''}`}
       onClick={goToReview}
-      onKeyPress={handleCardKeyPress}
-      role="button"
-      tabIndex={0}
     >
       <div className={styles.cardHeader}>
         <div className={styles.studentInfo}>
@@ -138,9 +129,6 @@ const SubmissionCard = ({ submission }) => {
               className={styles.infoIconWrapper}
               onMouseEnter={() => setShowTooltip(true)}
               onMouseLeave={() => setShowTooltip(false)}
-              onClick={e => e.stopPropagation()}
-              onKeyPress={e => e.stopPropagation()}
-              role="presentation"
             >
               <div className={styles.infoIcon}>
                 <FiInfo size={20} />
@@ -185,7 +173,7 @@ const SubmissionCard = ({ submission }) => {
           </span>
         </div>
       )}
-    </div>
+    </button>
   );
 };
 

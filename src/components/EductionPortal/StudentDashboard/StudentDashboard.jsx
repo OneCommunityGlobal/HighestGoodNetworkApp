@@ -237,6 +237,7 @@ const StudentDashboard = () => {
               {FILTER_TABS.map(tab => (
                 <button
                   key={tab.key}
+                  type="button"
                   role="tab"
                   aria-selected={activeFilter === tab.key}
                   className={`${styles.filterTab} ${

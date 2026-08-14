@@ -96,6 +96,7 @@ const NavigationBar = ({ darkMode = false }) => {
       <div className={styles.navContainer}>
         {/* Hamburger button — visible only on mobile */}
         <button
+          type="button"
           className={styles.hamburger}
           aria-label={menuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={menuOpen}

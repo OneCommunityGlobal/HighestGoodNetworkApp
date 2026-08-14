@@ -11,6 +11,10 @@
   display: flex;
   flex-direction: column;
   overflow: visible;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
 }
 
 .card:hover {
