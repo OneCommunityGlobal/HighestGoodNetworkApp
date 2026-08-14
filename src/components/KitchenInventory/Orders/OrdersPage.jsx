@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { createPortal } from 'react-dom';
@@ -23,8 +23,6 @@ const ORDERS_PER_PAGE = 5;
 /* -------------------------------------------------------------------------- */
 
 function Modal({ isOpen, toggle, size, className, children }) {
-  const overlayRef = useRef(null);
-
   useEffect(() => {
     if (!isOpen) return undefined;
 
@@ -43,24 +41,10 @@ function Modal({ isOpen, toggle, size, className, children }) {
 
   if (!isOpen) return null;
 
-  const handleOverlayClick = e => {
-    if (e.target === overlayRef.current) toggle();
-  };
-
   const sizeClass = size === 'lg' ? styles.modalLg : '';
 
   return createPortal(
-    <div
-      className={styles.modalOverlay}
-      ref={overlayRef}
-      onClick={handleOverlayClick}
-      onKeyDown={e => {
-        if (e.key === 'Escape') {
-          toggle();
-        }
-      }}
-      role="presentation"
-    >
+    <div className={styles.modalOverlay}>
       <div className={`${styles.modalContent} ${sizeClass} ${className || ''}`}>{children}</div>
     </div>,
     document.body,
@@ -1275,13 +1259,27 @@ function OrdersPage() {
                     ? supplier.specialities
                     : [];
 
-                  const avgDeliveryDays =
-                    supplier.avgDeliveryDays ?? supplier.averageDeliveryDays ?? 'N/A';
+                  let avgDeliveryDays = supplier.avgDeliveryDays;
 
-                  const avgDeliveryDisplay =
-                    avgDeliveryDays === 'N/A'
-                      ? 'N/A'
-                      : `${avgDeliveryDays} ${Number(avgDeliveryDays) === 1 ? 'day' : 'days'}`;
+                  if (avgDeliveryDays == null) {
+                    avgDeliveryDays = supplier.averageDeliveryDays;
+                  }
+
+                  if (avgDeliveryDays == null) {
+                    avgDeliveryDays = 'N/A';
+                  }
+
+                  let avgDeliveryDisplay = 'N/A';
+
+                  if (avgDeliveryDays !== 'N/A') {
+                    let unit = 'days';
+
+                    if (Number(avgDeliveryDays) === 1) {
+                      unit = 'day';
+                    }
+
+                    avgDeliveryDisplay = `${avgDeliveryDays} ${unit}`;
+                  }
 
                   /*
                    * IMPORTANT:
