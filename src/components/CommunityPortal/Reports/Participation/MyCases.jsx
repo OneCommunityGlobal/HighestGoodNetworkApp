@@ -1,239 +1,262 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './MyCases.module.css';
-import { AddEventDetailsPopup } from './AddEventDetailsPopup';
-import {
-  createEvent,
-  fetchEventDetails,
-} from '../../../../actions/communityPortal/EventActivityActions';
+import CreateEventModal from './CreateEventModal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUsers } from '@fortawesome/free-solid-svg-icons';
+import { filterEventsByDate } from './FilterByDate';
+import { fetchEventDetails } from '../../../../actions/communityPortal/EventActivityActions';
 import { constructQueryParams, transformEvents } from './HelperFunctions';
 import { EventsCalendar } from './EventsCalendar';
 
-function EventCard({ event, darkMode, placeholderAvatar }) {
-  return (
-    <div className={`case-card-global ${styles.caseCard} ${darkMode ? styles.caseCardDark : ''}`}>
-      <span className={styles.eventBadge} data-type={event.type}>
-        {event.type}
-      </span>
-      <span className={`${styles.eventTime} ${darkMode ? styles.eventTimeDark : ''}`}>
-        {event.date}
-      </span>
-      <span className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
-        {event.title}
-      </span>
-      <div className={`${styles.attendeesInfo} ${darkMode ? styles.attendeesInfoDark : ''}`}>
-        <div className={styles.avatars}>
-          <img
-            alt="profile img"
-            src={placeholderAvatar}
-            width="24"
-            height="24"
-            crossOrigin="anonymous"
-            loading="lazy"
-          />
-        </div>
-        <span
-          className={`${styles.attendeesCount} ${darkMode ? styles.attendeesCountDark : ''}`}
-        >{`+${event.resources.length}`}</span>
-      </div>
-    </div>
-  );
-}
-
 function MyCases() {
   const [view, setView] = useState('card');
-  const [filter, setFilter] = useState('all');
-  const [addEventDetailsPopup, setAddEventDetailsPopup] = useState(false);
-  const fetchEventState = useSelector(state => state.fetchEvent);
-  const createEventState = useSelector(state => state.createEvent);
+  const [filter, setFilter] = useState('All Time');
+  const [expanded, setExpanded] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [eventsData, setEventsData] = useState([]);
-  const [events, setEvents] = useState([]);
-  const [more, setMore] = useState(false);
+
+  const fetchEventState = useSelector(state => state.fetchEvent);
   const dispatch = useDispatch();
   const token = localStorage.getItem('token');
+
+  const isExporting =
+    typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true';
+
+  const now = new Date();
+
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  const filteredEvents = filterEventsByDate(eventsData, filter).filter(
+    event => new Date(event.eventDate).getTime() >= now.getTime(),
+  );
+
+  let visibleEvents = filteredEvents;
+
+  if (!isExporting) {
+    visibleEvents = expanded ? filteredEvents : filteredEvents.slice(0, 10);
+  }
+
   const placeholderAvatar = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 
+  // Bridges the backend event shape (from transformEvents: _id, type, title,
+  // resources, startTime/endTime/date) onto the field names the rendering and
+  // filterEventsByDate/isEventToday logic below expect (id, eventType,
+  // eventName, eventTime, eventDate, attendees).
+  const adaptEventForDisplay = event => ({
+    ...event,
+    id: event._id,
+    eventType: event.type,
+    eventName: event.title,
+    eventTime: event.date,
+    eventDate: event.startTime,
+    attendees: Array.isArray(event.resources) ? event.resources.length : 0,
+  });
+
+  const fetchEvents = () => {
+    const params = expanded ? {} : { limit: 16 };
+    const queryParams = constructQueryParams(params);
+    dispatch(fetchEventDetails(token, queryParams));
+  };
+
+  // Fetch events from the backend; re-fetch without a limit once expanded ("More").
   useEffect(() => {
     if (!fetchEventState.loading) {
       if (fetchEventState.data === null && fetchEventState.error === null) {
-        const params = { limit: 16 };
-        const queryParams = constructQueryParams(params);
-        dispatch(fetchEventDetails(token, queryParams));
+        fetchEvents();
       } else if (fetchEventState.data?.events) {
-        setEventsData(transformEvents(fetchEventState.data.events));
+        setEventsData(transformEvents(fetchEventState.data.events).map(adaptEventForDisplay));
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchEventState]);
 
   useEffect(() => {
-    const now = new Date();
-    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const endOfDay = new Date(startOfDay);
-    endOfDay.setDate(endOfDay.getDate() + 1);
+    if (expanded) {
+      fetchEvents();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expanded]);
 
-    const startOfWeek = new Date(startOfDay);
-    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(endOfWeek.getDate() + 7);
+  const isEventToday = dateString => {
+    const eventDate = new Date(dateString);
+    const nowDate = new Date();
 
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-
-    setEvents(
-      eventsData.filter(e => {
-        const eventDate = new Date(e.startTime);
-        if (filter === 'today') return eventDate >= startOfDay && eventDate < endOfDay;
-        if (filter === 'thisWeek') return eventDate >= startOfWeek && eventDate < endOfWeek;
-        if (filter === 'thisMonth') return eventDate >= startOfMonth && eventDate < endOfMonth;
-        return true;
-      }),
+    return (
+      eventDate.getDate() === nowDate.getDate() &&
+      eventDate.getMonth() === nowDate.getMonth() &&
+      eventDate.getFullYear() === nowDate.getFullYear()
     );
-  }, [filter, eventsData]);
-
-  useEffect(() => {
-    setEvents(eventsData);
-  }, [eventsData]);
-
-  useEffect(() => {
-    if (!createEventState.loading && createEventState.status?.status === 'success') {
-      const params = more ? {} : { limit: 16 };
-      const queryParams = constructQueryParams(params);
-      dispatch(fetchEventDetails(token, queryParams));
-      setAddEventDetailsPopup(false);
-    }
-  }, [createEventState]);
-
-  useEffect(() => {
-    if (more) {
-      const queryParams = constructQueryParams({});
-      dispatch(fetchEventDetails(token, queryParams));
-    }
-  }, [more]);
-
-  const handlePopup = () => {
-    setAddEventDetailsPopup(!addEventDetailsPopup);
-  };
-
-  const addEventDetails = eventDetails => {
-    dispatch(createEvent(token, eventDetails));
   };
 
   const renderCardView = () => (
-    <div className={`case-cards-global ${styles.caseCards} ${more ? '' : styles.shrink}`}>
-      {events.map(event => (
-        <EventCard
-          key={event._id}
-          event={event}
-          darkMode={darkMode}
-          placeholderAvatar={placeholderAvatar}
-        />
+    <div
+      className={`case-cards-global ${styles.caseCards} ${
+        expanded || isExporting ? styles.expanded : ''
+      }`}
+    >
+      {visibleEvents.map(event => (
+        <div
+          className={`case-card-global ${styles.caseCard} ${darkMode ? styles.caseCardDark : ''}`}
+          key={event.id}
+        >
+          <span className={styles.eventBadge} data-type={event.eventType}>
+            {event.eventType}
+          </span>
+
+          <span className={`${styles.eventTime} ${darkMode ? styles.eventTimeDark : ''}`}>
+            {event.eventTime}
+          </span>
+
+          <span className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
+            {isEventToday(event.eventDate) ? "Today's " : ''}
+            {event.eventName}
+          </span>
+
+          <div className={`${styles.attendeesInfo} ${darkMode ? styles.attendeesInfoDark : ''}`}>
+            <div className={styles.avatars}>
+              <img
+                alt="profile img"
+                src={placeholderAvatar}
+                width="24"
+                height="24"
+                crossOrigin="anonymous"
+                loading="lazy"
+              />
+            </div>
+
+            <span
+              className={`${styles.attendeesCount} ${darkMode ? styles.attendeesCountDark : ''}`}
+              title="Number of members who attended this event"
+              data-tooltip="Members Attended"
+            >
+              <FontAwesomeIcon icon={faUsers} className="me-2" />
+              {`+${event.attendees}`} Attendees
+            </span>
+          </div>
+        </div>
       ))}
     </div>
   );
 
   const renderListView = () => (
-    <ul className={`case-list-global ${styles.caseList}`}>
-      {events.map(event => (
+    <ul
+      className={`case-list-global ${styles.caseList} ${
+        expanded || isExporting ? styles.expanded : ''
+      }`}
+    >
+      {visibleEvents.map(event => (
         <li
           className={`case-list-item-global ${styles.caseListItem} ${
             darkMode ? styles.caseListItemDark : ''
           }`}
-          key={event._id}
+          key={event.id}
         >
-          <span className={styles.eventType}>{event.type}</span>
-          <span className={styles.eventTime}>{event.date}</span>
-          <span className={styles.eventName}>{event.title}</span>
-          <span className={styles.attendeesCount}>{`+${event.resources.length}`}</span>
+          <span className={styles.eventType}>{event.eventType}</span>
+          <span className={styles.eventTime}>{event.eventTime}</span>
+          <span className={styles.eventName}>{event.eventName}</span>
+
+          <span
+            className={styles.attendeesCount}
+            title="Number of members who attended this event"
+            data-tooltip="Members Attended"
+          >
+            <FontAwesomeIcon icon={faUsers} className="me-2" />
+            {`+${event.attendees}`} Attendees
+          </span>
         </li>
       ))}
     </ul>
   );
 
   return (
-    <div className={`${styles.myCasesPage} ${darkMode ? styles.myCasesPageDark : ''}`}>
+    <div
+      className={`my-cases-global ${styles.myCasesPage} ${darkMode ? styles.myCasesPageDark : ''}`}
+    >
       <header className={styles.header}>
-        <div className={styles.eventsTitle}>
-          <h2 className={`${styles.sectionTitle} ${darkMode ? styles.sectionTitleDark : ''}`}>
-            Upcoming Events
-          </h2>
-          {view === 'card' && (
+        <h2 className={`${styles.sectionTitle} ${darkMode ? styles.sectionTitleDark : ''}`}>
+          Upcoming Events
+        </h2>
+
+        <div className={styles.headerActions}>
+          <div className={`${styles.viewSwitcher} ${darkMode ? styles.viewSwitcherDarkMode : ''}`}>
             <button
               type="button"
-              className={darkMode ? styles.moreBtnDark : styles.moreBtn}
-              onClick={() => setMore(prev => !prev)}
+              className={view === 'calendar' ? styles.active : ''}
+              onClick={() => setView('calendar')}
             >
-              {more ? 'Less ˄' : 'More ˅'}
+              Calendar
             </button>
-          )}
-        </div>
-        <div className={styles.headerActions}>
-          <div className={`view-switcher-global ${styles.viewSwitcher}`}>
-            <div>
-              <button
-                type="button"
-                className={`${view === 'calendar' ? styles.active : ''} ${
-                  darkMode ? styles.colorBlack : ''
-                }`}
-                onClick={() => setView('calendar')}
-              >
-                Calendar
-              </button>
-              <button
-                type="button"
-                className={`${styles.cardBtn} ${view === 'card' ? styles.active : ''} ${
-                  darkMode ? styles.colorBlack : ''
-                }`}
-                onClick={() => setView('card')}
-              >
-                Card
-              </button>
-              <button
-                type="button"
-                className={`${view === 'list' ? styles.active : ''} ${
-                  darkMode ? styles.colorBlack : ''
-                }`}
-                onClick={() => setView('list')}
-              >
-                List
-              </button>
-            </div>
+
+            <button
+              type="button"
+              className={view === 'card' ? styles.active : ''}
+              onClick={() => setView('card')}
+            >
+              Card
+            </button>
+
+            <button
+              type="button"
+              className={view === 'list' ? styles.active : ''}
+              onClick={() => setView('list')}
+            >
+              List
+            </button>
           </div>
+
           {view !== 'calendar' && (
             <div className={`filter-wrapper-global ${styles.filterWrapper}`}>
               <select
-                className={`${styles.filterDropdown} ${darkMode ? styles.filterDropdownDark : ''}`}
+                className={`${styles.filterDropdown} ${
+                  darkMode ? styles.filterDropdownDarkMode : ''
+                }`}
                 value={filter}
                 onChange={e => setFilter(e.target.value)}
               >
-                <option value="all">All Time</option>
-                <option value="today">Today</option>
-                <option value="thisWeek">This Week</option>
-                <option value="thisMonth">This Month</option>
+                <option value="All Time">All Time</option>
+                <option value="Today">Today</option>
+                <option value="This Week">This Week</option>
+                <option value="This Month">This Month</option>
               </select>
             </div>
           )}
+
           <button
             type="button"
-            className={`create-new-global ${styles.createNew}`}
-            onClick={() => setAddEventDetailsPopup(true)}
+            className={`${styles.createNew} ${darkMode ? styles.createNewDarkMode : ''}`}
+            onClick={() => setIsCreateModalOpen(true)}
           >
             + Create New
           </button>
-          {addEventDetailsPopup && (
-            <AddEventDetailsPopup handlePopup={handlePopup} addEventDetails={addEventDetails} />
+
+          {filteredEvents.length > 10 && !isExporting && (
+            <button
+              type="button"
+              className={`more-btn-global ${styles.moreBtn}`}
+              onClick={() => setExpanded(!expanded)}
+            >
+              {expanded ? 'Show Less' : 'More'}
+            </button>
           )}
         </div>
       </header>
+
       <main className={styles.content}>
-        {events.length === 0 && !fetchEventState.loading && (
+        {eventsData.length === 0 && !fetchEventState.loading && (
           <div className={styles.retrievalStatus}>No events found</div>
         )}
         {fetchEventState.loading && <div className={styles.retrievalStatus}>Loading events...</div>}
-        {view === 'calendar' && <EventsCalendar />}
         {view === 'card' && renderCardView()}
         {view === 'list' && renderListView()}
+        {view === 'calendar' && <EventsCalendar />}
       </main>
+
+      <CreateEventModal
+        isOpen={isCreateModalOpen}
+        toggle={() => setIsCreateModalOpen(!isCreateModalOpen)}
+        onEventCreated={fetchEvents}
+      />
     </div>
   );
 }

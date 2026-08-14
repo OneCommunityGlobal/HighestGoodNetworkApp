@@ -46,6 +46,7 @@ const TeamMemberTask = React.memo(
     userId,
     updateTaskStatus,
     showWhoHasTimeOff,
+    showTrackers,
     showTasks,
     onTimeOff,
     goingOnTimeOff,
@@ -411,7 +412,7 @@ const TeamMemberTask = React.memo(
                           <td
                             colSpan={2}
                             className={styles['team-member-tasks-user-name']}
-                            style={{ textAlign: 'center' }}
+                            style={{ textAlign: 'center', alignItems: 'center' }}
                           >
                             <Link
                               className={styles['team-member-tasks-user-name-link']}
@@ -518,6 +519,7 @@ const TeamMemberTask = React.memo(
                               userRole={userRole}
                               personId={user.personId}
                               displayUser={displayUser}
+                              showTrackers={showTrackers}
                             />
                             <div
                               style={{ textAlign: 'center', marginTop: '8px' }}
@@ -647,17 +649,13 @@ const TeamMemberTask = React.memo(
                                         </div>
 
                                         {/* Review Button */}
-                                        <div
-                                          className={styles['team-member-task-review-button']}
-                                          style={
-                                            onTimeOff ? { opacity: 0.4, pointerEvents: 'none' } : {}
-                                          }
-                                        >
+                                        <div className={styles['team-member-task-review-button']}>
                                           <ReviewButton
                                             user={user}
                                             userId={userId}
                                             task={task}
                                             updateTask={updateTaskStatus}
+                                            onTimeOff={onTimeOff}
                                           />
                                         </div>
                                       </div>
@@ -853,6 +851,7 @@ TeamMemberTask.propTypes = {
     timeOffTill: PropTypes.string,
   }).isRequired,
   userRole: PropTypes.string.isRequired,
+  showTrackers: PropTypes.bool,
   showTasks: PropTypes.bool,
   userId: PropTypes.string.isRequired,
   displayUser: PropTypes.object,

@@ -1,4 +1,8 @@
-/* stylelint-disable declaration-block-single-line-max-declarations, no-descending-specificity, no-duplicate-selectors */
+/* ---------- CSS Variables for Dark Mode ---------- */
+:root {
+  --color-text-dark: #fff;
+  --color-border-dark: #4a5a77;
+}
 
 /* ---------- General Styling ---------- */
 .body {
@@ -11,14 +15,21 @@
 .participationLandingPage {
   max-width: 90%;
   margin: 0 auto;
-  background: white;
 }
 
 .participationLandingPageDark {
-  max-width: 90%;
+  min-width: 100%;
   margin: 0 auto;
   background-color: #1b2a41;
   color: #fff;
+}
+
+/* The landing page is only 90% wide and centered, so in dark mode the page
+   body shows through the side/top gutters as white. Paint the body dark
+   whenever the dark landing page is present (reverts automatically when
+   navigating away). */
+:global(body):has(.participationLandingPageDark) {
+  background-color: #1b2a41;
 }
 
 /* ---------- Page Header ---------- */
@@ -31,77 +42,26 @@
   border-bottom: 2px solid #e0e0e0;
 }
 
+.participationLandingPageDark .landingPageHeaderContainer {
+  border-bottom: 2px solid var(--color-border-dark);
+}
+
 .landingPageHeader {
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: #111;
-  letter-spacing: 0.5px;
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
 .landingPageHeaderDark {
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: #fff !important;
-  letter-spacing: 0.5px;
+  color: #fff;
 }
 
-/* ---------- Save as PDF button ---------- */
-.savePdfBtn {
-  font-size: 14px;
-  font-weight: 500;
-  padding: 8px 14px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.1s ease;
+.header {
+  margin-bottom: 30px;
 }
 
-.savePdfBtnLight {
-  background: #f5f5f5;
-  color: #333;
-  border: 1px solid #ccc;
-}
-
-.savePdfBtnLight:hover {
-  background: #e8e8e8;
-  transform: translateY(-1px);
-}
-
-.savePdfBtnDark {
-  background: #333;
-  color: #f5f5f5;
-  border: 1px solid #666;
-}
-
-.savePdfBtnDark:hover {
-  background: #444;
-  transform: translateY(-1px);
-}
-
-@media (width <= 768px) {
-  .landingPageHeaderContainer {
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    text-align: center;
-  }
-}
-
-/* ---------- Section Headers ---------- */
-.myCasesHeader h2,
-.trackingHeader h3,
-.insightsHeader h3 {
-  font-size: 1.4rem;
-  font-weight: 600;
-}
-
-.trackingHeaderDark h3,
-.insightsHeaderDark h3 {
-  font-size: 1.4rem;
-  font-weight: 600;
-}
-
-/* ---------- My Cases Section ---------- */
+/* My Cases Section */
 .myCases {
   margin-bottom: 40px;
 }
@@ -144,7 +104,7 @@
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
-/* ---------- Analytics Section ---------- */
+/* Analytics Section */
 .analyticsSection {
   display: flex;
   flex-wrap: nowrap;
@@ -172,32 +132,24 @@
   background-color: #1c2541;
   color: #fff;
   border-radius: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-border-dark);
   box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
   padding: 20px;
   box-sizing: border-box;
 }
 
-@media (width <= 1024px) {
-  .analyticsSection {
-    flex-direction: column;
-    gap: 30px;
-  }
-
-  .trackingContainer,
-  .insights {
-    min-width: 100%;
-  }
-}
-
 @media (width <= 768px) {
+  .analyticsSection {
+    flex-wrap: wrap;
+  }
+
   .trackingContainer,
   .insights {
     width: 100%;
   }
 }
 
-/* ---------- Tracking Section ---------- */
+/* Tracking Section */
 .trackingHeader {
   display: flex;
   justify-content: space-between;
@@ -213,86 +165,54 @@
   color: #fff;
 }
 
-
-@media (width <= 1024px) {
-  .trackingHeader {
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .trackingHeaderDark {
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-}
-
 .trackingHeader h3 {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   color: #333;
   margin: 0;
+  white-space: nowrap;
 }
 
 .trackingHeaderDark h3 {
   color: #fff;
   font-size: 1.3rem;
   margin: 0;
-}
-
-.trackingFilters {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 12px; /* spacing between dropdowns */
+  white-space: nowrap;
 }
 
 .trackingFilters select {
-  flex: 0 0 auto;
+  margin-left: 10px;
   padding: 8px;
   font-size: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
+  background-color: #fff;
+  color: #333;
 }
 
-.trackingFiltersDark {
-  display: flex;
-  gap: 10px;
-  background-color: #1c2541;
+.trackingHeaderDark .trackingFilters select {
+  background-color: #3A506B;
+  color: var(--color-text-dark);
+  border: 1px solid var(--color-border-dark);
 }
 
-.trackingFiltersDark select {
-  background-color: #2d3748;
-  border-color: #4a5568;
-  color: #fff;
+.trackingHeaderDark .trackingFilters select option {
+  background-color: #3A506B;
+  color: var(--color-text-dark);
 }
 
-.trackingFiltersDark select option {
-  background-color: #2d3748;
-  color: #fff;
-}
-
-/* Summary boxes */
 .trackingSummary {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
 }
 
-/* Light mode */
 .trackingRate {
   background: #f8f9fa;
   border-radius: 10px;
   width: 48%;
   padding: 10px;
-  color: #333;
 }
 
-.trackingRate .trackingRateSubheading span,
-.trackingRate .trackingRateValue span {
-  color: #333;
-}
-
-/* Dark mode */
 .trackingRateDark {
   background: #3a506b;
   border-radius: 10px;
@@ -301,27 +221,33 @@
   color: #fff;
 }
 
-.trackingRateDark .trackingRateSubheading span,
-.trackingRateDark .trackingRateValue span {
+.trackingRateDark .spanDark {
   color: #fff;
+  display: inline-block;
+  padding-left: 5px;
+}
+
+.trackingRateLabelDark {
+  color: #fff !important;
+  margin-top: 5px;
 }
 
 .trackingRateValue {
   font-size: 0.9rem;
+  color: #f44336;
   display: inline-block;
 }
 
-.trackingRate .trackingRateValue span.trackingRateValuePositive,
-.trackingRateDark .trackingRateValue span.trackingRateValuePositive {
-  color: #f44336 !important;
+.trackingRateValue span {
+  font-size: 0.9rem;
+  color: #777;
+  display: inline-block;
 }
 
-.trackingRate .trackingRateValue span.trackingRateValueNegative,
-.trackingRateDark .trackingRateValue span.trackingRateValueNegative {
-  color: #008000 !important;
+.trackingRateDark .trackingRateValue span {
+  color: #cbd5e1;
 }
 
-/* Tables */
 .trackingListContainer {
   max-height: 600px;
   overflow-y: auto;
@@ -334,44 +260,42 @@
 .trackingListContainerDark {
   max-height: 600px;
   overflow-y: auto;
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-border-dark);
   border-radius: 10px;
   padding: 10px;
-  background: #3a506b;
-  color: #fff;
+  background: #3A506B;
+  color: var(--color-text-dark);
+  scrollbar-color: #6b7fa0 #2c3e50;
+}
+
+.trackingListContainerDark::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.trackingListContainerDark::-webkit-scrollbar-track {
+  background: #2c3e50;
+  border-radius: 10px;
+}
+
+.trackingListContainerDark::-webkit-scrollbar-thumb {
+  background: #6b7fa0;
+  border-radius: 10px;
+}
+
+.trackingListContainerDark::-webkit-scrollbar-thumb:hover {
+  background: #8a9bc0;
 }
 
 .trackingTable {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
-  overflow-wrap: break-word;
 }
 
 .trackingTable thead th {
   text-align: left;
   padding: 10px;
   background: #f4f4f4;
-}
-
-.sortableHeader {
-  cursor: pointer;
-  user-select: none;
-  white-space: nowrap;
-}
-
-.sortableHeaderContent {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.sortableHeader:hover {
-  background: #e8e8e8;
-}
-
-.trackingTableDark .sortableHeader:hover {
-  background: #253055;
 }
 
 .trackingTableDark thead th {
@@ -384,16 +308,59 @@
   border-bottom: 1px solid #eee;
 }
 
+/* Phone view: with table-layout: fixed each column is ~25% wide, but the
+   nowrap headers ("No-show rate", "Drop-off rate") are wider than that and
+   overflow into the neighbouring columns. Let headers wrap and tighten the
+   cell spacing so the columns fit. */
+@media (width <= 768px) {
+  .sortableHeader {
+    white-space: normal;
+  }
+
+  .sortableHeaderContent {
+    flex-wrap: wrap;
+  }
+
+  .trackingTable thead th,
+  .trackingTable tbody td {
+    padding: 6px 4px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Table row hover states */
+.trackingTable tbody tr:hover {
+  background: #f5f7fa;
+}
+
+.trackingTableDark thead th {
+  background: #1C2541;
+  color: var(--color-text-dark);
+}
+
+.trackingTableDark tbody td {
+  color: var(--color-text-dark);
+  border-bottom: 1px solid var(--color-border-dark);
+}
+
+.trackingTableDark tbody tr:hover {
+  background: #2c3e50;
+}
+
+.trackingTableDark tbody tr:hover td {
+  color: #fff;
+}
+
 .trackingRateGreen {
-  color: green !important;
+  color: green;
   font-weight: bold;
 }
 
 .trackingRateRed {
-  color: red !important;
+  color: red;
 }
 
-/* ---------- Insights Section ---------- */
+/* Insights Section */
 .insightsHeader {
   font-weight: bold;
   color: #444;
@@ -408,20 +375,6 @@
   margin-bottom: 15px;
   display: flex;
   justify-content: space-between;
-}
-
-@media (width <= 1024px) {
-  .insightsHeader {
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .insightsHeaderDark {
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
 }
 
 .insightsHeader h3 {
@@ -442,43 +395,54 @@
   font-size: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
+  background-color: #fff;
+  color: #333;
 }
 
-.insightsFiltersDark {
-  display: flex;
-  gap: 10px;
-  background-color: #1c2541;
+.insightsHeaderDark .insightsFilters select {
+  background-color: #3A506B;
+  color: var(--color-text-dark);
+  border: 1px solid var(--color-border-dark);
 }
 
-.insightsFiltersDark select {
-  background-color: #2d3748;
-  border-color: #4a5568;
-  color: #fff;
+.insightsHeaderDark .insightsFilters select option {
+  background-color: #3A506B;
+  color: var(--color-text-dark);
 }
 
-.insightsFiltersDark select option {
-  background-color: #2d3748;
-  color: #fff;
+.infoIcon {
+  cursor: pointer;
+  color: #6c757d;
+  font-size: 1rem;
+  transition: color 0.2s ease;
 }
 
-.insightsTabs {
-  flex: 1;
-  display: flex;
-  align-items: center;
+.infoIcon:hover {
+  color: #007bff;
+}
+
+.insightsHeaderDark .infoIcon {
+  color: #adb5bd;
+}
+
+.insightsHeaderDark .infoIcon:hover {
+  color: #66b3ff;
+}
+
+.insightsFilters select {
+  margin-left: 10px;
+  padding: 8px;
+  font-size: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
 
-.insightsTabsContainer{
+.insightsTabs {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.icons{
-  cursor: pointer;
-  display: flex;
-  gap: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+  max-width: 60%;
 }
 
 .selectDemographic {
@@ -490,77 +454,64 @@
 .insightsTab {
   flex: 1;
   text-align: center;
-  padding: 6px 12px;
+  padding: 10px 0;
   font-size: 0.9rem;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  background-color: transparent;
-  color: #374151 !important;
-  transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
-}
-
-.insightsTabLight{
   color: #555;
   background-color: #f8f9fa;
-}
-
-.insightsTabDark{
-  color: #f8f9fa;
-  background-color: #1C2541;
-}
-
-.insightsTabDark:hover {
-  background-color: #3A506B;
-}
-
-.insightsTabLight:hover {
-  background-color: #e0e0e0;
-}
-
-.insightsTab:not(:last-child) {
-  border-right: none;
-}
-
-.insightsTab.activeTab {
-  background-color: #fff;
-  color: #111 !important;
-  font-weight: 600;
-  box-shadow: 0 1px 4px rgb(0 0 0 / 15%);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .insightsDark .insightsTab {
-  background-color: transparent;
-  color: #94a3b8 !important;
-  border-right: none;
-}
-
-.insightsDark .insightsTab {
+  color: var(--color-text-dark);
   background-color: #3A506B;
-  color: #fff;
-  border-right: 1px solid #555;
+  border: 1px solid var(--color-border-dark);
 }
 
-.insightsTab:hover:not(.activeTab) {
-  background-color: #e4e4e4;
-}
-
-.insightsDark .insightsTab:hover:not(.activeTabDarkMode) {
-  background-color: rgb(255 255 255 / 8%);
+.insightsDark .insightsTab:not(:last-child) {
+  border-right: 1px solid var(--color-border-dark);
 }
 
 .insightsDark .insightsTab.activeTab {
-  background-color: #e2e8f0;
-  color: #1e293b !important;
-  font-weight: 600;
-  box-shadow: 0 1px 6px rgb(0 0 0 / 50%);
+  background-color: #007bff;
+  color: var(--color-text-dark);
 }
 
-.insightsDark .insightsTab.activeTabDarkMode {
-  background-color: #e2e8f0 !important;
-  color: #1e293b !important;
-  font-weight: 600;
-  box-shadow: 0 1px 6px rgb(0 0 0 / 50%);
+.insightsTab:not(:last-child) {
+  border-right: 1px solid #ccc;
+}
+
+.insightsTabActive {
+  border-radius: 4px;
+  background-color: #0056b3;
+  color: #fff;
+  font-weight: bold;
+}
+
+.insightsTab:hover {
+  background-color: #e0e0e0;
+}
+
+/* Dark mode hover states */
+.insightsDark .insightsTab:hover {
+  background-color: #3b5373;
+  color: #fff;
+}
+
+.navigationCardDark:hover {
+  background: #465d7b;
+}
+
+.case-list-item-dark:hover {
+  background-color: #2b3f59;
+}
+
+.eventsTableDark .tableContainer tr:hover,
+.monthlyTrendsDark .trendsTable tr:hover,
+.eventTypeValuesDark .valueTable tr:hover,
+.eventTypeTrendsDark .trendsTable tr:hover {
+  background: #304663;
 }
 
 .insightsContent {
@@ -608,78 +559,71 @@
   transition: width 0.3s ease-in-out;
 }
 
-.insightsPercentage {
+.insightPercentage {
   font-size: 0.9rem;
-  color: red;
+  font-weight: bold;
+  color: #333;
 }
 
-.insightsPercentageDark {
-    color: #fff;
-  }
-
-.insightsDark .insightsPercentageDark {
-  color: red !important;
+/* Header Section Styles */
+.participationHeader {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgb(0 0 0 / 10%);
 }
 
-.tooltipWrapper {
-  position: relative;
-  display: inline-flex;
+.participationHeaderDark {
+  background: linear-gradient(135deg, #1c2541 0%, #3a506b 100%);
+  color: #fff;
+}
+
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.headerTitle {
+  flex: 1;
+  text-align: left;
+  margin-right: 2rem;
+}
+
+.headerNavigation {
+  flex-shrink: 0;
+  margin-top: 0.5rem;
+  display: flex;
   align-items: center;
 }
 
-.tooltip {
-  position: absolute;
-  bottom: 125%;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 6px 10px;
-  font-size: 12px;
-  background-color: #111;
+.mainTitle {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 0 0 0.5rem;
+  color: white;
+  text-align: left;
+}
+
+.mainTitleDark {
   color: #fff;
-  border-radius: 6px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.15s ease;
-  z-index: 10;
 }
 
-.tooltipWrapper:hover .tooltip {
-  opacity: 1;
+.subtitle {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin: 0;
+  color: white;
+  text-align: left;
 }
 
-.exportOptionsButtons,
-.exportOptionsButtonsDark {
-  flex: 1;
-  padding: 10px 12px;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.exportOptionsButtons{
-  background: transparent;
-  border: 1px solid #ccc;
-  color: #555;
-}
-
-.exportOptionsButtons:hover{
-  color: #555;
-  background-color: #e0e0e0;
-}
-
-.exportOptionsButtonsDark{
-  border: 1px solid #ccc;
-  color: #111;
-}
-
-.exportOptionsButtonsDark:hover {
-  background: #3A506B;
-}
-
-.exportOptionsButtons:disabled,
-.exportOptionsButtonsDark:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.insightsPercentageDark {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: var(--color-text-dark);
 }
 
 /* ---------- PDF/Print helpers ---------- */
@@ -687,13 +631,6 @@
 .pageBreakAfter  { break-after: always; }
 .avoidBreak       { break-inside: avoid; }
 
-:global(html[data-exporting="true"]) .caseCards:global(.expanded),
-:global(html[data-exporting="true"]) .caseList:global(.expanded),
-:global(html[data-exporting="true"]) .trackingListContainer {
-  max-height: none !important;
-  overflow: visible !important;
-  -webkit-overflow-scrolling: auto !important;
-}
 
 /* Dark mode container */
 .insightsTabsDarkMode {
@@ -1007,6 +944,1679 @@
   flex-direction: column;
 }
 
+.navLinks {
+  display: flex;
+  gap: 1rem;
+}
+
+.navLink {
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  background: #5a4a8a;
+  transition: background 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.navLink:hover {
+  background: #4a3a7a;
+  text-decoration: none;
+  color: white;
+}
+
+/* Analytics page backlink styles */
+.analyticsPage .navLink {
+  color: #333;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+}
+
+.analyticsPage .navLink:hover {
+  background: #e9ecef;
+  color: #333;
+}
+
+.analyticsPageDark .navLink {
+  color: #fff;
+  background: #2d3e54;
+  border: 1px solid #5a6b7d;
+}
+
+.analyticsPageDark .navLink:hover {
+  background: #3d4e64;
+  color: #fff;
+}
+
+.metricsSummary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.metricsSummaryDark {
+  background: rgb(255 255 255 / 5%);
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.metricCard {
+  background: rgb(255 255 255 / 10%);
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+
+.metricValue {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+  color: white;
+}
+
+.metricLabel {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  color: white;
+}
+
+/* Engagement Section Styles */
+.engagementSection {
+  margin-bottom: 2rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.sectionTitleDark {
+  color: #fff;
+}
+
+.engagementSectionDark {
+  background-color: #1c2541;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #3a506b;
+}
+
+.engagementCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.engagementCard {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.engagementCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 15%);
+}
+
+.engagementCardDark {
+  background: #3a506b;
+  color: #fff;
+  border: 1px solid #5a6b7d;
+}
+
+.cardIcon {
+  font-size: 2rem;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.cardContent {
+  flex: 1;
+}
+
+.cardValue {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+
+.engagementCardDark .cardValue {
+  color: #fff;
+}
+
+.cardLabel {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+}
+
+.engagementCardDark .cardLabel {
+  color: #fff;
+}
+
+.cardSubtext {
+  font-size: 0.8rem;
+  color: #4b5563;
+}
+
+.engagementCardDark .cardSubtext {
+  color: #e5e7eb;
+}
+
+/* Chart Section Styles */
+.pieChartSection,
+.barChartSection {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+  margin-bottom: 1rem;
+}
+
+.pieChartSectionDark,
+.barChartSectionDark {
+  background: #3a506b;
+  color: #fff;
+  border: 1px solid #5a6b7d;
+}
+
+.chartTitle {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  margin-top: 0;
+  padding-bottom: 0.5rem;
+  color: #333;
+}
+
+.chartTitleDark {
+  color: #fff;
+}
+
+.pieChartContainer {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.pieChart {
+  flex-shrink: 0;
+}
+
+.pieChartLegend {
+  flex: 1;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.legendColor {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+}
+
+.legendText {
+  display: flex;
+  flex-direction: column;
+}
+
+.legendLabel {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.pieChartSectionDark .legendLabel {
+  color: #e5e7eb;
+}
+
+.legendValue {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.pieChartSectionDark .legendValue {
+  color: #e0e2e6;
+}
+
+.chartSummary {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.pieChartSectionDark .chartSummary {
+  border-top-color: #5a6b7d;
+}
+
+.summaryItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.summaryLabel {
+  font-size: 0.8rem;
+  color: #666;
+  font-weight: 600;
+}
+
+.pieChartSectionDark .summaryLabel {
+  color: #e5e7eb;
+}
+
+.summaryValue {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.pieChartSectionDark .summaryValue {
+  color: #fff;
+}
+
+/* Bar Chart Styles */
+.barChartContainer {
+  margin-top: 1rem;
+}
+
+.chartArea {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  margin-top: 2rem;
+  padding-left: 10px;
+}
+
+.yAxis {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  min-width: 80px;
+  position: relative;
+  padding-left: 20px;
+}
+
+.yAxisLabel {
+  font-size: 0.8rem;
+  color: #666;
+  font-weight: 600;
+  transform: rotate(-90deg);
+  white-space: nowrap;
+  position: absolute;
+  left: -60px;
+  top: 50%;
+  transform-origin: center;
+  width: 120px;
+  text-align: center;
+  margin-top: -10px;
+  height: 20px;
+  line-height: 20px;
+}
+
+.barChartSectionDark .yAxisLabel {
+  color: #e5e7eb;
+}
+
+.yAxisValues {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 200px;
+  justify-content: space-between;
+}
+
+.yAxisValue {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.barChartSectionDark .yAxisValue {
+  color: #e5e7eb;
+}
+
+.barsContainer {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  height: 200px;
+  flex: 1;
+}
+
+.barGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.barWrapper {
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+  height: 100%;
+}
+
+.bar {
+  width: 20px;
+  border-radius: 2px 2px 0 0;
+  min-height: 4px;
+}
+
+.attendanceBar {
+  background-color: #2196f3;
+}
+
+.engagementBar {
+  background-color: #4caf50;
+}
+
+.barLabel {
+  font-size: 0.8rem;
+  color: #666;
+  font-weight: 600;
+}
+
+.barChartSectionDark .barLabel {
+  color: #eef0f3;
+}
+
+.barValues {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  text-align: center;
+}
+
+.barValue {
+  font-size: 0.7rem;
+  color: #666;
+}
+
+.barChartSectionDark .barValue {
+  color: #e5e7eb;
+}
+
+.chartLegend {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.barChartSectionDark .chartLegend {
+  border-top-color: #5a6b7d;
+}
+
+.chartInsights {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.barChartSectionDark .chartInsights {
+  border-top-color: #5a6b7d;
+}
+
+/* .insightItem and .insightLabel are defined earlier in the file */
+
+.barChartSectionDark .insightLabel {
+  color: #e5e7eb;
+}
+
+.insightValue {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.barChartSectionDark .insightValue {
+  color: #fff;
+}
+
+/* Analytics Navigation Styles */
+.analyticsNavigation {
+  margin-top: 2rem;
+}
+
+.analyticsNavigationDark {
+  background-color: #1c2541;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #3a506b;
+}
+
+.sectionSubtitle {
+  color: #666;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
+.analyticsNavigationDark .sectionSubtitle {
+  color: #e5e7eb;
+}
+
+.navigationGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.navigationCard {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #eee;
+}
+
+.navigationCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 15%);
+  text-decoration: none;
+  color: inherit;
+}
+
+.navigationCardDark {
+  background: #3a506b;
+  color: #fff;
+  border-color: #5a6b7d;
+}
+
+.navigationCard .cardIcon {
+  font-size: 2rem;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.navigationCardDark .cardIcon {
+  background: #5a6b7d;
+}
+
+.navigationCard .cardContent {
+  flex: 1;
+}
+
+.navigationCard .cardTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.navigationCardDark .cardTitle {
+  color: #fff;
+}
+
+.navigationCard .cardDescription {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.navigationCardDark .cardDescription {
+  color: #e5e7eb;
+}
+
+.navigationCard .cardStats {
+  font-size: 0.8rem;
+  color: #888;
+  font-weight: 600;
+}
+
+.navigationCardDark .cardStats {
+  color: #d1d5db;
+}
+
+.navigationCard .cardArrow {
+  font-size: 1.2rem;
+  color: #666;
+  font-weight: bold;
+}
+
+.navigationCardDark .cardArrow {
+  color: #e5e7eb;
+}
+
+/* Charts Section Styles */
+.chartsSection {
+  margin-bottom: 2rem;
+}
+
+.chartsRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (width <= 768px) {
+  .chartsRow {
+    grid-template-columns: 1fr;
+  }
+
+  .headerContent {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .headerNavigation {
+    width: 100%;
+  }
+
+  .navLinks {
+    flex-wrap: wrap;
+  }
+
+  .metricsSummary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .engagementCards {
+    grid-template-columns: 1fr;
+  }
+
+  .navigationGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Analytics Pages Styles */
+.analyticsPage {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.analyticsPageDark {
+  background-color: #1b2a41;
+  color: #fff;
+  min-height: 100vh;
+  max-width: none !important;
+  width: 100vw !important;
+  margin: 0 !important;
+  padding: 2rem;
+  box-sizing: border-box;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw !important;
+  margin-right: -50vw !important;
+}
+
+.analyticsPageDark .pageHeader {
+  text-align: center;
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+}
+
+.analyticsPageDark .comparisonCards,
+.analyticsPageDark .valueSummaryCards,
+.analyticsPageDark .trendsSummaryCards,
+.analyticsPageDark .performanceSummaryCards {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+}
+
+.analyticsPageDark .comparisonTable,
+.analyticsPageDark .eventTypeValues,
+.analyticsPageDark .monthlyTrends,
+.analyticsPageDark .eventTypeTrends,
+.analyticsPageDark .eventsTable,
+.analyticsPageDark .valueTrends,
+.analyticsPageDark .insightsSection,
+.analyticsPageDark .valueInsights,
+.analyticsPageDark .trendInsights,
+.analyticsPageDark .performanceInsights {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+}
+
+.pageHeader {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.pageTitle {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.pageTitleDark {
+  color: #fff;
+}
+
+.pageSubtitle {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.pageSubtitleDark {
+  color: #e5e7eb;
+}
+
+.timeframeSelector,
+.metricSelector,
+.periodSelector,
+.filterSelector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.timeframeSelector label,
+.metricSelector label,
+.periodSelector label,
+.filterSelector label {
+  font-weight: 600;
+  color: #333;
+}
+
+.analyticsPageDark .timeframeSelector label,
+.analyticsPageDark .metricSelector label,
+.analyticsPageDark .periodSelector label,
+.analyticsPageDark .filterSelector label {
+  color: #fff;
+}
+
+.timeframeSelect,
+.metricSelect,
+.periodSelect,
+.filterSelect {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: white;
+  font-size: 0.9rem;
+}
+
+.analyticsPageDark .timeframeSelect,
+.analyticsPageDark .metricSelect,
+.analyticsPageDark .periodSelect,
+.analyticsPageDark .filterSelect {
+  background: #3a506b;
+  border-color: #5a6b7d;
+  color: #fff;
+}
+
+/* Comparison Cards */
+.comparisonCards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.comparisonCard {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+  border: 2px solid transparent;
+}
+
+.virtualCard {
+  border-color: #2196f3;
+}
+
+.virtualCardDark {
+  background: #3a506b;
+  color: #fff;
+  border-color: #2196f3;
+}
+
+.inPersonCard {
+  border-color: #4caf50;
+}
+
+.inPersonCardDark {
+  background: #3a506b;
+  color: #fff;
+  border-color: #4caf50;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.cardHeader .cardIcon {
+  font-size: 2rem;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+  border-radius: 10px;
+}
+
+.virtualCardDark .cardHeader .cardIcon,
+.inPersonCardDark .cardHeader .cardIcon {
+  background: #5a6b7d;
+}
+
+.cardHeader h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0;
+  color: #333;
+}
+
+.virtualCardDark .cardHeader h3,
+.inPersonCardDark .cardHeader h3 {
+  color: #fff;
+}
+
+.cardStats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.statValue {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+
+.virtualCardDark .statValue,
+.inPersonCardDark .statValue {
+  color: #fff;
+}
+
+.statLabel {
+  font-size: 0.8rem;
+  color: #666;
+  font-weight: 600;
+}
+
+.virtualCardDark .statLabel,
+.inPersonCardDark .statLabel {
+  color: #e5e7eb;
+}
+
+.topEvent {
+  font-size: 0.9rem;
+  color: #666;
+  text-align: center;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.virtualCardDark .topEvent,
+.inPersonCardDark .topEvent {
+  color: #e5e7eb;
+  border-top-color: #5a6b7d;
+}
+
+/* Ensure Top Event label is readable in dark mode */
+.virtualCardDark .topEvent strong,
+.inPersonCardDark .topEvent strong {
+  color: #fff;
+}
+
+/* Comparison Table */
+.comparisonTable {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+  margin-bottom: 2rem;
+}
+
+.comparisonTableDark {
+  background: #3a506b;
+  color: #fff;
+  border: 1px solid #5a6b7d;
+}
+
+/* Hover styles for comparison table */
+.comparisonTable table tbody tr:hover {
+  background: #f5f7fa;
+}
+
+.comparisonTableDark table tbody tr:hover {
+  background: #304663;
+  color: #fff;
+}
+
+.comparisonTableDark table tbody tr:hover td {
+  color: #fff;
+}
+
+.comparisonTable h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.comparisonTableDark h3 {
+  color: #fff;
+}
+
+.comparisonTable table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.comparisonTable th,
+.comparisonTable td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.comparisonTableDark th,
+.comparisonTableDark td {
+  border-bottom-color: #5a6b7d;
+}
+
+.comparisonTable th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+}
+
+.comparisonTableDark th {
+  background: #5a6b7d;
+  color: #fff;
+}
+
+.metricName {
+  font-weight: 600;
+  color: #333;
+}
+
+.comparisonTableDark .metricName {
+  color: #fff;
+}
+
+.virtualValue {
+  color: #2196f3;
+  font-weight: 600;
+}
+
+.inPersonValue {
+  color: #4caf50;
+  font-weight: 600;
+}
+
+.winner {
+  font-weight: 600;
+}
+
+/* Value Summary Cards */
+.valueSummaryCards,
+.trendsSummaryCards,
+.performanceSummaryCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.valueCard,
+.trendCard,
+.performanceCard {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.valueCard:hover,
+.trendCard:hover,
+.performanceCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 15%);
+}
+
+.valueCardDark,
+.trendCardDark,
+.performanceCardDark {
+  background: #3a506b;
+  color: #fff;
+  border: 1px solid #5a6b7d;
+}
+
+/* Ensure strong contrast for summary numbers and labels in dark mode */
+.trendCardDark .cardValue,
+.trendCardDark .cardLabel,
+.trendCardDark .cardSubtext,
+.valueCardDark .cardValue,
+.valueCardDark .cardLabel,
+.valueCardDark .cardSubtext,
+.performanceCardDark .cardValue,
+.performanceCardDark .cardLabel,
+.performanceCardDark .cardSubtext {
+  color: #fff;
+}
+
+/* Event Type Values Table */
+.eventTypeValues,
+.monthlyTrends,
+.eventTypeTrends,
+.eventsTable {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+  margin-bottom: 2rem;
+}
+
+.eventTypeValuesDark,
+.monthlyTrendsDark,
+.eventTypeTrendsDark,
+.eventsTableDark {
+  background: #3a506b;
+  color: #fff;
+  border: 1px solid #5a6b7d;
+}
+
+/* Improve contrast for monthly trends chart in dark mode */
+.monthlyTrendsDark .yAxisLabel,
+.monthlyTrendsDark .yAxisValue,
+.monthlyTrendsDark .barLabel,
+.valueTrendsDark .yAxisLabel,
+.valueTrendsDark .yAxisValue,
+.valueTrendsDark .barLabel {
+  color: #e5e7eb;
+}
+
+.eventTypeValues h3,
+.monthlyTrends h3,
+.eventTypeTrends h3,
+.eventsTable h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  margin-top: 0;
+  padding-bottom: 0.5rem;
+  color: #333;
+}
+
+.eventTypeValuesDark h3,
+.monthlyTrendsDark h3,
+.eventTypeTrendsDark h3,
+.eventsTableDark h3 {
+  color: #fff;
+}
+
+.valueTable,
+.trendsTable,
+.tableContainer {
+  overflow-x: auto;
+}
+
+.valueTable table,
+.trendsTable table,
+.tableContainer table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.valueTable th,
+.valueTable td,
+.trendsTable th,
+.trendsTable td,
+.tableContainer th,
+.tableContainer td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.eventTypeValuesDark .valueTable th,
+.eventTypeValuesDark .valueTable td,
+.monthlyTrendsDark .trendsTable th,
+.monthlyTrendsDark .trendsTable td,
+.eventTypeTrendsDark .trendsTable th,
+.eventTypeTrendsDark .trendsTable td,
+.eventsTableDark .tableContainer th,
+.eventsTableDark .tableContainer td {
+  border-bottom-color: #5a6b7d;
+}
+
+.valueTable th,
+.trendsTable th,
+.tableContainer th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+}
+
+.eventTypeValuesDark .valueTable th,
+.monthlyTrendsDark .trendsTable th,
+.eventTypeTrendsDark .trendsTable th,
+.eventsTableDark .tableContainer th {
+  background: #5a6b7d;
+  color: #fff;
+}
+
+.eventType {
+  font-weight: 600;
+  color: #333;
+}
+
+.eventTypeValuesDark .eventType,
+.monthlyTrendsDark .eventType,
+.eventTypeTrendsDark .eventType,
+.eventsTableDark .eventType {
+  color: #fff;
+}
+
+.value {
+  color: #4caf50;
+  font-weight: 600;
+}
+
+.participants {
+  color: #2196f3;
+  font-weight: 600;
+}
+
+.costPerPerson {
+  color: #ff9800;
+  font-weight: 600;
+}
+
+.roi {
+  color: #9c27b0;
+  font-weight: 600;
+}
+
+.growth {
+  color: #4caf50;
+  font-weight: 600;
+}
+
+.trend {
+  font-weight: 600;
+}
+
+.statusGood {
+  color: #4caf50;
+  font-weight: 600;
+}
+
+.statusNeutral {
+  color: #ff9800;
+  font-weight: 600;
+}
+
+.statusWarning {
+  color: #f44336;
+  font-weight: 600;
+}
+
+/* Value Trends Chart */
+.valueTrends {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+  margin-bottom: 2rem;
+}
+
+.valueTrendsDark {
+  background: #3a506b;
+  color: #fff;
+  border: 1px solid #5a6b7d;
+}
+
+.valueTrends h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  margin-top: 0;
+  padding-bottom: 0.5rem;
+  color: #333;
+}
+
+.valueTrendsDark h3 {
+  color: #fff;
+}
+
+.trendsChart {
+  margin-top: 1rem;
+  padding-left: 10px;
+}
+
+.trendBarGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.trendBar {
+  width: 30px;
+  border-radius: 2px 2px 0 0;
+  min-height: 4px;
+}
+
+/* .barValue is defined earlier in the file */
+
+.valueTrendsDark .barValue,
+.monthlyTrendsDark .barValue {
+  color: #e5e7eb;
+}
+
+.barEvents {
+  font-size: 0.7rem;
+  color: #888;
+}
+
+.valueTrendsDark .barEvents,
+.monthlyTrendsDark .barEvents {
+  color: #d1d5db;
+}
+
+.barGrowth {
+  font-size: 0.7rem;
+  color: #4caf50;
+  font-weight: 600;
+}
+
+/* Event Performance Table */
+.eventName {
+  font-weight: 600;
+  color: #333;
+}
+
+.eventsTableDark .eventName {
+  color: #fff;
+}
+
+.eventDate {
+  color: #666;
+}
+
+.eventsTableDark .eventDate {
+  color: #e5e7eb;
+}
+
+.attendance {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.attendanceBarContainer {
+  width: 60px;
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.eventsTableDark .attendanceBarContainer {
+  background: #5a6b7d;
+}
+
+.attendanceFill {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.rating {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ratingValue {
+  font-weight: 600;
+  color: #333;
+}
+
+.eventsTableDark .ratingValue {
+  color: #fff;
+}
+
+.ratingStars {
+  color: #ffd700;
+  font-size: 0.8rem;
+}
+
+.engagement {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.engagementBarContainer {
+  width: 60px;
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.eventsTableDark .engagementBar {
+  background: #5a6b7d;
+}
+
+.engagementFill {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.statusBadge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.statusCompleted {
+  background: #2e7d32;
+  color: white;
+}
+
+.statusUpcoming {
+  background: #1565c0;
+  color: white;
+}
+
+/* Insights Sections */
+.insightsSection,
+.valueInsights,
+.trendInsights,
+.performanceInsights {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+  margin-bottom: 2rem;
+}
+
+.insightsSectionDark,
+.valueInsightsDark,
+.trendInsightsDark,
+.performanceInsightsDark {
+  background: #3a506b;
+  color: #fff;
+  border: 1px solid #5a6b7d;
+}
+
+.insightsSection h3,
+.valueInsights h3,
+.trendInsights h3,
+.performanceInsights h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.insightsSectionDark h3,
+.valueInsightsDark h3,
+.trendInsightsDark h3,
+.performanceInsightsDark h3 {
+  color: #fff;
+}
+
+.insightsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.insightsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.insightCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #2196f3;
+}
+
+.insightsSectionDark .insightItem,
+.insightsDark .insightItem,
+.barChartSectionDark .insightItem {
+  background: #304663;
+  border-left-color: #2196f3;
+  color: #e5e7eb;
+}
+
+.insightsDark .insightItem *,
+.barChartSectionDark .insightItem * {
+  color: #e5e7eb;
+}
+
+.insightIcon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.valueInsightsDark .insightCard,
+.trendInsightsDark .insightCard,
+.performanceInsightsDark .insightCard {
+  background: #5a6b7d;
+  border-left-color: #4caf50;
+}
+
+.insightCard .insightIcon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.insightContent h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.valueInsightsDark .insightContent h4,
+.trendInsightsDark .insightContent h4,
+.performanceInsightsDark .insightContent h4 {
+  color: #fff;
+}
+
+.insightContent p {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.valueInsightsDark .insightContent p,
+.trendInsightsDark .insightContent p,
+.performanceInsightsDark .insightContent p {
+  color: #e5e7eb;
+}
+
+/* Comprehensive dark mode text contrast fixes */
+.participationLandingPageDark .cardLabel,
+.participationLandingPageDark .cardSubtext,
+.participationLandingPageDark .summaryLabel,
+.participationLandingPageDark .summaryValue,
+.participationLandingPageDark .legendLabel,
+.participationLandingPageDark .legendValue,
+.participationLandingPageDark .yAxisLabel,
+.participationLandingPageDark .yAxisValue,
+.participationLandingPageDark .barLabel,
+.participationLandingPageDark .barValue,
+.participationLandingPageDark .insightLabel,
+.participationLandingPageDark .insightValue,
+.participationLandingPageDark .sectionSubtitle,
+.participationLandingPageDark .cardDescription,
+.participationLandingPageDark .cardStats,
+.participationLandingPageDark .cardArrow {
+  color: #e5e7eb !important;
+}
+
+/* Force white text for all dark mode card content */
+.participationLandingPageDark .cardValue,
+.participationLandingPageDark .cardLabel,
+.participationLandingPageDark .cardSubtext {
+  color: #fff !important;
+}
+
+/* Responsive Design */
+@media (width <= 768px) {
+  .analyticsPage {
+    padding: 1rem;
+  }
+
+  .comparisonCards {
+    grid-template-columns: 1fr;
+  }
+
+  .valueSummaryCards,
+  .trendsSummaryCards,
+  .performanceSummaryCards {
+    grid-template-columns: 1fr;
+  }
+
+  .insightsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .cardStats {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== Merged from PR #4602 branch (harshavarma-landing-page) ===== */
+
+/* ---------- Save as PDF button ---------- */
+.savePdfBtn {
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.savePdfBtnLight {
+  background: #f5f5f5;
+  color: #333;
+  border: 1px solid #ccc;
+}
+
+.savePdfBtnLight:hover {
+  background: #e8e8e8;
+  transform: translateY(-1px);
+}
+
+.savePdfBtnDark {
+  background: #333;
+  color: #f5f5f5;
+  border: 1px solid #666;
+}
+
+.savePdfBtnDark:hover {
+  background: #444;
+  transform: translateY(-1px);
+}
+
+.trackingFiltersDark {
+  display: flex;
+  gap: 10px;
+  background-color: #1c2541;
+}
+
+.trackingFiltersDark select {
+  background-color: #2d3748;
+  border-color: #4a5568;
+  color: #fff;
+}
+
+.trackingFiltersDark select option {
+  background-color: #2d3748;
+  color: #fff;
+}
+
+.insightsFiltersDark {
+  display: flex;
+  gap: 10px;
+  background-color: #1c2541;
+}
+
+.insightsFiltersDark select {
+  background-color: #2d3748;
+  border-color: #4a5568;
+  color: #fff;
+}
+
+.insightsFiltersDark select option {
+  background-color: #2d3748;
+  color: #fff;
+}
+
+.insightsTabsContainer{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.icons{
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+}
+
+.insightsTabLight{
+  color: #555;
+  background-color: #f8f9fa;
+}
+
+.insightsTabDark{
+  color: #f8f9fa;
+  background-color: #1C2541;
+}
+
+.insightsTabDark:hover {
+  background-color: #3A506B;
+}
+
+.insightsTabLight:hover {
+  background-color: #e0e0e0;
+}
+
+.insightsPercentage {
+  font-size: 0.9rem;
+  color: red;
+}
+
+.tooltipWrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 10px;
+  font-size: 12px;
+  background-color: #111;
+  color: #fff;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  z-index: 10;
+}
+
+.tooltipWrapper:hover .tooltip {
+  opacity: 1;
+}
+
+.exportOptionsButtons,
+.exportOptionsButtonsDark {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.exportOptionsButtons{
+  background: transparent;
+  border: 1px solid #ccc;
+  color: #555;
+}
+
+.exportOptionsButtons:hover{
+  color: #555;
+  background-color: #e0e0e0;
+}
+
+.exportOptionsButtonsDark{
+  border: 1px solid #ccc;
+  color: #111;
+}
+
+.exportOptionsButtonsDark:hover {
+  background: #3A506B;
+}
+
+.exportOptionsButtons:disabled,
+.exportOptionsButtonsDark:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .modalContentDark {
   background: #1C2541;
   color: #fff;
@@ -1075,35 +2685,4 @@
 .sendEmailBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-
-/* ===== Dark mode fixes ===== */
-
-.participationLandingPageDark :global(button) {
-  color: #fff !important;
-}
-
-.participationLandingPageDark :global(.btn),
-.participationLandingPageDark :global(.btn-light),
-.participationLandingPageDark :global(.btn-outline-secondary) {
-  color: #fff !important;
-  background-color: #3a506b !important;
-  border-color: #3a506b !important;
-}
-
-.participationLandingPageDark :global(.btn-primary),
-.participationLandingPageDark :global(.active) {
-  color: #fff !important;
-}
-
-.trackingContainerDark .trackingFilters select {
-  background-color: #3A506B;
-  color: #fff;
-  border: 1px solid #3A506B;
-}
-
-.insightsDark .insightsFilters select {
-  background-color: #3A506B;
-  color: #fff;
-  border: 1px solid #3A506B;
 }

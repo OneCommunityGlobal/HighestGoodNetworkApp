@@ -2,7 +2,7 @@ import React from 'react';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import {
   authMock,
   userProfileMock,
@@ -42,7 +42,7 @@ vi.mock('axios', async () => {
   };
 });
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 describe('<TimeEntryForm edit/>', () => {
   const data = timeEntryMock.weeks[0][0];

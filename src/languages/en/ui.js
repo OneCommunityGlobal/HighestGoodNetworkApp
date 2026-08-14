@@ -113,6 +113,7 @@ export const KI_REPORTS = 'Reports';
 export const FOOD_BARS = 'Food Bars';
 
 export const SEND_EMAILS = 'Send Emails';
+export const SCHEDULE_MEETINGS = 'Schedule Meeting';
 export const BLUE_SQUARE_EMAIL_MANAGEMENT = 'Blue Square Email Management';
 
  
