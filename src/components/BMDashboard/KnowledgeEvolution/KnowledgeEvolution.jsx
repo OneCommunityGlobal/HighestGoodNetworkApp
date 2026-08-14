@@ -73,9 +73,56 @@ const KnowledgeEvolution = () => {
   const totalInProgress = allAtoms.filter(a => a.atomStatus === 'in_progress').length;
   const totalNotStarted = allAtoms.filter(a => a.atomStatus === 'not_started').length;
   const savedInterest = 2;
-  const tooltipRef = useRef(null);
   const [tooltipData, setTooltipData] = useState(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+
+  // Visibility is driven entirely by tooltipData (see the style prop below) rather than
+  // an imperative ref mutation, and position is always set in the SAME handler call that
+  // reveals the tooltip -- both land in one React commit, so there's never a frame where
+  // it's visible with stale/default position (which showed up as a brief empty box flash
+  // at a wrong location whenever a node was first entered/focused).
+  //
+  // Defined before the D3 draw effect so it can attach these as node-level listeners
+  // (only actual chart nodes should trigger the tooltip, not clicks/hovers on empty
+  // space elsewhere in the chart area).
+  const handleChartMouseEnter = e => {
+    const subjectData = data?.knowledgeEvolution?.find(s => s._id === selectedSubject);
+    if (!subjectData) return;
+    const atoms = subjectData.atoms || [];
+    const completed = atoms.filter(a => a.atomStatus === 'completed').length;
+    const inProgress = atoms.filter(a => a.atomStatus === 'in_progress').length;
+    const notStarted = atoms.filter(a => a.atomStatus === 'not_started').length;
+
+    const target = e?.currentTarget;
+    if (target?.getBoundingClientRect) {
+      const rect = target.getBoundingClientRect();
+      setTooltipPos({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
+    }
+
+    setTooltipData({
+      subject: subjectData.subjectName,
+      completed,
+      inProgress,
+      notStarted,
+    });
+  };
+
+  const handleChartMouseLeave = () => {
+    setTooltipData(null);
+  };
+
+  const handleChartMouseMove = e => {
+    setTooltipPos({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleChartKeyDown = e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleChartMouseEnter(e);
+    } else if (e.key === 'Escape') {
+      handleChartMouseLeave();
+    }
+  };
 
   useEffect(() => {
     if (!data || !selectedSubject) return;
@@ -88,6 +135,11 @@ const KnowledgeEvolution = () => {
       atom =>
         !searchTerm || subjectNameMatches || atom.atomName?.toLowerCase().includes(searchTerm),
     );
+
+    // Redrawing wipes whatever node is currently being hovered without ever firing its
+    // mouseleave/blur (D3 removes it directly, the cursor never actually "leaves" it), so
+    // any active tooltip would otherwise be stuck showing stale content in a stale position.
+    handleChartMouseLeave();
 
     const width = 700;
     const height = 500;
@@ -162,11 +214,28 @@ const KnowledgeEvolution = () => {
       .attr('stroke-dasharray', d => (d.status === 'not_started' ? '6,4' : '0'))
       .attr('opacity', 0.95);
 
-    svg
+    // Circle + label are grouped together with hover/focus listeners on the *group*, not
+    // the circle alone -- otherwise moving the cursor from the circle onto its own label
+    // text (a separate sibling element) fires a real mouseleave+mouseenter pair and the
+    // tooltip flickers/disappears while hovering the node's own text.
+    const nodeGroups = svg
       .append('g')
-      .selectAll('circle')
+      .selectAll('g.chartNode')
       .data(allNodes)
       .enter()
+      .append('g')
+      .attr('class', 'chartNode')
+      .attr('tabindex', 0)
+      .style('cursor', 'pointer')
+      .style('outline', 'none')
+      .on('mouseenter', handleChartMouseEnter)
+      .on('mouseleave', handleChartMouseLeave)
+      .on('mousemove', handleChartMouseMove)
+      .on('focus', handleChartMouseEnter)
+      .on('blur', handleChartMouseLeave)
+      .on('keydown', handleChartKeyDown);
+
+    nodeGroups
       .append('circle')
       .attr('cx', d => d.x)
       .attr('cy', d => d.y)
@@ -180,17 +249,14 @@ const KnowledgeEvolution = () => {
       .attr('stroke', d => (d.type === 'subject' ? '#8b5a00' : darkerMap[d.status]))
       .attr('stroke-width', d => (d.type === 'subject' ? 4 : 3));
 
-    svg
-      .append('g')
-      .selectAll('text')
-      .data(allNodes)
-      .enter()
+    nodeGroups
       .append('text')
       .attr('x', d => d.x)
       .attr('y', d => d.y)
       .attr('text-anchor', 'middle')
       .attr('font-size', d => (d.type === 'subject' ? 18 : 12))
       .attr('fill', darkMode ? '#ffffff' : '#222')
+      .style('pointer-events', 'none')
       .each(function(d) {
         const node = d3.select(this);
         const words = (d.type === 'subject' ? d.id : d.name || '').split(' ');
@@ -209,39 +275,6 @@ const KnowledgeEvolution = () => {
   if (loading) return <div>Loading Knowledge Evolution...</div>;
   if (error) return <div>Failed to load knowledge evolution data. Please try again later.</div>;
   if (!data) return <div>No knowledge evolution data available.</div>;
-  const handleChartMouseEnter = () => {
-    const subjectData = data?.knowledgeEvolution?.find(s => s._id === selectedSubject);
-    if (!subjectData) return;
-    const atoms = subjectData.atoms || [];
-    const completed = atoms.filter(a => a.atomStatus === 'completed').length;
-    const inProgress = atoms.filter(a => a.atomStatus === 'in_progress').length;
-    const notStarted = atoms.filter(a => a.atomStatus === 'not_started').length;
-
-    setTooltipData({
-      subject: subjectData.subjectName,
-      completed,
-      inProgress,
-      notStarted,
-    });
-    if (tooltipRef.current) tooltipRef.current.style.visibility = 'visible';
-  };
-
-  const handleChartMouseLeave = () => {
-    setTooltipData(null);
-    if (tooltipRef.current) tooltipRef.current.style.visibility = 'hidden';
-  };
-
-  const handleChartMouseMove = e => {
-    setTooltipPos({ x: e.clientX, y: e.clientY });
-  };
-
-  const handleChartKeyDown = e => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      handleChartMouseEnter();
-    } else if (e.key === 'Escape') {
-      handleChartMouseLeave();
-    }
-  };
 
   return (
     <div className={`${darkMode ? styles.pageContainerDarkMode : ''}`}>
@@ -271,7 +304,7 @@ const KnowledgeEvolution = () => {
               </div>
 
               <div className={`${styles.statBox}`}>
-                <h3>{savedInterest}</h3>
+                <h3 className={`${styles.savedInterestText}`}>{savedInterest}</h3>
                 <p>Saved Interest</p>
               </div>
             </div>
@@ -338,9 +371,12 @@ const KnowledgeEvolution = () => {
         ) : (
           <>
             <div
-              ref={tooltipRef}
               className={`${styles.subjectTooltipTop}`}
-              style={tooltipData ? { top: tooltipPos.y - 130, left: tooltipPos.x } : {}}
+              style={
+                tooltipData
+                  ? { top: tooltipPos.y - 130, left: tooltipPos.x, visibility: 'visible' }
+                  : { visibility: 'hidden' }
+              }
               aria-hidden={!tooltipData}
             >
               {tooltipData ? (
@@ -366,19 +402,11 @@ const KnowledgeEvolution = () => {
               ) : null}
             </div>
 
-            {/* D3 CHART with subject-level hover */}
-            <button
-              type="button"
-              className={`${styles.chartWrapper}`}
-              onMouseEnter={handleChartMouseEnter}
-              onMouseLeave={handleChartMouseLeave}
-              onMouseMove={handleChartMouseMove}
-              onFocus={handleChartMouseEnter}
-              onBlur={handleChartMouseLeave}
-              onKeyDown={handleChartKeyDown}
-            >
+            {/* D3 CHART — tooltip is triggered per-node (see the draw effect), not on the
+                whole wrapper, so hovering/clicking empty chart space no longer shows it. */}
+            <div className={`${styles.chartWrapper}`}>
               <svg ref={svgRef} width={700} height={500} />
-            </button>
+            </div>
 
             {/* Legend placed below chart */}
             <div className={`${styles.subjectTooltipBottomLegend}`}>

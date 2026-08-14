@@ -431,3 +431,13 @@
 .pageContainerDarkMode .statBox .notStartedText {
   color: #adb5bd !important;
 }
+
+.savedInterestText {
+  color: #007bff;
+  font-weight: 600;
+}
+
+.pageContainerDarkMode .savedInterestText,
+.pageContainerDarkMode .statBox .savedInterestText {
+  color: #4dabf7 !important;
+}
