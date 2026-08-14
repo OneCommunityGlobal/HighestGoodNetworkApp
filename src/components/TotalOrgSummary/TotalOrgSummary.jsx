@@ -48,12 +48,23 @@ import VolunteerStatus from './VolunteerStatus/VolunteerStatus';
 import VolunteerStatusChart from './VolunteerStatus/VolunteerStatusChart';
 import VolunteerTrendsLineChart from './VolunteerTrendsLineChart/VolunteerTrendsLineChart';
 
+/*
+  BUG FIX: these two functions previously subtracted an EXTRA 7 days
+  (`daysToSubtract - 7` / `daysToAdd` computed the same way), which meant the
+  module-level `fromDate`/`toDate` constants actually described LAST week's
+  Sunday-Saturday range, not the current week. Since those same constants
+  were wired up to the "Current Week" dropdown option, clicking "Current
+  Week" never actually fetched the current week - it fetched last week. And
+  "Previous Week" (which shifts fromDate/toDate back another 7 days via
+  getPreviousWeekDates) was actually fetching the week before last.
+
+  These now correctly compute the CURRENT week's Sunday-Saturday range.
+*/
 function calculateStartDate() {
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
   const dayOfWeek = currentDate.getDay();
-  const daysToSubtract = dayOfWeek === 0 ? 0 : dayOfWeek;
-  currentDate.setDate(currentDate.getDate() - daysToSubtract - 7);
+  currentDate.setDate(currentDate.getDate() - dayOfWeek);
   return currentDate.toISOString().split('T')[0];
 }
 
@@ -61,8 +72,7 @@ function calculateEndDate() {
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
   const dayOfWeek = currentDate.getDay();
-  const daysToAdd = dayOfWeek === 6 ? 0 : -1 - dayOfWeek;
-  currentDate.setDate(currentDate.getDate() + daysToAdd);
+  currentDate.setDate(currentDate.getDate() + (6 - dayOfWeek));
   return currentDate.toISOString().split('T')[0];
 }
 
@@ -471,8 +481,22 @@ function TotalOrgSummary(props) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [currentFromDate, setCurrentFromDate] = useState(fromDate);
-  const [currentToDate, setCurrentToDate] = useState(toDate);
+  /*
+    BUG FIX: fromDate/toDate now correctly represent the CURRENT week (see
+    calculateStartDate/calculateEndDate above). Since the default label here
+    is 'Previous Week', the initial currentFromDate/currentToDate must be
+    computed via getPreviousWeekDates(fromDate, toDate) - matching what the
+    "Previous Week" dropdown option itself computes - rather than reusing
+    fromDate/toDate directly, which would (after the fix above) describe the
+    CURRENT week instead and mismatch the 'Previous Week' label on first
+    render.
+  */
+  const [currentFromDate, setCurrentFromDate] = useState(
+    () => getPreviousWeekDates(fromDate, toDate).start,
+  );
+  const [currentToDate, setCurrentToDate] = useState(
+    () => getPreviousWeekDates(fromDate, toDate).end,
+  );
   const rootRef = useRef(null);
   const cacheRef = useRef({});
 
@@ -601,6 +625,13 @@ function TotalOrgSummary(props) {
       )}
     >
       <div ref={rootRef} data-pdf-root>
+        {/*
+          NOTE: The header Row and the date-range Modal used to also be written out
+          inline here (duplicating ReportHeader / DateRangeModal below), which caused
+          "Total Org Summary" + the dropdowns + Save as PDF button to render twice on
+          the page. That inline JSX has been removed — ReportHeader and DateRangeModal
+          are the single source of truth for this UI now.
+        */}
         <ReportHeader
           darkMode={darkMode}
           selectedDateRange={selectedDateRange}
@@ -671,6 +702,7 @@ function TotalOrgSummary(props) {
                 <GlobalVolunteerMap
                   isLoading={isLoading}
                   locations={volunteerStats?.userLocations}
+                  darkMode={darkMode}
                 />
               </div>
             </Col>
@@ -906,6 +938,7 @@ function TotalOrgSummary(props) {
                   usersInTeamStats={volunteerStats?.usersInTeamStats}
                   endDate={currentToDate}
                   comparisonType={selectedComparison}
+                  darkMode={darkMode}
                 />
               </div>
             </Col>
