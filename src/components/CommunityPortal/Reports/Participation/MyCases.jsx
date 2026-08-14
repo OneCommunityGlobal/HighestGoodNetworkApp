@@ -1,17 +1,24 @@
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styles from './MyCases.module.css';
-import mockEvents from './mockData';
 import CreateEventModal from './CreateEventModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import { filterEventsByDate } from './FilterByDate';
+import { fetchEventDetails } from '../../../../actions/communityPortal/EventActivityActions';
+import { constructQueryParams, transformEvents } from './HelperFunctions';
+import { EventsCalendar } from './EventsCalendar';
 
 function MyCases() {
   const [view, setView] = useState('card');
   const [filter, setFilter] = useState('All Time');
   const [expanded, setExpanded] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [eventsData, setEventsData] = useState([]);
+
+  const fetchEventState = useSelector(state => state.fetchEvent);
+  const dispatch = useDispatch();
+  const token = localStorage.getItem('token');
 
   const isExporting =
     typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true';
@@ -20,7 +27,7 @@ function MyCases() {
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const filteredEvents = filterEventsByDate(mockEvents, filter).filter(
+  const filteredEvents = filterEventsByDate(eventsData, filter).filter(
     event => new Date(event.eventDate).getTime() >= now.getTime(),
   );
 
@@ -32,14 +39,53 @@ function MyCases() {
 
   const placeholderAvatar = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 
+  // Bridges the backend event shape (from transformEvents: _id, type, title,
+  // resources, startTime/endTime/date) onto the field names the rendering and
+  // filterEventsByDate/isEventToday logic below expect (id, eventType,
+  // eventName, eventTime, eventDate, attendees).
+  const adaptEventForDisplay = event => ({
+    ...event,
+    id: event._id,
+    eventType: event.type,
+    eventName: event.title,
+    eventTime: event.date,
+    eventDate: event.startTime,
+    attendees: Array.isArray(event.resources) ? event.resources.length : 0,
+  });
+
+  const fetchEvents = () => {
+    const params = expanded ? {} : { limit: 16 };
+    const queryParams = constructQueryParams(params);
+    dispatch(fetchEventDetails(token, queryParams));
+  };
+
+  // Fetch events from the backend; re-fetch without a limit once expanded ("More").
+  useEffect(() => {
+    if (!fetchEventState.loading) {
+      if (fetchEventState.data === null && fetchEventState.error === null) {
+        fetchEvents();
+      } else if (fetchEventState.data?.events) {
+        setEventsData(transformEvents(fetchEventState.data.events).map(adaptEventForDisplay));
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchEventState]);
+
+  useEffect(() => {
+    if (expanded) {
+      fetchEvents();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expanded]);
+
   const isEventToday = dateString => {
     const eventDate = new Date(dateString);
-    const now = new Date();
+    const nowDate = new Date();
 
     return (
-      eventDate.getDate() === now.getDate() &&
-      eventDate.getMonth() === now.getMonth() &&
-      eventDate.getFullYear() === now.getFullYear()
+      eventDate.getDate() === nowDate.getDate() &&
+      eventDate.getMonth() === nowDate.getMonth() &&
+      eventDate.getFullYear() === nowDate.getFullYear()
     );
   };
 
@@ -123,12 +169,6 @@ function MyCases() {
     </ul>
   );
 
-  const renderCalendarView = () => (
-    <div className={`${styles.calendarView} ${darkMode ? styles.calendarViewDark : ''}`}>
-      <p>Calendar View is under construction...</p>
-    </div>
-  );
-
   return (
     <div
       className={`my-cases-global ${styles.myCasesPage} ${darkMode ? styles.myCasesPageDark : ''}`}
@@ -165,20 +205,22 @@ function MyCases() {
             </button>
           </div>
 
-          <div className={`filter-wrapper-global ${styles.filterWrapper}`}>
-            <select
-              className={`${styles.filterDropdown} ${
-                darkMode ? styles.filterDropdownDarkMode : ''
-              }`}
-              value={filter}
-              onChange={e => setFilter(e.target.value)}
-            >
-              <option value="All Time">All Time</option>
-              <option value="Today">Today</option>
-              <option value="This Week">This Week</option>
-              <option value="This Month">This Month</option>
-            </select>
-          </div>
+          {view !== 'calendar' && (
+            <div className={`filter-wrapper-global ${styles.filterWrapper}`}>
+              <select
+                className={`${styles.filterDropdown} ${
+                  darkMode ? styles.filterDropdownDarkMode : ''
+                }`}
+                value={filter}
+                onChange={e => setFilter(e.target.value)}
+              >
+                <option value="All Time">All Time</option>
+                <option value="Today">Today</option>
+                <option value="This Week">This Week</option>
+                <option value="This Month">This Month</option>
+              </select>
+            </div>
+          )}
 
           <button
             type="button"
@@ -201,14 +243,19 @@ function MyCases() {
       </header>
 
       <main className={styles.content}>
+        {eventsData.length === 0 && !fetchEventState.loading && (
+          <div className={styles.retrievalStatus}>No events found</div>
+        )}
+        {fetchEventState.loading && <div className={styles.retrievalStatus}>Loading events...</div>}
         {view === 'card' && renderCardView()}
         {view === 'list' && renderListView()}
-        {view === 'calendar' && renderCalendarView()}
+        {view === 'calendar' && <EventsCalendar />}
       </main>
 
       <CreateEventModal
         isOpen={isCreateModalOpen}
         toggle={() => setIsCreateModalOpen(!isCreateModalOpen)}
+        onEventCreated={fetchEvents}
       />
     </div>
   );

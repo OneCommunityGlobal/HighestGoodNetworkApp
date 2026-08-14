@@ -1,6 +1,6 @@
 /* ---------- CSS Variables for Dark Mode ---------- */
 :root {
-  --color-text-dark: #ffffff;
+  --color-text-dark: #fff;
   --color-border-dark: #4a5a77;
 }
 
@@ -133,7 +133,7 @@
   color: #fff;
   border-radius: 10px;
   border: 1px solid var(--color-border-dark);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
   padding: 20px;
   box-sizing: border-box;
 }
@@ -185,7 +185,7 @@
   font-size: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #333;
 }
 
@@ -395,7 +395,7 @@
   font-size: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #333;
 }
 
@@ -443,6 +443,12 @@
   border-radius: 5px;
   overflow: hidden;
   max-width: 60%;
+}
+
+.selectDemographic {
+  padding: 5px 8px;
+  margin-top: 10px;
+  border-radius: 5px;
 }
 
 .insightsTab {
@@ -625,6 +631,318 @@
 .pageBreakAfter  { break-after: always; }
 .avoidBreak       { break-inside: avoid; }
 
+
+/* Dark mode container */
+.insightsTabsDarkMode {
+  border: none;
+  background-color: #334155;
+}
+
+/* Dark mode tab */
+.insightsTabDarkMode {
+  color: #94a3b8 !important;
+  background-color: transparent;
+}
+
+/* Dark mode divider */
+.insightsTabDarkMode:not(:last-child) {
+  border-right: none;
+}
+
+.printOnly {
+  display: none;
+}
+
+@media print {
+  /* Hide everything except the participation component */
+  :global(body > *:not(#root)) {
+    display: none !important;
+  }
+
+  :global(#root > *:not(.participation-landing-page-global)) {
+    display: none !important;
+  }
+
+  /* Force proper backgrounds for all elements */
+  .participationLandingPage,
+  .participationLandingPage * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Light mode styles for print */
+  .participationLandingPage {
+    background: white !important;
+    color: #333 !important;
+  }
+
+  /* Sonar fix: avoid duplicate selector by scoping the print version */
+  :global(#root) .participationLandingPage {
+    max-width: 100% !important;
+    margin: 0 !important;
+    background: white !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  @page {
+    size: auto;
+
+    /* Use auto instead of Letter to allow multiple pages */
+    margin: 0.5in;
+  }
+
+  @supports (-webkit-print-color-adjust: exact) {
+    * {
+      -webkit-print-color-adjust: exact;
+    }
+  }
+
+  @supports (print-color-adjust: exact) {
+    * {
+      print-color-adjust: exact;
+    }
+  }
+
+  :global(.my-cases-global),
+  :global(.case-cards-global),
+  :global(.case-list-global) {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  :global(.case-cards-global) {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+    break-inside: auto !important;
+  }
+
+  :global(.case-card-global) {
+    break-inside: avoid !important;
+    height: auto !important;
+  }
+
+  :global(.case-list-global) {
+    break-inside: auto !important;
+  }
+
+  :global(.case-list-item-global) {
+    break-inside: avoid !important;
+  }
+
+  .trackingListContainer,
+  .trackingListContainerDark {
+    max-height: none !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  :global(.tracking-table-global) tr {
+    break-inside: avoid;
+  }
+
+  .insightItem {
+    break-inside: avoid;
+  }
+
+  :global(.view-switcher-global),
+  :global(.filter-wrapper-global),
+  :global(.create-new-global),
+  :global(.more-btn-global),
+  .noPrint {
+    display: none !important;
+  }
+
+  .noPrintGap {
+    margin-bottom: 8px;
+  }
+
+  :global(.tracking-table-global) thead th {
+    background: #f4f4f4 !important;
+    color: #333 !important;
+  }
+
+  :global(.tracking-table-global-dark) thead th {
+    background: #1C2541 !important;
+    color: #fff !important;
+  }
+
+  .printOnly {
+    display: block !important;
+  }
+  
+  :global(#root) .case-card-global {
+    background: white !important;
+    color: #333 !important;
+    border: 1px solid #ddd !important;
+  }
+
+  .trackingContainer {
+    background: white !important;
+    color: #333 !important;
+    border: 1px solid #ddd !important;
+  }
+
+  .insights {
+    background: white !important;
+    color: #333 !important;
+    border: 1px solid #ddd !important;
+  }
+
+  /* Dark mode styles for print */
+  .participationLandingPageDark {
+    background: #1B2A41 !important;
+    color: #fff !important;
+  }
+
+  .participationLandingPageDark :global(.case-card-global) {
+    background: #3A506B !important;
+    color: #fff !important;
+    border: 1px solid #555 !important;
+  }
+
+  .participationLandingPageDark .trackingContainerDark {
+    background: #1C2541 !important;
+    color: #fff !important;
+    border: 1px solid #555 !important;
+  }
+
+  .participationLandingPageDark .insightsDark {
+    background: #1C2541 !important;
+    color: #fff !important;
+    border: 1px solid #555 !important;
+  }
+
+  .participationLandingPageDark .trackingListContainerDark {
+    background: #3A506B !important;
+    color: #fff !important;
+  }
+
+  .participationLandingPageDark :global(.tracking-table-global-dark) thead th {
+    background: #1C2541 !important;
+    color: #fff !important;
+  }
+
+  .participationLandingPageDark .trackingRateDark {
+    background: #3A506B !important;
+    color: #fff !important;
+  }
+
+  /* Event badge colors for print */
+  :global(.event-badge-global)[data-type='Yoga Class'] {
+    background-color: #e9f7ef !important;
+    color: #1e7e34 !important;
+  }
+
+  :global(.event-badge-global)[data-type='Cooking Workshop'] {
+    background-color: #fdecea !important;
+    color: #c0392b !important;
+  }
+
+  :global(.event-badge-global)[data-type='Dance Class'] {
+    background-color: #fff5e6 !important;
+    color: #8a5300 !important;
+  }
+
+  :global(.event-badge-global)[data-type='Fitness Bootcamp'] {
+    background-color: #f5e6ff !important;
+    color: #6c3483 !important;
+  }
+
+  .trackingRateGreen {
+    color: green !important;
+    font-weight: bold !important;
+  }
+
+  .trackingRateRed {
+    color: red !important;
+    font-weight: bold !important;
+  }
+
+  /* Insight bar colors */
+  .insightFill {
+    background: #007bff !important;
+  }
+
+  /* Text colors for dark mode */
+  .participationLandingPageDark .landingPageHeaderDark,
+  .participationLandingPageDark .sectionTitleDark,
+  .participationLandingPageDark .eventNameDark,
+  .participationLandingPageDark .eventTimeDark,
+  .participationLandingPageDark .attendeesCountDark,
+  .participationLandingPageDark .insightsLabelDark,
+  .participationLandingPageDark .insightsPercentageDark {
+    color: #fff !important;
+  }
+}
+
+/* Active tab dark mode */
+.activeTabDarkMode {
+  background-color: #e2e8f0;
+  color: #1e293b !important;
+  font-weight: 600;
+  box-shadow: 0 1px 6px rgb(0 0 0 / 50%);
+}
+
+  /* Text colors for dark mode */
+  .participationLandingPageDark .landingPageHeaderDark,
+  .participationLandingPageDark .sectionTitleDark,
+  .participationLandingPageDark .eventNameDark,
+  .participationLandingPageDark .eventTimeDark,
+  .participationLandingPageDark .attendeesCountDark,
+  .participationLandingPageDark .insightsLabelDark,
+  .participationLandingPageDark .insightsPercentageDark {
+    color: #fff !important;
+  }
+
+.filterDropdown {
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.participationLandingPageDark .filterDropdown {
+  background-color: #3A506B;
+  color: #fff;
+  border: 1px solid #555;
+  color-scheme: dark;
+}
+
+.participationLandingPageDark .filterDropdown:hover,
+.participationLandingPageDark .filterDropdown:focus {
+  border-color: #007bff;
+  background-color: #4A627D;
+}
+
+
+/* Hover effect dark mode */
+.insightsTabDarkMode:hover {
+  background-color: #374151;
+}
+
+/* ---------- Get List Button ---------- */
+.getListBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+/* ---------- Modal ---------- */
+
+.modalContent {
+  background: #fff;
+  width: 420px;
+  max-height: 80vh;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
 
 .navLinks {
   display: flex;
@@ -2132,4 +2450,239 @@
   .cardStats {
     grid-template-columns: 1fr;
   }
+}
+
+/* ===== Merged from PR #4602 branch (harshavarma-landing-page) ===== */
+
+/* ---------- Save as PDF button ---------- */
+.savePdfBtn {
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.savePdfBtnLight {
+  background: #f5f5f5;
+  color: #333;
+  border: 1px solid #ccc;
+}
+
+.savePdfBtnLight:hover {
+  background: #e8e8e8;
+  transform: translateY(-1px);
+}
+
+.savePdfBtnDark {
+  background: #333;
+  color: #f5f5f5;
+  border: 1px solid #666;
+}
+
+.savePdfBtnDark:hover {
+  background: #444;
+  transform: translateY(-1px);
+}
+
+.trackingFiltersDark {
+  display: flex;
+  gap: 10px;
+  background-color: #1c2541;
+}
+
+.trackingFiltersDark select {
+  background-color: #2d3748;
+  border-color: #4a5568;
+  color: #fff;
+}
+
+.trackingFiltersDark select option {
+  background-color: #2d3748;
+  color: #fff;
+}
+
+.insightsFiltersDark {
+  display: flex;
+  gap: 10px;
+  background-color: #1c2541;
+}
+
+.insightsFiltersDark select {
+  background-color: #2d3748;
+  border-color: #4a5568;
+  color: #fff;
+}
+
+.insightsFiltersDark select option {
+  background-color: #2d3748;
+  color: #fff;
+}
+
+.insightsTabsContainer{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.icons{
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+}
+
+.insightsTabLight{
+  color: #555;
+  background-color: #f8f9fa;
+}
+
+.insightsTabDark{
+  color: #f8f9fa;
+  background-color: #1C2541;
+}
+
+.insightsTabDark:hover {
+  background-color: #3A506B;
+}
+
+.insightsTabLight:hover {
+  background-color: #e0e0e0;
+}
+
+.insightsPercentage {
+  font-size: 0.9rem;
+  color: red;
+}
+
+.tooltipWrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 10px;
+  font-size: 12px;
+  background-color: #111;
+  color: #fff;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  z-index: 10;
+}
+
+.tooltipWrapper:hover .tooltip {
+  opacity: 1;
+}
+
+.exportOptionsButtons,
+.exportOptionsButtonsDark {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.exportOptionsButtons{
+  background: transparent;
+  border: 1px solid #ccc;
+  color: #555;
+}
+
+.exportOptionsButtons:hover{
+  color: #555;
+  background-color: #e0e0e0;
+}
+
+.exportOptionsButtonsDark{
+  border: 1px solid #ccc;
+  color: #111;
+}
+
+.exportOptionsButtonsDark:hover {
+  background: #3A506B;
+}
+
+.exportOptionsButtons:disabled,
+.exportOptionsButtonsDark:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.modalContentDark {
+  background: #1C2541;
+  color: #fff;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.modalSubHeader {
+  font-size: 0.85rem;
+  margin: 8px 0 12px;
+  opacity: 0.8;
+}
+
+.modalList {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.selectAll {
+  font-weight: bold;
+}
+
+.userRow {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.userAvatar {
+  font-size: 16px;
+}
+
+.userName {
+  font-size: 0.85rem;
+}
+
+.userEmail {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.modalFooter {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.sendEmailBtn {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  background: #0056b3;
+  color: white;
+  cursor: pointer;
+}
+
+.sendEmailBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

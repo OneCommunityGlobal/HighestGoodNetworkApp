@@ -14,6 +14,7 @@ function NoShowInsights() {
   const [dateFilter, setDateFilter] = useState('This Week');
   const [scopeFilter, setScopeFilter] = useState('My Event');
   const [activeTab, setActiveTab] = useState('Event type');
+  const [demographicType, setDemographicType] = useState('Age');
   const [sortOrder, setSortOrder] = useState('none');
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -37,7 +38,8 @@ function NoShowInsights() {
     let categoryDescription;
     if (activeTab === 'Event type') categoryDescription = 'event types';
     else if (activeTab === 'Time') categoryDescription = 'time periods';
-    else categoryDescription = 'locations';
+    else if (activeTab === 'Location') categoryDescription = 'locations';
+    else categoryDescription = 'demographic groups';
 
     return `Percentages represent the average no-show rate for each ${categoryDescription} (${activeTab}), aggregated from all matching events within the selected time range. Higher percentages indicate a higher likelihood of participants not attending.`;
   };
@@ -50,6 +52,30 @@ function NoShowInsights() {
       if (activeTab === 'Event type') key = event.eventType;
       else if (activeTab === 'Time') key = event.eventTime.split(' ')[0];
       else if (activeTab === 'Location') key = event.location;
+      else if (activeTab === 'Demographics') {
+        switch (demographicType) {
+          case 'Age':
+            key = event.ageGroup;
+            break;
+          case 'Gender':
+            key = event.gender;
+            break;
+          case 'Income':
+            key = event.incomeLevel;
+            break;
+          case 'Occupation':
+            key = event.occupation;
+            break;
+          case 'Education':
+            key = event.educationLevel;
+            break;
+          case 'Segment':
+            key = event.userSegment;
+            break;
+          default:
+            key = event.ageGroup;
+        }
+      }
 
       const percentage = parseInt(event.noShowRate, 10);
 
@@ -312,7 +338,7 @@ function NoShowInsights() {
 
         <div className={styles.insightsTabsContainer}>
           <div className={`${styles.insightsTabs} ${darkMode ? styles.insightsTabsDarkMode : ''}`}>
-            {['Event type', 'Time', 'Location'].map(tab => (
+            {['Demographics', 'Event type', 'Time', 'Location'].map(tab => (
               <button
                 key={tab}
                 type="button"
@@ -350,6 +376,21 @@ function NoShowInsights() {
             </div>
           </div>
         </div>
+
+        {activeTab === 'Demographics' && (
+          <select
+            value={demographicType}
+            onChange={e => setDemographicType(e.target.value)}
+            className={styles.selectDemographic}
+          >
+            <option value="Age">Age</option>
+            <option value="Gender">Gender</option>
+            <option value="Income">Income</option>
+            <option value="Occupation">Occupation</option>
+            <option value="Education">Education</option>
+            <option value="Segment">User Segment</option>
+          </select>
+        )}
 
         <div className={styles.insightsContent}>{renderStats()}</div>
       </div>

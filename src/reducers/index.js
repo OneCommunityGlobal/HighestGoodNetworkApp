@@ -82,6 +82,11 @@ import userPreferencesReducer from './listBidDashboard/userPreferencesReducer';
 import userSkillsReducer from './userSkillsReducer';
 // community portalgit
 import { eventFeedbackReducer } from './communityPortal/eventFeedback';
+import {
+  FetchEventReducer,
+  CreateEventReducer,
+  FetchCalendarEventReducer,
+} from './communityPortal/EventActivityReducer';
 import { noShowVizReducer } from './communityPortal/noShowVizReducer';
 
 import { jobApplicationReducer } from './jobApplication/jobApplicationReducer';
@@ -192,6 +197,9 @@ const localReducers = {
   bmissuechart: issueReducer,
   noShowViz: noShowVizReducer,
   eventFeedback: eventFeedbackReducer,
+  fetchEvent: FetchEventReducer,
+  createEvent: CreateEventReducer,
+  fetchCalendarEvent: FetchCalendarEventReducer,
 
   bmProjectMembers: bmProjectMemberReducer,
   bmTimeLogger: bmTimeLoggerReducer,
