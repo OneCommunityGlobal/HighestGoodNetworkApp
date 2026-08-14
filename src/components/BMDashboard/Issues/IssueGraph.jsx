@@ -145,7 +145,7 @@ function IssueGraph() {
                 min={minEndDate}
                 max={maxEndDate}
               />
-              <button className={styles.goButton} onClick={handleGoClick}>
+              <button type="button" className={styles.goButton} onClick={handleGoClick}>
                 Go
               </button>
             </div>
