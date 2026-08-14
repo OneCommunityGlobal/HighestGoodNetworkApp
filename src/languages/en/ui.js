@@ -12,7 +12,8 @@ export const BM_PROJECT = 'Project';
 export const ADD_MATERIAL = 'Add Material';
 export const LOG_MATERIAL = 'Log Material';
 export const MATERIAL_LIST = 'Material List';
-export const ADD_EQUIPMENT_TOOL = 'Add Equipment/Tool';
+export const ADD_EQUIPMENT = 'Add Equipment';
+export const ADD_TOOL = 'Add Tool';
 export const LOG_EQUIPMENT_TOOL = 'Log Equipment/Tool';
 export const UPDATE_EQUIPMENT_TOOL = 'Update Equipment/Tool';
 export const EQUIPMENT_TOOL_LIST = 'Equipment/Tool List';
@@ -22,6 +23,7 @@ export const LESSON = 'Lesson';
 export const DASHBOARD = 'Dashboard';
 export const DELETE = 'Delete';
 export const ARCHIVE = 'Archive';
+export const UNARCHIVE = "Unarchive";
 export const LOGO = 'Time Tracking Tool';
 export const LOGOUT = 'Logout';
 export const MEMBERS = 'Members';
@@ -67,7 +69,7 @@ export const TEAM_NAME = 'Team Names';
 export const TOTAL_TEAMS = 'Total Teams';
 export const TOTAL_PROJECTS = 'Total Projects';
 export const ACTIVE_TEAMS = 'Active Teams';
-export const IN_ACTIVE_TEAMS = 'In Active Teams';
+export const IN_ACTIVE_TEAMS = 'Inactive Teams';
 export const ADMIN = 'Admin';
 export const POPUP_MANAGEMENT = 'Popup Management';
 export const CANCEL = 'Delete Final Day';
@@ -94,6 +96,8 @@ export const PR_PROMOTIONS = 'PR Promotions';
 export const JOB_ANALYTICS_REPORT = 'Job Analytics Report';
 export const ACTIVITY_RESOURCE_USAGE = 'Activity Resource Usage';
 export const ACTIVITY_RESOURCE_MANGEMENT = 'Activity Resource Management';
+export const EVENT_DATABASE_DESIGN = 'Event Database Design';
+
 
 export const PRODUCTION = 'Production';
 export const GARDEN_MANAGEMENT = 'Garden Management';
@@ -109,4 +113,7 @@ export const KI_REPORTS = 'Reports';
 export const FOOD_BARS = 'Food Bars';
 
 export const SEND_EMAILS = 'Send Emails';
+export const SCHEDULE_MEETINGS = 'Schedule Meeting';
 export const BLUE_SQUARE_EMAIL_MANAGEMENT = 'Blue Square Email Management';
+
+ 

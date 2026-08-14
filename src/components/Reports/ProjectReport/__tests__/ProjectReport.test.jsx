@@ -1,7 +1,7 @@
 import { render, screen} from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import axios from 'axios';
 import { themeMock } from '__tests__/mockStates';
@@ -10,7 +10,7 @@ import { fetchAllMembers, getProjectActiveUser } from '~/actions/projectMembers'
 import { fetchAllWBS } from '~/actions/wbs';
 import { ProjectReport } from '../ProjectReport';
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 const store = mockStore({
   auth: {
     user: {
@@ -48,7 +48,7 @@ describe('ProjectReport component', () => {
         <ProjectReport />
       </Provider>,
     );
-  }, 15000); // Increased timeout to 15 seconds
+  });
 
   it('should render the project name three times', async () => {
     axios.get.mockResolvedValue({
