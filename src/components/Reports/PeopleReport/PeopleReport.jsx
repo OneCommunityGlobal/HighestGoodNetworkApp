@@ -14,7 +14,6 @@ import {
 } from '../../../actions/userProfile';
 import { getUserProjects } from '../../../actions/userProjects';
 import { getWeeklySummaries, updateWeeklySummaries } from '../../../actions/weeklySummaries';
-import 'react-input-range/lib/css/index.css';
 import { getTimeEntriesForPeriod } from '../../../actions/timeEntries';
 import InfringementsViz from '../InfringementsViz';
 import TimeEntriesViz from '../TimeEntriesViz';
