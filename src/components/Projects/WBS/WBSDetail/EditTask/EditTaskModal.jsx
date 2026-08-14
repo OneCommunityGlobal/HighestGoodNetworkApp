@@ -206,11 +206,11 @@ function EditTaskModal(props) {
   // Recompute the derived estimate (and the best <= most <= worst warning) from the
   // current field values only. Editing one hours field must NOT overwrite the others.
   const calHoursEstimate = () => {
-    const currHoursBest = parseInt(hoursBest, 10);
-    const currHoursMost = parseInt(hoursMost, 10);
-    const currHoursWorst = parseInt(hoursWorst, 10);
+    const currHoursBest = Number.parseInt(hoursBest, 10);
+    const currHoursMost = Number.parseInt(hoursMost, 10);
+    const currHoursWorst = Number.parseInt(hoursWorst, 10);
 
-    setHoursEstimate(parseInt((currHoursMost + currHoursBest + currHoursWorst) / 3, 10));
+    setHoursEstimate(Number.parseInt((currHoursMost + currHoursBest + currHoursWorst) / 3, 10));
 
     if (!(currHoursBest <= currHoursMost && currHoursMost <= currHoursWorst)) {
       setHoursWarning(true);
@@ -276,11 +276,6 @@ function EditTaskModal(props) {
     }
   }, [startedDate, dueDate]);
 
-  const formatDate = (date, format) => {
-    // consistent timezone handling
-    const zonedDate = utcToZonedTime(date, TIMEZONE);
-    return dateFnsFormat(zonedDate, format);
-  };
   const parseDate = (str, format, locale) => {
     const parsed = dateFnsParse(str, format, new Date(), { locale });
     if (DateUtils.isDate(parsed)) {
