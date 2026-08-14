@@ -1,4 +1,5 @@
-/* stylelint-disable  */
+/* stylelint-disable */
+
 .customTooltip {
   background-color: #fff;
   border: 1px solid #ccc;
@@ -12,43 +13,53 @@
   border: 1px solid rgb(255 255 255 / 20%);
 }
 
-.filterSelect :global(.ant-select-selector),
-.filterSelect :global(.ant-select-selection-item),
-.filterSelect :global(.ant-select-selection-placeholder) {
-  color: #333 !important;
-}
+/* =========================
+   LIGHT MODE FILTERS
+========================= */
 
 .filterSelect :global(.ant-select-selector) {
   background-color: #fff !important;
-  border-color: rgb(0 0 0 / 20%) !important;
-}
-
-/* RangePicker placeholder */
-.filterSelect :global(.ant-picker-input > input::placeholder) {
-  color: #666 !important;
+  border-color: #8c8c8c !important;
+  border-width: 1px !important;
+  color: #333 !important;
 }
 
 .filterSelect:global(.ant-picker) {
   background-color: #fff !important;
-  border-color: rgb(0 0 0 / 20%) !important;
+  border-color: #8c8c8c !important;
+  border-width: 1px !important;
+  color: #333 !important;
+}
+
+.filterSelect :global(.ant-select-selection-item) {
+  color: #333 !important;
 }
 
 .filterSelect :global(.ant-select-selection-search-input),
-.filterSelect :global(.ant-picker-input) input {
-  color: #000000 !important;
+.filterSelect:global(.ant-picker) :global(.ant-picker-input > input) {
+  color: #000 !important;
 }
 
-/* Darken Light Mode Icons */
+.filterSelect :global(.ant-select-selection-placeholder),
+.filterSelect:global(.ant-picker) :global(.ant-picker-input > input::placeholder) {
+  color: #666 !important;
+  opacity: 1 !important;
+  font-weight: 500;
+}
+
 .filterSelect :global(.ant-select-arrow),
-.filterSelect :global(.ant-picker-suffix),
-.filterSelect :global(.ant-picker-range-separator),
-.filterSelect :global(.ant-picker-separator) {
+.filterSelect :global(.ant-select-clear),
+.filterSelect:global(.ant-picker) :global(.ant-picker-suffix),
+.filterSelect:global(.ant-picker) :global(.ant-picker-clear),
+.filterSelect:global(.ant-picker) :global(.ant-picker-range-separator),
+.filterSelect:global(.ant-picker) :global(.ant-picker-separator) {
   color: #939393 !important;
 }
 
-/* Shared sizing for the chart area's conditional states (loading / empty /
-   no-data / chart) so switching between them never collapses to zero height
-   or leaves an orphan gap below the filters row. */
+/* =========================
+   CHART STATES
+========================= */
+
 .chartStateContainer {
   width: 100%;
 }
@@ -92,7 +103,7 @@
   padding: 6px 16px;
   border-radius: 20px;
   background-color: rgb(0 0 0 / 4%);
-  color: #666666;
+  color: #666;
   font-size: 14px;
   font-weight: 500;
   opacity: 0.75;
@@ -102,6 +113,20 @@
 .chartPlaceholder:hover .placeholderTooltip,
 .chartPlaceholder:focus-visible .placeholderTooltip {
   opacity: 1;
+}
+
+.noDataState {
+  color: #999;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* =========================
+   DARK MODE
+========================= */
+
+.oxideDark {
+  background-color: #1b2a41;
 }
 
 .oxideDark .chartPlaceholder:hover,
@@ -118,34 +143,33 @@
   color: rgb(245 245 245 / 70%);
 }
 
-.noDataState {
-  color: #999999;
-  font-size: 16px;
-  font-weight: 500;
-}
-
 .oxideDark .noDataState {
   color: rgb(245 245 245 / 55%);
 }
 
-.oxideDark {
-  background-color: #1b2a41;
-}
+/* =========================
+   DARK MODE FILTERS
+========================= */
 
-/* Only in darkMode: target filterSelect under .oxideDark */
 .oxideDark .filterSelect :global(.ant-select-selector) {
   background-color: #1c2541 !important;
   border-color: rgb(255 255 255 / 35%) !important;
+  color: #f5f5f5 !important;
 }
 
 .oxideDark .filterSelect :global(.ant-select-selection-placeholder) {
-  color: rgb(245 245 245 / 55%) !important;
+  color: rgb(245 245 245 / 70%) !important;
 }
 
 .oxideDark .filterSelect :global(.ant-select-selection-item) {
   background-color: rgb(0 123 255 / 25%) !important;
   border-color: rgb(0 123 255 / 55%) !important;
   color: #f5f5f5 !important;
+}
+
+.oxideDark .filterSelect :global(.ant-select-selection-item-content) {
+  color: #f5f5f5 !important;
+  font-weight: 500;
 }
 
 .oxideDark .filterSelect :global(.ant-select-selection-item-remove) {
@@ -156,28 +180,40 @@
   color: #f5f5f5 !important;
 }
 
-.oxideDark .filterSelect :global(.ant-select-arrow) {
+.oxideDark .filterSelect :global(.ant-select-arrow),
+.oxideDark .filterSelect :global(.ant-select-clear) {
   color: #f5f5f5 !important;
 }
 
 .oxideDark .filterSelect :global(.ant-select-clear) {
-  color: #f5f5f5 !important;
   background-color: #1c2541 !important;
 }
+
+/* =========================
+   DARK MODE RANGE PICKER
+========================= */
 
 .oxideDark .filterSelect:global(.ant-picker) {
   background-color: #1c2541 !important;
   border-color: rgb(255 255 255 / 20%) !important;
+  color: #f5f5f5 !important;
 }
 
 .oxideDark .filterSelect:global(.ant-picker) :global(.ant-picker-input > input),
-.oxideDark .filterSelect:global(.ant-picker) :global(.ant-picker-input > input::placeholder) {
+.oxideDark
+  .filterSelect:global(.ant-picker)
+  :global(.ant-picker-input > input::placeholder) {
+  color: #f5f5f5 !important;
+}
+
+.oxideDark .filterSelect :global(.ant-picker-suffix),
+.oxideDark .filterSelect :global(.ant-picker-separator),
+.oxideDark .filterSelect :global(.ant-picker-range-separator) {
   color: #f5f5f5 !important;
 }
 
 .oxideDark .filterSelect :global(.ant-picker-suffix) {
-  color: #f5f5f5 !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-bottom: 1px solid rgb(255 255 255 / 10%) !important;
 }
 
 .oxideDark .filterSelect :global(.ant-picker-clear) {
@@ -185,16 +221,18 @@
   background-color: #1c2541 !important;
 }
 
-.oxideDark .filterSelect :global(.ant-picker-separator) {
-  color: #f5f5f5 !important;
-}
+/* =========================
+   DARK MODE SELECT DROPDOWN
+========================= */
 
-/* Dropdowns render in a portal on document.body, so they must be targeted
-   globally via the popupClassName applied in the JSX (oxideDark-dropdown). */
+/*
+ * Ant Design renders dropdowns in a portal attached to document.body.
+ * popupClassName="oxideDark-dropdown" is applied in the JSX so these
+ * selectors can style the popup outside the .oxideDark container.
+ */
+
 :global(.ant-select-dropdown.oxideDark-dropdown) {
   background-color: #1c2541 !important;
-  /* Popup bg is close to the page bg - give it a visible edge/elevation so
-     it doesn't blend into the page it floats over. */
   border: 1px solid rgb(255 255 255 / 20%) !important;
   box-shadow: 0 4px 16px rgb(0 0 0 / 45%) !important;
 }
@@ -211,6 +249,18 @@
   background-color: rgb(0 123 255 / 28%) !important;
 }
 
+:global(
+    .ant-select-dropdown.oxideDark-dropdown
+      .ant-select-item-option-selected
+      .ant-select-item-option-content
+  ) {
+  color: #fff !important;
+}
+
+/* =========================
+   DARK MODE DATE DROPDOWN
+========================= */
+
 :global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-panel-container),
 :global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-panel),
 :global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-header),
@@ -220,8 +270,6 @@
   border-color: rgb(255 255 255 / 20%) !important;
 }
 
-/* Elevate the panel so it reads as a distinct floating surface, matching
-   the select dropdown's treatment. */
 :global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-panel-container) {
   box-shadow: 0 4px 16px rgb(0 0 0 / 45%) !important;
 }
@@ -233,7 +281,6 @@
   color: #f5f5f5 !important;
 }
 
-/* Weekday header row ("week bar") and all body cells */
 :global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-content thead),
 :global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-content thead tr),
 :global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-content th),
@@ -241,7 +288,6 @@
   background-color: transparent !important;
 }
 
-/* Week-number column, when shown */
 :global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-cell-week) {
   color: rgb(245 245 245 / 60%) !important;
 }
@@ -254,10 +300,16 @@
   background: transparent !important;
 }
 
-/* Day-cell hover/selected/in-range feedback. Without these, AntD's default
-   light-theme fills (faint black tints) are invisible on this dark panel,
-   so hovering or picking a date range gives no visible feedback. */
-:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-cell:hover:not(.ant-picker-cell-selected, .ant-picker-cell-range-start, .ant-picker-cell-range-end, .ant-picker-cell-disabled) .ant-picker-cell-inner) {
+:global(
+    .ant-picker-dropdown.oxideDark-dropdown
+      .ant-picker-cell:hover:not(
+        .ant-picker-cell-selected,
+        .ant-picker-cell-range-start,
+        .ant-picker-cell-range-end,
+        .ant-picker-cell-disabled
+      )
+      .ant-picker-cell-inner
+  ) {
   background-color: rgb(0 123 255 / 20%) !important;
 }
 
@@ -265,26 +317,48 @@
   background-color: rgb(0 123 255 / 15%) !important;
 }
 
-:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-cell-range-start:not(.ant-picker-cell-range-start-single)::before),
-:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-cell-range-end:not(.ant-picker-cell-range-end-single)::before) {
+:global(
+    .ant-picker-dropdown.oxideDark-dropdown
+      .ant-picker-cell-range-start:not(.ant-picker-cell-range-start-single)::before
+  ),
+:global(
+    .ant-picker-dropdown.oxideDark-dropdown
+      .ant-picker-cell-range-end:not(.ant-picker-cell-range-end-single)::before
+  ) {
   background-color: rgb(0 123 255 / 15%) !important;
 }
 
-:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-cell-selected .ant-picker-cell-inner),
-:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-cell-range-start .ant-picker-cell-inner),
-:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-cell-range-end .ant-picker-cell-inner) {
+:global(
+    .ant-picker-dropdown.oxideDark-dropdown
+      .ant-picker-cell-selected
+      .ant-picker-cell-inner
+  ),
+:global(
+    .ant-picker-dropdown.oxideDark-dropdown
+      .ant-picker-cell-range-start
+      .ant-picker-cell-inner
+  ),
+:global(
+    .ant-picker-dropdown.oxideDark-dropdown
+      .ant-picker-cell-range-end
+      .ant-picker-cell-inner
+  ) {
   background-color: #007bff !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
-:global(.ant-picker-dropdown.oxideDark-dropdown .ant-picker-cell-today .ant-picker-cell-inner::before) {
+:global(
+    .ant-picker-dropdown.oxideDark-dropdown
+      .ant-picker-cell-today
+      .ant-picker-cell-inner::before
+  ) {
   border-color: #007bff !important;
 }
 
-/* RangePicker calendar popup - keep it inside the viewport instead of
-   bleeding off the edge on narrow screens/side panels, and let the
-   day-of-week columns scale to the available width instead of forcing a
-   fixed table width. */
+/* =========================
+   RESPONSIVE DATE PICKER
+========================= */
+
 :global(.ant-picker-dropdown.injurySeverityDateDropdown) {
   max-width: calc(100vw - 16px);
   overflow-x: auto;
@@ -335,8 +409,10 @@
   }
 }
 
-/* Chart axis labels and text in dark mode (excludes bar value labels,
-   whose color is set inline per-theme in InjurySeverityChart.jsx instead) */
+/* =========================
+   DARK MODE CHART
+========================= */
+
 .oxideDark :global(.recharts-text):not(:global(.recharts-label)) {
   fill: #f5f5f5 !important;
 }
@@ -353,6 +429,10 @@
 .oxideDark :global(.recharts-cartesian-grid-vertical line) {
   stroke: rgb(255 255 255 / 20%) !important;
 }
+
+/* =========================
+   ANIMATIONS
+========================= */
 
 @keyframes placeholderPulse {
   0% {
