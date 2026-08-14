@@ -212,7 +212,7 @@
     "stylelint-config-css-modules": "^4.5.1",
     "stylelint-config-standard": "^39.0.1",
     "typescript": "^4.8.4",
-    "vite": "^6.3.5",
+    "vite": "^6.4.3",
     "vitest": "^3.2.4"
   },
   "lint-staged": {
