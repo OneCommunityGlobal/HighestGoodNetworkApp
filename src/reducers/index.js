@@ -29,6 +29,7 @@ import { infoCollectionsReducer } from './informationReducer';
 import { managingTeamsReducer } from './managingTeamsReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
 import notificationReducer from './notificationReducer';
+import meetingNotificationReducer from './meetingNotificationReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
 import { popupEditorReducer } from './popupEditorReducer';
 import { rolePresetReducer } from './rolePresetReducer';
@@ -88,6 +89,7 @@ import { jobApplicationReducer } from './jobApplication/jobApplicationReducer';
 import emailOutboxReducer from './emailOutboxReducer';
 import emailTemplateReducer from './emailTemplateReducer';
 import wishListReducer from './listBidDashboard/wishListItemReducer';
+import villageDetailsReducer from './listBidDashboard/villageDetailsReducer';
 
 import { optStatusBreakdownReducer } from './optStatusBreakdownReducer';
 
@@ -106,6 +108,7 @@ import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
 import { JobsHitsApplicationsReducer } from './jobAnalytics/JobsHitsApplicationsReducer';
 import { studentTasksReducer } from './studentTasksReducer';
+import { toolReplacementReducer } from './toolReplacementReducer';
 
 // Education Dashboard Reducers
 import { weeklySummariesFiltersApi } from '../actions/weeklySummariesFilterAction';
@@ -117,6 +120,12 @@ import { studentReducer } from './studentProfileReducer';
 
 // Kitchen and Inventory Management
 import { kiCalendarApi } from '../actions/kiCalendarAction';
+
+// Popularity Enhanced
+import {
+  enhancedPopularityAnalyticsReducer,
+  enchancedPopularityRolesReducer,
+} from './EnhancedPopularityAnalytics/EnchancedPopularityReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -144,6 +153,7 @@ const localReducers = {
   mouseoverText: mouseoverTextReducer,
   weeklySummaryRecipients: weeklySummaryRecipientsReducer,
   notification: notificationReducer,
+  meetingNotification: meetingNotificationReducer,
   userFollowUp: followUpReducer,
   userProjectsByUserNameReducer,
   teamCodes: teamCodesReducer,
@@ -178,6 +188,7 @@ const localReducers = {
 
   // lbdashboard
   wishlistItem: wishListReducer,
+  villageDetails: villageDetailsReducer,
 
   bmissuechart: issueReducer,
   noShowViz: noShowVizReducer,
@@ -208,6 +219,7 @@ const localReducers = {
   // student tasks
   studentTasks: studentTasksReducer,
   jobApplication: jobApplicationReducer,
+  toolReplacement: toolReplacementReducer,
 
   // education portal
   atom: atomReducer,
@@ -215,6 +227,11 @@ const localReducers = {
   // education portal
   browseLessonPlan: browseLessonPlanReducer,
   kiInventory: KIInventoryReducer,
+
+  // enchanced popularity analytics
+  enhancedPopularityAnalytics: enhancedPopularityAnalyticsReducer,
+
+  enhancedPopularityRoles: enchancedPopularityRolesReducer,
 
   // Kitchen and Inventory Management
   [kiCalendarApi.reducerPath]: kiCalendarApi.reducer,

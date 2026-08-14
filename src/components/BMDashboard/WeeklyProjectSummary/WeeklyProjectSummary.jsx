@@ -32,6 +32,9 @@ import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
 import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
+import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
+import InjurySeverityChart from '../Injuries/InjurySeverityChart';
+import CostPredictionChart from './CostPredictionChart';
 
 const projectStatusButtons = [
   {
@@ -273,6 +276,16 @@ function WeeklyProjectSummary() {
         ),
       },
       {
+        title: 'Injury Severity by Projects',
+        key: 'Injury Severity by Projects',
+        className: 'full',
+        content: (
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
+            <InjurySeverityChart />
+          </div>
+        ),
+      },
+      {
         title: 'Material Consumption',
         key: 'Material Consumption',
         className: 'full',
@@ -468,6 +481,21 @@ function WeeklyProjectSummary() {
         content: (
           <div style={{ gridColumn: '1 / -1', width: '100%' }}>
             <FinancialsTrackingSection />
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: '15px',
+                marginTop: '15px',
+              }}
+            >
+              <div className="weekly-project-summary-card financial-small financial-chart">
+                <CostPredictionChart projectId={1} />
+              </div>
+              <div className="weekly-project-summary-card financial-small financial-chart">
+                <ActualVsPlannedCost />
+              </div>
+            </div>
           </div>
         ),
       },

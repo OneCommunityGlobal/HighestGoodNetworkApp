@@ -19,29 +19,146 @@ import styles from './InjurySeverityChart.module.css';
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-const generateColors = n =>
-  Array.from({ length: n }, (_, i) => {
-    const hue = Math.round((i * 360) / n);
-    return `hsl(${hue}, 70%, 50%)`;
-  });
+const DEPARTMENT_COLOR_MAP = {
+  Welding: '#d62728',
+  Electrical: '#ff7f0e',
+  Plumbing: '#1f77b4',
+  Carpentry: '#2ca02c',
+};
 
 const SEVERITY_ORDER = ['Minor', 'Major', 'Critical'];
 
-function CustomTooltip({ active, payload, label, darkMode }) {
+const DEPARTMENT_ORDER = ['Welding', 'Electrical', 'Plumbing', 'Carpentry'];
+
+const DEPARTMENT_OPTIONS = ['Plumbing', 'Electrical', 'Carpentry', 'Welding'];
+
+const DEFAULT_DEPARTMENTS = DEPARTMENT_OPTIONS;
+
+function buildSingleDeptEntry(entry, sev, rawData, visibleProjects) {
+  visibleProjects.forEach(project => {
+    const rec = rawData.find(r => r.severity === sev && r.projectName === project.name);
+
+    entry[project.name] = rec ? rec.totalInjuries : 0;
+  });
+}
+
+function buildMultiDeptEntry(entry, sev, rawData, visibleProjects, visibleDepartments) {
+  visibleProjects.forEach(project => {
+    visibleDepartments.forEach(dept => {
+      const key = `${project.name}_${dept}`;
+
+      const rec = rawData.find(
+        r => r.severity === sev && r.projectName === project.name && r.department === dept,
+      );
+
+      entry[key] = rec ? rec.totalInjuries : 0;
+    });
+  });
+}
+
+function buildChartData(rawData, visibleProjects, visibleDepartments) {
+  return SEVERITY_ORDER.map(sev => {
+    const entry = { severity: sev };
+
+    if (visibleDepartments.length <= 1) {
+      buildSingleDeptEntry(entry, sev, rawData, visibleProjects);
+    } else {
+      buildMultiDeptEntry(entry, sev, rawData, visibleProjects, visibleDepartments);
+    }
+
+    return entry;
+  });
+}
+
+function buildSingleDeptBars(visibleProjects, visibleDepartments) {
+  const selectedDepartment = visibleDepartments[0];
+
+  return visibleProjects.map(project => ({
+    key: project._id,
+    dataKey: project.name,
+    name: project.name,
+    fill: DEPARTMENT_COLOR_MAP[selectedDepartment] || '#1f77b4',
+  }));
+}
+
+function buildMultiDeptBars(visibleProjects, visibleDepartments) {
+  const bars = [];
+
+  visibleDepartments.forEach(dept => {
+    visibleProjects.forEach((project, projectIdx) => {
+      bars.push({
+        key: `${project._id}_${dept}`,
+        dataKey: `${project.name}_${dept}`,
+        name: `${project.name} - ${dept}`,
+        fill: DEPARTMENT_COLOR_MAP[dept],
+        stackId: project.name,
+        legendType: projectIdx === 0 ? 'rect' : 'none',
+      });
+    });
+  });
+
+  return bars;
+}
+
+function buildChartBars(visibleProjects, visibleDepartments) {
+  if (visibleDepartments.length <= 1) {
+    return buildSingleDeptBars(visibleProjects, visibleDepartments);
+  }
+
+  return buildMultiDeptBars(visibleProjects, visibleDepartments);
+}
+
+function buildLegendPayload(visibleDepartments) {
+  return visibleDepartments.map(dept => ({
+    value: dept,
+    type: 'rect',
+    color: DEPARTMENT_COLOR_MAP[dept],
+  }));
+}
+
+function formatBarLabel(value) {
+  return value > 0 ? value : '';
+}
+
+function CustomTooltip({ active, payload, label, darkMode, visibleDepartments }) {
   if (!active || !payload || payload.length === 0) return null;
 
-  // Group data by project
   const projectData = {};
 
   payload.forEach(entry => {
-    if (entry.value > 0) {
-      // Extract project and department from dataKey
-      const match = entry.dataKey.match(/^([^_]+)_(.+)$/);
-      if (match) {
-        const [, projectName, department] = match;
-        if (!projectData[projectName]) projectData[projectName] = [];
-        projectData[projectName].push({ department, value: entry.value, color: entry.color });
+    if (entry.value <= 0) return;
+
+    const match = entry.dataKey.match(/^([^_]+)_(.+)$/);
+
+    if (match) {
+      const [, projectName, department] = match;
+
+      if (!projectData[projectName]) {
+        projectData[projectName] = [];
       }
+
+      projectData[projectName].push({
+        department,
+        value: entry.value,
+        color: entry.color,
+      });
+
+      return;
+    }
+
+    if (visibleDepartments.length === 1) {
+      const projectName = entry.dataKey;
+      const department = visibleDepartments[0];
+
+      if (!projectData[projectName]) {
+        projectData[projectName] = [];
+      }
+
+      projectData[projectName].push({
+        department,
+        value: entry.value,
+        color: entry.color,
+      });
     }
   });
 
@@ -56,6 +173,7 @@ function CustomTooltip({ active, payload, label, darkMode }) {
       >
         {label}
       </p>
+
       {Object.entries(projectData).map(([projectName, departments]) => (
         <div key={projectName} style={{ marginBottom: '6px' }}>
           <div
@@ -67,6 +185,7 @@ function CustomTooltip({ active, payload, label, darkMode }) {
           >
             {projectName}:
           </div>
+
           <div
             style={{
               paddingLeft: '8px',
@@ -78,6 +197,7 @@ function CustomTooltip({ active, payload, label, darkMode }) {
                 <span style={{ color }}>
                   {department}: {value}
                 </span>
+
                 {idx < departments.length - 1 ? ', ' : ''}
               </span>
             ))}
@@ -85,6 +205,82 @@ function CustomTooltip({ active, payload, label, darkMode }) {
         </div>
       ))}
     </div>
+  );
+}
+
+function InjurySeverityBarChart({
+  chartData,
+  chartBars,
+  visibleProjects,
+  visibleDepartments,
+  darkMode,
+}) {
+  const axisTextColor = darkMode ? '#f5f5f5' : '#333333';
+  const legendPayload = buildLegendPayload(visibleDepartments);
+
+  return (
+    <ResponsiveContainer width="100%" height={400}>
+      <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+        <CartesianGrid strokeDasharray="3 3" />
+
+        <XAxis
+          dataKey="severity"
+          height={60}
+          tick={{ fill: axisTextColor }}
+          label={{
+            value: 'Severity',
+            position: 'bottom',
+            dy: 0,
+            fill: axisTextColor,
+          }}
+        />
+
+        <YAxis
+          tick={{ fill: axisTextColor }}
+          label={{
+            value: 'Injury Count',
+            angle: -90,
+            position: 'insideLeft',
+            fill: axisTextColor,
+          }}
+        />
+
+        <Tooltip
+          cursor={false}
+          content={
+            <CustomTooltip
+              visibleProjects={visibleProjects}
+              visibleDepartments={visibleDepartments}
+              darkMode={darkMode}
+            />
+          }
+        />
+
+        <Legend verticalAlign="bottom" wrapperStyle={{ paddingTop: 30 }} payload={legendPayload} />
+
+        {chartBars.map(bar => (
+          <Bar
+            key={bar.key}
+            dataKey={bar.dataKey}
+            name={bar.name}
+            fill={bar.fill}
+            stackId={bar.stackId}
+            legendType={bar.legendType}
+          >
+            <LabelList
+              dataKey={bar.dataKey}
+              position="center"
+              fill="#ffffff"
+              style={{
+                fontSize: '10px',
+                fontWeight: 'bold',
+              }}
+              formatter={formatBarLabel}
+            />
+          </Bar>
+        ))}
+      </BarChart>
+    </ResponsiveContainer>
   );
 }
 
@@ -96,7 +292,7 @@ function InjurySeverityDashboard(props) {
 
   const [selProjects, setSelProjects] = useState([]);
   const [selTypes, setSelTypes] = useState([]);
-  const [selDepts, setSelDepts] = useState([]);
+  const [selDepts, setSelDepts] = useState(DEFAULT_DEPARTMENTS);
   const [dateRange, setDateRange] = useState([null, null]);
   const [loading, setLoading] = useState(false);
 
@@ -106,6 +302,7 @@ function InjurySeverityDashboard(props) {
 
   useEffect(() => {
     setLoading(true);
+
     dispatch(
       fetchInjurySeverity({
         projectIds: selProjects,
@@ -117,89 +314,55 @@ function InjurySeverityDashboard(props) {
     ).finally(() => setLoading(false));
   }, [dispatch, selProjects, selTypes, selDepts, dateRange]);
 
+  const isEmptyState =
+    selProjects.length === 0 &&
+    selTypes.length === 0 &&
+    selDepts.length === 0 &&
+    !dateRange[0] &&
+    !dateRange[1];
+
+  const hasNoData = !loading && !isEmptyState && rawData.length === 0;
+
   const visibleProjects = useMemo(() => {
-    const projectsWithData = Array.from(new Set(rawData.map(r => r.projectName)));
-    return bmProjects.filter(
-      project =>
-        projectsWithData.includes(project.name) &&
-        (selProjects.length === 0 || selProjects.includes(project._id)),
-    );
-  }, [bmProjects, rawData, selProjects]);
+    const base =
+      selProjects.length > 0 ? bmProjects.filter(p => selProjects.includes(p._id)) : bmProjects;
+
+    const projectNamesWithData = new Set(rawData.map(r => r.projectName));
+
+    return base.filter(p => projectNamesWithData.has(p.name));
+  }, [bmProjects, selProjects, rawData]);
 
   const visibleDepartments = useMemo(() => {
-    const depts = Array.from(new Set(rawData.map(r => r.department).filter(Boolean)));
-    return depts;
+    const departmentsWithData = new Set(rawData.map(r => r.department).filter(Boolean));
+
+    return DEPARTMENT_ORDER.filter(dept => departmentsWithData.has(dept));
   }, [rawData]);
 
-  const chartData = useMemo(() => {
-    return SEVERITY_ORDER.map(sev => {
-      const entry = { severity: sev };
+  const chartData = useMemo(() => buildChartData(rawData, visibleProjects, visibleDepartments), [
+    rawData,
+    visibleProjects,
+    visibleDepartments,
+  ]);
 
-      if (visibleDepartments.length <= 1) {
-        // Single department - show total injuries per project
-        visibleProjects.forEach(project => {
-          const rec = rawData.find(r => r.severity === sev && r.projectName === project.name);
-          entry[project.name] = rec ? rec.totalInjuries : 0;
-        });
-      } else {
-        // Multiple departments - show department breakdown per project
-        visibleProjects.forEach(project => {
-          visibleDepartments.forEach(dept => {
-            const key = `${project.name}_${dept}`;
-            const rec = rawData.find(
-              r => r.severity === sev && r.projectName === project.name && r.department === dept,
-            );
-            entry[key] = rec ? rec.totalInjuries : 0;
-          });
-        });
-      }
-
-      return entry;
-    });
-  }, [rawData, visibleProjects, visibleDepartments]);
-
-  const chartBars = useMemo(() => {
-    if (visibleDepartments.length <= 1) {
-      // Single department - one bar per project (these will be grouped)
-      const projectColors = generateColors(visibleProjects.length);
-      return visibleProjects.map((project, idx) => ({
-        key: project._id,
-        dataKey: project.name,
-        name: project.name,
-        fill: projectColors[idx],
-      }));
-      // eslint-disable-next-line no-else-return
-    } else {
-      // Multiple departments - create stacked bars per project
-      const departmentColors = generateColors(visibleDepartments.length);
-      const bars = [];
-
-      visibleDepartments.forEach((dept, deptIdx) => {
-        visibleProjects.forEach((project, projectIdx) => {
-          bars.push({
-            key: `${project._id}_${dept}`,
-            dataKey: `${project.name}_${dept}`,
-            name: `${project.name} - ${dept}`, // Keep full name for tooltip
-            fill: departmentColors[deptIdx],
-            stackId: project.name, // Stack departments within each project
-            legendType: projectIdx === 0 ? 'rect' : 'none', // Only show first occurrence in legend
-          });
-        });
-      });
-      // eslint-disable-next-line prettier/prettier
-
-      return bars;
-    }
-  }, [visibleProjects, visibleDepartments]);
+  const chartBars = useMemo(() => buildChartBars(visibleProjects, visibleDepartments), [
+    visibleProjects,
+    visibleDepartments,
+  ]);
 
   const filterStyle = {
     flex: 1,
     minWidth: 180,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    color: '#333333',
-    borderColor: '#d9d9d9',
+    color: darkMode ? '#f5f5f5' : '#333333',
+    borderColor: darkMode ? 'rgb(255 255 255 / 20%)' : '#d9d9d9',
   };
+
+  const dropdownClassName = darkMode ? 'oxideDark-dropdown' : '';
+
+  const dateDropdownClassName = `injurySeverityDateDropdown${
+    darkMode ? ' oxideDark-dropdown' : ''
+  }`;
 
   return (
     <div
@@ -223,10 +386,17 @@ function InjurySeverityDashboard(props) {
 
       {/* Filters */}
       <div
-        style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 20, paddingLeft: 20 }}
+        style={{
+          display: 'flex',
+          gap: 12,
+          flexWrap: 'wrap',
+          marginBottom: 20,
+          paddingLeft: 20,
+        }}
       >
         <Select
           className={styles.filterSelect}
+          popupClassName={dropdownClassName}
           mode="multiple"
           allowClear
           placeholder="Projects"
@@ -245,6 +415,7 @@ function InjurySeverityDashboard(props) {
 
         <RangePicker
           className={styles.filterSelect}
+          popupClassName={dateDropdownClassName}
           value={dateRange}
           onChange={dates => setDateRange(dates || [null, null])}
           style={filterStyle}
@@ -252,6 +423,7 @@ function InjurySeverityDashboard(props) {
 
         <Select
           className={styles.filterSelect}
+          popupClassName={dropdownClassName}
           mode="multiple"
           allowClear
           placeholder="Injury Types"
@@ -270,6 +442,7 @@ function InjurySeverityDashboard(props) {
 
         <Select
           className={styles.filterSelect}
+          popupClassName={dropdownClassName}
           mode="multiple"
           allowClear
           placeholder="Departments"
@@ -279,7 +452,7 @@ function InjurySeverityDashboard(props) {
           maxTagCount="responsive"
           maxTagPlaceholder={omitted => `+${omitted.length}`}
         >
-          {['Plumbing', 'Electrical', 'Carpentry', 'Welding'].map(d => (
+          {DEPARTMENT_OPTIONS.map(d => (
             <Option key={d} value={d}>
               {d}
             </Option>
@@ -288,76 +461,33 @@ function InjurySeverityDashboard(props) {
       </div>
 
       {/* Chart */}
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: 50 }}>
-          <Spin size="large" />
-        </div>
-      ) : (
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="severity"
-              height={60}
-              label={{
-                value: 'Severity',
-                position: 'bottom',
-                dy: 0,
-              }}
-            />
-            <YAxis
-              label={{
-                value: 'Injury Count',
-                angle: -90,
-                position: 'insideLeft',
-              }}
-            />
-            <Tooltip
-              content={
-                <CustomTooltip
-                  visibleProjects={visibleProjects}
-                  visibleDepartments={visibleDepartments}
-                  darkMode={darkMode}
-                />
-              }
-            />
-            <Legend
-              verticalAlign="bottom"
-              wrapperStyle={{ paddingTop: 30 }}
-              payload={
-                visibleDepartments.length > 1
-                  ? visibleDepartments.map((dept, idx) => ({
-                      value: dept,
-                      type: 'rect',
-                      color: generateColors(visibleDepartments.length)[idx],
-                    }))
-                  : undefined
-              }
-            />
-            {chartBars.map(bar => (
-              <Bar
-                key={bar.key}
-                dataKey={bar.dataKey}
-                name={bar.name}
-                fill={bar.fill}
-                stackId={bar.stackId}
-                legendType={bar.legendType}
-              >
-                <LabelList
-                  dataKey={bar.dataKey}
-                  position="center"
-                  style={{
-                    fill: darkMode ? '#ffffff' : '#333333',
-                    fontSize: '10px',
-                    fontWeight: 'bold',
-                  }}
-                  formatter={value => (value > 0 ? value : '')}
-                />
-              </Bar>
-            ))}
-          </BarChart>
-        </ResponsiveContainer>
-      )}
+      <div className={styles.chartStateContainer}>
+        {loading ? (
+          <div className={styles.chartStateCenter}>
+            <Spin size="large" />
+          </div>
+        ) : isEmptyState ? (
+          <button type="button" className={`${styles.chartPlaceholder} ${styles.chartStateCenter}`}>
+            <div className={styles.placeholderGraphic} />
+
+            <div className={styles.placeholderTooltip}>
+              Select filters to generate visualization
+            </div>
+          </button>
+        ) : hasNoData ? (
+          <div className={`${styles.noDataState} ${styles.chartStateCenter}`}>
+            No data available for the selected filters
+          </div>
+        ) : (
+          <InjurySeverityBarChart
+            chartData={chartData}
+            chartBars={chartBars}
+            visibleProjects={visibleProjects}
+            visibleDepartments={visibleDepartments}
+            darkMode={darkMode}
+          />
+        )}
+      </div>
     </div>
   );
 }
@@ -365,4 +495,5 @@ function InjurySeverityDashboard(props) {
 const mapStateToProps = state => ({
   darkMode: state.theme.darkMode,
 });
+
 export default connect(mapStateToProps)(InjurySeverityDashboard);

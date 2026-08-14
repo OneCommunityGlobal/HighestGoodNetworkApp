@@ -138,6 +138,24 @@
   float: right;
 }
 
+/* Dark-mode styling for the "Move" dropdown menu so it stays consistent with
+   the dark theme (light text on a dark panel) with a clearly visible hover. */
+.moveDropdownMenuDark {
+  background-color: #1c2541;
+  border: 1px solid #3a506b;
+}
+
+.moveDropdownMenuDark :global(.dropdown-item) {
+  color: #fff;
+  background-color: transparent;
+}
+
+.moveDropdownMenuDark :global(.dropdown-item:hover),
+.moveDropdownMenuDark :global(.dropdown-item:focus) {
+  background-color: #3a506b;
+  color: #fff;
+}
+
 .newTask {
   background-color: #effff2;
 }

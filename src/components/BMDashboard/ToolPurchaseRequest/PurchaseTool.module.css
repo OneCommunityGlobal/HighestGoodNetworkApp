@@ -11,6 +11,14 @@
   .purchaseToolHeader {
     margin: 1rem auto;
   }
+
+.infoText {
+  color: #555;
+}
+
+.infoTextDark {
+  color: #ccc;
+}
   
   @media screen and (width <= 800px) {
     .purchaseToolContainer {
