@@ -27,6 +27,13 @@
   transform: translate(-50%, -50%);
   text-align: center;
   font-size: 14px;
+
+  /* Stack heading, count and comparison line with a real gap. Default margins
+     alone left 0px between them, so the lines ran into each other. */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
 }
 
 .volunteerStatusHeading {
@@ -62,6 +69,9 @@
 
 .volunteerStatusCenter > p {
   font-weight: bold;
+
+  /* Spacing is handled by the flex gap above. */
+  margin: 0;
 }
 
 .volunteerStatusCenter div {
