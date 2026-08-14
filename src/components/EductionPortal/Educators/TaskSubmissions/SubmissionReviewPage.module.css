@@ -471,3 +471,13 @@
 :global(.dark-mode) .errorState {
   background-color: #16213e;
 }
+
+/* A global "body.dark-mode *" rule (public/index.css) forces all text to white with
+   !important; these need matching specificity + !important to keep their status color. */
+:global(.dark-mode) .saveError {
+  color: #f87171 !important;
+}
+
+:global(.dark-mode) .saveMessage {
+  color: #34d399 !important;
+}

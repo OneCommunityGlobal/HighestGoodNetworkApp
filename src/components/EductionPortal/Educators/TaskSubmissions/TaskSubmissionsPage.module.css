@@ -73,6 +73,12 @@
   overflow: hidden;
 }
 
+.refreshing {
+  opacity: 0.5;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
 .scrollButton {
   flex-shrink: 0;
   width: 44px;
