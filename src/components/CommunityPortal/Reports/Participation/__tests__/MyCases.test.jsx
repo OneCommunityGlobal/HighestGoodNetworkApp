@@ -41,7 +41,7 @@ describe('MyCases', () => {
     expect(screen.getByText(/event type/i)).toBeInTheDocument();
     expect(screen.getByText(/date & time/i)).toBeInTheDocument();
     expect(screen.getByText(/event name/i)).toBeInTheDocument();
-    expect(screen.getByText(/attendees/i)).toBeInTheDocument();
+    expect(screen.getByText(/^attendees$/i)).toBeInTheDocument();
   });
 
   it('renders upcoming event rows in list view', () => {
