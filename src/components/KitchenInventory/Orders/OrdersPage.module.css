@@ -432,6 +432,25 @@
   border-bottom-color: #2a2a4a;
 }
 
+/* Status Badges - Dark Mode */
+.modalDark .badgeOrdered {
+  background-color: #3b2600;
+  color: #ffcc80;
+  border: 1px solid #8d5f00;
+}
+
+.modalDark .badgeReceived {
+  background-color: #12351f;
+  color: #a5d6a7;
+  border: 1px solid #3f7f4f;
+}
+
+.modalDark .badgeStocked {
+  background-color: #102d4a;
+  color: #90caf9;
+  border: 1px solid #3d6f9e;
+}
+
 .metaLabel {
   color: #999;
   font-size: 12px;
