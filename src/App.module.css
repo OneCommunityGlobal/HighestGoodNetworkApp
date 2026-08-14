@@ -306,3 +306,20 @@ tr.dark-leaderboard-row:hover a {
   background-color: #fff !important;
   color: #000 !important;
 }
+
+/* Date Picker Mobile Single Month Override */
+@media (width <= 768px) {
+  /* Hide second month panel in Ant Design RangePickers and show navigation on first panel */
+  :global(.ant-picker-panels) {
+    flex-direction: column !important;
+  }
+
+  :global(.ant-picker-panel:last-child) {
+    display: none !important;
+  }
+
+  :global(.ant-picker-panel:first-child .ant-picker-header-next-btn),
+  :global(.ant-picker-panel:first-child .ant-picker-header-super-next-btn) {
+    visibility: visible !important;
+  }
+}
