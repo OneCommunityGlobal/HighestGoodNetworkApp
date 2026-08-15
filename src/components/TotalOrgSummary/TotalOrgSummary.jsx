@@ -702,6 +702,7 @@ function TotalOrgSummary(props) {
                 <GlobalVolunteerMap
                   isLoading={isLoading}
                   locations={volunteerStats?.userLocations}
+                  darkMode={darkMode}
                 />
               </div>
             </Col>

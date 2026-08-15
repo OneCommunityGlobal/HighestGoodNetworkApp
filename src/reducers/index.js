@@ -121,6 +121,12 @@ import { studentReducer } from './studentProfileReducer';
 // Kitchen and Inventory Management
 import { kiCalendarApi } from '../actions/kiCalendarAction';
 
+// Popularity Enhanced
+import {
+  enhancedPopularityAnalyticsReducer,
+  enchancedPopularityRolesReducer,
+} from './EnhancedPopularityAnalytics/EnchancedPopularityReducer';
+
 const localReducers = {
   auth: authReducer,
   allUserProfiles: allUserProfilesReducer,
@@ -220,6 +226,11 @@ const localReducers = {
   // education portal
   browseLessonPlan: browseLessonPlanReducer,
   kiInventory: KIInventoryReducer,
+
+  // enchanced popularity analytics
+  enhancedPopularityAnalytics: enhancedPopularityAnalyticsReducer,
+
+  enhancedPopularityRoles: enchancedPopularityRolesReducer,
 
   // Kitchen and Inventory Management
   [kiCalendarApi.reducerPath]: kiCalendarApi.reducer,

@@ -531,6 +531,8 @@ export const ENDPOINTS = {
   GET_JOB_FORM: formId => `${APIEndpoint}/jobforms/${formId}`,
   GET_ALL_JOB_FORMS: `${APIEndpoint}/jobforms/all`,
   GET_FORM_RESPONSES: formID => `${APIEndpoint}/jobforms/${formID}/responses`,
+  SUBMIT_JOB_APPLICATION: formId =>
+  `${APIEndpoint}/jobforms/${formId}/responses`,
 
   ADD_QUESTION: formId => `${APIEndpoint}/jobforms/${formId}/questions`,
   UPDATE_QUESTION: (formId, questionIndex) =>
@@ -674,10 +676,10 @@ export const ENDPOINTS = {
 
     const qs = params.length ? `?${params.join('&')}` : '';
 
-    return `${APIEndpoint.replace('/api', '')}/job-analytics${qs}`;
+    return `${APIEndpoint}/job-analytics-router${qs}`;
   },
 
-  JOB_ANALYTICS_ROLES: `${APIEndpoint.replace('/api', '')}/job-analytics/roles`,
+  JOB_ANALYTICS_ROLES: `${APIEndpoint}/job-analytics-router/roles`,
 
   // pr dashboard endpoints
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
