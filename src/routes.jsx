@@ -169,7 +169,7 @@ import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCa
 import KitchenandInventoryLogin from './components/KitchenandInventory/Login';
 import OrchardManagement from './components/KitchenandInventory/OrchardManagement/OrchardManagement';
 import OrchardManagementPage from './components/KitchenandInventory/OrchardManagement/OrchardManagementPage';
-import GardenManagement from './components/KitchenandInventory/GardenManagement/GardenManagement';
+// import GardenManagement from './components/KitchenandInventory/GardenManagement/GardenManagement';
 import RecipesLandingPage from './components/KitchenandInventory/Recipes';
 
 import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
@@ -1062,11 +1062,11 @@ export default (
           exact
           component={OrchardManagementPage}
         />
-        <ProtectedRoute
+        {/* <ProtectedRoute
           path="/kitchenandinventory/gardenmanagement"
           exact
           component={GardenManagement}
-        />
+        /> */}
         <Route path="/kitchenandinventory/orders" component={OrdersPage} />
         <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} />
         <ProtectedRoute path="/kitchenandinventory/recipes" exact component={RecipesLandingPage} />
