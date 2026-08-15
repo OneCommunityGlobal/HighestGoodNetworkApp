@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import styles from './EventManagementTabs.module.css';
 
 const dummyEvents = [
@@ -8,17 +8,11 @@ const dummyEvents = [
   { id: '3', name: 'Developer Meetup', date: '2025-07-10', location: 'Chicago' },
 ];
 
-function EventManagementTabs() {
-  const { activityid, tab, section } = useParams();
-  const history = useHistory();
-  const [event, setEvent] = useState(null);
-  const [activeTab, setActiveTab] = useState(tab || 'description');
-  const [activeSection, setActiveSection] = useState(section || 'comments');
-
-  useEffect(() => {
-    const foundEvent = dummyEvents.find(e => e.id === activityid);
-    setEvent(foundEvent);
-  }, [activityid]);
+function EventManagementTabs({ darkMode }) {
+  const { activityid } = useParams();
+  const [event] = useState(() => dummyEvents.find(e => e.id === activityid) ?? null);
+  const [activeTab, setActiveTab] = useState('description');
+  const [activeSection, setActiveSection] = useState('comments');
 
   const tabs = [
     { key: 'description', label: 'Description' },
@@ -31,16 +25,10 @@ function EventManagementTabs() {
 
   const handleTabClick = newTab => {
     setActiveTab(newTab);
-    const newPath =
-      newTab === 'engagement'
-        ? `../communityportal/activity/${activityid}/engagement/comments`
-        : `../communityportal/activity/${activityid}/${newTab}`;
-    history.push(newPath);
   };
 
   const handleEngagementSectionClick = newSection => {
     setActiveSection(newSection);
-    history.push(`/communityportal/activity/${activityid}/engagement/${newSection}`);
   };
 
   const renderContent = () => {
@@ -88,14 +76,16 @@ function EventManagementTabs() {
   };
 
   return (
-    <div className={styles.eventTabs}>
+    <div className={`${styles.eventTabs} ${darkMode ? styles.eventTabsDark : ''}`}>
       <div className={styles.tabButtons}>
         {tabs.map(({ key, label }) => (
           <button
             type="button"
             key={key}
             onClick={() => handleTabClick(key)}
-            className={`${styles.tabBtn} ${activeTab === key ? styles.active : ''}`}
+            className={`${styles.tabBtn} ${activeTab === key ? styles.active : ''} ${
+              darkMode ? styles.tabBtnDark : ''
+            }`}
           >
             {label}
           </button>

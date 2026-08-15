@@ -102,6 +102,15 @@
   width: auto;
 }
 
+.inputField {
+  font-size: 0.9rem;
+  font-family: inherit;
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: transparent;
+}
+
 .statusActive {
   background-color: green;
   color: white;

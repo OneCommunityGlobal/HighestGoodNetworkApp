@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Calendar from 'react-calendar';
@@ -11,7 +11,6 @@ import EventManagementTabs from './EventManagementTabs';
 function EventPage() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const { activityid } = useParams();
-  const history = useHistory();
 
   const [eventName, setEventName] = useState('Event Name');
   const [eventType, setEventType] = useState('In-person');
@@ -74,7 +73,9 @@ function EventPage() {
         <div className={styles.eventCardMiddle}>
           <input
             type="text"
-            className={`${styles.eventCardTitle} ${darkMode ? styles.inputDark : ''}`}
+            className={`${styles.eventCardTitle} ${styles.inputField} ${
+              darkMode ? styles.inputDark : ''
+            }`}
             value={eventName}
             onChange={e => setEventName(e.target.value)}
           />
@@ -95,7 +96,7 @@ function EventPage() {
               type="text"
               value={location}
               onChange={e => setLocation(e.target.value)}
-              className={darkMode ? styles.inputDark : ''}
+              className={`${styles.inputField} ${darkMode ? styles.inputDark : ''}`}
             />
           </p>
           <div className={`${styles.eventCard12} ${darkMode ? styles.eventCard12Dark : ''}`}>
@@ -121,7 +122,7 @@ function EventPage() {
                   type="text"
                   value={time}
                   onChange={e => setTime(e.target.value)}
-                  className={darkMode ? styles.inputDark : ''}
+                  className={`${styles.inputField} ${darkMode ? styles.inputDark : ''}`}
                 />
               </div>
               <div className={styles.infoItem}>
@@ -132,7 +133,7 @@ function EventPage() {
                   type="text"
                   value={organizer}
                   onChange={e => setOrganizer(e.target.value)}
-                  className={darkMode ? styles.inputDark : ''}
+                  className={`${styles.inputField} ${darkMode ? styles.inputDark : ''}`}
                 />
               </div>
             </div>
@@ -149,7 +150,7 @@ function EventPage() {
                     type="text"
                     value={capacity}
                     onChange={e => setCapacity(e.target.value)}
-                    className={darkMode ? styles.inputDark : ''}
+                    className={`${styles.inputField} ${darkMode ? styles.inputDark : ''}`}
                   />
                 </p>
               </div>
@@ -202,12 +203,12 @@ function EventPage() {
       </div>
 
       <div className={styles.eventTabs}>
-        <EventManagementTabs activityid={activityid} history={history} />
+        <EventManagementTabs darkMode={darkMode} />
       </div>
 
       <div className={styles.eventDescription}>
         <textarea
-          className={styles.textarea}
+          className={`${styles.textarea} ${darkMode ? styles.inputDark : ''}`}
           value={description}
           onChange={e => setDescription(e.target.value)}
           placeholder="Enter event description..."

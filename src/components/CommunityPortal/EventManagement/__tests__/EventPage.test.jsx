@@ -4,7 +4,6 @@ import EventPage from '../EventPage';
 
 vi.mock('react-router-dom', () => ({
   useParams: () => ({ activityid: '1' }),
-  useHistory: () => ({ push: vi.fn() }),
 }));
 
 vi.mock('react-calendar', () => ({

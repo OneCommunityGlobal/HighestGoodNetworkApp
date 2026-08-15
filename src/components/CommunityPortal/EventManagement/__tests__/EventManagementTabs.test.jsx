@@ -1,18 +1,11 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import EventManagementTabs from '../EventManagementTabs';
 
-const mockPush = vi.fn();
-
 vi.mock('react-router-dom', () => ({
-  useParams: () => ({ activityid: '1', tab: undefined, section: undefined }),
-  useHistory: () => ({ push: mockPush }),
+  useParams: () => ({ activityid: '1' }),
 }));
 
 describe('EventManagementTabs', () => {
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
   it('renders all four tabs', () => {
     render(<EventManagementTabs />);
     expect(screen.getByRole('button', { name: /Description/i })).toBeInTheDocument();
@@ -30,7 +23,8 @@ describe('EventManagementTabs', () => {
   it('switches to Analysis tab on click', () => {
     render(<EventManagementTabs />);
     fireEvent.click(screen.getByRole('button', { name: /Analysis/i }));
-    expect(mockPush).toHaveBeenCalled();
+    const analysisBtn = screen.getByRole('button', { name: /Analysis/i });
+    expect(analysisBtn.className).toMatch(/active/i);
   });
 
   it('shows engagement sub-sections when Engagement tab clicked', () => {

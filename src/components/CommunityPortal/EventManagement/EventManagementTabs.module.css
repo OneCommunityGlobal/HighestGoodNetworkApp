@@ -57,3 +57,17 @@
 .mainContent {
   margin-top: 10px;
 }
+
+/* Dark mode */
+.eventTabsDark {
+  color: #fff;
+}
+
+.tabBtnDark {
+  color: #d0d0d0;
+}
+
+.tabBtnDark.active {
+  color: #fff;
+  border-bottom-color: #fff;
+}
