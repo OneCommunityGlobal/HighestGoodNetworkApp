@@ -45,11 +45,11 @@
 }
 
 .linkDark {
-  color: #90caf9;
+  color: #90caf9 !important;
 }
 
 .linkDark:hover {
-  color: #64b5f6;
+  color: #64b5f6 !important;
 }
 
 .loggedOutText {

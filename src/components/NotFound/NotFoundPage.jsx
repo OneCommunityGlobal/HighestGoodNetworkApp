@@ -48,7 +48,7 @@ function NotFoundPage() {
             className={cn(
               styles.notFoundText,
               styles.loggedOutText,
-              darkMode ? 'text-light' : 'text-dark',
+              darkMode ? styles.headingDark : styles.headingLight,
             )}
           >
             It seems like you&apos;ve reached a page that doesn&apos;t exist. In addition
