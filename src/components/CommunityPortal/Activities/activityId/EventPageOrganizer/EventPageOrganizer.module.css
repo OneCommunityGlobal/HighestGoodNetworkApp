@@ -301,6 +301,40 @@
   gap: 0;
 }
 
+.tabTriggerFlex {
+  flex: 1;
+}
+
+.tabContentSpacing {
+  margin-top: 2rem;
+}
+
+.detailInlineRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.iconSm {
+  width: 0.75rem;
+  height: 0.875rem;
+}
+
+.iconMd {
+  width: 13px;
+  height: 13px;
+}
+
+.iconMdWide {
+  width: 19px;
+  height: 13px;
+}
+
+.iconLg {
+  width: 19px;
+  height: 19px;
+}
+
 .tabTrigger {
   text-align: center;
   border-radius: 0;

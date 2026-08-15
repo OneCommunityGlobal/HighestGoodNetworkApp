@@ -21,13 +21,32 @@ const genId = () => {
   return `id_${Date.now().toString(36)}_${Math.trunc(performance.now()).toString(36)}`;
 };
 
+const MEDIA_STORAGE_KEY = id => `hgn_event_mock_v1:${id}:media`;
+
+function loadPersistedMedia(activityId) {
+  try {
+    const raw = localStorage.getItem(MEDIA_STORAGE_KEY(activityId));
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function savePersistedMedia(activityId, mediaList) {
+  try {
+    localStorage.setItem(MEDIA_STORAGE_KEY(activityId), JSON.stringify(mediaList));
+  } catch {
+    // storage quota exceeded — fail silently
+  }
+}
+
 export const DescriptionSection = ({
   activityId = 'test-event',
   initialDescription = '',
   onSaveDescription = async () => {},
   uploadMediaFn = null,
 }) => {
-  const [selectedMedia, setSelectedMedia] = useState([]);
+  const [selectedMedia, setSelectedMedia] = useState(() => loadPersistedMedia(activityId));
   const [description, setDescription] = useState(initialDescription);
   const darkMode = useSelector(state => state.theme.darkMode);
   const fileInputRef = useRef(null);
@@ -36,6 +55,14 @@ export const DescriptionSection = ({
   const textareaClassName = `${styles.textarea} ${darkMode ? styles.textareaDark : ''}`;
   const mediaButtonClassName = `${styles.mediaButton} ${darkMode ? styles.mediaButtonDark : ''}`;
   const addMediaLabelClassName = `${styles.buttonLabel} ${darkMode ? styles.buttonLabelDark : ''}`;
+
+  const fileToDataUrl = file =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
 
   const handleFileChange = async e => {
     const MAX_SIZE_MB = 5;
@@ -50,30 +77,36 @@ export const DescriptionSection = ({
     });
     if (!files.length) return;
 
+    try {
+      const newMedia = await Promise.all(
+        files.map(async f => ({
+          id: genId(),
+          url: await fileToDataUrl(f),
+          name: f.name,
+          size: f.size,
+        })),
+      );
+      setSelectedMedia(prev => {
+        const next = [...prev, ...newMedia];
+        savePersistedMedia(activityId, next);
+        return next;
+      });
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development') {
+        // eslint-disable-next-line no-console
+        console.error('uploadMedia failed', err);
+      }
+    }
+
     if (uploadMediaFn) {
       try {
-        const uploads = await Promise.all(files.map(f => uploadMediaFn(activityId, f)));
-        const newMedia = uploads.map(u => ({
-          id: genId(),
-          url: u.url,
-          name: u.name,
-          size: u.size,
-        }));
-        setSelectedMedia(prev => [...prev, ...newMedia]);
+        await Promise.all(files.map(f => uploadMediaFn(activityId, f)));
       } catch (err) {
         if (process.env.NODE_ENV === 'development') {
           // eslint-disable-next-line no-console
-          console.error('uploadMedia failed', err);
+          console.error('uploadMediaFn failed', err);
         }
       }
-    } else {
-      const newMedia = files.map(file => ({
-        id: genId(),
-        url: URL.createObjectURL(file),
-        name: file.name,
-        size: file.size,
-      }));
-      setSelectedMedia(prev => [...prev, ...newMedia]);
     }
   };
 
@@ -82,37 +115,10 @@ export const DescriptionSection = ({
   const handleRemoveMedia = mediaId => {
     setSelectedMedia(prev => {
       const updatedMedia = prev.filter(media => media.id !== mediaId);
-      // Revoke the URL to prevent memory leaks
-      const removedMedia = prev.find(media => media.id === mediaId);
-      if (removedMedia) {
-        try {
-          URL.revokeObjectURL(removedMedia.url);
-        } catch (e) {
-          if (process.env.NODE_ENV === 'development') {
-            // eslint-disable-next-line no-console
-            console.error('revokeObjectURL failed', e);
-          }
-        }
-      }
+      savePersistedMedia(activityId, updatedMedia);
       return updatedMedia;
     });
   };
-
-  // Cleanup blob URLs if any (best-effort)
-  React.useEffect(() => {
-    return () => {
-      selectedMedia.forEach(media => {
-        try {
-          URL.revokeObjectURL(media.url);
-        } catch (e) {
-          if (process.env.NODE_ENV === 'development') {
-            // eslint-disable-next-line no-console
-            console.error('revokeObjectURL cleanup failed', e);
-          }
-        }
-      });
-    };
-  }, [selectedMedia]);
 
   return (
     <section className={containerClassName}>

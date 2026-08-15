@@ -113,7 +113,7 @@ export const EventPageOrganizer = () => {
               <div className={styles.detailsGrid}>
                 <div className={styles.detailItem}>
                   <div className={styles.detailLabel}>
-                    <CalendarIcon className={`${styles.detailIcon} w-3 h-3.5`} />
+                    <CalendarIcon className={`${styles.detailIcon} ${styles.iconSm}`} />
                     <span className={styles.detailLabelText}>Date</span>
                   </div>
                   <select
@@ -135,10 +135,10 @@ export const EventPageOrganizer = () => {
 
                 <div className={styles.detailItem}>
                   <div className={styles.detailLabel}>
-                    <ClockIcon className={`${styles.detailIcon} w-3 h-[13px]`} />
+                    <ClockIcon className={`${styles.detailIcon} ${styles.iconMd}`} />
                     <span className={styles.detailLabelText}>Time</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className={styles.detailInlineRow}>
                     <span className={styles.detailValue}>
                       {evt?.time?.start} - {evt?.time?.end}
                     </span>
@@ -148,7 +148,7 @@ export const EventPageOrganizer = () => {
 
                 <div className={styles.detailItem}>
                   <div className={styles.detailLabel}>
-                    <UserCircleIcon className={`${styles.detailIcon} w-[13px] h-[13px]`} />
+                    <UserCircleIcon className={`${styles.detailIcon} ${styles.iconMd}`} />
                     <span className={styles.detailLabelText}>Orgnizer</span>
                   </div>
                   <div className={styles.detailValue}>{evt?.organizer?.name ?? '—'}</div>
@@ -156,7 +156,7 @@ export const EventPageOrganizer = () => {
 
                 <div className={styles.detailItem}>
                   <div className={styles.detailLabel}>
-                    <UsersIcon className={`${styles.detailIcon} w-[19px] h-[13px]`} />
+                    <UsersIcon className={`${styles.detailIcon} ${styles.iconMdWide}`} />
                     <span className={styles.detailLabelText}>Capacity</span>
                   </div>
                   <div className={styles.capacityValue}>
@@ -171,17 +171,17 @@ export const EventPageOrganizer = () => {
 
                 <div className={styles.detailItem}>
                   <div className={styles.detailLabel}>
-                    <StarIcon className={`${styles.detailIcon} w-[19px] h-[19px]`} />
+                    <StarIcon className={`${styles.detailIcon} ${styles.iconLg}`} />
                     <span className={styles.detailLabelText}>Overall Rating</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className={styles.detailInlineRow}>
                     <span className={styles.detailValue}>{evt?.rating ?? 0}</span>
                   </div>
                 </div>
 
                 <div className={styles.detailItem}>
                   <div className={styles.detailLabel}>
-                    <FileTextIcon className={`${styles.detailIcon} w-[19px] h-[19px]`} />
+                    <FileTextIcon className={`${styles.detailIcon} ${styles.iconLg}`} />
                     <span className={styles.detailLabelText}>Status</span>
                   </div>
                   <div className={`${styles.detailValue} ${styles.statusActive}`}>
@@ -229,24 +229,40 @@ export const EventPageOrganizer = () => {
 
         <Tabs defaultValue="description" className={styles.tabsContainer}>
           <TabsList className={tabsListClassName}>
-            <TabsTrigger value="description" style={{ flex: 1 }} className={tabsTriggerClassName}>
+            <TabsTrigger
+              value="description"
+              className={`${tabsTriggerClassName} ${styles.tabTriggerFlex}`}
+            >
               Description
             </TabsTrigger>
 
-            <TabsTrigger value="analysis" style={{ flex: 1 }} className={tabsTriggerClassName}>
+            <TabsTrigger
+              value="analysis"
+              className={`${tabsTriggerClassName} ${styles.tabTriggerFlex}`}
+            >
               Analysis
             </TabsTrigger>
 
-            <TabsTrigger value="resource" style={{ flex: 1 }} className={tabsTriggerClassName}>
+            <TabsTrigger
+              value="resource"
+              className={`${tabsTriggerClassName} ${styles.tabTriggerFlex}`}
+            >
               Resource
             </TabsTrigger>
 
-            <TabsTrigger value="engagement" style={{ flex: 1 }} className={tabsTriggerClassName}>
+            <TabsTrigger
+              value="engagement"
+              className={`${tabsTriggerClassName} ${styles.tabTriggerFlex}`}
+            >
               Engagement
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="description" className={`mt-8 ${styles.tabContent}`} forceMount>
+          <TabsContent
+            value="description"
+            className={`${styles.tabContentSpacing} ${styles.tabContent}`}
+            forceMount
+          >
             <DescriptionSection
               activityId={activityId}
               initialDescription={evt?.description ?? ''}
@@ -267,19 +283,19 @@ export const EventPageOrganizer = () => {
             />
           </TabsContent>
 
-          <TabsContent value="analysis" className="mt-8">
+          <TabsContent value="analysis" className={styles.tabContentSpacing}>
             <div className={placeholderPanelClassName}>
               <span className={styles.placeholderText}>Analysis content</span>
             </div>
           </TabsContent>
 
-          <TabsContent value="resource" className="mt-8">
+          <TabsContent value="resource" className={styles.tabContentSpacing}>
             <div className={placeholderPanelClassName}>
               <span className={styles.placeholderText}>Resource content</span>
             </div>
           </TabsContent>
 
-          <TabsContent value="engagement" className="mt-8">
+          <TabsContent value="engagement" className={styles.tabContentSpacing}>
             <div className={placeholderPanelClassName}>
               <span className={styles.placeholderText}>Engagement content</span>
             </div>
