@@ -304,6 +304,19 @@
   background: #2b2b2b;
 }
 
+.table tbody tr:hover {
+  background-color: #e8f0fe;
+}
+
+.darkMode .table tbody tr:hover {
+  background-color: #3a506b;
+}
+
+.darkMode .table tbody tr:hover .td,
+.darkMode .table tbody tr:hover .tdProject {
+  color: #fff !important;
+}
+
 .th {
   padding: 12px;
   text-align: left;
