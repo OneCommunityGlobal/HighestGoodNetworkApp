@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Calendar from 'react-calendar';
@@ -10,7 +10,6 @@ import EventManagementTabs from './EventManagementTabs';
 
 function EventPage() {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const { activityid } = useParams();
 
   const [eventName, setEventName] = useState('Event Name');
   const [eventType, setEventType] = useState('In-person');
