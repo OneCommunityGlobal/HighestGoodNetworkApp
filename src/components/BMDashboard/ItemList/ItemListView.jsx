@@ -335,10 +335,21 @@ export function ItemListView({
             <ItemsTable
               selectedProject={selectedProject}
               selectedItem={selectedItem}
-              filteredItems={filteredItems}
+              filteredItems={paginatedItems}
               UpdateItemModal={UpdateItemModal}
               dynamicColumns={dynamicColumns}
               darkMode={darkMode}
+              itemType={itemType}
+              sortConfig={sortConfig}
+              onSort={handleSort}
+              totalItems={totalItems}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              rowsPerPage={rowsPerPage}
+              startRow={startRow}
+              endRow={endRow}
+              onPageChange={setCurrentPage}
+              onRowsPerPageChange={setRowsPerPage}
             />
           </>
         )}

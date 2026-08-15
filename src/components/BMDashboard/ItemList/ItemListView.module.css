@@ -443,10 +443,6 @@ table td {
   box-shadow: 0 0 0 1px #4a90e2 !important;
 }
 
-.darkDatePickerInput::placeholder {
-  color: #8fa0b9 !important;
-}
-
 /* 2. THIS STYLES THE POP-UP CALENDAR CONTAINER */
 .darkDatePicker {
   background-color: #1f2e45 !important;
