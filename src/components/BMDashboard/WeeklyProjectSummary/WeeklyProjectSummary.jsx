@@ -30,9 +30,7 @@ import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import { MaterialConsumptionCards } from './MaterialConsumption/MaterialConsumption';
-
 import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
-
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import InjurySeverityChart from '../Injuries/InjurySeverityChart';
 import CostPredictionChart from './CostPredictionChart';
@@ -254,29 +252,25 @@ function WeeklyProjectSummary() {
       {
         title: 'Tools and Equipment Tracking',
         key: 'Tools and Equipment Tracking',
-        className: 'half',
+        className: 'full',
         content: (
-          <>
-            {/* <div className="weekly-project-summary-card normal-card tools-tracking-layout"> */}
+          <div className={styles.toolsTrackingGrid}>
             <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
               <ToolStatusDonutChart />
             </div>
+
             <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
               <ToolsHorizontalBarChart darkMode={darkMode} />
             </div>
-            <div
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-              style={{ minHeight: '300px', gridColumn: 'span 2' }}
-            >
+
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
               <SupplierPerformanceGraph />
             </div>
-            <div
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-              style={{ minHeight: '300px', gridColumn: 'span 2' }}
-            >
+
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
               <ToolsStoppageHorizontalBarChart />
             </div>
-          </>
+          </div>
         ),
       },
       {
