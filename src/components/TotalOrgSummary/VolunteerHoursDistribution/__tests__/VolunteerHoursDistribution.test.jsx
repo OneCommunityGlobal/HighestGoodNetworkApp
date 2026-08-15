@@ -3,6 +3,7 @@
 import { render, screen } from '@testing-library/react';
 import React from 'react';
 
+import { renderCenterLabel } from '../../HoursWorkedPieChart/HoursWorkedPieChart';
 import VolunteerHoursDistribution, { computeDistribution } from '../VolunteerHoursDistribution';
 
 let container = null;
@@ -78,9 +79,6 @@ describe('VolunteerHoursDistribution wrapper', () => {
     );
 
     expect(screen.getAllByText('Weekly Committed Hours')).toHaveLength(2);
-    expect(screen.getByText('TOTAL')).toBeInTheDocument();
-    expect(screen.getByText('VOLUNTEERS')).toBeInTheDocument();
-    expect(screen.getByText('8')).toBeInTheDocument();
     expect(screen.getByText('40 hrs')).toBeInTheDocument();
     expect(screen.getByText('Over 40 hrs')).toBeInTheDocument();
 
@@ -95,5 +93,23 @@ describe('VolunteerHoursDistribution wrapper', () => {
       totalVolunteers: 8,
       totalHoursWorked: 8,
     });
+  });
+
+  it('renders the committed distribution center label', () => {
+    render(
+      <svg>
+        {renderCenterLabel({
+          darkMode: false,
+          isMobile: false,
+          totalHours: 8,
+          centerLabelLines: ['TOTAL', 'VOLUNTEERS'],
+        })}
+      </svg>,
+      { container },
+    );
+
+    expect(screen.getByText('TOTAL')).toBeInTheDocument();
+    expect(screen.getByText('VOLUNTEERS')).toBeInTheDocument();
+    expect(screen.getByText('8')).toBeInTheDocument();
   });
 });
