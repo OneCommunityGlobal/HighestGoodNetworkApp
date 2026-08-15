@@ -592,7 +592,6 @@ export default (
         />
         <ProtectedRoute
           path="/announcements"
-          exact
           component={Announcements}
           routePermissions={RoutePermissions.announcements}
         />
