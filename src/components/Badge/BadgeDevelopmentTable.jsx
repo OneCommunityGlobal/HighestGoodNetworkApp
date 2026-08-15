@@ -228,15 +228,9 @@ function BadgeDevelopmentTable(props) {
             props.updateBadge(badgeValue._id, updatedValue);
           }}
           data-testid={`report-checkbox-${badgeValue._id}`}
-          style={{
-            display: 'inline-block',
-            width: '20px',
-            height: '20px',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            backgroundColor: checkValue ? '#007bff' : 'transparent',
-            cursor: 'pointer',
-          }}
+          className={`${styles.reportCheckbox} ${
+            checkValue ? styles.reportCheckboxChecked : styles.reportCheckboxUnchecked
+          }`}
         />
       </div>
     );
@@ -300,16 +294,7 @@ function BadgeDevelopmentTable(props) {
                   <Card className={`text-center ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
                     <CardImg className="badge_image_lg" src={value?.imageUrl} />
                     <CardBody>
-                      <CardTitle
-                        style={{
-                          fontWeight: 'bold',
-                          fontSize: 18,
-                          color: '#285739',
-                          marginBottom: 15,
-                        }}
-                      >
-                        {value?.badgeName}
-                      </CardTitle>
+                      <CardTitle className={styles.badgeCardTitle}>{value?.badgeName}</CardTitle>
                       <CardText>{value?.description}</CardText>
                     </CardBody>
                   </Card>
@@ -344,7 +329,7 @@ function BadgeDevelopmentTable(props) {
                   </Button>
                 </span>
               </td>
-              <td style={{ textAlign: 'center' }}>{reportBadge(value)}</td>
+              <td className={styles.reportCell}>{reportBadge(value)}</td>
             </tr>
           ))}
         </tbody>
