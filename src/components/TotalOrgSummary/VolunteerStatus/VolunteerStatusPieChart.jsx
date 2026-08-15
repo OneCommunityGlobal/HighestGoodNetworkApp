@@ -32,8 +32,10 @@ function VolunteerStatusPieChart({
       legend: {
         display: false,
       },
+      // Value + percentage are already shown permanently via externalLabelGuides;
+      // the native hover tooltip only duplicates them and renders on top, overlapping.
       tooltip: {
-        enabled: true,
+        enabled: false,
       },
       externalLabelGuides: {
         offset: 20,
