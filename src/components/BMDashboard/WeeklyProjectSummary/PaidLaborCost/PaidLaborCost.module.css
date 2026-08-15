@@ -156,9 +156,9 @@
 }
 
 .darkDateInput {
-  background-color: #253342;
-  color: #fff;
-  border-color: #2d4059;
+  background-color: #253342 !important;
+  color: #fff !important;
+  border-color: #2d4059 !important;
   color-scheme: dark;
 }
 

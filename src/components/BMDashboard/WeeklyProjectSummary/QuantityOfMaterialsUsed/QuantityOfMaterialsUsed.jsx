@@ -795,7 +795,9 @@ function QuantityOfMaterialsUsed({ data }) {
             maxDate={new Date()}
             dateFormat="MM/dd/yy - MM/dd/yy"
             placeholderText="Select Date Range one"
-            className={`${styles.quantityOfMaterialUsedCustomDatePicker}`}
+            className={`${styles.quantityOfMaterialUsedCustomDatePicker}${
+              darkMode ? ` ${styles.quantityOfMaterialUsedCustomDatePickerDark}` : ''
+            }`}
             disabledKeyboardNavigation
             calendarStartDay={1}
             shouldCloseOnSelect={false}
@@ -840,7 +842,9 @@ function QuantityOfMaterialsUsed({ data }) {
             maxDate={new Date()}
             dateFormat="MM/dd/yy - MM/dd/yy"
             placeholderText="Select Date Range two"
-            className={`${styles.quantityOfMaterialUsedCustomDatePicker}`}
+            className={`${styles.quantityOfMaterialUsedCustomDatePicker}${
+              darkMode ? ` ${styles.quantityOfMaterialUsedCustomDatePickerDark}` : ''
+            }`}
             disabledKeyboardNavigation
             calendarStartDay={1}
             shouldCloseOnSelect={false}
