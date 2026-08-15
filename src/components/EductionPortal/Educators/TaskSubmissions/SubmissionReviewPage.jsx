@@ -78,6 +78,11 @@ const SubmissionReviewPage = () => {
       return;
     }
 
+    if (marks !== '' && maxMarks !== '' && Number(marks) > Number(maxMarks)) {
+      setSaveError(`Marks cannot exceed "Out of" value (${maxMarks}).`);
+      return;
+    }
+
     try {
       setSaving(true);
 
@@ -254,6 +259,7 @@ const SubmissionReviewPage = () => {
                   id="review-marks"
                   type="number"
                   min="0"
+                  max={maxMarks !== '' ? maxMarks : undefined}
                   className={styles.numberInput}
                   value={marks}
                   onChange={e => setMarks(e.target.value)}
