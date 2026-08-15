@@ -237,7 +237,14 @@ function buildPDFStyles(darkMode) {
     }
     [data-pdf-title] p {
       font-size: 1.5em !important; font-weight: bold !important; text-align: center !important;
-      margin: 10px !important; color: #333 !important;
+      margin: 10px !important; color: ${darkMode ? '#fff' : '#333'} !important;
+      text-shadow: ${darkMode ? '0 1px 4px #000, 0 0 2px #000' : 'none'} !important;
+    }
+    [data-pdf-label] {
+      color: ${darkMode ? '#fff' : '#000'} !important;
+      background-color: transparent !important;
+      border-color: ${darkMode ? '#64748b' : '#e0e0e0'} !important;
+      opacity: 1 !important;
     }
     ${
       darkMode
@@ -369,6 +376,7 @@ function ReportHeader({
 
 function DateRangeModal({
   showDatePicker,
+  darkMode,
   startDate,
   endDate,
   onToggle,
@@ -378,7 +386,11 @@ function DateRangeModal({
   onApply,
 }) {
   return (
-    <Modal isOpen={showDatePicker} toggle={onToggle}>
+    <Modal
+      isOpen={showDatePicker}
+      toggle={onToggle}
+      className={darkMode ? styles.dateRangeModalDark : undefined}
+    >
       <ModalHeader toggle={onToggle}>Select Date Range</ModalHeader>
       <ModalBody>
         <div className="d-flex flex-column gap-4">
@@ -391,7 +403,8 @@ function DateRangeModal({
                 id="start-date"
                 selected={startDate}
                 onChange={onStartChange}
-                className="form-control"
+                className={clsx('form-control', darkMode && styles.datePickerInputDark)}
+                calendarClassName={darkMode ? 'total-org-datepicker-dark' : undefined}
                 dateFormat="MM/dd/yyyy"
                 placeholderText="Select start date"
               />
@@ -406,7 +419,8 @@ function DateRangeModal({
                 id="end-date"
                 selected={endDate}
                 onChange={onEndChange}
-                className="form-control"
+                className={clsx('form-control', darkMode && styles.datePickerInputDark)}
+                calendarClassName={darkMode ? 'total-org-datepicker-dark' : undefined}
                 dateFormat="MM/dd/yyyy"
                 placeholderText="Select end date"
                 minDate={startDate}
@@ -609,6 +623,7 @@ function TotalOrgSummary(props) {
         />
         <DateRangeModal
           showDatePicker={showDatePicker}
+          darkMode={darkMode}
           startDate={startDate}
           endDate={endDate}
           onToggle={() => setShowDatePicker(!showDatePicker)}
@@ -698,7 +713,7 @@ function TotalOrgSummary(props) {
         </AccordianWrapper>
         <AccordianWrapper title="Volunteer Workload and Task Completion Analysis">
           <Row>
-            <Col lg={{ size: 6 }}>
+            <Col lg={{ size: 12 }}>
               <div
                 className={clsx(styles.componentContainer, styles.componentBorder)}
                 data-pdf-block
@@ -716,12 +731,28 @@ function TotalOrgSummary(props) {
                   className="d-flex flex-column justify-content-center mt-4 gap-3"
                   style={{ gap: '20px' }}
                 >
-                  <VolunteerHoursDistribution
-                    isLoading={isLoading}
-                    darkMode={darkMode}
-                    hoursData={volunteerStats?.volunteerHoursStats}
-                    totalHoursData={volunteerStats?.totalHoursWorked}
-                  />
+                  <div className="d-flex flex-row flex-wrap justify-content-center gap-4">
+                    <VolunteerHoursDistribution
+                      isLoading={isLoading}
+                      darkMode={darkMode}
+                      hoursData={
+                        volunteerStats?.volunteerWorkedHoursStats ??
+                        volunteerStats?.volunteerHoursStats
+                      }
+                      totalHoursData={volunteerStats?.totalHoursWorked}
+                      title="Actual Hours Worked"
+                      legendTitle="Actual Hours Worked"
+                    />
+                    <VolunteerHoursDistribution
+                      isLoading={isLoading}
+                      darkMode={darkMode}
+                      hoursData={volunteerStats?.volunteerCommittedHoursStats}
+                      title="Weekly Committed Hours"
+                      legendTitle="Weekly Committed Hours"
+                      centerLabelLines={['TOTAL', 'VOLUNTEERS']}
+                      useBucketCounts
+                    />
+                  </div>
                   <div className="d-flex flex-column align-items-center justify-content-center">
                     <NumbersVolunteerWorked
                       isLoading={isLoading}
@@ -739,7 +770,7 @@ function TotalOrgSummary(props) {
                 </div>
               </div>
             </Col>
-            <Col lg={{ size: 3 }}>
+            <Col lg={{ size: 6 }}>
               <div
                 className={clsx(styles.componentContainer, styles.componentBorder)}
                 data-pdf-block
@@ -762,7 +793,7 @@ function TotalOrgSummary(props) {
                 </div>
               </div>
             </Col>
-            <Col lg={{ size: 3 }}>
+            <Col lg={{ size: 6 }}>
               <div
                 className={clsx(styles.componentContainer, styles.componentBorder)}
                 data-pdf-block
