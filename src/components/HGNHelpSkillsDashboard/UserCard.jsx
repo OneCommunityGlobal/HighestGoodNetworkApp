@@ -27,7 +27,13 @@ function UserCard({ user }) {
         {email && (
           <div className={`${styles.contactLine}`}>
             <img src={emailIcon} alt="Email" className={`${styles.contactIcon}`} />
-            <span>{email}</span>
+            <a
+              href={`mailto:${email}`}
+              aria-label={`Email ${name}`}
+              className={`${styles.contactLink}`}
+            >
+              {email}
+            </a>
           </div>
         )}
         {slack && (
