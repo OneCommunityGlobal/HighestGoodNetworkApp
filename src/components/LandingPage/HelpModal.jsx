@@ -1,6 +1,6 @@
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { connect, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -13,8 +13,11 @@ function HelpModal({ show, onHide, auth }) {
   const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [teams, setTeams] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // null = not yet determined (loading or unknown due to a failed request); true/false = backend result
+  const [eligible, setEligible] = useState(null);
+  const [eligibilityLoading, setEligibilityLoading] = useState(true);
+  const [eligibilityError, setEligibilityError] = useState(false);
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -36,18 +39,27 @@ function HelpModal({ show, onHide, auth }) {
   }, []);
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId) {
+      setEligibilityLoading(false);
+      return;
+    }
 
-    const fetchUserProfile = async () => {
+    const fetchEligibility = async () => {
+      setEligibilityLoading(true);
+      setEligibilityError(false);
       try {
-        const profileResponse = await axios.get(ENDPOINTS.USER_PROFILE(userId));
-        setTeams(profileResponse.data?.teams || []);
+        const eligibilityResponse = await axios.get(ENDPOINTS.HELP_REQUEST_ELIGIBILITY);
+        setEligible(Boolean(eligibilityResponse.data?.eligible));
       } catch {
-        setTeams([]);
+        // A failed eligibility check is not proof of ineligibility; keep eligible unknown (null).
+        setEligible(null);
+        setEligibilityError(true);
+      } finally {
+        setEligibilityLoading(false);
       }
     };
 
-    fetchUserProfile();
+    fetchEligibility();
   }, [userId]);
 
   const handleSelect = option => {
@@ -70,7 +82,6 @@ function HelpModal({ show, onHide, auth }) {
 
     try {
       await axios.post(ENDPOINTS.HELP_REQUEST_CREATE, {
-        userId,
         topic: selectedOption,
         description: `Help request for: ${selectedOption}`,
       });
@@ -96,18 +107,6 @@ function HelpModal({ show, onHide, auth }) {
     localStorage.setItem('openSuggestionsModal', 'true');
     onHide();
   };
-
-  /* ---------------- Access Logic ---------------- */
-  const role = auth?.user?.role?.trim().toLowerCase() || '';
-
-  const allowedRoles = useMemo(() => new Set(['owner', 'administrator']), []);
-
-  const isSoftwareDevMember = useMemo(() => {
-    return (
-      allowedRoles.has(role) ||
-      teams.some(team => team.teamName?.trim().toLowerCase() === 'software development team')
-    );
-  }, [allowedRoles, teams, role]);
 
   const renderContent = () => {
     if (loading) return <div>Loading categories...</div>;
@@ -181,9 +180,16 @@ function HelpModal({ show, onHide, auth }) {
       <Modal.Body>
         <div className={styles.selectContainer}>{renderContent()}</div>
 
-        {!isSoftwareDevMember && (
+        {!eligibilityLoading && eligibilityError && (
           <div className="alert alert-warning mt-3">
-            Only members of the Software Development Team can submit requests.
+            Unable to verify your eligibility right now. Please try again later.
+          </div>
+        )}
+
+        {!eligibilityLoading && !eligibilityError && eligible === false && (
+          <div className="alert alert-warning mt-3">
+            You must complete the HGN questionnaire and belong to an eligible HGN team or role to
+            submit a help request.
           </div>
         )}
 
@@ -203,7 +209,7 @@ function HelpModal({ show, onHide, auth }) {
         <Button
           variant="primary"
           onClick={handleSubmit}
-          disabled={!selectedOption || !isSoftwareDevMember || isSubmitting}
+          disabled={!selectedOption || eligibilityLoading || eligible !== true || isSubmitting}
         >
           {isSubmitting ? 'Submitting...' : 'Submit'}
         </Button>
