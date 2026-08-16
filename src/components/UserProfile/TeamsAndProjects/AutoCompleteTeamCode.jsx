@@ -86,8 +86,8 @@ export const AutoCompleteTeamCode = props => {
                   className={classNameStyleP}
                   style={
                     darkMode
-                      ? { ...styleP, ...colordarkWithBorder, width: 'auto' }
-                      : { ...styleP, width: 'auto' }
+                      ? { ...styleP, ...colordarkWithBorder, width: '100%' }
+                      : { ...styleP, width: '100%' }
                   }
                 >
                   No options
@@ -97,7 +97,7 @@ export const AutoCompleteTeamCode = props => {
                   className={
                     arrayInputAutoComplete.length > 3
                       ? 'row row-cols-lg-5 row-cols-sm-4'
-                      : ''
+                      : 'teamCodeResultsSmall'
                   }
                   style={{
                     marginLeft: 0,
@@ -108,7 +108,7 @@ export const AutoCompleteTeamCode = props => {
                   {arrayInputAutoComplete.map(item => (
                     <div
                       key={item}
-                      className={`${arrayInputAutoComplete.length <= 3 ? '' : 'col col-cols-3'}`}
+                      className={`${arrayInputAutoComplete.length <= 3 ? 'w-100' : 'col col-cols-3'}`}
                     >
                       {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions */}
                       <p

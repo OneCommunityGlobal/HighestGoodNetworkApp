@@ -32,6 +32,14 @@
   color: green;
 }
 
+.teamCodeResultsSmall {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
 .emp-profile {
   padding-top: 20px;
   padding-left: 3%;

@@ -1430,11 +1430,11 @@ setUpdatedTasks(prev => {
         </div>
 
         <div className="right-column">
-          {!codeValid ? (
+          {/* {!codeValid ? (
             <Alert color="danger">
-              NOT SAVED! The code must be between 5 and 7 characters long
+              NOT SAVED! The code must be between 5 and 77 characters long
             </Alert>
-          ) : null}
+          ) : null} */}
           <div className="profile-head">
             <h5 className={`mr-2 ${darkMode ? 'text-light' : ''}`}>{`${firstName} ${lastName}`}</h5>
             <div style={{ marginTop: '6px' }}>
