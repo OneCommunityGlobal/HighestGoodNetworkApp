@@ -34,7 +34,7 @@
     padding-top: 10px !important;
     padding-bottom: 10px !important;
   }
-  
+
   .containerTotalOrgWrapper:global(.mb-5) {
     margin-bottom: 20px !important;
   }
@@ -215,6 +215,29 @@
   color: #fff !important;
 }
 
+/* Role Distribution slice label overrides */
+.containerTotalOrgWrapper:global(.bg-oxford-blue)
+  .componentContainer
+  :global(.role-distribution-label-dark),
+.containerTotalOrgWrapper:global(.bg-oxford-blue)
+  .componentContainer
+  :global(.role-distribution-label-dark)
+  tspan {
+  fill: #000 !important;
+  color: #000 !important;
+}
+
+.containerTotalOrgWrapper:global(.bg-oxford-blue)
+  .componentContainer
+  :global(.role-distribution-label-light),
+.containerTotalOrgWrapper:global(.bg-oxford-blue)
+  .componentContainer
+  :global(.role-distribution-label-light)
+  tspan {
+  fill: #fff !important;
+  color: #fff !important;
+}
+
 .containerTotalOrgWrapper.bg-oxford-blue h3 {
   color: #fff;
 }
@@ -382,8 +405,6 @@
   transform: translateX(4px) !important;
 }
 
-/* Dark mode dropdown consistency */
-
 /* Component containers - Clean borderless design */
 .componentContainer {
   margin: 0 0 15px;
@@ -486,6 +507,70 @@
 
 .totalOrgChartTitleDark p {
   color: white;
+}
+
+.dateRangeModalDark :global(.modal-content) {
+  color: #f8fafc;
+  background-color: #1c2541;
+  border-color: #475569;
+}
+
+.dateRangeModalDark :global(.close) {
+  color: #fff;
+  opacity: 1;
+}
+
+.dateRangeModalDark :global(.btn-close) {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.datePickerInputDark {
+  color: #f8fafc !important;
+  background-color: #111827 !important;
+  border-color: #64748b !important;
+}
+
+.datePickerInputDark::placeholder {
+  color: #cbd5e1 !important;
+  opacity: 1;
+}
+
+:global(.total-org-datepicker-dark.react-datepicker),
+:global(.total-org-datepicker-dark .react-datepicker__month-container) {
+  color: #f8fafc;
+  background-color: #111827;
+  border-color: #64748b;
+}
+
+:global(.total-org-datepicker-dark .react-datepicker__header) {
+  background-color: #1e293b;
+  border-bottom-color: #64748b;
+}
+
+:global(.total-org-datepicker-dark .react-datepicker__current-month),
+:global(.total-org-datepicker-dark .react-datepicker__day-name),
+:global(.total-org-datepicker-dark .react-datepicker__day) {
+  color: #f8fafc;
+}
+
+:global(.total-org-datepicker-dark .react-datepicker__day:hover),
+:global(.total-org-datepicker-dark .react-datepicker__day--keyboard-selected) {
+  color: #fff;
+  background-color: #475569;
+}
+
+:global(.total-org-datepicker-dark .react-datepicker__day--selected) {
+  color: #fff;
+  background-color: #2563eb;
+}
+
+:global(.total-org-datepicker-dark .react-datepicker__day--outside-month),
+:global(.total-org-datepicker-dark .react-datepicker__day--disabled) {
+  color: #94a3b8;
+}
+
+:global(.total-org-datepicker-dark .react-datepicker__navigation-icon::before) {
+  border-color: #f8fafc;
 }
 
 .whiteSmoke {
