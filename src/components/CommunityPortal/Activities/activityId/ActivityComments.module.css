@@ -674,6 +674,11 @@
   color: #b8c5d1 !important;
 }
 
+:global(body.dark-mode) .eventStatus,
+:global(body.bm-dashboard-dark) .eventStatus {
+  color: #9be7b0 !important;
+}
+
 :global(body.dark-mode) .eventMetaItem a,
 :global(body.bm-dashboard-dark) .eventMetaItem a {
   color: #66b3ff !important;
