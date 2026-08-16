@@ -136,6 +136,7 @@ const initialState = {
   replaceCodeLoading: false,
   allRoleInfo: [],
   teamCodeWarningUsers: [],
+  showOnlyMismatched: false,
   loadedTabs: [navItems[1]],
   summariesByTab: {},
   tabsLoading: { [navItems[1]]: false },
@@ -1723,6 +1724,10 @@ const WeeklySummariesReport = props => {
   const { error } = props;
   const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
   const { authEmailWeeklySummaryRecipient } = props;
+  const mismatchedInCurrentFilter = state.filteredSummaries.filter(s => s.teamCodeWarning);
+  const displayedSummaries = state.showOnlyMismatched
+    ? mismatchedInCurrentFilter
+    : state.filteredSummaries;
 
   if (error) {
     return (
@@ -1925,7 +1930,7 @@ const WeeklySummariesReport = props => {
 
           <div>
             <div className={styles.teamCodeSelectRow}>
-              {state.teamCodeWarningUsers.length > 0 && (
+              {mismatchedInCurrentFilter.length > 0 && (
                 <>
                   <i
                     className="fa fa-info-circle text-danger"
@@ -1940,8 +1945,35 @@ const WeeklySummariesReport = props => {
                     }}
                   />
                   <ReactTooltip id="teamCodeWarningTooltip" place="top" effect="solid">
-                    {state.teamCodeWarningUsers.length} users have mismatched team codes!
+                    {mismatchedInCurrentFilter.length} users have mismatched team codes!
                   </ReactTooltip>
+                  <div
+                    className={styles.filterStyle}
+                    style={{ marginRight: '8px', alignSelf: 'center' }}
+                  >
+                    <span>Show only mismatched</span>
+                    <div className={`${styles.switchToggleControl}`}>
+                      <input
+                        type="checkbox"
+                        className={`${styles.switchToggle}`}
+                        id="show-only-mismatched-toggle"
+                        checked={state.showOnlyMismatched}
+                        onChange={() =>
+                          setState(prev => ({
+                            ...prev,
+                            showOnlyMismatched: !prev.showOnlyMismatched,
+                          }))
+                        }
+                      />
+                      <label
+                        className={`${styles.switchToggleLabel}`}
+                        htmlFor="show-only-mismatched-toggle"
+                      >
+                        <span className={`${styles.switchToggleInner}`} />
+                        <span className={`${styles.switchToggleSwitch}`} />
+                      </label>
+                    </div>
+                  </div>
                 </>
               )}
 
@@ -2275,7 +2307,7 @@ const WeeklySummariesReport = props => {
                         style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}
                       >
                         <GeneratePdfReport
-                          summaries={state.filteredSummaries}
+                          summaries={displayedSummaries}
                           weekIndex={index}
                           weekDates={weekDates[index]}
                           darkMode={darkMode}
@@ -2312,17 +2344,17 @@ const WeeklySummariesReport = props => {
                         </Button>
                       </Col>
                     </Row>
-                    {state.filteredSummaries && state.filteredSummaries.length > 0 ? (
+                    {displayedSummaries && displayedSummaries.length > 0 ? (
                       <>
                         <Row>
                           <Col>
-                            <b>Total Team Members:</b> {state.filteredSummaries.length}
+                            <b>Total Team Members:</b> {displayedSummaries.length}
                           </Col>
                         </Row>
                         <Row>
                           <Col>
                             <FormattedReport
-                              summaries={state.filteredSummaries}
+                              summaries={displayedSummaries}
                               weekIndex={index}
                               bioCanEdit={permissionState.bioEditPermission}
                               canEditSummaryCount={permissionState.canEditSummaryCount}
