@@ -265,12 +265,35 @@ button.sendButton:hover {
 
 /* index.css's `body.dark-mode * { color: #fff !important }` overrides each
    platform's brand color (set via inline style from getIconColor() in
-   index.jsx), so every icon renders white in dark mode. index.jsx also sets
-   the color on a `--icon-color` custom property alongside the inline color;
-   read it back here with matching !important so the per-platform color
-   survives. */
-.tabNavItem.dark .tabIcon svg {
-  color: var(--icon-color, inherit) !important;
+   index.jsx), so every icon renders white in dark mode. One rule per
+   platform id, matching the colors getIconColor() already returns, so
+   dark mode doesn't depend on the inline style surviving at all. */
+.tabNavItem.dark .icon-facebook svg {
+  color: #1877f2 !important;
+}
+
+.tabNavItem.dark .icon-linkedin svg {
+  color: #0077b5 !important;
+}
+
+.tabNavItem.dark .icon-medium svg {
+  color: #00ab6c !important;
+}
+
+.tabNavItem.dark .icon-video svg {
+  color: #f00 !important;
+}
+
+.tabNavItem.dark .icon-article svg {
+  color: #4285f4 !important;
+}
+
+.tabNavItem.dark .icon-photo svg {
+  color: #e91e63 !important;
+}
+
+.tabNavItem.dark .icon-weeklyreport svg {
+  color: #00c853 !important;
 }
 
 .tabNavItem.dark {

@@ -10,8 +10,10 @@
 
 .invalid-help-context,
 .warning-help-context {
-  /* Preserve error red in dark mode so validation text remains readable. */
-  color: red;
+  /* index.css's `body.dark-mode * { color: #fff !important }` beats a plain
+     (non-important) color, so this needs its own !important to actually
+     preserve error red in dark mode. */
+  color: red !important;
   font-size: 0.8rem;
   margin-top: 0.5rem;
   margin-bottom: auto;

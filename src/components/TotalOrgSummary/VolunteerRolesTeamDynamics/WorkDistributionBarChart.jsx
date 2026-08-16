@@ -111,7 +111,10 @@ export default function WorkDistributionBarChart({ isLoading, workDistributionSt
                 fontSize: 14,
               }}
             />
-            <Tooltip content={<CustomTooltip yAxisLabel="totalHours" darkMode={isDarkMode} />} />
+            <Tooltip
+              content={<CustomTooltip yAxisLabel="totalHours" darkMode={isDarkMode} />}
+              cursor={{ fill: isDarkMode ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)' }}
+            />
             <Legend />
             <Bar
               dataKey="totalHours"

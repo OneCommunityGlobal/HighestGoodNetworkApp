@@ -174,7 +174,7 @@ function Announcements({ title, email: initialEmail }) {
               }}
               aria-selected={activeTab === id}
             >
-              <div className={styles.tabIcon}>
+              <div className={`${styles.tabIcon} ${styles[`icon-${id}`] || ''}`}>
                 {customIconSrc ? (
                   <img src={customIconSrc} alt={`${label} icon`} className={styles.tabIcon} />
                 ) : (
@@ -184,7 +184,6 @@ function Announcements({ title, email: initialEmail }) {
                       width: '100%',
                       height: '100%',
                       color: getIconColor(id),
-                      '--icon-color': getIconColor(id),
                     }}
                   />
                 )}

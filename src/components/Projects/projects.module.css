@@ -173,10 +173,15 @@
 }
 
 /* Bootstrap's `.btn-outline-light:hover` sets a light background + dark text,
-   but index.css's `body.dark-mode .btn { color: #fff !important }` forces the
-   hover text back to white — white text on the light hover background.
-   Re-assert the dark hover text for just this button. */
-:global(.dark-mode) .show-archived-btn:hover {
+   but index.css's `body.dark-mode:not(.no-global-theme) .btn { color: #fff
+   !important }` forces the hover text back to white — white text on the
+   light hover background. That rule's selector is `body.dark-mode
+   :not(.no-global-theme) .btn` (specificity 0,0,3,1); `.dark-mode
+   .show-archived-btn:hover` alone ties on the class count (3) but loses on
+   element count (0 vs 1), so index.css still won. Prefix `body` to match its
+   specificity exactly and win on source order (this module loads after
+   index.css). */
+:global(body.dark-mode) .show-archived-btn:hover {
   color: #212529 !important;
 }
 

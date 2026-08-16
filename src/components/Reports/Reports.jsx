@@ -626,6 +626,7 @@ endDate: moment()
                     filterStatus={this.state.filterStatus}
                     setFilterStatus={this.setFilterStatus}
                     onWildCardSearch={this.onWildCardSearch}
+                    wildCardSearchText={this.state.wildCardSearchText}
                     onCreateNewTeamShow={this.onCreateNewTeamShow}
                     onSearchClick={this.handleSearchClick}
                     darkMode={darkMode}

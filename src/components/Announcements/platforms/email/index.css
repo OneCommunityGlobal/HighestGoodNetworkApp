@@ -288,6 +288,17 @@ body.dark-mode .tab-pane.active {
   border-color: #3b82f6 !important;
 }
 
+/* Dashboard card icons keep their brand colors (blue send icon, green gear)
+   in both themes — index.css's `body.dark-mode * { color: #fff !important }`
+   otherwise repaints them white. */
+.email-update-container.dark-mode .email-dashboard-card-icon-send {
+  color: #007bff !important;
+}
+
+.email-update-container.dark-mode .email-dashboard-card-icon-templates {
+  color: #28a745 !important;
+}
+
 /* Container background */
 .email-update-container.dark-mode,
 div.bg-oxford-blue.text-light.dark-mode,

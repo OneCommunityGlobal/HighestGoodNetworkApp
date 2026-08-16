@@ -123,7 +123,10 @@ export default function EmailPanel({ title, initialEmail }) {
                 e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
-              <FaPaperPlane style={{ fontSize: '3rem', color: '#007bff', marginBottom: '1rem' }} />
+              <FaPaperPlane
+                className="email-dashboard-card-icon-send"
+                style={{ fontSize: '3rem', color: '#007bff', marginBottom: '1rem' }}
+              />
               <h3 style={{ color: darkMode ? '#fff' : '#000', marginBottom: '1rem' }}>Email</h3>
               <p style={{ color: darkMode ? '#ccc' : '#666', marginBottom: '0.5rem' }}>
                 Send, Outbox
@@ -155,7 +158,10 @@ export default function EmailPanel({ title, initialEmail }) {
                 e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
-              <FaCog style={{ fontSize: '3rem', color: '#28a745', marginBottom: '1rem' }} />
+              <FaCog
+                className="email-dashboard-card-icon-templates"
+                style={{ fontSize: '3rem', color: '#28a745', marginBottom: '1rem' }}
+              />
               <h3 style={{ color: darkMode ? '#fff' : '#000', marginBottom: '1rem' }}>
                 Manage Templates
               </h3>
