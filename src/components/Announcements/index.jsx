@@ -192,8 +192,8 @@ function Announcements({ title, email: initialEmail }) {
       </Nav>
       <ReactTooltip place="bottom" type="dark" effect="solid" />
 
-      <div style={{ backgroundColor: darkMode ? '#14233a' : '#fff', padding: '1rem' }}>
-        <TabContent activeTab={activeTab}>
+      <div className={styles.announcementsTab}>
+        <TabContent activeTab={activeTab} className={styles.tabContent}>
           <TabPane tabId="email">
             <EmailPanel title={title} initialEmail={initialEmail} />
           </TabPane>
