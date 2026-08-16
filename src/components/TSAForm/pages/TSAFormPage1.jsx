@@ -272,7 +272,7 @@ function TSAFormPage1() {
           }}
         />
         {errors.email && (
-          <div style={{ color: 'red', fontSize: '14px', marginTop: '5px' }}>
+          <div className="bm-error-red" style={{ fontSize: '14px', marginTop: '5px' }}>
             Please enter a valid email address
           </div>
         )}
@@ -323,7 +323,7 @@ function TSAFormPage1() {
           }}
         />
         {errors.fullname && (
-          <div style={{ color: 'red', fontSize: '14px', marginTop: '5px' }}>
+          <div className="bm-error-red" style={{ fontSize: '14px', marginTop: '5px' }}>
             This field is required <br />
             Please enter your Full Name (first and last name required)
           </div>
@@ -375,7 +375,7 @@ function TSAFormPage1() {
           }}
         />
         {errors.professionaltitle && (
-          <div style={{ color: 'red', fontSize: '14px', marginTop: '5px' }}>
+          <div className="bm-error-red" style={{ fontSize: '14px', marginTop: '5px' }}>
             This field is required
           </div>
         )}
@@ -439,7 +439,9 @@ function TSAFormPage1() {
           </label>
         ))}
         {errors.professionalExperience && (
-          <div style={{ color: 'red', fontSize: '14px' }}>Please select one</div>
+          <div className="bm-error-red" style={{ fontSize: '14px' }}>
+            Please select one
+          </div>
         )}
       </div>
 
@@ -544,7 +546,9 @@ function TSAFormPage1() {
           </div>
         ))}
         {errors.areaofExpertise && (
-          <div style={{ color: 'red', fontSize: '14px' }}>Please select at least one</div>
+          <div className="bm-error-red" style={{ fontSize: '14px' }}>
+            Please select at least one
+          </div>
         )}
       </div>
 

@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { addNewWBS } from './../../../../actions/wbs';
 import hasPermission from '~/utils/permissions';
+import styles from './AddWBS.module.css';
 
 const AddWBS = (props) => {
   const darkMode = props.state.theme.darkMode;
@@ -28,14 +29,14 @@ const AddWBS = (props) => {
       {canPostWBS ? (
         <div className="input-group" id="new_project">
           <div className="input-group-prepend">
-            <span className={`input-group-text ${darkMode ? 'bg-light-grey border-0' : ''}`}>Add new WBS</span>
+            <span className={`input-group-text ${darkMode ? styles.wbsLabel : ''}`}>Add new WBS</span>
           </div>
 
           <input
             // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
             type="text"
-            className={`form-control ${darkMode ? 'bg-white border-0' : ''}`}
+            className={`form-control ${darkMode ? styles.wbsInput : ''}`}
             aria-label="WBS WBS"
             placeholder="WBS Name"
             value={taskTitle}

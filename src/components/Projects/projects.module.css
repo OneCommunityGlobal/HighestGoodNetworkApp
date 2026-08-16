@@ -165,6 +165,21 @@
   z-index: 2;
 }
 
+/* index.css's `body.dark-mode * { color: #fff !important }` repaints this
+   dark-on-green count white, so it disappears against the lawngreen circle.
+   Re-assert the dark text with matching !important. */
+:global(.dark-mode) .project-member-badge {
+  color: #111 !important;
+}
+
+/* Bootstrap's `.btn-outline-light:hover` sets a light background + dark text,
+   but index.css's `body.dark-mode .btn { color: #fff !important }` forces the
+   hover text back to white — white text on the light hover background.
+   Re-assert the dark hover text for just this button. */
+:global(.dark-mode) .show-archived-btn:hover {
+  color: #212529 !important;
+}
+
 .project-member-btn .fa-users {
   font-size: 1.5rem;
   line-height: 1;

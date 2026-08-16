@@ -27,10 +27,12 @@
   margin-top: 5px; /* Space above input fields */
   width: 100%;
   padding: 12px;
+
   /* Increased padding */
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
+
   /* Ensures padding is included in width */
 }
 
@@ -44,10 +46,12 @@ button.sendButton {
   border: none;
   border-radius: 4px;
   padding: 12px 24px;
+
   /* Increased padding */
   cursor: pointer;
   margin-top: 20px;
   box-sizing: border-box;
+
   /* Ensures padding is included in width */
 }
 
@@ -107,6 +111,7 @@ button.sendButton:hover {
 .emails {
   margin-top: 65px;
   padding: 24px;
+
   /* Increased padding */
   border: solid 1px #cacaca;
   border-radius: 20px;
@@ -170,8 +175,10 @@ button.sendButton:hover {
     width: 100%;
     margin-top: 20px;
     padding: 20px 12px;
+
     /* Adjust padding for smaller screens */
     box-sizing: border-box;
+
     /* Ensures padding is included in width */
   }
   
@@ -179,8 +186,10 @@ button.sendButton:hover {
     width: 100%;
     margin-bottom: 10px;
     padding: 12px;
+
     /* Ensures padding is consistent */
     box-sizing: border-box;
+
     /* Ensures padding is included in width */
   }
   
@@ -188,8 +197,10 @@ button.sendButton:hover {
   :global(textarea) {
     width: 100%;
     padding: 12px;
+
     /* Ensures padding is consistent */
     box-sizing: border-box;
+
     /* Ensures padding is included in width */
   }
 }
@@ -250,6 +261,16 @@ button.sendButton:hover {
   text-align: center;
   margin-top: 6px;
   line-height: 1rem;
+}
+
+/* index.css's `body.dark-mode * { color: #fff !important }` overrides each
+   platform's brand color (set via inline style from getIconColor() in
+   index.jsx), so every icon renders white in dark mode. index.jsx also sets
+   the color on a `--icon-color` custom property alongside the inline color;
+   read it back here with matching !important so the per-platform color
+   survives. */
+.tabNavItem.dark .tabIcon svg {
+  color: var(--icon-color, inherit) !important;
 }
 
 .tabNavItem.dark {
@@ -545,6 +566,7 @@ button.sendButton:hover {
   box-shadow: -2px 0 6px rgb(0 0 0 / 12%), 2px 0 6px rgb(0 0 0 / 12%),
     0 6px 6px rgb(0 0 0 / 20%);
 }
+
 /* Dark mode background fix for entire announcements area */
 .dark-mode {
   background-color: #1a1d23 !important;
@@ -561,6 +583,7 @@ button.sendButton:hover {
 .dark-mode .tab-content {
   background-color: #1a1d23 !important;
 }
+
 /* CRITICAL: Remove white padding in dark mode */
 .dark-mode,
 .dark-mode > div,

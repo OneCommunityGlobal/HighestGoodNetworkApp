@@ -180,7 +180,12 @@ function Announcements({ title, email: initialEmail }) {
                 ) : (
                   <FontAwesomeIcon
                     icon={icon}
-                    style={{ width: '100%', height: '100%', color: getIconColor(id) }}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      color: getIconColor(id),
+                      '--icon-color': getIconColor(id),
+                    }}
                   />
                 )}
               </div>

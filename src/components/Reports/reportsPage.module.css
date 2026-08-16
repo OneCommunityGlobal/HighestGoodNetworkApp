@@ -130,8 +130,59 @@
   -webkit-overflow-scrolling: touch;
 }
 
+/* Dark mode: the browser's default light scrollbar stays light-on-dark here
+   otherwise. */
+:global(.dark-mode) .table-data-container {
+  scrollbar-color: #3a506b #1a1d23;
+}
+
+:global(.dark-mode) .table-data-container::-webkit-scrollbar-track {
+  background: #1a1d23;
+}
+
+:global(.dark-mode) .table-data-container::-webkit-scrollbar-thumb {
+  background-color: #3a506b;
+  border-radius: 4px;
+}
+
+/* Dark mode for the People/Project/Team report tables. `bg-yinmn-blue`
+   (passed as a plain string from PeopleTable/ProjectTable/TeamTable.jsx) is
+   defined in src/App.module.css, which Vite scopes as a CSS module, so it
+   never matches — the tables keep their default white background while
+   index.css forces all text white. Give them real scoped dark styling,
+   including a row-hover highlight that stays visible against a dark
+   background. */
+:global(.dark-mode) .reports-table-dark {
+  background-color: #1c2541;
+  color: #fff;
+}
+
+:global(.dark-mode) .reports-table-dark th,
+:global(.dark-mode) .reports-table-dark td {
+  border-color: #3a506b;
+}
+
+:global(.dark-mode) .reports-table-dark tbody tr:hover {
+  background-color: #3a506b;
+}
+
 .search-field-container {
   max-width: 100%;
+}
+
+/* Dark mode: `bg-darkmode-liblack`/`text-light` (passed as plain strings from
+   ReportTableSearchPanel.jsx) are defined in src/App.module.css, which Vite
+   scopes as a CSS module, so they never match and the input keeps its light
+   background while index.css forces the text white — white-on-white. Give the
+   input its own scoped dark styling instead. */
+:global(.dark-mode) .search-field-container {
+  background-color: #1c2541 !important;
+  border-color: #3a506b !important;
+  color: #fff !important;
+}
+
+:global(.dark-mode) .search-field-container::placeholder {
+  color: #94a3b8;
 }
 
 .date-picker-container {

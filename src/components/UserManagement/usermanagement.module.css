@@ -646,3 +646,17 @@
   background-color: #3a506b !important;
   border-color: #334155 !important;
 }
+
+/* Same problem, same fix, for the inline-edit text inputs in UserTableData.jsx:
+   they used to pass `bg-darkmode-liblack text-light` (dead — see the comment
+   above), leaving the inputs on a white background while the global dark-mode
+   rule forced the text white too. */
+.editInputDark {
+  background-color: #1c2541 !important;
+  border-color: #3a506b !important;
+  color: #fff !important;
+}
+
+.editInputDark::placeholder {
+  color: #94a3b8;
+}
