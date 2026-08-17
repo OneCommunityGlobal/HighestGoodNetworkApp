@@ -4,11 +4,12 @@ const APIEndpoint =
 
 export const ENDPOINTS = {
   APIEndpoint: () => APIEndpoint,
+  USER_PROFILES: `${APIEndpoint}/userProfile`,
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
   USER_PROFILE_FIXED: userId => `${APIEndpoint}/userProfile/${userId}`,
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
   USER_PAUSE: userId => `${APIEndpoint}/userProfile/${userId}/pause`,
-  USER_PROFILES: `${APIEndpoint}/userprofile/`,
+  VERIFY_PRODUCTION_IDENTITY: `${APIEndpoint}/production-identity/verify`,
   UPDATE_REHIREABLE_STATUS: userId => `${APIEndpoint}/userprofile/${userId}/rehireable`,
   TOGGLE_VISIBILITY: userId => `${APIEndpoint}/userprofile/${userId}/toggleInvisibility`,
   USER_PROFILE_UPDATE: `${APIEndpoint}/userprofile/update`,
@@ -414,6 +415,8 @@ export const ENDPOINTS = {
   },
   BM_TOOL_AVAILABILITY: (toolId = '', projectId = '') =>
     `${APIEndpoint}/tools/availability?toolId=${toolId}&projectId=${projectId}`,
+  // Tool replacement / breakdown susceptibility chart (backend PR #2037)
+  TOOL_REPLACEMENTS: `${APIEndpoint}/tools/replacements`,
   BM_LOG_TOOLS: `${APIEndpoint}/bm/tools/log`,
   BM_TOOL_UTILIZATION: `${APIEndpoint}/tools/utilization`,
   BM_TOOL_UTILIZATION_INSIGHTS: `${APIEndpoint}/tools/utilization/insights`,
@@ -527,11 +530,9 @@ export const ENDPOINTS = {
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   GET_JOB_FORM: formId => `${APIEndpoint}/jobforms/${formId}`,
   GET_ALL_JOB_FORMS: `${APIEndpoint}/jobforms/all`,
-  GET_JOB: jobId => `${APIEndpoint}/jobs/${jobId}`,
-  /** Referral pre-fill for job application (`/${referralId}` appended in client). */
-  GET_USER_QUESTIONNAIRE: `${APIEndpoint}/hgnform/referral`,
   GET_FORM_RESPONSES: formID => `${APIEndpoint}/jobforms/${formID}/responses`,
-  SUBMIT_JOB_APPLICATION: formId => `${APIEndpoint}/jobforms/${formId}/responses`,
+  SUBMIT_JOB_APPLICATION: formId =>
+  `${APIEndpoint}/jobforms/${formId}/responses`,
 
   ADD_QUESTION: formId => `${APIEndpoint}/jobforms/${formId}/questions`,
   UPDATE_QUESTION: (formId, questionIndex) =>
@@ -576,18 +577,17 @@ export const ENDPOINTS = {
   // event endpoint
   EVENTS: `${APIEndpoint}/events`,
   EVENT_BY_ID: eventId => `${APIEndpoint}/events/${eventId}`,
+  EVENTS_BY_ID: activityId => `${APIEndpoint}/events/${activityId}`,
+  REGISTER_FOR_EVENT: activityId => `${APIEndpoint}/events/${activityId}/register`,
   EVENT_TYPES: `${APIEndpoint}/events/types`,
   EVENT_LOCATIONS: `${APIEndpoint}/events/locations`,
-
+  EVENT_ATTENDANCE_STATS: `${APIEndpoint}/events/attendance/stats`,
   ATTENDANCE: `${APIEndpoint}/attendance`,
   ATTENDANCE_BY_EVENT: eventId => `${APIEndpoint}/attendance/event/${eventId}`,
   ATTENDANCE_SUMMARY: eventId => `${APIEndpoint}/attendance/event/${eventId}/summary`,
   ATTENDANCE_BY_ID: attendanceId => `${APIEndpoint}/attendance/${attendanceId}`,
   ATTENDANCE_SEED: eventId => `${APIEndpoint}/attendance/event/${eventId}/seed`,
   ATTENDANCE_MOCK: eventId => `${APIEndpoint}/attendance/event/${eventId}/mock`,
-  EVENTS_BY_ID: (activityId) => `${APIEndpoint}/events/${activityId}`,
-  REGISTER_FOR_EVENT: (activityId) => `${APIEndpoint}/events/${activityId}/register`,
-  EVENT_ATTENDANCE_STATS: `${APIEndpoint}/events/attendance/stats`,
   LB_SEND_MESSAGE: `${APIEndpoint}/lb/messages`,
   LB_READ_MESSAGE: `${APIEndpoint}/lb/messages/conversation`,
   LB_UPDATE_MESSAGE_STATUS: `${APIEndpoint}/lb/messages/statuses`,
@@ -596,6 +596,8 @@ export const ENDPOINTS = {
   LB_GET_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
   LB_UPDATE_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
   LB_MARK_MESSAGES_AS_READ: `${APIEndpoint}/lb/messages/mark-as-read`,
+  LB_VILLAGES: `${APIEndpoint}/villages`,
+  LB_VILLAGE_BY_ID: id => `${APIEndpoint}/villages/${id}`,
 
   // Injuries endpoints
   INJURIES: `${APIEndpoint}/injuries`,
@@ -674,10 +676,10 @@ export const ENDPOINTS = {
 
     const qs = params.length ? `?${params.join('&')}` : '';
 
-    return `${APIEndpoint.replace('/api', '')}/job-analytics${qs}`;
+    return `${APIEndpoint}/job-analytics-router${qs}`;
   },
 
-  JOB_ANALYTICS_ROLES: `${APIEndpoint.replace('/api', '')}/job-analytics/roles`,
+  JOB_ANALYTICS_ROLES: `${APIEndpoint}/job-analytics-router/roles`,
 
   // pr dashboard endpoints
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
@@ -696,9 +698,23 @@ export const ENDPOINTS = {
 
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
+  GITHUB_REVIEW_SUMMARY: (duration, sort = 'desc', team) => {
+    const params = new URLSearchParams({
+      duration,
+      sort,
+    });
+    if (team) {
+      params.set('team', team);
+    }
+    return `${APIEndpoint}/analytics/review-summary?${params.toString()}`;
+  },
   PR_GRADING_CONFIG: `${APIEndpoint}/pr-grading-config`,
   WEEKLY_GRADING: `${APIEndpoint}/weekly-grading`,
   WEEKLY_GRADING_SAVE: `${APIEndpoint}/weekly-grading/save`,
+
+  PM_EDUCATORS: () => `${APIEndpoint}/pm/educators`,
+  PM_EDUCATOR_STUDENTS: (educatorId) => `${APIEndpoint}/pm/educators/${encodeURIComponent(educatorId)}/students`,
+  PM_NOTIFICATIONS: () => `${APIEndpoint}/pm/notifications`,
 
   // Education Portal endpoints
   PROGRESS_EDUCATOR_STUDENT: studentId => `${APIEndpoint}/progress/educator/student-progress/${studentId}`,
@@ -731,6 +747,8 @@ export const ENDPOINTS = {
   HGN_FORM_RESPONSES: () => `${APIEndpoint}/hgnform`,
   KI_CALENDAR_EVENTS: (month, year) => `${APIEndpoint}/kitchenandinventory/calendar?month=${month}&year=${year}`,
   KI_INVENTORY_ITEMS: `${APIEndpoint}/kitchenandinventory/inventory/items`,
+  KI_INVENTORY_ITEM: itemId => `${APIEndpoint}/kitchenandinventory/inventory/items/${itemId}`,
+  KI_INVENTORY_STORED_QUANTITY: `${APIEndpoint}/kitchenandinventory/inventory/items/storedQuantity`,
   KI_INVENTORY_STATS: `${APIEndpoint}/kitchenandinventory/inventory/items/stats`,
   KI_INVENTORY_PRESERVED: `${APIEndpoint}/kitchenandinventory/inventory/items/ingredients/preserved`,
 

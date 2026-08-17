@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import {
@@ -303,7 +304,7 @@ function LogAttendance() {
       <div className={containerClass}>
         <div className={styles.errorContainer}>
           <p>Error: {error}</p>
-          <button type="button" onClick={() => window.location.reload()}>
+          <button type="button" onClick={() => globalThis.location.reload()}>
             Retry
           </button>
         </div>
@@ -385,13 +386,7 @@ function LogAttendance() {
         ))}
       </section>
 
-      {activeTab !== 'Analysis' ? (
-        <section className={styles.placeholder}>
-          <p>
-            The <strong>{activeTab}</strong> section is coming soon. Stay tuned!
-          </p>
-        </section>
-      ) : (
+      {activeTab === 'Analysis' ? (
         <>
           <section className={styles.analyticsCards}>
             {insightConfig.map(card => (
@@ -499,6 +494,12 @@ function LogAttendance() {
             </div>
           </section>
         </>
+      ) : (
+        <section className={styles.placeholder}>
+          <p>
+            The <strong>{activeTab}</strong> section is coming soon. Stay tuned!
+          </p>
+        </section>
       )}
     </div>
   );
@@ -515,6 +516,12 @@ function MetaRow({ icon, label, value }) {
     </div>
   );
 }
+
+MetaRow.propTypes = {
+  icon: PropTypes.node,
+  label: PropTypes.string,
+  value: PropTypes.string,
+};
 
 function MiniCalendar() {
   const weeks = [
@@ -559,6 +566,11 @@ function MiniCalendar() {
   );
 }
 
+const ringDetailShape = PropTypes.shape({
+  label: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+});
+
 function RingCard({ config }) {
   const { title, value, details = [], colors } = config;
   return (
@@ -593,6 +605,15 @@ function RingCard({ config }) {
   );
 }
 
+RingCard.propTypes = {
+  config: PropTypes.shape({
+    title: PropTypes.string,
+    value: PropTypes.number,
+    details: PropTypes.arrayOf(ringDetailShape),
+    colors: PropTypes.arrayOf(PropTypes.string),
+  }),
+};
+
 function SortableHeader({ label, sortKey, sortConfig, onSort }) {
   return (
     <th>
@@ -607,5 +628,15 @@ function SortableHeader({ label, sortKey, sortConfig, onSort }) {
     </th>
   );
 }
+
+SortableHeader.propTypes = {
+  label: PropTypes.string,
+  sortKey: PropTypes.string,
+  sortConfig: PropTypes.shape({
+    key: PropTypes.string,
+    direction: PropTypes.string,
+  }),
+  onSort: PropTypes.func,
+};
 
 export default LogAttendance;
