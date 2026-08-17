@@ -34,6 +34,8 @@ export default function ItemsTable({
   endRow,
   onPageChange,
   onRowsPerPageChange,
+  selectedRowId,
+  onRowSelect,
 }) {
   const [modal, setModal] = useState(false);
   const [record, setRecord] = useState(null);
@@ -148,7 +150,13 @@ export default function ItemsTable({
           <tbody>
             {filteredItems && filteredItems.length > 0 ? (
               filteredItems.map(el => (
-                <tr key={el._id}>
+                <tr
+                  key={el._id}
+                  className={`${styles.selectableRow} ${
+                    el._id === selectedRowId ? styles.selectedRow : ''
+                  }`}
+                  onClick={() => onRowSelect?.(el)}
+                >
                   <td style={{ verticalAlign: 'middle' }}>{el.project?.name}</td>
                   <td style={{ verticalAlign: 'middle' }}>{el.itemType?.name}</td>
                   {(dynamicColumns || []).map(({ label, key }) => {
@@ -342,6 +350,8 @@ ItemsTable.propTypes = {
   endRow: PropTypes.number,
   onPageChange: PropTypes.func,
   onRowsPerPageChange: PropTypes.func,
+  selectedRowId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  onRowSelect: PropTypes.func,
 };
 
 ItemsTable.defaultProps = {
@@ -359,4 +369,6 @@ ItemsTable.defaultProps = {
   rowsPerPage: 25,
   startRow: 0,
   endRow: 0,
+  selectedRowId: null,
+  onRowSelect: null,
 };

@@ -208,6 +208,15 @@ table td {
   background-color: #3b82f6;
 }
 
+.selectableRow {
+  cursor: pointer;
+}
+
+.selectedRow td {
+  background-color: #d8e9fb !important;
+  color: #102033 !important;
+}
+
 .paginationBar {
   display: flex;
   align-items: center;
@@ -304,6 +313,11 @@ table td {
 
 .darkMode table tbody tr:hover td {
   background-color: #1c3354 !important;
+  color: #fff !important;
+}
+
+.darkMode table tbody tr.selectedRow td {
+  background-color: #315983 !important;
   color: #fff !important;
 }
 
