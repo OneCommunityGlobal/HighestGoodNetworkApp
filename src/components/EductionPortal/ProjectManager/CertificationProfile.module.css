@@ -1,0 +1,190 @@
+/* Modal backdrop */
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal container */
+.modal {
+  background: #fff;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh; /* limit modal height */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* prevent content spilling out */
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+  position: relative;
+  padding: 0; /* remove padding here; we’ll add inside modalBody */
+}
+
+.modalBody {
+  padding: 30px; /* your old modal padding */
+  overflow-y: auto; /* scroll if content is too tall */
+  flex-grow: 1;
+}
+
+/* Modal title */
+.modalTitle {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #222;
+}
+
+/* Certification list */
+.certList {
+  margin-bottom: 20px;
+}
+
+.certItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.certName {
+  font-weight: 500;
+  font-size: 15px;
+  color: #333;
+}
+
+.certStatus {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+/* Status colors */
+.status_active {
+  background: #e6f8ec;
+  color: #1a8b3c;
+}
+
+.status_inprogress {
+  background: #fff5d9;
+  color: #d19900;
+}
+
+.status_inactive {
+  background: #f0f0f0;
+  color: #666;
+}
+
+/* Edit & Add buttons */
+.editButton,
+.addButton {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.2s ease;
+}
+
+.editButton:hover,
+.addButton:hover {
+  background: #0069d9;
+}
+
+/* Add button spacing */
+.addButton {
+  margin-top: 10px;
+}
+
+/* Form section */
+.formSection {
+  margin-top: 20px;
+}
+
+.formGroup {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup label {
+  font-weight: 500;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.input,
+.select {
+  padding: 8px 10px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.input:focus,
+.select:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+/* Modal actions */
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.saveButton {
+  background: #28a745;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.saveButton:hover {
+  background: #218838;
+}
+
+.cancelButton {
+  background: #ccc;
+  color: #333;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.cancelButton:hover {
+  background: #b3b3b3;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .modal {
+    padding: 20px;
+  }
+
+  .modalTitle {
+    font-size: 20px;
+  }
+}

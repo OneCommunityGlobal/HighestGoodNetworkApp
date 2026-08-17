@@ -731,6 +731,13 @@ export const ENDPOINTS = {
   GET_SAVED: `${APIEndpoint}/education/student/saved-interests`,
   REMOVE_INTEREST: `${APIEndpoint}/education/student/saved-interests`,
   CHECK_IF_SAVED: `${APIEndpoint}/education/student/saved-interests/check`,
+
+   //PM Dashboard Certification endpoints
+  PM_EDUCATOR_CERTIFICATIONS: ()=> `${APIEndpoint}/pm/educators/certifications`,
+  PM_CERTIFICATIONS: () => `${APIEndpoint}/pm/certifications`,
+  PM_ASSIGN_CERTIFICATIONS: (educatorId) => `${APIEndpoint}/pm/educators/${encodeURIComponent(educatorId)}/certifications` 
+
+  
   // Kitchen and Inventory
   KITCHEN_PROCESSING_PROJECTS: `${APIEndpoint}/kitchenandinventory/processing`,
 
