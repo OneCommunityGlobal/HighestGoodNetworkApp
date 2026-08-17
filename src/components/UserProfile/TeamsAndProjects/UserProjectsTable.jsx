@@ -18,6 +18,8 @@ const UserProjectsTable = React.memo(props => {
     return fallback;
   };
 
+  const getProjectId = project => project?._id || project?.projectId;
+
   const [tooltipOpen, setTooltip] = useState(false);
   const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
   const canUpdateTask = props.hasPermission('updateTask');
@@ -45,16 +47,18 @@ const UserProjectsTable = React.memo(props => {
 }, [userTasks]);
 
   const tasksByProject = userProjects?.map(project => {
-    const tasks = sortedTasksByNumber?.filter(task => task.projectId?.includes(project.projectId));
-    return { ...project, tasks };
+    const projectId = getProjectId(project);
+    const tasks = sortedTasksByNumber?.filter(task => task.projectId?.includes(projectId));
+    return { ...project, projectId, tasks };
   });
 
   const filterTasksByUserTaskSituation = useMemo(() => {
     return (situation) => {
       if (sortedTasksByNumber) {
         return userProjects?.map(project => {
+          const projectId = getProjectId(project);
           const filteredTasks = sortedTasksByNumber.filter(task => {
-            const isTaskForProject = task.projectId?.includes(project.projectId);
+            const isTaskForProject = task.projectId?.includes(projectId);
             const isCompletedTask = task.resources?.find(user => user.userID === props.userId)?.completedTask;
     
             if (isTaskForProject) {
@@ -69,7 +73,7 @@ const UserProjectsTable = React.memo(props => {
             return false;
           });
     
-          return { ...project, tasks: filteredTasks };
+          return { ...project, projectId, tasks: filteredTasks };
         });
       }
     };
@@ -111,9 +115,9 @@ const removeOrAddTaskFromUser = (task, method) => {
 };
 
   //For updating tasks visually but not saving until user clicks save changes
-  const deleteTasksTemporarily = (project_id) => {
-    setFilteredTasks(filteredTasks?.filter(project => project.projectId !== project_id ));
-  }
+  const deleteTasksTemporarily = (projectId) => {
+    setFilteredTasks(filteredTasks?.filter(project => getProjectId(project) !== projectId));
+  };
 
   useEffect(()=>{
     setFilteredTasks(() => filterTasksByUserTaskSituation('active'));
@@ -180,15 +184,17 @@ const removeOrAddTaskFromUser = (task, method) => {
               </thead>
               <tbody>
                 {props.userProjectsById.length > 0 ? (
-                  tasksByProject?.map((project, index) => (
-                    <tr key={project.projectId} className={darkMode ? 'bg-yinmn-blue' : ''}>
+                  tasksByProject?.map((project, index) => {
+                    const projectId = getProjectId(project);
+                    return (
+                    <tr key={projectId} className={darkMode ? 'bg-yinmn-blue' : ''}>
                       <td>{index + 1}</td>
                       <td className="taskName">{project.projectName}</td>
                       {props.role && canPostTask && (
                         <td className='table-cell'>
-                          <Link to={`/project/wbs/${project.projectId}`}>
+                          <Link to={`/project/wbs/${projectId}`}>
                             <button
-                              id={`wbs-tooltip-${project.projectId}`}
+                              id={`wbs-tooltip-${projectId}`}
                               type="button"
                               className="btn btn-outline-info"
                               style={darkMode ? {} : boxStyle}
@@ -199,7 +205,7 @@ const removeOrAddTaskFromUser = (task, method) => {
 
                           <UncontrolledTooltip
                             placement="left"
-                            target={`wbs-tooltip-${project.projectId}`}
+                            target={`wbs-tooltip-${projectId}`}
                             delay={{ show: 250, hide: 100 }} // Optional: smoother UX
                           >
                             Click to access the Work Breakdown Structures &#40;WBSs&#41; for this project
@@ -212,8 +218,8 @@ const removeOrAddTaskFromUser = (task, method) => {
                             color="danger"
                             disabled={!canUpdateTask}
                             onClick={e => {
-                              props.onDeleteClick(project.projectId);
-                              deleteTasksTemporarily(project.projectId);
+                              props.onDeleteClick(projectId);
+                              deleteTasksTemporarily(projectId);
                             }}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
@@ -222,7 +228,8 @@ const removeOrAddTaskFromUser = (task, method) => {
                         </td>
                       )}
                     </tr>
-                  ))
+                    );
+                  })
                 ) : (
                   <></>
                 )}
@@ -383,7 +390,7 @@ const removeOrAddTaskFromUser = (task, method) => {
               <tbody>
                 {props.userProjectsById.length > 0 ? (
                   filteredTasks?.map((project, index) => (
-                    <tr key={project.projectId}>
+                    <tr key={getProjectId(project)}>
                       <td>{index + 1}</td>
                       <td className="taskName">{`${project.projectName}`}</td>
                       {props.edit && props.role && canDeleteProjects && (
@@ -392,7 +399,7 @@ const removeOrAddTaskFromUser = (task, method) => {
                             color="danger"
                             disabled={!canUpdateTask}
                             onClick={e => {
-                              props.onDeleteClick(project.projectId);
+                              props.onDeleteClick(getProjectId(project));
                             }}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >

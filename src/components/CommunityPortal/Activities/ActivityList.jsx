@@ -3,7 +3,15 @@ import { useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import styles from './ActivityList.module.css';
-// import { useHistory } from 'react-router-dom';
+import {
+  FaTag,
+  FaCalendarAlt,
+  FaMapMarkerAlt,
+  FaDumbbell,
+  FaUsers,
+  FaGraduationCap,
+  FaPalette,
+} from 'react-icons/fa';
 import { fuzzySearch } from '../../../utils/fuzzySearch';
 import { mockActivities } from './mockActivities';
 
@@ -126,23 +134,26 @@ function ActivityList() {
     setModalOpen(false);
   };
 
+  const getTypeIcon = type => {
+    switch (type) {
+      case 'Fitness':
+        return <FaDumbbell className={styles.activityIcon} />;
+      case 'Social':
+        return <FaUsers className={styles.activityIcon} />;
+      case 'Educational':
+        return <FaGraduationCap className={styles.activityIcon} />;
+      case 'Art':
+        return <FaPalette className={styles.activityIcon} />;
+      default:
+        return <FaTag className={styles.activityIcon} />;
+    }
+  };
+
   const startOfToday = useMemo(() => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
     return d;
   }, []);
-
-  const activityTypes = useMemo(() => {
-    const typeOrder = new Map();
-
-    activities.forEach(activity => {
-      if (activity.type && !typeOrder.has(activity.type)) {
-        typeOrder.set(activity.type, typeOrder.size);
-      }
-    });
-
-    return [...typeOrder.keys()].sort((a, b) => typeOrder.get(a) - typeOrder.get(b));
-  }, [activities]);
 
   const filteredActivities = activities
     .filter(activity => showPastEvents || activity._dateObj >= startOfToday)
@@ -308,9 +319,25 @@ function ActivityList() {
               >
                 <li className={`${styles.activityItem} ${darkMode ? styles.darkModeItem : ''}`}>
                   <strong>{activity.name}</strong>
-                  <span>
-                    {activity.type} – {activity.date} – {activity.location}
-                  </span>
+
+                  {/* Type */}
+                  <div className={styles.altypeRow}>
+                    {getTypeIcon(activity.type)}
+                    <span className={styles.altypeText}>{activity.type}</span>
+                  </div>
+
+                  {/* Location + Date */}
+                  <div className={styles.allocationDateRow}>
+                    <div className={styles.allocation}>
+                      <FaMapMarkerAlt className={styles.alactivityIcon} />
+                      <span>{activity.location}</span>
+                    </div>
+
+                    <div className={styles.aldate}>
+                      <FaCalendarAlt className={styles.alactivityIcon} />
+                      <span>{activity.date}</span>
+                    </div>
+                  </div>
                 </li>
               </div>
             ))}
