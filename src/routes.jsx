@@ -534,10 +534,7 @@ export default (
           exact
           component={PermissionsManagement}
           fallback
-          routePermissions={[
-            ...RoutePermissions.permissionsManagement,
-            ...RoutePermissions.userPermissionsManagement,
-          ].flat()}
+          routePermissions={RoutePermissions.permissionsManagement}
         />
         <ProtectedRoute
           path="/permissionsmanagement/:userRole"

@@ -25,7 +25,6 @@ const LEGACY_OR_EXTRA_KEYS = [
   'announcements_manage',
   'assignBadgeOthers',
   'createPopup',
-  'delete:badges',
   'deleteTimeEntry',
   'deleteUserProfile',
   'editProject',
@@ -41,7 +40,6 @@ const LEGACY_OR_EXTRA_KEYS = [
   'seeSummaryIndicator',
   'seeVisibilityIcon',
   'unassignUserInProject',
-  'update:badges',
   'updateUserSkillsProfileFollowUp',
 ];
 

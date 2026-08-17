@@ -392,14 +392,15 @@ const EnhancedJobFormBuilder = () => {
     }
   };
 
-  const canManageForms = useMemo(
-    () => userRole === 'Owner' || dispatch(hasPermission(permissions.manageJobForms)),
-    [dispatch, userRole, frontPermissions, rolePermissions],
-  );
+  const canManageForms = useMemo(() => dispatch(hasPermission(permissions.manageJobForms)), [
+    dispatch,
+    frontPermissions,
+    rolePermissions,
+  ]);
 
   const canCreateQuestionSets = useMemo(
-    () => userRole === 'Owner' || dispatch(hasPermission(permissions.createFormQuestions)),
-    [dispatch, userRole, frontPermissions, rolePermissions],
+    () => dispatch(hasPermission(permissions.createFormQuestions)),
+    [dispatch, frontPermissions, rolePermissions],
   );
 
   const handleFormChange = (field, value) => {

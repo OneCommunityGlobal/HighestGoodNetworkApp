@@ -248,18 +248,18 @@ const QuestionSetManager = ({
   };
 
   const canCreateQuestionSets = useMemo(
-    () => userRole === 'Owner' || dispatch(hasPermission(permissions.createFormQuestions)),
-    [dispatch, userRole, frontPermissions, rolePermissions],
+    () => dispatch(hasPermission(permissions.createFormQuestions)),
+    [dispatch, frontPermissions, rolePermissions],
   );
 
   const canEditQuestionSets = useMemo(
-    () => userRole === 'Owner' || dispatch(hasPermission(permissions.editFormQuestions)),
-    [dispatch, userRole, frontPermissions, rolePermissions],
+    () => dispatch(hasPermission(permissions.editFormQuestions)),
+    [dispatch, frontPermissions, rolePermissions],
   );
 
   const canDeleteQuestionSets = useMemo(
-    () => userRole === 'Owner' || dispatch(hasPermission(permissions.deleteFormQuestions)),
-    [dispatch, userRole, frontPermissions, rolePermissions],
+    () => dispatch(hasPermission(permissions.deleteFormQuestions)),
+    [dispatch, frontPermissions, rolePermissions],
   );
 
   const handleImportQuestions = async (selectedSet, selectedQuestions = null) => {

@@ -39,7 +39,12 @@ const RoutePermissions = {
     permissions.deleteTeam,
     permissions.assignTeamToUsers,
   ],
-  permissionsManagement: [permissions.postRole, permissions.putRole, permissions.deleteRole],
+  permissionsManagement: [
+    permissions.postRole,
+    permissions.putRole,
+    permissions.deleteRole,
+    permissions.putUserProfilePermissions,
+  ],
   userPermissionsManagement: [permissions.putUserProfilePermissions],
   inventoryProject: [''],
   inventoryProjectWbs: [''],

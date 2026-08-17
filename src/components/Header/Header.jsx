@@ -210,9 +210,10 @@ export function Header(props) {
     !isAuthUser,
   );
   const canAccessScheduleMeetings = props.hasPermission(permissions.scheduleMeetings, !isAuthUser);
-  const canAccessPermissionsManagement =
-    props.hasPermission(RoutePermissions.permissionsManagement, !isAuthUser) ||
-    props.hasPermission(RoutePermissions.userPermissionsManagement, !isAuthUser);
+  const canAccessPermissionsManagement = props.hasPermission(
+    RoutePermissions.permissionsManagement,
+    !isAuthUser,
+  );
 
   const canAccessBlueSquareEmailManagement = props.hasPermission(
     permissions.resendBlueSquareAndSummaryEmails,
