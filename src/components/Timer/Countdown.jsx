@@ -1,21 +1,21 @@
+import cs from 'classnames';
+import moment from 'moment';
+import { useRef, useState } from 'react';
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
-import { Input } from 'reactstrap';
 import {
+  BsArrowCounterclockwise,
   BsFillPenFill,
+  BsHourglassBottom,
+  BsHourglassSplit,
+  BsHourglassTop,
   BsPauseFill,
   BsPlay,
   BsStopFill,
-  BsArrowCounterclockwise,
-  BsHourglassTop,
-  BsHourglassSplit,
-  BsHourglassBottom,
   BsXLg,
 } from 'react-icons/bs';
-import { FaSave, FaAngleUp, FaAngleDown } from 'react-icons/fa';
-import moment from 'moment';
-import { useRef, useState } from 'react';
-import cs from 'classnames';
+import { FaAngleDown, FaAngleUp, FaSave } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import { Input } from 'reactstrap';
 import css from './Countdown.module.css';
 
 function getClockIcon(index) {
@@ -57,50 +57,18 @@ export default function Countdown({
   const hourRef = useRef(null);
   const minRef = useRef(null);
 
-  const remainingDuration = moment.duration(remaining);
-  const remainingHours = Math.floor(remainingDuration.asHours());
-  const remainingMinutes = remainingDuration.minutes();
-  const remainingSeconds = remainingDuration.seconds();
+  const remainingHours = moment.duration(remaining).hours();
+  const remainingMinutes = moment.duration(remaining).minutes();
+  const remainingSeconds = moment.duration(remaining).seconds();
 
   const remainingHoursDisplay = remainingHours.toString().padStart(2, '0');
   const remainingMinutesDisplay = remainingMinutes.toString().padStart(2, '0');
   const remainingSecondsDisplay = remainingSeconds.toString().padStart(2, '0');
 
-  const goalDuration = moment.duration(goal);
-  const goalHoursDisplay = Math.floor(goalDuration.asHours()).toString();
-  const goalMinutesDisplay = goalDuration
-    .minutes()
-    .toString()
-    .padStart(2, '0');
-  const goalSecondsDisplay = goalDuration
-    .seconds()
-    .toString()
-    .padStart(2, '0');
-
-  const elapsedMs = Math.max(goal - remaining, 0);
-  const elapsedDuration = moment.duration(elapsedMs);
-  const elapsedHoursDisplay = Math.floor(elapsedDuration.asHours()).toString();
-  const elapsedMinutesDisplay = elapsedDuration
-    .minutes()
-    .toString()
-    .padStart(2, '0');
-  const elapsedSecondsDisplay = elapsedDuration
-    .seconds()
-    .toString()
-    .padStart(2, '0');
-
   const shouldDisplay = {
     hour: true,
     minute: true,
   };
-
-  const minGoalMs = MIN_MINS * 60 * 1000;
-  const maxGoalMs = MAX_HOURS * 60 * 60 * 1000;
-
-  const canSubtract15 = goal - 15 * 60 * 1000 >= minGoalMs;
-  const canAdd15 = goal + 15 * 60 * 1000 <= maxGoalMs && checkBtnAvail(15);
-  const canAdd30 = goal + 30 * 60 * 1000 <= maxGoalMs && checkBtnAvail(30);
-  const canAdd60 = goal + 60 * 60 * 1000 <= maxGoalMs && checkBtnAvail(60);
 
   const forceMinMax = (event, ref) => {
     const { value, min, max } = event.target;
@@ -152,8 +120,8 @@ export default function Countdown({
     }
   };
 
-  const handleInitialMinuteChange = amount => {
-    const newMin = initialMinutes + amount;
+  const handleInitialMinuteChange = amout => {
+    const newMin = initialMinutes + amout;
     switch (true) {
       case initialHours === 0 && newMin < MIN_MINS:
         toast.error(`Timer cannot be set less than ${MIN_MINS} minutes!`);
@@ -177,17 +145,23 @@ export default function Countdown({
 
   return (
     <div className={css.countdown}>
-      <BsXLg
-        className={cs(css.transitionColor, css.crossIcon)}
+      <button
+        type="button"
         onClick={toggleTimer}
-        title="close timer dropdown"
-      />
-
+        style={{ background: 'none', border: 'none', padding: 0 }}
+        aria-label="Close timer dropdown"
+      >
+        <BsXLg className={cs(css.transitionColor, css.crossIcon)} title="close timer dropdown" />
+      </button>
       <div className={css.infoDisplay}>
-        <h4>{`Goal: ${goalHoursDisplay}:${goalMinutesDisplay}:${goalSecondsDisplay}`}</h4>
-        <h6>{`Elapsed: ${elapsedHoursDisplay}:${elapsedMinutesDisplay}:${elapsedSecondsDisplay}`}</h6>
+        <h4>{`Goal: ${moment.utc(goal).format('HH:mm:ss')}`}</h4>
+        <h6>
+          {`Elapsed: ${moment
+            .utc(goal)
+            .subtract(remaining)
+            .format('HH:mm:ss')}`}
+        </h6>
       </div>
-
       <div className={css.countdownCircle}>
         <CircularProgressbarWithChildren
           value={started ? (moment.duration(remaining).asMilliseconds() / goal) * 100 : 100}
@@ -203,16 +177,21 @@ export default function Countdown({
             {running ? (
               getClockIcon(remainingSeconds % 4)
             ) : (
-              <BsArrowCounterclockwise
+              <button
+                type="button"
                 onClick={() => setConfirmationResetModal(true)}
-                className={cs(css.transitionColor, css.resetIcon)}
-                fontSize="2rem"
-                title="Reset timer"
-              />
+                style={{ background: 'none', border: 'none', padding: 0 }}
+                aria-label="Reset timer"
+              >
+                <BsArrowCounterclockwise
+                  className={cs(css.transitionColor, css.resetIcon)}
+                  fontSize="2rem"
+                  title="Reset timer"
+                  style={{ pointerEvents: 'none' }}
+                />
+              </button>
             )}
-
             <span>Time Remaining</span>
-
             <div className={css.remainingTime}>
               {shouldDisplay.hour && (
                 <>
@@ -223,7 +202,6 @@ export default function Countdown({
                   <div className={css.timeColon}>:</div>
                 </>
               )}
-
               {shouldDisplay.minute && (
                 <>
                   <div>
@@ -233,13 +211,11 @@ export default function Countdown({
                   <div className={css.timeColon}>:</div>
                 </>
               )}
-
               <div>
                 <div className={css.timeDisplay}>{remainingSecondsDisplay}</div>
                 <div className={css.label}>seconds</div>
               </div>
             </div>
-
             <div className={css.operators}>
               {running ? (
                 <button type="button" onClick={sendPause} aria-label="Pause timer">
@@ -247,6 +223,7 @@ export default function Countdown({
                     className={cs(css.transitionColor, css.operator)}
                     fontSize="2.5rem"
                     title="Pause timer"
+                    style={{ pointerEvents: 'none' }}
                   />
                 </button>
               ) : (
@@ -259,10 +236,10 @@ export default function Countdown({
                     )}
                     fontSize="2.5rem"
                     title="Start timer"
+                    style={{ pointerEvents: 'none' }}
                   />
                 </button>
               )}
-
               {started && (
                 <button
                   type="button"
@@ -273,6 +250,7 @@ export default function Countdown({
                     className={cs(css.transitionColor, css.operator)}
                     fontSize="2.5rem"
                     title="Stop timer and log time"
+                    style={{ pointerEvents: 'none' }}
                   />
                 </button>
               )}
@@ -280,7 +258,6 @@ export default function Countdown({
           </div>
         </CircularProgressbarWithChildren>
       </div>
-
       <div className={css.bottom}>
         {started ? (
           <div className={cs(css.addGrid, css.transitionColor)}>
@@ -288,40 +265,33 @@ export default function Countdown({
               size="sm"
               type="button"
               aria-label="remove 15 minutes"
-              onClick={() => canSubtract15 && handleSubtractButton(15)}
-              disabled={!canSubtract15}
+              onClick={() => handleSubtractButton(15)}
             >
-              <span className={cs(css.btn, canSubtract15 ? '' : css.btnDisabled)}>-15 m</span>
+              <span className={cs(css.btn, checkBtnAvail(-15) ? '' : css.btnDisabled)}>-15 m</span>
             </button>
-
             <button
               size="sm"
               type="button"
               aria-label="add 15 minutes"
-              onClick={() => canAdd15 && handleAddButton(15)}
-              disabled={!canAdd15}
+              onClick={() => handleAddButton(15)}
             >
-              <span className={cs(css.btn, canAdd15 ? '' : css.btnDisabled)}>+15 m</span>
+              <span className={cs(css.btn, checkBtnAvail(15) ? '' : css.btnDisabled)}>+15 m</span>
             </button>
-
             <button
               size="sm"
               type="button"
               aria-label="add 30 minutes"
-              onClick={() => canAdd30 && handleAddButton(30)}
-              disabled={!canAdd30}
+              onClick={() => handleAddButton(30)}
             >
-              <span className={cs(css.btn, canAdd30 ? '' : css.btnDisabled)}>+30 m</span>
+              <span className={cs(css.btn, checkBtnAvail(30) ? '' : css.btnDisabled)}>+30 m</span>
             </button>
-
             <button
               size="sm"
               type="button"
               aria-label="add 1 hour"
-              onClick={() => canAdd60 && handleAddButton(60)}
-              disabled={!canAdd60}
+              onClick={() => handleAddButton(60)}
             >
-              <span className={cs(css.btn, canAdd60 ? '' : css.btnDisabled)}>+1 h</span>
+              <span className={cs(css.btn, checkBtnAvail(60) ? '' : css.btnDisabled)}>+1 h</span>
             </button>
           </div>
         ) : (
@@ -335,7 +305,6 @@ export default function Countdown({
                     onClick={() => handleInitialHourChange(1)}
                   />
                 )}
-
                 <Input
                   type="number"
                   className={editing ? css.editing : ''}
@@ -346,7 +315,6 @@ export default function Countdown({
                   disabled={!editing}
                   innerRef={hourRef}
                 />
-
                 {editing && (
                   <FaAngleDown
                     className={cs(css.transitionColor, css.down)}
@@ -354,9 +322,7 @@ export default function Countdown({
                   />
                 )}
               </div>
-
               <span className={css.timeColon}>:</span>
-
               <div className={css.numberWrapper}>
                 {editing && (
                   <FaAngleUp
@@ -366,7 +332,6 @@ export default function Countdown({
                     }
                   />
                 )}
-
                 <Input
                   type="number"
                   min={0}
@@ -378,7 +343,6 @@ export default function Countdown({
                   disabled={!editing}
                   innerRef={minRef}
                 />
-
                 {editing && (
                   <FaAngleDown
                     className={cs(css.transitionColor, css.down)}
@@ -390,7 +354,6 @@ export default function Countdown({
                   />
                 )}
               </div>
-
               {editing ? (
                 <FaSave
                   className={cs(css.transitionColor, css.goalBtn)}

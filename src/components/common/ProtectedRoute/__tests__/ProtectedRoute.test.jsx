@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { MemoryRouter, Router } from 'react-router-dom';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { createMemoryHistory } from 'history';
 import ProtectedRoute from '../ProtectedRoute';
@@ -24,7 +24,7 @@ const renderWithRouter = (
   };
 };
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 // Mock components for testing
 // function LoginComponent() {
