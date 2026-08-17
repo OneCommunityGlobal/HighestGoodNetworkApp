@@ -189,6 +189,7 @@ import ReportDownloadButton from './components/EductionPortal/AnalyticsDashboard
 import GroupList from './components/EductionPortal/GroupList/GroupList';
 import EvaluationResultsWrapper from './components/EductionPortal/EvaluationResultsWrapper';
 import InsightWidget from './components/EductionPortal/AnalyticsDashboard/InsightsWidget';
+import ProjectManagerEducatorView from './components/EductionPortal/ProjectManager/ProjectManagerEducatorView';
 import StudentDashboard from './components/EductionPortal/StudentTasks/StudentDashboard';
 import StudentTasks from './components/EductionPortal/StudentTasks/StudentTasks';
 import TaskDetails from './components/EductionPortal/StudentTasks/TaskDetails';
@@ -300,6 +301,7 @@ const PopularityTimelineChart = lazy(() =>
 const MonthsPledgedChart = lazy(() =>
   import('./components/MonthsPledgedAnalytics/MonthsPledgedChart'),
 );
+
 const EnhancedPopularityTimelineChart = lazy(() =>
   import('./components/EnhancedPopularityTimelineAnalytics/EnhancedPopularityTimelineChart'),
 );
@@ -1017,6 +1019,11 @@ export default (
         <EPProtectedRoute path="/educationportal/student/tasks/:id" exact component={TaskDetails} />
         <Redirect exact from="/student/tasks" to="/educationportal/student/tasks" />
         <Redirect exact from="/student/tasks/:id" to="/educationportal/student/tasks/:id" />
+        <EPProtectedRoute
+          path="/educationportal/pm/dashboard"
+          exact
+          component={ProjectManagerEducatorView}
+        />
         <CPProtectedRoute
           path="/communityportal/reports/resourceusage"
           exact

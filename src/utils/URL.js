@@ -415,6 +415,8 @@ export const ENDPOINTS = {
   },
   BM_TOOL_AVAILABILITY: (toolId = '', projectId = '') =>
     `${APIEndpoint}/tools/availability?toolId=${toolId}&projectId=${projectId}`,
+  // Tool replacement / breakdown susceptibility chart (backend PR #2037)
+  TOOL_REPLACEMENTS: `${APIEndpoint}/tools/replacements`,
   BM_LOG_TOOLS: `${APIEndpoint}/bm/tools/log`,
   BM_TOOL_UTILIZATION: `${APIEndpoint}/tools/utilization`,
   BM_TOOL_UTILIZATION_INSIGHTS: `${APIEndpoint}/tools/utilization/insights`,
@@ -529,6 +531,8 @@ export const ENDPOINTS = {
   GET_JOB_FORM: formId => `${APIEndpoint}/jobforms/${formId}`,
   GET_ALL_JOB_FORMS: `${APIEndpoint}/jobforms/all`,
   GET_FORM_RESPONSES: formID => `${APIEndpoint}/jobforms/${formID}/responses`,
+  SUBMIT_JOB_APPLICATION: formId =>
+  `${APIEndpoint}/jobforms/${formId}/responses`,
 
   ADD_QUESTION: formId => `${APIEndpoint}/jobforms/${formId}/questions`,
   UPDATE_QUESTION: (formId, questionIndex) =>
@@ -672,10 +676,10 @@ export const ENDPOINTS = {
 
     const qs = params.length ? `?${params.join('&')}` : '';
 
-    return `${APIEndpoint.replace('/api', '')}/job-analytics${qs}`;
+    return `${APIEndpoint}/job-analytics-router${qs}`;
   },
 
-  JOB_ANALYTICS_ROLES: `${APIEndpoint.replace('/api', '')}/job-analytics/roles`,
+  JOB_ANALYTICS_ROLES: `${APIEndpoint}/job-analytics-router/roles`,
 
   // pr dashboard endpoints
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
@@ -707,6 +711,10 @@ export const ENDPOINTS = {
   PR_GRADING_CONFIG: `${APIEndpoint}/pr-grading-config`,
   WEEKLY_GRADING: `${APIEndpoint}/weekly-grading`,
   WEEKLY_GRADING_SAVE: `${APIEndpoint}/weekly-grading/save`,
+
+  PM_EDUCATORS: () => `${APIEndpoint}/pm/educators`,
+  PM_EDUCATOR_STUDENTS: (educatorId) => `${APIEndpoint}/pm/educators/${encodeURIComponent(educatorId)}/students`,
+  PM_NOTIFICATIONS: () => `${APIEndpoint}/pm/notifications`,
 
   // Education Portal endpoints
   PROGRESS_EDUCATOR_STUDENT: studentId => `${APIEndpoint}/progress/educator/student-progress/${studentId}`,
