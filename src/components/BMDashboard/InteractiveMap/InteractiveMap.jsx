@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, forwardRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
@@ -14,6 +14,16 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 import styles from './InteractiveMap.module.css';
+
+const MapDateInput = forwardRef(({ darkMode, className, ...props }, ref) => (
+  <input
+    {...props}
+    ref={ref}
+    className={`${styles.dateInput} ${
+      darkMode ? styles.dateInputDark : styles.dateInputLight
+    } ${className || ''}`}
+  />
+));
 
 /* -----------------------------------------------------
    APPLY DARK MODE STYLING TO MAP
@@ -419,8 +429,9 @@ export default function InteractiveMap() {
             <DatePicker
               selected={startDate}
               onChange={date => setStartDate(date)}
-              className={`${styles.dateInput} ${
-                darkMode ? styles.dateInputDark : styles.dateInputLight
+              customInput={<MapDateInput darkMode={darkMode} />}
+              wrapperClassName={`${styles.datePickerWrapper} ${
+                darkMode ? styles.datePickerWrapperDark : styles.datePickerWrapperLight
               }`}
               placeholderText="Start Date"
               calendarClassName={darkMode ? styles.calendarDark : styles.calendarLight}
@@ -435,8 +446,9 @@ export default function InteractiveMap() {
             <DatePicker
               selected={endDate}
               onChange={date => setEndDate(date)}
-              className={`${styles.dateInput} ${
-                darkMode ? styles.dateInputDark : styles.dateInputLight
+              customInput={<MapDateInput darkMode={darkMode} />}
+              wrapperClassName={`${styles.datePickerWrapper} ${
+                darkMode ? styles.datePickerWrapperDark : styles.datePickerWrapperLight
               }`}
               placeholderText="End Date"
               calendarClassName={darkMode ? styles.calendarDark : styles.calendarLight}

@@ -169,6 +169,64 @@
   width: 150px;
 }
 
+.datePickerWrapper,
+.datePickerWrapper :global(.react-datepicker__input-container) {
+  display: inline-block;
+}
+
+.datePickerWrapperLight :global(input),
+.datePickerWrapperLight :global(.react-datepicker__input-container input) {
+  background-color: #fff !important;
+  background: #fff !important;
+  color: #222 !important;
+  border: 1px solid #ccc !important;
+  color-scheme: light;
+}
+
+.datePickerWrapperLight :global(input)::placeholder,
+.datePickerWrapperLight :global(.react-datepicker__input-container input)::placeholder {
+  color: #6b7280 !important;
+  opacity: 1;
+}
+
+.datePickerWrapperDark :global(input),
+.datePickerWrapperDark :global(.react-datepicker__input-container input) {
+  background-color: #1c2541 !important;
+  background: #1c2541 !important;
+  color: #f8fafc !important;
+  border: 1px solid #465a74 !important;
+  color-scheme: dark;
+}
+
+.datePickerWrapperDark :global(input)::placeholder,
+.datePickerWrapperDark :global(.react-datepicker__input-container input)::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1;
+}
+
+.darkPage .filterInputs :global(.react-datepicker-wrapper input),
+.darkPage .filterInputs :global(.react-datepicker__input-container input) {
+  background-color: #1c2541 !important;
+  background: #1c2541 !important;
+  color: #f8fafc !important;
+  border: 1px solid #465a74 !important;
+  color-scheme: dark;
+}
+
+.darkPage .filterInputs :global(.react-datepicker-wrapper input)::placeholder,
+.darkPage .filterInputs :global(.react-datepicker__input-container input)::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1;
+}
+
+.lightPage .filterInputs :global(.react-datepicker-wrapper input),
+.lightPage .filterInputs :global(.react-datepicker__input-container input) {
+  background-color: #fff !important;
+  background: #fff !important;
+  color: #222 !important;
+  border: 1px solid #ccc !important;
+}
+
 .filterInputs :global(.react-datepicker__close-icon::after) {
   background-color: #6b7280;
   color: #fff;
@@ -310,11 +368,9 @@
   outline: 1px solid transparent;
 }
 
-/* ----------------------------------
-   DARK MAP OVERLAY EFFECT
----------------------------------- */
+/* Dark tiles already provide the dark-mode map look; avoid extra dimming. */
 .darkMap {
-  filter: brightness(0.78) contrast(1.1);
+  filter: none;
 }
 
 /* ----------------------------------
@@ -502,4 +558,25 @@
 .totalProjects {
   font-weight: 500;
   margin-left: auto;
+}
+
+/* Beat leaked global DatePicker input styles (white bg) from other BM charts */
+:global(body.dark-mode) .dateInputDark,
+:global(body.bm-dashboard-dark) .dateInputDark,
+:global(body.dark-mode) .datePickerWrapperDark :global(input),
+:global(body.bm-dashboard-dark) .datePickerWrapperDark :global(input),
+:global(body.dark-mode) .filterInputs :global(.react-datepicker-wrapper input),
+:global(body.bm-dashboard-dark) .filterInputs :global(.react-datepicker-wrapper input) {
+  background-color: #1c2541 !important;
+  background: #1c2541 !important;
+  color: #f8fafc !important;
+  border-color: #465a74 !important;
+}
+
+:global(body.dark-mode) .dateInputDark::placeholder,
+:global(body.bm-dashboard-dark) .dateInputDark::placeholder,
+:global(body.dark-mode) .datePickerWrapperDark :global(input)::placeholder,
+:global(body.bm-dashboard-dark) .datePickerWrapperDark :global(input)::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1;
 }
