@@ -179,7 +179,10 @@ export default function ItemsTable({
                       </td>
                     );
                   })}
-                  <td className={styles.itemsCell} style={getColumnStyle(null, true)}>
+                  <td
+                    className={`${styles.itemsCell} ${styles.actionCell}`}
+                    style={getColumnStyle(null, true)}
+                  >
                     <button
                       type="button"
                       onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
@@ -197,7 +200,7 @@ export default function ItemsTable({
                     </Button>
                   </td>
                   <td
-                    className={styles.itemsCell}
+                    className={`${styles.itemsCell} ${styles.actionCell}`}
                     style={{ verticalAlign: 'middle', textAlign: 'center' }}
                   >
                     <button
@@ -216,7 +219,10 @@ export default function ItemsTable({
                       View
                     </Button>
                   </td>
-                  <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
+                  <td
+                    className={styles.actionCell}
+                    style={{ verticalAlign: 'middle', textAlign: 'center' }}
+                  >
                     <Button
                       color="primary"
                       outline

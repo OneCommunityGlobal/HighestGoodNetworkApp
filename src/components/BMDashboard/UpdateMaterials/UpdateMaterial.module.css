@@ -153,3 +153,7 @@
 :global(.dark-mode) .updateMaterialContainer .materialFormError {
   color: red !important;
 }
+
+:global(.dark-mode) .updateMaterialContainer .materialFormErrorClr {
+  color: red !important;
+}

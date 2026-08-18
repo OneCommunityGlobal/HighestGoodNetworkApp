@@ -43,6 +43,10 @@ table td {
   cursor: pointer;
 }
 
+.actionCell {
+  white-space: nowrap;
+}
+
 .itemsCell svg {
   width: 20px;
   height: 20px;
