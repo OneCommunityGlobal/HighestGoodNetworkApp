@@ -41,7 +41,7 @@ export const normalizeVolunteerActivities = (
       };
     }
 
-    const current = data.current || data.count || 0;
+    const current = data.current ?? data.count ?? data.total ?? data.value ?? 0;
     const percentage = data.percentage ?? data.comparisonPercentage ?? 0;
     return {
       ...VOLUNTEER_ACTIVITIES_TAB.find(tab => tab.type === key),
