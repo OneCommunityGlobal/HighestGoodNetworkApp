@@ -417,3 +417,20 @@
   background-color: #0d55b3 !important;
   color: #ffffff !important;
 }
+
+.tooltipSeriesRow {
+  color: var(--tooltip-series-color) !important;
+  margin: 8px 0 0;
+}
+
+.tooltipSeriesRow * {
+  color: inherit !important;
+}
+
+:global(.darkMode) .tooltipSeriesRow {
+  color: var(--tooltip-series-color) !important;
+}
+
+:global(.darkMode) .tooltipSeriesRow * {
+  color: inherit !important;
+}

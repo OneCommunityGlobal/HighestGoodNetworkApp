@@ -164,6 +164,11 @@ function InjuryCategoryBarChart() {
     const set = new Set(projects.map(p => String(p._id)));
     return Array.from(set);
   }, [projects]);
+  const colorProjectIds = useMemo(() => {
+    const source = unfilteredProjects.length ? unfilteredProjects : projects;
+    const set = new Set(source.map(project => String(project._id)));
+    return Array.from(set);
+  }, [unfilteredProjects, projects]);
 
   const showLabels = seriesProjectIds.length <= 4;
 
@@ -179,7 +184,7 @@ function InjuryCategoryBarChart() {
   ];
 
   const projectColorById = new Map();
-  [...allSeriesProjectIds]
+  [...colorProjectIds]
     .sort((a, b) => a.localeCompare(b))
     .forEach((pid, index) => {
       // Sort by project ID so colors do not depend on API or filter response order.
@@ -364,20 +369,40 @@ function InjuryCategoryBarChart() {
               <Tooltip
                 //tooltip only; no shaded hover overlay across the chart
                 cursor={false}
-                contentStyle={{
-                  backgroundColor: darkMode ? '#2b3e59' : '#fff',
-                  color: darkMode ? '#fff' : '#000',
-                  border: darkMode ? '1px solid #555' : '1px solid #ccc',
+                content={({ active, payload, label }) => {
+                  if (!active || !payload?.length) return null;
+
+                  return (
+                    <div
+                      style={{
+                        backgroundColor: darkMode ? '#2b3e59' : '#fff',
+                        border: darkMode ? '1px solid #555' : '1px solid #ccc',
+                        padding: 10,
+                      }}
+                    >
+                      <div style={{ color: darkMode ? '#fff' : '#000', margin: 0 }}>{label}</div>
+                      {payload.map(entry => {
+                        const projectId = String(entry.dataKey);
+                        const projectColor =
+                          projectColorById.get(projectId) || entry.color || '#000';
+                        const projectLabel =
+                          projectLabelById.get(projectId) ||
+                          projectNameById.get(projectId) ||
+                          'Unknown Project';
+
+                        return (
+                          <div
+                            key={projectId}
+                            className={styles.tooltipSeriesRow}
+                            style={{ '--tooltip-series-color': projectColor }}
+                          >
+                            {projectLabel} : {entry.value}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
                 }}
-                labelStyle={{
-                  color: darkMode ? '#fff' : '#000',
-                }}
-                formatter={(value, name) => [
-                  value,
-                  projectLabelById.get(String(name)) ||
-                    projectNameById.get(String(name)) ||
-                    'Unknown Project',
-                ]}
               />
               <Legend
                 wrapperStyle={{
