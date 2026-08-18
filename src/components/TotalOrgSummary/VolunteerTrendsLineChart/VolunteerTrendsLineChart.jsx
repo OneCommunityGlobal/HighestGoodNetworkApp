@@ -8,8 +8,10 @@ import styles from './VolunteerTrendsStyles.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
 
 const formatChartData = rawData => {
-  if (rawData[0]._id.month) {
-    // for monthly intervals
+  if (!Array.isArray(rawData) || rawData.length === 0) return [];
+
+  // Safe check for monthly format vs weekly format
+  if (rawData[0]?._id?.month !== undefined) {
     const integerToMonths = {
       1: 'Jan',
       2: 'Feb',
@@ -25,25 +27,21 @@ const formatChartData = rawData => {
       12: 'Dec',
     };
 
-    return rawData.map(data => {
-      return {
-        xLabel: integerToMonths[data._id.month],
-        totalHours: data.totalHours,
-        year: data._id.year,
-        interval: 'month',
-      };
-    });
+    return rawData.map(data => ({
+      xLabel: integerToMonths[data._id.month] || `M${data._id.month}`,
+      totalHours: Number(data.totalHours) || 0,
+      year: data._id.year,
+      interval: 'month',
+    }));
   }
 
-  // for weekly intervals
-  return rawData.map(data => {
-    return {
-      xLabel: data._id.week,
-      totalHours: data.totalHours,
-      year: data._id.year,
-      interval: 'week',
-    };
-  });
+  // Weekly interval format - explicitly cast week to String so Recharts treats it as a discrete category
+  return rawData.map(data => ({
+    xLabel: Number(data._id.week) || 0,
+    totalHours: Number(data.totalHours) || 0,
+    year: data._id.year,
+    interval: 'week',
+  }));
 };
 
 const dateToYYYYMMDD = date => {
@@ -52,17 +50,20 @@ const dateToYYYYMMDD = date => {
 
 export default function VolunteerTrendsLineChart({ darkMode }) {
   const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState(null);
-  const [fetchError, setFetchError] = useState(false);
-  const latestNumberOfHours = data?.[data.length - 1].totalHours || 0;
-  const [chartSize, setChartSize] = useState({ width: null, height: null });
+  const [data, setData] = useState([]);
+  const [fetchError, setFetchError] = useState(null);
+
+  // Safe extraction for last point value
+  const latestNumberOfHours = data && data.length > 0 ? data[data.length - 1].totalHours : 0;
+
+  // Explicit non-zero fallbacks for initial chart dimension state
+  const [chartSize, setChartSize] = useState({ width: 600, height: 350 });
   const [requestTimeFrame, setRequestTimeFrame] = useState(1);
   const [requestOffset, setRequestOffset] = useState('week');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [customDateRange, setCustomDateRange] = useState([null, null]);
   const [customStartDate = new Date(), customEndDate = new Date()] = customDateRange;
 
-  //dropdown styling - dark mode
   const selectStyle = {
     backgroundColor: darkMode ? '#111827' : '#ffffff',
     color: darkMode ? '#f8fafc' : '#111827',
@@ -71,19 +72,15 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
     padding: '2px 8px',
   };
 
-  // option colors
   const optionStyle = {
     backgroundColor: darkMode ? '#111827' : '#ffffff',
     color: darkMode ? '#f8fafc' : '#111827',
   };
 
   useEffect(() => {
-    // Gets backend data
     const getData = async () => {
-      // TODO: NEED TO ABSTRACT THIS TO ITS OWN REDUX REDUCER
       let url;
       if (customDateRange.every(date => date)) {
-        // URL for custom dates
         const formattedDateRange = customDateRange.map(date => dateToYYYYMMDD(date));
         url = ENDPOINTS.VOLUNTEER_TRENDS(
           requestTimeFrame,
@@ -92,7 +89,6 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
           formattedDateRange[1],
         );
       } else {
-        // URL for pre-set timeframes
         url = ENDPOINTS.VOLUNTEER_TRENDS(requestTimeFrame, requestOffset);
       }
 
@@ -110,17 +106,13 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
   }, [requestTimeFrame, requestOffset, customDateRange]);
 
   useEffect(() => {
-    // Add event listener to set chart width on window resize
     const updateChartSize = () => {
-      // Default sizes
       let width = 600;
       let height = 350;
       if (window.innerWidth < 650) {
-        // Mobile
-        width = 400;
+        width = 380;
         height = 250;
       } else if (window.innerWidth < 1200) {
-        // Tablet
         width = 500;
       }
       setChartSize({ width, height });
@@ -133,12 +125,12 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
   }, []);
 
   const formatNumber = number => {
-    // Add comma every third digit (e.g. makes 1000 a 1,000)
+    if (number === null || number === undefined) return '0';
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 
   const renderCustomDot = ({ cx, cy, index }) => {
-    // Highlight and show value of last dot on the line
+    if (!data || data.length === 0) return null;
     const isLastPoint = index === data.length - 1;
     const formattedNumber = formatNumber(latestNumberOfHours);
     if (isLastPoint) {
@@ -164,7 +156,7 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
 
   const renderCustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
-      const { year, interval } = payload[0].payload;
+      const { year } = payload[0].payload;
       const bgColor = darkMode ? '#222' : 'white';
       const textColor = darkMode ? '#fff' : '#222';
       const labelColor = darkMode ? '#90cdf4' : '#222';
@@ -179,16 +171,9 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
           }}
         >
           <h6 style={{ color: labelColor }}>
-            {interval === 'week' ? 'Week ' : ''}
-            {label}
-            {`, `}
-            {year}
+            {label}, {year}
           </h6>
-
-          <h6 style={{ color: darkMode ? '#90ee90' : '#328D1B' }}>
-            {payload[0].value}
-            {' hours'}
-          </h6>
+          <h6 style={{ color: darkMode ? '#90ee90' : '#328D1B' }}>{payload[0].value} hours</h6>
         </div>
       );
     }
@@ -205,11 +190,11 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
     const numberOfYears = e.target.value.substring(5);
     setIsLoading(true);
     setRequestTimeFrame(numberOfYears);
-    return undefined;
   };
 
   const setOffsetFilter = e => {
     const offset = e.target.value;
+    setIsLoading(true);
     setRequestOffset(offset);
   };
 
@@ -224,6 +209,9 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
   if (fetchError) {
     return <div>Error fetching data!</div>;
   }
+
+  const maxWeek = data.length > 0 ? Math.max(...data.map(d => d.xLabel)) : 32;
+  const evenTicks = Array.from({ length: Math.floor(maxWeek / 2) + 1 }, (_, i) => i * 2);
 
   return (
     <div className={styles.chartContainer}>
@@ -257,7 +245,7 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
             Choose Date Range
           </option>
         </select>
-        by
+        {' by '}
         <select
           name="offset-filter"
           id="offset-filter"
@@ -313,9 +301,12 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
           <CartesianGrid stroke="#ccc" vertical={false} />
           <XAxis
             dataKey="xLabel"
+            type="number"
+            ticks={evenTicks}
+            domain={[0, maxWeek]}
             axisLine={false}
             tickLine={false}
-            tick={{ fill: darkMode ? '#ccc' : undefined }}
+            tick={{ fill: darkMode ? '#ccc' : undefined, fontSize: 12 }}
           />
           <YAxis
             tickFormatter={formatNumber}
