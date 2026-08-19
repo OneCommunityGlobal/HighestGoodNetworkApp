@@ -108,11 +108,6 @@
 .dateFieldEnd :global(.react-datepicker__input-container input) {
   position: relative;
   z-index: 22;
-  background-color: #fff;
-}
-
-.darkMode .dateFieldEnd :global(.react-datepicker__input-container input) {
-  background-color: #222 !important;
 }
 
 .datepickerPopper {
