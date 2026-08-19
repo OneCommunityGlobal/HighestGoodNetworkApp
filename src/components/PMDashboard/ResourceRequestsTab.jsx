@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Button, Input, Table, Badge, Spinner } from 'reactstrap';
 import styles from './PMResourceDashboard.module.css';
 
@@ -14,6 +14,49 @@ function ResourceRequestsTab({ darkMode }) {
     teacherId: '',
     searchTerm: '',
   });
+  const tableContainerRef = useRef(null);
+  const topScrollbarRef = useRef(null);
+  const isSyncingScrollRef = useRef(false);
+  const [tableOverflow, setTableOverflow] = useState({
+    hasOverflow: false,
+    showFade: false,
+    scrollWidth: 0,
+    topScrollbarWidth: 0,
+  });
+
+  const getTableScrollContainer = useCallback(
+    () =>
+      tableContainerRef.current?.querySelector('.table-responsive') || tableContainerRef.current,
+    [],
+  );
+
+  const updateTableOverflow = useCallback(() => {
+    const scrollContainer = getTableScrollContainer();
+
+    if (!scrollContainer) {
+      return;
+    }
+
+    const { scrollLeft, scrollWidth, clientWidth } = scrollContainer;
+    const hasOverflow = scrollWidth > clientWidth;
+    const topScrollbarClientWidth = topScrollbarRef.current?.clientWidth || clientWidth;
+    const topScrollbarWidth = scrollWidth - clientWidth + topScrollbarClientWidth;
+    // Account for small browser rounding differences between the top scrollbar and table viewport.
+    const scrollEndTolerance = 4;
+    const remainingScroll = scrollWidth - clientWidth - scrollLeft;
+    const isAtRightEdge = remainingScroll <= scrollEndTolerance;
+
+    setTableOverflow({
+      hasOverflow,
+      showFade: hasOverflow && !isAtRightEdge,
+      scrollWidth,
+      topScrollbarWidth,
+    });
+
+    if (topScrollbarRef.current) {
+      topScrollbarRef.current.scrollLeft = scrollLeft;
+    }
+  }, [getTableScrollContainer]);
 
   const parseDateOnlyAsLocal = dateString => {
     const [year, month, day] = dateString.split('-').map(Number);
@@ -121,6 +164,74 @@ function ResourceRequestsTab({ darkMode }) {
 
     setFilteredRequests(filtered);
   }, [filters, requests]);
+
+  useEffect(() => {
+    const scrollContainer = getTableScrollContainer();
+    const topScrollbar = topScrollbarRef.current;
+
+    if (!scrollContainer) {
+      return undefined;
+    }
+
+    const syncTopScrollbar = () => {
+      if (isSyncingScrollRef.current) {
+        return;
+      }
+
+      isSyncingScrollRef.current = true;
+
+      if (topScrollbar) {
+        topScrollbar.scrollLeft = scrollContainer.scrollLeft;
+      }
+
+      updateTableOverflow();
+      isSyncingScrollRef.current = false;
+    };
+
+    const syncTableScroll = () => {
+      if (!topScrollbar || isSyncingScrollRef.current) {
+        return;
+      }
+
+      isSyncingScrollRef.current = true;
+      scrollContainer.scrollLeft = topScrollbar.scrollLeft;
+      updateTableOverflow();
+      isSyncingScrollRef.current = false;
+    };
+
+    scrollContainer.addEventListener('scroll', syncTopScrollbar);
+    topScrollbar?.addEventListener('scroll', syncTableScroll);
+    updateTableOverflow();
+
+    return () => {
+      scrollContainer.removeEventListener('scroll', syncTopScrollbar);
+      topScrollbar?.removeEventListener('scroll', syncTableScroll);
+    };
+  }, [getTableScrollContainer, tableOverflow.hasOverflow, updateTableOverflow]);
+
+  useEffect(() => {
+    const scrollContainer = getTableScrollContainer();
+    let resizeObserver;
+
+    const handleResize = () => {
+      window.requestAnimationFrame(updateTableOverflow);
+    };
+
+    updateTableOverflow();
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+
+    if (window.ResizeObserver && scrollContainer) {
+      resizeObserver = new window.ResizeObserver(handleResize);
+      resizeObserver.observe(scrollContainer);
+    }
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+      resizeObserver?.disconnect();
+    };
+  }, [filteredRequests, getTableScrollContainer, updateTableOverflow]);
 
   const handleApprove = requestId => {
     setRequests(prev =>
@@ -239,74 +350,89 @@ function ResourceRequestsTab({ darkMode }) {
       </div>
 
       {/* Requests Table */}
-      <div className={styles.tableContainer}>
-        <Table
-          responsive
-          striped
-          className={`${styles.resourceTable} ${darkMode ? styles.resourceTableDark : ''}`}
-        >
-          <thead>
-            <tr>
-              <th>Request ID</th>
-              <th>Teacher ID</th>
-              <th>Teacher Name</th>
-              <th>Resource Type</th>
-              <th>Quantity</th>
-              <th>Description</th>
-              <th>Request Date</th>
-              <th>Priority</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredRequests.length === 0 ? (
+      <div
+        className={`${styles.tableOverflowWrapper} ${
+          tableOverflow.showFade ? styles.tableOverflowWrapperWithFade : ''
+        }`}
+      >
+        {tableOverflow.hasOverflow && (
+          <div className={styles.tableTopScrollbar} ref={topScrollbarRef} aria-hidden="true">
+            <div
+              className={styles.tableTopScrollbarInner}
+              style={{ width: `${tableOverflow.topScrollbarWidth}px` }}
+            />
+          </div>
+        )}
+
+        <div className={styles.tableContainer} ref={tableContainerRef}>
+          <Table
+            responsive
+            striped
+            className={`${styles.resourceTable} ${darkMode ? styles.resourceTableDark : ''}`}
+          >
+            <thead>
               <tr>
-                <td colSpan="10" className={styles.noResults}>
-                  No resource requests found matching the filters.
-                </td>
+                <th>Request ID</th>
+                <th>Teacher ID</th>
+                <th>Teacher Name</th>
+                <th>Resource Type</th>
+                <th>Quantity</th>
+                <th>Description</th>
+                <th>Request Date</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
-            ) : (
-              filteredRequests.map(request => (
-                <tr key={request.id}>
-                  <td className={styles.requestId}>{request.id}</td>
-                  <td>{request.teacherId}</td>
-                  <td>{request.teacherName}</td>
-                  <td>{request.resourceType}</td>
-                  <td>{request.quantity}</td>
-                  <td className={styles.description}>{request.description}</td>
-                  <td>{formatDateOnly(request.requestDate)}</td>
-                  <td>{getPriorityBadge(request.priority)}</td>
-                  <td>{getStatusBadge(request.status)}</td>
-                  <td className={styles.actionsCell}>
-                    {request.status === 'pending' ? (
-                      <div className={styles.actionButtons}>
-                        <Button
-                          color="success"
-                          size="sm"
-                          onClick={() => handleApprove(request.id)}
-                          className={styles.approveBtn}
-                        >
-                          ✓ Approve
-                        </Button>
-                        <Button
-                          color="danger"
-                          size="sm"
-                          onClick={() => handleDeny(request.id)}
-                          className={styles.denyBtn}
-                        >
-                          ✗ Deny
-                        </Button>
-                      </div>
-                    ) : (
-                      <span className={styles.statusText}>—</span>
-                    )}
+            </thead>
+            <tbody>
+              {filteredRequests.length === 0 ? (
+                <tr>
+                  <td colSpan="10" className={styles.noResults}>
+                    No resource requests found matching the filters.
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </Table>
+              ) : (
+                filteredRequests.map(request => (
+                  <tr key={request.id}>
+                    <td className={styles.requestId}>{request.id}</td>
+                    <td>{request.teacherId}</td>
+                    <td>{request.teacherName}</td>
+                    <td>{request.resourceType}</td>
+                    <td>{request.quantity}</td>
+                    <td className={styles.description}>{request.description}</td>
+                    <td>{formatDateOnly(request.requestDate)}</td>
+                    <td>{getPriorityBadge(request.priority)}</td>
+                    <td>{getStatusBadge(request.status)}</td>
+                    <td className={styles.actionsCell}>
+                      {request.status === 'pending' ? (
+                        <div className={styles.actionButtons}>
+                          <Button
+                            color="success"
+                            size="sm"
+                            onClick={() => handleApprove(request.id)}
+                            className={styles.approveBtn}
+                          >
+                            ✓ Approve
+                          </Button>
+                          <Button
+                            color="danger"
+                            size="sm"
+                            onClick={() => handleDeny(request.id)}
+                            className={styles.denyBtn}
+                          >
+                            ✗ Deny
+                          </Button>
+                        </div>
+                      ) : (
+                        <span className={styles.statusText}>—</span>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </Table>
+        </div>
       </div>
     </div>
   );

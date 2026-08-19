@@ -161,10 +161,65 @@
 }
 
 /* Table Container */
+.tableOverflowWrapper {
+  position: relative;
+}
+
+.tableOverflowWrapperWithFade::after {
+  content: '';
+  position: absolute;
+  top: 1.125rem;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  width: 1.25rem;
+  pointer-events: none;
+  background: linear-gradient(to right, rgb(255 255 255 / 0%), rgb(255 255 255 / 45%));
+  border-radius: 0 8px 8px 0;
+}
+
+.tableTopScrollbar {
+  height: 0.875rem;
+  margin-bottom: 0.25rem;
+  overflow: auto hidden;
+  scrollbar-width: thin;
+}
+
+.tableTopScrollbarInner {
+  height: 1px;
+}
+
+.dashboardDark .tableTopScrollbar {
+  scrollbar-color: #8f9bb3 #1a1f36;
+}
+
+.dashboardDark .tableTopScrollbar::-webkit-scrollbar {
+  height: 0.875rem;
+}
+
+.dashboardDark .tableTopScrollbar::-webkit-scrollbar-track {
+  background-color: #1a1f36;
+}
+
+.dashboardDark .tableTopScrollbar::-webkit-scrollbar-thumb {
+  background-color: #8f9bb3;
+  border: 3px solid #1a1f36;
+  border-radius: 999px;
+}
+
 .tableContainer {
   overflow-x: auto;
   border-radius: 8px;
   border: 1px solid #dee2e6;
+}
+
+.tableContainer :global(.table-responsive) {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tableContainer :global(.table-responsive::-webkit-scrollbar) {
+  display: none;
 }
 
 .resourceTable {
@@ -249,6 +304,12 @@
 
 .actionsCell {
   min-width: 180px;
+  padding-right: 1.5rem !important;
+}
+
+.expiryColumn {
+  min-width: 160px;
+  padding-right: 1.5rem !important;
 }
 
 .actionButtons {
@@ -415,6 +476,10 @@
 
 .dashboardDark .tableContainer {
   border-color: #3a4460;
+}
+
+.dashboardDark .tableOverflowWrapperWithFade::after {
+  background: linear-gradient(to right, rgb(36 43 61 / 0%), rgb(36 43 61 / 45%));
 }
 
 .dashboardDark .tabNav {

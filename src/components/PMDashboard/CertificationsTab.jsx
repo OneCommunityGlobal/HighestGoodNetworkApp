@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Button, Input, Table, Badge, Spinner } from 'reactstrap';
 import styles from './PMResourceDashboard.module.css';
 
@@ -14,6 +14,49 @@ function CertificationsTab({ darkMode }) {
     teacherId: '',
     searchTerm: '',
   });
+  const tableContainerRef = useRef(null);
+  const topScrollbarRef = useRef(null);
+  const isSyncingScrollRef = useRef(false);
+  const [tableOverflow, setTableOverflow] = useState({
+    hasOverflow: false,
+    showFade: false,
+    scrollWidth: 0,
+    topScrollbarWidth: 0,
+  });
+
+  const getTableScrollContainer = useCallback(
+    () =>
+      tableContainerRef.current?.querySelector('.table-responsive') || tableContainerRef.current,
+    [],
+  );
+
+  const updateTableOverflow = useCallback(() => {
+    const scrollContainer = getTableScrollContainer();
+
+    if (!scrollContainer) {
+      return;
+    }
+
+    const { scrollLeft, scrollWidth, clientWidth } = scrollContainer;
+    const hasOverflow = scrollWidth > clientWidth;
+    const topScrollbarClientWidth = topScrollbarRef.current?.clientWidth || clientWidth;
+    const topScrollbarWidth = scrollWidth - clientWidth + topScrollbarClientWidth;
+    // Account for small browser rounding differences between the top scrollbar and table viewport.
+    const scrollEndTolerance = 4;
+    const remainingScroll = scrollWidth - clientWidth - scrollLeft;
+    const isAtRightEdge = remainingScroll <= scrollEndTolerance;
+
+    setTableOverflow({
+      hasOverflow,
+      showFade: hasOverflow && !isAtRightEdge,
+      scrollWidth,
+      topScrollbarWidth,
+    });
+
+    if (topScrollbarRef.current) {
+      topScrollbarRef.current.scrollLeft = scrollLeft;
+    }
+  }, [getTableScrollContainer]);
 
   const parseDateOnlyAsLocal = dateString => {
     const [year, month, day] = dateString.split('-').map(Number);
@@ -143,6 +186,74 @@ function CertificationsTab({ darkMode }) {
 
     setFilteredCertifications(filtered);
   }, [filters, certifications]);
+
+  useEffect(() => {
+    const scrollContainer = getTableScrollContainer();
+    const topScrollbar = topScrollbarRef.current;
+
+    if (!scrollContainer) {
+      return undefined;
+    }
+
+    const syncTopScrollbar = () => {
+      if (isSyncingScrollRef.current) {
+        return;
+      }
+
+      isSyncingScrollRef.current = true;
+
+      if (topScrollbar) {
+        topScrollbar.scrollLeft = scrollContainer.scrollLeft;
+      }
+
+      updateTableOverflow();
+      isSyncingScrollRef.current = false;
+    };
+
+    const syncTableScroll = () => {
+      if (!topScrollbar || isSyncingScrollRef.current) {
+        return;
+      }
+
+      isSyncingScrollRef.current = true;
+      scrollContainer.scrollLeft = topScrollbar.scrollLeft;
+      updateTableOverflow();
+      isSyncingScrollRef.current = false;
+    };
+
+    scrollContainer.addEventListener('scroll', syncTopScrollbar);
+    topScrollbar?.addEventListener('scroll', syncTableScroll);
+    updateTableOverflow();
+
+    return () => {
+      scrollContainer.removeEventListener('scroll', syncTopScrollbar);
+      topScrollbar?.removeEventListener('scroll', syncTableScroll);
+    };
+  }, [getTableScrollContainer, tableOverflow.hasOverflow, updateTableOverflow]);
+
+  useEffect(() => {
+    const scrollContainer = getTableScrollContainer();
+    let resizeObserver;
+
+    const handleResize = () => {
+      window.requestAnimationFrame(updateTableOverflow);
+    };
+
+    updateTableOverflow();
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+
+    if (window.ResizeObserver && scrollContainer) {
+      resizeObserver = new window.ResizeObserver(handleResize);
+      resizeObserver.observe(scrollContainer);
+    }
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+      resizeObserver?.disconnect();
+    };
+  }, [filteredCertifications, getTableScrollContainer, updateTableOverflow]);
 
   const getDerivedStatus = expiryDate => {
     const daysLeft = getDaysUntilExpiry(expiryDate);
@@ -316,51 +427,66 @@ function CertificationsTab({ darkMode }) {
       </div>
 
       {/* Certifications Table */}
-      <div className={styles.tableContainer}>
-        <Table
-          responsive
-          striped
-          className={`${styles.resourceTable} ${darkMode ? styles.resourceTableDark : ''}`}
-        >
-          <thead>
-            <tr>
-              <th>Cert ID</th>
-              <th>Teacher ID</th>
-              <th>Teacher Name</th>
-              <th>Certification Type</th>
-              <th>Certifying Body</th>
-              <th>Training Hours</th>
-              <th>Issue Date</th>
-              <th>Expiry Date</th>
-              <th>Status</th>
-              <th>Days Until Expiry</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredCertifications.length === 0 ? (
+      <div
+        className={`${styles.tableOverflowWrapper} ${
+          tableOverflow.showFade ? styles.tableOverflowWrapperWithFade : ''
+        }`}
+      >
+        {tableOverflow.hasOverflow && (
+          <div className={styles.tableTopScrollbar} ref={topScrollbarRef} aria-hidden="true">
+            <div
+              className={styles.tableTopScrollbarInner}
+              style={{ width: `${tableOverflow.topScrollbarWidth}px` }}
+            />
+          </div>
+        )}
+
+        <div className={styles.tableContainer} ref={tableContainerRef}>
+          <Table
+            responsive
+            striped
+            className={`${styles.resourceTable} ${darkMode ? styles.resourceTableDark : ''}`}
+          >
+            <thead>
               <tr>
-                <td colSpan="10" className={styles.noResults}>
-                  No certifications found matching the filters.
-                </td>
+                <th>Cert ID</th>
+                <th>Teacher ID</th>
+                <th>Teacher Name</th>
+                <th>Certification Type</th>
+                <th>Certifying Body</th>
+                <th>Training Hours</th>
+                <th>Issue Date</th>
+                <th>Expiry Date</th>
+                <th>Status</th>
+                <th className={styles.expiryColumn}>Days Until Expiry</th>
               </tr>
-            ) : (
-              filteredCertifications.map(cert => (
-                <tr key={cert.id}>
-                  <td className={styles.certId}>{cert.id}</td>
-                  <td>{cert.teacherId}</td>
-                  <td>{cert.teacherName}</td>
-                  <td>{cert.certificationType}</td>
-                  <td>{cert.certifyingBody}</td>
-                  <td>{cert.trainingHours}h</td>
-                  <td>{formatDateOnly(cert.issueDate)}</td>
-                  <td>{formatDateOnly(cert.expiryDate)}</td>
-                  <td>{getStatusBadge(getDerivedStatus(cert.expiryDate))}</td>
-                  <td>{getExpiryWarning(cert.expiryDate)}</td>
+            </thead>
+            <tbody>
+              {filteredCertifications.length === 0 ? (
+                <tr>
+                  <td colSpan="10" className={styles.noResults}>
+                    No certifications found matching the filters.
+                  </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </Table>
+              ) : (
+                filteredCertifications.map(cert => (
+                  <tr key={cert.id}>
+                    <td className={styles.certId}>{cert.id}</td>
+                    <td>{cert.teacherId}</td>
+                    <td>{cert.teacherName}</td>
+                    <td>{cert.certificationType}</td>
+                    <td>{cert.certifyingBody}</td>
+                    <td>{cert.trainingHours}h</td>
+                    <td>{formatDateOnly(cert.issueDate)}</td>
+                    <td>{formatDateOnly(cert.expiryDate)}</td>
+                    <td>{getStatusBadge(getDerivedStatus(cert.expiryDate))}</td>
+                    <td className={styles.expiryColumn}>{getExpiryWarning(cert.expiryDate)}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </Table>
+        </div>
       </div>
     </div>
   );
