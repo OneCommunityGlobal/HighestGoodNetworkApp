@@ -28,8 +28,8 @@ import styles from './BadgeDevelopmentTable.module.css';
 function BadgeDevelopmentTable(props) {
   const { darkMode } = props;
 
-  const canUpdateBadges = hasPermission(permissions.updateBadges);
-  const canDeleteBadges = hasPermission(permissions.deleteBadges);
+  const canUpdateBadges = props.hasPermission(permissions.updateBadges);
+  const canDeleteBadges = props.hasPermission(permissions.deleteBadges);
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');

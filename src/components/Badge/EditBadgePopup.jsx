@@ -79,20 +79,21 @@ function EditBadgePopup(props) {
   };
 
   useEffect(() => {
-    setBadgeValues(props.badgeValues);
-    setBadgeId(props.badgeValues ? props.badgeValues._id : null);
-    setBadgeName(props.badgeValues ? props.badgeValues.badgeName : '');
-    setImageUrl(props.badgeValues ? props.badgeValues.imageUrl : '');
-    setDescription(props.badgeValues ? props.badgeValues.description : '');
-    setRanking(props.badgeValues ? props.badgeValues.ranking : 0);
-    setType(props.badgeValues ? props.badgeValues.type : 'Custom');
-    setCategory(props.badgeValues ? props.badgeValues.category : 'Unspecified');
-    setTotalHrs(props.badgeValues ? props.badgeValues.totalHrs : 0);
-    setWeeks(props.badgeValues ? props.badgeValues.weeks : 0);
-    setMonths(props.badgeValues ? props.badgeValues.months : 0);
-    setMultiple(props.badgeValues ? props.badgeValues.multiple : 0);
-    setPeople(props.badgeValues ? props.badgeValues.people : 0);
-    displayTypeRelatedFields(props.badgeValues ? props.badgeValues.type : 'Custom');
+    const badge = props.badgeValues;
+    setBadgeValues(badge);
+    setBadgeId(badge?._id ?? null);
+    setBadgeName(badge?.badgeName ?? '');
+    setImageUrl(badge?.imageUrl ?? '');
+    setDescription(badge?.description ?? '');
+    setRanking(badge?.ranking ?? 0);
+    setType(badge?.type ?? 'Custom');
+    setCategory(badge?.category ?? 'Unspecified');
+    setTotalHrs(badge?.totalHrs ?? 0);
+    setWeeks(badge?.weeks ?? 0);
+    setMonths(badge?.months ?? 0);
+    setMultiple(badge?.multiple ?? 0);
+    setPeople(badge?.people ?? 0);
+    displayTypeRelatedFields(badge?.type ?? 'Custom');
   }, [props.badgeValues]);
 
   const validRanking = badgeRanking => {
@@ -101,10 +102,7 @@ function EditBadgePopup(props) {
   };
 
   const enableButton =
-    badgeName.length === 0 ||
-    imageUrl.length === 0 ||
-    description.length === 0 ||
-    !validRanking(ranking);
+    !badgeName?.length || !imageUrl?.length || !description?.length || !validRanking(ranking);
 
   const closePopup = () => {
     props.setEditPopup(false);
