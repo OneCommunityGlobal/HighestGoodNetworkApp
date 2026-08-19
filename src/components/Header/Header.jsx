@@ -259,7 +259,19 @@ export function Header(props) {
 
   useEffect(() => {
     const path = location.pathname;
+    // BM Projects accordion: any BM dashboard route.
     setShowProjectDropdown(path === '/bmdashboard' || path.startsWith('/bmdashboard/'));
+  }, [location.pathname]);
+
+  // Injuries Tracking should only show in real BM Dashboard context — not on Report
+  // pages that happen to live under /bmdashboard/* (e.g. Total Construction Summary).
+  const showInjuriesTrackingLink = useMemo(() => {
+    const path = location.pathname;
+    if (path === '/bmdashboard' || path === '/bmdashboard/') return true;
+    if (path.startsWith('/bmdashboard/injurychart')) return true;
+    if (!path.startsWith('/bmdashboard/')) return false;
+    const excludedPrefixes = ['/bmdashboard/totalconstructionsummary'];
+    return !excludedPrefixes.some(prefix => path.startsWith(prefix));
   }, [location.pathname]);
   const MeetingNotificationAudioRef = useRef(null);
   const dismissedMeetingModalIdRef = useRef(null);
@@ -888,8 +900,8 @@ export function Header(props) {
                         BM Dashboard
                       </DropdownItem>
 
-                      {/* Visible while on BM Dashboard; route stays /bmdashboard/injurychart (BMProtectedRoute). */}
-                      {showProjectDropdown && (
+                      {/* Visible only in BM Dashboard context; route stays /bmdashboard/injurychart. */}
+                      {showInjuriesTrackingLink && (
                         <DropdownItem
                           tag={Link}
                           to="/bmdashboard/injurychart"

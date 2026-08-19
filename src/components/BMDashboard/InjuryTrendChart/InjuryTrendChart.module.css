@@ -83,12 +83,30 @@
   grid-template-columns: 1fr 1fr;
   gap: 0.45rem;
   width: 100%;
+  overflow: visible;
+}
+
+.dateField {
+  position: relative;
+  min-width: 0;
+  width: 100%;
 }
 
 .headerFilters :global(.react-datepicker-wrapper),
 .headerFilters :global(.react-datepicker__input-container) {
   display: block;
   width: 100%;
+}
+
+.headerFilters :global(.react-datepicker__input-container input) {
+  width: 100%;
+  min-height: 36px;
+  box-sizing: border-box;
+}
+
+.headerFilters :global(.react-datepicker__close-icon::after) {
+  background-color: #6b7280;
+  color: #fff;
 }
 
 .headerFilters :global(.react-datepicker__month-select),
@@ -226,10 +244,25 @@
 }
 
 .darkMode .select,
-.darkMode .datepicker {
-  background-color: #222;
-  color: #ddd;
-  border-color: #2d3a4d;
+.darkMode .datepicker,
+.darkMode :global(.react-datepicker__input-container input) {
+  background-color: #222 !important;
+  color: #e5eaf1 !important;
+  border-color: #2d3a4d !important;
+  -webkit-text-fill-color: #e5eaf1;
+  caret-color: #e5eaf1;
+}
+
+.darkMode .datepicker::placeholder,
+.darkMode :global(.react-datepicker__input-container input::placeholder) {
+  color: #9aa6b8 !important;
+  -webkit-text-fill-color: #9aa6b8;
+  opacity: 1;
+}
+
+.darkMode :global(.react-datepicker__close-icon::after) {
+  background-color: #64748b;
+  color: #fff;
 }
 
 .darkMode .demoBadge {
@@ -241,9 +274,56 @@
   color: #9aa6b8;
 }
 
+/* Calendar is portaled to body, so theme it via the page body class. */
+:global(.injury-dark-body) :global(.react-datepicker) {
+  background-color: #222;
+  color: #e5eaf1;
+  border: 1px solid #2d3a4d;
+}
+
+:global(.injury-dark-body) :global(.react-datepicker__header) {
+  background-color: #2a3446;
+  border-bottom: 1px solid #2d3a4d;
+}
+
+:global(.injury-dark-body) :global(.react-datepicker__current-month),
+:global(.injury-dark-body) :global(.react-datepicker__day-name),
+:global(.injury-dark-body) :global(.react-datepicker__day),
+:global(.injury-dark-body) :global(.react-datepicker__month-read-view--selected-month),
+:global(.injury-dark-body) :global(.react-datepicker__year-read-view--selected-year) {
+  color: #e5eaf1;
+}
+
+:global(.injury-dark-body) :global(.react-datepicker__day:hover),
+:global(.injury-dark-body) :global(.react-datepicker__month-text:hover),
+:global(.injury-dark-body) :global(.react-datepicker__year-text:hover) {
+  background-color: #334155;
+}
+
+:global(.injury-dark-body) :global(.react-datepicker__day--selected),
+:global(.injury-dark-body) :global(.react-datepicker__day--keyboard-selected),
+:global(.injury-dark-body) :global(.react-datepicker__day--in-range),
+:global(.injury-dark-body) :global(.react-datepicker__day--in-selecting-range) {
+  background-color: #3b82f6;
+  color: #fff;
+}
+
+:global(.injury-dark-body) :global(.react-datepicker__day--disabled) {
+  color: #6b7280;
+}
+
+:global(.injury-dark-body) :global(.react-datepicker__month-dropdown),
+:global(.injury-dark-body) :global(.react-datepicker__year-dropdown),
+:global(.injury-dark-body) :global(.react-datepicker__month-select),
+:global(.injury-dark-body) :global(.react-datepicker__year-select) {
+  background-color: #222;
+  color: #e5eaf1;
+  border-color: #2d3a4d;
+}
+
 .darkMode :global(.react-datepicker) {
   background-color: #222;
-  color: #ddd;
+  color: #e5eaf1;
   border: 1px solid #2d3a4d;
 }
 
@@ -257,7 +337,7 @@
 .darkMode :global(.react-datepicker__current-month),
 .darkMode :global(.react-datepicker__month-read-view--selected-month),
 .darkMode :global(.react-datepicker__year-read-view--selected-year) {
-  color: #ddd;
+  color: #e5eaf1;
 }
 
 .darkMode :global(.react-datepicker__month-dropdown),
@@ -265,7 +345,7 @@
 .darkMode :global(.react-datepicker__month-select),
 .darkMode :global(.react-datepicker__year-select) {
   background-color: #222;
-  color: #ddd;
+  color: #e5eaf1;
 }
 
 @media (width <= 900px) {
