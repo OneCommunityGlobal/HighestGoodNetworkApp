@@ -104,10 +104,13 @@
 }
 
 .dateFieldEnd :global(.react-datepicker-wrapper),
-.dateFieldEnd :global(.react-datepicker__input-container),
-.dateFieldEnd :global(.react-datepicker__input-container input) {
+.dateFieldEnd :global(.react-datepicker__input-container) {
   position: relative;
   z-index: 22;
+}
+
+.dateFieldEnd :global(.react-datepicker__close-icon) {
+  z-index: 1;
 }
 
 .datepickerPopper {
