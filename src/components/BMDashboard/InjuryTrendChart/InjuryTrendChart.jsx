@@ -359,7 +359,6 @@ function InjuryTrendChart() {
     dateFormat: 'yyyy-MM-dd',
     className: styles.datepicker,
     calendarClassName: darkMode ? styles.datepickerCalendarDark : undefined,
-    popperClassName: styles.datepickerPopper,
     isClearable: true,
   };
 
@@ -392,29 +391,35 @@ function InjuryTrendChart() {
             <div className={styles.filterGroup}>
               <span className={styles.filterLabel}>Dates</span>
               <div className={styles.dateInputs}>
-                <DatePicker
-                  id="injury-start-date"
-                  selected={startDate}
-                  onChange={setStartDate}
-                  selectsStart
-                  startDate={startDate}
-                  endDate={endDate}
-                  placeholderText="Start date"
-                  popperPlacement="bottom-start"
-                  {...datePickerProps}
-                />
-                <DatePicker
-                  id="injury-end-date"
-                  selected={endDate}
-                  onChange={setEndDate}
-                  selectsEnd
-                  startDate={startDate}
-                  endDate={endDate}
-                  minDate={startDate}
-                  placeholderText="End date"
-                  popperPlacement="bottom-end"
-                  {...datePickerProps}
-                />
+                <div className={styles.dateFieldStart}>
+                  <DatePicker
+                    id="injury-start-date"
+                    selected={startDate}
+                    onChange={setStartDate}
+                    selectsStart
+                    startDate={startDate}
+                    endDate={endDate}
+                    placeholderText="Start date"
+                    popperPlacement="bottom-start"
+                    popperClassName={styles.datepickerPopper}
+                    {...datePickerProps}
+                  />
+                </div>
+                <div className={styles.dateFieldEnd}>
+                  <DatePicker
+                    id="injury-end-date"
+                    selected={endDate}
+                    onChange={setEndDate}
+                    selectsEnd
+                    startDate={startDate}
+                    endDate={endDate}
+                    minDate={startDate}
+                    placeholderText="End date"
+                    popperPlacement="bottom-end"
+                    popperClassName={styles.datepickerPopper}
+                    {...datePickerProps}
+                  />
+                </div>
               </div>
             </div>
           </div>

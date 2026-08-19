@@ -38,11 +38,11 @@
 
 .headerFilters {
   display: grid;
-  grid-template-columns: minmax(140px, 180px) minmax(220px, 320px);
+  grid-template-columns: minmax(140px, 180px) minmax(260px, 360px);
   gap: 0.85rem 1rem;
   place-items: start stretch;
   flex: 1 1 auto;
-  max-width: 520px;
+  max-width: 560px;
   overflow: visible;
 }
 
@@ -84,14 +84,47 @@
 
 .dateInputs {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 0.45rem;
   width: 100%;
   overflow: visible;
 }
 
+/* Start calendar popper sits below its field; end field stays above that popper. */
+.dateFieldStart {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+
+.dateFieldEnd {
+  position: relative;
+  z-index: 22;
+  min-width: 0;
+}
+
+.dateFieldEnd :global(.react-datepicker-wrapper),
+.dateFieldEnd :global(.react-datepicker__input-container),
+.dateFieldEnd :global(.react-datepicker__input-container input) {
+  position: relative;
+  z-index: 22;
+  background-color: #fff;
+}
+
+.darkMode .dateFieldEnd :global(.react-datepicker__input-container input) {
+  background-color: #222 !important;
+}
+
 .datepickerPopper {
   z-index: 20;
+}
+
+.dateFieldStart :global(.react-datepicker-popper) {
+  z-index: 20;
+}
+
+.dateFieldEnd :global(.react-datepicker-popper) {
+  z-index: 25;
 }
 
 .headerFilters :global(.react-datepicker-wrapper),
