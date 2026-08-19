@@ -2,54 +2,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import TimeEntriesViz from '../TimeEntriesViz';
 
-// Mock d3 and DOM methods to prevent errors during testing
-vi.mock('d3', () => {
-  // Create a chainable mock for d3 selections
-  const createChainableMock = () => {
-    const mock = {};
-    const methods = [
-      'append',
-      'attr',
-      'style',
-      'text',
-      'datum',
-      'data',
-      'join',
-      'html',
-      'call',
-      'selectAll',
-      'select',
-      'on',
-      'remove',
-      'empty',
-      'domain',
-      'range',
-      'x',
-      'y',
-    ];
-
-    methods.forEach(method => {
-      mock[method] = vi.fn(() => mock);
-    });
-
-    return mock;
-  };
-
-  // Main mock object
-  return {
-    select: vi.fn(() => createChainableMock()),
-    selectAll: vi.fn(() => createChainableMock()),
-    scaleTime: vi.fn(() => createChainableMock()),
-    scaleLinear: vi.fn(() => createChainableMock()),
-    axisBottom: vi.fn(() => vi.fn()),
-    axisLeft: vi.fn(() => vi.fn()),
-    extent: vi.fn(() => [new Date(), new Date()]),
-    line: vi.fn(() => createChainableMock()),
-    timeParse: vi.fn(() => () => new Date()),
-    timeFormat: vi.fn(() => () => '01/01/2023'),
-  };
-});
-
 const timeEntries = {
   period: [
     {
