@@ -64,6 +64,18 @@ describe('Unit Test case for PeopleTableDetails component', () => {
     expect(screen.getByText('Task 3')).toBeInTheDocument();
   });
 
+  it('displays a task with no resources and no start date', () => {
+    const taskWithoutResourcesOrStartDate = {
+      ...getMockTask('4', 'Unassigned task', 0),
+      resources: [[]],
+      startDate: 'null',
+    };
+
+    render(<PeopleTableDetails taskData={[taskWithoutResourcesOrStartDate]} />);
+
+    expect(screen.getByText('Unassigned task')).toBeInTheDocument();
+  });
+
   it('Test 5 : Verify no toggle button if resources < 2', () => {
     render(<PeopleTableDetails taskData={[getMockTask('1', 'P1', 1)]} />);
     expect(screen.queryByRole('button', { name: /^\d+\+$/ })).not.toBeInTheDocument();

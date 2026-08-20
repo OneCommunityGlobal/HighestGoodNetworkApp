@@ -85,7 +85,8 @@ function PeopleTableDetails(props) {
   const filterTasks = (tasks) => {
     let filteredList = tasks.filter((task) => {
       const taskStartDate = new Date(task.startDate);
-      const isWithinDateRange = !startDate || taskStartDate <= endDate;
+      const hasStartDate = !Number.isNaN(taskStartDate.getTime());
+      const isWithinDateRange = !hasStartDate || !startDate || taskStartDate <= endDate;
 
       return (
         task.taskName.toLowerCase().includes(name.toLowerCase()) &&
@@ -99,14 +100,11 @@ function PeopleTableDetails(props) {
     });
 
     filteredList = filteredList.filter((task) => {
-      let flag = false;
-      for (let i = 0; i < task.resources[0].length; i += 1) {
-        if (task.resources[0][i].name.toLowerCase().includes(resources.toLowerCase())) {
-          flag = true;
-          break;
-        }
-      }
-      return flag;
+      if (!resources) return true;
+
+      return (task.resources || [])
+        .flat()
+        .some(resource => resource.name?.toLowerCase().includes(resources.toLowerCase()));
     });
     return filteredList;
   };

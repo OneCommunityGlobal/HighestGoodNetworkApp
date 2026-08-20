@@ -149,7 +149,7 @@ function PeopleReport(props) {
     );
   }
 
-    const PeopleDataTable = () => {
+  const PeopleDataTable = () => {
     const peopleData = {
       alertVisible: false,
       taskData: [],
@@ -311,18 +311,11 @@ function PeopleReport(props) {
 
       <div className={`${styles.mobilePeopleTable}`}>
         <div className={styles.graphContainer}>
-          {isLoading ? (
-            <p
-              className={`${darkMode ? styles.textLight : ''}
-            d-flex align-items-center flex-row justify-content-center`}
-            >
-              Loading tasks: &nbsp; <Spinner color={`${darkMode ? 'light' : 'dark'}`} />
-            </p>
-          ) : activeTasks.length > 0 ? (
+          <div className={`intro_date ${darkMode ? styles.textLight : ''}`}>
+            <h5>Tasks contributed</h5>
+          </div>
+          {activeTasks.length > 0 ? (
             <>
-              <div className={`intro_date ${darkMode ? styles.textLight : ''}`}>
-                <h4>Tasks contributed</h4>
-              </div>
               <PeopleDataTable />
             </>
           ) : (

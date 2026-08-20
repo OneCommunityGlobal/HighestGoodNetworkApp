@@ -52,9 +52,11 @@ function TableFilter({
   // const [endDate, setEndDate] = useState(new Date());
   const taskName = taskNameList.map(item => item.taskName);
   const taskHour = taskNameList.map(item => item.estimatedHours);
-  const taskResource = taskNameList.map(function taskResource(item) {
-    return [item.resources.map(e => e[0].name)].join();
-  });
+  const taskResource = taskNameList.map(item => (item.resources || [])
+    .flat()
+    .map(resource => resource.name)
+    .filter(Boolean)
+    .join(','));
   const uniquetaskHour = [...new Set(taskHour)];
   const uniquetaskResource = [...new Set(taskResource)];
 
