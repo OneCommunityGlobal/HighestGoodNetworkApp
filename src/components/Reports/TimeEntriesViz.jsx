@@ -149,7 +149,7 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate, darkMode }) {
                 contentStyle={{
                   backgroundColor: darkMode ? '#1b2a41' : '#ffffff',
                   color: textColor,
-                  border: `2px solid ${textColor}`,
+                  border: `1px solid ${textColor}`,
                   borderRadius: 5,
                 }}
                 labelFormatter={ts => {
