@@ -296,6 +296,23 @@
   min-width: 900px;
 }
 
+/* projects.module.css and Team.module.css both leak an unscoped global
+   `tr:hover { background: ... }` rule that applies to every table in the
+   app, including this one, washing out text in dark mode. Override it
+   here, scoped to this table, for both light and dark mode. */
+.table tbody tr:hover {
+  background-color: #f5f5f5;
+}
+
+.darkMode .table tbody tr:hover {
+  background-color: #2a2a2a;
+}
+
+.darkMode .table tbody tr:hover .td,
+.darkMode .table tbody tr:hover .tdProject {
+  color: #eee;
+}
+
 .tableHeadRow {
   background: #f0f0f0;
 }
