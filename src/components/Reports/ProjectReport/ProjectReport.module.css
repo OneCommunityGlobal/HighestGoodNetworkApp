@@ -21,3 +21,14 @@
 .pie-chart-checkbox {
   margin-right: 8px; /* Space between checkbox and label */
 }
+
+
+.project-header {
+  font-size: 32px;
+  padding: 5px;
+  text-align: center;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 0 12px #eae1f6;
+  width: 100%;
+}

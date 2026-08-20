@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import 'react-datepicker/dist/react-datepicker.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { FiBox } from 'react-icons/fi';
 import {WbsPieChart}  from './WbsPiechart/WbsPieChart';
@@ -16,10 +15,11 @@ import { WbsTable } from '../WbsTable';
 import hasPermission from '../../../utils/permissions';
 import viewWBSpermissionsRequired from '../../../utils/viewWBSpermissionsRequired';
 import { projectReportViewData } from './selectors';
-import '../../Teams/Team.module.css';
-import './ProjectReport.module.css';
-import { boxStyle, boxStyleDark } from '../../../styles';
 import { PieChartByProject } from './PiechartByProject/PieChartByProject';
+import 'react-datepicker/dist/react-datepicker.css';
+import '../../Teams/Team.module.css';
+import styles from './ProjectReport.module.css';
+import { boxStyle, boxStyleDark } from '../../../styles';
 
 
 // eslint-disable-next-line import/prefer-default-export
@@ -128,7 +128,7 @@ export function ProjectReport({ match }) {
   };
 
   return (
-    <div className={`container-project-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
+    <div className={`${styles['container-project-wrapper']} ${darkMode ? 'bg-oxford-blue' : ''}`}>
     <ReportPage
       renderProfile={() => (
         <ReportPage.ReportHeader
@@ -142,8 +142,8 @@ export function ProjectReport({ match }) {
       )}
       darkMode={darkMode}
     >
-      <div className={`project-header ${darkMode ? 'bg-yinmn-blue text-light' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>{projectName}</div>
-      <div className="wbs-and-members-blocks-wrapper">
+      <div className={`${styles['project-header']} ${darkMode ? 'bg-yinmn-blue text-light' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>{projectName}</div>
+      <div className={styles['wbs-and-members-blocks-wrapper']}>
         <ReportPage.ReportBlock className="wbs-and-members-blocks" darkMode={darkMode}>
           <Paging totalElementsCount={wbs.WBSItems.length} darkMode={darkMode}>
             <WbsTable wbs={wbs} match={match} canViewWBS={canViewWBS} darkMode={darkMode}/>
