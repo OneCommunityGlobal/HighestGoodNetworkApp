@@ -9,16 +9,24 @@ import { getUserProfile } from '../../actions/userProfile';
 
 function PermissionWatcher() {
   const dispatch = useDispatch();
-  const { isAuthenticated, forceLogoutAt } = useSelector(state => state.auth || {});
+  const { isAuthenticated, forceLogoutAt, user } = useSelector(state => state.auth || {});
   const userProfile = useSelector(state => state.userProfile);
   const isAcknowledged = userProfile?.permissions?.isAcknowledged !== false;
   const [isPermAckLoading, setIsPermAckLoading] = useState(false);
+  const currentUser = user.userid === userProfile._id;
   // Get seconds remaining until force logout
   const secondsRemaining = useCountdown(forceLogoutAt);
+  const [justLoggedIn, setJustLoggedIn] = useState(!!localStorage.getItem('justLoggedIn'));
+
+  useEffect(() => {
+    if (justLoggedIn) {
+      handleAcknowledge();
+    }
+  }, [currentUser]);
 
   // Start the force logout countdown when conditions are met
   useEffect(() => {
-    if (isAuthenticated && !isAcknowledged && !forceLogoutAt) {
+    if (isAuthenticated && !isAcknowledged && !forceLogoutAt && currentUser && !justLoggedIn) {
       // eslint-disable-next-line no-console
       console.log('Starting force logout countdown due to unacknowledged permission changes');
       dispatch(startForceLogout(20000)); // 20 seconds countdown
@@ -50,6 +58,10 @@ function PermissionWatcher() {
         .then(() => {
           setIsPermAckLoading(false);
           dispatch(getUserProfile(_id));
+          if (justLoggedIn) {
+            localStorage.removeItem('justLoggedIn');
+            setJustLoggedIn(false);
+          }
         })
         .catch(error => {
           // eslint-disable-next-line no-console
@@ -68,13 +80,16 @@ function PermissionWatcher() {
     return null;
   }
   return (
-    !isAcknowledged && (
+    !isAcknowledged &&
+    currentUser &&
+    !justLoggedIn && (
       <PopUpBar
-        message={`Permissions changed—logging out in ${secondsRemaining}s. Timer will be stopped; please restart after login.`}
+        message={`Heads up, there have been permission changes made to your account. You will be logged out in ${secondsRemaining}s to automatically apply these new permissions. \n
+          Your timer will be stopped as part of this logout, please restart after logging back in.`}
         onClickClose={handleAcknowledge}
         textColor="red"
         isLoading={isPermAckLoading}
-        button={false}
+        permissionsChanged={!isAcknowledged}
       />
     )
   );
