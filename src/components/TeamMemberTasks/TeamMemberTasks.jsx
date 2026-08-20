@@ -657,6 +657,7 @@ const TeamMemberTasks = React.memo(props => {
                   styles['team-member-tasks-headers'],
                   darkMode ? styles.darkStickyHeader : '',
                 ].join(' ')}
+                style={{ background: 'transparent' }}
               >
                 <Table
                   borderless
@@ -666,7 +667,10 @@ const TeamMemberTasks = React.memo(props => {
                     darkMode ? styles.textLight : '',
                   ].join(' ')}
                 >
-                  <thead className={darkMode ? styles.darkStickyHeader : ''}>
+                  <thead
+                    className={darkMode ? styles.darkStickyHeader : ''}
+                    style={{ background: 'transparent' }}
+                  >
                     <tr>
                       <th
                         className={darkMode ? styles.darkStickyHeader : ''}
@@ -677,81 +681,98 @@ const TeamMemberTasks = React.memo(props => {
                       <th
                         className={[
                           styles['team-member-tasks-headers'],
-                          styles['team-member-tasks-user-name'],
-                          darkMode ? styles.darkStickyHeader : '',
-                          darkMode ? styles.transparentHeader : '',
-                        ].join(' ')}
-                      >
-                        Team Member
-                      </th>
-                      <th
-                        className={[
-                          styles['team-member-tasks-headers'],
-                          styles['team-clocks'],
-                          styles['team-clocks-header'],
                           darkMode ? styles.darkStickyHeader : '',
                         ].join(' ')}
+                        style={{ background: 'transparent' }}
                       >
-                        <FontAwesomeIcon
-                          style={{ color: darkMode ? 'lightgray' : '' }}
-                          icon={faClock}
-                          title="Weekly Committed Hours"
-                        />
-                        /
-                        <FontAwesomeIcon
-                          style={{ color: 'green' }}
-                          icon={faClock}
-                          title="Total Hours Completed this Week"
-                        />
-                        /
-                        <FontAwesomeIcon
-                          style={{ color: 'red' }}
-                          icon={faClock}
-                          title="Total Remaining Hours"
-                        />
-                        <div style={{ background: 'transparent', display: 'flex', gap: '4px' }}>
-                          <button
-                            type="button"
-                            onClick={handleShowTrackers}
-                            className={[
-                              styles.m1,
-                              darkMode ? styles.boxShadowDark : styles.boxShadowLight,
-                            ].join(' ')}
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            gap: '6px',
+                          }}
+                        >
+                          <span>Team Member</span>
+                          <span>
+                            <FontAwesomeIcon
+                              className={styles.clockIconNeutral}
+                              icon={faClock}
+                              title="Weekly Committed Hours"
+                            />
+                            /
+                            <FontAwesomeIcon
+                              className={styles.clockIconGreen}
+                              icon={faClock}
+                              title="Total Hours Completed this Week"
+                            />
+                            /
+                            <FontAwesomeIcon
+                              className={styles.clockIconRed}
+                              icon={faClock}
+                              title="Total Remaining Hours"
+                            />
+                          </span>
+                          <div
                             style={{
-                              marginTop: '6px',
-                              padding: '2px 8px',
-                              fontSize: '12px',
-                              borderRadius: '4px',
-                              border: '1px solid #17a2b8',
-                              backgroundColor: showTrackers ? '#17a2b8' : 'white',
-                              color: showTrackers ? 'white' : '#17a2b8',
-                              cursor: 'pointer',
-                              whiteSpace: 'nowrap',
+                              background: 'transparent',
+                              display: 'flex',
+                              flexWrap: 'wrap',
+                              justifyContent: 'center',
+                              gap: '4px',
                             }}
                           >
-                            {showTrackers ? 'Hide Trackers' : 'Show Trackers'}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={handleHideTasks}
-                            className={[
-                              styles.m1,
-                              darkMode ? styles.boxShadowDark : styles.boxShadowLight,
-                            ].join(' ')}
-                            style={{
-                              marginTop: '6px',
-                              padding: '2px 8px',
-                              fontSize: '12px',
-                              borderRadius: '4px',
-                              border: '1px solid #17a2b8',
-                              backgroundColor: showTasks ? 'white' : '#17a2b8',
-                              color: showTasks ? '#17a2b8' : 'white',
-                              cursor: 'pointer',
-                              whiteSpace: 'nowrap',
-                            }}
-                          >
-                            {showTasks ? 'Hide Tasks' : 'Show Tasks'}
-                          </button>
+                            <button
+                              type="button"
+                              onClick={handleShowTrackers}
+                              className={[
+                                styles.m1,
+                                darkMode ? styles.boxShadowDark : styles.boxShadowLight,
+                              ].join(' ')}
+                              style={{
+                                padding: '2px 8px',
+                                fontSize: '12px',
+                                borderRadius: '4px',
+                                border: '1px solid #17a2b8',
+                                backgroundColor: showTrackers
+                                  ? '#17a2b8'
+                                  : darkMode
+                                  ? '#1c2541'
+                                  : 'white',
+                                color: showTrackers ? 'white' : darkMode ? '#fff' : '#17a2b8',
+                                cursor: 'pointer',
+                                whiteSpace: 'nowrap',
+                                flexShrink: 0,
+                              }}
+                            >
+                              {showTrackers ? 'Hide Trackers' : 'Show Trackers'}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleHideTasks}
+                              className={[
+                                styles.m1,
+                                darkMode ? styles.boxShadowDark : styles.boxShadowLight,
+                              ].join(' ')}
+                              style={{
+                                padding: '2px 8px',
+                                fontSize: '12px',
+                                borderRadius: '4px',
+                                border: '1px solid #17a2b8',
+                                backgroundColor: showTasks
+                                  ? darkMode
+                                    ? '#1c2541'
+                                    : 'white'
+                                  : '#17a2b8',
+                                color: showTasks ? (darkMode ? '#fff' : '#17a2b8') : 'white',
+                                cursor: 'pointer',
+                                whiteSpace: 'nowrap',
+                                flexShrink: 0,
+                              }}
+                            >
+                              {showTasks ? 'Hide Tasks' : 'Show Tasks'}
+                            </button>
+                          </div>
                         </div>
                       </th>
                     </tr>
@@ -765,6 +786,7 @@ const TeamMemberTasks = React.memo(props => {
                   styles['team-member-tasks-headers'],
                   darkMode ? styles.darkStickyHeader : '',
                 ].join(' ')}
+                style={{ background: 'transparent' }}
               >
                 <Table
                   borderless
@@ -773,19 +795,33 @@ const TeamMemberTasks = React.memo(props => {
                     darkMode ? styles.textLight : '',
                   ].join(' ')}
                 >
-                  <thead className={darkMode ? styles.darkStickyHeader : ''}>
+                  <thead
+                    className={darkMode ? styles.darkStickyHeader : ''}
+                    style={{ background: 'transparent' }}
+                  >
                     <tr>
-                      <th className={darkMode ? styles.darkStickyHeader : ''}>Tasks(s)</th>
+                      <th
+                        className={darkMode ? styles.darkStickyHeader : ''}
+                        style={{ background: 'transparent' }}
+                      >
+                        Tasks(s)
+                      </th>
                       <th
                         className={[
                           styles['team-task-progress'],
                           darkMode ? styles.darkStickyHeader : '',
                         ].join(' ')}
+                        style={{ background: 'transparent' }}
                       >
                         Progress
                       </th>
                       {displayUser.role === 'Administrator' ? (
-                        <th className={darkMode ? styles.darkStickyHeader : ''}>Status</th>
+                        <th
+                          className={darkMode ? styles.darkStickyHeader : ''}
+                          style={{ background: 'transparent' }}
+                        >
+                          Status
+                        </th>
                       ) : null}
                     </tr>
                   </thead>

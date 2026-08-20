@@ -26,7 +26,8 @@
 }
 
 .review-button-dropdown {
-  max-height: 240px;
+  max-height: 280px;
+  max-width: calc(100vw - 24px);
   overflow-y: auto;
   z-index: 9999;
 }
@@ -77,7 +78,7 @@
   }
 
   .review-button-dropdown {
-    max-height: 200px;
+    max-height: 280px;
   }
 
   .edit-link-btn {
@@ -93,8 +94,7 @@
   }
 
   .review-button-dropdown {
-    max-height: 150px;
-    width: 100%;
+    max-height: 280px;
   }
 
   .edit-link-btn {
@@ -111,8 +111,7 @@
   }
 
   .review-button-dropdown {
-    max-height: 150px;
-    width: 100%;
+    max-height: 280px;
   }
 
   .edit-link-btn {
@@ -128,8 +127,7 @@
   }
 
   .review-button-dropdown {
-    max-height: 120px;
-    width: 100%;
+    max-height: 280px;
   }
 
   .edit-link-btn {
