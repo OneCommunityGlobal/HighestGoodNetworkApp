@@ -73,6 +73,7 @@ export default function ItemsTable({
   };
 
   const numericKeys = new Set(['stockBought', 'stockUsed', 'stockAvailable', 'stockWasted']);
+  const isMaterials = itemType === 'Materials';
 
   const getColumnStyle = (key, isAction = false) => {
     const base = { verticalAlign: 'middle' };
@@ -188,51 +189,57 @@ export default function ItemsTable({
                     );
                   })}
                   <td className={styles.itemsCell} style={getColumnStyle(null, true)}>
-                    <button
-                      type="button"
-                      onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
-                      aria-label="Edit Record"
-                    >
-                      <BiPencil />
-                    </button>
-                    <Button
-                      color="primary"
-                      outline
-                      size="sm"
-                      onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
-                    >
-                      View
-                    </Button>
+                    <span className={isMaterials ? styles.materialsActionGroup : undefined}>
+                      <button
+                        type="button"
+                        onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
+                        aria-label="Edit Record"
+                      >
+                        <BiPencil />
+                      </button>
+                      <Button
+                        color="primary"
+                        outline
+                        size="sm"
+                        onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
+                      >
+                        View
+                      </Button>
+                    </span>
                   </td>
                   <td
                     className={styles.itemsCell}
                     style={{ verticalAlign: 'middle', textAlign: 'center' }}
                   >
-                    <button
-                      type="button"
-                      onClick={() => handleEditRecordsClick(el, 'Update')}
-                      aria-label="Edit Record"
-                    >
-                      <BiPencil />
-                    </button>
-                    <Button
-                      color="primary"
-                      outline
-                      size="sm"
-                      onClick={() => handleViewRecordsClick(el, 'Update')}
-                    >
-                      View
-                    </Button>
+                    <span className={isMaterials ? styles.materialsActionGroup : undefined}>
+                      <button
+                        type="button"
+                        onClick={() => handleEditRecordsClick(el, 'Update')}
+                        aria-label="Edit Record"
+                      >
+                        <BiPencil />
+                      </button>
+                      <Button
+                        color="primary"
+                        outline
+                        size="sm"
+                        onClick={() => handleViewRecordsClick(el, 'Update')}
+                      >
+                        View
+                      </Button>
+                    </span>
                   </td>
                   <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
-                    <Button
-                      color="primary"
-                      outline
-                      size="sm"
-                      onClick={() => handleViewRecordsClick(el, 'Purchase')}
-                    >
-                      View
-                    </Button>
+                    <span className={isMaterials ? styles.materialsActionGroup : undefined}>
+                      <Button
+                        color="primary"
+                        outline
+                        size="sm"
+                        onClick={() => handleViewRecordsClick(el, 'Purchase')}
+                      >
+                        View
+                      </Button>
+                    </span>
                   </td>
                 </tr>
               ))

@@ -772,6 +772,11 @@
   color: #ffffff !important;
 }
 
+:global(body.dark-mode) [class*="logMaterialTable"] tbody tr td[class*="materialFormTableError"],
+:global(body.bm-dashboard-dark) [class*="logMaterialTable"] tbody tr td[class*="materialFormTableError"] {
+  color: red !important;
+}
+
 /* === DARK MODE TABLE HEADER FIX FOR CSS MODULES === */
 
 /* Fix headers that use Bootstrap .table-light */
