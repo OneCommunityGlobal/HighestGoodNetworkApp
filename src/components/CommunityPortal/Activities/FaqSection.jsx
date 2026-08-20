@@ -90,7 +90,10 @@ function FaqSection() {
   });
 
   return (
-    <div className={styles.faqContainer}>
+    <div
+      className={`${styles.faqContainer} ${darkMode ? styles.faqContainerDark : ''}`}
+      data-testid="faq-section"
+    >
       <h2 className={styles.faqTitle}>Frequently Asked Questions</h2>
       <p className={styles.faqSubtitle}>
         These are the most frequently asked questions about One Community.
@@ -98,7 +101,7 @@ function FaqSection() {
 
       <input
         type="text"
-        className={`${styles.faqSearch} ${darkMode ? styles.faqSearchDark : ''}`}
+        className={styles.faqSearch}
         placeholder="Search FAQs..."
         value={searchTerm}
         onChange={handleSearchChange}
@@ -111,7 +114,7 @@ function FaqSection() {
             type="button"
             className={`${styles.faqCategory} ${
               selectedCategory === category ? styles.active : ''
-            } ${darkMode ? styles.faqCategoryDark : ''}`}
+            }`}
             onClick={() => handleCategoryClick(category)}
           >
             {category}
@@ -129,7 +132,7 @@ function FaqSection() {
             <div key={faq.id} className={styles.faqItem}>
               <button
                 type="button"
-                className={`${styles.faqQuestion} ${darkMode ? styles.faqQuestionDark : ''}`}
+                className={styles.faqQuestion}
                 onClick={() => toggleFaq(faq.id)}
                 aria-expanded={openIndex === faq.id}
               >

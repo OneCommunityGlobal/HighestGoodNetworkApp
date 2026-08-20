@@ -83,6 +83,7 @@ import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOvervi
 import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
 import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
 import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
+import Activity from './components/CommunityPortal/Activities/activityId/Activity';
 import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
 import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
 import EventList from './components/CommunityPortal/Event/EventList/EventList';
@@ -872,6 +873,11 @@ export default (
           path="/communityportal/profile/:userId"
           fallback
           component={UserProfile}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityid/faq"
+          exact
+          render={() => <Activity initialTab="FAQs" />}
         />
         <CPProtectedRoute
           path="/communityportal/ActivityAttendance"
