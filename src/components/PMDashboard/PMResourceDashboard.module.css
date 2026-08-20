@@ -181,34 +181,36 @@
 .tableTopScrollbar {
   height: 0.875rem;
   margin-bottom: 0.25rem;
-  overflow: auto hidden;
-  scrollbar-width: thin;
-}
-
-.tableTopScrollbarInner {
-  height: 1px;
-}
-
-.dashboardDark .tableTopScrollbar {
-  scrollbar-color: #8f9bb3 #1a1f36;
-}
-
-.dashboardDark .tableTopScrollbar::-webkit-scrollbar {
-  height: 0.875rem;
-}
-
-.dashboardDark .tableTopScrollbar::-webkit-scrollbar-track {
-  background-color: #1a1f36;
-}
-
-.dashboardDark .tableTopScrollbar::-webkit-scrollbar-thumb {
-  background-color: #8f9bb3;
-  border: 3px solid #1a1f36;
+  position: relative;
+  background-color: #e9ecef;
   border-radius: 999px;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.tableTopScrollbar:focus-visible {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+.tableTopScrollbarThumb {
+  position: absolute;
+  top: 0.1875rem;
+  left: 0;
+  height: 0.5rem;
+  background-color: #6c757d;
+  border-radius: 999px;
+  cursor: grab;
+  touch-action: none;
+  will-change: transform;
+}
+
+.tableTopScrollbarThumb:active {
+  cursor: grabbing;
 }
 
 .tableContainer {
-  overflow-x: auto;
+  overflow: hidden;
   border-radius: 8px;
   border: 1px solid #dee2e6;
 }
@@ -478,6 +480,14 @@
   border-color: #3a4460;
 }
 
+.dashboardDark .tableTopScrollbar {
+  background-color: #1a1f36;
+}
+
+.dashboardDark .tableTopScrollbarThumb {
+  background-color: #8f9bb3;
+}
+
 .dashboardDark .tableOverflowWrapperWithFade::after {
   background: linear-gradient(to right, rgb(36 43 61 / 0%), rgb(36 43 61 / 45%));
 }
@@ -492,7 +502,7 @@
 
 .dashboardDark .tabLink:hover {
   color: #7fb5e8;
-  background-color: rgb(91 155 213 / 10%);
+  background-color: #26364c;
 }
 
 .dashboardDark .tabLinkActive {
