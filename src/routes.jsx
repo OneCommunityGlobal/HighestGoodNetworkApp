@@ -159,7 +159,6 @@ import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPa
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
 // Community Calendar
 import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
-import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
 import PRGradingScreenContainer from './components/PRGradingScreen';
 // Kicthen and Inventory Portal
 import KitchenandInventoryLogin from './components/KitchenandInventory/Login';
@@ -197,7 +196,6 @@ import BookingPage from './components/Booking/BookingPage';
 import BookingConfirmPage from './components/Booking/BookingConfirmPage';
 import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
 import ReviewersStackedBarChart from './components/HGNPRDashboard/ReviewersStackedBarChart/ReviewersStackedBarChart';
-import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
 import PRGradingScreen from './components/PRGradingScreen';
 import PRGradingTest from './components/PRGradingScreen/PRGradingTest'; //temporary route for testing - delete after testing
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -1080,12 +1078,7 @@ export default (
           exact
           component={PRReviewTeamAnalytics}
         />
-        <ProtectedRoute
-          path="/pr-grading-dashboard"
-          exact
-          component={PRGradingDashboard}
-          fallback
-        />
+
         <ProtectedRoute
           path="/pr-grading-screen"
           exact
