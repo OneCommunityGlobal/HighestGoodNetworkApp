@@ -499,6 +499,10 @@ body {
   }
 }
 
+:global(.dark-mode) .peopleReportPage {
+  background-color: #0f1b2b !important;
+}
+
 .peopleTasksPieChartWrapper {
   display: block;
   flex: 1;
@@ -511,6 +515,10 @@ body {
   height: auto;
   min-height: calc(100vh - 169px);
   width: 100%;
+}
+
+:global(.dark-mode) .reportLoading {
+  background-color: #0f1b2b;
 }
 
 .mobilePeopleTable {
@@ -535,12 +543,6 @@ body {
 
 .alertText {
   justify-content: center;
-}
-
-@media (width <= 1100px) {
-  .mobilePeopleTable {
-    
-  }
 }
 
 @media (width >= 768px) {

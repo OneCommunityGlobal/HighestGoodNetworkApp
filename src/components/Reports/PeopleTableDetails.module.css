@@ -3,7 +3,7 @@
   overflow-x: auto;
   width: 100%;
   max-width: 100%;
-  padding: 0 16px;
+  padding-inline: 0;
   box-sizing: border-box;
 }
 
@@ -155,53 +155,6 @@
   border: none !important;
 }
 
-.mobile-table {
-  width: 350px;
-  border-radius: 16px;
-  border: 3px solid rgb(150 148 148);
-  overflow: hidden;
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-.mobile-table p {
-  font-size: 15px;
-  text-align: left;
-  padding: 17px;
-  width: 100%;
-}
-
-/* Responsive: large screens */
-@media only screen and (width <= 1024px) {
-  .people-table {
-    display: flex;
-    flex-flow: column wrap;
-    align-content: center;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-
-  .people-table-row {
-    display: none;
-  }
-
-  .wrapperDark .people-table {
-    background-color: transparent;
-  }
-
-  .wrapperDark .table-filter-container {
-    background-color: #162032;
-    border-radius: 8px;
-    padding: 12px;
-    margin-bottom: 16px;
-    border: 1px solid #3a4460;
-  }
-}
-
 .task-details {
   padding: 2%;
 }
@@ -312,6 +265,53 @@
   width: 100%;
 }
 
+.peopleTableReact {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+}
+
+.peopleTableReact th,
+.peopleTableReact td {
+  padding: 8px;
+  text-align: left;
+  overflow-wrap: break-word;
+  vertical-align: middle;
+}
+
+.peopleTableReact th {
+  background-color: #eee7f8;
+  font-size: 18px;
+}
+
+.peopleTableReact td {
+  border-bottom: 3px solid #f8f7f8;
+  font-size: 16px;
+}
+
+.peopleTableReact th:first-child,
+.peopleTableReact td:first-child {
+  width: 28%;
+}
+
+.peopleTableReact th:nth-child(4),
+.peopleTableReact td:nth-child(4) {
+  width: 14%;
+}
+
+.peopleTableReact tbody tr:hover {
+  background-color: #fafafa;
+}
+
+.people-table-row-dark td {
+  border-color: #374151;
+}
+
+.reports-table-head-dark th {
+  background-color: #1b2a41;
+  color: #f9fafb;
+}
+
 .wrapperDark .people-table-scrollable {
   background-color: #162032;
   border: 1px solid #3a4460;
@@ -359,7 +359,7 @@
 }
 
 .people-table-row-dark {
-  background-color: #232946 !important;
+  background-color: transparent !important;
   color: #fff !important;
 }
 
@@ -385,4 +385,8 @@
   background: #232946;
   color: #fff;
   border: 1.5px solid #444;
+}
+
+.centerColumn {
+  text-align: center !important;
 }
