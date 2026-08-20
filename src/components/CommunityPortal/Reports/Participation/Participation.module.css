@@ -360,6 +360,18 @@
   color: red;
 }
 
+/* public/index.css sets `body.dark-mode * { color: #fff !important }`, which otherwise
+   washes out these semantic colors. Match its specificity + importance to keep them. */
+:global(body.dark-mode) .trackingRateGreen,
+:global(body.bm-dashboard-dark) .trackingRateGreen {
+  color: green !important;
+}
+
+:global(body.dark-mode) .trackingRateRed,
+:global(body.bm-dashboard-dark) .trackingRateRed {
+  color: red !important;
+}
+
 /* Insights Section */
 .insightsHeader {
   font-weight: bold;
@@ -618,6 +630,11 @@
   font-size: 0.9rem;
   font-weight: bold;
   color: var(--color-text-dark);
+}
+
+:global(body.dark-mode) .insightsPercentageDark,
+:global(body.bm-dashboard-dark) .insightsPercentageDark {
+  color: red !important;
 }
 
 /* ---------- PDF/Print helpers ---------- */

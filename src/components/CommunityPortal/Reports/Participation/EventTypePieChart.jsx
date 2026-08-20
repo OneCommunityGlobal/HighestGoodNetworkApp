@@ -1,17 +1,41 @@
 import { useSelector } from 'react-redux';
+import { useMemo } from 'react';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import styles from './Participation.module.css';
 
-function EventTypePieChart() {
+const CHART_COLORS = ['#4CAF50', '#2196F3', '#FF9800', '#9C27B0', '#F44336', '#00BCD4'];
+
+function EventTypePieChart({ events = [] }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const eventTypeData = [
-    { type: 'Yoga Class', count: 8, percentage: 33, color: '#4CAF50' },
-    { type: 'Fitness Bootcamp', count: 6, percentage: 25, color: '#2196F3' },
-    { type: 'Cooking Workshop', count: 5, percentage: 21, color: '#FF9800' },
-    { type: 'Dance Class', count: 5, percentage: 21, color: '#9C27B0' },
-  ];
+  const eventTypeData = useMemo(() => {
+    if (!events.length) return [];
+
+    const countsByType = events.reduce((acc, event) => {
+      acc[event.eventType] = (acc[event.eventType] || 0) + 1;
+      return acc;
+    }, {});
+
+    const total = events.length;
+
+    return Object.entries(countsByType)
+      .map(([type, count], index) => ({
+        type,
+        count,
+        percentage: Math.round((count / total) * 100),
+        color: CHART_COLORS[index % CHART_COLORS.length],
+      }))
+      .sort((a, b) => b.count - a.count);
+  }, [events]);
 
   const totalEvents = eventTypeData.reduce((sum, item) => sum + item.count, 0);
+
+  const tooltipStyle = {
+    backgroundColor: darkMode ? '#1C2541' : '#ffffff',
+    border: `1px solid ${darkMode ? '#3a4a6b' : '#e0e0e0'}`,
+    borderRadius: '6px',
+    color: darkMode ? '#e5e7eb' : '#1a1a1a',
+  };
 
   return (
     <div className={`${styles.pieChartSection} ${darkMode ? styles.pieChartSectionDark : ''}`}>
@@ -19,71 +43,72 @@ function EventTypePieChart() {
         Event Type Popularity
       </h3>
 
-      <div className={styles.pieChartContainer}>
-        <div className={styles.pieChart}>
-          <svg width="200" height="200" viewBox="0 0 200 200">
-            <circle cx="100" cy="100" r="80" fill="none" stroke="#e0e0e0" strokeWidth="40" />
-            {eventTypeData.map((item, index) => {
-              const startAngle = eventTypeData
-                .slice(0, index)
-                .reduce((sum, prev) => sum + prev.percentage * 3.6, 0);
-              const endAngle = startAngle + item.percentage * 3.6;
-
-              const startAngleRad = (startAngle - 90) * (Math.PI / 180);
-              const endAngleRad = (endAngle - 90) * (Math.PI / 180);
-
-              const x1 = 100 + 80 * Math.cos(startAngleRad);
-              const y1 = 100 + 80 * Math.sin(startAngleRad);
-              const x2 = 100 + 80 * Math.cos(endAngleRad);
-              const y2 = 100 + 80 * Math.sin(endAngleRad);
-
-              const largeArcFlag = item.percentage > 50 ? 1 : 0;
-
-              const pathData = [
-                `M 100 100`,
-                `L ${x1} ${y1}`,
-                `A 80 80 0 ${largeArcFlag} 1 ${x2} ${y2}`,
-                'Z',
-              ].join(' ');
-
-              return (
-                <path
-                  key={item.type}
-                  d={pathData}
-                  fill={item.color}
-                  stroke={darkMode ? '#1C2541' : '#ffffff'}
-                  strokeWidth="2"
-                />
-              );
-            })}
-          </svg>
-        </div>
-
-        <div className={styles.pieChartLegend}>
-          {eventTypeData.map(item => (
-            <div key={item.type} className={styles.legendItem}>
-              <div className={styles.legendColor} style={{ backgroundColor: item.color }} />
-              <div className={styles.legendText}>
-                <span className={styles.legendLabel}>{item.type}</span>
-                <span className={styles.legendValue}>
-                  {item.count} events ({item.percentage}%)
-                </span>
-              </div>
+      {eventTypeData.length === 0 ? (
+        <p className={darkMode ? styles.chartTitleDark : ''}>No event data available.</p>
+      ) : (
+        <>
+          <div className={styles.pieChartContainer}>
+            <div className={styles.pieChart}>
+              <ResponsiveContainer width={200} height={200}>
+                <PieChart>
+                  <Pie
+                    data={eventTypeData}
+                    dataKey="count"
+                    nameKey="type"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={90}
+                    isAnimationActive={false}
+                    label={({ percent }) => `${Math.round(percent * 100)}%`}
+                  >
+                    {eventTypeData.map((item, index) => (
+                      <Cell
+                        key={item.type}
+                        fill={CHART_COLORS[index % CHART_COLORS.length]}
+                        stroke={darkMode ? '#1C2541' : '#ffffff'}
+                        strokeWidth={2}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={tooltipStyle}
+                    itemStyle={{ color: tooltipStyle.color }}
+                    formatter={(value, name, tooltipProps) => [
+                      `${value} events (${tooltipProps.payload.percentage}%)`,
+                      name,
+                    ]}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
             </div>
-          ))}
-        </div>
-      </div>
 
-      <div className={styles.chartSummary}>
-        <div className={styles.summaryItem}>
-          <span className={styles.summaryLabel}>Total Events:</span>
-          <span className={styles.summaryValue}>{totalEvents}</span>
-        </div>
-        <div className={styles.summaryItem}>
-          <span className={styles.summaryLabel}>Most Popular:</span>
-          <span className={styles.summaryValue}>{eventTypeData[0].type}</span>
-        </div>
-      </div>
+            <div className={styles.pieChartLegend}>
+              {eventTypeData.map(item => (
+                <div key={item.type} className={styles.legendItem}>
+                  <div className={styles.legendColor} style={{ backgroundColor: item.color }} />
+                  <div className={styles.legendText}>
+                    <span className={styles.legendLabel}>{item.type}</span>
+                    <span className={styles.legendValue}>
+                      {item.count} events ({item.percentage}%)
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className={styles.chartSummary}>
+            <div className={styles.summaryItem}>
+              <span className={styles.summaryLabel}>Total Events:</span>
+              <span className={styles.summaryValue}>{totalEvents}</span>
+            </div>
+            <div className={styles.summaryItem}>
+              <span className={styles.summaryLabel}>Most Popular:</span>
+              <span className={styles.summaryValue}>{eventTypeData[0].type}</span>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
