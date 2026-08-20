@@ -1,184 +1,239 @@
-/* eslint-disable testing-library/no-node-access */
-import * as d3 from 'd3';
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import { boxStyle, boxStyleDark } from '../../styles';
 import styles from './PeopleReport/PeopleReport.module.css';
-import {
-  createAxes,
-  createDots,
-  createLabels,
-  createLegend,
-  createLine,
-  createSvgRoot,
-  createTooltip,
-} from './d3GraphUtils';
+
+const FULL_DATE_FORMAT = new Intl.DateTimeFormat('en-US', {
+  weekday: 'long',
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+});
+
+const DATE_LABEL_FORMAT = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+
+function parseDate(date) {
+  if (!date) return new Date(NaN);
+  const parsedDate = new Date(date);
+  if (!Number.isNaN(parsedDate.getTime())) return parsedDate;
+  return new Date(`${date}T00:00:00`);
+}
+
+function aggregateInfringements(infringements, fromDate, toDate) {
+  const groupedInfringements = {};
+  const fromTimestamp = fromDate ? Date.parse(fromDate) : null;
+  const toTimestamp = toDate ? Date.parse(toDate) : null;
+  const hasRange = Number.isFinite(fromTimestamp) && Number.isFinite(toTimestamp);
+
+  infringements.forEach(infringement => {
+    if (!infringement.date) return;
+
+    if (groupedInfringements[infringement.date]) {
+      groupedInfringements[infringement.date].ids.push(infringement._id);
+      groupedInfringements[infringement.date].des.push(infringement.description);
+      groupedInfringements[infringement.date].count += 1;
+      return;
+    }
+
+    groupedInfringements[infringement.date] = {
+      ids: [infringement._id],
+      des: [infringement.description],
+      count: 1,
+    };
+  });
+
+  const values = Object.entries(groupedInfringements)
+    .map(([dateKey, infringement]) => {
+      const date = parseDate(dateKey);
+      return {
+        ...infringement,
+        date,
+        ts: date.getTime(),
+        type: 'Infringement',
+      };
+    })
+    .filter(infringement => {
+      if (Number.isNaN(infringement.ts)) return false;
+      return !hasRange || (fromTimestamp <= infringement.ts && infringement.ts <= toTimestamp);
+    })
+    .sort((first, second) => first.ts - second.ts);
+
+  return {
+    values,
+    maxSquareCount: Math.max(0, ...values.map(infringement => infringement.count)),
+  };
+}
 
 function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
+
   const [graphVisible, setGraphVisible] = React.useState(false);
   const [modalVisible, setModalVisible] = React.useState(false);
-  const [focusedInf, setFocusedInf] = React.useState({});
+  const [focusedInf, setFocusedInf] = React.useState(null);
+  const [selectedInf, setSelectedInf] = React.useState(null);
+
+  const { values, maxSquareCount } = React.useMemo(
+    () => aggregateInfringements(infringements || [], fromDate, toDate),
+    [infringements, fromDate, toDate],
+  );
+
+  const textColor = darkMode ? '#f9fafb' : '#1f1f1f';
+  const gridColor = darkMode ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)';
 
   const handleModalClose = () => {
     setModalVisible(false);
-    setFocusedInf({});
+    setFocusedInf(null);
   };
 
-  const handleModalShow = d => {
-    setFocusedInf(d);
-    if (graphVisible === false) setModalVisible(!modalVisible);
-    setGraphVisible(!graphVisible);
+  const renderDot = ({ cx, cy, payload }) => (
+    <circle
+      cx={cx}
+      cy={cy}
+      r={4}
+      fill="#ffffff"
+      stroke="#69b3a2"
+      strokeWidth={3}
+      onClick={() => setSelectedInf(payload)}
+      style={{ cursor: 'pointer' }}
+    />
+  );
+
+  const renderTooltip = ({ active, payload, label }) => {
+    if (!active || !payload || payload.length === 0) return null;
+
+    const infringement = payload[0].payload;
+    const descriptions = [...new Set(infringement.des.filter(Boolean))];
+    return (
+      <div
+        data-testid="infringement-tooltip"
+        style={{
+          backgroundColor: darkMode ? '#1b2a41' : '#ffffff',
+          color: textColor,
+          border: `1px solid ${textColor}`,
+          borderRadius: 5,
+          padding: '0.5rem',
+          maxHeight: '100%',
+          overflowY: 'auto',
+          overflowWrap: 'anywhere',
+        }}
+      >
+        <div>{FULL_DATE_FORMAT.format(new Date(label))}</div>
+        <div>Count: {infringement.count}</div>
+        <div>Descriptions:</div>
+        <ul style={{ margin: '0.25rem 0 0', paddingLeft: '1.25rem' }}>
+          {descriptions.length > 0 ? descriptions.map((description, index) => (
+            <li key={`${description}-${index}`}>{description}</li>
+          )) : <li>None</li>}
+        </ul>
+      </div>
+    );
   };
-
-  function displayGraph(bsCount, maxSquareCount) {
-    if (!graphVisible) {
-      d3.selectAll('#infplot > *').remove();
-    } else {
-      d3.selectAll('#infplot > *').remove();
-
-      const margin = { top: 30, right: 20, bottom: 30, left: 20 };
-      const containerWidth = '1000';
-      const width = Math.min(containerWidth - margin.left - margin.right, 1000);
-      const height = 400 - margin.top - margin.bottom;
-
-      const textColor = darkMode ? `color: #f9fafb;` : '';
-      const legendHtml =
-        `<div class="lengendSubContainer" style="${textColor}">` +
-        `<div class="infLabelsOff"><button style="${textColor}">Labels Off</button></div>` +
-        `<div class="infCountLabelsOn"><button style="${textColor}">Show Squares</button></div>` +
-        `<div class="infDateLabelsOn"><button style="${textColor}">Show Dates</button></div>` +
-        `</div>`;
-
-      const svgRoot = createSvgRoot('#infplot', containerWidth, height, margin, darkMode);
-      const svg = svgRoot.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
-
-      const x = d3.scaleTime().domain(d3.extent(bsCount, d => d.date)).range([0, width]);
-      const y = d3.scaleLinear().domain([0, maxSquareCount + 2]).range([height, 0]);
-
-      createAxes(svg, x, y, height, darkMode);
-
-      svg
-        .append('g')
-        .call(d3.axisLeft(y).ticks(5).tickFormat(d3.format('d')))
-        .selectAll('text')
-        .attr('fill', darkMode ? '#f9fafb' : 'black');
-
-      createLine(svg, bsCount, x, y, darkMode);
-
-      const dots = createDots(svg, bsCount, x, y);
-      dots.on('click', function handleCircleClick(event, d) {
-        const prevTooltip = d3.select(`.inf${d.id}`);
-        if (prevTooltip.empty()) {
-          const Tooltip = createTooltip('#infplot', d, darkMode);
-          Tooltip.attr('class', `tooltip inf${d.id}`)
-            .style('max-width', '500px')
-            .html(
-              `<div class="tip__container"><div class="close">` +
-              `<button style="color: ${darkMode ? '#f9fafb' : 'black'}; background: transparent; border: none;">&times</button>` +
-              `</div><div>Exact date: ${d3.timeFormat('%A, %B %e, %Y')(d.date)}<br>` +
-              `Count: ${d.count === 1 ? d.count : `${d.count} <span class="detailsModal"><a>See All</a></span>`}<br>` +
-              `Description: ${d.des[0]}</div></div>`
-            )
-            .style('left', `${event.pageX + 10}px`)
-            .style('top', `${event.pageY}px`)
-            .style('opacity', 1);
-
-          Tooltip.select('.close').on('click', function handleCloseClick() {
-            Tooltip.remove();
-          });
-          Tooltip.select('.detailsModal').on('click', function handleDetailsModalClick() {
-            handleModalShow(d);
-          });
-        }
-      });
-
-      createLabels(svg, bsCount, x, y, 'infCountLabel', darkMode, d => parseInt(d.count, 10));
-      createLabels(svg, bsCount, x, y, 'infDateLabel', darkMode, d => d3.timeFormat('%m/%d/%Y')(d.date));
-
-      const legend = createLegend('#infplot', legendHtml);
-
-      legend.select('.infLabelsOff').on('click', function handleLabelsOffClick() {
-        d3.selectAll('.infCountLabel').style('display', 'none');
-        d3.selectAll('.infDateLabel').style('display', 'none');
-      });
-      legend.select('.infCountLabelsOn').on('click', function handleCountLabelsOnClick() {
-        d3.selectAll('.infCountLabel').style('display', 'block');
-        d3.selectAll('.infDateLabel').style('display', 'none');
-      });
-      legend.select('.infDateLabelsOn').on('click', function handleDateLabelsOnClick() {
-        d3.selectAll('.infDateLabel').style('display', 'block');
-        d3.selectAll('.infCountLabel').style('display', 'none');
-      });
-    }
-  }
-
-  const generateGraph = () => {
-    const dict = {};
-    const value = [];
-    let maxSquareCount = 0;
-
-    for (let i = 0; i < infringements.length; i += 1) {
-      if (infringements[i].date in dict) {
-        dict[infringements[i].date].ids.push(infringements[i]._id);
-        dict[infringements[i].date].count += 1;
-        dict[infringements[i].date].des.push(infringements[i].description);
-      } else {
-        dict[infringements[i].date] = {
-          ids: [infringements[i]._id],
-          count: 1,
-          des: [infringements[i].description],
-        };
-      }
-    }
-
-    if (fromDate === '' || toDate === '') {
-      Object.keys(dict).forEach(key => {
-        if (Object.prototype.hasOwnProperty.call(dict, key)) {
-          value.push({
-            date: d3.timeParse('%Y-%m-%d')(key),
-            des: dict[key].des,
-            count: dict[key].count,
-            type: 'Infringement',
-            ids: dict[key].ids,
-          });
-          if (dict[key].count > maxSquareCount) maxSquareCount = dict[key].count;
-        }
-      });
-    } else {
-      let counter = 0;
-      Object.keys(dict).forEach(key => {
-        if (Date.parse(fromDate) <= Date.parse(key) && Date.parse(key) <= Date.parse(toDate)) {
-          value.push({
-            id: counter,
-            date: d3.timeParse('%Y-%m-%d')(key),
-            des: dict[key].des,
-            count: dict[key].count,
-            type: 'Infringement',
-            ids: dict[key].ids,
-          });
-          if (dict[key].count > maxSquareCount) maxSquareCount = dict[key].count;
-          counter += 1;
-        }
-      });
-    }
-
-    displayGraph(value, maxSquareCount);
-  };
-
-  React.useEffect(() => {
-    generateGraph();
-  }, [graphVisible, fromDate, toDate, focusedInf]);
 
   return (
     <div>
-      <Button onClick={handleModalShow} aria-expanded={graphVisible} style={darkMode ? boxStyleDark : boxStyle}>
+      <Button
+        onClick={() => setGraphVisible(!graphVisible)}
+        aria-expanded={graphVisible}
+        style={darkMode ? boxStyleDark : boxStyle}
+      >
         {graphVisible ? 'Hide Infringements Graph' : 'Show Infringements Graph'}
       </Button>
-      <div className={`${styles.kaitest} ${darkMode ? 'mt-2' : ''}`} id="infplot" data-testid="infplot" />
+
+      {graphVisible && (
+        <div className={`${styles.kaitest} ${darkMode ? 'mt-2' : ''}`} data-testid="infplot">
+          {values.length === 0 ? (
+            <div style={{ color: textColor, padding: '1rem 0' }}>No infringements to display.</div>
+          ) : (
+            <>
+              <ResponsiveContainer width="100%" height={400}>
+                <LineChart data={values} margin={{ top: 30, right: 20, bottom: 30, left: 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+                  <XAxis
+                    dataKey="ts"
+                    type="number"
+                    scale="time"
+                    domain={['dataMin', 'dataMax']}
+                    tick={{ fill: textColor }}
+                    axisLine={{ stroke: textColor }}
+                    tickLine={{ stroke: textColor }}
+                    tickFormatter={timestamp => DATE_LABEL_FORMAT.format(new Date(timestamp))}
+                  />
+                  <YAxis
+                    allowDecimals={false}
+                    domain={[0, maxSquareCount + 2]}
+                    tick={{ fill: textColor }}
+                    axisLine={{ stroke: textColor }}
+                    tickLine={{ stroke: textColor }}
+                  />
+                  <Tooltip
+                    allowEscapeViewBox={{ x: false, y: false }}
+                    content={renderTooltip}
+                    wrapperStyle={{
+                      maxWidth: 'calc(100% - 100px)',
+                      maxHeight: 'calc(100% - 24px)',
+                      overflow: 'hidden',
+                    }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="count"
+                    stroke={darkMode ? '#f9fafb' : '#000000'}
+                    strokeWidth={1.5}
+                    dot={renderDot}
+                    activeDot={{ r: 5 }}
+                    isAnimationActive={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+
+              {selectedInf && (
+                <div data-testid="infringement-details" style={{ color: textColor, maxWidth: 500 }}>
+                  <button type="button" aria-label="Close infringement details" onClick={() => setSelectedInf(null)}>
+                    &times;
+                  </button>
+                  <div>
+                    Exact date: {FULL_DATE_FORMAT.format(selectedInf.date)}
+                    <br />
+                    Count: {selectedInf.count}
+                    {selectedInf.count > 1 && (
+                      <>
+                        {' '}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFocusedInf(selectedInf);
+                            setModalVisible(true);
+                          }}
+                        >
+                          See All
+                        </button>
+                      </>
+                    )}
+                    <br />
+                    Description: {selectedInf.des[0]}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
 
       <Modal size="lg" show={modalVisible} onHide={handleModalClose}>
         <Modal.Header closeButton style={darkMode ? { backgroundColor: '#1b2a41', color: '#f9fafb', borderColor: '#374151' } : {}}>
-          <Modal.Title>{focusedInf.date ? focusedInf.date.toString() : 'Infringement'}</Modal.Title>
+          <Modal.Title>{focusedInf ? focusedInf.date.toString() : 'Infringement'}</Modal.Title>
         </Modal.Header>
         <Modal.Body style={darkMode ? { backgroundColor: '#1b2a41', color: '#f9fafb' } : {}}>
           <div id="inf">
@@ -189,7 +244,7 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
                 </tr>
               </thead>
               <tbody>
-                {focusedInf.des
+                {focusedInf
                   ? focusedInf.des.map(desc => (
                     <tr key={desc} style={darkMode ? { backgroundColor: '#1b2a41' } : {}}>
                       <td style={darkMode ? { backgroundColor: '#1b2a41', color: '#f9fafb' } : {}}>{desc}</td>
@@ -207,5 +262,12 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
     </div>
   );
 }
+
+InfringementsViz.defaultProps = {
+  infringements: [],
+  fromDate: '',
+  toDate: '',
+  darkMode: false,
+};
 
 export default InfringementsViz;
