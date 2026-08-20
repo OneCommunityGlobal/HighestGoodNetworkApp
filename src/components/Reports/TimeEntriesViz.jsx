@@ -114,7 +114,15 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate, darkMode }) {
         {show ? 'Hide Time Entries Graph' : 'Show Time Entries Graph'}
       </Button>
 
-      {show && (
+      {show && (values.length === 0 ? (
+        <div
+          className={darkMode ? 'mt-2' : ''}
+          data-testid="time-entries-empty-state"
+          style={{ color: textColor, width: '100%', padding: '1rem 0' }}
+        >
+          No time entries to display. 
+        </div>
+      ) : (
         <div
           className={darkMode ? 'mt-2' : ''}
           data-testid="time-entries-chart"
@@ -181,7 +189,7 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate, darkMode }) {
             Total Hours: {totalHours.toFixed(2)}
           </div>
         </div>
-      )}
+      ))}
     </div>
   );
 }

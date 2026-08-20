@@ -77,6 +77,16 @@ describe('TimeEntriesViz component', () => {
 
     // Avoid clicking the button in this test to prevent D3 errors
   });
+  it('shows an empty state when there are no time entries', () => {
+    render(<TimeEntriesViz timeEntries={{ period: [] }} fromDate={fromDate} toDate={toDate} />);
+
+    fireEvent.click(screen.getByText('Show Time Entries Graph'));
+
+    expect(screen.getByTestId('time-entries-empty-state')).toHaveTextContent(
+      'No time entries to display.',
+    );
+    expect(screen.queryByTestId('time-entries-chart')).not.toBeInTheDocument();
+  });
   it('check if Total Hours displays as expected when period key is present', () => {
     render(<TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />);
 
