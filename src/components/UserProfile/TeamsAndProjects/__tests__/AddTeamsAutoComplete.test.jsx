@@ -1,8 +1,9 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom/extend-expect';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import AddTeamsAutoComplete from '../AddTeamsAutoComplete';
 import { toast } from 'react-toastify';
 
@@ -15,7 +16,8 @@ vi.mock('react-toastify', () => ({
 describe('AddTeamsAutoComplete Component', () => {
   const mockSetSearchText = vi.fn();
   const mockOnCreateNewTeam = vi.fn();
-  const mockSetInputs = vi.fn();
+  const mockOnDropDownSelect = vi.fn();
+
   const teamsData = {
     allTeams: [
       { _id: '1', teamName: 'Engineering' },
@@ -24,7 +26,7 @@ describe('AddTeamsAutoComplete Component', () => {
     ],
   };
 
-  const mockStore = configureStore([]);
+  const mockStore = configureMockStore([]);
   const initialState = {
     theme: { darkMode: false },
   };
@@ -40,7 +42,7 @@ describe('AddTeamsAutoComplete Component', () => {
         <AddTeamsAutoComplete
           searchText=""
           setSearchText={mockSetSearchText}
-          setInputs={mockSetInputs}
+          onDropDownSelect={mockOnDropDownSelect}
           teamsData={teamsData}
           onCreateNewTeam={mockOnCreateNewTeam}
         />
@@ -49,21 +51,20 @@ describe('AddTeamsAutoComplete Component', () => {
     expect(screen.getByRole('textbox')).toBeInTheDocument();
   });
 
-  // UPDATED: Component shows dropdown on focus even when searchText is empty.
+  // Component shows dropdown on focus even when searchText is empty.
   test('dropdown shows when searchText is empty (on focus)', () => {
     render(
       <Provider store={store}>
         <AddTeamsAutoComplete
           searchText=""
           setSearchText={mockSetSearchText}
-          setInputs={mockSetInputs}
+          onDropDownSelect={mockOnDropDownSelect}
           teamsData={teamsData}
           onCreateNewTeam={mockOnCreateNewTeam}
         />
       </Provider>,
     );
     const input = screen.getByRole('textbox');
-    // ensure menu is opened in case the component opens on focus
     input.focus();
     const dropdown = screen.getByRole('menu');
     expect(dropdown).toBeInTheDocument();
@@ -78,7 +79,7 @@ describe('AddTeamsAutoComplete Component', () => {
         <AddTeamsAutoComplete
           searchText="Eng"
           setSearchText={mockSetSearchText}
-          setInputs={mockSetInputs}
+          onDropDownSelect={mockOnDropDownSelect}
           teamsData={teamsData}
           onCreateNewTeam={mockOnCreateNewTeam}
         />
@@ -98,7 +99,7 @@ describe('AddTeamsAutoComplete Component', () => {
         <AddTeamsAutoComplete
           searchText=""
           setSearchText={mockSetSearchText}
-          setInputs={mockSetInputs}
+          onDropDownSelect={mockOnDropDownSelect}
           teamsData={teamsData}
           onCreateNewTeam={mockOnCreateNewTeam}
         />
@@ -115,7 +116,7 @@ describe('AddTeamsAutoComplete Component', () => {
         <AddTeamsAutoComplete
           searchText="engineering"
           setSearchText={mockSetSearchText}
-          setInputs={mockSetInputs}
+          onDropDownSelect={mockOnDropDownSelect}
           teamsData={teamsData}
           onCreateNewTeam={mockOnCreateNewTeam}
         />
@@ -142,7 +143,7 @@ describe('AddTeamsAutoComplete Component', () => {
         <AddTeamsAutoComplete
           searchText="Eng&"
           setSearchText={mockSetSearchText}
-          setInputs={mockSetInputs}
+          onDropDownSelect={mockOnDropDownSelect}
           teamsData={teamsDataWithSpecialCharacters}
           onCreateNewTeam={mockOnCreateNewTeam}
         />
@@ -155,14 +156,14 @@ describe('AddTeamsAutoComplete Component', () => {
     expect(screen.getByText('Eng&Dev')).toBeInTheDocument();
   });
 
-  // UPDATED: Component renders inline "No teams found" when none match.
+  // Component renders inline "No teams found" when none match.
   test('handles case when no teams are available', () => {
     render(
       <Provider store={store}>
         <AddTeamsAutoComplete
           searchText="Test"
           setSearchText={mockSetSearchText}
-          setInputs={mockSetInputs}
+          onDropDownSelect={mockOnDropDownSelect}
           teamsData={{ allTeams: [] }}
           onCreateNewTeam={mockOnCreateNewTeam}
         />
@@ -175,32 +176,14 @@ describe('AddTeamsAutoComplete Component', () => {
     expect(screen.getByText('No teams found')).toBeInTheDocument();
   });
 
-  //////////////////
-
-  test('renders input field', () => {
-    render(
-      <Provider store={store}>
-        <AddTeamsAutoComplete
-          searchText=""
-          setSearchText={mockSetSearchText}
-          setInputs={mockSetInputs}
-          teamsData={teamsData}
-          onCreateNewTeam={mockOnCreateNewTeam}
-        />
-      </Provider>,
-    );
-
-    expect(screen.getByRole('textbox')).toBeInTheDocument();
-  });
-
-  // UPDATED: Component calls setInputs with the TEAM OBJECT, not an updater fn
+  // Component calls onDropDownSelect with the TEAM OBJECT when a suggestion is picked.
   test('selects a team from the dropdown', () => {
     render(
       <Provider store={store}>
         <AddTeamsAutoComplete
           searchText="Eng"
           setSearchText={mockSetSearchText}
-          setInputs={mockSetInputs}
+          onDropDownSelect={mockOnDropDownSelect}
           teamsData={teamsData}
           onCreateNewTeam={mockOnCreateNewTeam}
         />
@@ -210,28 +193,53 @@ describe('AddTeamsAutoComplete Component', () => {
     fireEvent.click(screen.getByText('Engineering'));
     expect(mockSetSearchText).toHaveBeenCalledWith('Engineering');
 
-    expect(mockSetInputs).toHaveBeenCalledWith({
+    expect(mockOnDropDownSelect).toHaveBeenCalledWith({
       _id: '1',
       teamName: 'Engineering',
     });
   });
 
-  test('creates a new team when no match is found', () => {
-    render(
+  test('creates a new team when no match is found', async () => {
+    let searchText = '';
+    const setSearchText = (value) => {
+      searchText = value;
+      rerender(
+        <Provider store={store}>
+          <AddTeamsAutoComplete
+            searchText={searchText}
+            setSearchText={setSearchText}
+            teamsData={teamsData}
+            onCreateNewTeam={mockOnCreateNewTeam}
+            onDropDownSelect={mockOnDropDownSelect}
+          />
+        </Provider>
+      );
+    };
+
+    const { rerender } = render(
       <Provider store={store}>
         <AddTeamsAutoComplete
-          searchText="HR"
-          setSearchText={mockSetSearchText}
-          setInputs={mockSetInputs}
+          searchText={searchText}
+          setSearchText={setSearchText}
           teamsData={teamsData}
           onCreateNewTeam={mockOnCreateNewTeam}
+          onDropDownSelect={mockOnDropDownSelect}
         />
-      </Provider>,
+      </Provider>
     );
 
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'HR' } });
-    fireEvent.click(screen.getByText('Create new team: HR'));
+    const input = screen.getByRole('textbox');
 
+    // Type HR
+    await userEvent.type(input, 'HR');
+
+    // Wait for "Create new team: HR" to appear
+    const createNewOption = await screen.findByText('Create new team: HR');
+
+    // Click it using userEvent
+    await userEvent.click(createNewOption);
+
+    expect(mockOnCreateNewTeam).toHaveBeenCalledTimes(1);
     expect(mockOnCreateNewTeam).toHaveBeenCalledWith('HR');
   });
 });

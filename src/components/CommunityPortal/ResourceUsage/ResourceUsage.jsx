@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Dropdown } from 'react-bootstrap';
+import { Package, CalendarDays } from 'lucide-react';
 import {
   BarChart,
   Bar,
@@ -162,6 +163,7 @@ export default function ResourceUsage() {
   const [insightsTimePeriod, setInsightsTimePeriod] = useState('Last Week');
   const [data, setData] = useState(allData.material);
   const [insights, setInsights] = useState(allInsights['Last Week']);
+  const [showScroll, setShowScroll] = useState(false);
 
   const darkMode = useSelector(state => state.theme.darkMode);
   const badgeRefs = useRef([]);
@@ -184,7 +186,16 @@ export default function ResourceUsage() {
     setInsights(allInsights[insightsTimePeriod]);
   }, [insightsTimePeriod]);
 
-  const YAxisLabel = ({ viewBox, darkMode }) => {
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScroll(window.scrollY < 200);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const YAxisLabel = ({ viewBox, darkMode: isDarkMode }) => {
     const { x, y } = viewBox;
     return (
       <text
@@ -193,12 +204,16 @@ export default function ResourceUsage() {
         textAnchor="start"
         dx={8}
         dy={0}
-        fill={darkMode ? '#eee' : '#666'}
+        fill={isDarkMode ? '#ffffff' : '#666'}
         fontSize={14}
       >
         Amount
       </text>
     );
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -208,6 +223,14 @@ export default function ResourceUsage() {
         darkMode ? 'dark-mode bg-oxford-blue text-light' : ''
       }`}
     >
+      {showScroll && (
+        <button
+          onClick={scrollToTop}
+          className={`${styles.scrollButton} ${darkMode ? styles.dark : ''}`}
+        >
+          ↑
+        </button>
+      )}
       {/* LEFT SECTION */}
       <div className={`${styles.chartSection} ${darkMode ? 'bg-space-cadet' : ''}`}>
         <div className={styles.headerSection}>
@@ -215,7 +238,10 @@ export default function ResourceUsage() {
 
           <div className={styles.filters}>
             <Dropdown>
-              <Dropdown.Toggle className={styles.customDropdown}>{resourceType}</Dropdown.Toggle>
+              <Dropdown.Toggle className={styles.customDropdown}>
+                <Package className={styles.filterIcon} size={14} aria-hidden="true" />
+                {resourceType}
+              </Dropdown.Toggle>
               <Dropdown.Menu>
                 <Dropdown.Item onClick={() => setResourceType('Material')}>Material</Dropdown.Item>
                 <Dropdown.Item onClick={() => setResourceType('Equipment')}>
@@ -226,7 +252,10 @@ export default function ResourceUsage() {
             </Dropdown>
 
             <Dropdown>
-              <Dropdown.Toggle className={styles.customDropdown}>{timePeriod}</Dropdown.Toggle>
+              <Dropdown.Toggle className={styles.customDropdown}>
+                <CalendarDays className={styles.filterIcon} size={14} aria-hidden="true" />
+                {timePeriod}
+              </Dropdown.Toggle>
               <Dropdown.Menu>
                 <Dropdown.Item onClick={() => setTimePeriod('This Week')}>This Week</Dropdown.Item>
                 <Dropdown.Item onClick={() => setTimePeriod('Last Week')}>Last Week</Dropdown.Item>
@@ -240,14 +269,18 @@ export default function ResourceUsage() {
 
         {/* CHART */}
         <div className={styles.chartContainer}>
-          <div className={styles.yAxisLabel} style={{ color: darkMode ? '#ffffff' : '#666' }}>
-            Amount
-          </div>
-
           {data && data.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data} margin={{ top: 20, right: 60, left: 20, bottom: 80 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#eee" vertical={false} />
+              <BarChart
+                data={data}
+                margin={{ top: 20, right: 60, left: 20, bottom: 20 }}
+                barCategoryGap="15%"
+              >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke={darkMode ? '#3A506B' : '#e5e7eb'}
+                  vertical={false}
+                />
                 <XAxis
                   dataKey="name"
                   axisLine={false}
@@ -263,7 +296,14 @@ export default function ResourceUsage() {
                   orientation="right"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: darkMode ? '#eee' : '#666', fontSize: 12 }}
+                  tickCount={5}
+                  domain={[0, 'auto']}
+                  width={40}
+                  tick={{
+                    fill: darkMode ? '#ffffff' : '#666',
+                    fontWeight: 700,
+                    fontSize: 12,
+                  }}
                   label={<YAxisLabel darkMode={darkMode} />}
                 />
 
@@ -321,6 +361,7 @@ export default function ResourceUsage() {
           <h2>Insights</h2>
           <Dropdown>
             <Dropdown.Toggle className={styles.customDropdown}>
+              <CalendarDays className={styles.filterIcon} size={14} aria-hidden="true" />
               {insightsTimePeriod}
             </Dropdown.Toggle>
             <Dropdown.Menu>

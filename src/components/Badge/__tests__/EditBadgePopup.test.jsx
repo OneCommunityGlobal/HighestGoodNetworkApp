@@ -2,10 +2,10 @@ import React from 'react';
 import EditBadgePopup from '../EditBadgePopup';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { themeMock } from '__tests__/mockStates';
 
-const mockStore = configureStore([]);
+const mockStore = configureMockStore([]);
 const mockBadgeValues = {
   badgeName: 'Test Name',
   category: 'Test Category',

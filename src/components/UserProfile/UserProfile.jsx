@@ -449,9 +449,14 @@ function UserProfile(props) {
         );
         const normalized = (data || []).map(row => {
           // common shapes: {project: {...}}, {projectId: {...}}, or already {...}
-          if (row?.project?.projectName) return row.project;
-          if (row?.projectId?.projectName) return row.projectId;
-          return row; // fallback if API already returns the project document
+          let project;
+          if (row?.project?.projectName) project = row.project;
+          else if (row?.projectId?.projectName) project = row.projectId;
+          else project = row; // fallback if API already returns the project document
+          return {
+            ...project,
+            projectId: project?._id || project?.projectId,
+          };
         });
         setProjects(normalized);
         setOriginalProjects(normalized);
@@ -593,7 +598,12 @@ const onAssignProject = async (assignedProject) => {
     return;
   }
 
-  const updatedProjects = [...currentProjects, assignedProject];
+  const normalizedProject = {
+    ...assignedProject,
+    projectId: assignedProject._id || assignedProject.projectId,
+  };
+
+  const updatedProjects = [...currentProjects, normalizedProject];
   setProjects(updatedProjects);
 
   const updatedUserProfile = {
@@ -766,8 +776,8 @@ setUpdatedTasks(prev => {
           date: dateStamp,
           description: summary,
           createdDate: moment().format('YYYY-MM-DD'),
-          manullyAssigned: true,
-          manullyAssignedBy: requestorId,
+          manuallyAssigned: true,
+          manuallyAssignedBy: requestorId,
         };
         setModalTitle('Blue Square');
         axios

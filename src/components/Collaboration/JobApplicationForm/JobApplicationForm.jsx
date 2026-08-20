@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { useLocation } from 'react-router-dom';
 import styles from './JobApplicationForm.module.css';
 import OneCommunityImage from '../../../assets/images/logo2.png';
@@ -7,6 +8,8 @@ import { ENDPOINTS } from '../../../utils/URL';
 import { useSelector } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
+import moment from 'moment-timezone';
 
 function normalizeTitleKey(s) {
   return String(s || '')
@@ -32,6 +35,72 @@ function titlesLikelyMatch(jobTitle, formTitle) {
   return false;
 }
 
+const STOPWORDS = new Set([
+  'the',
+  'and',
+  'for',
+  'with',
+  'our',
+  'your',
+  'are',
+  'you',
+  'role',
+  'a',
+  'an',
+  'to',
+  'of',
+  'in',
+]);
+
+function tokenizeTitle(s) {
+  return normalizeTitleKey(s)
+    .split(/\s+/)
+    .filter(w => w.length > 1 && !STOPWORDS.has(w));
+}
+
+/** Match when most significant words from the job board appear in the saved form title. */
+function findFormByTokenOverlap(formsArr, jobTitle) {
+  const tokens = tokenizeTitle(jobTitle);
+  if (!tokens.length || !formsArr?.length) return null;
+  const need =
+    tokens.length >= 4
+      ? Math.max(2, Math.ceil(tokens.length * 0.5))
+      : Math.max(1, Math.ceil(tokens.length * 0.45));
+
+  let best = null;
+  let bestOverlap = -1;
+  for (const f of formsArr) {
+    const nk = normalizeTitleKey(f.title || '');
+    let overlap = 0;
+    for (const t of tokens) {
+      if (nk.includes(t)) overlap++;
+    }
+    if (overlap > bestOverlap) {
+      bestOverlap = overlap;
+      best = f;
+    }
+  }
+  return bestOverlap >= need ? best : null;
+}
+
+/**
+ * When both job and a form mention the same role family (e.g. "developer") and only one form fits,
+ * use it so ?jobTitle= from the board still resolves without noisy toasts.
+ */
+function findFormByDeveloperFamily(formsArr, jobTitle) {
+  const j = normalizeTitleKey(jobTitle);
+  if (!j.includes('developer') && !j.includes('engineer')) return null;
+  const candidates = formsArr.filter(f => {
+    const t = normalizeTitleKey(f.title || '');
+    return (
+      (j.includes('developer') && t.includes('developer')) ||
+      (j.includes('engineer') && t.includes('engineer'))
+    );
+  });
+  if (candidates.length !== 1) return null;
+  return candidates[0];
+}
+
 /** Match a job listing title to a saved application form (titles may differ slightly). */
 function findFormForJobTitle(formsArr, jobTitle) {
   if (!jobTitle || !formsArr?.length) return null;
@@ -46,6 +115,10 @@ function findFormForJobTitle(formsArr, jobTitle) {
   });
   if (m) return m;
   m = formsArr.find(f => titlesLikelyMatch(jobTitle, f.title));
+  if (m) return m;
+  m = findFormByTokenOverlap(formsArr, jobTitle);
+  if (m) return m;
+  m = findFormByDeveloperFamily(formsArr, jobTitle);
   return m || null;
 }
 
@@ -68,8 +141,88 @@ function pickInitialForm(formsArr, navState) {
   return formsArr.find(f => f.questions?.length) || formsArr[0];
 }
 
+function parseFormsResponse(res) {
+  return Array.isArray(res.data.forms) ? res.data.forms : [];
+}
+
+function resolveNavigationJobTitle(jobDataFromRedirect, location) {
+  return (
+    (jobDataFromRedirect?.jobTitle && String(jobDataFromRedirect.jobTitle).trim()) ||
+    getJobTitleFromNavigation(location)
+  );
+}
+
+function notifyInitialFormSelection(navTitle, formMatch, chosen) {
+  if (!navTitle || formMatch) return;
+  if (chosen) {
+    toast.info(
+      `Could not match "${navTitle}" to a form title. Showing "${chosen.title}" — pick another role from the dropdown if this is not the right application.`,
+      { autoClose: 7000 },
+    );
+    return;
+  }
+  toast.warn('No application form is available. Please contact support or try again later.');
+}
+
+function getInitialFormState(chosen, navTitle) {
+  if (!chosen) {
+    return {
+      selectedJob: '',
+      filteredForm: null,
+      answers: [],
+      bannerJobTitle: '',
+      jobTitleInput: null,
+    };
+  }
+  return {
+    selectedJob: chosen.title,
+    filteredForm: chosen,
+    answers: initialAnswersForQuestions(getVisibleQuestionsForForm(chosen)),
+    bannerJobTitle: navTitle || chosen.title,
+    jobTitleInput: navTitle || null,
+  };
+}
+
 function getQuestionType(q) {
   return String(q.questionType || q.type || '').toLowerCase();
+}
+
+function isResumeQuestion(q) {
+  const label = (q.label || q.questionText || '').toLowerCase();
+  return /\b(resume|résumé|curriculum\s*vitae|cv)\b/.test(label);
+}
+
+/** Resume/CV and built-in profile prompts are collected above — skip duplicates in the list. */
+function shouldHideQuestionFromApplicantList(q) {
+  if (isResumeQuestion(q)) return true;
+  if (isStandardProfileFieldQuestion(q)) return true;
+  const raw = (q.label || q.questionText || '').trim();
+  return /^(19|20)[.)\s]/.test(raw) || /^question\s*(19|20)\b/i.test(raw);
+}
+
+function formRequiresResumeUpload(form) {
+  if (!form?.questions) return false;
+  return form.questions.some(
+    q => q.visible !== false && isResumeQuestion(q) && isQuestionRequired(q),
+  );
+}
+
+function isFileUploadQuestion(q) {
+  if (isResumeQuestion(q)) return false;
+  const qt = getQuestionType(q);
+  if (['file', 'upload', 'document', 'attachment'].includes(qt)) return true;
+  const label = (q.label || q.questionText || '').toLowerCase();
+  return (
+    /\b(upload|attach|file)\b/.test(label) &&
+    !/\b(work\s*sample|portfolio|writing\s*sample)\b/.test(label)
+  );
+}
+
+function formatFileSize(bytes) {
+  if (bytes == null || bytes === 0) return '';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 /**
@@ -91,15 +244,290 @@ function stripLeadingQuestionEnumeration(raw) {
   return s;
 }
 
+function getQuestionLabelText(q) {
+  const raw = (q?.label || q?.questionText || '').trim();
+  if (!raw) return '';
+  return stripLeadingQuestionEnumeration(raw) || raw;
+}
+
 function getQuestionLabel(q, idx) {
-  const raw = (q.label || q.questionText || '').trim();
-  if (!raw) return `Question ${idx + 1}`;
-  const cleaned = stripLeadingQuestionEnumeration(raw);
-  return cleaned || raw;
+  const cleaned = getQuestionLabelText(q);
+  if (!cleaned) return `Question ${idx + 1}`;
+  return cleaned;
+}
+
+/** Profile fields rendered once at the top of the application form. */
+const STANDARD_PROFILE_LABEL_KEYS = new Set([
+  'name',
+  'your name',
+  'full name',
+  'applicant name',
+  'email',
+  'your email',
+  'email address',
+  'your email address',
+  'phone',
+  'phone number',
+  'your phone',
+  'your phone number',
+  'mobile',
+  'mobile number',
+  'location timezone',
+  'location and timezone',
+  'your location timezone',
+  'company position',
+  'company and position',
+  'your company position',
+  'primary website social',
+  'primary website and social',
+  'website social',
+  'website or social',
+]);
+
+function isStandardProfileFieldQuestion(q) {
+  const normalized = normalizeTitleKey(getQuestionLabelText(q));
+  if (!normalized || normalized.length > 48) return false;
+  return STANDARD_PROFILE_LABEL_KEYS.has(normalized);
 }
 
 function isQuestionRequired(q) {
-  return q.isRequired === true || q.required === true;
+  if (!q || typeof q !== 'object') return false;
+  return (
+    q.isRequired === true ||
+    q.required === true ||
+    q.mandatory === true ||
+    String(q.isRequired).toLowerCase() === 'true' ||
+    String(q.required).toLowerCase() === 'true'
+  );
+}
+
+/** True if two question objects carry nearly the same prompt (long repeated copy, minor edits). */
+function questionLabelsNearlyDuplicate(q1, q2) {
+  const raw1 = (q1?.label || q1?.questionText || '').trim();
+  const raw2 = (q2?.label || q2?.questionText || '').trim();
+  const c1 = stripLeadingQuestionEnumeration(raw1) || raw1;
+  const c2 = stripLeadingQuestionEnumeration(raw2) || raw2;
+  const a = normalizeTitleKey(c1);
+  const b = normalizeTitleKey(c2);
+  if (!a || !b) return false;
+  if (a === b) return true;
+  if (a.length < 45 || b.length < 45) return false;
+  return a.includes(b) || b.includes(a);
+}
+
+/** Drop exact and near-duplicate prompts (templates pasted twice, etc.). */
+function dedupeVisibleQuestions(questions) {
+  const kept = [];
+  for (const q of questions ?? []) {
+    const raw = (q.label || q.questionText || '').trim();
+    const cleaned = stripLeadingQuestionEnumeration(raw) || raw;
+    const key = normalizeTitleKey(cleaned);
+    const dupExact =
+      key &&
+      kept.some(k => {
+        const kr = (k.label || k.questionText || '').trim();
+        const kc = stripLeadingQuestionEnumeration(kr) || kr;
+        return normalizeTitleKey(kc) === key;
+      });
+    if (dupExact) continue;
+    if (kept.some(k => questionLabelsNearlyDuplicate(q, k))) continue;
+    kept.push(q);
+  }
+  return kept;
+}
+
+function getVisibleQuestionsForForm(form) {
+  if (!form?.questions) return [];
+  const filtered = form.questions.filter(
+    q => q.visible !== false && !shouldHideQuestionFromApplicantList(q),
+  );
+  return dedupeVisibleQuestions(filtered);
+}
+
+function initialAnswersForQuestions(questions) {
+  return (questions ?? []).map(() => '');
+}
+
+function normalizeCheckboxAnswerArray(prev) {
+  if (Array.isArray(prev)) return [...prev];
+  if (prev !== '' && prev != null) return [String(prev)];
+  return [];
+}
+
+function answerValueToPrefillString(value) {
+  if (Array.isArray(value)) return value.filter(Boolean).join(', ');
+  if (value == null || value === '') return '';
+  return String(value);
+}
+
+function parseNumericInput(value) {
+  return value ? Number.parseFloat(value) : 0;
+}
+
+function isAnswerEmpty(answer, q) {
+  const t = getQuestionType(q);
+  if (t === 'checkbox') {
+    if (Array.isArray(answer)) return answer.length === 0;
+    return !String(answer ?? '').trim();
+  }
+  return !String(answer ?? '').trim();
+}
+
+function missingRequiredQuestionLabel(q, idx, answers, questionFiles) {
+  if (!isQuestionRequired(q)) return null;
+  if (isFileUploadQuestion(q)) {
+    return questionFiles[idx] ? null : getQuestionLabel(q, idx);
+  }
+  return isAnswerEmpty(answers[idx], q) ? getQuestionLabel(q, idx) : null;
+}
+
+function isHoursPerWeekQuestion(label) {
+  const text = String(label || '').toLowerCase();
+
+  // Schedule / availability prompts mention hours but expect text answers.
+  if (/\b(availability|available)\b/.test(text)) return false;
+  if (/\bweekly\s+deadline\b/.test(text)) return false;
+
+  return (
+    /hours?\s*(per|a|\/)\s*week\b/.test(text) ||
+    /\bhow\s+many\s+hours\b/.test(text) ||
+    /\bvolunteer\s+hours?\b/.test(text) ||
+    (/\bcommit\b/.test(text) && /\bhours?\b/.test(text))
+  );
+}
+
+function isIndividualOrgQuestionLabel(label) {
+  const labelLower = String(label || '').toLowerCase();
+  return labelLower.includes('individual') && labelLower.includes('organization');
+}
+
+function validateHoursPerWeekAnswer(label, answer) {
+  const trimmed = String(answer ?? '').trim();
+  if (!trimmed) return null;
+  if (!/^\d+$/.test(trimmed)) return `${label} (must be a number)`;
+  const num = Number(trimmed);
+  if (num <= 0 || num > 168) return `${label} (must be between 1 and 168)`;
+  return null;
+}
+
+function validateName(name) {
+  const trimmed = String(name || '').trim();
+
+  if (!trimmed) return 'Name is required.';
+  if (trimmed.length < 2) return 'Name must be at least 2 characters.';
+  if (trimmed.length > 100) return 'Name must not exceed 100 characters.';
+
+  if (!/^[\p{L}\s'-]+$/u.test(trimmed)) {
+    return 'Name may contain only letters, spaces, hyphens, and apostrophes.';
+  }
+
+  return '';
+}
+
+function validateEmail(email) {
+  const trimmed = String(email || '').trim();
+
+  if (!trimmed) return 'Email is required.';
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+    return 'Please enter a valid email address.';
+  }
+
+  return '';
+}
+
+function validatePhone(phone) {
+  const trimmed = String(phone || '').trim();
+
+  if (!trimmed) return 'Phone number is required.';
+
+  try {
+    const phoneNumber = parsePhoneNumberFromString(trimmed);
+
+    if (!phoneNumber?.isPossible()) {
+      return 'Please enter a valid phone number format (e.g., +1 213-456-7890).';
+    }
+  } catch {
+    return 'Invalid phone number format.';
+  }
+
+  return '';
+}
+
+function validateLocation(location) {
+  const trimmed = String(location || '').trim();
+
+  if (!trimmed) return 'Location is required.';
+
+  if (trimmed.length > 100 || !/^[\p{L}\s,.'-]{3,100}$/u.test(trimmed)) {
+    return 'Please enter a valid location (e.g., Charlotte, NC).';
+  }
+
+  return '';
+}
+
+function validateTimeZone(timeZone) {
+  const trimmed = String(timeZone || '').trim();
+
+  if (!trimmed) return 'Time zone is required.';
+
+  if (!moment.tz.zone(trimmed)) {
+    return 'Please select a valid time zone.';
+  }
+
+  return '';
+}
+
+function getProfileValidationErrors({ applicantName, applicantEmail, phone, location, timeZone }) {
+  const errors = {};
+
+  const nameError = validateName(applicantName);
+  const emailError = validateEmail(applicantEmail);
+  const phoneError = validatePhone(phone);
+  const locationError = validateLocation(location);
+  const timeZoneError = validateTimeZone(timeZone);
+
+  if (nameError) errors.applicantName = nameError;
+  if (emailError) errors.applicantEmail = emailError;
+  if (phoneError) errors.phone = phoneError;
+  if (locationError) errors.location = locationError;
+  if (timeZoneError) errors.timeZone = timeZoneError;
+
+  return errors;
+}
+
+function collectMissingRequiredFields({
+  profileErrors,
+  visibleQuestions,
+  answers,
+  questionFiles,
+  resumeFile,
+  resumeRequired,
+}) {
+  const missing = Object.values(profileErrors);
+
+  if (resumeRequired && !resumeFile) missing.push('Resume');
+  for (const [idx, q] of visibleQuestions.entries()) {
+    const label = getQuestionLabel(q, idx);
+    const requiredLabel = missingRequiredQuestionLabel(q, idx, answers, questionFiles);
+    if (requiredLabel) missing.push(requiredLabel);
+    if (isHoursPerWeekQuestion(label)) {
+      const hoursError = validateHoursPerWeekAnswer(label, answers[idx]);
+      if (hoursError) missing.push(hoursError);
+    }
+  }
+  return missing;
+}
+
+function serializeAnswerForSubmit(q, idx, answers, questionFiles) {
+  if (!isFileUploadQuestion(q)) return answers[idx];
+  const file = questionFiles[idx];
+  if (!file) return '';
+  return {
+    fileName: file.name,
+    size: file.size,
+    mimeType: file.type,
+  };
 }
 
 /** Shown for every role when API text is missing or only a placeholder (e.g. "desc …"). */
@@ -128,8 +556,103 @@ function getJobDescriptionForModal(form) {
   return `${GENERIC_ROLE_DESCRIPTION}\n\nAdditional details:\n${extra}`;
 }
 
+function isValidId(id) {
+  if (!id || typeof id !== 'string') return false;
+  return /^[a-zA-Z0-9_-]+$/.test(id) && id.length <= 100;
+}
+
+const REQUIREMENT_ITEMS = [
+  { id: 'reactExperience', label: '1+ years of Full-Time ReactJS Experience' },
+  { id: 'twoMonthsCommitment', label: 'Minimum of 2 Months Commitment' },
+  { id: 'javascriptExperience', label: '1+ years of Full-Time JavaScript Experience' },
+  { id: 'timeZoneLocation', label: 'Time Zone and Location Matches' },
+  { id: 'tenHoursPerWeek', label: 'Minimum of 10 hours of work a week' },
+];
+
+function FileUploadField({
+  id,
+  label,
+  accept,
+  file,
+  onChange,
+  onClear,
+  inputRef,
+  optional = false,
+  required = false,
+}) {
+  const statusText = file ? `${file.name} (${formatFileSize(file.size)})` : 'No file selected';
+  const statusClass = file ? styles.fileStatusSelected : styles.fileStatusEmpty;
+
+  return (
+    <div className={styles.fileUploadField}>
+      {label && (
+        <span className={styles.fieldLabel}>
+          {label}
+          {!optional && required && (
+            <>
+              <span className={styles.requiredMark} aria-hidden="true">
+                {' '}
+                *
+              </span>
+              <span className={styles.visuallyHidden}> (required)</span>
+            </>
+          )}
+        </span>
+      )}
+      <div className={styles.fileUploadRow}>
+        <label htmlFor={id} className={styles.uploadButton}>
+          <span>Choose file</span>
+          <input
+            id={id}
+            ref={inputRef}
+            type="file"
+            accept={accept}
+            onChange={onChange}
+            className={styles.hiddenFileInput}
+            required={required && !file}
+          />
+        </label>
+        <span className={`${styles.fileStatus} ${statusClass}`} aria-live="polite">
+          {statusText}
+        </span>
+        {file && (
+          <button type="button" className={styles.clearFileBtn} onClick={onClear}>
+            Remove
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+FileUploadField.propTypes = {
+  id: PropTypes.string.isRequired,
+  label: PropTypes.string,
+  accept: PropTypes.string,
+  file: PropTypes.shape({
+    name: PropTypes.string,
+    size: PropTypes.number,
+  }),
+  onChange: PropTypes.func.isRequired,
+  onClear: PropTypes.func,
+  inputRef: PropTypes.oneOfType([PropTypes.func, PropTypes.shape({ current: PropTypes.any })]),
+  optional: PropTypes.bool,
+  required: PropTypes.bool,
+};
+
+FileUploadField.defaultProps = {
+  label: '',
+  accept: '.pdf,.doc,.docx,.png,.jpg,.jpeg',
+  file: null,
+  onClear: undefined,
+  inputRef: undefined,
+  optional: false,
+  required: false,
+};
+
 function JobApplicationForm() {
-  const location = useLocation();
+  const routerLocation = useLocation();
+
   const [forms, setForms] = useState([]);
   const [selectedJob, setSelectedJob] = useState('');
   const [answers, setAnswers] = useState([]);
@@ -138,21 +661,143 @@ function JobApplicationForm() {
   const [showDescription, setShowDescription] = useState(false);
   const [applicantName, setApplicantName] = useState('');
   const [applicantEmail, setApplicantEmail] = useState('');
-  const [locationTimezone, setLocationTimezone] = useState('');
+  const [applicantLocation, setApplicantLocation] = useState('');
+  const [timeZone, setTimeZone] = useState('');
   const [phone, setPhone] = useState('');
   const [companyPosition, setCompanyPosition] = useState('');
   const [websiteSocial, setWebsiteSocial] = useState('');
   const [resumeFile, setResumeFile] = useState(null);
+  const [questionFiles, setQuestionFiles] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const resumeInputRef = useRef(null);
+  const questionFileInputRefs = useRef({});
   /** Shown in the page title — the role the user clicked, not only the matched DB form name. */
   const [bannerJobTitle, setBannerJobTitle] = useState('');
+  const [jobDataFromRedirect, setJobDataFromRedirect] = useState(null);
+  const [fullTimeYears, setFullTimeYears] = useState('');
+  const [monthsVolunteer, setMonthsVolunteer] = useState('');
+  const [hoursPerWeek, setHoursPerWeek] = useState('');
+  const [roleSkills, setRoleSkills] = useState('');
+  /** Owner/Admin: optional manual toggles on top of auto-calculated requirement flags. */
+  const [requirementPreviewOverrides, setRequirementPreviewOverrides] = useState({});
+  const [fieldErrors, setFieldErrors] = useState({});
+  const locationTimezone = [applicantLocation.trim(), timeZone.trim()].filter(Boolean).join(' | ');
 
   const darkMode = useSelector(state => state.theme?.darkMode);
+  const isAdmin = useSelector(state => {
+    try {
+      const role = state?.auth?.user?.role;
+      if (role == null || role === '') return false;
+      const r = String(role).toLowerCase();
+      return r === 'administrator' || r === 'owner' || r === 'admin';
+    } catch (err) {
+      console.error('Error checking admin status:', err);
+      return false;
+    }
+  });
 
-  const visibleQuestions = useMemo(
-    () => (filteredForm?.questions ?? []).filter(q => q.visible !== false),
-    [filteredForm],
-  );
+  /* Global back-to-top lives outside #root in index.html; hide it on this long form page. */
+  useEffect(() => {
+    const btn = document.querySelector('.back-to-top');
+    if (!btn) return undefined;
+    const prev = btn.style.display;
+    btn.style.display = 'none';
+    return () => {
+      btn.style.display = prev;
+    };
+  }, []);
+
+  /*
+   * Match html/body/#root to the page strip. Global #root is white; dark mode uses !important —
+   * route class + :global rules in the module CSS set backgrounds with !important while mounted.
+   */
+  useEffect(() => {
+    const c = 'job-application-route';
+    const root = document.getElementById('root');
+    document.documentElement.classList.add(c);
+    document.body.classList.add(c);
+    root?.classList.add(c);
+    return () => {
+      document.documentElement.classList.remove(c);
+      document.body.classList.remove(c);
+      root?.classList.remove(c);
+    };
+  }, []);
+
+  const visibleQuestions = useMemo(() => getVisibleQuestionsForForm(filteredForm), [filteredForm]);
+  const resumeRequired = useMemo(() => formRequiresResumeUpload(filteredForm), [filteredForm]);
+
+  const applyQuestionnairePreFill = data => {
+    if (!data) return;
+    if (data.name) setApplicantName(data.name);
+    if (data.email) setApplicantEmail(data.email);
+    if (data.location) {
+      setApplicantLocation(data.location);
+    } else if (data.locationTimezone) {
+      setApplicantLocation(data.locationTimezone);
+    }
+    if (data.timeZone || data.timezone) {
+      setTimeZone(data.timeZone || data.timezone);
+    }
+    if (data.phone) setPhone(data.phone);
+    if (data.fullTimeYears) setFullTimeYears(data.fullTimeYears);
+    if (data.monthsVolunteer) setMonthsVolunteer(data.monthsVolunteer);
+    if (data.hoursPerWeek) setHoursPerWeek(data.hoursPerWeek);
+    if (data.roleSkills) setRoleSkills(data.roleSkills);
+  };
+
+  const fetchUserQuestionnaireData = async referralId => {
+    try {
+      const response = await axios.get(`${ENDPOINTS.GET_USER_QUESTIONNAIRE}/${referralId}`);
+      if (response.data) {
+        applyQuestionnairePreFill(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching user questionnaire data:', error);
+    }
+  };
+
+  const fetchJobData = async jobId => {
+    try {
+      const response = await axios.get(`${ENDPOINTS.GET_JOB}/${jobId}`);
+      if (response.data) {
+        setJobDataFromRedirect({
+          jobId: response.data._id,
+          jobTitle: response.data.title,
+          jobDescription: response.data.description || '',
+          requirements: response.data.requirements || [],
+          category: response.data.category || 'General',
+        });
+        if (response.data.title) {
+          setJobTitleInput(response.data.title);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching job data:', error);
+      toast.error('Failed to load job details');
+    }
+  };
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(routerLocation.search);
+    const referralId = searchParams.get('ref') || searchParams.get('referral');
+    const jobIdParam = searchParams.get('jobId');
+    const pathJobId = routerLocation.pathname.split('/').pop();
+    const jobId = jobIdParam || (pathJobId && pathJobId !== 'job-application' ? pathJobId : null);
+
+    if (referralId && isValidId(referralId)) {
+      fetchUserQuestionnaireData(referralId);
+    }
+
+    if (routerLocation.state) {
+      setJobDataFromRedirect(routerLocation.state);
+      if (routerLocation.state.jobTitle) {
+        setJobTitleInput(routerLocation.state.jobTitle);
+      }
+    } else if (jobId && isValidId(jobId)) {
+      fetchJobData(jobId);
+    }
+  }, [routerLocation.state, routerLocation.search, routerLocation.pathname]);
 
   useEffect(() => {
     let cancelled = false;
@@ -161,35 +806,24 @@ function JobApplicationForm() {
       try {
         const res = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
         if (cancelled) return;
-        const formsArr = Array.isArray(res.data.forms) ? res.data.forms : [];
+        const formsArr = parseFormsResponse(res);
         setForms(formsArr);
 
-        const navTitle = getJobTitleFromNavigation(location);
-        const navState = { ...location.state, jobTitle: navTitle || location.state?.jobTitle };
+        const navTitle = resolveNavigationJobTitle(jobDataFromRedirect, routerLocation);
+        const navState = {
+          ...routerLocation.state,
+          jobTitle: navTitle || routerLocation.state?.jobTitle,
+        };
+        const formMatch = navTitle ? findFormForJobTitle(formsArr, navTitle) : null;
         const chosen = pickInitialForm(formsArr, navState);
-        if (navTitle && !findFormForJobTitle(formsArr, navTitle)) {
-          toast.warn(
-            `No application form matched "${navTitle}". Pick the correct role from the dropdown or enter the exact form title.`,
-            { autoClose: 8000 },
-          );
-        }
-        if (chosen) {
-          setSelectedJob(chosen.title);
-          setFilteredForm(chosen);
-          if (navTitle) {
-            setJobTitleInput(navTitle);
-            setBannerJobTitle(navTitle);
-          } else {
-            setBannerJobTitle(chosen.title);
-          }
-          const n = (chosen.questions ?? []).filter(q => q.visible !== false).length;
-          setAnswers(new Array(n).fill(''));
-        } else {
-          setSelectedJob('');
-          setFilteredForm(null);
-          setAnswers([]);
-          setBannerJobTitle('');
-        }
+        notifyInitialFormSelection(navTitle, formMatch, chosen);
+
+        const initial = getInitialFormState(chosen, navTitle);
+        setSelectedJob(initial.selectedJob);
+        setFilteredForm(initial.filteredForm);
+        setAnswers(initial.answers);
+        setBannerJobTitle(initial.bannerJobTitle);
+        if (initial.jobTitleInput) setJobTitleInput(initial.jobTitleInput);
       } catch (err) {
         if (!cancelled) {
           setForms([]);
@@ -205,14 +839,17 @@ function JobApplicationForm() {
     return () => {
       cancelled = true;
     };
-  }, [location.key]);
+  }, [routerLocation.key, jobDataFromRedirect]);
 
   useEffect(() => {
     if (!selectedJob) return;
     const form = forms.find(f => f.title === selectedJob);
     setFilteredForm(form);
-    const n = (form?.questions ?? []).filter(q => q.visible !== false).length;
-    setAnswers(new Array(n).fill(''));
+    const qs = getVisibleQuestionsForForm(form);
+    setAnswers(initialAnswersForQuestions(qs));
+    setQuestionFiles({});
+    questionFileInputRefs.current = {};
+    setFieldErrors({});
   }, [selectedJob, forms]);
 
   const handleJobChange = e => {
@@ -241,11 +878,56 @@ function JobApplicationForm() {
     }
   };
 
-  const handleAnswerChange = (idx, value) => {
+  const handleAnswerChange = (idx, value, label) => {
     const newAnswers = [...answers];
     newAnswers[idx] = value;
     setAnswers(newAnswers);
+
+    if (isHoursPerWeekQuestion(label)) {
+      const str = Array.isArray(value) ? '' : String(value ?? '');
+      if (str && !/^\d*$/.test(str)) {
+        setFieldErrors(prev => ({ ...prev, [idx]: 'Only numbers are allowed' }));
+      } else {
+        setFieldErrors(prev => {
+          const next = { ...prev };
+          delete next[idx];
+          return next;
+        });
+      }
+    }
   };
+
+  /** Checkbox question with multiple options: toggle selection in an array stored at answers[idx]. */
+  const toggleCheckboxOption = (idx, opt) => {
+    const prev = answers[idx];
+    const arr = normalizeCheckboxAnswerArray(prev);
+    const i = arr.indexOf(opt);
+    if (i >= 0) arr.splice(i, 1);
+    else arr.push(opt);
+    handleAnswerChange(idx, arr);
+  };
+
+  const isCheckboxOptionChecked = (answer, opt) => {
+    if (Array.isArray(answer)) return answer.includes(opt);
+    return answer === opt;
+  };
+
+  // Copy answers for typical prompts into requirement evaluation state (avoids duplicating those fields in the UI).
+  useEffect(() => {
+    if (!visibleQuestions.length) return;
+    visibleQuestions.forEach((q, idx) => {
+      const label = (q.label || q.questionText || '').toLowerCase();
+      const v = answers[idx];
+      const str = answerValueToPrefillString(v);
+      if (!str.trim()) return;
+
+      if (/(skill|what skills|experience do you|possess\?)/i.test(label)) setRoleSkills(str);
+      else if (/hours per week|volunteer hours|commit to/i.test(label)) setHoursPerWeek(str);
+      else if (/how long|wish to volunteer|in months/i.test(label)) setMonthsVolunteer(str);
+      else if (/full.?time|years of.*experience|full time experience/i.test(label))
+        setFullTimeYears(str);
+    });
+  }, [answers, visibleQuestions]);
 
   const handleShowDescription = e => {
     e.preventDefault();
@@ -268,45 +950,241 @@ function JobApplicationForm() {
 
   const handleResumeChange = e => {
     const f = e.target.files?.[0] || null;
-    setResumeFile(f);
-  };
 
-  const validateBeforeSubmit = () => {
-    const missing = [];
-    if (!applicantName.trim()) missing.push('Name');
-    if (!applicantEmail.trim()) missing.push('Email');
-
-    if (visibleQuestions.length) {
-      for (const [idx, q] of visibleQuestions.entries()) {
-        if (isQuestionRequired(q) && !String(answers[idx] ?? '').trim()) {
-          missing.push(getQuestionLabel(q, idx));
-        }
-      }
-    }
-
-    return missing;
-  };
-
-  const handleSubmit = async e => {
-    e.preventDefault();
-
-    const missing = validateBeforeSubmit();
-    if (missing.length > 0) {
-      toast.error(`Please complete required fields: ${missing.join(', ')}`, { autoClose: 7000 });
+    if (!f) {
+      setResumeFile(null);
       return;
     }
 
-    toast.success('Application submitted. A copy will be sent to your email.');
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ];
 
+    if (!allowedTypes.includes(f.type)) {
+      setResumeFile(null);
+      if (resumeInputRef.current) resumeInputRef.current.value = '';
+      toast.error('Invalid file type. Please upload PDF or DOC/DOCX.');
+      return;
+    }
+
+    setResumeFile(f);
+    toast.success(`Resume selected: ${f.name}`);
+  };
+
+  const clearResumeFile = () => {
+    setResumeFile(null);
+    if (resumeInputRef.current) resumeInputRef.current.value = '';
+  };
+
+  const handleQuestionFileChange = (idx, e) => {
+    const f = e.target.files?.[0] || null;
+    setQuestionFiles(prev => ({ ...prev, [idx]: f }));
+  };
+
+  const clearQuestionFile = idx => {
+    setQuestionFiles(prev => {
+      const next = { ...prev };
+      delete next[idx];
+      return next;
+    });
+    const ref = questionFileInputRefs.current[idx];
+    if (ref) ref.value = '';
+  };
+
+  const evaluateRequirements = (data = {}) => {
+    const {
+      fullTimeYears: years = '',
+      monthsVolunteer: months = '',
+      hoursPerWeek: hours = '',
+      roleSkills: skills = '',
+      locationTimezone: timezone = '',
+    } = data;
+
+    const reactKeywords = ['react', 'reactjs', 'react.js'];
+    const skillsLower = (skills || '').toLowerCase();
+    const yearsNum = parseNumericInput(years);
+    const monthsNum = parseNumericInput(months);
+    const hoursNum = parseNumericInput(hours);
+
+    return {
+      reactExperience:
+        yearsNum >= 1 || reactKeywords.some(keyword => skillsLower.includes(keyword)),
+      twoMonthsCommitment: monthsNum >= 2,
+      javascriptExperience: yearsNum >= 1,
+      timeZoneLocation: Boolean(timezone?.trim()),
+      tenHoursPerWeek: hoursNum >= 10,
+    };
+  };
+
+  const requirementsForDisplay = useMemo(() => {
+    const computed = evaluateRequirements({
+      fullTimeYears,
+      monthsVolunteer,
+      hoursPerWeek,
+      roleSkills,
+      locationTimezone,
+    });
+    const merged = { ...computed };
+    Object.entries(requirementPreviewOverrides).forEach(([id, val]) => {
+      if (val !== undefined) merged[id] = val;
+    });
+    return merged;
+  }, [
+    fullTimeYears,
+    monthsVolunteer,
+    hoursPerWeek,
+    roleSkills,
+    locationTimezone,
+    requirementPreviewOverrides,
+  ]);
+
+  const toggleRequirementPreview = useCallback(
+    id => {
+      setRequirementPreviewOverrides(prev => {
+        const computed = evaluateRequirements({
+          fullTimeYears,
+          monthsVolunteer,
+          hoursPerWeek,
+          roleSkills,
+          locationTimezone,
+        });
+        const current = prev[id] === undefined ? computed[id] : prev[id];
+        return { ...prev, [id]: !current };
+      });
+    },
+    [fullTimeYears, monthsVolunteer, hoursPerWeek, roleSkills, locationTimezone],
+  );
+
+  const validateBeforeSubmit = () => {
+    const profileErrors = getProfileValidationErrors({
+      applicantName,
+      applicantEmail,
+      phone,
+      location: applicantLocation,
+      timeZone,
+    });
+
+    const missing = collectMissingRequiredFields({
+      profileErrors,
+      visibleQuestions,
+      answers,
+      questionFiles,
+      resumeFile,
+      resumeRequired,
+    });
+
+    return { missing, profileErrors };
+  };
+
+  const resetFormAfterSubmit = () => {
     setApplicantName('');
     setApplicantEmail('');
-    setLocationTimezone('');
+    setApplicantLocation('');
+    setTimeZone('');
     setPhone('');
     setCompanyPosition('');
     setWebsiteSocial('');
     setResumeFile(null);
     if (resumeInputRef.current) resumeInputRef.current.value = '';
-    setAnswers(new Array(visibleQuestions.length).fill(''));
+    setQuestionFiles({});
+    questionFileInputRefs.current = {};
+    setFullTimeYears('');
+    setMonthsVolunteer('');
+    setHoursPerWeek('');
+    setRoleSkills('');
+    setAnswers(initialAnswersForQuestions(visibleQuestions));
+    setRequirementPreviewOverrides({});
+    setFieldErrors({});
+  };
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+
+    if (!filteredForm?._id) {
+      toast.error('No application form selected. Choose a role from the dropdown.');
+      return;
+    }
+
+    const { missing, profileErrors } = validateBeforeSubmit();
+
+    setFieldErrors(prev => {
+      const next = { ...prev };
+
+      delete next.applicantName;
+      delete next.applicantEmail;
+      delete next.location;
+      delete next.timeZone;
+      delete next.phone;
+
+      return {
+        ...next,
+        ...profileErrors,
+      };
+    });
+
+    if (missing.length > 0) {
+      toast.error(
+        <div>
+          <div>Please complete required fields:</div>
+          {missing.map(field => (
+            <div key={field}>• {field}</div>
+          ))}
+        </div>,
+        { autoClose: 7000 },
+      );
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const formData = new FormData();
+      formData.append(
+        'payload',
+        JSON.stringify({
+          applicantName: applicantName.trim(),
+          applicantEmail: applicantEmail.trim(),
+          profile: {
+            locationTimezone,
+            phone,
+            companyPosition,
+            websiteSocial,
+            jobTitle: (bannerJobTitle || selectedJob || '').trim(),
+            fullTimeYears,
+            monthsVolunteer,
+            hoursPerWeek,
+            roleSkills,
+          },
+          answers: visibleQuestions.map((q, idx) => ({
+            questionId: q._id,
+            answer: serializeAnswerForSubmit(q, idx, answers, questionFiles),
+          })),
+        }),
+      );
+
+      if (resumeFile) {
+        formData.append('resume', resumeFile);
+      }
+
+      visibleQuestions.forEach((q, idx) => {
+        if (isFileUploadQuestion(q) && questionFiles[idx] && q._id) {
+          formData.append(`questionFile_${q._id}`, questionFiles[idx]);
+        }
+      });
+
+      await axios.post(ENDPOINTS.SUBMIT_JOB_APPLICATION(filteredForm._id), formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      toast.success('Application submitted successfully.');
+      resetFormAfterSubmit();
+    } catch (err) {
+      const message = err.response?.data?.message || err.message || 'Failed to submit application.';
+      toast.error(message, { autoClose: 7000 });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -347,7 +1225,7 @@ function JobApplicationForm() {
         </section>
         <section className={styles.formContainer}>
           <h1 className={styles.formTitle}>
-            FORM FOR {(bannerJobTitle || selectedJob || '').toUpperCase()} POSITION
+            Job Application – {(bannerJobTitle || selectedJob || 'this role').trim()}
           </h1>
           <p className={styles.formSubtitle}>
             <a href="#learnMore" onClick={handleShowDescription}>
@@ -394,106 +1272,388 @@ function JobApplicationForm() {
             </div>
           )}
           <form className={styles.form} onSubmit={handleSubmit}>
+            {isAdmin && (
+              <>
+                <p className={styles.adminRequirementsNote}>
+                  Admin preview: boxes start from your answers; you can override any item for
+                  review.
+                </p>
+                <RequirementsSection
+                  requirements={requirementsForDisplay}
+                  darkMode={darkMode}
+                  interactive
+                  onToggle={toggleRequirementPreview}
+                />
+              </>
+            )}
+            <p className={styles.formHint}>
+              <span className={styles.requiredMark} aria-hidden="true">
+                *
+              </span>{' '}
+              indicates a required field. Complete all required items before you submit.
+            </p>
             <div>
               Here is a questionnaire to apply to work with us. To complete your application and
               schedule a Zoom interview, please answer the pre-interview questions below.
             </div>
             <div className={styles.formContentGroup}>
               <div className={styles.formProfileDetailGroup}>
-                <input
-                  type="text"
-                  placeholder="Name"
-                  className={styles.inputField}
-                  value={applicantName}
-                  onChange={e => setApplicantName(e.target.value)}
-                />
-                <input
-                  type="email"
-                  placeholder="Email"
-                  className={styles.inputField}
-                  value={applicantEmail}
-                  onChange={e => setApplicantEmail(e.target.value)}
-                />
-                <input
-                  type="text"
-                  placeholder="Location & Timezone"
-                  className={styles.inputField}
-                  value={locationTimezone}
-                  onChange={e => setLocationTimezone(e.target.value)}
-                />
-                <input
-                  type="text"
-                  placeholder="Phone Number"
-                  className={styles.inputField}
-                  value={phone}
-                  onChange={e => setPhone(e.target.value)}
-                />
-                <input
-                  type="text"
-                  placeholder="Company & Position"
-                  className={styles.inputField}
-                  value={companyPosition}
-                  onChange={e => setCompanyPosition(e.target.value)}
-                />
-                <input
-                  type="text"
-                  placeholder="Primary Website/Social"
-                  className={styles.inputField}
-                  value={websiteSocial}
-                  onChange={e => setWebsiteSocial(e.target.value)}
-                />
-                <label className={styles.resumeLabel}>
-                  Upload Resume (optional)
+                <div className={styles.profileField}>
+                  <label htmlFor="jaf-applicant-name" className={styles.fieldLabel}>
+                    <span>Name</span>
+                    <span className={styles.requiredMark} aria-hidden="true">
+                      *
+                    </span>
+                  </label>
+
                   <input
-                    ref={resumeInputRef}
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    onChange={handleResumeChange}
+                    id="jaf-applicant-name"
+                    type="text"
+                    placeholder="Name"
+                    className={`${styles.inputField} ${
+                      fieldErrors.applicantName ? styles.inputFieldError : ''
+                    }`}
+                    value={applicantName}
+                    onChange={e => {
+                      setApplicantName(e.target.value);
+
+                      if (fieldErrors.applicantName) {
+                        setFieldErrors(prev => {
+                          const next = { ...prev };
+                          delete next.applicantName;
+                          return next;
+                        });
+                      }
+                    }}
+                    minLength={2}
+                    maxLength={100}
+                    required
+                    aria-required="true"
+                    aria-invalid={Boolean(fieldErrors.applicantName)}
+                    autoComplete="name"
                   />
-                </label>
+
+                  {fieldErrors.applicantName && (
+                    <p className={styles.fieldError} role="alert">
+                      {fieldErrors.applicantName}
+                    </p>
+                  )}
+                </div>
+
+                <div className={styles.profileField}>
+                  <label htmlFor="jaf-applicant-email" className={styles.fieldLabel}>
+                    <span>Email</span>
+                    <span className={styles.requiredMark} aria-hidden="true">
+                      *
+                    </span>
+                  </label>
+
+                  <input
+                    id="jaf-applicant-email"
+                    type="email"
+                    placeholder="Email"
+                    className={`${styles.inputField} ${
+                      fieldErrors.applicantEmail ? styles.inputFieldError : ''
+                    }`}
+                    value={applicantEmail}
+                    onChange={e => {
+                      setApplicantEmail(e.target.value);
+
+                      if (fieldErrors.applicantEmail) {
+                        setFieldErrors(prev => {
+                          const next = { ...prev };
+                          delete next.applicantEmail;
+                          return next;
+                        });
+                      }
+                    }}
+                    required
+                    aria-required="true"
+                    aria-invalid={Boolean(fieldErrors.applicantEmail)}
+                    autoComplete="email"
+                  />
+
+                  {fieldErrors.applicantEmail && (
+                    <p className={styles.fieldError} role="alert">
+                      {fieldErrors.applicantEmail}
+                    </p>
+                  )}
+                </div>
+
+                <div className={styles.profileField}>
+                  <label htmlFor="jaf-location" className={styles.fieldLabel}>
+                    <span>Location</span>
+                    <span className={styles.requiredMark} aria-hidden="true">
+                      *
+                    </span>
+                  </label>
+
+                  <input
+                    id="jaf-location"
+                    type="text"
+                    placeholder="Location (e.g., Charlotte, NC)"
+                    className={`${styles.inputField} ${
+                      fieldErrors.location ? styles.inputFieldError : ''
+                    }`}
+                    value={applicantLocation}
+                    onChange={e => {
+                      setApplicantLocation(e.target.value);
+
+                      if (fieldErrors.location) {
+                        setFieldErrors(prev => {
+                          const next = { ...prev };
+                          delete next.location;
+                          return next;
+                        });
+                      }
+                    }}
+                    maxLength={100}
+                    required
+                    aria-required="true"
+                    aria-invalid={Boolean(fieldErrors.location)}
+                    autoComplete="address-level2"
+                  />
+
+                  {fieldErrors.location && (
+                    <p className={styles.fieldError} role="alert">
+                      {fieldErrors.location}
+                    </p>
+                  )}
+                </div>
+
+                <div className={styles.profileField}>
+                  <label htmlFor="jaf-timezone" className={styles.fieldLabel}>
+                    <span>Time Zone</span>
+                    <span className={styles.requiredMark} aria-hidden="true">
+                      *
+                    </span>
+                  </label>
+
+                  <select
+                    id="jaf-timezone"
+                    className={`${styles.inputField} ${
+                      fieldErrors.timeZone ? styles.inputFieldError : ''
+                    }`}
+                    value={timeZone}
+                    onChange={e => {
+                      setTimeZone(e.target.value);
+
+                      if (fieldErrors.timeZone) {
+                        setFieldErrors(prev => {
+                          const next = { ...prev };
+                          delete next.timeZone;
+                          return next;
+                        });
+                      }
+                    }}
+                    required
+                    aria-required="true"
+                    aria-invalid={Boolean(fieldErrors.timeZone)}
+                  >
+                    <option value="">Select Time Zone</option>
+
+                    {moment.tz.names().map(tz => (
+                      <option key={tz} value={tz}>
+                        {tz}
+                      </option>
+                    ))}
+                  </select>
+
+                  {fieldErrors.timeZone && (
+                    <p className={styles.fieldError} role="alert">
+                      {fieldErrors.timeZone}
+                    </p>
+                  )}
+                </div>
+
+                <div className={styles.profileField}>
+                  <label htmlFor="jaf-phone" className={styles.fieldLabel}>
+                    <span>Phone number</span>
+                    <span className={styles.requiredMark} aria-hidden="true">
+                      *
+                    </span>
+                  </label>
+
+                  <input
+                    id="jaf-phone"
+                    type="tel"
+                    placeholder="+1 213-456-7890"
+                    className={`${styles.inputField} ${
+                      fieldErrors.phone ? styles.inputFieldError : ''
+                    }`}
+                    value={phone}
+                    onChange={e => {
+                      setPhone(e.target.value);
+
+                      if (fieldErrors.phone) {
+                        setFieldErrors(prev => {
+                          const next = { ...prev };
+                          delete next.phone;
+                          return next;
+                        });
+                      }
+                    }}
+                    required
+                    aria-required="true"
+                    aria-invalid={Boolean(fieldErrors.phone)}
+                    autoComplete="tel"
+                  />
+
+                  {fieldErrors.phone && (
+                    <p className={styles.fieldError} role="alert">
+                      {fieldErrors.phone}
+                    </p>
+                  )}
+                </div>
+                <div className={styles.profileField}>
+                  <label htmlFor="jaf-company" className={styles.fieldLabel}>
+                    Company &amp; position
+                  </label>
+                  <input
+                    id="jaf-company"
+                    type="text"
+                    placeholder="Company & Position"
+                    className={styles.inputField}
+                    value={companyPosition}
+                    onChange={e => setCompanyPosition(e.target.value)}
+                    autoComplete="organization-title"
+                  />
+                </div>
+                <div className={styles.profileField}>
+                  <label htmlFor="jaf-social" className={styles.fieldLabel}>
+                    Primary website / social
+                  </label>
+                  <input
+                    id="jaf-social"
+                    type="text"
+                    placeholder="Primary Website/Social"
+                    className={styles.inputField}
+                    value={websiteSocial}
+                    onChange={e => setWebsiteSocial(e.target.value)}
+                    autoComplete="url"
+                  />
+                </div>
+                <FileUploadField
+                  id="jaf-resume-upload"
+                  label={resumeRequired ? 'Upload Resume' : 'Upload Resume (optional)'}
+                  accept=".pdf,.doc,.docx"
+                  file={resumeFile}
+                  onChange={handleResumeChange}
+                  onClear={clearResumeFile}
+                  inputRef={resumeInputRef}
+                  optional={!resumeRequired}
+                  required={resumeRequired}
+                />
               </div>
               {visibleQuestions.map((q, idx) => {
                 const qt = getQuestionType(q);
                 const label = getQuestionLabel(q, idx);
+                const labelLower = label.toLowerCase();
+                const isIndividualOrgQuestion = isIndividualOrgQuestionLabel(label);
+                const req = isQuestionRequired(q);
+                const hasFieldError = Boolean(fieldErrors[idx]);
                 const formKey = filteredForm?._id
                   ? `${filteredForm._id}-q-${idx}`
                   : `q-${idx}-${label.slice(0, 24)}`;
 
                 return (
                   <div className={styles.formGroup} key={formKey}>
-                    <h2>
-                      {idx + 1}. {label}
+                    <h2 className={styles.formGroupTitle} id={`${formKey}-heading`}>
+                      <span className={styles.questionNumber}>{idx + 1}.</span> {label}
+                      {req && (
+                        <>
+                          <span className={styles.requiredMark} aria-hidden="true">
+                            {' '}
+                            *
+                          </span>
+                          <span className={styles.visuallyHidden}> (required)</span>
+                        </>
+                      )}
                     </h2>
-                    {['textbox', 'text'].includes(qt) && (
-                      <input
-                        type="text"
-                        placeholder={q.placeholder || 'Type your response here'}
-                        value={answers[idx] || ''}
-                        onChange={e => handleAnswerChange(idx, e.target.value)}
-                      />
+                    {['textbox', 'text'].includes(qt) &&
+                      !isFileUploadQuestion(q) &&
+                      !isIndividualOrgQuestion && (
+                        <>
+                          <input
+                            type="text"
+                            placeholder={q.placeholder || 'Type your response here'}
+                            value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
+                            onChange={e => handleAnswerChange(idx, e.target.value, label)}
+                            required={req}
+                            aria-required={req}
+                            aria-labelledby={`${formKey}-heading`}
+                            className={`${styles.inputField} ${
+                              hasFieldError ? styles.inputFieldError : ''
+                            }`}
+                          />
+                          {hasFieldError && (
+                            <p className={styles.fieldError} role="alert">
+                              {fieldErrors[idx]}
+                            </p>
+                          )}
+                        </>
+                      )}
+                    {qt === 'textarea' && !isIndividualOrgQuestion && (
+                      <>
+                        <textarea
+                          placeholder={q.placeholder || 'Type your response here'}
+                          value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
+                          onChange={e => handleAnswerChange(idx, e.target.value, label)}
+                          rows={5}
+                          required={req}
+                          aria-required={req}
+                          aria-labelledby={`${formKey}-heading`}
+                          className={`${styles.inputField} ${
+                            hasFieldError ? styles.inputFieldError : ''
+                          }`}
+                        />
+                        {hasFieldError && (
+                          <p className={styles.fieldError} role="alert">
+                            {fieldErrors[idx]}
+                          </p>
+                        )}
+                      </>
                     )}
-                    {qt === 'textarea' && (
-                      <textarea
-                        placeholder={q.placeholder || 'Type your response here'}
-                        value={answers[idx] || ''}
-                        onChange={e => handleAnswerChange(idx, e.target.value)}
-                        rows={5}
-                      />
-                    )}
-                    {qt === 'date' && (
+                    {(qt === 'date' ||
+                      (labelLower.includes('start') && labelLower.includes('date'))) && (
                       <input
                         type="date"
                         className={styles.dateInput}
-                        value={answers[idx] || ''}
-                        onChange={e => handleAnswerChange(idx, e.target.value)}
+                        value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
+                        onChange={e => handleAnswerChange(idx, e.target.value, label)}
+                        required={req}
+                        aria-required={req}
+                        aria-labelledby={`${formKey}-heading`}
                       />
                     )}
-                    {['checkbox', 'radio'].includes(qt) && q.options && q.options.length > 0 && (
-                      <div>
+                    {qt === 'checkbox' && q.options && q.options.length > 0 && (
+                      <fieldset
+                        className={styles.optionFieldset}
+                        aria-labelledby={`${formKey}-heading`}
+                      >
                         {q.options.map(opt => (
-                          <label key={opt}>
+                          <label key={String(opt)}>
                             <input
-                              type={qt === 'checkbox' ? 'checkbox' : 'radio'}
+                              type="checkbox"
+                              name={`question-${formKey}-${String(opt)}`}
+                              value={opt}
+                              checked={isCheckboxOptionChecked(answers[idx], opt)}
+                              onChange={() => toggleCheckboxOption(idx, opt)}
+                            />{' '}
+                            {opt}
+                          </label>
+                        ))}
+                      </fieldset>
+                    )}
+                    {qt === 'radio' && q.options && q.options.length > 0 && (
+                      <fieldset
+                        className={styles.optionFieldset}
+                        aria-labelledby={`${formKey}-heading`}
+                      >
+                        {q.options.map(opt => (
+                          <label key={String(opt)}>
+                            <input
+                              type="radio"
                               name={`question-${formKey}`}
                               value={opt}
                               checked={answers[idx] === opt}
@@ -502,21 +1662,52 @@ function JobApplicationForm() {
                             {opt}
                           </label>
                         ))}
-                      </div>
+                      </fieldset>
                     )}
-                    {qt === 'dropdown' && (
+                    {isIndividualOrgQuestion ? (
                       <select
                         className={styles.selectField}
-                        value={answers[idx] || ''}
-                        onChange={e => handleAnswerChange(idx, e.target.value)}
+                        value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
+                        onChange={e => handleAnswerChange(idx, e.target.value, label)}
+                        required={req}
+                        aria-required={req}
+                        aria-labelledby={`${formKey}-heading`}
                       >
                         <option value="">Select an option</option>
-                        {(q.options || []).map(opt => (
-                          <option key={opt} value={opt}>
-                            {opt}
-                          </option>
-                        ))}
+                        <option value="Individual">Individual</option>
+                        <option value="Organization">Organization</option>
                       </select>
+                    ) : (
+                      qt === 'dropdown' && (
+                        <select
+                          className={styles.selectField}
+                          value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
+                          onChange={e => handleAnswerChange(idx, e.target.value, label)}
+                          required={req}
+                          aria-required={req}
+                          aria-labelledby={`${formKey}-heading`}
+                        >
+                          <option value="">Select an option</option>
+                          {(q.options || []).map(opt => (
+                            <option key={opt} value={opt}>
+                              {opt}
+                            </option>
+                          ))}
+                        </select>
+                      )
+                    )}
+                    {isFileUploadQuestion(q) && (
+                      <FileUploadField
+                        id={`${formKey}-file`}
+                        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+                        file={questionFiles[idx] || null}
+                        onChange={e => handleQuestionFileChange(idx, e)}
+                        onClear={() => clearQuestionFile(idx)}
+                        inputRef={el => {
+                          questionFileInputRefs.current[idx] = el;
+                        }}
+                        required={req}
+                      />
                     )}
                     {![
                       'textbox',
@@ -526,19 +1717,24 @@ function JobApplicationForm() {
                       'checkbox',
                       'radio',
                       'dropdown',
-                    ].includes(qt) && (
-                      <input
-                        type="text"
-                        placeholder="Type your response here"
-                        value={answers[idx] || ''}
-                        onChange={e => handleAnswerChange(idx, e.target.value)}
-                      />
-                    )}
+                    ].includes(qt) &&
+                      !isFileUploadQuestion(q) && (
+                        <input
+                          type="text"
+                          placeholder="Type your response here"
+                          value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
+                          onChange={e => handleAnswerChange(idx, e.target.value, label)}
+                          required={req}
+                          aria-required={req}
+                          aria-labelledby={`${formKey}-heading`}
+                          className={styles.inputField}
+                        />
+                      )}
                   </div>
                 );
               })}
-              <button type="submit" className={styles.submitButton}>
-                Proceed to submit with details
+              <button type="submit" className={styles.submitButton} disabled={isSubmitting}>
+                {isSubmitting ? 'Submitting…' : 'Submit your application'}
               </button>
             </div>
           </form>
@@ -548,4 +1744,150 @@ function JobApplicationForm() {
   );
 }
 
+const requirementsPropType = PropTypes.shape({
+  reactExperience: PropTypes.bool,
+  twoMonthsCommitment: PropTypes.bool,
+  javascriptExperience: PropTypes.bool,
+  timeZoneLocation: PropTypes.bool,
+  tenHoursPerWeek: PropTypes.bool,
+});
+
+const CheckIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M11.6667 3.5L5.25 9.91667L2.33334 7"
+      stroke="white"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+function RequirementsSection({
+  requirements,
+  darkMode,
+  variant = 'admin',
+  interactive = false,
+  onToggle,
+}) {
+  const baseClass =
+    variant === 'user' ? styles.userRequirementsSection : styles.adminRequirementsSection;
+  const sectionClass = interactive
+    ? `${baseClass} ${styles.requirementsSectionInteractive}`
+    : baseClass;
+  const requirementList = REQUIREMENT_ITEMS.map(({ id, label }) => ({
+    id,
+    label,
+    satisfied: !!requirements[id],
+  }));
+
+  return (
+    <div className={sectionClass}>
+      <h3 className={styles.requirementsTitle}>Requirements Status</h3>
+      <div className={styles.requirementsList}>
+        {requirementList.map(req => (
+          <div key={req.id} className={styles.requirementItem}>
+            <label className={styles.requirementCheckbox}>
+              <input
+                type="checkbox"
+                className={styles.requirementCheckboxInput}
+                checked={req.satisfied}
+                onChange={interactive && onToggle ? () => onToggle(req.id) : undefined}
+                disabled={!interactive}
+              />
+              <span
+                className={`${styles.requirementCheckboxCustom} ${
+                  req.satisfied ? styles.checked : ''
+                }`}
+              >
+                {req.satisfied && <CheckIcon />}
+              </span>
+              <span style={{ color: darkMode ? '#ffffff' : undefined }}>{req.label}</span>
+            </label>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+RequirementsSection.propTypes = {
+  requirements: requirementsPropType.isRequired,
+  darkMode: PropTypes.bool,
+  variant: PropTypes.oneOf(['admin', 'user']),
+  interactive: PropTypes.bool,
+  onToggle: PropTypes.func,
+};
+RequirementsSection.defaultProps = {
+  darkMode: false,
+  variant: 'admin',
+  interactive: false,
+  onToggle: undefined,
+};
+
 export default JobApplicationForm;
+
+/* const validateEmail = email => {
+    if (!email.trim()) return 'Email is required.';
+
+    if (!email.includes('@') || !email.includes('.')) {
+      return 'Please enter a valid email address.';
+    }
+
+    return '';
+  };
+
+  const validatePhone = phone => {
+    if (!phone.trim()) return 'Phone number is required.';
+    try {
+      const phoneNumber = parsePhoneNumberFromString(phone);
+      if (!phoneNumber?.isPossible()) {
+        return 'Please enter a valid phone number format (e.g., +1 213-456-7890).';
+      }
+    } catch {
+      return 'Invalid phone number format.';
+    }
+    return '';
+  };
+
+  const validateLocation = value => {
+    if (!value.trim()) return 'Location is required.';
+    if (!/^[a-zA-Z\s,.-]{3,}$/.test(value)) {
+      return 'Please enter a valid location (e.g., City, Country).';
+    }
+    return '';
+  };
+
+  const validateTimeZone = tz => {
+    if (!tz) return 'Time zone is required.';
+    return '';
+  };
+
+  const validateAllFields = () => {
+    const newErrors = {};
+
+    const emailError = validateEmail(applicantEmail);
+    if (emailError) newErrors.email = emailError;
+
+    const phoneError = validatePhone(phone);
+    if (phoneError) newErrors.phone = phoneError;
+
+    const locationError = validateLocation(location);
+    if (locationError) newErrors.location = locationError;
+
+    const tzError = validateTimeZone(timeZone);
+    if (tzError) newErrors.timeZone = tzError;
+
+    if (!firstName.trim()) {
+      newErrors.firstName = 'First name is required.';
+    }
+
+    if (!lastName.trim()) {
+      newErrors.lastName = 'Last name is required.';
+    }
+
+    return newErrors;
+  };
+
+  const visibleQuestions = useMemo(() => {
+    const seen = new Set(); */
