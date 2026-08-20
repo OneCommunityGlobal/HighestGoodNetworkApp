@@ -175,7 +175,7 @@ const useTableOverflow = refreshDependency => {
         End: tableOverflow.maxScrollLeft,
       };
 
-      if (!Object.prototype.hasOwnProperty.call(keyScrollAmounts, event.key)) {
+      if (!Object.hasOwn(keyScrollAmounts, event.key)) {
         return;
       }
 

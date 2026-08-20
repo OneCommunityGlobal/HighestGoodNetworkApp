@@ -45,8 +45,7 @@
 
 .category-container {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-flow: row wrap;
   justify-content: space-evenly;
   gap: 10px;
 }
@@ -389,4 +388,3 @@
 .add-lost-time-header :global(.modal-title) {
   filter: none !important;
 }
-?
