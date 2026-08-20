@@ -214,6 +214,10 @@
   text-decoration: none;
   cursor: pointer;
   transition: color 0.3s ease;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
 }
 
 .footerLink:hover {
@@ -353,4 +357,3 @@
 :global(body.dark-mode) .error {
   color: #b0b0b0;
 }
-
