@@ -66,13 +66,15 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
     return sanitizer(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
   };
 
-  // Safe link handler to prevent XSS in href attributes
+  // Safe link handler to prevent XSS in href attributes.
+  // Only checks sanitization/well-formedness here, not the allowed-domain
+  // whitelist: that's a submission-time content policy (see
+  // validateAllowedDomainTypes usage in submitReviewRequest/handleEditLink),
+  // not a reason to refuse opening a link that's already stored.
   const handleSafeLink = url => {
-    // Sanitize the URL and validate it's safe to use as href
     const sanitizedUrl = sanitizeUrl(url);
-    const validationResult = validateAllowedDomainTypes(sanitizedUrl);
 
-    if (validationResult.isValid && validURL(sanitizedUrl)) {
+    if (validURL(sanitizedUrl)) {
       return sanitizedUrl;
     }
     return '#'; // Fallback to safe href
