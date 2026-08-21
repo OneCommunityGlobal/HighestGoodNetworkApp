@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import { Package, CalendarDays } from 'lucide-react';
+import { Package, Wrench, Building2, CalendarDays } from 'lucide-react';
 import {
   BarChart,
   Bar,
@@ -15,6 +15,14 @@ import {
 } from 'recharts';
 import styles from './ResourceUsage.module.css';
 import { useSelector } from 'react-redux';
+
+// Each resource type gets its own icon so the filter still reads correctly
+// once the selection moves away from Material.
+const resourceTypeIcons = {
+  Material: Package,
+  Equipment: Wrench,
+  Venue: Building2,
+};
 
 const allData = {
   material: [
@@ -212,6 +220,8 @@ export default function ResourceUsage() {
     );
   };
 
+  const ResourceTypeIcon = resourceTypeIcons[resourceType] ?? Package;
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -239,7 +249,7 @@ export default function ResourceUsage() {
           <div className={styles.filters}>
             <Dropdown>
               <Dropdown.Toggle className={styles.customDropdown}>
-                <Package className={styles.filterIcon} size={14} aria-hidden="true" />
+                <ResourceTypeIcon className={styles.filterIcon} size={14} aria-hidden="true" />
                 {resourceType}
               </Dropdown.Toggle>
               <Dropdown.Menu>

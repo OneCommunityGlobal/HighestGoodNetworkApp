@@ -267,8 +267,18 @@
   border-color: #3A506B !important;
 }
 
-.resourceUsageContainer:global(.dark-mode) .customDropdown:global(.show) {
+/* react-bootstrap marks the open toggle with aria-expanded, not a .show class,
+   and Bootstrap's own .btn-primary focus colour (#1D4ED8) otherwise flashes
+   bright blue against the dark chart. */
+.resourceUsageContainer:global(.dark-mode) .customDropdown:hover,
+.resourceUsageContainer:global(.dark-mode) .customDropdown:focus,
+.resourceUsageContainer:global(.dark-mode) .customDropdown:focus-visible,
+.resourceUsageContainer:global(.dark-mode) .customDropdown:active,
+.resourceUsageContainer:global(.dark-mode) .customDropdown[aria-expanded='true'] {
   background-color: #243B5A !important;
+  color: #fff !important;
+  border-color: #3A506B !important;
+  box-shadow: none !important;
 }
 
 .resourceUsageContainer:global(.dark-mode) :global(.dropdown-menu) {
