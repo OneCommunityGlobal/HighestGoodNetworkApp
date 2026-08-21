@@ -237,6 +237,13 @@
   border-color: #ca50db;
 }
 
+:global(.dark-mode) .tasks-table-clear-filter-button {
+  background-color: #232946;
+  border: 2px solid #ca50db;
+  outline-color: #ca50db;
+  color: #e7b1ef;
+}
+
 /* Dark mode styling for Clear Filters button */
 .wrapperDark .tasks-table-clear-filter-button {
   background-color: #232946 !important;
