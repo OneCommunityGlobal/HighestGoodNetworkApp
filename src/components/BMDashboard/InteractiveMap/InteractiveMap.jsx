@@ -516,12 +516,12 @@ export default function InteractiveMap() {
                             style={{
                               color:
                                 org.status === 'active'
-                                  ? '#DE6A6A'
+                                  ? '#b84040'
                                   : org.status === 'delayed'
-                                  ? '#E3D270'
+                                  ? '#a08a10'
                                   : org.status === 'completed'
-                                  ? '#6ACFDE'
-                                  : '#AAAAAA',
+                                  ? '#1a8fa0'
+                                  : '#777777',
                               fontWeight: 'bold',
                             }}
                           >

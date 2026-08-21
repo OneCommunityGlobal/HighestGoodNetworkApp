@@ -238,6 +238,7 @@ function InjuryCategoryBarChart() {
               maxDate={endDate || undefined}
               placeholderText="Start date"
               className="injury-date-input"
+              calendarClassName={darkMode ? 'paid-labor-cost-dark-calendar' : ''}
             />
           </div>
 
@@ -255,6 +256,7 @@ function InjuryCategoryBarChart() {
               minDate={startDate || undefined}
               placeholderText="End date"
               className="injury-date-input"
+              calendarClassName={darkMode ? 'paid-labor-cost-dark-calendar' : ''}
             />
           </div>
         </div>

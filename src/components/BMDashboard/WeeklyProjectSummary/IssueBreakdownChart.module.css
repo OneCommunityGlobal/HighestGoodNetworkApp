@@ -64,6 +64,12 @@
   text-shadow: none;
 }
 
+/* Dark mode heading (fixes #888 fallback which is near-invisible on dark bg) */
+:global(.dark-mode) .heading,
+:global(.bm-dashboard-dark) .heading {
+  color: #e5e7eb;
+}
+
 /* Dark mode legend label */
 :global(.dark-mode) .legendLabel {
   color: #fff;
