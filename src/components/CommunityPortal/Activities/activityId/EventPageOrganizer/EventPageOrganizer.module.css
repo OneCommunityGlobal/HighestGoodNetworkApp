@@ -426,8 +426,12 @@
   background-color: #1f2937;
 }
 
-.containerDark .statusActive {
+.containerDark .detailValue.statusActive {
   color: #58df88;
+}
+
+.containerDark .capacityUsed {
+  color: #ff8a8a;
 }
 
 .tabTriggerDark {
