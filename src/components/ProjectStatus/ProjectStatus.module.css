@@ -1,13 +1,18 @@
 .wrapper {
   display: flex;
-  gap: 3rem;
+  flex-wrap: wrap;
+  gap: clamp(1.5rem, 4vw, 3rem);
   align-items: flex-start;
-  padding: 1.5rem 2rem; /* <-- adds spacing from page edges */
+  padding: clamp(1rem, 3vw, 1.5rem) clamp(1rem, 4vw, 2rem); /* <-- adds spacing from page edges */
   min-height: 100vh; /* fills the page so dark mode has no leftover white gap below short content */
+  box-sizing: border-box;
+  max-width: 1400px; /* keeps the chart from stranding on the left with a wall of empty space on ultra-wide screens */
+  margin: 0 auto;
 }
 
 .leftSection {
-  flex: 1;
+  flex: 1 1 320px;
+  min-width: 0; /* lets flex item (and the chart inside it) shrink below its content size instead of overflowing */
 }
 
 .header {
@@ -25,6 +30,7 @@
 
 .controls {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.75rem;
   align-items: center;
 }
@@ -43,13 +49,24 @@
 
 .chartWrapper {
   position: relative;
-  width: 400px;
-  height: 400px;
+  width: 100%;
+  min-width: 0;
+  max-width: 400px;
+  aspect-ratio: 1 / 1;
   margin: 0 auto;
 }
 
+/* Chart.js sizes the canvas via inline style based on its container's last
+   observed box, which can otherwise force this container (and its flex
+   ancestors) to stay pinned at that size instead of shrinking further -
+   capping the canvas to the wrapper's own bounds breaks that feedback loop. */
+.chartWrapper canvas {
+  max-width: 100% !important;
+  max-height: 100% !important;
+}
+
 .customTooltip {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   z-index: 10;
@@ -58,6 +75,7 @@
   border-radius: 6px;
   font-size: 13px;
   white-space: nowrap;
+  max-width: calc(100vw - 16px);
   background: rgb(0 0 0 / 80%);
   color: #fff;
   border: 1px solid rgb(0 0 0 / 10%);
@@ -116,7 +134,10 @@
   flex-direction: column;
   gap: 1.5rem;
   font-size: 14px;
+  flex: 1 1 240px;
   min-width: 220px;
+  max-width: 320px;
+  box-sizing: border-box;
   padding: 1.2rem;
   background: #f9fafb;
   border-radius: 10px;
@@ -372,6 +393,7 @@
 
   .panel {
     width: 100%;
+    max-width: none;
     min-width: 0;
   }
 
@@ -383,12 +405,5 @@
   .controls {
     flex-direction: column;
     align-items: center;
-  }
-
-  .chartWrapper {
-    width: 100%;
-    max-width: 400px;
-    height: auto;
-    aspect-ratio: 1 / 1;
   }
 }

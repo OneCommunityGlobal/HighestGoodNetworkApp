@@ -104,24 +104,47 @@ export default function ProjectStatus() {
       return;
     }
 
+    // Chart-local point, then converted to viewport coordinates so the tooltip
+    // can be positioned with `fixed` and clamped against the real screen edges
+    // below - on narrow (mobile) viewports the chart sits close enough to the
+    // edge that an unclamped box routinely lands partly or fully off-screen.
     const angle = (el.startAngle + el.endAngle) / 2;
     const gap = 14;
-    const x = el.x + Math.cos(angle) * (el.outerRadius + gap);
-    const y = el.y + Math.sin(angle) * (el.outerRadius + gap);
+    const canvasRect = chart.canvas.getBoundingClientRect();
+    let x = canvasRect.left + el.x + Math.cos(angle) * (el.outerRadius + gap);
+    let y = canvasRect.top + el.y + Math.sin(angle) * (el.outerRadius + gap);
 
     // Anchor the box away from the point based on which side of the ring
     // it's on, so the box itself never overlaps the slice.
     const deg = (angle * 180) / Math.PI;
     let transform;
+    let box; // box edges relative to (x, y), using a generous size estimate
+    // since the real rendered size isn't known until after this box is placed
+    const EST_W = 180;
+    const EST_H = 64;
     if (deg >= -45 && deg <= 45) {
       transform = 'translate(10px, -50%)'; // right
+      box = { left: 10, right: 10 + EST_W, top: -EST_H / 2, bottom: EST_H / 2 };
     } else if (deg > 45 && deg <= 135) {
       transform = 'translate(-50%, 10px)'; // bottom
+      box = { left: -EST_W / 2, right: EST_W / 2, top: 10, bottom: 10 + EST_H };
     } else if (deg > 135 || deg < -135) {
       transform = 'translate(calc(-100% - 10px), -50%)'; // left
+      box = { left: -10 - EST_W, right: -10, top: -EST_H / 2, bottom: EST_H / 2 };
     } else {
       transform = 'translate(-50%, calc(-100% - 10px))'; // top
+      box = { left: -EST_W / 2, right: EST_W / 2, top: -10 - EST_H, bottom: -10 };
     }
+
+    // Nudge the anchor point back on-screen if the estimated box would spill
+    // past either edge in either axis.
+    const margin = 8;
+    if (x + box.left < margin) x += margin - (x + box.left);
+    else if (x + box.right > window.innerWidth - margin)
+      x -= x + box.right - (window.innerWidth - margin);
+    if (y + box.top < margin) y += margin - (y + box.top);
+    else if (y + box.bottom > window.innerHeight - margin)
+      y -= y + box.bottom - (window.innerHeight - margin);
 
     const pctMap = data?.percentages || {};
     const keys = ['active', 'completed', 'delayed'];
@@ -273,7 +296,7 @@ export default function ProjectStatus() {
         )}
 
         {/* Chart + Legend */}
-        {!pending && !error && data && (
+        {!pending && !error && !dateError && data && (
           <>
             {hasData ? (
               <>
