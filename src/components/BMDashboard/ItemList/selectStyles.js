@@ -16,6 +16,7 @@ export const getReactSelectStyles = darkMode => {
   return {
     control: (base, state) => ({
       ...base,
+      alignItems: 'center',
       backgroundColor: theme.bgControl ?? base.backgroundColor,
       borderColor: theme.border ?? base.borderColor,
       color: theme.text ?? base.color,
@@ -54,18 +55,37 @@ export const getReactSelectStyles = darkMode => {
 
     valueContainer: base => ({
       ...base,
-      maxHeight: '38px',
-      overflowY: 'auto',
-      flexWrap: 'wrap',
+      height: '38px',
+      alignItems: 'center',
+      flexWrap: 'nowrap',
+      overflowX: 'auto',
+      overflowY: 'hidden',
+      scrollbarWidth: 'thin',
+      scrollbarColor: darkMode ? '#5a7a9b transparent' : '#c1c1c1 transparent',
+      '&::-webkit-scrollbar': {
+        height: '4px',
+      },
+      '&::-webkit-scrollbar-track': {
+        backgroundColor: 'transparent',
+      },
+      '&::-webkit-scrollbar-thumb': {
+        backgroundColor: darkMode ? '#5a7a9b' : '#c1c1c1',
+        borderRadius: '4px',
+      },
     }),
 
     multiValue: base => ({
       ...base,
+      flexShrink: 0,
+      maxWidth: '160px',
       backgroundColor: theme.bgHover ?? base.backgroundColor,
     }),
 
     multiValueLabel: base => ({
       ...base,
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
       color: theme.textLight ?? base.color,
     }),
 
@@ -90,6 +110,8 @@ export const getReactSelectStyles = darkMode => {
 
     input: base => ({
       ...base,
+      margin: 0,
+      padding: 0,
       color: theme.text ?? base.color,
     }),
   };

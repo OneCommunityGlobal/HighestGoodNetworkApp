@@ -69,7 +69,7 @@ export default function SelectItem({
   };
 
   return (
-    <div className={styles.filterItem}>
+    <div className={`${styles.filterItem} ${styles.filterItemSelect}`}>
       <label htmlFor="select-item" style={{ fontWeight: 'bold' }}>
         {label ? `${label}:` : 'Item:'}
       </label>

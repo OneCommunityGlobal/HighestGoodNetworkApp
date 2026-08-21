@@ -42,7 +42,7 @@ export default function SelectForm({
   };
 
   return (
-    <div className={styles.filterItem}>
+    <div className={`${styles.filterItem} ${styles.filterItemSelect}`}>
       <label htmlFor="select-project" style={{ fontWeight: 'bold' }}>
         Project:
       </label>

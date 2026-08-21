@@ -141,7 +141,7 @@ table td {
 .selectInput {
   display: flex;
   align-items: flex-end;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 15px;
   width: 100%;
   max-width: 1200px;
@@ -159,6 +159,11 @@ table td {
   min-width: 180px;
   max-width: 200px;
   margin-bottom: 8px;
+}
+
+.filterItemSelect {
+  flex: 2;
+  max-width: 380px;
 }
 
 .filterItem label {
@@ -199,8 +204,7 @@ table td {
   margin-bottom: 8px;
 }
 
-.selectInput input,
-.selectInput select {
+.datePickerCell input {
   height: 38px;
   width: 100%;
   min-width: 180px;
@@ -208,12 +212,6 @@ table td {
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  margin-bottom: 8px;
-}
-
-.selectInput input[type='text'] {
-  padding: 5px;
-  margin-bottom: 8px;
 }
 
 .btnPrimary {
@@ -650,10 +648,17 @@ table td {
     text-align: left;
   }
 
-  .selectInput input,
-  .selectInput select {
+  .datePickerCell input {
     max-width: 100%;
     min-width: 0;
+  }
+
+  .filterItemSelect {
+    max-width: 100%;
+  }
+
+  .selectInput {
+    flex-wrap: wrap;
   }
 }
 
