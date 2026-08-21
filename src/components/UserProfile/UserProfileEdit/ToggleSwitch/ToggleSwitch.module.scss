@@ -46,7 +46,8 @@
   display: inline-block;
   position: relative;
   margin: 5px;
-  background: dodgerblue;
+  background: #2563eb;
+  border: 1px solid #60a5fa;
   transition: all 0.5s ease;
   appearance: none;
   -webkit-tap-highlight-color: transparent;
@@ -71,11 +72,22 @@
   }
 
   &:checked {
-    background: rgb(0 0 0);
+    background: #475569;
 
     &::after {
       transform: translateX(15px);
     }
+  }
+
+  &:disabled {
+    background: #334155;
+    border-color: #475569;
+    cursor: not-allowed;
+    opacity: 0.65;
+  }
+
+  &:disabled::after {
+    background: #94a3b8;
   }
 }
 

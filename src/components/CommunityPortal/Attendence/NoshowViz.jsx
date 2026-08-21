@@ -35,6 +35,7 @@ function EventNoShowChart() {
       : undefined,
     labelStyle: darkMode ? { color: '#f9fafb' } : undefined,
   };
+  const tooltipCursor = darkMode ? { fill: '#26364d', stroke: '#64748b' } : undefined;
   const axisTick = { fill: darkMode ? '#d1d5db' : '#666' };
 
   useEffect(() => {
@@ -157,7 +158,7 @@ function EventNoShowChart() {
           <BarChart data={noShowPeriod}>
             <XAxis dataKey="date" tick={axisTick} />
             <YAxis ticks={ticks} tick={axisTick} />
-            <Tooltip {...tooltipStyle} />
+            <Tooltip {...tooltipStyle} cursor={tooltipCursor} />
             <Legend wrapperStyle={darkMode ? { color: '#d1d5db' } : undefined} />
             {uniqueEventTypes.map(event => (
               <React.Fragment key={event}>
@@ -184,7 +185,7 @@ function EventNoShowChart() {
           <BarChart data={locationData}>
             <XAxis dataKey="location" tick={axisTick} />
             <YAxis tick={axisTick} />
-            <Tooltip {...tooltipStyle} />
+            <Tooltip {...tooltipStyle} cursor={tooltipCursor} />
             <Legend wrapperStyle={darkMode ? { color: '#d1d5db' } : undefined} />
             {locationData.length > 0 &&
               Object.keys(locationData[0])
@@ -206,7 +207,7 @@ function EventNoShowChart() {
           <BarChart data={ageGroupData}>
             <XAxis dataKey="ageGroup" tick={axisTick} />
             <YAxis tick={axisTick} />
-            <Tooltip {...tooltipStyle} />
+            <Tooltip {...tooltipStyle} cursor={tooltipCursor} />
             <Legend wrapperStyle={darkMode ? { color: '#d1d5db' } : undefined} />
             {genderTypes.map(gender => (
               <Bar key={gender} dataKey={gender} fill={genderColorMapping[gender] || '#8884d8'} />
@@ -233,7 +234,7 @@ function EventNoShowChart() {
                 <Cell key={`cell-${entry.name}`} fill={genderColorMapping[entry.name]} />
               ))}
             </Pie>
-            <Tooltip {...tooltipStyle} />
+            <Tooltip {...tooltipStyle} cursor={tooltipCursor} />
             <Legend wrapperStyle={darkMode ? { color: '#d1d5db' } : undefined} />
           </PieChart>
         </ResponsiveContainer>
@@ -263,7 +264,7 @@ function EventNoShowChart() {
           <LineChart data={attendanceByDay}>
             <XAxis dataKey="day" tick={axisTick} />
             <YAxis ticks={ticksLine} tick={axisTick} />
-            <Tooltip {...tooltipStyle} />
+            <Tooltip {...tooltipStyle} cursor={tooltipCursor} />
             <Legend wrapperStyle={darkMode ? { color: '#d1d5db' } : undefined} />
             <Line
               type="monotone"

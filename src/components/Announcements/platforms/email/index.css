@@ -295,8 +295,16 @@ body.dark-mode .tab-pane.active {
   color: #007bff !important;
 }
 
+.email-update-container.dark-mode .email-dashboard-card-icon-send path {
+  fill: #007bff !important;
+}
+
 .email-update-container.dark-mode .email-dashboard-card-icon-templates {
   color: #28a745 !important;
+}
+
+.email-update-container.dark-mode .email-dashboard-card-icon-templates path {
+  fill: #28a745 !important;
 }
 
 /* Container background */

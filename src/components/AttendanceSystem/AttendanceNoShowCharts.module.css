@@ -594,12 +594,28 @@
 }
 
 .darkMode .heroBadge {
-  background: #374151;
+  background: #334155;
   color: #f9fafb;
 }
 
 .darkMode .heroPoster {
   background: #4b5563;
+}
+
+.darkMode .avatar,
+.darkMode .avatarCount {
+  background: #334155;
+  border-color: #475569;
+  color: #f9fafb;
+}
+
+.darkMode .calendarDayName {
+  color: #94a3b8;
+}
+
+.darkMode .calendarActiveDay {
+  background: #2563eb;
+  color: #fff;
 }
 
 .darkMode .barTag {

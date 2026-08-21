@@ -26,6 +26,7 @@ const PAIRS = [
     'components/EmailManagement/email-sender/IntegratedEmailSender.jsx',
     'components/EmailManagement/email-sender/IntegratedEmailSender.module.css',
   ],
+  ['components/LeaderBoard/Leaderboard.jsx', 'components/LeaderBoard/Leaderboard.module.css'],
   ...Array.from({ length: 8 }, (_, i) => [
     `components/TSAForm/pages/TSAFormPage${i + 1}.jsx`,
     'components/TSAForm/TSAForm.module.css',
@@ -63,5 +64,19 @@ describe('dark-mode CSS modules', () => {
     // still inert, which is a known, separately-tracked problem.
     const bare = new RegExp(`^import\\s+['"][^'"]*${basename.replace('.', '\\.')}['"];?\\s*$`, 'm');
     expect(bare.test(src)).toBe(false);
+  });
+
+  it('keeps Dashboard interaction states in component CSS modules', () => {
+    const leaderboard = read('components/LeaderBoard/Leaderboard.jsx');
+    const leaderboardCss = read('components/LeaderBoard/Leaderboard.module.css');
+    const teamMemberTask = read('components/TeamMemberTasks/TeamMemberTask.jsx');
+    const teamMemberTaskCss = read('components/TeamMemberTasks/style.module.css');
+
+    expect(leaderboard).toContain("styles['dark-leaderboard-row']");
+    expect(leaderboard.match(/styles\['dark-leaderboard-row'\]/g)).toHaveLength(2);
+    expect(leaderboardCss).toContain('.dark-leaderboard-row:focus-within');
+    expect(teamMemberTask).toContain("styles['dark-task-row']");
+    expect(teamMemberTaskCss).toContain('.dark-teammember-row tr:hover > td');
+    expect(teamMemberTaskCss).toContain('.dark-task-row:focus-within');
   });
 });

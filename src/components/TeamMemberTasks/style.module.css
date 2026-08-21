@@ -165,6 +165,19 @@
   color: black;
 }
 
+.dark-teammember-row tr:hover,
+.dark-teammember-row tr:active,
+.dark-teammember-row tr:focus-within,
+.dark-teammember-row tr:hover > td,
+.dark-teammember-row tr:active > td,
+.dark-teammember-row tr:focus-within > td,
+.dark-teammember-row tr:hover > th,
+.dark-teammember-row tr:active > th,
+.dark-teammember-row tr:focus-within > th {
+  background-color: #111831 !important;
+  color: white;
+}
+
 .task-align {
   width: auto;
   flex: 1 1 auto;
@@ -254,7 +267,6 @@
   padding-left: 10px !important;
 }
 
-
 .team-member-tasks-number {
   display: inline-block;
   text-align: center;
@@ -324,6 +336,22 @@
 
 .table-row {
   position: relative;
+}
+
+.dark-task-row,
+.dark-task-row > td {
+  background-color: #3a506b;
+  color: white;
+}
+
+.dark-task-row:hover,
+.dark-task-row:active,
+.dark-task-row:focus-within,
+.dark-task-row:hover > td,
+.dark-task-row:active > td,
+.dark-task-row:focus-within > td {
+  background-color: #111831 !important;
+  color: white;
 }
 
 .hidden {
@@ -908,6 +936,26 @@
 
 .boxShadowLight {
   box-shadow: 2px 2px 4px 1px lightgray;
+}
+
+.headerControlButton {
+  background-color: #fff;
+  color: #17a2b8;
+}
+
+.headerControlButtonActive {
+  background-color: #17a2b8;
+  color: #fff;
+}
+
+.headerControlButtonDark {
+  background-color: #1b263b;
+  color: #67e8f9 !important;
+}
+
+.headerControlButtonDark.headerControlButtonActive {
+  background-color: #17a2b8;
+  color: #fff !important;
 }
 
 /* Previously `responsive-btn-size` */

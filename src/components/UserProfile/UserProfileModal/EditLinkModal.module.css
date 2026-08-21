@@ -20,6 +20,11 @@
   padding-left: 0.4rem;
 }
 
+:global(body.dark-mode) .invalid-help-context,
+:global(body.dark-mode) .warning-help-context {
+  color: #dc3545 !important;
+}
+
 .custom-label {
   display: flex;
   padding: 0.6em 0.4em;

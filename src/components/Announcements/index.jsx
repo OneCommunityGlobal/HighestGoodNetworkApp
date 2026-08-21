@@ -104,6 +104,8 @@ function Announcements({ title, email: initialEmail }) {
         return '#E91E63';
       case 'weeklyreport':
         return '#00C853';
+      case 'email':
+        return '#EA4335';
       default:
         return undefined;
     }
@@ -174,7 +176,10 @@ function Announcements({ title, email: initialEmail }) {
               }}
               aria-selected={activeTab === id}
             >
-              <div className={`${styles.tabIcon} ${styles[`icon-${id}`] || ''}`}>
+              <div
+                className={`${styles.tabIcon} ${styles[`icon-${id}`] || ''}`}
+                style={getIconColor(id) ? { '--platform-icon-color': getIconColor(id) } : undefined}
+              >
                 {customIconSrc ? (
                   <img src={customIconSrc} alt={`${label} icon`} className={styles.tabIcon} />
                 ) : (
