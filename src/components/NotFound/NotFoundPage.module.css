@@ -52,6 +52,17 @@
   color: #64b5f6 !important;
 }
 
+/* Override global body.dark-mode * { color: #fff !important } which wins via higher specificity */
+:global(body.dark-mode) .linkDark,
+:global(body.bm-dashboard-dark) .linkDark {
+  color: #90caf9 !important;
+}
+
+:global(body.dark-mode) .linkDark:hover,
+:global(body.bm-dashboard-dark) .linkDark:hover {
+  color: #64b5f6 !important;
+}
+
 .loggedOutText {
   margin: 10px 20px;
 }
