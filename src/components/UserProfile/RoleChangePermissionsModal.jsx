@@ -131,6 +131,8 @@ function RoleChangePermissionsModal(props) {
     if(!selectedRole2) return
     const roleDefaults = roleNameToDefaults[selectedRole2.roleName] || [];
     const removedDefaults = getRemovedDefaults(selectedRole2.roleName)
+    const remainingAddedPermissions = userCustomPermissions.filter(perms => { return !roleDefaults.includes(perms) })?.length;
+    const remainingRemovedPermissions = removedDefaults.filter(perms => { return roleDefaults.includes(perms) })?.length;
     return (
       <div key={selectedRole2.roleName} style={{ border: '1px solid #ccc', borderRadius: 4, marginBottom: 8 }}>
         <div style={{ padding: '8px 12px' }}>
@@ -145,11 +147,18 @@ function RoleChangePermissionsModal(props) {
             </div>
           }
           {userProfile?.role !== selectedRole && <h5>Changing User&apos;s Role from {userProfile?.role} to {selectedRole}</h5>}
-          {userProfile?.role !== selectedRole && 
+          {userProfile?.role !== selectedRole && (remainingAddedPermissions > 0 || remainingRemovedPermissions > 0) &&
             <div style={{ display: 'flex' }}>
               <div style={{padding: '10px 0'}}>
                 These permissions were modified and do not match the new role&apos;s. 
                 Which of these permissions do you wish to keep?
+              </div>
+            </div>
+          }
+          {userProfile?.role !== selectedRole && (remainingAddedPermissions === 0 && remainingRemovedPermissions === 0) &&
+            <div style={{ display: 'flex' }}>
+              <div style={{padding: '10px 0'}}>
+                There are added/removed pemissions remaining but they match the default permissions of the currently selected new role, so nothing to check in this case
               </div>
             </div>
           }
