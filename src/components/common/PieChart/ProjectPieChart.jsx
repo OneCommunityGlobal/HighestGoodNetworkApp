@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
-import { useEffect, useMemo } from 'react';
-import * as d3 from 'd3';
+import { useMemo } from 'react';
+import { Cell, Label, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { useTable } from 'react-table';
 import { CHART_RADIUS, CHART_SIZE } from './constants'; // use same numbers as the D3 chart
 import styles from './UserProjectPieChart.module.css';
@@ -35,6 +35,19 @@ function toChartData(projectsData) {
     }))
     .filter(d => d.value > 0);
 }
+
+const renderCenterLabel = (total, darkMode) => (
+  <text
+    x="50%"
+    y="50%"
+    textAnchor="middle"
+    dominantBaseline="central"
+    fill={darkMode ? '#ffffff' : '#000000'}
+    fontSize={14}
+  >
+    {`${total.toFixed(2)} Hrs`}
+  </text>
+);
 
 export default function UserProjectD3PieChart({
   projectsData,
@@ -83,45 +96,6 @@ export default function UserProjectD3PieChart({
     data: tableData,
   });
 
-  useEffect(() => {
-    if (!total) return undefined;
-
-    d3.select(`#pie-chart-${pieChartId}`).remove();
-    const container = d3.select(`#pie-chart-container-${pieChartId}`);
-    const svg = container
-      .append('svg')
-      .attr('id', `pie-chart-${pieChartId}`)
-      .attr('width', CHART_SIZE)
-      .attr('height', CHART_SIZE)
-      .append('g')
-      .attr('transform', `translate(${CHART_SIZE / 2}, ${CHART_SIZE / 2})`);
-
-    svg
-      .append('text')
-      .attr('text-anchor', 'middle')
-      .style('fill', darkMode ? 'white' : 'black')
-      .text(`${total.toFixed(2)} Hrs`);
-
-    const pie = d3.pie().value(project => project.value);
-    const arcs = pie(data);
-    const arcGenerator = d3
-      .arc()
-      .innerRadius(70)
-      .outerRadius(CHART_RADIUS);
-
-    svg
-      .selectAll('path')
-      .data(arcs)
-      .join('path')
-      .attr('d', arcGenerator)
-      .attr('fill', (_arc, index) => colors[index])
-      .style('opacity', 1);
-
-    return () => {
-      d3.select(`#pie-chart-${pieChartId}`).remove();
-    };
-  }, [colors, darkMode, data, pieChartId, total]);
-
   if (!data.length || total === 0) return null;
 
   return (
@@ -129,7 +103,65 @@ export default function UserProjectD3PieChart({
       <div
         id={`pie-chart-container-${pieChartId}`}
         style={{ width: CHART_SIZE, height: CHART_SIZE }}
-      />
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
+            <Pie
+              data={data}
+              dataKey="value"
+              nameKey="name"
+              cx="50%"
+              cy="50%"
+              innerRadius={70}
+              outerRadius={CHART_RADIUS}
+              paddingAngle={1}
+              stroke="none"
+              isAnimationActive={false}
+            >
+              {data.map((entry, index) => (
+                <Cell key={entry.id ?? index} fill={colors[index]} />
+              ))}
+              <Label position="center" content={() => renderCenterLabel(total, darkMode)} />
+            </Pie>
+            <Tooltip
+              content={({ active, payload }) => {
+                if (!active || !payload || !payload.length) return null;
+                const item = payload[0];
+                const value = Number(item.value);
+                const name = item.name;
+                const swatch =
+                  (item.payload && item.payload.fill) || colors[item.payload?.index ?? 0];
+                const hours = value.toFixed(2);
+                const pct = total ? ((value / total) * 100).toFixed(1) : '0.0';
+                return (
+                  <div
+                    className={darkMode ? styles['tooltip-box-dark'] : styles['tooltip-box-light']}
+                  >
+                    <div className={styles['tooltip-row']}>
+                      {swatch && (
+                        <span
+                          aria-hidden="true"
+                          className={styles['tooltip-swatch']}
+                          style={{ backgroundColor: swatch }}
+                        />
+                      )}
+                      <span className={styles['tooltip-name']}>{name}</span>
+                    </div>
+                    <div
+                      className={
+                        darkMode ? styles['tooltip-detail-dark'] : styles['tooltip-detail-light']
+                      }
+                    >
+                      {`${hours} hrs (${pct}%)`}
+                    </div>
+                  </div>
+                );
+              }}
+              wrapperStyle={{ zIndex: 9999 }}
+            />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
 
       <div className={styles['pie-chart-table-container']}>
         <table {...getTableProps()}>
