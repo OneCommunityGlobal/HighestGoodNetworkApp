@@ -256,6 +256,7 @@ export function ItemListView({
                 selectedItem={selectedItem}
                 setSelectedItem={setSelectedItem}
                 label={isMaterialsView ? 'Material' : itemType}
+                itemType={itemType}
                 darkMode={darkMode}
               />
 

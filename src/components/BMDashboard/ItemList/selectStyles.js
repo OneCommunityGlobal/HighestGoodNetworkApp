@@ -52,6 +52,13 @@ export const getReactSelectStyles = darkMode => {
       };
     },
 
+    valueContainer: base => ({
+      ...base,
+      maxHeight: '38px',
+      overflowY: 'auto',
+      flexWrap: 'wrap',
+    }),
+
     multiValue: base => ({
       ...base,
       backgroundColor: theme.bgHover ?? base.backgroundColor,
