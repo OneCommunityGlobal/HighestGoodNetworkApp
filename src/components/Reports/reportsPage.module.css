@@ -130,6 +130,12 @@
   -webkit-overflow-scrolling: touch;
 }
 
+.team-table-container {
+  width: 50%;
+  min-width: 0;
+  overflow-x: auto;
+}
+
 .search-field-container {
   max-width: 100%;
 }
@@ -322,6 +328,10 @@
   }
 
   .table-data-container {
+    width: 100%;
+  }
+
+  .team-table-container {
     width: 100%;
   }
 

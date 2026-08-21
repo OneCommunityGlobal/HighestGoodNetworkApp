@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import { React, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import './TeamTable.module.css';
+import styles from './TeamTable.module.css';
 import { Input, FormGroup, FormFeedback } from 'reactstrap';
 import { connect } from 'react-redux';
 import hasPermission from '~/utils/permissions';
@@ -12,7 +12,7 @@ import {
 } from '~/actions/weeklySummariesFilterAction';
 import { boxStyle, boxStyleDark } from '~/styles';
 
-function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
+export function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
   // Display project lists
   let TeamsList = [];
   const canEditTeamCode = hasPermission('editTeamCode') || auth.user.role === 'Owner';
@@ -74,7 +74,7 @@ function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
     };
 
     return (
-      <div className="team-code-form-field">
+      <div className={styles['team-code-form-field']}>
         {canEditTeamCode ? (
           <div style={{ paddingRight: '5px' }}>
             <FormGroup>
@@ -108,7 +108,7 @@ function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
         <th scope="row">
           <div className={darkMode ? 'text-light' : ''}>{index + 1}</div>
         </th>
-        <td>
+        <td className={styles['team-name-cell']}>
           <Link to={`/teamreport/${team._id}`} className={darkMode ? 'text-light' : ''}>
             {team.teamName}
           </Link>
@@ -132,19 +132,21 @@ function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
   }
   return (
     <table
-      className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`}
+      className={`table ${styles['team-table']} ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`}
       style={darkMode ? boxStyleDark : boxStyle}
     >
       <thead>
         <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
-          <th scope="col" id="projects__order">
+          <th className={styles['order-column']} scope="col" id="projects__order">
             #
           </th>
-          <th scope="col">Team Name</th>
-          <th scope="col" id="projects__active">
+          <th className={styles['team-name-column']} scope="col">
+            Team Name
+          </th>
+          <th className={styles['active-column']} scope="col" id="projects__active">
             Active
           </th>
-          <th style={{ width: '30%' }} scope="col">
+          <th className={styles['team-code-column']} scope="col">
             Team Code
           </th>
         </tr>
