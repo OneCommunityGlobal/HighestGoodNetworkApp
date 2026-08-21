@@ -348,20 +348,22 @@ export default function ProjectStatus() {
       </div>
 
       {/* Right stats panel */}
-      <aside className={styles.panel}>
-        <div className={styles.stat}>
-          <span className={styles.statLabel}>ACTIVE PROJECTS</span>
-          <span className={styles.statValue}>{data?.activeProjects ?? 0}</span>
-        </div>
-        <div className={styles.stat}>
-          <span className={styles.statLabel}>COMPLETED PROJECTS </span>
-          <span className={styles.statValue}>{data?.completedProjects ?? 0}</span>
-        </div>
-        <div className={styles.stat}>
-          <span className={styles.statLabel}>DELAYED PROJECTS</span>
-          <span className={styles.statValue}>{data?.delayedProjects ?? 0}</span>
-        </div>
-      </aside>
+      {!dateError && (
+        <aside className={styles.panel}>
+          <div className={styles.stat}>
+            <span className={styles.statLabel}>ACTIVE PROJECTS</span>
+            <span className={styles.statValue}>{data?.activeProjects ?? 0}</span>
+          </div>
+          <div className={styles.stat}>
+            <span className={styles.statLabel}>COMPLETED PROJECTS </span>
+            <span className={styles.statValue}>{data?.completedProjects ?? 0}</span>
+          </div>
+          <div className={styles.stat}>
+            <span className={styles.statLabel}>DELAYED PROJECTS</span>
+            <span className={styles.statValue}>{data?.delayedProjects ?? 0}</span>
+          </div>
+        </aside>
+      )}
     </div>
   );
 }
