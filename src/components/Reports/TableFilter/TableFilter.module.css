@@ -30,6 +30,17 @@
   min-height: 38px;
 }
 
+.checkboxGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+
+  label {
+    margin-bottom: 0;
+    font-weight: 500;
+  }
+}
+
 .tableFilterInput {
   width: 140px;
   min-height: 38px;

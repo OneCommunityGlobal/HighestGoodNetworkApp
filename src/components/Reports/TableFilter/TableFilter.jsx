@@ -5,7 +5,6 @@ import Select from 'react-select';
 import { FiCalendar } from 'react-icons/fi';
 import 'react-datepicker/dist/react-datepicker.css';
 import styles from './TableFilter.module.css';
-import { Checkbox } from '~/components/common/Checkbox';
 
 const InputWithCalendarIcon = forwardRef(({ value, onClick }, ref) => {
   return (
@@ -136,28 +135,32 @@ function TableFilter({
         minDate={new Date('01/01/2010')}
         onChange={date => UpdateEndDate(date)}
       />
-      <Checkbox
-        value={taskActive}
-        onChange={({ target: { checked } }) => {
-          setTaskActive(checked);
-          searchActive(checked ? 'Yes' : 'No');
-        }}
-        id="active"
-        wrapperClassname={styles.tableFilterItem}
-        label="Active"
-        darkMode={darkMode}
-      />
-      <Checkbox
-        value={taskAssign}
-        onChange={({ target: { checked } }) => {
-          setTaskAssign(checked);
-          searchAssign(checked ? 'Yes' : 'No');
-        }}
-        id="assign"
-        wrapperClassname={styles.tableFilterItem}
-        label="Assign"
-        darkMode={darkMode}
-      />
+      <div className={styles.checkboxGroup}>
+        <input
+          type="checkbox"
+          id="active"
+          checked={taskActive}
+          onChange={({ target: { checked } }) => {
+            setTaskActive(checked);
+            searchActive(checked ? 'Yes' : 'No');
+          }}
+          className={styles.tableFilterItem}
+        />
+        <label htmlFor="active">Active</label>
+      </div>
+      <div className={styles.checkboxGroup}>
+        <input
+          type="checkbox"
+          id="assign"
+          checked={taskAssign}
+          onChange={({ target: { checked } }) => {
+            setTaskAssign(checked);
+            searchAssign(checked ? 'Yes' : 'No');
+          }}
+          className={styles.tableFilterItem}
+        />
+        <label htmlFor="assign">Assign</label>
+      </div>
     </div>
   );
 }
