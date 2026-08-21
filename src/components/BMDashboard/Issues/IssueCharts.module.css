@@ -63,6 +63,17 @@ Issue Charts Module CSS
   font-size: 0.875rem;
 }
 
+/* Some unrelated components leak an unscoped, !important
+   `.react-datepicker-wrapper input { background-color: #fff !important }`
+   rule onto every date-picker input in the app. Beat it here by matching
+   its specificity + !important via our own two-class ancestor scope,
+   rather than touching the other component's file. */
+.dark .dateDark {
+  background-color: #2b3e59 !important;
+  color: #fff !important;
+  border-color: #4a5a72 !important;
+}
+
 /* Fix react-datepicker navigation arrow contrast — scoped via calendarClassName
    so it isn't overridden by other components' global datepicker overrides
    (the calendar renders in a portal, outside this module's DOM scope) */
