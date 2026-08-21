@@ -1,6 +1,4 @@
-const APIEndpoint =
-  process.env.REACT_APP_APIENDPOINT || 'http://localhost:4500/api';
-
+const APIEndpoint = process.env.REACT_APP_APIENDPOINT || 'http://localhost:4500/api';
 
 export const ENDPOINTS = {
   APIEndpoint: () => APIEndpoint,
@@ -148,9 +146,10 @@ export const ENDPOINTS = {
     `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
   TOTAL_ORG_SUMMARY: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate ||
-    ''}&comparisonEndDate=${comparisonEndDate || ''}`,
+      ''}&comparisonEndDate=${comparisonEndDate || ''}`,
   VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate) =>
-    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${customStartDate ? `&customStartDate=${customStartDate}` : ''
+    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${
+      customStartDate ? `&customStartDate=${customStartDate}` : ''
     }${customEndDate ? `&customEndDate=${customEndDate}` : ''}`,
   HOURS_TOTAL_ORG_SUMMARY: (startDate, endDate) =>
     `${APIEndpoint}/reports/overviewsummaries/taskandprojectstats?startDate=${startDate}&endDate=${endDate}`,
@@ -262,7 +261,8 @@ export const ENDPOINTS = {
   PRESETS_BY_ID: roleNameOrPresetId => `${APIEndpoint}/rolePreset/${roleNameOrPresetId}`,
 
   OWNERMESSAGE: () => `${APIEndpoint}/ownerMessage`,
-  OWNER_MESSAGE_HISTORY: (page, limit) => `${APIEndpoint}/ownerMessageLogs?page=${page}&limit=${limit}`,
+  OWNER_MESSAGE_HISTORY: (page, limit) =>
+    `${APIEndpoint}/ownerMessageLogs?page=${page}&limit=${limit}`,
 
   AI_PROMPT: () => `${APIEndpoint}/dashboard/aiPrompt`,
   COPIED_AI_PROMPT: userId => `${APIEndpoint}/dashboard/aiPrompt/copied/${userId}`,
@@ -422,7 +422,7 @@ export const ENDPOINTS = {
   BM_TOOL_UTILIZATION_INSIGHTS: `${APIEndpoint}/tools/utilization/insights`,
   BM_TOOL_UTILIZATION_EXPORT: `${APIEndpoint}/tools/utilization/export`,
   BM_EQUIPMENT_BY_ID: singleEquipmentId => `${APIEndpoint}/bm/equipment/${singleEquipmentId}`,
-  BM_EQUIPMENT_STATUS_UPDATE: (equipmentId) => `${APIEndpoint}/bm/equipment/${equipmentId}/status`,
+  BM_EQUIPMENT_STATUS_UPDATE: equipmentId => `${APIEndpoint}/bm/equipment/${equipmentId}/status`,
   BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
   BM_INVTYPE_TYPE: type => `${APIEndpoint}/bm/invtypes/${type}`,
   BM_ISSUE_CHART: `${APIEndpoint}/bm/issue/issue-chart`,
@@ -491,8 +491,7 @@ export const ENDPOINTS = {
     `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/stop`,
   TIME_LOGGER_LOGS: (projectId, memberId) =>
     `${APIEndpoint}/bm/timelogger/${projectId}/${memberId}/logs`,
-  TIME_LOGGER_ALL_LOGS: projectId =>
-    `${APIEndpoint}/bm/timelogger/${projectId}/logs`,
+  TIME_LOGGER_ALL_LOGS: projectId => `${APIEndpoint}/bm/timelogger/${projectId}/logs`,
 
   GET_TIME_OFF_REQUESTS: () => `${APIEndpoint}/getTimeOffRequests`,
   ADD_TIME_OFF_REQUEST: () => `${APIEndpoint}/setTimeOffRequest`,
@@ -512,7 +511,8 @@ export const ENDPOINTS = {
   HGN_FORM_UPDATE_QUESTION: id => `${APIEndpoint}/questions/${id}`,
   HGN_FORM_SUBMIT: `${APIEndpoint}/hgnform`,
   HGN_FORM_UPDATE_USER_SKILLS_FOLLOWUP_SUBMIT: `${APIEndpoint}/skills/profile/updateFollowUp/`,
-  SKILLS_PROFILE_UPDATE_YEARS_OF_EXPERIENCE: userId => `${APIEndpoint}/skills/profile/updateYearsOfExperience/${userId}`,
+  SKILLS_PROFILE_UPDATE_YEARS_OF_EXPERIENCE: userId =>
+    `${APIEndpoint}/skills/profile/updateYearsOfExperience/${userId}`,
   // HGN Skills Dashboard
   SKILLS_PROFILE: userId => `${APIEndpoint}/skills/profile/${userId}`,
   // User State Indicator endpoints
@@ -531,8 +531,7 @@ export const ENDPOINTS = {
   GET_JOB_FORM: formId => `${APIEndpoint}/jobforms/${formId}`,
   GET_ALL_JOB_FORMS: `${APIEndpoint}/jobforms/all`,
   GET_FORM_RESPONSES: formID => `${APIEndpoint}/jobforms/${formID}/responses`,
-  SUBMIT_JOB_APPLICATION: formId =>
-  `${APIEndpoint}/jobforms/${formId}/responses`,
+  SUBMIT_JOB_APPLICATION: formId => `${APIEndpoint}/jobforms/${formId}/responses`,
 
   ADD_QUESTION: formId => `${APIEndpoint}/jobforms/${formId}/questions`,
   UPDATE_QUESTION: (formId, questionIndex) =>
@@ -639,17 +638,15 @@ export const ENDPOINTS = {
   APPLICANT_SOURCES: `${APIEndpoint}/applicant-analytics/applicant-sources`,
 
   OPT_STATUS_BREAKDOWN: (startDate, endDate, role) => {
-  let url = `${APIEndpoint}/analytics/opt-status`;
-  const params = [];
+    let url = `${APIEndpoint}/analytics/opt-status`;
+    const params = [];
 
-  if (startDate) params.push(`startDate=${startDate}`);
-  if (endDate) params.push(`endDate=${endDate}`);
-  if (role) params.push(`role=${role}`);
+    if (startDate) params.push(`startDate=${startDate}`);
+    if (endDate) params.push(`endDate=${endDate}`);
+    if (role) params.push(`role=${role}`);
 
-  return params.length > 0 ? `${url}?${params.join("&")}` : url;
-},
-
-
+    return params.length > 0 ? `${url}?${params.join('&')}` : url;
+  },
 
   // job analytics
   HOURS_PLEDGED: `${APIEndpoint}/analytics/hours-pledged`,
@@ -713,11 +710,13 @@ export const ENDPOINTS = {
   WEEKLY_GRADING_SAVE: `${APIEndpoint}/weekly-grading/save`,
 
   PM_EDUCATORS: () => `${APIEndpoint}/pm/educators`,
-  PM_EDUCATOR_STUDENTS: (educatorId) => `${APIEndpoint}/pm/educators/${encodeURIComponent(educatorId)}/students`,
+  PM_EDUCATOR_STUDENTS: educatorId =>
+    `${APIEndpoint}/pm/educators/${encodeURIComponent(educatorId)}/students`,
   PM_NOTIFICATIONS: () => `${APIEndpoint}/pm/notifications`,
 
   // Education Portal endpoints
-  PROGRESS_EDUCATOR_STUDENT: studentId => `${APIEndpoint}/progress/educator/student-progress/${studentId}`,
+  PROGRESS_EDUCATOR_STUDENT: studentId =>
+    `${APIEndpoint}/progress/educator/student-progress/${studentId}`,
   EDUCATION_TASKS_BY_STUDENT: studentId => `${APIEndpoint}/education-tasks/student/${studentId}`,
   EDUCATION_TASK: taskId => `${APIEndpoint}/education-tasks/${taskId}`,
   EDUCATION_TASK_STATUS: taskId => `${APIEndpoint}/education-tasks/${taskId}/status`,
@@ -745,7 +744,8 @@ export const ENDPOINTS = {
   },
 
   HGN_FORM_RESPONSES: () => `${APIEndpoint}/hgnform`,
-  KI_CALENDAR_EVENTS: (month, year) => `${APIEndpoint}/kitchenandinventory/calendar?month=${month}&year=${year}`,
+  KI_CALENDAR_EVENTS: (month, year) =>
+    `${APIEndpoint}/kitchenandinventory/calendar?month=${month}&year=${year}`,
   KI_INVENTORY_ITEMS: `${APIEndpoint}/kitchenandinventory/inventory/items`,
   KI_INVENTORY_ITEM: itemId => `${APIEndpoint}/kitchenandinventory/inventory/items/${itemId}`,
   KI_INVENTORY_STORED_QUANTITY: `${APIEndpoint}/kitchenandinventory/inventory/items/storedQuantity`,
@@ -765,6 +765,8 @@ export const ENDPOINTS = {
     return url.slice(0);
   },
   APPLICATION_TIME_DATA_ROLES: `${APIEndpoint}/analytics/application-time/roles`,
+  REVIEWER_GROUPS: '/api/reviewer-groups',
+  REVIEWER_GROUPS_NEW: '/api/reviewer-groups/new',
 };
 
 export const ApiEndpoint = APIEndpoint;

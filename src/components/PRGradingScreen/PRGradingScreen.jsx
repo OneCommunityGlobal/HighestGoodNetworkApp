@@ -183,7 +183,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                 <thead>
                   <tr>
                     <th>Reviewer Name</th>
-                    <th>PR reviewed</th>
+                    <th>PRs reviewed</th>
                     <th>PRs Needed</th>
                     <th>PR Numbers</th>
                   </tr>

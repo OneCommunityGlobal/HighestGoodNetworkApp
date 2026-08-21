@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { FaCheck } from 'react-icons/fa';
-import { getPromotionEligibility, postPromotionEligibility } from '../../actions/promotionActions';
+import {
+  getPromotionEligibility,
+  postPromotionEligibility,
+  fetchReviewerGroups,
+} from '../../actions/promotionActions';
 import styles from './PromotionEligibility.module.css';
 import { useSelector } from 'react-redux';
 
@@ -14,7 +18,22 @@ function PromotionEligibility({ currentUser }) {
   const [processing, setProcessing] = useState(false);
 
   const [selectGroup, setSelectedGroup] = useState('new');
+  const isOwner = true;
+  const [showReviewDropdown, setShowReviewDropdown] = useState(false);
+  const [showManageOptions, setShowManageOptions] = useState(false);
+  const [reviewOptions, setReviewOptions] = useState([]);
+  const [loadingReviewOptions, setLoadingReviewOptions] = useState(false);
+  const [newOption, setNewOption] = useState({
+    label: '',
+    rangeStart: '',
+    rangeEnd: '',
+  });
 
+  const [editOption, setEditOption] = useState({
+    label: '',
+    rangeStart: '',
+    rangeEnd: '',
+  });
   const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
@@ -42,6 +61,24 @@ function PromotionEligibility({ currentUser }) {
     })();
   }, []);
 
+  useEffect(() => {
+    const loadReviewerGroups = async () => {
+      try {
+        setLoadingReviewOptions(true);
+
+        const data = await fetchReviewerGroups();
+
+        setReviewOptions(data.groups || []);
+      } catch (error) {
+        console.error('Failed to fetch reviewer groups:', error);
+        toast.error('Unable to load review groups.');
+      } finally {
+        setLoadingReviewOptions(false);
+      }
+    };
+
+    loadReviewerGroups();
+  }, []);
   const newMembers = reviewers.filter(r => r.isNewMember);
   const existingMembers = reviewers.filter(r => !r.isNewMember);
   const filteredMemebers = selectGroup === 'new' ? newMembers : existingMembers;
@@ -147,6 +184,98 @@ function PromotionEligibility({ currentUser }) {
     </tr>
   );
 
+  const handleReviewOptionSelect = option => {
+    setShowReviewDropdown(false);
+
+    // Keep this selected option for the modal
+    setSelectedOption(option);
+
+    // TODO: Open the required review modal
+    console.log('Selected reviewer group:', option);
+  };
+
+  const handleEditClick = option => {
+    setSelectedOption(option);
+
+    setEditOption({
+      label: option.label || '',
+      rangeStart: option.rangeStart || '',
+      rangeEnd: option.rangeEnd || '',
+    });
+
+    setShowEditOption(true);
+  };
+
+  const handleUpdateOption = async () => {
+    if (!selectedOption) return;
+
+    if (!editOption.label.trim()) {
+      toast.error('Please enter a name.');
+      return;
+    }
+
+    if (!editOption.rangeStart || !editOption.rangeEnd) {
+      toast.error('Please enter both range values.');
+      return;
+    }
+
+    try {
+      await updateReviewerGroup(selectedOption.key, editOption);
+
+      setReviewOptions(prev =>
+        prev.map(option =>
+          option.key === selectedOption.key
+            ? {
+                ...option,
+                ...editOption,
+              }
+            : option,
+        ),
+      );
+
+      setShowEditOption(false);
+      setSelectedOption(null);
+
+      toast.success('Reviewer group updated successfully.');
+    } catch (error) {
+      console.error('Failed to update reviewer group:', error);
+      toast.error('Unable to update reviewer group.');
+    }
+  };
+
+  const handleAddOption = async () => {
+    if (!newOption.label.trim()) {
+      toast.error('Please enter a name.');
+      return;
+    }
+
+    if (!newOption.rangeStart || !newOption.rangeEnd) {
+      toast.error('Please enter both range values.');
+      return;
+    }
+
+    try {
+      const response = await createReviewerGroup(newOption);
+
+      const createdGroup = response.group || response;
+
+      setReviewOptions(prev => [...prev, createdGroup]);
+
+      setNewOption({
+        label: '',
+        rangeStart: '',
+        rangeEnd: '',
+      });
+
+      setShowAddOption(false);
+
+      toast.success('Reviewer group added successfully.');
+    } catch (error) {
+      console.error('Failed to add reviewer group:', error);
+      toast.error('Unable to add reviewer group.');
+    }
+  };
+
   return (
     <div className={`${styles.pageWrapper} ${darkMode ? styles.dark : ''}`}>
       <div className={`${styles.promo_table_container} ${darkMode ? styles.dark : ''}`}>
@@ -161,14 +290,106 @@ function PromotionEligibility({ currentUser }) {
               <option value="new">New Member</option>
               <option value="existing">Existing Member</option>
             </select>
-            <button
-              type="button"
-              onClick={() => toast.info('Review Weekly clicked. Logic not implemented yet.')}
-              disabled={processing}
-              className={styles.review_btn}
-            >
-              Review for this week
-            </button>
+            <>
+              {/* Review dropdown */}
+              <div className={styles.review_dropdown}>
+                <button
+                  type="button"
+                  onClick={() => setShowReviewDropdown(prev => !prev)}
+                  disabled={processing || loadingReviewOptions}
+                  className={styles.review_btn}
+                  aria-haspopup="menu"
+                  aria-expanded={showReviewDropdown}
+                >
+                  Review for This Week
+                  <span aria-hidden="true"> ▾</span>
+                </button>
+
+                {showReviewDropdown && (
+                  <div className={styles.dropdown_menu} role="menu">
+                    {[...reviewOptions]
+                      .sort((a, b) => a.sortOrder - b.sortOrder)
+                      .map(option => (
+                        <button
+                          key={option._id}
+                          type="button"
+                          role="menuitem"
+                          className={styles.dropdown_item}
+                          onClick={() => handleReviewOptionSelect(option)}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+
+                    {isOwner && (
+                      <>
+                        <div className={styles.dropdown_divider} />
+
+                        <button
+                          type="button"
+                          role="menuitem"
+                          className={styles.manage_options}
+                          onClick={() => {
+                            setShowReviewDropdown(false);
+                            setShowManageOptions(true);
+                          }}
+                        >
+                          Manage Review Options
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Owner Manage Options Modal */}
+              {showManageOptions && (
+                <div className={styles.modal_overlay}>
+                  <div className={styles.modal} role="dialog" aria-modal="true">
+                    <h2>Manage Review Options</h2>
+
+                    {[...reviewOptions]
+                      .sort((a, b) => a.sortOrder - b.sortOrder)
+                      .map(option => (
+                        <div key={option._id} className={styles.option_row}>
+                          <div>
+                            <strong>{option.label}</strong>
+
+                            <span className={styles.option_range}>
+                              {option.rangeStart && option.rangeEnd
+                                ? `${option.rangeStart} - ${option.rangeEnd}`
+                                : 'All Members'}
+                            </span>
+                          </div>
+
+                          {option.editable && (
+                            <button type="button" onClick={() => handleEditClick(option)}>
+                              Edit
+                            </button>
+                          )}
+                        </div>
+                      ))}
+
+                    <button
+                      type="button"
+                      className={styles.add_option_btn}
+                      onClick={() => {
+                        setShowManageOptions(false);
+                        setShowAddOption(true);
+                      }}
+                    >
+                      + Add Option
+                    </button>
+
+                    <div className={styles.modal_actions}>
+                      <button type="button" onClick={() => setShowManageOptions(false)}>
+                        Close
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
             <button
               type="button"
               onClick={handleProcessPromotions}
