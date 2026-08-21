@@ -8,6 +8,7 @@ import AssignBadge from './AssignBadge';
 import BadgeDevelopment from './BadgeDevelopment';
 import { fetchAllBadges, setActiveTab } from '../../actions/badgeManagement';
 import { permissions as permissionKeys } from '../../utils/constants';
+import hasPermission from '../../utils/permissions';
 
 function BadgeManagement(props) {
   const { darkMode, activeTab, setActiveTab, role } = props;
@@ -95,11 +96,11 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   fetchAllBadges: () => dispatch(fetchAllBadges()),
   setActiveTab: tab => dispatch(setActiveTab(tab)),
+  hasPermission: permission => dispatch(hasPermission(permission)),
 });
 
 function checkIfBadgeAssignmentIsAllowed(permissions, role) {
-  if (role === 'Administrator' || role === 'Owner') return true;
-  return permissions?.frontPermissions.includes(permissionKeys.assignBadges);
+  return props.hasPermission(permissionKeys.assignBadges);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(BadgeManagement);
