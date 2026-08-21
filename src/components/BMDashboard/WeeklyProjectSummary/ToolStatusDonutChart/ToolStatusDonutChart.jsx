@@ -202,17 +202,17 @@ export default function ToolStatusDonutChart() {
   let outerRadius;
   let chartHeight;
   if (isXS) {
-    innerRadius = 25;
-    outerRadius = 40;
-    chartHeight = 180;
-  } else if (windowWidth <= 768) {
     innerRadius = 30;
     outerRadius = 50;
-    chartHeight = 200;
-  } else {
-    innerRadius = 35;
-    outerRadius = 60;
     chartHeight = 220;
+  } else if (windowWidth <= 768) {
+    innerRadius = 40;
+    outerRadius = 65;
+    chartHeight = 260;
+  } else {
+    innerRadius = 50;
+    outerRadius = 80;
+    chartHeight = 300;
   }
 
   const wrapperClass = `${styles.toolDonutWrapper} ${darkMode ? styles.toolDonutWrapperDark : ''}`;
