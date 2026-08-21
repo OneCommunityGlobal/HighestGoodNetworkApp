@@ -39,7 +39,7 @@ function FilterOption({ icon, label, selected, onSelect }) {
   return (
     <Dropdown.Item className={styles.filterOption} onClick={onSelect}>
       <span className={styles.filterOptionIcon} aria-hidden="true">
-        {Glyph ? <Glyph size={ICON_SIZE} /> : null}
+        {Glyph ? <Glyph size={ICON_SIZE} data-testid="filter-option-icon" /> : null}
       </span>
       {label}
     </Dropdown.Item>
@@ -277,6 +277,7 @@ export default function ResourceUsage() {
                   className={styles.filterIcon}
                   size={ICON_SIZE}
                   aria-hidden="true"
+                  data-testid="filter-icon"
                 />
                 {resourceType}
               </Dropdown.Toggle>
@@ -295,7 +296,12 @@ export default function ResourceUsage() {
 
             <Dropdown>
               <Dropdown.Toggle className={styles.customDropdown}>
-                <CalendarDays className={styles.filterIcon} size={ICON_SIZE} aria-hidden="true" />
+                <CalendarDays
+                  className={styles.filterIcon}
+                  size={ICON_SIZE}
+                  aria-hidden="true"
+                  data-testid="filter-icon"
+                />
                 {timePeriod}
               </Dropdown.Toggle>
               <Dropdown.Menu>
@@ -411,7 +417,12 @@ export default function ResourceUsage() {
           <h2>Insights</h2>
           <Dropdown>
             <Dropdown.Toggle className={styles.customDropdown}>
-              <CalendarDays className={styles.filterIcon} size={ICON_SIZE} aria-hidden="true" />
+              <CalendarDays
+                className={styles.filterIcon}
+                size={ICON_SIZE}
+                aria-hidden="true"
+                data-testid="filter-icon"
+              />
               {insightsTimePeriod}
             </Dropdown.Toggle>
             <Dropdown.Menu>
