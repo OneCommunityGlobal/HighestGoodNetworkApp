@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useHistory } from 'react-router-dom';
 import { FiInfo, FiCheck } from 'react-icons/fi';
 import styles from './SubmissionCard.module.css';
 
@@ -35,11 +36,17 @@ const getTaskTypeLabel = type => {
 };
 
 const SubmissionCard = ({ submission, darkMode }) => {
+  const history = useHistory();
   const [showTooltip, setShowTooltip] = useState(false);
   const { studentName, taskType, status, submittedAt, dueAt, grade } = submission;
 
+  const goToReview = () => {
+    if (submission._id) {
+      history.push(`/educationportal/educator/review/${submission._id}`);
+    }
+  };
+
   const statusDetails = useMemo(() => {
-    // const isLate = submittedAt && dueAt && new Date(submittedAt) > new Date(dueAt);
     const isLate =
       submittedAt &&
       dueAt &&
@@ -52,8 +59,9 @@ const SubmissionCard = ({ submission, darkMode }) => {
         showBadge: true,
         badgeText: 'Graded',
         badgeClass: styles.gradedBadge,
-        cardClass: styles.gradedCard,
+        cardClass: isLate ? styles.lateCard : styles.gradedCard,
         icon: <FiCheck size={14} strokeWidth={3} />,
+        showLateSection: isLate,
       };
     }
 
@@ -61,26 +69,6 @@ const SubmissionCard = ({ submission, darkMode }) => {
       return {
         showLateSection: true,
         cardClass: styles.lateCard,
-        showInfoIcon: true,
-        tooltipContent: (
-          <>
-            <span className={styles.tooltipTitle}>Late Submission</span>
-            <span className={styles.tooltipText}>
-              Submitted{' '}
-              {new Date(submittedAt).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-              })}{' '}
-              at{' '}
-              {new Date(submittedAt).toLocaleTimeString('en-US', {
-                hour: 'numeric',
-                minute: '2-digit',
-                hour12: true,
-              })}
-            </span>
-          </>
-        ),
       };
     }
 
@@ -91,16 +79,25 @@ const SubmissionCard = ({ submission, darkMode }) => {
       };
     }
 
+    if (status === 'assigned' || status === 'in_progress') {
+      return {
+        showInfoIcon: true,
+        tooltipContent: <span className={styles.tooltipText}>Not yet submitted</span>,
+      };
+    }
+
     return {};
   }, [status, submittedAt, dueAt]);
 
   const avatarColor = getAvatarColor(studentName);
 
   return (
-    <div
+    <button
+      type="button"
       className={`${styles.card} ${statusDetails.cardClass || ''} ${
         darkMode ? styles.darkMode : ''
       }`}
+      onClick={goToReview}
     >
       <div className={styles.cardHeader}>
         <div className={styles.studentInfo}>
@@ -178,7 +175,7 @@ const SubmissionCard = ({ submission, darkMode }) => {
           </span>
         </div>
       )}
-    </div>
+    </button>
   );
 };
 

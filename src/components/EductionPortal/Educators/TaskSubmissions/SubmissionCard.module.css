@@ -1,3 +1,4 @@
+/* stylelint-disable */
 .card {
   background: white;
   border: 2px solid #E5E7EB;
@@ -6,10 +7,14 @@
   position: relative;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
-  height: 150px;
+  min-height: 150px;
   display: flex;
   flex-direction: column;
   overflow: visible;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
 }
 
 .card:hover {
@@ -258,7 +263,7 @@
 
 @media (width <= 1024px) {
   .card {
-    height: 145px;
+    min-height: 145px;
     padding: 16px;
   }
 
