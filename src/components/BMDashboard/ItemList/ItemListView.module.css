@@ -32,6 +32,11 @@ table td {
   background-color: #fff;
 }
 
+.itemsTableContainer table th,
+.itemsTableContainer table td {
+  white-space: nowrap;
+}
+
 .items_list_container section {
   margin-top: 2rem;
 }
@@ -642,6 +647,7 @@ table td {
   .selectInput {
     grid-template-columns: 1fr;
     max-width: 100%;
+    flex-wrap: wrap;
   }
 
   .selectInput label {
@@ -657,9 +663,6 @@ table td {
     max-width: 100%;
   }
 
-  .selectInput {
-    flex-wrap: wrap;
-  }
 }
 
 /* DatePicker Input Dark Mode Overrides */

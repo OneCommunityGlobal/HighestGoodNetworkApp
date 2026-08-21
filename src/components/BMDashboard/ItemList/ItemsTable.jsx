@@ -92,14 +92,10 @@ export default function ItemsTable({
     Hold: 'hold',
   };
 
-  const numericKeys = new Set(['stockBought', 'stockUsed', 'stockAvailable', 'stockWasted']);
-
-  const getColumnStyle = (key, isAction = false) => {
-    const base = { verticalAlign: 'middle' };
-    if (key && numericKeys.has(key)) base.textAlign = 'right';
+  const getColumnStyle = (isAction = false) => {
+    const base = { verticalAlign: 'middle', textAlign: 'center' };
     if (isAction) {
       base.borderLeft = '2px solid #dee2e6';
-      base.textAlign = 'center';
     }
     return base;
   };
@@ -150,20 +146,20 @@ export default function ItemsTable({
       )}
 
       <div className={`${styles.itemsTableContainer} ${darkMode ? styles.darkTableWrapper : ''}`}>
-        <Table className={darkMode ? styles.darkTable : ''}>
+        <Table bordered striped hover className={darkMode ? styles.darkTable : ''}>
           <thead className={styles.stickyThead}>
             <tr>
               <th
                 onClick={() => onSort?.('project')}
                 className={styles.sortableTh}
-                style={{ verticalAlign: 'middle' }}
+                style={{ verticalAlign: 'middle', textAlign: 'center' }}
               >
                 Project <FontAwesomeIcon icon={getIconFor('project')} size="lg" />
               </th>
               <th
                 onClick={() => onSort?.('name')}
                 className={styles.sortableTh}
-                style={{ verticalAlign: 'middle' }}
+                style={{ verticalAlign: 'middle', textAlign: 'center' }}
               >
                 Name <FontAwesomeIcon icon={getIconFor('name')} size="lg" />
               </th>
@@ -175,16 +171,16 @@ export default function ItemsTable({
                     key={label || key}
                     onClick={clickable ? () => onSort?.(sortKey) : undefined}
                     className={clickable ? styles.sortableTh : undefined}
-                    style={getColumnStyle(key)}
+                    style={getColumnStyle()}
                   >
                     {label} {clickable && <FontAwesomeIcon icon={getIconFor(sortKey)} size="lg" />}
                   </th>
                 );
               })}
-              {isMaterialsView && <th style={getColumnStyle(null)}>Usage %</th>}
-              {isMaterialsView && <th style={getColumnStyle(null)}>Stock Health</th>}
+              {isMaterialsView && <th style={getColumnStyle()}>Usage %</th>}
+              {isMaterialsView && <th style={getColumnStyle()}>Stock Health</th>}
               {isMaterialsView && (
-                <th style={getColumnStyle(null, true)} title="View usage history and charts">
+                <th style={getColumnStyle(true)} title="View usage history and charts">
                   Usage Record
                 </th>
               )}
