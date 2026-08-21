@@ -54,6 +54,7 @@ import { consumablesReducer } from './bmdashboard/consumablesReducer';
 import { costBreakdownReducer } from './bmdashboard/costBreakdownReducer';
 import { equipmentReducer } from './bmdashboard/equipmentReducer';
 import bmInjuryReducer from './bmdashboard/injuryReducer';
+import issueGraphReducer from './bmdashboard/issueGraphReducer';
 import { bmInvTypeReducer } from './bmdashboard/inventoryTypeReducer';
 import { bmInvUnitReducer } from './bmdashboard/inventoryUnitReducer';
 import { lessonsReducer } from './bmdashboard/lessonsReducer';
@@ -187,6 +188,7 @@ const localReducers = {
 
   // lbdashboard
   wishlistItem: wishListReducer,
+  issueGraph: issueGraphReducer,
   villageDetails: villageDetailsReducer,
 
   bmissuechart: issueReducer,

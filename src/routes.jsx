@@ -33,30 +33,30 @@ import FormViewer from './components/Forms/FormViewer';
 import HeaderRenderer from './components/Header/HeaderRenderer';
 import Announcements from './components/Announcements';
 import JobCCDashboard from './components/JobCCDashboard/JobCCDashboard';
-import WeeklyProjectSummary from './components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
-import TotalOrgSummaryEmail from './components/TotalOrgSummary/WeeklySummaryEmail/TotalOrgSummaryEmail';
-import LessonForm from './components/BMDashboard/Lesson/LessonForm';
-import LessonList from './components/BMDashboard/LessonList/LessonListForm';
+
+import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
+import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
 import AddEquipmentType from './components/BMDashboard/Equipment/Add/AddEquipmentType';
 import EDailyActivityLog from './components/BMDashboard/Equipment/DailyActivityLog/EDailyActivityLog';
+import Issue from './components/BMDashboard/Issue/Issue';
+import IssueChart from './components/BMDashboard/Issues/issueCharts';
+import AnalyticsDashboard from './components/JobCCDashboard/JobAnalytics/JobAnalytics.jsx';
+import IssueGraph from './components/BMDashboard/Issues/IssueGraph';
+import FaqSearch from './components/Faq/FaqSearch';
+import FaqManagement from './components/Faq/FaqManagement';
+import FaqHistory from './components/Faq/FaqHistory';
+import UnansweredFaqs from './components/Faq/UnansweredFaqs';
+import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
+import LessonForm from './components/BMDashboard/Lesson/LessonForm';
+import LessonList from './components/BMDashboard/LessonList/LessonListForm';
 import EquipmentUpdateLog from './components/BMDashboard/Equipment/EHistory';
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 import OrdersPage from './components/KitchenInventory/Orders/OrdersPage';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
-import Issue from './components/BMDashboard/Issue/Issue';
-import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
-import IssueChart from './components/BMDashboard/Issues/issueCharts';
-import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
-import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
-import AnalyticsDashboard from './components/JobCCDashboard/JobAnalytics/JobAnalytics';
-import FaqSearch from './components/Faq/FaqSearch';
-import FaqManagement from './components/Faq/FaqManagement';
-import FaqHistory from './components/Faq/FaqHistory';
-import UnansweredFaqs from './components/Faq/UnansweredFaqs';
+import WeeklyProjectSummary from './components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
 import { ExperienceDonutChart } from './components/ExperienceDonutChart';
-import ActualCostBreakdown from './components/ActualCostBreakdown';
 import ToolsAvailabilityPage from './components/BMDashboard/WeeklyProjectSummary/Tools/ToolsAvailabilityPage';
 import ResourceUsage from './components/CommunityPortal/ResourceUsage/ResourceUsage';
 import DatabaseDesign from './components/CommunityPortal/DatabaseDesign/DatabaseDesign';
@@ -224,6 +224,8 @@ import SupportLogin from './components/SupportPortal/SupportLogin';
 import SupportDashboard from './components/SupportPortal/SupportDashboard';
 import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
 import MaterialUtilizationChart from './components/MaterialUtilization/MaterialUtilizationChart';
+import TotalOrgSummaryEmail from './components/TotalOrgSummary/WeeklySummaryEmail/TotalOrgSummaryEmail';
+import ActualCostBreakdown from './components/ActualCostBreakdown/ActualCostBreakdown';
 
 // High Good Education
 import StudentBadgeGallery from './components/StudentBadgeGallery/StudentBadgeGallery';
@@ -837,6 +839,7 @@ export default (
         />
         <BMProtectedRoute path="/bmdashboard/issues/add/:projectId" component={Issue} />
         <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
+        <BMProtectedRoute path="/bmdashboard/issueGraph" component={IssueGraph} />
         <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
         <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
         <BMProtectedRoute path="/bmdashboard/InteractiveMap" component={InteractiveMap} />
