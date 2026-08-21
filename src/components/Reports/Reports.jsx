@@ -853,7 +853,12 @@ endDate: moment()
                 )}
               </div>
               {this.state.showCharts && (
-                <div className={styles['table-data-container']} style={(this.state.showPeople || this.state.showProjects || this.state.showTeams) ? { overflowY: 'auto' } : {overflowY: 'none'}}>
+                <div
+                  className={`${styles['table-data-container']} ${
+                    this.state.showTeams ? styles['team-table-container'] : ''
+                  }`}
+                  style={(this.state.showPeople || this.state.showProjects || this.state.showTeams) ? { overflowY: 'auto' } : {overflowY: 'none'}}
+                >
                   {this.state.showPeople && (
                     <PeopleTable userProfiles={this.state.peopleSearchData} darkMode={darkMode} />
                   )}

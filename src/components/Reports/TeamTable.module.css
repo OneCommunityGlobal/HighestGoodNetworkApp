@@ -19,3 +19,29 @@
   min-width: 8em;
   max-width: 13em;
 }
+
+.team-table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.order-column {
+  width: 3.5rem;
+}
+
+.team-name-column {
+  width: auto;
+}
+
+.team-name-cell {
+  overflow-wrap: anywhere;
+}
+
+.active-column {
+  width: 5rem;
+}
+
+.team-code-column {
+  width: 30%;
+  min-width: 8em;
+}
