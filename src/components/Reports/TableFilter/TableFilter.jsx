@@ -45,8 +45,6 @@ function TableFilter({
   const taskStatus = ['Paused', 'Complete', 'Active'];
   const [taskActive, setTaskActive] = useState(true);
   const [taskAssign, setTaskAssign] = useState(true);
-  // const [startDate, setStartDate] = useState(new Date('01/01/2010'));
-  // const [endDate, setEndDate] = useState(new Date());
 
   const selectStyles = darkMode
     ? {
