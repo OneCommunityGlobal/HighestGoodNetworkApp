@@ -13,7 +13,7 @@ function PermissionWatcher() {
   const userProfile = useSelector(state => state.userProfile);
   const isAcknowledged = userProfile?.permissions?.isAcknowledged !== false;
   const [isPermAckLoading, setIsPermAckLoading] = useState(false);
-  const currentUser = user.userid === userProfile._id;
+  const currentUser = user?.userid === userProfile?._id;
   // Get seconds remaining until force logout
   const secondsRemaining = useCountdown(forceLogoutAt);
   const [justLoggedIn, setJustLoggedIn] = useState(!!localStorage.getItem('justLoggedIn'));
