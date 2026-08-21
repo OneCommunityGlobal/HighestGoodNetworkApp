@@ -568,7 +568,7 @@ const TeamMemberTask = React.memo(
                                         darkMode ? styles.textLight : ''
                                       }`}
                                     >
-                                      <div className={styles.taskColumnLayout}>
+                                      <div>
                                         {/* Task title */}
                                         <div className={styles['team-member-tasks-content']}>
                                           <Link
@@ -590,7 +590,7 @@ const TeamMemberTask = React.memo(
                                         </div>
 
                                         {/* Icons UNDER task name */}
-                                        <div className={styles.taskIconsUnderName}>
+                                        <div>
                                           {task.taskNotifications.length > 0 &&
                                             task.taskNotifications.some(
                                               notification =>

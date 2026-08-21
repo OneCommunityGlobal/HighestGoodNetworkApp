@@ -18,6 +18,11 @@ const ROOT = path.resolve(__dirname, '../..');
 
 // [component, stylesheet it imports as `styles`]
 const PAIRS = [
+  ['components/Announcements/index.jsx', 'components/Announcements/Announcements.module.css'],
+  [
+    'components/CommunityPortal/Attendence/NoshowViz.jsx',
+    'components/CommunityPortal/Attendence/NoshowViz.module.css',
+  ],
   [
     'components/HGNPRDashboard/PRDashboardTopReviewedPRs.jsx',
     'components/HGNPRDashboard/PRDashboardTopReviewedPRs.module.css',
@@ -27,6 +32,12 @@ const PAIRS = [
     'components/EmailManagement/email-sender/IntegratedEmailSender.module.css',
   ],
   ['components/LeaderBoard/Leaderboard.jsx', 'components/LeaderBoard/Leaderboard.module.css'],
+  [
+    'components/Reports/ViewReportsByDate/ViewReportsByDate.jsx',
+    'components/Reports/reportsPage.module.css',
+  ],
+  ['components/TeamMemberTasks/TeamMemberTask.jsx', 'components/TeamMemberTasks/style.module.css'],
+  ['components/TeamMemberTasks/TeamMemberTasks.jsx', 'components/TeamMemberTasks/style.module.css'],
   ...Array.from({ length: 8 }, (_, i) => [
     `components/TSAForm/pages/TSAFormPage${i + 1}.jsx`,
     'components/TSAForm/TSAForm.module.css',

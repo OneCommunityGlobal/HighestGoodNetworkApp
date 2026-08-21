@@ -131,13 +131,13 @@ function EventNoShowChart() {
   );
 
   return (
-    <div className={`${styles.eventContainer} ${darkMode ? styles.dark : ''}`}>
-      <h2 className={`${styles.eventTitle}`}>Event No Shows by Date</h2>
-      <div className={`${styles.buttonGroup}`}>
+    <div className={`${styles['event-container']} ${darkMode ? styles.dark : ''}`}>
+      <h2 className={styles['event-title']}>Event No Shows by Date</h2>
+      <div className={styles['button-group']}>
         <button
           type="button"
           onClick={() => setPeriod('month')}
-          className={`${styles.chartButton} ${period === 'month' ? styles.active : ''} ${
+          className={`${styles['chart-button']} ${period === 'month' ? styles.active : ''} ${
             darkMode ? styles.dark : ''
           }`}
         >
@@ -146,14 +146,14 @@ function EventNoShowChart() {
         <button
           type="button"
           onClick={() => setPeriod('year')}
-          className={`${styles.chartButton} ${period === 'year' ? styles.active : ''} ${
+          className={`${styles['chart-button']} ${period === 'year' ? styles.active : ''} ${
             darkMode ? styles.dark : ''
           }`}
         >
           Year View
         </button>
       </div>
-      <div className={`${styles.chartWrapper} ${darkMode ? styles.dark : ''}`}>
+      <div className={`${styles['chart-wrapper']} ${darkMode ? styles.dark : ''}`}>
         <ResponsiveContainer width="100%" height={400}>
           <BarChart data={noShowPeriod}>
             <XAxis dataKey="date" tick={axisTick} />
@@ -179,8 +179,8 @@ function EventNoShowChart() {
           </BarChart>
         </ResponsiveContainer>
       </div>
-      <h2 className={`${styles.eventTitle}`}>Event No Shows by Location</h2>
-      <div className={`${styles.chartWrapper} ${darkMode ? styles.dark : ''}`}>
+      <h2 className={styles['event-title']}>Event No Shows by Location</h2>
+      <div className={`${styles['chart-wrapper']} ${darkMode ? styles.dark : ''}`}>
         <ResponsiveContainer width="100%" height={400}>
           <BarChart data={locationData}>
             <XAxis dataKey="location" tick={axisTick} />
@@ -201,8 +201,8 @@ function EventNoShowChart() {
         </ResponsiveContainer>
       </div>
 
-      <h2 className={`${styles.eventTitle}`}>No Shows by Age Group and Gender</h2>
-      <div className={`${styles.chartWrapper} ${darkMode ? styles.dark : ''}`}>
+      <h2 className={styles['event-title']}>No Shows by Age Group and Gender</h2>
+      <div className={`${styles['chart-wrapper']} ${darkMode ? styles.dark : ''}`}>
         <ResponsiveContainer width="100%" height={400}>
           <BarChart data={ageGroupData}>
             <XAxis dataKey="ageGroup" tick={axisTick} />
@@ -216,8 +216,8 @@ function EventNoShowChart() {
         </ResponsiveContainer>
       </div>
 
-      <h2 className={`${styles.eventTitle}`}>Proportion of No-Shows by Gender</h2>
-      <div className={`${styles.chartWrapper} ${darkMode ? styles.dark : ''}`}>
+      <h2 className={styles['event-title']}>Proportion of No-Shows by Gender</h2>
+      <div className={`${styles['chart-wrapper']} ${darkMode ? styles.dark : ''}`}>
         <ResponsiveContainer width="100%" height={400}>
           <PieChart>
             <Pie
@@ -240,7 +240,7 @@ function EventNoShowChart() {
         </ResponsiveContainer>
       </div>
 
-      <h2 className={`${styles.eventTitle}`}>Attendance Trend by Day of the Week</h2>
+      <h2 className={styles['event-title']}>Attendance Trend by Day of the Week</h2>
       <label
         className={`${styles['no-show-viz-label']} ${darkMode ? styles.dark : ''}`}
         htmlFor="event-type-select"
@@ -259,7 +259,7 @@ function EventNoShowChart() {
         ))}
       </select>
 
-      <div className={`${styles.chartWrapper} ${darkMode ? styles.dark : ''}`}>
+      <div className={`${styles['chart-wrapper']} ${darkMode ? styles.dark : ''}`}>
         <ResponsiveContainer width="100%" height={400}>
           <LineChart data={attendanceByDay}>
             <XAxis dataKey="day" tick={axisTick} />

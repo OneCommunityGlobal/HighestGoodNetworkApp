@@ -679,7 +679,6 @@ const TeamMemberTasks = React.memo(props => {
                           styles['team-member-tasks-headers'],
                           styles['team-member-tasks-user-name'],
                           darkMode ? styles.darkStickyHeader : '',
-                          darkMode ? styles.transparentHeader : '',
                         ].join(' ')}
                       >
                         Team Member
