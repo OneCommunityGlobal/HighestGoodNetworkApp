@@ -25,6 +25,7 @@
 
 .filters {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.75rem;
 }
 
@@ -32,8 +33,10 @@
   background: transparent !important;
   border: 1px solid #e5e7eb !important;
   color: #374151 !important;
-  padding: 0.5rem 1rem !important;
-  width: 8.75rem !important;
+  /* min-width, not width: still can't shrink when the selection changes
+     (PR #5224 / #5246), but longer labels no longer crowd the icon. */
+  padding: 0.5rem 0.875rem !important;
+  min-width: 8.75rem !important;
   font-size: 0.875rem !important;
   border-radius: 0.375rem !important;
   box-shadow: none !important;
@@ -55,6 +58,30 @@
   vertical-align: -0.15em;
   flex-shrink: 0;
   opacity: 0.75;
+}
+
+/* Menu rows: icon column stays a fixed width so labels align whether the row
+   shows a type icon, a selection check, or neither. */
+.filterOption {
+  display: flex !important;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem !important;
+  font-size: 0.875rem;
+}
+
+.filterOptionIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+
+/* Hairline between rows, never above the first one. */
+.filterOption + .filterOption {
+  border-top: 1px solid rgb(0 0 0 / 6%);
 }
 
 .customDropdown::after {
@@ -296,6 +323,10 @@
   color: #fff !important;
 }
 
+.resourceUsageContainer:global(.dark-mode) .filterOption + .filterOption {
+  border-top-color: rgb(255 255 255 / 10%);
+}
+
 /* Chart ticks */
 .recharts-cartesian-axis-tick-value {
   font-size: 12px;
@@ -338,6 +369,28 @@
 
 /* Mobile: single-column insights, smaller padding and chart */
 @media (width <= 480px) {
+  /* Three fixed-width pills plus gaps need ~450px, so below this they stack
+     to full width instead of overflowing the header. */
+  .filters {
+    width: 100%;
+  }
+
+  .filters > * {
+    flex: 1 1 100%;
+  }
+
+  .customDropdown {
+    width: 100% !important;
+
+    /* Full width would otherwise strand the label mid-button, between the
+       icon and the caret. Keep icon and label together, caret to the edge. */
+    justify-content: flex-start !important;
+  }
+
+  .customDropdown::after {
+    margin-left: auto !important;
+  }
+
   .chartSection,
   .insightsSection {
     padding: 1rem;

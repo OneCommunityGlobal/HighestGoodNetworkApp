@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import { Package, Wrench, Building2, CalendarDays } from 'lucide-react';
+import { Package, Wrench, Building2, CalendarDays, Check } from 'lucide-react';
 import {
   BarChart,
   Bar,
@@ -16,13 +16,54 @@ import {
 import styles from './ResourceUsage.module.css';
 import { useSelector } from 'react-redux';
 
+const ICON_SIZE = 14;
+
 // Each resource type gets its own icon so the filter still reads correctly
-// once the selection moves away from Material.
+// once the selection moves away from Material. This map is also the source of
+// the menu options, so an option can never exist without an icon.
 const resourceTypeIcons = {
   Material: Package,
   Equipment: Wrench,
   Venue: Building2,
 };
+
+const resourceTypes = Object.keys(resourceTypeIcons);
+const timePeriods = ['This Week', 'Last Week', 'This Month'];
+
+// Menu row for a filter option. Resource types pass their own icon, since the
+// icon is what distinguishes them; time periods pass none and mark the current
+// selection with a check instead, because three identical calendars carry no
+// information. The icon slot is always rendered so labels stay aligned.
+function FilterOption({ icon, label, selected, onSelect }) {
+  const Glyph = icon ?? (selected ? Check : null);
+  return (
+    <Dropdown.Item className={styles.filterOption} onClick={onSelect}>
+      <span className={styles.filterOptionIcon} aria-hidden="true">
+        {Glyph ? <Glyph size={ICON_SIZE} /> : null}
+      </span>
+      {label}
+    </Dropdown.Item>
+  );
+}
+
+// Right-aligned axis caption. Defined at module scope so recharts keeps the
+// same component identity between renders.
+function YAxisLabel({ viewBox, darkMode }) {
+  const { x, y } = viewBox;
+  return (
+    <text
+      x={x - 19}
+      y={y - 20}
+      textAnchor="start"
+      dx={8}
+      dy={0}
+      fill={darkMode ? '#ffffff' : '#666'}
+      fontSize={12}
+    >
+      Amount
+    </text>
+  );
+}
 
 const allData = {
   material: [
@@ -203,23 +244,6 @@ export default function ResourceUsage() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const YAxisLabel = ({ viewBox, darkMode: isDarkMode }) => {
-    const { x, y } = viewBox;
-    return (
-      <text
-        x={x - 19}
-        y={y - 10}
-        textAnchor="start"
-        dx={8}
-        dy={0}
-        fill={isDarkMode ? '#ffffff' : '#666'}
-        fontSize={14}
-      >
-        Amount
-      </text>
-    );
-  };
-
   const ResourceTypeIcon = resourceTypeIcons[resourceType] ?? Package;
 
   const scrollToTop = () => {
@@ -249,29 +273,40 @@ export default function ResourceUsage() {
           <div className={styles.filters}>
             <Dropdown>
               <Dropdown.Toggle className={styles.customDropdown}>
-                <ResourceTypeIcon className={styles.filterIcon} size={14} aria-hidden="true" />
+                <ResourceTypeIcon
+                  className={styles.filterIcon}
+                  size={ICON_SIZE}
+                  aria-hidden="true"
+                />
                 {resourceType}
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item onClick={() => setResourceType('Material')}>Material</Dropdown.Item>
-                <Dropdown.Item onClick={() => setResourceType('Equipment')}>
-                  Equipment
-                </Dropdown.Item>
-                <Dropdown.Item onClick={() => setResourceType('Venue')}>Venue</Dropdown.Item>
+                {resourceTypes.map(type => (
+                  <FilterOption
+                    key={type}
+                    icon={resourceTypeIcons[type]}
+                    label={type}
+                    selected={resourceType === type}
+                    onSelect={() => setResourceType(type)}
+                  />
+                ))}
               </Dropdown.Menu>
             </Dropdown>
 
             <Dropdown>
               <Dropdown.Toggle className={styles.customDropdown}>
-                <CalendarDays className={styles.filterIcon} size={14} aria-hidden="true" />
+                <CalendarDays className={styles.filterIcon} size={ICON_SIZE} aria-hidden="true" />
                 {timePeriod}
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item onClick={() => setTimePeriod('This Week')}>This Week</Dropdown.Item>
-                <Dropdown.Item onClick={() => setTimePeriod('Last Week')}>Last Week</Dropdown.Item>
-                <Dropdown.Item onClick={() => setTimePeriod('This Month')}>
-                  This Month
-                </Dropdown.Item>
+                {timePeriods.map(period => (
+                  <FilterOption
+                    key={period}
+                    label={period}
+                    selected={timePeriod === period}
+                    onSelect={() => setTimePeriod(period)}
+                  />
+                ))}
               </Dropdown.Menu>
             </Dropdown>
           </div>
@@ -287,8 +322,8 @@ export default function ResourceUsage() {
                 barCategoryGap="15%"
               >
                 <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke={darkMode ? '#3A506B' : '#e5e7eb'}
+                  strokeDasharray="6 6"
+                  stroke={darkMode ? '#4C6485' : '#9CA3AF'}
                   vertical={false}
                 />
                 <XAxis
@@ -317,17 +352,22 @@ export default function ResourceUsage() {
                   label={<YAxisLabel darkMode={darkMode} />}
                 />
 
-                <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
+                <Tooltip
+                  content={<CustomTooltip darkMode={darkMode} />}
+                  cursor={{
+                    fill: darkMode ? 'rgba(58, 80, 107, 0.45)' : 'rgba(17, 24, 39, 0.08)',
+                  }}
+                />
 
                 <Legend
                   align="right"
                   verticalAlign="top"
                   iconType="circle"
-                  iconSize={8}
+                  iconSize={10}
                   wrapperStyle={{
                     top: 0,
                     right: 0,
-                    paddingBottom: '4px',
+                    paddingBottom: '20px',
                     color: darkMode ? '#ffffff' : '#666',
                     fontSize: '0.875rem',
                     lineHeight: '1.5',
@@ -336,8 +376,8 @@ export default function ResourceUsage() {
                     <span
                       style={{
                         color: darkMode ? '#ffffff' : '#666',
-                        marginLeft: '1px',
-                        marginRight: '0px',
+                        marginLeft: '6px',
+                        marginRight: '12px',
                         fontSize: '0.875rem',
                       }}
                     >
@@ -371,19 +411,18 @@ export default function ResourceUsage() {
           <h2>Insights</h2>
           <Dropdown>
             <Dropdown.Toggle className={styles.customDropdown}>
-              <CalendarDays className={styles.filterIcon} size={14} aria-hidden="true" />
+              <CalendarDays className={styles.filterIcon} size={ICON_SIZE} aria-hidden="true" />
               {insightsTimePeriod}
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item onClick={() => setInsightsTimePeriod('This Week')}>
-                This Week
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => setInsightsTimePeriod('Last Week')}>
-                Last Week
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => setInsightsTimePeriod('This Month')}>
-                This Month
-              </Dropdown.Item>
+              {timePeriods.map(period => (
+                <FilterOption
+                  key={period}
+                  label={period}
+                  selected={insightsTimePeriod === period}
+                  onSelect={() => setInsightsTimePeriod(period)}
+                />
+              ))}
             </Dropdown.Menu>
           </Dropdown>
         </div>
