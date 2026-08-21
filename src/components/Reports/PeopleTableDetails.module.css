@@ -90,6 +90,11 @@
   text-transform: uppercase;
 }
 
+:global(.dark-mode) .dot {
+  background-color: #3a4460;
+  color: #f1f1f1;
+}
+
 .people-table-row:hover {
   background-color: #fafafa;
 }

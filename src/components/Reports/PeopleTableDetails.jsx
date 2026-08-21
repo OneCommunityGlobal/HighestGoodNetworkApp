@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import 'reactjs-popup/dist/index.css';
 import { useTable } from 'react-table';
-import { Container } from 'reactstrap';
 import styles from './PeopleTableDetails.module.css';
 import TableFilter from './TableFilter/TableFilter';
 
