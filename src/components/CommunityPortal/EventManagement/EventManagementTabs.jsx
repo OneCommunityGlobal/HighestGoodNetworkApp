@@ -1,16 +1,7 @@
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
 import styles from './EventManagementTabs.module.css';
 
-const dummyEvents = [
-  { id: '1', name: 'Tech Conference 2025', date: '2025-05-15', location: 'San Francisco' },
-  { id: '2', name: 'AI Summit', date: '2025-06-20', location: 'New York' },
-  { id: '3', name: 'Developer Meetup', date: '2025-07-10', location: 'Chicago' },
-];
-
 function EventManagementTabs({ darkMode }) {
-  const { activityid } = useParams();
-  const [event] = useState(() => dummyEvents.find(e => e.id === activityid) ?? null);
   const [activeTab, setActiveTab] = useState('description');
   const [activeSection, setActiveSection] = useState('comments');
 
@@ -32,8 +23,6 @@ function EventManagementTabs({ darkMode }) {
   };
 
   const renderContent = () => {
-    if (!event) return <div className={styles.contentBox}>Event details below</div>;
-
     if (activeTab === 'engagement') {
       return (
         <div>
@@ -62,9 +51,9 @@ function EventManagementTabs({ darkMode }) {
 
     switch (activeTab) {
       case 'analysis':
-        return <div className={styles.contentBox}>Analysis for {event.name}</div>;
+        return <div className={styles.contentBox}>Analysis content</div>;
       case 'resources':
-        return <div className={styles.contentBox}>Resources for {event.name}</div>;
+        return <div className={styles.contentBox}>Resources content</div>;
       case 'description':
       default:
         return (

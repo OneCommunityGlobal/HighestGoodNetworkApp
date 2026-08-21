@@ -1,10 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import EventManagementTabs from '../EventManagementTabs';
 
-vi.mock('react-router-dom', () => ({
-  useParams: () => ({ activityid: '1' }),
-}));
-
 describe('EventManagementTabs', () => {
   it('renders all four tabs', () => {
     render(<EventManagementTabs />);

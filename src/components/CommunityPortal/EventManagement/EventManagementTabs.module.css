@@ -71,3 +71,19 @@
   color: #fff;
   border-bottom-color: #fff;
 }
+
+.eventTabsDark .contentBox {
+  border-color: #3a506b;
+  background-color: #1c2541;
+  color: #fff;
+}
+
+.eventTabsDark .sectionBtn {
+  background-color: #3a506b;
+  color: #d0d0d0;
+}
+
+.eventTabsDark .sectionBtn.active {
+  background-color: #6b8cae;
+  color: #fff;
+}

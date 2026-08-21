@@ -23,6 +23,8 @@ function EventPage() {
   const [rating] = useState(4);
   const [media, setMedia] = useState(null);
   const [description, setDescription] = useState('');
+  const [descriptionError, setDescriptionError] = useState('');
+  const [descriptionPosted, setDescriptionPosted] = useState(false);
 
   const handleMediaUpload = event => {
     const file = event.target.files[0];
@@ -42,6 +44,16 @@ function EventPage() {
         ⭐
       </span>
     ));
+  };
+
+  const handlePostDescription = () => {
+    if (!description.trim()) {
+      setDescriptionError('Description cannot be empty.');
+      setDescriptionPosted(false);
+      return;
+    }
+    setDescriptionError('');
+    setDescriptionPosted(true);
   };
 
   const handleDateChange = dates => {
@@ -209,9 +221,17 @@ function EventPage() {
         <textarea
           className={`${styles.textarea} ${darkMode ? styles.inputDark : ''}`}
           value={description}
-          onChange={e => setDescription(e.target.value)}
+          onChange={e => {
+            setDescription(e.target.value);
+            if (descriptionError) setDescriptionError('');
+            if (descriptionPosted) setDescriptionPosted(false);
+          }}
           placeholder="Enter event description..."
         />
+        {descriptionError && <p className={styles.errorText}>{descriptionError}</p>}
+        {descriptionPosted && (
+          <p className={styles.successText}>Description posted successfully!</p>
+        )}
         <div className={styles.mediaUploadContainer}>
           <input
             type="file"
@@ -222,6 +242,7 @@ function EventPage() {
           <button
             type="button"
             className={`${styles.postBtn} ${darkMode ? styles.postBtnDark : ''}`}
+            onClick={handlePostDescription}
           >
             Post Description
           </button>

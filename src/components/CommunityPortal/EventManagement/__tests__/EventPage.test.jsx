@@ -1,10 +1,6 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import * as reactRedux from 'react-redux';
 import EventPage from '../EventPage';
-
-vi.mock('react-router-dom', () => ({
-  useParams: () => ({ activityid: '1' }),
-}));
 
 vi.mock('react-calendar', () => ({
   default: () => <div data-testid="mock-calendar" />,
@@ -47,5 +43,20 @@ describe('EventPage', () => {
   it('renders Post Description button', () => {
     render(<EventPage />);
     expect(screen.getByRole('button', { name: /Post Description/i })).toBeInTheDocument();
+  });
+
+  it('shows validation error when posting empty description', () => {
+    render(<EventPage />);
+    fireEvent.click(screen.getByRole('button', { name: /Post Description/i }));
+    expect(screen.getByText(/Description cannot be empty/i)).toBeInTheDocument();
+  });
+
+  it('shows success message when posting non-empty description', () => {
+    render(<EventPage />);
+    fireEvent.change(screen.getByPlaceholderText(/Enter event description/i), {
+      target: { value: 'A great event' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /Post Description/i }));
+    expect(screen.getByText(/Description posted successfully/i)).toBeInTheDocument();
   });
 });

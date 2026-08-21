@@ -78,6 +78,7 @@
   border-radius: 8px;
   box-shadow: 0 2px 6px rgb(0 0 0 / 10%);
   margin-right: 10px;
+  transition: background-color 0.2s;
 }
 
 .eventCardInfo,
@@ -89,6 +90,7 @@
   padding: 10px;
   background-color: #f9f9f9;
   border-radius: 4px;
+  transition: background-color 0.2s;
 }
 
 .infoItem,
@@ -177,6 +179,18 @@
   margin-top: 20px;
 }
 
+.errorText {
+  color: #c0392b;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.successText {
+  color: #27ae60;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
 .star {
   font-size: 1rem;
 }
@@ -235,6 +249,29 @@
 
 .eventCardRightDark {
   background-color: transparent;
+}
+
+/* Dark mode overrides for card and textarea */
+.eventPageDark .eventCard {
+  background-color: #253554;
+  border-color: #3a506b;
+  color: #fff;
+}
+
+.eventPageDark .eventCard12 {
+  background-color: #1c2541;
+}
+
+.eventPageDark .eventCardInfo,
+.eventPageDark .eventCardExtra {
+  background-color: #3a506b;
+  border: 1px solid #444;
+}
+
+.eventPageDark .textarea {
+  background-color: #2c2c2c;
+  color: #fff;
+  border: 1px solid #444;
 }
 
 /* Calendar tile highlight - uses global override since react-calendar injects its own classes */
