@@ -207,7 +207,6 @@ function PeopleTableDetails(props) {
 
   return (
     <TaskResourceContext.Provider value={{ expandedTasks, toggleMoreResources }}>
-      <Container fluid >
       <div className={styles['table-filter-container']}>
         <TableFilter
           onTaskNameSearch={onTaskNameSearch}
@@ -276,7 +275,6 @@ function PeopleTableDetails(props) {
           </tbody>
         </table>
       </div>
-      </Container>
     </TaskResourceContext.Provider>
   );
 }
