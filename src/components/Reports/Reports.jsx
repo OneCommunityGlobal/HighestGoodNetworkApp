@@ -211,6 +211,7 @@ endDate: moment()
       showAddProjHistory: false,
       showAddPersonHistory: false,
       showAddTeamHistory: false,
+      showCharts: !prevState.showAddTimeForm,
     }));
   }
 
@@ -417,7 +418,8 @@ endDate: moment()
       showAddProjHistory: !prevState.showAddProjHistory,
       showAddPersonHistory: false,
       showAddTeamHistory: false,
-      showContributorsReport: false
+      showContributorsReport: false,
+      showCharts: !prevState.showAddProjHistory
     }));
   }
 
@@ -433,7 +435,8 @@ endDate: moment()
       showAddProjHistory: false,
       showAddPersonHistory: !prevState.showAddPersonHistory,
       showAddTeamHistory: false,
-      showContributorsReport: false
+      showContributorsReport: false,
+      showCharts: !prevState.showAddPersonHistory
     }));
   }
 
@@ -449,7 +452,8 @@ endDate: moment()
       showAddProjHistory: false,
       showAddPersonHistory: false,
       showAddTeamHistory: !prevState.showAddTeamHistory,
-      showContributorsReport: false
+      showContributorsReport: false,
+      showCharts: !prevState.showAddTeamHistory
     }));
   }
 

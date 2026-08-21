@@ -155,18 +155,6 @@ function ActivityList() {
     return d;
   }, []);
 
-  const activityTypes = useMemo(() => {
-    const typeOrder = new Map();
-
-    activities.forEach(activity => {
-      if (activity.type && !typeOrder.has(activity.type)) {
-        typeOrder.set(activity.type, typeOrder.size);
-      }
-    });
-
-    return [...typeOrder.keys()].sort((a, b) => typeOrder.get(a) - typeOrder.get(b));
-  }, [activities]);
-
   const filteredActivities = activities
     .filter(activity => showPastEvents || activity._dateObj >= startOfToday)
     .filter(activity => {
