@@ -1,0 +1,253 @@
+/* =========================================================
+   🎨 Layout & Structure
+   ========================================================= */
+.galleryContainer {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  color: var(--text-primary, #285739);
+  margin-bottom: 25px;
+}
+
+.cardHeader {
+  background: #eaeaea;
+  color: #285739;
+  font-weight: 600;
+  font-size: 1.4rem;
+  padding: 12px 20px;
+}
+
+/* =========================================================
+   🧩 Badge Grid
+   ========================================================= */
+.badge_history_container,
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start; /* ensures labels show below icons */
+  gap: 28px;
+  padding: 16px 0;
+  overflow-y: auto;
+}
+
+/* =========================================================
+   🏅 Badge Card Container
+   ========================================================= */
+.card {
+  position: relative;
+  background-color: var(--bg-secondary, #fafafa);
+  border-radius: 12px;
+  padding: 1.2rem;
+  text-align: center;
+  box-shadow: 2px 2px 6px rgb(0 0 0 / 15%);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  width: 190px;
+  height: 210px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* 👈 show label below */
+  padding-bottom: 1rem;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 2px 6px 12px rgb(0 0 0 / 25%);
+}
+
+/* =========================================================
+   🖼️ Badge Image Container
+   ========================================================= */
+.badge_image_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 130px;
+  margin: 10px;
+}
+
+/* --- Badge image itself --- */
+.badge_image_container img,
+.icon {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: contain;
+  margin-bottom: 10px; /* 👈 ensures space between image and label */
+  transition: transform 0.2s ease;
+}
+
+.badge_image_container img:hover,
+.icon:hover {
+  transform: scale(1.08);
+}
+
+/* =========================================================
+   ✍️ Text Styles
+   ========================================================= */
+.badgeName {
+  font-weight: 600;
+  color: var(--text-primary, #285739);
+  font-size: 1rem;
+  margin-top: 0.3rem;
+}
+
+.badgeDesc {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #555);
+  margin-top: 0.25rem;
+  text-align: center;
+  line-height: 1.1rem;
+}
+
+.badgeLabel {
+  margin-top: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #285739;
+  text-align: center;
+  line-height: 1.2;
+  min-height: 22px; 
+  display: block;
+}
+
+/* =========================================================
+   🖱️ Button
+   ========================================================= */
+.badgeButton {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.badgeButton:focus {
+  outline: 2px solid #007bff;
+  border-radius: 10px;
+}
+
+/* =========================================================
+   🔒 Unearned / Locked Badges
+   ========================================================= */
+.unearned {
+  opacity: 0.55;
+  filter: grayscale(100%);
+}
+
+/* =========================================================
+   📱 Responsive Design
+   ========================================================= */
+@media screen and (width <= 768px) {
+  .badge_history_container,
+  .grid {
+    justify-content: center;
+    gap: 20px;
+    padding: 8px 0;
+  }
+
+  .card {
+    width: 160px;
+    height: 185px;
+    padding: 1rem;
+  }
+
+  .icon,
+  .badge_image_container img {
+    width: 90px;
+    height: 90px;
+  }
+
+  .badgeName {
+    font-size: 0.9rem;
+  }
+
+  .badgeDesc,
+  .badgeLabel {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+
+  .cardHeader {
+    font-size: 1.1rem;
+    text-align: center;
+  }
+}
+
+@media screen and (width <= 480px) {
+  .badge_history_container,
+  .grid {
+    flex-flow: row wrap;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  .card {
+    width: 140px;
+    height: 165px;
+  }
+
+  .icon,
+  .badge_image_container img {
+    width: 75px;
+    height: 75px;
+  }
+
+  .badgeName {
+    font-size: 0.85rem;
+  }
+
+  .badgeDesc,
+  .badgeLabel {
+    font-size: 0.7rem;
+  }
+}
+
+/* =========================================================
+   🌙 Dark Mode Styling
+   Note: .galleryContainer is intentionally NOT styled here — it's
+   the full page wrapper for this route, not the badge box, and
+   should just inherit the app's normal dark background.
+   The Row/Card backgrounds are set inline (via the darkMode prop)
+   in StudentBadgeGallery.jsx; these rules cover the classes that
+   don't have a conflicting inline style.
+   .card/.icon/.badgeName/.badgeDesc are used by StudentBadgeCard.jsx,
+   which isn't currently wired into this component.
+   ========================================================= */
+:global(body.dark-mode) .card {
+  background-color: #1c2541 !important;
+  color: #fff !important;
+  border: 1px solid #2e3d55 !important;
+  box-shadow: 2px 2px 6px rgb(0 0 0 / 35%) !important;
+}
+
+:global(body.dark-mode) .cardHeader {
+  background-color: #3a506b !important;
+  color: #fff !important;
+  border-bottom: 1px solid #2e3d55 !important;
+}
+
+:global(body.dark-mode) .badgeName,
+:global(body.dark-mode) .badgeDesc,
+:global(body.dark-mode) .badgeLabel {
+  color: #fff !important;
+}
+
+:global(body.dark-mode) .icon {
+  filter: none !important;
+  box-shadow: 0 0 4px rgb(0 0 0 / 40%) !important;
+  background-color: #1c2541 !important;
+}
+
+:global(body.dark-mode) .unearned {
+  opacity: 0.55 !important;
+  filter: grayscale(100%) !important;
+}
