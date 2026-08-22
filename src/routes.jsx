@@ -51,6 +51,7 @@ import IssueChart from './components/BMDashboard/Issues/issueCharts';
 import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
 import AnalyticsDashboard from './components/JobCCDashboard/JobAnalytics/JobAnalytics';
+import KnowledgeEvolution from './components/BMDashboard/KnowledgeEvolution/KnowledgeEvolution';
 import FaqSearch from './components/Faq/FaqSearch';
 import FaqManagement from './components/Faq/FaqManagement';
 import FaqHistory from './components/Faq/FaqHistory';
@@ -181,6 +182,9 @@ import EPLogin from './components/EductionPortal/Login';
 import BrowseLessonPlan from './components/EductionPortal/BrowseLessonPlan/BrowseLP';
 import EPDashboard from './components/EductionPortal';
 import TaskSubmissions from './components/EductionPortal/Educators/TaskSubmissions';
+import SubmissionReviewPage from './components/EductionPortal/Educators/TaskSubmissions/SubmissionReviewPage';
+import AnnouncementsPage from './components/EductionPortal/Announcements/AnnouncementsPage';
+import StudentProfile from './components/EductionPortal/StudentProfile';
 
 import StudentProfilePage from './components/EductionPortal/StudentProfile/StudentProfilePage';
 import AssignAtoms from './components/EductionPortal/AssignAtoms/AssignAtoms';
@@ -854,6 +858,11 @@ export default (
           component={ToolsAvailabilityPage}
         />
         <BMProtectedRoute
+          path="/student/knowledge-evolution"
+          exact
+          component={KnowledgeEvolution}
+        />
+        <BMProtectedRoute
           path="/bmdashboard/injuriesovertimechart"
           fallback
           exact
@@ -982,21 +991,33 @@ export default (
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
+        <ProtectedRoute
+          path="/educationportal/student/:studentId"
+          exact
+          component={StudentProfile}
+        />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
+        <EPProtectedRoute
+          path="/educationportal/announcements"
+          exact
+          component={AnnouncementsPage}
+        />
         <EPProtectedRoute
           path="/educationportal/educator/task-submissions"
           exact
           component={TaskSubmissions}
         />
+        <EPProtectedRoute
+          path="/educationportal/educator/review/:submissionId"
+          exact
+          component={SubmissionReviewPage}
+        />
         <EPProtectedRoute path="/student/profile" exact component={StudentProfilePage} />
-        {/* PR Analytics Dashboard */}
-        <Route path="/pull-request-analytics/reviews-insight" component={ReviewsInsight} />
         <EPProtectedRoute
           path="/educationportal/evaluation-results"
           exact
           component={EvaluationResultsWrapper}
         />
-        <Route path="/educationportal/login" component={EPLogin} />
         <EPProtectedRoute path="/educationportal/InsightWidget" component={InsightWidget} />
         <EPProtectedRoute
           path="/educationportal/lesson-library"
@@ -1004,7 +1025,6 @@ export default (
           component={BrowseLessonPlan}
         />
         <EPProtectedRoute path="/educationportal/assignAtoms" exact component={AssignAtoms} />
-        <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
         <EPProtectedRoute path="/educationportal/reportButton" component={ReportDownloadButton} />
         <EPProtectedRoute path="/educationportal/groups" exact component={GroupList} />
         <EPProtectedRoute path="/educationportal/reports" exact component={EducatorReports} />
