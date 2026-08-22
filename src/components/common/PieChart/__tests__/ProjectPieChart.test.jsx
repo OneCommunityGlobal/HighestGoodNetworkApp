@@ -21,9 +21,15 @@ describe('ProjectNameCell', () => {
 
 describe('ProjectPieTooltip', () => {
   const baseProps = {
-    name: 'Project A',
-    value: 3.5,
-    swatch: '#abcdef',
+    active: true,
+    payload: [
+      {
+        name: 'Project A',
+        value: 3.5,
+        payload: { fill: '#abcdef', index: 0 },
+      },
+    ],
+    colors: ['#abcdef'],
     darkMode: false,
     total: 10,
   };
@@ -36,20 +42,23 @@ describe('ProjectPieTooltip', () => {
   });
 
   it('renders the swatch when one is supplied', () => {
-    render(<ProjectPieTooltip {...baseProps} swatch="#112233" />);
+    const payload = [{ ...baseProps.payload[0], payload: { fill: '#112233', index: 0 } }];
+    render(<ProjectPieTooltip {...baseProps} payload={payload} />);
     const swatch = screen.getByTestId('tooltip-swatch');
 
     expect(swatch).toHaveStyle({ backgroundColor: 'rgb(17, 34, 51)' });
   });
 
   it('omits the swatch when none is supplied', () => {
-    render(<ProjectPieTooltip {...baseProps} swatch={undefined} />);
+    const payload = [{ ...baseProps.payload[0], payload: {} }];
+    render(<ProjectPieTooltip {...baseProps} payload={payload} colors={[]} />);
 
     expect(screen.queryByTestId('tooltip-swatch')).not.toBeInTheDocument();
   });
 
   it('reports 0.0% when total is zero', () => {
-    render(<ProjectPieTooltip {...baseProps} total={0} value={5} />);
+    const payload = [{ ...baseProps.payload[0], value: 5 }];
+    render(<ProjectPieTooltip {...baseProps} payload={payload} total={0} />);
 
     expect(screen.getByTestId('tooltip-detail')).toHaveTextContent('5.00 hrs (0.0%)');
   });

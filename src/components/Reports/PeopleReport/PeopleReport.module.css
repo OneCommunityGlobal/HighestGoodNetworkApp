@@ -219,6 +219,79 @@ body {
   width: 100%;
 }
 
+.infringementsViz {
+  color: #1f1f1f;
+}
+
+.infringementToggle {
+  box-shadow: 2px 2px 4px 1px lightgray;
+}
+
+.infringementTooltip {
+  max-height: 100%;
+  padding: 0.5rem;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+  color: inherit;
+  background-color: #fff;
+  border: 1px solid currentcolor;
+  border-radius: 5px;
+}
+
+.infringementTooltipList {
+  margin: 0.25rem 0 0;
+  padding-left: 1.25rem;
+}
+
+.infringementEmptyState {
+  padding: 1rem 0;
+}
+
+.infringementGrid line {
+  stroke: rgb(0 0 0 / 10%);
+}
+
+.infringementDetails {
+  max-width: 500px;
+}
+
+.infringementModalTable {
+  width: 100%;
+}
+
+:global(.dark-mode) .infringementsViz {
+  color: #f9fafb;
+}
+
+:global(.dark-mode) .kaitest {
+  margin-top: 0.5rem;
+}
+
+:global(.dark-mode) .infringementToggle {
+  box-shadow: 0.5px 0.5px 5px #000;
+}
+
+:global(.dark-mode) .infringementTooltip,
+:global(.dark-mode) .infringementModalHeader,
+:global(.dark-mode) .infringementModalBody,
+:global(.dark-mode) .infringementModalFooter,
+:global(.dark-mode) .infringementModalTable,
+:global(.dark-mode) .infringementModalTable tr,
+:global(.dark-mode) .infringementModalTable th,
+:global(.dark-mode) .infringementModalTable td {
+  color: #f9fafb;
+  background-color: #1b2a41;
+}
+
+:global(.dark-mode) .infringementModalHeader,
+:global(.dark-mode) .infringementModalFooter {
+  border-color: #374151;
+}
+
+:global(.dark-mode) .infringementGrid line {
+  stroke: rgb(255 255 255 / 15%);
+}
+
 @media (width <= 850px) {
   .introDate {
     margin: 16px 0;
@@ -602,4 +675,3 @@ body {
     }
   }
 }
-

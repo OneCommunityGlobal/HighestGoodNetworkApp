@@ -50,7 +50,13 @@ export function ProjectNameCell({ value }) {
   return <span className={styles.projectNameText}>{value}</span>;
 }
 
-export function ProjectPieTooltip({ name, value, swatch, darkMode, total }) {
+export function ProjectPieTooltip({ active, payload, colors, darkMode, total }) {
+  if (!active || !payload?.length) return null;
+
+  const item = payload[0];
+  const name = item.name;
+  const value = Number(item.value);
+  const swatch = item.payload?.fill || colors?.[item.payload?.index ?? 0];
   const hours = value.toFixed(2);
   const pct = total ? ((value / total) * 100).toFixed(1) : '0.0';
   return (
@@ -165,20 +171,7 @@ export default function UserProjectD3PieChart({
               <Label position="center" content={() => renderCenterLabel(total, darkMode)} />
             </Pie>
             <Tooltip
-              content={({ active, payload }) => {
-                if (!active || !payload?.length) return null;
-                const item = payload[0];
-                const swatch = item.payload?.fill || colors[item.payload?.index ?? 0];
-                return (
-                  <ProjectPieTooltip
-                    name={item.name}
-                    value={Number(item.value)}
-                    swatch={swatch}
-                    darkMode={darkMode}
-                    total={total}
-                  />
-                );
-              }}
+              content={<ProjectPieTooltip colors={colors} darkMode={darkMode} total={total} />}
               wrapperStyle={{ zIndex: 9999 }}
             />
           </PieChart>

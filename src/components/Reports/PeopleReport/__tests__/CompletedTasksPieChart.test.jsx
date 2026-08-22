@@ -7,15 +7,17 @@ import {
 } from '../CompletedTasksPieChart';
 
 describe('ColorSwatchCell', () => {
-  it('paints the swatch with the supplied color', () => {
-    render(<ColorSwatchCell color="#ff00aa" />);
+  const colorScale = { proj1: '#ff00aa', proj2: '#00aaff' };
+
+  it('paints the swatch with the color looked up from column.colorScale', () => {
+    render(<ColorSwatchCell value="proj1" column={{ colorScale }} />);
     const swatch = screen.getByTestId('color-swatch');
 
     expect(swatch).toHaveStyle({ backgroundColor: 'rgb(255, 0, 170)' });
   });
 
-  it('renders an empty swatch when no color is provided', () => {
-    render(<ColorSwatchCell color={undefined} />);
+  it('renders no background color when the value is not in the colorScale', () => {
+    render(<ColorSwatchCell value="unknown" column={{ colorScale }} />);
     const swatch = screen.getByTestId('color-swatch');
 
     expect(swatch).not.toHaveAttribute('style');
@@ -67,7 +69,19 @@ describe('TotalHoursLabel', () => {
 });
 
 describe('PieTooltip', () => {
-  const baseProps = { name: 'Project A', value: 3.5, swatch: '#abcdef', darkMode: false, total: 10 };
+  const baseProps = {
+    active: true,
+    payload: [
+      {
+        name: 'Project A',
+        value: 3.5,
+        payload: { fill: '#abcdef', index: 0 },
+      },
+    ],
+    colors: ['#abcdef'],
+    darkMode: false,
+    total: 10,
+  };
 
   it('renders the project name and the padded hours + percentage detail', () => {
     render(<PieTooltip {...baseProps} />);
@@ -77,20 +91,23 @@ describe('PieTooltip', () => {
   });
 
   it('renders the swatch when one is supplied', () => {
-    render(<PieTooltip {...baseProps} swatch="#112233" />);
+    const payload = [{ ...baseProps.payload[0], payload: { fill: '#112233', index: 0 } }];
+    render(<PieTooltip {...baseProps} payload={payload} />);
     const swatch = screen.getByTestId('tooltip-swatch');
 
     expect(swatch).toHaveStyle({ backgroundColor: 'rgb(17, 34, 51)' });
   });
 
   it('omits the swatch when none is supplied', () => {
-    render(<PieTooltip {...baseProps} swatch={undefined} />);
+    const payload = [{ ...baseProps.payload[0], payload: {} }];
+    render(<PieTooltip {...baseProps} payload={payload} colors={[]} />);
 
     expect(screen.queryByTestId('tooltip-swatch')).not.toBeInTheDocument();
   });
 
   it('reports 0.0% when total is zero', () => {
-    render(<PieTooltip {...baseProps} total={0} value={5} />);
+    const payload = [{ ...baseProps.payload[0], value: 5 }];
+    render(<PieTooltip {...baseProps} payload={payload} total={0} />);
 
     expect(screen.getByTestId('tooltip-detail')).toHaveTextContent('5.00 hrs (0.0%)');
   });

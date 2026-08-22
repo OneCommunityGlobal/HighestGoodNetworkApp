@@ -4,7 +4,12 @@ import { useTable } from 'react-table';
 import styles from './PeopleTableDetails.module.css';
 import TableFilter from './TableFilter/TableFilter';
 
-export function TaskResourceCell({ row, expandedTasks, toggleMoreResources }) {
+export function TaskResourceCell({
+  row,
+  column,
+  expandedTasks = column?.expandedTasks ?? {},
+  toggleMoreResources = column?.toggleMoreResources,
+}) {
   const task = row.original;
   const taskResources = (task.resources || []).flat();
   const isExpanded = !!expandedTasks[task._id];
@@ -156,13 +161,9 @@ function PeopleTableDetails(props) {
         Header: 'Resources',
         accessor: 'resources',
         testId: 'resources',
-        Cell: ({ row }) => (
-          <TaskResourceCell
-            row={row}
-            expandedTasks={expandedTasks}
-            toggleMoreResources={toggleMoreResources}
-          />
-        ),
+        expandedTasks,
+        toggleMoreResources,
+        Cell: TaskResourceCell,
       },
       {
         Header: 'Active',

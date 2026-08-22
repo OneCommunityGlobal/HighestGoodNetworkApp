@@ -11,12 +11,12 @@ import styles from './CompletedTasksPieChart.module.css';
 // Reserve space for the "Show more" footer so it doesn't push the last visible row offscreen.
 const FOOTER_RESERVED_ROWS = 1;
 
-export function ColorSwatchCell({ color }) {
+export function ColorSwatchCell({ value, column }) {
   return (
     <div
       data-testid="color-swatch"
       className={styles['project-chart-legend']}
-      style={{ backgroundColor: color }}
+      style={{ backgroundColor: column.colorScale[value] }}
     />
   );
 }
@@ -37,7 +37,13 @@ export function TotalHoursLabel({ total, darkMode }) {
   );
 }
 
-export function PieTooltip({ name, value, swatch, darkMode, total }) {
+export function PieTooltip({ active, payload, colors, darkMode, total }) {
+  if (!active || !payload?.length) return null;
+
+  const item = payload[0];
+  const name = item.name;
+  const value = Number(item.value);
+  const swatch = item.payload?.fill || colors?.[item.payload?.index ?? 0];
   const hours = value.toFixed(2);
   const pct = total ? ((value / total) * 100).toFixed(1) : '0.0';
   return (
@@ -142,7 +148,8 @@ function CompletedTasksPieChart({ darkMode }) {
         accessor: 'projectId',
         headerClassName: styles.colorColumn,
         cellClassName: styles.colorRow,
-        Cell: ({ value }) => <ColorSwatchCell color={colorScale[value]} />,
+        colorScale,
+        Cell: ColorSwatchCell,
       },
       {
         Header: 'Task Name',
@@ -216,26 +223,13 @@ function CompletedTasksPieChart({ darkMode }) {
                   ))}
                   <Label
                     position="center"
-                    content={() => <TotalHoursLabel total={total} darkMode={darkMode} />}
+                    content={<TotalHoursLabel total={total} darkMode={darkMode} />}
                   />
                 </Pie>
                 <Tooltip
-                  content={({ active, payload }) => {
-                    if (!active || !payload?.length) return null;
-                    const item = payload[0];
-                    const swatch =
-                      item.payload?.fill ||
-                      colors[item.payload?.index ?? 0];
-                    return (
-                      <PieTooltip
-                        name={item.name}
-                        value={Number(item.value)}
-                        swatch={swatch}
-                        darkMode={darkMode}
-                        total={total}
-                      />
-                    );
-                  }}
+                  content={
+                    <PieTooltip colors={colors} darkMode={darkMode} total={total} />
+                  }
                   wrapperStyle={{ zIndex: 9999 }}
                 />
               </PieChart>

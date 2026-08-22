@@ -9,7 +9,6 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { boxStyle, boxStyleDark } from '../../styles';
 import styles from './PeopleReport/PeopleReport.module.css';
 
 const FULL_DATE_FORMAT = new Intl.DateTimeFormat('en-US', {
@@ -90,7 +89,7 @@ export function aggregateInfringements(infringements, fromDate, toDate) {
   };
 }
 
-function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
+function InfringementsViz({ infringements, fromDate, toDate }) {
   const [graphVisible, setGraphVisible] = React.useState(false);
   const [modalVisible, setModalVisible] = React.useState(false);
   const [focusedInf, setFocusedInf] = React.useState(null);
@@ -100,9 +99,6 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
     () => aggregateInfringements(infringements || [], fromDate, toDate),
     [infringements, fromDate, toDate],
   );
-
-  const textColor = darkMode ? '#f9fafb' : '#1f1f1f';
-  const gridColor = darkMode ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)';
 
   const handleModalClose = () => {
     setModalVisible(false);
@@ -130,21 +126,12 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
     return (
       <div
         data-testid="infringement-tooltip"
-        style={{
-          backgroundColor: darkMode ? '#1b2a41' : '#ffffff',
-          color: textColor,
-          border: `1px solid ${textColor}`,
-          borderRadius: 5,
-          padding: '0.5rem',
-          maxHeight: '100%',
-          overflowY: 'auto',
-          overflowWrap: 'anywhere',
-        }}
+        className={styles.infringementTooltip}
       >
         <div>{FULL_DATE_FORMAT.format(new Date(label))}</div>
         <div>Count: {infringement.count}</div>
         <div>Descriptions:</div>
-        <ul style={{ margin: '0.25rem 0 0', paddingLeft: '1.25rem' }}>
+        <ul className={styles.infringementTooltipList}>
           {descriptions.length > 0 ? descriptions.map((description, index) => (
             <li key={`${description}-${index}`}>{description}</li>
           )) : <li>None</li>}
@@ -154,40 +141,43 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
   };
 
   return (
-    <div>
+    <div className={styles.infringementsViz}>
       <Button
         onClick={() => setGraphVisible(!graphVisible)}
         aria-expanded={graphVisible}
-        style={darkMode ? boxStyleDark : boxStyle}
+        className={styles.infringementToggle}
       >
         {graphVisible ? 'Hide Infringements Graph' : 'Show Infringements Graph'}
       </Button>
 
       {graphVisible && (
-        <div className={`${styles.kaitest} ${darkMode ? 'mt-2' : ''}`} data-testid="infplot">
+        <div className={styles.kaitest} data-testid="infplot">
           {values.length === 0 ? (
-            <div style={{ color: textColor, padding: '1rem 0' }}>No infringements to display.</div>
+            <div className={styles.infringementEmptyState}>No infringements to display.</div>
           ) : (
             <>
               <ResponsiveContainer width="100%" height={400}>
                 <LineChart data={values} margin={{ top: 30, right: 20, bottom: 30, left: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+                  <CartesianGrid
+                    className={styles.infringementGrid}
+                    strokeDasharray="3 3"
+                  />
                   <XAxis
                     dataKey="ts"
                     type="number"
                     scale="time"
                     domain={['dataMin', 'dataMax']}
-                    tick={{ fill: textColor }}
-                    axisLine={{ stroke: textColor }}
-                    tickLine={{ stroke: textColor }}
+                    tick={{ fill: 'currentColor' }}
+                    axisLine={{ stroke: 'currentColor' }}
+                    tickLine={{ stroke: 'currentColor' }}
                     tickFormatter={timestamp => DATE_LABEL_FORMAT.format(new Date(timestamp))}
                   />
                   <YAxis
                     allowDecimals={false}
                     domain={[0, maxSquareCount + 2]}
-                    tick={{ fill: textColor }}
-                    axisLine={{ stroke: textColor }}
-                    tickLine={{ stroke: textColor }}
+                    tick={{ fill: 'currentColor' }}
+                    axisLine={{ stroke: 'currentColor' }}
+                    tickLine={{ stroke: 'currentColor' }}
                   />
                   <Tooltip
                     allowEscapeViewBox={{ x: false, y: false }}
@@ -201,7 +191,7 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
                   <Line
                     type="monotone"
                     dataKey="count"
-                    stroke={darkMode ? '#f9fafb' : '#000000'}
+                    stroke="currentColor"
                     strokeWidth={1.5}
                     dot={renderDot}
                     activeDot={{ r: 5 }}
@@ -211,7 +201,10 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
               </ResponsiveContainer>
 
               {selectedInf && (
-                <div data-testid="infringement-details" style={{ color: textColor, maxWidth: 500 }}>
+                <div
+                  data-testid="infringement-details"
+                  className={styles.infringementDetails}
+                >
                   <button type="button" aria-label="Close infringement details" onClick={() => setSelectedInf(null)}>
                     &times;
                   </button>
@@ -243,23 +236,28 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
         </div>
       )}
 
-      <Modal size="lg" show={modalVisible} onHide={handleModalClose}>
-        <Modal.Header closeButton style={darkMode ? { backgroundColor: '#1b2a41', color: '#f9fafb', borderColor: '#374151' } : {}}>
+      <Modal
+        size="lg"
+        show={modalVisible}
+        onHide={handleModalClose}
+        className={styles.infringementModal}
+      >
+        <Modal.Header closeButton className={styles.infringementModalHeader}>
           <Modal.Title>{focusedInf ? focusedInf.date.toString() : 'Infringement'}</Modal.Title>
         </Modal.Header>
-        <Modal.Body style={darkMode ? { backgroundColor: '#1b2a41', color: '#f9fafb' } : {}}>
+        <Modal.Body className={styles.infringementModalBody}>
           <div id="inf">
-            <table style={darkMode ? { backgroundColor: '#1b2a41', color: '#f9fafb', width: '100%' } : { width: '100%' }}>
+            <table className={styles.infringementModalTable}>
               <thead>
-                <tr style={darkMode ? { backgroundColor: '#1b2a41' } : {}}>
-                  <th style={darkMode ? { backgroundColor: '#1b2a41', color: '#f9fafb' } : {}}>Descriptions</th>
+                <tr>
+                  <th>Descriptions</th>
                 </tr>
               </thead>
               <tbody>
                 {focusedInf
                   ? focusedInf.des.map(desc => (
-                    <tr key={desc} style={darkMode ? { backgroundColor: '#1b2a41' } : {}}>
-                      <td style={darkMode ? { backgroundColor: '#1b2a41', color: '#f9fafb' } : {}}>{desc}</td>
+                    <tr key={desc}>
+                      <td>{desc}</td>
                     </tr>
                   ))
                   : null}
@@ -267,7 +265,7 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
             </table>
           </div>
         </Modal.Body>
-        <Modal.Footer style={darkMode ? { backgroundColor: '#1b2a41', borderColor: '#374151' } : {}}>
+        <Modal.Footer className={styles.infringementModalFooter}>
           <Button variant="secondary" onClick={handleModalClose}>Close</Button>
         </Modal.Footer>
       </Modal>
@@ -279,7 +277,6 @@ InfringementsViz.defaultProps = {
   infringements: [],
   fromDate: '',
   toDate: '',
-  darkMode: false,
 };
 
 export default InfringementsViz;
