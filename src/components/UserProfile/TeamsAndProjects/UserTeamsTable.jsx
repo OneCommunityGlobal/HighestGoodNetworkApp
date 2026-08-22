@@ -80,7 +80,7 @@ const UserTeamsTable = props => {
               newTeamCode: refInput.current,
               userId: props.userProfile._id,
             })
-            toast.success('Team code updated!');
+            // toast.success('Team code updated!');
           } catch {
             toast.error('It is not possible to save the team code.');
           }

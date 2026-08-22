@@ -185,7 +185,10 @@ export const Badges = (props) => {
           </div>
         </CardHeader>
         <CardBody style={{ overflow: 'auto' }}>
-          <FeaturedBadges personalBestMaxHrs={props.userProfile.personalBestMaxHrs} badges={props.userProfile.badgeCollection} />
+          {props.userProfile.badgeCollection.length > 0 ?
+            <FeaturedBadges personalBestMaxHrs={props.userProfile.personalBestMaxHrs} badges={props.userProfile.badgeCollection} /> :
+            ''
+          }
         </CardBody>
         <CardFooter style={{ display: 'flex', alignItems: 'center' }}>
           <span
