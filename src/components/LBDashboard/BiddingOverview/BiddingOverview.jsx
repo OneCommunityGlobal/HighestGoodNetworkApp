@@ -181,12 +181,14 @@ function BiddingOverview() {
             <div className={styles.biddingCard}>
               {/* Left column */}
               <div className={styles.biddingLeft}>
-                <div className={styles.currentBid}>Current bid: {unitDetails.bidAmount} /night</div>
+                <div className={styles.currentBid}>
+                  Current bid: {unitDetails.bidAmount ?? unitDetails.price} /night
+                </div>
 
                 <div className={styles.biddingImage}>
                   <img
                     src={unitDetails.images[currentImageIndex]}
-                    alt={`Unit ${unitDetails.unitNumber} ${unitDetails.villageName}`}
+                    alt={unitDetails.title}
                     style={{ transform: `scale(${imageScale})`, transition: 'transform 0.2s' }}
                   />
                   <div className={styles.imageZoomControls}>

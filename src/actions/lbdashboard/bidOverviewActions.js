@@ -18,7 +18,7 @@ export const fetchUnitDetails = listingId => async (dispatch) => {
     const { data } = await axios.get(url);
     dispatch({
       type: FETCH_UNIT_DETAILS_SUCCESS,
-      payload: data.listingDetail,
+      payload: data,
     });
     return data;
   } catch (error) {
@@ -34,8 +34,6 @@ export const submitBid = (listingId, bidData) => async (dispatch) => {
   try {
     dispatch({ type: SUBMIT_BID_REQUEST });
     const url = ENDPOINTS.LB_SUBMIT_BID(listingId);
-    console.log('Submitting bid to:', url);
-    console.log('Request body:', bidData); 
     const { data } = await axios.post(url, bidData);
     dispatch({
       type: SUBMIT_BID_SUCCESS,
@@ -46,7 +44,6 @@ export const submitBid = (listingId, bidData) => async (dispatch) => {
         type: NOTIFICATION_SUCCESS,
         payload: data.notifications,
       });
-      console.log('Notifications:', data.notifications);
     }
     return data;
   } catch (error) {
