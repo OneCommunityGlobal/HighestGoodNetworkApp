@@ -32,6 +32,14 @@
   color: green;
 }
 
+.teamCodeResultsSmall {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
 .emp-profile {
   padding-top: 20px;
   padding-left: 3%;
@@ -103,10 +111,6 @@
   font-weight: 600;
 }
 
-.profile-tabs .nav-tabs {
-  margin-bottom: 5%;
-}
-
 .profile-tabs .nav-tabs .nav-link {
   font-weight: 600;
   border: none;
@@ -173,7 +177,7 @@
 }
 
 .profileEditButtonContainer {
-  margin-top: 20px;
+  margin-top: 15px;
 }
 
 .profileEditButton {
@@ -485,6 +489,10 @@ button.btn.btn-outline-primary {
   background-color: transparent;
 }
 
+#myTabContent {
+  padding: 10px 0px 5px 5px;
+}
+
 /* Mobile & Tablet Layout */
 @media (width <= 767px) {
 @media (width <= 767px) {
@@ -520,6 +528,22 @@ button.btn.btn-outline-primary {
 
 .tablet {
   display: none;
+}
+
+/* Minimal Dark Mode Hover & Active Fix */
+body.dark-mode .nav-link:hover,
+body.dark-mode .nav-link.active,
+body.bm-dashboard-dark .nav-link:hover,
+body.bm-dashboard-dark .nav-link.active {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+body.dark-mode .nav-link:hover *,
+body.dark-mode .nav-link.active *,
+body.bm-dashboard-dark .nav-link:hover *,
+body.bm-dashboard-dark .nav-link.active * {
+  color: #000000 !important;
 }
 
 @media (max-width: 768px) {
