@@ -156,11 +156,17 @@ function AssignBadge(props) {
   };
 
   const submit = async () => {
-    if (selectedUserIds?.length > 0 && props.selectedBadges?.length > 0) {
-      await props.assignBadgesToMultipleUserID(selectedUserIds, props.selectedBadges);
-      setOpen(false);
-      setSelectedUserIds([]);
-      props.clearNameAndSelected();
+    const badgesToAssign = props.selectedBadges?.length
+      ? [...props.selectedBadges]
+      : [...selectedBadges];
+
+    if (selectedUserIds?.length > 0 && badgesToAssign.length > 0) {
+      const success = await props.assignBadgesToMultipleUserID(selectedUserIds, badgesToAssign);
+      if (success) {
+        setOpen(false);
+        setSelectedUserIds([]);
+        props.clearNameAndSelected();
+      }
     }
   };
 

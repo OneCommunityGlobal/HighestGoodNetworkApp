@@ -12,6 +12,7 @@ import hasPermission from '../../utils/permissions';
 
 function BadgeManagement(props) {
   const { darkMode, activeTab, setActiveTab, role } = props;
+  const canAssignBadges = props.hasPermission(permissionKeys.assignBadges);
 
   useEffect(() => {
     props.fetchAllBadges();
@@ -23,9 +24,14 @@ function BadgeManagement(props) {
 
   useEffect(() => {
     if (!activeTab) {
-      setActiveTab('1');
+      setActiveTab(canAssignBadges ? '1' : '2');
+      return;
     }
-  }, [activeTab, setActiveTab]);
+    if (!canAssignBadges && activeTab === '1') {
+      setActiveTab('2');
+    }
+  }, [activeTab, canAssignBadges, setActiveTab]);
+
   return (
     <div
       className={darkMode ? 'bg-oxford-blue' : ''}
@@ -46,19 +52,23 @@ function BadgeManagement(props) {
         />
       </div>
       <Nav pills className="mb-2">
-        <NavItem>
-          <NavLink
-            className={`mr-2 ${classnames({ active: activeTab === '1' })} ${
-              darkMode && activeTab !== '1' ? 'bg-light' : ''
-            }`}
-            onClick={() => handleTabChange('1')}
-            style={
-              darkMode ? { ...boxStyleDark, cursor: 'pointer' } : { ...boxStyle, cursor: 'pointer' }
-            }
-          >
-            Badge Assignment
-          </NavLink>
-        </NavItem>
+        {canAssignBadges && (
+          <NavItem>
+            <NavLink
+              className={`mr-2 ${classnames({ active: activeTab === '1' })} ${
+                darkMode && activeTab !== '1' ? 'bg-light' : ''
+              }`}
+              onClick={() => handleTabChange('1')}
+              style={
+                darkMode
+                  ? { ...boxStyleDark, cursor: 'pointer' }
+                  : { ...boxStyle, cursor: 'pointer' }
+              }
+            >
+              Badge Assignment
+            </NavLink>
+          </NavItem>
+        )}
         <NavItem>
           <NavLink
             className={`${classnames({ active: activeTab === '2' })} ${
@@ -74,9 +84,11 @@ function BadgeManagement(props) {
         </NavItem>
       </Nav>
       <TabContent activeTab={activeTab}>
-        <TabPane tabId="1">
-          <AssignBadge allBadgeData={props.allBadgeData} />
-        </TabPane>
+        {canAssignBadges && (
+          <TabPane tabId="1">
+            <AssignBadge allBadgeData={props.allBadgeData} />
+          </TabPane>
+        )}
         <TabPane tabId="2" className="h-100">
           <BadgeDevelopment allBadgeData={props.allBadgeData} darkMode={darkMode} />
         </TabPane>
@@ -89,7 +101,6 @@ const mapStateToProps = state => ({
   allBadgeData: state.badge.allBadgeData,
   role: state.userProfile.role,
   darkMode: state.theme.darkMode,
-  permissions: state.userProfile.permissions,
   activeTab: state.badge.activeTab,
 });
 
@@ -98,9 +109,5 @@ const mapDispatchToProps = dispatch => ({
   setActiveTab: tab => dispatch(setActiveTab(tab)),
   hasPermission: permission => dispatch(hasPermission(permission)),
 });
-
-function checkIfBadgeAssignmentIsAllowed(permissions, role) {
-  return props.hasPermission(permissionKeys.assignBadges);
-}
 
 export default connect(mapStateToProps, mapDispatchToProps)(BadgeManagement);

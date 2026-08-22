@@ -23,6 +23,7 @@ function PermissionListItem(props) {
     setPermissions,
     setRemovedDefaultPermissions,
     removedDefaultPermissions,
+    editPermission,
   } = props;
   const isCategory = !!subperms;
   const [infoRoleModal, setinfoRoleModal] = useState(false);
@@ -49,6 +50,8 @@ function PermissionListItem(props) {
     isRestrictedPermission &&
     !userHasRestrictedPermission &&
     !userHasRoleWithRestrictedPermission;
+
+  const canEditPermissions = props.hasPermission(editPermission || permissions.putRole);
 
   const { updateModalStatus } = useContext(ModalContext);
 
@@ -230,7 +233,7 @@ function PermissionListItem(props) {
                 props.onChange();
                 updateModalStatus(true);
               }}
-              disabled={!props.hasPermission(permissions.putRole)}
+              disabled={!canEditPermissions}
               style={darkMode ? boxStyleDark : boxStyle}
             >
               {howManySubpermsInRole === 'All' ? 'Delete' : 'Add'}
@@ -244,7 +247,7 @@ function PermissionListItem(props) {
                 updateModalStatus(true);
               }}
               disabled={
-                !props.hasPermission(permissions.putRole) ||
+                !canEditPermissions ||
                 (immutablePermissions.includes(permission) &&
                   !props.hasPermission(permissions.putUserProfilePermissions)) ||
                 shouldDisableForRestriction
@@ -274,6 +277,7 @@ function PermissionListItem(props) {
             permissionsList={subperms}
             immutablePermissions={immutablePermissions}
             editable={editable}
+            editPermission={editPermission}
             setPermissions={setPermissions}
             // eslint-disable-next-line react/destructuring-assignment
             onChange={props.onChange}

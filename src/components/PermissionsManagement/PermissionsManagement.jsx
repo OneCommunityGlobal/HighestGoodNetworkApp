@@ -21,15 +21,22 @@ import CreateNewRolePopup from './NewRolePopUp';
 import PermissionChangeLogTable from './PermissionChangeLogTable';
 
 import { permissions } from '../../utils/constants';
-function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode }) {
+function PermissionsManagement({
+  roles,
+  auth,
+  getUserRole,
+  userProfile,
+  darkMode,
+  hasPermission: checkPermission,
+}) {
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
   const [reminderModal, setReminderModal] = useState(false);
   const { modalStatus, reminderUser } = useContext(ModalContext);
 
-  const canPostRole = hasPermission(permissions.postRole);
-  const canPutRole = hasPermission(permissions.putRole);
-  const canManageUserPermissions = hasPermission(permissions.putUserProfilePermissions);
+  const canPostRole = checkPermission(permissions.postRole);
+  const canPutRole = checkPermission(permissions.putRole);
+  const canManageUserPermissions = checkPermission(permissions.putUserProfilePermissions);
 
   // Added permissionChangeLogs state management
   const [changeLogs, setChangeLogs] = useState([]);
