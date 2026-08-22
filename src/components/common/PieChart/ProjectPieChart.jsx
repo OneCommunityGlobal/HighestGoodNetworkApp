@@ -36,6 +36,48 @@ function toChartData(projectsData) {
     .filter(d => d.value > 0);
 }
 
+export function ProjectColorCell({ value }) {
+  return (
+    <div
+      data-testid="project-color-cell"
+      className={styles['project-chart-legend']}
+      style={{ backgroundColor: value }}
+    />
+  );
+}
+
+export function ProjectNameCell({ value }) {
+  return <span className={styles.projectNameText}>{value}</span>;
+}
+
+export function ProjectPieTooltip({ name, value, swatch, darkMode, total }) {
+  const hours = value.toFixed(2);
+  const pct = total ? ((value / total) * 100).toFixed(1) : '0.0';
+  return (
+    <div className={darkMode ? styles['tooltip-box-dark'] : styles['tooltip-box-light']}>
+      <div className={styles['tooltip-row']}>
+        {swatch && (
+          <span
+            aria-hidden="true"
+            data-testid="tooltip-swatch"
+            className={styles['tooltip-swatch']}
+            style={{ backgroundColor: swatch }}
+          />
+        )}
+        <span data-testid="tooltip-name" className={styles['tooltip-name']}>
+          {name}
+        </span>
+      </div>
+      <div
+        data-testid="tooltip-detail"
+        className={darkMode ? styles['tooltip-detail-dark'] : styles['tooltip-detail-light']}
+      >
+        {`${hours} hrs (${pct}%)`}
+      </div>
+    </div>
+  );
+}
+
 const renderCenterLabel = (total, darkMode) => (
   <text
     x="50%"
@@ -63,6 +105,7 @@ export default function UserProjectD3PieChart({
     () => data.map((project, index) => ({ ...project, color: colors[index] })),
     [colors, data],
   );
+
   const columns = useMemo(
     () => [
       {
@@ -70,16 +113,14 @@ export default function UserProjectD3PieChart({
         accessor: 'color',
         headerClassName: styles.colorColumn,
         cellClassName: styles.colorRow,
-        Cell: ({ value }) => (
-          <div className={styles['project-chart-legend']} style={{ backgroundColor: value }} />
-        ),
+        Cell: ProjectColorCell,
       },
       {
         Header: 'Project Name',
         accessor: 'name',
         headerClassName: styles.projectNameColumn,
         cellClassName: styles.projectNameRow,
-        Cell: ({ value }) => <span className={styles.projectNameText}>{value}</span>,
+        Cell: ProjectNameCell,
       },
       {
         Header: 'Hours',
@@ -125,36 +166,17 @@ export default function UserProjectD3PieChart({
             </Pie>
             <Tooltip
               content={({ active, payload }) => {
-                if (!active || !payload || !payload.length) return null;
+                if (!active || !payload?.length) return null;
                 const item = payload[0];
-                const value = Number(item.value);
-                const name = item.name;
-                const swatch =
-                  (item.payload && item.payload.fill) || colors[item.payload?.index ?? 0];
-                const hours = value.toFixed(2);
-                const pct = total ? ((value / total) * 100).toFixed(1) : '0.0';
+                const swatch = item.payload?.fill || colors[item.payload?.index ?? 0];
                 return (
-                  <div
-                    className={darkMode ? styles['tooltip-box-dark'] : styles['tooltip-box-light']}
-                  >
-                    <div className={styles['tooltip-row']}>
-                      {swatch && (
-                        <span
-                          aria-hidden="true"
-                          className={styles['tooltip-swatch']}
-                          style={{ backgroundColor: swatch }}
-                        />
-                      )}
-                      <span className={styles['tooltip-name']}>{name}</span>
-                    </div>
-                    <div
-                      className={
-                        darkMode ? styles['tooltip-detail-dark'] : styles['tooltip-detail-light']
-                      }
-                    >
-                      {`${hours} hrs (${pct}%)`}
-                    </div>
-                  </div>
+                  <ProjectPieTooltip
+                    name={item.name}
+                    value={Number(item.value)}
+                    swatch={swatch}
+                    darkMode={darkMode}
+                    total={total}
+                  />
                 );
               }}
               wrapperStyle={{ zIndex: 9999 }}

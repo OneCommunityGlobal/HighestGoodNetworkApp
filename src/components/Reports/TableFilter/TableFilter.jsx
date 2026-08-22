@@ -6,6 +6,12 @@ import { FiCalendar } from 'react-icons/fi';
 import 'react-datepicker/dist/react-datepicker.css';
 import styles from './TableFilter.module.css';
 
+function getOptionBackgroundColor(isSelected, isFocused) {
+  if (isSelected) return '#ca50db';
+  if (isFocused) return '#2c2c2c';
+  return '#1f1f1f';
+}
+
 const InputWithCalendarIcon = forwardRef(({ value, onClick }, ref) => {
   return (
     <>
@@ -61,11 +67,7 @@ function TableFilter({
         }),
         option: (base, { isFocused, isSelected }) => ({
           ...base,
-          backgroundColor: isSelected
-            ? '#ca50db'
-            : isFocused
-            ? '#2c2c2c'
-            : '#1f1f1f',
+          backgroundColor: getOptionBackgroundColor(isSelected, isFocused),
           color: isSelected ? '#fff' : '#f1f1f1',
         }),
         singleValue: base => ({ ...base, color: '#f1f1f1' }),

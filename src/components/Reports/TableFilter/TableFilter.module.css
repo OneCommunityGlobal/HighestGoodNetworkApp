@@ -109,12 +109,12 @@
 
 .tableFilterWrapper :global(.react-datepicker__day--selected) {
   color: #fff !important;
-  background-color: #ca50db !important;
+  background-color: #a02db5 !important;
 }
 
 .tableFilterWrapper :global(.react-datepicker__day--selected:hover) {
   color: #fff !important;
-  background-color: #ca50db !important;
+  background-color: #a02db5 !important;
 }
 
 :global(.dark-mode) .tableFilterWrapper :global(.react-datepicker) {
@@ -139,19 +139,19 @@
 }
 
 :global(.dark-mode) .tableFilterWrapper :global(.react-datepicker__day--selected) {
-  background-color: #ca50db;
+  background-color: #a02db5;
 }
 
 :global(.dark-mode) .tableFilterWrapper :global(.react-datepicker__day--selected:hover) {
-  background-color: #ca50db;
+  background-color: #a02db5;
 }
 
 :global(.dark-mode) .tableFilterWrapper :global(.react-datepicker__day--keyboard-selected) {
-  background-color: #ca50db;
+  background-color: #a02db5;
 }
 
 :global(.dark-mode) .tableFilterWrapper :global(.react-datepicker__day--keyboard-selected:hover) {
-  background-color: #ca50db;
+  background-color: #a02db5;
 }
 
 :global(.dark-mode) .tableFilterWrapper :global(.react-datepicker__day--disabled),

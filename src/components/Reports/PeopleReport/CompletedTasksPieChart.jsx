@@ -11,6 +11,60 @@ import styles from './CompletedTasksPieChart.module.css';
 // Reserve space for the "Show more" footer so it doesn't push the last visible row offscreen.
 const FOOTER_RESERVED_ROWS = 1;
 
+export function ColorSwatchCell({ color }) {
+  return (
+    <div
+      data-testid="color-swatch"
+      className={styles['project-chart-legend']}
+      style={{ backgroundColor: color }}
+    />
+  );
+}
+
+export function TotalHoursLabel({ total, darkMode }) {
+  return (
+    <text
+      x="50%"
+      y="50%"
+      textAnchor="middle"
+      dominantBaseline="central"
+      fill={darkMode ? '#ffffff' : '#000000'}
+      fontSize={14}
+      data-testid="total-hours-label"
+    >
+      {`${total.toFixed(2)} Hrs`}
+    </text>
+  );
+}
+
+export function PieTooltip({ name, value, swatch, darkMode, total }) {
+  const hours = value.toFixed(2);
+  const pct = total ? ((value / total) * 100).toFixed(1) : '0.0';
+  return (
+    <div className={darkMode ? styles['tooltip-box-dark'] : styles['tooltip-box-light']}>
+      <div className={styles['tooltip-row']}>
+        {swatch && (
+          <span
+            aria-hidden="true"
+            data-testid="tooltip-swatch"
+            className={styles['tooltip-swatch']}
+            style={{ backgroundColor: swatch }}
+          />
+        )}
+        <span data-testid="tooltip-name" className={styles['tooltip-name']}>
+          {name}
+        </span>
+      </div>
+      <div
+        data-testid="tooltip-detail"
+        className={darkMode ? styles['tooltip-detail-dark'] : styles['tooltip-detail-light']}
+      >
+        {`${hours} hrs (${pct}%)`}
+      </div>
+    </div>
+  );
+}
+
 function CompletedTasksPieChart({ darkMode }) {
   const { tasksWithLoggedHoursById } = useSelector(peopleTasksPieChartViewData);
   const tasks = tasksWithLoggedHoursById ?? [];
@@ -41,7 +95,7 @@ function CompletedTasksPieChart({ darkMode }) {
       // the tbody's rendered height — that would feed back on itself because the
       // tbody's height is a function of how many rows we render into it.
       const tbodyStyles = window.getComputedStyle(tbody);
-      const maxHeightPx = parseFloat(tbodyStyles.maxHeight);
+      const maxHeightPx = Number.parseFloat(tbodyStyles.maxHeight);
       if (!Number.isFinite(maxHeightPx) || maxHeightPx <= 0) {
         setVisibleCount(tasks.length);
         return;
@@ -88,12 +142,7 @@ function CompletedTasksPieChart({ darkMode }) {
         accessor: 'projectId',
         headerClassName: styles.colorColumn,
         cellClassName: styles.colorRow,
-        Cell: ({ value }) => (
-          <div
-            className={styles['project-chart-legend']}
-            style={{ backgroundColor: `${colorScale[value]}` }}
-          />
-        ),
+        Cell: ({ value }) => <ColorSwatchCell color={colorScale[value]} />,
       },
       {
         Header: 'Task Name',
@@ -124,7 +173,7 @@ function CompletedTasksPieChart({ darkMode }) {
     return (
       <div className={styles.completedTasksPieChartEmpty}>
         <div className={`${styles['report-block']} ${styles['pie-empty-state']}`}>
-          <div className={styles['pie-empty-state-inner']} role="status">
+          <div className={styles['pie-empty-state-inner']}>
             <div className={styles['pie-empty-state-icon']} aria-hidden="true">
               <FiFolder size={20} />
             </div>
@@ -167,57 +216,24 @@ function CompletedTasksPieChart({ darkMode }) {
                   ))}
                   <Label
                     position="center"
-                    content={() => (
-                      <text
-                        x="50%"
-                        y="50%"
-                        textAnchor="middle"
-                        dominantBaseline="central"
-                        fill={darkMode ? '#ffffff' : '#000000'}
-                        fontSize={14}
-                      >
-                        {`${total.toFixed(2)} Hrs`}
-                      </text>
-                    )}
+                    content={() => <TotalHoursLabel total={total} darkMode={darkMode} />}
                   />
                 </Pie>
                 <Tooltip
                   content={({ active, payload }) => {
-                    if (!active || !payload || !payload.length) return null;
+                    if (!active || !payload?.length) return null;
                     const item = payload[0];
-                    const value = Number(item.value);
-                    const name = item.name;
                     const swatch =
-                      (item.payload && item.payload.fill) ||
+                      item.payload?.fill ||
                       colors[item.payload?.index ?? 0];
-                    const hours = value.toFixed(2);
-                    const pct = total ? ((value / total) * 100).toFixed(1) : '0.0';
                     return (
-                      <div
-                        className={
-                          darkMode ? styles['tooltip-box-dark'] : styles['tooltip-box-light']
-                        }
-                      >
-                        <div className={styles['tooltip-row']}>
-                          {swatch && (
-                            <span
-                              aria-hidden="true"
-                              className={styles['tooltip-swatch']}
-                              style={{ backgroundColor: swatch }}
-                            />
-                          )}
-                          <span className={styles['tooltip-name']}>{name}</span>
-                        </div>
-                        <div
-                          className={
-                            darkMode
-                              ? styles['tooltip-detail-dark']
-                              : styles['tooltip-detail-light']
-                          }
-                        >
-                          {`${hours} hrs (${pct}%)`}
-                        </div>
-                      </div>
+                      <PieTooltip
+                        name={item.name}
+                        value={Number(item.value)}
+                        swatch={swatch}
+                        darkMode={darkMode}
+                        total={total}
+                      />
                     );
                   }}
                   wrapperStyle={{ zIndex: 9999 }}

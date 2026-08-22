@@ -25,7 +25,7 @@ const DATE_LABEL_FORMAT = new Intl.DateTimeFormat('en-US', {
 });
 
 function parseDate(key) {
-  if (!key) return new Date(NaN);
+  if (!key) return new Date(Number.NaN);
   const d = new Date(key);
   if (!Number.isNaN(d.getTime())) return d;
   // Best-effort parse for 'YYYY-MM-DD' style strings.

@@ -1,13 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import 'reactjs-popup/dist/index.css';
 import { useTable } from 'react-table';
 import styles from './PeopleTableDetails.module.css';
 import TableFilter from './TableFilter/TableFilter';
 
-const TaskResourceContext = React.createContext({});
-
-function TaskResourceList({ task }) {
-  const { expandedTasks, toggleMoreResources } = React.useContext(TaskResourceContext);
+export function TaskResourceCell({ row, expandedTasks, toggleMoreResources }) {
+  const task = row.original;
   const taskResources = (task.resources || []).flat();
   const isExpanded = !!expandedTasks[task._id];
 
@@ -52,6 +50,18 @@ function TaskResourceList({ task }) {
       </div>
     </>
   );
+}
+
+export function YesNoCell({ value }) {
+  return (
+    <div style={{ textAlign: 'center' }}>
+      {value === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}
+    </div>
+  );
+}
+
+export function CenteredValueCell({ value }) {
+  return <div style={{ textAlign: 'center' }}>{value}</div>;
 }
 
 function PeopleTableDetails(props) {
@@ -126,12 +136,12 @@ function PeopleTableDetails(props) {
   };
 
   // REFACTORED: Toggle using state instead of direct DOM manipulation
-  const toggleMoreResources = (id) => {
+  const toggleMoreResources = useCallback((id) => {
     setExpandedTasks((prev) => ({
       ...prev,
       [id]: !prev[id],
     }));
-  };
+  }, []);
 
   const { taskData, darkMode } = props;
   const filteredTasks = filterTasks(taskData);
@@ -146,53 +156,51 @@ function PeopleTableDetails(props) {
         Header: 'Resources',
         accessor: 'resources',
         testId: 'resources',
-        Cell: ({ row }) => <TaskResourceList task={row.original} />,
+        Cell: ({ row }) => (
+          <TaskResourceCell
+            row={row}
+            expandedTasks={expandedTasks}
+            toggleMoreResources={toggleMoreResources}
+          />
+        ),
       },
       {
         Header: 'Active',
         headerClassName: styles.centerColumn,
         accessor: 'active',
         testId: 'active',
-        Cell: ({ value }) => (
-          <div style={{ textAlign: 'center' }}>
-            {value === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}
-          </div>
-        ),
+        Cell: YesNoCell,
       },
       {
         Header: 'Assign',
         accessor: 'assign',
         headerClassName: styles.centerColumn,
         testId: 'assign',
-        Cell: ({ value }) => (
-          <div style={{ textAlign: 'center' }}>
-            {value === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}
-          </div>
-        ),
+        Cell: YesNoCell,
       },
       {
         Header: 'Estimated Hours',
         accessor: 'estimatedHours',
         headerClassName: styles.centerColumn,
         testId: 'eh',
-        Cell: ({ value }) => <div style={{ textAlign: 'center' }}>{value}</div>,
+        Cell: CenteredValueCell,
       },
       {
         Header: 'Start Date',
         accessor: 'startDate',
         headerClassName: styles.centerColumn,
         testId: 'sd',
-        Cell: ({ value }) => <div style={{ textAlign: 'center' }}>{value}</div>,
+        Cell: CenteredValueCell,
       },
       {
         Header: 'End Date',
         accessor: 'endDate',
         headerClassName: styles.centerColumn,
         testId: 'ed',
-        Cell: ({ value }) => <div style={{ textAlign: 'center' }}>{value}</div>,
+        Cell: CenteredValueCell,
       },
     ],
-    [darkMode],
+    [darkMode, expandedTasks, toggleMoreResources],
   );
 
   const tableInstance = useTable({ columns, data: filteredTasks });
@@ -205,7 +213,7 @@ function PeopleTableDetails(props) {
   } = tableInstance;
 
   return (
-    <TaskResourceContext.Provider value={{ expandedTasks, toggleMoreResources }}>
+    <>
       <div className={styles['table-filter-container']}>
         <TableFilter
           onTaskNameSearch={onTaskNameSearch}
@@ -274,7 +282,7 @@ function PeopleTableDetails(props) {
           </tbody>
         </table>
       </div>
-    </TaskResourceContext.Provider>
+    </>
   );
 }
 

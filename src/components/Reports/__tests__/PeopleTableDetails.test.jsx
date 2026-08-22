@@ -1,6 +1,11 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 import '@testing-library/jest-dom';
-import PeopleTableDetails from '../PeopleTableDetails';
+import PeopleTableDetails, {
+  CenteredValueCell,
+  TaskResourceCell,
+  YesNoCell,
+} from '../PeopleTableDetails';
 
 // Factory function to eliminate SonarCloud duplication
 const getMockTask = (id, taskName, resourceCount) => ({
@@ -95,25 +100,89 @@ describe('Unit Test case for PeopleTableDetails component', () => {
   });
 
   it('toggles resource visibility when button is clicked', () => {
+    const taskId = taskFixtureThreeNamedResources[0]._id;
     render(<PeopleTableDetails taskData={taskFixtureThreeNamedResources} />);
 
-    const allButtons = screen.getAllByRole('button');
-    const toggleButton = allButtons.find(button => button.textContent.includes('+'));
+    const toggleButton = screen.getByRole('button', { name: /^\d+\+$/ });
     expect(toggleButton).toBeInTheDocument();
-
-    // eslint-disable-next-line testing-library/no-node-access
-    const extraDiv = document.getElementById(taskFixtureThreeNamedResources[0]._id);
-    expect(extraDiv).toBeInTheDocument();
+    expect(screen.getByTestId(`extra-resources-${taskId}`)).toBeInTheDocument();
 
     fireEvent.click(toggleButton);
-    expect(extraDiv.style.display).toBe('table-cell');
+    expect(screen.getByTestId(`extra-resources-${taskId}`)).toHaveStyle({
+      display: 'table-cell',
+    });
 
-    fireEvent.click(toggleButton);
-    expect(extraDiv).not.toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: /^\d+\+$/ }));
+    expect(screen.getByTestId(`extra-resources-${taskId}`)).toHaveStyle({ display: 'none' });
   });
 
   it('Test 8 : Verify remaining resource count displayed', () => {
     render(<PeopleTableDetails taskData={[getMockTask('1', 'P2', 4)]} />);
     expect(screen.getByText('2+')).toBeInTheDocument();
+  });
+});
+
+describe('TaskResourceCell', () => {
+  const baseProps = { expandedTasks: {}, toggleMoreResources: () => {} };
+
+  it('renders nothing extra when the task has 2 or fewer resources', () => {
+    render(<TaskResourceCell row={{ original: getMockTask('1', 'P1', 2) }} {...baseProps} />);
+    expect(screen.queryByRole('button', { name: /^\d+\+$/ })).not.toBeInTheDocument();
+  });
+
+  it('renders a toggle button when the task has more than 2 resources', () => {
+    render(
+      <TaskResourceCell
+        row={{ original: createTaskWithThreeNamedResources() }}
+        {...baseProps}
+      />,
+    );
+    expect(screen.getByText('1+')).toBeInTheDocument();
+  });
+
+  it('shows the extra-resources block when the task is in expandedTasks', () => {
+    const task = createTaskWithThreeNamedResources();
+    render(
+      <TaskResourceCell
+        row={{ original: task }}
+        expandedTasks={{ [task._id]: true }}
+        toggleMoreResources={() => {}}
+      />,
+    );
+    const extra = screen.getByTestId(`extra-resources-${task._id}`);
+    expect(extra).toHaveStyle({ display: 'table-cell' });
+  });
+
+  it('invokes toggleMoreResources with the task id when the toggle is clicked', () => {
+    const task = createTaskWithThreeNamedResources();
+    const toggleMoreResources = vi.fn();
+    render(
+      <TaskResourceCell
+        row={{ original: task }}
+        expandedTasks={{}}
+        toggleMoreResources={toggleMoreResources}
+      />,
+    );
+    fireEvent.click(screen.getByText('1+'));
+    expect(toggleMoreResources).toHaveBeenCalledWith(task._id);
+  });
+});
+
+describe('YesNoCell', () => {
+  it('renders a check mark when value is "Yes"', () => {
+    render(<YesNoCell value="Yes" />);
+    expect(screen.getByText('✓')).toBeInTheDocument();
+  });
+
+  it('renders a cross mark when value is anything other than "Yes"', () => {
+    const { container } = render(<YesNoCell value="No" />);
+    expect(container.textContent).toBe('❌');
+  });
+});
+
+describe('CenteredValueCell', () => {
+  it('renders the supplied value inside a centered div', () => {
+    render(<CenteredValueCell value="2022-01-01" />);
+    expect(screen.getByText('2022-01-01')).toHaveStyle({ textAlign: 'center' });
   });
 });

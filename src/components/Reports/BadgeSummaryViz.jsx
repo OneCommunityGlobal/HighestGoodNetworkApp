@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import {
   Table,
-  Button as ReactStrapButton,
   DropdownToggle,
   Modal,
   ModalHeader,

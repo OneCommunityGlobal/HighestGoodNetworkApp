@@ -26,49 +26,62 @@ const DATE_LABEL_FORMAT = new Intl.DateTimeFormat('en-US', {
 });
 
 function parseDate(date) {
-  if (!date) return new Date(NaN);
+  if (!date) return new Date(Number.NaN);
   const parsedDate = new Date(date);
   if (!Number.isNaN(parsedDate.getTime())) return parsedDate;
   return new Date(`${date}T00:00:00`);
 }
 
-function aggregateInfringements(infringements, fromDate, toDate) {
-  const groupedInfringements = {};
-  const fromTimestamp = fromDate ? Date.parse(fromDate) : null;
-  const toTimestamp = toDate ? Date.parse(toDate) : null;
-  const hasRange = Number.isFinite(fromTimestamp) && Number.isFinite(toTimestamp);
-
-  infringements.forEach(infringement => {
-    if (!infringement.date) return;
-
-    if (groupedInfringements[infringement.date]) {
-      groupedInfringements[infringement.date].ids.push(infringement._id);
-      groupedInfringements[infringement.date].des.push(infringement.description);
-      groupedInfringements[infringement.date].count += 1;
-      return;
+function groupInfringementsByDate(infringements) {
+  const grouped = {};
+  for (const infringement of infringements) {
+    if (!infringement.date) continue;
+    const bucket = grouped[infringement.date];
+    if (bucket) {
+      bucket.ids.push(infringement._id);
+      bucket.des.push(infringement.description);
+      bucket.count += 1;
+    } else {
+      grouped[infringement.date] = {
+        ids: [infringement._id],
+        des: [infringement.description],
+        count: 1,
+      };
     }
+  }
+  return grouped;
+}
 
-    groupedInfringements[infringement.date] = {
-      ids: [infringement._id],
-      des: [infringement.description],
-      count: 1,
+function buildInfringementValues(groupedInfringements) {
+  return Object.entries(groupedInfringements).map(([dateKey, infringement]) => {
+    const date = parseDate(dateKey);
+    return {
+      ...infringement,
+      date,
+      ts: date.getTime(),
+      type: 'Infringement',
     };
   });
+}
 
-  const values = Object.entries(groupedInfringements)
-    .map(([dateKey, infringement]) => {
-      const date = parseDate(dateKey);
-      return {
-        ...infringement,
-        date,
-        ts: date.getTime(),
-        type: 'Infringement',
-      };
-    })
-    .filter(infringement => {
-      if (Number.isNaN(infringement.ts)) return false;
-      return !hasRange || (fromTimestamp <= infringement.ts && infringement.ts <= toTimestamp);
-    })
+function parseTimestamp(dateString) {
+  if (!dateString) return null;
+  const timestamp = Date.parse(dateString);
+  return Number.isFinite(timestamp) ? timestamp : null;
+}
+
+function isInRange(timestamp, fromTimestamp, toTimestamp) {
+  if (fromTimestamp === null || toTimestamp === null) return true;
+  return fromTimestamp <= timestamp && timestamp <= toTimestamp;
+}
+
+export function aggregateInfringements(infringements, fromDate, toDate) {
+  const grouped = groupInfringementsByDate(infringements);
+  const fromTimestamp = parseTimestamp(fromDate);
+  const toTimestamp = parseTimestamp(toDate);
+
+  const values = buildInfringementValues(grouped)
+    .filter(({ ts }) => !Number.isNaN(ts) && isInRange(ts, fromTimestamp, toTimestamp))
     .sort((first, second) => first.ts - second.ts);
 
   return {
@@ -78,7 +91,6 @@ function aggregateInfringements(infringements, fromDate, toDate) {
 }
 
 function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
-
   const [graphVisible, setGraphVisible] = React.useState(false);
   const [modalVisible, setModalVisible] = React.useState(false);
   const [focusedInf, setFocusedInf] = React.useState(null);

@@ -3,9 +3,8 @@ import { useSelector } from 'react-redux';
 import UserProjectD3PieChart from '../../../common/PieChart/ProjectPieChart';
 import { FiFolder } from "react-icons/fi";
 import { peopleTasksPieChartViewData } from '../selectors';
-import { ReportPage } from '../../sharedComponents/ReportPage';
 import styles from './PeopleTasksPieChart.module.css';
-import clsx from 'clsx';
+import { clsx } from 'clsx';
 
 export function PeopleTasksPieChart({ darkMode }) {
   const {
@@ -31,7 +30,7 @@ export function PeopleTasksPieChart({ darkMode }) {
         </div>
       )}
       {!showProjectsPieChart && (
-          <div className={styles['pie-empty-state-inner']} role="status">
+          <div className={styles['pie-empty-state-inner']}>
             <div className={styles['pie-empty-state-icon']} aria-hidden="true">
               <FiFolder size={20}/>
             </div>
