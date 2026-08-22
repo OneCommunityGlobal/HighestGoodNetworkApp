@@ -13,7 +13,6 @@ import Button from 'react-bootstrap/Button';
 
 import itemStyles from './WishList/ItemOverview.module.css';
 import ThemeIconToggle from './ThemeIconToggle';
-import VillageDropdownFilter from './DropdownFilter/DropdownFilter';
 
 const cx = (base, darkClass, darkMode) => `${base} ${darkMode ? darkClass : ''}`.trim();
 
