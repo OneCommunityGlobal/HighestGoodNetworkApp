@@ -1,5 +1,4 @@
-// export default WeeklyProjectSummary;
-
+// --- WeeklyProjectSummary.jsx ---
 /* eslint-disable import/no-unresolved */
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,8 +6,6 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { toast } from 'react-toastify';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
-import InjurySeverityChart from '../Injuries/InjurySeverityChart';
-import CostPredictionChart from './CostPredictionChart';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
@@ -17,20 +14,20 @@ import IssuesBreakdownChart from './IssuesBreakdownChart';
 import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
-import CostVarianceTrendGraph from './Financials/CostVarianceTrendGraph';
 import CostBreakDown from './Financials/CostBreakDown/CostBreakDown';
-import FinancialsTrackingSection from './ExpenditureChart/FinancialsTrackingSection';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
+import IssueCharts from '../Issues/openIssueCharts';
 import InteractiveMap from '../InteractiveMap/InteractiveMap';
-import styles from './WeeklyProjectSummary.module.css';
 import LossTrackingLineChart from './Financials/LossTrackingLineCharts/LossTrackingLineChart';
-import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
-import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
-import IssueCharts from '../Issues/openIssueCharts';
+import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
+
+import styles from './WeeklyProjectSummary.module.css';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
+import InjurySeverityChart from '../Injuries/InjurySeverityChart';
+import CostPredictionChart from './CostPredictionChart';
 
 const projectStatusButtons = [
   {
@@ -71,7 +68,7 @@ const projectStatusButtons = [
     change: '+13% week over week',
     bgColor: '#FFF6EE',
     buttonColor: '#FFD8A5',
-    textColor: '#328D1B',
+    textColor: '#FFD8A5',
   },
   {
     title: 'Total Material Cost',
@@ -153,9 +150,7 @@ function WeeklyProjectSummary() {
   const selectedComparisonRangeLabel = comparisonPeriodFilter || 'Previous week';
 
   useEffect(() => {
-    if (materials.length === 0) {
-      dispatch(fetchAllMaterials());
-    }
+    if (materials.length === 0) dispatch(fetchAllMaterials());
   }, [dispatch, materials.length]);
 
   useEffect(() => {
@@ -174,11 +169,8 @@ function WeeklyProjectSummary() {
     return Array.from(new Map(materials.map(material => [material._id, material])).values());
   }, [materials]);
 
-  const toggleSection = category => {
-    setOpenSections(prev => ({
-      ...prev,
-      [category]: !prev[category],
-    }));
+  const toggleSection = key => {
+    setOpenSections(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
   const filterProps = useMemo(
@@ -258,6 +250,16 @@ function WeeklyProjectSummary() {
         ),
       },
       {
+        title: 'Injury Severity by Projects',
+        key: 'Injury Severity by Projects',
+        className: 'full',
+        content: (
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
+            <InjurySeverityChart />
+          </div>
+        ),
+      },
+      {
         title: 'Material Consumption',
         key: 'Material Consumption',
         className: 'full',
@@ -297,19 +299,6 @@ function WeeklyProjectSummary() {
         content: (
           <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
             <IssueCharts {...filterProps} />
-          </div>
-        ),
-      },
-      {
-        title: 'Injury Severity by Category of Worker Injured',
-        key: 'Injury Severity',
-        className: 'full',
-        content: (
-          <div
-            className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}
-            style={{ minHeight: '450px' }}
-          >
-            <InjurySeverityChart />
           </div>
         ),
       },
@@ -387,8 +376,7 @@ function WeeklyProjectSummary() {
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: '15px',
-              width: '100%',
+              gap: '10px',
             }}
           >
             <div

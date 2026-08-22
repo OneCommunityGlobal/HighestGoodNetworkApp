@@ -191,12 +191,12 @@
 
 .team-member-tasks-user-name {
   width: 50%;
-  text-align: left;
+  text-align: center;
   vertical-align: top !important;
   display: flex;
   flex-direction: column;
   justify-content: flex-start !important;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .team-member-tasks td {
