@@ -1,0 +1,49 @@
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 16px;
+}
+
+.formList {
+  display: grid;
+  gap: 16px;
+}
+
+.formCard {
+  display: block;
+  padding: 20px;
+  color: inherit;
+  text-decoration: none;
+  background: #fff;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+}
+
+.formCard:hover,
+.formCard:focus {
+  border-color: #00754a;
+}
+
+.darkMode {
+  color: #f0f0f0;
+}
+
+.darkMode .formCard {
+  background: #2a2a2a;
+  border-color: #555;
+}
+
+.darkMode .formCard p {
+  color: #f0f0f0;
+}
+
+.message {
+  padding: 32px 16px;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 24px 12px;
+  }
+}

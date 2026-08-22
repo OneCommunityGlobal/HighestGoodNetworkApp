@@ -219,7 +219,7 @@ function FollowupQuestions() {
 
   const handleEdit = () => {
     dispatch(setformData(newVolunteer));
-    navigate.push('/hgnform');
+    navigate.push('/hgnform/page1');
   };
 
   const handleTextChange = e => {
