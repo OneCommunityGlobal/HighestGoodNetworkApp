@@ -1,4 +1,5 @@
 import { Pie } from 'react-chartjs-2';
+import PropTypes from 'prop-types';
 import sharedStyles from './ReviewsInsight.module.css';
 import { useSelector } from 'react-redux';
 import { Chart } from 'chart.js';
@@ -6,7 +7,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 Chart.register(ChartDataLabels);
 
-function PRQualityGraph({ selectedTeams, qualityData, isDataViewActive }) {
+function PRQualityGraph({ selectedTeams, qualityData, isDataViewActive, orderedTeamIds }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   if (!selectedTeams || selectedTeams.length === 0) {
@@ -18,9 +19,7 @@ function PRQualityGraph({ selectedTeams, qualityData, isDataViewActive }) {
   }
 
   const isAllTeams = selectedTeams.some(team => team.value === 'All');
-  const teamsToDisplay = isAllTeams
-    ? Object.keys(qualityData)
-    : selectedTeams.map(team => team.value);
+  const teamsToDisplay = isAllTeams ? orderedTeamIds : selectedTeams.map(team => team.value);
 
   const generateChartData = team => {
     const teamQualityData = qualityData[team] || {};
@@ -110,5 +109,31 @@ function PRQualityGraph({ selectedTeams, qualityData, isDataViewActive }) {
     </div>
   );
 }
+
+PRQualityGraph.propTypes = {
+  selectedTeams: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.string,
+      label: PropTypes.string,
+    }),
+  ),
+  qualityData: PropTypes.objectOf(
+    PropTypes.shape({
+      NotApproved: PropTypes.number,
+      LowQuality: PropTypes.number,
+      Sufficient: PropTypes.number,
+      Exceptional: PropTypes.number,
+    }),
+  ),
+  isDataViewActive: PropTypes.bool,
+  orderedTeamIds: PropTypes.arrayOf(PropTypes.string),
+};
+
+PRQualityGraph.defaultProps = {
+  selectedTeams: [],
+  qualityData: {},
+  isDataViewActive: false,
+  orderedTeamIds: [],
+};
 
 export default PRQualityGraph;

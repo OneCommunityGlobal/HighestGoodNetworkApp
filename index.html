@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <base href="/" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="theme-color" content="#000000" />
@@ -41,5 +40,15 @@
     <a class="back-to-top" href="#" aria-label="Back to top">
       ↑
     </a>
+    <script>
+      document.querySelector('.back-to-top').addEventListener('click', function (e) {
+        e.preventDefault();
+        document.documentElement.style.scrollBehavior = 'smooth';
+        document.body.style.scrollBehavior = 'smooth';
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        window.scrollTo(0, 0);
+      });
+    </script>
   </body>
 </html>

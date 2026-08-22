@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .purchaseEquipmentContainer {
   width: 100%;
   max-width: 800px;
@@ -11,7 +12,15 @@
   margin: 1rem auto;
 }
 
-@media screen and (max-width: 800px) {
+.infoText {
+  color: #555;
+}
+
+.infoTextDark {
+  color: #ccc;
+}
+
+@media screen and (width <= 800px) {
   .purchaseEquipmentContainer {
     width: 95%;
   }

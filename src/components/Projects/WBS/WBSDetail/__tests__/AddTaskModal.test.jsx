@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import '@testing-library/jest-dom/extend-expect';
 import AddTaskModal from '../AddTask/AddTaskModal';
@@ -34,22 +34,7 @@ vi.mock('@tinymce/tinymce-react', () => ({
   ),
 }));
 
-// Mock Redux actions
-//vi.mock('../../../../../actions/task', () => ({
-//  addNewTask: vi.fn(),
-//}));
-
-//vi.mock('../../../../../actions/projectMembers', () => ({
-  // Return a plain action so redux-mock-store accepts it
-  //fetchAllMembers: vi.fn(() => ({ type: 'FETCH_MEMBERS_TEST_DUMMY' })),
-//}));
-
-vi.mock('../../../../../actions/projectMembers', () => ({
-  fetchAllMembers: vi.fn(() => ({ type: 'FETCH_MEMBERS_TEST_DUMMY' })),
-  findProjectMembers: vi.fn(() => ({ type: 'FIND_PROJECT_MEMBERS_TEST_DUMMY' })),
-}));
-
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 const initialState = {
   tasks: {
     taskItems: [],

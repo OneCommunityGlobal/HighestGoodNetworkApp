@@ -1,18 +1,19 @@
 #!/bin/sh
 # Load nvm if available
-# Try to load nvm (non-blocking)
 export NVM_DIR="$HOME/.nvm"
-
-if [ -s "$NVM_DIR/nvm.sh" ]; then
-  . "$NVM_DIR/nvm.sh"
-  nvm use >/dev/null 2>&1
-  echo "Using Node via nvm"
-else
-  echo "nvm not available, using system Node"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+# Use Node 20 if available (or install if needed)
+if [ -f .nvmrc ]; then
+  nvm use 20 2>/dev/null || nvm install 20 && nvm use 20
 fi
 
 echo ""
 echo "🛡️  Husky pre-commit hook triggered"
+
+if git rev-parse -q --verify MERGE_HEAD >/dev/null 2>&1; then
+  echo "ℹ️  Merge commit detected. Skipping lint-staged auto-fix on the merged file set."
+  exit 0
+fi
 
 # Block plain .css files (except .module.css and index.css)
 for file in $(git diff --cached --name-only --diff-filter=ACM | grep '\.css$'); do
