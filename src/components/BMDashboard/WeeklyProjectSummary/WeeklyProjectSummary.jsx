@@ -28,6 +28,10 @@ import styles from './WeeklyProjectSummary.module.css';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import InjurySeverityChart from '../Injuries/InjurySeverityChart';
 import CostPredictionChart from './CostPredictionChart';
+import FinancialsTrackingSection from './ExpenditureChart/FinancialsTrackingSection';
+import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
+import CostVarianceTrendGraph from './Financials/CostVarianceTrendGraph';
+import SupplierPerformanceGraph from './SupplierPerformanceGraph';
 
 const projectStatusButtons = [
   {
