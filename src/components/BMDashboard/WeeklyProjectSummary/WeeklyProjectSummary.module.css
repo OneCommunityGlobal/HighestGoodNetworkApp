@@ -32,7 +32,6 @@
   width: 100%;
 }
 
-/* Header Container */
 .weeklySummaryHeaderContainer {
   display: flex;
   flex-wrap: nowrap;
@@ -47,7 +46,6 @@
   gap: 12px;
 }
 
-/* Title */
 .weeklySummaryHeaderTitle {
   margin: 0;
   line-height: 1.2;
@@ -58,7 +56,6 @@
   flex: 0 0 auto;
 }
 
-/* Header Controls */
 .weeklySummaryHeaderControls {
   display: flex;
   gap: 8px;
@@ -82,7 +79,6 @@
   max-width: 220px;
 }
 
-/* Dropdown Styling */
 .weeklySummaryHeaderControls select {
   height: 38px;
   min-height: 38px;
@@ -113,7 +109,6 @@
   border-color: var(--focus-border-color, #3b82f6);
 }
 
-/* Dropdown Hover */
 .weeklySummaryHeaderControls select:hover {
   background-color: var(--section-title-hover) !important;
 }
@@ -146,6 +141,12 @@
   transition: background 0.2s ease-in-out;
 }
 
+/* Bootstrap .btn can add vertical offset; align with selects */
+.weeklySummaryHeaderControls :global(button.btn) {
+  margin: 0 !important;
+  vertical-align: middle;
+}
+
 .darkMode .weeklySummaryShareBtn {
   background-color: var(--button-bg) !important;
 }
@@ -160,10 +161,8 @@
   cursor: not-allowed;
 }
 
-/* Bootstrap .btn can add vertical offset; align with selects */
-.weeklySummaryHeaderControls :global(button.btn) {
-  margin: 0 !important;
-  vertical-align: middle;
+.darkMode .weeklySummaryShareBtn:hover {
+  background-color: var(--button-hover) !important;
 }
 
 .weeklySummaryShareBtn:hover:not(:disabled) {
@@ -197,7 +196,7 @@
   flex-direction: column;
 }
 
-/* .weeklyProjectSummaryDashboardSection options */
+/* Section Size Modifiers */
 .full {
   grid-column: span 4;
 }
@@ -231,6 +230,14 @@
 .darkMode .weeklyProjectSummaryCard {
   background: var(--card-bg);
   box-shadow: 0 2px 5px rgb(255 255 255 / 10%);
+}
+
+.toolReplacementCard {
+  grid-column: 1 / -1;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow: visible;
 }
 
 .weeklyProjectSummaryCard :global(.container) {
@@ -299,6 +306,7 @@
   font-size: 24px;
 }
 
+/* shared card layout types */
 .fullCard {
   width: 100%;
   min-height: 250px;
@@ -373,13 +381,14 @@
   border-top: 1px solid rgb(255 255 255 / 20%);
 }
 
-.weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
-  display: grid;
+.weeklyProjectSummaryDashboardSection.half
+  .weeklyProjectSummaryDashboardCategoryContent {
   grid-template-columns: repeat(2, 1fr);
   gap: 15px;
 }
 
-.weeklyProjectSummaryDashboardSection.small .weeklyProjectSummaryDashboardCategoryContent {
+.weeklyProjectSummaryDashboardSection.small
+  .weeklyProjectSummaryDashboardCategoryContent {
   display: grid;
   grid-template-columns: 1fr;
   gap: 15px;
@@ -469,7 +478,7 @@
   --card-elev-hover: rgb(0 0 0 / 18%);
 }
 
-/* ---------------- DARK MODE STYLES ---------------- */
+/* ---------------- DARK MODE (Unified) ---------------- */
 .darkMode {
   --bg-color: #1b2a41;
   --text-color: #fff;
@@ -490,7 +499,6 @@
   --card-elev-hover: rgb(0 0 0 / 60%);
 }
 
-/* MERGED: keep background + FORCE all title text visible in dark mode */
 .darkMode .weeklyProjectSummaryDashboardCategoryTitle {
   background: #2d4059;
   color: #fff;
@@ -503,10 +511,6 @@
 .darkMode .weeklySummaryHeaderContainer {
   background: var(--section-bg);
   color: var(--text-color);
-}
-
-.darkMode .weeklySummaryShareBtn:hover {
-  background-color: var(--button-hover) !important;
 }
 
 /* ---------------- STATUS CARD (base) ---------------- */
@@ -585,13 +589,25 @@
   border-radius: 4px;
 }
 
-/* Additional adjustments for dark mode if needed */
 .darkMode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-track {
   background: rgb(255 255 255 / 10%);
 }
 
 .darkMode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-thumb {
   background: rgb(255 255 255 / 30%);
+}
+
+/* Animation */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Animation */
@@ -700,6 +716,39 @@
 
   .weeklyProjectSummaryDashboardGrid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .darkMode .weeklySummaryHeaderTitle {
+    color: #fff !important; /* bright white title */
+  }
+
+  .darkMode .weeklySummaryHeaderControls select {
+    background: #2d4059 !important;
+    color: #fff !important;
+    border: 1px solid rgb(255 255 255 / 30%) !important;
+  }
+
+  .darkMode .weeklySummaryHeaderControls select option {
+    background: #2d4059;
+    color: #fff;
+  }
+
+  .darkMode .weeklySummaryShareBtn {
+    background: #e8a71c !important;
+    color: #000 !important; /* readable in dark mode */
+  /* Tools and Equipment Tracking - 2 column layout on tablet */
+  }
+  
+  .weeklyProjectSummaryDashboardCategoryContent {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding: 12px;
+  }
+
+  /* Cards span full width on tablet */
+  .weeklyProjectSummaryDashboardCategoryContent .wideCard,
+  .weeklyProjectSummaryDashboardCategoryContent .normalCard {
+    grid-column: span 2;
   }
 }
 

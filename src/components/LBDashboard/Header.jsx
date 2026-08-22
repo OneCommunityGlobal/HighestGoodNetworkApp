@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import { connect, useSelector } from 'react-redux';
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import Navbar from 'react-bootstrap/Navbar';
@@ -14,6 +13,7 @@ import Button from 'react-bootstrap/Button';
 
 import itemStyles from './WishList/ItemOverview.module.css';
 import ThemeIconToggle from './ThemeIconToggle';
+import VillageDropdownFilter from './DropdownFilter/DropdownFilter';
 
 const cx = (base, darkClass, darkMode) => `${base} ${darkMode ? darkClass : ''}`.trim();
 
@@ -24,24 +24,6 @@ function LBDashboardHeader({ notifications, authUser, villages, onVillageChange 
   const [showNotifications, setShowNotifications] = useState(false);
   const notificationCount = notifications?.length ?? 0;
   const darkMode = useSelector(state => state.theme.darkMode);
-
-  const selectorStyle = darkMode
-    ? {
-        backgroundColor: 'transparent',
-        color: '#ffffff',
-      }
-    : undefined;
-
-  const goButtonStyle = darkMode
-    ? {
-        backgroundColor: '#4f6fdc',
-        borderColor: '#89a2ff',
-      }
-    : undefined;
-
-  const handleGoClick = () => {
-    onVillageChange(selectedVillage);
-  };
 
   return (
     <>

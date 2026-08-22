@@ -1,11 +1,11 @@
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import { fireEvent, render, screen } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router-dom';
-import { configureStore } from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import TeamMemberTask from '~/components/TeamMemberTasks/TeamMemberTask';
-import { authMock, rolesMock, themeMock, userProfileMock } from '../../../__tests__/mockStates.js';
+import { authMock, rolesMock, userProfileMock, themeMock } from '../../../__tests__/mockStates.js';
+import thunk from 'redux-thunk';
+import configureMockStore from 'redux-mock-store';
+import { MemoryRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
 
 // sample props used for testing purpose. You can change the props according to your test.
 // currently used admin props to conduct the test
@@ -40,7 +40,7 @@ const props = {
   weeklycommittedHours: 10,
 };
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 const store = mockStore({
   auth: authMock,
@@ -70,8 +70,6 @@ const renderComponent = mockProps => {
               userRole={mockProps.role}
               userId={mockProps.personId}
               updateTaskStatus={updateTaskStatus}
-              showTrackers
-              showTasks
             />
           </tbody>
         </table>
