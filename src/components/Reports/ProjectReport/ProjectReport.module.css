@@ -21,3 +21,36 @@
 .pie-chart-checkbox {
   margin-right: 8px; /* Space between checkbox and label */
 }
+
+/* `dark-mode`, `bg-oxford-blue` and the bootstrap/reactstrap classes below are all
+   global - applied by ancestors or by reactstrap, never by this module. Inside a
+   `.module.css` they would be hashed and match nothing, so they must stay :global(). */
+:global(.dark-mode .project-header),
+:global(.bg-oxford-blue .project-header) {
+  color: #fff !important;
+}
+
+:global(.dark-mode select),
+:global(.bg-oxford-blue select),
+:global(.dark-mode .form-control),
+:global(.bg-oxford-blue .form-control) {
+  background-color: #1c2541;
+  color: #fff;
+  border-color: #3a506b;
+}
+
+:global(.dark-mode .dropdown-menu),
+:global(.bg-oxford-blue .dropdown-menu) {
+  background-color: #1c2541;
+  border-color: #3a506b;
+}
+
+:global(.dark-mode .dropdown-item),
+:global(.bg-oxford-blue .dropdown-item) {
+  color: #fff;
+}
+
+:global(.dark-mode .dropdown-item:hover),
+:global(.bg-oxford-blue .dropdown-item:hover) {
+  background-color: #3a506b;
+}

@@ -679,7 +679,6 @@ const TeamMemberTasks = React.memo(props => {
                           styles['team-member-tasks-headers'],
                           styles['team-member-tasks-user-name'],
                           darkMode ? styles.darkStickyHeader : '',
-                          darkMode ? styles.transparentHeader : '',
                         ].join(' ')}
                       >
                         Team Member
@@ -715,6 +714,9 @@ const TeamMemberTasks = React.memo(props => {
                             onClick={handleShowTrackers}
                             className={[
                               styles.m1,
+                              styles.headerControlButton,
+                              showTrackers ? styles.headerControlButtonActive : '',
+                              darkMode ? styles.headerControlButtonDark : '',
                               darkMode ? styles.boxShadowDark : styles.boxShadowLight,
                             ].join(' ')}
                             style={{
@@ -723,8 +725,6 @@ const TeamMemberTasks = React.memo(props => {
                               fontSize: '12px',
                               borderRadius: '4px',
                               border: '1px solid #17a2b8',
-                              backgroundColor: showTrackers ? '#17a2b8' : 'white',
-                              color: showTrackers ? 'white' : '#17a2b8',
                               cursor: 'pointer',
                               whiteSpace: 'nowrap',
                             }}
@@ -736,6 +736,9 @@ const TeamMemberTasks = React.memo(props => {
                             onClick={handleHideTasks}
                             className={[
                               styles.m1,
+                              styles.headerControlButton,
+                              !showTasks ? styles.headerControlButtonActive : '',
+                              darkMode ? styles.headerControlButtonDark : '',
                               darkMode ? styles.boxShadowDark : styles.boxShadowLight,
                             ].join(' ')}
                             style={{
@@ -744,8 +747,6 @@ const TeamMemberTasks = React.memo(props => {
                               fontSize: '12px',
                               borderRadius: '4px',
                               border: '1px solid #17a2b8',
-                              backgroundColor: showTasks ? 'white' : '#17a2b8',
-                              color: showTasks ? '#17a2b8' : 'white',
                               cursor: 'pointer',
                               whiteSpace: 'nowrap',
                             }}

@@ -46,6 +46,12 @@ import {
   fetchEmailTemplates,
   previewEmailTemplate,
 } from '../../../actions/emailTemplateActions';
+// ponytail: still a bare import, so this stylesheet's rules ship hashed and match
+// nothing — it has been inert since it was written. Left that way deliberately:
+// it is a 568-line sheet of generic Bootstrap overrides (.form-group, .btn-sm,
+// .invalid-feedback), so wrapping it in :global() to revive it would leak those
+// across the whole app once this chunk loads. Fix it by scoping its rules to an
+// email-management root first, then binding it.
 import '../EmailManagementShared.module.css';
 import { getEmailSenderConfig } from '../shared';
 import {
@@ -54,7 +60,7 @@ import {
   YOUTUBE_THUMBNAIL_QUALITIES,
 } from './constants/emailConstants';
 import { clearDraft, getDraftAge, hasDraft, loadDraft, saveDraft } from './formPersistence';
-import './IntegratedEmailSender.module.css';
+import styles from './IntegratedEmailSender.module.css';
 import {
   buildRenderedEmailFromTemplate,
   parseRecipients as parseRecipientsUtil,
@@ -1391,7 +1397,7 @@ const IntegratedEmailSender = ({
 
   if (componentError) {
     return (
-      <div className={`email-sender ${darkMode ? 'dark-mode' : 'light-mode'}`}>
+      <div className={`${styles['email-sender']} ${darkMode ? styles.dark : ''}`}>
         <div className="page-title-container mb-3">
           <h2 className="page-title">Send Email</h2>
         </div>

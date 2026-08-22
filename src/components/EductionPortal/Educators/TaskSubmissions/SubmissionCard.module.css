@@ -19,7 +19,7 @@
 
 .card:hover {
   border-color: #D1D5DB;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 8%);
   transform: translateY(-3px);
 }
 
@@ -115,7 +115,7 @@
   border-radius: 8px;
   font-size: 12px;
   font-weight: 700;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 4px 12px rgb(16 185 129 / 25%);
   letter-spacing: 0.3px;
   text-transform: uppercase;
 }
@@ -136,12 +136,12 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 10px rgb(0 0 0 / 15%);
 }
 
 .infoIcon:hover {
   transform: scale(1.1);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 14px rgb(0 0 0 / 20%);
 }
 
 .tooltip {
@@ -149,14 +149,15 @@
   top: calc(100% + 12px);
   right: 0;
   z-index: 50;
-  animation: tooltipFadeIn 0.2s ease-out;
+  animation: tooltip-fade-in 0.2s ease-out;
 }
 
-@keyframes tooltipFadeIn {
+@keyframes tooltip-fade-in {
   from {
     opacity: 0;
     transform: translateY(-8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -164,11 +165,11 @@
 }
 
 .tooltipContent {
-  background: #FFFFFF;
+  background: #FFF;
   color: #1F2937;
   padding: 12px 14px;
   border-radius: 8px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 25px rgb(0 0 0 / 15%), 0 0 0 1px rgb(0 0 0 / 5%);
   min-width: 200px;
   max-width: 280px;
   display: flex;
@@ -199,8 +200,8 @@
   height: 0;
   border-left: 8px solid transparent;
   border-right: 8px solid transparent;
-  border-bottom: 8px solid #FFFFFF;
-  filter: drop-shadow(0 -2px 2px rgba(0, 0, 0, 0.05));
+  border-bottom: 8px solid #FFF;
+  filter: drop-shadow(0 -2px 2px rgb(0 0 0 / 5%));
 }
 
 .spacer {
@@ -260,7 +261,7 @@
   line-height: 1.4;
 }
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .card {
     min-height: 145px;
     padding: 16px;
@@ -281,7 +282,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .card {
     height: auto;
     min-height: 140px;
@@ -347,71 +348,72 @@
   }
 }
 
-/* Dark Mode */
-:global(.dark-mode) .card {
-  background: #1e1e2e;
-  border-color: #3d3d3d;
+/* ─── Dark mode ───
+   `.darkMode` is applied to `.card` itself by SubmissionCard.jsx, so it's
+   combined via a compound selector here rather than a descendant one. The
+   `.lateCard`/`.gradedCard` gradients and the green `.gradedBadge` already carry
+   enough of their own color to read fine in both themes and are left alone. */
+.card.darkMode {
+  background: #1c2541;
+  border-color: #3a506b;
 }
 
-:global(.dark-mode) .card:hover {
-  border-color: #555;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+.card.darkMode.lateCard {
+  background: linear-gradient(to bottom, #1c2541 0%, #3a1f24 100%);
 }
 
-:global(.dark-mode) .lateCard {
-  background: linear-gradient(to bottom, #1e1e2e 0%, #2d1515 100%);
-  border-color: #EF4444;
+.card.darkMode.gradedCard {
+  background: linear-gradient(to bottom, #1c2541 0%, #1a3324 100%);
 }
 
-:global(.dark-mode) .lateCard:hover {
-  border-color: #DC2626;
+.darkMode .studentName {
+  color: #f9fafb;
 }
 
-:global(.dark-mode) .gradedCard {
-  background: linear-gradient(to bottom, #1e1e2e 0%, #0f2d1a 100%);
-  border-color: #166534;
+.darkMode .taskType {
+  color: #94a3b8;
 }
 
-:global(.dark-mode) .studentName {
-  color: #e0e0e0;
+.darkMode .infoIcon {
+  background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
 }
 
-:global(.dark-mode) .taskType {
-  color: #9ca3af;
+.darkMode .tooltipContent {
+  background: #232946;
+  color: #d1d5db;
+  box-shadow: 0 10px 25px rgb(0 0 0 / 40%), 0 0 0 1px #3a506b;
 }
 
-:global(.dark-mode) .tooltipContent {
-  background: #2d2d2d;
-  color: #e0e0e0;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+.darkMode .tooltipArrow {
+  border-bottom-color: #232946;
 }
 
-:global(.dark-mode) .tooltipText {
+.darkMode .tooltipText {
   color: #d1d5db;
 }
 
-:global(.dark-mode) .tooltipArrow {
-  border-bottom-color: #2d2d2d;
+.darkMode .gradeSection {
+  background: linear-gradient(135deg, #14532d 0%, #1a3324 100%);
+  border-color: #22543d;
 }
 
-:global(.dark-mode) .gradeSection {
-  background: linear-gradient(135deg, #0f2d1a 0%, #14532d 100%);
-  border-color: #166534;
+.darkMode .gradeLabel {
+  color: #86efac;
 }
 
-:global(.dark-mode) .gradeLabel {
-  color: #6ee7b7;
+.darkMode .gradeValue {
+  color: #4ade80;
 }
 
-:global(.dark-mode) .gradeValue {
-  color: #34d399;
-}
-
-:global(.dark-mode) .lateSection {
-  background: linear-gradient(135deg, #2d1515 0%, #3d1a1a 100%);
+.darkMode .lateSection {
+  background: linear-gradient(135deg, #3a1f24 0%, #4a1f24 100%);
   border-color: #7f1d1d;
 }
 
-:global(.dark-mode) .lateDate {
+.darkMode .lateLabel {
+  color: #fca5a5;
+}
+
+.darkMode .lateDate {
   color: #fca5a5;
 }

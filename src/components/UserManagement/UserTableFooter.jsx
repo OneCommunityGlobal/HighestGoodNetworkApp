@@ -19,6 +19,7 @@ const UserTableFooterComponent = (props) => {
         selectedPage={props.selectedPage}
         pageSize={props.pageSize}
         datacount={props.datacount}
+        darkMode={darkMode}
       />
       <PageSizeDropDown onSelectPageSize={onSelectPageSize}  darkMode={darkMode}/>
       <div id="ember745" className="table-nav col-md-6 col-sm-6 col-xs-6 ember-view">
@@ -113,7 +114,7 @@ const PageSummaryLabelComponent = (props) => {
   return (
     <div
       id="user_table_footer"
-      className="table-summary col-md-4 col-sm-4 col-xs-4 ember-view"
+      className={`table-summary col-md-4 col-sm-4 col-xs-4 ember-view ${props.darkMode ? 'text-light' : ''}`}
       style={{ marginBottom: '25px' }}
     >
       {displayedUsers}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import 'reactjs-popup/dist/index.css';
 import { Container } from 'reactstrap';
-import './PeopleTableDetails.module.css';
+import styles from './PeopleTableDetails.module.css';
 import NewModal from '../common/NewModal';
 import TableFilter from './TableFilter/TableFilter';
 
@@ -17,11 +17,11 @@ function TaskModalContent({ whyInfo, intentInfo, endstateInfo }) {
   return (
     <>
       <div>Why This Task is important</div>
-      <textarea className="rectangle" type="text" value={whyInfo} readOnly />
+      <textarea className={styles['rectangle']} type="text" value={whyInfo} readOnly />
       <div>Design Intent</div>
-      <textarea className="rectangle" type="text" value={intentInfo} readOnly />
+      <textarea className={styles['rectangle']} type="text" value={intentInfo} readOnly />
       <div>End State</div>
-      <textarea className="rectangle" type="text" value={endstateInfo} readOnly />
+      <textarea className={styles['rectangle']} type="text" value={endstateInfo} readOnly />
     </>
   );
 }
@@ -124,16 +124,16 @@ function PeopleTableDetails(props) {
   const filteredOptions = filterOptions(taskData);
 
   const renderMobileFilteredTask = (value) => (
-    <div className={`task-card ${darkMode ? 'text-dark' : ''}`}>
+    <div className={`${styles['task-card']} ${darkMode ? styles['task-card-dark'] : ''}`}>
       <div key={value._id}>
-        <div className="task-header">
-          <div className="task-title people-report-task-name task-name-word-break">
+        <div className={styles['task-header']}>
+          <div className={`task-title ${styles['people-report-task-name']} ${styles['task-name-word-break']}`}>
             {value.taskName}
           </div>
-          <div className='task-details'>
-            <div className='task-info'>
-              <div className='sub-head'>Priority</div>
-              <div className='sub-details'>{value.priority}</div>
+          <div className={styles['task-details']}>
+            <div className={styles['task-info']}>
+              <div className={styles['sub-head']}>Priority</div>
+              <div className={styles['sub-details']}>{value.priority}</div>
             </div>
             <div className='task-info'>
               <div className='sub-head'>Resources</div>
@@ -155,24 +155,24 @@ function PeopleTableDetails(props) {
               )}
             </div>
           </div>
-          <div className="task-info">
-            <div className="sub-head">Active</div>
+          <div className={styles['task-info']}>
+            <div className={styles['sub-head']}>Active</div>
             <div>{value.active === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}</div>
           </div>
-          <div className="task-info">
-            <div className="sub-head">Assign</div>
+          <div className={styles['task-info']}>
+            <div className={styles['sub-head']}>Assign</div>
             <div>{value.assign === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}</div>
           </div>
-          <div className="task-info">
-            <div className="sub-head">Estimated Hours</div>
+          <div className={styles['task-info']}>
+            <div className={styles['sub-head']}>Estimated Hours</div>
             <div>{value.estimatedHours}</div>
           </div>
-          <div className="task-info">
-            <div className="sub-head">Start Date</div>
+          <div className={styles['task-info']}>
+            <div className={styles['sub-head']}>Start Date</div>
             <div>{value.startDate}</div>
           </div>
-          <div className="task-info">
-            <div className="sub-head">End Date</div>
+          <div className={styles['task-info']}>
+            <div className={styles['sub-head']}>End Date</div>
             <div>{value.endDate}</div>
           </div>
         </div>
@@ -186,8 +186,10 @@ function PeopleTableDetails(props) {
     const isExpanded = !!expandedTasks[value._id];
 
     return (
-      <div key={value._id} className={`people-table-row people-table-body-row ${darkMode ? 'people-table-row-dark' : ''}`}>
-        <div className="people-report-task-name">{value.taskName}</div>
+      <div key={value._id} className={`${styles['people-table-row']} ${styles['people-table-body-row']} ${
+          darkMode ? styles['people-table-row-dark'] : ''
+        }`}>
+        <div className={styles['people-report-task-name']}>{value.taskName}</div>
         <div>{value.priority}</div>
         <div>{value.status}</div>
         <div>
@@ -225,11 +227,11 @@ function PeopleTableDetails(props) {
           {/* Style is now driven by React State, making it testable and Sonar-safe */}
           <div
             id={value._id}
-            className="extra"
+            className={styles['extra']}
             data-testid={`extra-resources-${value._id}`}
             style={{ display: isExpanded ? 'table-cell' : 'none' }}
           >
-            <div className="extra1">
+            <div className={styles['extra1']}>
               {value.resources?.map((res, outerIndex) =>
                 // eslint-disable-next-line array-callback-return,consistent-return
                 res
@@ -248,15 +250,15 @@ function PeopleTableDetails(props) {
           </div>
         </div>
 
-        <div className="people-table-center-cell">
+        <div className={styles['people-table-center-cell']}>
           {value.active === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}
         </div>
-        <div className="people-table-center-cell">
+        <div className={styles['people-table-center-cell']}>
           {value.assign === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}
         </div>
-        <div className="people-table-end-cell">{value.estimatedHours}</div>
-        <div className="people-table-end-cell">{value.startDate}</div>
-        <div className="people-table-end-cell">{value.endDate}</div>
+        <div className={styles['people-table-end-cell']}>{value.estimatedHours}</div>
+        <div className={styles['people-table-end-cell']}>{value.startDate}</div>
+        <div className={styles['people-table-end-cell']}>{value.endDate}</div>
       </div>
     );
   };
@@ -264,17 +266,17 @@ function PeopleTableDetails(props) {
   const renderModalContent = (value) => (
     <div>
       <div>Why This Task is important</div>
-      <textarea className="rectangle" type="text" defaultValue={value.whyInfo} />
+      <textarea className={styles['rectangle']} type="text" defaultValue={value.whyInfo} />
       <div>Design Intent</div>
-      <textarea className="rectangle" type="text" defaultValue={value.intentInfo} />
+      <textarea className={styles['rectangle']} type="text" defaultValue={value.intentInfo} />
       <div>End State</div>
-      <textarea className="rectangle" type="text" defaultValue={value.endstateInfo} />
+      <textarea className={styles['rectangle']} type="text" defaultValue={value.endstateInfo} />
     </div>
   );
 
   return (
-    <Container fluid className={`wrapper ${darkMode ? 'text-light' : ''}`}>
-      <div className="table-filter-container">
+    <Container fluid className={`${styles.wrapper} ${darkMode ? 'text-light' : ''}`}>
+      <div className={styles['table-filter-container']}>
         <TableFilter
           onTaskNameSearch={onTaskNameSearch}
           searchPriority={searchPriority}
@@ -297,23 +299,34 @@ function PeopleTableDetails(props) {
           UpdateStartDate={updateStartDate}
           EndDate={endDate}
           UpdateEndDate={updateEndDate}
+          darkMode={darkMode}
         />
-        <button type="button" onClick={resetFilters} className="tasks-table-clear-filter-button">
+        <button
+          type="button"
+          onClick={resetFilters}
+          className={`${styles['tasks-table-clear-filter-button']} ${
+            darkMode ? styles['tasks-table-clear-filter-button-dark'] : ''
+          }`}
+        >
           Clear Filters
         </button>
       </div>
-      <div className={`people-table-row reports-table-head ${darkMode ? 'bg-space-cadet' : ''}`}>
+      <div
+        className={`${styles['people-table-row']} ${styles['reports-table-head']} ${
+          darkMode ? styles['reports-table-head-dark'] : ''
+        }`}
+      >
         <div data-testid="task">Task</div>
         <div data-testid="priority">Priority</div>
         <div data-testid="status">Status</div>
-        <div data-testid="resources" className="people-table-center-cell">Resources</div>
-        <div data-testid="active" className="people-table-center-cell">Active</div>
-        <div data-testid="assign" className="people-table-center-cell">Assign</div>
-        <div data-testid="eh" className="people-table-end-cell">Estimated Hours</div>
-        <div data-testid="sd" className="people-table-end-cell">Start Date</div>
-        <div data-testid="ed" className="people-table-end-cell">End Date</div>
+        <div data-testid="resources" className={styles['people-table-center-cell']}>Resources</div>
+        <div data-testid="active" className={styles['people-table-center-cell']}>Active</div>
+        <div data-testid="assign" className={styles['people-table-center-cell']}>Assign</div>
+        <div data-testid="eh" className={styles['people-table-end-cell']}>Estimated Hours</div>
+        <div data-testid="sd" className={styles['people-table-end-cell']}>Start Date</div>
+        <div data-testid="ed" className={styles['people-table-end-cell']}>End Date</div>
       </div>
-      <div className="people-table">
+      <div className={styles['people-table']}>
         {filteredTasks.map(value => (
 
           // eslint-disable-next-line react/no-unstable-nested-components

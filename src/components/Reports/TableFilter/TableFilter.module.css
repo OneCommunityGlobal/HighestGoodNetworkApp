@@ -45,68 +45,75 @@ select {
   color: #c6c6c6;
 }
 
-/* Dark mode styles */
-.text-light .table-filter-input {
-  background-color: #2c2c2c;
-  border-color: #4a4a4a;
+/* ─── Dark mode ─── */
+
+/* Keyed off `.dark`, applied to the wrapper by TableFilter.jsx. These rules were
+   previously written as `.text-light .x`, meaning Bootstrap's global helper the
+   parent puts on its <Container>. That could never match: CSS Modules hashes
+   `.text-light` here into a local name, while the DOM carries the unhashed global
+   one. A local class is the only ancestor a module can reliably select on.
+   Palette matches TasksTable.module.css so both filter rows look identical. */
+.dark .table-filter-item {
+  background-color: #1c2541;
+}
+
+.dark .table-filter-input {
+  background-color: #1c2541;
+  border-color: #3a506b;
   color: #fff;
 }
 
-.text-light .table-filter-input::placeholder {
-  color: #a0a0a0;
+.dark .table-filter-input::placeholder {
+  color: #94a3b8;
 }
 
-.text-light .date-picker-icon {
-  color: #a0a0a0;
+.dark .date-picker-icon {
+  color: #94a3b8;
 }
 
-.text-light .react-datepicker {
-  background-color: #2c2c2c;
-  border-color: #4a4a4a;
+.dark .table-filter-item label {
   color: #fff;
 }
 
-.text-light .react-datepicker__header {
-  background-color: #2c2c2c;
-  border-bottom-color: #4a4a4a;
+.dark .table-filter-item input[type="checkbox"] {
+  background-color: #1c2541;
+  border-color: #3a506b;
 }
 
-.text-light .react-datepicker__current-month,
-.text-light .react-datepicker__day-name,
-.text-light .react-datepicker__day {
-  color: #fff;
-}
-
-.text-light .react-datepicker__day:hover {
-  background-color: #4a4a4a;
-}
-
-.text-light .react-datepicker__day--selected {
-  background-color: #ca50db;
-}
-
-.text-light .react-datepicker__day--keyboard-selected {
-  background-color: #ca50db;
-}
-
-.text-light .table-filter-item label {
-  color: #fff;
-}
-
-.text-light .table-filter-item input[type="checkbox"] {
-  background-color: #2c2c2c;
-  border-color: #4a4a4a;
-}
-
-.text-light .table-filter-item input[type="checkbox"]:checked {
+.dark .table-filter-item input[type="checkbox"]:checked {
   background-color: #ca50db;
   border-color: #ca50db;
 }
 
-.text-light .table-filter-item input[type="checkbox"]:hover {
+.dark .table-filter-item input[type="checkbox"]:hover {
   border-color: #ca50db;
 }
 
-.text-light .table-filter-item {
-  background-color: #2c2c2c;
+/* react-datepicker ships its own global stylesheet, so these class names must be
+   wrapped in :global() or CSS Modules would hash them too and they would stop
+   matching the calendar popup — the same failure this file is being fixed for. */
+.dark :global(.react-datepicker) {
+  background-color: #1c2541;
+  border-color: #3a506b;
+  color: #fff;
+}
+
+.dark :global(.react-datepicker__header) {
+  background-color: #1c2541;
+  border-bottom-color: #3a506b;
+}
+
+.dark :global(.react-datepicker__current-month),
+.dark :global(.react-datepicker__day-name),
+.dark :global(.react-datepicker__day) {
+  color: #fff;
+}
+
+.dark :global(.react-datepicker__day):hover {
+  background-color: #3a506b;
+}
+
+.dark :global(.react-datepicker__day--selected),
+.dark :global(.react-datepicker__day--keyboard-selected) {
+  background-color: #ca50db;
 }

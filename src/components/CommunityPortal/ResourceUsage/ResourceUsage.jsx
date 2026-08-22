@@ -110,7 +110,7 @@ const allInsights = {
   ],
 };
 
-/* ----------Insight definitions for clarity ---------- */
+/* ---------- Insight definitions for clarity ---------- */
 const insightDefinitions = {
   'Most vulnerable materials':
     'Material with the lowest return rate compared to loaned items for the selected period.',
@@ -216,26 +216,60 @@ export default function ResourceUsage() {
       {/* LEFT SECTION */}
       <div className={`${styles.chartSection} ${darkMode ? 'bg-space-cadet' : ''}`}>
         <div className={styles.headerSection}>
-          <h1>Resources usage</h1>
+          <h1 style={{ color: darkMode ? '#ffffff' : '#111827' }}>Resources usage</h1>
 
           <div className={styles.filters}>
             <Dropdown>
-              <Dropdown.Toggle className={styles.customDropdown}>{resourceType}</Dropdown.Toggle>
-              <Dropdown.Menu>
-                <Dropdown.Item onClick={() => setResourceType('Material')}>Material</Dropdown.Item>
-                <Dropdown.Item onClick={() => setResourceType('Equipment')}>
+              <Dropdown.Toggle
+                className={`${styles.customDropdown} ${darkMode ? styles.customDropdownDark : ''}`}
+              >
+                {resourceType}
+              </Dropdown.Toggle>
+              <Dropdown.Menu className={darkMode ? styles.dropdownMenuDark : ''}>
+                <Dropdown.Item
+                  className={darkMode ? styles.dropdownItemDark : ''}
+                  onClick={() => setResourceType('Material')}
+                >
+                  Material
+                </Dropdown.Item>
+                <Dropdown.Item
+                  className={darkMode ? styles.dropdownItemDark : ''}
+                  onClick={() => setResourceType('Equipment')}
+                >
                   Equipment
                 </Dropdown.Item>
-                <Dropdown.Item onClick={() => setResourceType('Venue')}>Venue</Dropdown.Item>
+                <Dropdown.Item
+                  className={darkMode ? styles.dropdownItemDark : ''}
+                  onClick={() => setResourceType('Venue')}
+                >
+                  Venue
+                </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
 
             <Dropdown>
-              <Dropdown.Toggle className={styles.customDropdown}>{timePeriod}</Dropdown.Toggle>
-              <Dropdown.Menu>
-                <Dropdown.Item onClick={() => setTimePeriod('This Week')}>This Week</Dropdown.Item>
-                <Dropdown.Item onClick={() => setTimePeriod('Last Week')}>Last Week</Dropdown.Item>
-                <Dropdown.Item onClick={() => setTimePeriod('This Month')}>
+              <Dropdown.Toggle
+                className={`${styles.customDropdown} ${darkMode ? styles.customDropdownDark : ''}`}
+              >
+                {timePeriod}
+              </Dropdown.Toggle>
+              <Dropdown.Menu className={darkMode ? styles.dropdownMenuDark : ''}>
+                <Dropdown.Item
+                  className={darkMode ? styles.dropdownItemDark : ''}
+                  onClick={() => setTimePeriod('This Week')}
+                >
+                  This Week
+                </Dropdown.Item>
+                <Dropdown.Item
+                  className={darkMode ? styles.dropdownItemDark : ''}
+                  onClick={() => setTimePeriod('Last Week')}
+                >
+                  Last Week
+                </Dropdown.Item>
+                <Dropdown.Item
+                  className={darkMode ? styles.dropdownItemDark : ''}
+                  onClick={() => setTimePeriod('This Month')}
+                >
                   This Month
                 </Dropdown.Item>
               </Dropdown.Menu>
@@ -334,22 +368,33 @@ export default function ResourceUsage() {
         </div>
       </div>
 
-      {/* RIGHT SECTION */}
+      {/* RIGHT SECTION — Insights */}
       <div className={`${styles.insightsSection} ${darkMode ? styles.darkInsightsSection : ''}`}>
         <div className={styles.insightsHeader}>
           <h2>Insights</h2>
           <Dropdown>
-            <Dropdown.Toggle className={styles.customDropdown}>
+            <Dropdown.Toggle
+              className={`${styles.customDropdown} ${darkMode ? styles.customDropdownDark : ''}`}
+            >
               {insightsTimePeriod}
             </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item onClick={() => setInsightsTimePeriod('This Week')}>
+            <Dropdown.Menu className={darkMode ? styles.dropdownMenuDark : ''}>
+              <Dropdown.Item
+                className={darkMode ? styles.dropdownItemDark : ''}
+                onClick={() => setInsightsTimePeriod('This Week')}
+              >
                 This Week
               </Dropdown.Item>
-              <Dropdown.Item onClick={() => setInsightsTimePeriod('Last Week')}>
+              <Dropdown.Item
+                className={darkMode ? styles.dropdownItemDark : ''}
+                onClick={() => setInsightsTimePeriod('Last Week')}
+              >
                 Last Week
               </Dropdown.Item>
-              <Dropdown.Item onClick={() => setInsightsTimePeriod('This Month')}>
+              <Dropdown.Item
+                className={darkMode ? styles.dropdownItemDark : ''}
+                onClick={() => setInsightsTimePeriod('This Month')}
+              >
                 This Month
               </Dropdown.Item>
             </Dropdown.Menu>
@@ -360,7 +405,7 @@ export default function ResourceUsage() {
           {insights.map((insight, idx) => (
             <div
               key={idx}
-              className={`${styles.insightCard} ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+              className={`${styles.insightCard} ${darkMode ? styles.insightCardDark : ''}`}
             >
               <div className={styles.insightContent}>
                 <div

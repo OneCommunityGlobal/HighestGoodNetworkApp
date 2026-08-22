@@ -73,7 +73,8 @@
 
 .pie-chart-legend-table {
   width: 100%;
-  table-layout: fixed;
+  table-layout: auto;
+  border-collapse: collapse;
 }
 
 .project-chart-legend {
@@ -136,49 +137,66 @@ div.pie-chart-legend-container {
   background-color: #4caf50;
 }
 
-.pie-chart-legend-table th:nth-child(1),
-.pie-chart-legend-table td:nth-child(1),
-.pie-chart-legend-table-dark th:nth-child(1),
-.pie-chart-legend-table-dark td:nth-child(1) {
-  text-align: center;
-  width: 60px; /* Color */
+/* Layout mirrors the "Time Logged to Projects/Non-tasks" legend
+   (UserProjectPieChart.module.css) so the two charts read as one component:
+   auto layout, left-aligned cells, 8px padding. It lives on the base class
+   because the table always carries it - `-dark` is added on top, never
+   instead - so light and dark stay geometrically identical and only colors
+   differ. Keep it that way: anything but a color below belongs up here. */
+
+/* `Teams/Team.module.css` opens with a bare `thead { background: aliceblue }` and
+   `Projects/projects.module.css` with `:global(thead)` doing the same - CSS Modules
+   scopes class names but NOT element selectors, so both leak onto every table in the
+   app. PeopleTable.jsx pulls the former onto this page. Clearing the thead is what
+   lets the dark gradient show; a transparent `th` alone just exposes the aliceblue. */
+.pie-chart-legend-table thead {
+  background: transparent;
 }
 
-.pie-chart-legend-table th:nth-child(2),
-.pie-chart-legend-table td:nth-child(2),
-.pie-chart-legend-table-dark th:nth-child(2),
-.pie-chart-legend-table-dark td:nth-child(2) {
-  text-align: center;
-  width: 60%; /* Name column */
-}
-
-.pie-chart-legend-table th:nth-child(3),
-.pie-chart-legend-table td:nth-child(3),
-.pie-chart-legend-table-dark th:nth-child(3),
-.pie-chart-legend-table-dark td:nth-child(3) {
-  width: 80px; /* Hours column */
-  text-align: right;
-}
-
-.pie-chart-legend-table tr:hover,
-.pie-chart-legend-table-dark tr:hover {
-  background-color: transparent !important;
+.pie-chart-legend-table th,
+.pie-chart-legend-table td {
+  padding: 8px;
+  background-color: transparent;
 }
 
 .pie-chart-legend-table th {
-  background-color: transparent;
+  font-weight: bold;
 }
 
-.pie-chart-legend-table td,
-.pie-chart-legend-table-dark td {
+.pie-chart-legend-table td {
   padding: 8px 0;
 }
 
-.pie-chart-legend-table-dark th {
-  background-color: transparent;
-  color: #f9fafb;
+.pie-chart-legend-table th:nth-child(1),
+.pie-chart-legend-table td:nth-child(1) {
+  text-align: left;
+  width: 40px; /* Color */
 }
 
+.pie-chart-legend-table th:nth-child(2),
+.pie-chart-legend-table td:nth-child(2) {
+  text-align: center;
+  width: auto; /* Name column */
+}
+
+.pie-chart-legend-table th:nth-child(3),
+.pie-chart-legend-table td:nth-child(3) {
+  text-align: left;
+  width: auto; /* Hours column */
+}
+
+.pie-chart-legend-table tr:hover {
+  background-color: transparent !important;
+}
+
+/* Dark: colors only. The flat #1f2a40 of the sibling legend becomes a gradient
+   so the table reads as its own surface rather than the grey of the card behind it. */
+.pie-chart-legend-table-dark {
+  background: linear-gradient(to bottom right, #1f2a40, #2f4157);
+  border-radius: 8px;
+}
+
+.pie-chart-legend-table-dark th,
 .pie-chart-legend-table-dark td {
   color: #f9fafb;
 }

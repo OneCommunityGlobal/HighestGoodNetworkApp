@@ -121,6 +121,17 @@
   border-bottom: 2px solid #0062cc;
 }
 
+/* Bootstrap's own .nav-tabs .nav-link.active sets a hardcoded white
+   background, never themed here. public/index.css's global
+   `body.dark-mode * { color:#fff !important }` then forces the label text
+   white too, so the active tab (e.g. "Edit History") rendered as a blank
+   white box in dark mode. Scoped to .profile-tabs so it only affects this
+   tab group. */
+body.dark-mode .profile-tabs .nav-tabs .nav-link.active {
+  background-color: #1c2541;
+  color: #fff;
+}
+
 .profile-work p {
   font-size: 12px;
   color: #818182;

@@ -110,7 +110,7 @@ const Members = props => {
   // ADDED: State for toggling display of active members only
   const [showActiveMembersOnly, setShowActiveMembersOnly] = useState(false);
 
-  // avoid re-filtering the netire list on every render
+  // avoid re-filtering the entire list on every render
   const displayedMembers = useMemo(
     () => (showActiveMembersOnly ? membersList?.filter(member => member.isActive) : membersList),
     [membersList, showActiveMembersOnly]
@@ -123,14 +123,13 @@ const Members = props => {
   };
 
 
-  // Waits for user to finsh typing before calling API
+  // Waits for user to finish typing before calling API
   const handleInputChange = event => {
     const currentValue = event.target.value;
     setQuery(currentValue);
     setSearchText(currentValue);
     setShowFindUserList(false);
   };
-
   const handleFind = () => {
   const q = (searchText || '').trim();
     if (!q) {
@@ -199,9 +198,10 @@ useEffect(() => {
                   textAlign: 'center',
                   fontWeight: 'bold',
                   fontSize: '1.5rem',
-                  wordBreak: 'break-word', 
-                  flexGrow: 1, 
-                  whiteSpace: 'normal', 
+                  wordBreak: 'break-word',
+                  flexGrow: 1,
+                  whiteSpace: 'normal',
+                  color: darkMode ? '#ffffff' : 'inherit',
                 }}
               >
                 {projectName}
@@ -246,7 +246,7 @@ useEffect(() => {
                   className={`btn ${filterMode === "all"  ? "btn-primary" : "btn-outline-primary"}`}
                   type="button"
                   onClick={() => {
-                    // optional “All users” button
+                    // optional "All users" button
                     props.getAllUserProfiles();
                     setShowFindUserList(true);
                     setFilterMode("all");
@@ -261,13 +261,10 @@ useEffect(() => {
                     setShowFindUserList(false);
                     setQuery('');
                     props.clearFoundUsers();
-                    setSearchText('');            // clear the visible input too
-                    // clear previous suggestions in Redux (you already imported foundUsers)
+                    setSearchText('');
                     if (props.dispatch) props.dispatch(foundUsers([]));
                   }}
                   >
-                  
-                  
                   Cancel
                 </button>
               </div>
@@ -275,6 +272,7 @@ useEffect(() => {
             </div>
           ) : null}
            
+
 
 
           {showFindUserList && filteredUsers.length > 0 && (

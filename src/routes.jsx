@@ -95,6 +95,7 @@ import ParticipationTrends from './components/CommunityPortal/Reports/Participat
 import EventPerformance from './components/CommunityPortal/Reports/Participation/EventPerformance';
 import LogAttendance from './components/CommunityPortal/Activities/LogAttendance';
 import NoShowList from './components/CommunityPortal/Activities/NoShow/NoShowList';
+import EventNoShowChart from './components/CommunityPortal/Attendence/NoshowViz';
 import MaterialSummary from './components/MaterialSummary/MaterialSummary';
 // Activity Feedback Modal
 import FeedbackRatingEntry from './components/FeedbackActivityModal/FeedbackActivityEntry';
@@ -1042,6 +1043,10 @@ export default (
           path="/educationportal/pm/dashboard"
           exact
           component={ProjectManagerEducatorView}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/EventNoShowChart"
+          component={EventNoShowChart}
         />
         <CPProtectedRoute
           path="/communityportal/reports/resourceusage"

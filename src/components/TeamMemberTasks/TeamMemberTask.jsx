@@ -250,7 +250,7 @@ const TeamMemberTask = React.memo(
     return (
       <tr
         ref={ref}
-        className={`${styles['table-row']} ${darkMode ? 'bg-yinmn-blue' : ''}`}
+        className={`${styles['table-row']} ${darkMode ? styles['dark-task-row'] : ''}`}
         key={user.personId}
       >
         <td className={styles['remove-padding']} colSpan={6}>
@@ -290,9 +290,9 @@ const TeamMemberTask = React.memo(
             )}
             <Table className={styles['no-bottom-margin']}>
               <tbody>
-                <tr className="remove-child-borders">
+                <tr className={darkMode ? styles['dark-task-row'] : undefined}>
                   {/* green if member has met committed hours for the week, red if not */}
-                  <td colSpan={1} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
+                  <td colSpan={1}>
                     <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column' }}>
                       <div className={styles['member-links-wrapper']}>
                         <div className={styles['committed-hours-circle']}>
@@ -397,11 +397,7 @@ const TeamMemberTask = React.memo(
                       )}
                     </div>
                   </td>
-                  <td
-                    colSpan={2}
-                    className={`${darkMode ? 'bg-yinmn-blue' : ''}`}
-                    style={{ textAlign: 'center' }}
-                  >
+                  <td colSpan={2} style={{ textAlign: 'center' }}>
                     <Table
                       borderless
                       className={styles['team-member-tasks-subtable']}
@@ -552,7 +548,7 @@ const TeamMemberTask = React.memo(
                       </tbody>
                     </Table>
                   </td>
-                  <td colSpan={3} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
+                  <td colSpan={3}>
                     <div className={styles['grid-container']}>
                       {showTasks !== false && (
                         <Table borderless className={styles['team-member-tasks-subtable']}>
@@ -563,16 +559,16 @@ const TeamMemberTask = React.memo(
                                   <tr
                                     key={`${task._id}`}
                                     className={`${styles['task-break']} ${
-                                      darkMode ? 'bg-yinmn-blue' : ''
+                                      darkMode ? styles['dark-task-row'] : ''
                                     }`}
                                   >
                                     <td
                                       data-label="Task(s)"
                                       className={`${styles['task-align']} ${
-                                        darkMode ? 'bg-yinmn-blue text-light' : ''
+                                        darkMode ? styles.textLight : ''
                                       }`}
                                     >
-                                      <div className={styles.taskColumnLayout}>
+                                      <div>
                                         {/* Task title */}
                                         <div className={styles['team-member-tasks-content']}>
                                           <Link
@@ -594,7 +590,7 @@ const TeamMemberTask = React.memo(
                                         </div>
 
                                         {/* Icons UNDER task name */}
-                                        <div className={styles.taskIconsUnderName}>
+                                        <div>
                                           {task.taskNotifications.length > 0 &&
                                             task.taskNotifications.some(
                                               notification =>
@@ -664,7 +660,7 @@ const TeamMemberTask = React.memo(
                                       <td
                                         data-label="Progress"
                                         className={`${styles['team-task-progress']} ${
-                                          darkMode ? 'bg-yinmn-blue text-light' : ''
+                                          darkMode ? styles.textLight : ''
                                         }`}
                                       >
                                         <div className={styles['progress-wrapper']}>

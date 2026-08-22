@@ -51,7 +51,10 @@ export default function SearchProjectByPerson({
           className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
           placeholder={searchMode === 'person' ? 'Search by Person Name' : 'Search by Project Name'}
           value={inputValue}
-          onChange={handleInputChange} // Trigger input change
+          onChange={handleInputChange}
+          style={
+            darkMode ? { backgroundColor: '#1c2541', color: '#ffffff', borderColor: '#3a506b' } : {}
+          }
         />
       </form>
 

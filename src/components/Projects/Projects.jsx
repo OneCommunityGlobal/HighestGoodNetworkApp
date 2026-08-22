@@ -406,7 +406,7 @@ const Projects = function(props) {
           type="button"
           onClick={handleFetchArchivedProjects}
           style={{ whiteSpace: 'nowrap', height: '38px', flexShrink: 0 }}
-          className={`btn px-3 ${
+          className={`btn px-3 ${styles['show-archived-btn']} ${
             showArchived ? 'btn-warning' : darkMode ? 'btn-outline-light' : 'btn-outline-secondary'
           }`}
         >

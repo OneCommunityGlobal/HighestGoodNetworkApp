@@ -1,5 +1,8 @@
 /* stylelint-disable declaration-property-value-no-unknown, no-descending-specificity */
-.wrapper.container-fluid {
+
+/* `container-fluid` comes from reactstrap and stays global, so it cannot be part of
+   a scoped compound selector here - `.wrapper` alone is enough to target the element. */
+.wrapper {
   overflow-x: auto;
   width: 100%;
   padding: 0 16px;
@@ -50,12 +53,6 @@
   background-color: #fafafa;
 }
 
-/* ✅ merged hover style */
-.people-table-row-dark:hover {
-  background-color: #1a1a2e !important;
-  color: #fff !important;
-}
-
 .people-table-body-row:hover {
   background-color: #fafafa;
 }
@@ -104,7 +101,6 @@
 
 .extra {
   display: none;
-  border: collapse;
 }
 
 .extra1 {
@@ -155,7 +151,9 @@
   overflow: hidden;
 }
 
-.text-dark {
+/* Dark-mode marker for the mobile task cards. Renamed off Bootstrap's global
+   `text-dark` so the scoped module owns it outright. */
+.task-card-dark {
   color: black;
 }
 
@@ -219,6 +217,15 @@
   margin-left: auto;
 }
 
+/* The light button sets `color: #ca50db`, but `public/index.css` has
+   `body.dark-mode * { color: #fff !important }`, which repainted the label white on a
+   white background - the button looked empty. Rather than fight that !important, give
+   the button a dark background so the forced-white label is legible. */
+.tasks-table-clear-filter-button-dark {
+  background-color: #1c2541;
+  border-color: #3a506b;
+}
+
 .people-report-task-name {
   overflow-wrap: break-word;
   min-width: 200px;
@@ -236,51 +243,60 @@
 }
 
 /* Dark mode for mobile modal cards */
-.task-card.text-dark {
+.task-card.task-card-dark {
   background-color: #232946;
   color: #fff;
   border: 1px solid #444;
 }
 
-.task-card.text-dark .task-header {
+.task-card.task-card-dark .task-header {
   background-color: #1a1a2e;
   color: #fff;
 }
 
-.task-card.text-dark .task-status {
+.task-card.task-card-dark .task-status {
   background-color: #ca50db;
   color: #fff;
 }
 
-.task-card.text-dark .task-info {
+.task-card.task-card-dark .task-info {
   color: #fff;
 }
 
-.task-card.text-dark .sub-head,
-.task-card.text-dark .sub-details {
+.task-card.task-card-dark .sub-head,
+.task-card.task-card-dark .sub-details {
   color: #fff;
 }
 
 /* Modal textarea dark mode */
-.text-dark .rectangle {
+.task-card-dark .rectangle {
   background: #232946;
   color: #fff;
   border: 1.5px solid #444;
 }
 
 /* Desktop table dark mode */
-.bg-space-cadet {
+.reports-table-head-dark {
   background-color: #1a1a2e !important;
   color: #fff !important;
+  border-bottom: 2px solid #444 !important;
 }
 
 .people-table-row-dark {
   background-color: #232946 !important;
   color: #fff !important;
+  border-bottom: 2px solid #444 !important;
+}
+
+/* Merged hover style. Kept below the base rule above so specificity ascends
+   through the file, which is what no-descending-specificity checks. */
+.people-table-row-dark:hover {
+  background-color: #1a1a2e !important;
+  color: #fff !important;
 }
 
 .people-table-row-dark > div,
-.bg-space-cadet > div {
+.reports-table-head-dark > div {
   color: #fff !important;
 }
 
@@ -289,15 +305,9 @@
   color: #fff !important;
 }
 
-/* Table cell border for dark mode */
-.people-table-row-dark,
-.bg-space-cadet {
-  border-bottom: 2px solid #444 !important;
-}
-
 /* Table textarea dark mode */
 .people-table-row-dark .rectangle,
-.bg-space-cadet .rectangle {
+.reports-table-head-dark .rectangle {
   background: #232946;
   color: #fff;
   border: 1.5px solid #444;

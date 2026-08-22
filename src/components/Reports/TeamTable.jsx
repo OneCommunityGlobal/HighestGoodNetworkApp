@@ -2,6 +2,7 @@
 import { React, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './TeamTable.module.css';
+import styles from './reportsPage.module.css';
 import { Input, FormGroup, FormFeedback } from 'reactstrap';
 import { connect } from 'react-redux';
 import hasPermission from '~/utils/permissions';
@@ -132,7 +133,7 @@ function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
   }
   return (
     <table
-      className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`}
+      className={`table ${darkMode ? styles['reports-table-dark'] : 'table-bordered'}`}
       style={darkMode ? boxStyleDark : boxStyle}
     >
       <thead>

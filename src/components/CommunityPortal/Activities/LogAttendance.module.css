@@ -603,6 +603,35 @@
   border-color: #243559;
 }
 
+/* MiniCalendar had no dark-mode styling at all, so it kept its light border,
+   badge, and near-black active-day highlight regardless of theme — all of
+   which look out of place once .darkMode darkens the surrounding card. */
+.darkMode .calendarShell {
+  border-color: #334155;
+}
+
+.darkMode .calendarShell button {
+  color: #94a3b8;
+}
+
+.darkMode .finishedBadge {
+  background: #312e81;
+  color: #c7d2fe;
+}
+
+.darkMode .calendarRow {
+  color: #cbd5e1;
+}
+
+.darkMode .calendarActive {
+  background: #3a506b;
+  color: #fff !important;
+}
+
+.darkMode .calendarShell footer {
+  color: #e2e8f0;
+}
+
 .panelHeader h2 {
   margin-bottom: 4px;
 }

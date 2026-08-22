@@ -184,7 +184,8 @@ function ActivityList() {
         darkMode ? styles.activityListContainerDark : ''
       }`}
     >
-      <h1 className={`${styles.heading} ${darkMode ? 'text-light' : ''}`}>Activity List</h1>
+      {/* <h1 className={`${styles.heading} ${darkMode ? 'text-light' : ''}`}>Activity List</h1> */}
+      <h1 className={`${styles.heading} ${darkMode ? styles.headingDark : ''}`}>Activity List</h1>
 
       <div className={`${styles.filters} ${darkMode ? styles.darkModeFilters : ''}`}>
         <div className={styles.filterInputsRow}>

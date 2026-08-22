@@ -1,5 +1,20 @@
 /* Enhanced Email Sender Styles */
 
+/* This file is a CSS Module, but every selector in it was originally authored for
+   a plain global stylesheet — and it was imported for side effects only
+   (`import './IntegratedEmailSender.module.css'`) while the JSX used plain kebab
+   strings. Vite hashes any `*.module.css` regardless of import form, so all ~1200
+   lines shipped hashed and matched nothing: the page was rendering on
+   `public/index.css`'s blanket `body.dark-mode` rules alone.
+
+   Fix, per the convention in TableFilter.module.css: `.email-sender` stays local
+   so the JSX can bind it via `styles`, `.dark` replaces the old `dark-mode` body
+   class as a local marker on that same root (the old `light-mode` class is gone —
+   nothing ever defined a rule for it), and every other class — Bootstrap's
+   (`.btn`, `.form-control`, `.modal-*`) and the
+   plain strings this component applies (`.variable-input`, `.template-variables`)
+   — is wrapped in :global() so it keeps matching the real DOM. */
+
 /* Main Container */
 .email-sender {
   max-width: 1400px;
@@ -9,19 +24,19 @@
   overflow-x: hidden;
 }
 
-.email-sender .page-title-container {
+.email-sender :global(.page-title-container) {
   margin-bottom: 1.5rem;
   padding-left: 0;
 }
 
-.email-sender .page-title {
+.email-sender :global(.page-title) {
   font-size: 1.75rem;
   font-weight: 600;
   color: #343a40;
   margin: 0;
 }
 
-.email-controls-container {
+:global(.email-controls-container) {
   width: 100%;
   margin-bottom: 2rem;
   padding: 0;
@@ -29,7 +44,7 @@
   border-bottom: 1px solid #e9ecef;
 }
 
-.email-controls-row {
+:global(.email-controls-row) {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -46,14 +61,14 @@
    both base rules must appear before either component's :hover / :active. */
 
 /* Mode Buttons */
-.mode-buttons {
+:global(.mode-buttons) {
   display: flex;
   gap: 1rem;
   flex-shrink: 0;
   align-items: center;
 }
 
-.mode-buttons .btn {
+:global(.mode-buttons) :global(.btn) {
   border-radius: 6px;
   border: 1px solid #dee2e6;
   font-weight: 500;
@@ -66,14 +81,14 @@
 }
 
 /* Action Buttons */
-.action-buttons {
+:global(.action-buttons) {
   display: flex;
   gap: 1rem;
   flex-shrink: 0;
   align-items: center;
 }
 
-.action-buttons .btn {
+:global(.action-buttons) :global(.btn) {
   border-radius: 6px;
   font-weight: 500;
   font-size: 0.85rem;
@@ -83,88 +98,88 @@
 }
 
 /* Pseudo-states after both base rules */
-.mode-buttons .btn:active,
-.action-buttons .btn:active {
+:global(.mode-buttons) :global(.btn):active,
+:global(.action-buttons) :global(.btn):active {
   transform: translateY(0);
 }
 
-.mode-buttons .btn:hover,
-.action-buttons .btn:hover {
+:global(.mode-buttons) :global(.btn):hover,
+:global(.action-buttons) :global(.btn):hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
 }
 
 /* Mode button variants */
-.mode-buttons .btn-primary {
+:global(.mode-buttons) :global(.btn-primary) {
   background: #007bff;
   border-color: #007bff;
   color: white;
 }
 
-.mode-buttons .btn-outline-primary {
+:global(.mode-buttons) :global(.btn-outline-primary) {
   background: white;
   color: #007bff;
   border-color: #007bff;
 }
 
-.mode-buttons .btn-outline-primary:hover {
+:global(.mode-buttons) :global(.btn-outline-primary):hover {
   background: #007bff;
   color: white;
 }
 
-.mode-buttons .btn-success {
+:global(.mode-buttons) :global(.btn-success) {
   background: #28a745;
   border-color: #28a745;
   color: white;
 }
 
-.mode-buttons .btn-outline-success {
+:global(.mode-buttons) :global(.btn-outline-success) {
   background: white;
   color: #28a745;
   border-color: #28a745;
 }
 
-.mode-buttons .btn-outline-success:hover {
+:global(.mode-buttons) :global(.btn-outline-success):hover {
   background: #28a745;
   color: white;
 }
 
-.mode-buttons .btn-info {
+:global(.mode-buttons) :global(.btn-info) {
   background: #17a2b8;
   border-color: #17a2b8;
   color: white;
 }
 
-.mode-buttons .btn-outline-info {
+:global(.mode-buttons) :global(.btn-outline-info) {
   background: white;
   color: #17a2b8;
   border-color: #17a2b8;
 }
 
-.mode-buttons .btn-outline-info:hover {
+:global(.mode-buttons) :global(.btn-outline-info):hover {
   background: #17a2b8;
   color: white;
 }
 
 /* Action button variants */
-.action-buttons .btn-outline-danger {
+:global(.action-buttons) :global(.btn-outline-danger) {
   border-color: #dc3545;
   color: #dc3545;
 }
 
-.action-buttons .btn-outline-danger:hover {
+:global(.action-buttons) :global(.btn-outline-danger):hover {
   background-color: #dc3545;
   color: #fff;
 }
 
 /* Distribution Options */
-.distribution-options {
+:global(.distribution-options) {
   display: flex;
   gap: 1.5rem;
   margin-top: 0.5rem;
 }
 
-.distribution-option {
+:global(.distribution-option) {
   display: flex;
   align-items: center;
   padding: 0.85rem 1.5rem;
@@ -178,33 +193,33 @@
   position: relative;
 }
 
-.distribution-option.selected {
+:global(.distribution-option.selected) {
   border-color: #007bff;
   background: #e7f3ff;
   color: #007bff;
   box-shadow: 0 2px 8px rgb(0 123 255 / 15%);
 }
 
-.distribution-option input[type="radio"] {
+:global(.distribution-option) input[type="radio"] {
   margin-right: 0.5rem;
   width: 18px;
   height: 18px;
   accent-color: #007bff;
 }
 
-.option-icon {
+:global(.option-icon) {
   font-size: 1.2rem;
   margin-right: 0.5rem;
   margin-left: 0.5rem;
 }
 
-.sending-email-btn {
+:global(.sending-email-btn) {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
 /* Progress */
-.email-sending-progress {
+:global(.email-sending-progress) {
   margin-top: 1rem;
   padding: 1rem;
   background: #f8f9fa;
@@ -212,11 +227,11 @@
   border: 1px solid #dee2e6;
 }
 
-.progress-container {
+:global(.progress-container) {
   width: 100%;
 }
 
-.progress-header {
+:global(.progress-header) {
   display: flex;
   align-items: center;
   margin-bottom: 0.5rem;
@@ -224,7 +239,7 @@
   font-weight: 500;
 }
 
-.progress-bar-container {
+:global(.progress-bar-container) {
   position: relative;
   height: 8px;
   background: #e9ecef;
@@ -233,14 +248,14 @@
   margin-bottom: 0.5rem;
 }
 
-.progress-bar-sending {
+:global(.progress-bar-sending) {
   height: 100%;
   background: #007bff;
   border-radius: 4px;
   transition: width 0.3s ease;
 }
 
-.progress-bar-fill {
+:global(.progress-bar-fill) {
   height: 100%;
   background: #007bff;
   border-radius: 4px;
@@ -257,17 +272,17 @@
   }
 }
 
-.progress-text {
+:global(.progress-text) {
   font-size: 0.85rem;
   color: #6c757d;
 }
 
 /* Template Selection */
-.template-selection-container {
+:global(.template-selection-container) {
   margin-bottom: 1rem;
 }
 
-.template-select {
+:global(.template-select) {
   width: 100%;
   border-radius: 6px;
   border: 1px solid #ced4da;
@@ -278,24 +293,24 @@
   color: #495057;
 }
 
-.template-select:focus {
+:global(.template-select):focus {
   border-color: #007bff;
   box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
 }
 
-.template-select-disabled {
+:global(.template-select-disabled) {
   background-color: #e9ecef;
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.template-info {
+:global(.template-info) {
   font-size: 0.8rem;
   color: #6c757d;
   margin-top: 0.5rem;
 }
 
-.template-error-message {
+:global(.template-error-message) {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -304,19 +319,19 @@
   margin-top: 0.5rem;
 }
 
-.error-icon {
+:global(.error-icon) {
   color: #dc3545;
 }
 
-.error-text {
+:global(.error-text) {
   flex: 1;
 }
 
-.template-retry-simple {
+:global(.template-retry-simple) {
   margin-top: 0.5rem;
 }
 
-.retry-btn-simple {
+:global(.retry-btn-simple) {
   background: #dc3545;
   border: 1px solid #dc3545;
   color: white;
@@ -326,19 +341,19 @@
   transition: all 0.2s ease;
 }
 
-.retry-btn-simple:hover {
+:global(.retry-btn-simple):hover {
   background: #c82333;
   border-color: #bd2130;
   color: white;
 }
 
-.retry-btn-simple:disabled {
+:global(.retry-btn-simple):disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
 /* Template Variables */
-.template-variables {
+:global(.template-variables) {
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
   padding: 1.25rem;
@@ -347,27 +362,27 @@
   border: 1px solid #e9ecef;
 }
 
-.variables-header {
+:global(.variables-header) {
   margin-bottom: 1.25rem;
   padding-bottom: 0.75rem;
   border-bottom: 2px solid #dee2e6;
 }
 
-.variables-header h6 {
+:global(.variables-header) h6 {
   font-size: 1.1rem;
   font-weight: 600;
   color: #343a40;
   margin: 0;
 }
 
-.template-variables .table {
+:global(.template-variables) :global(.table) {
   margin-bottom: 0;
   background: white;
   border-radius: 6px;
   overflow: hidden;
 }
 
-.template-variables .table thead th {
+:global(.template-variables) :global(.table) thead th {
   background: #495057;
   color: #495057;
   font-weight: 600;
@@ -378,21 +393,21 @@
   border-bottom: 2px solid #dee2e6;
 }
 
-.template-variables .table tbody tr {
+:global(.template-variables) :global(.table) tbody tr {
   transition: background-color 0.15s ease;
 }
 
-.template-variables .table tbody tr:hover {
+:global(.template-variables) :global(.table) tbody tr:hover {
   background-color: #f8f9fa;
 }
 
-.template-variables .table tbody td {
+:global(.template-variables) :global(.table) tbody td {
   padding: 1rem 0.85rem;
   vertical-align: middle;
   border-color: #e9ecef;
 }
 
-.template-variables .badge {
+:global(.template-variables) :global(.badge) {
   padding: 0.35rem 0.65rem;
   font-size: 0.75rem;
   font-weight: 600;
@@ -401,14 +416,14 @@
   letter-spacing: 0.3px;
 }
 
-.empty-variables-state {
+:global(.empty-variables-state) {
   background: #f8f9fa;
   border-radius: 6px;
   border: 1px dashed #dee2e6;
   margin-top: 0.5rem;
 }
 
-.variable-label {
+:global(.variable-label) {
   font-weight: 600;
   color: #343a40;
   margin-bottom: 0;
@@ -418,7 +433,7 @@
   font-size: 0.95rem;
 }
 
-.variable-input {
+:global(.variable-input) {
   width: 100%;
   border-radius: 6px;
   border: 1.5px solid #ced4da;
@@ -428,27 +443,27 @@
   background: white;
 }
 
-.variable-input:focus {
+:global(.variable-input):focus {
   border-color: #007bff;
   box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 15%);
   outline: none;
 }
 
-.variable-textarea {
+:global(.variable-textarea) {
   min-height: 100px;
   resize: vertical;
   font-family: inherit;
 }
 
 /* Editor */
-.editor-container {
+:global(.editor-container) {
   position: relative;
   border: none;
   border-radius: 6px;
   overflow: hidden;
 }
 
-.editor-loading {
+:global(.editor-loading) {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -457,11 +472,11 @@
   color: #6c757d;
 }
 
-.editor-suspense {
+:global(.editor-suspense) {
   min-height: 200px;
 }
 
-.editor-fallback {
+:global(.editor-fallback) {
   padding: 1rem;
   background: #fff3cd;
   border: 1px solid #ffeaa7;
@@ -470,38 +485,38 @@
 }
 
 /* Shimmer */
-.template-shimmer-container {
+:global(.template-shimmer-container) {
   margin-bottom: 1rem;
 }
 
-.shimmer-select-wrapper {
+:global(.shimmer-select-wrapper) {
   margin-bottom: 0.5rem;
 }
 
-.shimmer-select {
+:global(.shimmer-select) {
   width: 100%;
   height: 38px;
   background: #e9ecef;
   border-radius: 6px;
 }
 
-.shimmer-info {
+:global(.shimmer-info) {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.shimmer-line {
+:global(.shimmer-line) {
   height: 16px;
   background: #e9ecef;
   border-radius: 4px;
 }
 
-.shimmer-short {
+:global(.shimmer-short) {
   width: 60%;
 }
 
-.shimmer-animated {
+:global(.shimmer-animated) {
   background: linear-gradient(90deg, #e9ecef 25%, #f8f9fa 50%, #e9ecef 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
@@ -517,7 +532,7 @@
   }
 }
 
-.skeleton-loader {
+:global(.skeleton-loader) {
   background: #e9ecef;
   border-radius: 4px;
   display: inline-block;
@@ -525,24 +540,24 @@
   overflow: hidden;
 }
 
-.skeleton-animated {
+:global(.skeleton-animated) {
   background: linear-gradient(90deg, #e9ecef 25%, #f8f9fa 50%, #e9ecef 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
 
-.enhanced-loader {
+:global(.enhanced-loader) {
   text-align: center;
   padding: 2rem;
 }
 
-.fallback-card {
+:global(.fallback-card) {
   border: 1px solid #dee2e6;
   border-radius: 8px;
   background: white;
 }
 
-.empty-content-message {
+:global(.empty-content-message) {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -551,24 +566,24 @@
   padding: 2rem;
 }
 
-.empty-content-message p {
+:global(.empty-content-message) p {
   margin: 0;
   font-size: 1rem;
   color: #6c757d;
 }
 
-.empty-content-message i {
+:global(.empty-content-message) i {
   color: #17a2b8;
 }
 
 /* Modal */
-.email-sender .modal-content {
+.email-sender :global(.modal-content) {
   border: none;
   border-radius: 12px;
   box-shadow: 0 10px 30px rgb(0 0 0 / 20%);
 }
 
-.email-sender .modal-header {
+.email-sender :global(.modal-header) {
   background: #007bff;
   color: white;
   border-bottom: none;
@@ -577,16 +592,16 @@
   font-weight: 600;
 }
 
-.email-sender .modal-header .btn-close {
+.email-sender :global(.modal-header) :global(.btn-close) {
   filter: brightness(0) invert(1);
 }
 
-.email-sender .modal-body {
+.email-sender :global(.modal-body) {
   padding: 1.5rem;
   background: #fff;
 }
 
-.email-sender .modal-footer {
+.email-sender :global(.modal-footer) {
   background: #f8f9fa;
   border-top: 1px solid #dee2e6;
   border-radius: 0 0 12px 12px;
@@ -599,12 +614,12 @@
   margin-top: 1.5rem;
 }
 
-.email-sender .form-group {
+.email-sender :global(.form-group) {
   margin-bottom: 1.75rem;
   padding: 0;
 }
 
-.email-sender .form-label,
+.email-sender :global(.form-label),
 .email-sender label {
   font-weight: 600;
   color: #343a40;
@@ -614,7 +629,7 @@
   padding-left: 0.25rem;
 }
 
-.email-sender .template-select {
+.email-sender :global(.template-select) {
   font-size: 0.95rem;
   padding: 0.75rem 2.5rem 0.75rem 1rem;
   border: 1.5px solid #ced4da;
@@ -636,42 +651,42 @@
   text-overflow: ellipsis;
 }
 
-.email-sender .template-select option {
+.email-sender :global(.template-select) option {
   color: #212529;
   font-weight: 400;
   padding: 0.5rem;
 }
 
-.email-sender .template-selection-container {
+.email-sender :global(.template-selection-container) {
   padding: 0;
 }
 
-.email-sender .form-group:has(.distribution-options) {
+.email-sender :global(.form-group:has(.distribution-options)) {
   margin-top: 2rem;
   padding-top: 1.25rem;
   border-top: 1px solid #e9ecef;
 }
 
-.email-sender .distribution-options {
+.email-sender :global(.distribution-options) {
   padding-left: 0;
   margin-top: 0.75rem;
   margin-bottom: 1rem;
 }
 
-.email-sender .distribution-option {
+.email-sender :global(.distribution-option) {
   padding: 0.85rem 1.5rem;
   border: 2px solid #dee2e6;
   border-radius: 8px;
   font-weight: 500;
 }
 
-.email-sender .distribution-option.selected {
+.email-sender :global(.distribution-option.selected) {
   border-color: #007bff;
   background: #e7f3ff;
   box-shadow: 0 2px 8px rgb(0 123 255 / 15%);
 }
 
-.email-sender textarea.form-control {
+.email-sender :global(textarea.form-control) {
   border: 1.5px solid #ced4da;
   border-radius: 6px;
   padding: 0.75rem;
@@ -682,18 +697,18 @@
   min-height: 120px;
 }
 
-.email-sender textarea.form-control:focus {
+.email-sender :global(textarea.form-control):focus {
   border-color: #007bff;
   box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 15%);
 }
 
-.email-sender textarea.form-control::placeholder {
+.email-sender :global(textarea.form-control)::placeholder {
   color: #6c757d;
   font-size: 0.875rem;
 }
 
 .email-sender h6,
-.email-sender .section-title {
+.email-sender :global(.section-title) {
   font-size: 1.05rem;
   font-weight: 600;
   color: #343a40;
@@ -701,7 +716,7 @@
 }
 
 /* Email preview */
-.email-preview-content img {
+:global(.email-preview-content) img {
   max-width: 100% !important;
   height: auto !important;
   display: block;
@@ -709,38 +724,38 @@
   object-fit: contain;
 }
 
-.email-preview-content {
+:global(.email-preview-content) {
   overflow-wrap: break-word;
 }
 
-.email-preview-content p {
+:global(.email-preview-content) p {
   margin-bottom: 0.5rem;
 }
 
 /* Must come BEFORE .alert selectors */
-.email-preview-content > *:last-child {
+:global(.email-preview-content) > *:last-child {
   margin-bottom: 0;
 }
 
-/* body.dark-mode wildcard - must come BEFORE .alert .d-flex.gap-2 > * */
-body.dark-mode .alert-warning * {
+/* .dark wildcard - must come BEFORE .alert .d-flex.gap-2 > * */
+.dark :global(.alert-warning) * {
   color: #fef3c7 !important;
 }
 
 /* Alert */
-.alert-info {
+:global(.alert-info) {
   border-left: 4px solid #17a2b8;
 }
 
-.alert-warning {
+:global(.alert-warning) {
   border-left: 4px solid #ffc107;
 }
 
-.alert .gap-2 {
+:global(.alert) :global(.gap-2) {
   gap: 0.5rem !important;
 }
 
-.alert .d-flex.gap-2 > * {
+:global(.alert) :global(.d-flex.gap-2) > * {
   margin-left: 0 !important;
 }
 
@@ -757,366 +772,366 @@ body.dark-mode .alert-warning * {
   }
 }
 
-.draft-notification {
+:global(.draft-notification) {
   animation: fade-in 0.3s ease-in;
 }
 
 /* ===================== DARK MODE ===================== */
 
-/* email-sender.dark-mode table base - MUST come before .dark-mode .template-variables */
-.email-sender.dark-mode table {
+/* email-sender.dark table base - MUST come before .dark .template-variables */
+.email-sender.dark table {
   background-color: #2d3748 !important;
   color: #e2e8f0 !important;
 }
 
-.email-sender.dark-mode table th {
+.email-sender.dark table th {
   background-color: #374151 !important;
   color: #e2e8f0 !important;
   border-color: #4a5568 !important;
 }
 
-.email-sender.dark-mode table td {
+.email-sender.dark table td {
   background-color: #2d3748 !important;
   color: #e2e8f0 !important;
   border-color: #4a5568 !important;
 }
 
-/* dark-mode template variables tbody td - MUST come before table tr:hover td */
-.dark-mode .template-variables .table tbody td {
+/* dark template variables tbody td - MUST come before table tr:hover td */
+.dark :global(.template-variables) :global(.table) tbody td {
   background: #2d3748;
   color: #e2e8f0;
   border-color: #4a5568;
 }
 
-/* email-sender.dark-mode table tr:hover td - after tbody td */
-.email-sender.dark-mode table tr:hover td {
+/* email-sender.dark table tr:hover td - after tbody td */
+.email-sender.dark table tr:hover td {
   background-color: #374151 !important;
 }
 
-/* dark-mode template variables */
-.dark-mode .template-variables {
+/* dark template variables */
+.dark :global(.template-variables) {
   background: #1a1d23 !important;
   border-color: #2d3748;
 }
 
-.dark-mode .variables-header {
+.dark :global(.variables-header) {
   border-bottom-color: #4a5568;
 }
 
-.dark-mode .variables-header h6 {
+.dark :global(.variables-header) h6 {
   color: #e2e8f0;
 }
 
-.dark-mode .template-variables .table {
+.dark :global(.template-variables) :global(.table) {
   background: #2d3748;
 }
 
-.dark-mode .template-variables .table thead th {
+.dark :global(.template-variables) :global(.table) thead th {
   background: #4a5568;
   color: #e2e8f0;
   border-color: #718096;
 }
 
-.dark-mode .template-variables .table tbody tr:hover {
+.dark :global(.template-variables) :global(.table) tbody tr:hover {
   background-color: #374151;
 }
 
-.dark-mode .template-variables .variable-input {
+.dark :global(.template-variables) :global(.variable-input) {
   background: #374151;
   border-color: #4a5568;
   color: #e2e8f0;
 }
 
-.dark-mode .template-variables .variable-input:focus {
+.dark :global(.template-variables) :global(.variable-input):focus {
   border-color: #63b3ed;
   box-shadow: 0 0 0 0.2rem rgb(99 179 237 / 15%);
 }
 
-.dark-mode .template-variables .form-control {
+.dark :global(.template-variables) :global(.form-control) {
   background: #4a5568;
   border-color: #718096;
   color: #e2e8f0;
 }
 
-.dark-mode .template-variables .form-select {
+.dark :global(.template-variables) :global(.form-select) {
   background: #4a5568;
   border-color: #718096;
   color: #e2e8f0;
 }
 
-.dark-mode .template-variables .variable-label {
+.dark :global(.template-variables) :global(.variable-label) {
   color: #e2e8f0;
 }
 
-.dark-mode .template-variables .badge {
+.dark :global(.template-variables) :global(.badge) {
   background: #4a5568;
   color: #e2e8f0;
 }
 
-.dark-mode .empty-variables-state {
+.dark :global(.empty-variables-state) {
   background: #4a5568;
   border-color: #718096;
   color: #e2e8f0;
 }
 
-.dark-mode .invalid-feedback {
+.dark :global(.invalid-feedback) {
   color: #f8d7da !important;
 }
 
-.dark-mode .template-info {
+.dark :global(.template-info) {
   color: #a0aec0;
 }
 
-.dark-mode .template-select {
+.dark :global(.template-select) {
   background: #2d3748;
   border-color: #4a5568;
   color: #e2e8f0;
 }
 
-.dark-mode .template-select option {
+.dark :global(.template-select) option {
   background: #2d3748;
   color: #e2e8f0;
 }
 
-.dark-mode .template-select:focus {
+.dark :global(.template-select):focus {
   border-color: #63b3ed;
   box-shadow: 0 0 0 0.2rem rgb(99 179 237 / 25%);
 }
 
-.dark-mode .distribution-option {
+.dark :global(.distribution-option) {
   background: #2d3748;
   border-color: #4a5568;
   color: #e2e8f0;
 }
 
-.dark-mode .distribution-option.selected {
+.dark :global(.distribution-option.selected) {
   border-color: #63b3ed;
   background: #2b6cb0;
   color: #e2e8f0;
 }
 
-.dark-mode .email-controls-container {
+.dark :global(.email-controls-container) {
   border-bottom-color: #4a5568;
 }
 
-.dark-mode .mode-buttons .btn-outline-primary {
+.dark :global(.mode-buttons) :global(.btn-outline-primary) {
   background: #2d3748;
   color: #63b3ed;
   border-color: #4a5568;
 }
 
-.dark-mode .mode-buttons .btn-outline-primary:hover {
+.dark :global(.mode-buttons) :global(.btn-outline-primary):hover {
   background: #3182ce;
   color: white;
   border-color: #3182ce;
 }
 
-.dark-mode .mode-buttons .btn-outline-success {
+.dark :global(.mode-buttons) :global(.btn-outline-success) {
   background: #2d3748;
   color: #68d391;
   border-color: #4a5568;
 }
 
-.dark-mode .mode-buttons .btn-outline-success:hover {
+.dark :global(.mode-buttons) :global(.btn-outline-success):hover {
   background: #38a169;
   color: white;
   border-color: #38a169;
 }
 
-.dark-mode .mode-buttons .btn-outline-info {
+.dark :global(.mode-buttons) :global(.btn-outline-info) {
   background: #2d3748;
   color: #63b3ed;
   border-color: #4a5568;
 }
 
-.dark-mode .mode-buttons .btn-outline-info:hover {
+.dark :global(.mode-buttons) :global(.btn-outline-info):hover {
   background: #17a2b8;
   color: white;
   border-color: #17a2b8;
 }
 
-.dark-mode .action-buttons .btn-outline-secondary {
+.dark :global(.action-buttons) :global(.btn-outline-secondary) {
   background: #2d3748;
   color: #e2e8f0;
   border-color: #4a5568;
 }
 
-.dark-mode .action-buttons .btn-outline-secondary:hover {
+.dark :global(.action-buttons) :global(.btn-outline-secondary):hover {
   background: #4a5568;
   color: #e2e8f0;
   border-color: #718096;
 }
 
-.dark-mode .action-buttons .btn-outline-danger {
+.dark :global(.action-buttons) :global(.btn-outline-danger) {
   background: #2d3748;
   color: #fc8181;
   border-color: #742a2a;
 }
 
-.dark-mode .action-buttons .btn-outline-danger:hover {
+.dark :global(.action-buttons) :global(.btn-outline-danger):hover {
   background: #742a2a;
   color: #fff;
   border-color: #9b2c2c;
 }
 
-.dark-mode .alert-info {
+.dark :global(.alert-info) {
   background-color: rgb(23 162 184 / 20%);
   border-color: #17a2b8;
   color: #fff;
 }
 
-.dark-mode .alert-warning {
+.dark :global(.alert-warning) {
   background-color: #92400e !important;
   border-color: #d97706 !important;
   color: #fef3c7 !important;
 }
 
-.dark-mode .alert-info small,
-.dark-mode .alert-warning small {
+.dark :global(.alert-info) small,
+.dark :global(.alert-warning) small {
   color: rgb(255 255 255 / 80%);
 }
 
-.dark-mode .email-sender .page-title {
+.email-sender.dark :global(.page-title) {
   color: #f8f9fa !important;
 }
 
-.dark-mode .email-sender .form-label,
-.dark-mode .email-sender label {
+.email-sender.dark :global(.form-label),
+.email-sender.dark label {
   color: #f8f9fa !important;
 }
 
-.dark-mode .email-sender .form-group:has(.distribution-options) {
+.email-sender.dark :global(.form-group:has(.distribution-options)) {
   border-top-color: #4a5568;
 }
 
-.dark-mode .email-sender .distribution-option {
+.email-sender.dark :global(.distribution-option) {
   border-color: #4a5568;
 }
 
-.dark-mode .email-sender .distribution-option.selected {
+.email-sender.dark :global(.distribution-option.selected) {
   background: #2b6cb0;
   border-color: #63b3ed;
 }
 
-.dark-mode .email-sender .template-select {
+.email-sender.dark :global(.template-select) {
   background: #2d3748;
   border-color: #4a5568;
   color: #e2e8f0;
 }
 
-.dark-mode .email-sender .template-select option {
+.email-sender.dark :global(.template-select) option {
   background: #2d3748;
   color: #e2e8f0;
 }
 
-.dark-mode .email-sender .template-select:focus {
+.email-sender.dark :global(.template-select):focus {
   border-color: #63b3ed;
   box-shadow: 0 0 0 0.2rem rgb(99 179 237 / 25%);
 }
 
 /* ─── FIX 2: merge both .btn-primary base rules before any :hover / :disabled ─
-   .email-sender.dark-mode .btn-primary and .dark-mode .action-buttons
+   .email-sender.dark .btn-primary and .dark .action-buttons
    .btn-primary share the same element; both bases must precede pseudo-states. */
 
-.dark-mode .action-buttons .btn-primary,
-.email-sender.dark-mode .btn-primary {
+.dark :global(.action-buttons) :global(.btn-primary),
+.email-sender.dark :global(.btn-primary) {
   background: #3182ce !important;
   border-color: #3182ce !important;
   color: white !important;
 }
 
 /* Pseudo-states after both base rules */
-.dark-mode .action-buttons .btn-primary:hover,
-.email-sender.dark-mode .btn-primary:hover {
+.dark :global(.action-buttons) :global(.btn-primary):hover,
+.email-sender.dark :global(.btn-primary):hover {
   background: #2c5aa0 !important;
   border-color: #2c5aa0 !important;
   color: white !important;
 }
 
-.dark-mode .action-buttons .btn-primary:disabled {
+.dark :global(.action-buttons) :global(.btn-primary):disabled {
   background: #4a5568 !important;
   border-color: #4a5568 !important;
   color: #a0aec0 !important;
   opacity: 0.7;
 }
 
-/* email-sender.dark-mode modal */
-.email-sender.dark-mode .modal-content {
+/* email-sender.dark modal */
+.email-sender.dark :global(.modal-content) {
   background: #2d3748 !important;
   border: 1px solid #4a5568 !important;
   color: #e2e8f0 !important;
 }
 
-.email-sender.dark-mode .modal-header {
+.email-sender.dark :global(.modal-header) {
   background: #3182ce !important;
   color: #e2e8f0 !important;
   border-bottom: 1px solid #4a5568 !important;
 }
 
-.email-sender.dark-mode .modal-body {
+.email-sender.dark :global(.modal-body) {
   background: #2d3748 !important;
   color: #e2e8f0 !important;
 }
 
-.email-sender.dark-mode .modal-footer {
+.email-sender.dark :global(.modal-footer) {
   background: #4a5568 !important;
   border-top: 1px solid #718096 !important;
 }
 
-.email-sender.dark-mode .btn-secondary {
+.email-sender.dark :global(.btn-secondary) {
   background: #4a5568 !important;
   border-color: #718096 !important;
   color: #e2e8f0 !important;
 }
 
-.email-sender.dark-mode .btn-secondary:hover {
+.email-sender.dark :global(.btn-secondary):hover {
   background: #718096 !important;
   border-color: #a0aec0 !important;
   color: #e2e8f0 !important;
 }
 
-.email-sender.dark-mode .badge {
+.email-sender.dark :global(.badge) {
   background-color: #4a5568 !important;
   color: #e2e8f0 !important;
 }
 
-.email-sender.dark-mode label,
-.email-sender.dark-mode .form-label {
+.email-sender.dark label,
+.email-sender.dark :global(.form-label) {
   color: #f8f9fa !important;
 }
 
 /* form-control base BEFORE :focus */
-.email-sender.dark-mode .form-control,
-.email-sender.dark-mode input.form-control,
-.email-sender.dark-mode select.form-control,
-.email-sender.dark-mode textarea.form-control {
+.email-sender.dark :global(.form-control),
+.email-sender.dark :global(input.form-control),
+.email-sender.dark :global(select.form-control),
+.email-sender.dark :global(textarea.form-control) {
   background-color: #2d3748 !important;
   border-color: #4a5568 !important;
   color: #e2e8f0 !important;
 }
 
-.email-sender.dark-mode .form-control:focus {
+.email-sender.dark :global(.form-control):focus {
   background-color: #374151 !important;
   border-color: #63b3ed !important;
   color: #e2e8f0 !important;
 }
 
-.email-sender.dark-mode .form-control::placeholder {
+.email-sender.dark :global(.form-control)::placeholder {
   color: #a0aec0 !important;
 }
 
-/* dark-mode email-sender textarea base BEFORE :focus */
-.dark-mode .email-sender textarea.form-control {
+/* dark email-sender textarea base BEFORE :focus */
+.email-sender.dark :global(textarea.form-control) {
   background: #2d3748;
   border-color: #4a5568;
   color: #e2e8f0;
 }
 
-.dark-mode .email-sender textarea.form-control:focus {
+.email-sender.dark :global(textarea.form-control):focus {
   border-color: #63b3ed;
 }
 
-.dark-mode .email-sender textarea.form-control::placeholder {
+.email-sender.dark :global(textarea.form-control)::placeholder {
   color: #a0aec0;
 }
 
@@ -1126,12 +1141,12 @@ body.dark-mode .alert-warning * {
     padding: 0 1.5rem;
   }
 
-  .email-controls-row {
+  :global(.email-controls-row) {
     gap: 0.75rem;
   }
 
-  .mode-buttons .btn,
-  .action-buttons .btn {
+  :global(.mode-buttons) :global(.btn),
+  :global(.action-buttons) :global(.btn) {
     font-size: 0.8rem;
     padding: 0.35rem 0.6rem;
     min-width: 80px;
@@ -1143,38 +1158,38 @@ body.dark-mode .alert-warning * {
     padding: 0 1rem;
   }
 
-  .email-controls-row {
+  :global(.email-controls-row) {
     flex-direction: column;
     align-items: stretch;
     gap: 1rem;
   }
 
-  .mode-buttons,
-  .action-buttons {
+  :global(.mode-buttons),
+  :global(.action-buttons) {
     justify-content: center;
   }
 
-  .distribution-options {
+  :global(.distribution-options) {
     flex-direction: column;
     gap: 0.75rem;
     padding-left: 0;
   }
 
-  .distribution-option {
+  :global(.distribution-option) {
     justify-content: center;
   }
 
-  .draft-notification {
+  :global(.draft-notification) {
     flex-direction: column !important;
     align-items: flex-start !important;
   }
 
-  .draft-notification .d-flex.gap-2 {
+  :global(.draft-notification) :global(.d-flex.gap-2) {
     margin-top: 0.75rem;
     width: 100%;
   }
 
-  .draft-notification .d-flex.gap-2 button {
+  :global(.draft-notification) :global(.d-flex.gap-2) button {
     flex: 1;
   }
 }

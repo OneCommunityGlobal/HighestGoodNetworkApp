@@ -77,7 +77,7 @@ function ReportTableSearchPanel({ onSearch, wildCardSearchText, onSearchClick })
           /* eslint-disable-next-line jsx-a11y/no-autofocus */
           autoFocus
           type="text"
-          className={`form-control ${styles['search-field-container']} ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
+          className={`form-control ${styles['search-field-container']}`}
           aria-label="Search"
           placeholder="Search Text"
           id="team-profiles-wild-card-search"

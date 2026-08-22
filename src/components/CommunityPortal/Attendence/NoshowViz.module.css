@@ -83,4 +83,44 @@
   .no-show-viz-select:focus {
     border-color: #4CAF50; /* Green border on focus */
   }
-  
+
+  /* ─── Dark mode ───
+     `.dark` is applied alongside each element's own class by NoshowViz.jsx
+     (same convention as TableFilter.module.css), not as a single ancestor
+     wrapper, since the 5 chart cards and the select/label sit at different
+     nesting depths. */
+  .event-container.dark {
+    background: #1a1d23;
+    box-shadow: 0 4px 6px rgb(0 0 0 / 30%);
+  }
+
+  .event-container.dark .event-title {
+    color: #f9fafb;
+  }
+
+  .chart-button.dark {
+    background-color: #1c2541;
+    border-color: #3a506b;
+    color: #d1d5db;
+  }
+
+  .chart-button.dark.active {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+    color: #fff;
+  }
+
+  .chart-wrapper.dark {
+    background: #1c2541;
+    box-shadow: 0 4px 6px rgb(0 0 0 / 30%);
+  }
+
+  .no-show-viz-label.dark {
+    color: #d1d5db;
+  }
+
+  .no-show-viz-select.dark {
+    background-color: #1c2541;
+    border-color: #3a506b;
+    color: #f9fafb;
+  }

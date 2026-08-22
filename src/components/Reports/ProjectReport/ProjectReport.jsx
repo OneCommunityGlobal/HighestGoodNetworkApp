@@ -142,7 +142,12 @@ export function ProjectReport({ match }) {
       )}
       darkMode={darkMode}
     >
-      <div className={`project-header ${darkMode ? 'bg-yinmn-blue text-light' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>{projectName}</div>
+      <div
+        className={`project-header ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+        style={darkMode ? { ...boxStyleDark, color: '#ffffff' } : boxStyle}
+      >
+      {projectName}
+      </div>
       <div className="wbs-and-members-blocks-wrapper">
         <ReportPage.ReportBlock className="wbs-and-members-blocks" darkMode={darkMode}>
           <Paging totalElementsCount={wbs.WBSItems.length} darkMode={darkMode}>

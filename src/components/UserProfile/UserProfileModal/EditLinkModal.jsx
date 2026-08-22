@@ -286,7 +286,7 @@ const EditLinkModal = props => {
 
                       <input
                         id="google-doc-link"
-                        className={styles.customEdit}
+                        className={`${styles.customEdit} ${darkMode ? styles['customEdit-dark'] : ''}`}
                         placeholder="Enter Google Doc link"
                         value={googleLink.Link}
                         onChange={e => {
@@ -310,7 +310,7 @@ const EditLinkModal = props => {
                       </label>
 
                       <input
-                        className={styles.customEdit}
+                        className={`${styles.customEdit} ${darkMode ? styles['customEdit-dark'] : ''}`}
                         id="media-folder-link"
                         placeholder="Enter Dropbox link"
                         value={mediaFolderLink.Link}
@@ -327,13 +327,13 @@ const EditLinkModal = props => {
                           className={`${styles['link-fields']}`}
                         >
                           <input
-                            className={styles.customInput}
+                            className={`${styles.customInput} ${darkMode ? styles['customInput-dark'] : ''}`}
                             value={link.Name}
                             onChange={e => handleNameChanges(e, adminLinks, index, setAdminLinks)}
                             placeholder="Link Name"
                           />
                           <input
-                            className={styles.customInput}
+                            className={`${styles.customInput} ${darkMode ? styles['customInput-dark'] : ''}`}
                             value={link.Link}
                             onChange={e => handleLinkChanges(e, adminLinks, index, setAdminLinks)}
                             placeholder="Link URL"
@@ -363,7 +363,7 @@ const EditLinkModal = props => {
                       className={`${styles['link-fields']} new-admin-links`}
                     >
                       <input
-                        className={styles.customEdit}
+                        className={`${styles.customEdit} ${darkMode ? styles['customEdit-dark'] : ''}`}
                         id="linkName"
                         placeholder="enter name"
                         value={newAdminLink.Name}
@@ -374,7 +374,7 @@ const EditLinkModal = props => {
                         }}
                       />
                       <input
-                        className={styles.customEdit}
+                        className={`${styles.customEdit} ${darkMode ? styles['customEdit-dark'] : ''}`}
                         id="linkURL"
                         placeholder="enter link"
                         value={newAdminLink.Link}
@@ -419,12 +419,12 @@ const EditLinkModal = props => {
                       className={`${styles['link-fields']}`}
                     >
                       <input
-                        className={styles.customInput}
+                        className={`${styles.customInput} ${darkMode ? styles['customInput-dark'] : ''}`}
                         value={link.Name}
                         onChange={e => handleNameChanges(e, personalLinks, index, setPersonalLinks)}
                       />
                       <input
-                        className={styles.customInput}
+                        className={`${styles.customInput} ${darkMode ? styles['customInput-dark'] : ''}`}
                         value={link.Link}
                         onChange={e => handleLinkChanges(e, personalLinks, index, setPersonalLinks)}
                       />
@@ -454,7 +454,7 @@ const EditLinkModal = props => {
                     className={`${styles['link-fields']}`}
                   >
                     <input
-                      className={`${styles['customEdit']} me-3`}
+                      className={`${styles['customEdit']} me-3 ${darkMode ? styles['customEdit-dark'] : ''}`}
                       placeholder="enter name"
                       value={newPersonalLink.Name}
                       onChange={e => {
@@ -465,7 +465,7 @@ const EditLinkModal = props => {
                       }}
                     />
                     <input
-                      className={styles.customEdit}
+                      className={`${styles.customEdit} ${darkMode ? styles['customEdit-dark'] : ''}`}
                       placeholder="enter link"
                       value={newPersonalLink.Link}
                       onChange={e => {

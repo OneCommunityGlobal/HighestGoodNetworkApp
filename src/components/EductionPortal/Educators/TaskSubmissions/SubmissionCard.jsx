@@ -35,7 +35,7 @@ const getTaskTypeLabel = type => {
   return labels[type] || 'Task';
 };
 
-const SubmissionCard = ({ submission }) => {
+const SubmissionCard = ({ submission, darkMode }) => {
   const history = useHistory();
   const [showTooltip, setShowTooltip] = useState(false);
   const { studentName, taskType, status, submittedAt, dueAt, grade } = submission;
@@ -94,7 +94,9 @@ const SubmissionCard = ({ submission }) => {
   return (
     <button
       type="button"
-      className={`${styles.card} ${statusDetails.cardClass || ''}`}
+      className={`${styles.card} ${statusDetails.cardClass || ''} ${
+        darkMode ? styles.darkMode : ''
+      }`}
       onClick={goToReview}
     >
       <div className={styles.cardHeader}>
