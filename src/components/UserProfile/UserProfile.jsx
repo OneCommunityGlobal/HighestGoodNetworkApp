@@ -2045,7 +2045,10 @@ setUpdatedTasks(prev => {
                 <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>
                   Volunteering Times
                 </ModalHeader>
-                <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+                <ModalBody
+                  id="volunteering-times-modal-body"
+                  className={darkMode ? 'bg-yinmn-blue' : ''}
+                >
                   <VolunteeringTimeTab
                     userProfile={userProfile}
                     setUserProfile={setUserProfile}
@@ -2079,6 +2082,7 @@ setUpdatedTasks(prev => {
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
+                            scrollContainerId="volunteering-times-modal-body"
                           />
                           {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                           <span

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import EditConfirmModal from '../UserProfileModal/EditConfirmModal';
 import { boxStyle, boxStyleDark } from '~/styles';
@@ -30,7 +31,7 @@ const stillSavingMessage = 'Saving, will take just a second...';
  * @returns
  */
 const SaveButton = props => {
-  const { handleSubmit, disabled, userProfile, setSaved, darkMode } = props;
+  const { handleSubmit, disabled, userProfile, setSaved, darkMode, scrollContainerId } = props;
   const [modal, setModal] = useState(false);
   const [randomMessage, setRandomMessage] = useState(getRandomMessage());
   const [isLoading, setIsLoading] = useState(false);
@@ -38,21 +39,19 @@ const SaveButton = props => {
   const scrollSnapshot = useRef([]);
 
   const captureScrollPosition = event => {
-    const buttonAncestors = [];
-    let ancestor = event?.currentTarget?.parentElement;
-
-    while (ancestor) {
-      buttonAncestors.push(ancestor);
-      ancestor = ancestor.parentElement;
-    }
+    const parentModalBody = event?.currentTarget
+      ?.closest('.modal-content')
+      ?.querySelector('.modal-body');
+    const explicitScrollContainer = scrollContainerId
+      ? document.getElementById(scrollContainerId)
+      : null;
 
     const scrollContainers = [
       document.scrollingElement,
       document.documentElement,
       document.body,
-      document.getElementById('root'),
-      ...document.querySelectorAll('.modal-body'),
-      ...buttonAncestors,
+      explicitScrollContainer,
+      parentModalBody,
     ].filter(Boolean);
 
     scrollSnapshot.current = [...new Set(scrollContainers)].map(element => ({
@@ -156,6 +155,15 @@ const SaveButton = props => {
       </Button>
     </React.Fragment>
   );
+};
+
+SaveButton.propTypes = {
+  handleSubmit: PropTypes.func.isRequired,
+  disabled: PropTypes.bool.isRequired,
+  userProfile: PropTypes.object.isRequired,
+  setSaved: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool,
+  scrollContainerId: PropTypes.string,
 };
 
 export default SaveButton;

@@ -40,8 +40,13 @@ describe('<SaveButton />', () => {
       modalBody.scrollTop = 0;
     });
     render(
-      <div className="modal-body" data-testid="volunteer-time-modal-body">
-        <SaveButton {...createProps({ handleSubmit })} />
+      <div id="volunteer-time-modal-body" data-testid="volunteer-time-modal-body">
+        <SaveButton
+          {...createProps({
+            handleSubmit,
+            scrollContainerId: 'volunteer-time-modal-body',
+          })}
+        />
       </div>,
     );
     modalBody = screen.getByTestId('volunteer-time-modal-body');
