@@ -40,6 +40,7 @@ export const Badges = (props) => {
   const [isAssignOpen, setAssignOpen] = useState(false);
 
   const canAssignBadges = props.hasPermission(permissions.assignBadges) || props.hasPermission(permissions.assignBadgeOthers);
+  const canUpdateBadges = props.hasPermission(permissions.updateBadges);
   
   const [sortedBadges, setSortedBadges] = useState([]);
   const [isBadgeOpen, setIsBadgeOpen] = useState(false);
@@ -130,7 +131,7 @@ export const Badges = (props) => {
             </span>
 
             <div className='d-flex'>
-              {(props.canEdit || props.role == 'Owner' || props.role == 'Administrator' || canModifyBadgeAmount) && (
+              {(props.canEdit || canUpdateBadges || canModifyBadgeAmount) && (
                 <>
                   <Button className={styles['btn--dark-sea-green']} onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
                     Select Featured
