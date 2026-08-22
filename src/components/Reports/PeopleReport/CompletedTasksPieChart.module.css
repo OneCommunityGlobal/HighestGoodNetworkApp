@@ -244,3 +244,63 @@
   background-color: #1f2a44;
   color: #b8c4e0;
 }
+
+/* Tooltip */
+.tooltip-box-light,
+.tooltip-box-dark {
+  border-radius: 6px;
+  padding: 8px 16px;
+  max-width: 300px;
+  font-size: 16px;
+  line-height: 1.4;
+  overflow-wrap: break-word;
+  white-space: normal;
+  box-shadow: 0 4px 10px rgb(15 23 42 / 35%);
+}
+
+.tooltip-box-light {
+  background-color: #fff;
+  color: #0f172a;
+  border: 1px solid #d1d5db;
+}
+
+.tooltip-box-dark {
+  background-color: #111827;
+  color: #f8fafc;
+  border: 1px solid #4b5563;
+}
+
+.tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tooltip-swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  min-width: 12px;
+  min-height: 12px;
+  border-radius: 50%;
+}
+
+.tooltip-name {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+}
+
+.tooltip-detail-light {
+  color: #475569;
+}
+
+.tooltip-detail-dark {
+  color: #cbd5e1;
+}

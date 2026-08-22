@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useTable } from 'react-table';
-import * as d3 from 'd3';
+import { Cell, Label, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { FiFolder } from 'react-icons/fi';
 import { CHART_RADIUS, CHART_SIZE } from '../../common/PieChart/constants';
 import { generateArrayOfUniqColors } from '../../common/PieChart/colorsGenerator';
@@ -16,14 +16,7 @@ function CompletedTasksPieChart({ darkMode }) {
   const tasks = tasksWithLoggedHoursById ?? [];
 
   const total = tasks.reduce((sum, t) => sum + t.totalTime, 0);
-  const colors = useMemo(
-    () => generateArrayOfUniqColors(tasks.length),
-    [tasks.length],
-  );
-  const colorScale = useMemo(() => {
-    const domain = tasks.map(t => t.projectId);
-    return d3.scaleOrdinal().domain(domain).range(colors);
-  }, [colors, tasks]);
+  const colors = useMemo(() => generateArrayOfUniqColors(tasks.length), [tasks.length]);
 
   const pieChartId = 'completedTasksPieChart';
 
@@ -33,43 +26,6 @@ function CompletedTasksPieChart({ darkMode }) {
   const tbodyRef = useRef(null);
   const [visibleCount, setVisibleCount] = useState(tasks.length);
   const [expanded, setExpanded] = useState(false);
-
-  // Draw the donut (same look as common/PieChart's D3 render).
-  useEffect(() => {
-    if (!total) return undefined;
-
-    d3.select(`#pie-chart-${pieChartId}`).remove();
-    const container = d3.select(`#pie-chart-container-${pieChartId}`);
-    const svg = container
-      .append('svg')
-      .attr('id', `pie-chart-${pieChartId}`)
-      .attr('width', CHART_SIZE)
-      .attr('height', CHART_SIZE)
-      .append('g')
-      .attr('transform', `translate(${CHART_SIZE / 2}, ${CHART_SIZE / 2})`);
-
-    svg
-      .append('text')
-      .attr('text-anchor', 'middle')
-      .style('fill', darkMode ? 'white' : 'black')
-      .text(`${total.toFixed(2)} Hrs`);
-
-    const pie = d3.pie().value(d => d.totalTime);
-    const arcs = pie(tasks);
-    const arcGen = d3.arc().innerRadius(70).outerRadius(CHART_RADIUS);
-
-    svg
-      .selectAll('path')
-      .data(arcs)
-      .join('path')
-      .attr('d', arcGen)
-      .attr('fill', d => colorScale(d.data.projectId))
-      .style('opacity', 1);
-
-    return () => {
-      d3.select(`#pie-chart-${pieChartId}`).remove();
-    };
-  }, [colorScale, darkMode, tasks, total]);
 
   // Measure how many rows fit in the clamped tbody height. Uses the height of the
   // first measured row — every row in the table has the same layout, so a single
@@ -84,8 +40,8 @@ function CompletedTasksPieChart({ darkMode }) {
       // Budget comes from CSS (max-height on .legend-scroll-area tbody), NOT from
       // the tbody's rendered height — that would feed back on itself because the
       // tbody's height is a function of how many rows we render into it.
-      const styles = window.getComputedStyle(tbody);
-      const maxHeightPx = parseFloat(styles.maxHeight);
+      const tbodyStyles = window.getComputedStyle(tbody);
+      const maxHeightPx = parseFloat(tbodyStyles.maxHeight);
       if (!Number.isFinite(maxHeightPx) || maxHeightPx <= 0) {
         setVisibleCount(tasks.length);
         return;
@@ -116,6 +72,15 @@ function CompletedTasksPieChart({ darkMode }) {
   const hiddenCount = expanded ? 0 : Math.max(0, tasks.length - visibleCount);
   const tasksView = expanded ? tasks : tasks.slice(0, visibleCount);
 
+  const colorScale = useMemo(() => {
+    const domain = tasks.map(t => t.projectId);
+    const scale = {};
+    domain.forEach((id, idx) => {
+      scale[id] = colors[idx];
+    });
+    return scale;
+  }, [colors, tasks]);
+
   const columns = useMemo(
     () => [
       {
@@ -126,7 +91,7 @@ function CompletedTasksPieChart({ darkMode }) {
         Cell: ({ value }) => (
           <div
             className={styles['project-chart-legend']}
-            style={{ backgroundColor: `${colorScale(value)}` }}
+            style={{ backgroundColor: `${colorScale[value]}` }}
           />
         ),
       },
@@ -175,23 +140,94 @@ function CompletedTasksPieChart({ darkMode }) {
 
   return (
     <div className={styles.completedTasksPieChart}>
-      <div
-        className={styles['report-block']}
-      >
+      <div className={styles['report-block']}>
         <h5 className={styles['people-pie-charts-header']}>Tasks With Completed Hours</h5>
         <div className={styles['pie-chart-wrapper']}>
-          {/* Donut chart rendered with D3, matching the existing PieChart look. */}
-          <div id={`pie-chart-container-${pieChartId}`} className={styles['pie-chart']} />
           <div
-            className={styles['pie-chart-legend-container']}
+            id={`pie-chart-container-${pieChartId}`}
+            className={styles['pie-chart']}
+            style={{ width: CHART_SIZE, height: CHART_SIZE }}
           >
-            <div
-              className={expanded ? undefined : styles['legend-scroll-area']}
-            >
-              <table
-                {...getTableProps()}
-                className={styles.completedTasksTable}
-              >
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
+                <Pie
+                  data={tasks}
+                  dataKey="totalTime"
+                  nameKey="projectName"
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={70}
+                  outerRadius={CHART_RADIUS}
+                  paddingAngle={1}
+                  stroke="none"
+                  isAnimationActive={false}
+                >
+                  {tasks.map((task, index) => (
+                    <Cell key={task.projectId ?? index} fill={colors[index]} />
+                  ))}
+                  <Label
+                    position="center"
+                    content={() => (
+                      <text
+                        x="50%"
+                        y="50%"
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                        fill={darkMode ? '#ffffff' : '#000000'}
+                        fontSize={14}
+                      >
+                        {`${total.toFixed(2)} Hrs`}
+                      </text>
+                    )}
+                  />
+                </Pie>
+                <Tooltip
+                  content={({ active, payload }) => {
+                    if (!active || !payload || !payload.length) return null;
+                    const item = payload[0];
+                    const value = Number(item.value);
+                    const name = item.name;
+                    const swatch =
+                      (item.payload && item.payload.fill) ||
+                      colors[item.payload?.index ?? 0];
+                    const hours = value.toFixed(2);
+                    const pct = total ? ((value / total) * 100).toFixed(1) : '0.0';
+                    return (
+                      <div
+                        className={
+                          darkMode ? styles['tooltip-box-dark'] : styles['tooltip-box-light']
+                        }
+                      >
+                        <div className={styles['tooltip-row']}>
+                          {swatch && (
+                            <span
+                              aria-hidden="true"
+                              className={styles['tooltip-swatch']}
+                              style={{ backgroundColor: swatch }}
+                            />
+                          )}
+                          <span className={styles['tooltip-name']}>{name}</span>
+                        </div>
+                        <div
+                          className={
+                            darkMode
+                              ? styles['tooltip-detail-dark']
+                              : styles['tooltip-detail-light']
+                          }
+                        >
+                          {`${hours} hrs (${pct}%)`}
+                        </div>
+                      </div>
+                    );
+                  }}
+                  wrapperStyle={{ zIndex: 9999 }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className={styles['pie-chart-legend-container']}>
+            <div className={expanded ? undefined : styles['legend-scroll-area']}>
+              <table {...getTableProps()} className={styles.completedTasksTable}>
                 <thead>
                   {headerGroups.map(headerGroup => {
                     const { key, ...headerGroupProps } = headerGroup.getHeaderGroupProps();
@@ -259,12 +295,8 @@ function CompletedTasksPieChart({ darkMode }) {
                 </button>
               </div>
             )}
-            <div
-              className={`${styles['data-total-hours']}`}
-            >
-              <strong>
-                Total Hours:
-              </strong>
+            <div className={`${styles['data-total-hours']}`}>
+              <strong>Total Hours:</strong>
               {total.toFixed(2)}
             </div>
           </div>
