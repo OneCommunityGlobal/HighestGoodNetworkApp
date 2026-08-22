@@ -7,8 +7,16 @@ import PRReviewTeamAnalytics from '../PRReviewTeamAnalytics';
 
 vi.mock('axios');
 
-test('requests new PR data when the duration changes', async () => {
-  axios.get.mockResolvedValue({ data: [] });
+test('requests and renders new PR data when the duration changes', async () => {
+  const responses = {
+    [ENDPOINTS.POPULAR_PRS('lastWeek')]: [
+      { prNumber: 'FE-101', prTitle: 'Weekly PR', reviewCount: 1 },
+    ],
+    [ENDPOINTS.POPULAR_PRS('lastMonth')]: [
+      { prNumber: 'FE-202', prTitle: 'Monthly PR', reviewCount: 3 },
+    ],
+  };
+  axios.get.mockImplementation(url => Promise.resolve({ data: responses[url] ?? [] }));
   window.localStorage.setItem('token', 'test-token');
   const store = configureStore({ reducer: { theme: () => ({ darkMode: false }) } });
 
@@ -23,6 +31,7 @@ test('requests new PR data when the duration changes', async () => {
       headers: { Authorization: 'test-token' },
     }),
   );
+  expect(await screen.findByText('1 reviews')).toBeInTheDocument();
 
   fireEvent.change(screen.getByLabelText('Select duration filter'), {
     target: { value: 'lastMonth' },
@@ -33,4 +42,6 @@ test('requests new PR data when the duration changes', async () => {
       headers: { Authorization: 'test-token' },
     }),
   );
+  expect(await screen.findByText('3 reviews')).toBeInTheDocument();
+  expect(screen.queryByText('1 reviews')).not.toBeInTheDocument();
 });
