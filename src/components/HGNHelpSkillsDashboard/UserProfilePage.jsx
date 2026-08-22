@@ -333,6 +333,25 @@ function SkillsTabbedSection({ skillsData }) {
 }
 
 // Main UserProfilePage
+const normalizeSkillInfo = skillInfo => {
+  const toSkills = section =>
+    Object.entries(section || {})
+      .filter(([, score]) => !Number.isNaN(Number(score)))
+      .map(([name, score]) => ({
+        id: name,
+        name,
+        score: Number(score),
+        question: name,
+      }));
+
+  return {
+    Frontend: toSkills(skillInfo?.frontend),
+    Backend: toSkills(skillInfo?.backend),
+    DevOps: [],
+    SWPractices: [],
+  };
+};
+
 function UserProfilePage() {
   const { userId } = useParams();
   const [userProfile, setUserProfile] = useState(null);
@@ -345,7 +364,7 @@ function UserProfilePage() {
 
       try {
         setLoading(true);
-        const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
+        const response = await axios.get(ENDPOINTS.SKILLS_PROFILE(userId));
         setUserProfile(response.data);
         setLoading(false);
       } catch (err) {
@@ -363,12 +382,26 @@ function UserProfilePage() {
   return (
     <div className={`${styles.userProfilePage}`}>
       <div>
-        <div>User Profile Page Placeholder</div>
+        <h2>{userProfile?.name?.displayName || 'User Profile'}</h2>
+        {userProfile?.teams?.length > 0 && (
+          <div>
+            <h3>Teams</h3>
+            {userProfile.teams.map(team => (
+              <div key={team.id}>{team.role ? `${team.name} (${team.role})` : team.name}</div>
+            ))}
+          </div>
+        )}
+        {userProfile?.skillInfo?.general?.leadership_experience && (
+          <p>Leadership experience: {userProfile.skillInfo.general.leadership_experience}</p>
+        )}
+        {userProfile?.skillInfo?.followUp?.additional_info && (
+          <p>Additional experience: {userProfile.skillInfo.followUp.additional_info}</p>
+        )}
       </div>
 
-      {userProfile?.skills && (
+      {userProfile?.skillInfo && (
         <div className={`${styles.skillsSection}`}>
-          <SkillsTabbedSection skillsData={userProfile.skills} />
+          <SkillsTabbedSection skillsData={normalizeSkillInfo(userProfile.skillInfo)} />
         </div>
       )}
     </div>
