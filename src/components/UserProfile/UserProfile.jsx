@@ -194,7 +194,7 @@ const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
       return uniqueTeamCodes;
     } catch (error) {
       setIsLoading(false);
-      toast.error(`It was not possible to retrieve the team codes.
+      toast.error(`It was not possible to retrieve the team codes: ${error.message}
       Please try again by clicking the icon inside the input auto complete.`);
       return [];
     }
