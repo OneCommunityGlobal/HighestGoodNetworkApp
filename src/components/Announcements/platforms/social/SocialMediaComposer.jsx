@@ -509,14 +509,24 @@ export default function SocialMediaComposer({ platform, darkMode }) {
     setPreviewOpen(false);
   };
 
-  const copyAndOpenX = async content => {
+  const reserveXPopup = () => {
+    const xWindow = window.open('', '_blank');
+    if (!xWindow) {
+      toast.error('Could not open X. Please allow pop-ups and try again.');
+      return null;
+    }
+    return xWindow;
+  };
+
+  const copyAndOpenX = async (content, xWindow) => {
     try {
       await navigator.clipboard.writeText(content);
     } catch {
+      xWindow.close();
       toast.error('Could not copy content to clipboard. Please try again.');
       return false;
     }
-    window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(content)}`, '_blank');
+    xWindow.location.href = `https://x.com/intent/tweet?text=${encodeURIComponent(content)}`;
     toast.success('Content copied to clipboard! X is opening — paste and post.', {
       autoClose: 5000,
     });
@@ -532,6 +542,12 @@ export default function SocialMediaComposer({ platform, darkMode }) {
     if (postContent.length > charLimit) {
       toast.error(`Post exceeds ${charLimit} character limit.`);
       return;
+    }
+
+    let xWindow = null;
+    if (platform === 'x') {
+      xWindow = reserveXPopup();
+      if (!xWindow) return;
     }
 
     const selectedPlatforms = Object.keys(crossPostPlatforms).filter(p => crossPostPlatforms[p]);
@@ -554,8 +570,9 @@ export default function SocialMediaComposer({ platform, darkMode }) {
 
       if (response.ok) {
         if (platform === 'x') {
-          const copied = await copyAndOpenX(postContent.trim());
+          const copied = await copyAndOpenX(postContent.trim(), xWindow);
           if (!copied) return;
+          xWindow = null;
         } else {
           let message = `Successfully posted to ${platform}!`;
           if (selectedPlatforms.length > 0) {
@@ -568,10 +585,15 @@ export default function SocialMediaComposer({ platform, darkMode }) {
           loadPostHistory();
         }
       } else {
+        if (xWindow) {
+          xWindow.close();
+          xWindow = null;
+        }
         const err = await response.json().catch(() => null);
         toast.error(err?.detail || `Failed to post to ${platform}.`);
       }
     } catch (err) {
+      if (xWindow) xWindow.close();
       toast.error(`Error while posting to ${platform}.`);
     } finally {
       setIsPosting(false);
@@ -727,13 +749,15 @@ export default function SocialMediaComposer({ platform, darkMode }) {
   };
 
   const handlePostScheduledNow = async post => {
-    const performPost = async () => {
+    const performPost = async reservedXWindow => {
+      let xWindow = reservedXWindow;
       try {
         const content = api.parseScheduledText(post);
 
         if (platform === 'x') {
-          const copied = await copyAndOpenX(content);
+          const copied = await copyAndOpenX(content, xWindow);
           if (!copied) return;
+          xWindow = null;
           const token = localStorage.getItem('token');
           await fetch(`/api/x/schedule/${post._id}/mark-posted`, {
             method: 'PATCH',
@@ -769,12 +793,21 @@ export default function SocialMediaComposer({ platform, darkMode }) {
           toast.error(err?.detail || 'Failed to post.');
         }
       } catch (err) {
+        if (xWindow) xWindow.close();
         toast.error('Error posting.');
       }
     };
 
+    const reserveAndPost = () => {
+      if (platform !== 'x') return performPost(null);
+
+      const xWindow = reserveXPopup();
+      if (!xWindow) return Promise.resolve();
+      return performPost(xWindow);
+    };
+
     if (!preferences.confirmPostNow) {
-      await performPost();
+      await reserveAndPost();
     } else {
       showModal({
         title: 'Post Immediately',
@@ -782,7 +815,7 @@ export default function SocialMediaComposer({ platform, darkMode }) {
           platform === 'x'
             ? 'This will copy the content to your clipboard and open X. The post will be marked as completed.'
             : `This will post immediately to ${platform} and remove it from your scheduled posts. Continue?`,
-        onConfirm: performPost,
+        onConfirm: reserveAndPost,
         confirmText: platform === 'x' ? 'Copy & Open X' : 'Post Now',
         confirmColor: 'success',
         showDontShowAgain: true,

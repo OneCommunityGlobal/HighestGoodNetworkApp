@@ -53,12 +53,14 @@ describe('SocialMediaComposer X clipboard handling', () => {
   const content = 'Post this on X';
   let writeText;
   let open;
+  let xWindow;
 
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
     writeText = vi.fn();
-    open = vi.fn();
+    xWindow = { close: vi.fn(), location: { href: '' } };
+    open = vi.fn(() => xWindow);
     vi.stubGlobal('navigator', { clipboard: { writeText } });
     vi.stubGlobal('open', open);
   });
@@ -75,14 +77,35 @@ describe('SocialMediaComposer X clipboard handling', () => {
     return postInput;
   };
 
-  it('shows success and continues the flow only after the clipboard write succeeds', async () => {
-    writeText.mockResolvedValue();
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve({}) })),
+  const showScheduledPost = async fetchMock => {
+    localStorage.setItem(
+      'mastodon_composer_prefs',
+      JSON.stringify({ confirmDeleteScheduled: true, confirmPostNow: false }),
     );
+    vi.stubGlobal('fetch', fetchMock);
+    render(<SocialMediaComposer platform="x" />);
+    fireEvent.click(screen.getByRole('button', { name: /^scheduled$/i }));
+    return screen.findByTitle(/copy & post to x/i);
+  };
+
+  it('reserves a popup synchronously, then navigates and completes the new-post flow', async () => {
+    writeText.mockResolvedValue();
+    let resolveApiRequest;
+    const fetchMock = vi.fn(
+      () =>
+        new Promise(resolve => {
+          resolveApiRequest = resolve;
+        }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
 
     const postInput = submitPost();
+
+    expect(open).toHaveBeenCalledWith('', '_blank');
+    expect(writeText).not.toHaveBeenCalled();
+    expect(xWindow.location.href).toBe('');
+
+    resolveApiRequest({ ok: true, json: () => Promise.resolve({}) });
 
     await waitFor(() => {
       expect(writeText).toHaveBeenCalledWith(content);
@@ -93,10 +116,14 @@ describe('SocialMediaComposer X clipboard handling', () => {
         },
       );
     });
-    expect(open).toHaveBeenCalledWith(
-      `https://x.com/intent/tweet?text=${encodeURIComponent(content)}`,
-      '_blank',
+    expect(open.mock.invocationCallOrder[0]).toBeLessThan(fetchMock.mock.invocationCallOrder[0]);
+    expect(fetchMock.mock.invocationCallOrder[0]).toBeLessThan(
+      writeText.mock.invocationCallOrder[0],
     );
+    expect(xWindow.location.href).toBe(
+      `https://x.com/intent/tweet?text=${encodeURIComponent(content)}`,
+    );
+    expect(xWindow.close).not.toHaveBeenCalled();
     expect(postInput).toHaveValue('');
     expect(toast.error).not.toHaveBeenCalled();
   });
@@ -116,16 +143,52 @@ describe('SocialMediaComposer X clipboard handling', () => {
       );
     });
     expect(toast.success).not.toHaveBeenCalled();
-    expect(open).not.toHaveBeenCalled();
+    expect(open).toHaveBeenCalledWith('', '_blank');
+    expect(xWindow.close).toHaveBeenCalledOnce();
+    expect(xWindow.location.href).toBe('');
     expect(postInput).toHaveValue(content);
   });
 
-  it('does not mark a scheduled post as completed when the clipboard write fails', async () => {
-    writeText.mockRejectedValue(new Error('Clipboard unavailable'));
-    localStorage.setItem(
-      'mastodon_composer_prefs',
-      JSON.stringify({ confirmDeleteScheduled: true, confirmPostNow: false }),
+  it('closes the reserved popup when the new-post API request fails', async () => {
+    const fetchMock = vi.fn(() =>
+      Promise.resolve({
+        ok: false,
+        json: () => Promise.resolve({ detail: 'X API unavailable' }),
+      }),
     );
+    vi.stubGlobal('fetch', fetchMock);
+
+    const postInput = submitPost();
+
+    expect(open).toHaveBeenCalledWith('', '_blank');
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith('X API unavailable');
+    });
+    expect(xWindow.close).toHaveBeenCalledOnce();
+    expect(xWindow.location.href).toBe('');
+    expect(writeText).not.toHaveBeenCalled();
+    expect(toast.success).not.toHaveBeenCalled();
+    expect(postInput).toHaveValue(content);
+  });
+
+  it('preserves the composer when the popup is blocked', async () => {
+    open.mockReturnValue(null);
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+
+    const postInput = submitPost();
+
+    expect(toast.error).toHaveBeenCalledWith(
+      'Could not open X. Please allow pop-ups and try again.',
+    );
+    expect(writeText).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(toast.success).not.toHaveBeenCalled();
+    expect(postInput).toHaveValue(content);
+  });
+
+  it('navigates X and marks a scheduled post after clipboard success', async () => {
+    writeText.mockResolvedValue();
     const scheduledPost = {
       _id: 'scheduled-x-post',
       content,
@@ -138,11 +201,37 @@ describe('SocialMediaComposer X clipboard handling', () => {
       }
       return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
     });
-    vi.stubGlobal('fetch', fetchMock);
+    const copyScheduledButton = await showScheduledPost(fetchMock);
 
-    render(<SocialMediaComposer platform="x" />);
-    fireEvent.click(screen.getByRole('button', { name: /^scheduled$/i }));
-    const copyScheduledButton = await screen.findByTitle(/copy & post to x/i);
+    fireEvent.click(copyScheduledButton);
+
+    expect(open).toHaveBeenCalledWith('', '_blank');
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/x/schedule/scheduled-x-post/mark-posted',
+        expect.objectContaining({ method: 'PATCH' }),
+      );
+    });
+    expect(xWindow.location.href).toBe(
+      `https://x.com/intent/tweet?text=${encodeURIComponent(content)}`,
+    );
+  });
+
+  it('does not mark a scheduled post as completed when the clipboard write fails', async () => {
+    writeText.mockRejectedValue(new Error('Clipboard unavailable'));
+    const scheduledPost = {
+      _id: 'scheduled-x-post',
+      content,
+      scheduledAt: '2026-08-23T12:00:00.000Z',
+      status: 'ready',
+    };
+    const fetchMock = vi.fn((url, options) => {
+      if (url === '/api/x/schedule' && !options?.method) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve([scheduledPost]) });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+    });
+    const copyScheduledButton = await showScheduledPost(fetchMock);
     fireEvent.click(copyScheduledButton);
 
     await waitFor(() => {
@@ -151,7 +240,38 @@ describe('SocialMediaComposer X clipboard handling', () => {
       );
     });
     expect(toast.success).not.toHaveBeenCalled();
-    expect(open).not.toHaveBeenCalled();
+    expect(open).toHaveBeenCalledWith('', '_blank');
+    expect(xWindow.close).toHaveBeenCalledOnce();
+    expect(xWindow.location.href).toBe('');
+    expect(fetchMock).not.toHaveBeenCalledWith(
+      '/api/x/schedule/scheduled-x-post/mark-posted',
+      expect.anything(),
+    );
+  });
+
+  it('does not mark a scheduled post when the popup is blocked', async () => {
+    open.mockReturnValue(null);
+    const scheduledPost = {
+      _id: 'scheduled-x-post',
+      content,
+      scheduledAt: '2026-08-23T12:00:00.000Z',
+      status: 'ready',
+    };
+    const fetchMock = vi.fn((url, options) => {
+      if (url === '/api/x/schedule' && !options?.method) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve([scheduledPost]) });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+    });
+    const copyScheduledButton = await showScheduledPost(fetchMock);
+
+    fireEvent.click(copyScheduledButton);
+
+    expect(toast.error).toHaveBeenCalledWith(
+      'Could not open X. Please allow pop-ups and try again.',
+    );
+    expect(writeText).not.toHaveBeenCalled();
+    expect(toast.success).not.toHaveBeenCalled();
     expect(fetchMock).not.toHaveBeenCalledWith(
       '/api/x/schedule/scheduled-x-post/mark-posted',
       expect.anything(),
