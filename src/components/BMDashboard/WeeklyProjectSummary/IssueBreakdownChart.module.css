@@ -269,8 +269,13 @@
   background: var(--section-bg, #fff);
   border-radius: 12px;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
+}
+
+.chartContainer > * {
+  flex: 1;
+  min-width: 0;
 }
 
 :global(.dark-mode) .chartContainer {

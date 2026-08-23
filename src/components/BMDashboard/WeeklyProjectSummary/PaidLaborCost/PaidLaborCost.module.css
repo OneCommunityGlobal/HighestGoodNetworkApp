@@ -166,6 +166,15 @@
   border-color: #3a506b;
 }
 
+.darkDateInput::placeholder {
+  color: #94a3b8 !important;
+}
+
+:global(.react-datepicker-wrapper) {
+  width: 100%;
+  display: block;
+}
+
 .dateSeparator {
   flex: 0 0 auto;
   font-size: 13px;
@@ -315,6 +324,23 @@
 :global(.paid-labor-cost-dark-calendar .react-datepicker__current-month),
 :global(.paid-labor-cost-dark-calendar .react-datepicker__day-name) {
   color: #fff !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__day) {
+  color: #e0e0e0 !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__day:hover) {
+  background-color: #3a506b !important;
+  color: #fff !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__day--outside-month) {
+  color: #8a94a3 !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__day--disabled) {
+  color: #5a6472 !important;
 }
 
 @media screen and (width <=1130px) {
