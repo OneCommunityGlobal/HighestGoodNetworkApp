@@ -1,15 +1,13 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { toast } from 'react-toastify';
-import { ApiEndpoint } from '~/utils/URL';
-
-vi.mock('~/utils/URL', () => ({ ApiEndpoint: 'https://configured.example/api/' }));
+vi.mock('~/utils/URL', () => ({ ApiEndpoint: 'https://configured.example/api///' }));
 
 import SocialMediaComposer from '../SocialMediaComposer';
 import styles from '../SocialMediaComposer.module.css';
 
 // react-toastify is globally mocked in src/setupTests.js
-const EXPECTED_API_BASE = ApiEndpoint.replace(/\/+$/, '');
+const EXPECTED_API_BASE = 'https://configured.example/api';
 
 const getPostCard = content => {
   // The semantic card class is the stable styling hook under test.
@@ -581,7 +579,8 @@ describe('SocialMediaComposer configured Mastodon API requests', () => {
     vi.stubGlobal('fetch', fetchMock);
     render(<SocialMediaComposer platform="mastodon" />);
 
-    fireEvent.change(screen.getByPlaceholderText(/write your mastodon post here/i), {
+    const postInput = screen.getByPlaceholderText(/write your mastodon post here/i);
+    fireEvent.change(postInput, {
       target: { value: 'Mastodon content' },
     });
     fireEvent.click(screen.getByRole('button', { name: /^post now$/i }));
@@ -599,6 +598,31 @@ describe('SocialMediaComposer configured Mastodon API requests', () => {
           crossPostTo: [],
         }),
       });
+      expect(toast.success).toHaveBeenCalledWith('Successfully posted to mastodon!', {
+        autoClose: 5000,
+      });
+      expect(postInput).toHaveValue('');
+    });
+  });
+
+  it('preserves the cross-post suffix in the immediate-post success message', async () => {
+    const expectedMessage = 'Successfully posted to mastodon! (Selected for: facebook, linkedin)';
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve({}) })),
+    );
+    render(<SocialMediaComposer platform="mastodon" />);
+
+    fireEvent.change(screen.getByPlaceholderText(/write your mastodon post here/i), {
+      target: { value: 'Cross-posted content' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /also post to/i }));
+    fireEvent.click(screen.getByLabelText('Facebook'));
+    fireEvent.click(screen.getByLabelText('LinkedIn'));
+    fireEvent.click(screen.getByRole('button', { name: /^post now$/i }));
+
+    await waitFor(() => {
+      expect(toast.success).toHaveBeenCalledWith(expectedMessage, { autoClose: 5000 });
     });
   });
 

@@ -8,7 +8,14 @@ import ConfirmationModal from '../../ConfirmationModal';
 import styles from './SocialMediaComposer.module.css';
 
 const PREFS_KEY = 'mastodon_composer_prefs';
-const SOCIAL_API_BASE = ApiEndpoint.replace(/\/+$/, '');
+
+const removeTrailingSlashes = value => {
+  let end = value.length;
+  while (end > 0 && value[end - 1] === '/') end -= 1;
+  return value.slice(0, end);
+};
+
+const SOCIAL_API_BASE = removeTrailingSlashes(ApiEndpoint);
 
 const X_STATUS_BADGES = {
   ready: '⏰ Ready to Post',
@@ -543,7 +550,8 @@ export default function SocialMediaComposer({ platform, darkMode }) {
 
   // Post Now (platform-routed)
   const handlePostNow = async () => {
-    if (!postContent.trim()) {
+    const content = postContent.trim();
+    if (!content) {
       toast.error('Post cannot be empty!');
       return;
     }
@@ -562,12 +570,7 @@ export default function SocialMediaComposer({ platform, darkMode }) {
 
     setIsPosting(true);
     try {
-      const { url, body } = api.postNow(
-        postContent.trim(),
-        uploadedImage,
-        imageAltText,
-        selectedPlatforms,
-      );
+      const { url, body } = api.postNow(content, uploadedImage, imageAltText, selectedPlatforms);
 
       const token = localStorage.getItem('token');
       const response = await fetch(url, {
@@ -576,32 +579,30 @@ export default function SocialMediaComposer({ platform, darkMode }) {
         body: JSON.stringify(body),
       });
 
-      if (response.ok) {
-        if (platform === 'x') {
-          const copied = await copyAndOpenX(postContent.trim(), xWindow);
-          if (!copied) return;
-          xWindow = null;
-        } else {
-          let message = `Successfully posted to ${platform}!`;
-          if (selectedPlatforms.length > 0) {
-            message += ` (Selected for: ${selectedPlatforms.join(', ')})`;
-          }
-          toast.success(message, { autoClose: 5000 });
-        }
-        clearComposer();
-        if (activeSubTab === 'history') {
-          loadPostHistory();
-        }
-      } else {
-        if (xWindow) {
-          xWindow.close();
-          xWindow = null;
-        }
+      if (!response.ok) {
+        xWindow?.close();
         const err = await response.json().catch(() => null);
         toast.error(err?.detail || `Failed to post to ${platform}.`);
+        return;
+      }
+
+      if (platform === 'x') {
+        const copied = await copyAndOpenX(content, xWindow);
+        if (!copied) return;
+        xWindow = null;
+      } else {
+        const crossPostSuffix = selectedPlatforms.length
+          ? ` (Selected for: ${selectedPlatforms.join(', ')})`
+          : '';
+        toast.success(`Successfully posted to ${platform}!${crossPostSuffix}`, { autoClose: 5000 });
+      }
+
+      clearComposer();
+      if (activeSubTab === 'history') {
+        loadPostHistory();
       }
     } catch (err) {
-      if (xWindow) xWindow.close();
+      xWindow?.close();
       toast.error(`Error while posting to ${platform}.`);
     } finally {
       setIsPosting(false);
