@@ -179,9 +179,7 @@ function EventPage() {
                   <select
                     value={status}
                     onChange={e => setStatus(e.target.value)}
-                    className={`${styles.statusDropdown} ${
-                      darkMode ? styles.statusDropdownDark : ''
-                    }`}
+                    className={darkMode ? styles.statusDropdownDark : styles.statusDropdown}
                   >
                     <option>Active</option>
                     <option>Finished</option>
