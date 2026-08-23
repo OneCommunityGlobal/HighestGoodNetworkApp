@@ -2,8 +2,15 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { toast } from 'react-toastify';
 import SocialMediaComposer from '../SocialMediaComposer';
+import styles from '../SocialMediaComposer.module.css';
 
 // react-toastify is globally mocked in src/setupTests.js
+
+const getPostCard = content => {
+  // The semantic card class is the stable styling hook under test.
+  // eslint-disable-next-line testing-library/no-node-access
+  return screen.getByText(content).closest(`.${styles['post-card']}`);
+};
 
 describe('SocialMediaComposer X 280-character limit', () => {
   const overLimitContent = 'a'.repeat(281);
@@ -220,14 +227,13 @@ describe('SocialMediaComposer X clipboard handling', () => {
     });
 
     await screen.findByText(/skipped/i);
-    // The card's status styling is applied inline on the nearest styled ancestor.
-    // eslint-disable-next-line testing-library/no-node-access
-    const skippedCard = screen.getByText(content).closest('[style]');
+    const skippedCard = getPostCard(content);
     expect(skippedCard).toHaveTextContent(content);
-    expect(skippedCard).toHaveStyle({
-      background: '#f5f5f5',
-      borderLeft: '4px solid #757575',
-    });
+    expect(skippedCard).toHaveClass(styles['x-card-skipped']);
+    expect(screen.getByText(/— skipped/i)).toHaveClass(
+      styles['status-badge'],
+      styles['status-badge-skipped'],
+    );
     expect(within(skippedCard).queryByTitle('Edit')).not.toBeInTheDocument();
     expect(within(skippedCard).queryByTitle('Copy & post to X')).not.toBeInTheDocument();
     expect(within(skippedCard).queryByTitle('Delete')).not.toBeInTheDocument();
@@ -404,6 +410,110 @@ describe('SocialMediaComposer X clipboard handling', () => {
       '/api/x/schedule/scheduled-x-post/mark-posted',
       expect.anything(),
     );
+  });
+});
+
+describe('SocialMediaComposer scheduled-post theme styling', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorage.clear();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  const openScheduledPosts = async ({ platform, darkMode = true, posts }) => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve(posts) })),
+    );
+    render(<SocialMediaComposer platform={platform} darkMode={darkMode} />);
+    fireEvent.click(screen.getByRole('button', { name: /^scheduled$/i }));
+    await waitFor(() => expect(globalThis.fetch).toHaveBeenCalled());
+  };
+
+  it('renders readable semantic hooks for pending, ready, and skipped X posts', async () => {
+    const posts = [
+      {
+        _id: 'pending-post',
+        content: 'Pending themed post',
+        scheduledAt: '2026-08-23T12:00:00.000Z',
+        status: 'pending',
+      },
+      {
+        _id: 'ready-post',
+        content: 'Ready themed post',
+        scheduledAt: '2026-08-23T13:00:00.000Z',
+        status: 'ready',
+      },
+      {
+        _id: 'skipped-post',
+        content: 'Skipped themed post',
+        scheduledAt: '2026-08-23T14:00:00.000Z',
+        status: 'skipped',
+      },
+    ];
+
+    await openScheduledPosts({ platform: 'x', posts });
+
+    expect(await screen.findByText(/🕐 pending/i)).toHaveClass(
+      styles['status-badge'],
+      styles['status-badge-pending'],
+    );
+    expect(screen.getByText(/⏰ ready to post/i)).toHaveClass(
+      styles['status-badge'],
+      styles['status-badge-ready'],
+    );
+    expect(screen.getByText(/— skipped/i)).toHaveClass(
+      styles['status-badge'],
+      styles['status-badge-skipped'],
+    );
+    expect(getPostCard('Ready themed post')).toHaveClass(styles['x-card-ready']);
+    expect(getPostCard('Skipped themed post')).toHaveClass(styles['x-card-skipped']);
+  });
+
+  it('uses the theme-aware empty state in dark mode', async () => {
+    await openScheduledPosts({ platform: 'x', posts: [] });
+
+    const emptyState = await screen.findByText('No scheduled posts yet.');
+    expect(emptyState).toHaveClass(styles['scheduled-empty-state']);
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(emptyState.closest(`.${styles['social-media-composer']}`)).toHaveClass(styles.dark);
+  });
+
+  it('applies the composer-owned dark theme to the Post Immediately modal', async () => {
+    const post = {
+      _id: 'ready-post',
+      content: 'Open the themed modal',
+      scheduledAt: '2026-08-23T13:00:00.000Z',
+      status: 'ready',
+    };
+    await openScheduledPosts({ platform: 'x', posts: [post] });
+
+    fireEvent.click(await screen.findByTitle('Copy & post to X'));
+
+    expect(await screen.findByText('Post Immediately')).toBeInTheDocument();
+    expect(screen.getByRole('dialog')).toHaveClass(styles['confirmation-modal-dark']);
+  });
+
+  it('applies scoped dark scheduled-section styling hooks to Mastodon posts', async () => {
+    const post = {
+      _id: 'mastodon-post',
+      postData: JSON.stringify({ status: 'Dark Mastodon scheduled post' }),
+      scheduledTime: '2026-08-23T13:00:00.000Z',
+    };
+    await openScheduledPosts({ platform: 'mastodon', posts: [post] });
+
+    const card = getPostCard('Dark Mastodon scheduled post');
+    expect(card).toHaveClass(styles['post-card']);
+    // The section-specific ancestor activates only scheduled-post dark rules.
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(card.closest(`.${styles['scheduled-content']}`)).toHaveClass(
+      styles['scheduled-content'],
+    );
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(card.closest(`.${styles['social-media-composer']}`)).toHaveClass(styles.dark);
   });
 });
 

@@ -8,23 +8,11 @@ import styles from './SocialMediaComposer.module.css';
 
 const PREFS_KEY = 'mastodon_composer_prefs';
 
-const X_CARD_STYLES = {
-  ready: { border: '2px solid #ffc107', background: '#fff8e1' },
-  posted: { background: '#e8f5e9', borderLeft: '4px solid #2e7d32' },
-  skipped: { background: '#f5f5f5', borderLeft: '4px solid #757575' },
-};
-
-const X_CARD_STYLES_DARK = {
-  ready: { border: '2px solid #ffc107', background: '#3d3520' },
-  posted: { background: '#1f2e22', borderLeft: '4px solid #4caf50' },
-  skipped: { background: '#262626', borderLeft: '4px solid #9e9e9e' },
-};
-
 const X_STATUS_BADGES = {
-  ready: { bg: '#ffc107', color: '#333', text: '⏰ Ready to Post' },
-  pending: { bg: '#1976d2', color: '#fff', text: '🕐 Pending' },
-  posted: { bg: '#2e7d32', color: '#fff', text: '✓ Posted' },
-  skipped: { bg: '#616161', color: '#fff', text: '— Skipped' },
+  ready: '⏰ Ready to Post',
+  pending: '🕐 Pending',
+  posted: '✓ Posted',
+  skipped: '— Skipped',
 };
 
 const getPostNowLabel = (isPosting, platform) => {
@@ -1112,7 +1100,9 @@ export default function SocialMediaComposer({ platform, darkMode }) {
         <div className={styles['scheduled-content']}>
           <h4>Scheduled Posts for {platform}</h4>
           {isLoadingScheduled && <p>Loading...</p>}
-          {!isLoadingScheduled && scheduledPosts.length === 0 && <p>No scheduled posts yet.</p>}
+          {!isLoadingScheduled && scheduledPosts.length === 0 && (
+            <p className={styles['scheduled-empty-state']}>No scheduled posts yet.</p>
+          )}
           {!isLoadingScheduled && scheduledPosts.length > 0 && (
             <div className={styles['posts-list']}>
               {scheduledPosts.map(post => {
@@ -1122,29 +1112,21 @@ export default function SocialMediaComposer({ platform, darkMode }) {
                 const isX = platform === 'x';
                 const xStatus = isX ? post.status : null;
 
-                const xCardStyles = darkMode ? X_CARD_STYLES_DARK : X_CARD_STYLES;
-                const cardStyle = isX ? xCardStyles[xStatus] ?? {} : {};
                 const xStatusBadge = X_STATUS_BADGES[xStatus] ?? null;
+                const xCardClass = isX ? styles[`x-card-${xStatus}`] ?? '' : '';
 
                 return (
-                  <div key={post._id} className={styles['post-card']} style={cardStyle}>
+                  <div key={post._id} className={`${styles['post-card']} ${xCardClass}`.trim()}>
                     <div className={styles['post-card-content']}>
                       <p className={styles['post-text']}>{postText}</p>
                       <p className={styles['post-meta']}>📅 {formatScheduledTime(time)}</p>
                       {isX && xStatusBadge && (
                         <span
-                          style={{
-                            display: 'inline-block',
-                            padding: '2px 8px',
-                            borderRadius: '4px',
-                            fontSize: '0.75rem',
-                            fontWeight: 'bold',
-                            marginTop: '0.25rem',
-                            background: xStatusBadge.bg,
-                            color: xStatusBadge.color,
-                          }}
+                          className={`${styles['status-badge']} ${
+                            styles[`status-badge-${xStatus}`]
+                          }`}
                         >
-                          {xStatusBadge.text}
+                          {xStatusBadge}
                         </span>
                       )}
                       {imageBase64 && (
@@ -1246,7 +1228,9 @@ export default function SocialMediaComposer({ platform, darkMode }) {
                       {/* X stats */}
                       {platform === 'x' && (
                         <div className={styles['post-stats']}>
-                          <span className={`${styles['status-badge']} ${styles.success}`}>
+                          <span
+                            className={`${styles['status-badge']} ${styles['status-badge-posted']}`}
+                          >
                             ✓ Posted
                           </span>
                           {post.postedAt && (
@@ -1350,6 +1334,7 @@ export default function SocialMediaComposer({ platform, darkMode }) {
         confirmColor={modalConfig.confirmColor}
         showDontShowAgain={modalConfig.showDontShowAgain}
         onDontShowAgainChange={() => handleDontShowAgainChange(modalConfig.preferenceKey)}
+        modalClassName={darkMode ? styles['confirmation-modal-dark'] : undefined}
       />
 
       <PostPreviewModal
