@@ -1,10 +1,15 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { toast } from 'react-toastify';
+import { ApiEndpoint } from '~/utils/URL';
+
+vi.mock('~/utils/URL', () => ({ ApiEndpoint: 'https://configured.example/api/' }));
+
 import SocialMediaComposer from '../SocialMediaComposer';
 import styles from '../SocialMediaComposer.module.css';
 
 // react-toastify is globally mocked in src/setupTests.js
+const EXPECTED_API_BASE = ApiEndpoint.replace(/\/+$/, '');
 
 const getPostCard = content => {
   // The semantic card class is the stable styling hook under test.
@@ -54,6 +59,35 @@ describe('SocialMediaComposer X 280-character limit', () => {
     });
     expect(globalThis.fetch).not.toHaveBeenCalled();
   });
+
+  it('uses the configured API base without changing the X schedule request', async () => {
+    localStorage.setItem('token', 'x-token');
+    const fetchMock = vi.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve({}) }));
+    vi.stubGlobal('fetch', fetchMock);
+    const { container } = render(<SocialMediaComposer platform="x" />);
+    const scheduledAt = new Date('2099-01-02T12:30').toISOString();
+
+    fireEvent.change(screen.getByPlaceholderText(/write your x post here/i), {
+      target: { value: 'Scheduled X content' },
+    });
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    fireEvent.change(container.querySelector('input[type="date"]'), {
+      target: { value: '2099-01-02' },
+    });
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    fireEvent.change(container.querySelector('input[type="time"]'), {
+      target: { value: '12:30' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^schedule post$/i }));
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(`${EXPECTED_API_BASE}/x/schedule`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'x-token' },
+        body: JSON.stringify({ content: 'Scheduled X content', scheduledAt }),
+      });
+    });
+  });
 });
 
 describe('SocialMediaComposer X clipboard handling', () => {
@@ -97,6 +131,7 @@ describe('SocialMediaComposer X clipboard handling', () => {
 
   it('reserves a popup synchronously, then navigates and completes the new-post flow', async () => {
     writeText.mockResolvedValue();
+    localStorage.setItem('token', 'test-token');
     let resolveApiRequest;
     const fetchMock = vi.fn(
       () =>
@@ -124,6 +159,11 @@ describe('SocialMediaComposer X clipboard handling', () => {
       );
     });
     expect(open.mock.invocationCallOrder[0]).toBeLessThan(fetchMock.mock.invocationCallOrder[0]);
+    expect(fetchMock).toHaveBeenCalledWith(`${EXPECTED_API_BASE}/x/post`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'test-token' },
+      body: JSON.stringify({ content }),
+    });
     expect(fetchMock.mock.invocationCallOrder[0]).toBeLessThan(
       writeText.mock.invocationCallOrder[0],
     );
@@ -204,12 +244,12 @@ describe('SocialMediaComposer X clipboard handling', () => {
     const skippedPost = { ...readyPost, status: 'skipped' };
     let scheduledLoadCount = 0;
     const fetchMock = vi.fn((url, options) => {
-      if (url === '/api/x/schedule' && !options?.method) {
+      if (url === `${EXPECTED_API_BASE}/x/schedule` && !options?.method) {
         scheduledLoadCount += 1;
         const posts = scheduledLoadCount === 1 ? [readyPost] : [skippedPost];
         return Promise.resolve({ ok: true, json: () => Promise.resolve(posts) });
       }
-      if (url === '/api/x/schedule/scheduled-x-post/skip') {
+      if (url === `${EXPECTED_API_BASE}/x/schedule/scheduled-x-post/skip`) {
         return Promise.resolve({ ok: true, json: () => Promise.resolve(skippedPost) });
       }
       return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
@@ -220,7 +260,7 @@ describe('SocialMediaComposer X clipboard handling', () => {
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith(
-        '/api/x/schedule/scheduled-x-post/skip',
+        `${EXPECTED_API_BASE}/x/schedule/scheduled-x-post/skip`,
         expect.objectContaining({ method: 'PATCH' }),
       );
       expect(scheduledLoadCount).toBe(2);
@@ -251,7 +291,7 @@ describe('SocialMediaComposer X clipboard handling', () => {
       status: 'ready',
     };
     const fetchMock = vi.fn((url, options) => {
-      if (url === '/api/x/schedule' && !options?.method) {
+      if (url === `${EXPECTED_API_BASE}/x/schedule` && !options?.method) {
         return Promise.resolve({ ok: true, json: () => Promise.resolve([scheduledPost]) });
       }
       return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
@@ -263,7 +303,7 @@ describe('SocialMediaComposer X clipboard handling', () => {
     expect(open).toHaveBeenCalledWith('', '_blank');
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith(
-        '/api/x/schedule/scheduled-x-post/mark-posted',
+        `${EXPECTED_API_BASE}/x/schedule/scheduled-x-post/mark-posted`,
         expect.objectContaining({ method: 'PATCH' }),
       );
     });
@@ -281,7 +321,7 @@ describe('SocialMediaComposer X clipboard handling', () => {
     await waitFor(() => {
       expect(
         fetchMock.mock.calls.filter(
-          ([url, options]) => url === '/api/x/schedule' && !options?.method,
+          ([url, options]) => url === `${EXPECTED_API_BASE}/x/schedule` && !options?.method,
         ),
       ).toHaveLength(2);
     });
@@ -296,10 +336,10 @@ describe('SocialMediaComposer X clipboard handling', () => {
       status: 'ready',
     };
     const fetchMock = vi.fn((url, options) => {
-      if (url === '/api/x/schedule' && !options?.method) {
+      if (url === `${EXPECTED_API_BASE}/x/schedule` && !options?.method) {
         return Promise.resolve({ ok: true, json: () => Promise.resolve([scheduledPost]) });
       }
-      if (url === '/api/x/schedule/scheduled-x-post/mark-posted') {
+      if (url === `${EXPECTED_API_BASE}/x/schedule/scheduled-x-post/mark-posted`) {
         return Promise.resolve({ ok: false });
       }
       return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
@@ -315,7 +355,7 @@ describe('SocialMediaComposer X clipboard handling', () => {
     });
     expect(
       fetchMock.mock.calls.filter(
-        ([url, options]) => url === '/api/x/schedule' && !options?.method,
+        ([url, options]) => url === `${EXPECTED_API_BASE}/x/schedule` && !options?.method,
       ),
     ).toHaveLength(1);
     expect(xWindow.location.href).toBe(
@@ -332,10 +372,10 @@ describe('SocialMediaComposer X clipboard handling', () => {
       status: 'ready',
     };
     const fetchMock = vi.fn((url, options) => {
-      if (url === '/api/x/schedule' && !options?.method) {
+      if (url === `${EXPECTED_API_BASE}/x/schedule` && !options?.method) {
         return Promise.resolve({ ok: true, json: () => Promise.resolve([scheduledPost]) });
       }
-      if (url === '/api/x/schedule/scheduled-x-post/mark-posted') {
+      if (url === `${EXPECTED_API_BASE}/x/schedule/scheduled-x-post/mark-posted`) {
         return Promise.reject(new Error('Network unavailable'));
       }
       return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
@@ -351,7 +391,7 @@ describe('SocialMediaComposer X clipboard handling', () => {
     });
     expect(
       fetchMock.mock.calls.filter(
-        ([url, options]) => url === '/api/x/schedule' && !options?.method,
+        ([url, options]) => url === `${EXPECTED_API_BASE}/x/schedule` && !options?.method,
       ),
     ).toHaveLength(1);
     expect(xWindow.location.href).toBe(
@@ -368,7 +408,7 @@ describe('SocialMediaComposer X clipboard handling', () => {
       status: 'ready',
     };
     const fetchMock = vi.fn((url, options) => {
-      if (url === '/api/x/schedule' && !options?.method) {
+      if (url === `${EXPECTED_API_BASE}/x/schedule` && !options?.method) {
         return Promise.resolve({ ok: true, json: () => Promise.resolve([scheduledPost]) });
       }
       return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
@@ -386,7 +426,7 @@ describe('SocialMediaComposer X clipboard handling', () => {
     expect(xWindow.close).toHaveBeenCalledOnce();
     expect(xWindow.location.href).toBe('');
     expect(fetchMock).not.toHaveBeenCalledWith(
-      '/api/x/schedule/scheduled-x-post/mark-posted',
+      `${EXPECTED_API_BASE}/x/schedule/scheduled-x-post/mark-posted`,
       expect.anything(),
     );
   });
@@ -400,7 +440,7 @@ describe('SocialMediaComposer X clipboard handling', () => {
       status: 'ready',
     };
     const fetchMock = vi.fn((url, options) => {
-      if (url === '/api/x/schedule' && !options?.method) {
+      if (url === `${EXPECTED_API_BASE}/x/schedule` && !options?.method) {
         return Promise.resolve({ ok: true, json: () => Promise.resolve([scheduledPost]) });
       }
       return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
@@ -415,7 +455,7 @@ describe('SocialMediaComposer X clipboard handling', () => {
     expect(writeText).not.toHaveBeenCalled();
     expect(toast.success).not.toHaveBeenCalled();
     expect(fetchMock).not.toHaveBeenCalledWith(
-      '/api/x/schedule/scheduled-x-post/mark-posted',
+      `${EXPECTED_API_BASE}/x/schedule/scheduled-x-post/mark-posted`,
       expect.anything(),
     );
   });
@@ -525,6 +565,80 @@ describe('SocialMediaComposer scheduled-post theme styling', () => {
   });
 });
 
+describe('SocialMediaComposer configured Mastodon API requests', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorage.clear();
+    localStorage.setItem('token', 'mastodon-token');
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('preserves the immediate-post method, body, and authorization headers', async () => {
+    const fetchMock = vi.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve({}) }));
+    vi.stubGlobal('fetch', fetchMock);
+    render(<SocialMediaComposer platform="mastodon" />);
+
+    fireEvent.change(screen.getByPlaceholderText(/write your mastodon post here/i), {
+      target: { value: 'Mastodon content' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^post now$/i }));
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(`${EXPECTED_API_BASE}/mastodon/createPin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'mastodon-token' },
+        body: JSON.stringify({
+          title: 'Mastodon Post',
+          description: 'Mastodon content',
+          imgType: 'URL',
+          mediaItems: '',
+          mediaAltText: null,
+          crossPostTo: [],
+        }),
+      });
+    });
+  });
+
+  it('preserves the scheduled-post method, body, and authorization headers', async () => {
+    const fetchMock = vi.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve({}) }));
+    vi.stubGlobal('fetch', fetchMock);
+    const { container } = render(<SocialMediaComposer platform="mastodon" />);
+    const scheduledTime = new Date('2099-01-02T12:30').toISOString();
+
+    fireEvent.change(screen.getByPlaceholderText(/write your mastodon post here/i), {
+      target: { value: 'Scheduled Mastodon content' },
+    });
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    fireEvent.change(container.querySelector('input[type="date"]'), {
+      target: { value: '2099-01-02' },
+    });
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    fireEvent.change(container.querySelector('input[type="time"]'), {
+      target: { value: '12:30' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^schedule post$/i }));
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(`${EXPECTED_API_BASE}/mastodon/schedule`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'mastodon-token' },
+        body: JSON.stringify({
+          title: 'Mastodon Scheduled Post',
+          description: 'Scheduled Mastodon content',
+          imgType: 'URL',
+          mediaItems: '',
+          mediaAltText: null,
+          scheduledTime,
+          crossPostTo: [],
+        }),
+      });
+    });
+  });
+});
+
 describe('SocialMediaComposer history response handling', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -558,7 +672,7 @@ describe('SocialMediaComposer history response handling', () => {
 
     expect(await screen.findByText(historyPost.content)).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/x/history?limit=20',
+      `${EXPECTED_API_BASE}/x/history?limit=20`,
       expect.objectContaining({ headers: {} }),
     );
     expect(toast.error).not.toHaveBeenCalled();
@@ -596,19 +710,21 @@ describe('SocialMediaComposer history response handling', () => {
       favourites_count: 2,
       reblogs_count: 1,
     };
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(() =>
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([mastodonPost]),
-        }),
-      ),
+    const fetchMock = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve([mastodonPost]),
+      }),
     );
+    vi.stubGlobal('fetch', fetchMock);
 
     openHistory('mastodon');
 
     expect(await screen.findByText(mastodonPost.content)).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledWith(
+      `${EXPECTED_API_BASE}/mastodon/history?limit=20`,
+      expect.objectContaining({ headers: {} }),
+    );
     expect(toast.error).not.toHaveBeenCalled();
   });
 });

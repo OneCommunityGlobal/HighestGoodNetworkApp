@@ -2,11 +2,13 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { ApiEndpoint } from '~/utils/URL';
 import CharacterCounter from '../../CharacterCounter';
 import ConfirmationModal from '../../ConfirmationModal';
 import styles from './SocialMediaComposer.module.css';
 
 const PREFS_KEY = 'mastodon_composer_prefs';
+const SOCIAL_API_BASE = ApiEndpoint.replace(/\/+$/, '');
 
 const X_STATUS_BADGES = {
   ready: '⏰ Ready to Post',
@@ -49,7 +51,7 @@ const formatScheduledTime = isoString => {
 const platformAPI = {
   mastodon: {
     postNow: (content, image, altText, crossPostTo) => ({
-      url: '/api/mastodon/createPin',
+      url: `${SOCIAL_API_BASE}/mastodon/createPin`,
       body: {
         title: 'Mastodon Post',
         description: content,
@@ -60,7 +62,7 @@ const platformAPI = {
       },
     }),
     schedule: (content, image, altText, scheduledTime, crossPostTo) => ({
-      url: '/api/mastodon/schedule',
+      url: `${SOCIAL_API_BASE}/mastodon/schedule`,
       body: {
         title: 'Mastodon Scheduled Post',
         description: content,
@@ -71,9 +73,9 @@ const platformAPI = {
         crossPostTo,
       },
     }),
-    deleteSchedule: id => `/api/mastodon/schedule/${id}`,
-    getScheduled: () => '/api/mastodon/schedule',
-    getHistory: () => '/api/mastodon/history?limit=20',
+    deleteSchedule: id => `${SOCIAL_API_BASE}/mastodon/schedule/${id}`,
+    getScheduled: () => `${SOCIAL_API_BASE}/mastodon/schedule`,
+    getHistory: () => `${SOCIAL_API_BASE}/mastodon/history?limit=20`,
     // Mastodon stores post content inside a JSON-encoded postData field
     parseScheduledText: post => {
       try {
@@ -94,16 +96,16 @@ const platformAPI = {
 
   x: {
     postNow: content => ({
-      url: '/api/x/post',
+      url: `${SOCIAL_API_BASE}/x/post`,
       body: { content },
     }),
     schedule: (content, _image, _altText, scheduledTime) => ({
-      url: '/api/x/schedule',
+      url: `${SOCIAL_API_BASE}/x/schedule`,
       body: { content, scheduledAt: scheduledTime },
     }),
-    deleteSchedule: id => `/api/x/schedule/${id}`,
-    getScheduled: () => '/api/x/schedule',
-    getHistory: () => '/api/x/history?limit=20',
+    deleteSchedule: id => `${SOCIAL_API_BASE}/x/schedule/${id}`,
+    getScheduled: () => `${SOCIAL_API_BASE}/x/schedule`,
+    getHistory: () => `${SOCIAL_API_BASE}/x/history?limit=20`,
     // X model stores fields at top level
     parseScheduledText: post => post.content || 'No content',
     parseScheduledImage: () => null, // media support comes later
@@ -766,7 +768,7 @@ export default function SocialMediaComposer({ platform, darkMode }) {
           xWindow = null;
           const token = localStorage.getItem('token');
           try {
-            const response = await fetch(`/api/x/schedule/${post._id}/mark-posted`, {
+            const response = await fetch(`${SOCIAL_API_BASE}/x/schedule/${post._id}/mark-posted`, {
               method: 'PATCH',
               headers: { ...(token && { Authorization: token }) },
             });
@@ -842,7 +844,7 @@ export default function SocialMediaComposer({ platform, darkMode }) {
   const handleMarkAsPosted = async postId => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/x/schedule/${postId}/mark-posted`, {
+      const response = await fetch(`${SOCIAL_API_BASE}/x/schedule/${postId}/mark-posted`, {
         method: 'PATCH',
         headers: { ...(token && { Authorization: token }) },
       });
@@ -862,7 +864,7 @@ export default function SocialMediaComposer({ platform, darkMode }) {
   const handleSkipPost = async postId => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/x/schedule/${postId}/skip`, {
+      const response = await fetch(`${SOCIAL_API_BASE}/x/schedule/${postId}/skip`, {
         method: 'PATCH',
         headers: { ...(token && { Authorization: token }) },
       });
