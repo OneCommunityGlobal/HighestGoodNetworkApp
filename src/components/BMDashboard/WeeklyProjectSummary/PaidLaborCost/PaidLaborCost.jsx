@@ -66,8 +66,6 @@ const barValueLabelPlugin = {
   },
 };
 
-ChartJS.register(barValueLabelPlugin);
-
 const isValidISODate = dateString => {
   if (!dateString) return false;
   return moment(dateString).isValid();
@@ -365,6 +363,7 @@ const buildChartOptions = (textColor, darkMode) => ({
   maintainAspectRatio: false,
   layout: { padding: { top: 35, left: 15, right: 15, bottom: 10 } },
   plugins: {
+    barValueLabelPlugin: { darkMode },
     legend: {
       position: 'top',
       labels: { font: { size: 12 }, color: textColor, padding: 20, usePointStyle: true },
@@ -604,7 +603,7 @@ export default function PaidLaborCost() {
           {labels.length === 0 ? (
             <div className={styles.emptyState}>No data available for the selected filters.</div>
           ) : (
-            <Bar data={chartData} options={options} />
+            <Bar data={chartData} options={options} plugins={[barValueLabelPlugin]} />
           )}
         </div>
       </div>
