@@ -721,3 +721,114 @@
     color: #e0e0e0;
   }
 }
+
+/* App-toggle dark mode (Redux darkMode prop) — additive, does not modify shared rules.
+   Gated to the X tab via .x-scope; other platforms get .dark on the root but no
+   visual change until their owner adds rules. */
+.dark.x-scope .platform-title {
+  color: #e0e0e0;
+}
+
+.dark.x-scope .tab-button {
+  color: #a0a0a0;
+}
+
+/* .dark.x-scope .tab-button (0,3,0) out-specifies .tab-button.active/:hover (0,2,0),
+   so without these the active/hover blue would flatten to grey. */
+.dark.x-scope .tab-button:hover {
+  color: #4da6ff;
+  background: #2a2a2a;
+}
+
+.dark.x-scope .tab-button.active {
+  color: #4da6ff;
+  border-bottom-color: #4da6ff;
+  background: #2a2a2a;
+}
+
+.dark.x-scope .post-textarea {
+  background: #2a2a2a;
+  border-color: #444;
+  color: #e0e0e0;
+}
+
+.dark.x-scope .post-textarea::placeholder {
+  color: #666;
+}
+
+.dark.x-scope .datetime-input {
+  background: #2a2a2a;
+  border-color: #444;
+  color: #e0e0e0;
+  color-scheme: dark; /* inverts native picker icons */
+}
+
+/* Root card + schedule label: required once the card hosts light text above —
+   without these the light platform-title sits on the card's white background. */
+.dark.x-scope {
+  background: #1e1e1e;
+}
+
+.dark.x-scope .section-label {
+  color: #e0e0e0;
+}
+
+/* ====================================
+   App-toggle dark mode — Scheduled / History / Details tabs + Preview modal.
+   Additive, X-gated (.dark.x-scope). Values mirror the prefers-color-scheme block.
+   Inline-styled elements are handled by darkMode JSX conditionals (inline beats CSS).
+   ==================================== */
+.dark.x-scope .scheduled-content,
+.dark.x-scope .history-content,
+.dark.x-scope .details-content {
+  background: #1e1e1e;
+  color: #e0e0e0;
+}
+
+.dark.x-scope .scheduled-content h4,
+.dark.x-scope .history-content h4 {
+  color: #e0e0e0;
+}
+
+.dark.x-scope .post-card {
+  background: #2a2a2a;
+  border-color: #444;
+}
+
+/* COUPLED with X_CARD_STYLES_DARK (JSX): on ready/posted/skipped X cards the inline
+   status background wins over this rule, so this light text must land on the dark
+   inline card bg. Ship both halves together. */
+.dark.x-scope .post-text {
+  color: #e0e0e0;
+}
+
+.dark.x-scope .post-meta {
+  color: #a0a0a0;
+}
+
+.dark.x-scope .post-stats {
+  color: #a0a0a0;
+}
+
+.dark.x-scope .details-content ul {
+  color: #e0e0e0;
+}
+
+.dark.x-scope .details-content strong {
+  color: #e0e0e0;
+}
+
+/* Preview modal — matches only because <Modal modalClassName> carries .dark.x-scope
+   (modal is portaled to body). `color` added to preview-container (prefers set only
+   background) so header/char-count/alt+crosspost-box text inherit light — COUPLED with
+   darkening those inline box backgrounds in the JSX. */
+.dark.x-scope .preview-container {
+  background: #1e1e1e;
+  color: #e0e0e0;
+}
+
+.dark.x-scope .preview-content {
+  background: #2a2a2a;
+  border-color: #444;
+  color: #e0e0e0;
+}
