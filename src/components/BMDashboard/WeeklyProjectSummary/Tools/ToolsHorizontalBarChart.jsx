@@ -58,6 +58,18 @@ CustomTooltip.defaultProps = {
   darkMode: false,
 };
 
+const getChartFontSize = windowWidth => {
+  if (windowWidth < 480) return 10;
+  if (windowWidth < 768) return 11;
+  return 12;
+};
+
+const getYAxisWidth = windowWidth => {
+  if (windowWidth < 480) return 70;
+  if (windowWidth < 768) return 90;
+  return 110;
+};
+
 function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
   const reduxDarkMode = useSelector(state => state.theme.darkMode);
   const darkMode = typeof darkModeProp === 'boolean' ? darkModeProp : reduxDarkMode;

@@ -513,17 +513,17 @@ export default function InteractiveMap() {
                         <div style={{ marginBottom: '8px' }}>
                           <strong>Status:</strong>{' '}
                           <span
-                            style={{
-                              color:
-                                org.status === 'active'
-                                  ? '#b84040'
-                                  : org.status === 'delayed'
-                                  ? '#a08a10'
-                                  : org.status === 'completed'
-                                  ? '#1a8fa0'
-                                  : '#777777',
-                              fontWeight: 'bold',
-                            }}
+                            className={
+                              // eslint-disable-next-line no-nested-ternary
+                              org.status === 'active'
+                                ? styles.statusActive
+                                : // eslint-disable-next-line no-nested-ternary
+                                org.status === 'delayed'
+                                ? styles.statusDelayed
+                                : org.status === 'completed'
+                                ? styles.statusCompleted
+                                : styles.statusDefault
+                            }
                           >
                             {org.status}
                           </span>
