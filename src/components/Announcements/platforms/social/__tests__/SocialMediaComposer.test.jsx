@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { toast } from 'react-toastify';
 import SocialMediaComposer from '../SocialMediaComposer';
 
@@ -185,6 +185,55 @@ describe('SocialMediaComposer X clipboard handling', () => {
     expect(fetchMock).not.toHaveBeenCalled();
     expect(toast.success).not.toHaveBeenCalled();
     expect(postInput).toHaveValue(content);
+  });
+
+  it('keeps a skipped scheduled post visible and removes pending and ready actions', async () => {
+    const readyPost = {
+      _id: 'scheduled-x-post',
+      content,
+      scheduledAt: '2026-08-23T12:00:00.000Z',
+      status: 'ready',
+    };
+    const skippedPost = { ...readyPost, status: 'skipped' };
+    let scheduledLoadCount = 0;
+    const fetchMock = vi.fn((url, options) => {
+      if (url === '/api/x/schedule' && !options?.method) {
+        scheduledLoadCount += 1;
+        const posts = scheduledLoadCount === 1 ? [readyPost] : [skippedPost];
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(posts) });
+      }
+      if (url === '/api/x/schedule/scheduled-x-post/skip') {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(skippedPost) });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+    });
+
+    await showScheduledPost(fetchMock);
+    fireEvent.click(screen.getByTitle('Skip this post'));
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/x/schedule/scheduled-x-post/skip',
+        expect.objectContaining({ method: 'PATCH' }),
+      );
+      expect(scheduledLoadCount).toBe(2);
+    });
+
+    await screen.findByText(/skipped/i);
+    // The card's status styling is applied inline on the nearest styled ancestor.
+    // eslint-disable-next-line testing-library/no-node-access
+    const skippedCard = screen.getByText(content).closest('[style]');
+    expect(skippedCard).toHaveTextContent(content);
+    expect(skippedCard).toHaveStyle({
+      background: '#f5f5f5',
+      borderLeft: '4px solid #757575',
+    });
+    expect(within(skippedCard).queryByTitle('Edit')).not.toBeInTheDocument();
+    expect(within(skippedCard).queryByTitle('Copy & post to X')).not.toBeInTheDocument();
+    expect(within(skippedCard).queryByTitle('Delete')).not.toBeInTheDocument();
+    expect(within(skippedCard).queryByTitle('Mark as already posted')).not.toBeInTheDocument();
+    expect(within(skippedCard).queryByTitle('Skip this post')).not.toBeInTheDocument();
+    expect(toast.success).toHaveBeenCalledWith('Post skipped.');
   });
 
   it('navigates X, marks a scheduled post, and refetches after mark-posted succeeds', async () => {
