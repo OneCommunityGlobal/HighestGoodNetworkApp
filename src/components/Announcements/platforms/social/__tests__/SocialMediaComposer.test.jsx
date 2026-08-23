@@ -187,7 +187,7 @@ describe('SocialMediaComposer X clipboard handling', () => {
     expect(postInput).toHaveValue(content);
   });
 
-  it('navigates X and marks a scheduled post after clipboard success', async () => {
+  it('navigates X, marks a scheduled post, and refetches after mark-posted succeeds', async () => {
     writeText.mockResolvedValue();
     const scheduledPost = {
       _id: 'scheduled-x-post',
@@ -212,6 +212,85 @@ describe('SocialMediaComposer X clipboard handling', () => {
         expect.objectContaining({ method: 'PATCH' }),
       );
     });
+    expect(xWindow.location.href).toBe(
+      `https://x.com/intent/tweet?text=${encodeURIComponent(content)}`,
+    );
+    await waitFor(() => {
+      expect(
+        fetchMock.mock.calls.filter(
+          ([url, options]) => url === '/api/x/schedule' && !options?.method,
+        ),
+      ).toHaveLength(2);
+    });
+  });
+
+  it('does not refetch scheduled posts when mark-posted returns a non-OK response', async () => {
+    writeText.mockResolvedValue();
+    const scheduledPost = {
+      _id: 'scheduled-x-post',
+      content,
+      scheduledAt: '2026-08-23T12:00:00.000Z',
+      status: 'ready',
+    };
+    const fetchMock = vi.fn((url, options) => {
+      if (url === '/api/x/schedule' && !options?.method) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve([scheduledPost]) });
+      }
+      if (url === '/api/x/schedule/scheduled-x-post/mark-posted') {
+        return Promise.resolve({ ok: false });
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+    });
+    const copyScheduledButton = await showScheduledPost(fetchMock);
+
+    fireEvent.click(copyScheduledButton);
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith(
+        'Could not mark scheduled post as posted. Please try again.',
+      );
+    });
+    expect(
+      fetchMock.mock.calls.filter(
+        ([url, options]) => url === '/api/x/schedule' && !options?.method,
+      ),
+    ).toHaveLength(1);
+    expect(xWindow.location.href).toBe(
+      `https://x.com/intent/tweet?text=${encodeURIComponent(content)}`,
+    );
+  });
+
+  it('does not refetch scheduled posts when the mark-posted request rejects', async () => {
+    writeText.mockResolvedValue();
+    const scheduledPost = {
+      _id: 'scheduled-x-post',
+      content,
+      scheduledAt: '2026-08-23T12:00:00.000Z',
+      status: 'ready',
+    };
+    const fetchMock = vi.fn((url, options) => {
+      if (url === '/api/x/schedule' && !options?.method) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve([scheduledPost]) });
+      }
+      if (url === '/api/x/schedule/scheduled-x-post/mark-posted') {
+        return Promise.reject(new Error('Network unavailable'));
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+    });
+    const copyScheduledButton = await showScheduledPost(fetchMock);
+
+    fireEvent.click(copyScheduledButton);
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith(
+        'Could not mark scheduled post as posted. Please try again.',
+      );
+    });
+    expect(
+      fetchMock.mock.calls.filter(
+        ([url, options]) => url === '/api/x/schedule' && !options?.method,
+      ),
+    ).toHaveLength(1);
     expect(xWindow.location.href).toBe(
       `https://x.com/intent/tweet?text=${encodeURIComponent(content)}`,
     );

@@ -759,10 +759,19 @@ export default function SocialMediaComposer({ platform, darkMode }) {
           if (!copied) return;
           xWindow = null;
           const token = localStorage.getItem('token');
-          await fetch(`/api/x/schedule/${post._id}/mark-posted`, {
-            method: 'PATCH',
-            headers: { ...(token && { Authorization: token }) },
-          });
+          try {
+            const response = await fetch(`/api/x/schedule/${post._id}/mark-posted`, {
+              method: 'PATCH',
+              headers: { ...(token && { Authorization: token }) },
+            });
+            if (!response.ok) {
+              toast.error('Could not mark scheduled post as posted. Please try again.');
+              return;
+            }
+          } catch {
+            toast.error('Could not mark scheduled post as posted. Please try again.');
+            return;
+          }
           loadScheduledPosts();
           return;
         }
