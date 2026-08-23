@@ -267,9 +267,17 @@ describe('SocialMediaComposer X clipboard handling', () => {
         expect.objectContaining({ method: 'PATCH' }),
       );
     });
+    expect(writeText).toHaveBeenCalledWith(content);
     expect(xWindow.location.href).toBe(
       `https://x.com/intent/tweet?text=${encodeURIComponent(content)}`,
     );
+    expect(toast.success).toHaveBeenCalledWith(
+      'Content copied to clipboard! X is opening — paste and post.',
+      {
+        autoClose: 5000,
+      },
+    );
+    expect(toast.error).not.toHaveBeenCalled();
     await waitFor(() => {
       expect(
         fetchMock.mock.calls.filter(
