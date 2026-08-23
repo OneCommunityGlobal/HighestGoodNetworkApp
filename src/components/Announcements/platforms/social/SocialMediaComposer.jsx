@@ -513,12 +513,14 @@ export default function SocialMediaComposer({ platform, darkMode }) {
     try {
       await navigator.clipboard.writeText(content);
     } catch {
-      // clipboard may fail in non-HTTPS contexts; continue anyway
+      toast.error('Could not copy content to clipboard. Please try again.');
+      return false;
     }
     window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(content)}`, '_blank');
     toast.success('Content copied to clipboard! X is opening — paste and post.', {
       autoClose: 5000,
     });
+    return true;
   };
 
   // Post Now (platform-routed)
@@ -552,7 +554,8 @@ export default function SocialMediaComposer({ platform, darkMode }) {
 
       if (response.ok) {
         if (platform === 'x') {
-          await copyAndOpenX(postContent.trim());
+          const copied = await copyAndOpenX(postContent.trim());
+          if (!copied) return;
         } else {
           let message = `Successfully posted to ${platform}!`;
           if (selectedPlatforms.length > 0) {
@@ -729,7 +732,8 @@ export default function SocialMediaComposer({ platform, darkMode }) {
         const content = api.parseScheduledText(post);
 
         if (platform === 'x') {
-          await copyAndOpenX(content);
+          const copied = await copyAndOpenX(content);
+          if (!copied) return;
           const token = localStorage.getItem('token');
           await fetch(`/api/x/schedule/${post._id}/mark-posted`, {
             method: 'PATCH',
