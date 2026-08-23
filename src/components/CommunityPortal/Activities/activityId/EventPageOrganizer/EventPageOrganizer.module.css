@@ -374,7 +374,6 @@
 .containerDark .linkLabel,
 .containerDark .detailLabelText,
 .containerDark .detailValue,
-.containerDark .capacityTotal,
 .containerDark .moreCountText,
 .containerDark .placeholderText {
   color: #e5e7eb;
@@ -382,6 +381,10 @@
 
 .containerDark .linkValue {
   color: #8ec9ff;
+}
+
+.containerDark .capacityTotal {
+  color: #cbd5e1;
 }
 
 .containerDark .divider,
