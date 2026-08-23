@@ -357,3 +357,91 @@ describe('SocialMediaComposer X clipboard handling', () => {
     );
   });
 });
+
+describe('SocialMediaComposer history response handling', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorage.clear();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  const openHistory = platform => {
+    render(<SocialMediaComposer platform={platform} />);
+    fireEvent.click(screen.getByRole('button', { name: /^history$/i }));
+  };
+
+  it('renders X history from the standardized posts and total response', async () => {
+    const historyPost = {
+      _id: 'x-history-post',
+      content: 'Standardized X history entry',
+      postedAt: '2026-08-22T12:00:00.000Z',
+    };
+    const fetchMock = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ posts: [historyPost], total: 24 }),
+      }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    openHistory('x');
+
+    expect(await screen.findByText(historyPost.content)).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/x/history?limit=20',
+      expect.objectContaining({ headers: {} }),
+    );
+    expect(toast.error).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['a legacy bare array', [{ _id: 'legacy', content: 'Legacy X history entry' }]],
+    ['a non-array posts field', { posts: {}, total: 1 }],
+    ['an invalid total field', { posts: [], total: '1' }],
+  ])('rejects %s in an X history response', async (_description, payload) => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(payload),
+        }),
+      ),
+    );
+
+    openHistory('x');
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith('Error loading post history');
+    });
+    expect(screen.getByText('No posts found in history.')).toBeInTheDocument();
+    expect(screen.queryByText('Legacy X history entry')).not.toBeInTheDocument();
+  });
+
+  it('continues to consume Mastodon history as an array', async () => {
+    const mastodonPost = {
+      id: 'mastodon-history-post',
+      content: 'Mastodon history entry',
+      created_at: '2026-08-22T12:00:00.000Z',
+      favourites_count: 2,
+      reblogs_count: 1,
+    };
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([mastodonPost]),
+        }),
+      ),
+    );
+
+    openHistory('mastodon');
+
+    expect(await screen.findByText(mastodonPost.content)).toBeInTheDocument();
+    expect(toast.error).not.toHaveBeenCalled();
+  });
+});

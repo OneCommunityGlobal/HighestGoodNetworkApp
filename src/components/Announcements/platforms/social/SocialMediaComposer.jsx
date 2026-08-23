@@ -126,6 +126,25 @@ const platformAPI = {
 // Fallback to mastodon shape for any platform not yet wired
 const getAPI = platform => platformAPI[platform] || platformAPI.mastodon;
 
+const parseHistoryResponse = (platform, data) => {
+  if (platform !== 'x') {
+    const posts = Array.isArray(data) ? data : [];
+    return { posts, total: posts.length };
+  }
+
+  if (
+    !data ||
+    Array.isArray(data) ||
+    !Array.isArray(data.posts) ||
+    !Number.isSafeInteger(data.total) ||
+    data.total < 0
+  ) {
+    throw new TypeError('Invalid X history response');
+  }
+
+  return { posts: data.posts, total: data.total };
+};
+
 // X-only notice: auto-posting to X is not supported, so the user posts manually.
 // The platform === 'x' guard stays at the call site — this component is unconditional.
 function XManualPostingNotice({ darkMode }) {
@@ -328,7 +347,7 @@ export default function SocialMediaComposer({ platform, darkMode }) {
   const [isLoadingScheduled, setIsLoadingScheduled] = useState(false);
   const [uploadedImage, setUploadedImage] = useState(null);
   const [imageAltText, setImageAltText] = useState('');
-  const [postHistory, setPostHistory] = useState([]);
+  const [postHistory, setPostHistory] = useState({ posts: [], total: 0 });
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [crossPostPlatforms, setCrossPostPlatforms] = useState({
     facebook: false,
@@ -416,8 +435,7 @@ export default function SocialMediaComposer({ platform, darkMode }) {
       });
       if (response.ok) {
         const data = await response.json();
-        // X wraps results in { posts, total }; Mastodon returns an array
-        setPostHistory(data.posts || data || []);
+        setPostHistory(parseHistoryResponse(platform, data));
       } else {
         toast.error('Failed to load post history');
       }
@@ -1201,10 +1219,10 @@ export default function SocialMediaComposer({ platform, darkMode }) {
         <div className={styles['history-content']}>
           <h4>Post History for {platform}</h4>
           {isLoadingHistory && <p>Loading...</p>}
-          {!isLoadingHistory && postHistory.length === 0 && <p>No posts found in history.</p>}
-          {!isLoadingHistory && postHistory.length > 0 && (
+          {!isLoadingHistory && postHistory.posts.length === 0 && <p>No posts found in history.</p>}
+          {!isLoadingHistory && postHistory.posts.length > 0 && (
             <div className={styles['posts-list']}>
-              {postHistory.map(post => {
+              {postHistory.posts.map(post => {
                 // Normalize fields across platforms
                 const key = post.id || post._id;
                 const content = post.content || '';
