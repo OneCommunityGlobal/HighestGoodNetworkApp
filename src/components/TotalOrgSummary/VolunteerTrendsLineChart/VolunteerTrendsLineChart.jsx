@@ -158,7 +158,7 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
       const bgColor = darkMode ? '#222' : 'white';
       const textColor = darkMode ? '#fff' : '#222';
       const labelColor = darkMode ? '#90cdf4' : '#222';
-      
+
       const formattedLabel = interval === 'week' ? `Week ${label}` : label;
 
       return (
@@ -304,7 +304,7 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
           margin={{ right: 50, top: 50, left: 70 }}
         >
           <CartesianGrid stroke="#ccc" vertical={false} />
-          
+
           {/* Conditional props render depending on weekly vs monthly view */}
           <XAxis
             dataKey="xLabel"
