@@ -35,7 +35,7 @@ const formatChartData = rawData => {
     }));
   }
 
-  // Weekly interval format - explicitly cast week to String so Recharts treats it as a discrete category
+  // Weekly interval format - numeric value for axis calculations
   return rawData.map(data => ({
     xLabel: Number(data._id.week) || 0,
     totalHours: Number(data.totalHours) || 0,
@@ -53,10 +53,8 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
   const [data, setData] = useState([]);
   const [fetchError, setFetchError] = useState(null);
 
-  // Safe extraction for last point value
   const latestNumberOfHours = data && data.length > 0 ? data[data.length - 1].totalHours : 0;
 
-  // Explicit non-zero fallbacks for initial chart dimension state
   const [chartSize, setChartSize] = useState({ width: 600, height: 350 });
   const [requestTimeFrame, setRequestTimeFrame] = useState(1);
   const [requestOffset, setRequestOffset] = useState('week');
@@ -156,10 +154,13 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
 
   const renderCustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
-      const { year } = payload[0].payload;
+      const { year, interval } = payload[0].payload;
       const bgColor = darkMode ? '#222' : 'white';
       const textColor = darkMode ? '#fff' : '#222';
       const labelColor = darkMode ? '#90cdf4' : '#222';
+      
+      const formattedLabel = interval === 'week' ? `Week ${label}` : label;
+
       return (
         <div
           style={{
@@ -171,7 +172,7 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
           }}
         >
           <h6 style={{ color: labelColor }}>
-            {label}, {year}
+            {formattedLabel}, {year}
           </h6>
           <h6 style={{ color: darkMode ? '#90ee90' : '#328D1B' }}>{payload[0].value} hours</h6>
         </div>
@@ -210,8 +211,12 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
     return <div>Error fetching data!</div>;
   }
 
-  const maxWeek = data.length > 0 ? Math.max(...data.map(d => d.xLabel)) : 32;
-  const evenTicks = Array.from({ length: Math.floor(maxWeek / 2) + 1 }, (_, i) => i * 2);
+  // Dynamic axis calculations depending on active interval
+  const isWeekly = requestOffset === 'week';
+  const maxWeek = data.length > 0 && isWeekly ? Math.max(...data.map(d => d.xLabel)) : 32;
+  const evenTicks = isWeekly
+    ? Array.from({ length: Math.floor(maxWeek / 2) + 1 }, (_, i) => i * 2)
+    : undefined;
 
   return (
     <div className={styles.chartContainer}>
@@ -252,8 +257,8 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
           onChange={setOffsetFilter}
           style={selectStyle}
         >
-          <option value="week">week</option>
-          <option value="month">month</option>
+          <option value="week">Week</option>
+          <option value="month">Month</option>
         </select>
       </div>
 
@@ -269,7 +274,7 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
               selectsRange
               inline
               dateFormat="MM-dd-yyyy"
-              className="date-picker"
+              className={darkMode ? styles.darkCalendar : styles.lightCalendar}
             />
           )}
         </div>
@@ -296,18 +301,22 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
           width={chartSize.width}
           height={chartSize.height}
           data={data}
-          margin={{ right: 50, top: 50, left: 20 }}
+          margin={{ right: 50, top: 50, left: 70 }}
         >
           <CartesianGrid stroke="#ccc" vertical={false} />
+          
+          {/* Conditional props render depending on weekly vs monthly view */}
           <XAxis
             dataKey="xLabel"
-            type="number"
-            ticks={evenTicks}
-            domain={[0, maxWeek]}
+            type={isWeekly ? 'number' : 'category'}
+            ticks={isWeekly ? evenTicks : undefined}
+            domain={isWeekly ? [0, maxWeek] : undefined}
+            interval={isWeekly ? undefined : 'preserveStartEnd'}
             axisLine={false}
             tickLine={false}
             tick={{ fill: darkMode ? '#ccc' : undefined, fontSize: 12 }}
           />
+
           <YAxis
             tickFormatter={formatNumber}
             axisLine={false}
