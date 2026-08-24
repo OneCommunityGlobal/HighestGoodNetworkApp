@@ -128,8 +128,12 @@ function CertificationsTab({ darkMode }) {
 
     // Filter by teacher ID
     if (filters.teacherId.trim()) {
+      const teacherIdFilter = filters.teacherId.replace(/\s+/g, '').toLowerCase();
       filtered = filtered.filter(cert =>
-        cert.teacherId.toLowerCase().includes(filters.teacherId.toLowerCase()),
+        cert.teacherId
+          .replace(/\s+/g, '')
+          .toLowerCase()
+          .includes(teacherIdFilter),
       );
     }
 

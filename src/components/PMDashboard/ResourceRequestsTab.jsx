@@ -111,8 +111,12 @@ function ResourceRequestsTab({ darkMode }) {
 
     // Filter by teacher ID
     if (filters.teacherId.trim()) {
+      const teacherIdFilter = filters.teacherId.replace(/\s+/g, '').toLowerCase();
       filtered = filtered.filter(req =>
-        req.teacherId.toLowerCase().includes(filters.teacherId.toLowerCase()),
+        req.teacherId
+          .replace(/\s+/g, '')
+          .toLowerCase()
+          .includes(teacherIdFilter),
       );
     }
 
