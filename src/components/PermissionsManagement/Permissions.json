@@ -569,5 +569,21 @@
         "description": "Gives the user permission to create, edit, and manage job application forms and templates."
       }
     ]
+  },
+  {
+    "label":"Activity Log Management",
+    "description":"Category for all permissions related to activity logs",
+    "subperms":[
+      {
+        "label":"Read Activity Logs",
+        "key":"readActivityLogs",
+        "description":"Gives the user permission to view activity logs."
+      },
+      {
+        "label":"Update Activity Logs",
+        "key":"updateActivityLogs",
+        "description":"Gives the user permission to update activity logs."
+      }
+    ]
   }
 ]
