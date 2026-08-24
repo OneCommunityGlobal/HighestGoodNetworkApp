@@ -43,6 +43,8 @@ export default function ItemsTable({
   const [updateModal, setUpdateModal] = useState(false);
   const [updateRecord, setUpdateRecord] = useState(null);
 
+  const isMaterialsView = itemType === 'Materials';
+
   const handleEditRecordsClick = (selectedEl, type) => {
     if (type === 'Update') {
       setUpdateModal(true);
@@ -131,9 +133,11 @@ export default function ItemsTable({
                   </th>
                 );
               })}
-              <th style={getColumnStyle(null, true)} title="View usage history and charts">
-                Usage Record
-              </th>
+              {isMaterialsView && (
+                <th style={getColumnStyle(null, true)} title="View usage history and charts">
+                  Usage Record
+                </th>
+              )}
               <th
                 style={{ verticalAlign: 'middle', textAlign: 'center' }}
                 title="View history of manual updates"
@@ -153,10 +157,13 @@ export default function ItemsTable({
               filteredItems.map(el => (
                 <tr
                   key={el._id}
-                  className={`${styles.selectableRow} ${
-                    el._id === selectedRowId ? styles.selectedRow : ''
-                  }`}
-                  onClick={() => onRowSelect?.(el)}
+                  className={[
+                    isMaterials ? styles.selectableRow : '',
+                    isMaterials && el._id === selectedRowId ? styles.selectedRow : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                  onClick={isMaterials ? () => onRowSelect?.(el) : undefined}
                 >
                   <td style={{ verticalAlign: 'middle' }}>{el.project?.name}</td>
                   <td style={{ verticalAlign: 'middle' }}>{el.itemType?.name}</td>
@@ -188,25 +195,27 @@ export default function ItemsTable({
                       </td>
                     );
                   })}
-                  <td className={styles.itemsCell} style={getColumnStyle(null, true)}>
-                    <span className={isMaterials ? styles.materialsActionGroup : undefined}>
-                      <button
-                        type="button"
-                        onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
-                        aria-label="Edit Record"
-                      >
-                        <BiPencil />
-                      </button>
-                      <Button
-                        color="primary"
-                        outline
-                        size="sm"
-                        onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
-                      >
-                        View
-                      </Button>
-                    </span>
-                  </td>
+                  {isMaterialsView && (
+                    <td className={styles.itemsCell} style={getColumnStyle(null, true)}>
+                      <span className={isMaterials ? styles.materialsActionGroup : undefined}>
+                        <button
+                          type="button"
+                          onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
+                          aria-label="Edit Record"
+                        >
+                          <BiPencil />
+                        </button>
+                        <Button
+                          color="primary"
+                          outline
+                          size="sm"
+                          onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
+                        >
+                          View
+                        </Button>
+                      </span>
+                    </td>
+                  )}
                   <td
                     className={styles.itemsCell}
                     style={{ verticalAlign: 'middle', textAlign: 'center' }}
