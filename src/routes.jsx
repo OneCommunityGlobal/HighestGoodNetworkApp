@@ -215,8 +215,6 @@ import PRGradingScreen from './components/PRGradingScreen';
 import PRGradingTest from './components/PRGradingScreen/PRGradingTest'; //temporary route for testing - delete after testing
 import ProtectedRoute from './components/common/ProtectedRoute';
 import TaskTimer from './components/EductionPortal/StudentDashboard/TaskTimer';
-import StudentProfile from './components/EductionPortal/StudentProfile';
-import AnnouncementsPage from './components/EductionPortal/Announcements/AnnouncementsPage';
 import { UserRole } from './utils/enums';
 
 import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
@@ -1042,16 +1040,6 @@ export default (
         <Redirect exact from="/student/tasks" to="/educationportal/student/tasks" />
         <Redirect exact from="/student/tasks/:id" to="/educationportal/student/tasks/:id" />
         <EPProtectedRoute path="/educationportal/timer" exact component={TaskTimer} />
-        <EPProtectedRoute
-          path="/educationportal/student/:studentId"
-          exact
-          component={StudentProfile}
-        />
-        <EPProtectedRoute
-          path="/educationportal/announcements"
-          exact
-          component={AnnouncementsPage}
-        />
         <EPProtectedRoute
           path="/educationportal/pm/dashboard"
           exact
