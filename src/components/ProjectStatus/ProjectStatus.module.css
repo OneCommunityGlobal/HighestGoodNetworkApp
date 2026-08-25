@@ -290,6 +290,16 @@
   color: #fecaca;
 }
 
+/* Explicit border for the DatePicker inputs - react-datepicker ships no
+   border of its own, so without this the box relies entirely on the
+   browser's native default input chrome, which renders inconsistently
+   (sometimes missing edges) on mobile viewports. */
+:global(.react-datepicker-wrapper) input {
+  box-sizing: border-box;
+  border: 2px solid #6b7280;
+  border-radius: 4px;
+}
+
 /* Dark mode for DatePicker input (the input itself lives inside .wrapper, so
    the .darkMode ancestor works here - but the class from the react-datepicker
    library must be marked :global or CSS Modules hashes it and the rule never
@@ -297,7 +307,7 @@
 .darkMode :global(.react-datepicker-wrapper) input {
   background: #334155;
   color: #e2e8f0;
-  border-color: #475569;
+  border: 2px solid #475569;
 }
 
 .darkMode :global(.react-datepicker-wrapper) input::placeholder {
