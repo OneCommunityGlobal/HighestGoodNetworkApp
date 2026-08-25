@@ -2,13 +2,22 @@ import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Route } from 'react-router-dom';
 import { configureStore } from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import PRGradingScreenContainer from '../index';
-import * as prGradingActions from '../../../actions/prGradingActions';
 
-// Mock the child — expose all props needed for assertions
+vi.mock('uuid', () => ({
+  v4: () => 'mocked-uuid-1234',
+}));
+
+import * as prGradingActions from '../../../actions/prGradingActions';
+import { UserRole } from '../../../utils/enums';
+
+vi.mock('../../../actions/prGradingActions', () => ({
+  fetchWeeklyGrading: vi.fn(),
+  fetchPRGradingConfig: vi.fn(),
+}));
+
 vi.mock('../PRGradingScreen', () => ({
   default: ({ teamData, reviewers, teamOptions, selectedTeamName, onTeamChange, emptyMessage }) => (
     <div data-testid="pr-grading-screen">
@@ -34,26 +43,37 @@ vi.mock('../PRGradingScreen', () => ({
   ),
 }));
 
-vi.mock('../../../actions/prGradingActions', () => ({
-  fetchWeeklyGrading: vi.fn(),
-  fetchPRGradingConfig: vi.fn(),
-}));
+import PRGradingScreenContainer from '../index';
 
 const mockStore = configureStore([thunk]);
-const baseStore = { theme: { darkMode: false } };
 
-const renderContainer = (locationState = {}, storeOverrides = {}) => {
+const baseStore = {
+  theme: { darkMode: false },
+  auth: {
+    isAuthenticated: true,
+    user: { role: UserRole.Administrator, permissions: ['see_all_reports'] },
+  },
+  userProfile: {
+    permission: {
+      permission: ['see_all_reports', 'manage_PR_grading'],
+    },
+  },
+};
+
+const renderContainer = (locationState = {}, storeOverrides = {}, teamId = '') => {
   const store = mockStore({ ...baseStore, ...storeOverrides });
+  const path = teamId ? `/pr-grading-screen/${teamId}` : '/pr-grading-screen';
   return render(
     <Provider store={store}>
-      <MemoryRouter initialEntries={[{ pathname: '/pr-grading-screen', state: locationState }]}>
-        <PRGradingScreenContainer />
+      <MemoryRouter initialEntries={[{ pathname: path, state: locationState }]}>
+        <Route path="/pr-grading-screen/:teamId?">
+          <PRGradingScreenContainer />
+        </Route>
       </MemoryRouter>
     </Provider>,
   );
 };
 
-// Flat array shape the real backend returns
 const apiFlatArray = [
   {
     reviewer: 'Dave',
@@ -70,7 +90,6 @@ const teamOptions = [
 
 beforeEach(() => {
   vi.clearAllMocks();
-  // Default: config returns two teams, grading returns data
   prGradingActions.fetchPRGradingConfig.mockReturnValue(() =>
     Promise.resolve({ success: true, data: teamOptions }),
   );
@@ -79,9 +98,6 @@ beforeEach(() => {
   );
 });
 
-// ---------------------------------------------------------------------------
-// Config-driven dynamic team (location state path)
-// ---------------------------------------------------------------------------
 describe('dynamic teamId + config (no API call)', () => {
   const config = {
     teamName: 'DynamicTeam',
@@ -90,7 +106,7 @@ describe('dynamic teamId + config (no API call)', () => {
   };
 
   it('builds reviewers from config.reviewerNames', async () => {
-    renderContainer({ teamId: 'custom-abc', config });
+    renderContainer({ config }, {}, 'custom-abc');
 
     await waitFor(() => {
       expect(screen.getByTestId('team-name').textContent).toBe('DynamicTeam');
@@ -101,7 +117,7 @@ describe('dynamic teamId + config (no API call)', () => {
   });
 
   it('falls back to "Reviewer N" when reviewerNames is missing', async () => {
-    renderContainer({ teamId: 'custom-xyz', config: { teamName: 'NoNameTeam', reviewerCount: 2 } });
+    renderContainer({ config: { teamName: 'NoNameTeam', reviewerCount: 2 } }, {}, 'custom-xyz');
 
     await waitFor(() => {
       expect(screen.getByTestId('reviewer-count').textContent).toBe('2');
@@ -109,10 +125,11 @@ describe('dynamic teamId + config (no API call)', () => {
   });
 
   it('renders zero reviewers when reviewerCount is 0', async () => {
-    renderContainer({
-      teamId: 'custom-empty',
-      config: { teamName: 'EmptyTeam', reviewerCount: 0 },
-    });
+    renderContainer(
+      { config: { teamName: 'EmptyTeam', reviewerCount: 0 } },
+      {},
+      'custom-empty',
+    );
 
     await waitFor(() => {
       expect(screen.getByTestId('reviewer-count').textContent).toBe('0');
@@ -120,12 +137,9 @@ describe('dynamic teamId + config (no API call)', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// Static teamId — now shows error (not mock data)
-// ---------------------------------------------------------------------------
 describe('static teamId (error state)', () => {
   it('shows error for static team IDs instead of mock data', async () => {
-    renderContainer({ teamId: 'team1' });
+    renderContainer({}, {}, 'team1');
 
     await waitFor(() => {
       expect(screen.getByText(/Static mock team IDs are not supported/i)).toBeInTheDocument();
@@ -135,9 +149,6 @@ describe('static teamId (error state)', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// Loading state
-// ---------------------------------------------------------------------------
 describe('loading state', () => {
   it('shows loading text while API is in flight', () => {
     prGradingActions.fetchWeeklyGrading.mockReturnValue(() => new Promise(() => {}));
@@ -147,15 +158,11 @@ describe('loading state', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// API success path
-// ---------------------------------------------------------------------------
 describe('API fetch path — success', () => {
   it('renders reviewer data from the API response', async () => {
     renderContainer();
 
     await waitFor(() => {
-      // selectedTeamName defaults to 'Team 1' (first from config)
       expect(screen.getByTestId('team-name').textContent).toBe('Team 1');
       expect(screen.getByTestId('reviewer-count').textContent).toBe('1');
     });
@@ -165,7 +172,7 @@ describe('API fetch path — success', () => {
     renderContainer();
 
     await waitFor(() => {
-      expect(prGradingActions.fetchWeeklyGrading).toHaveBeenCalledWith('Team 1');
+      expect(prGradingActions.fetchWeeklyGrading).toHaveBeenCalledWith('Team 1', expect.any(String));
     });
   });
 
@@ -173,14 +180,11 @@ describe('API fetch path — success', () => {
     renderContainer({ teamName: 'Team 2' });
 
     await waitFor(() => {
-      expect(prGradingActions.fetchWeeklyGrading).toHaveBeenCalledWith('Team 2');
+      expect(prGradingActions.fetchWeeklyGrading).toHaveBeenCalledWith('Team 2', expect.any(String));
     });
   });
 });
 
-// ---------------------------------------------------------------------------
-// Empty state (200 with [])
-// ---------------------------------------------------------------------------
 describe('empty state', () => {
   it('shows empty message when API returns []', async () => {
     prGradingActions.fetchWeeklyGrading.mockReturnValue(() =>
@@ -196,9 +200,6 @@ describe('empty state', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// Error state
-// ---------------------------------------------------------------------------
 describe('error state', () => {
   it('shows error message when API returns success: false', async () => {
     prGradingActions.fetchWeeklyGrading.mockReturnValue(() =>
@@ -240,9 +241,6 @@ describe('error state', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// Team switching via dropdown
-// ---------------------------------------------------------------------------
 describe('team switching', () => {
   it('loads team options from config on mount', async () => {
     renderContainer();
@@ -290,13 +288,13 @@ describe('team switching', () => {
     fireEvent.change(screen.getByTestId('team-dropdown'), { target: { value: 'Team 2' } });
 
     await waitFor(() => {
-      expect(prGradingActions.fetchWeeklyGrading).toHaveBeenCalledWith('Team 2');
+      expect(prGradingActions.fetchWeeklyGrading).toHaveBeenCalledWith('Team 2', expect.any(String));
     });
   });
 
   it('does not fetch config for config-driven teamId paths', async () => {
     const config = { teamName: 'Custom', reviewerCount: 1, reviewerNames: ['Alice'] };
-    renderContainer({ teamId: 'custom-123', config });
+    renderContainer({ config }, {}, 'custom-123');
 
     await waitFor(() => {
       expect(screen.getByTestId('team-name').textContent).toBe('Custom');
