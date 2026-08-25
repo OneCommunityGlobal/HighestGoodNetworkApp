@@ -801,7 +801,7 @@ const TeamMemberTasks = React.memo(props => {
                 .map(user => {
                   const taskNode = (
                     <TeamMemberTask
-                      key={!isTimeFilterActive ? user.personId : undefined}
+                      key={isTimeFilterActive ? undefined : user.personId}
                       user={user}
                       userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes(
                         'putReviewStatus',

@@ -37,13 +37,83 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .sectionTitle {
   font-size: 1.5rem;
   font-weight: 600;
   color: #1a1a1a;
+  margin: 0;
+}
+
+/* Filter tabs */
+.filterTabs {
+  display: flex;
+  gap: 0.25rem;
+  background-color: #f3f4f6;
+  border-radius: 8px;
+  padding: 4px;
+  flex-wrap: wrap;
+}
+
+.filterTab {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.9rem;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.filterTab:hover {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.filterTabActive {
+  background-color: #fff;
+  color: #1a1a1a;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+}
+
+.filterCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  background-color: #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.filterTabActive .filterCount {
+  background-color: #3b82f6;
+  color: #fff;
+}
+
+/* Empty state for filtered tabs */
+.emptyState {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+.emptyState p {
   margin: 0;
 }
 
@@ -128,17 +198,35 @@
 /* Responsive Design */
 @media (width <= 768px) {
   .mainContainer {
-    padding: 1rem 0.5rem;
+    padding: 1rem 0.75rem;
   }
 
   .title {
-    font-size: 2rem;
+    font-size: 1.75rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .header {
+    margin-bottom: 2rem;
   }
 
   .sectionHeader {
     flex-direction: column;
-    gap: 1rem;
     align-items: flex-start;
+  }
+
+  .filterTabs {
+    width: 100%;
+  }
+
+  .filterTab {
+    flex: 1;
+    justify-content: center;
+    padding: 0.4rem 0.5rem;
+    font-size: 0.8rem;
   }
 
   .viewToggle {
@@ -146,17 +234,23 @@
   }
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 3rem;
-  text-align: left;
+@media (width <= 480px) {
+  .mainContainer {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .filterTab {
+    font-size: 0.75rem;
+  }
 }
 
-.headerLeft {
-  display: flex;
-  flex-direction: column;
+/* Dark Mode Styles - Using global dark-mode class for consistency across builds */
+:global(.dark-mode) .dashboard {
+  background-color: #1a1a1a;
 }
 
 :global(.dark-mode) .title {
@@ -179,6 +273,38 @@
 
 :global(.dark-mode) .sectionTitle {
   color: #fff;
+}
+
+:global(.dark-mode) .filterTabs {
+  background-color: #2d2d2d;
+}
+
+:global(.dark-mode) .filterTab {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .filterTab:hover {
+  background-color: #363636;
+  color: #d1d5db;
+}
+
+:global(.dark-mode) .filterTabActive {
+  background-color: #404040;
+  color: #fff;
+}
+
+:global(.dark-mode) .filterCount {
+  background-color: #4b5563;
+  color: #d1d5db;
+}
+
+:global(.dark-mode) .filterTabActive .filterCount {
+  background-color: #2563eb;
+  color: #fff;
+}
+
+:global(.dark-mode) .emptyState {
+  color: #9ca3af;
 }
 
 :global(.dark-mode) .viewToggle {
