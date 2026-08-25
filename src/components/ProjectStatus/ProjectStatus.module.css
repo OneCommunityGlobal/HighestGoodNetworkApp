@@ -6,7 +6,7 @@
   padding: clamp(1rem, 3vw, 1.5rem) clamp(1rem, 4vw, 2rem); /* <-- adds spacing from page edges */
   min-height: 100vh; /* fills the page so dark mode has no leftover white gap below short content */
   box-sizing: border-box;
-  max-width: 1400px; /* keeps the chart from stranding on the left with a wall of empty space on ultra-wide screens */
+  max-width: 2200px; /* keeps the chart from stranding on the left with a wall of empty space on ultra-wide screens, without clipping normal desktop widths */
   margin: 0 auto;
 }
 
@@ -347,7 +347,7 @@
 }
 
 :global(body.dark-mode .react-datepicker__day--disabled) {
-  color: #64748b;
+  color: #64748b !important;
 }
 
 :global(body.dark-mode .react-datepicker__navigation-icon::before) {
