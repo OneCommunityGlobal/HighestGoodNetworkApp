@@ -125,11 +125,7 @@ describe('dynamic teamId + config (no API call)', () => {
   });
 
   it('renders zero reviewers when reviewerCount is 0', async () => {
-    renderContainer(
-      { config: { teamName: 'EmptyTeam', reviewerCount: 0 } },
-      {},
-      'custom-empty',
-    );
+    renderContainer({ config: { teamName: 'EmptyTeam', reviewerCount: 0 } }, {}, 'custom-empty');
 
     await waitFor(() => {
       expect(screen.getByTestId('reviewer-count').textContent).toBe('0');
@@ -172,7 +168,10 @@ describe('API fetch path — success', () => {
     renderContainer();
 
     await waitFor(() => {
-      expect(prGradingActions.fetchWeeklyGrading).toHaveBeenCalledWith('Team 1', expect.any(String));
+      expect(prGradingActions.fetchWeeklyGrading).toHaveBeenCalledWith(
+        'Team 1',
+        expect.any(String),
+      );
     });
   });
 
@@ -180,7 +179,10 @@ describe('API fetch path — success', () => {
     renderContainer({ teamName: 'Team 2' });
 
     await waitFor(() => {
-      expect(prGradingActions.fetchWeeklyGrading).toHaveBeenCalledWith('Team 2', expect.any(String));
+      expect(prGradingActions.fetchWeeklyGrading).toHaveBeenCalledWith(
+        'Team 2',
+        expect.any(String),
+      );
     });
   });
 });
@@ -288,7 +290,10 @@ describe('team switching', () => {
     fireEvent.change(screen.getByTestId('team-dropdown'), { target: { value: 'Team 2' } });
 
     await waitFor(() => {
-      expect(prGradingActions.fetchWeeklyGrading).toHaveBeenCalledWith('Team 2', expect.any(String));
+      expect(prGradingActions.fetchWeeklyGrading).toHaveBeenCalledWith(
+        'Team 2',
+        expect.any(String),
+      );
     });
   });
 
