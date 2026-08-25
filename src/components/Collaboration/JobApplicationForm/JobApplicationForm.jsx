@@ -132,6 +132,8 @@ function JobApplicationForm() {
   const location = useLocation();
   const [forms, setForms] = useState([]);
   const [selectedJob, setSelectedJob] = useState('');
+  const [positions, setPositions] = useState([]);
+  const [jobsData, setJobsData] = useState([]);
   const [answers, setAnswers] = useState([]);
   const [jobTitleInput, setJobTitleInput] = useState('');
   const [filteredForm, setFilteredForm] = useState(null);
@@ -159,6 +161,24 @@ function JobApplicationForm() {
 
     async function fetchForms() {
       try {
+        try {
+          const posRes = await axios.get(`${ENDPOINTS.APIEndpoint()}/jobs/positions`);
+          if (!cancelled && posRes.data && posRes.data.positions) {
+            setPositions(posRes.data.positions);
+          }
+        } catch (e) {
+          console.error('Failed to fetch positions', e);
+        }
+
+        try {
+          const jobsRes = await axios.get(`${ENDPOINTS.APIEndpoint()}/jobs?limit=1000`);
+          if (!cancelled && jobsRes.data && jobsRes.data.jobs) {
+            setJobsData(Array.isArray(jobsRes.data.jobs) ? jobsRes.data.jobs : []);
+          }
+        } catch (e) {
+          console.error('Failed to fetch jobs', e);
+        }
+
         const res = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
         if (cancelled) return;
         const formsArr = Array.isArray(res.data.forms) ? res.data.forms : [];
@@ -208,8 +228,9 @@ function JobApplicationForm() {
   }, [location.key]);
 
   useEffect(() => {
-    if (!selectedJob) return;
-    const form = forms.find(f => f.title === selectedJob);
+    if (!selectedJob || forms.length === 0) return;
+    const form =
+      findFormForJobTitle(forms, selectedJob) || forms.find(f => f.title === selectedJob);
     setFilteredForm(form);
     const n = (form?.questions ?? []).filter(q => q.visible !== false).length;
     setAnswers(new Array(n).fill(''));
@@ -296,17 +317,53 @@ function JobApplicationForm() {
       return;
     }
 
-    toast.success('Application submitted. A copy will be sent to your email.');
+    if (!filteredForm?._id) {
+      toast.error('Form ID is missing, cannot submit.');
+      return;
+    }
 
-    setApplicantName('');
-    setApplicantEmail('');
-    setLocationTimezone('');
-    setPhone('');
-    setCompanyPosition('');
-    setWebsiteSocial('');
-    setResumeFile(null);
-    if (resumeInputRef.current) resumeInputRef.current.value = '';
-    setAnswers(new Array(visibleQuestions.length).fill(''));
+    const formData = new FormData();
+    formData.append('respondent', applicantName);
+    formData.append('email', applicantEmail);
+    formData.append(
+      'answers',
+      JSON.stringify(
+        visibleQuestions.map((q, idx) => ({
+          questionId: q._id,
+          answer: Array.isArray(answers[idx]) ? answers[idx] : answers[idx] || '',
+        })),
+      ),
+    );
+    if (resumeFile) {
+      formData.append('resume', resumeFile);
+    }
+
+    try {
+      const response = await axios.post(`/api/jobforms/${filteredForm._id}/responses`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      if (response.status === 201) {
+        toast.success('Application submitted. A copy will be sent to your email.');
+        setApplicantName('');
+        setApplicantEmail('');
+        setLocationTimezone('');
+        setPhone('');
+        setCompanyPosition('');
+        setWebsiteSocial('');
+        setResumeFile(null);
+        if (resumeInputRef.current) resumeInputRef.current.value = '';
+        setAnswers(new Array(visibleQuestions.length).fill(''));
+      }
+    } catch (error) {
+      if (error.response?.status === 409) {
+        toast.error('Application already submitted.');
+      } else if (error.response?.status === 400) {
+        toast.error('Required fields missing.');
+      } else {
+        toast.error('Submission failed. Please try again.');
+        console.error(error);
+      }
+    }
   };
 
   return (
@@ -335,25 +392,57 @@ function JobApplicationForm() {
               Go
             </button>
           </div>
+          {/* NOTE: The position dropdown is commented out because it is not retrieving
+              form data as expected. Needs further investigation before re-enabling.
           <div className={styles.headerRight}>
             <select className={styles.jobSelect} value={selectedJob} onChange={handleJobChange}>
-              {forms.map(form => (
-                <option key={form._id || form.id} value={form.title}>
-                  {form.title}
-                </option>
-              ))}
+              <option value="" disabled>
+                — Select a position —
+              </option>
+              {positions.length > 0
+                ? positions.map(pos => (
+                    <option key={pos} value={pos}>
+                      {pos}
+                    </option>
+                  ))
+                : forms.map(form => (
+                    <option key={form._id || form.id} value={form.title}>
+                      {form.title}
+                    </option>
+                  ))}
             </select>
           </div>
+          */}
         </section>
         <section className={styles.formContainer}>
           <h1 className={styles.formTitle}>
             FORM FOR {(bannerJobTitle || selectedJob || '').toUpperCase()} POSITION
           </h1>
-          <p className={styles.formSubtitle}>
-            <a href="#learnMore" onClick={handleShowDescription}>
-              Click to know more about this position
-            </a>
-          </p>
+          {(() => {
+            const currentJobDetailsLink = jobsData.find(
+              j =>
+                j.title?.toLowerCase() === (bannerJobTitle || selectedJob)?.toLowerCase() ||
+                j.position?.toLowerCase() === (bannerJobTitle || selectedJob)?.toLowerCase(),
+            )?.jobDetailsLink;
+
+            return (
+              <p className={styles.formSubtitle}>
+                {currentJobDetailsLink ? (
+                  <a href={currentJobDetailsLink} target="_blank" rel="noopener noreferrer">
+                    Click to know more about this position
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    className={styles.linkButton}
+                    onClick={handleShowDescription}
+                  >
+                    Click to know more about this position
+                  </button>
+                )}
+              </p>
+            );
+          })()}
           {showDescription && filteredForm && (
             <div className={styles.popupOverlay}>
               <div className={styles.popupContent}>
@@ -402,14 +491,14 @@ function JobApplicationForm() {
               <div className={styles.formProfileDetailGroup}>
                 <input
                   type="text"
-                  placeholder="Name"
+                  placeholder="Name *"
                   className={styles.inputField}
                   value={applicantName}
                   onChange={e => setApplicantName(e.target.value)}
                 />
                 <input
                   type="email"
-                  placeholder="Email"
+                  placeholder="Email *"
                   className={styles.inputField}
                   value={applicantEmail}
                   onChange={e => setApplicantEmail(e.target.value)}
@@ -453,16 +542,24 @@ function JobApplicationForm() {
                 </label>
               </div>
               {visibleQuestions.map((q, idx) => {
-                const qt = getQuestionType(q);
+                let qt = getQuestionType(q);
+                let options = q.options || [];
                 const label = getQuestionLabel(q, idx);
                 const formKey = filteredForm?._id
                   ? `${filteredForm._id}-q-${idx}`
                   : `q-${idx}-${label.slice(0, 24)}`;
 
+                // Override for the question "Are you applying as an individual or organization?"
+                if (label.toLowerCase().includes('individual or organization')) {
+                  qt = 'dropdown';
+                  options = options.length > 0 ? options : ['Individual', 'Organization'];
+                }
+
                 return (
                   <div className={styles.formGroup} key={formKey}>
                     <h2>
                       {idx + 1}. {label}
+                      {isQuestionRequired(q) ? ' *' : ''}
                     </h2>
                     {['textbox', 'text'].includes(qt) && (
                       <input
@@ -488,9 +585,9 @@ function JobApplicationForm() {
                         onChange={e => handleAnswerChange(idx, e.target.value)}
                       />
                     )}
-                    {['checkbox', 'radio'].includes(qt) && q.options && q.options.length > 0 && (
+                    {['checkbox', 'radio'].includes(qt) && options && options.length > 0 && (
                       <div>
-                        {q.options.map(opt => (
+                        {options.map(opt => (
                           <label key={opt}>
                             <input
                               type={qt === 'checkbox' ? 'checkbox' : 'radio'}
@@ -511,7 +608,7 @@ function JobApplicationForm() {
                         onChange={e => handleAnswerChange(idx, e.target.value)}
                       >
                         <option value="">Select an option</option>
-                        {(q.options || []).map(opt => (
+                        {options.map(opt => (
                           <option key={opt} value={opt}>
                             {opt}
                           </option>

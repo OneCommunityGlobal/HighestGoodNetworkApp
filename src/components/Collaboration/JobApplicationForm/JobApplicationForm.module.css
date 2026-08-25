@@ -124,6 +124,17 @@
   text-decoration: none;
 }
 
+.linkButton {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #007bff;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: inherit;
+  font-family: inherit;
+}
+
 .form {
   display: flex;
   flex-direction: column;
