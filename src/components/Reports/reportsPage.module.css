@@ -58,6 +58,7 @@
 .category-container {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: space-evenly;
   gap: 10px;
 }
@@ -67,7 +68,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  width: 30%;
+  flex: 1 1 140px;
+  min-width: 140px;
+  max-width: 200px;
   padding: 24px;
   border: 0;
   background-color: #f1ebf7;
@@ -130,28 +133,99 @@
   -webkit-overflow-scrolling: touch;
 }
 
+.table-data-container :global(.bg-yinmn-blue tbody tr:hover) {
+  background: #2f4157 !important;
+}
+
 .search-field-container {
   max-width: 100%;
 }
 
+.report-filter-panel {
+  --report-filter-label-width: 88px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.report-filter-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.report-filter-options-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+}
+
+.report-filter-options-row label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.report-filter-label-action {
+  width: var(--report-filter-label-width);
+}
+
+:global(.dark-mode) .report-filter-label-action {
+  background-color: #3a506b;
+}
+
 .date-picker-container {
   display: flex;
-  flex-flow: row;
-  justify-content: flex-start;
-  padding: 8px 0;
-  gap: 4%;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  background-color: transparent !important;
 }
 
 .date-picker-item {
   display: flex;
-  width: 30%;
-  flex-flow: column nowrap;
-  justify-content: space-between;
+  align-items: center;
 }
 
 .date-picker-label {
+  width: var(--report-filter-label-width, 88px);
+  flex: 0 0 var(--report-filter-label-width, 88px);
   text-align: left;
-  margin: 8px 0;
+  margin: 0;
+}
+
+.date-picker-item :global(.react-datepicker-wrapper) {
+  width: 220px;
+}
+
+.date-picker-item :global(.react-datepicker__input-container),
+.date-picker-item input {
+  width: 100%;
+}
+
+@media screen and (width <= 575px) {
+  .report-filter-header-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .date-picker-item {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .date-picker-label,
+  .report-filter-label-action {
+    width: 100%;
+    flex-basis: auto;
+  }
+
+  .date-picker-item :global(.react-datepicker-wrapper) {
+    width: 100%;
+  }
 }
 
 /* Unified spacing system */
@@ -367,4 +441,12 @@
 .bg-yinmn-blue .info-modal-content.force-white-text,
 .bg-yinmn-blue .info-modal-content.force-white-text * {
   color: #fff !important;
+}
+
+/* The EmailManagement dark-mode stylesheet applies a global
+   `filter: invert(1)` to any `.modal-title` on the page whenever
+   `body.bm-dashboard-dark` is present, which inverts our light
+   title text to black. Neutralize it for this modal specifically. */
+.add-lost-time-header :global(.modal-title) {
+  filter: none !important;
 }

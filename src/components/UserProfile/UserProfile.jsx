@@ -110,12 +110,12 @@ function UserProfile(props) {
         params: { _ts: Date.now() },
         headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
       });
-  
+
       const teamCodes = (Array.isArray(response.data) ? response.data : [])
         .filter(item => typeof item === 'string' && item.trim() !== '');
   
       const uniqueTeamCodes = [...new Set(teamCodes)].sort((a, b) => a.localeCompare(b));
-  
+
       setInputAutoComplete(uniqueTeamCodes);
       setInputAutoStatus(response.status);
   
@@ -124,7 +124,9 @@ function UserProfile(props) {
       // eslint-disable-next-line no-console
       console.log('Team codes fetch failed:', error);
       return [];
-    }
+    } finally {
+        setIsLoading(false);
+      }
   }, []);
 
   /* Hooks */
@@ -449,9 +451,14 @@ function UserProfile(props) {
         );
         const normalized = (data || []).map(row => {
           // common shapes: {project: {...}}, {projectId: {...}}, or already {...}
-          if (row?.project?.projectName) return row.project;
-          if (row?.projectId?.projectName) return row.projectId;
-          return row; // fallback if API already returns the project document
+          let project;
+          if (row?.project?.projectName) project = row.project;
+          else if (row?.projectId?.projectName) project = row.projectId;
+          else project = row; // fallback if API already returns the project document
+          return {
+            ...project,
+            projectId: project?._id || project?.projectId,
+          };
         });
         setProjects(normalized);
         setOriginalProjects(normalized);
@@ -593,7 +600,12 @@ const onAssignProject = async (assignedProject) => {
     return;
   }
 
-  const updatedProjects = [...currentProjects, assignedProject];
+  const normalizedProject = {
+    ...assignedProject,
+    projectId: assignedProject._id || assignedProject.projectId,
+  };
+
+  const updatedProjects = [...currentProjects, normalizedProject];
   setProjects(updatedProjects);
 
   const updatedUserProfile = {
@@ -1418,11 +1430,11 @@ setUpdatedTasks(prev => {
         </div>
 
         <div className="right-column">
-          {!codeValid ? (
+          {/* {!codeValid ? (
             <Alert color="danger">
-              NOT SAVED! The code must be between 5 and 7 characters long
+              NOT SAVED! The code must be between 5 and 77 characters long
             </Alert>
-          ) : null}
+          ) : null} */}
           <div className="profile-head">
             <h5 className={`mr-2 ${darkMode ? 'text-light' : ''}`}>{`${firstName} ${lastName}`}</h5>
             <div style={{ marginTop: '6px' }}>

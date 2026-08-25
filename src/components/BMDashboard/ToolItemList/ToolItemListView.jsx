@@ -2,14 +2,32 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
+import {
+  FaCubes,
+  FaShoppingCart,
+  FaTools,
+  FaRecycle,
+  FaWrench,
+  FaRulerCombined,
+} from 'react-icons/fa';
 import BMError from '../shared/BMError';
 import SelectForm from '../ItemList/SelectForm';
 import SelectItem from '../ItemList/SelectItem';
 import ToolItemsTable from './ToolItemsTable';
+import InventoryNavBar from '../InventoryTypesList/InventoryNavBar';
 import styles from './ToolItemListView.module.css';
 import { ToolFiltersProvider, useToolFilters } from '../Tools/ToolFiltersContext';
+import { Form, FormGroup, Label } from 'reactstrap';
 
-// Same logic as ToolItemsTable for Using / Available
+const siblingCategories = [
+  { label: 'Materials', route: '/bmdashboard/materials', icon: <FaCubes /> },
+  { label: 'Consumables', route: '/bmdashboard/consumables', icon: <FaShoppingCart /> },
+  { label: 'Equipment', route: '/bmdashboard/equipment', icon: <FaTools /> },
+  { label: 'Reusables', route: '/bmdashboard/reusables', icon: <FaRecycle /> },
+  { label: 'Units', route: '/bmdashboard/units', icon: <FaRulerCombined /> },
+];
+
 const isItemUsing = item =>
   Array.isArray(item.itemType?.using) && item.itemType.using.includes(item._id);
 
@@ -29,41 +47,19 @@ const toBool = raw => {
     if (['yes', 'y', 'true', 't', '1'].includes(v)) return true;
     if (['no', 'n', 'false', 'f', '0'].includes(v)) return false;
   }
-  return undefined; // unknown
+  return undefined;
 };
 
 function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, dynamicColumns }) {
   const [filteredItems, setFilteredItems] = useState(items || []);
+  const [localValues, setLocalValues] = useState([]);
   const [isError, setIsError] = useState(false);
 
-  // theme state
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const projectKey = `${itemType}_selected_projects`;
+  const itemKey = `${itemType}_selected_items`;
 
-  // read dark / light from body class
-  useEffect(() => {
-    if (typeof document === 'undefined') return;
-
-    const checkDark = () => {
-      const className = document.body.className || '';
-      // treat ANY body class that contains "dark" (case-insensitive) as dark-mode
-      return /dark/i.test(className);
-    };
-
-    // initial value
-    setIsDarkMode(checkDark());
-
-    // watch for body class changes when the user toggles theme
-    const observer = new MutationObserver(() => {
-      setIsDarkMode(checkDark());
-    });
-
-    observer.observe(document.body, {
-      attributes: true,
-      attributeFilter: ['class'],
-    });
-
-    return () => observer.disconnect();
-  }, []);
+  // Read dark mode directly from Redux
+  const isDarkMode = useSelector(state => state.theme.darkMode);
 
   const { filters, setFilters } = useToolFilters();
   const {
@@ -94,13 +90,13 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
     let data = [...items];
 
     // 1) Project filter
-    if (selectedProject !== 'all') {
-      data = data.filter(item => item.project?.name === selectedProject);
+    if (Array.isArray(selectedProject) && selectedProject.length > 0) {
+      data = data.filter(item => selectedProject.includes(item.project?.name));
     }
 
     // 2) Tool type filter
-    if (selectedItem !== 'all') {
-      data = data.filter(item => item.itemType?.name === selectedItem);
+    if (Array.isArray(selectedItem) && selectedItem.length > 0) {
+      data = data.filter(item => selectedItem.includes(item.itemType?.name));
     }
 
     // 3) Available filter
@@ -115,7 +111,7 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
       data = data.filter(item => isItemUsing(item) === wantUsing);
     }
 
-    // 4.5) Tool Status (from upstream requirement)
+    // 4.5) Tool Status
     if (toolStatusFilter && toolStatusFilter !== 'all') {
       data = data.filter(item => {
         if (toolStatusFilter === 'using') return isItemUsing(item);
@@ -131,7 +127,7 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
       });
     }
 
-    // 4.6) Condition (from upstream requirement)
+    // 4.6) Condition
     if (conditionFilter && conditionFilter !== 'all') {
       data = data.filter(item => item.condition === conditionFilter);
     }
@@ -151,7 +147,7 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
       });
     }
 
-    // 6) Sorting (your existing switch)
+    // 6) Sorting
     if (sortConfig?.key) {
       const { key, direction } = sortConfig;
       const mult = direction === 'asc' ? 1 : -1;
@@ -216,11 +212,7 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
     setFilteredItems(processedItems);
   }, [processedItems]);
 
-  const updateFilter = patch =>
-    setFilters(prev => ({
-      ...prev,
-      ...patch,
-    }));
+  const updateFilter = patch => setFilters(prev => ({ ...prev, ...patch }));
 
   const handleSort = columnKey => {
     updateFilter({
@@ -231,9 +223,20 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
     });
   };
 
+  const handleReset = () => {
+    setLocalValues([]);
+    updateFilter({ selectedProject: [], selectedItem: [] });
+    localStorage.removeItem(projectKey);
+    localStorage.removeItem(itemKey);
+  };
+
   if (isError) {
     return (
-      <main className={`${styles.itemsListContainer} ${styles.lightTheme}`}>
+      <main
+        className={`${styles.itemsListContainer} ${
+          isDarkMode ? styles.darkTheme : styles.lightTheme
+        }`}
+      >
         <h2>{itemType} List</h2>
         <BMError errors={errors} />
       </main>
@@ -244,23 +247,29 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
 
   return (
     <main className={`${styles.itemsListContainer} ${themeClass}`}>
-      <h3>{itemType}</h3>
+      <h3 className={styles.pageTitle}>
+        <span className={styles.pageTitleIcon}>
+          <FaWrench />
+        </span>
+        {itemType}
+      </h3>
+
+      {/* Inventory Navigation Bar */}
+      <InventoryNavBar categories={siblingCategories} styles={styles} />
+
       <section>
         {items && (
           <div className={styles.filtersRow}>
-            {/* Row 1: Project + Tool */}
             <div className={styles.projectToolColumn}>
               <div className={styles.filterGroup}>
                 <SelectForm
                   items={items}
-                  selectedProject={selectedProject}
-                  selectedItem={selectedItem}
                   setSelectedProject={value => updateFilter({ selectedProject: value })}
-                  setSelectedItem={value => updateFilter({ selectedItem: value })}
-                  isDarkMode={isDarkMode}
+                  localValues={localValues}
+                  setLocalValues={setLocalValues}
+                  itemType={itemType}
                 />
               </div>
-
               <div className={styles.filterGroup}>
                 <SelectItem
                   items={items}
@@ -268,12 +277,29 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
                   selectedItem={selectedItem}
                   setSelectedItem={value => updateFilter({ selectedItem: value })}
                   label="Tool"
-                  isDarkMode={isDarkMode}
+                  itemType={itemType}
                 />
+              </div>
+              <div className={styles.resetContainer}>
+                <Form onSubmit={e => e.preventDefault()}>
+                  <FormGroup>
+                    <Label>&nbsp;</Label>
+                    <button
+                      type="button"
+                      className={styles.btnReset}
+                      onClick={handleReset}
+                      disabled={
+                        localStorage.getItem(projectKey) === null &&
+                        localStorage.getItem(itemKey) === null
+                      }
+                    >
+                      Reset
+                    </button>
+                  </FormGroup>
+                </Form>
               </div>
             </div>
 
-            {/* Row 2: Available / Using / Tool Status / Condition / Search */}
             <div className={styles.availSearchColumn}>
               <div className={styles.availSearchRow}>
                 <div className={styles.availUsingGroup}>
@@ -382,15 +408,9 @@ function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, 
 
 ToolItemListViewInner.propTypes = {
   itemType: PropTypes.string,
-  items: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number,
-      name: PropTypes.string,
-    }),
-  ).isRequired,
-  errors: PropTypes.shape({
-    message: PropTypes.string,
-  }),
+  items: PropTypes.arrayOf(PropTypes.shape({ id: PropTypes.number, name: PropTypes.string }))
+    .isRequired,
+  errors: PropTypes.shape({ message: PropTypes.string }),
   UpdateItemModal: PropTypes.oneOfType([PropTypes.func, PropTypes.elementType]),
   dynamicColumns: PropTypes.array,
 };
