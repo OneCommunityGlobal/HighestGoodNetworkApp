@@ -4,7 +4,11 @@ import { Table, Button, Badge } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
+
 import RecordsModal from './RecordsModal';
+import MaterialUsageChart from '../MaterialUsage/MaterialUsageChart';
+import StockHealthIndicator from '../MaterialList/StockHealthIndicator';
+import UsagePercentageBar from '../MaterialList/UsagePercentageBar';
 import styles from './ItemListView.module.css';
 
 const rowsPerPageOptions = [25, 50, 100];
@@ -40,6 +44,10 @@ export default function ItemsTable({
   const [recordType, setRecordType] = useState('');
   const [updateModal, setUpdateModal] = useState(false);
   const [updateRecord, setUpdateRecord] = useState(null);
+  const [showChartModal, setShowChartModal] = useState(false);
+  const [chartProjectId, setChartProjectId] = useState(null);
+
+  const isMaterialsView = itemType === 'Materials';
 
   const handleEditRecordsClick = (selectedEl, type) => {
     if (type === 'Update') {
@@ -49,13 +57,32 @@ export default function ItemsTable({
   };
 
   const handleViewRecordsClick = (data, type) => {
+    if (isMaterialsView && type === 'UsageRecord') {
+      const projectId = data.project?._id || data.projectId;
+
+      if (projectId) {
+        setChartProjectId(projectId);
+        setShowChartModal(true);
+        return;
+      }
+    }
+
     setModal(true);
     setRecord(data);
     setRecordType(type);
   };
 
-  const getNestedValue = (obj, path) =>
-    path ? path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj) : null;
+  const getNestedValue = (obj, path) => {
+    if (!path) return null;
+    if (path === 'product id') return obj.productId ?? 'N/A';
+    return path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
+  };
+
+  const filteredDynamicColumns = (dynamicColumns || []).filter(
+    col => col.label !== 'Project' && col.label !== 'Name',
+  );
+
+  const emptyStateColSpan = 5 + filteredDynamicColumns.length + (isMaterialsView ? 2 : 0);
 
   const getIconFor = key => {
     if (!sortConfig?.key || sortConfig.key !== key) return faSort;
@@ -92,10 +119,16 @@ export default function ItemsTable({
         recordType={recordType}
         itemType={itemType}
       />
+      {showChartModal && chartProjectId && (
+        <MaterialUsageChart
+          projectId={chartProjectId}
+          toggle={() => setShowChartModal(false)}
+          darkMode={darkMode}
+        />
+      )}
       {UpdateItemModal && (
         <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
       )}
-
       <div className={`${styles.itemsTableContainer} ${darkMode ? styles.darkTableWrapper : ''}`}>
         <Table className={darkMode ? styles.darkTable : ''}>
           <thead className={styles.stickyThead}>
@@ -103,18 +136,18 @@ export default function ItemsTable({
               <th
                 onClick={() => onSort?.('project')}
                 className={styles.sortableTh}
-                style={{ verticalAlign: 'middle' }}
+                style={{ verticalAlign: 'middle', textAlign: 'center' }}
               >
                 Project <FontAwesomeIcon icon={getIconFor('project')} size="lg" />
               </th>
               <th
                 onClick={() => onSort?.('name')}
                 className={styles.sortableTh}
-                style={{ verticalAlign: 'middle' }}
+                style={{ verticalAlign: 'middle', textAlign: 'center' }}
               >
                 Name <FontAwesomeIcon icon={getIconFor('name')} size="lg" />
               </th>
-              {(dynamicColumns || []).map(({ label, key }) => {
+              {(filteredDynamicColumns || []).map(({ label, key }) => {
                 const sortKey = dynamicSortKeyByLabel[label];
                 const clickable = Boolean(sortKey);
                 return (
@@ -128,6 +161,8 @@ export default function ItemsTable({
                   </th>
                 );
               })}
+              {isMaterialsView && <th style={getColumnStyle(null)}>Usage %</th>}
+              {isMaterialsView && <th style={getColumnStyle(null)}>Stock Health</th>}
               <th style={getColumnStyle(null, true)} title="View usage history and charts">
                 Usage Record
               </th>
@@ -151,7 +186,7 @@ export default function ItemsTable({
                 <tr key={el._id}>
                   <td style={{ verticalAlign: 'middle' }}>{el.project?.name}</td>
                   <td style={{ verticalAlign: 'middle' }}>{el.itemType?.name}</td>
-                  {(dynamicColumns || []).map(({ label, key }) => {
+                  {filteredDynamicColumns.map(({ label, key }) => {
                     const value = getNestedValue(el, key);
                     if (
                       key === 'stockAvailable' &&
@@ -179,6 +214,16 @@ export default function ItemsTable({
                       </td>
                     );
                   })}
+                  {isMaterialsView && (
+                    <td style={getColumnStyle(null)}>
+                      <UsagePercentageBar material={el} darkMode={darkMode} />
+                    </td>
+                  )}
+                  {isMaterialsView && (
+                    <td style={getColumnStyle(null)}>
+                      <StockHealthIndicator material={el} darkMode={darkMode} />
+                    </td>
+                  )}
                   <td
                     className={`${styles.itemsCell} ${styles.actionCell}`}
                     style={getColumnStyle(null, true)}
@@ -236,7 +281,7 @@ export default function ItemsTable({
               ))
             ) : (
               <tr>
-                <td colSpan={(dynamicColumns?.length || 0) + 5} style={{ textAlign: 'center' }}>
+                <td colSpan={emptyStateColSpan} style={{ textAlign: 'center' }}>
                   No items data
                 </td>
               </tr>

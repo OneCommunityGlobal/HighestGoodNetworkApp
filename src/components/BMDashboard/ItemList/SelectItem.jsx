@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Form, FormGroup, Label } from 'reactstrap';
+
 import Select from 'react-select';
 import PropTypes from 'prop-types';
+import { Form, FormGroup, Label } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import styles from './ItemListView.module.css';
 import { getReactSelectStyles } from './selectStyles.js';

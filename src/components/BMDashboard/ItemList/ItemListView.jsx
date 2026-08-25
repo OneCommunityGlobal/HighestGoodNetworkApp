@@ -16,6 +16,7 @@ import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
 import InventoryNavBar from '../InventoryTypesList/InventoryNavBar';
+import MaterialSummaryPanel from '../MaterialList/MaterialSummaryPanel';
 import styles from './ItemListView.module.css';
 
 const allCategories = [
@@ -62,6 +63,7 @@ export function ItemListView({
     localStorage.removeItem(itemKey);
   };
 
+  const isMaterialsView = itemType === 'Materials';
   const [searchQuery, setSearchQuery] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
@@ -315,34 +317,34 @@ export function ItemListView({
               </button>
             )}
           </div>
-
           <div className={styles.foundCount}>
             {totalItems} {totalItems === 1 ? 'material' : 'materials'} found
           </div>
         </div>
 
-        {children}
-
         {filteredItems && (
-          <ItemsTable
-            selectedProject={selectedProject}
-            selectedItem={selectedItem}
-            filteredItems={paginatedItems}
-            UpdateItemModal={UpdateItemModal}
-            dynamicColumns={dynamicColumns}
-            darkMode={darkMode}
-            itemType={itemType}
-            sortConfig={sortConfig}
-            onSort={handleSort}
-            totalItems={totalItems}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            rowsPerPage={rowsPerPage}
-            startRow={startRow}
-            endRow={endRow}
-            onPageChange={setCurrentPage}
-            onRowsPerPageChange={setRowsPerPage}
-          />
+          <>
+            <MaterialSummaryPanel materials={filteredItems} darkMode={darkMode} />
+            <ItemsTable
+              selectedProject={selectedProject}
+              selectedItem={selectedItem}
+              filteredItems={paginatedItems}
+              UpdateItemModal={UpdateItemModal}
+              dynamicColumns={dynamicColumns}
+              darkMode={darkMode}
+              itemType={itemType}
+              sortConfig={sortConfig}
+              onSort={handleSort}
+              totalItems={totalItems}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              rowsPerPage={rowsPerPage}
+              startRow={startRow}
+              endRow={endRow}
+              onPageChange={setCurrentPage}
+              onRowsPerPageChange={setRowsPerPage}
+            />
+          </>
         )}
       </section>
     </main>
@@ -353,7 +355,8 @@ ItemListView.propTypes = {
   itemType: PropTypes.string.isRequired,
   items: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      name: PropTypes.string,
       itemType: PropTypes.shape({
         name: PropTypes.string,
         unit: PropTypes.string,
@@ -367,6 +370,7 @@ ItemListView.propTypes = {
       stockUsed: PropTypes.number,
       stockWasted: PropTypes.number,
       stockHold: PropTypes.number,
+      productId: PropTypes.string,
     }),
   ).isRequired,
   errors: PropTypes.shape({

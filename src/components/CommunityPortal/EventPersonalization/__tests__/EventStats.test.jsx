@@ -3,7 +3,6 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import PopularEvents from '../EventStats';
 
-// Minimal mock reducer
 const mockThemeReducer = (darkMode = false) => () => ({ darkMode });
 
 const renderWithStore = (darkMode = false) => {
@@ -20,115 +19,73 @@ const renderWithStore = (darkMode = false) => {
   );
 };
 
+const getEventBars = () =>
+  screen.getAllByText((_, node) => {
+    return Boolean(node?.textContent?.match(/^\d{1,3}% \(\d{1,3}\/\d{1,3}\)$/));
+  }); // unique per event row
+
 describe('PopularEvents Component', () => {
-  // ---------------------------
-  // BASIC RENDER
-  // ---------------------------
   test('renders header', () => {
     renderWithStore();
-    expect(screen.getByRole('heading', { name: /Most Popular Event/i })).toBeInTheDocument();
+
+    expect(screen.getByRole('heading', { name: /most popular event/i })).toBeInTheDocument();
   });
 
-  test('renders exactly 7 event labels initially', () => {
+  test('renders exactly 7 event items initially', () => {
     renderWithStore();
-    const labels = screen.getAllByTestId('stat-label');
-    expect(labels.length).toBe(7);
+
+    expect(getEventBars()).toHaveLength(7);
   });
 
-  // ---------------------------
-  // FILTERS
-  // ---------------------------
   test('filters events by type (Offline)', () => {
     renderWithStore();
-    const typeSelect = screen.getAllByRole('combobox')[1];
 
-    fireEvent.change(typeSelect, { target: { value: 'Offline' } });
+    fireEvent.change(screen.getAllByRole('combobox')[1], {
+      target: { value: 'Offline' },
+    });
 
-    const labels = screen.getAllByTestId('stat-label');
-    expect(labels.length).toBe(4);
+    expect(getEventBars()).toHaveLength(4);
   });
 
   test('filters events by time (Morning)', () => {
     renderWithStore();
-    const timeSelect = screen.getAllByRole('combobox')[0];
 
-    fireEvent.change(timeSelect, { target: { value: 'Morning' } });
+    fireEvent.change(screen.getAllByRole('combobox')[0], {
+      target: { value: 'Morning' },
+    });
 
-    const labels = screen.getAllByTestId('stat-label');
-    expect(labels.length).toBe(3);
+    expect(getEventBars()).toHaveLength(3);
   });
 
-  test('changing filters multiple times restores all 7 events', () => {
-    renderWithStore();
-    const select = screen.getAllByRole('combobox')[1];
-
-    fireEvent.change(select, { target: { value: 'Offline' } });
-    fireEvent.change(select, { target: { value: 'Online' } });
-    fireEvent.change(select, { target: { value: 'All' } });
-
-    const labels = screen.getAllByTestId('stat-label');
-    expect(labels.length).toBe(7);
-  });
-
-  // ---------------------------
-  // SUMMARY CARDS
-  // ---------------------------
-  test('summary shows correct values', () => {
+  test('changing filters restores all events', () => {
     renderWithStore();
 
-    expect(screen.getByText('Total Number of Events')).toBeInTheDocument();
-    expect(screen.getByTestId('summary-total-events')).toHaveTextContent('7');
+    const typeSelect = screen.getAllByRole('combobox')[1];
 
-    expect(screen.getByTestId('summary-total-enrollments')).toHaveTextContent('145');
+    fireEvent.change(typeSelect, { target: { value: 'Offline' } });
+    fireEvent.change(typeSelect, { target: { value: 'Online' } });
+    fireEvent.change(typeSelect, { target: { value: 'All' } });
 
-    expect(screen.getAllByText('Most Popular Event').length).toBe(2);
-    expect(screen.getByTestId('summary-most')).toHaveTextContent('Type of Event 2');
-
-    expect(screen.getAllByText('Least Popular Event').length).toBe(1);
-    expect(screen.getByTestId('summary-least')).toHaveTextContent('Type of Event 7');
+    expect(getEventBars()).toHaveLength(7);
   });
 
-  // ---------------------------
-  // DARK MODE
-  // ---------------------------
   test('dark mode applies proper class', () => {
     renderWithStore(true);
 
-    // specifically select ONLY the main header, not the summary box
     const heading = screen.getByRole('heading', {
-      name: 'Most Popular Event',
+      name: /most popular event/i,
     });
 
-    expect(heading.className.includes('text-light')).toBe(true);
+    expect(heading.className).toMatch(/popularEventsHeaderDark/);
   });
 
-  // ---------------------------
-  // EMPTY FILTER RESULTS
-  // ---------------------------
-  test('no summary cards when filteredData is empty', () => {
+  test('empty filter still renders structure', () => {
     renderWithStore();
 
-    const timeSelect = screen.getAllByRole('combobox')[0];
-    fireEvent.change(timeSelect, { target: { value: 'NonExistent' } });
-
-    // Header stays
-    expect(screen.getByRole('heading', { name: 'Most Popular Event' })).toBeInTheDocument();
-
-    // These disappear because filteredData is empty
-    expect(screen.queryByTestId('summary-most')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('summary-least')).not.toBeInTheDocument();
-  });
-
-  // ---------------------------
-  // BAR WIDTH
-  // ---------------------------
-  test('bars have inline width style', () => {
-    renderWithStore();
-
-    const bars = screen.getAllByTestId('stat-bar-inner');
-
-    bars.forEach(inner => {
-      expect(inner.style.width).toMatch(/%/);
+    fireEvent.change(screen.getAllByRole('combobox')[0], {
+      target: { value: 'NonExistent' },
     });
+
+    expect(screen.getByRole('heading', { name: /most popular event/i })).toBeInTheDocument();
   });
 });

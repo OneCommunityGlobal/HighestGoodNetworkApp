@@ -1,15 +1,23 @@
 /* stylelint-disable declaration-property-value-no-unknown, no-descending-specificity */
-.wrapper.container-fluid {
+.wrapper {
   overflow-x: auto;
   width: 100%;
-  padding: 0 16px;
+  max-width: 100%;
+  padding-inline: 0;
   box-sizing: border-box;
+}
+
+.wrapperDark {
+  background-color: #1b2a41;
+  color: #e4e6eb;
+  padding-bottom: 16px;
+  border-radius: 8px;
 }
 
 .reports-table-head {
   display: grid;
-  grid-template-columns: 2.2fr 1fr 1fr 1.2fr 0.6fr 0.6fr 1.2fr 1fr 1fr;
-  justify-content: space-between;
+  grid-template-columns: 3.5fr 0.8fr 0.8fr 1fr 0.6fr 0.6fr 1fr 0.8fr 0.8fr;
+  gap: 0;
   align-items: center;
   vertical-align: middle;
   overflow: hidden;
@@ -24,18 +32,18 @@
 
 .people-table-row {
   display: grid;
-  grid-template-columns: 2.2fr 1fr 1fr 1.2fr 0.6fr 0.6fr 1.2fr 1fr 1fr;
-  justify-content: space-between;
+  grid-template-columns: 3.5fr 0.8fr 0.8fr 1fr 0.6fr 0.6fr 1fr 0.8fr 0.8fr;
+  gap: 0;
   align-items: center;
   vertical-align: middle;
   min-height: 42px;
-  padding: 0 16px;
+  padding: 8px 16px;
   cursor: pointer;
-  border-bottom: 3px solid #f8f7f8;
+  border-bottom: 1px solid #f8f7f8;
   width: 100%;
 }
 
-.reports-table-head,
+.reports-table-head > div,
 .people-table-row > div {
   padding: 8px;
   text-align: left;
@@ -44,6 +52,47 @@
   font-size: 16px;
   overflow-wrap: break-word;
   white-space: normal;
+  overflow: hidden;
+}
+
+/* Profile picture styling */
+.img-circle {
+  border-radius: 50%;
+  height: 30px;
+  width: 30px;
+  object-fit: cover;
+  display: inline-block;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.name {
+  display: inline-block;
+  margin-right: 4px;
+}
+
+.resourceMoreToggle {
+  display: inline-block;
+  margin-left: 4px;
+  cursor: pointer;
+}
+
+.dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #bbb;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+:global(.dark-mode) .dot {
+  background-color: #3a4460;
+  color: #f1f1f1;
 }
 
 .people-table-row:hover {
@@ -52,7 +101,7 @@
 
 /* ✅ merged hover style */
 .people-table-row-dark:hover {
-  background-color: #1a1a2e !important;
+  background-color: #232946 !important;
   color: #fff !important;
 }
 
@@ -111,38 +160,6 @@
   border: none !important;
 }
 
-.mobile-table {
-  width: 350px;
-  border-radius: 16px;
-  border: 3px solid rgb(150 148 148);
-  overflow: hidden;
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-.mobile-table p {
-  font-size: 15px;
-  text-align: left;
-  padding: 17px;
-  width: 100%;
-}
-
-/* Responsive: large screens */
-@media only screen and (width <= 1024px) {
-  .people-table {
-    display: flex;
-    flex-flow: column wrap;
-    align-content: center;
-  }
-
-  .people-table-row {
-    display: none;
-  }
-}
-
 .task-details {
   padding: 2%;
 }
@@ -155,7 +172,7 @@
   overflow: hidden;
 }
 
-.text-dark {
+.task-card-dark {
   color: black;
 }
 
@@ -217,6 +234,31 @@
   height: 30px;
   cursor: pointer;
   margin-left: auto;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.tasks-table-clear-filter-button:hover {
+  background-color: #fef5ff;
+  border-color: #ca50db;
+}
+
+:global(.dark-mode) .tasks-table-clear-filter-button {
+  background-color: #232946;
+  border: 2px solid #ca50db;
+  outline-color: #ca50db;
+  color: #e7b1ef;
+}
+
+/* Dark mode styling for Clear Filters button */
+.wrapperDark .tasks-table-clear-filter-button {
+  background-color: #232946 !important;
+  border: 2px solid #5A67D8 !important;
+  color: #fff !important;
+}
+
+.wrapperDark .tasks-table-clear-filter-button:hover {
+  background-color: #1C2541 !important;
+  border-color: #ca50db !important;
 }
 
 .people-report-task-name {
@@ -235,52 +277,106 @@
   width: 100%;
 }
 
+.peopleTableReact {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+}
+
+.peopleTableReact th,
+.peopleTableReact td {
+  padding: 8px;
+  text-align: left;
+  overflow-wrap: break-word;
+  vertical-align: middle;
+}
+
+.peopleTableReact th {
+  background-color: #eee7f8;
+  font-size: 18px;
+}
+
+.peopleTableReact td {
+  border-bottom: 1px solid #f8f7f8;
+  font-size: 16px;
+}
+
+.peopleTableReact th:first-child,
+.peopleTableReact td:first-child {
+  width: 28%;
+}
+
+.peopleTableReact th:nth-child(4),
+.peopleTableReact td:nth-child(4) {
+  width: 14%;
+}
+
+.peopleTableReact tbody tr:hover {
+  background-color: #fafafa;
+}
+
+.people-table-row-dark td {
+  border-color: #374151;
+}
+
+.reports-table-head-dark th {
+  background-color: #1b2a41;
+  color: #f9fafb;
+}
+
+.wrapperDark .people-table-scrollable {
+  background-color: #162032;
+  border: 1px solid #3a4460;
+  border-radius: 8px;
+  padding: 4px 0;
+}
+
 /* Dark mode for mobile modal cards */
-.task-card.text-dark {
+.task-card.task-card-dark {
   background-color: #232946;
   color: #fff;
   border: 1px solid #444;
 }
 
-.task-card.text-dark .task-header {
+.task-card.task-card-dark .task-header {
   background-color: #1a1a2e;
   color: #fff;
 }
 
-.task-card.text-dark .task-status {
+.task-card.task-card-dark .task-status {
   background-color: #ca50db;
   color: #fff;
 }
 
-.task-card.text-dark .task-info {
+.task-card.task-card-dark .task-info {
   color: #fff;
 }
 
-.task-card.text-dark .sub-head,
-.task-card.text-dark .sub-details {
+.task-card.task-card-dark .sub-head,
+.task-card.task-card-dark .sub-details {
   color: #fff;
 }
 
 /* Modal textarea dark mode */
-.text-dark .rectangle {
+.task-card-dark .rectangle {
   background: #232946;
   color: #fff;
   border: 1.5px solid #444;
 }
 
 /* Desktop table dark mode */
-.bg-space-cadet {
+.reports-table-head-dark {
   background-color: #1a1a2e !important;
   color: #fff !important;
 }
 
 .people-table-row-dark {
-  background-color: #232946 !important;
+  background-color: transparent !important;
   color: #fff !important;
 }
 
 .people-table-row-dark > div,
-.bg-space-cadet > div {
+.reports-table-head-dark > div {
   color: #fff !important;
 }
 
@@ -291,14 +387,18 @@
 
 /* Table cell border for dark mode */
 .people-table-row-dark,
-.bg-space-cadet {
-  border-bottom: 2px solid #444 !important;
+.reports-table-head-dark {
+  border-bottom: 1px solid #444 !important;
 }
 
 /* Table textarea dark mode */
 .people-table-row-dark .rectangle,
-.bg-space-cadet .rectangle {
+.reports-table-head-dark .rectangle {
   background: #232946;
   color: #fff;
-  border: 1.5px solid #444;
+  border: 1px solid #444;
+}
+
+.centerColumn {
+  text-align: center !important;
 }

@@ -71,6 +71,7 @@ import issueReducer from './bmdashboard/issueReducer';
 import dashboardReducer from './dashboardReducer';
 import HGNFormReducer from './hgnFormReducers';
 import injuriesReducer from './injuries';
+import knowledgeEvolutionReducer from './bmdashboard/knowledgeEvolutionReducer';
 import { timeOffRequestsReducer } from './timeOffRequestReducer';
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 // import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
@@ -120,6 +121,12 @@ import { studentReducer } from './studentProfileReducer';
 
 // Kitchen and Inventory Management
 import { kiCalendarApi } from '../actions/kiCalendarAction';
+
+// Popularity Enhanced
+import {
+  enhancedPopularityAnalyticsReducer,
+  enchancedPopularityRolesReducer,
+} from './EnhancedPopularityAnalytics/EnchancedPopularityReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -177,6 +184,7 @@ const localReducers = {
   dashboard: dashboardReducer,
   injuries: injuriesReducer,
   weeklyProjectSummary: weeklyProjectSummaryReducer,
+  knowledgeEvolution: knowledgeEvolutionReducer,
   costBreakdown: costBreakdownReducer,
 
   // lbdashboard
@@ -220,6 +228,11 @@ const localReducers = {
   // education portal
   browseLessonPlan: browseLessonPlanReducer,
   kiInventory: KIInventoryReducer,
+
+  // enchanced popularity analytics
+  enhancedPopularityAnalytics: enhancedPopularityAnalyticsReducer,
+
+  enhancedPopularityRoles: enchancedPopularityRolesReducer,
 
   // Kitchen and Inventory Management
   [kiCalendarApi.reducerPath]: kiCalendarApi.reducer,
