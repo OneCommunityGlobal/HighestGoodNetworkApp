@@ -1032,7 +1032,6 @@ function OrdersPage() {
       setOrders(Array.isArray(orderRes.data) ? orderRes.data : []);
       setSupplierList(Array.isArray(supplierRes.data) ? supplierRes.data : []);
     } catch (error) {
-      console.error('Failed to load orders and suppliers:', error);
       toast.error('Failed to load orders.');
     } finally {
       setLoading(false);
