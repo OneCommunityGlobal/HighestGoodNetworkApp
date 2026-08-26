@@ -71,6 +71,7 @@ import issueReducer from './bmdashboard/issueReducer';
 import dashboardReducer from './dashboardReducer';
 import HGNFormReducer from './hgnFormReducers';
 import injuriesReducer from './injuries';
+import knowledgeEvolutionReducer from './bmdashboard/knowledgeEvolutionReducer';
 import { timeOffRequestsReducer } from './timeOffRequestReducer';
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 // import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
@@ -186,6 +187,7 @@ const localReducers = {
   injuries: injuriesReducer,
   weeklyProjectSummary: weeklyProjectSummaryReducer,
   bidOverview: bidOverviewReducer,
+  knowledgeEvolution: knowledgeEvolutionReducer,
   costBreakdown: costBreakdownReducer,
 
   // lbdashboard

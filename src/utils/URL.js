@@ -477,6 +477,7 @@ export const ENDPOINTS = {
   BM_ORGS_WITH_LOCATION: `${APIEndpoint}/bm/orgLocation`,
   ORG_DETAILS: projectId => `${APIEndpoint}/bm/orgLocation/${projectId}`,
   BM_PROJECT_MEMBERS: projectId => `${APIEndpoint}/bm/project/${projectId}/users`,
+  KNOWLEDGE_EVOLUTION: `${APIEndpoint}/student/knowledge-evolution`,
   BM_UPDATE_NAME_AND_UNIT: invtypeId => `${APIEndpoint}/bm/invtypes/material/${invtypeId}`,
   BM_ITEM_UPDATE_HISTORY: invtypeId => `${APIEndpoint}/bm/invtypes/${invtypeId}/history`,
 
