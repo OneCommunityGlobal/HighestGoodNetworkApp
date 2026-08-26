@@ -12,6 +12,13 @@ const minimumScheduleTime = () => {
   return localDate.toISOString().slice(0, 16);
 };
 
+const MAX_TAGS = 500;
+const PRIVACY_OPTIONS = [
+  { value: 'public', label: 'Public' },
+  { value: 'unlisted', label: 'Unlisted' },
+  { value: 'private', label: 'Private' },
+];
+
 function YoutubeAutoPoster({ platform }) {
   const [auth, setAuth] = useState(null);
   const [error, setError] = useState(() => {
@@ -22,6 +29,49 @@ function YoutubeAutoPoster({ platform }) {
   });
   const [uploading, setUploading] = useState(false);
   const [result, setResult] = useState(null);
+  const [tags, setTags] = useState([]);
+  const [tagDraft, setTagDraft] = useState('');
+  const [privacyStatus, setPrivacyStatus] = useState('public');
+
+  const addTag = rawValue => {
+    const normalized = rawValue.trim().replace(/^#+/, '');
+    if (!normalized) return;
+    if (tags.length >= MAX_TAGS) return;
+    if (tags.includes(normalized)) {
+      setTagDraft('');
+      return;
+    }
+    setTags(current => [...current, normalized]);
+    setTagDraft('');
+  };
+
+  const removeTag = value => {
+    setTags(current => current.filter(tag => tag !== value));
+  };
+
+  const commitDraft = event => {
+    event.preventDefault();
+    addTag(tagDraft);
+  };
+
+  const splitAndAddDraft = () => {
+    const pieces = tagDraft
+      .split(',')
+      .map(piece => piece.trim())
+      .filter(Boolean);
+    if (pieces.length === 0) return;
+    const remainingSlots = MAX_TAGS - tags.length;
+    const accepted = pieces.slice(0, remainingSlots);
+    if (accepted.length === 0) return;
+    setTags(current => {
+      const next = [...current];
+      for (const piece of accepted) {
+        if (!next.includes(piece)) next.push(piece);
+      }
+      return next;
+    });
+    setTagDraft('');
+  };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -61,6 +111,11 @@ function YoutubeAutoPoster({ platform }) {
     try {
       const form = event.currentTarget;
       const formData = new FormData(form);
+      if (tags.length > 0) {
+        formData.set('tags', tags.join(','));
+      } else {
+        formData.delete('tags');
+      }
       const scheduledAt = formData.get('scheduledAt');
 
       if (typeof scheduledAt === 'string' && scheduledAt) {
@@ -84,6 +139,8 @@ function YoutubeAutoPoster({ platform }) {
 
       setResult(await response.json());
       form.reset();
+      setTags([]);
+      setTagDraft('');
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : 'Upload failed');
     } finally {
@@ -92,8 +149,133 @@ function YoutubeAutoPoster({ platform }) {
   };
 
   return (
-    <main>
+    <main className={styles.youtubeAutoPoster}>
       <h1>YouTube Autoposter</h1>
+
+      {/* Video details */}
+      <section className={styles.card}>
+        <h4 className={styles.cardTitle}>Video details</h4>
+        <div className={styles.cardContent}>
+          <div className={styles.inputGroup}>
+            <label htmlFor="videoTitle" className={styles.inputLabel}>
+              Video Title <span className={styles.inputRequired}>*</span>
+            </label>
+            <input type="text" className={styles.inputField} />
+          </div>
+          <div className={styles.horizontal}>
+            <div className={styles.inputGroup}>
+              <label htmlFor="videoTitle" className={styles.inputLabel}>
+                Category <span className={styles.inputRequired}>*</span>
+              </label>
+              <input type="text" className={styles.inputField} />
+            </div>
+            <div className={styles.inputGroup}>
+              <label htmlFor="videoTitle" className={styles.inputLabel}>
+                Made for kids <span className={styles.inputRequired}>*</span>
+              </label>
+              <input type="text" className={styles.inputField} />
+            </div>
+          </div>
+          <div className={styles.inputGroup}>
+            <label htmlFor="videoTitle" className={styles.inputLabel}>
+              Description <span className={styles.inputOptional}>Optional</span>
+            </label>
+            <input type="text" className={styles.inputField} />
+          </div>
+        </div>
+      </section>
+
+      {/* Video upload */}
+      {/* <section className={styles.card}>
+        <h4 className={styles.cardTitle}>Video source</h4>
+      </section> */}
+
+      {/* Tags */}
+      <section className={styles.card}>
+        <div className={styles.tagsHead}>
+          <h4 className={styles.cardTitle}>
+            Tags <span className={styles.inputOptional}>Optional</span>
+          </h4>
+          <span className={styles.tagCount}>
+            {tags.length} / {MAX_TAGS}
+          </span>
+        </div>
+        <div className={styles.tagsWrap}>
+          {tags.map(tag => (
+            <span key={tag} className={styles.tagChip}>
+              <span className={styles.tagText}>#{tag}</span>
+              <button
+                type="button"
+                className={styles.tagRemove}
+                aria-label={`Remove tag ${tag}`}
+                onClick={() => removeTag(tag)}
+              >
+                ✕
+              </button>
+            </span>
+          ))}
+          <span className={styles.addTagChip}>
+            +
+            <input
+              type="text"
+              className={styles.addTagInput}
+              placeholder="add tag"
+              value={tagDraft}
+              onChange={event => {
+                const { value } = event.target;
+                if (value.includes(',')) {
+                  setTagDraft(value);
+                  splitAndAddDraft();
+                  return;
+                }
+                setTagDraft(value);
+              }}
+              onKeyDown={event => {
+                if (event.key === 'Enter' || event.key === ',') {
+                  commitDraft(event);
+                } else if (event.key === 'Backspace' && tagDraft === '' && tags.length > 0) {
+                  removeTag(tags[tags.length - 1]);
+                }
+              }}
+              onBlur={splitAndAddDraft}
+              disabled={tags.length >= MAX_TAGS}
+            />
+          </span>
+        </div>
+        <p className={styles.tagHint}>
+          Use commas or Enter to separate. Tags help YouTube recommend your video.
+        </p>
+      </section>
+
+      {/* Visibility */}
+      <section className={styles.card}>
+        <div className={styles.visibilityHead}>
+          <h4 id="visibility-title" className={styles.visibilityTitle}>
+            Visibility
+          </h4>
+          <span
+            className={`${styles.visibilityStatus} ${styles[`${privacyStatus}Status`]}`}
+            aria-live="polite"
+          >
+            {privacyStatus.toUpperCase()}
+          </span>
+        </div>
+        <div className={styles.visibilityOptions}>
+          {PRIVACY_OPTIONS.map(option => (
+            <label key={option.value} className={styles.visibilityChoice}>
+              <input
+                type="radio"
+                className={styles.visibilityInput}
+                name="visibilityPicker"
+                value={option.value}
+                checked={privacyStatus === option.value}
+                onChange={event => setPrivacyStatus(event.target.value)}
+              />
+              <span className={styles.visibilityOption}>{option.label}</span>
+            </label>
+          ))}
+        </div>
+      </section>
 
       <section>
         <h2>1. Connect YouTube</h2>
@@ -157,7 +339,11 @@ function YoutubeAutoPoster({ platform }) {
 
           <label>
             Privacy when publishing now
-            <select name="privacyStatus" defaultValue="private">
+            <select
+              name="privacyStatus"
+              value={privacyStatus}
+              onChange={event => setPrivacyStatus(event.target.value)}
+            >
               <option value="private">Private</option>
               <option value="unlisted">Unlisted</option>
               <option value="public">Public</option>
