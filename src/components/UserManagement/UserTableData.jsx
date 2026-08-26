@@ -222,7 +222,7 @@ const UserTableDataComponent = props => {
         title="Click to view user report"
       >
         <img
-          src="/report_icon.png"
+          src="/report_icon.webp"
           alt="reportsicon"
           className="team-member-tasks-user-report-link-image"
           id={`report-icon-${props.user._id}`}

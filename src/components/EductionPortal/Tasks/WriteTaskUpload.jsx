@@ -709,7 +709,7 @@ export default function WriteTaskUpload() {
         <section className={styles.chart}>
           <div className={`${styles.chartCard} ${darkMode ? styles.chartCardDark : ''}`}>
             <img
-              src="/upload_chart.png"
+              src="/upload_chart.webp"
               alt="Activity chart"
               className={styles.chartImg}
               draggable="false"

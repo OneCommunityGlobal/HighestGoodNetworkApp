@@ -616,7 +616,7 @@ function SetupProfileUserEntry({ token, userEmail }) {
           <Row>
             <Col md="3" className="text-md-right pb-3">
               <Image
-                src={userProfile.profilePicture || '/Portrait_Placeholder.png'}
+                src={userProfile.profilePicture || '/Portrait_Placeholder.webp'}
                 alt=""
                 id="profile-picture"
               />

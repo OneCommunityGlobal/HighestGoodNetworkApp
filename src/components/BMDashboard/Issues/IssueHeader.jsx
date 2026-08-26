@@ -54,7 +54,7 @@ export function IssueHeader(props) {
               {profilePic ? (
                 <img src={profilePic} alt={`${firstName}'s avatar`} />
               ) : (
-                <img src="/pfp-default-header.png" alt="Default avatar" />
+                <img src="/pfp-default-header.jpg" alt="Default avatar" />
               )}
               <ChevronDown size={20} color="#828282" />
             </div>

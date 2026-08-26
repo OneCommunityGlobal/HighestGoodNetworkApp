@@ -276,7 +276,7 @@ export function Header(props) {
               <NavItem>
                 <NavLink tag={Link} to={`/userprofile/${user.userid}`}>
                   <img
-                    src={`${profilePic || '/pfp-default-header.png'}`}
+                    src={`${profilePic || '/pfp-default-header.jpg'}`}
                     alt=""
                     style={{ maxWidth: '60px', maxHeight: '60px' }}
                     className="dashboardimg"

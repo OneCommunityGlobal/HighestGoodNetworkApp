@@ -1499,7 +1499,7 @@ setUpdatedTasks(prev => {
                   onClick={event => handleReportClick(event, userProfile._id)}
                 >
                   <img
-                    src="/report_icon.png"
+                    src="/report_icon.webp"
                     alt="reportsicon"
                     className={teamStyles["team-member-tasks-user-report-link-image"]}
                   />
@@ -1516,7 +1516,7 @@ setUpdatedTasks(prev => {
                   title={'Click to add user access to GitHub, Dropbox, Slack, and Sentry.'}
                 >
                   <img
-                    src="/HGN_Add_Access.png"
+                    src="/HGN_Add_Access.webp"
                     alt="Add Access"
                     style={{ width: '20px', height: '20px' }}
                   />

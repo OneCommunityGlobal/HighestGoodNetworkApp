@@ -247,7 +247,7 @@ export function Header(props) {
                 <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                   <img
                     alt=""
-                    src={`${profilePic || '/pfp-default-header.png'}`}
+                    src={`${profilePic || '/pfp-default-header.jpg'}`}
                     style={{ maxWidth: '60px', maxHeight: '60px' }}
                     className="dashboardimg"
                   />
@@ -389,7 +389,7 @@ export function Header(props) {
               <NavItem className={styles.hideInMobile}>
                 <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                   <img
-                    src={`${profilePic || '/pfp-default-header.png'}`}
+                    src={`${profilePic || '/pfp-default-header.jpg'}`}
                     alt=""
                     style={{ maxWidth: '60px', maxHeight: '60px' }}
                     className="dashboardimg"

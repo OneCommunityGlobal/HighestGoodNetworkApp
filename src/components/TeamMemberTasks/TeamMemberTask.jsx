@@ -110,7 +110,7 @@ const TeamMemberTask = React.memo(
           firstName,
           lastName,
           email,
-          profilePic: profilePic || '/pfp-default-header.png',
+          profilePic: profilePic || '/pfp-default-header.jpg',
         };
         sessionStorage.setItem('viewingUser', JSON.stringify(viewingUser));
         window.dispatchEvent(new Event('storage'));
@@ -470,7 +470,7 @@ const TeamMemberTask = React.memo(
                                     }}
                                   >
                                     <img
-                                      src="/report_icon.png"
+                                      src="/report_icon.webp"
                                       alt="reportsicon"
                                       style={{
                                         width: '22px',
