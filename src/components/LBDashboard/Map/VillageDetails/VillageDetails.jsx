@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { getVillageDetailsData } from '~/actions/lbdashboard/villageDetailsAction';
-import logo from '../../../../assets/images/logo2.png';
+import logo from '../../../../assets/images/logo2.webp';
 import styles from './VillageDetails.module.css';
 
 const NOT_FOUND_STYLE = { textAlign: 'center' };

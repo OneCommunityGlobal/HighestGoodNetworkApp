@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import { FaFacebook, FaInstagram, FaLinkedin } from 'react-icons/fa';
 import { Link, useParams } from 'react-router-dom';
-import companyLogo from '../../../assets/images/logo2.png';
+import companyLogo from '../../../assets/images/logo2.webp';
 import styles from './FollowUpEmailTemplate.module.css';
 
 function FollowUpEmailTemplate() {
