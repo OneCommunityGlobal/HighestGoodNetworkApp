@@ -47,7 +47,7 @@ import AddTool from './components/BMDashboard/Tools/AddTool';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
 import Issue from './components/BMDashboard/Issue/Issue';
 import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
-import IssueChart from './components/BMDashboard/Issues/issueCharts';
+import MaterialConsumption from './components/BMDashboard/WeeklyProjectSummary/MaterialConsumption/MaterialConsumption';
 import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
 import AnalyticsDashboard from './components/JobCCDashboard/JobAnalytics/JobAnalytics';
@@ -837,7 +837,8 @@ export default (
           component={InjurySeverityDashboard}
         />
         <BMProtectedRoute path="/bmdashboard/issues/add/:projectId" component={Issue} />
-        <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
+        {/* PR #4812 expects this URL to show the full three-card Material Consumption group. */}
+        <BMProtectedRoute path="/bmdashboard/issuechart" component={MaterialConsumption} />
         <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
         <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
         <BMProtectedRoute path="/bmdashboard/InteractiveMap" component={InteractiveMap} />

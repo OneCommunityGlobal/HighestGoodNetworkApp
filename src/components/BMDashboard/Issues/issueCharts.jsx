@@ -33,13 +33,26 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
     return base || str;
   };
 
+  const isValidIssueType = value => {
+    if (value == null) return false;
+
+    const normalized = String(value)
+      .trim()
+      .toLowerCase();
+    return normalized !== '' && normalized !== 'null' && normalized !== 'undefined';
+  };
+
+  const getValidIssueTypes = sourceIssues =>
+    Object.keys(sourceIssues || {}).filter(isValidIssueType);
+
   useEffect(() => {
     dispatch(fetchIssues());
   }, [dispatch]);
 
   useEffect(() => {
     if (issues && Object.keys(issues).length > 0) {
-      const allIssueTypes = Object.keys(issues);
+      // Sanitize backend issue-type keys once before they enter filters or chart labels.
+      const allIssueTypes = getValidIssueTypes(issues);
       const allYears = [
         ...new Set(
           Object.values(issues)
@@ -62,7 +75,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
   }, []);
 
   const extractDropdownOptions = () => {
-    const rawIssueTypes = [...new Set(Object.keys(issues || {}))];
+    const rawIssueTypes = [...new Set(getValidIssueTypes(issues))];
     const issueTypeGroups = rawIssueTypes.reduce((acc, name) => {
       const base = stripNumericSuffix(name);
       if (!acc[base]) acc[base] = [];
@@ -138,7 +151,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
   const handleSelectAll = field => {
     setFilters(prev => ({
       ...prev,
-      [field]: field === 'issueTypes' ? Object.keys(issues || {}) : uniqueYears,
+      [field]: field === 'issueTypes' ? getValidIssueTypes(issues) : uniqueYears,
     }));
   };
 
@@ -154,7 +167,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
 
     const getBase = name => stripNumericSuffix(name);
 
-    const issueTypeKeys = Object.keys(issues || {}).sort((a, b) => {
+    const issueTypeKeys = getValidIssueTypes(issues).sort((a, b) => {
       const aLower = String(a).toLowerCase();
       const bLower = String(b).toLowerCase();
       const aIsNull = aLower === 'null';
@@ -282,7 +295,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
       maintainAspectRatio: false,
       layout: {
         padding: {
-          bottom: isCardVariant ? 36 : 56,
+          bottom: isCardVariant ? 8 : 56,
         },
       },
       plugins: {
@@ -427,11 +440,13 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
         backgroundColor: darkMode ? '#22272e' : '#ffffff',
         borderColor: darkMode ? '#3d444d' : '#ccc',
         color: darkMode ? '#cfd7e3' : '#333',
-        minHeight: 48,
-        height: 'auto',
+        // Keep the select itself compact; extra selected chips scroll inside the value area.
+        minHeight: 42,
+        height: 42,
+        maxHeight: 42,
         alignItems: 'center',
-        paddingTop: 2,
-        paddingBottom: 2,
+        paddingTop: 0,
+        paddingBottom: 0,
         boxShadow: 'none',
         '&:hover': {
           borderColor: darkMode ? '#3d444d' : '#bbb',
@@ -440,13 +455,18 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
       valueContainer: provided => ({
         ...provided,
         display: 'flex',
-        paddingTop: 0,
-        paddingBottom: 0,
+        // Show roughly one chip row so filters do not push the chart far down the card.
+        height: 34,
+        maxHeight: 34,
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        paddingTop: 2,
+        paddingBottom: 2,
         paddingLeft: 10,
         paddingRight: 10,
         alignItems: 'center',
         flexWrap: 'wrap',
-        gap: 8,
+        gap: 4,
       }),
       input: provided => ({
         ...provided,
@@ -476,6 +496,8 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
       indicatorsContainer: provided => ({
         ...provided,
         alignItems: 'center',
+        alignSelf: 'stretch',
+        flexShrink: 0,
         paddingRight: 6,
       }),
       singleValue: provided => ({
@@ -484,12 +506,23 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
       }),
       multiValue: provided => ({
         ...provided,
-        margin: '4px 8px 4px 0',
+        margin: '1px 4px 1px 0',
         backgroundColor: darkMode ? '#3d444d' : '#e2e8f0',
+        maxWidth: '100%',
       }),
       multiValueLabel: provided => ({
         ...provided,
         color: darkMode ? '#cfd7e3' : '#333',
+        fontSize: 13,
+        lineHeight: 1.2,
+        whiteSpace: 'normal',
+      }),
+      multiValueRemove: provided => ({
+        ...provided,
+        alignItems: 'center',
+        display: 'flex',
+        paddingLeft: 4,
+        paddingRight: 4,
       }),
       option: (provided, state) => ({
         ...provided,
@@ -547,7 +580,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
   FilterMenuList.displayName = 'IssueChartFilterMenuList';
 
   const activeFilterSummary = useMemo(() => {
-    const issueTypeCount = filters.issueTypes.length || Object.keys(issues || {}).length;
+    const issueTypeCount = filters.issueTypes.length || getValidIssueTypes(issues).length;
     const yearList = filters.years.length ? filters.years : uniqueYears;
     const range =
       yearList.length > 0 ? `${Math.min(...yearList)}–${Math.max(...yearList)}` : 'No years';
@@ -571,7 +604,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
           className={`${styles.issueChartEventTitle} ${
             darkMode ? styles.issueChartEventTitleDark : ''
           }`}
-          style={isCardVariant ? { marginTop: 0, marginBottom: 16 } : {}}
+          style={isCardVariant ? { marginTop: 0, marginBottom: 8 } : {}}
         >
           Issue Chart
         </h2>
@@ -579,7 +612,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
 
       <div
         className={styles.selectContainer}
-        style={{ justifyContent: 'center', gap: '20px', flexWrap: 'wrap' }}
+        style={{ justifyContent: 'center', gap: '12px', rowGap: '12px', flexWrap: 'wrap' }}
       >
         <div style={{ minWidth: 200 }}>
           <label
@@ -655,29 +688,48 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
           className={`${styles.issueChartYearGroup} ${styles.issueTypeGroup} ${
             darkMode ? styles.issueChartYearGroupDark : ''
           }`}
-          style={{ marginTop: 24 }}
+          style={
+            isCardVariant
+              ? {
+                  display: 'flex',
+                  flex: '1 1 auto',
+                  flexDirection: 'column',
+                  marginTop: 10,
+                  minHeight: 0,
+                }
+              : { marginTop: 10 }
+          }
         >
           <div className={styles.activeFilterSummary}>{activeFilterSummary}</div>
 
           <div
             className={`${styles.chartWrapper} ${darkMode ? styles.chartWrapperDark : ''}`}
             style={{
-              height: isCardVariant ? '460px' : '520px',
-              maxHeight: isCardVariant ? '460px' : '520px',
+              // Card mode has compact filters, so give the Chart.js canvas more vertical room.
+              height: isCardVariant ? 'clamp(560px, 58vh, 720px)' : '520px',
+              maxHeight: isCardVariant ? 'none' : '520px',
+              display: 'flex',
+              flex: isCardVariant ? '1 1 auto' : undefined,
+              flexDirection: 'column',
+              minHeight: isCardVariant ? 0 : undefined,
               position: 'relative',
               overflow: 'hidden',
-              paddingBottom: 50,
+              paddingTop: 12,
+              paddingBottom: 2,
             }}
           >
-            <Bar
-              data={chartData}
-              options={chartOptions}
-              plugins={chartPlugins}
-              aria-labelledby="chart-title"
-            />
+            <div style={{ flex: '1 1 auto', minHeight: 0, position: 'relative' }}>
+              <Bar
+                data={chartData}
+                options={chartOptions}
+                plugins={chartPlugins}
+                aria-labelledby="chart-title"
+              />
+            </div>
             <p
               style={{
-                marginTop: 10,
+                marginBottom: 0,
+                marginTop: 0,
                 fontSize: 13,
                 opacity: 0.85,
                 textAlign: 'center',

@@ -6,14 +6,12 @@ import { v4 as uuidv4 } from 'uuid';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
-import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
 import ProjectRiskProfileOverview from './ProjectRiskProfileOverview';
 import IssuesBreakdownChart from './IssuesBreakdownChart';
 import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
 import CostBreakDown from './Financials/CostBreakDown/CostBreakDown';
-import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import IssueCharts from '../Issues/openIssueCharts';
 import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import LossTrackingLineChart from './Financials/LossTrackingLineCharts/LossTrackingLineChart';
@@ -21,6 +19,7 @@ import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
+import { MaterialConsumptionCards } from './MaterialConsumption/MaterialConsumption';
 
 import styles from './WeeklyProjectSummary.module.css';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
@@ -132,12 +131,6 @@ function renderFinancialCard(i) {
   return <div>📊 Card</div>;
 }
 
-function renderMaterialCard(idx, quantityOfMaterialsUsedData) {
-  if (idx === 1) return <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />;
-  if (idx === 2) return <TotalMaterialCostPerProject />;
-  return <p>📊 Card</p>;
-}
-
 function renderProjectStatusGrid() {
   return (
     <div className={styles.projectStatusGrid}>
@@ -168,14 +161,6 @@ function renderProjectStatusGrid() {
       ))}
     </div>
   );
-}
-
-function renderMaterialConsumptionCards(quantityOfMaterialsUsedData) {
-  return [0, 1, 2].map(idx => (
-    <div key={uuidv4()} className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-      {renderMaterialCard(idx, quantityOfMaterialsUsedData)}
-    </div>
-  ));
 }
 
 function renderLaborTrackingCard(i) {
@@ -274,7 +259,10 @@ function WeeklyProjectSummary() {
         title: 'Material Consumption',
         key: 'Material Consumption',
         className: 'large',
-        content: renderMaterialConsumptionCards(quantityOfMaterialsUsedData),
+        // Shared with /bmdashboard/issuechart so the PR-required three-card grouping stays in sync.
+        content: (
+          <MaterialConsumptionCards quantityOfMaterialsUsedData={quantityOfMaterialsUsedData} />
+        ),
       },
       {
         title: 'Issue Tracking',
