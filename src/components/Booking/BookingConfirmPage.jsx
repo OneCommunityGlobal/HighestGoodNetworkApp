@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { Container, Button, Card, CardBody } from 'reactstrap';
-import logo from '../../assets/images/logo2.png';
+import logo from '../../assets/images/logo2.webp';
 import styles from './booking.module.css';
 
 const STORAGE_KEY = 'bookingDraft_v1';

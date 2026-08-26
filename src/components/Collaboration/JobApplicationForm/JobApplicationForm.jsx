@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import PropTypes from 'prop-types';
 import { useLocation } from 'react-router-dom';
 import styles from './JobApplicationForm.module.css';
-import OneCommunityImage from '../../../assets/images/logo2.png';
+import OneCommunityImage from '../../../assets/images/logo2.webp';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import { useSelector } from 'react-redux';

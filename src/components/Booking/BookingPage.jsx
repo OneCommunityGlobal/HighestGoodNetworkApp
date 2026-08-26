@@ -4,7 +4,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Container, Row, Col, Button, Input, Label, Alert, Spinner } from 'reactstrap';
 import { FaComment, FaBell, FaUser } from 'react-icons/fa';
-import logo from '../../assets/images/logo2.png';
+import logo from '../../assets/images/logo2.webp';
 import styles from './booking.module.css';
 
 import DatePicker from 'react-datepicker';

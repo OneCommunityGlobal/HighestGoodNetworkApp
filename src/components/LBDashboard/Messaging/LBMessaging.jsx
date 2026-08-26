@@ -19,8 +19,8 @@ import {
   updateChatState,
   markMessagesAsReadViaSocket,
 } from '../../../utils/messagingSocket';
-import logo from '../../../assets/images/logo2.png';
 import Header from '../../Header/Header';
+import logo from '../../../assets/images/logo2.webp';
 
 export default function LBMessaging() {
   const dispatch = useDispatch();

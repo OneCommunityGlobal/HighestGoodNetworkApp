@@ -10,8 +10,8 @@ import {
   fetchListingById,
   resetBooking,
 } from '../../../actions/lbdashboard/listOverviewAction';
-import logo from '../../../assets/images/logo2.png';
-import mapIcon from '../../../assets/images/mapIcon.png';
+import logo from '../../../assets/images/logo2.webp';
+import mapIcon from '../../../assets/images/mapIcon.webp';
 
 const STOCK_IMAGE = 'https://www.caspianpolicy.org/no-image.png';
 const today = new Date().toISOString().split('T')[0];

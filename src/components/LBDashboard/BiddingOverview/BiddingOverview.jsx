@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './BiddingOverview.module.css';
 
-import logo from '../../../assets/images/logo2.png';
+import logo from '../../../assets/images/logo2.webp';
 
 function BiddingOverview() {
   const [rentingFrom, setRentingFrom] = useState('');

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ApiEndpoint } from '../../utils/URL';
 import { toast } from 'react-toastify';
-import OneCommunityImage from '../../assets/images/logo2.png';
+import OneCommunityImage from '../../assets/images/logo2.webp';
 import styles from './SuggestedJobsList.module.css';
 
 function SuggestedJobsList() {

@@ -5,8 +5,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import cn from 'classnames';
 import styles from './NotFoundPage.module.css';
-import NotFoundImage from '../../assets/images/404Image1.png';
-import NotFoundDarkImage from '../../assets/images/404ImageDarkMode1.png';
+import NotFoundImage from '../../assets/images/404Image1.webp';
+import NotFoundDarkImage from '../../assets/images/404ImageDarkMode1.webp';
 
 function NotFoundPage() {
   const darkMode = useSelector(state => state.theme.darkMode);

@@ -12,7 +12,7 @@ import {
   getDashboardDataAI,
   getCopiedDateOfPrompt,
 } from '../../actions/weeklySummariesAIPrompt';
-import iconNew from '../../assets/images/New-HGN-Icon-11kb-200x160px.png';
+import iconNew from '../../assets/images/New-HGN-Icon-11kb-200x160px.webp';
 
 function CurrentPromptModal(props) {
   const [modal, setModal] = useState(false);

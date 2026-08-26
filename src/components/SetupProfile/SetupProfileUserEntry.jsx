@@ -36,7 +36,7 @@ import DeleteHomeCountryModal from './deleteHomeCountryModal';
 import collaborationOptions from './collaborationSuggestionData';
 import 'react-phone-input-2/lib/style.css';
 import './SetupProfileUserEntry.module.css';
-import logo from '../../assets/images/logo.png';
+import logo from '../../assets/images/logo.webp';
 import TimeZoneDropDown from '../UserProfile/TimeZoneDropDown';
 
 function SetupProfileUserEntry({ token, userEmail }) {
