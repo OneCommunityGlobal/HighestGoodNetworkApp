@@ -18,6 +18,11 @@ import styles from './OrdersPage.module.css';
 
 const ORDERS_PER_PAGE = 5;
 
+// Maximum values allowed for order items.
+// These values should match the corresponding server-side validation.
+const MAX_QUANTITY = 10000;
+const MAX_UNIT_PRICE = 100000;
+
 /* -------------------------------------------------------------------------- */
 /*                                   MODAL                                    */
 /* -------------------------------------------------------------------------- */
@@ -133,6 +138,7 @@ const StatCard = ({ label, value, bgColor, icon }) => (
       <p className={styles.statLabel}>{label}</p>
       <p className={styles.statValue}>{value}</p>
     </div>
+
     <div className={styles.statIcon} style={{ '--stat-bg': bgColor }}>
       {icon}
     </div>
@@ -157,6 +163,7 @@ const OrderCard = ({ order, onStatusChange, darkMode }) => {
 
   const handleConfirm = () => {
     if (confirmTarget) onStatusChange(order._id, confirmTarget);
+
     setConfirmOpen(false);
     setConfirmTarget(null);
   };
@@ -207,7 +214,9 @@ const OrderCard = ({ order, onStatusChange, darkMode }) => {
   };
 
   const confirmLabel = confirmTarget ? `Mark as ${confirmTarget}` : '';
+
   const displayOrderId = order._id || 'N/A';
+
   const confirmMessage = confirmTarget
     ? `Mark order ${displayOrderId} as ${confirmTarget.toLowerCase()}?`
     : '';
@@ -225,6 +234,7 @@ const OrderCard = ({ order, onStatusChange, darkMode }) => {
             <span className={styles.orderId}>{displayOrderId}</span>
             <StatusBadge status={order.status} />
           </div>
+
           <span className={styles.orderTotal}>${Number(order.totalAmount || 0).toFixed(2)}</span>
         </div>
 
@@ -266,8 +276,10 @@ const OrderCard = ({ order, onStatusChange, darkMode }) => {
             <div key={item._id || item.itemName || index} className={styles.itemRow}>
               <div className={styles.itemInfo}>
                 <div className={styles.itemIcon}>✓</div>
+
                 <div>
                   <div className={styles.itemName}>{item.itemName || 'Unnamed item'}</div>
+
                   <div className={styles.itemQty}>
                     {item.quantity} × ${Number(item.pricePerItem || 0).toFixed(2)}
                   </div>
@@ -342,6 +354,7 @@ const OrderCard = ({ order, onStatusChange, darkMode }) => {
           <div className={styles.detailRow}>
             <div className={styles.detailSection}>
               <p className={styles.detailLabel}>Order Date</p>
+
               <p className={styles.detailValue}>
                 {order.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'N/A'}
               </p>
@@ -349,6 +362,7 @@ const OrderCard = ({ order, onStatusChange, darkMode }) => {
 
             <div className={styles.detailSection}>
               <p className={styles.detailLabel}>Expected Delivery</p>
+
               <p className={styles.detailValue}>
                 {order.expectedDeliveryDate
                   ? new Date(order.expectedDeliveryDate).toLocaleDateString()
@@ -359,6 +373,7 @@ const OrderCard = ({ order, onStatusChange, darkMode }) => {
             {order.actualDeliveryDate && (
               <div className={styles.detailSection}>
                 <p className={styles.detailLabel}>Delivered On</p>
+
                 <p className={styles.detailValue}>
                   {new Date(order.actualDeliveryDate).toLocaleDateString()}
                 </p>
@@ -397,6 +412,7 @@ const OrderCard = ({ order, onStatusChange, darkMode }) => {
                   <td colSpan="3" className={styles.detailTotalLabel}>
                     Order Total
                   </td>
+
                   <td className={styles.detailTotalValue}>
                     ${Number(order.totalAmount || 0).toFixed(2)}
                   </td>
@@ -478,6 +494,7 @@ const SupplierFormModal = ({
     setEmail(supplier?.email || '');
     setPhone(supplier?.phone || '');
     setWebsite(supplier?.websiteUrl || supplier?.website || supplier?.url || '');
+
     setSpecialties(Array.isArray(supplier?.specialities) ? supplier.specialities.join(', ') : '');
   }, [isOpen, supplier]);
 
@@ -510,6 +527,7 @@ const SupplierFormModal = ({
           <label className={styles.label} htmlFor="supplierName">
             Supplier Name <span className={styles.required}>*</span>
           </label>
+
           <input
             id="supplierName"
             type="text"
@@ -524,6 +542,7 @@ const SupplierFormModal = ({
           <label className={styles.label} htmlFor="supplierContact">
             Contact Person
           </label>
+
           <input
             id="supplierContact"
             type="text"
@@ -539,6 +558,7 @@ const SupplierFormModal = ({
             <label className={styles.label} htmlFor="supplierEmail">
               Email <span className={styles.required}>*</span>
             </label>
+
             <input
               id="supplierEmail"
               type="email"
@@ -553,6 +573,7 @@ const SupplierFormModal = ({
             <label className={styles.label} htmlFor="supplierPhone">
               Phone <span className={styles.required}>*</span>
             </label>
+
             <input
               id="supplierPhone"
               type="tel"
@@ -568,6 +589,7 @@ const SupplierFormModal = ({
           <label className={styles.label} htmlFor="supplierWebsite">
             Website
           </label>
+
           <input
             id="supplierWebsite"
             type="url"
@@ -582,6 +604,7 @@ const SupplierFormModal = ({
           <label className={styles.label} htmlFor="supplierSpecialties">
             Specialties
           </label>
+
           <input
             id="supplierSpecialties"
             type="text"
@@ -590,6 +613,7 @@ const SupplierFormModal = ({
             value={specialties}
             onChange={e => setSpecialties(e.target.value)}
           />
+
           <small>Separate multiple specialties with commas.</small>
         </div>
       </ModalBody>
@@ -598,6 +622,7 @@ const SupplierFormModal = ({
         <button type="button" className={styles.btnModalSecondary} onClick={onClose}>
           Cancel
         </button>
+
         <button type="button" className={styles.btnModalPrimary} onClick={handleSubmit}>
           <FiPlus size={15} />
           {submitLabel}
@@ -636,11 +661,19 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
   const [supplierId, setSupplierId] = useState('');
   const [orderDate, setOrderDate] = useState('');
   const [deliveryDate, setDeliveryDate] = useState('');
+
   const [items, setItems] = useState([
-    { id: 1, name: '', quantity: '', unit: 'lbs', unitPrice: '' },
+    {
+      id: 1,
+      name: '',
+      quantity: '',
+      unit: 'lbs',
+      unitPrice: '',
+    },
   ]);
 
   const getToday = () => new Date().toISOString().split('T')[0];
+
   const today = getToday();
 
   useEffect(() => {
@@ -648,7 +681,16 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
       setSupplierId('');
       setOrderDate(getToday());
       setDeliveryDate('');
-      setItems([{ id: crypto.randomUUID(), name: '', quantity: '', unit: 'lbs', unitPrice: '' }]);
+
+      setItems([
+        {
+          id: crypto.randomUUID(),
+          name: '',
+          quantity: '',
+          unit: 'lbs',
+          unitPrice: '',
+        },
+      ]);
     }
   }, [isOpen]);
 
@@ -662,7 +704,14 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
 
   const handleItemChange = (itemId, field, value) => {
     setItems(currentItems =>
-      currentItems.map(item => (item.id === itemId ? { ...item, [field]: value } : item)),
+      currentItems.map(item =>
+        item.id === itemId
+          ? {
+              ...item,
+              [field]: value,
+            }
+          : item,
+      ),
     );
   };
 
@@ -681,6 +730,7 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
 
   const removeItem = itemId => {
     if (items.length <= 1) return;
+
     setItems(currentItems => currentItems.filter(item => item.id !== itemId));
   };
 
@@ -700,25 +750,87 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
       return;
     }
 
-    const validItems = items.filter(
-      item => item.name.trim() && Number(item.quantity) >= 1 && Number(item.unitPrice) >= 0,
-    );
+    /*
+     * Validate every item instead of filtering invalid items out.
+     *
+     * This prevents an invalid row from silently disappearing from
+     * the submitted order.
+     */
+    for (let index = 0; index < items.length; index += 1) {
+      const item = items[index];
+      const itemNumber = index + 1;
 
-    if (validItems.length === 0) {
-      toast.error('Add at least one valid item.');
-      return;
+      if (!item.name.trim()) {
+        toast.error(`Please enter an item name for item ${itemNumber}.`);
+        return;
+      }
+
+      if (item.quantity === '') {
+        toast.error(`Please enter a quantity for item ${itemNumber}.`);
+        return;
+      }
+
+      if (item.unitPrice === '') {
+        toast.error(`Please enter a unit price for item ${itemNumber}.`);
+        return;
+      }
+
+      const quantity = Number(item.quantity);
+      const unitPrice = Number(item.unitPrice);
+
+      /*
+       * Quantity validation:
+       * - Must be a finite number
+       * - Must be a whole number
+       * - Must be at least 1
+       * - Must not exceed MAX_QUANTITY
+       */
+      if (
+        !Number.isFinite(quantity) ||
+        !Number.isInteger(quantity) ||
+        quantity < 1 ||
+        quantity > MAX_QUANTITY
+      ) {
+        toast.error(
+          `Quantity for item ${itemNumber} must be a whole number between 1 and ${MAX_QUANTITY}.`,
+        );
+        return;
+      }
+
+      /*
+       * Unit price validation:
+       * - Must be a finite number
+       * - Must not be negative
+       * - Must not exceed MAX_UNIT_PRICE
+       */
+      if (!Number.isFinite(unitPrice) || unitPrice < 0 || unitPrice > MAX_UNIT_PRICE) {
+        toast.error(`Unit price for item ${itemNumber} must be between $0 and $${MAX_UNIT_PRICE}.`);
+        return;
+      }
+
+      /*
+       * Limit unit price to two decimal places.
+       */
+      const decimalPlaces = item.unitPrice.includes('.') ? item.unitPrice.split('.')[1].length : 0;
+
+      if (decimalPlaces > 2) {
+        toast.error(`Unit price for item ${itemNumber} cannot have more than 2 decimal places.`);
+        return;
+      }
     }
+
+    const validItems = items.map(item => ({
+      itemName: item.name.trim(),
+      quantity: Number(item.quantity),
+      pricePerItem: Number(item.unitPrice),
+    }));
 
     onSubmit({
       supplierId,
       status: 'Pending',
       orderDate: new Date(`${orderDate}T00:00:00`).toISOString(),
       expectedDeliveryDate: new Date(`${deliveryDate}T00:00:00`).toISOString(),
-      items: validItems.map(item => ({
-        itemName: item.name.trim(),
-        quantity: Number(item.quantity),
-        pricePerItem: Number(item.unitPrice),
-      })),
+      items: validItems,
     });
   };
 
@@ -739,6 +851,7 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
             onChange={e => setSupplierId(e.target.value)}
           >
             <option value="">Select a supplier…</option>
+
             {supplierList.map(supplier => (
               <option key={supplier._id} value={supplier._id}>
                 {supplier.name}
@@ -758,6 +871,7 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
             <label className={styles.label} htmlFor="orderDate">
               Order Date <span className={styles.required}>*</span>
             </label>
+
             <input
               id="orderDate"
               type="date"
@@ -772,6 +886,7 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
             <label className={styles.label} htmlFor="deliveryDate">
               Expected Delivery <span className={styles.required}>*</span>
             </label>
+
             <input
               id="deliveryDate"
               type="date"
@@ -809,6 +924,7 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
               className={`${styles.input} ${styles.itemFormColSm}`}
               type="number"
               min="1"
+              max={MAX_QUANTITY}
               step="1"
               placeholder="Qty"
               value={item.quantity}
@@ -834,6 +950,7 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
               className={`${styles.input} ${styles.itemFormColSm}`}
               type="number"
               min="0"
+              max={MAX_UNIT_PRICE}
               step="0.01"
               placeholder="$0.00"
               value={item.unitPrice}
@@ -852,6 +969,11 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
           </div>
         ))}
 
+        <small>
+          Quantity must be between 1 and {MAX_QUANTITY.toLocaleString()}. Unit price must be between
+          $0 and ${MAX_UNIT_PRICE.toLocaleString()}.
+        </small>
+
         <button type="button" className={styles.addItemBtn} onClick={addItem}>
           + Add Item
         </button>
@@ -861,6 +983,7 @@ const NewOrderModal = ({ isOpen, onClose, onSubmit, suppliers: supplierList, dar
         <button type="button" className={styles.btnModalSecondary} onClick={onClose}>
           Cancel
         </button>
+
         <button type="button" className={styles.btnModalPrimary} onClick={handleSubmit}>
           Create Order
         </button>
@@ -908,7 +1031,8 @@ function OrdersPage() {
 
       setOrders(Array.isArray(orderRes.data) ? orderRes.data : []);
       setSupplierList(Array.isArray(supplierRes.data) ? supplierRes.data : []);
-    } catch {
+    } catch (error) {
+      console.error('Failed to load orders and suppliers:', error);
       toast.error('Failed to load orders.');
     } finally {
       setLoading(false);
@@ -924,7 +1048,14 @@ function OrdersPage() {
       await updateOrderStatus(orderId, newStatus);
 
       setOrders(prev =>
-        prev.map(order => (order._id === orderId ? { ...order, status: newStatus } : order)),
+        prev.map(order =>
+          order._id === orderId
+            ? {
+                ...order,
+                status: newStatus,
+              }
+            : order,
+        ),
       );
 
       toast.success(`Order marked as ${newStatus}.`);
@@ -946,6 +1077,7 @@ function OrdersPage() {
       setNewOrderOpen(false);
 
       setCurrentPage(1);
+
       await loadOrders();
     } catch {
       toast.error('Failed to create order.');
@@ -972,6 +1104,7 @@ function OrdersPage() {
       await updateSupplier(editingSupplier._id, supplierData);
 
       toast.success('Supplier updated successfully.');
+
       setEditSupplierOpen(false);
       setEditingSupplier(null);
 
@@ -1057,6 +1190,7 @@ function OrdersPage() {
   });
 
   const totalPages = Math.max(1, Math.ceil(sortedOrders.length / ORDERS_PER_PAGE));
+
   const safePage = Math.min(currentPage, totalPages);
 
   const paginatedOrders = sortedOrders.slice(
@@ -1172,9 +1306,18 @@ function OrdersPage() {
 
         <div className={styles.tabs}>
           {[
-            { id: 'purchase-orders', label: '📋 Purchase Orders' },
-            { id: 'suppliers', label: '🏢 Suppliers' },
-            { id: 'surplus', label: '↗️ Surplus Opportunities' },
+            {
+              id: 'purchase-orders',
+              label: '📋 Purchase Orders',
+            },
+            {
+              id: 'suppliers',
+              label: '🏢 Suppliers',
+            },
+            {
+              id: 'surplus',
+              label: '↗️ Surplus Opportunities',
+            },
           ].map(tab => (
             <button
               type="button"
@@ -1281,18 +1424,6 @@ function OrdersPage() {
                     avgDeliveryDisplay = `${avgDeliveryDays} ${unit}`;
                   }
 
-                  /*
-                   * IMPORTANT:
-                   * Use the count from the orders currently loaded instead of
-                   * relying only on supplier.totalOrders/orderCount.
-                   *
-                   * Therefore:
-                   * Supplier A = 2 existing orders
-                   * Create another order for Supplier A
-                   * -> loadOrders()
-                   * -> supplierOrderCounts[A] = 3
-                   * -> Total Orders immediately shows 3
-                   */
                   const backendTotalOrders = supplier.totalOrders ?? supplier.orderCount;
 
                   const calculatedTotalOrders = supplierOrderCounts[supplier._id] ?? 0;
@@ -1327,8 +1458,10 @@ function OrdersPage() {
                           <span className={styles.detailIcon} aria-hidden="true">
                             👤
                           </span>
+
                           <div>
                             <p className={styles.supplierDetailLabel}>Contact</p>
+
                             <p className={styles.supplierDetailValue}>
                               {supplier.contact || 'N/A'}
                             </p>
@@ -1339,8 +1472,10 @@ function OrdersPage() {
                           <span className={styles.detailIcon} aria-hidden="true">
                             ✉
                           </span>
+
                           <div>
                             <p className={styles.supplierDetailLabel}>Email</p>
+
                             <p className={styles.supplierDetailValue}>{supplier.email || 'N/A'}</p>
                           </div>
                         </div>
@@ -1349,8 +1484,10 @@ function OrdersPage() {
                           <span className={styles.detailIcon} aria-hidden="true">
                             ☎
                           </span>
+
                           <div>
                             <p className={styles.supplierDetailLabel}>Phone</p>
+
                             <p className={styles.supplierDetailValue}>{supplier.phone || 'N/A'}</p>
                           </div>
                         </div>
@@ -1361,8 +1498,10 @@ function OrdersPage() {
                           <span className={styles.supplierStatIcon} aria-hidden="true">
                             🚚
                           </span>
+
                           <div>
                             <p className={styles.supplierStatLabel}>Avg Delivery</p>
+
                             <p className={styles.supplierStatValue}>{avgDeliveryDisplay}</p>
                           </div>
                         </div>
@@ -1371,8 +1510,10 @@ function OrdersPage() {
                           <span className={styles.supplierStatIcon} aria-hidden="true">
                             📦
                           </span>
+
                           <div>
                             <p className={styles.supplierStatLabel}>Total Orders</p>
+
                             <p className={styles.supplierStatValue}>{totalOrders}</p>
                           </div>
                         </div>
