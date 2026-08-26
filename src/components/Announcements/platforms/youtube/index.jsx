@@ -18,6 +18,36 @@ const PRIVACY_OPTIONS = [
   { value: 'unlisted', label: 'Unlisted' },
   { value: 'private', label: 'Private' },
 ];
+const AUDIENCE_SETTINGS = [
+  {
+    key: 'notifySubscribers',
+    label: 'Notify subscribers',
+    description: 'Send a push to your subscribers when published.',
+    defaultValue: false,
+  },
+  {
+    key: 'embeddable',
+    label: 'Embeddable',
+    description: 'Allow other sites to embed your video.',
+    defaultValue: true,
+  },
+  {
+    key: 'publicStatsViewable',
+    label: 'Public stats viewable',
+    description: 'Show like / view counts publicly.',
+    defaultValue: true,
+  },
+  {
+    key: 'containsSyntheticMedia',
+    label: 'Contains synthetic media',
+    description: 'AI-generated or synthetic content.',
+    defaultValue: false,
+  },
+];
+
+const initialAudienceSettings = Object.fromEntries(
+  AUDIENCE_SETTINGS.map(setting => [setting.key, setting.defaultValue]),
+);
 
 function YoutubeAutoPoster({ platform }) {
   const [auth, setAuth] = useState(null);
@@ -32,6 +62,7 @@ function YoutubeAutoPoster({ platform }) {
   const [tags, setTags] = useState([]);
   const [tagDraft, setTagDraft] = useState('');
   const [privacyStatus, setPrivacyStatus] = useState('public');
+  const [audienceSettings, setAudienceSettings] = useState(initialAudienceSettings);
 
   const addTag = rawValue => {
     const normalized = rawValue.trim().replace(/^#+/, '');
@@ -274,6 +305,51 @@ function YoutubeAutoPoster({ platform }) {
               <span className={styles.visibilityOption}>{option.label}</span>
             </label>
           ))}
+        </div>
+      </section>
+
+      {/* Audience & Embed */}
+      <section
+        className={`${styles.card} ${styles.togglesCard}`}
+        aria-labelledby="audience-settings-title"
+      >
+        <h4 id="audience-settings-title" className={styles.togglesTitle}>
+          Audience &amp; embed
+        </h4>
+        <div className={styles.togglesList}>
+          {AUDIENCE_SETTINGS.map(setting => {
+            const descriptionId = `${setting.key}-description`;
+
+            return (
+              <div key={setting.key} className={styles.toggleRow}>
+                <div className={styles.toggleText}>
+                  <label htmlFor={setting.key} className={styles.toggleLabel}>
+                    {setting.label}
+                  </label>
+                  <p id={descriptionId} className={styles.toggleDescription}>
+                    {setting.description}
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  role="switch"
+                  className={styles.toggleInput}
+                  name={setting.key}
+                  checked={audienceSettings[setting.key]}
+                  aria-describedby={descriptionId}
+                  onChange={event =>
+                    setAudienceSettings(current => ({
+                      ...current,
+                      [setting.key]: event.target.checked,
+                    }))
+                  }
+                />
+                <span className={styles.toggleTrack} aria-hidden="true">
+                  <span className={styles.toggleKnob} />
+                </span>
+              </div>
+            );
+          })}
         </div>
       </section>
 

@@ -266,6 +266,114 @@
   outline-offset: 2px;
 }
 
+.togglesCard {
+  box-sizing: border-box;
+  padding: 1.25rem;
+  margin-top: 0.75rem;
+  border: 0;
+  border-radius: 16px;
+  font-family: Inter, sans-serif;
+}
+
+.togglesTitle {
+  margin: 0;
+  color: #1a1a1a;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.togglesList {
+  display: flex;
+  flex-direction: column;
+}
+
+.toggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.875rem;
+  padding: 0.875rem 0;
+  margin: 0;
+  color: #1a1a1a;
+  font-weight: 400;
+  border-bottom: 1px solid #e5e7eb;
+  cursor: pointer;
+}
+
+.toggleRow:last-child {
+  border-bottom: 0;
+}
+
+.toggleText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.toggleLabel {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.25;
+  margin-bottom: 0;
+}
+
+.toggleDescription {
+  color: #888;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  line-height: 1.35;
+  margin-bottom: 0;
+}
+
+.toggleInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.toggleTrack {
+  display: inline-flex;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  align-items: center;
+  width: 2.25rem;
+  height: 1.375rem;
+  padding: 0.1875rem;
+  background-color: #e5e7eb;
+  border-radius: 9999px;
+  transition: background-color 150ms ease;
+}
+
+.toggleKnob {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  background-color: #fff;
+  border-radius: 50%;
+  transition: transform 150ms ease;
+}
+
+.toggleInput:checked + .toggleTrack {
+  background-color: #f03;
+}
+
+.toggleInput:checked + .toggleTrack .toggleKnob {
+  transform: translateX(0.875rem);
+}
+
+.toggleInput:focus-visible + .toggleTrack {
+  outline: 3px solid rgb(255 0 51 / 28%);
+  outline-offset: 2px;
+}
+
+.toggleRow:hover .toggleTrack {
+  box-shadow: 0 0 0 2px rgb(255 0 51 / 10%);
+}
+
 @media (width >= 768px) {
   .visibilityChoice {
     flex: 1;
