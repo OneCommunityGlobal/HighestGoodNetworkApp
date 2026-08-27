@@ -110,6 +110,47 @@
   margin-bottom: 10px;
   box-sizing: border-box;
   width: calc(100vw - 45px);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.userManagementActions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.userManagementFilters {
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-wrap: nowrap;
+}
+
+.userManagementFilters input,
+.userManagementFilters select {
+  min-width: 0;
+}
+
+@media (width < 768px) {
+  .new_user_management {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .userManagementActions {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .userManagementFilters {
+    width: 100%;
+  }
+
+  .userManagementFilters select {
+    width: min(150px, 32vw);
+  }
 }
 
 .userManagementTable {
@@ -156,6 +197,13 @@
   overflow: hidden;
   vertical-align: middle;
   padding: 2px;
+}
+
+.mobileUserManagementRow,
+.mobileUserManagementRow input,
+.mobileUserManagementRow select,
+.mobileUserManagementRow button {
+  font-size: 10px;
 }
 
 .roleCell {
