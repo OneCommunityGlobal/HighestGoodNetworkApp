@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import styles from './YoutubeAutoPoster.module.css';
+import { ENDPOINTS } from '~/utils/URL';
 
 const readError = async response => {
   const body = await response.json().catch(() => null);
@@ -57,12 +58,16 @@ function YoutubeAutoPoster({ platform }) {
       ? 'YouTube authorization failed. Please try connecting again.'
       : '';
   });
+  const [videoFile, setVideoFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [result, setResult] = useState(null);
   const [tags, setTags] = useState([]);
   const [tagDraft, setTagDraft] = useState('');
   const [privacyStatus, setPrivacyStatus] = useState('public');
   const [audienceSettings, setAudienceSettings] = useState(initialAudienceSettings);
+
+  const [connected, setConnected] = useState(false);
+  const [checking, setChecking] = useState(true);
 
   const addTag = rawValue => {
     const normalized = rawValue.trim().replace(/^#+/, '');
@@ -85,8 +90,8 @@ function YoutubeAutoPoster({ platform }) {
     addTag(tagDraft);
   };
 
-  const splitAndAddDraft = () => {
-    const pieces = tagDraft
+  const splitAndAddDraft = (rawValue = tagDraft) => {
+    const pieces = rawValue
       .split(',')
       .map(piece => piece.trim())
       .filter(Boolean);
@@ -104,34 +109,111 @@ function YoutubeAutoPoster({ platform }) {
     setTagDraft('');
   };
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.has('youtube')) {
-      window.history.replaceState({}, '', window.location.pathname);
-    }
+  async function connectYouTube() {
+    const token = localStorage.getItem('token');
 
-    void fetch('/api/auth/status')
-      .then(async response => {
-        if (!response.ok) throw new Error(await readError(response));
-        return await response.json();
-      })
-      .then(setAuth)
-      .catch(requestError => {
-        setError(requestError instanceof Error ? requestError.message : 'Could not reach backend');
-      });
-  }, []);
+    const response = await fetch(ENDPOINTS.YOUTUBE_AUTOPOSTER_AUTH_URL, {
+      method: 'GET',
+      headers: {
+        Authorization: token,
+      },
+      credentials: 'include',
+    });
 
-  const disconnect = async () => {
-    setError('');
-    const response = await fetch('/api/auth/disconnect', { method: 'POST' });
+    const result = await response.json();
 
     if (!response.ok) {
-      setError(await readError(response));
-      return;
+      throw new Error(result.message || 'Unable to connect YouTube');
     }
 
-    setAuth(current => (current ? { ...current, connected: false } : current));
-  };
+    window.location.assign(result.authUrl);
+  }
+
+  async function getYouTubeConnectionStatus() {
+    const token = localStorage.getItem('token');
+
+    const response = await fetch(ENDPOINTS.YOUTUBE_AUTOPOSTER_STATUS_URL, {
+      method: 'GET',
+      headers: {
+        Authorization: token,
+      },
+      credentials: 'include',
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || 'Unable to check YouTube connection');
+    }
+
+    return result.connected;
+  }
+
+  async function uploadYouTubeVideo(videoFile, values) {
+    const token = localStorage.getItem('token');
+    const formData = new FormData();
+
+    formData.append('video', videoFile);
+    formData.append(
+      'metadata',
+      JSON.stringify({
+        title: values.title,
+        description: values.description || '',
+        categoryId: values.categoryId,
+        tags: values.tags || [],
+        privacyStatus: values.privacyStatus || 'private',
+        madeForKids: values.madeForKids,
+        notifySubscribers: values.notifySubscribers ?? false,
+        embeddable: values.embeddable ?? true,
+        publicStatsViewable: values.publicStatsViewable ?? true,
+        containsSyntheticMedia: values.containsSyntheticMedia ?? false,
+      }),
+    );
+
+    const response = await fetch(ENDPOINTS.YOUTUBE_AUTOPOSTER_UPLOAD_URL, {
+      method: 'POST',
+      headers: {
+        Authorization: token,
+      },
+      credentials: 'include',
+      body: formData,
+    });
+
+    const uploadResult = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      throw new Error(uploadResult?.message || 'YouTube upload failed');
+    }
+
+    return uploadResult;
+  }
+
+  useEffect(() => {
+    async function checkConnection() {
+      try {
+        const status = await getYouTubeConnectionStatus();
+        setConnected(status);
+      } catch (error) {
+        setConnected(false);
+      } finally {
+        setChecking(false);
+      }
+    }
+
+    checkConnection();
+  }, []);
+
+  // const disconnect = async () => {
+  //   setError('');
+  //   const response = await fetch('/api/auth/disconnect', { method: 'POST' });
+
+  //   if (!response.ok) {
+  //     setError(await readError(response));
+  //     return;
+  //   }
+
+  //   setAuth(current => (current ? { ...current, connected: false } : current));
+  // };
 
   const submitVideo = async event => {
     event.preventDefault();
@@ -142,36 +224,28 @@ function YoutubeAutoPoster({ platform }) {
     try {
       const form = event.currentTarget;
       const formData = new FormData(form);
-      if (tags.length > 0) {
-        formData.set('tags', tags.join(','));
-      } else {
-        formData.delete('tags');
-      }
-      const scheduledAt = formData.get('scheduledAt');
 
-      if (typeof scheduledAt === 'string' && scheduledAt) {
-        formData.set('scheduledAt', new Date(scheduledAt).toISOString());
+      if (!videoFile || videoFile.size === 0 || !videoFile.type.startsWith('video/')) {
+        throw new Error('Select a video file to upload');
       }
 
-      const response = await fetch('/api/videos', {
-        method: 'POST',
-        body: formData,
-      });
+      const values = {
+        title: formData.get('title'),
+        description: formData.get('description'),
+        categoryId: formData.get('categoryId'),
+        tags,
+        privacyStatus,
+        madeForKids: formData.get('madeForKids') === 'true',
+        ...audienceSettings,
+      };
 
-      if (!response.ok) {
-        const message = await readError(response);
-
-        if (response.status === 401 || response.status === 403) {
-          setAuth(current => (current ? { ...current, connected: false } : current));
-        }
-
-        throw new Error(message);
-      }
-
-      setResult(await response.json());
+      setResult(await uploadYouTubeVideo(videoFile, values));
       form.reset();
+      setVideoFile(null);
       setTags([]);
       setTagDraft('');
+      setPrivacyStatus('public');
+      setAudienceSettings(initialAudienceSettings);
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : 'Upload failed');
     } finally {
@@ -182,178 +256,242 @@ function YoutubeAutoPoster({ platform }) {
   return (
     <main className={styles.youtubeAutoPoster}>
       <h1>YouTube Autoposter</h1>
+      <button type="button" onClick={connectYouTube}>
+        click me
+      </button>
 
-      {/* Video details */}
-      <section className={styles.card}>
-        <h4 className={styles.cardTitle}>Video details</h4>
-        <div className={styles.cardContent}>
-          <div className={styles.inputGroup}>
-            <label htmlFor="videoTitle" className={styles.inputLabel}>
-              Video Title <span className={styles.inputRequired}>*</span>
-            </label>
-            <input type="text" className={styles.inputField} />
-          </div>
-          <div className={styles.horizontal}>
-            <div className={styles.inputGroup}>
-              <label htmlFor="videoTitle" className={styles.inputLabel}>
-                Category <span className={styles.inputRequired}>*</span>
-              </label>
-              <input type="text" className={styles.inputField} />
-            </div>
-            <div className={styles.inputGroup}>
-              <label htmlFor="videoTitle" className={styles.inputLabel}>
-                Made for kids <span className={styles.inputRequired}>*</span>
-              </label>
-              <input type="text" className={styles.inputField} />
-            </div>
-          </div>
-          <div className={styles.inputGroup}>
-            <label htmlFor="videoTitle" className={styles.inputLabel}>
-              Description <span className={styles.inputOptional}>Optional</span>
-            </label>
-            <input type="text" className={styles.inputField} />
-          </div>
-        </div>
-      </section>
+      {connected ? <p>YouTube account connected</p> : <p>not connected</p>}
 
-      {/* Video upload */}
-      {/* <section className={styles.card}>
-        <h4 className={styles.cardTitle}>Video source</h4>
-      </section> */}
-
-      {/* Tags */}
-      <section className={styles.card}>
-        <div className={styles.tagsHead}>
-          <h4 className={styles.cardTitle}>
-            Tags <span className={styles.inputOptional}>Optional</span>
-          </h4>
-          <span className={styles.tagCount}>
-            {tags.length} / {MAX_TAGS}
-          </span>
-        </div>
-        <div className={styles.tagsWrap}>
-          {tags.map(tag => (
-            <span key={tag} className={styles.tagChip}>
-              <span className={styles.tagText}>#{tag}</span>
-              <button
-                type="button"
-                className={styles.tagRemove}
-                aria-label={`Remove tag ${tag}`}
-                onClick={() => removeTag(tag)}
-              >
-                ✕
-              </button>
-            </span>
-          ))}
-          <span className={styles.addTagChip}>
-            +
-            <input
-              type="text"
-              className={styles.addTagInput}
-              placeholder="add tag"
-              value={tagDraft}
-              onChange={event => {
-                const { value } = event.target;
-                if (value.includes(',')) {
-                  setTagDraft(value);
-                  splitAndAddDraft();
-                  return;
-                }
-                setTagDraft(value);
-              }}
-              onKeyDown={event => {
-                if (event.key === 'Enter' || event.key === ',') {
-                  commitDraft(event);
-                } else if (event.key === 'Backspace' && tagDraft === '' && tags.length > 0) {
-                  removeTag(tags[tags.length - 1]);
-                }
-              }}
-              onBlur={splitAndAddDraft}
-              disabled={tags.length >= MAX_TAGS}
-            />
-          </span>
-        </div>
-        <p className={styles.tagHint}>
-          Use commas or Enter to separate. Tags help YouTube recommend your video.
-        </p>
-      </section>
-
-      {/* Visibility */}
-      <section className={styles.card}>
-        <div className={styles.visibilityHead}>
-          <h4 id="visibility-title" className={styles.visibilityTitle}>
-            Visibility
-          </h4>
-          <span
-            className={`${styles.visibilityStatus} ${styles[`${privacyStatus}Status`]}`}
-            aria-live="polite"
-          >
-            {privacyStatus.toUpperCase()}
-          </span>
-        </div>
-        <div className={styles.visibilityOptions}>
-          {PRIVACY_OPTIONS.map(option => (
-            <label key={option.value} className={styles.visibilityChoice}>
-              <input
-                type="radio"
-                className={styles.visibilityInput}
-                name="visibilityPicker"
-                value={option.value}
-                checked={privacyStatus === option.value}
-                onChange={event => setPrivacyStatus(event.target.value)}
-              />
-              <span className={styles.visibilityOption}>{option.label}</span>
-            </label>
-          ))}
-        </div>
-      </section>
-
-      {/* Audience & Embed */}
-      <section
-        className={`${styles.card} ${styles.togglesCard}`}
-        aria-labelledby="audience-settings-title"
+      <form
+        className={styles.form}
+        aria-label="YouTube video upload"
+        onSubmit={event => void submitVideo(event)}
       >
-        <h4 id="audience-settings-title" className={styles.togglesTitle}>
-          Audience &amp; embed
-        </h4>
-        <div className={styles.togglesList}>
-          {AUDIENCE_SETTINGS.map(setting => {
-            const descriptionId = `${setting.key}-description`;
-
-            return (
-              <div key={setting.key} className={styles.toggleRow}>
-                <div className={styles.toggleText}>
-                  <label htmlFor={setting.key} className={styles.toggleLabel}>
-                    {setting.label}
-                  </label>
-                  <p id={descriptionId} className={styles.toggleDescription}>
-                    {setting.description}
-                  </p>
-                </div>
+        {/* Video details */}
+        <section className={styles.card}>
+          <h4 className={styles.cardTitle}>Video details</h4>
+          <div className={styles.cardContent}>
+            <div className={styles.inputGroup}>
+              <label htmlFor="videoTitle" className={styles.inputLabel}>
+                Video Title <span className={styles.inputRequired}>*</span>
+              </label>
+              <input
+                id="videoTitle"
+                name="title"
+                type="text"
+                className={styles.inputField}
+                maxLength={100}
+                required
+              />
+            </div>
+            <div className={styles.horizontal}>
+              <div className={styles.inputGroup}>
+                <label htmlFor="categoryId" className={styles.inputLabel}>
+                  Category <span className={styles.inputRequired}>*</span>
+                </label>
                 <input
-                  type="checkbox"
-                  role="switch"
-                  className={styles.toggleInput}
-                  name={setting.key}
-                  checked={audienceSettings[setting.key]}
-                  aria-describedby={descriptionId}
-                  onChange={event =>
-                    setAudienceSettings(current => ({
-                      ...current,
-                      [setting.key]: event.target.checked,
-                    }))
-                  }
+                  id="categoryId"
+                  name="categoryId"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]+"
+                  className={styles.inputField}
+                  required
                 />
-                <span className={styles.toggleTrack} aria-hidden="true">
-                  <span className={styles.toggleKnob} />
-                </span>
               </div>
-            );
-          })}
-        </div>
-      </section>
+              <div className={styles.inputGroup}>
+                <label htmlFor="madeForKids" className={styles.inputLabel}>
+                  Made for kids <span className={styles.inputRequired}>*</span>
+                </label>
+                <select
+                  id="madeForKids"
+                  name="madeForKids"
+                  className={styles.inputField}
+                  defaultValue="false"
+                  required
+                >
+                  <option value="false">No</option>
+                  <option value="true">Yes</option>
+                </select>
+              </div>
+            </div>
+            <div className={styles.inputGroup}>
+              <label htmlFor="videoDescription" className={styles.inputLabel}>
+                Description <span className={styles.inputOptional}>Optional</span>
+              </label>
+              <input
+                id="videoDescription"
+                name="description"
+                type="text"
+                className={styles.inputField}
+                maxLength={5000}
+              />
+            </div>
+          </div>
+        </section>
 
-      <section>
+        {/* Video upload */}
+        <section className={styles.card}>
+          <h4 className={styles.cardTitle}>Video source</h4>
+          <input
+            type="file"
+            name="video"
+            accept="video/*"
+            aria-label="Video source"
+            onChange={event => setVideoFile(event.target.files?.[0] ?? null)}
+            required
+          />
+        </section>
+
+        {/* Tags */}
+        <section className={styles.card}>
+          <div className={styles.tagsHead}>
+            <h4 className={styles.cardTitle}>
+              Tags <span className={styles.inputOptional}>Optional</span>
+            </h4>
+            <span className={styles.tagCount}>
+              {tags.length} / {MAX_TAGS}
+            </span>
+          </div>
+          <div className={styles.tagsWrap}>
+            {tags.map(tag => (
+              <span key={tag} className={styles.tagChip}>
+                <span className={styles.tagText}>#{tag}</span>
+                <button
+                  type="button"
+                  className={styles.tagRemove}
+                  aria-label={`Remove tag ${tag}`}
+                  onClick={() => removeTag(tag)}
+                >
+                  ✕
+                </button>
+              </span>
+            ))}
+            <span className={styles.addTagChip}>
+              +
+              <input
+                type="text"
+                className={styles.addTagInput}
+                placeholder="add tag"
+                value={tagDraft}
+                onChange={event => {
+                  const { value } = event.target;
+                  if (value.includes(',')) {
+                    splitAndAddDraft(value);
+                    return;
+                  }
+                  setTagDraft(value);
+                }}
+                onKeyDown={event => {
+                  if (event.key === 'Enter' || event.key === ',') {
+                    commitDraft(event);
+                  } else if (event.key === 'Backspace' && tagDraft === '' && tags.length > 0) {
+                    removeTag(tags[tags.length - 1]);
+                  }
+                }}
+                onBlur={() => splitAndAddDraft()}
+                disabled={tags.length >= MAX_TAGS}
+              />
+            </span>
+          </div>
+          <p className={styles.tagHint}>
+            Use commas or Enter to separate. Tags help YouTube recommend your video.
+          </p>
+        </section>
+
+        {/* Visibility */}
+        <section className={styles.card}>
+          <div className={styles.visibilityHead}>
+            <h4 id="visibility-title" className={styles.visibilityTitle}>
+              Visibility
+            </h4>
+            <span
+              className={`${styles.visibilityStatus} ${styles[`${privacyStatus}Status`]}`}
+              aria-live="polite"
+            >
+              {privacyStatus.toUpperCase()}
+            </span>
+          </div>
+          <div className={styles.visibilityOptions}>
+            {PRIVACY_OPTIONS.map(option => (
+              <label key={option.value} className={styles.visibilityChoice}>
+                <input
+                  type="radio"
+                  className={styles.visibilityInput}
+                  name="visibilityPicker"
+                  value={option.value}
+                  checked={privacyStatus === option.value}
+                  onChange={event => setPrivacyStatus(event.target.value)}
+                />
+                <span className={styles.visibilityOption}>{option.label}</span>
+              </label>
+            ))}
+          </div>
+        </section>
+
+        {/* Audience & Embed */}
+        <section
+          className={`${styles.card} ${styles.togglesCard}`}
+          aria-labelledby="audience-settings-title"
+        >
+          <h4 id="audience-settings-title" className={styles.togglesTitle}>
+            Audience &amp; embed
+          </h4>
+          <div className={styles.togglesList}>
+            {AUDIENCE_SETTINGS.map(setting => {
+              const descriptionId = `${setting.key}-description`;
+
+              return (
+                <div key={setting.key} className={styles.toggleRow}>
+                  <div className={styles.toggleText}>
+                    <label htmlFor={setting.key} className={styles.toggleLabel}>
+                      {setting.label}
+                    </label>
+                    <p id={descriptionId} className={styles.toggleDescription}>
+                      {setting.description}
+                    </p>
+                  </div>
+                  <input
+                    id={setting.key}
+                    type="checkbox"
+                    role="switch"
+                    className={styles.toggleInput}
+                    name={setting.key}
+                    checked={audienceSettings[setting.key]}
+                    aria-describedby={descriptionId}
+                    onChange={event =>
+                      setAudienceSettings(current => ({
+                        ...current,
+                        [setting.key]: event.target.checked,
+                      }))
+                    }
+                  />
+                  <span className={styles.toggleTrack} aria-hidden="true">
+                    <span className={styles.toggleKnob} />
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <button type="submit" disabled={!connected || checking || uploading}>
+          {uploading ? 'Uploading…' : 'Upload'}
+        </button>
+      </form>
+
+      {error && <p role="alert">Error: {error}</p>}
+
+      {result?.video && (
+        <p>
+          Upload complete:{' '}
+          <a href={result.video.url} target="_blank" rel="noreferrer">
+            Open video on YouTube
+          </a>
+        </p>
+      )}
+
+      {/* <section>
         <h2>1. Connect YouTube</h2>
         {auth === null && <p>Checking connection…</p>}
         {auth && !auth.configured && (
@@ -453,7 +591,7 @@ function YoutubeAutoPoster({ platform }) {
           <p>Privacy: {result.privacyStatus}</p>
           {result.publishAt && <p>Scheduled for: {new Date(result.publishAt).toLocaleString()}</p>}
         </section>
-      )}
+      )} */}
     </main>
   );
 }
