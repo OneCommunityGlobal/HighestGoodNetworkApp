@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import {
   deleteWeeklyGradingReviewer,
@@ -13,10 +13,8 @@ import { UserRole } from '../../utils/enums';
 import PRGradingScreen from './PRGradingScreen';
 
 const ALLOWED_ROLES = [UserRole.Administrator, UserRole.Owner];
-
 const PST_TIMEZONE = 'America/Los_Angeles';
 
-// Get the current date components in PST
 const getPSTDate = () => {
   const now = new Date();
   const pst = new Intl.DateTimeFormat('en-CA', {
@@ -25,13 +23,12 @@ const getPSTDate = () => {
     month: '2-digit',
     day: '2-digit',
   }).format(now);
-  // en-CA gives YYYY-MM-DD
   return new Date(pst + 'T00:00:00');
 };
 
 const getSunday = (weeksAgo = 0) => {
   const today = getPSTDate();
-  const dayOfWeek = today.getDay(); // 0 = Sunday
+  const dayOfWeek = today.getDay();
   today.setDate(today.getDate() - dayOfWeek - weeksAgo * 7);
   return today.toISOString().split('T')[0];
 };
@@ -54,7 +51,7 @@ const formatShort = dateStr => {
 const buildWeekLabel = (baseLabel, weeksAgo) => {
   const sunday = getSunday(weeksAgo);
   const saturday = getSaturday(sunday);
-  return `${baseLabel} (${formatShort(sunday)} – ${formatShort(saturday)})`;
+  return `${baseLabel} (${formatShort(sunday)} - ${formatShort(saturday)})`;
 };
 
 const WEEK_OPTIONS = [
@@ -103,9 +100,7 @@ const transformApiResponse = (flatArray, teamName, weekStart) => ({
   })),
 });
 
-// Build bootstrap rows from config reviewerNames + sync prsNeeded data
 const bootstrapReviewers = (reviewerNames, syncTeamArray) => {
-  // Normalise keys for case-insensitive, trim-safe lookup
   const prsNeededMap = {};
   if (Array.isArray(syncTeamArray)) {
     syncTeamArray.forEach(entry => {
@@ -121,38 +116,56 @@ const bootstrapReviewers = (reviewerNames, syncTeamArray) => {
   }));
 };
 
+const buildDynamicRouteReviewers = config => {
+  const { reviewerCount = 0, reviewerNames } = config ?? {};
+  const names =
+    Array.isArray(reviewerNames) && reviewerNames.length > 0
+      ? reviewerNames
+      : Array.from({ length: reviewerCount }, (_, i) => `Reviewer ${i + 1}`);
+
+  return names.slice(0, reviewerCount).map(name => ({
+    id: uuidv4(),
+    reviewer: name,
+    prsNeeded: 7,
+    prsReviewed: 0,
+    gradedPrs: [],
+  }));
+};
+
 const PRGradingScreenContainer = () => {
   const dispatch = useDispatch();
   const location = useLocation();
+  const { teamId } = useParams();
   const userRole = useSelector(state => state.auth?.user?.role);
 
-  const initialTeamName = location.state?.teamName || 'Team 1';
+  const hasTeamIdParam = Boolean(teamId);
+  const configFromState = location.state?.config;
 
+  const initialTeamName = location.state?.teamName || 'Team 1';
   const [selectedTeamName, setSelectedTeamName] = useState(initialTeamName);
   const [selectedWeek, setSelectedWeek] = useState(WEEK_OPTIONS[0].value);
   const [teamOptions, setTeamOptions] = useState([]);
-  const [syncData, setSyncData] = useState(null); // { team1: [{name, prsNeeded}], team2: [...] }
+  const [syncData, setSyncData] = useState(null);
   const [teamData, setTeamData] = useState(null);
   const [reviewers, setReviewers] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEmpty, setIsEmpty] = useState(false);
-  const [saveStatus, setSaveStatus] = useState(null); // 'success' | 'error' | null
+  const [saveStatus, setSaveStatus] = useState(null);
 
-  // Role gate — only Owner and Administrator can access this page
   const isAuthorized = ALLOWED_ROLES.includes(userRole);
 
-  // Sync reviewers then load team config on mount
   useEffect(() => {
+    if (hasTeamIdParam) return;
+
     const loadTeams = async () => {
       try {
-        // Sync must complete before config fetch — it updates the config the fetch reads
         const syncResult = await dispatch(syncPRGradingReviewers());
         if (syncResult.success && syncResult.data) {
           setSyncData(syncResult.data);
         }
       } catch {
-        // Non-fatal — proceed without sync data
+        // Non-fatal
       }
       try {
         const result = await dispatch(fetchPRGradingConfig());
@@ -165,7 +178,7 @@ const PRGradingScreenContainer = () => {
       }
     };
     loadTeams();
-  }, [dispatch]);
+  }, [dispatch, hasTeamIdParam]);
 
   const loadGradingData = useCallback(
     async (name, weekStart, currentSyncData, currentTeamOptions) => {
@@ -183,22 +196,17 @@ const PRGradingScreenContainer = () => {
           return;
         }
         if (result.data.length === 0) {
-          // Bootstrap from config reviewerNames + sync prsNeeded data
           const teamConfig = currentTeamOptions?.find(t => t.teamName === name);
           const reviewerNames = teamConfig?.reviewerNames ?? [];
-
-          // Determine which sync team array to use based on team name
           const isTeam1 = name.toLowerCase().trim() === 'team 1';
           const syncTeamArray = currentSyncData
             ? isTeam1
               ? currentSyncData.team1
               : currentSyncData.team2
             : null;
-
           if (reviewerNames.length > 0) {
             setTeamData(buildTeamData(name, weekStart));
             setReviewers(bootstrapReviewers(reviewerNames, syncTeamArray));
-            // Not truly empty if we can bootstrap — show the table ready to be graded
             setIsEmpty(false);
           } else {
             setIsEmpty(true);
@@ -220,10 +228,33 @@ const PRGradingScreenContainer = () => {
   );
 
   useEffect(() => {
+    if (hasTeamIdParam) return;
     if (selectedTeamName) {
       loadGradingData(selectedTeamName, selectedWeek, syncData, teamOptions);
     }
-  }, [selectedTeamName, selectedWeek, loadGradingData, syncData, teamOptions]);
+  }, [selectedTeamName, selectedWeek, loadGradingData, syncData, teamOptions, hasTeamIdParam]);
+
+  useEffect(() => {
+    if (!hasTeamIdParam) return;
+
+    setError(null);
+    setIsEmpty(false);
+
+    if (configFromState) {
+      const cfgTeamName = configFromState.teamName;
+      const builtReviewers = buildDynamicRouteReviewers(configFromState);
+
+      setTeamData(buildTeamData(cfgTeamName, selectedWeek));
+      setReviewers(builtReviewers);
+      setSelectedTeamName(cfgTeamName);
+      setLoading(false);
+    } else {
+      setError(
+        'Static mock team IDs are not supported. Please contact an administrator to set up dynamic team routing.',
+      );
+      setLoading(false);
+    }
+  }, [hasTeamIdParam, configFromState, teamId, selectedWeek]);
 
   const handleTeamChange = name => setSelectedTeamName(name);
   const handleWeekChange = week => setSelectedWeek(week);
@@ -248,7 +279,6 @@ const PRGradingScreenContainer = () => {
         const result = await dispatch(saveWeeklyGrading(payload));
         if (result.success) {
           setSaveStatus('success');
-          // Refresh data from server after save
           await loadGradingData(selectedTeamName, selectedWeek, syncData, teamOptions);
         } else {
           setSaveStatus('error');
