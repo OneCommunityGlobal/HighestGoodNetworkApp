@@ -45,6 +45,31 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
   const getValidIssueTypes = sourceIssues =>
     Object.keys(sourceIssues || {}).filter(isValidIssueType);
 
+  // Wrap long desktop X-axis labels without inserting blank rows above single long words.
+  const wrapXAxisLabel = (label, maxCharsPerLine) => {
+    const words = String(label)
+      .split(/\s+/)
+      .filter(Boolean);
+    const lines = [];
+    let currentLine = '';
+
+    words.forEach(word => {
+      const nextLine = currentLine ? `${currentLine} ${word}` : word;
+
+      if (nextLine.length <= maxCharsPerLine) {
+        currentLine = nextLine;
+        return;
+      }
+
+      // Avoid blank first lines for long single-word labels like "Maintenance".
+      if (currentLine) lines.push(currentLine);
+      currentLine = word;
+    });
+
+    if (currentLine) lines.push(currentLine);
+    return lines;
+  };
+
   useEffect(() => {
     dispatch(fetchIssues());
   }, [dispatch]);
@@ -385,7 +410,9 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
             autoSkip: false,
             maxRotation: isMobile ? 90 : 0,
             minRotation: isMobile ? 90 : 0,
-            font: { size: 12, weight: '500' },
+            // Card-mode desktop labels have less width, so only those X-axis ticks use smaller text.
+            // Use 8px only for desktop card-mode X-axis ticks so crowded labels fit the narrow card.
+            font: { size: isCardVariant && !isMobile ? 8 : 12, weight: '500' },
             callback: (value, index, ticks) => {
               const label = chartData?.labels?.[index] ?? ticks?.[index]?.label ?? String(value);
               if (isMobile) return label;
@@ -393,21 +420,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
               const maxCharsPerLine = 10;
               if (label.length <= maxCharsPerLine) return label;
 
-              const words = label.split(' ');
-              const lines = [];
-              let currentLine = '';
-
-              words.forEach(word => {
-                if ((currentLine + ' ' + word).trim().length <= maxCharsPerLine) {
-                  currentLine = (currentLine + ' ' + word).trim();
-                } else {
-                  lines.push(currentLine);
-                  currentLine = word;
-                }
-              });
-
-              if (currentLine) lines.push(currentLine);
-              return lines;
+              return wrapXAxisLabel(label, maxCharsPerLine);
             },
           },
           border: {
