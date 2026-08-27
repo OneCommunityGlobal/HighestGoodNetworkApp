@@ -337,17 +337,17 @@ class UserManagement extends React.PureComponent {
     timeOffRequests,
     darkMode,
   ) => {
-    this.setState({
+    this.setState(prevState => ({
       userTableItems: this.userTableElements(
         userProfiles,
         rolesPermissions,
         timeOffRequests,
         darkMode,
-        this.state.isMobile,
-        this.state.mobileFontSize,
+        prevState.isMobile,
+        prevState.mobileFontSize,
       ),
       isFilteringTable: false,
-    });
+    }));
   };
 
   filteredUserList = (userProfiles) => {
