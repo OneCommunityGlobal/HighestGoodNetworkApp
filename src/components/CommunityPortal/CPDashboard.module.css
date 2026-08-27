@@ -6,12 +6,6 @@
   padding: 0;
 }
 
-/* In dark mode the page body is darkened (class toggled from the component) so
-   the area around the dashboard matches the app's dark theme instead of white. */
-:global(body.dark-mode-body) {
-  background: #1b2a41;
-}
-
 .dashboardContainer {
   padding: 40px 10px;
   margin: 0 auto;
@@ -27,15 +21,13 @@
 .darkContainer {
   background: #2b3e59 !important;
   color: #fff;
-  border-radius: 0;
-  box-shadow: none;
 }
 
 .dashboardHeader {
   display: flex;
   align-items: center;
-  justify-content: flex-start; 
-  gap: 20px;                   
+  justify-content: flex-start;
+  gap: 20px;
   margin-bottom: 30px;
   padding: 16px 24px;
   background: linear-gradient(120deg, #fff, #f8f9fa);
@@ -44,18 +36,18 @@
   flex-wrap: nowrap;
 }
 
-.darkHeader{
-  background: #1b2a41;
-  color: #fff;
-}
-
 .dashboardHeader h1 {
   margin: 0;
   font-size: 2.5rem;
   font-weight: bold;
   color: #2c3e50;
-  white-space: nowrap; 
+  white-space: nowrap;
   flex-shrink: 0;
+}
+
+.darkHeader {
+  background: #1b2a41;
+  color: #fff;
 }
 
 .dashboardControls {
@@ -64,7 +56,6 @@
   gap: 15px;
 }
 
-/* pill input */
 .dashboardSearchInput {
   width: 100%;
   border-radius: 999px;
@@ -73,41 +64,37 @@
   box-sizing: border-box;
 }
 
-/* clear X button */
 .dashboardClearBtn {
-  position: absolute;
-  right: 35px;
-  top: 45%;
-  transform: translateY(-50%);
   border: none;
   background: transparent;
   cursor: pointer;
   font-size: 0.9rem;
   color: #1b3c55;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
 }
 
-/* search icon button inside the bar */
 .dashboardSearchIconBtn {
-  position: absolute;
-  right: 1%;
-  top: 48%;
-  transform: translateY(-50%);
   width: 34px;
   height: 34px;
   border-radius: 50%;
   cursor: pointer;
   background: transparent;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #1b3c55;
   font-size: 0.9rem;
+  padding: 0;
 }
 
 .cp_dashboard_header {
   display: flex;
   align-items: center;
-  justify-content: space-between; 
+  justify-content: space-between;
   gap: 24px;
   padding: 16px 24px;
   margin-bottom: 30px;
@@ -127,12 +114,7 @@
   overflow: hidden;
   border: 2px solid #1b3c55;
   background: #fff;
-}
-
-.darkHeader .dashboardSearchContainer {   /* white when NOT focused */
   outline: none;
-  border-color: #fff;
-  background: #1b2a41;
 }
 
 .dashboardSearchContainer {
@@ -148,12 +130,15 @@
   margin-top: 8px;
 }
 
-.dashboardSearchContainer input {
+.dashboardSearchContainer input,
+.dashboardSearchContainer textarea {
   outline: none;
 }
 
 .dashboardSearchContainer input:focus,
-.dashboardSearchContainer input:focus-visible {
+.dashboardSearchContainer input:focus-visible,
+.dashboardSearchContainer textarea:focus,
+.dashboardSearchContainer textarea:focus-visible {
   outline: none;
   box-shadow: none;
 }
@@ -161,6 +146,11 @@
 .dashboardSearchContainer:focus,
 .dashboardSearchContainer:focus-visible {
   outline: none;
+}
+
+.darkHeader .dashboardSearchContainer {
+  border-color: #fff;
+  background: #1b2a41;
 }
 
 .dashboardSearchContainer:focus-within {
@@ -180,11 +170,11 @@
   background: transparent;
   font-size: 1rem;
   line-height: 1.5;
-  padding: 10px 96px 10px 18px;
-  min-height: 36px;
+  padding: 8px 96px 8px 18px;
+  min-height: 32px;
   max-height: 120px;
   box-sizing: border-box;
-  overflow: hidden auto;      /* ✅ Brave-like wrapping */      /* ✅ prevents overflow */
+  overflow: hidden auto;
   white-space: pre-wrap;
   overflow-wrap: break-word;
   word-break: normal;
@@ -197,7 +187,6 @@
 .darkHeader .dashboardSearchTextarea::placeholder {
   color: #cbd5e1;
 }
-
 
 @media (width <= 850px) {
   .dashboardSearchContainer {
@@ -232,12 +221,6 @@
   border-color: #4da3ff;
 }
 
-.dashboardSearchContainer,
-.dashboardSearchContainer:focus,
-.dashboardSearchContainer:focus-visible {
-  outline: none;
-}
-
 .darkSearchTextarea {
   color: #fff;
 }
@@ -265,42 +248,12 @@
 }
 
 .darkSidebar {
-  background: #1b2a41;
-}
-
-.darkSidebar .filterItem input:not([type='checkbox'], [type='radio']),
-.darkSidebar .filterItem select {
-  background-color: #34495e;
-  color: #fff;
-  border: 1px solid #4a6572;
-}
-
-.darkSidebar .filterItem label {
-  background: transparent;
-  color: #ecf0f1;
-}
-
-.darkSidebar input[type="date"] {
-  color-scheme: dark;
-}
-
-.darkSidebar .inputGroup {
-  background-color: #34495e;
-  border-color: #4da3ff;
-}
-
-.darkSidebar .inputGroup input {
-  color: #fff;
-}
-
-.darkSidebar .inputGroup input::placeholder {
-  color: #cbd5e1;
-}
-
-.darkSidebar .inputGroupText {
   background: #2b3e59;
   border-right: 1px solid #1b2a41;
-  color: #cbd5e1;
+}
+
+.filterSection {
+  width: 100%;
 }
 
 .filterSection h4 {
@@ -309,18 +262,25 @@
   font-weight: 600;
 }
 
+.filterSectionHeader {
+  margin-bottom: 40px;
+}
+
 .filterSectionDivider {
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
-.filterSectionHeader{
-  margin-bottom: 40px;
-}
-
 .filterItem {
   margin-bottom: 0;
+}
+
+.filterItem label {
+  display: block;
+  font-weight: 600;
+  color: #34495e;
+  margin-bottom: 8px;
 }
 
 .filterOptionsVertical {
@@ -329,13 +289,6 @@
   align-items: flex-start;
   gap: 8px;
   margin-top: 10px;
-}
-
-.filterItem label {
-  display: block;
-  font-weight: 600;
-  color: #34495e;
-  margin-bottom: 8px;
 }
 
 .filterItem input:not([type='checkbox'], [type='radio'], [type='date']),
@@ -351,41 +304,6 @@
   transition: all 0.3s ease;
 }
 
-.radioRow {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: 10px;
-  align-items: center;
-}
-
-.radioOption,
-.checkboxOption {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin: 0;
-  cursor: pointer;
-  font-weight: 500;
-  background: transparent !important;
-}
-
-.radioOption input[type='radio'],
-.checkboxOption input[type='checkbox'] {
-  margin: 0;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.filterItem input[type='radio'],
-.filterItem input[type='checkbox'] {
-  display: inline-block; /* <– keeps input on same line as text */
-  width: auto;
-  padding: 0;
-  margin: 0;
-  vertical-align: middle;
-}
-
 .filterItem input:focus,
 .filterItem select:focus {
   border-color: #2c3e50;
@@ -393,45 +311,76 @@
   outline: none;
 }
 
+.radioRow {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+  padding: 0;
+}
+
+.radioColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .radioGroup {
-  margin-right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
 }
 
-.radioInput {
-  margin-right: 6px;
-}
-
-.radioLabel {
+.radioLabel,
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-weight: 400;
   margin-bottom: 0;
+  color: #34495e;
+}
+
+.filterItem input[type='radio'],
+.filterItem input[type='checkbox'],
+.radioInput,
+.checkboxInput {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+  accent-color: #1b3c55;
+  flex-shrink: 0;
   vertical-align: middle;
 }
 
-.filterItem input:not([type="checkbox"], [type="radio"]),
-.filterItem select {
-  padding: 12px 15px;
-  margin-top: 10px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  width: 100%;
-  font-size: 1rem;
-  background: #fff;
-  transition: all 0.3s ease;
+.darkSidebar .filterItem label,
+.darkSidebar .radioLabel,
+.darkSidebar .checkboxLabel {
+  color: #ecf0f1;
 }
 
-/* Render a single dropdown chevron: hide the browser's native arrow and draw
-   one custom chevron so the selects don't show a doubled-up arrow. */
-.filterItem select {
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232c3e50' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 16px;
-  padding-right: 36px;
+.darkSidebar .radioInput,
+.darkSidebar .filterItem input[type='checkbox'] {
+  accent-color: #4da3ff;
 }
 
-/* In the dark sidebar the select text is white, so use a white chevron. */
+.darkSidebar .inputGroup input {
+  color: #fff;
+}
+
+.darkSidebar .filterItem input:not([type='checkbox'], [type='radio'], [type='date']),
 .darkSidebar .filterItem select {
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-color: #34495e;
+  color: #fff;
+  border: 1px solid #4a6572;
+}
+
+.darkSidebar input[type='date'] {
+  color-scheme: dark;
 }
 
 .dateFilter {
@@ -464,7 +413,6 @@
   margin-bottom: 1.5rem;
 }
 
-/* Search Input Container */
 .inputGroup {
   display: flex;
   align-items: center;
@@ -484,6 +432,19 @@
   font-size: 1.1rem;
 }
 
+.darkSidebar .inputGroup {
+  background-color: #34495e;
+  border-color: #4da3ff;
+}
+
+.darkSidebar .inputGroup input::placeholder {
+  color: #cbd5e1;
+}
+
+.darkSidebar .inputGroupText {
+  color: #cbd5e1;
+}
+
 .dashboardMain {
   width: 65%;
   padding: 30px;
@@ -494,11 +455,17 @@
   background: #2b3e59;
 }
 
+.darkMain .sectionTitle {
+  color: #f5f6f7;
+}
+
 .eventsHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 30px;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .sectionTitle {
@@ -529,7 +496,7 @@
   margin-bottom: 30px;
 }
 
-.clearDateFilterBtn{
+.clearDateFilterBtn {
   margin-top: 10px;
 }
 
@@ -538,19 +505,17 @@
   margin-bottom: 1.5rem;
 }
 
-.eventCard:hover {
-  transform: scale(1.02);
-  box-shadow: 0 8px 20px rgb(0 0 0 / 20%);
-}
-
-.eventCardImgContainer img {
+.eventCardLink {
   width: 100%;
-  height: auto;
+  display: flex;
+  text-decoration: none;
+  color: inherit;
 }
 
 .eventCard {
   width: 100%;
   height: 100%;
+  min-height: 100%;
   box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
   display: flex;
   flex-direction: column;
@@ -558,12 +523,52 @@
   overflow: hidden;
   border: none;
   background: #fff;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   position: relative;
+}
+
+.eventCard:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 20%);
+}
+
+.eventTitle::after {
+  content: attr(data-event-title);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  z-index: 2;
+  max-width: min(280px, calc(100vw - 48px));
+  padding: 6px 10px;
+  color: #fff;
+  font-size: 0.9rem;
+  line-height: 1.3;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: break-word;
+  background-color: #000;
+  border-radius: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -4px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.eventTitle:hover::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
 }
 
 .darkEventCard {
   background: #1b2a41;
+}
+
+.darkEventCard .eventTitle {
+  color: #f5f6f7;
 }
 
 .eventCardImgContainer {
@@ -571,6 +576,12 @@
   overflow: hidden;
   background-color: #f0f0f0;
   position: relative;
+  flex-shrink: 0;
+}
+
+.eventCardImgContainer img {
+  width: 100%;
+  height: auto;
 }
 
 .eventCardImg {
@@ -587,16 +598,22 @@
 }
 
 .eventTitle {
+  position: relative;
   text-align: center;
   color: #2c3e50;
   margin: 0 0 15px;
   font-weight: bold;
   font-size: 1.3rem;
   line-height: 1.4;
+  overflow: visible;
+  cursor: default;
+}
+
+.eventTitleText {
+  display: block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  cursor: default;
 }
 
 .eventDate,
@@ -642,17 +659,19 @@
 .noEvents {
   text-align: center;
   padding: 40px;
-  color: #595959; /* darker gray to meet AA contrast on the white background */
+  color: #888;
   font-size: 1.2rem;
+  width: 100%;
 }
 
 .darkMain .noEvents {
-  color: #e4e6eb; /* lighter gray to meet AA contrast on the dark background */
+  color: #9ca3af;
 }
 
 .dashboardActions {
   text-align: center;
-  margin-top: 30px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .dashboardActions button {
@@ -677,6 +696,11 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
+}
+
+.paginationInfo {
+  font-weight: 500;
 }
 
 .paginationBtn {
@@ -685,24 +709,31 @@
   color: #fff !important;
 }
 
-/* Hide browser's built-in clear icon for search inputs */
+.paginationBtn:disabled {
+  opacity: 0.65;
+}
+
+.paginationBtn:hover:not(:disabled) {
+  background-color: #5a6268 !important;
+  border-color: #545b62 !important;
+}
 
 .filterActions {
   display: flex;
-  flex-direction: row; 
+  flex-direction: row;
   gap: 10px;
   margin-top: 20px;
   padding-top: 15px;
-  width: 100%; 
+  width: 100%;
 }
 
 .applyBtn {
   flex: 1;
-  background-color: #198754 !important; /* darker success green: white text meets AA contrast */
+  background-color: #1e8449 !important;
   border: none;
   color: white;
-  padding: 10px 5px; 
-  font-size: 0.9rem; 
+  padding: 10px 5px;
+  font-size: 0.9rem;
   font-weight: 600;
   border-radius: 8px;
   cursor: pointer;
@@ -710,16 +741,16 @@
 }
 
 .applyBtn:hover {
-  background-color: #146c43 !important;
+  background-color: #156b3a !important;
   box-shadow: 0 4px 8px rgb(39 174 96 / 30%);
 }
 
 .clearBtn {
   flex: 1;
-  background-color: #6c757d !important; /* darker secondary gray: white text meets AA contrast */
+  background-color: #6c757d !important;
   border: none;
   color: white;
-  padding: 10px 5px; 
+  padding: 10px 5px;
   font-size: 0.9rem;
   font-weight: 600;
   border-radius: 8px;
@@ -728,12 +759,119 @@
 }
 
 .clearBtn:hover {
-  background-color: #565e64 !important;
+  background-color: #7f8c8d !important;
   box-shadow: 0 4px 8px rgb(149 165 166 / 30%);
 }
 
 .darkSidebar .filterActions {
   border-top-color: #3a4e6a;
+}
+
+/* Recent Search Dropdown */
+.recentSearchDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  margin-top: 4px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.darkRecentSearchDropdown {
+  background: #1b2a41;
+  border-color: #4a6572;
+}
+
+.recentSearchHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #eee;
+}
+
+.darkRecentSearchDropdown .recentSearchHeader {
+  color: #9ca3af;
+  border-bottom-color: #3a4e6a;
+}
+
+.recentIcon {
+  color: #888;
+  font-size: 0.7rem;
+}
+
+.recentIconDark {
+  color: #9ca3af;
+  font-size: 0.7rem;
+}
+
+.recentSearchItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.recentSearchTerm {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #34495e;
+  text-align: left;
+  transition: background-color 0.15s ease;
+}
+
+.recentSearchTerm:hover {
+  background: #f5f5f5;
+}
+
+.darkRecentSearchTerm {
+  color: #ecf0f1;
+}
+
+.darkRecentSearchTerm:hover {
+  background: #2b3e59;
+}
+
+.recentSearchRemove {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 4px 8px;
+  color: #999;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease;
+}
+
+.recentSearchRemove:hover {
+  color: #e74c3c;
+}
+
+.darkRecentSearchRemove {
+  color: #7f8c8d;
+}
+
+.darkRecentSearchRemove:hover {
+  color: #e74c3c;
 }
 
 @media (width <= 768px) {
@@ -744,13 +882,26 @@
   .cp_dashboard_search_container {
     width: 100%;
   }
-}
 
-.paginationBtn:disabled {
-  opacity: 0.65;
-}
+  .centeredRow {
+    padding: 15px;
+  }
 
-.paginationBtn:hover:not(:disabled) {
-  background-color: #5a6268 !important;
-  border-color: #545b62 !important;
+  .dashboardMain {
+    width: 100%;
+    padding: 20px 10px;
+  }
+
+  .dashboardSidebar {
+    margin-bottom: 20px;
+  }
+
+  .eventsHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .filterActions {
+    flex-direction: column;
+  }
 }

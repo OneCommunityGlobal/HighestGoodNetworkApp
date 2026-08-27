@@ -415,7 +415,7 @@ const Projects = function(props) {
         </div>
         <div>
         <table className={`table table-bordered table-responsive-sm ${styles.projectsTable}`}>
-          <thead>
+          <thead className={styles.projectsTableHead}>
             <ProjectTableHeader
               onChange={onChangeCategory}
               selectedValue={categorySelectedForSort}

@@ -6,36 +6,51 @@
 
 .itemsListContainer {
   width: 100%;
-  max-width: 1536px;
-  margin: 1rem auto;
+  margin: 0 auto;
   padding: 0 1rem;
-}
-
-.itemsListContainer section {
-  margin-top: 2rem;
+  min-height: 100vh;
+  background-color: #fff;
+  color: #1f2937;
 }
 
 .itemsTableContainer {
+  position: relative;
   overflow: auto;
   max-height: 600px;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
+  background-color: #fff;
 }
 
-.itemsListContainer table {
+.itemsTableContainer table {
+  background-color: #fff;
+  color: #1f2937;
+  margin-bottom: 0;
+}
+
+.itemsTableContainer table tbody tr {
+  background-color: #fff;
+}
+
+.itemsTableContainer table th,
+.itemsTableContainer table td {
+  white-space: nowrap;
+}
+
+.items_list_container section {
+  margin-top: 2rem;
+}
+
+.items_list_container table {
   text-align: center;
   min-width: 1024px;
   overflow: scroll;
   font-size: small;
   margin-bottom: 0 !important;
-  background-color: #fff;
-  color: #111827;
 }
 
-.itemsListContainer th {
+.items_list_container th {
   height: 2rem;
-  background-color: #f9fafb;
-  color: #374151;
 }
 
 .itemsCell td {
@@ -57,7 +72,6 @@
   color: black;
 }
 
-/* --- Search Row --- */
 .searchRow {
   display: flex;
   align-items: center;
@@ -86,8 +100,6 @@
   padding: 5px 34px 5px 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
-  background-color: #fff;
-  color: #111827;
 }
 
 .clearSearch {
@@ -111,7 +123,6 @@
   opacity: 0.85;
 }
 
-/* --- Table Headers --- */
 .stickyThead th {
   position: sticky;
   top: 0;
@@ -129,17 +140,66 @@
   text-decoration: underline;
 }
 
-/* --- Input Selection Grid --- */
+/* Changed from grid to flexbox to handle variable number of filter items
+   without overflowing — grid with fixed columns caused SelectItem to push
+   off-screen when there were fewer items than columns */
 .selectInput {
-  display: grid;
-  grid-template-columns: auto 1fr auto 1fr;
-  align-items: center;
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: nowrap;
   gap: 15px;
   width: 100%;
-  min-width: 400px;
   max-width: 1200px;
   margin: 0 auto 10px;
-  overflow: visible;
+}
+
+.selectInput :global(.react-select__menu) {
+  z-index: 10;
+}
+
+.filterItem {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 180px;
+  max-width: 200px;
+  margin-bottom: 8px;
+}
+
+.filterItemSelect {
+  flex: 2;
+  max-width: 380px;
+}
+
+.filterItem label {
+  text-align: left;
+  white-space: nowrap;
+  margin-bottom: 8px;
+}
+
+.resetContainer {
+  display: flex;
+  align-items: flex-end;
+}
+
+.btnReset {
+  height: 38px;
+  padding: 0 1.2rem;
+  font-weight: 500;
+  background-color: #dc2626;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btnReset:hover {
+  background-color: #b91c1c;
+}
+
+.btnReset:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .selectInput label {
@@ -149,32 +209,16 @@
   margin-bottom: 8px;
 }
 
-.selectInput input,
-.selectInput select {
+.datePickerCell input {
   height: 38px;
   width: 100%;
-  min-width: 400px;
-  max-width: 1200px;
+  min-width: 180px;
+  max-width: 240px;
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  margin-bottom: 8px;
-  background-color: #fff;
-  color: #111827;
 }
 
-.selectInput :global(.react-select__control) {
-  width: 100%;
-  max-width: 1200px;
-  min-width: 400px;
-}
-
-.selectInput input[type='text'] {
-  padding: 5px;
-  margin-bottom: 8px;
-}
-
-/* --- Buttons --- */
 .btnPrimary {
   background-color: #468ef9;
   color: white;
@@ -195,7 +239,6 @@
   background-color: #3b82f6;
 }
 
-/* --- Pagination --- */
 .paginationBar {
   display: flex;
   align-items: center;
@@ -206,7 +249,6 @@
   border-top: none;
   border-radius: 0 0 6px 6px;
   flex-wrap: wrap;
-  background-color: #fff;
 }
 
 .rowsPerPage {
@@ -222,7 +264,6 @@
   border-radius: 6px;
   border: 1px solid #d1d5db;
   background: #fff;
-  color: #111827;
 }
 
 .rangeInfo {
@@ -243,7 +284,6 @@
   border-radius: 6px;
   border: 1px solid #d1d5db;
   background: white;
-  color: #111827;
   cursor: pointer;
 }
 
@@ -263,22 +303,11 @@
   opacity: 0.75;
 }
 
-.filterForm,
-.filterItem {
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 20px;
-}
-
-/* ==========================================================================
-   DARK MODE CONTROL PANEL
-   All dark mode styles are scoped safely under .darkMode or :global(.dark-mode)
-   ========================================================================== */
-
 .darkMode {
   color: #e8edf4;
-  background-color: #0d1117 !important;
+  background-color: #1a1d23 !important;
   min-height: 100vh;
+  padding-top: 1rem;
   padding-bottom: 2rem;
 }
 
@@ -291,25 +320,66 @@
   border-color: #30363d;
 }
 
-/* Deep component tree modifications under Dark Mode */
-.darkMode .itemsListContainer table {
+.darkMode table {
+  background-color: #14253d !important;
+  color: #fff !important;
+  border-color: #1d3c52 !important;
+}
+
+.darkTable tbody tr:nth-child(odd) {
+  background-color: #1f2e45;
+}
+
+.darkTable tbody tr:nth-child(even) {
+  background-color: #23375b;
+}
+
+.darkTable .stickyThead th {
+  background-color: #2f4157;
+  border-bottom: 1px solid #3f5269;
+}
+
+/* Dark mode container/table base (overrides the light defaults above) */
+.darkTableWrapper {
+  background-color: #1f2e45;
+}
+
+.darkTableWrapper table,
+.itemsTableContainer .darkTable {
+  background-color: #1f2e45;
+  color: #e8edf4;
+}
+
+.itemsTableContainer .darkTable tbody tr:nth-child(odd) {
+  background-color: #1f2e45;
+}
+
+.itemsTableContainer .darkTable tbody tr:nth-child(even) {
+  background-color: #23375b;
+}
+
+:global(.dark-mode) .items_table_container {
+  background-color: transparent !important;
+}
+
+:global(.dark-mode) .items_list_container table {
   background-color: #161b22;
   color: #fff;
   border: 1px solid #30363d;
 }
 
-.darkMode .itemsListContainer th {
+:global(.dark-mode) .items_list_container th {
   background-color: #1f2937;
   color: #fff;
   border-bottom: 1px solid #30363d;
 }
 
-.darkMode .itemsListContainer td {
+:global(.dark-mode) .items_list_container td {
   border-bottom: 1px solid #30363d;
   color: #fff;
 }
 
-.darkMode .itemsListContainer tr:hover {
+:global(.dark-mode) .items_list_container tr:hover {
   background-color: #1f2a37;
 }
 
@@ -317,8 +387,32 @@
   color: #fff;
 }
 
-.darkMode .itemsCell svg:hover {
-  color: #468ef9;
+:global(.dark-mode) .items_cell svg:hover {
+  color: #fff;
+}
+
+:global(.dark-mode) .select_input {
+  background-color: #1e2632;
+  color: #fff;
+  border: 1px solid #30363d;
+}
+
+:global(.dark-mode) select,
+:global(.dark-mode) input {
+  background-color: #1e2632;
+  color: #fff;
+  border: 1px solid #30363d;
+}
+
+:global(.dark-mode) option {
+  background-color: #111827;
+  color: #fff;
+}
+
+:global(.dark-mode) body,
+:global(.dark-mode) html,
+:global(.dark-mode) #root {
+  background-color: #0d1117 !important;
 }
 
 .darkMode .searchBox input {
@@ -337,7 +431,6 @@
 
 .darkMode .paginationBar {
   border-color: #2f4157;
-  background-color: #161b22;
 }
 
 .darkMode .rowsPerPage select {
@@ -352,55 +445,58 @@
   border: 1px solid #3f5269;
 }
 
-/* Global Dark Mode Overrides (Only used if the class is appended to body/html container) */
-:global(.dark-mode) body,
-:global(.dark-mode) html,
-:global(.dark-mode) #root {
-  background-color: #0d1117 !important;
+.darkDatePickerInput::placeholder {
+  color: #8fa0b9 !important;
 }
 
-/* --- Dark Mode DatePicker Sub-styles --- */
-.darkDatePickerInput {
+.darkDatePickerInput:focus {
+  outline: none !important;
+  border-color: #4a90e2 !important;
+  box-shadow: 0 0 0 1px #4a90e2 !important;
+}
+
+/* 2. THIS STYLES THE POP-UP CALENDAR CONTAINER */
+.darkDatePicker {
+  background-color: #1f2e45 !important;
+  border: 1px solid #3f5269 !important;
+}
+
+/* The rest of your header/time picker global overrides go below here... */
+.darkDatePicker :global(.react-datepicker__header) {
+  background-color: #2f4157 !important;
+  border-color: #3f5269 !important;
+}
+
+.darkDatePicker :global(input) {
   background-color: #2a3f5f !important;
   color: #e8edf4 !important;
   border: 1px solid #3f5269 !important;
 }
 
-.darkDatePickerInput::placeholder {
+.darkDatePicker :global(input)::placeholder {
   color: #c8d2e0 !important;
 }
 
-.darkDatePicker {
-  background-color: #1f2e45 !important;
-  color: #e8edf4 !important;
-  border: 1px solid #3f5269 !important;
-}
-
-.darkDatePicker .react-datepicker__header {
-  background-color: #2f4157;
-  border-color: #3f5269;
-}
-
-.darkDatePicker .react-datepicker__time-header {
+.darkDatePicker :global(.react-datepicker__time-header),
+.darkDatePicker :global(.react-datepicker-time__header) {
   color: #f2f6ff !important;
   background-color: #2f4157 !important;
-  border-bottom: 1px solid #3f5269 !important;
 }
 
-.darkDatePicker .react-datepicker__current-month,
-.darkDatePicker .react-datepicker-year-header {
+.darkDatePicker :global(.react-datepicker__current-month),
+.darkDatePicker :global(.react-datepicker-year-header) {
   color: #f2f6ff !important;
 }
 
-.darkDatePicker .react-datepicker__day-name,
-.darkDatePicker .react-datepicker__day,
-.darkDatePicker .react-datepicker__time-name {
-  color: #e8edf4;
+.darkDatePicker :global(.react-datepicker__day-name),
+.darkDatePicker :global(.react-datepicker__day),
+.darkDatePicker :global(.react-datepicker__time-name) {
+  color: #e8edf4 !important;
 }
 
-.darkDatePicker .react-datepicker__day--selected,
-.darkDatePicker .react-datepicker__day--keyboard-selected,
-.darkDatePicker .react-datepicker__time-list-item--selected {
+.darkDatePicker :global(.react-datepicker__day--selected),
+.darkDatePicker :global(.react-datepicker__day--keyboard-selected),
+.darkDatePicker :global(.react-datepicker__time-list-item--selected) {
   background-color: #468ef9 !important;
   color: #fff !important;
   border-color: #468ef9 !important;
@@ -409,7 +505,10 @@
 .darkDatePicker :global(.react-datepicker__time-container),
 .darkDatePicker :global(.react-datepicker__time-container .react-datepicker__time),
 .darkDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box),
-.darkDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box ul.react-datepicker__time-list) {
+.darkDatePicker
+  :global(.react-datepicker__time-container
+    .react-datepicker__time-box
+    ul.react-datepicker__time-list) {
   background-color: #2a3f5f !important;
   border-color: #3f5269 !important;
   color: #e8edf4 !important;
@@ -426,11 +525,15 @@
   color: #fff !important;
 }
 
-.darkDatePickerPopper .react-datepicker__triangle {
+.darkDatePicker :global(.react-datepicker__time-list-item--selected) {
+  background-color: #1a56db !important;
+  color: #fff !important;
+}
+
+.darkDatePickerPopper :global(.react-datepicker__triangle) {
   display: none;
 }
 
-/* --- Light Mode DatePicker Sub-styles --- */
 .lightDatePickerInput {
   background-color: #fff !important;
   color: #111827 !important;
@@ -467,10 +570,34 @@
   color: #fff !important;
 }
 
+.lightDatePicker .react-datepicker__time-container {
+  border-color: #d1d5db !important;
+  background-color: #fff !important;
+}
+
+.lightDatePicker .react-datepicker__time-container .react-datepicker__time {
+  background-color: #fff !important;
+  border-color: #d1d5db !important;
+}
+
+.lightDatePicker .react-datepicker__time-container .react-datepicker__time-box {
+  background-color: #fff !important;
+  border-color: #d1d5db !important;
+}
+
+.lightDatePicker .react-datepicker__time-container .react-datepicker__time-list {
+  background-color: #fff !important;
+  color: #1f2937 !important;
+  border-color: #d1d5db !important;
+}
+
 .lightDatePicker :global(.react-datepicker__time-container),
 .lightDatePicker :global(.react-datepicker__time-container .react-datepicker__time),
 .lightDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box),
-.lightDatePicker :global(.react-datepicker__time-container .react-datepicker__time-box ul.react-datepicker__time-list) {
+.lightDatePicker
+  :global(.react-datepicker__time-container
+    .react-datepicker__time-box
+    ul.react-datepicker__time-list) {
   background-color: #fff !important;
   border-color: #d1d5db !important;
   color: #1f2937 !important;
@@ -487,6 +614,80 @@
   color: #111827 !important;
 }
 
+.lightDatePicker :global(.react-datepicker__time-list-item--selected) {
+  background-color: #1a56db !important;
+  color: #fff !important;
+}
+
+.items_list_container.dark_mode {
+  background-color: #1b1f27 !important;
+  color: #fff !important;
+  border-color: #2a2f3a !important;
+}
+
+.dark-mode .items_table_container .table thead th {
+  background-color: #1c2541 !important;
+  color: #fff !important;
+  border-color: #555 !important;
+}
+
 .lightDatePickerPopper .react-datepicker__triangle {
   display: none;
 }
+
+.fieldRequired {
+  color: red;
+}
+
+:global(body.dark-mode) .fieldRequired,
+:global(body.bm-dashboard-dark) .fieldRequired {
+  color: #f87171 !important;
+}
+
+.historyTable {
+  overflow: scroll;
+  height: 75vh;
+  text-align: center;
+  font-size: small;
+  white-space: nowrap;
+}
+
+@media (width <= 900px) {
+  .selectInput {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .selectInput label {
+    text-align: left;
+  }
+
+  .datePickerCell input {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .filterItemSelect {
+    max-width: 100%;
+  }
+
+}
+
+/* DatePicker Input Dark Mode Overrides */
+.darkMode :global(.react-datepicker-wrapper) .darkDatePickerInput {
+  background-color: #1b2439 !important;
+  color: #fff !important;
+  border: 1px solid #3f5269 !important;
+}
+
+.darkMode :global(.react-datepicker-wrapper) .darkDatePickerInput:focus {
+  outline: none !important;
+  border-color: #4a90e2 !important;
+  box-shadow: 0 0 0 1px #4a90e2 !important;
+}
+
+.darkMode :global(.react-datepicker-wrapper) .darkDatePickerInput::placeholder {
+  color: #8fa0b9 !important;
+}
+ 

@@ -1,21 +1,69 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-
+import {
+  FaCubes,
+  FaShoppingCart,
+  FaTools,
+  FaRecycle,
+  FaWrench,
+  FaRulerCombined,
+} from 'react-icons/fa';
 import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
+import InventoryNavBar from '../InventoryTypesList/InventoryNavBar';
+import MaterialSummaryPanel from '../MaterialList/MaterialSummaryPanel';
 import styles from './ItemListView.module.css';
 
-export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamicColumns }) {
+const allCategories = [
+  { label: 'Materials', route: '/bmdashboard/materials', icon: <FaCubes /> },
+  { label: 'Consumables', route: '/bmdashboard/consumables', icon: <FaShoppingCart /> },
+  { label: 'Equipment', route: '/bmdashboard/equipment', icon: <FaTools /> },
+  { label: 'Reusables', route: '/bmdashboard/reusables', icon: <FaRecycle /> },
+  { label: 'Tools', route: '/bmdashboard/tools', icon: <FaWrench /> },
+  { label: 'Units', route: '/bmdashboard/units', icon: <FaRulerCombined /> },
+];
+
+const categoryIcons = {
+  Materials: <FaCubes />,
+  Consumables: <FaShoppingCart />,
+  Equipment: <FaTools />,
+  Reusables: <FaRecycle />,
+  Tools: <FaWrench />,
+};
+
+export function ItemListView({
+  itemType,
+  items,
+  errors,
+  UpdateItemModal,
+  dynamicColumns,
+  children,
+}) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [filteredItems, setFilteredItems] = useState([]);
   const [selectedProject, setSelectedProject] = useState([]); // Array of strings
   const [selectedItem, setSelectedItem] = useState([]); // Array of strings
+  const [localValues, setLocalValues] = useState([]);
   const [isError, setIsError] = useState(false);
   const [selectedTime, setSelectedTime] = useState(new Date());
 
+  const projectKey = `${itemType}_selected_projects`;
+  const itemKey = `${itemType}_selected_items`;
+
+  const handleReset = () => {
+    setLocalValues([]);
+    setSelectedProject([]);
+    setSelectedItem([]);
+    localStorage.removeItem(projectKey);
+    localStorage.removeItem(itemKey);
+  };
+
+  const isMaterialsView = itemType === 'Materials';
   const [searchQuery, setSearchQuery] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
@@ -156,33 +204,50 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
 
   return (
     <main className={`${styles.itemsListContainer} ${darkMode ? styles.darkMode : ''}`}>
-      <h3>{itemType}</h3>
+      <h3 className={styles.pageTitle}>
+        <span className={styles.pageTitleIcon}>{categoryIcons[itemType]}</span>
+        {itemType}
+      </h3>
+
+      {/* Inventory Navigation Bar */}
+      <InventoryNavBar
+        categories={allCategories.filter(cat => cat.label !== itemType)}
+        styles={styles}
+      />
 
       <section>
         <span>
           {items && (
             <div className={`${styles.selectInput}`}>
-              <label htmlFor="itemListTime">Time:</label>
-              <DatePicker
-                selected={selectedTime}
-                onChange={date => setSelectedTime(date)}
-                showTimeSelect
-                timeFormat="HH:mm"
-                timeIntervals={15}
-                dateFormat="yyyy-MM-dd HH:mm:ss"
-                placeholderText="Select date and time"
-                inputId="itemListTime"
-                className={darkMode ? styles.darkDatePickerInput : styles.lightDatePickerInput}
-                calendarClassName={darkMode ? styles.darkDatePicker : styles.lightDatePicker}
-                popperClassName={
-                  darkMode ? styles.darkDatePickerPopper : styles.lightDatePickerPopper
-                }
-              />
+              <div className={styles.filterItem}>
+                <label htmlFor="itemListTime" style={{ fontWeight: 'bold' }}>
+                  Time:
+                </label>
+                <div className={styles.datePickerCell}>
+                  <DatePicker
+                    selected={selectedTime}
+                    onChange={date => setSelectedTime(date)}
+                    showTimeSelect
+                    timeFormat="HH:mm"
+                    timeIntervals={15}
+                    dateFormat="yyyy-MM-dd HH:mm:ss"
+                    placeholderText="Select date and time"
+                    inputId="itemListTime"
+                    className={darkMode ? styles.darkDatePickerInput : styles.lightDatePickerInput}
+                    calendarClassName={darkMode ? styles.darkDatePicker : styles.lightDatePicker}
+                    popperClassName={
+                      darkMode ? styles.darkDatePickerPopper : styles.lightDatePickerPopper
+                    }
+                  />
+                </div>
+              </div>
 
               <SelectForm
                 items={items}
                 setSelectedProject={setSelectedProject}
-                setSelectedItem={setSelectedItem}
+                localValues={localValues}
+                setLocalValues={setLocalValues}
+                itemType={itemType}
               />
 
               <SelectItem
@@ -190,8 +255,27 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
                 selectedProject={selectedProject}
                 selectedItem={selectedItem}
                 setSelectedItem={setSelectedItem}
-                label={itemType}
+                label={isMaterialsView ? 'Material' : itemType}
+                itemType={itemType}
+                darkMode={darkMode}
               />
+
+              <div className={styles.filterItem}>
+                <span style={{ fontWeight: 'bold' }} aria-hidden="true">
+                  &nbsp;
+                </span>
+                <button
+                  type="button"
+                  className={styles.btnReset}
+                  onClick={handleReset}
+                  disabled={
+                    localStorage.getItem(projectKey) === null &&
+                    localStorage.getItem(itemKey) === null
+                  }
+                >
+                  Reset
+                </button>
+              </div>
             </div>
           )}
 
@@ -241,34 +325,34 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
               </button>
             )}
           </div>
-
           <div className={styles.foundCount}>
             {totalItems} {totalItems === 1 ? 'material' : 'materials'} found
           </div>
         </div>
 
-        {children}
-
         {filteredItems && (
-          <ItemsTable
-            selectedProject={selectedProject}
-            selectedItem={selectedItem}
-            filteredItems={paginatedItems}
-            UpdateItemModal={UpdateItemModal}
-            dynamicColumns={dynamicColumns}
-            darkMode={darkMode}
-            itemType={itemType}
-            sortConfig={sortConfig}
-            onSort={handleSort}
-            totalItems={totalItems}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            rowsPerPage={rowsPerPage}
-            startRow={startRow}
-            endRow={endRow}
-            onPageChange={setCurrentPage}
-            onRowsPerPageChange={setRowsPerPage}
-          />
+          <>
+            <MaterialSummaryPanel materials={filteredItems} darkMode={darkMode} />
+            <ItemsTable
+              selectedProject={selectedProject}
+              selectedItem={selectedItem}
+              filteredItems={paginatedItems}
+              UpdateItemModal={UpdateItemModal}
+              dynamicColumns={dynamicColumns}
+              darkMode={darkMode}
+              itemType={itemType}
+              sortConfig={sortConfig}
+              onSort={handleSort}
+              totalItems={totalItems}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              rowsPerPage={rowsPerPage}
+              startRow={startRow}
+              endRow={endRow}
+              onPageChange={setCurrentPage}
+              onRowsPerPageChange={setRowsPerPage}
+            />
+          </>
         )}
       </section>
     </main>
@@ -279,7 +363,8 @@ ItemListView.propTypes = {
   itemType: PropTypes.string.isRequired,
   items: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      name: PropTypes.string,
       itemType: PropTypes.shape({
         name: PropTypes.string,
         unit: PropTypes.string,
@@ -293,6 +378,7 @@ ItemListView.propTypes = {
       stockUsed: PropTypes.number,
       stockWasted: PropTypes.number,
       stockHold: PropTypes.number,
+      productId: PropTypes.string,
     }),
   ).isRequired,
   errors: PropTypes.shape({
@@ -305,10 +391,12 @@ ItemListView.propTypes = {
       key: PropTypes.string.isRequired,
     }),
   ).isRequired,
+  children: PropTypes.node,
 };
 
 ItemListView.defaultProps = {
   errors: {},
+  children: null,
 };
 
 export default ItemListView;

@@ -65,7 +65,7 @@ const processResponseData = responseData => {
 const fetchStoppageDataForProject = async (projectId, startDate, endDate) => {
   const url = ENDPOINTS.BM_TOOLS_STOPPAGE_BY_PROJECT(projectId, startDate, endDate);
   const response = await axios.get(url);
-  return processResponseData(response.data);
+  return processResponseData(response.data.data);
 };
 
 const formatDatesForAPI = (startDate, endDate) => ({
@@ -253,7 +253,7 @@ export default function ToolsStoppageHorizontalBarChart() {
       setError(null);
       try {
         const response = await axios.get(ENDPOINTS.BM_TOOL_PROJECTS);
-        setProjects(response.data);
+        setProjects(response.data.data);
       } catch (err) {
         const errorMessage = err?.response?.data?.message || err?.message || 'Please try again.';
         setError(`Failed to load projects. ${errorMessage}`);
@@ -368,34 +368,38 @@ export default function ToolsStoppageHorizontalBarChart() {
             </Button>
           </div>
         </Col>
-        <Col xs={12} md={4}>
-          <div className={`${styles.selectWrapper} ${darkMode ? styles.darkSelectWrapper : ''}`}>
-            <Select
-              className="w-100"
-              classNamePrefix="customSelect"
-              value={selectedProject}
-              onChange={opt => setSelectedProject(opt)}
-              options={projectOptions}
-              placeholder="Select a project ID to view data"
-              isClearable={false}
-              isDisabled={projects.length === 0}
-              styles={darkMode ? selectDarkStyles : {}}
-            />
+        <Col xs={12} md={6}>
+          <div className={styles.projectRowWrapper}>
+            <div
+              className={`${styles.projectSelectContainer} ${
+                darkMode ? styles.darkSelectWrapper : ''
+              }`}
+            >
+              <Select
+                className="w-100"
+                classNamePrefix="customSelect"
+                value={selectedProject}
+                onChange={opt => setSelectedProject(opt)}
+                options={projectOptions}
+                placeholder="Select a project ID to view data"
+                isClearable={false}
+                isDisabled={projects.length === 0}
+                styles={darkMode ? selectDarkStyles : {}}
+              />
+            </div>
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={() => {
+                setSelectedProject(null);
+                setDateRange([null, null]);
+                setData(emptyData);
+                setError(null);
+              }}
+            >
+              Reset
+            </Button>
           </div>
-        </Col>
-        <Col xs={12} md={2}>
-          <Button
-            variant="danger"
-            size="sm"
-            onClick={() => {
-              setSelectedProject(null);
-              setDateRange([null, null]);
-              setData(emptyData);
-              setError(null);
-            }}
-          >
-            Reset
-          </Button>
         </Col>
       </Row>
 
@@ -404,7 +408,9 @@ export default function ToolsStoppageHorizontalBarChart() {
         {loading && <div className="tools-chart-loading">Loading tools stoppage data...</div>}
 
         {!loading && selectedProject && data.length > 0 && (
-          <Bar data={chartData} options={chartOptions} height={600} />
+          <div className={styles.chartCanvasWrapper}>
+            <Bar data={chartData} options={chartOptions} />
+          </div>
         )}
 
         {!loading && selectedProject && data.length === 0 && (

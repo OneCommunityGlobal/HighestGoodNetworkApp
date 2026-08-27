@@ -1116,6 +1116,7 @@ function MostFrequentKeywords() {
         </div>
         {(startDate || endDate) && (
           <button
+            type="button"
             className={styles.clearButton}
             onClick={handleClearDates}
             title="Clear dates"

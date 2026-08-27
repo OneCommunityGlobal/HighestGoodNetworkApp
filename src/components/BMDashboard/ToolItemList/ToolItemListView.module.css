@@ -12,13 +12,6 @@
   min-height: 100vh;
 }
 
-.viewTitle {
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border-color, #e5e7eb);
-}
-
 /* ==========================================================================
    THEME CONFIGURATION PANELS
    ========================================================================== */
@@ -31,7 +24,7 @@
   --border-color: #e5e7eb;
 }
 
-/* Dark Mode Context Base (Fixed to prevent contrasting dark-slate blending issues) */
+/* Dark Mode Context Base */
 .darkTheme {
   background-color: #0f1b2b;
   color: #f5f7fb;
@@ -47,25 +40,20 @@
    FILTER LAYOUT ENGINE & SELECT FIELDS
    ========================================================================== */
 
-.selectContainers {
+.filtersRow {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
-.containers {
-  display: flex;
-  flex-direction: column;
-  padding: 1rem 0;
-  margin-bottom: 1rem;
-}
-
-.filtersWrapper {
+.projectToolColumn {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
   gap: 1.5rem;
   width: 100%;
+  padding: 1rem 0;
+  margin-bottom: 1rem;
 }
 
 .filterGroup {
@@ -96,19 +84,103 @@
 .resetContainer {
   display: flex;
   align-items: flex-end;
-  height: 100%;
 }
 
-.resetButton {
+.projectToolColumn :global(.react-select__menu) {
+  z-index: 10;
+}
+
+.btnReset {
   padding: 0.45rem 1.5rem;
   font-weight: 500;
   height: 38px;
+  background-color: #dc2626;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
-.tableResponsiveWrapper {
+.btnReset:hover {
+  background-color: #b91c1c;
+}
+
+.btnReset:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.availSearchColumn {
+  display: flex;
   width: 100%;
-  overflow-x: auto;
-  border-radius: 6px;
+}
+
+.availSearchRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.availUsingGroup {
+  display: flex;
+  gap: 1rem;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+}
+
+.filterGroupSmall {
+  display: flex;
+  flex-direction: column;
+  min-width: 140px;
+}
+
+.filterSelect,
+.searchInput {
+  height: 40px;
+  padding: 0 0.75rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  border: 1px solid transparent;
+}
+
+.searchInput {
+  width: 100%;
+}
+
+.searchGroup {
+  display: flex;
+  flex-direction: column;
+  margin-left: auto;
+}
+
+.lightTheme .filterSelect,
+.lightTheme .searchInput {
+  background-color: #fff;
+  color: #111827;
+  border-color: #d1d5db;
+}
+
+.lightTheme .filterSelect:focus,
+.lightTheme .searchInput:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgb(37 99 235 / 25%);
+}
+
+.darkTheme .filterSelect,
+.darkTheme .searchInput {
+  background-color: #1e293b;
+  color: #f5f7fb;
+  border-color: #1d3c52;
+}
+
+.darkTheme .filterSelect:focus,
+.darkTheme .searchInput:focus {
+  outline: none;
+  border-color: #4ba3ff;
+  box-shadow: 0 0 0 1px rgb(75 163 255 / 30%);
 }
 
 /* ==========================================================================
@@ -157,10 +229,87 @@
 }
 
 /* ==========================================================================
+   TABLE STYLES
+   ========================================================================== */
+
+.itemsTableContainer {
+  border-radius: 4px;
+  margin-top: 1.5rem;
+  overflow-x: scroll;
+  align-items: center;
+}
+
+.itemsTableContainer table {
+  width: 100%;
+  min-width: 1024px;
+  border-collapse: collapse;
+  font-size: small;
+  text-align: center;
+}
+
+.itemsTableContainer td {
+  padding: 0.5rem 0.75rem;
+  text-align: center;
+}
+
+.lightTheme .itemsTableContainer {
+  border: 1px solid #e5e7eb;
+}
+
+.lightTheme .itemsTableContainer thead th {
+  background-color: #f3f4f6;
+  color: #111827;
+  border-bottom: 1px solid #e5e7eb;
+  height: 2.5rem;
+}
+
+.lightTheme .itemsTableContainer thead th:hover {
+  background-color: #e5e7eb;
+}
+
+.lightTheme .itemsTableContainer tbody tr {
+  background-color: #fff;
+}
+
+.lightTheme .itemsTableContainer tbody tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.lightTheme .itemsTableContainer tbody tr:hover {
+  background-color: #edf2ff;
+}
+
+.darkTheme .itemsTableContainer {
+  border: 1px solid #374151;
+}
+
+.darkTheme .itemsTableContainer thead th {
+  background-color: #1c2b3b;
+  color: #f5f7fb;
+  border-bottom: 1px solid #1d3c52;
+  height: 2.5rem;
+}
+
+.darkTheme .itemsTableContainer thead th:hover {
+  background-color: #25374c;
+}
+
+.darkTheme .itemsTableContainer tbody tr {
+  background-color: #101c2a;
+}
+
+.darkTheme .itemsTableContainer tbody tr:nth-child(even) {
+  background-color: #131f30;
+}
+
+.darkTheme .itemsTableContainer tbody tr:hover {
+  background-color: #1e3046;
+}
+
+/* ==========================================================================
    GLOBAL BOOTSTRAP DATATABLE THEME INJECTIONS
    ========================================================================== */
 
-/* Light Theme Grid Boundaries */
 .lightTheme :global(.table) {
   color: #111827 !important;
   background-color: #fff !important;
@@ -181,7 +330,6 @@
   background-color: #edf2ff !important;
 }
 
-/* Dark Theme Grid Boundaries - Cleaned up to match your core theme background */
 .darkTheme :global(.table) {
   color: #e5e7eb !important;
   background-color: #14253d !important;
@@ -207,14 +355,12 @@
   background-color: #1c3354 !important;
 }
 
-/* Action controls elements safely inside dark mode tables */
 .darkTheme :global(.table) button {
   background: transparent;
   color: #6af1ea;
   border: none;
 }
 
-/* Native Form UI Fields in Dark Mode Context */
 .darkTheme :global(.form-select),
 .darkTheme :global(.form-control) {
   background-color: #14253d !important;
@@ -222,12 +368,117 @@
   border-color: #1d3c52 !important;
 }
 
+/* ── Inventory Navigation Bar ── */
+.inventoryNav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.returnBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 16px;
+  background-color: #0d5675;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.returnBtn:hover {
+  background-color: #1a73c0;
+  color: #fff;
+}
+
+.categoryIcons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.categoryIconLink {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 10px;
+  border: 1px solid #4dabf7;
+  border-radius: 8px;
+  color: #0d5675;
+  text-decoration: none;
+  font-size: 0.75rem;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.categoryIconLink:hover {
+  background-color: #0d5675;
+  color: #fff;
+  border-color: #0d5675;
+}
+
+.iconWrapper {
+  font-size: 1.2rem;
+}
+
+.iconLabel {
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.darkTheme .returnBtn {
+  background-color: #2e5061;
+  color: #fff;
+}
+
+.darkTheme .returnBtn:hover {
+  background-color: #1a73c0;
+}
+
+.darkTheme .categoryIconLink {
+  border-color: #4dabf7;
+  color: #4dabf7;
+}
+
+.darkTheme .categoryIconLink:hover {
+  background-color: #4dabf7;
+  color: #0f172a;
+  border-color: #4dabf7;
+}
+
+/* ── Page Title with Icon ── */
+.pageTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+}
+
+.pageTitleIcon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.2rem;
+  color: #0d5675;
+}
+
+.darkTheme .pageTitleIcon {
+  color: #4dabf7;
+}
+
 /* ==========================================================================
    RESPONSIVE DESIGN SYSTEM MEDIA BREAKPOINTS
    ========================================================================== */
 
 @media (width <= 768px) {
-  .filtersWrapper {
+  .projectToolColumn {
     flex-direction: column;
     align-items: stretch;
     gap: 1rem;
@@ -246,7 +497,70 @@
     margin-top: 0.5rem;
   }
 
-  .resetButton {
+  .btnReset {
+    width: 100%;
+  }
+
+  .availSearchColumn {
+    width: 100%;
+  }
+
+  .availSearchRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .searchGroup {
+    min-width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+  }
+
+  .filterGroupSmall {
+    min-width: 120px;
+    flex: 1 1 45%;
+  }
+
+  .availUsingGroup {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .inventoryNav {
+    gap: 10px;
+  }
+
+  .returnBtn {
+    flex: 1 1 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .categoryIcons {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .pageTitle {
+    font-size: 1.4rem;
+  }
+}
+
+@media (width <= 480px) {
+  .categoryIconLink {
+    padding: 5px 8px;
+    font-size: 0.7rem;
+  }
+
+  .iconWrapper {
+    font-size: 1rem;
+  }
+
+  .filterGroupSmall {
+    flex: 1 1 100%;
+  }
+
+  .selectInput {
     width: 100%;
   }
 }
