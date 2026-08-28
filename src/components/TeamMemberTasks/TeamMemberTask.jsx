@@ -583,7 +583,7 @@ const TeamMemberTask = React.memo(
                                             style={{ color: darkMode ? '#339CFF' : undefined }}
                                           >
                                             <span className={styles.taskTitle}>
-                                              {`${task.num} ${task.taskName}`}
+                                              {`${task.num} ${task.taskName.slice(0,6)}`}
                                             </span>
                                           </Link>
 

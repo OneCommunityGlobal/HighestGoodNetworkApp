@@ -873,6 +873,7 @@ const TeamMemberTasks = React.memo(props => {
         </Table>
       </div>
     </div>
+    
   );
 });
 
