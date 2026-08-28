@@ -1,100 +1,260 @@
 import { useEffect, useState } from 'react';
 import HoursWorkedPieChart from '../HoursWorkedPieChart/HoursWorkedPieChart';
 
-// components
+// Components
 import Loading from '../../common/Loading';
+
+const COLORS = ['#00AFF4', '#FFA500', '#00B030', '#EC52CB', '#F8FF00', '#7C4DFF'];
+
+// --- Helper Functions ---
+
+function parseRangeStart(rangeStr) {
+  if (!rangeStr) return 0;
+  const [first] = String(rangeStr).split(/[-+]/);
+  const parsed = Number(first);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function normalizeBucketId(rangeStr) {
+  if (!rangeStr) return '';
+  const trimmed = String(rangeStr).trim();
+
+  if (trimmed.includes('+')) {
+    const start = parseRangeStart(trimmed);
+    return `${start}+`;
+  }
+
+  return String(parseRangeStart(trimmed));
+}
+
+function mergeHoursBuckets(hoursData) {
+  const safeHoursData = Array.isArray(hoursData) ? hoursData : [];
+  const merged = new Map();
+
+  safeHoursData.forEach(item => {
+    const normalizedId = normalizeBucketId(item?._id);
+    if (!normalizedId) return;
+    const existing = merged.get(normalizedId) || 0;
+    merged.set(normalizedId, existing + (Number(item?.count) || 0));
+  });
+
+  return [...merged.entries()]
+    .map(([id, count]) => ({ _id: id, count }))
+    .sort((a, b) => parseRangeStart(a._id) - parseRangeStart(b._id));
+}
+
+function allocateRoundedHoursByCount(normalizedHoursData, totalHoursWorked) {
+  const roundedTotalHours = Math.max(0, Math.round(Number(totalHoursWorked) || 0));
+  const totalCount = normalizedHoursData.reduce(
+    (sum, bucket) => sum + (Number(bucket.count) || 0),
+    0,
+  );
+
+  if (!totalCount || !roundedTotalHours) {
+    return normalizedHoursData.map(bucket => ({ ...bucket, allocatedHours: 0 }));
+  }
+
+  const provisional = normalizedHoursData.map(bucket => {
+    const count = Number(bucket.count) || 0;
+    const exact = (count / totalCount) * roundedTotalHours;
+    const base = Math.floor(exact);
+    return { ...bucket, allocatedHours: base, remainder: exact - base };
+  });
+
+  let assigned = provisional.reduce((sum, bucket) => sum + bucket.allocatedHours, 0);
+  let remaining = roundedTotalHours - assigned;
+
+  const byRemainderDesc = [...provisional].sort((a, b) => b.remainder - a.remainder);
+  let i = 0;
+  while (remaining > 0 && byRemainderDesc.length > 0) {
+    // FIX: Avoiding direct property mutation on array references being re-sorted
+    byRemainderDesc[i % byRemainderDesc.length].allocatedHours += 1;
+    remaining -= 1;
+    i += 1;
+  }
+
+  return byRemainderDesc
+    .map(({ remainder, ...bucket }) => bucket)
+    .sort((a, b) => parseRangeStart(a._id) - parseRangeStart(b._id));
+}
+
+export function formatRangeLabel(rangeStr) {
+  if (!rangeStr) return '';
+  const normalizedRange = normalizeBucketId(rangeStr);
+
+  if (normalizedRange.includes('+')) {
+    // FIX: Prefer Number() over parseFloat() for safer numeric string conversions
+    const num = Number(normalizedRange.replace('+', ''));
+    return `${num}+ hrs`;
+  } else {
+    const num = Number(normalizedRange);
+    return `${num}-${num + 9} hrs`;
+  }
+}
+
+export function formatCommittedRangeLabel(rangeStr) {
+  const normalizedRange = normalizeBucketId(rangeStr);
+  if (normalizedRange === '40') return '40 hrs';
+  if (normalizedRange === '40+') return 'Over 40 hrs';
+  return formatRangeLabel(normalizedRange);
+}
+
+function buildChartData(hoursData, totalHoursData, useBucketCounts = false) {
+  const normalizedHoursData = mergeHoursBuckets(hoursData);
+  const totalVolunteers = normalizedHoursData.reduce((total, cur) => total + (cur.count || 0), 0);
+  const totalHoursWorked = useBucketCounts
+    ? totalVolunteers
+    : Number(totalHoursData?.current ?? totalHoursData?.count ?? 0);
+
+  const hoursByBucket = allocateRoundedHoursByCount(normalizedHoursData, totalHoursWorked);
+  const totalAllocatedHours = hoursByBucket.reduce(
+    (sum, bucket) => sum + (bucket.allocatedHours || 0),
+    0,
+  );
+
+  const userData = hoursByBucket.map(range => {
+    let value = range.count || 0;
+    let denominator = totalVolunteers;
+    if (!useBucketCounts && totalHoursWorked > 0) {
+      value = range.allocatedHours || 0;
+      denominator = totalAllocatedHours;
+    }
+
+    return {
+      name: useBucketCounts ? formatCommittedRangeLabel(range._id) : formatRangeLabel(range._id),
+      value,
+      percentage: denominator ? Math.round((value / denominator) * 100) : 0,
+      ...(useBucketCounts && { valueType: 'volunteers' }),
+    };
+  });
+
+  return { normalizedHoursData, userData, totalVolunteers, totalHoursWorked };
+}
+
+// --- Sub-Components ---
+
+function HoursWorkList({ data, darkMode, title = 'Hours Worked', useCommittedLabels = false }) {
+  if (!data) return <div />;
+
+  const ranges = data.map((elem, index) => {
+    return {
+      name: elem._id,
+      count: elem.count,
+      displayName: useCommittedLabels
+        ? formatCommittedRangeLabel(elem._id)
+        : formatRangeLabel(elem._id),
+      color: COLORS[index % COLORS.length],
+    };
+  });
+
+  return (
+    <div>
+      <h6 style={{ color: darkMode ? 'white' : 'grey' }}>{title}</h6>
+      <div>
+        <ul className="list-unstyled">
+          {ranges.map(item => (
+            <li key={item.name} className="text-secondary d-flex align-items-center mb-1">
+              <div
+                className="me-2"
+                style={{
+                  width: '15px',
+                  height: '15px',
+                  backgroundColor: item.color,
+                }}
+              />
+              <span className="ms-2">{item.displayName}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+// --- Main Exported Component ---
 
 export default function VolunteerHoursDistribution({
   isLoading,
   darkMode,
-  usersTimeEntries,
-  usersOverTimeEntries,
+  hoursData,
+  totalHoursData,
+  title = 'Actual Hours Worked',
+  legendTitle = 'Hours Worked',
+  centerLabelLines = ['TOTAL HOURS', 'WORKED'],
+  useBucketCounts = false,
 }) {
-  const [userData, setUserData] = useState([]);
-
-  useEffect(() => {
-    if (
-      !Array.isArray(usersTimeEntries) ||
-      usersTimeEntries.length === 0 ||
-      !Array.isArray(usersOverTimeEntries) ||
-      usersOverTimeEntries.length === 0
-    ) {
-      return;
-    }
-
-    const hoursWorked = usersTimeEntries.reduce((acc, curr) => {
-      const hours = Number(curr.hours) || 0;
-      const minutes = Number(curr.minutes) || 0;
-      return acc + hours + minutes / 60;
-    }, 0);
-
-    const hoursOverTimeWorked = usersOverTimeEntries.reduce((acc, curr) => {
-      const hours = Number(curr.hours) || 0;
-      const minutes = Number(curr.minutes) || 0;
-      return acc + hours + minutes / 60;
-    }, 0);
-
-    const ranges = [
-      { name: '0 - 9.99', min: 0, max: 9.99 },
-      { name: '10 - 19.99', min: 10, max: 19.99 },
-      { name: '20 - 29.99', min: 20, max: 29.99 },
-      { name: '30 - 39.99', min: 30, max: 39.99 },
-      { name: '40+', min: 40, max: Infinity },
-    ];
-
-    const arrData = ranges.map(range => {
-      const value = usersTimeEntries.reduce((acc, curr) => {
-        const hours = Number(curr.hours) || 0;
-        const minutes = Number(curr.minutes) || 0;
-        const total = hours + minutes / 60;
-        if (total >= range.min && total < range.max) {
-          return acc + total;
-        }
-        return acc;
-      }, 0);
-
-      return {
-        name: range.name,
-        value,
-        totalHours: hoursWorked,
-        totalOverTimeHours: hoursOverTimeWorked,
-        title: 'HOURS WORKED',
-      };
-    });
-
-    setUserData(arrData);
-  }, [usersTimeEntries, usersOverTimeEntries]);
-
+  // FIXED: Comparing with 'undefined' directly instead of using 'typeof' on an object property
   const [windowSize, setWindowSize] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: globalThis.window !== undefined ? globalThis.window.innerWidth : 1200,
+    height: globalThis.window !== undefined ? globalThis.window.innerHeight : 800,
   });
 
-  const updateWindowSize = () => {
-    setWindowSize({
-      width: window.innerWidth,
-      height: window.innerHeight,
-    });
-  };
-
   useEffect(() => {
-    window.addEventListener('resize', updateWindowSize);
-    return () => {
-      window.removeEventListener('resize', updateWindowSize);
-    };
+    // FIXED: Removed 'typeof' check on globalThis.window property access
+    if (globalThis.window !== undefined) {
+      const updateWindowSize = () => {
+        setWindowSize({
+          width: globalThis.window.innerWidth,
+          height: globalThis.window.innerHeight,
+        });
+      };
+
+      globalThis.window.addEventListener('resize', updateWindowSize);
+      return () => globalThis.window.removeEventListener('resize', updateWindowSize);
+    }
   }, []);
 
+  if (isLoading) {
+    return (
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ minHeight: '200px' }}
+      >
+        <Loading />
+      </div>
+    );
+  }
+
+  const { normalizedHoursData, userData, totalHoursWorked } = buildChartData(
+    hoursData,
+    totalHoursData,
+    useBucketCounts,
+  );
+
   return (
-    <div>
-      {isLoading ? (
-        <div className="d-flex justify-content-center align-items-center">
-          <div className="w-100vh">
-            <Loading />
-          </div>
-        </div>
-      ) : (
-        <HoursWorkedPieChart darkmode={darkMode} windowSize={windowSize} userData={userData} />
-      )}
+    <div className="d-flex flex-column align-items-center">
+      <h5 style={{ color: darkMode ? 'white' : 'inherit' }}>{title}</h5>
+      <div
+        className="d-flex flex-row flex-wrap align-items-center justify-content-center"
+        style={{ gap: '20px' }}
+      >
+        <HoursWorkedPieChart
+          darkMode={darkMode}
+          windowSize={windowSize}
+          userData={userData}
+          totalHours={totalHoursWorked}
+          colors={COLORS}
+          centerLabelLines={centerLabelLines}
+        />
+        <HoursWorkList
+          data={normalizedHoursData}
+          darkMode={darkMode}
+          title={legendTitle}
+          useCommittedLabels={useBucketCounts}
+        />
+      </div>
     </div>
   );
+}
+
+// Extra named exports for automated testing
+export { HoursWorkList, mergeHoursBuckets };
+
+export function computeDistribution(hoursData, totalHoursData, useBucketCounts = false) {
+  const { userData, totalVolunteers, totalHoursWorked } = buildChartData(
+    hoursData,
+    totalHoursData,
+    useBucketCounts,
+  );
+  return { userData, totalVolunteers, totalHoursWorked };
 }

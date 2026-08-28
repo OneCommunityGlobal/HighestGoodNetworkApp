@@ -1,4 +1,4 @@
-import GET_BM_PROJECT_MEMBERS from 'constants/bmdashboard/projectMemberConstants';
+import GET_BM_PROJECT_MEMBERS from '~/constants/bmdashboard/projectMemberConstants';
 
 // eslint-disable-next-line default-param-last
 export const bmProjectMemberReducer = (state = { members: [] }, action) => {

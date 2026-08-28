@@ -11,7 +11,7 @@ import {
   POST_UPDATE_REUSABLE_ERROR_BULK,
 } from '../../constants/bmdashboard/reusableConstants';
 import { GET_ERRORS } from '../../constants/errors';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 export const reusableUpdateStart = () => {
   return {

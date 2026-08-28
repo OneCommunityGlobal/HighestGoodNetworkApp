@@ -2,11 +2,7 @@ import { useState, useEffect } from 'react';
 import { debounce } from 'lodash';
 import { Button } from 'reactstrap';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { getAllFAQs, searchFAQs, logUnansweredQuestion } from './api';
-
-toast.configure();
 
 function FaqSearch() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -72,11 +68,11 @@ function FaqSearch() {
     setLogging(true);
     try {
       const response = await logUnansweredQuestion(searchQuery);
-      toast.success(response.data.message || 'Your question has been recorded.');
+      globalThis.alert(response?.data?.message || 'Question logged successfully');
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error logging unanswered question:', error);
-      toast.error('Failed to log question. It may already exist.');
+      globalThis.alert(error?.response?.data?.message || 'Failed to log question.');
     } finally {
       setLogging(false);
     }
@@ -103,7 +99,8 @@ function FaqSearch() {
         <ul style={{ listStyle: 'none', padding: 0 }}>
           {suggestions.map(faq => (
             <li key={faq._id} style={{ marginBottom: '10px' }}>
-              <div
+              <button
+                type="button"
                 onClick={() => toggleFAQ(faq._id)}
                 style={{
                   padding: '10px',
@@ -115,11 +112,15 @@ function FaqSearch() {
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
+                  width: '100%',
+                  textAlign: 'left',
                 }}
+                aria-expanded={expandedFAQ === faq._id}
+                aria-controls={`faq-answer-${faq._id}`}
               >
                 <strong>{faq.question}</strong>
                 {expandedFAQ === faq._id ? <FaChevronUp /> : <FaChevronDown />}
-              </div>
+              </button>
               {expandedFAQ === faq._id && (
                 <div
                   style={{

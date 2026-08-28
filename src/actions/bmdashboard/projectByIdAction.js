@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { ENDPOINTS } from '../../utils/URL';
-import GET_BM_PROJECT_BY_ID from '../../constants/bmdashboard/projectConstants';
+import { ENDPOINTS } from '~/utils/URL';
+import  { GET_BM_PROJECT_BY_ID } from '../../constants/bmdashboard/projectConstants';
 import { GET_ERRORS } from '../../constants/errors';
 
 export const setProject = payload => {

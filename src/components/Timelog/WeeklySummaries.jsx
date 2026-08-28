@@ -1,12 +1,43 @@
 import { useState, useEffect } from 'react';
 import parse from 'html-react-parser';
-import './Timelog.css';
-import { getUserProfile, updateUserProfile } from 'actions/userProfile';
-import hasPermission from 'utils/permissions';
+import hasPermission from '../../utils/permissions';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
 import Spinner from 'react-bootstrap/Spinner';
+import { Button } from 'reactstrap';
 import { updateWeeklySummaries } from '../../actions/weeklySummaries';
+import styles from './Timelog.module.css';
+
+export const moveWeeklySummary = (
+  weeklySummaries,
+  sourceIndex,
+  destinationIndex,
+  uploadDate = new Date().toISOString(),
+) => {
+  if (
+    !Array.isArray(weeklySummaries) ||
+    sourceIndex === destinationIndex ||
+    !weeklySummaries[sourceIndex]?.summary ||
+    weeklySummaries[destinationIndex]?.summary
+  ) {
+    return null;
+  }
+
+  return weeklySummaries.map((item, index) => {
+    if (index === sourceIndex) {
+      const { uploadDate: _uploadDate, ...sourceWithoutUploadDate } = item;
+      return { ...sourceWithoutUploadDate, summary: '' };
+    }
+    if (index === destinationIndex) {
+      return {
+        ...item,
+        summary: weeklySummaries[sourceIndex].summary,
+        uploadDate,
+      };
+    }
+    return item;
+  });
+};
 
 function WeeklySummaries({ userProfile }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -22,6 +53,9 @@ function WeeklySummaries({ userProfile }) {
   ]);
 
   const [LoadingHandleSave, setLoadingHandleSave] = useState(null);
+  const [moveSourceIndex, setMoveSourceIndex] = useState(null);
+  const [moveDestinationIndex, setMoveDestinationIndex] = useState('');
+  const [isMoving, setIsMoving] = useState(false);
 
   const [wordCount, setWordCount] = useState(0);
 
@@ -80,21 +114,51 @@ function WeeklySummaries({ userProfile }) {
         ),
       };
 
-      // This code updates the summary.
-      await dispatch(updateUserProfile(userProfile));
-
-      // This code saves edited weekly summaries in MongoDB.
-      await dispatch(updateWeeklySummaries(userProfile._id, updatedUserProfile));
-      await dispatch(getUserProfile(userProfile._id));
-      await setLoadingHandleSave(null);
+      const status = await dispatch(updateWeeklySummaries(userProfile._id, updatedUserProfile));
+      if (status === 200) {
+        // Toggle off editing mode only after the update succeeds.
+        toggleEdit(index);
+      }
       setLoadingHandleSave(null);
-      // Toggle off editing mode
-      toggleEdit(index);
     } else {
       // Invalid summary, show an error message or handle it as needed
       // eslint-disable-next-line no-alert
       alert('Please enter a valid summary with at least 50 words.');
     }
+  };
+
+  const handleMove = async () => {
+    const destinationIndex = Number(moveDestinationIndex);
+    const weeklySummaries = moveWeeklySummary(
+      userProfile.weeklySummaries,
+      moveSourceIndex,
+      destinationIndex,
+    );
+
+    if (!weeklySummaries) return;
+
+    const mediaFolderUrl = userProfile.adminLinks?.find(
+      link => link.Name === 'Media Folder',
+    )?.Link;
+
+    setIsMoving(true);
+    const status = await dispatch(
+      updateWeeklySummaries(userProfile._id, {
+        mediaUrl: mediaFolderUrl || userProfile.mediaUrl || '',
+        weeklySummaries,
+        weeklySummariesCount: userProfile.weeklySummariesCount || 0,
+      }),
+    );
+    if (status === 200) {
+      setMoveSourceIndex(null);
+      setMoveDestinationIndex('');
+    }
+    setIsMoving(false);
+  };
+
+  const cancelMove = () => {
+    setMoveSourceIndex(null);
+    setMoveDestinationIndex('');
   };
 
   // Images are not allowed while editing weekly summaries
@@ -107,7 +171,7 @@ function WeeklySummaries({ userProfile }) {
   const TINY_MCE_INIT_OPTIONS = {
     license_key: 'gpl',
     menubar: false,
-    plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
+    plugins: 'advlist autolink autoresize lists link charmap table help wordcount',
     toolbar:
       'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
     branding: false,
@@ -135,22 +199,28 @@ function WeeklySummaries({ userProfile }) {
           />
 
           <div style={{ marginTop: '10px' }}>
-            <button
-              type="button"
-              className="button save-button"
+            <Button
+              color="success"
+              size="sm"
+              className={`${styles.actionButton} ${styles.saveButton} ${
+                darkMode ? styles.actionButtonDark : ''
+              }`}
               onClick={() => handleSave(index)}
               disabled={LoadingHandleSave === index}
             >
               {LoadingHandleSave === index ? <Spinner animation="border" size="sm" /> : 'Save'}
-            </button>
+            </Button>
 
-            <button
-              type="button"
-              className="button cancel-button"
+            <Button
+              color="danger"
+              size="sm"
+              className={`${styles.actionButton} ${styles.cancelButton} ${
+                darkMode ? styles.actionButtonDark : ''
+              }`}
               onClick={() => handleCancel(index)}
             >
               Cancel
-            </button>
+            </Button>
           </div>
         </div>
       );
@@ -158,37 +228,129 @@ function WeeklySummaries({ userProfile }) {
     if (summary && (canEdit || currentUserID === loggedInUserId)) {
       // Display the summary with an "Edit" button
       return (
-        <div>
+        <div className={darkMode ? 'bg-yinmn-blue summary-text-light' : ''}>
           <h3>{title}</h3>
           {parse(editedSummaries[index])}
-          <button type="button" className="button edit-button" onClick={() => toggleEdit(index)}>
+          <Button
+            color="primary"
+            size="sm"
+            className={`${styles.actionButton} ${styles.editButton} ${
+              darkMode ? styles.actionButtonDark : ''
+            }`}
+            onClick={() => toggleEdit(index)}
+          >
             Edit
-          </button>
+          </Button>
+          <Button
+            color="secondary"
+            size="sm"
+            className={`${styles.actionButton} ${styles.moveButton} ${
+              darkMode ? styles.actionButtonDark : ''
+            }`}
+            onClick={() => {
+              setMoveSourceIndex(index);
+              setMoveDestinationIndex('');
+            }}
+          >
+            Move
+          </Button>
+          {moveSourceIndex === index && (
+            <div
+              className={`${styles.moveControls} ${
+                darkMode ? styles.moveControlsDark : ''
+              }`}
+            >
+              <label htmlFor={`move-summary-${index}`}>
+                Move to
+                <select
+                  id={`move-summary-${index}`}
+                  className={`${styles.moveSelect} ${
+                    darkMode ? styles.moveSelectDark : ''
+                  }`}
+                  value={moveDestinationIndex}
+                  onChange={event => setMoveDestinationIndex(event.target.value)}
+                  disabled={isMoving}
+                >
+                  <option value="">Select a week</option>
+                  {[
+                    "This week's summary",
+                    "Last week's summary",
+                    "The week before last's summary",
+                  ].map((weekTitle, destinationIndex) => (
+                    <option
+                      key={weekTitle}
+                      value={destinationIndex}
+                      disabled={
+                        destinationIndex === index ||
+                        Boolean(userProfile.weeklySummaries[destinationIndex]?.summary)
+                      }
+                    >
+                      {weekTitle}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <Button
+                color="success"
+                size="sm"
+                className={`${styles.actionButton} ${styles.saveButton} ${
+                  darkMode ? styles.actionButtonDark : ''
+                }`}
+                onClick={handleMove}
+                disabled={moveDestinationIndex === '' || isMoving}
+              >
+                {isMoving ? <Spinner animation="border" size="sm" /> : 'Confirm Move'}
+              </Button>
+              <Button
+                color="danger"
+                size="sm"
+                className={`${styles.actionButton} ${styles.cancelButton} ${
+                  darkMode ? styles.actionButtonDark : ''
+                }`}
+                onClick={cancelMove}
+                disabled={isMoving}
+              >
+                Cancel
+              </Button>
+            </div>
+          )}
         </div>
       );
     }
     if (summary) {
-      // Display the summary with an "Edit" button
+      // Display the summary without edit button for users without edit permissions
       return (
-        <div>
+        <div className={darkMode ? 'bg-yinmn-blue summary-text-light' : ''}>
           <h3>{title}</h3>
           {parse(editedSummaries[index])}
         </div>
       );
     }
-    // Display a message when there's no summary
+    // Display a message and allow authorized users to add a missing summary.
     return (
       <div>
         <h3>{title}</h3>
-        <p>
+        <p className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
           {userProfile.firstName} {userProfile.lastName} did not submit a summary.
         </p>
+        {(canEdit || currentUserID === loggedInUserId) && (
+          <Button
+            color="primary"
+            size="sm"
+            className={`${styles.actionButton} ${styles.editButton} ${
+              darkMode ? styles.actionButtonDark : ''
+            }`}
+            onClick={() => toggleEdit(index)}
+          >
+            Edit
+          </Button>
+        )}
       </div>
     );
   };
 
   return (
-    <div className={`responsive-font-size p-2 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+    <div className={`${styles['responsive-font-size']} p-2 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
       {renderSummary("This week's summary", userProfile.weeklySummaries[0]?.summary, 0)}
       {renderSummary("Last week's summary", userProfile.weeklySummaries[1]?.summary, 1)}
       {renderSummary("The week before last's summary", userProfile.weeklySummaries[2]?.summary, 2)}

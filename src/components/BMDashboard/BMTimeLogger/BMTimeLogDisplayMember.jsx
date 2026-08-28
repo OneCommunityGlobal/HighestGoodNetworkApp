@@ -1,6 +1,6 @@
 import { CardHeader, Card } from 'reactstrap';
 import BMTimeLogStopWatch from './BMTimeLogStopWatch';
-import './BMTimeLogCard.css';
+import styles from './BMTimeLogCard.module.css';
 
 // function BMTimeLogCard({ selectedProject }) {
 function BMTimeLogDisplayMember({ firstName, lastName, role, memberId, projectId }) {
@@ -18,9 +18,12 @@ function BMTimeLogDisplayMember({ firstName, lastName, role, memberId, projectId
 
   return (
     <div>
-      <Card className="member-card rounded-8 mr-3 my-3" style={{ border: borderProperty }}>
-        <CardHeader className="member-card-header" style={{ backgroundColor: cardColor }}>
-          <h5 className="member-card-name">
+      <Card
+        className={`${styles.memberCard} rounded-8 mr-3 my-3`}
+        style={{ border: borderProperty }}
+      >
+        <CardHeader className={`${styles.memberCardHeader}`} style={{ backgroundColor: cardColor }}>
+          <h5 className={`${styles.memberCardName}`}>
             {firstName} {lastName}
           </h5>
         </CardHeader>

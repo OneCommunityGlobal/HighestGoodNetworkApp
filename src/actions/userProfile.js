@@ -10,7 +10,7 @@ import {
   USER_NOT_FOUND_ERROR,
   GET_USER_AUTOCOMPLETE,
 } from '../constants/userProfile';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 export const getProjectsByPersonActionCreator = data => ({
   type: GET_PROJECT_BY_USER_NAME,
@@ -77,7 +77,7 @@ export const getUserTasks = userId => {
         toast.info(`Get user task request status is not 200, status message: ${res.statusText}`);
       }
     } catch (error) {
-      toast.error(error);
+      toast.error(error?.message || String(error));
     }
   };
 };

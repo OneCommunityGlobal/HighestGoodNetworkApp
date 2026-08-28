@@ -1,9 +1,8 @@
-import { getFormState } from 'actions/formActions';
-
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addQuestion, resetFormState } from 'actions/formActions';
+import { addQuestion, resetFormState, getFormState } from '~/actions/formActions';
 import QuestionMaker from './Components/QuestionMaker';
+import styles from './formsPage.module.css';
 
 export default function FormEditor() {
   const formQuestions = useSelector(state => state.form.questions);
@@ -16,7 +15,7 @@ export default function FormEditor() {
   return (
     // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
-      <div className="container-fluid">
+      <div className={`container-fluid ${styles.pageShell}`}>
         <h1>Form Builder</h1>
         {/* <h2>Untitled Form</h2>
         <h3>summary</h3> */}

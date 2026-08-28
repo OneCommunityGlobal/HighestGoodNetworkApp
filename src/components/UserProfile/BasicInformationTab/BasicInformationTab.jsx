@@ -1,25 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { Row, Label, Input, Col, FormFeedback, FormGroup, Button } from 'reactstrap';
-import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
-import moment from 'moment';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PropTypes from 'prop-types';
+import { useEffect, useRef, useState } from 'react';
 import PhoneInput from 'react-phone-input-2';
-// import 'react-phone-input-2/lib/style.css';
-import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton';
-import TimeZoneDropDown from '../TimeZoneDropDown';
-import { connect } from 'react-redux';
-import hasPermission from 'utils/permissions';
-import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
-import './BasicInformationTab.css';
-import { boxStyle, boxStyleDark } from 'styles';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import { formatDateLocal } from 'utils/formatDate';
-import { ENDPOINTS } from 'utils/URL';
+import { Button, Col, FormFeedback, FormGroup, Input, Label, Row } from 'reactstrap';
+import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
+
+//// import 'react-phone-input-2/lib/style.css';
 import axios from 'axios';
 import { isString } from 'lodash';
+import { connect, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { useDispatch } from 'react-redux';
+import PauseAndResumeButton from '~/components/UserManagement/PauseAndResumeButton';
+import SetUpFinalDayButton from '~/components/UserManagement/SetUpFinalDayButton';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { formatDateCompany, formatDateLocal } from '~/utils/formatDate';
+import hasPermission from '~/utils/permissions';
+import { ENDPOINTS } from '~/utils/URL';
+import TimeZoneDropDown from '../TimeZoneDropDown';
+import styles from './BasicInformationTab.module.css';
+import RoleChangePermissionsModal from '~/components/UserProfile/RoleChangePermissionsModal';
 
-const Name = props => {
+
+export const Name = props => {
   const {
     userProfile,
     setUserProfile,
@@ -31,17 +35,21 @@ const Name = props => {
   } = props;
 
   const { firstName, lastName } = userProfile;
-
   if (canEdit) {
     return (
       <>
-        <Col md={desktopDisplay ? '3' : ''}>
+        <Col md={desktopDisplay ? '3' : ''} style={{paddingRight: 0}} className={darkMode ? 'bg-yinmn-blue' : ''}>
           <FormGroup>
+            <div style={{position: 'relative'}}>
             <Input
               type="text"
               name="firstName"
               id="firstName"
+
+              data-testid='firstName'
+
               className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
+
               value={firstName}
               // className={styleProfile.profileText}
               onChange={e => {
@@ -55,15 +63,35 @@ const Name = props => {
               placeholder="First Name"
               invalid={!formValid.firstName}
             />
+            <FontAwesomeIcon
+              icon={faCopy}
+              title="Copy first name"
+              onClick={() => {
+                navigator.clipboard.writeText(firstName);
+                toast.success('First Name copied!');
+              }}
+              style={{
+                position: 'absolute',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                color: darkMode ? '#fff' : '#000',
+                top: '50%',
+                right: '10px', 
+                transform: 'translateY(-50%)',
+              }}
+            />
+            </div>
             <FormFeedback>First Name Can&apos;t be empty</FormFeedback>
           </FormGroup>
         </Col>
-        <Col md={desktopDisplay ? '3' : ''}>
+        <Col md={desktopDisplay ? '3' : ''} className={darkMode ? 'bg-yinmn-blue' : ''}>
           <FormGroup>
+          <div style={{position: 'relative'}}>
             <Input
               type="text"
               name="lastName"
               id="lastName"
+              data-testid='lastName'
               value={lastName}
               className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
               // className={styleProfile.profileText}
@@ -81,6 +109,24 @@ const Name = props => {
               placeholder="Last Name"
               invalid={!formValid.lastName}
             />
+            <FontAwesomeIcon
+              icon={faCopy}
+              title="Copy last name"
+              onClick={() => {
+                navigator.clipboard.writeText(lastName);
+                toast.success('Last Name copied!');
+              }}
+              style={{
+                position: 'absolute',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                color: darkMode ? '#fff' : '#000',
+                top: '50%',
+                right: '10px', 
+                transform: 'translateY(-50%)',
+              }}
+            />
+            </div>
             <FormFeedback>Last Name Can&apos;t have less than 2 characters</FormFeedback>
           </FormGroup>
         </Col>
@@ -90,34 +136,54 @@ const Name = props => {
 
   return (
     <>
-      <Col>
+      <Col className={darkMode ? 'bg-yinmn-blue' : ''}>
         <p className={`text-right ${darkMode ? 'text-light' : ''}`}>{`${firstName} ${lastName}`}</p>
       </Col>
     </>
   );
 };
 
-const Title = props => {
+  export const Title = props => {
   const { userProfile, setUserProfile, canEdit, desktopDisplay, darkMode } = props;
-
   const { jobTitle } = userProfile;
 
   if (canEdit) {
     return (
       <>
-        <Col md={desktopDisplay ? '6' : ''}>
+        <Col md={desktopDisplay ? '6' : ''} className={darkMode ? 'bg-yinmn-blue' : ''}>
           <FormGroup>
+            <div style={{position: 'relative', width: '100%'}}>
             <Input
               type="text"
               name="title"
               id="jobTitle"
+              data-testid="jobTitle"
               value={jobTitle}
               className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
               onChange={e => {
                 setUserProfile({ ...userProfile, jobTitle: e.target.value });
               }}
               placeholder="Job Title"
+              style={{ paddingRight: '2.5rem' }}
             />
+            <FontAwesomeIcon
+              icon={faCopy}
+              title="Copy title"
+              onClick={() => {
+                navigator.clipboard.writeText(jobTitle);
+                toast.success('Title copied!');
+              }}
+              style={{
+                position: 'absolute',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                color: darkMode ? '#fff' : '#000',
+                top: '50%',
+                right: '10px', 
+                transform: 'translateY(-50%)',
+              }}
+            />
+            </div>
           </FormGroup>
         </Col>
       </>
@@ -125,14 +191,15 @@ const Title = props => {
   }
   return (
     <>
-      <Col>
+      <Col className={darkMode ? 'bg-yinmn-blue' : ''}>
         <p className={`text-right ${darkMode ? 'text-light' : ''}`}>{`${jobTitle}`}</p>
       </Col>
     </>
   );
 };
 
-const Email = props => {
+
+export const Email = props => {
   const {
     userProfile,
     setUserProfile,
@@ -150,8 +217,9 @@ const Email = props => {
   if (canEdit) {
     return (
       <>
-        <Col md={desktopDisplay ? '6' : ''}>
+        <Col md={desktopDisplay ? '6' : ''} className={darkMode ? 'bg-yinmn-blue' : ''}>
           <FormGroup>
+            <div style={{position: 'relative', width: '100%' }}>
             <Input
               type="email"
               name="email"
@@ -165,9 +233,27 @@ const Email = props => {
               placeholder="Email"
               invalid={!formValid.email}
             />
-
+            <FontAwesomeIcon
+              icon={faCopy}
+              title="Copy email"
+              onClick={() => {
+                navigator.clipboard.writeText(email);
+                toast.success('Email copied!');
+              }}
+              style={{
+                position: 'absolute',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                color: darkMode ? '#fff' : '#000',
+                top: '50%',
+                right: '10px', 
+                transform: 'translateY(-50%)',
+              }}
+            />
+            </div>
             <ToggleSwitch
               switchType="email"
+              id="emailPrivacy"
               state={privacySettings?.email}
               handleUserProfile={props.handleUserProfile}
               darkMode={darkMode}
@@ -175,9 +261,29 @@ const Email = props => {
 
             <ToggleSwitch
               switchType="email-subcription"
-              state={emailSubscriptions ? emailSubscriptions : false}
+
+              id="emailSubscription"
+              state={emailSubscriptions? emailSubscriptions : false}
+
+              // state={emailSubscriptions ? emailSubscriptions : false}
+
               handleUserProfile={props.handleUserProfile}
               darkMode={darkMode}
+            />
+
+            <Input
+              type="email"
+              name="email"
+              id="email"
+              data-testid="email"
+              value={email}
+              className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
+              onChange={e => {
+                setUserProfile({ ...userProfile, email: e.target.value });
+                setFormValid({ ...formValid, email: emailPattern.test(e.target.value) });
+              }}
+              placeholder="Email"
+              invalid={!formValid.email}
             />
 
             <FormFeedback>Email is not Valid</FormFeedback>
@@ -189,7 +295,7 @@ const Email = props => {
   return (
     <>
       {privacySettings?.email && (
-        <Col>
+        <Col className={darkMode ? 'bg-yinmn-blue' : ''}>
           <p className={`text-right ${darkMode ? 'text-light' : ''}`}>{email}</p>
         </Col>
       )}
@@ -197,7 +303,7 @@ const Email = props => {
   );
 };
 
-const formatPhoneNumber = str => {
+export const formatPhoneNumber = str => {
   // Filter only numbers from the input
   const cleaned = `${str}`.replace(/\D/g, '');
   if (cleaned.length === 10) {
@@ -227,45 +333,77 @@ const formatPhoneNumber = str => {
   // Unconventional
   return str;
 };
-const Phone = props => {
-  const {
-    userProfile,
-    setUserProfile,
-    handleUserProfile,
-    canEdit,
-    desktopDisplay,
-    darkMode,
-  } = props;
+
+export const Phone = props => {
+  const { userProfile, setUserProfile, handleUserProfile, canEdit, desktopDisplay, darkMode } = props;
   const { phoneNumber, privacySettings } = userProfile;
+  const phoneInputWrapperRef = useRef(null);
+
   if (canEdit) {
     return (
       <>
-        <Col md={desktopDisplay ? '6' : ''}>
+        <Col md={desktopDisplay ? '6' : ''} className={darkMode ? 'bg-yinmn-blue' : ''}>
           <FormGroup>
-            <PhoneInput
-              buttonClass={`${darkMode ? 'bg-darkmode-liblack' : ''}`}
-              inputClass={`phone-input-style ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
-              country={'us'}
-              value={phoneNumber}
-              onChange={phoneNumber => {
-                setUserProfile({ ...userProfile, phoneNumber: phoneNumber.trim() });
-              }}
-            />
+            {/* one toggle, same as Email */}
             <ToggleSwitch
               switchType="phone"
+              id="phone"
               state={privacySettings?.phoneNumber}
               handleUserProfile={handleUserProfile}
               darkMode={darkMode}
             />
+
+            {/* wrapper to position the copy icon correctly */}
+            <div
+              ref={phoneInputWrapperRef}
+              style={{ position: 'relative', width: '100%' }}
+            >
+              <PhoneInput
+                buttonClass={`${darkMode ? 'bg-darkmode-liblack' : ''}`}
+                inputClass={`phone-input-style ${
+                  darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''
+                }`}
+                country="us"
+                data-testid="ph-input-style"
+                id="ph-input-style"
+                value={phoneNumber}
+                onChange={value => {
+                  setUserProfile({ ...userProfile, phoneNumber: value.trim() });
+                }}
+              />
+
+              <FontAwesomeIcon
+                icon={faCopy}
+                title="Copy phone number"
+                onClick={() => {
+                  const input = phoneInputWrapperRef.current?.querySelector('input');
+                  if (input) {
+                    navigator.clipboard.writeText(input.value);
+                    toast.success('Phone number copied!');
+                  }
+                }}
+                style={{
+                  position: 'absolute',
+                  cursor: 'pointer',
+                  fontSize: '1rem',
+                  color: darkMode ? '#fff' : '#000',
+                  top: '50%',
+                  right: '10px',
+                  transform: 'translateY(-50%)',
+                  zIndex: 2,
+                }}
+              />
+            </div>
           </FormGroup>
         </Col>
       </>
     );
   }
+
   return (
     <>
       {privacySettings?.phoneNumber && (
-        <Col>
+        <Col className={darkMode ? 'bg-yinmn-blue' : ''}>
           <p className={`text-right ${darkMode ? 'text-light' : ''}`}>
             {formatPhoneNumber(phoneNumber)}
           </p>
@@ -275,9 +413,8 @@ const Phone = props => {
   );
 };
 
-const TimeZoneDifference = props => {
+export const TimeZoneDifference = props => {
   const { isUserSelf, errorOccurred, setErrorOccurred, desktopDisplay, darkMode } = props;
-
   const [signedOffset, setSignedOffset] = useState('');
   const viewingTimeZone = props.userProfile.timeZone;
   const yourLocalTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -317,7 +454,7 @@ const TimeZoneDifference = props => {
   if (!isUserSelf) {
     return (
       <>
-        <Col md="6">
+        <Col md="6" className={darkMode ? 'bg-yinmn-blue' : ''}>
           <p className={`text-right ${darkMode ? 'text-light' : ''}`}>{signedOffset} hours</p>
         </Col>
       </>
@@ -326,7 +463,7 @@ const TimeZoneDifference = props => {
 
   return (
     <>
-      <Col md={desktopDisplay ? '6' : ''}>
+      <Col md={desktopDisplay ? '6' : ''} className={darkMode ? 'bg-yinmn-blue' : ''}>
         <p
           className={`${darkMode ? 'text-light' : ''} ${
             desktopDisplay ? 'text-right' : 'text-left'
@@ -353,17 +490,19 @@ const BasicInformationTab = props => {
     role,
     loadUserProfile,
     darkMode,
+    hasFinalDay,
   } = props;
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [desktopDisplay, setDesktopDisplay] = useState(window.innerWidth > 1024);
   const [errorOccurred, setErrorOccurred] = useState(false);
+  const [showRolePermsModal, setShowRolePermsModal] = useState(false);
+  const [newRole, setNewRole] = useState(userProfile.role);
   const dispatch = useDispatch();
   const rolesAllowedToEditStatusFinalDay = ['Administrator', 'Owner'];
-  const canEditStatus =
-  rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission('pauseUserActivity'));
+  const canEditStatus = dispatch(hasPermission('interactWithPauseUserButton'));
 
   const canEditEndDate =
-  rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission('setUserFinalDay'));
+  rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission('setFinalDay'));
 
 
   let topMargin = '6px';
@@ -385,6 +524,7 @@ const BasicInformationTab = props => {
   };
   const onClickGetTimeZone = () => {
     if (!userProfile.location.userProvided) {
+      // eslint-disable-next-line no-alert
       alert('Please enter valid location');
       return;
     }
@@ -414,6 +554,22 @@ const BasicInformationTab = props => {
     setDesktopDisplay(window.innerWidth > 1024);
   };
 
+  const updateSelectedRole = selectedRole => {
+    setNewRole(selectedRole);
+    const retrievedRole = roles.find(role => role.roleName === selectedRole);
+    const remainingAddedPermissions = userProfile.permissions.frontPermissions.some(permission => !retrievedRole.permissions.includes(permission));
+    const remainingRemovedPermissions = retrievedRole.permissions.some(permission => userProfile.permissions.removedDefaultPermissions.includes(permission));
+
+    if(remainingAddedPermissions || remainingRemovedPermissions) {
+      setShowRolePermsModal(true)
+    } else {
+      setUserProfile({ 
+        ...userProfile, 
+        role: selectedRole,
+      })
+    }
+  }
+
   useEffect(() => {
     window.addEventListener('resize', handleResize);
     return () => {
@@ -423,8 +579,8 @@ const BasicInformationTab = props => {
 
   const nameComponent = (
     <>
-      <Col>
-        <span className="label-icon-container">
+      <Col md="5" className={darkMode ? styles['dark-label-col'] : ''}>
+        <span className={styles['label-icon-container']}>
           <Label className={darkMode ? 'text-light label-with-icon' : 'label-with-icon'}>
             Name
           </Label>
@@ -456,8 +612,8 @@ const BasicInformationTab = props => {
 
   const titleComponent = (
     <>
-      <Col>
-        <span className="label-icon-container">
+      <Col md="5" className={darkMode ? styles['dark-label-col'] : ''}>
+        <span className={styles['label-icon-container']}>
           <Label className={darkMode ? 'text-light label-with-icon' : 'label-with-icon'}>
             Title
           </Label>
@@ -488,8 +644,8 @@ const BasicInformationTab = props => {
 
   const emailComponent = (
     <>
-      <Col>
-        <span className="label-icon-container">
+      <Col md="5" className={darkMode ? styles['dark-label-col'] : ''}>
+        <span className={styles['label-icon-container']}>
           <Label className={darkMode ? 'text-light label-with-icon' : ' label-with-icon'}>
             Email
           </Label>
@@ -521,8 +677,8 @@ const BasicInformationTab = props => {
 
   const phoneComponent = (
     <>
-      <Col>
-        <span className="label-icon-container">
+      <Col md="5" className={darkMode ? styles['dark-label-col'] : ''}>
+        <span className={styles['label-icon-container']}>
           <Label className={darkMode ? 'text-light label-with-icon' : 'label-with-icon'}>
             Phone
           </Label>
@@ -553,16 +709,17 @@ const BasicInformationTab = props => {
 
   const videoCallPreferenceComponent = (
     <>
-      <Col>
+      <Col md="5" className={darkMode ? styles['dark-label-col'] : ''}>
         <Label className={darkMode ? 'text-light' : ''}>Video Call Preference</Label>
       </Col>
-      <Col md={desktopDisplay ? '6' : ''}>
+      <Col md={desktopDisplay ? '6' : ''} className={darkMode ? 'bg-yinmn-blue' : ''}>
         {canEdit ? (
           <FormGroup disabled={!canEdit}>
             <Input
               type="text"
               name="collaborationPreference"
               id="collaborationPreference"
+              data-testid="collaborationPreference"
               value={userProfile.collaborationPreference}
               className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
               onChange={e => {
@@ -572,7 +729,7 @@ const BasicInformationTab = props => {
             />
           </FormGroup>
         ) : (
-          `${userProfile.collaborationPreference}`
+          <p className={`text-right ${darkMode ? 'text-light' : ''}`}>{userProfile.collaborationPreference}</p>
         )}
       </Col>
     </>
@@ -580,47 +737,51 @@ const BasicInformationTab = props => {
 
   const roleComponent = (
     <>
-      <Col>
+      <Col md="5" className={darkMode ? styles['dark-label-col'] : ''}>
         <Label className={darkMode ? 'text-light' : ''}>Role</Label>
       </Col>
-      <Col md={desktopDisplay ? '6' : ''}>
+      <Col md={desktopDisplay ? '6' : ''} className={darkMode ? 'bg-yinmn-blue' : ''}>
         {canEditRole ? (
           <FormGroup>
             <select
-              value={userProfile.role}
-              onChange={e => {
-                setUserProfile({
-                  ...userProfile,
-                  role: e.target.value,
-                  permissions: { ...userProfile.permissions, frontPermissions: [] },
-                });
-              }}
               id="role"
               name="role"
               className={`form-control ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
+              value={newRole || ''}   // make sure this is a string
+              onChange={e => {
+                updateSelectedRole(e.target.value)
+              }}
             >
-              {roles.map(({ roleName }) => {
-                if (roleName === 'Owner') return;
-                return (
-                  <option key={roleName} value={roleName}>
-                    {roleName}
-                  </option>
-                );
-              })}
+              {/* Optional placeholder when no role selected */}
+              {!userProfile.role && <option value="">Select role</option>}
+
               {canAddDeleteEditOwners && (
                 <option value="Owner" style={desktopDisplay ? { marginLeft: '5px' } : {}}>
                   Owner
                 </option>
               )}
+  
+              {(roles || [])
+                .map(r => (typeof r === 'string' ? r : r.roleName)) // normalize
+                .filter(Boolean)
+                .map(roleName => {
+                  if (roleName === 'Owner') return null; // skip Owner in this list
+                  return (
+                    <option key={roleName} value={roleName}>
+                      {roleName}
+                    </option>
+                  );
+                })}
             </select>
           </FormGroup>
+          
         ) : (
-          `${userProfile.role}`
+          <p className={`text-right ${darkMode ? 'text-light' : ''}`}>{userProfile.role}</p>
         )}
       </Col>
       {desktopDisplay ? (
         <Col md="1">
-          <div style={{ marginTop: topMargin, }}>
+          <div style={{ marginTop: topMargin }}>
             <EditableInfoModal
               role={role}
               areaName={'roleInfo'}
@@ -635,25 +796,27 @@ const BasicInformationTab = props => {
       )}
     </>
   );
+  
 
   const locationComponent = (
     <>
       {canEdit && (
         <>
-          <Col md={{ size: 5, offset: 0 }}>
+          <Col md={{ size: 5, offset: 0 }} className={darkMode ? styles['dark-label-col'] : ''}>
             <Label className={darkMode ? 'text-light' : ''}>Location</Label>
           </Col>
           {desktopDisplay ? (
-            <Col md="6">
+            <Col md="6" style={{paddingRight: 0}} className={darkMode ? 'bg-yinmn-blue' : ''}>
               <Row className="ml-0">
-                <Col className="p-0" style={{ marginRight: '10px' }}>
+                <Col className="p-0">
                   <Input
+                    data-testid="location"
                     onChange={handleLocation}
                     value={locationCheckValue(userProfile.location || '')}
                     className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
                   />
                 </Col>
-                <Col>
+                <Col style={{paddingRight: 0}}>
                   <Button
                     color="secondary"
                     block
@@ -667,8 +830,8 @@ const BasicInformationTab = props => {
               </Row>
             </Col>
           ) : (
-            <Col className="cols">
-              <Input onChange={handleLocation} value={userProfile.location.userProvided || ''} />
+            <Col className={styles['cols']}>
+              <Input data-testid="location" onChange={handleLocation} value={userProfile.location.userProvided || ''} />
               <div>
                 <Button
                   color="secondary"
@@ -689,11 +852,11 @@ const BasicInformationTab = props => {
 
   const timeZoneComponent = (
     <>
-      <Col>
+      <Col md="5" className={darkMode ? styles['dark-label-col'] : ''}>
         <Label className={darkMode ? 'text-light' : ''}>Time Zone</Label>
       </Col>
-      <Col md={desktopDisplay ? '6' : ''}>
-        {!canEdit && <p className={darkMode ? 'text-light' : ''}>{userProfile.timeZone}</p>}
+      <Col md={desktopDisplay ? '6' : ''} className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <p className={`text-right ${darkMode ? 'text-light' : ''}`}>{userProfile.timeZone}</p>
         {canEdit && (
           <TimeZoneDropDown
             filter={timeZoneFilter}
@@ -710,7 +873,8 @@ const BasicInformationTab = props => {
 
   const timeZoneDifferenceComponent = (
     <>
-      <Col md={desktopDisplay ? '5' : ''}>
+      <Col md={desktopDisplay ? '5' : ''} className={darkMode ? styles['dark-label-col'] : ''}>
+        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
         <label className={darkMode ? 'text-light' : ''}>
           Difference in this Time Zone from Your Local
         </label>
@@ -728,16 +892,99 @@ const BasicInformationTab = props => {
       />
     </>
   );
+  const statusComponent = (
+    <>
+      <Col md={desktopDisplay ? '5' : ''} className={darkMode ? styles['dark-label-col'] : ''}>
+        <Label className={darkMode ? 'text-light' : ''}>
+          Status
+        </Label>
+      </Col>
+      <Col md={desktopDisplay ? '6' : ''} className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <p className={`${darkMode ? 'text-light' : ''}`} style={{ margin: '0', flex: 1 }}>
+            {(() => {
+              if (userProfile.isActive) return 'Active';
+              if (userProfile.reactivationDate) return 'Paused until ' + formatDateCompany(userProfile.reactivationDate);
+              return 'Inactive';
+            })()}
+          </p>
+          {canEdit && canEditStatus && (
+            <PauseAndResumeButton
+              setUserProfile={setUserProfile}
+              loadUserProfile={loadUserProfile}
+              isBigBtn={true}
+              userProfile={userProfile}
+              darkMode={darkMode}
+            />
+          )}
+        </div>
+      </Col>
+    </>
+  );
 
   const endDateComponent = (
     <>
-      <Col md={desktopDisplay ? '8' : ''} className={desktopDisplay ? 'mr-5' : ''}>
-        <Label className={`mr-1 ${darkMode ? 'text-light' : ''}`}>
-          {userProfile.endDate
-            ? 'End Date ' + formatDateLocal(userProfile.endDate)
-            : 'End Date ' + 'N/A'}
+      <Col md={desktopDisplay ? '5' : ''} className={darkMode ? styles['dark-label-col'] : ''}>
+        <Label className={darkMode ? 'text-light' : ''}>
+          End Date
         </Label>
-        {canEdit && canEditEndDate &&!desktopDisplay && (
+      </Col>
+      <Col md={desktopDisplay ? '6' : ''} className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <p className={`${darkMode ? 'text-light' : ''}`} style={{ margin: '0', flex: 1 }}>
+            {userProfile.endDate ? formatDateLocal(userProfile.endDate) : 'N/A'}
+          </p>
+          {canEdit && canEditEndDate && (
+            <SetUpFinalDayButton
+              loadUserProfile={loadUserProfile}
+              setUserProfile={setUserProfile}
+              isBigBtn={true}
+              userProfile={userProfile}
+              darkMode={darkMode}
+              hasFinalDay={hasFinalDay}
+            />
+          )}
+        </div>
+      </Col>
+    </>
+  );
+
+  const statusComponentMobile = (
+    <Col>
+      <Label className={darkMode ? 'text-light' : ''}>Status</Label>
+      <div>
+        <Label style={{ fontWeight: 'normal' }} className={darkMode ? 'text-light' : ''}>
+          {userProfile.isActive
+            ? 'Active'
+            : userProfile.reactivationDate
+            ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
+            : 'Inactive'}
+        </Label>
+        &nbsp;
+        {canEdit && canEditStatus && (
+          <PauseAndResumeButton
+            setUserProfile={setUserProfile}
+            loadUserProfile={loadUserProfile}
+            isBigBtn={true}
+            userProfile={userProfile}
+            darkMode={darkMode}
+          />
+        )}
+      </div>
+    </Col>
+  );
+
+  const endDateComponentMobile = (
+    <Col>
+      <Label className={darkMode ? 'text-light' : ''}>End Date</Label>
+      <div>
+        <Label style={{ fontWeight: 'normal' }} className={darkMode ? 'text-light' : ''}>
+          {userProfile.endDate
+            ? formatDateLocal(userProfile.endDate)
+            : 'N/A'}
+        </Label>
+        &nbsp;
+        {canEdit && canEditEndDate && (
           <SetUpFinalDayButton
             loadUserProfile={loadUserProfile}
             setUserProfile={setUserProfile}
@@ -746,109 +993,15 @@ const BasicInformationTab = props => {
             darkMode={darkMode}
           />
         )}
-      </Col>
-      {desktopDisplay && canEdit && canEditEndDate && (
-        <Col>
-          <SetUpFinalDayButton
-            loadUserProfile={loadUserProfile}
-            setUserProfile={setUserProfile}
-            isBigBtn={true}
-            userProfile={userProfile}
-            darkMode={darkMode}
-          />
-        </Col>
-      )}
-    </>
-  );
-
-  const statusComponent = (
-    <>
-      {desktopDisplay ? (
-        <Row
-          style={{
-            display: 'flex',
-            alignItems: 'center', // Ensures vertical alignment of all items
-            justifyContent: 'space-between', // Space between the columns
-          }}
-        >
-          <Col
-            md="2"
-            className="mr-5"
-            style={{
-              display: 'flex',
-              alignItems: 'center', // Align label vertically
-            }}
-          >
-            <Label className={darkMode ? 'text-light' : ''} style={{ margin: '0' }}>
-              Status
-            </Label>
-          </Col>
-
-          <Col
-            style={{
-              display: 'flex',
-              alignItems: 'center', // Align label and button vertically
-              justifyContent: 'flex-end', // Align button to the far right
-            }}
-          >
-            <Label
-              style={{ margin: '0' }}
-              className={darkMode ? 'text-light label-with-icon' : 'label-with-icon'}
-            >
-              {userProfile.isActive
-                ? 'Active'
-                : userProfile.reactivationDate
-                ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
-                : 'Inactive'}
-            </Label>
-            &nbsp;
-            {canEdit && canEditStatus && (
-              <PauseAndResumeButton
-                setUserProfile={setUserProfile}
-                loadUserProfile={loadUserProfile}
-                isBigBtn={true}
-                userProfile={userProfile}
-                darkMode={darkMode}
-              />
-            )}
-          </Col>
-        </Row>
-      ) : (
-        // Non-desktop view
-        <>
-          <Col>
-            <Label className={darkMode ? 'text-light' : ''}>Status</Label>
-            <div>
-              <Label style={{ fontWeight: 'normal' }} className={darkMode ? 'text-light' : ''}>
-                {userProfile.isActive
-                  ? 'Active'
-                  : userProfile.reactivationDate
-                  ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
-                  : 'Inactive'}
-              </Label>
-              &nbsp;
-              {canEdit && canEditStatus && (
-                <PauseAndResumeButton
-                  setUserProfile={setUserProfile}
-                  loadUserProfile={loadUserProfile}
-                  isBigBtn={true}
-                  userProfile={userProfile}
-                  darkMode={darkMode}
-                />
-              )}
-            </div>
-          </Col>
-          {endDateComponent}
-        </>
-      )}
-    </>
+      </div>
+    </Col>
   );
 
   return (
     <div className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
       <div
         data-testid="basic-info-tab"
-        className={desktopDisplay ? 'basic-info-tab-desktop' : 'basic-info-tab-tablet'}
+        className={`${desktopDisplay ? styles['basic-info-tab-desktop'] : styles['basic-info-tab-tablet']} ${darkMode ? `bg-yinmn-blue ${styles['dark-mode']}` : ''}`}
       >
         {desktopDisplay ? (
           <>
@@ -872,7 +1025,10 @@ const BasicInformationTab = props => {
               {videoCallPreferenceComponent}
               <Col md="1" lg="1"></Col>
             </Row>
-            <Row style={{ marginBottom: '10px' }}>{roleComponent}</Row>
+            <Row style={{ marginBottom: '10px' }}>
+              {roleComponent}
+              <Col md="1" lg="1"></Col>
+            </Row>
             <Row style={{  marginBottom: '10px' }}>
               {locationComponent}
               <Col md="1"></Col>
@@ -881,29 +1037,129 @@ const BasicInformationTab = props => {
               {timeZoneComponent}
               <Col md="1"></Col>
             </Row>
-            <Row>{timeZoneDifferenceComponent}</Row>
-            <Row className='custom-row' style={{ marginBottom: '10px' }}>{statusComponent}</Row>
-            <Row className='custom-row' style={{ marginBottom: '10px' }}>{endDateComponent}</Row>
+            <Row style={{ marginBottom: '10px' }}>{timeZoneDifferenceComponent}<Col md="1"></Col></Row>
+            <Row style={{ marginBottom: '10px' }}>{statusComponent}<Col md="1"></Col></Row>
+            <Row style={{ marginBottom: '10px' }}>{endDateComponent}<Col md="1"></Col></Row>
           </>
         ) : (
           <>
-            <Col className="cols">{nameComponent}</Col>
-            <Col className="cols">{titleComponent}</Col>
-            <Col className="cols">{emailComponent}</Col>
-            <Col className="cols">{phoneComponent}</Col>
-            <Col className="cols">{videoCallPreferenceComponent}</Col>
-            <Col className="cols">{roleComponent}</Col>
-            <Col className="cols">{locationComponent}</Col>
-            <Col className="cols">{timeZoneComponent}</Col>
-            <Col className="cols">{timeZoneDifferenceComponent}</Col>
+            <Col className={styles['cols']}>{nameComponent}</Col>
+            <Col className={styles['cols']}>{titleComponent}</Col>
+            <Col className={styles['cols']}>{emailComponent}</Col>
+            <Col className={styles['cols']}>{phoneComponent}</Col>
+            <Col className={styles['cols']}>{videoCallPreferenceComponent}</Col>
+            <Col className={styles['cols']}>{roleComponent}</Col>
+            <Col className={styles['cols']}>{locationComponent}</Col>
+            <Col className={styles['cols']}>{timeZoneComponent}</Col>
+            <Col className={styles['cols']}>{timeZoneDifferenceComponent}</Col>
             <hr />
             <Row xs="2" style={{ marginLeft: '1rem' }}>
-              {statusComponent}
+              {statusComponentMobile}
+            </Row>
+            <Row xs="2" style={{ marginLeft: '1rem' }}>
+              {endDateComponentMobile}
             </Row>
           </>
         )}
       </div>
+      <RoleChangePermissionsModal
+        isOpen={showRolePermsModal}
+        onClose={() => setShowRolePermsModal(false)}
+        newRole={newRole}
+        roles={roles}
+        userProfile={userProfile}
+        setUserProfile={setUserProfile}
+        loadUserProfile={loadUserProfile}
+        desktopDisplay={desktopDisplay}
+        canAddDeleteEditOwners={canAddDeleteEditOwners}
+      />
     </div>
   );
 };
+
+BasicInformationTab.propTypes = {
+  userProfile: PropTypes.shape({
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    jobTitle: PropTypes.string,
+    email: PropTypes.string,
+    phoneNumber: PropTypes.string,
+    collaborationPreference: PropTypes.string,
+    role: PropTypes.string,
+    location: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.shape({
+        userProvided: PropTypes.string,
+        coords: PropTypes.shape({
+          lat: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+          lng: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        }),
+        country: PropTypes.string,
+        city: PropTypes.string,
+      }),
+    ]),
+    timeZone: PropTypes.string,
+    isActive: PropTypes.bool,
+    reactivationDate: PropTypes.string,
+    endDate: PropTypes.string,
+    privacySettings: PropTypes.shape({
+      email: PropTypes.bool,
+      phoneNumber: PropTypes.bool,
+    }),
+    emailSubscriptions: PropTypes.bool,
+    permissions: PropTypes.shape({
+      frontPermissions: PropTypes.array,
+    }),
+  }).isRequired,
+  setUserProfile: PropTypes.func.isRequired,
+  isUserSelf: PropTypes.bool,
+  handleUserProfile: PropTypes.func.isRequired,
+  formValid: PropTypes.shape({
+    firstName: PropTypes.bool,
+    lastName: PropTypes.bool,
+    email: PropTypes.bool,
+  }).isRequired,
+  setFormValid: PropTypes.func.isRequired,
+  canEdit: PropTypes.bool,
+  canEditRole: PropTypes.bool,
+  roles: PropTypes.arrayOf(
+    PropTypes.shape({
+      roleName: PropTypes.string,
+    })
+  ),
+  role: PropTypes.string,
+  loadUserProfile: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool,
+  hasPermission: PropTypes.func.isRequired,
+};
+Name.propTypes = {
+  userProfile: PropTypes.object.isRequired,
+  setUserProfile: PropTypes.func.isRequired,
+  formValid: PropTypes.object.isRequired,
+  setFormValid: PropTypes.func.isRequired,
+  canEdit: PropTypes.bool,
+  desktopDisplay: PropTypes.bool,
+  darkMode: PropTypes.bool,
+};
+
+Email.propTypes = {
+  userProfile: PropTypes.object.isRequired,
+  setUserProfile: PropTypes.func.isRequired,
+  formValid: PropTypes.object.isRequired,
+  setFormValid: PropTypes.func.isRequired,
+  canEdit: PropTypes.bool,
+  desktopDisplay: PropTypes.bool,
+  darkMode: PropTypes.bool,
+  handleUserProfile: PropTypes.func.isRequired,
+};
+
+Phone.propTypes = {
+  userProfile: PropTypes.object.isRequired,
+  setUserProfile: PropTypes.func.isRequired,
+  handleUserProfile: PropTypes.func.isRequired,
+  canEdit: PropTypes.bool,
+  desktopDisplay: PropTypes.bool,
+  darkMode: PropTypes.bool,
+};
+
 export default connect(null, { hasPermission })(BasicInformationTab);

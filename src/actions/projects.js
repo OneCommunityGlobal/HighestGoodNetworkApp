@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as types from '../constants/projects';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 /** *****************************************
  * PLAIN OBJECT ACTIONS
  ****************************************** */
@@ -53,8 +53,9 @@ const addNewProject = ({ newProject, status, error }) => ({
  * @param error: error message
  */
 // const updateProject = (projectId, projectName, category, isActive, status, error) => {
-const updateProject = ({ updatedProject, status, error }) => ({
+const updateProject = ({ projectId, updatedProject, status, error }) => ({
   type: types.UPDATE_PROJECT,
+  projectId: projectId ?? updatedProject?._id,
   updatedProject,
   status,
   error,
@@ -105,6 +106,24 @@ export const fetchAllProjects = () => {
   };
 };
 
+export const fetchAllArchivedProjects = () => {
+  return async dispatch => {
+    const url = ENDPOINTS.ARCHIVEDPROJECTS;
+    let status, error;
+    dispatch(setProjectsStart());
+    try {
+      const res = await axios.get(url);
+      status = res.status;
+      const projects = res.data;
+      dispatch(setProjectsSuccess({ projects, status }));
+    } catch (err) {
+      status = err.response.status;
+      error = err.response.data;
+      dispatch(setProjectsError({ status, error }));
+    }
+  };
+};
+
 /**
  * Post new project to DB
  * @param {projectName}: name of new project
@@ -141,10 +160,15 @@ export const postNewProject = (projectName, projectCategory) => {
 };
 
 export const modifyProject = updatedProject => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
     const url = ENDPOINTS.PROJECT + updatedProject._id;
     let status;
     let error;
+    
+    // Get the previous project state to check if category changed
+    const previousProject = getState().allProjects.projects.find(p => p._id === updatedProject._id);
+    const categoryChanged = previousProject && previousProject.category !== updatedProject.category;
+    
     try {
       const res = await axios.put(url, updatedProject);
       status = res.status;

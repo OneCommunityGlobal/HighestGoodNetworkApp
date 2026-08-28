@@ -1,7 +1,12 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { ENDPOINTS } from '../../utils/URL';
-import { GET_BM_LESSONS, UPDATE_LESSON, DELETE_LESSON, SET_LESSON } from '../../constants/bmdashboard/lessonConstants';
+import { ENDPOINTS } from '~/utils/URL';
+import {
+  GET_BM_LESSONS,
+  UPDATE_LESSON,
+  DELETE_LESSON,
+  SET_LESSON,
+} from '../../constants/bmdashboard/lessonConstants';
 import { getUserProfile } from '../userProfile';
 import { fetchProjectById } from './projectByIdAction';
 import { GET_ERRORS } from '../../constants/errors';
@@ -40,13 +45,20 @@ export const setLessons = payload => {
   };
 };
 
+// A valid MongoDB ObjectId is a 24-character hex string. Lesson author/project
+// fields sometimes hold display names (e.g. "James", "project 1") instead of
+// real references; skip those so we don't fire doomed 404/500/400 requests.
+const isObjectId = id => typeof id === 'string' && /^[0-9a-fA-F]{24}$/.test(id);
+
 export const fetchBMLessons = () => {
   return async dispatch => {
     try {
       const response = await axios.get(ENDPOINTS.BM_LESSONS);
       const lessons = response.data;
-      const authorIds = [...new Set(lessons.map(lesson => lesson.author))];
-      const projectIds = [...new Set(lessons.map(lesson => lesson.relatedProject))];
+      const authorIds = [...new Set(lessons.map(lesson => lesson.author).filter(isObjectId))];
+      const projectIds = [
+        ...new Set(lessons.map(lesson => lesson.relatedProject).filter(isObjectId)),
+      ];
 
       // Keep the more robust approach from honglin-lesson-list-buttons branch
       const [authorProfiles, projectDetails] = await Promise.all([
@@ -124,10 +136,11 @@ export const fetchSingleBMLesson = lessonId => {
       const response = await axios.get(url);
       const lesson = response.data;
 
-      // Fetch user profile and project details concurrently
+      // Fetch user profile and project details concurrently, but only when the
+      // stored values are real ObjectIds (not display names like "project 1").
       const [projectDetails, userProfile] = await Promise.all([
-        dispatch(fetchProjectById(lesson.relatedProject)),
-        dispatch(getUserProfile(lesson.author)),
+        isObjectId(lesson.relatedProject) ? dispatch(fetchProjectById(lesson.relatedProject)) : null,
+        isObjectId(lesson.author) ? dispatch(getUserProfile(lesson.author)) : null,
       ]);
 
       // Update the lesson with author and project details
@@ -135,15 +148,15 @@ export const fetchSingleBMLesson = lessonId => {
         ...lesson,
         author: userProfile
           ? {
-              id: userProfile._id,
-              name: `${userProfile.firstName} ${userProfile.lastName}`,
-            }
+            id: userProfile._id,
+            name: `${userProfile.firstName} ${userProfile.lastName}`,
+          }
           : lesson.author,
         relatedProject: projectDetails
           ? {
-              id: projectDetails._id,
-              name: projectDetails.projectName,
-            }
+            id: projectDetails._id,
+            name: projectDetails.projectName,
+          }
           : lesson.relatedProject,
       };
       dispatch(setLesson(updatedLesson));

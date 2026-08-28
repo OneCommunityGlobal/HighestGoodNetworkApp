@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import GET_BM_PROJECTS from '../../constants/bmdashboard/projectConstants';
 import { GET_ERRORS } from '../../constants/errors';
 
@@ -30,3 +30,11 @@ export const fetchBMProjects = () => {
       });
   };
 };
+
+export const getProjectGlobalDistribution = async (payload) => {
+  const url = ENDPOINTS.PROJECT_GLOBAL_DISTRIBUTION
+
+  const res = await axios.get(url, {params: payload});
+  
+  return res.data
+  };

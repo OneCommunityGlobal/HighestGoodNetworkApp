@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import { fetchBMLessons } from './lessonsAction';
 import { BM_LESSON_LIKES } from '../../constants/bmdashboard/lessonConstants';
 
