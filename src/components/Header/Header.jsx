@@ -1072,16 +1072,6 @@ export function Header(props) {
           />
         ))}
       <PermissionWatcher props={props} />
-      {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged === false && (
-        <PopUpBar
-          firstName={viewingUser?.firstName || firstName}
-          lastName={viewingUser?.lastName}
-          message="Heads Up, there were permission changes made to this account"
-          onClickClose={handlePermissionChangeAck}
-          textColor="black_text"
-          isLoading={isAckLoading}
-        />
-      )}
       <div>
         <Modal
           isOpen={popup}
@@ -1097,8 +1087,10 @@ export function Header(props) {
       </div>
       {props.auth.isAuthenticated && isModalVisible && (
         <div className={`${darkMode ? 'bg-oxford-blue' : ''} ${styles.cardWrapper}`}>
-          <Card color="primary" className={styles.headerCard}>
-            <div className="close-button"><Button close onClick={closeModal} /></div>
+          <Card color="primary" className={`${styles.headerCard} ${styles.dashboardHeader}`}>
+            <div className="close-button" style={{ paddingRight: '5px'}}>
+              <Button close onClick={closeModal} />
+            </div>
             <div className={`${styles.cardContent}`}>{modalContent}</div>
           </Card>
         </div>
