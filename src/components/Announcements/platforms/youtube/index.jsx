@@ -59,6 +59,8 @@ function YoutubeAutoPoster({ platform }) {
       : '';
   });
   const [videoFile, setVideoFile] = useState(null);
+  const [videoPreviewUrl, setVideoPreviewUrl] = useState('');
+  const [videoDuration, setVideoDuration] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [result, setResult] = useState(null);
   const [tags, setTags] = useState([]);
@@ -68,6 +70,18 @@ function YoutubeAutoPoster({ platform }) {
 
   const [connected, setConnected] = useState(false);
   const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    if (!videoFile) {
+      setVideoPreviewUrl('');
+      setVideoDuration(null);
+      return undefined;
+    }
+
+    const previewUrl = URL.createObjectURL(videoFile);
+    setVideoPreviewUrl(previewUrl);
+    return () => URL.revokeObjectURL(previewUrl);
+  }, [videoFile]);
 
   const addTag = rawValue => {
     const normalized = rawValue.trim().replace(/^#+/, '');
@@ -242,6 +256,7 @@ function YoutubeAutoPoster({ platform }) {
       setResult(await uploadYouTubeVideo(videoFile, values));
       form.reset();
       setVideoFile(null);
+      setVideoDuration(null);
       setTags([]);
       setTagDraft('');
       setPrivacyStatus('public');
@@ -331,14 +346,52 @@ function YoutubeAutoPoster({ platform }) {
         {/* Video upload */}
         <section className={styles.card}>
           <h4 className={styles.cardTitle}>Video source</h4>
-          <input
-            type="file"
-            name="video"
-            accept="video/*"
-            aria-label="Video source"
-            onChange={event => setVideoFile(event.target.files?.[0] ?? null)}
-            required
-          />
+          <div className={styles.videoSourceTile}>
+            {videoPreviewUrl && (
+              <div className={styles.videoThumb}>
+                <video
+                  src={videoPreviewUrl}
+                  muted
+                  preload="metadata"
+                  onLoadedMetadata={event => setVideoDuration(event.currentTarget.duration)}
+                  aria-label="Selected video preview"
+                />
+              </div>
+            )}
+            <div className={styles.videoMeta}>
+              <p className={`${styles.videoFilename} ${!videoFile ? styles.emptyVideoPrompt : ''}`}>
+                {videoFile ? videoFile.name : 'Choose a video to upload'}
+              </p>
+              {videoFile && (
+                <div className={styles.videoSpecs}>
+                  <span>
+                    Size <strong>{(videoFile.size / (1024 * 1024)).toFixed(1)} MB</strong>
+                  </span>
+                  {videoDuration && (
+                    <span>
+                      Length{' '}
+                      <strong>
+                        {Math.floor(videoDuration / 60)}:
+                        {String(Math.floor(videoDuration % 60)).padStart(2, '0')}
+                      </strong>
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+            <label className={styles.replaceButton}>
+              {videoFile ? 'Replace' : 'Choose video'}
+              <input
+                type="file"
+                name="video"
+                accept="video/*"
+                aria-label="Video source"
+                className={styles.fileInput}
+                onChange={event => setVideoFile(event.target.files?.[0] ?? null)}
+                required={!videoFile}
+              />
+            </label>
+          </div>
         </section>
 
         {/* Tags */}
