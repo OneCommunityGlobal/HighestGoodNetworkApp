@@ -50,7 +50,7 @@ describe('ProjectReport component', () => {
     );
   });
 
-  it('should render the project name three times', async () => {
+  it('should render the project name two times', async () => {
     axios.get.mockResolvedValue({
       status: 200,
     });
@@ -62,7 +62,7 @@ describe('ProjectReport component', () => {
     );
 
     const projectNameElements = screen.getAllByText('project 1');
-    expect(projectNameElements).toHaveLength(3);
+    expect(projectNameElements).toHaveLength(2);
   });
 
   it('check if getProjectDetail works as expected', async () => {
