@@ -33,8 +33,6 @@ export async function postRescheduleNotify(baseApi, id, payload) {
       throw new Error('Unable to send the reschedule notification. Please try again.');
     }
 
-    const text = await res.text().catch(() => null);
-    if (process.env.NODE_ENV !== 'production') console.error('Non-JSON error response:', text);
     throw new Error('Unable to send the reschedule notification. Please try again.');
   }
 

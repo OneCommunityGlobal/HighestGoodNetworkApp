@@ -44,6 +44,7 @@ const RoutePermissions = {
   announcements: ['sendEmails'],
   faq: [''],
   faqManagement: ['manageFAQs'],
+  meetings: ['scheduleMeetings'],
   accessHgnSkillsDashboard: ['accessHgnSkillsDashboard'],
   jobFormManagement: [
     'manageJobForms',
