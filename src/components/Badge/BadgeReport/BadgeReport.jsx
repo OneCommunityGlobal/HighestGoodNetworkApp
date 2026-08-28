@@ -159,12 +159,6 @@ function BadgeReport(props) {
     });
   };
 
-  const handlePDFOnClick = () => {
-    // Ensure pdfFeaturedDocGenerator function is correctly defined and imported
-    if (pdfDocGenerator) pdfDocGenerator();
-    else console.error('pdfDocGenerator is not defined');
-  };
-
   useEffect(() => {
     let isMounted = true; // flag to track if component is mounted
 
@@ -287,49 +281,63 @@ function BadgeReport(props) {
     setBadgeToDelete([]);
   };
 
-  const deleteBadge = () => {
-    let newBadges = sortBadges.filter(badge => badge._id !== badgeToDelete._id);
-    if (badgeToDelete.featured) {
-      setNumFeatured(prevCount => prevCount - 1);
-    }
-    setSortBadges(newBadges);
-    toast.success('Badges deleted successfully.');
-    setShowModal(false);
-    setBadgeToDelete([]);
-  };
-
-  const saveChanges = async () => {
+  const saveChanges = async (
+    badgesToSave = sortBadges,
+    { closeEditor = true, successMessage = 'Badges successfully saved.' } = {},
+  ) => {
     setSavingChanges(true);
 
     try {
-      const newBadgeCollection = structuredClone(sortBadges);
+      const newBadgeCollection = structuredClone(badgesToSave);
 
       for (const badge of newBadgeCollection) {
         badge.badge = badge.badge._id;
       }
 
-      await props.changeBadgesByUserID(props.userId, newBadgeCollection);
+      const saved = await props.changeBadgesByUserID(props.userId, newBadgeCollection);
+      if (!saved) {
+        toast.error('Failed to save badges. Please try again.');
+        return false;
+      }
+
       await props.getUserProfile(props.userId);
 
       props.setUserProfile(prevProfile => ({
         ...prevProfile,
-        badgeCollection: sortBadges,
+        badgeCollection: badgesToSave,
       }));
 
       props.setOriginalUserProfile(prevProfile => ({
         ...prevProfile,
-        badgeCollection: sortBadges,
+        badgeCollection: badgesToSave,
       }));
 
-      toast.success('Badges successfully saved.');
+      setSortBadges(badgesToSave);
+      setNumFeatured(badgesToSave.filter(badge => badge.featured).length);
+      toast.success(successMessage);
 
       props.handleSubmit();
-      props.close();
+      if (closeEditor) props.close();
+      return true;
     } catch (error) {
       console.error('Error saving badges:', error);
       toast.error('Failed to save badges. Please try again.');
+      return false;
     } finally {
       setSavingChanges(false);
+    }
+  };
+
+  const deleteBadge = async () => {
+    const newBadges = sortBadges.filter(badge => badge._id !== badgeToDelete._id);
+    const wasSaved = await saveChanges(newBadges, {
+      closeEditor: false,
+      successMessage: 'Badges deleted successfully.',
+    });
+
+    if (wasSaved) {
+      setShowModal(false);
+      setBadgeToDelete([]);
     }
   };
 
@@ -483,21 +491,22 @@ function BadgeReport(props) {
           className="btn--dark-sea-green float-right"
           style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
           disabled={savingChanges}
-          onClick={saveChanges}
+          onClick={() => saveChanges()}
         >
           Save Changes
         </Button>
         <Button
           className="btn--dark-sea-green float-right"
           style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
-          onClick={handlePDFOnClick}
+          onClick={pdfDocGenerator}
         >
           Export All Badges to PDF
         </Button>
         <Button
+          disabled={numFeatured === 0}
           className="btn--dark-sea-green float-right"
           style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
-          onClick={handlePDFOnClick}
+          onClick={pdfFeaturedDocGenerator}
         >
           Export Selected/Featured Badges to PDF
         </Button>

@@ -58,7 +58,7 @@ function BadgeSpan({ badgeType, personalBestMaxHrs, count, cssSuffix }) {
 
   if (badgeType === 'Personal Max') {
     return (
-      <span className={`${styles.badge_count_3_digit} ${modifierClass || ''}`}>
+      <span className={`${styles.badge_count_personalmax} ${modifierClass || ''}`}>
         {Math.floor(personalBestMaxHrs)}
       </span>
     );
@@ -71,7 +71,7 @@ function BadgeSpan({ badgeType, personalBestMaxHrs, count, cssSuffix }) {
   }
 
   return (
-    <span className={`${styles.badge_count_personalmax} ${modifierClass || ''}`}>
+    <span className={`${styles.badge_count_3_digit} ${modifierClass || ''}`}>
       {Math.round(count)}
     </span>
   );

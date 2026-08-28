@@ -1,9 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import styles from '../Badge.module.css';
 import BadgeImage from '../BadgeImage';
-
-const FeaturedBadges = props => {
-  const [filteredBadges, setFilteredBadges] = useState([]);
 
 const filterBadges = allBadges => {
   if (!Array.isArray(allBadges)) return [];
@@ -25,19 +22,18 @@ const filterBadges = allBadges => {
   return featuredBadges.slice(0, 5);
 };
 
-  useEffect(() => {
-    setFilteredBadges(filterBadges(props.badges));
-  }, [props.badges]);
+const FeaturedBadges = props => {
+  const filteredBadges = useMemo(() => filterBadges(props.badges), [props.badges]);
 
   return (
     <div data-testid="badge_featured_container" className={styles.badge_featured_container}>
       {filteredBadges.map((value, index) => (
-        <BadgeImage 
-          personalBestMaxHrs={props.personalBestMaxHrs} 
-          count={value.count} 
-          badgeData={value.badge} 
-          index={index} 
-          key={value.badge?._id || index} 
+        <BadgeImage
+          personalBestMaxHrs={props.personalBestMaxHrs}
+          count={value.count}
+          badgeData={value.badge}
+          index={index}
+          key={value.badge?._id || index}
         />
       ))}
     </div>

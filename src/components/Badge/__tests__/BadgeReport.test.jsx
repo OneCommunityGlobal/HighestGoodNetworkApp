@@ -30,13 +30,29 @@ let mockBadges = [
 const mockRole = 'Owner';
 const mockHasPermission = vi.fn();
 
+const getBadgeReportProps = overrides => ({
+  badges: mockBadges,
+  hasPermission: mockHasPermission,
+  role: mockRole,
+  userId: 'user-id',
+  changeBadgesByUserID: vi.fn().mockResolvedValue(true),
+  getUserProfile: vi.fn().mockResolvedValue(),
+  setUserProfile: vi.fn(),
+  setOriginalUserProfile: vi.fn(),
+  handleSubmit: vi.fn(),
+  close: vi.fn(),
+  ...overrides,
+});
+
+const renderBadgeReport = overrides => render(<BadgeReport {...getBadgeReportProps(overrides)} />);
+
 describe('BadgeReport Component', () => {
   test('renders component without any errors', () => {
-    render(<BadgeReport badges={mockBadges} hasPermission={mockHasPermission} role={mockRole} />);
+    renderBadgeReport();
   });
 
   test('renders all the core static fields proplerly', () => {
-    render(<BadgeReport badges={mockBadges} hasPermission={mockHasPermission} role={mockRole} />);
+    renderBadgeReport();
 
     //common headers in desktop and mobile view
     const badgeHeaders = screen.getAllByText('Badge');
@@ -55,7 +71,7 @@ describe('BadgeReport Component', () => {
   });
 
   test('renders all mobile view specific fields properly', () => {
-    render(<BadgeReport badges={mockBadges} hasPermission={mockHasPermission} role={mockRole} />);
+    renderBadgeReport();
 
     const optionsField = screen.getByText('Options');
     expect(optionsField).toBeInTheDocument();
@@ -66,7 +82,7 @@ describe('BadgeReport Component', () => {
   });
 
   test('renders correct message if no badges are present', () => {
-    render(<BadgeReport badges={[]} hasPermission={mockHasPermission} />);
+    renderBadgeReport({ badges: [] });
 
     const noBadgesPlaceHolder = screen.getAllByText('This person has no badges.');
 
@@ -75,7 +91,7 @@ describe('BadgeReport Component', () => {
   });
 
   test('renders all the badge information correctly', () => {
-    render(<BadgeReport badges={mockBadges} hasPermission={mockHasPermission} />);
+    renderBadgeReport();
 
     mockBadges.forEach((mockBadge, index) => {
       const badgeName = mockBadge.badge.badgeName;
@@ -111,7 +127,7 @@ describe('BadgeReport Component', () => {
       },
     ];
 
-    render(<BadgeReport badges={mockBadges} hasPermission={mockHasPermission} />);
+    renderBadgeReport();
 
     mockBadges.forEach((mockBadge, index) => {
       const badgeName = mockBadge.badge.badgeName;
@@ -123,5 +139,97 @@ describe('BadgeReport Component', () => {
       expect(screen.getAllByText(badgeCount).length).toBeGreaterThan(0);
       expect(screen.getAllByRole('img').length).toBeGreaterThan(0);
     });
+  });
+
+  test('disables selected export until a badge is featured', () => {
+    renderBadgeReport({
+      badges: [{ ...mockBadges[0], featured: false }],
+    });
+
+    screen
+      .getAllByRole('button', { name: 'Export Selected/Featured Badges to PDF' })
+      .forEach(button => expect(button).toBeDisabled());
+  });
+
+  test('limits the selection to five featured badges and permits replacement after unselecting', async () => {
+    const badges = Array.from({ length: 6 }, (_, index) => ({
+      ...mockBadges[0],
+      _id: `badge-record-${index}`,
+      featured: false,
+      badge: {
+        ...mockBadges[0].badge,
+        _id: `badge-${index}`,
+        badgeName: `Badge ${index}`,
+      },
+    }));
+    renderBadgeReport({ badges });
+
+    const checkboxes = screen.getAllByRole('checkbox');
+    checkboxes.slice(0, 5).forEach(checkbox => fireEvent.click(checkbox));
+
+    await waitFor(() => expect(checkboxes[4]).toBeChecked());
+    fireEvent.click(checkboxes[5]);
+    expect(checkboxes[5]).not.toBeChecked();
+
+    fireEvent.click(checkboxes[0]);
+    fireEvent.click(checkboxes[5]);
+    expect(checkboxes[5]).toBeChecked();
+  });
+
+  test('persists a confirmed deletion and keeps the badge editor open', async () => {
+    const changeBadgesByUserID = vi.fn().mockResolvedValue(true);
+    const getUserProfile = vi.fn().mockResolvedValue();
+    const setUserProfile = vi.fn();
+    const setOriginalUserProfile = vi.fn();
+    const close = vi.fn();
+    const hasPermission = vi.fn(permission => permission === 'deleteBadges');
+
+    renderBadgeReport({
+      badges: [{ ...mockBadges[0] }],
+      changeBadgesByUserID,
+      getUserProfile,
+      setUserProfile,
+      setOriginalUserProfile,
+      close,
+      hasPermission,
+    });
+
+    fireEvent.click(screen.getAllByRole('button', { name: 'Delete' })[0]);
+    fireEvent.click(screen.getByRole('button', { name: 'Yes, Delete' }));
+
+    await waitFor(() => {
+      expect(changeBadgesByUserID).toHaveBeenCalledWith('user-id', []);
+    });
+    expect(getUserProfile).toHaveBeenCalledWith('user-id');
+    expect(setUserProfile).toHaveBeenCalled();
+    expect(setOriginalUserProfile).toHaveBeenCalled();
+    expect(close).not.toHaveBeenCalled();
+    await waitFor(() => {
+      expect(
+        screen.queryByText('Woah, easy tiger! Are you sure you want to delete this badge?'),
+      ).toBeNull();
+    });
+  });
+
+  test('keeps a badge deletion pending when persistence fails', async () => {
+    const changeBadgesByUserID = vi.fn().mockResolvedValue(false);
+    const setUserProfile = vi.fn();
+    const hasPermission = vi.fn(permission => permission === 'deleteBadges');
+
+    renderBadgeReport({
+      badges: [{ ...mockBadges[0] }],
+      changeBadgesByUserID,
+      setUserProfile,
+      hasPermission,
+    });
+
+    fireEvent.click(screen.getAllByRole('button', { name: 'Delete' })[0]);
+    fireEvent.click(screen.getByRole('button', { name: 'Yes, Delete' }));
+
+    await waitFor(() => expect(changeBadgesByUserID).toHaveBeenCalled());
+    expect(setUserProfile).not.toHaveBeenCalled();
+    expect(
+      screen.getByText('Woah, easy tiger! Are you sure you want to delete this badge?'),
+    ).toBeInTheDocument();
   });
 });
