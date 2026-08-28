@@ -66,15 +66,15 @@ function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled, dark
         onFocus={() => !disabled && setIsOpen(true)}
         readOnly
         disabled={disabled}
-        className={disabled && darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+        className={darkMode ? styles.darkDateInput : ''}
         style={{ 
           cursor: disabled ? 'default' : 'pointer',
-          backgroundColor: disabled ? (darkMode ? '' : '#e9ecef') : 'white',
+          backgroundColor: disabled ? (darkMode ? '#1c1c1c' : '#e9ecef') : undefined,
           opacity: 1
         }}
       />
       {isOpen && !disabled && (
-        <div style={{ position: 'absolute', right: 0, overflow: 'auto', zIndex: 10, backgroundColor: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', borderRadius: '4px' }}>
+        <div style={{ position: 'absolute', right: 0, overflow: 'auto', zIndex: 10, backgroundColor: darkMode ? '#1e293b' : 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', borderRadius: '4px' }}>
           <DayPicker 
             mode="single"
             selected={selectedDate}
@@ -84,14 +84,7 @@ function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled, dark
           <button
             type="button"
             onClick={() => setIsOpen(false)}
-            style={{ 
-              width: '100%', 
-              padding: '8px', 
-              border: 'none', 
-              borderTop: '1px solid #ddd',
-              background: '#f5f5f5',
-              cursor: 'pointer'
-            }}
+            className={`${styles.datePickerClose} ${darkMode ? styles.datePickerCloseDark : ''}`}
           >
             Close
           </button>
@@ -491,7 +484,7 @@ function EditTaskModal(props) {
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue dark-mode no-hover' : ''}>
           <table
-            className={`table table-bordered responsive
+            className={`table table-bordered responsive ${darkMode ? styles.editTaskTableDark : ''}
             ${canUpdateTask || canSuggestTask ? null : 'disable-div'} 
             ${darkMode ? 'text-light' : ''}`}
           >
@@ -517,7 +510,7 @@ function EditTaskModal(props) {
                       rows="2"
                       type="text"
                       className={`task-name border border-dark rounded ${
-                        darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                        darkMode ? `${styles.editTaskTextareaDark} text-light` : ''
                       }`}
                       onChange={e => setTaskName(e.target.value)}
                       onKeyPress={e => setTaskName(e.target.value)}
