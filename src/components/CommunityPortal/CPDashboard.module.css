@@ -169,8 +169,8 @@
   background: transparent;
   font-size: 1rem;
   line-height: 1.5;
-  padding: 10px 96px 10px 18px;
-  min-height: 36px;
+  padding: 8px 96px 8px 18px;
+  min-height: 32px;
   max-height: 120px;
   box-sizing: border-box;
   overflow: hidden auto;
@@ -454,6 +454,10 @@
   background: #2b3e59;
 }
 
+.darkMain .sectionTitle {
+  color: #f5f6f7;
+}
+
 .eventsHeader {
   display: flex;
   align-items: center;
@@ -518,7 +522,9 @@
   overflow: hidden;
   border: none;
   background: #fff;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   position: relative;
 }
 
@@ -546,7 +552,9 @@
   opacity: 0;
   pointer-events: none;
   transform: translate(-50%, -4px);
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 
 .eventTitle:hover::after {
@@ -556,6 +564,10 @@
 
 .darkEventCard {
   background: #1b2a41;
+}
+
+.darkEventCard .eventTitle {
+  color: #f5f6f7;
 }
 
 .eventCardImgContainer {
@@ -716,7 +728,7 @@
 
 .applyBtn {
   flex: 1;
-  background-color: #27ae60 !important;
+  background-color: #1e8449 !important;
   border: none;
   color: white;
   padding: 10px 5px;
@@ -728,13 +740,13 @@
 }
 
 .applyBtn:hover {
-  background-color: #229954 !important;
+  background-color: #156b3a !important;
   box-shadow: 0 4px 8px rgb(39 174 96 / 30%);
 }
 
 .clearBtn {
   flex: 1;
-  background-color: #95a5a6 !important;
+  background-color: #6c757d !important;
   border: none;
   color: white;
   padding: 10px 5px;
@@ -752,6 +764,113 @@
 
 .darkSidebar .filterActions {
   border-top-color: #3a4e6a;
+}
+
+/* Recent Search Dropdown */
+.recentSearchDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  margin-top: 4px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.darkRecentSearchDropdown {
+  background: #1b2a41;
+  border-color: #4a6572;
+}
+
+.recentSearchHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #eee;
+}
+
+.darkRecentSearchDropdown .recentSearchHeader {
+  color: #9ca3af;
+  border-bottom-color: #3a4e6a;
+}
+
+.recentIcon {
+  color: #888;
+  font-size: 0.7rem;
+}
+
+.recentIconDark {
+  color: #9ca3af;
+  font-size: 0.7rem;
+}
+
+.recentSearchItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.recentSearchTerm {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #34495e;
+  text-align: left;
+  transition: background-color 0.15s ease;
+}
+
+.recentSearchTerm:hover {
+  background: #f5f5f5;
+}
+
+.darkRecentSearchTerm {
+  color: #ecf0f1;
+}
+
+.darkRecentSearchTerm:hover {
+  background: #2b3e59;
+}
+
+.recentSearchRemove {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 4px 8px;
+  color: #999;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease;
+}
+
+.recentSearchRemove:hover {
+  color: #e74c3c;
+}
+
+.darkRecentSearchRemove {
+  color: #7f8c8d;
+}
+
+.darkRecentSearchRemove:hover {
+  color: #e74c3c;
 }
 
 @media (width <= 768px) {

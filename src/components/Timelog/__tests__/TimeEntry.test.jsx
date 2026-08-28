@@ -1,7 +1,7 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import moment from 'moment-timezone';
 // eslint-disable-next-line import/named
 import { rest } from 'msw';
@@ -16,7 +16,7 @@ import {
 import { renderWithProvider } from '../../../__tests__/utils';
 import TimeEntry from '../TimeEntry';
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 const weekDayRegex = /monday|tuesday|wednesday|thursday|friday|saturday|sunday/i;
 const dateRegex = /(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d\d?/i;
 

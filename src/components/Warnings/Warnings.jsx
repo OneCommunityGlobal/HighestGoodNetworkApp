@@ -1,12 +1,13 @@
 import axios from 'axios';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Button } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import hasPermission from '~/utils/permissions';
 import { ENDPOINTS } from '~/utils/URL';
+import { enqueueTask } from '~/utils/requestQueue';
 import {
   deleteWarningsById,
   getWarningsByUserId,
@@ -22,7 +23,13 @@ import styles from './Warnings.module.css';
 // Log Time to Action Items (“i” = ,ltayg = Reminder to please log your time as you go. At a minimum, please log daily any time you work.)
 // Intangible Time Log w/o Reason (“i” = ,itlr = The timer should be used for all time logged, so any time logged as intangible must also include in the time log description an explanation for why you didn’t use the timer.
 
-export default function Warning({ personId, username, userRole, displayUser }) {
+export default function Warning({
+  personId,
+  username,
+  userRole,
+  displayUser,
+  showTrackers = false,
+}) {
   const dispatch = useDispatch();
   const [usersWarnings, setUsersWarnings] = useState([]);
 
@@ -42,7 +49,7 @@ export default function Warning({ personId, username, userRole, displayUser }) {
     dispatch(hasPermission('deleteWarningTracker'));
 
   const fetchUsersWarningsById = async () => {
-    dispatch(getWarningsByUserId(personId))
+    return dispatch(getWarningsByUserId(personId))
       .then(res => {
         if (!res || res.error) {
           setUsersWarnings([]);
@@ -59,6 +66,22 @@ export default function Warning({ personId, username, userRole, displayUser }) {
     if (!toggle) fetchUsersWarningsById();
     setToggle(prev => !prev);
   };
+
+  useEffect(() => {
+    if (showTrackers) {
+      setToggle(true);
+      if (usersWarnings.length === 0) {
+        let cancelled = false;
+        enqueueTask(() => (cancelled ? Promise.resolve() : fetchUsersWarningsById()));
+        return () => {
+          cancelled = true;
+        };
+      }
+    } else {
+      setToggle(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showTrackers]);
 
   const handleDeleteWarning = async warningId => {
     dispatch(deleteWarningsById(warningId, personId)).then(res => {
@@ -229,4 +252,5 @@ Warning.propTypes = {
   username: PropTypes.string,
   userRole: PropTypes.string,
   displayUser: PropTypes.object,
+  showTrackers: PropTypes.bool,
 };

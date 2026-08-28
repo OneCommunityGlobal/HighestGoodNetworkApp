@@ -79,7 +79,7 @@ const UserTeamsTable = props => {
               newTeamCode: refInput.current,
               userId: props.userProfile._id,
             })
-            toast.success('Team code updated!');
+            // toast.success('Team code updated!');
           } catch {
             toast.error('It is not possible to save the team code.');
           }
@@ -273,8 +273,8 @@ const UserTeamsTable = props => {
           </Col>
         )}
       </div>
-      <div style={{ maxHeight: '300px', overflow: 'auto' }}>
-        <table className={`table table-bordered ${darkMode ? 'text-light' : ''}`}>
+      <div>
+        <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
           <thead className="user-team-head">
             {props.role && (
               <tr>

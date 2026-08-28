@@ -14,6 +14,7 @@ import {
   DISABLE_USER_PROFILE_EDIT,
   CHANGE_USER_PROFILE_PAGE,
   START_USER_INFO_UPDATE,
+  FINISH_USER_INFO_UPDATE,
 } from '../constants/userManagement';
 import { ENDPOINTS } from '~/utils/URL';
 import { UserStatus, UserStatusOperations, InactiveReason } from '~/utils/enums';
@@ -115,6 +116,11 @@ export const getAllUserProfile = () => {
     }
     return userProfilesPromise
       .then(res => {
+        // API must return an array; error payloads are objects and crash UserManagement.map
+        if (!Array.isArray(res.data)) {
+          dispatch(userProfilesFetchErrorAction());
+          return [];
+        }
         dispatch(userProfilesFetchCompleteACtion(res.data));
         return res.data;
       })
@@ -139,18 +145,18 @@ const resolveEndDate = (user) => {
 
   //2) if no lastActivityAt, use createdDate (if present)
   // format createdDate to real datetime in COMPANY_TZ
-  if(!user?.lastActivityAt && user?.createdDate) {
+  if (!user?.lastActivityAt && user?.createdDate) {
     const created = moment.tz(user.createdDate, 'YYYY-MM-DD', COMPANY_TZ).startOf('day');
     return created.toISOString();
   }
 
   //3) if no createdDate -> endDate will be set as passed
-  if(user?.endDate) {
+  if (user?.endDate) {
     return moment(user.endDate).toISOString();
   }
 
   // optional: if lastActivityAt is present, use that
-  if(user?.lastActivityAt) {
+  if (user?.lastActivityAt) {
     return moment(user.lastActivityAt).toISOString();
   }
 
@@ -159,7 +165,7 @@ const resolveEndDate = (user) => {
 }
 
 export const buildUpdatedUserLifecycleDetails = (user, payload) => {
-  const {action, endDate, reactivationDate} = payload;
+  const { action, endDate, reactivationDate } = payload;
   switch (action) {
     case UserStatusOperations.ACTIVATE:
       return {
@@ -445,4 +451,15 @@ export const changePagination = value => dispatch => {
 
 export const updateUserInfomation = value => dispatch => {
   dispatch({ type: START_USER_INFO_UPDATE, payload: value });
+};
+
+/**
+ * Clears the queue of pending user info edits (newUserData) after they have
+ * been successfully saved to the backend. Without this, previously-saved
+ * edits remain in the queue and get resubmitted (replayed) the next time any
+ * user's info is saved, silently overwriting that user's data with stale
+ * values. See hotfix: User Management stale date replay bug.
+ */
+export const finishUserInfoUpdate = () => dispatch => {
+  dispatch({ type: FINISH_USER_INFO_UPDATE });
 };
