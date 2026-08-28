@@ -278,14 +278,14 @@ const UserTeamsTable = props => {
           <thead className="user-team-head">
             {props.role && (
               <tr>
-                <th className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`}>#</th>
-                <th className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`}>Team Name</th>
+                <th className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`} style={{ textAlign: 'center' }}>#</th>
+                <th className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`} style={{ textAlign: 'center' }}>Team Name</th>
                 {canAssignTeamToUsers ? (
                   <>
-                    <th className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`}>Members</th>
+                    <th className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`} style={{ textAlign: 'center' }}>Members</th>
                     <th
-                      style={{ flex: 2 }}
-                      className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`}
+                      style={{ flex: 2 , textAlign: 'center'}}
+                      className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`} 
                     >
                       {}
                     </th>
@@ -298,11 +298,11 @@ const UserTeamsTable = props => {
             {teams.length > 0 ? (
               teams.map((team, index) => (
                 <tr key={index} className={`tr ${darkMode ? 'dark-mode' : ''}`}>
-                  <td style={{ alignContent: 'center' }}>{index + 1}</td>
-                  <td style={{ alignContent: 'center' }}>{`${team.teamName}`}</td>
+                  <td style={{ alignContent: 'center', textAlign: 'center' }}>{index + 1}</td>
+                  <td style={{ alignContent: 'center', textAlign: 'center' }}>{`${team.teamName}`}</td>
                   {props.edit && props.role && (
                     <>
-                      <td style={{ verticalAlign: 'middle' }}>
+                      <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
                         <button
                           style={darkMode ? { boxShadow: 'none' } : { boxShadow: 'none', ...boxStyle}}
                           disabled={!canAssignTeamToUsers}
@@ -321,6 +321,7 @@ const UserTeamsTable = props => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
+                            textAlign: 'center',
                           }}
                         >
                           <Button
