@@ -21,7 +21,8 @@ import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
-
+import SupplierPerformanceGraph from './SupplierPerformanceGraph';
+import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
 import styles from './WeeklyProjectSummary.module.css';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import InjurySeverityChart from '../Injuries/InjurySeverityChart';
@@ -289,15 +290,26 @@ function WeeklyProjectSummary() {
       {
         title: 'Tools and Equipment Tracking',
         key: 'Tools and Equipment Tracking',
-        className: 'half',
-        content: [
-          <div key="donut" className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-            <ToolStatusDonutChart />
-          </div>,
-          <div key="bar" className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-            <ToolsHorizontalBarChart darkMode={darkMode} />
-          </div>,
-        ],
+        className: 'full',
+        content: (
+          <div className={styles.toolsTrackingGrid}>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <ToolStatusDonutChart />
+            </div>
+
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <ToolsHorizontalBarChart darkMode={darkMode} />
+            </div>
+
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <SupplierPerformanceGraph />
+            </div>
+
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <ToolsStoppageHorizontalBarChart />
+            </div>
+          </div>
+        ),
       },
       {
         title: 'Lessons Learned',
