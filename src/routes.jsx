@@ -365,17 +365,6 @@ export default (
         </>
       )}
     />
-    <LBProtectedRoute
-      exact
-      path="/lbdashboard/wishlist/:id/availability"
-      render={() => (
-        <>
-          <AutoUpdate />
-          <ToastContainer />
-          <ListOveriew />
-        </>
-      )}
-    />
 
     <LBProtectedRoute path="/lbdashboard/home" component={LBHome} />
     {/* ----- LB Dashboard Routing Ends----- */}
