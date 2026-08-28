@@ -259,9 +259,7 @@ function YoutubeAutoPoster({ platform }) {
       <button type="button" onClick={connectYouTube}>
         click me
       </button>
-
       {connected ? <p>YouTube account connected</p> : <p>not connected</p>}
-
       <form
         className={styles.form}
         aria-label="YouTube video upload"
@@ -430,45 +428,46 @@ function YoutubeAutoPoster({ platform }) {
         </section>
 
         {/* Audience & Embed */}
-        <section
-          className={`${styles.card} ${styles.togglesCard}`}
-          aria-labelledby="audience-settings-title"
-        >
+        <section className={`${styles.card}`} aria-labelledby="audience-settings-title">
           <h4 id="audience-settings-title" className={styles.togglesTitle}>
             Audience &amp; embed
           </h4>
           <div className={styles.togglesList}>
             {AUDIENCE_SETTINGS.map(setting => {
+              const labelId = `${setting.key}-label`;
               const descriptionId = `${setting.key}-description`;
 
               return (
                 <div key={setting.key} className={styles.toggleRow}>
                   <div className={styles.toggleText}>
-                    <label htmlFor={setting.key} className={styles.toggleLabel}>
+                    <span id={labelId} className={styles.toggleLabel}>
                       {setting.label}
-                    </label>
+                    </span>
                     <p id={descriptionId} className={styles.toggleDescription}>
                       {setting.description}
                     </p>
                   </div>
-                  <input
-                    id={setting.key}
-                    type="checkbox"
-                    role="switch"
-                    className={styles.toggleInput}
-                    name={setting.key}
-                    checked={audienceSettings[setting.key]}
-                    aria-describedby={descriptionId}
-                    onChange={event =>
-                      setAudienceSettings(current => ({
-                        ...current,
-                        [setting.key]: event.target.checked,
-                      }))
-                    }
-                  />
-                  <span className={styles.toggleTrack} aria-hidden="true">
-                    <span className={styles.toggleKnob} />
-                  </span>
+                  <label className={styles.switchControl}>
+                    <input
+                      id={setting.key}
+                      type="checkbox"
+                      role="switch"
+                      className={styles.toggleInput}
+                      name={setting.key}
+                      checked={audienceSettings[setting.key]}
+                      aria-labelledby={labelId}
+                      aria-describedby={descriptionId}
+                      onChange={event =>
+                        setAudienceSettings(current => ({
+                          ...current,
+                          [setting.key]: event.target.checked,
+                        }))
+                      }
+                    />
+                    <span className={styles.toggleTrack} aria-hidden="true">
+                      <span className={styles.toggleKnob} />
+                    </span>
+                  </label>
                 </div>
               );
             })}
@@ -479,9 +478,7 @@ function YoutubeAutoPoster({ platform }) {
           {uploading ? 'Uploading…' : 'Upload'}
         </button>
       </form>
-
       {error && <p role="alert">Error: {error}</p>}
-
       {result?.video && (
         <p>
           Upload complete:{' '}
@@ -490,108 +487,6 @@ function YoutubeAutoPoster({ platform }) {
           </a>
         </p>
       )}
-
-      {/* <section>
-        <h2>1. Connect YouTube</h2>
-        {auth === null && <p>Checking connection…</p>}
-        {auth && !auth.configured && (
-          <p>Google OAuth is not configured. Add the credentials to backend/.env.</p>
-        )}
-        {auth?.configured && !auth.connected && (
-          <a href="/api/auth/google">Connect YouTube account</a>
-        )}
-        {auth?.connected && (
-          <p>
-            YouTube is connected.{' '}
-            <button type="button" onClick={() => void disconnect()}>
-              Disconnect
-            </button>
-          </p>
-        )}
-      </section>
-
-      <section>
-        <h2>2. Upload video</h2>
-        <form className={styles.form} onSubmit={event => void submitVideo(event)}>
-          <label>
-            Video file
-            <input type="file" name="video" accept="video/*" required />
-          </label>
-
-          <label>
-            Title
-            <input type="text" name="title" maxLength={100} required />
-          </label>
-
-          <label>
-            Description
-            <textarea name="description" maxLength={5000} rows={5} />
-          </label>
-
-          <label>
-            Tags (comma separated)
-            <input type="text" name="tags" />
-          </label>
-
-          <label>
-            Category
-            <select name="categoryId" defaultValue="22">
-              <option value="22">People &amp; Blogs</option>
-              <option value="24">Entertainment</option>
-              <option value="27">Education</option>
-              <option value="28">Science &amp; Technology</option>
-            </select>
-          </label>
-
-          <label>
-            Audience
-            <select name="madeForKids" defaultValue="false" required>
-              <option value="false">No, it is not made for kids</option>
-              <option value="true">Yes, it is made for kids</option>
-            </select>
-          </label>
-
-          <label>
-            Privacy when publishing now
-            <select
-              name="privacyStatus"
-              value={privacyStatus}
-              onChange={event => setPrivacyStatus(event.target.value)}
-            >
-              <option value="private">Private</option>
-              <option value="unlisted">Unlisted</option>
-              <option value="public">Public</option>
-            </select>
-          </label>
-
-          <label>
-            Schedule publication (optional, local time)
-            <input type="datetime-local" name="scheduledAt" min={minimumScheduleTime()} />
-          </label>
-          <small>
-            Scheduled videos are uploaded as private and published by YouTube at this time.
-          </small>
-
-          <button type="submit" disabled={!auth?.connected || uploading}>
-            {uploading ? 'Uploading…' : 'Upload to YouTube'}
-          </button>
-        </form>
-      </section>
-
-      {error && <p role="alert">Error: {error}</p>}
-
-      {result && (
-        <section>
-          <h2>Upload complete</h2>
-          <p>
-            <a href={result.youtubeUrl} target="_blank" rel="noreferrer">
-              Open video on YouTube
-            </a>
-          </p>
-          <p>Privacy: {result.privacyStatus}</p>
-          {result.publishAt && <p>Scheduled for: {new Date(result.publishAt).toLocaleString()}</p>}
-        </section>
-      )} */}
     </main>
   );
 }

@@ -1,11 +1,7 @@
 .form {
   display: flex;
   flex-direction: column;
-
-  label {
-    display: flex;
-    flex-direction: column;
-  }
+  row-gap: 1rem;
 }
 
 .youtubeAutoPoster {
@@ -225,7 +221,6 @@
 }
 
 .visibilityInput {
-  position: absolute;
   width: 1px;
   height: 1px;
   opacity: 0;
@@ -298,7 +293,6 @@
   color: #1a1a1a;
   font-weight: 400;
   border-bottom: 1px solid #e5e7eb;
-  cursor: pointer;
 }
 
 .toggleRow:last-child {
@@ -328,8 +322,14 @@
   margin-bottom: 0;
 }
 
+.form .switchControl {
+  display: inline-flex;
+  flex: 0 0 auto;
+  margin: 0;
+  cursor: pointer;
+}
+
 .toggleInput {
-  position: absolute;
   width: 1px;
   height: 1px;
   opacity: 0;
