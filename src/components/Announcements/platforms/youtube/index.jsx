@@ -358,254 +358,266 @@ function YoutubeAutoPoster({ platform }) {
           aria-label="YouTube video upload"
           onSubmit={event => void submitVideo(event)}
         >
-          {/* Video details */}
-          <section className={styles.card}>
-            <h4 className={styles.cardTitle}>Video details</h4>
-            <div className={styles.cardContent}>
-              <div className={styles.inputGroup}>
-                <label htmlFor="videoTitle" className={styles.inputLabel}>
-                  Video Title <span className={styles.inputRequired}>*</span>
-                </label>
-                <input
-                  id="videoTitle"
-                  name="title"
-                  type="text"
-                  className={styles.inputField}
-                  maxLength={100}
-                  required
-                />
-              </div>
-              <div className={styles.horizontal}>
-                <div className={styles.inputGroup}>
-                  <label htmlFor="categoryId" className={styles.inputLabel}>
-                    Category <span className={styles.inputRequired}>*</span>
-                  </label>
-                  <input
-                    id="categoryId"
-                    name="categoryId"
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]+"
-                    className={styles.inputField}
-                    required
-                  />
+          <div className={styles.formColumns}>
+            <div className={styles.formColumn}>
+              {/* Video details */}
+              <section className={styles.card}>
+                <h4 className={styles.cardTitle}>Video details</h4>
+                <div className={styles.cardContent}>
+                  <div className={styles.inputGroup}>
+                    <label htmlFor="videoTitle" className={styles.inputLabel}>
+                      Video Title <span className={styles.inputRequired}>*</span>
+                    </label>
+                    <input
+                      id="videoTitle"
+                      name="title"
+                      type="text"
+                      className={styles.inputField}
+                      maxLength={100}
+                      required
+                    />
+                  </div>
+                  <div className={styles.horizontal}>
+                    <div className={styles.inputGroup}>
+                      <label htmlFor="categoryId" className={styles.inputLabel}>
+                        Category <span className={styles.inputRequired}>*</span>
+                      </label>
+                      <input
+                        id="categoryId"
+                        name="categoryId"
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]+"
+                        className={styles.inputField}
+                        required
+                      />
+                    </div>
+                    <div className={styles.inputGroup}>
+                      <label htmlFor="madeForKids" className={styles.inputLabel}>
+                        Made for kids <span className={styles.inputRequired}>*</span>
+                      </label>
+                      <select
+                        id="madeForKids"
+                        name="madeForKids"
+                        className={styles.inputField}
+                        defaultValue="false"
+                        required
+                      >
+                        <option value="false">No</option>
+                        <option value="true">Yes</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className={styles.inputGroup}>
+                    <label htmlFor="videoDescription" className={styles.inputLabel}>
+                      Description <span className={styles.inputOptional}>Optional</span>
+                    </label>
+                    <input
+                      id="videoDescription"
+                      name="description"
+                      type="text"
+                      className={styles.inputField}
+                      maxLength={5000}
+                    />
+                  </div>
                 </div>
-                <div className={styles.inputGroup}>
-                  <label htmlFor="madeForKids" className={styles.inputLabel}>
-                    Made for kids <span className={styles.inputRequired}>*</span>
-                  </label>
-                  <select
-                    id="madeForKids"
-                    name="madeForKids"
-                    className={styles.inputField}
-                    defaultValue="false"
-                    required
-                  >
-                    <option value="false">No</option>
-                    <option value="true">Yes</option>
-                  </select>
-                </div>
-              </div>
-              <div className={styles.inputGroup}>
-                <label htmlFor="videoDescription" className={styles.inputLabel}>
-                  Description <span className={styles.inputOptional}>Optional</span>
-                </label>
-                <input
-                  id="videoDescription"
-                  name="description"
-                  type="text"
-                  className={styles.inputField}
-                  maxLength={5000}
-                />
-              </div>
-            </div>
-          </section>
+              </section>
 
-          {/* Video upload */}
-          <section className={styles.card}>
-            <h4 className={styles.cardTitle}>Video source</h4>
-            <div className={styles.videoSourceTile}>
-              {videoPreviewUrl && (
-                <div className={styles.videoThumb}>
-                  <video
-                    src={videoPreviewUrl}
-                    muted
-                    preload="metadata"
-                    onLoadedMetadata={event => setVideoDuration(event.currentTarget.duration)}
-                    aria-label="Selected video preview"
-                  />
-                </div>
-              )}
-              <div className={styles.videoMeta}>
-                <p
-                  className={`${styles.videoFilename} ${!videoFile ? styles.emptyVideoPrompt : ''}`}
-                >
-                  {videoFile ? videoFile.name : 'Choose a video to upload'}
-                </p>
-                {videoFile && (
-                  <div className={styles.videoSpecs}>
-                    <span>
-                      Size <strong>{(videoFile.size / (1024 * 1024)).toFixed(1)} MB</strong>
-                    </span>
-                    {videoDuration && (
-                      <span>
-                        Length{' '}
-                        <strong>
-                          {Math.floor(videoDuration / 60)}:
-                          {String(Math.floor(videoDuration % 60)).padStart(2, '0')}
-                        </strong>
-                      </span>
+              {/* Video upload */}
+              <section className={styles.card}>
+                <h4 className={styles.cardTitle}>Video source</h4>
+                <div className={styles.videoSourceTile}>
+                  {videoPreviewUrl && (
+                    <div className={styles.videoThumb}>
+                      <video
+                        src={videoPreviewUrl}
+                        muted
+                        preload="metadata"
+                        onLoadedMetadata={event => setVideoDuration(event.currentTarget.duration)}
+                        aria-label="Selected video preview"
+                      />
+                    </div>
+                  )}
+                  <div className={styles.videoMeta}>
+                    <p
+                      className={`${styles.videoFilename} ${
+                        !videoFile ? styles.emptyVideoPrompt : ''
+                      }`}
+                    >
+                      {videoFile ? videoFile.name : 'Choose a video to upload'}
+                    </p>
+                    {videoFile && (
+                      <div className={styles.videoSpecs}>
+                        <span>
+                          Size <strong>{(videoFile.size / (1024 * 1024)).toFixed(1)} MB</strong>
+                        </span>
+                        {videoDuration && (
+                          <span>
+                            Length{' '}
+                            <strong>
+                              {Math.floor(videoDuration / 60)}:
+                              {String(Math.floor(videoDuration % 60)).padStart(2, '0')}
+                            </strong>
+                          </span>
+                        )}
+                      </div>
                     )}
                   </div>
-                )}
-              </div>
-              <label className={styles.replaceButton}>
-                {videoFile ? 'Replace' : 'Choose video'}
-                <input
-                  type="file"
-                  name="video"
-                  accept="video/*"
-                  aria-label="Video source"
-                  className={styles.fileInput}
-                  onChange={event => setVideoFile(event.target.files?.[0] ?? null)}
-                  required={!videoFile}
-                />
-              </label>
+                  <label className={styles.replaceButton}>
+                    {videoFile ? 'Replace' : 'Choose video'}
+                    <input
+                      type="file"
+                      name="video"
+                      accept="video/*"
+                      aria-label="Video source"
+                      className={styles.fileInput}
+                      onChange={event => setVideoFile(event.target.files?.[0] ?? null)}
+                      required={!videoFile}
+                    />
+                  </label>
+                </div>
+              </section>
             </div>
-          </section>
 
-          {/* Tags */}
-          <section className={styles.card}>
-            <div className={styles.tagsHead}>
-              <h4 className={styles.cardTitle}>
-                Tags <span className={styles.inputOptional}>Optional</span>
-              </h4>
-              <span className={styles.tagCount}>
-                {tags.length} / {MAX_TAGS}
-              </span>
-            </div>
-            <div className={styles.tagsWrap}>
-              {tags.map(tag => (
-                <span key={tag} className={styles.tagChip}>
-                  <span className={styles.tagText}>#{tag}</span>
-                  <button
-                    type="button"
-                    className={styles.tagRemove}
-                    aria-label={`Remove tag ${tag}`}
-                    onClick={() => removeTag(tag)}
-                  >
-                    ✕
-                  </button>
-                </span>
-              ))}
-              <span className={styles.addTagChip}>
-                +
-                <input
-                  type="text"
-                  className={styles.addTagInput}
-                  placeholder="add tag"
-                  value={tagDraft}
-                  onChange={event => {
-                    const { value } = event.target;
-                    if (value.includes(',')) {
-                      splitAndAddDraft(value);
-                      return;
-                    }
-                    setTagDraft(value);
-                  }}
-                  onKeyDown={event => {
-                    if (event.key === 'Enter' || event.key === ',') {
-                      commitDraft(event);
-                    } else if (event.key === 'Backspace' && tagDraft === '' && tags.length > 0) {
-                      removeTag(tags[tags.length - 1]);
-                    }
-                  }}
-                  onBlur={() => splitAndAddDraft()}
-                  disabled={tags.length >= MAX_TAGS}
-                />
-              </span>
-            </div>
-            <p className={styles.tagHint}>
-              Use commas or Enter to separate. Tags help YouTube recommend your video.
-            </p>
-          </section>
-
-          {/* Visibility */}
-          <section className={styles.card}>
-            <div className={styles.visibilityHead}>
-              <h4 id="visibility-title" className={styles.visibilityTitle}>
-                Visibility
-              </h4>
-              <span
-                className={`${styles.visibilityStatus} ${styles[`${privacyStatus}Status`]}`}
-                aria-live="polite"
-              >
-                {privacyStatus.toUpperCase()}
-              </span>
-            </div>
-            <div className={styles.visibilityOptions}>
-              {PRIVACY_OPTIONS.map(option => (
-                <label key={option.value} className={styles.visibilityChoice}>
-                  <input
-                    type="radio"
-                    className={styles.visibilityInput}
-                    name="visibilityPicker"
-                    value={option.value}
-                    checked={privacyStatus === option.value}
-                    onChange={event => setPrivacyStatus(event.target.value)}
-                  />
-                  <span className={styles.visibilityOption}>{option.label}</span>
-                </label>
-              ))}
-            </div>
-          </section>
-
-          {/* Audience & Embed */}
-          <section className={`${styles.card}`} aria-labelledby="audience-settings-title">
-            <h4 id="audience-settings-title" className={styles.togglesTitle}>
-              Audience &amp; embed
-            </h4>
-            <div className={styles.togglesList}>
-              {AUDIENCE_SETTINGS.map(setting => {
-                const labelId = `${setting.key}-label`;
-                const descriptionId = `${setting.key}-description`;
-
-                return (
-                  <div key={setting.key} className={styles.toggleRow}>
-                    <div className={styles.toggleText}>
-                      <span id={labelId} className={styles.toggleLabel}>
-                        {setting.label}
-                      </span>
-                      <p id={descriptionId} className={styles.toggleDescription}>
-                        {setting.description}
-                      </p>
-                    </div>
-                    <label className={styles.switchControl}>
-                      <input
-                        id={setting.key}
-                        type="checkbox"
-                        role="switch"
-                        className={styles.toggleInput}
-                        name={setting.key}
-                        checked={audienceSettings[setting.key]}
-                        aria-labelledby={labelId}
-                        aria-describedby={descriptionId}
-                        onChange={event =>
-                          setAudienceSettings(current => ({
-                            ...current,
-                            [setting.key]: event.target.checked,
-                          }))
+            <div className={styles.formColumn}>
+              {/* Tags */}
+              <section className={styles.card}>
+                <div className={styles.tagsHead}>
+                  <h4 className={styles.cardTitle}>
+                    Tags <span className={styles.inputOptional}>Optional</span>
+                  </h4>
+                  <span className={styles.tagCount}>
+                    {tags.length} / {MAX_TAGS}
+                  </span>
+                </div>
+                <div className={styles.tagsWrap}>
+                  {tags.map(tag => (
+                    <span key={tag} className={styles.tagChip}>
+                      <span className={styles.tagText}>#{tag}</span>
+                      <button
+                        type="button"
+                        className={styles.tagRemove}
+                        aria-label={`Remove tag ${tag}`}
+                        onClick={() => removeTag(tag)}
+                      >
+                        ✕
+                      </button>
+                    </span>
+                  ))}
+                  <span className={styles.addTagChip}>
+                    +
+                    <input
+                      type="text"
+                      className={styles.addTagInput}
+                      placeholder="add tag"
+                      value={tagDraft}
+                      onChange={event => {
+                        const { value } = event.target;
+                        if (value.includes(',')) {
+                          splitAndAddDraft(value);
+                          return;
                         }
+                        setTagDraft(value);
+                      }}
+                      onKeyDown={event => {
+                        if (event.key === 'Enter' || event.key === ',') {
+                          commitDraft(event);
+                        } else if (
+                          event.key === 'Backspace' &&
+                          tagDraft === '' &&
+                          tags.length > 0
+                        ) {
+                          removeTag(tags[tags.length - 1]);
+                        }
+                      }}
+                      onBlur={() => splitAndAddDraft()}
+                      disabled={tags.length >= MAX_TAGS}
+                    />
+                  </span>
+                </div>
+                <p className={styles.tagHint}>
+                  Use commas or Enter to separate. Tags help YouTube recommend your video.
+                </p>
+              </section>
+
+              {/* Visibility */}
+              <section className={styles.card}>
+                <div className={styles.visibilityHead}>
+                  <h4 id="visibility-title" className={styles.visibilityTitle}>
+                    Visibility
+                  </h4>
+                  <span
+                    className={`${styles.visibilityStatus} ${styles[`${privacyStatus}Status`]}`}
+                    aria-live="polite"
+                  >
+                    {privacyStatus.toUpperCase()}
+                  </span>
+                </div>
+                <div className={styles.visibilityOptions}>
+                  {PRIVACY_OPTIONS.map(option => (
+                    <label key={option.value} className={styles.visibilityChoice}>
+                      <input
+                        type="radio"
+                        className={styles.visibilityInput}
+                        name="visibilityPicker"
+                        value={option.value}
+                        checked={privacyStatus === option.value}
+                        onChange={event => setPrivacyStatus(event.target.value)}
                       />
-                      <span className={styles.toggleTrack} aria-hidden="true">
-                        <span className={styles.toggleKnob} />
-                      </span>
+                      <span className={styles.visibilityOption}>{option.label}</span>
                     </label>
-                  </div>
-                );
-              })}
+                  ))}
+                </div>
+              </section>
+
+              {/* Audience & Embed */}
+              <section className={styles.card} aria-labelledby="audience-settings-title">
+                <h4 id="audience-settings-title" className={styles.togglesTitle}>
+                  Audience &amp; embed
+                </h4>
+                <div className={styles.togglesList}>
+                  {AUDIENCE_SETTINGS.map(setting => {
+                    const labelId = `${setting.key}-label`;
+                    const descriptionId = `${setting.key}-description`;
+
+                    return (
+                      <div key={setting.key} className={styles.toggleRow}>
+                        <div className={styles.toggleText}>
+                          <span id={labelId} className={styles.toggleLabel}>
+                            {setting.label}
+                          </span>
+                          <p id={descriptionId} className={styles.toggleDescription}>
+                            {setting.description}
+                          </p>
+                        </div>
+                        <label className={styles.switchControl}>
+                          <input
+                            id={setting.key}
+                            type="checkbox"
+                            role="switch"
+                            className={styles.toggleInput}
+                            name={setting.key}
+                            checked={audienceSettings[setting.key]}
+                            aria-labelledby={labelId}
+                            aria-describedby={descriptionId}
+                            onChange={event =>
+                              setAudienceSettings(current => ({
+                                ...current,
+                                [setting.key]: event.target.checked,
+                              }))
+                            }
+                          />
+                          <span className={styles.toggleTrack} aria-hidden="true">
+                            <span className={styles.toggleKnob} />
+                          </span>
+                        </label>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
             </div>
-          </section>
+          </div>
 
           <button
             className={styles.uploadButton}
