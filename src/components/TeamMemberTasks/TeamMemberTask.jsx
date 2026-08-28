@@ -154,7 +154,9 @@ const TeamMemberTask = React.memo(
     const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
     const isAllowedToResolveTasks =
       rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('resolveTask'));
-    const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
+    const isAllowedToSeeDeadlineCount =
+      rolesAllowedToSeeDeadlineCount.includes(userRole) ||
+      dispatch(hasPermission('viewAndInteractWithTaskDeadlinesBoxes'));
 
     const canGetWeeklySummaries = dispatch(hasPermission('getWeeklySummaries'));
     const canSeeReports =
