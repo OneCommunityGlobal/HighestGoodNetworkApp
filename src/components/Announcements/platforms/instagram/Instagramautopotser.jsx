@@ -21,6 +21,9 @@ import {
   fieldActionRow,
 } from './Instagramhelpers';
 
+// API Base for backend
+const API_BASE = 'https://freebase-sugar-duplicate.ngrok-free.dev';
+
 // ─── ScheduleField sub-component ─────────────────────────────────────────────
 
 function ScheduleField({ id, type, label, value, min, onChange, attemptedSave, errorText }) {
@@ -90,11 +93,14 @@ function InstagramAutoPoster({ platform }) {
 
   const [hashtagSuggestions, setHashtagSuggestions] = useState([]);
 
+  const [postStatus, setPostStatus] = useState(null);
+  const [publishedPost, setPublishedPost] = useState(null);
+
   const subTabs = useMemo(
     () => [
-      { id: 'make', label: '📝 Create Post' },
-      { id: 'schedule', label: '⏰ Scheduled Posts' },
-      { id: 'history', label: '📜 Post History' },
+      { id: 'make', label: 'Create Post' },
+      { id: 'schedule', label: 'Scheduled Posts' },
+      { id: 'history', label: 'Post History' },
     ],
     [],
   );
@@ -123,13 +129,16 @@ function InstagramAutoPoster({ platform }) {
 
   const authHeaders = () => {
     const token = localStorage.getItem('token');
-    return token ? { Authorization: token } : {};
+    return {
+      ...(token ? { Authorization: token } : {}),
+      'ngrok-skip-browser-warning': 'true',
+    };
   };
 
   const loadScheduledPosts = async () => {
     setIsLoadingScheduled(true);
     try {
-      const res = await fetch('/api/instagram/schedule', { headers: authHeaders() });
+      const res = await fetch(`${API_BASE}/api/instagram/schedule`, { headers: authHeaders() });
       if (!res.ok) throw new Error('Failed to load scheduled posts');
       setScheduledPosts(await res.json());
     } catch (err) {
@@ -142,7 +151,9 @@ function InstagramAutoPoster({ platform }) {
   const loadHistory = async () => {
     setIsLoadingHistory(true);
     try {
-      const res = await fetch('/api/instagram/history?limit=20', { headers: authHeaders() });
+      const res = await fetch(`${API_BASE}/api/instagram/history?limit=20`, {
+        headers: authHeaders(),
+      });
       if (!res.ok) throw new Error('Failed to load post history');
       setHistory(await res.json());
     } catch (err) {
@@ -249,9 +260,15 @@ function InstagramAutoPoster({ platform }) {
   // ── Handlers: real posting ──────────────────────────────────────────────
 
   const buildRequestBody = () => ({
-    description: buildCaptionForClipboard({ caption, hashtags }),
-    mediaItems: media ? media.base64 : '',
-    mediaAltText: trimmedAltText || null,
+    caption: buildCaptionForClipboard({ caption, hashtags }),
+    media: media
+      ? {
+          base64: media.base64,
+          name: media.name,
+          isVideo: media.isVideo,
+        }
+      : null,
+    altText: trimmedAltText || null,
   });
 
   const handlePostNow = async () => {
@@ -259,22 +276,34 @@ function InstagramAutoPoster({ platform }) {
       toast.error(`Caption must be 1–${CAPTION_MAX} characters.`);
       return;
     }
+
     if (!hasMedia) {
       toast.error('Instagram requires an image or video — attach media first.');
       return;
     }
 
     setIsPosting(true);
+
     try {
-      const res = await fetch('/api/instagram/createPin', {
+      const res = await fetch(`${API_BASE}/api/instagram/post`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+        headers: {
+          'Content-Type': 'application/json',
+          ...authHeaders(),
+        },
         body: JSON.stringify(buildRequestBody()),
       });
+
       const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || 'Failed to post to Instagram.');
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to post to Instagram.');
+      }
+
       toast.success('Posted to Instagram!');
+
       handleReset();
+      loadHistory();
     } catch (err) {
       toast.error(err.message);
     } finally {
@@ -314,43 +343,59 @@ function InstagramAutoPoster({ platform }) {
 
   const handleSaveSchedule = async () => {
     setScheduleAttemptedSave(true);
+
     if (!captionValid) {
       toast.error(`Caption must be 1–${CAPTION_MAX} characters.`);
       return;
     }
+
     if (!hasMedia) {
       toast.error('Instagram requires an image or video — attach media first.');
       return;
     }
+
     if (!scheduledDate || !scheduledTime) {
       toast.error('Choose a schedule date and time.');
       return;
     }
+
     const scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`);
+
     if (scheduledDateTime <= new Date()) {
       toast.error('Scheduled time must be in the future.');
       return;
     }
 
     setIsPosting(true);
+
     try {
       if (editingScheduleId) {
-        await fetch(`/api/instagram/schedule/${editingScheduleId}`, {
+        await fetch(`${API_BASE}/api/instagram/schedule/${editingScheduleId}`, {
           method: 'DELETE',
           headers: authHeaders(),
         });
       }
-      const res = await fetch('/api/instagram/schedule', {
+
+      const res = await fetch(`${API_BASE}/api/instagram/schedule`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+        headers: {
+          'Content-Type': 'application/json',
+          ...authHeaders(),
+        },
         body: JSON.stringify({
           ...buildRequestBody(),
           scheduledTime: scheduledDateTime.toISOString(),
         }),
       });
+
       const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || 'Failed to schedule post.');
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to schedule post.');
+      }
+
       toast.success(editingScheduleId ? 'Scheduled post updated.' : 'Post scheduled.');
+
       handleReset();
       setScheduleAttemptedSave(false);
       loadScheduledPosts();
@@ -363,22 +408,20 @@ function InstagramAutoPoster({ platform }) {
 
   const handleEditSchedule = post => {
     try {
-      const data = JSON.parse(post.postData);
-      // Caption + hashtags were combined when originally scheduled, so they
-      // load back into the caption field together — split them out again
-      // manually if you want separate hashtag suggestions this time.
-      setCaption(data.status || '');
+      setCaption(post.caption || '');
       setHashtags('');
-      setAltText(data.mediaAltText || '');
+      setAltText(post.mediaAltText || '');
       setLocation('');
-      if (data.local_media_base64) {
+
+      if (post.mediaUrl) {
         setMedia({
-          base64: data.local_media_base64,
-          preview: data.local_media_base64,
+          base64: null, // no base64 available from a saved URL; see note below
+          preview: `${post.mediaUrl}?ngrok-skip-browser-warning=true`,
           name: 'scheduled-media',
-          isVideo: data.local_media_base64.startsWith('data:video'),
+          isVideo: post.mediaType === 'VIDEO',
         });
       }
+
       const scheduled = new Date(post.scheduledTime);
       const { date, time } = clampScheduleDateTime(
         formatLocalDate(scheduled),
@@ -396,7 +439,7 @@ function InstagramAutoPoster({ platform }) {
 
   const handleDeleteScheduled = async postId => {
     try {
-      const res = await fetch(`/api/instagram/schedule/${postId}`, {
+      const res = await fetch(`${API_BASE}/api/instagram/schedule/${postId}`, {
         method: 'DELETE',
         headers: authHeaders(),
       });
@@ -411,7 +454,7 @@ function InstagramAutoPoster({ platform }) {
 
   const handleRetryScheduled = async postId => {
     try {
-      const res = await fetch(`/api/instagram/schedule/${postId}/retry`, {
+      const res = await fetch(`${API_BASE}/api/instagram/schedule/${postId}/retry`, {
         method: 'POST',
         headers: authHeaders(),
       });
@@ -670,13 +713,7 @@ function InstagramAutoPoster({ platform }) {
                 >
                   Schedule this post
                 </button>
-                <button
-                  type="button"
-                  style={buttonStyle('outline', darkMode)}
-                  onClick={shareToInstagram}
-                >
-                  Share to Instagram
-                </button>
+
                 <button
                   type="button"
                   style={{ ...buttonStyle('primary', darkMode), opacity: readyToPost ? 1 : 0.5 }}
@@ -785,7 +822,7 @@ function InstagramAutoPoster({ platform }) {
               )}
               {!isLoadingScheduled &&
                 scheduledPosts.map(post => {
-                  let captionPreview = 'No content captured.';
+                  let captionPreview = post.caption || 'No content captured.';
                   try {
                     const data = JSON.parse(post.postData);
                     const text = data.status || '';
@@ -816,6 +853,24 @@ function InstagramAutoPoster({ platform }) {
                           )}
                         </span>
                       </div>
+                      {post.mediaUrl && (
+                        <div className={styles['instagram-saved__media']}>
+                          {post.mediaType === 'VIDEO' ? (
+                            <video
+                              src={post.mediaUrl}
+                              className={styles['instagram-saved__thumbnail']}
+                              muted
+                              playsInline
+                            />
+                          ) : (
+                            <img
+                              src={post.mediaUrl}
+                              alt={captionPreview}
+                              className={styles['instagram-saved__thumbnail']}
+                            />
+                          )}
+                        </div>
+                      )}
                       <p className={styles['instagram-saved__excerpt']}>{captionPreview}</p>
                       {post.status === 'failed' && post.lastError && (
                         <p className={styles['instagram-field__error']}>{post.lastError}</p>
@@ -867,27 +922,48 @@ function InstagramAutoPoster({ platform }) {
           {!isLoadingHistory && history.length > 0 && (
             <div className={styles['instagram-saved__list']}>
               {history.map(post => {
-                let captionPreview = 'No content captured.';
-                try {
-                  const data = JSON.parse(post.postData);
-                  captionPreview = data.status || captionPreview;
-                } catch {
-                  // keep default
-                }
+                let captionPreview = post.caption || 'No content captured.';
+
                 return (
                   <article key={post._id} className={styles['instagram-saved__item']}>
                     <div className={styles['instagram-saved__header']}>
-                      <h4 className={styles['instagram-saved__title']}>Published</h4>
+                      <h4 className={styles['instagram-saved__title']}>
+                        {post.status === 'published' ? 'Published' : post.status}
+                      </h4>
                       <span className={styles['instagram-saved__meta']}>
-                        {post.publishedAt
+                        {post.postedAt
                           ? formatDisplayDateTime(
-                              formatLocalDate(new Date(post.publishedAt)),
-                              formatLocalTime(new Date(post.publishedAt)),
+                              formatLocalDate(new Date(post.postedAt)),
+                              formatLocalTime(new Date(post.postedAt)),
                             )
                           : '—'}
                       </span>
                     </div>
+                    {post.mediaUrl && (
+                      <div className={styles['instagram-saved__media']}>
+                        {post.mediaType === 'VIDEO' ? (
+                          <video
+                            src={post.mediaUrl}
+                            className={styles['instagram-saved__thumbnail']}
+                            muted
+                            playsInline
+                          />
+                        ) : (
+                          <img
+                            src={post.mediaUrl}
+                            alt={captionPreview}
+                            className={styles['instagram-saved__thumbnail']}
+                          />
+                        )}
+                      </div>
+                    )}
                     <p className={styles['instagram-saved__excerpt']}>{captionPreview}</p>
+                    {post.error && <p className={styles['instagram-saved__error']}>{post.error}</p>}
+                    {post.permalink && (
+                      <a href={post.permalink} target="_blank" rel="noopener noreferrer">
+                        View on Instagram →
+                      </a>
+                    )}
                   </article>
                 );
               })}

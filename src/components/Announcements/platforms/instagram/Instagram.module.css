@@ -445,6 +445,30 @@
   gap: 10px;
 }
 
+
+.instagram-saved__media {
+  display: flex;
+}
+
+.instagram-saved__thumbnail {
+  max-width: 100px;
+  max-height: 100px;
+  width: auto;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.instagram-saved__error {
+  font-size: 0.85rem;
+  color: #d9534f;
+  margin: 0;
+}
+
+.instagram-autoposter.dark .instagram-saved__error {
+  color: #ff9384;
+}
+
 /* ── Responsive ── */
 @media (width <= 960px) {
   .instagram-scheduler__grid {
