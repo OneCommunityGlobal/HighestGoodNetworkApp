@@ -10,13 +10,38 @@ function MyCases() {
   const [filter, setFilter] = useState('all');
   const [expanded, setExpanded] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [events, setEvents] = useState(mockEvents);
 
   const isExporting =
     typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true'; // Sonar: prefer .
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const filteredEvents = filterEventsByDate(mockEvents, filter);
+  const filteredEvents = filterEventsByDate(events, filter);
+
+  const handleEventCreated = createdEvent => {
+    if (!createdEvent) return;
+    const eventDate = createdEvent.startTime || createdEvent.date;
+    setEvents(prev => [
+      {
+        id: createdEvent._id || createdEvent.id || `local-${Date.now()}`,
+        eventType: createdEvent.type || 'all',
+        eventDate: new Date(eventDate).toISOString(),
+        eventTime: new Date(eventDate).toLocaleString('en-US', {
+          hour: 'numeric',
+          minute: 'numeric',
+          hour12: true,
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        }),
+        eventName: createdEvent.title,
+        attendees: 0,
+        location: createdEvent.location,
+      },
+      ...prev,
+    ]);
+  };
 
   const filteredEventsByEventType = filteredEvents.filter(event => {
     if (event.eventType === 'all') {
@@ -190,6 +215,7 @@ function MyCases() {
       <CreateEventModal
         isOpen={isCreateModalOpen}
         toggle={() => setIsCreateModalOpen(!isCreateModalOpen)}
+        onEventCreated={handleEventCreated}
       />
     </div>
   );

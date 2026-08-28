@@ -165,6 +165,7 @@ function CreateEventModal({ isOpen, toggle, onEventCreated = () => {} }) {
     try {
       const result = await dispatch(createEvent(eventData));
       if (result?.success) {
+        onEventCreated(result.event);
         resetForm();
         toggle();
       }
