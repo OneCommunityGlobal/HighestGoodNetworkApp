@@ -607,7 +607,12 @@ function YoutubeAutoPoster({ platform }) {
             </div>
           </section>
 
-          <button type="submit" disabled={!connected || checking || uploading}>
+          <button
+            className={styles.uploadButton}
+            type="submit"
+            disabled={!connected || checking || uploading}
+            aria-busy={uploading}
+          >
             {uploading ? 'Uploading…' : 'Upload'}
           </button>
         </form>
