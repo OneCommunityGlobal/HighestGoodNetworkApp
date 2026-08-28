@@ -116,3 +116,29 @@
   border-color: #5750db;
   outline-color: #5750db;
 }
+
+/* Color-only dark-mode overrides for controls that retain a white background. */
+.tasksTableDarkControls :global(.tasks-color-select__control),
+.tasksTableDarkControls :global(.tasks-color-select__placeholder),
+.tasksTableDarkControls :global(.tasks-color-select__single-value),
+.tasksTableDarkControls :global(.tasks-color-select__input-container),
+.tasksTableDarkControls :global(.tasks-color-select__input),
+.tasksTableDarkControls :global(.tasks-color-select__dropdown-indicator) {
+  color: #212529 !important;
+}
+
+.tasksTableDarkControls :global(.tasks-color-select__option) {
+  color: #212529 !important;
+}
+
+.tasksTableDarkControls :global(.tasks-color-select__option--is-focused),
+.tasksTableDarkControls :global(.tasks-color-select__option--is-selected) {
+  background-color: #2684ff !important;
+  color: #fff !important;
+}
+
+.tasksTableDarkTextInput,
+.tasksTableDarkTextInput::placeholder,
+.tasksTableDarkLabel {
+  color: #212529 !important;
+}

@@ -1,8 +1,86 @@
-.button-container {
-  position: absolute;
-  top: 60%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
-  pointer-events: auto;
+.chartRoot {
+  width: 100%;
+  min-width: 0;
+}
+
+.chartCanvas {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+}
+
+.centerContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #333;
+  font-size: 12px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.centerContentDark {
+  color: #fff;
+}
+
+.centerSummary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.centerToggleWrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.centerToggle {
+  position: static !important;
+  inset: auto !important;
+  transform: none !important;
+}
+
+.compactRoot {
+  height: auto;
+}
+
+.compactCanvas {
+  height: 15rem;
+}
+
+.mobileLegend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 12px;
+  width: 100%;
+  max-height: 9rem;
+  padding: 8px 4px;
+  overflow-y: auto;
+  font-size: 11px;
+  text-align: left;
+}
+
+.mobileLegendItem {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #d1cfd4;
+}
+
+.mobileLegendName {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+
+@media screen and (width <= 400px) {
+  .mobileLegend {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

@@ -5,7 +5,7 @@
 import { useState, useEffect, useRef } from 'react';
 import  '../../Teams/Team.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
-import './TasksTable.module.css';
+import styles from './TasksTable.module.css';
 import Select from 'react-select';
 import { Checkbox } from '~/components/common/Checkbox';
 import TextSearchBox from '~/components/UserManagement/TextSearchBox';
@@ -69,7 +69,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
   };
 
   return (
-    <div className={darkMode ? 'text-light' : ''}>
+    <div className={darkMode ? `text-light ${styles.tasksTableDarkControls}` : ''}>
       <div>
         <h4 className="tasks-table-header">Tasks</h4>
       </div>
@@ -81,6 +81,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             placeholder="Any user"
             onChange={(selectedOption) => handleSelectChange(selectedOption, 'users')}
             className="tasks-table-filter-item tasks-table-filter-input"
+            classNamePrefix="tasks-color-select"
             value={filters.users ? { value: filters.users, label: filters.users } : null}
           />
           <Select
@@ -88,6 +89,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             placeholder="Any classification"
             onChange={(selectedOption) => handleSelectChange(selectedOption, 'classification')}
             className="tasks-table-filter-item tasks-table-filter-input"
+            classNamePrefix="tasks-color-select"
             value={filters.classification ? { value: filters.classification, label: filters.classification } : null}
           />
           <Select
@@ -95,6 +97,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             placeholder="Any priority"
             onChange={(selectedOption) => handleSelectChange(selectedOption, 'priority')}
             className="tasks-table-filter-item tasks-table-filter-input"
+            classNamePrefix="tasks-color-select"
             value={filters.priority ? { value: filters.priority, label: filters.priority } : null}
           />
           <Select
@@ -102,11 +105,14 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             placeholder="Any status"
             onChange={(selectedOption) => handleSelectChange(selectedOption, 'status')}
             className="tasks-table-filter-item tasks-table-filter-input"
+            classNamePrefix="tasks-color-select"
             value={filters.status ? { value: filters.status, label: filters.status } : null}
           />
           <TextSearchBox
             placeholder="Estimated hours"
-            className="tasks-table-text-search-box"
+            className={`tasks-table-text-search-box ${
+              darkMode ? styles.tasksTableDarkTextInput : ''
+            }`}
             searchCallback={() => { }}
           />
           <Checkbox
@@ -114,6 +120,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             onChange={() => setActive(!isActive)}
             id="active_checkbox"
             wrapperClassname="tasks-table-filter-item"
+            textColorCN={darkMode ? styles.tasksTableDarkLabel : ''}
             label="Active"
           />
           <Checkbox
@@ -121,6 +128,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             onChange={() => setAssigned(!isAssigned)}
             id="assign_checkbox"
             wrapperClassname="tasks-table-filter-item"
+            textColorCN={darkMode ? styles.tasksTableDarkLabel : ''}
             label="Assign"
           />
         </div>
