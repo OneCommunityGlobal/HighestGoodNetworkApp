@@ -380,11 +380,18 @@
 }
 
 .containerDark .linkValue {
-  color: #8ec9ff;
+  /* stylelint-disable-next-line declaration-no-important */
+  color: #8ec9ff !important; /* beats the global `.bm-dashboard-dark *` !important rule */
 }
 
 .containerDark .capacityTotal {
-  color: #cbd5e1;
+  /* stylelint-disable-next-line declaration-no-important */
+  color: #cbd5e1 !important;
+}
+
+.containerDark .capacityUsed {
+  /* stylelint-disable-next-line declaration-no-important */
+  color: #ff8a8a !important;
 }
 
 .containerDark .divider,
@@ -430,11 +437,8 @@
 }
 
 .containerDark .detailValue.statusActive {
-  color: #58df88;
-}
-
-.containerDark .capacityUsed {
-  color: #ff8a8a;
+  /* stylelint-disable-next-line declaration-no-important */
+  color: #58df88 !important;
 }
 
 .tabTriggerDark {
