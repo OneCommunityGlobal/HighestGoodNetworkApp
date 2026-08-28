@@ -4,7 +4,7 @@ import moment from 'moment';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import userEvent from '@testing-library/user-event';
-import { default as configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { themeMock } from '__tests__/mockStates';
 import { Provider } from 'react-redux';
 import { weeklySummaryMockData1 } from '../__mocks__/weeklySummaryMockData'; // Located in the tested component's __mocks__ folder
@@ -30,7 +30,7 @@ vi.mock('react-toastify', () => {
   };
 });
 
-const mockStore = configureStore([]);
+const mockStore = configureMockStore([]);
 
 describe('WeeklySummary page', () => {
   describe('On page load', () => {
