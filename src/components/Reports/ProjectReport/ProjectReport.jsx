@@ -19,6 +19,7 @@ import { PieChartByProject } from './PiechartByProject/PieChartByProject';
 import 'react-datepicker/dist/react-datepicker.css';
 import '../../Teams/Team.module.css';
 import styles from './ProjectReport.module.css';
+
 import { boxStyle, boxStyleDark } from '../../../styles';
 
 
@@ -142,7 +143,6 @@ export function ProjectReport({ match }) {
       )}
       darkMode={darkMode}
     >
-      <div className={`${styles['project-header']} ${darkMode ? 'bg-yinmn-blue text-light' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>{projectName}</div>
       <div className={styles['wbs-and-members-blocks-wrapper']}>
         <ReportPage.ReportBlock className="wbs-and-members-blocks" darkMode={darkMode}>
           <Paging totalElementsCount={wbs.WBSItems.length} darkMode={darkMode}>

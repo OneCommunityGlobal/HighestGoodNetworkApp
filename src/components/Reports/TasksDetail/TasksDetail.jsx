@@ -77,7 +77,7 @@ export function TasksDetail(props) {
 
 
   const tasksList = filteredTasks.map((task, index) => (
-    <tr key={task._id} className={darkMode ? styles['dark-mode-row']  : ''}>
+    <tr key={task._id} className={`${styles['tasks-detail-table-row']} ${darkMode ? styles['dark-mode-row'] : ''}`}>
       <td>{index + 1}</td>
       <td className={styles['tasks-detail-task-name']}>{truncate(task.taskName, 20)}</td>
       <td className={styles['collapse-column']}>{task.priority}</td>
@@ -140,8 +140,8 @@ export function TasksDetail(props) {
             <th>Status</th>
             <th className={styles['tasks-detail-center-cells']}>Resources</th>
             <th className={styles['tasks-detail-center-cells']}>Active</th>
-            <th className={`${styles['tasks-detail-center-cells']} ${styles[`collapse-column`]}`}>Assign</th>
-            <th className={`${styles['tasks-detail-center-cells']} ${styles[`collapse-column`]}`}>Class</th>
+            <th className={`${styles['tasks-detail-center-cells']} ${styles['collapse-column']}`}>Assign</th>
+            <th className={`${styles['tasks-detail-center-cells']} ${styles['collapse-column']}`}>Class</th>
             <th className={styles['tasks-detail-center-cells']}>Estimated Hours</th>
             <th className={styles['collapse-column']}>Start Date</th>
             <th className={styles['collapse-column']}>End Date</th>

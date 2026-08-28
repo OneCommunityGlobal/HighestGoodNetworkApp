@@ -74,6 +74,7 @@
   outline-color: #0075ff;
 }
 
+
 /* Clear filter button styling */
 .tasks-table-clear-filter-button {
   display: block;
@@ -103,6 +104,10 @@
   cursor: pointer;
 }
 
+.dark-mode-button {
+  background-color: #3a506b;
+}
+
 .tasks-table-clear-filter-button:hover,
 .tasks-table-clear-filter-button:focus,
 .tasks-table-clear-filter-button:active {
@@ -115,4 +120,41 @@
 .tasks-table-edit-tasks-button:active {
   border-color: #5750db;
   outline-color: #5750db;
+}
+
+/* Styling React Select Element */
+
+.tasks-table-filter-input.dark-mode-select :global(.select__control) {
+  background-color: #3a506b !important;
+  border-color: #d1cfd4;
+}
+
+.dark-mode-select :global(.select__option) {
+  background-color: #3a506b;
+  color: #fff;
+}
+
+:global(body.dark-mode .select__option:hover),
+:global(body.dark-mode .select__option--is-focused),
+:global(body.bm-dashboard-dark .select__option:hover),
+:global(body.bm-dashboard-dark .select__option--is-focused) {
+  background-color: #111831 !important;
+}
+
+.dark-mode-select :global(.select__placeholder) {
+  color: #fff;
+}
+
+.dark-mode-select :global(.select__single-value) {
+  color: #fff;
+}
+
+:global(body.dark-mode .select__menu),
+:global(body.bm-dashboard-dark .select__menu) {
+  background-color: #3a506b !important;
+}
+
+/* Styling Checkbox elements */
+.tasks-table-filter-item.dark-mode-checkbox {
+  background-color: #3a506b;
 }

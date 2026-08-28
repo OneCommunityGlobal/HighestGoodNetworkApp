@@ -14,7 +14,6 @@ import { TasksDetail } from '../TasksDetail';
 import { stubArray } from 'lodash';
 
 export function TasksTable({ darkMode, tasks, projectId }) {
-  console.log(darkMode)
   const [isActive, setActive] = useState(true);
   const [isAssigned, setAssigned] = useState(true);
   const [toggleEditTasks, setToggleEditTasks] = useState(false);
@@ -82,28 +81,36 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             options={getUserOptions()}
             placeholder="Any user"
             onChange={(selectedOption) => handleSelectChange(selectedOption, 'users')}
-            className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']}`}
+            className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']} ${darkMode ? styles['dark-mode-select'] : ''}`}
+            classNamePrefix="select"
+            menuPortalTarget={document.body}
             value={filters.users ? { value: filters.users, label: filters.users } : null}
           />
           <Select
             options={getOptions('classification')}
             placeholder="Any classification"
             onChange={(selectedOption) => handleSelectChange(selectedOption, 'classification')}
-            className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']}`}
+            className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']} ${darkMode ? styles['dark-mode-select'] : ''}`}
+            classNamePrefix="select"
+            menuPortalTarget={document.body}
             value={filters.classification ? { value: filters.classification, label: filters.classification } : null}
           />
           <Select
             options={getOptions('priority')}
             placeholder="Any priority"
             onChange={(selectedOption) => handleSelectChange(selectedOption, 'priority')}
-            className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']}`}
+            className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']} ${darkMode ? styles['dark-mode-select'] : ''}`}
+            classNamePrefix="select"
+            menuPortalTarget={document.body}
             value={filters.priority ? { value: filters.priority, label: filters.priority } : null}
           />
           <Select
             options={getOptions('status')}
             placeholder="Any status"
             onChange={(selectedOption) => handleSelectChange(selectedOption, 'status')}
-            className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']}`}
+            className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']} ${darkMode ? styles['dark-mode-select'] : ''}`}
+            classNamePrefix="select"
+            menuPortalTarget={document.body}
             value={filters.status ? { value: filters.status, label: filters.status } : null}
           />
           <TextSearchBox
@@ -116,6 +123,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             onChange={() => setActive(!isActive)}
             id="active_checkbox"
             wrapperClassname={styles['tasks-table-filter-item']}
+            backgroundColorCN={darkMode ? styles['dark-mode-checkbox'] : ''}
             label="Active"
           />
           <Checkbox
@@ -123,13 +131,14 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             onChange={() => setAssigned(!isAssigned)}
             id="assign_checkbox"
             wrapperClassname={styles['tasks-table-filter-item']}
+            backgroundColorCN={darkMode ? styles['dark-mode-checkbox'] : ''}
             label="Assign"
           />
         </div>
 
         <div className='d-flex'>
           <button
-            className={styles['tasks-table-edit-tasks-button']}
+            className={`${styles['tasks-table-edit-tasks-button']} ${darkMode ? styles['dark-mode-button'] : ''} `}
             onClick={() => setToggleEditTasks(!toggleEditTasks)}
             style={darkMode ? boxStyleDark : boxStyle}
           >
@@ -137,7 +146,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
           </button>
 
           <button
-            className={styles['tasks-table-clear-filter-button']}
+            className={`${styles['tasks-table-clear-filter-button']} ${darkMode ? styles['dark-mode-button'] : ''}`}
             onClick={() => resetAllFilters()}
             style={darkMode ? boxStyleDark : boxStyle}
           >

@@ -14,16 +14,51 @@
   min-width: 800px; /* Minimum width to maintain table layout on smaller screens */
 }
 
-.tasks-detail-table th, .tasks-detail-table td {
-  padding: 5px;
-  border: 1px solid #ddd;
+
+.tasks-detail-table th,
+.tasks-detail-table td {
+  padding: 0 16px;
+  border: none;
   text-align: left;
+  vertical-align: middle;
 }
 
 .tasks-detail-table-head {
-  background-color: #f8f9fa;
+  background-color: #eee7f8;
   font-weight: bold;
 }
+
+
+.tasks-detail-table-head tr {
+  border-bottom: 3px solid #f8f7f8;
+}
+
+.tasks-detail-table-head th {
+  height: 42px;
+  padding: 0 16px;
+  border: none;
+  text-align: left;
+  vertical-align: middle;
+}
+
+
+
+.tasks-detail-table-head th:first-child {
+  border-radius: 4px 0 0 4px;
+}
+
+.tasks-detail-table-head th:last-child {
+  border-radius: 0 4px 4px 0;
+}
+
+
+
+
+.tasks-detail-table-row {
+  border-bottom: 3px solid #f8f7f8;
+  text-align: left;
+}
+
 
 .tasks-detail-center-cells {
   text-align: center;
@@ -46,19 +81,25 @@
   color: #fff;
 }
 
+
+.dark-mode-row:hover {
+  background-color: #111831;
+  color: #fff;
+}
+
 /* Responsive design */
+
 @media screen and (width <= 1100px) {
   .collapse-column {
     display: none;
   }
-}
 
-@media screen and (width <= 1100px) {
   .tasks-detail-table {
     min-width: 600px;
   }
 
-  .tasks-detail-table th, .tasks-detail-table td {
+  .tasks-detail-table th,
+  .tasks-detail-table td {
     padding: 5px;
     font-size: 12px;
   }
@@ -73,7 +114,8 @@
     min-width: 400px;
   }
 
-  .tasks-detail-table th, .tasks-detail-table td {
+  .tasks-detail-table th,
+  .tasks-detail-table td {
     padding: 2px;
     font-size: 10px;
   }
