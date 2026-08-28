@@ -1,26 +1,135 @@
-.badge_summary_viz_footer {
+/* Responsive: desktop / tablet switch */
+.desktop {
+  display: block;
+}
+
+.tablet {
+  display: none;
+}
+
+@media (width <= 1024px) {
+  .desktop {
+    display: none;
+  }
+
+  .tablet {
+    display: block;
+  }
+}
+
+/* Tablet column widths */
+.tablet th:nth-child(2),
+.tablet th:nth-child(3),
+.tablet td:nth-child(2),
+.tablet td:nth-child(3) {
+  width: 80px;
+  padding: 8px;
+}
+
+/* Dark mode is driven by <body class="dark-mode">, so :global() is required */
+:global(.dark-mode) .modalHeader {
+  background-color: #1c2541 !important;
+}
+
+:global(.dark-mode) .modalBody,
+:global(.dark-mode) .modalFooter {
+  background-color: #3a506b !important;
+}
+
+:global(.dark-mode) .tableHeaderRow {
+  background-color: #1c2541 !important;
+}
+
+:global(.dark-mode) .desktop thead,
+:global(.dark-mode) .tablet thead {
+  background-color: #1c2541;
+}
+
+:global(.dark-mode) .table {
+  color: #fff !important;
+}
+
+/* Dropdown styling */
+.badgeDropdown {
+  max-height: 150px;
+  overflow-y: auto;
+  height: auto;
+}
+
+@media screen and (width <= 991px) {
+  .badgeDropdown {
+    max-height: 250px;
+    width: 100%;
+  }
+}
+
+:global(.dark-mode) .badgeDropdown {
+  background-color: #1c2541 !important;
+  color: #f1f1f1 !important;
+  border-color: #444 !important;
+}
+
+:global(.dark-mode) .badgeDropdown :global(.dropdown-item):hover,
+:global(.dark-mode) .badgeDropdown :global(.dropdown-item):focus {
+  background-color: #2f4157 !important;
+  color: #fff !important;
+}
+
+/* Footer + close button */
+.badgeSummaryVizFooter {
   width: fit-content;
   float: right;
 }
 
-.badge_summary_viz_button {
+.badgeSummaryVizButton {
   box-shadow: 2px 2px 4px 1px lightgray;
   margin: 5px;
 }
 
 @media screen and (width <= 1024px) {
-  .badge_summary_viz_footer {
+  .badgeSummaryVizFooter {
     width: 100%;
   }
 
-  .badge_summary_viz_button {
+  .badgeSummaryVizButton {
     width: 100%;
     float: none;
     margin: 5px 0;
   }
 }
 
-.badge_count_viz {
+.me2 {
+  margin-right: 0.5rem !important;
+}
+
+.badgeImageSm {
+  width: 80px;
+  height: 80px;
+  padding: 4px;
+}
+
+.badgeImageSm > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Empty-state row text */
+.emptyState {
+  text-align: center;
+}
+
+/* Tooltip wrapper */
+.tooltipTarget {
+  padding-left: 3px;
+}
+
+.tooltipBody {
+  max-width: 300px;
+}
+
+/* Badge count bubbles */
+.badgeCountViz {
   border-radius: 50%;
   width: 20px;
   height: 20px;
@@ -34,22 +143,22 @@
   z-index: 10;
 }
 
-.badge_count_personalmax_viz {
-	padding-top: 4px;
-	border-radius: 45%;
-	width: 19px;
-	height: 19px;
-	background: #6a006a;
-	color: #fff;
-	text-align: center;
-	font: 11px Arial, sans-serif;
-	position: absolute;
-	right: 28px;
-	bottom: 3px;
-	z-index: 10;
+.badgeCountPersonalmaxViz {
+  padding-top: 4px;
+  border-radius: 45%;
+  width: 19px;
+  height: 19px;
+  background: #6a006a;
+  color: #fff;
+  text-align: center;
+  font: 11px Arial, sans-serif;
+  position: absolute;
+  right: 28px;
+  bottom: 3px;
+  z-index: 10;
 }
 
-.badge_count_3_digit_viz {
+.badgeCount3DigitViz {
   border-radius: 50%;
   width: 20px;
   height: 15px;
@@ -61,4 +170,8 @@
   right: 28px;
   bottom: 2px;
   z-index: 10;
+}
+
+:global(.dark-mode) .tableRow:hover {
+  background-color: #2f4157;
 }

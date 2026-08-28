@@ -14,7 +14,6 @@ import {
   DISABLE_USER_PROFILE_EDIT,
   CHANGE_USER_PROFILE_PAGE,
   START_USER_INFO_UPDATE,
-  CLEAR_USER_INFO_UPDATE
 } from '../constants/userManagement';
 import { ENDPOINTS } from '~/utils/URL';
 import { UserStatus, UserStatusOperations, InactiveReason } from '~/utils/enums';
@@ -116,6 +115,11 @@ export const getAllUserProfile = () => {
     }
     return userProfilesPromise
       .then(res => {
+        // API must return an array; error payloads are objects and crash UserManagement.map
+        if (!Array.isArray(res.data)) {
+          dispatch(userProfilesFetchErrorAction());
+          return [];
+        }
         dispatch(userProfilesFetchCompleteACtion(res.data));
         return res.data;
       })
@@ -451,4 +455,15 @@ export const updateUserInfomation = value => dispatch => {
 
 export const clearUserInformation = () => dispatch => {
   dispatch({ type: CLEAR_USER_INFO_UPDATE });
+};
+
+/**
+ * Clears the queue of pending user info edits (newUserData) after they have
+ * been successfully saved to the backend. Without this, previously-saved
+ * edits remain in the queue and get resubmitted (replayed) the next time any
+ * user's info is saved, silently overwriting that user's data with stale
+ * values. See hotfix: User Management stale date replay bug.
+ */
+export const finishUserInfoUpdate = () => dispatch => {
+  dispatch({ type: FINISH_USER_INFO_UPDATE });
 };
