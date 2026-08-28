@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { connect } from 'react-redux';
+import { normalizeVolunteerStats } from '../../utils/totalOrgSummary';
 import {
   Alert,
   Button,
@@ -638,7 +639,16 @@ function TotalOrgSummary(props) {
             <Col lg={{ size: 12 }}>
               <VolunteerStatus
                 isLoading={isLoading}
-                volunteerNumberStats={volunteerStats?.volunteerNumberStats}
+                volunteerNumberStats={
+                  volunteerStats?.volunteerNumberStats
+                    ? {
+                        ...volunteerStats.volunteerNumberStats,
+                        mentors:
+                          volunteerStats.volunteerNumberStats?.mentorNumberStats?.totalMentors ||
+                          volunteerStats.volunteerNumberStats?.mentors,
+                      }
+                    : null
+                }
                 totalHoursWorked={volunteerStats?.totalHoursWorked}
                 comparisonType={selectedComparison}
               />

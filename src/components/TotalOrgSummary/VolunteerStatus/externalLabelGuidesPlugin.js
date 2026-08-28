@@ -276,8 +276,6 @@ const resolveCollision = (labelBox1, labelBox2, chartArea, options) => {
   const chartCenterX = (chartArea.left + chartArea.right) / 2;
 
   // Determine which direction to push labels
-  // If both labels are on the same side of center, push them apart
-  // If labels are on opposite sides, try to push them further apart
   const leftBoxCenterX = leftBoxLeft + leftBoxWidth / 2;
   const rightBoxCenterX = rightBoxLeft + rightBoxWidth / 2;
 
@@ -307,21 +305,16 @@ const resolveCollision = (labelBox1, labelBox2, chartArea, options) => {
     return true;
   }
 
-  // If pushing apart doesn't work within boundaries, adjust based on available space
-  // Clamp the attempted positions first
   newLeftBoxLeft = Math.max(minX, Math.min(newLeftBoxLeft, maxXLeft));
   newRightBoxLeft = Math.max(minX, Math.min(newRightBoxLeft, maxXRight));
 
-  // If they still overlap after clamping, push them further apart
   const clampedLeftRight = newLeftBoxLeft + leftBoxWidth;
   if (newRightBoxLeft - clampedLeftRight < minSpacing) {
     const stillNeeded = minSpacing - (newRightBoxLeft - clampedLeftRight);
 
-    // Check available space on both sides
     const spaceLeft = newLeftBoxLeft - minX;
     const spaceRight = maxXRight - newRightBoxLeft;
 
-    // Distribute the needed space based on available room
     const totalAvailableSpace = spaceLeft + spaceRight;
     if (totalAvailableSpace >= stillNeeded) {
       const pushLeft = (spaceLeft / totalAvailableSpace) * stillNeeded;
@@ -330,17 +323,14 @@ const resolveCollision = (labelBox1, labelBox2, chartArea, options) => {
       newLeftBoxLeft = Math.max(minX, newLeftBoxLeft - pushLeft);
       newRightBoxLeft = Math.min(maxXRight, newRightBoxLeft + pushRight);
     } else {
-      // Not enough space - maximize separation within boundaries
       newLeftBoxLeft = minX;
       newRightBoxLeft = Math.max(
         newLeftBoxLeft + leftBoxWidth + minSpacing,
         maxXRight - rightBoxWidth,
       );
-      // If still overlapping, position them edge-to-edge
       if (newRightBoxLeft < newLeftBoxLeft + leftBoxWidth + minSpacing) {
         newRightBoxLeft = newLeftBoxLeft + leftBoxWidth + minSpacing;
         if (newRightBoxLeft > maxXRight) {
-          // If right box goes out of bounds, push left box left instead
           newRightBoxLeft = Math.min(newRightBoxLeft, maxXRight);
           newLeftBoxLeft = Math.max(minX, newRightBoxLeft - leftBoxWidth - minSpacing);
         }
@@ -348,11 +338,9 @@ const resolveCollision = (labelBox1, labelBox2, chartArea, options) => {
     }
   }
 
-  // Final boundary clamp to ensure everything is within bounds
   newLeftBoxLeft = Math.max(minX, Math.min(newLeftBoxLeft, maxXLeft));
   newRightBoxLeft = Math.max(minX, Math.min(newRightBoxLeft, maxXRight));
 
-  // Apply final positions
   leftBox.boxX = newLeftBoxLeft;
   rightBox.boxX = newRightBoxLeft;
 
@@ -431,7 +419,8 @@ const externalLabelGuidesPlugin = {
         return;
       }
 
-      const percentage = options.total ? Math.round((value / options.total) * 100) : 0;
+      // Updated calculation to pass unrounded percentage for decimal precision support
+      const percentage = options.total && options.total > 0 ? (value / options.total) * 100 : 0;
       const lines = options.formatter({ value, percentage, index });
       const labelLines = Array.isArray(lines) ? lines : [String(lines)];
 
@@ -446,7 +435,6 @@ const externalLabelGuidesPlugin = {
       const elbowX = x + Math.cos(angle) * (outerRadius + options.offset);
       const elbowY = y + Math.sin(angle) * (outerRadius + options.offset);
 
-      // Measure text block
       ctx.font = `${options.fontWeight} ${options.fontSize}px ${options.fontFamily}`;
       const textWidths = labelLines.map(line => ctx.measureText(line).width);
       const textWidth = Math.max(...textWidths);
@@ -478,7 +466,6 @@ const externalLabelGuidesPlugin = {
       const isRightOfCenter = boxX + boxWidth / 2 >= x;
       const effectiveDirection = isRightOfCenter ? 1 : -1;
 
-      // Store label box data for collision detection and drawing
       labelBoxes.push({
         index,
         arc,
@@ -540,7 +527,6 @@ const externalLabelGuidesPlugin = {
 
             if (checkLabelOverlap(box1Bounds, box2Bounds)) {
               hasCollisions = true;
-              // Resolve collision (function will modify labelBox1 and labelBox2)
               resolveCollision(labelBox1, labelBox2, chartArea, options);
             }
           }
@@ -562,10 +548,8 @@ const externalLabelGuidesPlugin = {
         padding: labelPadding,
       } = labelBox;
 
-      // Recalculate connector position based on final box position
       const connectorPosition = getConnectorPosition(labelBox, options.placement);
 
-      // Draw guide line
       ctx.strokeStyle = options.lineColor;
       ctx.beginPath();
       traceConnectorPath(ctx, labelBox, options.placement, connectorPosition);
@@ -578,7 +562,6 @@ const externalLabelGuidesPlugin = {
         ctx.fill();
       }
 
-      // Draw label background
       ctx.fillStyle = options.backgroundColor;
       drawRoundedRect(ctx, boxX, boxY, boxWidth, boxHeight, options.borderRadius);
       ctx.fill();
@@ -590,7 +573,6 @@ const externalLabelGuidesPlugin = {
         ctx.stroke();
       }
 
-      // Draw text
       ctx.fillStyle = options.lineColor;
       ctx.font = `${options.fontWeight} ${options.fontSize}px ${options.fontFamily}`;
       ctx.textAlign = effectiveDirection > 0 ? 'left' : 'right';

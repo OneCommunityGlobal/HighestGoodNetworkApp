@@ -640,15 +640,15 @@ export const ENDPOINTS = {
   APPLICANT_SOURCES: `${APIEndpoint}/applicant-analytics/applicant-sources`,
 
   OPT_STATUS_BREAKDOWN: (startDate, endDate, role) => {
-  let url = `${APIEndpoint}/analytics/opt-status`;
-  const params = [];
+    let url = `${APIEndpoint}/analytics/opt-status`;
+    const params = [];
 
-  if (startDate) params.push(`startDate=${startDate}`);
-  if (endDate) params.push(`endDate=${endDate}`);
-  if (role) params.push(`role=${role}`);
+    if (startDate) params.push(`startDate=${startDate}`);
+    if (endDate) params.push(`endDate=${endDate}`);
+    if (role) params.push(`role=${role}`);
 
-  return params.length > 0 ? `${url}?${params.join("&")}` : url;
-},
+    return params.length > 0 ? `${url}?${params.join("&")}` : url;
+  },
 
 
 
@@ -710,8 +710,10 @@ export const ENDPOINTS = {
     return `${APIEndpoint}/analytics/review-summary?${params.toString()}`;
   },
   PR_GRADING_CONFIG: `${APIEndpoint}/pr-grading-config`,
+  PR_GRADING_SYNC_REVIEWERS: `${APIEndpoint}/pr-grading-config/sync-reviewers`,
   WEEKLY_GRADING: `${APIEndpoint}/weekly-grading`,
   WEEKLY_GRADING_SAVE: `${APIEndpoint}/weekly-grading/save`,
+  WEEKLY_GRADING_DELETE_REVIEWER: `${APIEndpoint}/weekly-grading/reviewer`,
 
   PM_EDUCATORS: () => `${APIEndpoint}/pm/educators`,
   PM_EDUCATOR_STUDENTS: (educatorId) => `${APIEndpoint}/pm/educators/${encodeURIComponent(educatorId)}/students`,
