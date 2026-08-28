@@ -885,12 +885,10 @@ export default (
           exact
           component={FaqSection}
         />
-
         <CPProtectedRoute
           path="/communityportal/activities/:activityId/manage"
           component={RescheduleEvent}
         />
-
         <Route path="/communityportal/ReschedulePoll" component={ReschedulePoll} />
         <CPProtectedRoute
           path="/communityportal/profile/:userId"
