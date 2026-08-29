@@ -26,6 +26,7 @@ import styles from './WeeklyProjectSummary.module.css';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import InjurySeverityChart from '../Injuries/InjurySeverityChart';
 import CostPredictionChart from './CostPredictionChart';
+import SupplierPerformanceDashboard from './SupplierPerformanceGraph';
 
 const projectStatusButtons = [
   {
@@ -296,6 +297,12 @@ function WeeklyProjectSummary() {
           </div>,
           <div key="bar" className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
             <ToolsHorizontalBarChart darkMode={darkMode} />
+          </div>,
+          <div
+            key="supplier-performance"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
+            <SupplierPerformanceDashboard />
           </div>,
         ],
       },
