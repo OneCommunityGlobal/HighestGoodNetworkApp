@@ -31,12 +31,28 @@ function TotalTeamReport(props) {
   // Fetch and cache team members
   const matchTeamUser = async oldTeamList => {
     const cachedTeamMembers = localStorage.getItem('teamMembers');
-    if (cachedTeamMembers) {
-      setAllTeamsMembers(JSON.parse(cachedTeamMembers));
+    let parsedTeamMembers;
+    try {
+      parsedTeamMembers = cachedTeamMembers ? JSON.parse(cachedTeamMembers) : null;
+    } catch {
+      parsedTeamMembers = null;
+    }
+    const hasValidTeamMembers =
+      Array.isArray(parsedTeamMembers) &&
+      parsedTeamMembers.length > 0 &&
+      parsedTeamMembers.every(
+        team =>
+          typeof team?.teamId === 'string' &&
+          typeof team.teamName === 'string' &&
+          !Number.isNaN(Date.parse(team.createdDatetime)) &&
+          Array.isArray(team.members),
+      );
+    if (hasValidTeamMembers) {
+      setAllTeamsMembers(parsedTeamMembers);
     } else {
       // const allTeamMembersPromises = teamList.map(team => dispatch(getTeamMembers(team._id)));
       // const allTeamMembers = await Promise.all(allTeamMembersPromises);
-      if (oldTeamList.length === 0 || oldTeamList === undefined || oldTeamList === null) {
+      if (!Array.isArray(oldTeamList) || oldTeamList.length === 0) {
         return;
       }
       const allTeamsMembersData = await axios.post(
