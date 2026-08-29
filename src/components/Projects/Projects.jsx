@@ -55,6 +55,7 @@ const Projects = function(props) {
     category: '',
   });
   const [projectList, setProjectList] = useState(props.projectList || null);
+  const [allProjects, setAllProjects] = useState(null);
   const [searchName, setSearchName] = useState('');
   const [isChangingStatus, setIsChangingStatus] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
