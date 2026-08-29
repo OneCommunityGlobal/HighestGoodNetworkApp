@@ -53,9 +53,10 @@
 /* Dark mode styles */
 
 :global(.bg-dark) .form-control[type='date'] {
-  background-color: #343a40 !important;
-  color: #fff !important;
+  background-color: black !important;
+  color: black !important;
   border-color: #6c757d !important;
+  color-scheme: dark;
 }
 
 :global(.bg-dark) .form-control[type='date']::-webkit-calendar-picker-indicator {
@@ -99,37 +100,47 @@
   vertical-align: middle;
 }
 
-.reportTable.table-dark thead th {
-  background-color: #343a40;
-  color: #fff;
-  border-color: #495057;
-  text-align: center;
-  vertical-align: middle;
-  user-select: none;
-}
-
-.reportTable.table-dark tbody td {
-  background-color: #212529;
-  color: #fff;
-  border-color: #495057;
-}
-
-.reportTable.table-dark .totalRow td {
-  background-color: #343a40;
-  color: #fff;
-}
-
-.reportTable.table-dark ::selection {
-  background-color: #6c757d;
-  color: #fff;
-}
-
-.reportTable.table-dark thead tr:hover th {
+/* Dark mode table */
+.reportTable:global(.table-dark) {
   background-color: #343a40 !important;
   color: #fff !important;
 }
 
-/* .reportTable.table-dark thead th::selection {
-  background-color: transparent;
-  color: #fff;
-} */
+/* Dark mode table header */
+.reportTable:global(.table-dark) thead th {
+  background-color: #343a40 !important;
+  color: #fff !important;
+  border-color: #495057 !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  user-select: none;
+}
+
+.reportTable:global(.table-dark) thead th:hover {
+  background-color: #343a40 !important;
+  color: #fff !important;
+}
+
+/* Keep header exactly the same when hovering */
+.reportTable:global(.table-dark) thead tr:hover,
+.reportTable:global(.table-dark) thead tr:hover th,
+
+/* Dark mode table body */
+.reportTable:global(.table-dark) tbody td {
+  background-color: #212529 !important;
+  color: #fff !important;
+  border-color: #495057 !important;
+}
+
+/* Total row */
+.reportTable:global(.table-dark) .totalRow td {
+  background-color: #343a40 !important;
+  color: #fff !important;
+}
+
+/* Body hover */
+.reportTable:global(.table-dark) tbody tr:hover td {
+  background-color: #343a40 !important;
+  color: #fff !important;
+}
+
