@@ -273,8 +273,26 @@ function WeeklyProjectSummary() {
       {
         title: 'Material Consumption',
         key: 'Material Consumption',
-        className: 'large',
-        content: renderMaterialConsumptionCards(quantityOfMaterialsUsedData),
+        className: 'full',
+        content: [1, 2, 3].map((_, index) => {
+          let content;
+          if (index === 1) {
+            content = <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />;
+          } else if (index === 2) {
+            content = <TotalMaterialCostPerProject />;
+          } else {
+            content = null;
+          }
+          const uniqueId = uuidv4();
+          return (
+            <div
+              key={uniqueId}
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+            >
+              {content}
+            </div>
+          );
+        }),
       },
       {
         title: 'Issue Tracking',
