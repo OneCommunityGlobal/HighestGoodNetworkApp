@@ -40,12 +40,12 @@ function QuickSetupModal(props) {
     })
     .map(code => {
       if (typeof code === 'string') {
-        return { value: code, label: code };
+        return { value: code.trim(), label: code.trim() };
       }
 
       return {
-        value: code.value || '',
-        label: code.label || code.value || '',
+        value: (code.value || '').trim(),
+        label: (code.label || code.value || '').trim(),
       };
     });
 
