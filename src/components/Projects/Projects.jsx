@@ -353,7 +353,6 @@ const Projects = function(props) {
 
   const handleSearchName = searchNameInput => {
     setSearchName(searchNameInput);
-    generateProjectList(categorySelectedForSort, showStatus, sortedByName, searchNameInput);
   };
 
   return (
