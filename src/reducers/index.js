@@ -102,6 +102,8 @@ import {
   listingBookingReducer,
 } from './listBidDashboard/listOverviewReducer';
 
+import bidOverviewReducer from './listBidDashboard/bidOverviewReducer';
+
 // pr analytics
 import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 
@@ -184,6 +186,7 @@ const localReducers = {
   dashboard: dashboardReducer,
   injuries: injuriesReducer,
   weeklyProjectSummary: weeklyProjectSummaryReducer,
+  bidOverview: bidOverviewReducer,
   knowledgeEvolution: knowledgeEvolutionReducer,
   costBreakdown: costBreakdownReducer,
 

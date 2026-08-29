@@ -343,10 +343,11 @@ export default (
       )}
     />
     <LBProtectedRoute path="/lbdashboard/listOverview" exact component={ListOveriew} />
-    <LBProtectedRoute path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
+    <LBProtectedRoute path="/lbdashboard/bidOverview/:listingId" exact component={LBBidOverview} />
     <LBProtectedRoute path="/lbdashboard/bidding" exact component={BiddingHomepage} />
     <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} />
     <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
+
     <LBProtectedRoute path="/lbdashboard/village/:value" exact component={VillageDetails} />
     <LBProtectedRoute
       exact
