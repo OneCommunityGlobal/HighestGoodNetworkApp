@@ -1,21 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { Row, Col, Container } from 'reactstrap';
-import { connect, useSelector } from 'react-redux';
-import { cantUpdateDevAdminDetails } from 'utils/permissions';
+import { useEffect, useState } from 'react';
+import { connect, useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import { Col, Container, Row } from 'reactstrap';
+import { updateSummaryBarData } from '~/actions/dashboardActions';
 import {
-  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
-} from 'utils/constants';
-import { useDispatch } from 'react-redux';
-import { updateSummaryBarData } from 'actions/dashboardActions';
+} from '~/utils/constants';
+import { cantUpdateDevAdminDetails } from '~/utils/permissions';
+import '../../App.module.css';
 import Leaderboard from '../LeaderBoard';
-import WeeklySummary from '../WeeklySummary/WeeklySummary';
-import Badge from '../Badge';
-import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
-import './Dashboard.css';
-import '../../App.css';
+import Timelog from '../Timelog/Timelog';
+import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
 
 export function Dashboard(props) {
@@ -23,29 +21,12 @@ export function Dashboard(props) {
   const [filteredUserTeamIds, setFilteredUserTeamIds] = useState([]);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const { match, authUser } = props;
-  const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('displayUser')) ?? false;
-  const [displayUser, setDisplayUser] = useState(authUser);
-
-  const handleStorageEvent = () => {
-    const sessionStorageData = checkSessionStorage();
-    const normalizedUser = sessionStorageData
-      ? { ...sessionStorageData, userid: sessionStorageData.userId }
-      : authUser;
-
-    setDisplayUser(normalizedUser);
-  };
-
-  useEffect(() => {
-    // Set initial displayUser on mount
-    handleStorageEvent();
-    window.addEventListener('storage', handleStorageEvent);
-    return () => {
-      window.removeEventListener('storage', handleStorageEvent);
-    };
-  }, [authUser]);
-
-  const isNotAllowedToEdit = cantUpdateDevAdminDetails(displayUser?.email, authUser.email);
-
+  const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
+  const [viewingUser, setViewingUser] = useState(checkSessionStorage);
+  const [displayUserId, setDisplayUserId] = useState(
+    match.params.userId || viewingUser?.userId || authUser.userid,
+  );
+  const isNotAllowedToEdit = cantUpdateDevAdminDetails(viewingUser?.email, authUser.email);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const dispatch = useDispatch();
@@ -53,10 +34,10 @@ export function Dashboard(props) {
   const toggle = () => {
     if (isNotAllowedToEdit) {
       const warningMessage =
-        displayUser?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY
+        viewingUser?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY
           ? DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY
           : PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE;
-      alert(warningMessage);
+      toast.warn(warningMessage);
       return;
     }
 
@@ -70,24 +51,35 @@ export function Dashboard(props) {
     }, 150);
   };
 
+  const handleStorageEvent = () => {
+    const sessionStorageData = checkSessionStorage();
+    setViewingUser(sessionStorageData || false);
+    setDisplayUserId(sessionStorageData ? sessionStorageData.userId : authUser.userid);
+  };
+
   useEffect(() => {
-    console.log(summaryBarData);
+    window.addEventListener('storage', handleStorageEvent);
+    return () => {
+      window.removeEventListener('storage', handleStorageEvent);
+    };
+  }, []);
+
+  useEffect(() => {
     dispatch(updateSummaryBarData({ summaryBarData }));
   }, [summaryBarData]);
 
   return (
     <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
+      {/* <FeedbackModal /> */}
       <SummaryBar
-        displayUserId={displayUser.userid}
+        displayUserId={displayUserId}
         toggleSubmitForm={toggle}
-        role={displayUser.role}
+        role={authUser.role}
         summaryBarData={summaryBarData}
         isNotAllowedToEdit={isNotAllowedToEdit}
       />
-
       <Row className="w-100 ml-1">
-        <Col lg={7} />
-        <Col lg={5}>
+        <Col lg={5} className="order-lg-2 order-2">
           <div className="row justify-content-center">
             <div
               role="button"
@@ -99,21 +91,16 @@ export function Dashboard(props) {
               <WeeklySummary
                 isDashboard
                 isPopup={popup}
-                userRole={displayUser.role}
-                displayUserId={displayUser.userid}
-                displayUserEmail={displayUser?.email}
+                userRole={authUser.role}
+                displayUserId={displayUserId}
+                displayUserEmail={viewingUser?.email}
                 isNotAllowedToEdit={isNotAllowedToEdit}
                 darkMode={darkMode}
               />
             </div>
           </div>
-        </Col>
-      </Row>
-      <Row className="w-100 ml-1">
-        <Col lg={5} className="order-lg-2 order-2">
           <Leaderboard
-            displayUserId={displayUser.userid}
-            displayUserRole={displayUser.role}
+            displayUserId={displayUserId}
             isNotAllowedToEdit={isNotAllowedToEdit}
             darkMode={darkMode}
             setFilteredUserTeamIds={setFilteredUserTeamIds}
@@ -123,9 +110,9 @@ export function Dashboard(props) {
           {popup && (
             <div className="my-2" id="weeklySum">
               <WeeklySummary
-                displayUserId={displayUser.userid}
+                displayUserId={displayUserId}
                 setPopup={setPopup}
-                userRole={displayUser.role}
+                userRole={authUser.role}
                 isNotAllowedToEdit={isNotAllowedToEdit}
                 darkMode={darkMode}
               />
@@ -134,7 +121,6 @@ export function Dashboard(props) {
           <div className="my-2" id="wsummary">
             <Timelog
               isDashboard
-              userId={displayUser.userid}
               passSummaryBarData={setSummaryBarData}
               isNotAllowedToEdit={isNotAllowedToEdit}
               filteredUserTeamIds={filteredUserTeamIds}

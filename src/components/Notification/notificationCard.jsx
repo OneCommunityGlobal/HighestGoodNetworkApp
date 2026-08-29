@@ -4,6 +4,7 @@ import parse from 'html-react-parser';
 import { useDispatch } from 'react-redux';
 import { markNotificationAsRead } from '../../actions/notificationAction';
 import { convertDateFormatToMMMDDYY } from '../../utils/formatDate';
+import styles from './notificationCard.module.css';
 
 // Mock data
 // const URL_TO_BLUE_SQUARE_PAGE = 'https://google.com';
@@ -48,9 +49,7 @@ import { convertDateFormatToMMMDDYY } from '../../utils/formatDate';
 function NotificationCard({ notification }) {
   const dispatch = useDispatch();
   // const { _id, message, sender, isSystemGenerated } = mockData;
-  const { _id, message, sender, isSystemGenerated, createdTimeStamps } = notification;
-  const { firstName: senderFirstName, lastName: senderLastName } = sender;
-  const senderFullName = `${senderFirstName} ${senderLastName}`;
+  const { _id, message, isSystemGenerated, createdTimeStamps } = notification;
 
   // Fade animation state
   const [fade, setFade] = React.useState(false);
@@ -68,24 +67,23 @@ function NotificationCard({ notification }) {
   };
 
   return (
-    <Container fluid>
+    <Container fluid className={styles.notificationContainer}>
       <Card
         color="primary"
-        className={fade ? 'fade' : ''}
+        className={`${styles.notificationCard} ${fade ? styles.fade : ''}`}
         onAnimationEnd={() => setFade(false)}
         inverse
-        style={{ marginRight: '15px', marginBottom: '5px' }}
       >
         <CardBody>
           <CardTitle tag="h5">
             <i className="fa fa-info-circle" id="TypeInfo" />
             {isSystemGenerated
               ? ' You have a new system notification!'
-              : ` You have a new notification from ${senderFullName}!`}
+              : ` You have a new notification!`}
           </CardTitle>
           <CardText>{parse(styledHtmlString)}</CardText>
           <CardText>Date: {convertDateFormatToMMMDDYY(createdTimeStamps)}</CardText>
-          <Button onClick={onClickMarkAsRead}> Mark as Read </Button>
+          <Button onClick={onClickMarkAsRead}>Mark as Read</Button>
         </CardBody>
       </Card>
     </Container>

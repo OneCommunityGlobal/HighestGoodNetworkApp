@@ -5,7 +5,7 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import * as types from '../constants/WBS';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 /**
  * Set a flag that fetching WBS

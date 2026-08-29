@@ -1,310 +1,355 @@
-import { Component } from 'react';
-import './Collaboration.css';
+// src/pages/Collaboration/Collaboration.jsx
+import { useEffect, useState, useMemo, useRef } from 'react';
+import styles from './Collaboration.module.css';
 import { toast } from 'react-toastify';
-import { ApiEndpoint } from 'utils/URL';
-import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
+import { ApiEndpoint } from '~/utils/URL';
+import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import OneCommunityImage from '../../assets/images/logo2.png';
 
-import 'leaflet/dist/leaflet.css';
+const ADS_PER_PAGE = 18;
 
-class Collaboration extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      searchTerm: '',
-      selectedCategory: '',
-      currentPage: 1,
-      jobAds: [],
-      totalPages: 0,
-      categories: [],
-      summaries: '', // Add this line
-    };
-  }
+function Collaboration() {
+  const [query, setQuery] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [categoriesSelected, setCategoriesSelected] = useState([]);
+  const history = useHistory();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [jobAds, setJobAds] = useState([]);
+  const [allJobs, setAllJobs] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [categories, setCategories] = useState([]);
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [summaries, setSummaries] = useState(null);
+  const [selectedPosition, setSelectedPosition] = useState('');
 
-  componentDidMount() {
-    this.fetchJobAds();
-    this.fetchCategories();
-  }
+  const dropdownRef = useRef(null);
+  const [selectedJob, setSelectedJob] = useState(null);
 
-  fetchJobAds = async () => {
-    const { searchTerm, selectedCategory, currentPage } = this.state;
-    const adsPerPage = 18;
+  const darkMode = useSelector(state => state.theme.darkMode);
 
+  /* ================= FETCH JOBS ================= */
+  const fetchJobs = async (page = currentPage) => {
     try {
-      const response = await fetch(
-        `${ApiEndpoint}/jobs?page=${currentPage}&limit=${adsPerPage}&search=${searchTerm}&category=${selectedCategory}`,
-        {
-          method: 'GET',
-        },
-      );
+      const url =
+        `${ApiEndpoint}/jobs` +
+        `?page=${page}` +
+        `&limit=${ADS_PER_PAGE}` +
+        `&search=${encodeURIComponent(searchTerm || '')}` +
+        `&category=${encodeURIComponent(JSON.stringify(categoriesSelected))}`;
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch jobs: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      this.setState({
-        jobAds: data.jobs,
-        totalPages: data.pagination.totalPages, // Update total pages from the backend
-      });
-    } catch (error) {
+      const res = await fetch(url);
+      const data = await res.json();
+      setAllJobs(data.jobs || []);
+      setTotalPages(Math.max(data.pagination?.totalPages || 1, 1));
+    } catch {
       toast.error('Error fetching jobs');
     }
   };
 
-  fetchCategories = async () => {
+  const fetchCategories = async () => {
     try {
-      const response = await fetch(`${ApiEndpoint}/jobs/categories`, { method: 'GET' });
-      if (!response.ok) {
-        throw new Error(`Failed to fetch categories: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      const sortedCategories = data.categories.sort((a, b) => a.localeCompare(b));
-      this.setState({ categories: sortedCategories });
-    } catch (error) {
+      const res = await fetch(`${ApiEndpoint}/jobs/categories`);
+      const data = await res.json();
+      setCategories((data.categories || []).sort((a, b) => a.localeCompare(b)));
+    } catch {
       toast.error('Error fetching categories');
     }
   };
 
-  handleSearch = event => {
-    this.setState({ searchTerm: event.target.value });
-  };
+  /* ================= EFFECTS ================= */
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
-  handleSubmit = event => {
-    event.preventDefault();
-    this.setState({ summaries: null, currentPage: 1 }, this.fetchJobAds);
-  };
+  useEffect(() => {
+    setCurrentPage(1);
+    fetchJobs(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchTerm, categoriesSelected]);
 
-  handleCategoryChange = event => {
-    const selectedValue = event.target.value;
-    this.setState(
-      { selectedCategory: selectedValue === '' ? '' : selectedValue, currentPage: 1 },
-      this.fetchJobAds,
+  /* ================= FILTERED JOBS ================= */
+  const filteredJobs = useMemo(() => {
+    if (!selectedPosition) return allJobs;
+
+    return allJobs.filter(job =>
+      (job.position || job.title || '').toLowerCase().includes(selectedPosition.toLowerCase()),
     );
+  }, [allJobs, selectedPosition]);
+
+  /* ================= PAGINATION ================= */
+  // Pagination is server-side (see fetchJobs); allJobs already holds only the
+  // current page's results, so jobAds just mirrors the (position-filtered) list.
+  useEffect(() => {
+    setJobAds(filteredJobs);
+  }, [filteredJobs]);
+
+  const goToPage = page => {
+    setCurrentPage(page);
+    fetchJobs(page);
   };
 
-  handleResetFilters = async () => {
-    try {
-      const response = await fetch(`${ApiEndpoint}/jobs/reset-filters`, {
-        method: 'GET',
-      });
+  /* ================= ESC CLOSE MODAL ================= */
+  useEffect(() => {
+    if (!selectedJob) return;
+    const esc = e => e.key === 'Escape' && setSelectedJob(null);
+    globalThis.addEventListener('keydown', esc);
+    return () => globalThis.removeEventListener('keydown', esc);
+  }, [selectedJob]);
 
-      if (!response.ok) {
-        throw new Error(`Failed to reset filters: ${response.statusText}`);
+  /* ================= CLICK OUTSIDE DROPDOWN ================= */
+  useEffect(() => {
+    const handleClickOutside = event => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowCategoryDropdown(false);
       }
+    };
 
-      const data = await response.json();
-      this.setState({
-        searchTerm: '',
-        selectedCategory: '',
-        currentPage: 1,
-        jobAds: data.jobs,
-        totalPages: data.pagination.totalPages,
-        summaries: null,
-      });
-    } catch (error) {
-      toast.error('Error resetting filters');
-    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  /* ================= HANDLERS ================= */
+  const handleSubmit = e => {
+    e.preventDefault();
+    setSearchTerm(query);
   };
 
-  setPage = pageNumber => {
-    this.setState({ currentPage: pageNumber }, this.fetchJobAds);
+  const handleClearAllFilters = () => {
+    setCategoriesSelected([]);
+    setSelectedPosition('');
+    setSearchTerm('');
+    setQuery('');
+    setCurrentPage(1);
   };
 
-  handleShowSummaries = async () => {
-    const { searchTerm, selectedCategory } = this.state;
+  const handleCategoryToggle = cat =>
+    setCategoriesSelected(prev =>
+      prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat],
+    );
+
+  const getListingText = () => {
+    if (searchTerm) return `Listing results for '${searchTerm}'`;
+    if (selectedPosition) return `Listing results for '${selectedPosition}'`;
+    if (categoriesSelected.length) return 'Listing results for selected categories';
+    return 'Listing all job ads.';
+  };
+
+  const handleShowSummaries = async () => {
     try {
-      const response = await fetch(
-        `${ApiEndpoint}/jobs/summaries?search=${searchTerm}&category=${selectedCategory}`,
-        {
-          method: 'GET',
-        },
+      const res = await fetch(
+        `${ApiEndpoint}/jobs/summaries?search=${searchTerm}&category=${encodeURIComponent(
+          JSON.stringify(categoriesSelected),
+        )}`,
       );
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch summaries: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      this.setState({ summaries: data });
-    } catch (error) {
+      setSummaries(await res.json());
+    } catch {
       toast.error('Error fetching summaries');
     }
   };
 
-  render() {
-    const {
-      searchTerm,
-      selectedCategory,
-      currentPage,
-      jobAds,
-      totalPages,
-      categories,
-      summaries,
-    } = this.state;
+  const handleJobClick = ad => {
+    const title = ad.title || '';
+    const search = title ? `?jobTitle=${encodeURIComponent(title)}` : '';
+    history.push({
+      pathname: '/job-application',
+      search,
+      state: {
+        jobId: ad._id,
+        jobTitle: title,
+        jobDescription: ad.description || '',
+        requirements: ad.requirements || [],
+        category: ad.category || 'General',
+      },
+    });
+  };
 
-    if (summaries) {
-      return (
-        <div className="job-landing">
-          <div className="header">
-            <a
-              href="https://www.onecommunityglobal.org/collaboration/"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <img src={OneCommunityImage} alt="One Community Logo" className="responsive-img" />
-            </a>
-          </div>
-          <div className="collaboration-container">
-            <nav className="collaboration-navbar">
-              <div className="navbar-left">
-                <form className="search-form">
-                  <input
-                    type="text"
-                    placeholder="Search by title..."
-                    value={searchTerm}
-                    onChange={this.handleSearch}
-                  />
-                  <button className="search-button" type="submit" onClick={this.handleSubmit}>
-                    Go
-                  </button>
-                  <button type="button" onClick={this.handleResetFilters}>
-                    Reset
-                  </button>
-                  <button
-                    className="show-summaries"
-                    type="button"
-                    onClick={this.handleShowSummaries}
-                  >
-                    Show Summaries
-                  </button>
-                </form>
-              </div>
-
-              <div className="navbar-right">
-                <select
-                  value={selectedCategory}
-                  onChange={event => this.handleCategoryChange(event)}
-                >
-                  <option value="">Select from Categories</option>
-                  {categories.map(category => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </nav>
-
-            <div className="summaries-list">
-              <h1>Summaries</h1>
-              {summaries && summaries.jobs && summaries.jobs.length > 0 ? (
-                summaries.jobs.map(summary => (
-                  <div key={summary._id} className="summary-item">
-                    <h3>
-                      <a href={summary.jobDetailsLink}>{summary.title}</a>
-                    </h3>
-                    <p>{summary.description}</p>
-                    <p>Date Posted: {new Date(summary.datePosted).toLocaleDateString()}</p>
-                  </div>
-                ))
-              ) : (
-                <p>No summaries found.</p>
-              )}
-            </div>
-          </div>
-        </div>
-      );
-    }
-
+  /* ================= SUMMARIES VIEW ================= */
+  if (summaries) {
     return (
-      <div className="job-landing">
-        <div className="header">
-          <a
-            href="https://www.onecommunityglobal.org/collaboration/"
-            target="_blank"
-            rel="noreferrer"
-          >
+      <div className={`${styles.jobLanding} ${darkMode ? styles.dark : ''}`}>
+        <div className={styles.jobHeader}>
+          <a href="https://www.onecommunityglobal.org/collaboration/">
             <img src={OneCommunityImage} alt="One Community Logo" />
           </a>
         </div>
-        <div className="collaboration-container">
-          <nav className="collaboration-navbar">
-            <div className="navbar-left">
-              <form className="search-form">
-                <input
-                  type="text"
-                  placeholder="Search by title..."
-                  value={searchTerm}
-                  onChange={this.handleSearch}
-                />
-                <button className="search-button" type="submit" onClick={this.handleSubmit}>
-                  Go
-                </button>
-                <button type="button" onClick={this.handleResetFilters}>
-                  Reset
-                </button>
-                <button className="show-summaries" type="button" onClick={this.handleShowSummaries}>
-                  Show Summaries
-                </button>
-              </form>
-            </div>
 
-            <div className="navbar-right">
-              <select value={selectedCategory} onChange={event => this.handleCategoryChange(event)}>
-                <option value="">Select from Categories</option>
-                {categories.map(category => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </nav>
+        <div className={`${styles.userCollaborationContainer} ${darkMode ? styles.dark : ''}`}>
+          <h2>Job Summaries</h2>
 
-          <div className="headings">
-            <h1>Like to Work With Us? Apply Now!</h1>
-            <p>Learn about who we are and who we want to work with!</p>
-          </div>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            style={{ marginBottom: '24px' }}
+            onClick={() => setSummaries(null)}
+          >
+            ← Back to Job Listings
+          </button>
 
-          <div className="job-list">
-            {jobAds.map(ad => (
-              <div key={ad._id} className="job-ad">
-                <img
-                  src={`/api/placeholder/640/480?text=${encodeURIComponent(
-                    ad.category || 'Job Opening',
-                  )}`}
-                  alt={ad.title || 'Job Position'}
-                  loading="lazy"
-                />
-
-                <a
-                  href={`https://www.onecommunityglobal.org/collaboration/seeking-${ad.category.toLowerCase()}`}
-                >
-                  <h3>
-                    {ad.title} - {ad.category}
-                  </h3>
-                </a>
+          {summaries.jobs?.length ? (
+            summaries.jobs.map(job => (
+              <div key={job._id}>
+                <h4>
+                  <a href={job.jobDetailsLink}>{job.title}</a>
+                </h4>
+                <p>{job.description}</p>
               </div>
-            ))}
-          </div>
+            ))
+          ) : (
+            <p>No summaries found.</p>
+          )}
 
-          <div className="pagination">
-            {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                type="button"
-                key={i}
-                onClick={() => this.setPage(i + 1)}
-                disabled={currentPage === i + 1}
-              >
-                {i + 1}
-              </button>
-            ))}
-          </div>
+          <button type="button" className="btn btn-secondary" onClick={() => setSummaries(null)}>
+            ← Back to Job Listings
+          </button>
         </div>
       </div>
     );
   }
+
+  /* ================= MAIN VIEW ================= */
+  return (
+    <div className={`${styles.jobLanding} ${darkMode ? styles.dark : ''}`}>
+      <div className={styles.jobHeader}>
+        <a href="https://www.onecommunityglobal.org/collaboration/">
+          <img src={OneCommunityImage} alt="One Community Logo" />
+        </a>
+      </div>
+
+      <div className={styles.userCollaborationContainer}>
+        {/* NAVBAR */}
+        <nav className={styles.navbar}>
+          <form className={styles.searchForm} onSubmit={handleSubmit}>
+            <input
+              type="text"
+              placeholder="Search by title..."
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+            />
+            <button type="submit" className="btn btn-secondary">
+              Go
+            </button>
+          </form>
+
+          <div ref={dropdownRef} style={{ position: 'relative' }}>
+            <button type="button" onClick={() => setShowCategoryDropdown(p => !p)}>
+              Select Categories ▼
+            </button>
+
+            {showCategoryDropdown && (
+              <div className={styles.jobSelect}>
+                {categories.map(cat => (
+                  <label key={cat} className={styles.dropdownItem}>
+                    <input
+                      type="checkbox"
+                      checked={categoriesSelected.includes(cat)}
+                      onChange={() => handleCategoryToggle(cat)}
+                    />
+                    {cat}
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+        </nav>
+
+        {/* HEADINGS */}
+        <div className={styles.headings}>
+          <h1 className={styles.jobHead}>LIKE TO WORK WITH US? APPLY NOW!</h1>
+        </div>
+
+        {/* QUERY TEXT */}
+        <div className="job-queries">
+          <p>{getListingText()}</p>
+          <button type="button" className="btn btn-secondary" onClick={handleShowSummaries}>
+            Show Summaries
+          </button>
+        </div>
+
+        {/* FILTER CHIPS */}
+        {(categoriesSelected.length > 0 || selectedPosition) && (
+          <div className={styles.jobQueries}>
+            {categoriesSelected.map(cat => (
+              <span key={cat} className={styles.chip}>
+                {cat}
+              </span>
+            ))}
+            <button type="button" className={styles.clearAllButton} onClick={handleClearAllFilters}>
+              Clear All
+            </button>
+          </div>
+        )}
+
+        {/* JOB GRID */}
+        <div className={styles.jobList}>
+          {jobAds.length > 0 ? (
+            jobAds.map(ad => (
+              <button
+                key={ad._id}
+                type="button"
+                className={styles.jobAd}
+                onClick={() => handleJobClick(ad)}
+              >
+                <img
+                  src={
+                    ad.imageUrl ||
+                    `/api/placeholder/640/480?text=${encodeURIComponent(ad.category || 'Job')}`
+                  }
+                  alt={ad.title}
+                />
+                <h3>{ad.title}</h3>
+              </button>
+            ))
+          ) : (
+            <div className={styles.emptyState}>
+              <p>No job listings found matching your criteria.</p>
+              <p>Try clearing filters or adjusting your search terms.</p>
+              <button type="button" className="btn btn-secondary" onClick={handleClearAllFilters}>
+                Clear All Filters
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* PAGINATION */}
+        <div className={styles.pagination}>
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => goToPage(i + 1)}
+              className={
+                currentPage === i + 1 ? styles.paginationButtonActive : styles.paginationButton
+              }
+            >
+              {i + 1}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* MODAL */}
+      {selectedJob && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <button
+              type="button"
+              className={styles.closeButton}
+              onClick={() => setSelectedJob(null)}
+            >
+              ×
+            </button>
+
+            <h2>{selectedJob.title}</h2>
+            <p>
+              <strong>Category:</strong> {selectedJob.category}
+            </p>
+            <p>{selectedJob.description}</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default Collaboration;

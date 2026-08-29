@@ -1,14 +1,31 @@
+// --- WeeklyProjectSummary.jsx ---
 /* eslint-disable import/no-unresolved */
-import { useEffect, useMemo, useState } from 'react';
-import './WeeklyProjectSummary.css';
+import { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import ProjectRiskProfileOverview from './ProjectRiskProfileOverview';
+import IssuesBreakdownChart from './IssuesBreakdownChart';
+import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
+import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
+import ExpenseBarChart from './Financials/ExpenseBarChart';
+import CostBreakDown from './Financials/CostBreakDown/CostBreakDown';
+import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
+import IssueCharts from '../Issues/openIssueCharts';
+import InteractiveMap from '../InteractiveMap/InteractiveMap';
+import LossTrackingLineChart from './Financials/LossTrackingLineCharts/LossTrackingLineChart';
+import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
+import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
+import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
+import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
+
+import styles from './WeeklyProjectSummary.module.css';
+import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
+import InjurySeverityChart from '../Injuries/InjurySeverityChart';
+import CostPredictionChart from './CostPredictionChart';
 
 const projectStatusButtons = [
   {
@@ -109,64 +126,147 @@ const projectStatusButtons = [
   },
 ];
 
-export default function WeeklyProjectSummary() {
+function renderFinancialCard(i) {
+  if (i === 2) return <CostPredictionChart projectId={1} />;
+  if (i === 3) return <ActualVsPlannedCost />;
+  return <div>📊 Card</div>;
+}
+
+function renderMaterialCard(idx, quantityOfMaterialsUsedData) {
+  if (idx === 1) return <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />;
+  if (idx === 2) return <TotalMaterialCostPerProject />;
+  return <p>📊 Card</p>;
+}
+
+function renderProjectStatusGrid() {
+  return (
+    <div className={styles.projectStatusGrid}>
+      {projectStatusButtons.map(button => (
+        <div
+          key={uuidv4()}
+          className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
+          style={{ backgroundColor: button.bgColor }}
+        >
+          <div
+            className={styles.weeklyCardTitle}
+            style={{ color: '#000' }} // FIX: always visible
+          >
+            {button.title}
+          </div>
+
+          <div
+            className={styles.weeklyStatusButton}
+            style={{ backgroundColor: button.buttonColor }}
+          >
+            <span className={styles.weeklyStatusValue}>{button.value}</span>
+          </div>
+
+          <div className="weekly-status-change" style={{ color: button.textColor }}>
+            {button.change}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function renderMaterialConsumptionCards(quantityOfMaterialsUsedData) {
+  return [0, 1, 2].map(idx => (
+    <div key={uuidv4()} className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+      {renderMaterialCard(idx, quantityOfMaterialsUsedData)}
+    </div>
+  ));
+}
+
+function renderLaborTrackingCard(i) {
+  return i === 1 ? <PaidLaborCost /> : <DistributionLaborHours />;
+}
+
+function renderLaborTrackingCards() {
+  return [0, 1].map(i => (
+    <div key={uuidv4()} className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+      {renderLaborTrackingCard(i)}
+    </div>
+  ));
+}
+
+function renderFinancialsTrackingCards() {
+  return [0, 1, 2, 3].map(i => (
+    <div key={uuidv4()} className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+      {renderFinancialCard(i)}
+    </div>
+  ));
+}
+
+function DashboardSection({ title, sectionKey, className, content, isOpen, onToggle }) {
+  return (
+    <div className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]}`}>
+      <button
+        type="button"
+        className={styles.weeklyProjectSummaryDashboardCategoryTitle}
+        onClick={() => onToggle(sectionKey)}
+      >
+        {title} <span>{isOpen ? '∧' : '∨'}</span>
+      </button>
+
+      {isOpen && (
+        <div className={styles.weeklyProjectSummaryDashboardCategoryContent}>{content}</div>
+      )}
+    </div>
+  );
+}
+
+function WeeklyProjectSummary() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);
-  const [openSections, setOpenSections] = useState({});
-
   const darkMode = useSelector(state => state.theme.darkMode);
 
+  const [openSections, setOpenSections] = useState({});
+
   useEffect(() => {
-    if (materials.length === 0) {
-      dispatch(fetchAllMaterials());
-    }
+    if (materials.length === 0) dispatch(fetchAllMaterials());
   }, [dispatch, materials.length]);
 
   const quantityOfMaterialsUsedData = useMemo(() => {
     if (!materials.length) return [];
-    const uniqueMaterials = Array.from(new Map(materials.map(m => [m._id, m])).values());
-    return uniqueMaterials;
+    return Array.from(new Map(materials.map(m => [m._id, m])).values());
   }, [materials]);
 
-  const toggleSection = category => {
-    setOpenSections(prev => ({
-      ...prev,
-      [category]: !prev[category],
-    }));
+  const toggleSection = key => {
+    setOpenSections(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
   const sections = useMemo(
     () => [
       {
+        title: 'Risk profile for projects',
+        key: 'Risk profile for projects',
+        className: 'full',
+        content: <ProjectRiskProfileOverview />,
+      },
+      {
         title: 'Project Status',
         key: 'Project Status',
         className: 'full',
+        content: renderProjectStatusGrid(),
+      },
+      {
+        title: 'Issues Breakdown',
+        key: 'Issues Breakdown',
+        className: 'full',
         content: (
-          <div className="project-status-grid">
-            {projectStatusButtons.map(button => {
-              const uniqueId = uuidv4();
-              return (
-                <div
-                  key={uniqueId}
-                  className="weekly-project-summary-card status-card"
-                  style={{ backgroundColor: button.bgColor }} // Dynamic Background
-                >
-                  <div className="weekly-card-title">{button.title}</div>
-                  <div
-                    className="weekly-status-button"
-                    style={{ backgroundColor: button.buttonColor }} // Dynamic Oval Color
-                  >
-                    <span className="weekly-status-value">{button.value}</span>
-                  </div>
-                  <div
-                    className="weekly-status-change"
-                    style={{ color: button.textColor }} // Dynamic Change Color
-                  >
-                    {button.change}
-                  </div>
-                </div>
-              );
-            })}
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
+            <IssuesBreakdownChart />
+          </div>
+        ),
+      },
+      {
+        title: 'Injury Severity by Projects',
+        key: 'Injury Severity by Projects',
+        className: 'full',
+        content: (
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
+            <InjurySeverityChart />
           </div>
         ),
       },
@@ -174,215 +274,144 @@ export default function WeeklyProjectSummary() {
         title: 'Material Consumption',
         key: 'Material Consumption',
         className: 'large',
-        content: [1, 2, 3].map((_, index) => {
-          const uniqueId = uuidv4();
-          return (
-            <div key={uniqueId} className="weekly-project-summary-card normal-card">
-              {index === 1 ? (
-                <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />
-              ) : (
-                '📊 Card'
-              )}
-            </div>
-          );
-        }),
+        content: renderMaterialConsumptionCards(quantityOfMaterialsUsedData),
       },
       {
         title: 'Issue Tracking',
         key: 'Issue Tracking',
-        className: 'small',
-        content: <div className="weekly-project-summary-card normal-card">📊 Card</div>,
+        className: 'full',
+        content: (
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+            <IssueCharts />
+          </div>
+        ),
       },
       {
         title: 'Tools and Equipment Tracking',
         key: 'Tools and Equipment Tracking',
         className: 'half',
-        content: [1, 2].map(() => {
-          const uniqueId = uuidv4();
-          return (
-            <div key={uniqueId} className="weekly-project-summary-card normal-card">
-              📊 Card
-            </div>
-          );
-        }),
+        content: [
+          <div key="donut" className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+            <ToolStatusDonutChart />
+          </div>,
+          <div key="bar" className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+            <ToolsHorizontalBarChart darkMode={darkMode} />
+          </div>,
+        ],
       },
       {
         title: 'Lessons Learned',
         key: 'Lessons Learned',
-        className: 'half',
-        content: [1, 2].map(() => {
-          const uniqueId = uuidv4();
-          return (
-            <div key={uniqueId} className="weekly-project-summary-card normal-card">
-              📊 Card
-            </div>
-          );
-        }),
+        className: 'full',
+        content: [
+          <div
+            key="frequent-tags-card"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+            style={{ minHeight: '520px', height: 'auto', overflow: 'visible' }}
+          >
+            <MostFrequentKeywords />
+          </div>,
+          <div
+            key="injury-chart"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
+            <InjuryCategoryBarChart />
+          </div>,
+          <div
+            key="lessons-learnt-chart"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
+            <LessonsLearntChart darkMode={darkMode} />
+          </div>,
+        ],
       },
       {
         title: 'Financials',
         key: 'Financials',
         className: 'large',
         content: (
-          <>
-            {Array.from({ length: 4 }).map(() => {
-              const uniqueId = uuidv4();
-              return (
-                <div key={uniqueId} className="weekly-project-summary-card financial-small">
-                  📊 Card
-                </div>
-              );
-            })}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '10px',
+            }}
+          >
+            <div className="weekly-project-summary-card financial-small">📊 Card</div>
+            <div className="weekly-project-summary-card financial-small financial-chart">
+              <ExpenseBarChart />
+            </div>
 
-            <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
-          </>
+            {/* Bottom: Cost Breakdown Pie Chart (Spans across both columns) */}
+            <div
+              className="weekly-project-summary-card financial-big"
+              style={{ gridColumn: 'span 2', width: '100%', minHeight: '400px' }}
+            >
+              <CostBreakDown />
+            </div>
+          </div>
         ),
       },
       {
         title: 'Loss Tracking',
         key: 'Loss Tracking',
-        className: 'small',
-        content: <div className="weekly-project-summary-card normal-card">📊 Card</div>,
+        className: 'large',
+        content: (
+          <div className="weekly-project-summary-card financial-big">
+            <LossTrackingLineChart />
+          </div>
+        ),
       },
       {
-        title: 'Global Distribution and Project Status',
+        title: 'Global Distribution and Project Status Overview',
         key: 'Global Distribution and Project Status',
-        className: 'half',
+        className: 'full',
         content: (
-          <>
-            <div className="weekly-project-summary-card wide-card">📊 Wide Card</div>
-            <div className="weekly-project-summary-card normal-card">📊 Normal Card</div>
-          </>
+          <div
+            className={`${styles.weeklyProjectSummaryCard} ${styles.mapCard}`}
+            style={{ height: '500px', padding: '0' }}
+          >
+            <InteractiveMap />
+          </div>
         ),
       },
       {
         title: 'Labor and Time Tracking',
         key: 'Labor and Time Tracking',
         className: 'half',
-        content: [1, 2].map((_, index) => {
-          const uniqueId = uuidv4();
-          return (
-            <div key={uniqueId} className="weekly-project-summary-card normal-card">
-              {index === 1 ? <PaidLaborCost /> : '📊 Card'}
-            </div>
-          );
-        }),
+        content: renderLaborTrackingCards(),
+      },
+      {
+        title: 'Financials Tracking',
+        key: 'Financials Tracking',
+        className: 'full',
+        content: renderFinancialsTrackingCards(),
       },
     ],
-    [quantityOfMaterialsUsedData],
+    [quantityOfMaterialsUsedData, darkMode],
   );
 
-  const handleSaveAsPDF = async () => {
-    const currentOpenSections = { ...openSections };
-
-    try {
-      const allSectionsOpen = {};
-      sections.forEach(section => {
-        allSectionsOpen[section.key] = true;
-      });
-      setOpenSections(allSectionsOpen);
-
-      // eslint-disable-next-line no-promise-executor-return
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      const contentElement = document.querySelector('.weekly-project-summary-container');
-      if (!contentElement) throw new Error('Weekly project summary container not found.');
-
-      const pdfContainer = document.createElement('div');
-      pdfContainer.id = 'pdf-export-container';
-      Object.assign(pdfContainer.style, {
-        width: '420mm',
-        padding: '10mm',
-        backgroundColor: '#fff',
-        position: 'absolute',
-        left: '-9999px',
-        boxSizing: 'border-box',
-      });
-
-      const clonedContent = contentElement.cloneNode(true);
-
-      // Remove buttons and controls not needed in PDF
-      clonedContent
-        .querySelectorAll(
-          'button, .weekly-project-summary-dropdown-icon, .no-print, .weekly-summary-header-controls',
-        )
-        .forEach(el => el.parentNode?.removeChild(el));
-
-      const styleElem = document.createElement('style');
-      styleElem.textContent = `
-          img, svg {
-          height: auto !important;
-          page-break-inside: avoid !important;
-        }
-      `;
-
-      clonedContent.prepend(styleElem);
-      pdfContainer.appendChild(clonedContent);
-      document.body.appendChild(pdfContainer);
-
-      const canvas = await html2canvas(pdfContainer, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#fff',
-        windowWidth: pdfContainer.scrollWidth,
-        windowHeight: pdfContainer.scrollHeight,
-        logging: false,
-      });
-
-      if (!canvas) throw new Error('Failed to capture content as image.');
-
-      const imgData = canvas.toDataURL('image/jpeg', 0.95);
-
-      const pdfWidth = 210;
-      const imgHeight = (canvas.height * pdfWidth) / canvas.width;
-
-      // eslint-disable-next-line new-cap
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: [pdfWidth, imgHeight],
-      });
-
-      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
-
-      const now = new Date();
-      const fileName = `weekly-project-summary-${now.toISOString().slice(0, 10)}.pdf`;
-
-      // Save the PDF
-      pdf.save(fileName);
-
-      document.body.removeChild(pdfContainer);
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('PDF generation failed:', err);
-    } finally {
-      setOpenSections(currentOpenSections);
-    }
-  };
-
   return (
-    <div className={`weekly-project-summary-container ${darkMode ? 'dark-mode' : ''}`}>
-      <WeeklyProjectSummaryHeader handleSaveAsPDF={handleSaveAsPDF} />
-      <div className="weekly-project-summary-dashboard-container">
-        <div className="weekly-project-summary-dashboard-grid">
+    <div className={`weeklyProjectSummaryContainer ${darkMode ? styles.darkMode : ''}`}>
+      <WeeklyProjectSummaryHeader darkMode={darkMode} />
+
+      <div className={styles.weeklyProjectSummaryDashboardContainer}>
+        <div className={styles.weeklyProjectSummaryDashboardGrid}>
           {sections.map(({ title, key, className, content }) => (
-            <div key={key} className={`weekly-project-summary-dashboard-section ${className}`}>
-              <div
-                className="weekly-project-summary-dashboard-category-title"
-                onClick={() => toggleSection(key)}
-              >
-                {title}{' '}
-                <span className="weekly-project-summary-dropdown-icon">
-                  {openSections[key] ? '∧' : '∨'}
-                </span>
-              </div>
-              {openSections[key] && (
-                <div className="weekly-project-summary-dashboard-category-content">{content}</div>
-              )}
-            </div>
+            <DashboardSection
+              key={key}
+              title={title}
+              sectionKey={key}
+              className={className}
+              content={content}
+              isOpen={!!openSections[key]}
+              onToggle={toggleSection}
+            />
           ))}
         </div>
       </div>
     </div>
   );
 }
+
+export default WeeklyProjectSummary;

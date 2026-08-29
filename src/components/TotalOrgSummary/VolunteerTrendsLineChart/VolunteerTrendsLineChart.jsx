@@ -1,10 +1,10 @@
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
-import './styles.css';
 import { useEffect, useState } from 'react';
-import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
-import Loading from 'components/common/Loading';
 import DatePicker from 'react-datepicker';
+import { ENDPOINTS } from '~/utils/URL';
+import Loading from '~/components/common/Loading';
+import styles from './VolunteerTrendsStyles.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
 
 const formatChartData = rawData => {
@@ -61,6 +61,21 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [customDateRange, setCustomDateRange] = useState([null, null]);
   const [customStartDate = new Date(), customEndDate = new Date()] = customDateRange;
+
+  //dropdown styling - dark mode
+  const selectStyle = {
+    backgroundColor: darkMode ? '#111827' : '#ffffff',
+    color: darkMode ? '#f8fafc' : '#111827',
+    border: darkMode ? '1px solid rgba(255, 255, 255, 0.25)' : '1px solid #ccc',
+    borderRadius: 4,
+    padding: '2px 8px',
+  };
+
+  // option colors
+  const optionStyle = {
+    backgroundColor: darkMode ? '#111827' : '#ffffff',
+    color: darkMode ? '#f8fafc' : '#111827',
+  };
 
   useEffect(() => {
     // Gets backend data
@@ -150,20 +165,30 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
   const renderCustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       const { year, interval } = payload[0].payload;
+      const bgColor = darkMode ? '#222' : 'white';
+      const textColor = darkMode ? '#fff' : '#222';
+      const labelColor = darkMode ? '#90cdf4' : '#222';
       return (
         <div
           style={{
-            backgroundColor: 'white',
+            backgroundColor: bgColor,
+            color: textColor,
             border: '1px solid #ccc',
             minWidth: '180px',
             padding: '10px',
           }}
         >
-          <h6 style={{ color: 'black' }}>
+          <h6 style={{ color: labelColor }}>
             {interval === 'week' ? 'Week ' : ''}
-            {label}, {year}
+            {label}
+            {`, `}
+            {year}
           </h6>
-          <h6 style={{ color: '#328D1B' }}>{payload[0].value} hours</h6>
+
+          <h6 style={{ color: darkMode ? '#90ee90' : '#328D1B' }}>
+            {payload[0].value}
+            {' hours'}
+          </h6>
         </div>
       );
     }
@@ -201,45 +226,72 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
   }
 
   return (
-    <div className="chart-container">
+    <div className={styles.chartContainer}>
       {/* DATE FILTERS */}
-      <div className="date-filter-container">
-        <select name="timeframe-filter" id="timeframe-filter" onChange={setTimeframeFilter}>
-          <option value="years1">This year</option>
-          <option value="years2">Last 2 years</option>
-          <option value="years3">Last 3 years</option>
-          <option value="years5">Last 5 years</option>
-          <option value="years10">Last 10 years</option>
-          <option value="years0">All-time</option>
-          <option value="yearsCustom">Choose Date Range</option>
+      <div className={styles.dateFilterContainer}>
+        <select
+          name="timeframe-filter"
+          id="timeframe-filter"
+          onChange={setTimeframeFilter}
+          style={selectStyle}
+        >
+          <option value="years1" style={optionStyle}>
+            This year
+          </option>
+          <option value="years2" style={optionStyle}>
+            Last 2 years
+          </option>
+          <option value="years3" style={optionStyle}>
+            Last 3 years
+          </option>
+          <option value="years5" style={optionStyle}>
+            Last 5 years
+          </option>
+          <option value="years10" style={optionStyle}>
+            Last 10 years
+          </option>
+          <option value="years0" style={optionStyle}>
+            All-time
+          </option>
+          <option value="yearsCustom" style={optionStyle}>
+            Choose Date Range
+          </option>
         </select>
         by
-        <select name="offset-filter" id="offset-filter" onChange={setOffsetFilter}>
+        <select
+          name="offset-filter"
+          id="offset-filter"
+          onChange={setOffsetFilter}
+          style={selectStyle}
+        >
           <option value="week">week</option>
           <option value="month">month</option>
         </select>
       </div>
 
       {/* DATE PICKER */}
-      <div className="date-picker-container">
-        {showDatePicker && (
-          <DatePicker
-            selected={customStartDate}
-            onChange={handleCustomDateRange}
-            startDate={customStartDate}
-            endDate={customEndDate}
-            selectsRange
-            inline
-            dateFormat="MM-dd-yyyy"
-            className="date-picker"
-          />
-        )}
+      <div className={styles.datePickerContainer}>
+        <div className={styles.datePickerPostion}>
+          {showDatePicker && (
+            <DatePicker
+              selected={customStartDate}
+              onChange={handleCustomDateRange}
+              startDate={customStartDate}
+              endDate={customEndDate}
+              selectsRange
+              inline
+              dateFormat="MM-dd-yyyy"
+              className="date-picker"
+            />
+          )}
+        </div>
       </div>
 
       {/* CUSTOM DATE RANGE */}
       {customDateRange.every(date => date) && (
-        <div className="custom-date-range">
-          <span>{dateToYYYYMMDD(customDateRange[0])}</span> to{' '}
+        <div className={styles.customDateRange}>
+          <span>{dateToYYYYMMDD(customDateRange[0])}</span>
+          <span> to </span>
           <span>{dateToYYYYMMDD(customDateRange[1])}</span>
         </div>
       )}

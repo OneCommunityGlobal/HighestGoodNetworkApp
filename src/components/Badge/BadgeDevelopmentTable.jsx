@@ -14,14 +14,15 @@ import {
   UncontrolledPopover,
 } from 'reactstrap';
 import { connect } from 'react-redux';
-import { boxStyle } from 'styles';
+import { boxStyle } from '~/styles';
 import { updateBadge, deleteBadge, closeAlert } from '../../actions/badgeManagement';
 import BadgeTableHeader from './BadgeTableHeader';
 import BadgeTableFilter from './BadgeTableFilter';
 import EditBadgePopup from './EditBadgePopup';
 import DeleteBadgePopup from './DeleteBadgePopup';
 import hasPermission from '../../utils/permissions';
-import './Badge.css';
+import './Badge.module.css';
+import styles from './BadgeDevelopmentTable.module.css';
 
 function BadgeDevelopmentTable(props) {
   const { darkMode } = props;
@@ -163,7 +164,6 @@ function BadgeDevelopmentTable(props) {
   };
 
   const handleSortName = () => {
-    console.log('here sort name');
     setSortRankState('default');
     setSortNameState(prevState => {
       // change the icon
@@ -187,7 +187,6 @@ function BadgeDevelopmentTable(props) {
 
   const handleSortRank = () => {
     setSortNameState('default');
-    console.log('sort rank');
     setSortRankState(prevState => {
       // Change the icon state
       let newState = 'ascending';
@@ -228,6 +227,7 @@ function BadgeDevelopmentTable(props) {
             toggleCheckbox(badgeValue._id);
             props.updateBadge(badgeValue._id, updatedValue);
           }}
+          data-testid={`report-checkbox-${badgeValue._id}`}
           style={{
             display: 'inline-block',
             width: '20px',
@@ -272,7 +272,9 @@ function BadgeDevelopmentTable(props) {
   return (
     <Container fluid>
       <table
-        className={`table table-bordered ${darkMode ? 'bg-yinmn-blue text-light dark-mode' : ''}`}
+        className={`table table-bordered ${
+          darkMode ? `bg-yinmn-blue text-light ${styles.tableDark}` : ''
+        }`}
       >
         <thead>
           <BadgeTableHeader
@@ -288,7 +290,12 @@ function BadgeDevelopmentTable(props) {
             <tr key={value._id}>
               <td className="badge_image_sm">
                 {' '}
-                <img src={value.imageUrl} id={`popover_${value._id}`} alt="" />
+                <img
+                  src={value.imageUrl}
+                  id={`popover_${value._id}`}
+                  alt=""
+                  data-testid={`badge-image-${value._id}`}
+                />
                 <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
                   <Card className={`text-center ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
                     <CardImg className="badge_image_lg" src={value?.imageUrl} />

@@ -1,0 +1,43 @@
+/* stylelint-disable  */
+.recordsModalTableContainer {
+  overflow: scroll;
+  height: 75vh;
+  text-align: center;
+  font-size: small;
+  white-space: nowrap;
+}
+
+@media (width >= 1200px) {
+  .recordsModalTableContainer {
+    font-size: medium;
+  }
+}
+
+.modalDark {
+  color: #e2e8f0;
+}
+
+.modalHeaderDark {
+  background-color: #1e293b;
+  color: #e2e8f0;
+  border-bottom-color: #334155;
+}
+
+.modalBodyDark {
+  background-color: #1e293b;
+  color: #e2e8f0;
+  border-top-color: #334155;
+}
+
+.tableDark {
+  color: #e2e8f0;
+}
+
+.tableDark thead th {
+  border-bottom-color: #334155;
+}
+
+.tableDark td,
+.tableDark th {
+  border-top-color: #334155;
+}
