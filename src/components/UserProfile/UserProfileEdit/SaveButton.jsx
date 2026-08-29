@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import EditConfirmModal from '../UserProfileModal/EditConfirmModal';
@@ -61,7 +61,7 @@ const SaveButton = props => {
     }));
   };
 
-  const restoreScrollPosition = () => {
+  const restoreScrollPosition = useCallback(() => {
     const restore = () => {
       scrollSnapshot.current.forEach(({ element, left, top }) => {
         element.scrollLeft = left;
@@ -71,7 +71,7 @@ const SaveButton = props => {
 
     restore();
     requestAnimationFrame(() => requestAnimationFrame(restore));
-  };
+  }, []);
 
   const handleSave = async event => {
     event.preventDefault();
@@ -119,6 +119,12 @@ const SaveButton = props => {
       );
     }
   }, [modal, userProfile.teamCode]);
+
+  useLayoutEffect(() => {
+    if (modal && scrollSnapshot.current.length > 0) {
+      restoreScrollPosition();
+    }
+  }, [modal, restoreScrollPosition, userProfile]);
 
   return (
     <React.Fragment>

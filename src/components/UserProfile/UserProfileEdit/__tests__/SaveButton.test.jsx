@@ -59,4 +59,39 @@ describe('<SaveButton />', () => {
     await waitFor(() => expect(handleSubmit).toHaveBeenCalledOnce());
     await waitFor(() => expect(modalBody.scrollTop).toBe(240));
   });
+
+  it('restores the modal position after the saved profile is rendered', async () => {
+    const initialProfile = { ...userProfileMock };
+    const { rerender } = render(
+      <div id="volunteer-time-modal-body" data-testid="volunteer-time-modal-body">
+        <SaveButton
+          {...createProps({
+            userProfile: initialProfile,
+            scrollContainerId: 'volunteer-time-modal-body',
+          })}
+        />
+      </div>,
+    );
+    const modalBody = screen.getByTestId('volunteer-time-modal-body');
+    modalBody.scrollTop = 320;
+
+    const saveButton = screen.getByRole('button', { name: /save changes/i });
+    fireEvent.mouseDown(saveButton);
+    fireEvent.click(saveButton);
+    expect(await screen.findByRole('dialog')).toBeInTheDocument();
+
+    modalBody.scrollTop = 0;
+    rerender(
+      <div id="volunteer-time-modal-body" data-testid="volunteer-time-modal-body">
+        <SaveButton
+          {...createProps({
+            userProfile: { ...initialProfile, weeklycommittedHours: 25 },
+            scrollContainerId: 'volunteer-time-modal-body',
+          })}
+        />
+      </div>,
+    );
+
+    expect(modalBody.scrollTop).toBe(320);
+  });
 });
