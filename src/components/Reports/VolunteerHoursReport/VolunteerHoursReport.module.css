@@ -36,7 +36,7 @@
 }
 
 .hoursCell {
-  text-align: right;
+  text-align: center;
   font-weight: 500;
   min-width: 100px;
 }
@@ -51,10 +51,15 @@
 }
 
 /* Dark mode styles */
-:global(.bg-dark) .datePicker {
-  background: #343a40;
-  border-color: #495057;
-  color: white;
+
+:global(.bg-dark) .form-control[type='date'] {
+  background-color: #343a40 !important;
+  color: #fff !important;
+  border-color: #6c757d !important;
+}
+
+:global(.bg-dark) .form-control[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(1);
 }
 
 :global(.bg-dark) .totalRow {
@@ -87,3 +92,44 @@
     font-size: 14px;
   }
 }
+
+.reportTable th,
+.reportTable td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.reportTable.table-dark thead th {
+  background-color: #343a40;
+  color: #fff;
+  border-color: #495057;
+  text-align: center;
+  vertical-align: middle;
+  user-select: none;
+}
+
+.reportTable.table-dark tbody td {
+  background-color: #212529;
+  color: #fff;
+  border-color: #495057;
+}
+
+.reportTable.table-dark .totalRow td {
+  background-color: #343a40;
+  color: #fff;
+}
+
+.reportTable.table-dark ::selection {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.reportTable.table-dark thead tr:hover th {
+  background-color: #343a40 !important;
+  color: #fff !important;
+}
+
+/* .reportTable.table-dark thead th::selection {
+  background-color: transparent;
+  color: #fff;
+} */

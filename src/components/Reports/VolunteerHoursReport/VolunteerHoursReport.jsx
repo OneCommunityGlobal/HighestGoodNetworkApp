@@ -11,6 +11,7 @@ import styles from './VolunteerHoursReport.module.css';
 import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 import PropTypes from 'prop-types';
+import { AlignCenter } from 'lucide-react';
 
 const VolunteerHoursReport = ({
   darkMode,
@@ -231,7 +232,7 @@ const VolunteerHoursReport = ({
             <div>
               <h4 className="mb-3">{getReportTitle()}</h4>
               <div className={styles.tableContainer}>
-                <Table responsive className={darkMode ? 'table-dark' : ''}>
+               <Table responsive className={`${styles.reportTable} ${darkMode ? 'table-dark' : ''}`}>
                   <thead>
                     <tr>
                       {getTableHeaders().map(header => (
