@@ -368,3 +368,6 @@
 .bg-yinmn-blue .info-modal-content.force-white-text * {
   color: #fff !important;
 }
+.darkModeText {
+  color: #fff;
+}
