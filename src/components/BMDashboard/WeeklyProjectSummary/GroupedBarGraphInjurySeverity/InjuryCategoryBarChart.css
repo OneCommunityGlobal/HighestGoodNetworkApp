@@ -1,9 +1,15 @@
 .injury-chart-container {
+  width: 100%;
   padding: 1rem;
+  box-sizing: border-box;
+}
+
+.injury-chart-header {
+  width: 100%;
 }
 
 .injury-chart-title {
-  color: #666666;
+  color: #4b5563;
   font-size: 1.5rem;
   font-weight: 600;
   margin-bottom: 1rem;
@@ -13,43 +19,528 @@
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  margin-bottom: 2rem;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
 }
 
-/* ------------------- DARK MODE STYLES ------------------- */
-.darkMode .injury-chart-title {
-  color: white;
+.filter {
+  flex: 1 1 180px;
+  min-width: 170px;
 }
 
-.darkMode .injury-chart-label {
-  color: white;
+.injury-chart-label {
+  display: block;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.3rem;
 }
 
-.darkMode .injury-select__control {
-  background-color: #2b3e59 !important;
-  color: white !important;
-  border-color: #555 !important;
+.injury-select-container {
+  width: 100%;
+  font-size: 0.875rem;
 }
 
-.darkMode .injury-select__single-value,
-.darkMode .injury-select__multi-value__label,
-.darkMode .injury-select__input-container {
-  color: white !important;
+.injury-date-input {
+  width: 100%;
+  min-height: 38px;
+  padding: 0.5rem 0.65rem;
+  color: #111827;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  box-sizing: border-box;
+  font-size: 0.875rem;
 }
 
-.darkMode .injury-select__menu {
-  background-color: #2b3e59 !important;
-  color: white !important;
+.injury-date-input::placeholder {
+  color: #6b7280;
 }
 
-.darkMode .injury-select__option:hover {
-  color: black !important;
+.injury-date-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #3b82f6;
 }
 
-.darkMode .react-datepicker__input-container input {
-  background-color: #2b3e59 !important;
-  color: white !important;
-  border: 1px solid #555;
-  padding: 0.5rem;
+.injury-chart-visualization {
+  width: 100%;
+  min-width: 0;
+}
+
+.injury-chart-message,
+.injury-chart-empty {
+  color: #6b7280;
+  text-align: center;
+  font-style: italic;
+  padding: 1rem;
+}
+
+.injury-chart-error {
+  color: #b91c1c;
+  text-align: center;
+  padding: 1rem;
+}
+
+/* =========================================================
+   CUSTOM LEGEND
+   ========================================================= */
+
+.injury-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem 1rem;
+
+  width: calc(100% - 1rem);
+  max-height: 82px;
+
+  margin: 0.5rem auto 0;
+  padding: 0.65rem 0.75rem;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  color: #374151;
+  background-color: #f8fafc;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+
+  box-sizing: border-box;
+}
+
+.injury-chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  max-width: 180px;
+  min-width: 0;
+
+  font-size: 0.75rem;
+}
+
+.injury-chart-legend-marker {
+  width: 10px;
+  height: 10px;
+  min-width: 10px;
+
+  display: inline-block;
+
+  border-radius: 2px;
+}
+
+.injury-chart-legend-text {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.injury-chart-legend {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f1f5f9;
+}
+
+.injury-chart-legend::-webkit-scrollbar {
+  width: 8px;
+}
+
+.injury-chart-legend::-webkit-scrollbar-track {
+  background-color: #f1f5f9;
   border-radius: 4px;
+}
+
+.injury-chart-legend::-webkit-scrollbar-thumb {
+  background-color: #94a3b8;
+  border: 2px solid #f1f5f9;
+  border-radius: 4px;
+}
+
+.injury-chart-legend::-webkit-scrollbar-thumb:hover {
+  background-color: #64748b;
+}
+
+/* =========================================================
+   DARK MODE
+   ========================================================= */
+
+.injury-chart-container.darkMode .injury-chart-title {
+  color: #f8fafc;
+}
+
+.injury-chart-container.darkMode .injury-chart-label {
+  color: #f3f4f6;
+}
+
+.injury-chart-container.darkMode .injury-chart-message,
+.injury-chart-container.darkMode .injury-chart-empty {
+  color: #cbd5e1;
+}
+
+.injury-chart-container.darkMode .injury-chart-error {
+  color: #fca5a5;
+}
+
+/* =========================================================
+   REACT SELECT - DARK MODE
+   ========================================================= */
+
+.injury-chart-container.darkMode .injury-select__control {
+  min-height: 38px;
+
+  color: #f8fafc !important;
+  background-color: #2b3e59 !important;
+
+  border-color: #536985 !important;
+  box-shadow: none !important;
+}
+
+.injury-chart-container.darkMode
+  .injury-select__control:hover {
+  border-color: #7890ad !important;
+}
+
+.injury-chart-container.darkMode
+  .injury-select__control--is-focused {
+  border-color: #60a5fa !important;
+  box-shadow: 0 0 0 1px #60a5fa !important;
+}
+
+.injury-chart-container.darkMode
+  .injury-select__value-container {
+  background-color: transparent !important;
+}
+
+.injury-chart-container.darkMode
+  .injury-select__placeholder {
+  color: #cbd5e1 !important;
+}
+
+.injury-chart-container.darkMode
+  .injury-select__single-value {
+  color: #ffffff !important;
+}
+
+.injury-chart-container.darkMode
+  .injury-select__input-container {
+  color: #ffffff !important;
+}
+
+.injury-chart-container.darkMode
+  .injury-select__input {
+  color: #ffffff !important;
+}
+
+.injury-chart-container.darkMode
+  .injury-select__input input {
+  color: #ffffff !important;
+}
+
+.injury-chart-container.darkMode
+  .injury-select__indicator-separator {
+  background-color: #64748b !important;
+}
+
+.injury-chart-container.darkMode
+  .injury-select__dropdown-indicator,
+.injury-chart-container.darkMode
+  .injury-select__clear-indicator {
+  color: #cbd5e1 !important;
+}
+
+.injury-chart-container.darkMode
+  .injury-select__dropdown-indicator:hover,
+.injury-chart-container.darkMode
+  .injury-select__clear-indicator:hover {
+  color: #ffffff !important;
+}
+
+/* Selected values */
+
+.injury-chart-container.darkMode
+  .injury-select__multi-value {
+  background-color: #3b526f !important;
+}
+
+.injury-chart-container.darkMode
+  .injury-select__multi-value__label {
+  color: #ffffff !important;
+}
+
+.injury-chart-container.darkMode
+  .injury-select__multi-value__remove {
+  color: #dbeafe !important;
+}
+
+.injury-chart-container.darkMode
+  .injury-select__multi-value__remove:hover {
+  color: #ffffff !important;
+  background-color: #b91c1c !important;
+}
+
+/* Dropdown itself */
+
+.injury-chart-container.darkMode
+  .injury-select__menu {
+  z-index: 50;
+
+  color: #f8fafc !important;
+  background-color: #263952 !important;
+
+  border: 1px solid #536985;
+
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 35%),
+    0 4px 6px -4px rgb(0 0 0 / 35%);
+}
+
+.injury-chart-container.darkMode
+  .injury-select__menu-list {
+  padding: 4px 0;
+  background-color: #263952 !important;
+}
+
+/* Normal option */
+
+.injury-chart-container.darkMode
+  .injury-select__option {
+  color: #f8fafc !important;
+  background-color: #263952 !important;
+
+  cursor: pointer;
+}
+
+/* Hover / keyboard focus */
+
+.injury-chart-container.darkMode
+  .injury-select__option--is-focused {
+  color: #ffffff !important;
+  background-color: #355173 !important;
+}
+
+/* Selected option */
+
+.injury-chart-container.darkMode
+  .injury-select__option--is-selected {
+  color: #ffffff !important;
+  background-color: #2563eb !important;
+}
+
+.injury-chart-container.darkMode
+  .injury-select__option--is-selected.injury-select__option--is-focused {
+  color: #ffffff !important;
+  background-color: #1d4ed8 !important;
+}
+
+.injury-chart-container.darkMode
+  .injury-select__menu-notice {
+  color: #cbd5e1 !important;
+}
+
+/* Dropdown scrollbar */
+
+.injury-chart-container.darkMode
+  .injury-select__menu-list {
+  scrollbar-width: thin;
+  scrollbar-color: #7890ad #263952;
+}
+
+.injury-chart-container.darkMode
+  .injury-select__menu-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.injury-chart-container.darkMode
+  .injury-select__menu-list::-webkit-scrollbar-track {
+  background-color: #263952;
+  border-radius: 4px;
+}
+
+.injury-chart-container.darkMode
+  .injury-select__menu-list::-webkit-scrollbar-thumb {
+  background-color: #7890ad;
+
+  border: 2px solid #263952;
+  border-radius: 4px;
+}
+
+.injury-chart-container.darkMode
+  .injury-select__menu-list::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
+
+/* =========================================================
+   DATE INPUTS - DARK MODE
+   ========================================================= */
+
+.injury-chart-container.darkMode .injury-date-input {
+  color: #ffffff;
+
+  background-color: #2b3e59;
+
+  border: 1px solid #536985;
+
+  color-scheme: dark;
+}
+
+.injury-chart-container.darkMode
+  .injury-date-input::placeholder {
+  color: #cbd5e1;
+}
+
+.injury-chart-container.darkMode
+  .injury-date-input:hover {
+  border-color: #7890ad;
+}
+
+.injury-chart-container.darkMode
+  .injury-date-input:focus {
+  color: #ffffff;
+
+  background-color: #2b3e59;
+
+  border-color: #60a5fa;
+
+  box-shadow: 0 0 0 1px #60a5fa;
+}
+
+/* =========================================================
+   REACT DATEPICKER POPUP - DARK MODE
+   ========================================================= */
+
+.injury-chart-container.darkMode .react-datepicker {
+  color: #f8fafc;
+  background-color: #263952;
+
+  border-color: #536985;
+}
+
+.injury-chart-container.darkMode
+  .react-datepicker__header {
+  background-color: #2b3e59;
+
+  border-bottom-color: #536985;
+}
+
+.injury-chart-container.darkMode
+  .react-datepicker__current-month,
+.injury-chart-container.darkMode
+  .react-datepicker-time__header,
+.injury-chart-container.darkMode
+  .react-datepicker-year-header {
+  color: #ffffff;
+}
+
+.injury-chart-container.darkMode
+  .react-datepicker__day-name {
+  color: #cbd5e1;
+}
+
+.injury-chart-container.darkMode
+  .react-datepicker__day {
+  color: #f8fafc;
+}
+
+.injury-chart-container.darkMode
+  .react-datepicker__day:hover {
+  color: #ffffff;
+
+  background-color: #3b526f;
+}
+
+.injury-chart-container.darkMode
+  .react-datepicker__day--selected,
+.injury-chart-container.darkMode
+  .react-datepicker__day--keyboard-selected {
+  color: #ffffff;
+
+  background-color: #2563eb;
+}
+
+.injury-chart-container.darkMode
+  .react-datepicker__day--outside-month {
+  color: #7c8da3;
+}
+
+.injury-chart-container.darkMode
+  .react-datepicker__day--disabled {
+  color: #64748b;
+}
+
+.injury-chart-container.darkMode
+  .react-datepicker__navigation-icon::before {
+  border-color: #e2e8f0;
+}
+
+/* =========================================================
+   LEGEND - DARK MODE
+   ========================================================= */
+
+.injury-chart-container.darkMode
+  .injury-chart-legend {
+  color: #e2e8f0;
+
+  background-color: #263952;
+
+  border-color: #536985;
+
+  scrollbar-color: #7890ad #263952;
+}
+
+.injury-chart-container.darkMode
+  .injury-chart-legend-text {
+  color: #e2e8f0;
+}
+
+.injury-chart-container.darkMode
+  .injury-chart-legend::-webkit-scrollbar-track {
+  background-color: #263952;
+}
+
+.injury-chart-container.darkMode
+  .injury-chart-legend::-webkit-scrollbar-thumb {
+  background-color: #7890ad;
+
+  border-color: #263952;
+}
+
+.injury-chart-container.darkMode
+  .injury-chart-legend::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .injury-chart-container {
+    padding: 0.75rem;
+  }
+
+  .injury-chart-title {
+    font-size: 1.15rem;
+  }
+
+  .injury-chart-filters {
+    gap: 0.75rem;
+  }
+
+  .filter {
+    flex: 1 1 100%;
+    min-width: 100%;
+  }
+
+  .injury-chart-legend {
+    justify-content: flex-start;
+
+    max-height: 100px;
+  }
+
+  .injury-chart-legend-item {
+    max-width: 150px;
+  }
 }

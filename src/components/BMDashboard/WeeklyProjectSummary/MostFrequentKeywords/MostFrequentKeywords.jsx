@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import * as d3 from 'd3';
-import styles from './MostFrequentKeywords.module.css';
+import DatePicker from 'react-datepicker';
 import Select from 'react-select';
+import 'react-datepicker/dist/react-datepicker.css';
+import styles from './MostFrequentKeywords.module.css';
 
 function MostFrequentKeywords() {
   const svgRef = useRef();
+
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState('');
   const [startDate, setStartDate] = useState(null);
@@ -16,15 +17,18 @@ function MostFrequentKeywords() {
   const [tags, setTags] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
   const API_BASE = process.env.REACT_APP_APIENDPOINT;
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const fetchProjects = async () => {
     try {
       const token = localStorage.getItem('token');
+
       const res = await axios.get(`${API_BASE}/projects`, {
         headers: { Authorization: token },
       });
+
       setProjects(res.data || []);
     } catch (err) {
       if (process.env.NODE_ENV !== 'production') {
@@ -36,16 +40,27 @@ function MostFrequentKeywords() {
 
   const fetchFrequentTags = async () => {
     if (!selectedProject) return;
+
     try {
       setIsLoading(true);
       setError('');
+
       const params = new URLSearchParams();
+
       params.append('projectId', selectedProject);
-      if (startDate) params.append('startDate', new Date(startDate).toISOString());
-      if (endDate) params.append('endDate', new Date(endDate).toISOString());
+
+      if (startDate) {
+        params.append('startDate', new Date(startDate).toISOString());
+      }
+
+      if (endDate) {
+        params.append('endDate', new Date(endDate).toISOString());
+      }
+
       params.append('limit', 7);
 
       const token = localStorage.getItem('token');
+
       const res = await axios.get(`${API_BASE}/tags/frequent?${params.toString()}`, {
         headers: { Authorization: token },
       });
@@ -56,6 +71,7 @@ function MostFrequentKeywords() {
         // eslint-disable-next-line no-console
         console.error('Tag fetch failed:', err);
       }
+
       setError('Failed to load tag data');
     } finally {
       setIsLoading(false);
@@ -73,22 +89,34 @@ function MostFrequentKeywords() {
   useEffect(() => {
     const timeout = setTimeout(() => {
       const svgEl = svgRef.current;
+
       if (!tags?.length || !svgEl) return;
 
       // eslint-disable-next-line testing-library/no-node-access
       const svg = d3.select(svgEl);
+
       svg.selectAll('*').remove();
 
       const container = svgEl.parentElement;
       const width = container?.clientWidth || 500;
       const height = 400;
+
       const centerX = width / 2;
       const centerY = height / 2;
       const padding = 50;
+
       const radius = Math.min(width - padding * 2, height - padding * 2) * 0.42;
 
       const ellipseRx = 48;
       const ellipseRy = 20;
+
+      const centerFill = darkMode ? '#2563EB' : '#3B82F6';
+      const lineColor = darkMode ? '#94A3B8' : '#555555';
+
+      const keywordFill = darkMode ? '#3B526F' : '#E0F2FE';
+      const keywordHoverFill = darkMode ? '#4F6B8E' : '#BFDBFE';
+
+      const keywordTextColor = darkMode ? '#F8FAFC' : '#111111';
 
       svg
         .attr('width', width)
@@ -102,14 +130,14 @@ function MostFrequentKeywords() {
         .attr('cy', centerY)
         .attr('rx', ellipseRx)
         .attr('ry', ellipseRy)
-        .attr('fill', '#3B82F6');
+        .attr('fill', centerFill);
 
       svg
         .append('text')
         .attr('x', centerX)
         .attr('y', centerY - 5)
         .attr('text-anchor', 'middle')
-        .attr('fill', 'white')
+        .attr('fill', '#FFFFFF')
         .attr('font-weight', 'bold')
         .attr('font-size', '10px')
         .text('Most Frequent');
@@ -119,19 +147,36 @@ function MostFrequentKeywords() {
         .attr('x', centerX)
         .attr('y', centerY + 9)
         .attr('text-anchor', 'middle')
-        .attr('fill', 'white')
+        .attr('fill', '#FFFFFF')
         .attr('font-weight', 'bold')
         .attr('font-size', '10px')
         .text('Keywords');
 
       const angleStep = (2.3 * Math.PI) / tags.length;
-      const angles = tags.map((_, i) => i * angleStep + Math.PI / 2 + 0.1);
+
+      const angles = tags.map((_, index) => index * angleStep + Math.PI / 2 + 0.1);
 
       const getEllipseSize = text => {
         const len = text.length;
-        if (len > 14) return { rx: 48, ry: 18 };
-        if (len > 10) return { rx: 40, ry: 16 };
-        return { rx: 32, ry: 16 };
+
+        if (len > 14) {
+          return {
+            rx: 48,
+            ry: 18,
+          };
+        }
+
+        if (len > 10) {
+          return {
+            rx: 40,
+            ry: 16,
+          };
+        }
+
+        return {
+          rx: 32,
+          ry: 16,
+        };
       };
 
       const ensureInBounds = (x, y) => ({
@@ -142,13 +187,15 @@ function MostFrequentKeywords() {
       const truncateText = (text, max = 14) =>
         text.length <= max ? text : `${text.slice(0, max - 1)}…`;
 
-      tags.forEach((tag, i) => {
-        const angle = angles[i];
+      tags.forEach((tag, index) => {
+        const angle = angles[index];
+
         const isLeftOrRight = Math.abs(Math.cos(angle)) > 0.9;
         const adjustedRadius = isLeftOrRight ? radius * 1.35 : radius;
 
         let x = centerX + adjustedRadius * Math.cos(angle);
         let y = centerY + adjustedRadius * Math.sin(angle);
+
         ({ x, y } = ensureInBounds(x, y));
 
         const xStart = centerX + ellipseRx * Math.cos(angle);
@@ -160,27 +207,43 @@ function MostFrequentKeywords() {
           .attr('y1', yStart)
           .attr('x2', x)
           .attr('y2', y)
-          .attr('stroke', '#555');
+          .attr('stroke', lineColor)
+          .attr('stroke-width', darkMode ? 1.25 : 1);
 
         const { rx, ry } = getEllipseSize(tag.tag);
+
         svg
           .append('ellipse')
           .attr('cx', x)
           .attr('cy', y)
           .attr('rx', rx)
           .attr('ry', ry)
-          .attr('fill', '#E0F2FE')
+          .attr('fill', keywordFill)
+          .attr('stroke', darkMode ? '#7890AD' : 'none')
+          .attr('stroke-width', darkMode ? 1 : 0)
           .style('cursor', 'pointer')
           .attr('tabindex', 0)
           .attr('role', 'button')
           .attr('aria-label', `Keyword: ${tag.tag}`)
           .on('mouseover', function() {
             // eslint-disable-next-line testing-library/no-node-access
-            d3.select(this).attr('fill', '#BFDBFE');
+            d3.select(this).attr('fill', keywordHoverFill);
           })
           .on('mouseout', function() {
             // eslint-disable-next-line testing-library/no-node-access
-            d3.select(this).attr('fill', '#E0F2FE');
+            d3.select(this).attr('fill', keywordFill);
+          })
+          .on('focus', function() {
+            // eslint-disable-next-line testing-library/no-node-access
+            d3.select(this)
+              .attr('fill', keywordHoverFill)
+              .attr('stroke-width', 2);
+          })
+          .on('blur', function() {
+            // eslint-disable-next-line testing-library/no-node-access
+            d3.select(this)
+              .attr('fill', keywordFill)
+              .attr('stroke-width', darkMode ? 1 : 0);
           })
           .on('click', () => {
             window.open(`/tags/${tag.tag}`, '_blank');
@@ -192,7 +255,9 @@ function MostFrequentKeywords() {
           .attr('y', y + 4)
           .attr('text-anchor', 'middle')
           .attr('font-size', '11px')
-          .attr('fill', '#111')
+          .attr('font-weight', darkMode ? 500 : 400)
+          .attr('fill', keywordTextColor)
+          .style('pointer-events', 'none')
           .text(truncateText(tag.tag))
           .append('title')
           .text(tag.tag);
@@ -200,36 +265,43 @@ function MostFrequentKeywords() {
     }, 100);
 
     return () => clearTimeout(timeout);
-  }, [tags]);
+  }, [tags, darkMode]);
+
+  const projectOptions = projects.map(project => ({
+    label: project.projectName,
+    value: project._id,
+  }));
+
+  const selectedProjectOption =
+    projectOptions.find(option => option.value === selectedProject) || null;
 
   return (
-    <div className={`${styles.mfkContainer} ${darkMode ? 'darkMode' : ''}`}>
+    <div className={`${styles.mfkContainer} ${darkMode ? styles.mfkDark : ''}`}>
       <h3 className={styles.mfkTitle}>📊 Most Frequent Keywords</h3>
+
       <div className={styles.mfkControls}>
         <div>
           <label htmlFor="project-select" className={styles.mfkLabel}>
             Project
           </label>
+
           <Select
             inputId="project-select"
             className={styles.mfkSelect}
             classNamePrefix="project-select"
-            options={projects.map(p => ({
-              label: p.projectName,
-              value: p._id,
-            }))}
-            value={projects
-              .map(p => ({ label: p.projectName, value: p._id }))
-              .find(opt => opt.value === selectedProject)}
+            options={projectOptions}
+            value={selectedProjectOption}
             onChange={selected => setSelectedProject(selected?.value || '')}
             placeholder="Select a project..."
             isSearchable
           />
         </div>
+
         <div>
           <label htmlFor="start-date" className={styles.mfkLabel}>
             From
           </label>
+
           <DatePicker
             id="start-date"
             selected={startDate}
@@ -238,10 +310,12 @@ function MostFrequentKeywords() {
             placeholderText="Start date"
           />
         </div>
+
         <div>
           <label htmlFor="end-date" className={styles.mfkLabel}>
             To
           </label>
+
           <DatePicker
             id="end-date"
             selected={endDate}
@@ -254,10 +328,13 @@ function MostFrequentKeywords() {
 
       <div className={styles.mfkChartContainer}>
         {isLoading && <div className={styles.mfkLoading}>Loading...</div>}
+
         {!isLoading && error && <div className={styles.mfkError}>{error}</div>}
+
         {!isLoading && !error && tags.length === 0 && (
           <div className={styles.mfkEmpty}>No tags found for this selection.</div>
         )}
+
         {!isLoading && !error && tags.length > 0 && <svg ref={svgRef} />}
       </div>
     </div>

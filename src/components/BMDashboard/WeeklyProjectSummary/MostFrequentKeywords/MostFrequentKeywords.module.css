@@ -1,13 +1,14 @@
 .mfkContainer {
   padding: 1.25rem;
   font-family: 'Inter', sans-serif;
+  color: #111827;
 }
 
 .mfkTitle {
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 1rem;
-  color: #1e3a8a; /* Indigo-900 */
+  color: #1e3a8a;
 }
 
 .mfkControls {
@@ -23,31 +24,40 @@
   min-width: 220px;
 }
 
+.mfkLabel,
 .mfkControls label {
-  font-size: 0.875rem;
-  margin-bottom: 0.25rem;
   display: block;
-  color: #374151; /* Gray-700 */
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
 }
 
-.mfkSelect{
+.mfkSelect {
   width: 100%;
   font-size: 0.9rem;
   border-radius: 0.375rem;
 }
+
 .mfkDatepicker {
   width: 100%;
   padding: 0.5rem;
   font-size: 0.9rem;
-  border: 1px solid #d1d5db; /* Gray-300 */
+  color: #111827;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
   border-radius: 0.375rem;
 }
 
-.mfkSelect:focus,
 .mfkDatepicker:focus {
   outline: none;
-  border-color: #3b82f6; /* Blue-500 */
-  background-color: #fff;
+  border-color: #3b82f6;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 1px #3b82f6;
+}
+
+.mfkDatepicker::placeholder {
+  color: #6b7280;
 }
 
 .mfkLoading,
@@ -55,8 +65,12 @@
 .mfkEmpty {
   text-align: center;
   margin-top: 1rem;
-  color: #6b7280; /* Gray-500 */
+  color: #6b7280;
   font-style: italic;
+}
+
+.mfkError {
+  color: #b91c1c;
 }
 
 .mfkChartContainer {
@@ -79,32 +93,290 @@
   display: block;
 }
 
+/* =========================================================
+   DARK MODE
+   Everything below is scoped to this component through
+   the mfkDark class.
+   ========================================================= */
 
-:global(.darkMode) .mfkTitle {
-  color: white;
+.mfkDark {
+  color: #f3f4f6;
 }
 
-:global(.darkMode) .mfkLabel {
-  color: white;
+.mfkDark .mfkTitle {
+  color: #f8fafc;
 }
 
-:global(.darkMode) :global(.project-select__control) {
+.mfkDark .mfkLabel,
+.mfkDark .mfkControls label {
+  color: #f3f4f6;
+}
+
+.mfkDark .mfkDatepicker {
+  color: #f8fafc;
+  background-color: #2b3e59;
+  border-color: #536985;
+  color-scheme: dark;
+}
+
+.mfkDark .mfkDatepicker::placeholder {
+  color: #cbd5e1;
+}
+
+.mfkDark .mfkDatepicker:hover {
+  border-color: #7890ad;
+}
+
+.mfkDark .mfkDatepicker:focus {
+  color: #ffffff;
+  background-color: #2b3e59;
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 1px #60a5fa;
+}
+
+.mfkDark .mfkLoading,
+.mfkDark .mfkEmpty {
+  color: #cbd5e1;
+}
+
+.mfkDark .mfkError {
+  color: #fca5a5;
+}
+
+/* =========================================================
+   REACT-SELECT DARK MODE
+   project-select comes from classNamePrefix="project-select"
+   ========================================================= */
+
+.mfkDark :global(.project-select__control) {
+  min-height: 38px;
+  color: #f8fafc !important;
   background-color: #2b3e59 !important;
-  color: white !important;
-  border-color: #555 !important;
+  border-color: #536985 !important;
+  box-shadow: none !important;
 }
 
-:global(.darkMode) :global(.project-select__single-value),
-:global(.darkMode) :global(.project-select__multi-value__label),
-:global(.darkMode) :global(.project-select__input-container) {
-  color: white !important;
+.mfkDark :global(.project-select__control:hover) {
+  border-color: #7890ad !important;
 }
 
-:global(.darkMode) :global(.project-select__menu) {
-  background-color: #2b3e59 !important;
-  color: white !important;
+.mfkDark :global(.project-select__control--is-focused) {
+  border-color: #60a5fa !important;
+  box-shadow: 0 0 0 1px #60a5fa !important;
 }
 
-:global(.darkMode) :global(.project-select__option:hover) {
-  color: black !important;
+.mfkDark :global(.project-select__value-container) {
+  background-color: transparent;
+}
+
+.mfkDark :global(.project-select__single-value) {
+  color: #ffffff !important;
+}
+
+.mfkDark :global(.project-select__placeholder) {
+  color: #cbd5e1 !important;
+}
+
+.mfkDark :global(.project-select__input-container) {
+  color: #ffffff !important;
+}
+
+.mfkDark :global(.project-select__input) {
+  color: #ffffff !important;
+}
+
+.mfkDark :global(.project-select__input input) {
+  color: #ffffff !important;
+}
+
+.mfkDark :global(.project-select__indicators) {
+  color: #cbd5e1;
+}
+
+.mfkDark :global(.project-select__dropdown-indicator) {
+  color: #cbd5e1 !important;
+}
+
+.mfkDark :global(.project-select__dropdown-indicator:hover) {
+  color: #ffffff !important;
+}
+
+.mfkDark :global(.project-select__indicator-separator) {
+  background-color: #64748b !important;
+}
+
+.mfkDark :global(.project-select__menu) {
+  z-index: 20;
+  color: #f8fafc !important;
+  background-color: #263952 !important;
+  border: 1px solid #536985;
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 35%),
+    0 4px 6px -4px rgb(0 0 0 / 35%);
+}
+
+.mfkDark :global(.project-select__menu-list) {
+  padding-top: 4px;
+  padding-bottom: 4px;
+  background-color: #263952;
+}
+
+/* Default dropdown option */
+.mfkDark :global(.project-select__option) {
+  color: #f8fafc !important;
+  background-color: #263952 !important;
+  cursor: pointer;
+}
+
+/* Hover / keyboard focused dropdown option */
+.mfkDark :global(.project-select__option--is-focused) {
+  color: #ffffff !important;
+  background-color: #355173 !important;
+}
+
+/* Currently selected dropdown option */
+.mfkDark :global(.project-select__option--is-selected) {
+  color: #ffffff !important;
+  background-color: #2563eb !important;
+}
+
+/* Selected + focused */
+.mfkDark
+  :global(.project-select__option--is-selected.project-select__option--is-focused) {
+  color: #ffffff !important;
+  background-color: #1d4ed8 !important;
+}
+
+.mfkDark :global(.project-select__menu-notice) {
+  color: #cbd5e1 !important;
+}
+
+/* Multi-select support if this Select is changed later */
+.mfkDark :global(.project-select__multi-value) {
+  background-color: #3b526f !important;
+}
+
+.mfkDark :global(.project-select__multi-value__label) {
+  color: #ffffff !important;
+}
+
+.mfkDark :global(.project-select__multi-value__remove) {
+  color: #e2e8f0 !important;
+}
+
+.mfkDark :global(.project-select__multi-value__remove:hover) {
+  color: #ffffff !important;
+  background-color: #b91c1c !important;
+}
+
+/* =========================================================
+   REACT-SELECT SCROLLBAR
+   Makes the dropdown scrollbar visible in dark mode.
+   ========================================================= */
+
+.mfkDark :global(.project-select__menu-list) {
+  scrollbar-width: thin;
+  scrollbar-color: #7890ad #263952;
+}
+
+.mfkDark :global(.project-select__menu-list::-webkit-scrollbar) {
+  width: 8px;
+}
+
+.mfkDark :global(.project-select__menu-list::-webkit-scrollbar-track) {
+  background: #263952;
+  border-radius: 4px;
+}
+
+.mfkDark :global(.project-select__menu-list::-webkit-scrollbar-thumb) {
+  background-color: #7890ad;
+  border: 2px solid #263952;
+  border-radius: 4px;
+}
+
+.mfkDark :global(.project-select__menu-list::-webkit-scrollbar-thumb:hover) {
+  background-color: #94a3b8;
+}
+
+/* =========================================================
+   REACT-DATEPICKER DARK MODE
+   Scoped so other DatePicker instances are unaffected.
+   ========================================================= */
+
+.mfkDark :global(.react-datepicker) {
+  color: #f8fafc;
+  background-color: #263952;
+  border-color: #536985;
+}
+
+.mfkDark :global(.react-datepicker__header) {
+  background-color: #2b3e59;
+  border-bottom-color: #536985;
+}
+
+.mfkDark :global(.react-datepicker__current-month),
+.mfkDark :global(.react-datepicker-time__header),
+.mfkDark :global(.react-datepicker-year-header) {
+  color: #ffffff;
+}
+
+.mfkDark :global(.react-datepicker__day-name) {
+  color: #cbd5e1;
+}
+
+.mfkDark :global(.react-datepicker__day) {
+  color: #f8fafc;
+}
+
+.mfkDark :global(.react-datepicker__day:hover) {
+  color: #ffffff;
+  background-color: #3b526f;
+}
+
+.mfkDark :global(.react-datepicker__day--selected),
+.mfkDark :global(.react-datepicker__day--keyboard-selected) {
+  color: #ffffff;
+  background-color: #2563eb;
+}
+
+.mfkDark :global(.react-datepicker__day--outside-month) {
+  color: #7c8da3;
+}
+
+.mfkDark :global(.react-datepicker__day--disabled) {
+  color: #64748b;
+}
+
+.mfkDark :global(.react-datepicker__triangle) {
+  color: #2b3e59;
+  fill: #2b3e59;
+}
+
+.mfkDark :global(.react-datepicker__navigation-icon::before) {
+  border-color: #e2e8f0;
+}
+
+/* =========================================================
+   RESPONSIVENESS
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .mfkContainer {
+    padding: 0.75rem;
+  }
+
+  .mfkControls {
+    gap: 0.75rem;
+  }
+
+  .mfkControls > div {
+    flex: 1 1 100%;
+    min-width: 100%;
+  }
+
+  .mfkChartContainer {
+    height: 420px;
+    min-height: 420px;
+    padding: 5px;
+  }
 }

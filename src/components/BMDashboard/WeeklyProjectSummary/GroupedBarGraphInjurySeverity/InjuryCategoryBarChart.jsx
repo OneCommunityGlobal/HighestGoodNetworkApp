@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   BarChart,
   Bar,
@@ -21,11 +21,11 @@ import {
   fetchInjuryProjects,
 } from '../../../../actions/bmdashboard/injuryActions';
 
-// YYYY-MM-DD (no tz shift)
-const toYMD = d =>
-  d instanceof Date && !isNaN(d)
-    ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(
-        d.getDate(),
+// YYYY-MM-DD without timezone shift
+const toYMD = date =>
+  date instanceof Date && !Number.isNaN(date.getTime())
+    ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
+        date.getDate(),
       ).padStart(2, '0')}`
     : '';
 
@@ -40,6 +40,7 @@ function InjuryCategoryBarChart() {
     severities = [],
     injuryTypes = [],
   } = useSelector(state => state.bmInjury || {});
+
   const darkMode = useSelector(state => state.theme?.darkMode);
 
   const [projectNameFilter, setProjectNameFilter] = useState([]);
@@ -57,9 +58,10 @@ function InjuryCategoryBarChart() {
     const params = {
       startDate: toYMD(startDate),
       endDate: toYMD(endDate),
-      severities: severityFilter.map(s => s.value).join(','),
-      types: injuryTypeFilter.map(t => t.value).join(','),
+      severities: severityFilter.map(item => item.value).join(','),
+      types: injuryTypeFilter.map(item => item.value).join(','),
     };
+
     dispatch(fetchInjuryProjects(params));
   }, [dispatch, startDate, endDate, severityFilter, injuryTypeFilter]);
 
@@ -70,65 +72,137 @@ function InjuryCategoryBarChart() {
 
   const projectNameOptions = useMemo(() => {
     const seen = new Set();
-    const opts = [];
-    for (const p of projects) {
-      const name = p?.name ?? '';
-      if (!name || seen.has(name)) continue;
+    const options = [];
+
+    projects.forEach(project => {
+      const name = project?.name ?? '';
+
+      if (!name || seen.has(name)) return;
+
       seen.add(name);
-      opts.push({ value: name, label: name });
-    }
-    return opts.sort((a, b) => a.label.localeCompare(b.label));
+
+      options.push({
+        value: name,
+        label: name,
+      });
+    });
+
+    return options.sort((a, b) => a.label.localeCompare(b.label));
   }, [projects]);
 
   useEffect(() => {
     if (!projectNameFilter.length) return;
-    const valid = new Set(projectNameOptions.map(o => o.value));
-    const filtered = projectNameFilter.filter(p => valid.has(p.value));
-    if (filtered.length !== projectNameFilter.length) setProjectNameFilter(filtered);
+
+    const validProjectNames = new Set(projectNameOptions.map(option => option.value));
+
+    const filteredProjects = projectNameFilter.filter(project =>
+      validProjectNames.has(project.value),
+    );
+
+    if (filteredProjects.length !== projectNameFilter.length) {
+      setProjectNameFilter(filteredProjects);
+    }
   }, [projectNameOptions, projectNameFilter]);
 
-  const severityOptions = useMemo(() => sevList.map(s => ({ value: s, label: s })), [sevList]);
-  const typeOptions = useMemo(() => typeList.map(t => ({ value: t, label: t })), [typeList]);
+  const severityOptions = useMemo(
+    () =>
+      sevList.map(severity => ({
+        value: severity,
+        label: severity,
+      })),
+    [sevList],
+  );
+
+  const typeOptions = useMemo(
+    () =>
+      typeList.map(type => ({
+        value: type,
+        label: type,
+      })),
+    [typeList],
+  );
 
   useEffect(() => {
     const params = {
-      projectNames: projectNameFilter.length ? projectNameFilter.map(p => p.value).join(',') : '',
+      projectNames: projectNameFilter.length
+        ? projectNameFilter.map(project => project.value).join(',')
+        : '',
       startDate: toYMD(startDate),
       endDate: toYMD(endDate),
-      severities: severityFilter.map(s => s.value).join(','),
-      types: injuryTypeFilter.map(t => t.value).join(','),
+      severities: severityFilter.map(item => item.value).join(','),
+      types: injuryTypeFilter.map(item => item.value).join(','),
     };
+
     dispatch(fetchInjuryData(params));
   }, [dispatch, projectNameFilter, severityFilter, injuryTypeFilter, startDate, endDate]);
 
   const projectNameById = useMemo(() => {
-    const m = new Map();
-    for (const p of projects) m.set(String(p._id), p.name);
-    for (const r of data) {
-      const pid = String(r?.projectId ?? 'unknown');
-      if (!m.has(pid) && r?.projectName) m.set(pid, r.projectName);
-    }
-    return m;
+    const projectMap = new Map();
+
+    projects.forEach(project => {
+      projectMap.set(String(project._id), project.name);
+    });
+
+    data.forEach(record => {
+      const projectId = String(record?.projectId ?? 'unknown');
+
+      if (!projectMap.has(projectId) && record?.projectName) {
+        projectMap.set(projectId, record.projectName);
+      }
+    });
+
+    return projectMap;
   }, [projects, data]);
 
   const chartData = useMemo(() => {
-    const acc = Object.create(null);
-    for (const r of data) {
-      const workerCategory = r?.workerCategory ?? 'Unknown';
-      const pid = String(r?.projectId ?? 'unknown');
-      const total = Number(r?.totalInjuries) || 0;
-      if (!acc[workerCategory]) acc[workerCategory] = { workerCategory };
-      acc[workerCategory][pid] = (acc[workerCategory][pid] || 0) + total;
-    }
-    return Object.values(acc);
+    const accumulatedData = Object.create(null);
+
+    data.forEach(record => {
+      const workerCategory = record?.workerCategory ?? 'Unknown';
+      const projectId = String(record?.projectId ?? 'unknown');
+      const totalInjuries = Number(record?.totalInjuries) || 0;
+
+      if (!accumulatedData[workerCategory]) {
+        accumulatedData[workerCategory] = {
+          workerCategory,
+        };
+      }
+
+      accumulatedData[workerCategory][projectId] =
+        (accumulatedData[workerCategory][projectId] || 0) + totalInjuries;
+    });
+
+    return Object.values(accumulatedData);
   }, [data]);
 
   const seriesProjectIds = useMemo(() => {
-    const set = new Set(data.map(d => String(d?.projectId ?? 'unknown')));
-    return Array.from(set);
+    const projectIds = new Set(data.map(record => String(record?.projectId ?? 'unknown')));
+
+    return Array.from(projectIds);
   }, [data]);
 
   const showLabels = seriesProjectIds.length <= 4;
+
+  const axisColor = darkMode ? '#e2e8f0' : '#374151';
+  const tooltipBackground = darkMode ? '#263952' : '#ffffff';
+  const tooltipText = darkMode ? '#f8fafc' : '#111827';
+  const tooltipBorder = darkMode ? '#536985' : '#d1d5db';
+
+  const renderLegend = ({ payload }) => {
+    if (!payload?.length) return null;
+
+    return (
+      <div className={`injury-chart-legend ${darkMode ? 'injury-chart-legend-dark' : ''}`}>
+        {payload.map(entry => (
+          <div key={entry.value} className="injury-chart-legend-item" title={entry.value}>
+            <span className="injury-chart-legend-marker" style={{ backgroundColor: entry.color }} />
+
+            <span className="injury-chart-legend-text">{entry.value}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className={`injury-chart-container ${darkMode ? 'darkMode' : ''}`}>
@@ -140,14 +214,17 @@ function InjuryCategoryBarChart() {
             <label htmlFor="project-names-select" className="injury-chart-label">
               Projects
             </label>
+
             <Select
               inputId="project-names-select"
+              className="injury-select-container"
               classNamePrefix="injury-select"
               isMulti
               options={projectNameOptions}
               value={projectNameFilter}
-              onChange={setProjectNameFilter}
+              onChange={selected => setProjectNameFilter(selected || [])}
               placeholder="All names"
+              isSearchable
             />
           </div>
 
@@ -155,14 +232,17 @@ function InjuryCategoryBarChart() {
             <label htmlFor="severities-select" className="injury-chart-label">
               Severities
             </label>
+
             <Select
               inputId="severities-select"
+              className="injury-select-container"
               classNamePrefix="injury-select"
               isMulti
               options={severityOptions}
               value={severityFilter}
-              onChange={setSeverityFilter}
+              onChange={selected => setSeverityFilter(selected || [])}
               placeholder="All severities"
+              isSearchable
             />
           </div>
 
@@ -170,23 +250,27 @@ function InjuryCategoryBarChart() {
             <label htmlFor="injury-types-select" className="injury-chart-label">
               Injury types
             </label>
+
             <Select
               inputId="injury-types-select"
+              className="injury-select-container"
               classNamePrefix="injury-select"
               isMulti
               options={typeOptions}
               value={injuryTypeFilter}
-              onChange={setInjuryTypeFilter}
+              onChange={selected => setInjuryTypeFilter(selected || [])}
               placeholder="All types"
+              isSearchable
             />
           </div>
 
           <div className="filter">
-            <label htmlFor="start-date" className="injury-chart-label">
-              Start date
+            <label htmlFor="injury-start-date" className="injury-chart-label">
+              From
             </label>
+
             <DatePicker
-              id="start-date"
+              id="injury-start-date"
               selected={startDate}
               onChange={setStartDate}
               selectsStart
@@ -194,15 +278,17 @@ function InjuryCategoryBarChart() {
               endDate={endDate}
               maxDate={endDate || undefined}
               placeholderText="Start date"
+              className="injury-date-input"
             />
           </div>
 
           <div className="filter">
-            <label htmlFor="end-date" className="injury-chart-label">
-              End date
+            <label htmlFor="injury-end-date" className="injury-chart-label">
+              To
             </label>
+
             <DatePicker
-              id="end-date"
+              id="injury-end-date"
               selected={endDate}
               onChange={setEndDate}
               selectsEnd
@@ -210,53 +296,106 @@ function InjuryCategoryBarChart() {
               endDate={endDate}
               minDate={startDate || undefined}
               placeholderText="End date"
+              className="injury-date-input"
             />
           </div>
         </div>
       </div>
 
-      {loading && <p>Loading…</p>}
-      {!loading && error && <p className="error">Error: {String(error)}</p>}
+      {loading && <p className="injury-chart-message">Loading…</p>}
 
-      {!loading && !error && (
-        <ResponsiveContainer width="100%" height={420}>
-          <BarChart data={chartData} margin={{ top: 16, right: 24, bottom: 8, left: 8 }}>
-            <XAxis
-              dataKey="workerCategory"
-              interval={0}
-              angle={-45}
-              textAnchor="end"
-              height={80}
-              tick={{ fill: darkMode ? '#fff' : '#000' }}
-            />
-            <YAxis allowDecimals={false} />
-            <Tooltip
-              formatter={(value, name) => [
-                value,
-                projectNameById.get(String(name)) || 'Unknown Project',
-              ]}
-            />
-            <Legend
-              wrapperStyle={{ maxHeight: 72, overflowY: 'auto' }}
-              payload={seriesProjectIds.map(pid => ({
-                id: pid,
-                type: 'square',
-                value: projectNameById.get(pid) || 'Unknown Project',
-              }))}
-            />
-            {seriesProjectIds.map((pid, index) => (
-              <Bar key={pid} dataKey={pid} fill={index % 2 === 0 ? '#17c9d3' : '#000'}>
-                {showLabels && (
-                  <LabelList dataKey={pid} position="top" formatter={v => (v > 0 ? v : '')} />
-                )}
-              </Bar>
-            ))}
-          </BarChart>
-        </ResponsiveContainer>
+      {!loading && error && <p className="injury-chart-error">Error: {String(error)}</p>}
+
+      {!loading && !error && chartData.length > 0 && (
+        <div className="injury-chart-visualization">
+          <ResponsiveContainer width="100%" height={420}>
+            <BarChart
+              data={chartData}
+              margin={{
+                top: 16,
+                right: 24,
+                bottom: 8,
+                left: 8,
+              }}
+            >
+              <XAxis
+                dataKey="workerCategory"
+                interval={0}
+                angle={-45}
+                textAnchor="end"
+                height={80}
+                tick={{
+                  fill: axisColor,
+                  fontSize: 12,
+                }}
+                axisLine={{
+                  stroke: axisColor,
+                }}
+                tickLine={{
+                  stroke: axisColor,
+                }}
+              />
+
+              <YAxis
+                allowDecimals={false}
+                tick={{
+                  fill: axisColor,
+                  fontSize: 12,
+                }}
+                axisLine={{
+                  stroke: axisColor,
+                }}
+                tickLine={{
+                  stroke: axisColor,
+                }}
+              />
+
+              <Tooltip
+                formatter={(value, name) => [
+                  value,
+                  projectNameById.get(String(name)) || 'Unknown Project',
+                ]}
+                contentStyle={{
+                  backgroundColor: tooltipBackground,
+                  color: tooltipText,
+                  border: `1px solid ${tooltipBorder}`,
+                  borderRadius: '6px',
+                }}
+                itemStyle={{
+                  color: tooltipText,
+                }}
+                labelStyle={{
+                  color: tooltipText,
+                  fontWeight: 600,
+                }}
+              />
+
+              <Legend verticalAlign="bottom" content={renderLegend} />
+
+              {seriesProjectIds.map((projectId, index) => (
+                <Bar
+                  key={projectId}
+                  dataKey={projectId}
+                  name={projectNameById.get(projectId) || 'Unknown Project'}
+                  fill={index % 2 === 0 ? '#17c9d3' : '#64748b'}
+                >
+                  {showLabels && (
+                    <LabelList
+                      dataKey={projectId}
+                      position="top"
+                      formatter={value => (value > 0 ? value : '')}
+                      fill={axisColor}
+                    />
+                  )}
+                </Bar>
+              ))}
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       )}
 
       {!loading && !error && chartData.length === 0 && (
-        <div className="empty">No data for selected filters.</div>
+        <div className="injury-chart-empty">No data for selected filters.</div>
       )}
     </div>
   );
