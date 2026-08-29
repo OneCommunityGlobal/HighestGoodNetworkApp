@@ -15,7 +15,7 @@ import ProjectTableHeader from './ProjectTableHeader';
 import Project from './Project';
 import ModalTemplate from './../common/Modal';
 import { CONFIRM_ARCHIVE, PROJECT_INACTIVE_CONFIRMATION, PROJECT_ACTIVE_CONFIRMATION } from './../../languages/en/messages';
-import './projects.module.css';
+import styles from './projects.module.css';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
@@ -391,7 +391,7 @@ const Projects = function(props) {
           <div className="input-group" style={{ maxWidth: '260px', maxHeight: '38px' }}>
             <div className="input-group-prepend">
               <span
-              className={`input-group-text ${darkMode ? 'bg-light-grey' : ''}`}
+                  className={`input-group-text ${darkMode ? styles.searchLabelDark + ' text-light' : ''}`}
               >
                 Filter by
               </span>
@@ -399,7 +399,7 @@ const Projects = function(props) {
             <select
               value={searchMode}
               onChange={e => setSearchMode(e.target.value)}
-              className={`form-control ${darkMode ? 'bg-white' : ''}`}
+              className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
               aria-label="Filter by"
             >
               <option value="person">User Name</option>
@@ -419,7 +419,7 @@ const Projects = function(props) {
         </div>
         <div>
         <table className="table table-bordered table-responsive-sm">
-          <thead>
+          <thead className={styles.projectsTableHead}>
             <ProjectTableHeader
               onChange={onChangeCategory}
               selectedValue={categorySelectedForSort}
