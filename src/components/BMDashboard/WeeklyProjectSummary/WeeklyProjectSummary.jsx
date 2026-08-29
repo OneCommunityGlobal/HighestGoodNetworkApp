@@ -1,15 +1,9 @@
-// export default WeeklyProjectSummary;
-
+// --- WeeklyProjectSummary.jsx ---
 /* eslint-disable import/no-unresolved */
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
-import { toast } from 'react-toastify';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
-import InjurySeverityChart from '../Injuries/InjurySeverityChart';
-import CostPredictionChart from './CostPredictionChart';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
@@ -18,20 +12,20 @@ import IssuesBreakdownChart from './IssuesBreakdownChart';
 import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
-import CostVarianceTrendGraph from './Financials/CostVarianceTrendGraph';
 import CostBreakDown from './Financials/CostBreakDown/CostBreakDown';
-import FinancialsTrackingSection from './ExpenditureChart/FinancialsTrackingSection';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
+import IssueCharts from '../Issues/openIssueCharts';
 import InteractiveMap from '../InteractiveMap/InteractiveMap';
-import styles from './WeeklyProjectSummary.module.css';
 import LossTrackingLineChart from './Financials/LossTrackingLineCharts/LossTrackingLineChart';
-import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
-import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
-import IssueCharts from '../Issues/openIssueCharts';
+import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
+
+import styles from './WeeklyProjectSummary.module.css';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
+import InjurySeverityChart from '../Injuries/InjurySeverityChart';
+import CostPredictionChart from './CostPredictionChart';
 
 const projectStatusButtons = [
   {
@@ -72,7 +66,7 @@ const projectStatusButtons = [
     change: '+13% week over week',
     bgColor: '#FFF6EE',
     buttonColor: '#FFD8A5',
-    textColor: '#328D1B',
+    textColor: '#FFD8A5',
   },
   {
     title: 'Total Material Cost',
@@ -132,51 +126,91 @@ const projectStatusButtons = [
   },
 ];
 
-export function WeeklyProjectSummaryContent() {
-  const dispatch = useDispatch();
-  const materials = useSelector(state => state.materials?.materialslist || []);
-  const [openSections, setOpenSections] = useState({});
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+function renderFinancialCard(i) {
+  if (i === 2) return <CostPredictionChart projectId={1} />;
+  if (i === 3) return <ActualVsPlannedCost />;
+  return <div>📊 Card</div>;
+}
 
-  const darkMode = useSelector(state => state.theme.darkMode);
-  const projectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter || '');
-  const dateRangeFilter = useSelector(state => state.weeklyProjectSummary?.dateRangeFilter || '');
+function renderMaterialCard(idx, quantityOfMaterialsUsedData) {
+  if (idx === 1) return <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />;
+  if (idx === 2) return <TotalMaterialCostPerProject />;
+  return <p>📊 Card</p>;
+}
 
-  const getColorScheme = percentage => {
-    if (percentage === '-') return 'neutral';
-    if (percentage > 0) return 'positive';
-    if (percentage < 0) return 'negative';
-    return 'neutral';
-  };
-
-  const colorScheme = getColorScheme(monthOverMonth);
-
-  const titleClass = title.replace(/\s+/g, '-').toLowerCase();
-
+function renderProjectStatusGrid() {
   return (
-    <div
-      className={`financial-card ${colorScheme} custom-box-shadow financial-card-background-${titleClass}`}
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
-    >
-      <div className="financial-card-title">{title}</div>
-      <div className={`financial-card-ellipse financial-card-ellipse-${titleClass}`} />
-      <div className="financial-card-value">{value === '-' ? '-' : value.toLocaleString()}</div>
-      <div className={`financial-card-month-over-month ${colorScheme}`}>
-        {monthOverMonth === '-'
-          ? '-'
-          : `${monthOverMonth > 0 ? '+' : ''}${monthOverMonth}% month over month`}
-      </div>
+    <div className={styles.projectStatusGrid}>
+      {projectStatusButtons.map(button => (
+        <div
+          key={uuidv4()}
+          className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
+          style={{ backgroundColor: button.bgColor }}
+        >
+          <div
+            className={styles.weeklyCardTitle}
+            style={{ color: '#000' }} // FIX: always visible
+          >
+            {button.title}
+          </div>
 
-      {showTooltip && Object.keys(additionalInfo).length > 0 && (
-        <div className="financial-card-tooltip">
-          {Object.entries(additionalInfo).map(([key]) => (
-            <div key={key} className="financial-card-tooltip-item">
-              <span className="tooltip-key">{key}:</span>
-              <span className="tooltip-value">{value}</span>
-            </div>
-          ))}
+          <div
+            className={styles.weeklyStatusButton}
+            style={{ backgroundColor: button.buttonColor }}
+          >
+            <span className={styles.weeklyStatusValue}>{button.value}</span>
+          </div>
+
+          <div className="weekly-status-change" style={{ color: button.textColor }}>
+            {button.change}
+          </div>
         </div>
+      ))}
+    </div>
+  );
+}
+
+function renderMaterialConsumptionCards(quantityOfMaterialsUsedData) {
+  return [0, 1, 2].map(idx => (
+    <div key={uuidv4()} className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+      {renderMaterialCard(idx, quantityOfMaterialsUsedData)}
+    </div>
+  ));
+}
+
+function renderLaborTrackingCard(i) {
+  return i === 1 ? <PaidLaborCost /> : <DistributionLaborHours />;
+}
+
+function renderLaborTrackingCards() {
+  return [0, 1].map(i => (
+    <div key={uuidv4()} className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+      {renderLaborTrackingCard(i)}
+    </div>
+  ));
+}
+
+function renderFinancialsTrackingCards() {
+  return [0, 1, 2, 3].map(i => (
+    <div key={uuidv4()} className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+      {renderFinancialCard(i)}
+    </div>
+  ));
+}
+
+function DashboardSection({ title, sectionKey, className, content, isOpen, onToggle }) {
+  return (
+    <div className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]}`}>
+      <button
+        type="button"
+        className={styles.weeklyProjectSummaryDashboardCategoryTitle}
+        onClick={() => onToggle(sectionKey)}
+      >
+        {title} <span>{isOpen ? '∧' : '∨'}</span>
+      </button>
+
+      {isOpen && (
+        <div className={styles.weeklyProjectSummaryDashboardCategoryContent}>{content}</div>
       )}
     </div>
   );
@@ -185,30 +219,21 @@ export function WeeklyProjectSummaryContent() {
 function WeeklyProjectSummary() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);
-  const [openSections, setOpenSections] = useState({});
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
-  const projectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter || '');
-  const dateRangeFilter = useSelector(state => state.weeklyProjectSummary?.dateRangeFilter || '');
-  const containerRef = useRef(null);
+
+  const [openSections, setOpenSections] = useState({});
 
   useEffect(() => {
-    if (materials.length === 0) {
-      dispatch(fetchAllMaterials());
-    }
+    if (materials.length === 0) dispatch(fetchAllMaterials());
   }, [dispatch, materials.length]);
 
   const quantityOfMaterialsUsedData = useMemo(() => {
     if (!materials.length) return [];
-    const uniqueMaterials = Array.from(new Map(materials.map(m => [m._id, m])).values());
-    return uniqueMaterials;
+    return Array.from(new Map(materials.map(m => [m._id, m])).values());
   }, [materials]);
 
-  const toggleSection = category => {
-    setOpenSections(prev => ({
-      ...prev,
-      [category]: !prev[category],
-    }));
+  const toggleSection = key => {
+    setOpenSections(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
   const sections = useMemo(
@@ -223,31 +248,7 @@ function WeeklyProjectSummary() {
         title: 'Project Status',
         key: 'Project Status',
         className: 'full',
-        content: (
-          <div className={`${styles.projectStatusGrid}`}>
-            {projectStatusButtons.map(button => {
-              const uniqueId = uuidv4();
-              return (
-                <div
-                  key={uniqueId}
-                  className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
-                  style={{ backgroundColor: button.bgColor }}
-                >
-                  <div className={`${styles.weeklyCardTitle}`}>{button.title}</div>
-                  <div
-                    className={`${styles.weeklyStatusButton}`}
-                    style={{ backgroundColor: button.buttonColor }}
-                  >
-                    <span className={`${styles.weeklyStatusValue}`}>{button.value}</span>
-                  </div>
-                  <div className="weekly-status-change" style={{ color: button.textColor }}>
-                    {button.change}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        ),
+        content: renderProjectStatusGrid(),
       },
       {
         title: 'Issues Breakdown',
@@ -260,28 +261,20 @@ function WeeklyProjectSummary() {
         ),
       },
       {
+        title: 'Injury Severity by Projects',
+        key: 'Injury Severity by Projects',
+        className: 'full',
+        content: (
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
+            <InjurySeverityChart />
+          </div>
+        ),
+      },
+      {
         title: 'Material Consumption',
         key: 'Material Consumption',
-        className: 'full',
-        content: [1, 2, 3].map((_, index) => {
-          let content;
-          if (index === 1) {
-            content = <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />;
-          } else if (index === 2) {
-            content = <TotalMaterialCostPerProject />;
-          } else {
-            content = <p>📊 Card</p>;
-          }
-          const uniqueId = uuidv4();
-          return (
-            <div
-              key={uniqueId}
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-            >
-              {content}
-            </div>
-          );
-        }),
+        className: 'large',
+        content: renderMaterialConsumptionCards(quantityOfMaterialsUsedData),
       },
       {
         title: 'Issue Tracking',
@@ -294,45 +287,17 @@ function WeeklyProjectSummary() {
         ),
       },
       {
-        title: 'Injury Severity by Category of Worker Injured',
-        key: 'Injury Severity',
-        className: 'full',
-        content: (
-          <div
-            className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}
-            style={{ minHeight: '450px' }}
-          >
-            <InjurySeverityChart />
-          </div>
-        ),
-      },
-      {
         title: 'Tools and Equipment Tracking',
         key: 'Tools and Equipment Tracking',
         className: 'half',
-        content: (
-          <>
-            {/* <div className="weekly-project-summary-card normal-card tools-tracking-layout"> */}
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-              <ToolStatusDonutChart />
-            </div>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-              <ToolsHorizontalBarChart darkMode={darkMode} />
-            </div>
-            <div
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-              style={{ minHeight: '300px', gridColumn: 'span 2' }}
-            >
-              <SupplierPerformanceGraph />
-            </div>
-            <div
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-              style={{ minHeight: '300px', gridColumn: 'span 2' }}
-            >
-              <ToolsStoppageHorizontalBarChart />
-            </div>
-          </>
-        ),
+        content: [
+          <div key="donut" className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+            <ToolStatusDonutChart />
+          </div>,
+          <div key="bar" className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+            <ToolsHorizontalBarChart darkMode={darkMode} />
+          </div>,
+        ],
       },
       {
         title: 'Lessons Learned',
@@ -369,34 +334,12 @@ function WeeklyProjectSummary() {
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: '15px',
-              width: '100%',
+              gap: '10px',
             }}
           >
-            {/* Top Left: Planned vs Actual Cost */}
-            <div
-              className="weekly-project-summary-card financial-small financial-chart"
-              style={{
-                width: '100%',
-                minHeight: '550px',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <ExpenseBarChart darkMode={darkMode} />
-            </div>
-
-            {/* Top Right: Cost Variance Trend */}
-            <div
-              className="weekly-project-summary-card financial-small financial-chart"
-              style={{
-                width: '100%',
-                minHeight: '550px',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <CostVarianceTrendGraph darkMode={darkMode} />
+            <div className="weekly-project-summary-card financial-small">📊 Card</div>
+            <div className="weekly-project-summary-card financial-small financial-chart">
+              <ExpenseBarChart />
             </div>
 
             {/* Bottom: Cost Breakdown Pie Chart (Spans across both columns) */}
@@ -435,45 +378,14 @@ function WeeklyProjectSummary() {
       {
         title: 'Labor and Time Tracking',
         key: 'Labor and Time Tracking',
-        className: 'full',
-        content: (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
-              gap: '15px',
-              width: '100%',
-            }}
-          >
-            <div
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-              style={{ width: '100%', minHeight: '650px' }}
-            >
-              <DistributionLaborHours />
-            </div>
-            <div
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-              style={{
-                width: '100%',
-                minHeight: '650px',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <PaidLaborCost />
-            </div>
-          </div>
-        ),
+        className: 'half',
+        content: renderLaborTrackingCards(),
       },
       {
         title: 'Financials Tracking',
         key: 'Financials Tracking',
         className: 'full',
-        content: (
-          <div style={{ gridColumn: '1 / -1', width: '100%' }}>
-            <FinancialsTrackingSection />
-          </div>
-        ),
+        content: renderFinancialsTrackingCards(),
       },
     ],
     [quantityOfMaterialsUsedData, darkMode],
@@ -652,37 +564,21 @@ function WeeklyProjectSummary() {
   };
 
   return (
-    <div
-      ref={containerRef}
-      className={`weekly-project-summary-container ${styles.weeklyProjectSummaryContainer} ${
-        darkMode ? styles.darkMode : ''
-      } ${darkMode ? 'dark-mode' : ''}`}
-      data-testid="weekly-project-summary-container"
-    >
-      <WeeklyProjectSummaryHeader
-        handleSaveAsPDF={handleSaveAsPDF}
-        isGeneratingPDF={isGeneratingPDF}
-      />
-      <div className={`${styles.weeklyProjectSummaryDashboardContainer}`}>
-        <div className={`${styles.weeklyProjectSummaryDashboardGrid}`}>
+    <div className={`weeklyProjectSummaryContainer ${darkMode ? styles.darkMode : ''}`}>
+      <WeeklyProjectSummaryHeader darkMode={darkMode} />
+
+      <div className={styles.weeklyProjectSummaryDashboardContainer}>
+        <div className={styles.weeklyProjectSummaryDashboardGrid}>
           {sections.map(({ title, key, className, content }) => (
-            <div
+            <DashboardSection
               key={key}
-              className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]}`}
-            >
-              <button
-                type="button"
-                className={styles.weeklyProjectSummaryDashboardCategoryTitle}
-                onClick={() => toggleSection(key)}
-              >
-                {title} <span>{openSections[key] ? '∧' : '∨'}</span>
-              </button>
-              {openSections[key] && (
-                <div className={`${styles.weeklyProjectSummaryDashboardCategoryContent}`}>
-                  {content}
-                </div>
-              )}
-            </div>
+              title={title}
+              sectionKey={key}
+              className={className}
+              content={content}
+              isOpen={!!openSections[key]}
+              onToggle={toggleSection}
+            />
           ))}
         </div>
       </div>
