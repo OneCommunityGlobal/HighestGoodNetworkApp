@@ -74,44 +74,73 @@ beforeEach(() => {
 
 vi.mock('axios');
 
+const mockAxiosSuccess = () => {
+  axios.get.mockResolvedValue({
+    status: 200,
+    data: [],
+  });
+};
+
+const renderProjects = (customStore = store) =>
+  render(
+    <MemoryRouter>
+      <Provider store={customStore}>
+        <Projects />
+      </Provider>
+    </MemoryRouter>,
+  );
+
+const buildTestAuth = frontPermissions => ({
+  user: {
+    permissions: {
+      frontPermissions,
+      backPermissions: [],
+    },
+    role: 'Owner',
+    userid: 'user123',
+  },
+});
+
+const buildTestStore = ({
+  authState = auth,
+  userProfileRole = 'Manager',
+  allProjectsState = { projects: [], status: 'Active', fetching: true, fetched: false },
+} = {}) =>
+  mockStore({
+    auth: authState,
+    theme: theme,
+    projectTarget: { projectId: 'project123', projectName: 'project name 1' },
+    projectInfoModal: false,
+    allProjects: allProjectsState,
+    userProfile: { role: userProfileRole },
+    popupEditor: { currPopup: { popupContent: 'project content 1' } },
+    infoCollections: infoCollections,
+    role: { roles: rolesMock.role.roles },
+  });
+
 describe('Projects component', () => {
   it('renders without crashing', () => {
-    axios.get.mockResolvedValue({
-      status: 200,
-      data: [],
-    });
-    render(<MemoryRouter><Provider store={store}><Projects /></Provider></MemoryRouter>)
-  })
-  it('check if Projects header displays as expected',()=>{
-    axios.get.mockResolvedValue({
-      status: 200,
-      data: [],
-    });
-    render(<MemoryRouter><Provider store={store}><Projects /></Provider></MemoryRouter>)
+    mockAxiosSuccess();
+    renderProjects();
+  });
+  it('check if Projects header displays as expected', () => {
+    mockAxiosSuccess();
+    renderProjects();
     expect(screen.getAllByText('Projects')[0]).toBeInTheDocument();
   });
   it('check if Project Name header displays as expected', async () => {
-    axios.get.mockResolvedValue({
-      status: 200,
-      data: [],
-    });
-    render(<MemoryRouter><Provider store={store}><Projects /></Provider></MemoryRouter>)
+    mockAxiosSuccess();
+    renderProjects();
     expect(screen.getAllByText('Project Name')[0]).toBeInTheDocument();
-  })
-  it('check if Category header displays as expected',()=>{
-    axios.get.mockResolvedValue({
-      status: 200,
-      data: [],
-    });
-    render(<MemoryRouter><Provider store={store}><Projects /></Provider></MemoryRouter>)
+  });
+  it('check if Category header displays as expected', () => {
+    mockAxiosSuccess();
+    renderProjects();
     expect(screen.getByText('Category')).toBeInTheDocument();
   });
   it('check if Active header displays as expected', () => {
-    axios.get.mockResolvedValue({
-      status: 200,
-      data: [],
-    });
-    render(<MemoryRouter><Provider store={store}><Projects /></Provider></MemoryRouter>)
+    mockAxiosSuccess();
+    renderProjects();
     expect(screen.getByText('Active')).toBeInTheDocument();
   });
   it('check if Members, WBS header displays as expected', () => {
@@ -138,128 +167,62 @@ describe('Projects component', () => {
     expect(screen.getByText('WBS')).toBeInTheDocument();
   });
   it('check if loading elements get displayed when fetched is false', () => {
-    axios.get.mockResolvedValue({
-      status: 200,
-      data: [],
-    });
-    render(<MemoryRouter><Provider store={store}><Projects /></Provider></MemoryRouter>)
+    mockAxiosSuccess();
+    renderProjects();
     expect(screen.getByText('Members')).toBeInTheDocument();
     expect(screen.getByText('WBS')).toBeInTheDocument();
-  })
-  it('check if loading elements get displayed when fetched is false',()=>{
-    axios.get.mockResolvedValue({
-      status: 200,
-      data: [],
-    });
-    const testStore = mockStore({
-      auth: auth,
-      theme: theme,
-      projectTarget: { projectId: 'project123', projectName: 'project name 1' },
-      projectInfoModal: false,
-      allProjects:{projects:[], status: 'Active', fetching: true, fetched: false},
-      userProfile:{role:'Manager'},
-      popupEditor:{currPopup:{popupContent:'project content 1'}},
-      infoCollections:infoCollections,
-      role: {roles: rolesMock.role.roles}
-    })
-    render(<MemoryRouter><Provider store={testStore}><Projects /></Provider></MemoryRouter>)
-    expect(screen.getByTestId('loading')).toBeInTheDocument()
-  })
-  it('check if AddProject does not get displayed when postProject permission is not added',()=>{
-    axios.get.mockResolvedValue({
-      status: 200,
-      data: [],
-    });
+  });
+  it('check if loading spinner is displayed while projects are being fetched', () => {
+    mockAxiosSuccess();
+    const testStore = buildTestStore();
+    renderProjects(testStore);
+    expect(screen.getByTestId('loading')).toBeInTheDocument();
+  });
+  it('check if AddProject does not get displayed when postProject permission is not added', () => {
+    mockAxiosSuccess();
+    renderProjects();
+    expect(screen.queryByText('Add New Project')).not.toBeInTheDocument();
+  });
+  it('check if AddProject gets displayed when postProject permission is added', () => {
+    mockAxiosSuccess();
+    const testAuth = buildTestAuth(['postProject', 'deleteProject', 'putProject']);
+    const testStore = buildTestStore({ authState: testAuth, userProfileRole: 'Owner' });
 
-    render(<MemoryRouter><Provider store={store}><Projects /></Provider></MemoryRouter>)
-    expect(screen.queryByText('Add New Project')).not.toBeInTheDocument()
-  })
-  it('check if AddProject gets displayed when postProject permission is added',()=>{
-    axios.get.mockResolvedValue({
-      status: 200,
-      data: [],
-    });
-
-    const testAuth = {
-      user: {
-        permissions: {
-          frontPermissions: ['postProject', 'deleteProject', 'putProject'],
-          backPermissions: [],
-        },
-        role: 'Owner',
-        userid: 'user123',
-      },
-    };
-    const testStore = mockStore({
-      auth: testAuth,
-      theme: theme,
-      projectTarget: { projectId: 'project123', projectName: 'project name 1' },
-      projectInfoModal: false,
-      allProjects:{projects:[], status: 'Active', fetching: true, fetched: false},
-      userProfile:{role:'Owner'},
-      popupEditor:{currPopup:{popupContent:'project content 1'}},
-      infoCollections:infoCollections,
-      role: {roles: rolesMock.role.roles}
-    })
-
-    render(<MemoryRouter><Provider store={testStore}><Projects /></Provider></MemoryRouter>)
+    renderProjects(testStore);
     // expect(screen.queryByText('Add new project')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /add new project/i })).toBeInTheDocument();
   });
   it('check if modal title is not set to error when the fetch status is 200', () => {
-    axios.get.mockResolvedValue({
-      status: 200,
-      data: [],
-    });
-    render(<MemoryRouter><Provider store={store}><Projects /></Provider></MemoryRouter>)
-    expect(screen.queryByText("ERROR")).not.toBeInTheDocument()
-  })
-  it('check if modal title is not set to error when modal is open',()=>{
-    axios.get.mockResolvedValue({
-      status: 200,
-      data: [],
+    mockAxiosSuccess();
+    renderProjects();
+    expect(screen.queryByText('ERROR')).not.toBeInTheDocument();
+  });
+  it('check if modal title is not set to error when modal is open', () => {
+    mockAxiosSuccess();
+    const testAuth = buildTestAuth(['postProject', 'deleteProject', 'putProject', 'deleteProject']);
+    const testStore = buildTestStore({
+      authState: testAuth,
+      userProfileRole: 'Owner',
+      allProjectsState: { projects: projects, status: 'Active', fetching: true, fetched: false },
     });
 
-    const testAuth = {
-      user: {
-        permissions: {
-          frontPermissions: ['postProject', 'deleteProject', 'putProject', 'deleteProject'],
-          backPermissions: [],
-        },
-        role: 'Owner',
-        userid: 'user123',
-      },
-    };
-    const testStore = mockStore({
-      auth: testAuth,
-      theme: theme,
-      projectTarget: { projectId: 'project123', projectName: 'project name 1' },
-      projectInfoModal: false,
-      allProjects:{projects:projects, status: 'Active', fetching: true, fetched: false},
-      userProfile:{role:'Owner'},
-      popupEditor:{currPopup:{popupContent:'project content 1'}},
-      infoCollections:infoCollections,
-      role: {roles: rolesMock.role.roles}
-    })
-
-    const { container } = render(<MemoryRouter><Provider store={testStore}><Projects /></Provider></MemoryRouter>)
-    expect(screen.getByText("ERROR")).toBeInTheDocument()
+    const { container } = renderProjects(testStore);
+    expect(screen.getByText('ERROR')).toBeInTheDocument();
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    const ascendingButton = container.querySelector('[id="Ascending"]')
+    const ascendingButton = container.querySelector('[id="Ascending"]');
     if (ascendingButton) {
-      fireEvent.click(ascendingButton)
+      fireEvent.click(ascendingButton);
     }
 
-    // Code related to "Archive" functionality is refactored into Project component and will be tested in Project.test.js 
-  //   const archiveButton=screen.getAllByText('Archive')[1]
-  //   fireEvent.click(archiveButton)
-    
-  //   expect(screen.getByText('Confirm Archive')).toBeInTheDocument();
-  //   expect(screen.getByText(`Do you want to archive ${projects[0].projectName}?`)).toBeInTheDocument();
+    // Code related to "Archive" functionality is refactored into Project component and will be tested in Project.test.js
+    //   const archiveButton=screen.getAllByText('Archive')[1]
+    //   fireEvent.click(archiveButton)
 
-  //   const closeButton=screen.getByText('Close')
-  //   fireEvent.click(closeButton)
-  //   expect(screen.queryByText('Confirm Archive')).not.toBeInTheDocument();
-  })
-  
-})
+    //   expect(screen.getByText('Confirm Archive')).toBeInTheDocument();
+    //   expect(screen.getByText(`Do you want to archive ${projects[0].projectName}?`)).toBeInTheDocument();
+
+    //   const closeButton=screen.getByText('Close')
+    //   fireEvent.click(closeButton)
+    //   expect(screen.queryByText('Confirm Archive')).not.toBeInTheDocument();
+  });
+});
