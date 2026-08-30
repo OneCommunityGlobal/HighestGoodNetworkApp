@@ -233,8 +233,6 @@ import MaterialUtilizationChart from './components/MaterialUtilization/MaterialU
 import StudentBadgeGallery from './components/StudentBadgeGallery/StudentBadgeGallery';
 
 // Social Architecture
-
-// Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
@@ -1175,7 +1173,6 @@ export default (
         />
         <ProtectedRoute path="/actual-cost-breakdown" component={ActualCostBreakdown} fallback />
         <ProtectedRoute path="/prPromotionsPage" component={PRPromotionsPage} fallback />
-        <ProtectedRoute path="/pr-grading-screen" exact component={PRGradingScreen} />
         <ProtectedRoute path="/pr-grading-test" exact component={PRGradingTest} />
         {/* //temporary route for testing - delete after testing */}
         <ProtectedRoute path="/" exact component={Dashboard} />
@@ -1225,12 +1222,7 @@ export default (
           exact
           component={PRReviewTeamAnalytics}
         />
-        <ProtectedRoute
-          path="/pr-grading-dashboard"
-          exact
-          component={PRGradingDashboard}
-          fallback
-        />
+        <ProtectedRoute path="/pr-grading-screen" exact component={PRGradingScreen} fallback />
         <ProtectedRoute path="/pr-dashboard/overview" exact component={PRDashboardOverview} />
         <ProtectedRoute path="/pr-dashboard/analytics" exact component={PRReviewTeamAnalytics} />
         <ProtectedRoute
