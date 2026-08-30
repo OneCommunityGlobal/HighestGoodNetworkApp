@@ -971,6 +971,24 @@ setUpdatedTasks(prev => {
   }
 
   try {
+    // Ensures a change log with reason and user's modified permissions when their role is changed
+    if(originalUserProfile.role !== userProfileToUpdate.role) {
+      const userId = userProfileToUpdate?._id;
+      const permissionURL = `${ENDPOINTS.PERMISSION_MANAGEMENT_UPDATE()}/user/${userId}`;
+      const frontPermissions = userProfileToUpdate?.permissions.frontPermissions;
+      const removedDefaultPermissions = userProfileToUpdate?.permissions.removedDefaultPermissions;
+      const permissions = {
+          frontPermissions: frontPermissions,
+          removedDefaultPermissions: removedDefaultPermissions,
+      };
+      const requestor = props.auth.user;
+      const permissionData = {
+        reason: `Role Changed from to **${userProfileToUpdate?.role}** **${originalUserProfile?.role}**.`,
+        permissions: permissions,
+        requestor: requestor,
+      };
+      await axios.patch(permissionURL, permissionData);
+    }
     await props.updateUserProfile(userProfileToUpdate);
     clearCachedTeamMembers(); // clear all team caches on any profile save
     if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {

@@ -153,7 +153,10 @@ function UserPermissionsPopUp({
       const matchingPermissions = [
         ...new Set(
           getAllPermissionKeys().filter(
-            key => userPermissions.includes(key) || userRemovedDefaultPermissions.includes(key),
+            key =>
+              (userPermissions.includes(key) && !actualUserRolePermission.includes(key)) ||
+              (userRemovedDefaultPermissions.includes(key) &&
+                actualUserRolePermission.includes(key)),
           ),
         ),
       ];

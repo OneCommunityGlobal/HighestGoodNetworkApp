@@ -189,8 +189,10 @@ function PermissionListItem(props) {
 
   const changedPermission = currentPermission => {
     return (
-      rolePermissions.includes(currentPermission) ||
-      removedDefaultPermissions.includes(currentPermission)
+      (rolePermissions.includes(currentPermission) &&
+        !immutablePermissions.includes(currentPermission)) ||
+      (removedDefaultPermissions.includes(currentPermission) &&
+        immutablePermissions.includes(currentPermission))
     );
   };
 

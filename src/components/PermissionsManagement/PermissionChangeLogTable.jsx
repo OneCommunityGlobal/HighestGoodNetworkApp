@@ -95,7 +95,14 @@ function PermissionChangeLogTable({ changeLogs, darkMode, roleNamesToHighlight =
     }
 
     if (reason?.includes('**')) {
-      return `See default ${reason.split('**')[1]} role permissions`;
+      const reasonParts = reason.split('**');
+      const newRole = reasonParts[1];
+      const oldRole = reasonParts[3];
+      const removedRow = rowId.split('_')[1] === 'removed';
+      if (oldRole && removedRow) {
+        return `See default ${oldRole} role permissions`;
+      }
+      return `See default ${newRole} role permissions`;
     }
 
     return '';

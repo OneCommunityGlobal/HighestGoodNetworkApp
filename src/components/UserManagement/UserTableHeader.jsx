@@ -34,13 +34,14 @@ const UserTableHeaderComponent = ({ authUser, roleSearchText, darkMode, editUser
     const updatedUserData = useSelector(state => state.userProfileEdit.newUserData);
     const saveUserInformation = async updatedData => {
       try {
-        const permissions = {
-          frontPermissions: [],
-          removedDefaultPermissions: [],
-        };
         const requestor = authUser;
         const roleUpdateData = updatedUserData.filter(change => change.item === 'role')
         for(const roleUpdate of roleUpdateData) {
+          const user = await axios.get(ENDPOINTS.USER_PROFILE(roleUpdate.user_id));
+          const permissions = {
+            frontPermissions: user.data?.permissions.frontPermissions,
+            removedDefaultPermissions: user.data.permissions?.removedDefaultPermissions,
+          };
           const permissionURL = `${ENDPOINTS.PERMISSION_MANAGEMENT_UPDATE()}/user/${roleUpdate.user_id}`;
           const role = roles?.find(
             ({ roleName }) => roleName === roleUpdate.value
@@ -48,12 +49,12 @@ const UserTableHeaderComponent = ({ authUser, roleSearchText, darkMode, editUser
           const rolePermissions = role?.permissions ?? [];
           permissions.defaultPermissions = rolePermissions
           const permissionData = {
-            reason: `Role Changed to **${roleUpdate.value}**.`,
+            reason: `Role Changed to **${roleUpdate.value}** from **${user.data.role}**.`,
             permissions: permissions,
             requestor: requestor,
           }
 
-          axios.patch(permissionURL, permissionData).catch(err => console.error(err))
+          await axios.patch(permissionURL, permissionData).catch(err => console.error(err))
         }
         
         const response = await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE, updatedData);

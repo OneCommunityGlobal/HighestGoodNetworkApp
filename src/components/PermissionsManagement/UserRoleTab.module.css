@@ -242,7 +242,7 @@
 
 .permissionTooltipWrapper {
   position: absolute;
-  display: inline-block;
+  display: none;
   left: 94%;
   width: 25%;
 }
@@ -262,6 +262,10 @@
 
 .permissionTooltipText.dark {
   background-color: rgba(53, 53, 53, 0.75) !important;
+}
+
+.permissionTooltipWrapper.showTooltip {
+  display: inline-block;
 }
 
 .permissionTooltipWrapper.showTooltip:hover .permissionTooltipText {
