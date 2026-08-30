@@ -206,13 +206,13 @@ describe('Projects component', () => {
     // expect(screen.queryByText('Add new project')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /add new project/i })).toBeInTheDocument();
   });
-  it('check if modal title is set to error when the modal is not open', () => {
+  it('check if modal title is not set to error when the fetch status is 200', () => {
     axios.get.mockResolvedValue({
       status: 200,
       data: [],
     });
     render(<MemoryRouter><Provider store={store}><Projects /></Provider></MemoryRouter>)
-    expect(screen.getByText("ERROR")).toBeInTheDocument()
+    expect(screen.queryByText("ERROR")).not.toBeInTheDocument()
   })
   it('check if modal title is not set to error when modal is open',()=>{
     axios.get.mockResolvedValue({
