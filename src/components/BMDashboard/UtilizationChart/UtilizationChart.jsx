@@ -239,118 +239,120 @@ function UtilizationChart() {
   );
 
   return (
-    <div className={`${styles.utilizationChartContainer} ${darkMode ? styles.darkMode : ''}`}>
-      <h2 className={styles.chartTitle}>Tool Utilization Analysis</h2>
+    <div className={`${styles.utilizationChartPage} ${darkMode ? styles.darkPage : ''}`}>
+      <div className={`${styles.utilizationChartContainer} ${darkMode ? styles.darkMode : ''}`}>
+        <h2 className={styles.chartTitle}>Tool Utilization Analysis</h2>
 
-      <div className={styles.filters}>
-        <select
-          value={toolFilter}
-          onChange={e => setToolFilter(e.target.value)}
-          className={styles.select}
-          aria-label="Filter by tool type"
-        >
-          <option value="ALL">All Tools</option>
-          {toolTypes.map(toolType => (
-            <option key={toolType._id} value={toolType._id}>
-              {toolType.name}
-            </option>
-          ))}
-        </select>
+        <div className={styles.filters}>
+          <select
+            value={toolFilter}
+            onChange={e => setToolFilter(e.target.value)}
+            className={styles.select}
+            aria-label="Filter by tool type"
+          >
+            <option value="ALL">All Tools</option>
+            {toolTypes.map(toolType => (
+              <option key={toolType._id} value={toolType._id}>
+                {toolType.name}
+              </option>
+            ))}
+          </select>
 
-        <select
-          value={projectFilter}
-          onChange={e => setProjectFilter(e.target.value)}
-          className={styles.select}
-          aria-label="Filter by project"
-        >
-          <option value="ALL">All Projects</option>
-          {projects.map(project => (
-            <option key={project.projectId} value={project.projectId}>
-              {project.projectName}
-            </option>
-          ))}
-        </select>
+          <select
+            value={projectFilter}
+            onChange={e => setProjectFilter(e.target.value)}
+            className={styles.select}
+            aria-label="Filter by project"
+          >
+            <option value="ALL">All Projects</option>
+            {projects.map(project => (
+              <option key={project.projectId} value={project.projectId}>
+                {project.projectName}
+              </option>
+            ))}
+          </select>
 
-        <DatePicker
-          selected={startDate}
-          onChange={date => setStartDate(date)}
-          placeholderText="Start Date"
-          maxDate={endDate || new Date()}
-          className={styles.datepickerWrapper}
-          aria-label="Start date"
+          <DatePicker
+            selected={startDate}
+            onChange={date => setStartDate(date)}
+            placeholderText="Start Date"
+            maxDate={endDate || new Date()}
+            className={styles.datepickerWrapper}
+            aria-label="Start date"
+          />
+
+          <DatePicker
+            selected={endDate}
+            onChange={date => setEndDate(date)}
+            placeholderText="End Date"
+            minDate={startDate || undefined}
+            maxDate={new Date()}
+            className={styles.datepickerWrapper}
+            aria-label="End date"
+          />
+
+          <button type="button" onClick={handleApplyClick} className={styles.button}>
+            Apply
+          </button>
+        </div>
+
+        <ForecastModeToggle value={forecastMode} onChange={handleForecastModeChange} />
+
+        {forecastMode === FORECAST_MODES.FORECAST_FULL && warningMessage && (
+          <div className={styles.warningBanner} role="alert">
+            {warningMessage}
+          </div>
+        )}
+
+        {!insightsLoading && insights.summary && <InsightsSummaryBar summary={insights.summary} />}
+
+        {chartLoading && (
+          <div className={styles.loadingContainer} role="status" aria-live="polite">
+            <div className={styles.spinner} />
+            <span className={styles.srOnly}>Loading utilization data...</span>
+          </div>
+        )}
+
+        {!chartLoading && chartError && (
+          <div className={styles.utilizationChartError} role="alert">
+            {chartError}
+          </div>
+        )}
+
+        {!chartLoading && !chartError && toolsData.length === 0 && (
+          <div className={styles.emptyMessage}>
+            No utilization data available for the selected filters.
+          </div>
+        )}
+
+        {!chartLoading && !chartError && toolsData.length > 0 && (
+          <div
+            role="img"
+            aria-label={`Horizontal bar chart showing utilization rates for ${toolsData.length} tool types`}
+          >
+            <Bar data={chartData} options={options} plugins={[trafficLightPlugin]} />
+          </div>
+        )}
+
+        <div aria-live="polite" className={styles.srOnly}>
+          {chartAnnouncement}
+        </div>
+
+        {!insightsLoading && !insightsError && (
+          <div className={styles.insightsPanelsGrid}>
+            <RecommendationPanel recommendations={insights.recommendations} />
+            <MaintenanceAlertPanel alerts={insights.maintenanceAlerts} />
+            <ResourceBalancingPanel suggestions={insights.resourceBalancing} />
+          </div>
+        )}
+
+        <ExportReportButton
+          tool={toolFilter}
+          project={projectFilter}
+          startDate={startDate}
+          endDate={endDate}
         />
-
-        <DatePicker
-          selected={endDate}
-          onChange={date => setEndDate(date)}
-          placeholderText="End Date"
-          minDate={startDate || undefined}
-          maxDate={new Date()}
-          className={styles.datepickerWrapper}
-          aria-label="End date"
-        />
-
-        <button type="button" onClick={handleApplyClick} className={styles.button}>
-          Apply
-        </button>
       </div>
-
-      <ForecastModeToggle value={forecastMode} onChange={handleForecastModeChange} />
-
-      {forecastMode === FORECAST_MODES.FORECAST_FULL && warningMessage && (
-        <div className={styles.warningBanner} role="alert">
-          {warningMessage}
-        </div>
-      )}
-
-      {!insightsLoading && insights.summary && <InsightsSummaryBar summary={insights.summary} />}
-
-      {chartLoading && (
-        <div className={styles.loadingContainer} role="status" aria-live="polite">
-          <div className={styles.spinner} />
-          <span className={styles.srOnly}>Loading utilization data...</span>
-        </div>
-      )}
-
-      {!chartLoading && chartError && (
-        <div className={styles.utilizationChartError} role="alert">
-          {chartError}
-        </div>
-      )}
-
-      {!chartLoading && !chartError && toolsData.length === 0 && (
-        <div className={styles.emptyMessage}>
-          No utilization data available for the selected filters.
-        </div>
-      )}
-
-      {!chartLoading && !chartError && toolsData.length > 0 && (
-        <div
-          role="img"
-          aria-label={`Horizontal bar chart showing utilization rates for ${toolsData.length} tool types`}
-        >
-          <Bar data={chartData} options={options} plugins={[trafficLightPlugin]} />
-        </div>
-      )}
-
-      <div aria-live="polite" className={styles.srOnly}>
-        {chartAnnouncement}
-      </div>
-
-      {!insightsLoading && !insightsError && (
-        <div className={styles.insightsPanelsGrid}>
-          <RecommendationPanel recommendations={insights.recommendations} />
-          <MaintenanceAlertPanel alerts={insights.maintenanceAlerts} />
-          <ResourceBalancingPanel suggestions={insights.resourceBalancing} />
-        </div>
-      )}
-
-      <ExportReportButton
-        tool={toolFilter}
-        project={projectFilter}
-        startDate={startDate}
-        endDate={endDate}
-      />
     </div>
   );
 }
