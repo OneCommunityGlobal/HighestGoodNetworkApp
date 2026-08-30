@@ -29,7 +29,17 @@ import styles from './usermanagement.module.css';
  */
 const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser, enableEditUserInfo, disableEditUserInfo, isMobile, mobileFontSize }) => {
     const dispatch = useDispatch();
-    const [editFlag, setEditFlag] = useState(editUser);
+    const defaultEditFlags = {
+       first: 1,
+       last: 1,
+       role: 1,
+       jobTitle: 1,
+       email: 1,
+       weeklycommittedHours: 1,
+       startDate: 1,
+       endDate: 1,
+   };
+    const [editFlag, setEditFlag] = useState(editUser ?? defaultEditFlags);
     const updatedUserData = useSelector(state => state.userProfileEdit.newUserData);
     const saveUserInformation = async updatedData => {
       try {
@@ -44,17 +54,22 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
           await dispatch(getAllUserProfile());
           toast.update(toastId, {
             render: 'Data Updated successfully !',
-            // type: toast.TYPE.SUCCESS,
+            type: toast.TYPE.SUCCESS,
+            isLoading: false,
             autoClose: 3000,
           });
+          setTimeout(() => {
+          globalThis.location.reload();
+          }, 1000);
         } else {
           toast.error('Error Updating Data!');
         }
+        
       } catch (error) {
         toast.error('Error Updating Data ! ');
       }
     };
-    const darkModeStyle = darkMode ? { color: 'white', backgroundColor: '#3a506b' } : { backgroundColor: "#f0f8ff",color:"black"};
+    const darkModeStyle = darkMode ? { text: 'white', backgroundColor: '#364456' } : { backgroundColor: "#f0f8ff",color:"black"};
     const enableEdit = value => {
       setEditFlag(value);
       enableEditUserInfo(value);

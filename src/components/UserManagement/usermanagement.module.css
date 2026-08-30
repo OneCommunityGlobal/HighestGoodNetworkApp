@@ -475,8 +475,7 @@
 
 .userManagementTable tbody tr.darkUsermanagementData:hover,
 .darkUsermanagementData:hover {
-  background-color: #111831 !important;
-  color: #fff !important;
+  color: #111831;
 }
 
 

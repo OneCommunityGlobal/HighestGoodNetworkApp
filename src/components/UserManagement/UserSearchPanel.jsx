@@ -86,7 +86,7 @@ function UserSearchPanel({
       <input
         // autoFocus
         type="text"
-        className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
+        className={`form-control ml-2 mt-2 ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
         aria-label="Search"
         placeholder="Search Text"
         id="user-profiles-wild-card-search"
