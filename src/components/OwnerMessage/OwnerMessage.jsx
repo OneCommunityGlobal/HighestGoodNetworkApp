@@ -55,7 +55,7 @@ function OwnerMessage({
 
   function toggle() {
     setModal(!modal);
-    setDisableTextInput(false);
+    setDisableTextInput(isImageMessage(message));
   }
 
   function toggleDeleteWarning() {
@@ -97,6 +97,7 @@ function OwnerMessage({
       toast.success(
         isStandard ? 'Standard message update successfully!' : 'Message update successfully!',
       );
+      await getMessage();
     } else {
       toast.error(`Standard message save failed! Error: ${response}`);
     }
@@ -244,12 +245,24 @@ function OwnerMessage({
           <Input
             type="textarea"
             placeholder="Write your message here... (Max 100 characters)"
-            value={message}
+            value={hasSelectedImage ? '✓ Image selected — click Update/Create to save' : message}
             onChange={event => setMessage(event.target.value)}
             maxLength="100"
             disabled={disableTextInput}
             className={styles.inputs}
           />
+          {hasSelectedImage && (
+            <button
+              type="button"
+              style={{ marginTop: '0.5rem', fontSize: '0.8rem', cursor: 'pointer' }}
+              onClick={() => {
+                setMessage('');
+                setDisableTextInput(false);
+              }}
+            >
+              ✕ Remove image
+            </button>
+          )}
           {!hasSelectedImage && (
             <>
               <p className="paragraph" style={{ marginTop: '1rem' }}>
