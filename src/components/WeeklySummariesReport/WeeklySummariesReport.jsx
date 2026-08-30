@@ -1729,6 +1729,17 @@ const WeeklySummariesReport = props => {
     ? mismatchedInCurrentFilter
     : state.filteredSummaries;
 
+  useEffect(() => {
+    // The toggle icon only renders while there's a mismatch to show. If the
+    // last mismatch gets resolved while the filter is active, the icon
+    // disappears -- reset the filter so the view doesn't get stuck showing
+    // an empty list with no way to turn it back off.
+    if (state.showOnlyMismatched && mismatchedInCurrentFilter.length === 0) {
+      setState(prev => ({ ...prev, showOnlyMismatched: false }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mismatchedInCurrentFilter.length, state.showOnlyMismatched]);
+
   if (error) {
     return (
       <Container className={`container-wsr-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
@@ -1937,43 +1948,38 @@ const WeeklySummariesReport = props => {
                     data-tip
                     data-placement="top"
                     data-for="teamCodeWarningTooltip"
+                    role="button"
+                    tabIndex={0}
+                    aria-pressed={state.showOnlyMismatched}
+                    aria-label="Toggle filter for users with mismatched team codes"
+                    onClick={() =>
+                      setState(prev => ({
+                        ...prev,
+                        showOnlyMismatched: !prev.showOnlyMismatched,
+                      }))
+                    }
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setState(prev => ({
+                          ...prev,
+                          showOnlyMismatched: !prev.showOnlyMismatched,
+                        }));
+                      }
+                    }}
                     style={{
                       fontSize: '20px',
                       cursor: 'pointer',
                       marginRight: '8px',
                       alignSelf: 'center',
+                      borderRadius: '50%',
+                      boxShadow: state.showOnlyMismatched ? '0 0 0 2px #dc3545' : 'none',
                     }}
                   />
                   <ReactTooltip id="teamCodeWarningTooltip" place="top" effect="solid">
-                    {mismatchedInCurrentFilter.length} users have mismatched team codes!
+                    {mismatchedInCurrentFilter.length} users have mismatched team codes! Smash this
+                    &quot;i&quot; button to see who they are 👊
                   </ReactTooltip>
-                  <div
-                    className={styles.filterStyle}
-                    style={{ marginRight: '8px', alignSelf: 'center' }}
-                  >
-                    <span>Show only mismatched</span>
-                    <div className={`${styles.switchToggleControl}`}>
-                      <input
-                        type="checkbox"
-                        className={`${styles.switchToggle}`}
-                        id="show-only-mismatched-toggle"
-                        checked={state.showOnlyMismatched}
-                        onChange={() =>
-                          setState(prev => ({
-                            ...prev,
-                            showOnlyMismatched: !prev.showOnlyMismatched,
-                          }))
-                        }
-                      />
-                      <label
-                        className={`${styles.switchToggleLabel}`}
-                        htmlFor="show-only-mismatched-toggle"
-                      >
-                        <span className={`${styles.switchToggleInner}`} />
-                        <span className={`${styles.switchToggleSwitch}`} />
-                      </label>
-                    </div>
-                  </div>
                 </>
               )}
 
