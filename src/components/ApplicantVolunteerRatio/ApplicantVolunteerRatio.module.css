@@ -40,6 +40,38 @@
   max-width: 420px;
 }
 
+.selectedCount {
+  align-self: center;
+  flex: 0 0 auto;
+  padding: 3px 7px;
+  border-radius: 3px;
+  background-color: #e5e7eb;
+  color: #374151;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.dark .selectedCount {
+  background-color: #3a506b;
+  color: #f9fafb;
+}
+
+.optionContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.optionCheck {
+  flex: 0 0 auto;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
 .label {
   font-weight: 500;
   margin-bottom: 0;

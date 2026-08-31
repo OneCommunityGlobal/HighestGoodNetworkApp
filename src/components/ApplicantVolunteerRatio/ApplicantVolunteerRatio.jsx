@@ -2,10 +2,46 @@ import { useState, useMemo, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, LabelList, ResponsiveContainer } from 'recharts';
 import DatePicker from 'react-datepicker';
-import Select from 'react-select';
+import Select, { components } from 'react-select';
 import { getAllApplicantVolunteerRatios } from '../../services/applicantVolunteerRatioService';
 import styles from './ApplicantVolunteerRatio.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
+
+function LimitedMultiValue(props) {
+  const { index, getValue } = props;
+  const hiddenValueCount = getValue().length - 2;
+
+  if (index < 2) return <components.MultiValue {...props} />;
+
+  if (index === 2) {
+    return (
+      <span className={styles.selectedCount} title={`${hiddenValueCount} more selected`}>
+        + {hiddenValueCount}
+      </span>
+    );
+  }
+
+  return null;
+}
+
+function SelectOption(props) {
+  const { children, isSelected } = props;
+
+  return (
+    <components.Option {...props}>
+      <span className={styles.optionContent}>
+        <span>{children}</span>
+        {isSelected && (
+          <span className={styles.optionCheck} aria-hidden="true">
+            ✓
+          </span>
+        )}
+      </span>
+    </components.Option>
+  );
+}
+
+const roleSelectComponents = { MultiValue: LimitedMultiValue, Option: SelectOption };
 
 function ApplicantVolunteerRatio() {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -227,9 +263,11 @@ function ApplicantVolunteerRatio() {
             id="role-select"
             isMulti
             closeMenuOnSelect={false}
+            hideSelectedOptions={false}
             options={allRoles}
             value={selectedRoles}
             onChange={setSelectedRoles}
+            components={roleSelectComponents}
             placeholder="Select roles..."
             classNamePrefix="applicant-role-select"
             styles={roleSelectStyles}
