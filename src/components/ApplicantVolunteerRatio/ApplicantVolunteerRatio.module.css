@@ -83,6 +83,77 @@
   background-color: #2563eb;
 }
 
+/* Chart hover tooltip */
+.chartTooltip :global(.recharts-default-tooltip) {
+  background-color: #fff !important;
+  border: 1px solid #ccc !important;
+  color: #333 !important;
+}
+
+.chartTooltip :global(.recharts-tooltip-label),
+.chartTooltip :global(.recharts-tooltip-item) {
+  color: #333 !important;
+}
+
+.dark .chartTooltip :global(.recharts-default-tooltip) {
+  background-color: #243b55 !important;
+  border-color: #52677d !important;
+  color: #f9fafb !important;
+}
+
+.dark .chartTooltip :global(.recharts-tooltip-label),
+.dark .chartTooltip :global(.recharts-tooltip-item) {
+  color: #f9fafb !important;
+}
+
+.chartTooltipContent {
+  padding: 10px 12px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  color: #333;
+}
+
+.chartTooltipContent p {
+  margin: 0;
+}
+
+.chartTooltipRole {
+  margin-bottom: 6px !important;
+  color: #333;
+  font-weight: 700;
+}
+
+.chartTooltipContentDark {
+  background-color: #243b55;
+  border-color: #52677d;
+  color: #f9fafb;
+}
+
+.chartTooltipContentDark .chartTooltipRole {
+  color: #dbeafe;
+}
+
+/* The tooltip can be rendered outside the component's dark wrapper. */
+:global(.dark-mode) .chartTooltipContent {
+  background-color: #243b55;
+  border-color: #52677d;
+  color: #f9fafb;
+}
+
+:global(.dark-mode) .chartTooltipContent .chartTooltipRole {
+  color: #dbeafe;
+}
+
+.chartTooltipContent .chartTooltipapplicants {
+  color: #1976d2 !important;
+}
+
+.chartTooltipContent .chartTooltiphired,
+.chartTooltipContent .chartTooltiphiredPercentage {
+  color: #43a047 !important;
+}
+
 .optionContent {
   display: flex;
   align-items: center;

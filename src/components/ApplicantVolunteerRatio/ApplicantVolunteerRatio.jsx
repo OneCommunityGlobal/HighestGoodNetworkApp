@@ -43,6 +43,24 @@ function SelectOption(props) {
 
 const roleSelectComponents = { MultiValue: LimitedMultiValue, Option: SelectOption };
 
+function ChartTooltip({ active, payload, label, darkMode }) {
+  if (!active || !payload?.length) return null;
+
+  return (
+    <div
+      className={`${styles.chartTooltipContent} ${darkMode ? styles.chartTooltipContentDark : ''}`}
+    >
+      <p className={styles.chartTooltipRole}>{label}</p>
+      {payload.map(entry => (
+        <p key={entry.dataKey} className={styles[`chartTooltip${entry.dataKey}`]}>
+          {entry.name}: {entry.value}
+          {entry.dataKey === 'hiredPercentage' ? '%' : ''}
+        </p>
+      ))}
+    </div>
+  );
+}
+
 function ApplicantVolunteerRatio() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -328,20 +346,35 @@ function ApplicantVolunteerRatio() {
                 label={{ value: 'Role', angle: -90, position: 'insideLeft' }}
               />
 
-              <Tooltip />
+              <Tooltip
+                content={<ChartTooltip darkMode={darkMode} />}
+                cursor={{ fill: darkMode ? '#52677d' : '#f0f0f0', opacity: 0.35 }}
+              />
 
               {viewMode === 'count' ? (
                 <>
-                  <Bar dataKey="applicants" fill="#1976d2">
+                  <Bar
+                    dataKey="applicants"
+                    fill="#1976d2"
+                    activeBar={{ fill: darkMode ? '#60a5fa' : '#1565c0' }}
+                  >
                     <LabelList dataKey="applicants" position="right" />
                   </Bar>
 
-                  <Bar dataKey="hired" fill="#43a047">
+                  <Bar
+                    dataKey="hired"
+                    fill="#43a047"
+                    activeBar={{ fill: darkMode ? '#86efac' : '#2e7d32' }}
+                  >
                     <LabelList dataKey="hired" position="right" />
                   </Bar>
                 </>
               ) : (
-                <Bar dataKey="hiredPercentage" fill="#43a047">
+                <Bar
+                  dataKey="hiredPercentage"
+                  fill="#43a047"
+                  activeBar={{ fill: darkMode ? '#86efac' : '#2e7d32' }}
+                >
                   <LabelList
                     dataKey="hiredPercentage"
                     position="right"
