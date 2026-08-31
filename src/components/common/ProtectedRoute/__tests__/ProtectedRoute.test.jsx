@@ -170,17 +170,18 @@ describe('ProtectedRoute Component', () => {
       permissionDeniedMessage: 'You do not have access to the Resource Dashboard.',
     };
 
-    test.each(pmAllowedRoles)('%s can access without the dedicated PM permission', role => {
-      store = mockStore({
+    const createAuthenticatedStore = (role, frontPermissions = []) =>
+      mockStore({
         auth: {
           isAuthenticated: true,
-          user: { role, permissions: { frontPermissions: [] } },
+          user: { role, permissions: { frontPermissions } },
         },
         role: { roles: [] },
       });
 
+    const renderPMResourceDashboardRoute = testStore =>
       render(
-        <Provider store={store}>
+        <Provider store={testStore}>
           <MemoryRouter initialEntries={['/pm/dashboard/resources']}>
             <ProtectedRoute
               path="/pm/dashboard/resources"
@@ -192,55 +193,40 @@ describe('ProtectedRoute Component', () => {
           </MemoryRouter>
         </Provider>,
       );
+
+    const pmResourceDashboardRoute = (
+      <ProtectedRoute
+        path="/pm/dashboard/resources"
+        component={TargetComponent}
+        allowedRoles={pmAllowedRoles}
+        routePermissions={pmRoutePermissions}
+        permissionDeniedRedirectState={pmDeniedState}
+      />
+    );
+
+    test.each(pmAllowedRoles)('%s can access without the dedicated PM permission', role => {
+      store = createAuthenticatedStore(role);
+
+      renderPMResourceDashboardRoute(store);
 
       expect(screen.getByText(/Target Page/i)).toBeInTheDocument();
     });
 
     test('non-PM authenticated user with accessPMResourceDashboard can access', () => {
-      store = mockStore({
-        auth: {
-          isAuthenticated: true,
-          user: { role: 'Volunteer', permissions: { frontPermissions: pmRoutePermissions } },
-        },
-        role: { roles: [] },
-      });
+      store = createAuthenticatedStore('Volunteer', pmRoutePermissions);
 
-      render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/pm/dashboard/resources']}>
-            <ProtectedRoute
-              path="/pm/dashboard/resources"
-              component={TargetComponent}
-              allowedRoles={pmAllowedRoles}
-              routePermissions={pmRoutePermissions}
-              permissionDeniedRedirectState={pmDeniedState}
-            />
-          </MemoryRouter>
-        </Provider>,
-      );
+      renderPMResourceDashboardRoute(store);
 
       expect(screen.getByText(/Target Page/i)).toBeInTheDocument();
     });
 
     test('non-PM authenticated user without accessPMResourceDashboard redirects with PM denial state', () => {
-      store = mockStore({
-        auth: {
-          isAuthenticated: true,
-          user: { role: 'Volunteer', permissions: { frontPermissions: [] } },
-        },
-        role: { roles: [] },
-      });
+      store = createAuthenticatedStore('Volunteer');
 
-      const { history } = renderWithRouter(
-        <ProtectedRoute
-          path="/pm/dashboard/resources"
-          component={TargetComponent}
-          allowedRoles={pmAllowedRoles}
-          routePermissions={pmRoutePermissions}
-          permissionDeniedRedirectState={pmDeniedState}
-        />,
-        { route: '/pm/dashboard/resources', store },
-      );
+      const { history } = renderWithRouter(pmResourceDashboardRoute, {
+        route: '/pm/dashboard/resources',
+        store,
+      });
 
       expect(history.location.pathname).toBe('/dashboard');
       expect(history.location.state.permissionDeniedMessage).toBe(
@@ -249,13 +235,7 @@ describe('ProtectedRoute Component', () => {
     });
 
     test('other protected route denials do not receive the PM denial state by default', () => {
-      store = mockStore({
-        auth: {
-          isAuthenticated: true,
-          user: { role: 'Volunteer', permissions: { frontPermissions: [] } },
-        },
-        role: { roles: [] },
-      });
+      store = createAuthenticatedStore('Volunteer');
 
       const { history } = renderWithRouter(
         <ProtectedRoute

@@ -77,7 +77,8 @@ export function Dashboard(props) {
 
     toast.error(`Permission Denied: ${permissionDeniedMessage}`);
 
-    const { permissionDeniedMessage: _permissionDeniedMessage, ...remainingState } = location.state;
+    const remainingState = { ...location.state };
+    delete remainingState.permissionDeniedMessage;
     history?.replace({
       ...location,
       state: Object.keys(remainingState).length ? remainingState : undefined,
