@@ -112,15 +112,6 @@ function ApplicantVolunteerRatio() {
 
   const legendTextColor = darkMode ? '#e0e0e0' : '#333';
 
-  if (loading) {
-    return (
-      <div className={`${styles.page} ${darkMode ? styles.dark : ''}`}>
-        <h2 className={styles.heading}>Number of People Hired vs. Total Applications</h2>
-        <div className={styles.statusMessage}>Loading...</div>
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className={`${styles.page} ${darkMode ? styles.dark : ''}`}>
@@ -178,6 +169,7 @@ function ApplicantVolunteerRatio() {
           <Select
             id="role-select"
             isMulti
+            closeMenuOnSelect={false}
             options={allRoles}
             value={selectedRoles}
             onChange={setSelectedRoles}
@@ -221,7 +213,12 @@ function ApplicantVolunteerRatio() {
         </button>
       </div>
 
-      {chartData.length > 0 ? (
+      {loading ? (
+        <div className={styles.loadingContainer} role="status" aria-label="Loading chart data">
+          <div className={styles.loadingSpinner} aria-hidden="true" />
+          <span>Loading chart data...</span>
+        </div>
+      ) : chartData.length > 0 ? (
         <div className={styles.chartContainer}>
           <ResponsiveContainer width="100%" height={350}>
             <BarChart
