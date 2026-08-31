@@ -213,16 +213,24 @@
   color: #1976d2;
   text-decoration: none;
   cursor: pointer;
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, background-color 0.3s ease;
   background: none;
   border: none;
-  padding: 0;
+  border-radius: 3px;
+  padding: 0 2px;
   font: inherit;
 }
 
 .footerLink:hover {
   color: #1565c0;
   text-decoration: underline;
+}
+
+.footerLink:focus-visible {
+  color: #0d47a1;
+  text-decoration: underline;
+  outline: 2px solid #1976d2;
+  outline-offset: 2px;
 }
 
 @media (width <= 768px) {
@@ -346,11 +354,20 @@
 }
 
 :global(body.dark-mode) .footerLink {
-  color: #64b5f6;
+  color: #90caf9 !important;
+  font-weight: 600;
+  text-decoration: underline;
 }
 
-:global(body.dark-mode) .footerLink:hover {
-  color: #90caf9;
+:global(body.dark-mode) .footerLink:hover,
+:global(body.dark-mode) .footerLink:focus-visible {
+  color: #fff !important;
+  background-color: #1565c0;
+  text-decoration: underline;
+}
+
+:global(body.dark-mode) .footerLink:focus-visible {
+  outline-color: #90caf9;
 }
 
 :global(body.dark-mode) .loading,

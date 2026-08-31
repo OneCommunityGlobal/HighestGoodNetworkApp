@@ -4,6 +4,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { toast } from 'react-toastify';
 import { getAllFAQs } from '~/components/Faq/api';
 import ActivityFAQs from '../ActivityFAQs';
+import styles from '../ActivityFAQs.module.css';
 
 vi.mock('~/components/Faq/api', () => ({
   getAllFAQs: vi.fn(),
@@ -54,7 +55,11 @@ describe('ActivityFAQs', () => {
   it('copies the code-provided contact email and shows a success toast', async () => {
     renderActivityFAQs();
 
-    fireEvent.click(await screen.findByRole('button', { name: 'contact' }));
+    const contactButton = await screen.findByRole('button', { name: 'contact' });
+    expect(contactButton.tagName).toBe('BUTTON');
+    expect(contactButton).toHaveClass(styles.footerLink);
+
+    fireEvent.click(contactButton);
 
     expect(mockWriteText).toHaveBeenCalledWith('onecommunityglobal@gmail.com');
     await waitFor(() => expect(toast.success).toHaveBeenCalledWith('Email copied!'));
