@@ -282,14 +282,9 @@ function ApplicantVolunteerRatio() {
         <button
           type="button"
           onClick={() => setViewMode('count')}
-          style={{
-            padding: '6px 12px',
-            cursor: 'pointer',
-            backgroundColor: viewMode === 'count' ? '#1976d2' : '#e0e0e0',
-            color: viewMode === 'count' ? '#fff' : '#000',
-            border: 'none',
-            borderRadius: '4px',
-          }}
+          className={`${styles.toggleButton} ${
+            viewMode === 'count' ? styles.toggleButtonActive : ''
+          }`}
         >
           Count View
         </button>
@@ -297,14 +292,9 @@ function ApplicantVolunteerRatio() {
         <button
           type="button"
           onClick={() => setViewMode('percentage')}
-          style={{
-            padding: '6px 12px',
-            cursor: 'pointer',
-            backgroundColor: viewMode === 'percentage' ? '#1976d2' : '#e0e0e0',
-            color: viewMode === 'percentage' ? '#fff' : '#000',
-            border: 'none',
-            borderRadius: '4px',
-          }}
+          className={`${styles.toggleButton} ${
+            viewMode === 'percentage' ? styles.toggleButtonActive : ''
+          }`}
         >
           Percentage View
         </button>
