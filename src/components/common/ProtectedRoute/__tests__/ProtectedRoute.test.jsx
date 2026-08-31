@@ -166,7 +166,9 @@ describe('ProtectedRoute Component', () => {
   describe('PM Resource Dashboard permission denial UX', () => {
     const pmAllowedRoles = ['Administrator', 'Owner', 'Manager'];
     const pmRoutePermissions = ['accessPMResourceDashboard'];
-    const pmDeniedState = { permissionDeniedToast: 'pmResourceDashboard' };
+    const pmDeniedState = {
+      permissionDeniedMessage: 'You do not have access to the Resource Dashboard.',
+    };
 
     test.each(pmAllowedRoles)('%s can access without the dedicated PM permission', role => {
       store = mockStore({
@@ -241,7 +243,9 @@ describe('ProtectedRoute Component', () => {
       );
 
       expect(history.location.pathname).toBe('/dashboard');
-      expect(history.location.state.permissionDeniedToast).toBe('pmResourceDashboard');
+      expect(history.location.state.permissionDeniedMessage).toBe(
+        'You do not have access to the Resource Dashboard.',
+      );
     });
 
     test('other protected route denials do not receive the PM denial state by default', () => {
@@ -263,7 +267,7 @@ describe('ProtectedRoute Component', () => {
       );
 
       expect(history.location.pathname).toBe('/dashboard');
-      expect(history.location.state.permissionDeniedToast).toBeUndefined();
+      expect(history.location.state.permissionDeniedMessage).toBeUndefined();
     });
   });
 });

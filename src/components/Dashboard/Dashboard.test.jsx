@@ -67,7 +67,7 @@ describe('Dashboard', () => {
       pathname: '/dashboard',
       state: {
         from: { pathname: '/pm/dashboard/resources' },
-        permissionDeniedToast: 'pmResourceDashboard',
+        permissionDeniedMessage: 'You do not have access to the Resource Dashboard.',
       },
     };
     const history = { replace: vi.fn() };

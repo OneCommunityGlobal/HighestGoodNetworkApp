@@ -1039,7 +1039,7 @@ export default (
           allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
           routePermissions={RoutePermissions.accessPMResourceDashboard}
           permissionDeniedRedirectState={{
-            permissionDeniedToast: 'pmResourceDashboard',
+            permissionDeniedMessage: 'You do not have access to the Resource Dashboard.',
           }}
         />
         <EPProtectedRoute path="/educationportal/dashboard" exact component={StudentDashboard} />

@@ -69,13 +69,15 @@ export function Dashboard(props) {
   }, [summaryBarData]);
 
   useEffect(() => {
-    if (location?.state?.permissionDeniedToast !== 'pmResourceDashboard') {
+    const permissionDeniedMessage = location?.state?.permissionDeniedMessage;
+
+    if (!permissionDeniedMessage) {
       return;
     }
 
-    toast.error('Permission Denied: You do not have access to the Resource Dashboard.');
+    toast.error(`Permission Denied: ${permissionDeniedMessage}`);
 
-    const { permissionDeniedToast, ...remainingState } = location.state;
+    const { permissionDeniedMessage: _permissionDeniedMessage, ...remainingState } = location.state;
     history?.replace({
       ...location,
       state: Object.keys(remainingState).length ? remainingState : undefined,
