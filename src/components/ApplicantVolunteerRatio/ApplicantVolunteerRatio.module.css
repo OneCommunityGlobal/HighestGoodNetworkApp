@@ -35,7 +35,9 @@
 .filterGroupInline {
   display: flex;
   flex-direction: column;
+  width: 100%;
   min-width: 220px;
+  max-width: 420px;
 }
 
 .label {
