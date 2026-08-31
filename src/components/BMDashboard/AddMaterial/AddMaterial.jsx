@@ -166,6 +166,19 @@ export default function AddMaterialForm() {
     }
   };
 
+  // Keep price fields from entering browser-supported exponent/sign syntax that this form rejects.
+  const preventInvalidDecimalKey = event => {
+    if (['e', 'E', '+', '-'].includes(event.key)) {
+      event.preventDefault();
+    }
+  };
+
+  const preventInvalidDecimalPaste = event => {
+    if (/[eE+-]/.test(event.clipboardData.getData('text'))) {
+      event.preventDefault();
+    }
+  };
+
   const { unitPrice, quantity, taxes, shippingFee } = formData;
 
   const calculateTotalPrice = (price, totalQuantity) => price * totalQuantity;
@@ -454,6 +467,8 @@ export default function AddMaterialForm() {
                 name="unit-price"
                 value={formData.unitPrice}
                 onChange={event => handleInputChange('unitPrice', event.target.value)}
+                onKeyDown={preventInvalidDecimalKey}
+                onPaste={preventInvalidDecimalPaste}
               />
               {errors.unitPrice && (
                 <Label for="materialUnitPriceErr" sm={12} className={`${styles.materialFormError}`}>
@@ -486,6 +501,8 @@ export default function AddMaterialForm() {
                 name="quantity"
                 value={formData.quantity}
                 onChange={event => handleInputChange('quantity', event.target.value)}
+                onKeyDown={preventInvalidDecimalKey}
+                onPaste={preventInvalidDecimalPaste}
               />
               {errors.quantity && (
                 <Label for="materialQuantityErr" sm={12} className={`${styles.materialFormError}`}>
@@ -526,6 +543,8 @@ export default function AddMaterialForm() {
                 placeholder="0.00"
                 value={formData.shippingFee}
                 onChange={event => handleInputChange('shippingFee', event.target.value)}
+                onKeyDown={preventInvalidDecimalKey}
+                onPaste={preventInvalidDecimalPaste}
               />
             </FormGroup>
             <FormGroup>
@@ -537,6 +556,8 @@ export default function AddMaterialForm() {
                 placeholder="%"
                 value={formData.taxes}
                 onChange={event => handleInputChange('taxes', event.target.value)}
+                onKeyDown={preventInvalidDecimalKey}
+                onPaste={preventInvalidDecimalPaste}
               />
             </FormGroup>
           </div>

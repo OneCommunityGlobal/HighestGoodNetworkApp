@@ -284,7 +284,7 @@ font-size: .8em;
 
 :global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.country-list) :global(.country):hover,
 :global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.country-list) :global(.country.highlight) {
-  background-color: #3a506b !important;
+  background-color: #1a73c0 !important;
 }
 
 :global(.bm-dashboard-dark) .addMaterialForm :global(.react-tel-input) :global(.country-list) :global(.country-name),
