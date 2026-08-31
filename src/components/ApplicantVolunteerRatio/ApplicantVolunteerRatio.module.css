@@ -300,6 +300,10 @@
   display: none;
 }
 
+:global(.dark-mode) .page :global(.react-datepicker__navigation-icon::before) {
+  border-color: #fff !important;
+}
+
 /* Validation Error */
 .validationError {
   color: #fc0;
