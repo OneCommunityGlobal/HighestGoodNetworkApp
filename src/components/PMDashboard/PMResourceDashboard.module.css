@@ -290,11 +290,12 @@
 }
 
 /* Table Cells */
+
+/* IDs are plain table text, so avoid link-like color/hover affordances. */
 .requestId,
 .certId {
-  font-weight: 600;
-  color: #007bff;
   font-family: 'Courier New', monospace;
+  font-weight: 600;
 }
 
 .description {
