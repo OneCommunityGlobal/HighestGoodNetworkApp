@@ -111,6 +111,63 @@ function ApplicantVolunteerRatio() {
   }, [darkMode]);
 
   const legendTextColor = darkMode ? '#e0e0e0' : '#333';
+  const roleSelectStyles = useMemo(
+    () => ({
+      control: (base, state) => ({
+        ...base,
+        backgroundColor: darkMode ? '#243b55' : base.backgroundColor,
+        borderColor: state.isFocused ? '#60a5fa' : darkMode ? '#52677d' : base.borderColor,
+        boxShadow: state.isFocused ? '0 0 0 1px #60a5fa' : base.boxShadow,
+        ':hover': {
+          borderColor: darkMode ? '#60a5fa' : '#2684ff',
+        },
+      }),
+      menu: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#243b55' : base.backgroundColor,
+        border: darkMode ? '1px solid #52677d' : base.border,
+      }),
+      menuPortal: base => ({ ...base, zIndex: 10000 }),
+      option: (base, state) => ({
+        ...base,
+        backgroundColor: state.isSelected
+          ? darkMode
+            ? '#2563eb'
+            : base.backgroundColor
+          : state.isFocused && darkMode
+          ? '#3a506b'
+          : base.backgroundColor,
+        color: darkMode ? '#f9fafb' : base.color,
+        ':active': {
+          backgroundColor: darkMode ? '#1d4ed8' : base[':active']?.backgroundColor,
+        },
+      }),
+      multiValue: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#3a506b' : base.backgroundColor,
+      }),
+      multiValueLabel: base => ({
+        ...base,
+        color: darkMode ? '#f9fafb' : base.color,
+      }),
+      multiValueRemove: base => ({
+        ...base,
+        color: darkMode ? '#dbeafe' : base.color,
+        ':hover': {
+          backgroundColor: darkMode ? '#dc2626' : '#ffbdad',
+          color: '#fff',
+        },
+      }),
+      input: base => ({ ...base, color: darkMode ? '#f9fafb' : base.color }),
+      placeholder: base => ({ ...base, color: darkMode ? '#9ca3af' : base.color }),
+      dropdownIndicator: base => ({ ...base, color: darkMode ? '#cbd5e1' : base.color }),
+      indicatorSeparator: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#52677d' : base.backgroundColor,
+      }),
+    }),
+    [darkMode],
+  );
 
   if (error) {
     return (
@@ -174,8 +231,10 @@ function ApplicantVolunteerRatio() {
             value={selectedRoles}
             onChange={setSelectedRoles}
             placeholder="Select roles..."
-            classNamePrefix="custom-select"
+            classNamePrefix="applicant-role-select"
+            styles={roleSelectStyles}
             menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
+            menuPosition="fixed"
           />
         </div>
       </div>
