@@ -2,19 +2,22 @@
 @import url('./jobFormTheme.module.css');
 
 .oneCommunityGlobalImg {
+  display: block;
+  width: 100%;
   height: auto;
   max-width: 1000px;
 }
 
 .formBuilderContainer {
   background-color: var(--jfb-white);
-  max-width: 80%;
-  margin: 1% 10% 0;
+  width: min(1000px, calc(100% - 32px));
+  margin: 1% auto 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   border-radius: 10px;
   padding: 5px;
+  box-sizing: border-box;
   border: 1px solid #e8e8e8;
   box-shadow: 0 1px 4px rgb(0 0 0 / 6%);
 }
@@ -33,21 +36,27 @@
 }
 
 .customForm {
+  width: 100%;
   background-color: var(--jfb-white);
   padding: 10px;
   margin-top: 0;
   border-radius: 5px;
   border: 1px solid #ebebeb;
+  box-sizing: border-box;
 }
 
 .jobformNavbar {
   display: flex;
+  width: 100%;
   padding: 0 10px;
+  gap: 16px;
   justify-content: space-between;
+  align-items: center;
   background-color: var(--jfb-lime);
   border-radius: 5px;
   border: 1px solid var(--jfb-lime);
   margin-bottom: 12px;
+  box-sizing: border-box;
 }
 
 .jobformNavbar input {
@@ -61,12 +70,23 @@
 
 .jobformNavbar div {
   display: flex;
+  flex: 1 1 0;
+  min-width: 0;
   padding: 2px;
+}
+
+.jobformNavbar div:first-child {
+  align-items: center;
+}
+
+.jobformNavbar input {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .jobformNavbar button {
   padding: 11px 13px;
-  margin: 8px 10px;
+  margin: 8px 0 8px 10px;
   border: none;
   background-color: var(--jfb-white);
   color: var(--jfb-text);
@@ -112,6 +132,7 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   background-color: white;
+  box-sizing: border-box;
 }
 
 .jobformTextarea {
@@ -231,9 +252,70 @@
   padding: 0;
 }
 
-@media (width <= 768px) {
+@media (width <= 992px) {
+  .formBuilderContainer {
+    width: calc(100% - 24px);
+    margin-top: 12px;
+  }
+
+  .jobformNavbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 6px 10px;
+  }
+
+  .jobformNavbar div {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .jobformNavbar select {
+    max-width: 100%;
+  }
+
+  .standardApplicantGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .formDiv {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (width <= 576px) {
+  .formBuilderContainer {
+    width: 100%;
+    margin-top: 0;
+    padding: 4px;
+    border-radius: 0;
+  }
+
+  .customForm,
+  .newFieldSection,
+  .standardApplicantSection {
+    padding: 12px;
+  }
+
+  .jobformNavbar {
+    padding: 6px 8px;
+  }
+
+  .jobformTitle {
+    font-size: 1.5rem;
+  }
+
+  .jobformDesc {
+    line-height: 1.6;
+  }
+
+  .standardApplicantGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .formDiv {
+    gap: 12px;
+    padding: 10px;
   }
 }
 
