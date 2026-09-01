@@ -31,93 +31,93 @@ function UserSearchPanel({
   const [tooltipCreateNewUserOpen, setTooltipCreateNewUserOpen] = useState(false);
   const toggleCreateNewUserTooltip = () => setTooltipCreateNewUserOpen(!tooltipCreateNewUserOpen);
   return (
-    <div className={`input-group mt-3 ${styles.new_user_management}`}>
-      <button
-        type="button"
-        disabled={!canCreateUsers}
-        className="btn btn-info mr-2"
-        onClick={handleNewUserSetupPopup}
-        style={darkMode ? boxStyleDark : boxStyle}
-      >
-        {SEND_SETUP_LINK}
-      </button>
-      <OverlayTrigger placement="bottom" overlay={setupHistoryTooltip}>
+    <div className={`mt-3 ${styles.new_user_management}`}>
+      <div className={styles.userManagementActions}>
         <button
           type="button"
-          className="btn btn-info mr-2"
-          onClick={handleSetupHistoryPopup}
+          disabled={!canCreateUsers}
+          className="btn btn-info"
+          onClick={handleNewUserSetupPopup}
           style={darkMode ? boxStyleDark : boxStyle}
-          aria-label="Setup History"
         >
-          <FontAwesomeIcon className="bell_icon" icon={faBell} />
+          {SEND_SETUP_LINK}
         </button>
-      </OverlayTrigger>
+        <OverlayTrigger placement="bottom" overlay={setupHistoryTooltip}>
+          <button
+            type="button"
+            className="btn btn-info"
+            onClick={handleSetupHistoryPopup}
+            style={darkMode ? boxStyleDark : boxStyle}
+            aria-label="Setup History"
+          >
+            <FontAwesomeIcon className="bell_icon" icon={faBell} />
+          </button>
+        </OverlayTrigger>
 
-      {!canCreateUsers ? (
-        <ReactstrapTooltip
-          placement="bottom"
-          isOpen={tooltipCreateNewUserOpen}
-          target="btn-create-new-user"
-          toggle={toggleCreateNewUserTooltip}
-        >
-          You don&apos;t have permission to create a new user
-        </ReactstrapTooltip>
-      ) : (
-        ''
-      )}
+        {!canCreateUsers ? (
+          <ReactstrapTooltip
+            placement="bottom"
+            isOpen={tooltipCreateNewUserOpen}
+            target="btn-create-new-user"
+            toggle={toggleCreateNewUserTooltip}
+          >
+            You don&apos;t have permission to create a new user
+          </ReactstrapTooltip>
+        ) : (
+          ''
+        )}
 
-      <button
-        type="button"
-        disabled={!canCreateUsers}
-        className="btn btn-info mr-2"
-        onClick={() => {
-          onNewUserClick();
-        }}
-        style={darkMode ? boxStyleDark : boxStyle}
-        id="btn-create-new-user"
-      >
-        {CREATE_NEW_USER}
-      </button>
-      <div className="input-group-prepend">
-        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
-          {SEARCH}
-        </span>
-      </div>
-      <input
-        // autoFocus
-        type="text"
-        className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
-        aria-label="Search"
-        placeholder="Search Text"
-        id="user-profiles-wild-card-search"
-        value={searchText}
-        onChange={e => {
-          onSearch(e.target.value);
-        }}
-        style={{ marginRight: '5px' }}
-      />
-      <div className="input-group-prepend">
-        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
-          {SHOW}
-        </span>
-        <select
-          id="active-filter-dropdown"
-          style={{ marginBottom: '0px' }}
-          onChange={e => {
-            onActiveFilter(e.target.value);
+        <button
+          type="button"
+          disabled={!canCreateUsers}
+          className="btn btn-info"
+          onClick={() => {
+            onNewUserClick();
           }}
-          value={selectText}
-          className={darkMode ? 'bg-darkmode-liblack text-light' : ''}
+          style={darkMode ? boxStyleDark : boxStyle}
+          id="btn-create-new-user"
         >
-          <option value="all">All</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-          <option value="paused">Paused</option>
-          <option value="production-sync">Prod Auto-Deactivated</option>
-        </select>
+          {CREATE_NEW_USER}
+        </button>
       </div>
-
-      <div className="input-group-append" />
+      <div className={`input-group ${styles.userManagementFilters}`}>
+        <div className="input-group-prepend">
+          <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+            {SEARCH}
+          </span>
+        </div>
+        <input
+          type="text"
+          className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
+          aria-label="Search"
+          placeholder="Search Text"
+          id="user-profiles-wild-card-search"
+          value={searchText}
+          onChange={e => {
+            onSearch(e.target.value);
+          }}
+        />
+        <div className="input-group-prepend">
+          <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+            {SHOW}
+          </span>
+          <select
+            id="active-filter-dropdown"
+            style={{ marginBottom: '0px' }}
+            onChange={e => {
+              onActiveFilter(e.target.value);
+            }}
+            value={selectText}
+            className={darkMode ? 'bg-darkmode-liblack text-light' : ''}
+          >
+            <option value="all">All</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="paused">Paused</option>
+            <option value="production-sync">Prod Auto-Deactivated</option>
+          </select>
+        </div>
+      </div>
     </div>
   );
 }

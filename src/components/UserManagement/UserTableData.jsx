@@ -144,8 +144,8 @@ const UserTableDataComponent = props => {
 
   return (
     <tr
-      className={`${styles.usermanagementTr} ${
-        darkMode ? styles.darkUsermanagementData : styles.lightUsermanagementData
+      className={`${styles.usermanagementTr} ${darkMode ? styles.darkUsermanagementData : styles.lightUsermanagementData} ${
+        isMobile ? styles.mobileUserManagementRow : ''
       }`}
       id={`tr_user_${props.index}`}
       style={{ fontSize: isMobile ? mobileFontSize : 'initial' }}

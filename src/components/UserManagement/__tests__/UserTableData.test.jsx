@@ -126,7 +126,7 @@ const setupAxios = mode => {
   });
 };
 
-const renderUserRow = ({ store, user, handlers }) => {
+const renderUserRow = ({ store, user, handlers, mobileProps = {} }) => {
   renderWithProvider(
     <MemoryRouter initialEntries={['/usermanagement']}>
       <table>
@@ -138,6 +138,7 @@ const renderUserRow = ({ store, user, handlers }) => {
             onActiveInactiveClick={handlers.onActiveInactiveClick}
             onPauseResumeClick={handlers.onPauseResumeClick}
             onDeleteClick={handlers.onDeleteClick}
+            {...mobileProps}
           />
         </tbody>
       </table>
@@ -189,6 +190,28 @@ describe.each([
     it('should render one row of data', () => {
       renderUserRow({ store, user, handlers });
       expect(screen.getByRole('row')).toBeInTheDocument();
+    });
+
+    it('uses the 10px mobile font size for data rows', () => {
+      renderUserRow({
+        store,
+        user,
+        handlers,
+        mobileProps: { isMobile: true, mobileFontSize: 10 },
+      });
+
+      expect(screen.getByRole('row')).toHaveStyle({ fontSize: '10px' });
+    });
+
+    it('keeps the desktop data-row font size unchanged', () => {
+      renderUserRow({
+        store,
+        user,
+        handlers,
+        mobileProps: { isMobile: false, mobileFontSize: 10 },
+      });
+
+      expect(screen.getByRole('row')).not.toHaveStyle({ fontSize: '10px' });
     });
 
     it('should render an active/inactive button (ActiveCell)', () => {

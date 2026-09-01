@@ -1,7 +1,7 @@
 import { createBaseProps } from './UserManagementTestSetup.jsx';
 import UserManagement, { UnconnectedUserManagement } from '../UserManagement';
 
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 // Import the mocked functions directly
 import {
@@ -56,6 +56,27 @@ describe('UserManagement Component', () => {
     renderUserManagement(<UserManagement {...props} />);
     expect(props.getAllUserProfile).toHaveBeenCalled();
     expect(props.getAllTimeOffRequests).toHaveBeenCalled();
+  });
+
+  it('rebuilds data rows with the mobile font size after crossing the 750px breakpoint', async () => {
+    const originalWidth = window.innerWidth;
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 751 });
+
+    renderUserManagement(<UnconnectedUserManagement {...props} initialIsLoadingUsers={false} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('user-table-data-0')).toHaveAttribute('data-mobile', 'false');
+    });
+
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 750 });
+    fireEvent(window, new Event('resize'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('user-table-data-0')).toHaveAttribute('data-mobile', 'true');
+    });
+    expect(screen.getByTestId('user-table-data-0')).toHaveAttribute('data-mobile-font-size', '10');
+
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: originalWidth });
   });
 
   // TODO: unskip once isLoadingUsers is cleared on mount (see note above).
