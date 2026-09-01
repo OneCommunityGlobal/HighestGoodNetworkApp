@@ -119,6 +119,29 @@
   color: #fff;
 }
 
+.itemsPerPage {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+}
+
+.itemsPerPage select {
+  padding: 6px 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #334155;
+}
+
+.darkModeResourceManagementDashboard .itemsPerPage select {
+  background-color: #172f53;
+  border-color: #2d4a77;
+  color: #fff;
+}
+
 .searchButton {
   padding: 8px 14px;
   background-color: #0056b3;
@@ -363,6 +386,18 @@
   justify-content: center;
   animation: scale-in 0.25s ease-in-out;
   z-index: 1000;
+}
+
+.recordCount {
+  margin-top: -10px;
+  padding-bottom: 20px;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.darkModeResourceManagementDashboard .recordCount {
+  color: #cbd5e1;
 }
 
 .modalContent {
