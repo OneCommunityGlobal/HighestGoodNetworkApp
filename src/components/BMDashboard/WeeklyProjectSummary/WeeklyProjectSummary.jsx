@@ -576,7 +576,7 @@ function WeeklyProjectSummary() {
       const dateStr = now.toISOString().slice(0, 10);
       const projectName = projectFilter || 'All-Projects';
       const dateRange = dateRangeFilter
-        ? dateRangeFilter.replace(/\s+/g, '-').replace(/,/g, '')
+        ? dateRangeFilter.replaceAll(/\s+/g, '-').replaceAll(/,/g, '')
         : dateStr;
       const fileName = `weekly-project-summary-${projectName}-${dateRange}.pdf`;
 

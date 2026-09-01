@@ -74,6 +74,24 @@ function buildDatasets(categories, labels, groupedByMonth, darkMode) {
   });
 }
 
+function isInvalidDateRange(dateRange) {
+  return dateRange.start && dateRange.end && dateRange.start > dateRange.end;
+}
+
+function filterByDateRange(data, dateRange) {
+  if (!dateRange.start || !dateRange.end) return data;
+  return data.filter(item => {
+    const itemDate = new Date(item.date);
+    return itemDate >= dateRange.start && itemDate <= dateRange.end;
+  });
+}
+
+function filterExpenditureData(data, selectedProject, dateRange) {
+  const byProject =
+    selectedProject === 'all' ? data : data.filter(item => item.projectId === selectedProject);
+  return filterByDateRange(byProject, dateRange);
+}
+
 export default function ExpenditureLineGraph() {
   const chartRef = useRef(null);
   const [chartInstance, setChartInstance] = useState(null);
@@ -264,39 +282,29 @@ export default function ExpenditureLineGraph() {
     setChartInstance(newChartInstance);
   };
 
+  const clearChart = () => {
+    if (!chartInstance) return;
+    chartInstance.destroy();
+    setChartInstance(null);
+  };
+
   useEffect(() => {
     if (expenditureData.length === 0 || !chartRef.current) return;
 
     setDateError(null);
     setNoDataError(null);
 
-    if (dateRange.start && dateRange.end && dateRange.start > dateRange.end) {
+    if (isInvalidDateRange(dateRange)) {
       setDateError('Start date cannot be greater than end date');
-      if (chartInstance) {
-        chartInstance.destroy();
-        setChartInstance(null);
-      }
+      clearChart();
       return;
     }
 
-    let filteredData =
-      selectedProject === 'all'
-        ? expenditureData
-        : expenditureData.filter(item => item.projectId === selectedProject);
-
-    if (dateRange.start && dateRange.end) {
-      filteredData = filteredData.filter(item => {
-        const itemDate = new Date(item.date);
-        return itemDate >= dateRange.start && itemDate <= dateRange.end;
-      });
-    }
+    const filteredData = filterExpenditureData(expenditureData, selectedProject, dateRange);
 
     if (filteredData.length === 0) {
       setNoDataError('No data available for the selected date range and project');
-      if (chartInstance) {
-        chartInstance.destroy();
-        setChartInstance(null);
-      }
+      clearChart();
       return;
     }
 
