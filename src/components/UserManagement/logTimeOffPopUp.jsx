@@ -21,7 +21,7 @@ import {
 } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import { boxStyle, boxStyleDark } from '../../styles';
-import '../Header/index.css';
+import '../Header/index.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import {
   addTimeOffRequestThunk,

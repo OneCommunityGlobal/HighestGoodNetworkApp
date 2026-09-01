@@ -1,7 +1,9 @@
+import PropTypes from 'prop-types';
 import { Component } from 'react';
-import ReportTableSearchPanel from '../ReportTableSearchPanel';
-import { boxStyle, boxStyleDark } from '~/styles';
 import { Button } from 'reactstrap';
+import { boxStyle, boxStyleDark } from '~/styles';
+import ReportTableSearchPanel from '../ReportTableSearchPanel';
+import styles from '../reportsPage.module.css';
 
 class ReportFilter extends Component {
   constructor(props) {
@@ -36,60 +38,62 @@ class ReportFilter extends Component {
   render() {
     const { darkMode } = this.props;
     return (
-      <div>
-        <div>
+       <div className={styles['report-filter-panel']} style={{ color: darkMode ? '#fff' : 'inherit' }}>
+        <div className={styles['report-filter-header-row']}>
           <button type="button" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: '#007bff', textDecoration: 'none' }}>
             Select a Filter
           </button>
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <input
-            name="radio"
-            type="radio"
-            style={{ margin: '8px 12px', marginLeft: 0 }}
-            value="active"
-            checked={this.props.filterStatus === 'active'}
-            onChange={this.setActive}
-          />
-          Active
-          <input
-            name="radio"
-            type="radio"
-            style={{ margin: '8px 12px' }}
-            value="inactive"
-            checked={this.props.filterStatus === 'inactive'}
-            onChange={this.setInActive}
-          />
-          Inactive
-          <input
-            name="radio"
-            type="radio"
-            style={{ margin: '8px 12px' }}
-            value="all"
-            checked={this.props.filterStatus === 'all'}
-            onChange={this.setAll}
-          />
-          All
-          <input
-            name="radio"
-            type="radio"
-            style={{ margin: '8px 12px' }}
-            value="tenHour"
-            checked={this.props.filterStatus === 'tenHour'}
-            onChange={this.setTenHourFilter}
-          />
-          10+ hours
-        </div>
-        <Button
+          <Button
             onClick={() => window.location.reload()}
             color="danger"
             style={darkMode ? boxStyleDark : boxStyle}
           >
             Clear All
-        </Button>
+          </Button>
         </div>
-        <div className="mt-4">
+        <div className={styles['report-filter-options-row']} style={{ color: darkMode ? '#fff' : 'inherit' }}>
+          <label>
+            <input
+              name="radio"
+              type="radio"
+              value="active"
+              checked={this.props.filterStatus === 'active'}
+              onChange={this.setActive}
+            />
+            Active
+          </label>
+          <label>
+            <input
+              name="radio"
+              type="radio"
+              value="inactive"
+              checked={this.props.filterStatus === 'inactive'}
+              onChange={this.setInActive}
+            />
+            Inactive
+          </label>
+          <label>
+            <input
+              name="radio"
+              type="radio"
+              value="all"
+              checked={this.props.filterStatus === 'all'}
+              onChange={this.setAll}
+            />
+            All
+          </label>
+          <label>
+            <input
+              name="radio"
+              type="radio"
+              value="tenHour"
+              checked={this.props.filterStatus === 'tenHour'}
+              onChange={this.setTenHourFilter}
+            />
+            10+ hours
+          </label>
+        </div>
+        <div>
           <ReportTableSearchPanel
             onSearch={this.onWildCardSearch}
             wildCardSearchText={this.props.wildCardSearchText}
@@ -102,5 +106,26 @@ class ReportFilter extends Component {
     );
   }
 }
+ReportFilter.propTypes = {
+  darkMode: PropTypes.bool,
+  filterStatus: PropTypes.string,
+  setFilterStatus: PropTypes.func,
+  onWildCardSearch: PropTypes.func,
+  wildCardSearchText: PropTypes.string,
+  onCreateNewTeamShow: PropTypes.func,
+  scrollToResults: PropTypes.func,
+  onSearchClick: PropTypes.func,
+};
+
+ReportFilter.defaultProps = {
+  darkMode: false,
+  filterStatus: 'all',
+  setFilterStatus: () => {},
+  onWildCardSearch: () => {},
+  wildCardSearchText: '',
+  onCreateNewTeamShow: () => {},
+  scrollToResults: () => {},
+  onSearchClick: () => {},
+};
 
 export default ReportFilter;

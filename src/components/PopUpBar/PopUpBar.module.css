@@ -1,38 +1,109 @@
+/* stylelint-disable */
 .popupContainer {
   position: sticky;
-  width: 100%;
   top: 0;
-  left: 0%;
+  left: 0;
+  width: 100%;
+  max-width: 100%;
   margin: 0;
-  text-align: center;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
   background-color: #ffcc00;
   color: #fff;
   z-index: 2;
-  opacity: 0.8;
 }
-.popupContainer.blackText{
-  color: #000000
+
+.meetingNotification {
+  z-index: 90;
+  opacity: 1;
+  padding: 0.3rem 1.25rem 0.3rem 0.75rem;
+  min-height: 2rem;
+  isolation: isolate;
+}
+
+.meetingNotification + .meetingNotification {
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.blackText {
+  color: #000;
+}
+
+.popupMessage {
+  flex: 1;
+  margin: 0;
+  min-width: 0;
+  word-break: break-word;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.meetingNotification .popupMessage {
+  font-size: 0.85rem;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.meetingNotification .popupMessage a {
+  color: #0d47a1;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.meetingNotification :global(.meeting-popup-action-separator) {
+  color: #333;
 }
 
 .closeButton {
+  flex-shrink: 0;
   background: none;
   border: none;
-  font-size: 18px;
-  color: #000000;
+  font-size: 16px;
+  line-height: 1;
+  color: #000;
   cursor: pointer;
-  position: absolute;
-  top: 50%;
-  right: 30px;
-  transform: translateY(-50%);
+  padding: 0.2rem 0.4rem;
+  min-width: 1.75rem;
+  min-height: 1.75rem;
 }
 
-.closeButton.btnPadding{
-  @media (max-width: 768px) { 
-    top: 70%;
+.meetingNotification .closeButton {
+  background-color: #ffcc00;
+  border-radius: 4px;
+  position: relative;
+  z-index: 2;
+  margin-top: 0;
+}
+
+.closeButton.btnPadding {
+  @media (width <= 768px) {
+    align-self: flex-end;
   }
 }
 
-.closeButton > .containerFluid {
+.closeButton > :global(.container-fluid) {
+  padding: 0;
+}
+
+.popupContainer.permissionsChanged {
+  align-items: flex-start;
+  gap: 0px;
   padding: 0px;
 }
-  
+
+.popupContainer.permissionsChanged > .popupMessage {
+  white-space: pre-line;
+  padding: 5px 40px;
+}
+
+@media (width <= 768px) {
+  .meetingNotification .popupMessage {
+    font-size: 0.8rem;
+  }
+}

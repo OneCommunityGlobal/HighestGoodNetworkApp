@@ -246,34 +246,6 @@ const mockFeedbacks = [
 function ActivityComments() {
   const darkMode = useSelector(state => state.theme?.darkMode || false);
 
-  // Utility function to restore Date objects from localStorage
-  const restoreDates = items => {
-    return items.map(item => ({
-      ...item,
-      createdAt: new Date(item.createdAt),
-      replies: item.replies
-        ? item.replies.map(reply => ({
-            ...reply,
-            createdAt: new Date(reply.createdAt),
-          }))
-        : [],
-    }));
-  };
-
-  // Load data from localStorage or use mock data as fallback
-  const loadStoredComments = () => {
-    try {
-      const stored = localStorage.getItem('activityComments');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        return restoreDates(parsed);
-      }
-      return mockComments;
-    } catch (error) {
-      return mockComments;
-    }
-  };
-
   const loadStoredFeedbacks = () => {
     try {
       const stored = localStorage.getItem('activityFeedbacks');
@@ -292,7 +264,7 @@ function ActivityComments() {
 
   const [activeTab, setActiveTab] = useState('Engagement');
   const [commentTab, setCommentTab] = useState('Comment');
-  const [comments, setComments] = useState(loadStoredComments);
+  const [comments, setComments] = useState(mockComments);
   const [commentInput, setCommentInput] = useState('');
   const [sortType, setSortType] = useState('Newest');
 
@@ -300,7 +272,7 @@ function ActivityComments() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMoreComments, setHasMoreComments] = useState(true);
-  const [totalComments, setTotalComments] = useState(loadStoredComments().length + 10); // Simulating more comments exist
+  const [totalComments, setTotalComments] = useState(5); // Start with initial 5
   const commentsPerPage = 5;
 
   // Reply states
@@ -329,13 +301,13 @@ function ActivityComments() {
   ];
 
   // Save comments to localStorage whenever they change
-  useEffect(() => {
-    try {
-      localStorage.setItem('activityComments', JSON.stringify(comments));
-    } catch (error) {
-      // Failed to save to localStorage - continue without persistence
-    }
-  }, [comments]);
+  // useEffect(() => {
+  //   try {
+  //     localStorage.setItem('activityComments', JSON.stringify(comments));
+  //   } catch (error) {
+  //     // Failed to save to localStorage - continue without persistence
+  //   }
+  // }, [comments]);
 
   // Save feedbacks to localStorage whenever they change
   useEffect(() => {
@@ -357,63 +329,61 @@ function ActivityComments() {
 
   // Mock API function to simulate fetching more comments
   const fetchMoreComments = async page => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Generate unique users pool for variety
+    const usersPool = [
+      { id: 1, name: 'Michael Johnson', profilePic: '/profilepic.webp' },
+      { id: 2, name: 'Jennifer Smith', profilePic: '/pfp-default.png' },
+      { id: 3, name: 'Patricia Davis', profilePic: '/pfp-default-header.png' },
+      { id: 4, name: 'Robert Wilson', profilePic: '/Portrait_Placeholder.png' },
+      { id: 5, name: 'Amanda Lee', profilePic: '/pfp-default.png' },
+      { id: 6, name: 'David Brown', profilePic: '/profilepic.webp' },
+      { id: 7, name: 'Michelle Kim', profilePic: '/pfp-default-header.png' },
+      { id: 8, name: 'Christopher Martinez', profilePic: '/Portrait_Placeholder.png' },
+      { id: 9, name: 'Rachel Green', profilePic: '/pfp-default.png' },
+      { id: 10, name: 'Thomas Anderson', profilePic: '/profilepic.webp' },
+    ];
 
-    // Generate additional mock comments for pagination
+    // Get 2 unique users for this page
+    const startIdx = ((page - 1) * 2) % usersPool.length;
+    const pageUsers = [
+      usersPool[startIdx % usersPool.length],
+      usersPool[(startIdx + 1) % usersPool.length],
+    ];
+
+    // Generate 2 comments for pagination - use unique IDs
+    const baseCommentNum = 6; // Start after initial 5 comments
+    const uniqueOffset = (page - 1) * 1000; // Ensure unique IDs per page
     const additionalComments = [
       {
-        id: 100 + page * 10 + 1,
-        name: 'Michael Johnson',
-        profilePic: '/profilepic.webp',
+        id: uniqueOffset + (page * 2 - 1),
+        name: pageUsers[0].name,
+        profilePic: pageUsers[0].profilePic,
         createdAt: new Date(Date.now() - (page + 5) * 60 * 60 * 1000),
         fixedTimestamp: `${page + 5} hours ago`,
-        text: `This is an additional comment from page ${page}. The discussion continues with more insights and perspectives from the community.`,
+        text: `Comment ${(page - 1) * 2 + baseCommentNum} - Really enjoyed the event!`,
         visibility: 'Public',
         upvotes: getSecureRandomInt(0, 10),
         downvotes: getSecureRandomInt(0, 3),
         replies: [],
       },
       {
-        id: 100 + page * 10 + 2,
-        name: 'Jennifer Smith',
-        profilePic: '/pfp-default.png',
+        id: uniqueOffset + page * 2,
+        name: pageUsers[1].name,
+        profilePic: pageUsers[1].profilePic,
         createdAt: new Date(Date.now() - (page + 6) * 60 * 60 * 1000),
         fixedTimestamp: `${page + 6} hours ago`,
-        text: `Another perspective on this topic. I found the event very educational and would recommend it to others in our field.`,
+        text: `Comment ${(page - 1) * 2 + baseCommentNum + 1} - Thanks for organizing this!`,
         visibility: 'Public',
         upvotes: getSecureRandomInt(5, 15),
         downvotes: getSecureRandomInt(0, 2),
-        replies: [
-          {
-            id: 200 + page * 10 + 1,
-            name: 'Robert Wilson',
-            profilePic: '/Portrait_Placeholder.png',
-            createdAt: new Date(Date.now() - (page + 5) * 60 * 60 * 1000),
-            fixedTimestamp: `${page + 5} hours ago`,
-            text: 'I completely agree! Thanks for sharing your thoughts.',
-            visibility: 'Public',
-          },
-        ],
-      },
-      {
-        id: 100 + page * 10 + 3,
-        name: 'Patricia Davis',
-        profilePic: '/pfp-default-header.png',
-        createdAt: new Date(Date.now() - (page + 7) * 60 * 60 * 1000),
-        fixedTimestamp: `${page + 7} hours ago`,
-        text: `Great follow-up discussion! Looking forward to implementing some of these ideas in my own work.`,
-        visibility: 'Public',
-        upvotes: getSecureRandomInt(1, 8),
-        downvotes: 0,
         replies: [],
       },
     ];
 
     return {
       comments: additionalComments,
-      hasMore: page < 3, // Simulate having 3 pages total
-      total: 20, // Simulate total of 20 comments
+      hasMore: page < 10,
+      total: baseCommentNum + (page - 1) * 2 + 2, // Accurate cumulative total
     };
   };
 
@@ -426,10 +396,21 @@ function ActivityComments() {
       const nextPage = currentPage + 1;
       const result = await fetchMoreComments(nextPage);
 
-      setComments(prevComments => [...prevComments, ...result.comments]);
-      setCurrentPage(nextPage);
-      setHasMoreComments(result.hasMore);
-      setTotalComments(result.total);
+      // Filter out duplicates by ID before appending
+      const existingIds = new Set(comments.map(c => c.id));
+      const newComments = result.comments.filter(c => !existingIds.has(c.id));
+
+      // Only append if there are genuinely new comments
+      if (newComments.length > 0) {
+        setComments(prevComments => [...prevComments, ...newComments]);
+        setCurrentPage(nextPage);
+        setHasMoreComments(result.hasMore);
+        // Accumulate total comments rather than replacing
+        setTotalComments(prevTotal => prevTotal + newComments.length);
+      } else {
+        // No new comments - we've reached the end
+        setHasMoreComments(false);
+      }
     } catch (error) {
       // console.error('Error loading more comments:', error);
       // In a real app, you might show an error message to the user
@@ -611,18 +592,16 @@ function ActivityComments() {
 
   const renderStars = (rating, isInteractive = false, onRatingChange = null) => {
     return (
-      <div style={{ display: 'flex', gap: '2px' }}>
+      <div className={styles.feedbackStarsContainer}>
         {[1, 2, 3, 4, 5].map(star => (
           <button
             key={star}
             type="button"
+            className={`${styles.feedbackStarBtn} ${
+              star <= rating ? styles.feedbackStarSelected : ''
+            }`}
             style={{
-              fontSize: '1.2rem',
-              color: star <= rating ? '#ffc107' : '#ddd',
               cursor: isInteractive ? 'pointer' : 'default',
-              background: 'none',
-              border: 'none',
-              padding: 0,
             }}
             onClick={() => isInteractive && onRatingChange && onRatingChange(star)}
             disabled={!isInteractive}
@@ -675,7 +654,7 @@ function ActivityComments() {
     });
 
   return (
-    <div>
+    <div className={styles.container}>
       {/* Event Card */}
       <div className={styles.eventCard}>
         <div>
@@ -712,61 +691,34 @@ function ActivityComments() {
             {mockEvent.avatars.map((src, i) => (
               <img key={i} src={src} alt="avatar" className={styles.avatar} />
             ))}
-            <span style={{ color: '#888', fontSize: '1rem', marginLeft: 4 }}>+5</span>
+            <span>+5</span>
           </div>
         </div>
         <div className={styles.calendar}>
           {/* Calendar Header with Navigation */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: 12,
-            }}
-          >
-            <button
-              onClick={handlePrevMonth}
-              style={{
-                background: 'none',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                padding: '4px 8px',
-                cursor: 'pointer',
-                fontSize: '1rem',
-              }}
-            >
+          <div className={styles.calendarHeader}>
+            <button onClick={handlePrevMonth} className={styles.calendarNavBtn}>
               &#8249;
             </button>
-            <div style={{ fontWeight: 500 }}>
+            <div className={styles.calendarMonth}>
               {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
             </div>
-            <button
-              onClick={handleNextMonth}
-              style={{
-                background: 'none',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                padding: '4px 8px',
-                cursor: 'pointer',
-                fontSize: '1rem',
-              }}
-            >
+            <button onClick={handleNextMonth} className={styles.calendarNavBtn}>
               &#8250;
             </button>
           </div>
 
           {/* Calendar Grid */}
-          <table style={{ width: '100%', fontSize: '0.95rem' }}>
+          <table className={styles.calendarTable}>
             <thead>
-              <tr style={{ color: '#888' }}>
-                <th style={{ padding: '4px', textAlign: 'center' }}>S</th>
-                <th style={{ padding: '4px', textAlign: 'center' }}>M</th>
-                <th style={{ padding: '4px', textAlign: 'center' }}>T</th>
-                <th style={{ padding: '4px', textAlign: 'center' }}>W</th>
-                <th style={{ padding: '4px', textAlign: 'center' }}>T</th>
-                <th style={{ padding: '4px', textAlign: 'center' }}>F</th>
-                <th style={{ padding: '4px', textAlign: 'center' }}>S</th>
+              <tr>
+                <th className={styles.calendarWeekday}>S</th>
+                <th className={styles.calendarWeekday}>M</th>
+                <th className={styles.calendarWeekday}>T</th>
+                <th className={styles.calendarWeekday}>W</th>
+                <th className={styles.calendarWeekday}>T</th>
+                <th className={styles.calendarWeekday}>F</th>
+                <th className={styles.calendarWeekday}>S</th>
               </tr>
             </thead>
             <tbody>
@@ -784,13 +736,8 @@ function ActivityComments() {
                           <button
                             type="button"
                             onClick={() => handleDateClick(date)}
+                            className={styles.calendarDayBtn}
                             style={{
-                              cursor: 'pointer',
-                              padding: '6px',
-                              textAlign: 'center',
-                              border: 'none',
-                              background: 'none',
-                              width: '100%',
                               backgroundColor: isSameDate(selectedDate, date)
                                 ? '#1976d2'
                                 : isEventDate(date)
@@ -800,30 +747,17 @@ function ActivityComments() {
                                 isSameDate(selectedDate, date) || isEventDate(date)
                                   ? 'white'
                                   : 'inherit',
-                              borderRadius: '4px',
-                              position: 'relative',
                               fontWeight: isEventDate(date) ? 'bold' : 'normal',
                             }}
                             title={isEventDate(date) ? 'Event Date' : ''}
                           >
                             {date.getDate()}
                             {isEventDate(date) && !isSameDate(selectedDate, date) && (
-                              <div
-                                style={{
-                                  position: 'absolute',
-                                  bottom: '2px',
-                                  left: '50%',
-                                  transform: 'translateX(-50%)',
-                                  width: '4px',
-                                  height: '4px',
-                                  backgroundColor: 'white',
-                                  borderRadius: '50%',
-                                }}
-                              ></div>
+                              <div className={styles.calendarDayDot}></div>
                             )}
                           </button>
                         ) : (
-                          <div style={{ padding: '6px' }}></div>
+                          <div className={styles.calendarDayEmpty}></div>
                         )}
                       </td>
                     ))}
@@ -890,7 +824,7 @@ function ActivityComments() {
             <div>
               <div className={styles.commentHeaderRow}>
                 <span className={styles.commentCount}>
-                  Comment <span style={{ color: '#888', fontWeight: 400 }}>{comments.length}</span>
+                  Comment <span className={styles.commentCountNumber}>{comments.length}</span>
                 </span>
                 <button className={styles.sortBtn}>
                   <span style={{ fontSize: '1.1em' }}>⇅</span> Sort
@@ -943,65 +877,27 @@ function ActivityComments() {
 
                     {/* Reply Form */}
                     {replyingTo === comment.id && (
-                      <div
-                        style={{
-                          marginTop: '12px',
-                          marginLeft: '40px',
-                          padding: '12px',
-                          backgroundColor: '#f8f9fa',
-                          borderRadius: '8px',
-                          border: '1px solid #e9ecef',
-                        }}
-                      >
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                      <div className={styles.replyFormContainer}>
+                        <div className={styles.replyFormInner}>
                           <img
                             src="/pfp-default.png"
                             alt="profile"
-                            style={{
-                              width: '32px',
-                              height: '32px',
-                              borderRadius: '50%',
-                              objectFit: 'cover',
-                            }}
+                            className={styles.replyProfilePic}
                           />
                           <textarea
-                            style={{
-                              flex: 1,
-                              padding: '8px 12px',
-                              border: '1px solid #ddd',
-                              borderRadius: '6px',
-                              fontSize: '0.9rem',
-                              resize: 'vertical',
-                              minHeight: '60px',
-                            }}
+                            className={styles.replyTextarea}
                             placeholder={`Reply to ${comment.name}...`}
                             value={replyInput}
                             onChange={e => setReplyInput(e.target.value)}
                           />
                           <button
-                            style={{
-                              padding: '8px 16px',
-                              backgroundColor: '#1976d2',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '6px',
-                              fontSize: '0.9rem',
-                              cursor: 'pointer',
-                            }}
+                            className={styles.replySubmitBtn}
                             onClick={() => handlePostReply(comment.id)}
                           >
                             Reply
                           </button>
                           <button
-                            style={{
-                              padding: '8px 12px',
-                              backgroundColor: '#6c757d',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '6px',
-                              fontSize: '0.9rem',
-                              cursor: 'pointer',
-                            }}
+                            className={styles.replyCancelBtn}
                             onClick={() => setReplyingTo(null)}
                           >
                             Cancel
@@ -1012,44 +908,21 @@ function ActivityComments() {
 
                     {/* Display Replies */}
                     {comment.replies && comment.replies.length > 0 && (
-                      <div style={{ marginTop: '12px', marginLeft: '40px' }}>
+                      <div className={styles.repliesContainer}>
                         {comment.replies.map(reply => (
-                          <div
-                            key={reply.id}
-                            style={{
-                              padding: '12px',
-                              backgroundColor: '#f8f9fa',
-                              borderRadius: '8px',
-                              marginBottom: '8px',
-                              border: '1px solid #e9ecef',
-                            }}
-                          >
-                            <div
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                marginBottom: '8px',
-                              }}
-                            >
+                          <div key={reply.id} className={styles.replyCard}>
+                            <div className={styles.replyCardHeader}>
                               <img
                                 src={reply.profilePic}
                                 alt="profile"
-                                style={{
-                                  width: '24px',
-                                  height: '24px',
-                                  borderRadius: '50%',
-                                  objectFit: 'cover',
-                                }}
+                                className={styles.replyCardProfilePic}
                               />
-                              <span style={{ fontWeight: '500', fontSize: '0.9rem' }}>
-                                {reply.name}
-                              </span>
-                              <span style={{ color: '#666', fontSize: '0.8rem' }}>
+                              <span className={styles.replyCardName}>{reply.name}</span>
+                              <span className={styles.replyCardTimestamp}>
                                 {reply.fixedTimestamp || getRelativeTime(reply.createdAt)}
                               </span>
                             </div>
-                            <div style={{ fontSize: '0.9rem', color: '#333' }}>{reply.text}</div>
+                            <div className={styles.replyCardText}>{reply.text}</div>
                           </div>
                         ))}
                       </div>
@@ -1073,36 +946,26 @@ function ActivityComments() {
           {commentTab === 'Feedback' && (
             <div>
               {/* Feedback Stats */}
-              <div
-                style={{
-                  background: '#f8f9fa',
-                  padding: '20px',
-                  borderRadius: '8px',
-                  marginBottom: '20px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <div>
-                  <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#1976d2' }}>
+              <div className={styles.feedbackStats}>
+                <div className={styles.feedbackStatsLeft}>
+                  <div className={styles.feedbackStatsRating}>
                     {(feedbacks.reduce((sum, f) => sum + f.rating, 0) / feedbacks.length).toFixed(
                       1,
                     )}
                   </div>
-                  <div style={{ color: '#666' }}>
+                  <div className={styles.feedbackStatsStars}>
                     {renderStars(
                       Math.round(
                         feedbacks.reduce((sum, f) => sum + f.rating, 0) / feedbacks.length,
                       ),
                     )}
                   </div>
-                  <div style={{ fontSize: '0.9rem', color: '#666' }}>
+                  <div className={styles.feedbackStatsReviews}>
                     Based on {feedbacks.length} reviews
                   </div>
                 </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '1.2rem', fontWeight: '500', marginBottom: '8px' }}>
+                <div className={styles.feedbackStatsRight}>
+                  <div className={styles.feedbackStatsCount}>
                     Feedback: {filteredFeedbacks.length}
                   </div>
                 </div>
@@ -1111,11 +974,9 @@ function ActivityComments() {
               {/* Feedback Form */}
               <div className={styles.commentBox} style={{ marginBottom: '20px' }}>
                 <img src="/pfp-default.png" alt="profile" className={styles.commentProfilePic} />
-                <div style={{ flex: 1 }}>
+                <div className={styles.feedbackFormWrapper}>
                   <div style={{ marginBottom: '10px' }}>
-                    <div style={{ fontSize: '0.9rem', color: '#666', marginBottom: '5px' }}>
-                      Rating *
-                    </div>
+                    <div className={styles.feedbackRatingLabel}>Rating *</div>
                     {renderStars(feedbackRating, true, setFeedbackRating)}
                   </div>
                   <textarea
@@ -1132,40 +993,18 @@ function ActivityComments() {
               </div>
 
               {/* Search and Filter Controls */}
-              <div
-                style={{
-                  display: 'flex',
-                  gap: '12px',
-                  marginBottom: '20px',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                }}
-              >
+              <div className={styles.feedbackControlsContainer}>
                 <input
                   type="text"
                   placeholder="Search by reviewer name or feedback text..."
                   value={feedbackSearch}
                   onChange={e => setFeedbackSearch(e.target.value)}
-                  style={{
-                    flex: 1,
-                    minWidth: '200px',
-                    padding: '8px 12px',
-                    border: darkMode ? '1px solid #4a5a77' : '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '0.9rem',
-                    backgroundColor: darkMode ? '#3a506b' : '#fff',
-                    color: darkMode ? '#ffffff' : '#222',
-                  }}
+                  className={styles.feedbackSearchInput}
                 />
                 <select
                   value={feedbackSort}
                   onChange={e => setFeedbackSort(e.target.value)}
-                  style={{
-                    padding: '8px 12px',
-                    border: '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '0.9rem',
-                  }}
+                  className={styles.feedbackSelect}
                 >
                   <option value="Newest">Newest First</option>
                   <option value="Oldest">Oldest First</option>
@@ -1175,12 +1014,7 @@ function ActivityComments() {
                 <select
                   value={feedbackFilter}
                   onChange={e => setFeedbackFilter(e.target.value)}
-                  style={{
-                    padding: '8px 12px',
-                    border: '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '0.9rem',
-                  }}
+                  className={styles.feedbackSelect}
                 >
                   <option value="All">All Ratings</option>
                   <option value="5">5 Stars</option>
@@ -1192,7 +1026,7 @@ function ActivityComments() {
               </div>
 
               {/* Feedback List */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div className={styles.feedbackList}>
                 {filteredFeedbacks.length > 0 ? (
                   filteredFeedbacks.map(feedback => (
                     <div key={feedback.id} className={styles.commentItem}>
@@ -1206,18 +1040,9 @@ function ActivityComments() {
                         <span className={styles.commentTimestamp}>
                           {feedback.fixedTimestamp || feedback.timestamp}
                         </span>
-                        <div
-                          style={{
-                            marginLeft: 'auto',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                          }}
-                        >
+                        <div className={styles.feedbackRatingContainer}>
                           {renderStars(feedback.rating)}
-                          <span style={{ fontSize: '0.9rem', color: '#666' }}>
-                            ({feedback.rating}/5)
-                          </span>
+                          <span className={styles.feedbackRatingText}>({feedback.rating}/5)</span>
                         </div>
                       </div>
                       <div className={styles.commentText}>{feedback.text}</div>
@@ -1243,7 +1068,7 @@ function ActivityComments() {
                     </div>
                   ))
                 ) : (
-                  <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
+                  <div className={styles.feedbackEmpty}>
                     <h3>No feedback found</h3>
                     <p>
                       {feedbackSearch || feedbackFilter !== 'All'

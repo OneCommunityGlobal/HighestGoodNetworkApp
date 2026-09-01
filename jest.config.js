@@ -20,6 +20,8 @@ module.exports = {
     'react-leaflet': '<rootDir>/src/_tests_/__mocks__/react-leaflet.js',
     'marker-cluster-group': '<rootDir>/src/_tests_/__mocks__/react-leaflet-cluster.js',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy', // <-- Added to mock CSS/SCSS files
+    // Fix for Node.js built-in modules in Node 20
+    '^node:(.*)$': '$1',
   },
 
   // The paths to modules that run some code to configure or set up the testing environment before each test
