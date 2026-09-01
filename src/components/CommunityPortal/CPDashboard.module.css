@@ -17,10 +17,23 @@
   width: 100%;
 }
 
+/* ======================================
+   DARK MODE CONTAINERS
+   ====================================== */
+
+.dashboard-container-dark {
+  background: #1b2a41;
+  box-shadow: 0 6px 20px rgb(0 0 0 / 30%);
+}
+
 .darkContainer {
   background: #2b3e59 !important;
   color: #fff;
 }
+
+/* ======================================
+   DASHBOARD HEADER
+   ====================================== */
 
 .dashboardHeader {
   display: flex;
@@ -35,6 +48,11 @@
   flex-wrap: nowrap;
 }
 
+.dashboard-header-dark {
+  background: linear-gradient(120deg, #2b3e59, #22304a);
+  box-shadow: 0 3px 10px rgb(0 0 0 / 30%);
+}
+
 .dashboardHeader h1 {
   margin: 0;
   font-size: 2.5rem;
@@ -44,10 +62,18 @@
   flex-shrink: 0;
 }
 
+.dashboard-title-dark {
+  color: #fff !important;
+}
+
 .darkHeader {
   background: #1b2a41;
   color: #fff;
 }
+
+/* ======================================
+   DASHBOARD CONTROLS / SEARCH
+   ====================================== */
 
 .dashboardControls {
   display: flex;
@@ -58,9 +84,33 @@
 .dashboardSearchInput {
   width: 100%;
   border-radius: 999px;
-  border: none;
-  background: transparent;
-  box-sizing: border-box;
+  border: 2px solid #1b3c55;
+  min-width: 260px;
+  outline: none;
+  background: #fff;
+  color: #2c3e50;
+}
+
+.dashboard-search-input-dark {
+  border-color: #4a5a77;
+  background: #3a506b;
+  color: #fff;
+}
+
+.dashboard-search-input-dark::placeholder {
+  color: #b0b8c4;
+}
+
+.dashboard-search-input:focus {
+  border-color: #34495e;
+  box-shadow: 0 0 8px rgb(52 73 94 / 30%);
+  outline: none;
+}
+
+.dashboard-search-input-dark:focus {
+  border-color: #e8a71c;
+  box-shadow: 0 0 8px rgb(232 167 28 / 30%);
+  outline: none;
 }
 
 .dashboardClearBtn {
@@ -73,6 +123,10 @@
   align-items: center;
   justify-content: center;
   padding: 0;
+}
+
+.dashboard-clear-btn-dark {
+  color: #fff;
 }
 
 .dashboardSearchIconBtn {
@@ -89,6 +143,30 @@
   font-size: 0.9rem;
   padding: 0;
 }
+
+.dashboard-search-icon-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.dashboard-search-icon-btn-dark {
+  color: #fff;
+}
+
+/* Hide browser's built-in clear icon for search inputs */
+.dashboard-search-input::-webkit-search-cancel-button,
+.dashboard-search-input::-webkit-search-decoration,
+.dashboard-search-input::-webkit-search-results-button,
+.dashboard-search-input::-webkit-search-results-decoration {
+  appearance: none;
+  display: none;
+}
+
+/* ======================================
+   SEARCH CONTAINERS
+   ====================================== */
 
 .cp_dashboard_header {
   display: flex;
@@ -233,6 +311,10 @@
   color: #fff;
 }
 
+/* ======================================
+   LAYOUT
+   ====================================== */
+
 .centeredRow {
   padding: 30px;
 }
@@ -249,16 +331,27 @@
 .darkSidebar {
   background: #2b3e59;
   border-right: 1px solid #1b2a41;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
 }
 
 .filterSection {
   width: 100%;
 }
 
+/* ======================================
+   FILTERS
+   ====================================== */
+
 .filterSection h4 {
   font-size: 1.8rem;
   color: #2c3e50;
   font-weight: 600;
+  margin: 0 0 24px;
+  padding: 0;
+}
+
+.filter-section-title-dark {
+  color: #fff !important;
 }
 
 .filterSectionHeader {
@@ -282,6 +375,10 @@
   margin-bottom: 8px;
 }
 
+.filter-label-dark {
+  color: #fff !important;
+}
+
 .filterOptionsVertical {
   display: flex;
   flex-direction: column;
@@ -301,14 +398,60 @@
   font-size: 1rem;
   background: #fff;
   transition: all 0.3s ease;
+  box-sizing: border-box;
+  color: #2c3e50;
 }
 
-.filterItem input:focus,
+.darkSidebar .inputGroup input {
+  color: #fff;
+}
+
+.filterItem input:not([type='checkbox'], [type='radio'], [type='date']):focus,
 .filterItem select:focus {
   border-color: #2c3e50;
   box-shadow: 0 0 5px rgb(44 62 80 / 40%);
   outline: none;
 }
+
+.filter-select-dark,
+.date-filter-dark {
+  border-color: #4a5a77 !important;
+  background: #3a506b !important;
+  color: #fff !important;
+}
+
+.filter-select-dark:focus,
+.date-filter-dark:focus {
+  border-color: #e8a71c !important;
+  box-shadow: 0 0 5px rgb(232 167 28 / 40%) !important;
+}
+
+.filter-select-dark option {
+  background: #3a506b !important;
+  color: #fff !important;
+}
+
+/* Global dark mode styles for reactstrap Input components */
+:global(.filter-select-dark.form-control),
+:global(.filter-select-dark.form-select),
+:global(.date-filter-dark.form-control) {
+  border-color: #4a5a77 !important;
+  background-color: #3a506b !important;
+  color: #fff !important;
+}
+
+:global(.filter-select-dark.form-control:focus),
+:global(.filter-select-dark.form-select:focus),
+:global(.date-filter-dark.form-control:focus) {
+  border-color: #e8a71c !important;
+  background-color: #3a506b !important;
+  color: #fff !important;
+  box-shadow: 0 0 5px rgb(232 167 28 / 40%) !important;
+}
+
+/* ======================================
+   RADIO / CHECKBOX
+   ====================================== */
 
 .radioRow {
   display: flex;
@@ -353,6 +496,8 @@
   padding: 0;
   accent-color: #1b3c55;
   flex-shrink: 0;
+  position: relative;
+  appearance: auto;
   vertical-align: middle;
 }
 
@@ -362,13 +507,13 @@
   color: #ecf0f1;
 }
 
+.filter-option-text-dark {
+  color: #fff !important;
+}
+
 .darkSidebar .radioInput,
 .darkSidebar .filterItem input[type='checkbox'] {
   accent-color: #4da3ff;
-}
-
-.darkSidebar .inputGroup input {
-  color: #fff;
 }
 
 .darkSidebar .filterItem input:not([type='checkbox'], [type='radio'], [type='date']),
@@ -392,6 +537,7 @@
   font-size: 1rem;
   transition: all 0.3s ease;
   margin-bottom: 20px;
+  box-sizing: border-box;
 }
 
 .filterItem input[type='date'] {
@@ -407,6 +553,17 @@
   transition: all 0.3s ease;
   margin-bottom: 20px;
 }
+
+/* Override reactstrap default styles */
+:global(.radio-label .form-check-input),
+:global(.checkbox-label .form-check-input) {
+  margin: 0 !important;
+  position: static !important;
+}
+
+/* ======================================
+   SEARCH FILTER
+   ====================================== */
 
 .searchFilter {
   margin-bottom: 1.5rem;
@@ -444,6 +601,10 @@
   color: #cbd5e1;
 }
 
+/* ======================================
+   MAIN CONTENT
+   ====================================== */
+
 .dashboardMain {
   width: 65%;
   padding: 30px;
@@ -454,9 +615,20 @@
   background: #2b3e59;
 }
 
+.sectionTitle {
+  font-size: 2.2rem;
+  color: #2c3e50;
+  margin: 0 0 24px;
+  font-weight: bold;
+}
+
 .darkMain .sectionTitle {
   color: #f5f6f7;
 }
+
+/* ======================================
+   EVENTS HEADER
+   ====================================== */
 
 .eventsHeader {
   display: flex;
@@ -467,11 +639,8 @@
   flex-wrap: wrap;
 }
 
-.sectionTitle {
-  font-size: 2.2rem;
-  color: #2c3e50;
-  margin-bottom: 0;
-  font-weight: bold;
+.section-title-dark {
+  color: #fff !important;
 }
 
 .showPastEventsBtn {
@@ -499,6 +668,16 @@
   margin-top: 10px;
 }
 
+/* ======================================
+   EVENT CARDS
+   ====================================== */
+
+/*
+ * IMPORTANT:
+ * aspect-ratio: 1 / 1 keeps every event card square.
+ * Do not add height: 100% or min-height: 100% here.
+ */
+
 .eventCardCol {
   display: flex;
   margin-bottom: 1.5rem;
@@ -513,9 +692,9 @@
 
 .eventCard {
   width: 100%;
-  height: 100%;
-  min-height: 100%;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+  aspect-ratio: 1 / 1;
+  min-height: 0;
+  box-shadow: 0 6px 15px rgb(0 0 0 / 10%);
   display: flex;
   flex-direction: column;
   border-radius: 12px;
@@ -529,10 +708,97 @@
 }
 
 .eventCard:hover {
-  transform: scale(1.02);
+  transform: translateY(-4px);
   box-shadow: 0 8px 20px rgb(0 0 0 / 20%);
 }
 
+.event-card-dark {
+  background: #2b3e59;
+  box-shadow: 0 6px 15px rgb(0 0 0 / 30%);
+}
+
+.event-card-dark:hover {
+  box-shadow: 0 8px 20px rgb(0 0 0 / 50%);
+}
+
+/* ======================================
+   EVENT CARD IMAGE
+   ====================================== */
+
+.eventCardImgContainer {
+  width: 100%;
+  height: 40%;
+  flex-shrink: 0;
+  overflow: hidden;
+  background-color: #f0f0f0;
+  position: relative;
+}
+
+.eventCardImgContainer img,
+.eventCardImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-bottom: 3px solid #34495e;
+  display: block;
+}
+
+/* ======================================
+   EVENT CARD BODY
+   ====================================== */
+
+.eventCardBody {
+  flex-grow: 1;
+  min-height: 0;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  gap: 4px;
+}
+
+.eventCardBody::-webkit-scrollbar {
+  width: 4px;
+}
+
+.eventCardBody::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+
+.event-card-body-dark {
+  background: #2b3e59 !important;
+}
+
+/* ======================================
+   EVENT TITLE
+   ====================================== */
+
+.eventTitle {
+  position: relative;
+  text-align: center;
+  color: #2c3e50;
+  margin: 0 0 15px;
+  font-weight: bold;
+  font-size: 1.3rem;
+  line-height: 1.4;
+  overflow: visible;
+  cursor: default;
+}
+
+.event-title-dark {
+  color: #fff !important;
+}
+
+.eventTitleText {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Event title tooltip */
 .eventTitle::after {
   content: attr(data-event-title);
   position: absolute;
@@ -562,68 +828,19 @@
   transform: translate(-50%, 0);
 }
 
-.darkEventCard {
-  background: #1b2a41;
-}
-
-.darkEventCard .eventTitle {
-  color: #f5f6f7;
-}
-
-.eventCardImgContainer {
-  width: 100%;
-  overflow: hidden;
-  background-color: #f0f0f0;
-  position: relative;
-  flex-shrink: 0;
-}
-
-.eventCardImgContainer img {
-  width: 100%;
-  height: auto;
-}
-
-.eventCardImg {
-  width: 100%;
-  height: auto;
-}
-
-.eventCardBody {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  padding: 20px;
-  min-height: 180px;
-}
-
-.eventTitle {
-  position: relative;
-  text-align: center;
-  color: #2c3e50;
-  margin: 0 0 15px;
-  font-weight: bold;
-  font-size: 1.3rem;
-  line-height: 1.4;
-  overflow: visible;
-  cursor: default;
-}
-
-.eventTitleText {
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+/* ======================================
+   EVENT DETAILS
+   ====================================== */
 
 .eventDate,
 .eventLocation,
 .eventOrganizer {
-  font-size: 1rem;
+  font-size: 0.85rem;
   color: #555;
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 8px 0;
+  margin: 4px 0;
 }
 
 .eventIcon {
@@ -655,6 +872,10 @@
   color: #e4e6eb;
 }
 
+/* ======================================
+   NO EVENTS
+   ====================================== */
+
 .noEvents {
   text-align: center;
   padding: 40px;
@@ -666,6 +887,10 @@
 .darkMain .noEvents {
   color: #9ca3af;
 }
+
+/* ======================================
+   DASHBOARD ACTIONS
+   ====================================== */
 
 .dashboardActions {
   text-align: center;
@@ -689,6 +914,18 @@
   background-color: #34495e;
   box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
 }
+
+/* ======================================
+   LOADING / ERROR
+   ====================================== */
+
+.loading-text-dark {
+  color: #fff !important;
+}
+
+/* ======================================
+   PAGINATION
+   ====================================== */
 
 .paginationContainer {
   margin-top: 20px;
@@ -716,6 +953,10 @@
   background-color: #5a6268 !important;
   border-color: #545b62 !important;
 }
+
+/* ======================================
+   FILTER ACTIONS
+   ====================================== */
 
 .filterActions {
   display: flex;
@@ -766,7 +1007,10 @@
   border-top-color: #3a4e6a;
 }
 
-/* Recent Search Dropdown */
+/* ======================================
+   RECENT SEARCH DROPDOWN
+   ====================================== */
+
 .recentSearchDropdown {
   position: absolute;
   top: 100%;
@@ -873,7 +1117,21 @@
   color: #e74c3c;
 }
 
+/* ======================================
+   RESPONSIVE
+   ====================================== */
+
+@media (width <= 850px) {
+  .dashboardSearchContainer {
+    width: 250px;
+  }
+}
+
 @media (width <= 768px) {
+  .dashboard-main {
+    padding: 24px 0 0;
+  }
+
   .dashboardHeader {
     flex-wrap: wrap;
   }
