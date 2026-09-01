@@ -326,12 +326,15 @@ export default function ExpenditureLineGraph() {
     }
   };
 
+  const todayStr = new Date().toISOString().slice(0, 10);
+
   const inputStyle = {
     padding: '6px 10px',
     borderRadius: '4px',
     border: darkMode ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid #ddd',
     backgroundColor: darkMode ? '#253342' : '#fff',
     color: darkMode ? '#ffffff' : 'inherit',
+    colorScheme: darkMode ? 'dark' : 'light',
   };
 
   const labelStyle = { color: darkMode ? '#ffffff' : 'inherit' };
@@ -414,6 +417,7 @@ export default function ExpenditureLineGraph() {
                 value={startDate}
                 onChange={handleStartDateChange}
                 disabled={loading}
+                max={todayStr}
                 style={inputStyle}
               />
             </div>
@@ -428,6 +432,7 @@ export default function ExpenditureLineGraph() {
                 onChange={handleEndDateChange}
                 disabled={loading}
                 min={startDate}
+                max={todayStr}
                 style={inputStyle}
               />
             </div>
