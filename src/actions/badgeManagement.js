@@ -426,6 +426,7 @@ export const changeBadgesByUserID = (userId, badgeCollection) => {
       } else {
         setTimeout(() => dispatch(closeAlert()), ALERT_DELAY);
       }
+      return true;
     } catch (e) {
       dispatch(getMessage('Oops, something is wrong!', 'danger'));
       if (ALERT_DELAY === 0) {
@@ -433,6 +434,7 @@ export const changeBadgesByUserID = (userId, badgeCollection) => {
       } else {
         setTimeout(() => dispatch(closeAlert()), ALERT_DELAY);
       }
+      return false;
     }
   };
 };
