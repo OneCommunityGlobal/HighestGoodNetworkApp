@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Bar } from 'react-chartjs-2';
 import Select, { components } from 'react-select';
@@ -11,6 +11,7 @@ function IssueChart() {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
   const { loading, issues, error } = useSelector(state => state.bmissuechart);
+  const chartRef = useRef(null);
 
   const [filters, setFilters] = useState({ issueTypes: [], years: [] });
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
@@ -47,6 +48,54 @@ function IssueChart() {
     }
   }, [issues]);
 
+  const handleExportCSV = () => {
+    if (!chartData || chartData.labels.length === 0) return;
+
+    const rows = [];
+    rows.push(['Issue Type', 'Year', 'Count']);
+
+    chartData.datasets.forEach(dataset => {
+      dataset.data.forEach((count, index) => {
+        rows.push([chartData.labels[index], dataset.label, count]);
+      });
+    });
+
+    const csvContent = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'issues_chart_data.csv';
+    link.click();
+
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportPNG = () => {
+    if (!chartRef.current) return;
+
+    const chart = chartRef.current;
+    const sourceCanvas = chart.canvas;
+
+    // Chart.js renders on a transparent canvas, so the exported PNG has no
+    // background. Composite it onto a solid, theme-matched background first.
+    const exportCanvas = document.createElement('canvas');
+    exportCanvas.width = sourceCanvas.width;
+    exportCanvas.height = sourceCanvas.height;
+
+    const ctx = exportCanvas.getContext('2d');
+    ctx.fillStyle = darkMode ? '#22272e' : '#ffffff';
+    ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+    ctx.drawImage(sourceCanvas, 0, 0);
+
+    const url = exportCanvas.toDataURL('image/png');
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'issues_chart.png';
+    link.click();
+  };
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 640);
@@ -370,6 +419,9 @@ function IssueChart() {
             maxRotation: isMobile ? 90 : 0,
             minRotation: isMobile ? 90 : 0,
             font: { size: 12, weight: '500' },
+            padding: 10,
+            maxRotation: 35,
+            minRotation: 20,
             callback: (value, index, ticks) => {
               const label = chartData?.labels?.[index] ?? ticks?.[index]?.label ?? String(value);
               if (isMobile) return label;
@@ -571,6 +623,15 @@ function IssueChart() {
         >
           Issues Chart
         </h2>
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+          <button type="button" onClick={handleExportCSV} disabled={chartData.labels.length === 0}>
+            Export CSV
+          </button>
+
+          <button type="button" onClick={handleExportPNG} disabled={chartData.labels.length === 0}>
+            Export PNG
+          </button>
+        </div>
         <div
           className={styles.selectContainer}
           style={{ justifyContent: 'center', gap: '20px', flexWrap: 'wrap' }}
@@ -581,8 +642,35 @@ function IssueChart() {
               className={`${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`}
               title="Issue types with similar names are grouped (e.g., Technical, Technical1, Technical2)"
             >
-              Issue Type:
+              Issue Type ({filters.issueTypes.length} selected):
             </label>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '6px' }}>
+              <button
+                type="button"
+                onClick={() =>
+                  setFilters(prev => ({
+                    ...prev,
+                    issueTypes: Object.keys(issues),
+                  }))
+                }
+                style={{ cursor: 'pointer', fontSize: '12px' }}
+              >
+                Select All
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setFilters(prev => ({
+                    ...prev,
+                    issueTypes: [],
+                  }))
+                }
+                style={{ cursor: 'pointer', fontSize: '12px' }}
+              >
+                Clear All
+              </button>
+            </div>
             <Select
               inputId="issue-type-select"
               className={`${styles.issueChartSelect} ${
@@ -606,8 +694,34 @@ function IssueChart() {
               htmlFor="year-select"
               className={`${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`}
             >
-              Year:
+              Year ({filters.years.length} selected):
             </label>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '6px' }}>
+              <button
+                type="button"
+                onClick={() =>
+                  setFilters(prev => ({
+                    ...prev,
+                    years: uniqueYears.map(y => Number(y)), // ✅ FIXED
+                  }))
+                }
+                style={{ cursor: 'pointer', fontSize: '12px' }}
+              >
+                Select All
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  setFilters(prev => ({
+                    ...prev,
+                    years: [],
+                  }))
+                }
+                style={{ cursor: 'pointer', fontSize: '12px' }}
+              >
+                Clear All
+              </button>
+            </div>
             <Select
               inputId="year-select"
               className={`${styles.issueChartSelect} ${
@@ -648,7 +762,11 @@ function IssueChart() {
         {loading && <p>Loading...</p>}
         {error && <p>Error: {error}</p>}
 
-        {!loading && !error && (
+        {!loading && !error && chartData.labels.length === 0 && (
+          <p className={styles.noDataText}>No data for selected filters</p>
+        )}
+
+        {!loading && !error && chartData.labels.length > 0 && (
           <div
             className={`${styles.issueChartYearGroup} ${styles.issueTypeGroup} ${
               darkMode ? styles.issueChartYearGroupDark : ''
@@ -667,6 +785,7 @@ function IssueChart() {
               }}
             >
               <Bar
+                ref={chartRef}
                 data={chartData}
                 options={chartOptions}
                 plugins={chartPlugins}
