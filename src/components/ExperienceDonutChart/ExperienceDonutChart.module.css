@@ -281,6 +281,147 @@
   margin: 0 auto !important;
 }
 
+/* ===================== Details (below donut) ===================== */
+.chart-details {
+  max-width: 960px; /* match .experience-chart-container */
+  width: 100%;
+  margin: 1rem auto 0;
+  padding-inline: 0.5rem;
+  display: grid;
+  gap: 0.8rem;
+
+  /* single strategy: fluid columns that never force overflow */
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  place-items: stretch stretch;
+  overflow-x: hidden; /* safety net */
+}
+
+/* 2) Let cards fill the grid cell on desktop (remove narrow cap) */
+.detail-item {
+  display: grid;
+  grid-template-columns: 12px 1fr auto auto; /* dot | name | count | pct */
+  column-gap: 8px;
+  align-items: center;
+  width: 100%;
+  max-width: none; /* fill grid column, don't cap */
+  padding: 0.6rem 0.75rem;
+
+  /* text-align: left; */
+
+  /* prevent overflow on long role names / unbroken strings */
+  overflow-wrap: anywhere;
+  text-align: center;
+  justify-content: center;
+}
+
+/* Merged duplicate hover/active selectors */
+.detail-item:hover,
+.detail-item.active {
+  background: #111827;
+  border-color: #0b1220;
+  box-shadow: 0 8px 18px rgb(2 6 23 / 12%);
+  transform: translateY(-1px);
+}
+
+.detail-item:hover span,
+.detail-item.active span {
+  color: #fff !important;
+}
+.detail-item:hover .detail-pct,
+.detail-item.active .detail-pct { color: #93c5fd !important; } /* keep contrast on hover */
+
+/* Map children into the grid */
+.detail-dot {
+  grid-column: 1;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  box-shadow: 0 0 0 2px rgb(255 255 255 / 70%);
+}
+
+.detail-name {
+  grid-column: 2;
+  font-weight: 800;
+  color: #0f172a;
+  font-size: 0.9rem;
+}
+
+.detail-sep {
+  display: none;
+} /* we don’t need the bullet in a grid layout */
+.detail-count {
+  grid-column: 3;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.detail-sub {
+  display: none;
+} /* optional: hide to keep cards compact; show if you prefer */
+.detail-pct {
+  grid-column: 4;
+  margin-left: 0;
+  font-weight: 800;
+  color: #2563eb;
+}
+
+/* .detail-item:hover,
+.detail-item.active {
+  background: #111827;
+  border-color: #0b1220;
+  box-shadow: 0 8px 18px rgba(2,6,23,.12);
+  transform: translateY(-1px);
+} */
+
+/* .detail-item:hover span,
+.detail-item.active span { color: #ffffff !important; } */
+.detail-item:hover .detail-pct,
+.detail-item.active .detail-pct {
+  color: #93c5fd !important;
+} /* keep contrast on hover */
+
+@media (width <= 640px) {
+  .chart-details {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-item {
+    display: flex; /* simpler on mobile */
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+    gap: 0.45rem 0.6rem;
+  }
+
+  .detail-dot {
+    order: 1;
+  }
+
+  .detail-name {
+    order: 2;
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  .detail-sep {
+    display: none;
+  }
+
+  .detail-count {
+    order: 3;
+  }
+
+  .detail-sub {
+    order: 4;
+    display: inline;
+    color: #475569;
+  }
+
+  .detail-pct {
+    order: 5;
+  }
+}
+
 /* ===================== States ===================== */
 .spinner-container {
   display: flex;
@@ -333,6 +474,79 @@
     box-shadow: none;
     border: 1px solid #cbd5e1;
   }
+
+  .filter-section {
+    display: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .experience-chart-container {
+    border: 2px solid #000;
+  }
+
+  .filter-input,
+  .filter-select {
+    border: 2px solid #000;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+
+  .pie-cell,
+  .btn,
+  .filter-input,
+  .filter-select {
+    transition: none;
+  }
+}
+
+@media (width <= 640px) {
+  .chart-details {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-item {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+    gap: 0.45rem 0.6rem;
+  }
+
+  .detail-name {
+    width: 100%;
+    font-size: 1rem;
+  }
+}
+
+/* --- Ensure detail cards always show a visible background --- */
+/* Merged all .chart-details .detail-item selectors */
+.chart-details .detail-item {
+  background-color: #f1f5f9; /* stronger than #f8fafc, more visible */
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgb(2 6 23 / 6%);
+  background-clip: padding-box;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.2s ease,
+    transform 0.15s ease;
+}
+
+/* Keep dark hover/active but ensure contrast is clear */
+.chart-details .detail-item:hover,
+.chart-details .detail-item.active {
+  background-color: #111827;
+  border-color: #0b1220;
+  box-shadow: 0 8px 18px rgb(2 6 23 / 12%);
+}
+
+/* If your app has global card or utility classes that might strip bg,
+   this raises specificity a bit further without !important. */
+.experience-chart-container .chart-details .detail-item {
+  background-color: #f1f5f9;
 }
 
 /* Keep prefers-color-scheme consistent with your chosen dark */

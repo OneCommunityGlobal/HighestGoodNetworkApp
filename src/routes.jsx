@@ -228,6 +228,7 @@ import SimpleToolChart from './components/BMDashboard/Tools/SimpleToolChart';
 import SupportLogin from './components/SupportPortal/SupportLogin';
 import SupportDashboard from './components/SupportPortal/SupportDashboard';
 import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
+import ProjectStatus from './components/ProjectStatus/ProjectStatus';
 import MaterialUtilizationChart from './components/MaterialUtilization/MaterialUtilizationChart';
 
 // High Good Education
@@ -423,6 +424,7 @@ export default (
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
         <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
         <ProtectedRoute path="/taskeditsuggestions" component={TaskEditSuggestions} />
+        <ProtectedRoute path="/projectstatus" exact component={ProjectStatus} fallback />
         <ProtectedRoute
           path="/job-analytics-competitive-roles"
           exact
