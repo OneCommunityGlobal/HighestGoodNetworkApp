@@ -783,18 +783,11 @@ function Timer({ authUser, darkMode, isPopout }) {
       toggle={() => setConfirmationResetModal(!confirmationResetModal)}
       centered
       size="md"
-      className={cs(fontColor, darkMode ? 'dark-mode' : '')}
+      className={cs(fontColor, darkMode ? css.resetConfirmationModal : '')}
     >
-      <ModalHeader
-        className={darkMode ? 'bg-space-cadet' : ''}
-        toggle={() => setConfirmationResetModal(false)}
-      >
-        Reset Time
-      </ModalHeader>
-      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-        Are you sure you want to reset your time?
-      </ModalBody>
-      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+      <ModalHeader toggle={() => setConfirmationResetModal(false)}>Reset Time</ModalHeader>
+      <ModalBody>Are you sure you want to reset your time?</ModalBody>
+      <ModalFooter>
         <Button
           color="primary"
           onClick={() => {
