@@ -20,6 +20,7 @@ describe('ResourceUsage Component', () => {
   it('renders the title', () => {
     render(<ResourceUsage />);
     expect(screen.getByText(/Resources usage/i)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /scroll to top/i })).not.toBeInTheDocument();
   });
 
   // -----------------------------
