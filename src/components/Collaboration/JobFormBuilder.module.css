@@ -373,7 +373,6 @@
   width: 100%;
   padding: 12px;
   text-align: center;
-  margin-top: 20px;
   margin-left: auto;
   margin-right: auto;
   background-color: var(--jfb-lime);
@@ -393,8 +392,6 @@
 .saveSection {
   display: flex;
   justify-content: center;
-  margin-top: 15px;
-  margin-bottom: 20px;
 }
 
 /* Dark mode styles */
@@ -533,8 +530,13 @@
 
 /* Preview label (text-style) above save button */
 .previewSection {
-  margin-top: 20px;
-  margin-bottom: 8px;
+  padding-inline: 20px;
+}
+
+@media(width <= 576px) {
+  .previewSection {
+    padding-inline: 12px;
+  }
 }
 
 .previewTextButton {
@@ -557,7 +559,13 @@
 }
 
 .saveSection {
-  margin-top: 12px;
+  padding: 20px
+}
+
+@media(width <= 576px) {
+  .saveSection {
+    padding: 12px;
+  }
 }
 
 .darkMode .previewTextButton {
