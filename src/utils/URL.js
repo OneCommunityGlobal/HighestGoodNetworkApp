@@ -640,6 +640,7 @@ export const ENDPOINTS = {
   LB_LISTING_BOOK: `${APIEndpoint}/lb/listing/availability/booking`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
   HELP_REQUEST_CREATE: `${APIEndpoint}/helprequest/create`,
+  HELP_REQUEST_ELIGIBILITY: `${APIEndpoint}/helprequest/eligibility`,
   APPLICANT_SOURCES: `${APIEndpoint}/applicant-analytics/applicant-sources`,
 
   OPT_STATUS_BREAKDOWN: (startDate, endDate, role) => {
