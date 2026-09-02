@@ -48,7 +48,9 @@ export default function SearchProjectByPerson({
         </div>
         <input
           type="text"
-          className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
+          className={`form-control ${styles.searchInput} ${
+            darkMode ? 'bg-darkmode-liblack text-light' : ''
+          }`}
           placeholder={searchMode === 'person' ? 'Search by Person Name' : 'Search by Project Name'}
           value={inputValue}
           onChange={handleInputChange} // Trigger input change

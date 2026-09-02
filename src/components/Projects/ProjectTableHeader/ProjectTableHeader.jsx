@@ -14,11 +14,8 @@ import hasPermission from '~/utils/permissions';
 import { connect } from 'react-redux';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUp, faArrowDown, faSortDown } from '@fortawesome/free-solid-svg-icons';
-import { Dropdown,DropdownButton } from 'react-bootstrap';
-
-// import DropdownButton from 'react-bootstrap/DropdownButton';
-import { boxStyle, boxStyleDark } from '~/styles';
+import { faArrowUp, faArrowDown, faSortDown, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { Dropdown, DropdownButton } from 'react-bootstrap';
 import { Button } from 'reactstrap';
 
 
@@ -36,16 +33,27 @@ const ProjectTableHeader = props => {
     return faSortDown;
   };
 
-  const renderSortButton = column => (
-    <Button
-      size="sm"
-      className="ml-3 mb-1"
-      id={`${column.toLowerCase()}_sort`}
-      onClick={() => props.handleSort(column)}
-    >
-      <FontAwesomeIcon icon={getSortIcon(column)} pointerEvents="none" />
-    </Button>
-  );
+  // One muted, theme-aware style for every sort/filter control in the header so
+  // they read as a matched set instead of a row of clashing coloured chips.
+  // Outline while idle, filled once that column's sort/filter is active.
+  const baseColor = darkMode ? 'light' : 'secondary';
+  const filterVariant = active => (active ? baseColor : `outline-${baseColor}`);
+
+  const renderSortButton = column => {
+    const active = props.sorted.column === column && props.sorted.direction !== 'DEFAULT';
+    return (
+      <Button
+        size="sm"
+        outline={!active}
+        color={baseColor}
+        className="ml-2"
+        id={`${column.toLowerCase()}_sort`}
+        onClick={() => props.handleSort(column)}
+      >
+        <FontAwesomeIcon icon={getSortIcon(column)} pointerEvents="none" />
+      </Button>
+    );
+  };
 
   return (
     <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
@@ -53,8 +61,8 @@ const ProjectTableHeader = props => {
         #
       </th>
       {/* <th scope="col">{PROJECT_NAME}</th> */}
-      <th scope="col" className='align-middle'>        
-        <span className='d-flex justify-content-between align-middle mt-1'>
+      <th scope="col" className='align-middle text-break'>
+        <span className='d-flex justify-content-between align-items-center mt-1'>
           {PROJECT_NAME}
           <div>
             {renderSortButton('PROJECTS')}
@@ -62,45 +70,63 @@ const ProjectTableHeader = props => {
         </span>
       </th>
       <th scope="col" id="projects__category" className='align-middle'>
-         {/* This span holds the header-name and a dropDown component */}
-       <span className='d-flex justify-content-between align-middle mt-1'>
-        {PROJECT_CATEGORY}
-        <DropdownButton id="" title="" size='sm'style={darkMode ? boxStyleDark : boxStyle} variant='info' value={props.selectedValue} onSelect={props.onChange} menuAlign="right">
-          <Dropdown.Item default eventKey="" disabled={!props.selectedValue} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{props.selectedValue ? 'Clear filter' : 'Choose category'}</Dropdown.Item>
-          <Dropdown.Divider />
-          {categoryList.map((category, index) => 
-            <Dropdown.Item key={index} eventKey={category} active={props.selectedValue === category} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{category}</Dropdown.Item>
-          )}
-        </DropdownButton>
-       </span> 
+        {/* This span holds the header-name and a filter dropdown */}
+        <span className='d-flex justify-content-between align-items-center mt-1'>
+          {PROJECT_CATEGORY}
+          <DropdownButton
+            id="project-category-filter"
+            title={<FontAwesomeIcon icon={faChevronDown} pointerEvents="none" />}
+            size="sm"
+            variant={filterVariant(Boolean(props.selectedValue))}
+            className="ml-2"
+            value={props.selectedValue}
+            onSelect={props.onChange}
+            menuAlign="right"
+          >
+            <Dropdown.Item default eventKey="" disabled={!props.selectedValue} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{props.selectedValue ? 'Clear filter' : 'Choose category'}</Dropdown.Item>
+            <Dropdown.Divider />
+            {categoryList.map((category, index) => (
+              <Dropdown.Item key={index} eventKey={category} active={props.selectedValue === category} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{category}</Dropdown.Item>
+            ))}
+          </DropdownButton>
+        </span>
       </th>
-      <th scope="col" id="projects__active" className='align-middle'>
-      <span className='d-flex justify-content-between align-middle mt-1'>
-        {ACTIVE}
-        <DropdownButton className='ml-2 align-middle' id="" title="" size='sm'style={darkMode ? boxStyleDark : boxStyle} variant='info' value={props.showStatus} onSelect={props.selectStatus}  menuAlign="right" >
-        <Dropdown.Item default value="" disabled={!props.showStatus} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{props.showStatus ? 'Clear filter' : 'Choose Status'}</Dropdown.Item>
-          {statusList.map((status, index) => 
-            <Dropdown.Item key={index} eventKey={status} active={props.showStatus === status} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{status}</Dropdown.Item>
-          )}
-        </DropdownButton>
-       </span> 
+      <th scope="col" id="projects__active" className='align-middle text-center'>
+        <span className='d-flex justify-content-center align-items-center mt-1'>
+          {ACTIVE}
+          <DropdownButton
+            id="project-status-filter"
+            title={<FontAwesomeIcon icon={faChevronDown} pointerEvents="none" />}
+            size="sm"
+            variant={filterVariant(Boolean(props.showStatus))}
+            className="ml-2 align-middle"
+            value={props.showStatus}
+            onSelect={props.selectStatus}
+            menuAlign="right"
+          >
+            <Dropdown.Item default value="" disabled={!props.showStatus} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{props.showStatus ? 'Clear filter' : 'Choose Status'}</Dropdown.Item>
+            {statusList.map((status, index) => (
+              <Dropdown.Item key={index} eventKey={status} active={props.showStatus === status} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{status}</Dropdown.Item>
+            ))}
+          </DropdownButton>
+        </span>
       </th>
-      <th scope="col" id="projects__inv" className='align-middle'>
-        <span className='d-flex justify-content-between'>
+      <th scope="col" id="projects__inv" className='align-middle text-center'>
+        <span className='d-flex justify-content-center align-items-center'>
           {INVENTORY}
           <div>
             {renderSortButton('INVENTORY')}
           </div>
-        </span> 
+        </span>
       </th>
-      <th scope="col" id="projects__members" className='align-middle'>
-        <span className='d-flex'>
+      <th scope="col" id="projects__members" className='align-middle text-center'>
+        <span className='d-flex justify-content-center align-items-center'>
           {MEMBERS}
           {renderSortButton('MEMBERS')}
         </span>
       </th>
-      <th scope="col" id="projects__wbs" className='align-middle'>
-        <div className="d-flex align-items-center">
+      <th scope="col" id="projects__wbs" className='align-middle text-center'>
+        <div className="d-flex align-items-center justify-content-center">
           <span className="mr-2">{WBS}</span>
           <EditableInfoModal
             areaName="ProjectTableHeaderWBS"
@@ -114,7 +140,7 @@ const ProjectTableHeader = props => {
         </div>
       </th>
       {canDeleteProject ? (
-        <th scope="col" id="projects__delete" className='align-middle'>
+        <th scope="col" id="projects__delete" className='align-middle text-center'>
           {ARCHIVE}
         </th>
       ) : null}

@@ -381,14 +381,17 @@ const Projects = function(props) {
               </div>
             )}
         </div>
-        <div className="d-flex mb-3" style={{ gap: '10px' }}>
+        <div className="d-flex flex-wrap mb-3" style={{ gap: '10px' }}>
           <SearchProjectByPerson
             onSearch={handleSearchName}
             searchMode={searchMode}
             handleFetchArchivedProjects={handleFetchArchivedProjects}
             showArchived={showArchived}
           />
-          <div className="input-group" style={{ maxWidth: '260px', maxHeight: '38px' }}>
+          <div
+            className="input-group"
+            style={{ maxWidth: '260px', maxHeight: '38px', flexShrink: 0 }}
+          >
             <div className="input-group-prepend">
               <span
                   className={`input-group-text ${darkMode ? styles.searchLabelDark + ' text-light' : ''}`}
@@ -417,8 +420,11 @@ const Projects = function(props) {
           {showArchived ? 'Hide Archived' : 'Show Archived'}
         </button>
         </div>
-        <div>
-        <table className="table table-bordered table-responsive-sm">
+        <div className="table-responsive-sm w-100">
+        <table
+          className={`table table-bordered ${styles.projectsTable}`}
+          style={{ tableLayout: 'fixed', width: '100%' }}
+        >
           <thead className={styles.projectsTableHead}>
             <ProjectTableHeader
               onChange={onChangeCategory}
