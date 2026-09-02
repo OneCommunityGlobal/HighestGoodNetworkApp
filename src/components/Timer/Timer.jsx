@@ -325,7 +325,7 @@ function Timer({ authUser, darkMode, isPopout }) {
     if (viewingUserId == null) {
       return {
         sendStart: () => sendJsonMessageNoQueue({ action: action.START_TIMER }),
-        sendPause: () => sendJsonMessageNoQueue({ action: action.PAUSE_TIMER }),
+        sendPause: () => sendJsonMessageNoQueue({ action: action.PAUSE_TIMER }, false),
         sendClear: () => sendJsonMessageNoQueue({ action: action.CLEAR_TIMER }),
         sendStop: () => {
           sendJsonMessageNoQueue({ action: action.STOP_TIMER });
@@ -1008,7 +1008,7 @@ function Timer({ authUser, darkMode, isPopout }) {
             <button
               type="button"
               disabled={isButtonDisabled}
-              onClick={handleStartButton}
+              onMouseDown={handleStartButton}
               aria-label="Start timer"
               style={{ background: 'none', border: 'none' }}
             >
@@ -1029,7 +1029,7 @@ function Timer({ authUser, darkMode, isPopout }) {
             <button
               type="button"
               disabled={isButtonDisabled}
-              onClick={sendPause}
+              onMouseDown={sendPause}
               aria-label="Pause timer"
               style={{ background: 'none', border: 'none' }}
             >
@@ -1046,7 +1046,7 @@ function Timer({ authUser, darkMode, isPopout }) {
           <button
             type="button"
             disabled={!started || isButtonDisabled}
-            onClick={handleStopButton}
+            onMouseDown={handleStopButton}
             title="Stop timer and log time"
             aria-label="Stop timer and log time"
             style={{ background: 'none', border: 'none' }}
