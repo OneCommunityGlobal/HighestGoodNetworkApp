@@ -64,6 +64,16 @@
   height: 18px;
 }
 
+.contactLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.contactLink:hover,
+.contactLink:focus {
+  text-decoration: underline;
+}
+
 .scoreSkillsWrapper {
   width: 100%;
   display: flex;
