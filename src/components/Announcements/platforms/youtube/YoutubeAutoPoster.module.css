@@ -308,6 +308,11 @@
   color: #9aa1ab;
 }
 
+.youtubeAutoPoster .descriptionField {
+  min-height: 8rem;
+  resize: vertical;
+}
+
 .youtubeAutoPoster select.inputField {
   cursor: pointer;
 }

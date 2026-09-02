@@ -434,11 +434,11 @@ function YoutubeAutoPoster({ platform }) {
                         {videoDescriptionLength}/{MAX_VIDEO_DESCRIPTION_LENGTH} characters
                       </span>
                     </label>
-                    <input
+                    <textarea
                       id="videoDescription"
                       name="description"
-                      type="text"
-                      className={styles.inputField}
+                      className={clsx(styles.inputField, styles.descriptionField)}
+                      rows={5}
                       maxLength={MAX_VIDEO_DESCRIPTION_LENGTH}
                       onChange={event => setVideoDescriptionLength(event.target.value.length)}
                     />
