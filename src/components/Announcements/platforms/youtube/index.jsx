@@ -24,6 +24,10 @@ const PRIVACY_OPTIONS = [
   { value: 'unlisted', label: 'Unlisted' },
   { value: 'private', label: 'Private' },
 ];
+const MADE_FOR_KIDS_OPTIONS = [
+  { value: 'true', label: "Yes, it's made for kids" },
+  { value: 'false', label: "No, it's not made for kids" },
+];
 const AUDIENCE_SETTINGS = [
   {
     key: 'notifySubscribers',
@@ -74,6 +78,7 @@ function YoutubeAutoPoster({ platform }) {
   const [audienceSettings, setAudienceSettings] = useState(initialAudienceSettings);
   const [videoTitleLength, setVideoTitleLength] = useState(0);
   const [videoDescriptionLength, setVideoDescriptionLength] = useState(0);
+  const [madeForKids, setMadeForKids] = useState('false');
 
   const [connected, setConnected] = useState(false);
   const [checking, setChecking] = useState(true);
@@ -271,7 +276,7 @@ function YoutubeAutoPoster({ platform }) {
         categoryId: formData.get('categoryId'),
         tags,
         privacyStatus,
-        madeForKids: formData.get('madeForKids') === 'true',
+        madeForKids: madeForKids === 'true',
         ...audienceSettings,
       };
 
@@ -283,6 +288,7 @@ function YoutubeAutoPoster({ platform }) {
       setTagDraft('');
       setPrivacyStatus('public');
       setAudienceSettings(initialAudienceSettings);
+      setMadeForKids('false');
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : 'Upload failed');
     } finally {
@@ -406,21 +412,26 @@ function YoutubeAutoPoster({ platform }) {
                         required
                       />
                     </div>
-                    <div className={styles.inputGroup}>
-                      <label htmlFor="madeForKids" className={styles.inputLabel}>
+                    <fieldset className={styles.inputGroup}>
+                      <legend className={styles.inputLabel}>
                         Made for kids <span className={styles.inputRequired}>*</span>
-                      </label>
-                      <select
-                        id="madeForKids"
-                        name="madeForKids"
-                        className={styles.inputField}
-                        defaultValue="false"
-                        required
-                      >
-                        <option value="false">No</option>
-                        <option value="true">Yes</option>
-                      </select>
-                    </div>
+                      </legend>
+                      <div className={styles.radioGroup}>
+                        {MADE_FOR_KIDS_OPTIONS.map(option => (
+                          <label key={option.value} className={styles.radioOption}>
+                            <input
+                              type="radio"
+                              name="madeForKids"
+                              value={option.value}
+                              checked={madeForKids === option.value}
+                              onChange={event => setMadeForKids(event.target.value)}
+                              required
+                            />
+                            <span>{option.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </fieldset>
                   </div>
                   <div className={styles.inputGroup}>
                     <label

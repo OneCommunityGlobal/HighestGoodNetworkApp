@@ -253,6 +253,13 @@
   gap: 0.3rem;
 }
 
+.youtubeAutoPoster fieldset.inputGroup {
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
 .youtubeAutoPoster .inputLabelSpace {
   display: flex;
   align-items: center;
@@ -313,8 +320,31 @@
   resize: vertical;
 }
 
-.youtubeAutoPoster select.inputField {
+.youtubeAutoPoster .radioGroup {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.3rem;
+}
+
+.youtubeAutoPoster .radioOption {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #3f4650;
+  font-size: 0.875rem;
   cursor: pointer;
+}
+
+.youtubeAutoPoster .radioOption input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: #f03;
+  margin: 0;
+}
+
+.youtubeAutoPoster .radioOption input:focus-visible {
+  outline: 3px solid rgb(255 0 51 / 20%);
+  outline-offset: 2px;
 }
 
 .youtubeAutoPoster .fileInput {
@@ -899,6 +929,10 @@
 :global(.dark-mode) .youtubeAutoPoster .inputField::placeholder,
 :global(.dark-mode) .youtubeAutoPoster .addTagInput::placeholder {
   color: #9ca3af !important;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .radioOption {
+  color: #f3f4f6;
 }
 
 :global(.dark-mode) .youtubeAutoPoster .form .replaceButton:hover {
