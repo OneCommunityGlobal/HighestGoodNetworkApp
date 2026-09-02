@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import Select from 'react-select';
 import styles from './YoutubeAutoPoster.module.css';
 import { ENDPOINTS } from '~/utils/URL';
 import { clsx } from 'clsx';
@@ -79,6 +80,9 @@ function YoutubeAutoPoster({ platform }) {
   const [videoTitleLength, setVideoTitleLength] = useState(0);
   const [videoDescriptionLength, setVideoDescriptionLength] = useState(0);
   const [madeForKids, setMadeForKids] = useState('false');
+  const [categories, setCategories] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState('');
 
   const [connected, setConnected] = useState(false);
   const [checking, setChecking] = useState(true);
@@ -227,6 +231,25 @@ function YoutubeAutoPoster({ platform }) {
         setConnected(Boolean(connectionResult.connected));
         setAccount(connectionResult.account ?? null);
 
+        if (connectionResult.connected) {
+          setCategoriesLoading(true);
+          const categoriesResponse = await fetch(
+            ENDPOINTS.YOUTUBE_AUTOPOSTER_CATEGORIES_URL('US', 'en'),
+            {
+              headers: { Authorization: localStorage.getItem('token') },
+              credentials: 'include',
+            },
+          );
+          const categoriesResult = await categoriesResponse.json();
+          if (categoriesResponse.ok) {
+            const categoryItems = Array.isArray(categoriesResult)
+              ? categoriesResult
+              : categoriesResult.items ?? categoriesResult.categories ?? [];
+            setCategories(categoryItems.filter(category => category.snippet?.assignable !== false));
+          }
+          setCategoriesLoading(false);
+        }
+
         if (connectionWasJustRequested && connectionResult.connected && !connectionResult.account) {
           toast.error(
             'Your connected Google account does not have a YouTube channel. Create a channel, then try again.',
@@ -236,6 +259,7 @@ function YoutubeAutoPoster({ platform }) {
       } catch (error) {
         setConnected(false);
         setAccount(null);
+        setCategoriesLoading(false);
       } finally {
         setChecking(false);
       }
@@ -273,7 +297,7 @@ function YoutubeAutoPoster({ platform }) {
       const values = {
         title: formData.get('title'),
         description: formData.get('description'),
-        categoryId: formData.get('categoryId'),
+        categoryId: selectedCategoryId,
         tags,
         privacyStatus,
         madeForKids: madeForKids === 'true',
@@ -289,6 +313,7 @@ function YoutubeAutoPoster({ platform }) {
       setPrivacyStatus('public');
       setAudienceSettings(initialAudienceSettings);
       setMadeForKids('false');
+      setSelectedCategoryId('');
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : 'Upload failed');
     } finally {
@@ -402,13 +427,31 @@ function YoutubeAutoPoster({ platform }) {
                       <label htmlFor="categoryId" className={styles.inputLabel}>
                         Category <span className={styles.inputRequired}>*</span>
                       </label>
-                      <input
-                        id="categoryId"
+                      <Select
+                        inputId="categoryId"
                         name="categoryId"
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]+"
-                        className={styles.inputField}
+                        className={styles.categorySelect}
+                        classNamePrefix="youtubeCategory"
+                        options={categories.map(category => ({
+                          value: String(category.id),
+                          label: category.snippet?.title ?? category.title,
+                        }))}
+                        value={
+                          categories
+                            .map(category => ({
+                              value: String(category.id),
+                              label: category.snippet?.title ?? category.title,
+                            }))
+                            .find(option => option.value === selectedCategoryId) ?? null
+                        }
+                        onChange={option => setSelectedCategoryId(option?.value ?? '')}
+                        placeholder={
+                          categoriesLoading ? 'Loading categories…' : 'Select a category'
+                        }
+                        isDisabled={categoriesLoading || categories.length === 0}
+                        isLoading={categoriesLoading}
+                        isClearable={false}
+                        isSearchable
                         required
                       />
                     </div>

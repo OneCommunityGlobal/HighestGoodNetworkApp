@@ -320,6 +320,69 @@
   resize: vertical;
 }
 
+.youtubeAutoPoster .categorySelect {
+  width: 100%;
+  font-size: 0.875rem;
+}
+
+.youtubeAutoPoster .categorySelect :global(.youtubeCategory__control) {
+  min-height: 2.75rem;
+  background-color: #fff;
+  border-color: #d9dee7;
+  border-radius: 8px;
+  box-shadow: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.youtubeAutoPoster .categorySelect :global(.youtubeCategory__control:hover) {
+  border-color: #b8c1cf;
+}
+
+.youtubeAutoPoster .categorySelect :global(.youtubeCategory__control--is-focused) {
+  border-color: #e11d48;
+  box-shadow: 0 0 0 3px rgb(225 29 72 / 12%);
+}
+
+.youtubeAutoPoster .categorySelect :global(.youtubeCategory__value-container) {
+  padding-inline: 0.8rem;
+}
+
+.youtubeAutoPoster .categorySelect :global(.youtubeCategory__single-value) {
+  color: #9f1239;
+}
+
+.youtubeAutoPoster .categorySelect :global(.youtubeCategory__placeholder),
+.youtubeAutoPoster .categorySelect :global(.youtubeCategory__dropdown-indicator) {
+  color: #7d8590;
+}
+
+.youtubeAutoPoster .categorySelect :global(.youtubeCategory__indicator-separator) {
+  background-color: #d9dee7;
+}
+
+.youtubeAutoPoster .categorySelect :global(.youtubeCategory__menu) {
+  z-index: 5;
+  overflow: hidden;
+  border: 1px solid #d9dee7;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgb(32 33 36 / 12%);
+}
+
+.youtubeAutoPoster .categorySelect :global(.youtubeCategory__option) {
+  color: #303640;
+  cursor: pointer;
+}
+
+.youtubeAutoPoster .categorySelect :global(.youtubeCategory__option--is-focused) {
+  background-color: #f4f5f7;
+}
+
+.youtubeAutoPoster .categorySelect :global(.youtubeCategory__option--is-selected) {
+  color: #9f1239;
+  background-color: #fff1f2;
+  font-weight: 500;
+}
+
 .youtubeAutoPoster .radioGroup {
   display: flex;
   flex-direction: column;
@@ -929,6 +992,37 @@
 :global(.dark-mode) .youtubeAutoPoster .inputField::placeholder,
 :global(.dark-mode) .youtubeAutoPoster .addTagInput::placeholder {
   color: #9ca3af !important;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .categorySelect :global(.youtubeCategory__control),
+:global(.dark-mode) .youtubeAutoPoster .categorySelect :global(.youtubeCategory__menu),
+:global(.dark-mode) .youtubeAutoPoster .categorySelect :global(.youtubeCategory__menu-list) {
+  background-color: #1f252e;
+  border-color: #4b5563;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .categorySelect :global(.youtubeCategory__single-value),
+:global(.dark-mode) .youtubeAutoPoster .categorySelect :global(.youtubeCategory__option) {
+  color: #f3f4f6;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .categorySelect :global(.youtubeCategory__single-value) {
+  color: #fecdd3;
+}
+
+:global(.dark-mode)
+  .youtubeAutoPoster
+  .categorySelect
+  :global(.youtubeCategory__option--is-focused) {
+  background-color: #303846;
+}
+
+:global(.dark-mode)
+  .youtubeAutoPoster
+  .categorySelect
+  :global(.youtubeCategory__option--is-selected) {
+  color: #fecdd3;
+  background-color: #4a2630;
 }
 
 :global(.dark-mode) .youtubeAutoPoster .radioOption {
