@@ -70,7 +70,7 @@
 
 .task_table-container {
   width: 100%;
-  overflow: hidden auto;
+  overflow: auto;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -139,7 +139,7 @@
   max-width: 160px;
   padding-right: 0 !important;
   padding-left: 0 !important;
-  text-align: left;
+  text-align: center;
 }
 
 /* .task-break {
