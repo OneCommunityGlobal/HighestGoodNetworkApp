@@ -253,6 +253,11 @@
   gap: 0.3rem;
 }
 
+.youtubeAutoPoster .inputLabelSpace {
+  display: flex;
+  align-items: center;
+}
+
 .youtubeAutoPoster .inputLabel {
   font-size: 0.875rem;
   font-weight: 500;
@@ -267,6 +272,13 @@
   color: #878787 !important;
   font-weight: 400;
   font-size: 0.65rem;
+}
+
+.youtubeAutoPoster .characterCount {
+  margin-left: auto;
+  color: #878787 !important;
+  font-size: 0.75rem;
+  font-weight: 400;
 }
 
 .youtubeAutoPoster .inputField {

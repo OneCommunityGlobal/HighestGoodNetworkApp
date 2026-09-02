@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import styles from './YoutubeAutoPoster.module.css';
 import { ENDPOINTS } from '~/utils/URL';
+import { clsx } from 'clsx';
 
 const readError = async response => {
   const body = await response.json().catch(() => null);
@@ -15,6 +16,7 @@ const minimumScheduleTime = () => {
 };
 
 const MAX_TAGS = 500;
+const MAX_VIDEO_TITLE_LENGTH = 100;
 const YOUTUBE_CONNECTION_ATTEMPT_KEY = 'youtubeConnectionAttempt';
 const PRIVACY_OPTIONS = [
   { value: 'public', label: 'Public' },
@@ -69,6 +71,7 @@ function YoutubeAutoPoster({ platform }) {
   const [tagDraft, setTagDraft] = useState('');
   const [privacyStatus, setPrivacyStatus] = useState('public');
   const [audienceSettings, setAudienceSettings] = useState(initialAudienceSettings);
+  const [videoTitleLength, setVideoTitleLength] = useState(0);
 
   const [connected, setConnected] = useState(false);
   const [checking, setChecking] = useState(true);
@@ -365,15 +368,24 @@ function YoutubeAutoPoster({ platform }) {
                 <h4 className={styles.cardTitle}>Video details</h4>
                 <div className={styles.cardContent}>
                   <div className={styles.inputGroup}>
-                    <label htmlFor="videoTitle" className={styles.inputLabel}>
-                      Video Title <span className={styles.inputRequired}>*</span>
+                    <label
+                      htmlFor="videoTitle"
+                      className={clsx(styles.inputLabel, styles.inputLabelSpace)}
+                    >
+                      <span>
+                        Video Title <span className={styles.inputRequired}>*</span>
+                      </span>
+                      <span className={styles.characterCount} aria-live="polite">
+                        {videoTitleLength}/{MAX_VIDEO_TITLE_LENGTH} characters
+                      </span>
                     </label>
                     <input
                       id="videoTitle"
                       name="title"
                       type="text"
                       className={styles.inputField}
-                      maxLength={100}
+                      maxLength={MAX_VIDEO_TITLE_LENGTH}
+                      onChange={event => setVideoTitleLength(event.target.value.length)}
                       required
                     />
                   </div>
