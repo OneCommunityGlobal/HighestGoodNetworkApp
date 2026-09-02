@@ -5,6 +5,8 @@ import PromotionConfirmationBox from './PromotionConfirmationBox';
 import ReviewerCell from './ReviewerCell';
 import React from 'react';
 
+const GRADE_OPTIONS = ['Exceptional', 'Okay', 'Unsatisfactory', 'Cannot find image'];
+
 const PRGradingView = ({
   darkMode,
   teamData,
@@ -220,48 +222,25 @@ const PRGradingView = ({
               <thead>
                 <tr>
                   <th>PR Number</th>
-                  <th>Exceptional</th>
-                  <th>Okay</th>
-                  <th>Unsatisfactory</th>
-                  <th>Cannot find image</th>
+                  {GRADE_OPTIONS.map(g => (
+                    <th key={g}>{g}</th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
                 {gradingReviewer.gradedPrs.map(pr => (
                   <tr key={pr.id}>
                     <td>{pr.prNumbers}</td>
-                    <td>
-                      <input
-                        type="checkbox"
-                        disabled={isFinalized}
-                        checked={pr.grade === 'Exceptional'}
-                        onChange={() => onGradeChange(showGradingModal, pr.id, 'Exceptional')}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="checkbox"
-                        disabled={isFinalized}
-                        checked={pr.grade === 'Okay'}
-                        onChange={() => onGradeChange(showGradingModal, pr.id, 'Okay')}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="checkbox"
-                        disabled={isFinalized}
-                        checked={pr.grade === 'Unsatisfactory'}
-                        onChange={() => onGradeChange(showGradingModal, pr.id, 'Unsatisfactory')}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="checkbox"
-                        disabled={isFinalized}
-                        checked={pr.grade === 'Cannot find image'}
-                        onChange={() => onGradeChange(showGradingModal, pr.id, 'Cannot find image')}
-                      />
-                    </td>
+                    {GRADE_OPTIONS.map(grade => (
+                      <td key={grade}>
+                        <input
+                          type="checkbox"
+                          disabled={isFinalized}
+                          checked={pr.grade === grade}
+                          onChange={() => onGradeChange(showGradingModal, pr.id, grade)}
+                        />
+                      </td>
+                    ))}
                   </tr>
                 ))}
               </tbody>
