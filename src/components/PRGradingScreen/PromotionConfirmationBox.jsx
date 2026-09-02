@@ -98,6 +98,7 @@ function PromotionConfirmationBox({ reviewer, onConfirm, onCancel, darkMode }) {
                   <td
                     style={{
                       padding: '8px 12px',
+                      background: darkMode ? '#1e293b' : '#fff',
                       color: darkMode ? '#fff' : '#333',
                       border: `1px solid ${darkMode ? '#4a5a77' : '#dee2e6'}`,
                     }}
@@ -107,6 +108,7 @@ function PromotionConfirmationBox({ reviewer, onConfirm, onCancel, darkMode }) {
                   <td
                     style={{
                       padding: '8px 12px',
+                      background: darkMode ? '#1e293b' : '#fff',
                       color: darkMode ? '#fff' : '#333',
                       border: `1px solid ${darkMode ? '#4a5a77' : '#dee2e6'}`,
                       textAlign: 'center',
@@ -225,41 +227,21 @@ function PromotionConfirmationBox({ reviewer, onConfirm, onCancel, darkMode }) {
         </div>
 
         {/* Footer */}
+        {/* Footer */}
         <div
           className={`${styles['pr-grading-screen-modal-footer']} ${
-            darkMode ? styles['dark-mode'] : ''
-          }`}
-          style={{ gap: '12px' }}
+            styles['pr-promotion-footer']
+          } ${darkMode ? styles['dark-mode'] : ''}`}
         >
-          <button
-            type="button"
-            onClick={onCancel}
-            style={{
-              padding: '8px 20px',
-              borderRadius: '4px',
-              border: `1px solid ${darkMode ? '#5a6b88' : '#6c757d'}`,
-              background: darkMode ? '#6c757d' : '#fff',
-              color: darkMode ? '#fff' : '#6c757d',
-              cursor: 'pointer',
-              fontWeight: '600',
-            }}
-          >
+          <button type="button" className={styles['pr-promotion-btn-cancel']} onClick={onCancel}>
             Cancel
           </button>
           <button
             type="button"
-            onClick={() => onConfirm(reviewerName, reviewer.reviewerId)}
-            style={{
-              padding: '8px 20px',
-              borderRadius: '4px',
-              border: 'none',
-              background: '#28a745',
-              color: '#fff',
-              cursor: 'pointer',
-              fontWeight: '600',
-            }}
+            className={styles['pr-promotion-btn-confirm']}
+            onClick={() => onConfirm(reviewerName, reviewer.reviewerId || reviewer.id)}
           >
-            ✅ Confirm Promotion
+            Confirm Promotion
           </button>
         </div>
       </div>

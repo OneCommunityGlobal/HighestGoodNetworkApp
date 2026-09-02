@@ -1007,3 +1007,66 @@
 .pr-grading-screen-no-results.dark-mode {
   color: #9ab0cc;
 }
+
+/* Promotion Confirmation Modal Actions */
+.pr-promotion-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 24px 24px !important;
+}
+
+.pr-promotion-btn-cancel {
+  padding: 9px 24px;
+  border-radius: 6px;
+  border: 1px solid #6c757d;
+  background-color: #6c757d;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+}
+
+.pr-promotion-btn-cancel:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 20%);
+}
+
+.pr-promotion-btn-confirm {
+  padding: 9px 24px;
+  border-radius: 6px;
+  border: none;
+  background-color: #28a745;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+}
+
+.pr-promotion-btn-confirm:hover {
+  background-color: #218838;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgb(40 167 69 / 40%);
+}
+
+/* Dark Mode Overrides */
+.dark-mode .pr-promotion-btn-cancel {
+  border-color: #5a6b88;
+  background-color: #475569;
+}
+
+.dark-mode .pr-promotion-btn-cancel:hover {
+  background-color: #5a6b88;
+  border-color: #8a9bb8;
+}
+
+.dark-mode .pr-promotion-btn-confirm:hover {
+  background-color: #1e7e34;
+}
