@@ -282,8 +282,34 @@
 }
 
 .youtubeAutoPoster .inputField {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.8rem;
+  color: #202124;
+  background-color: #fff;
+  border: 1px solid #d9dee7;
   border-radius: 8px;
-  border: 1px solid #e4e6eb;
+  font: inherit;
+  line-height: 1.4;
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.youtubeAutoPoster .inputField:hover {
+  border-color: #b8c1cf;
+}
+
+.youtubeAutoPoster .inputField:focus {
+  border-color: #f03;
+  box-shadow: 0 0 0 3px rgb(255 0 51 / 14%);
+}
+
+.youtubeAutoPoster .inputField::placeholder {
+  color: #9aa1ab;
+}
+
+.youtubeAutoPoster select.inputField {
+  cursor: pointer;
 }
 
 .youtubeAutoPoster .fileInput {
