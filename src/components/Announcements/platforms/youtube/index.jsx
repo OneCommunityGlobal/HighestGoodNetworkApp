@@ -17,6 +17,7 @@ const minimumScheduleTime = () => {
 
 const MAX_TAGS = 500;
 const MAX_VIDEO_TITLE_LENGTH = 100;
+const MAX_VIDEO_DESCRIPTION_LENGTH = 5000;
 const YOUTUBE_CONNECTION_ATTEMPT_KEY = 'youtubeConnectionAttempt';
 const PRIVACY_OPTIONS = [
   { value: 'public', label: 'Public' },
@@ -72,6 +73,7 @@ function YoutubeAutoPoster({ platform }) {
   const [privacyStatus, setPrivacyStatus] = useState('public');
   const [audienceSettings, setAudienceSettings] = useState(initialAudienceSettings);
   const [videoTitleLength, setVideoTitleLength] = useState(0);
+  const [videoDescriptionLength, setVideoDescriptionLength] = useState(0);
 
   const [connected, setConnected] = useState(false);
   const [checking, setChecking] = useState(true);
@@ -421,15 +423,24 @@ function YoutubeAutoPoster({ platform }) {
                     </div>
                   </div>
                   <div className={styles.inputGroup}>
-                    <label htmlFor="videoDescription" className={styles.inputLabel}>
-                      Description <span className={styles.inputOptional}>Optional</span>
+                    <label
+                      htmlFor="videoDescription"
+                      className={clsx(styles.inputLabel, styles.inputLabelSpace)}
+                    >
+                      <span>
+                        Description <span className={styles.inputOptional}>Optional</span>
+                      </span>
+                      <span className={styles.characterCount} aria-live="polite">
+                        {videoDescriptionLength}/{MAX_VIDEO_DESCRIPTION_LENGTH} characters
+                      </span>
                     </label>
                     <input
                       id="videoDescription"
                       name="description"
                       type="text"
                       className={styles.inputField}
-                      maxLength={5000}
+                      maxLength={MAX_VIDEO_DESCRIPTION_LENGTH}
+                      onChange={event => setVideoDescriptionLength(event.target.value.length)}
                     />
                   </div>
                 </div>
