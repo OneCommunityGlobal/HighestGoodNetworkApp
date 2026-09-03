@@ -20,10 +20,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { Info, Repeat } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
+import PropTypes from 'prop-types';
 import { fetchBMProjects } from '../../../../actions/bmdashboard/projectActions';
 import styles from './QuantityOfMaterialsUsed.module.css';
-import PropTypes from 'prop-types';
-import { data } from 'jquery';
 
 ChartJS.register(
   BarElement,

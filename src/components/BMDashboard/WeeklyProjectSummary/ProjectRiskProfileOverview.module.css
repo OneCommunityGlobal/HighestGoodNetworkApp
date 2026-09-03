@@ -310,13 +310,22 @@
   background-color: #e8f0fe;
 }
 
+.table tbody tr:hover .td,
+.table tbody tr:hover .tdProject,
+.table tbody tr:hover .deltaText,
+.table tbody tr:hover .indicatorSub {
+  color: #1a1a1a;
+}
+
 .darkMode .table tbody tr:hover {
   background-color: #3a506b;
 }
 
 .darkMode .table tbody tr:hover .td,
-.darkMode .table tbody tr:hover .tdProject {
-  color: #fff !important;
+.darkMode .table tbody tr:hover .tdProject,
+.darkMode .table tbody tr:hover .deltaText,
+.darkMode .table tbody tr:hover .indicatorSub {
+  color: #fff;
 }
 
 .th {
@@ -335,10 +344,12 @@
 .td {
   padding: 12px;
   border-bottom: 1px solid #eee;
+  color: #1a1a1a;
 }
 
 .darkMode .td {
   border-bottom: 1px solid #404040;
+  color: #e5e7eb;
 }
 
 .tdProject {
@@ -346,10 +357,12 @@
   border-bottom: 1px solid #eee;
   white-space: nowrap;
   font-weight: 500;
+  color: #1a1a1a;
 }
 
 .darkMode .tdProject {
   border-bottom: 1px solid #404040;
+  color: #e5e7eb;
 }
 
 .sparkRow {
