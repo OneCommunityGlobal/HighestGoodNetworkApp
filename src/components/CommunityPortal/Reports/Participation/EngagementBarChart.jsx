@@ -75,6 +75,14 @@ function EngagementBarChart({ events = [] }) {
     ? Math.round(((lastAttendance - firstAttendance) / firstAttendance) * 100)
     : null;
 
+  let growthTrendLabel = 'N/A';
+  if (growthTrend !== null) {
+    const growthSign = growthTrend >= 0 ? '+' : '';
+    const firstMonthLabel = engagementData[0]?.month;
+    const lastMonthLabel = engagementData[engagementData.length - 1]?.month;
+    growthTrendLabel = `${growthSign}${growthTrend}% from ${firstMonthLabel} to ${lastMonthLabel}`;
+  }
+
   const tooltipStyle = {
     backgroundColor: darkMode ? '#1C2541' : '#ffffff',
     border: `1px solid ${darkMode ? '#3a4a6b' : '#e0e0e0'}`,
@@ -133,13 +141,7 @@ function EngagementBarChart({ events = [] }) {
         </div>
         <div className={styles.insightItem}>
           <span className={styles.insightLabel}>Growth Trend:</span>
-          <span className={styles.insightValue}>
-            {growthTrend === null
-              ? 'N/A'
-              : `${growthTrend >= 0 ? '+' : ''}${growthTrend}% from ${
-                  engagementData[0]?.month
-                } to ${engagementData[engagementData.length - 1]?.month}`}
-          </span>
+          <span className={styles.insightValue}>{growthTrendLabel}</span>
         </div>
       </div>
     </div>
