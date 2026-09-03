@@ -1,9 +1,18 @@
 /* stylelint-disable  */
 .mfkContainer {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --title-color: #1e3a8a;
+  --label-color: #374151;
+  --input-bg: #ffffff;
+  --border-color: #d1d5db;
+  --focus-border-color: #3b82f6;
+  --text-secondary: #6b7280;
+  --error-color: #dc2626;
   padding: 1rem;
   font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: var(--bg-color, #fff);
-  color: var(--text-color, #000);
+  background-color: var(--bg-color);
+  color: var(--text-color);
   height: 100%;
   min-height: 100%;
   display: flex;
@@ -50,16 +59,16 @@
   min-width: 120px;
 }
 
-/* Make data source dropdown wider */
+/* Data source dropdown spans its own row so the date fields can align together */
 .controlGroup:first-of-type {
-  flex: 2 1 200px;
+  flex: 1 1 100%;
   min-width: 180px;
 }
 
-/* Make date fields smaller and just big enough */
+/* Keep both date fields on the same line, sharing the row evenly */
 .controlGroup:nth-of-type(2),
 .controlGroup:nth-of-type(3) {
-  flex: 0 1 110px;
+  flex: 1 1 0;
   min-width: 100px;
 }
 
@@ -275,13 +284,13 @@
   }
 
   .controlGroup:first-of-type {
-    flex: 2 1 180px;
+    flex: 1 1 100%;
     min-width: 160px;
   }
 
   .controlGroup:nth-of-type(2),
   .controlGroup:nth-of-type(3) {
-    flex: 0 1 100px;
+    flex: 1 1 0;
     min-width: 90px;
   }
 
@@ -416,6 +425,11 @@
 
 :global(.mfk-dark-popper .react-datepicker__month-container),
 :global(.mfk-dark-calendar .react-datepicker__month-container) {
+  background-color: #0f172a !important;
+}
+
+:global(.mfk-dark-popper .react-datepicker__month),
+:global(.mfk-dark-calendar .react-datepicker__month) {
   background-color: #0f172a !important;
 }
 
@@ -1006,8 +1020,11 @@
   opacity: 1 !important;
 }
 
-:global(.react-datepicker__navigation-icon--previous::before),
-:global(.react-datepicker__navigation-icon--next::before) {
+/* Missing .darkMode guard here made this apply globally (light mode too),
+   overriding every other page's react-datepicker arrows app-wide since it
+   has higher selector specificity than an unscoped default. */
+.darkMode :global(.react-datepicker__navigation-icon--previous::before),
+.darkMode :global(.react-datepicker__navigation-icon--next::before) {
   border-color: #e2e8f0 !important;
   border-width: 2px 2px 0 0 !important;
   opacity: 1 !important;

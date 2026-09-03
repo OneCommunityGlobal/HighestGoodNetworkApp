@@ -1,17 +1,17 @@
-import axios from 'axios';
+import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { useEffect, useMemo, useState } from 'react';
+import { Table, Button, UncontrolledTooltip , Spinner } from 'reactstrap';
 import { connect } from 'react-redux';
-import { toast } from 'react-toastify';
-import { Button, Spinner, Table, UncontrolledTooltip } from 'reactstrap';
-import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
-import { ENDPOINTS } from '~/utils/URL';
+import axios from 'axios';
+import AssignTableRow from '../Badge/AssignTableRow';
 import {
   assignBadgesByUserID,
   clearNameAndSelected,
 } from '../../actions/badgeManagement';
+import { ENDPOINTS } from '~/utils/URL';
 import { boxStyle, boxStyleDark } from '../../styles';
-import AssignTableRow from '../Badge/AssignTableRow';
+import { toast } from 'react-toastify';
+import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
 
 
 function AssignBadgePopup(props) {
@@ -60,14 +60,25 @@ function AssignBadgePopup(props) {
       const response = await axios.get(ENDPOINTS.BADGE());
       setBadgeList(response.data);
       setisLoadingBadge(false);
-    } catch (error) {}
+    } catch (error) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('Failed to load badges', error);
+      }
+    }
+  };
+
+ const formatSearchInput = text => {
+    return text
+      .toLowerCase()
+      .replace(/\s+/g, '')
+      .trim();
   };
 
   const filterBadges = (allBadges = []) => {
     // guard against non-array inputs
     if (!Array.isArray(allBadges)) return [];
     return allBadges.filter(({ badgeName }) =>
-      badgeName.toLowerCase().includes(searchedName.toLowerCase()),
+      formatSearchInput(badgeName).includes(formatSearchInput(searchedName)),
     );
   };
 
@@ -76,18 +87,30 @@ function AssignBadgePopup(props) {
   }, [badgeList, searchedName]);
 
   const addExistBadges = () => {
-  if (props.userProfile?.badgeCollection) {
-    const existBadges = props.userProfile.badgeCollection
-      .filter(b => b && b.badge && typeof b.badge === 'object' && b.badge._id)
-      .map(b => b.badge._id);
-    return existBadges;
-  }
-  return [];
-};
+    if (props.userProfile?.badgeCollection) {
+      return props.userProfile.badgeCollection
+        .filter(b => b.badge !== null)
+        .map(b => b.badge._id);
+    }
+    return [];
+  };
   let existBadges = addExistBadges();
 
   return (
     <div data-testid="test-assignbadgepopup">
+      {/* Comprehensive dark mode hover style fix */}
+      {darkMode && (
+        <style>{`
+          .dark-mode-table tbody tr:hover,
+          .dark-mode-table tbody tr:hover td,
+          .dark-mode-table thead tr:hover,
+          .dark-mode-table thead tr:hover th,
+          .dark-mode-table thead tr:hover i {
+            background-color: #2b3553 !important;
+            color: #ffffff !important;
+          }
+        `}</style>
+      )}
       <input
         data-testid="test-searchBadgeName"
         type="text"
@@ -99,7 +122,10 @@ function AssignBadgePopup(props) {
       />
       <div style={{ overflowY: 'scroll', height: '75vh' }}>
         {!isLoadingBadge && (props.isTableOpen !== undefined ? props.isTableOpen : filteredBadges.length > 0) ? (
-          <Table data-testid="test-badgeResults" className={darkMode ? 'text-light' : ''}>
+          <Table
+            data-testid="test-badgeResults"
+            className={darkMode ? 'text-light dark-mode-table' : ''}
+          >
             <thead
               style={
                 darkMode
@@ -133,7 +159,7 @@ function AssignBadgePopup(props) {
             </thead>
             <tbody>
               {filteredBadges.map((value, index) => (
-                <AssignTableRow badge={value} index={index} key={value._id || index} propExistBadges={existBadges} />
+                <AssignTableRow badge={value} index={index} key={value._id ?? index} existBadges={existBadges} />
               ))}
             </tbody>
           </Table>
@@ -169,6 +195,26 @@ function AssignBadgePopup(props) {
   );
 }
 
+AssignBadgePopup.propTypes = {
+  darkMode: PropTypes.bool,
+  isRecordBelongsToJaeAndUneditable: PropTypes.bool,
+  isTableOpen: PropTypes.bool,
+  userProfile: PropTypes.shape({
+    _id: PropTypes.string,
+    badgeCollection: PropTypes.arrayOf(
+      PropTypes.shape({
+        badge: PropTypes.shape({ _id: PropTypes.string }),
+      }),
+    ),
+  }),
+  selectedBadges: PropTypes.arrayOf(PropTypes.object),
+  setUserProfile: PropTypes.func,
+  handleSubmit: PropTypes.func,
+  close: PropTypes.func,
+  assignBadgesByUserID: PropTypes.func,
+  clearNameAndSelected: PropTypes.func,
+};
+
 const mapStateToProps = state => ({
   selectedBadges: state.badge.selectedBadges,
   darkMode: state.theme.darkMode,
@@ -180,22 +226,6 @@ const mapDispatchToProps = dispatch => {
       assignBadgesByUserID(userId, selectedBadge)(dispatch),
     clearNameAndSelected: () => dispatch(clearNameAndSelected()),
   };
-};
-
-AssignBadgePopup.propTypes = {
-  userProfile: PropTypes.shape({
-    _id: PropTypes.string,
-    badgeCollection: PropTypes.array,
-  }),
-  selectedBadges: PropTypes.array,
-  darkMode: PropTypes.bool,
-  isRecordBelongsToJaeAndUneditable: PropTypes.bool,
-  isTableOpen: PropTypes.bool,
-  setUserProfile: PropTypes.func,
-  handleSubmit: PropTypes.func,
-  close: PropTypes.func,
-  assignBadgesByUserID: PropTypes.func,
-  clearNameAndSelected: PropTypes.func,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AssignBadgePopup);

@@ -24,6 +24,7 @@ const RoutePermissions = {
     'postTask',
     'updateTask',
     'deleteTask',
+    'rescheduleEvent',
   ],
   teams: ['postTeam', 'putTeam', 'deleteTeam', 'assignTeamToUsers'],
   permissionsManagement: ['postRole', 'putRole', 'deleteRole'],
@@ -43,6 +44,13 @@ const RoutePermissions = {
   announcements: ['sendEmails'],
   faq: [''],
   faqManagement: ['manageFAQs'],
+  meetings: ['scheduleMeetings'],
   accessHgnSkillsDashboard: ['accessHgnSkillsDashboard'],
+  jobFormManagement: [
+    'manageJobForms',
+    'createFormQuestions',
+    'editFormQuestions',
+    'deleteFormQuestions',
+  ],
 };
 export default RoutePermissions;

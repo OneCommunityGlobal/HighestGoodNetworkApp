@@ -2,29 +2,44 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import Warning from '../Warnings';
 import * as warningActions from '../../../actions/warnings';
 
 vi.mock('../../../actions/warnings', () => ({
-  getWarningsByUserId: vi.fn(() => () => Promise.resolve([])),
+  getWarningsByUserId: vi.fn(() => () => Promise.resolve([{ title: 'Warning 1', warnings: [] }])),
   postWarningByUserId: vi.fn(() => () => Promise.resolve([])),
   deleteWarningsById: vi.fn(() => () => Promise.resolve([])),
 }));
-
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 describe('Warning Component', () => {
   let store;
   const initialState = {
     role: {
-      roles: ['User'],
+      roles: [
+        {
+          roleName: 'Administrator',
+          permissions: [],
+        },
+        {
+          roleName: 'User',
+          permissions: [],
+        },
+      ],
     },
     auth: {
       user: {
         role: 'User',
+        permissions: {
+          frontPermissions: [],
+          backPermissions: [],
+        },
       },
+    },
+    theme: {
+      darkMode: false,
     },
   };
   const mockPersonId = '123';
@@ -32,7 +47,6 @@ describe('Warning Component', () => {
 
   beforeEach(() => {
     store = mockStore(initialState);
-    vi.clearAllMocks();
   });
 
   test('renders nothing for non-admin users', () => {
@@ -56,10 +70,6 @@ describe('Warning Component', () => {
   });
 
   test('toggles warnings display on button click', async () => {
-    warningActions.getWarningsByUserId.mockImplementation(() => () =>
-      Promise.resolve([{ title: 'Warning 1', warnings: [] }]),
-    );
-
     render(
       <Provider store={store}>
         <Warning personId={mockPersonId} username={mockUsername} userRole="Administrator" />

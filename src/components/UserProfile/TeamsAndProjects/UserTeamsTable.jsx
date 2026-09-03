@@ -1,11 +1,10 @@
-import { React, useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button, Col, Input } from 'reactstrap';
-import './TeamsAndProjects.module.css';
 import hasPermission from '../../../utils/permissions';
+import './TeamsAndProjects.module.css';
 // import styles from './UserTeamsTable.css';
-import { boxStyle, boxStyleDark } from '~/styles';
 import { connect } from 'react-redux';
-import Switch from './Switch';
+import { boxStyle } from '~/styles';
 
 import './UserTeamsTable.module.css';
 
@@ -13,14 +12,14 @@ import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
 
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 
-import './../../Teams/Team.module.css';
-import { TeamMember } from './TeamMember';
 import axios from 'axios';
-import { ENDPOINTS } from '~/utils/URL.js';
 import { toast } from 'react-toastify';
 import {
   useUpdateFiltersWithIndividualCodesChangeMutation
 } from '~/actions/weeklySummariesFilterAction';
+import { ENDPOINTS } from '~/utils/URL.js';
+import './../../Teams/Team.module.css';
+import { TeamMember } from './TeamMember';
 
 const UserTeamsTable = props => {
   const { darkMode } = props;
@@ -80,7 +79,7 @@ const UserTeamsTable = props => {
               newTeamCode: refInput.current,
               userId: props.userProfile._id,
             })
-            toast.success('Team code updated!');
+            // toast.success('Team code updated!');
           } catch {
             toast.error('It is not possible to save the team code.');
           }
@@ -164,7 +163,7 @@ const UserTeamsTable = props => {
       />
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {props.canEditVisibility && (
-          <div className="row">
+          <div className="row" style={{ alignItems: 'center' }}>
             <Col
               md="7"
               xs="12"
@@ -172,9 +171,13 @@ const UserTeamsTable = props => {
                 backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
                 border: '1px solid #ced4da',
                 marginBottom: '10px',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '10px 15px',
+                minHeight: '45px',
               }}
             >
-              <span className="teams-span">Visibility</span>
+              <span className="teams-span" style={{fontWeight: 'bold'}}>Visibility</span>
             </Col>
             <Col
               md="5"
@@ -196,25 +199,28 @@ const UserTeamsTable = props => {
             </Col>
           </div>
         )}
-        <div className="row">
+        <div className="row" style={{ alignItems: 'center' }}>
           <Col
             md="9"
             xs="12"
             style={{
-              backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
-              border: '1px solid #ced4da',
-              marginBottom: '10px',
-              height: '10%',
+                backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
+                border: '1px solid #ced4da',
+                marginBottom: '10px',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '10px 15px',
+                minHeight: '45px',
             }}
           >
-            <span className="teams-span">Teams</span>
+            <span className="teams-span" style={{fontWeight: 'bold'}}>Teams</span>
           </Col>
-          <Col md="3" xs="12" style={{ padding: '0', marginBottom: '10px' }}>
+          <Col md="3" xs="12" style={{ padding: '0', marginBottom: '10px', border: '1px solid #ced4da', minHeight: '45px', display: 'flex', alignItems: 'center' }}>
             <Input
               id="teamCode"
               value={teamCode}
               onChange={handleCodeChange}
-              style={darkMode ? colordark : styleDefault}
+              style={darkMode ? {...colordark, border: 'none', height: '100%'} : {...styleDefault, border: 'none', height: '100%'}}
               placeholder="X-XXX"
               onFocus={() => !showDropdown && setShowDropdown(true)}
               disabled={!props.canEditTeamCode}
@@ -267,8 +273,8 @@ const UserTeamsTable = props => {
           </Col>
         )}
       </div>
-      <div style={{ maxHeight: '300px', overflow: 'auto' }}>
-        <table className={`table table-bordered ${darkMode ? 'text-light' : ''}`}>
+      <div>
+        <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
           <thead className="user-team-head">
             {props.role && (
               <tr>
@@ -342,3 +348,5 @@ const UserTeamsTable = props => {
 };
 
 export default connect(null, { hasPermission })(UserTeamsTable);
+
+

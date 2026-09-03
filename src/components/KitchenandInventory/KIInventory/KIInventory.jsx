@@ -19,10 +19,17 @@ import {
 } from 'react-icons/fi';
 import { RiLeafLine } from 'react-icons/ri';
 import KIItemCard from './KIItemCard';
+import KIAddItemModal from './KIAddItemModal/KIAddItemModal';
+import KIReorderItemModal from './KIReorderItemModal/KIReorderItemModal';
+import KIUpdateItemModal from './KIUpdateItemModal/KIUpdateItemModal';
 import {
+  addInventoryItem,
+  deleteInventoryItem,
   fetchInventoryItems,
   fetchInventoryStats,
   fetchPreservedItems,
+  reorderInventoryItem,
+  updateInventoryItem,
 } from '../../../actions/KIInventoryActions';
 
 // Category enum values — must match backend model enum exactly
@@ -34,10 +41,28 @@ const CATEGORY_MAP = {
   'animal supplies': 'ANIMALSUPPLIES',
 };
 
+const CATEGORY_LABEL_MAP = Object.entries(CATEGORY_MAP).reduce(
+  (labels, [label, value]) => ({ ...labels, [value]: label }),
+  {},
+);
+
 const KIInventory = () => {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
-  const { items, preservedItems, stats, loading } = useSelector(state => state.kiInventory);
+  const {
+    items,
+    preservedItems,
+    stats,
+    loading,
+    addItemLoading,
+    addItemError,
+    updateItemLoading,
+    updateItemError,
+    deleteItemLoading,
+    deleteItemError,
+    reorderItemLoading,
+    reorderItemError,
+  } = useSelector(state => state.kiInventory);
 
   const tabs = [
     'ingredients',
@@ -48,6 +73,9 @@ const KIInventory = () => {
   ];
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
+  const [selectedInventoryItem, setSelectedInventoryItem] = useState(null);
+  const [selectedReorderItem, setSelectedReorderItem] = useState(null);
 
   const toggleTab = tab => {
     if (activeTab !== tabs[tab]) {
@@ -66,11 +94,32 @@ const KIInventory = () => {
   // Onsite grown — computed from all items
   const onsiteGrown = items.filter(i => i.onsite).length;
 
-  // Items for active tab filtered by category and search term
+  // Search helper
+  const filterItems = itemsToFilter => {
+    if (!searchTerm.trim()) {
+      return itemsToFilter;
+    }
+
+    return itemsToFilter.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  };
+
+  // Items for active tab
   const activeCategory = CATEGORY_MAP[activeTab];
-  const tabItems = items
-    .filter(i => i.category === activeCategory)
-    .filter(i => !searchTerm || i.name.toLowerCase().includes(searchTerm.toLowerCase()));
+
+  const categoryItems = items.filter(i => i.category === activeCategory);
+
+  const tabItems = filterItems(categoryItems);
+
+  const handleAddItem = payload => dispatch(addInventoryItem(payload));
+  const handleUpdateItem = (itemId, payload) => dispatch(updateInventoryItem(itemId, payload));
+  const handleDeleteItem = itemId => dispatch(deleteInventoryItem(itemId));
+  const handleReorderItem = (itemId, payload) => dispatch(reorderInventoryItem(itemId, payload));
+  const handleOpenUpdateItemModal = item => setSelectedInventoryItem(item);
+  const handleCloseUpdateItemModal = () => setSelectedInventoryItem(null);
+  const handleOpenReorderItemModal = item => setSelectedReorderItem(item);
+  const handleCloseReorderItemModal = () => setSelectedReorderItem(null);
+  const selectedItemCategoryValue = selectedInventoryItem?.category || activeCategory;
+  const selectedItemCategoryLabel = CATEGORY_LABEL_MAP[selectedItemCategoryValue] || activeTab;
 
   // Preserved items description for notification banner
   const preservedDesc =
@@ -85,13 +134,19 @@ const KIInventory = () => {
     if (tabItems.length > 0) {
       return tabItems.map(item => (
         <div key={item._id}>
-          <KIItemCard item={item} />
+          <KIItemCard
+            item={item}
+            onUpdateItem={handleOpenUpdateItemModal}
+            onReorder={handleOpenReorderItemModal}
+          />
         </div>
       ));
     }
     if (searchTerm) {
       return (
-        <p style={{ padding: '1rem', opacity: 0.6 }}>No results for &quot;{searchTerm}&quot;</p>
+        <p className={`${styles.noResults} ${darkMode ? styles.darkNoResults : ''}`}>
+          No results for "{searchTerm}"
+        </p>
       );
     }
     return <p style={{ padding: '1rem', opacity: 0.6 }}>No items in {tabName} yet.</p>;
@@ -188,15 +243,27 @@ const KIInventory = () => {
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
             />
-            <button
-              className={`${styles.clearSearch} ${darkMode ? styles.darkClearSearch : ''}`}
-              onClick={() => setSearchTerm('')}
-            >
-              x
-            </button>
+            {searchTerm && (
+              <button
+                className={`${styles.clearSearch} ${darkMode ? styles.darkClearSearch : ''}`}
+                onClick={() => setSearchTerm('')}
+                style={{
+                  backgroundColor: 'red',
+                  color: 'white',
+                  padding: '4px 8px',
+                  marginLeft: '5px',
+                }}
+              >
+                CLEAR
+              </button>
+            )}
           </div>
           <div>
-            <button className={classnames(styles.button, styles.addItemButton)}>
+            <button
+              type="button"
+              className={classnames(styles.button, styles.addItemButton)}
+              onClick={() => setIsAddItemModalOpen(true)}
+            >
               {'+ Add Item'}
             </button>
             <button className={classnames(styles.button, styles.scanBarcodeButton)}>
@@ -213,7 +280,7 @@ const KIInventory = () => {
           <TabPane key={tab} tabId={tab}>
             <div className={styles.tabContainer}>
               {/* Preserved items notification — only on the Ingredients tab */}
-              {index === 0 && preservedItems.length > 0 && (
+              {index === 0 && preservedItems.length > 0 && !searchTerm && (
                 <div
                   className={`${styles.notificationContainer} ${
                     darkMode ? styles.darkModeNotification : ''
@@ -250,6 +317,39 @@ const KIInventory = () => {
           </TabPane>
         ))}
       </TabContent>
+      <KIAddItemModal
+        isOpen={isAddItemModalOpen}
+        onClose={() => setIsAddItemModalOpen(false)}
+        onSubmit={handleAddItem}
+        categoryLabel={activeTab}
+        categoryValue={activeCategory}
+        isSubmitting={addItemLoading}
+        submitError={addItemError}
+        darkMode={darkMode}
+      />
+      <KIUpdateItemModal
+        isOpen={Boolean(selectedInventoryItem)}
+        item={selectedInventoryItem}
+        onClose={handleCloseUpdateItemModal}
+        onSubmit={handleUpdateItem}
+        onDelete={handleDeleteItem}
+        categoryLabel={selectedItemCategoryLabel}
+        categoryValue={selectedItemCategoryValue}
+        isSubmitting={updateItemLoading}
+        isDeleting={deleteItemLoading}
+        submitError={updateItemError}
+        deleteError={deleteItemError}
+        darkMode={darkMode}
+      />
+      <KIReorderItemModal
+        isOpen={Boolean(selectedReorderItem)}
+        item={selectedReorderItem}
+        onClose={handleCloseReorderItemModal}
+        onSubmit={handleReorderItem}
+        isSubmitting={reorderItemLoading}
+        submitError={reorderItemError}
+        darkMode={darkMode}
+      />
     </div>
   );
 };

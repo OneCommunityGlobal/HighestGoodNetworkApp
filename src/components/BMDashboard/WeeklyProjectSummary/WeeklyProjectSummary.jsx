@@ -8,19 +8,21 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { toast } from 'react-toastify';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
-import CostPredictionChart from './CostPredictionChart';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
+
+import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import IssuesCharts from '../Issues/LongestOpenIssuesChart';
 import ProjectRiskProfileOverview from './ProjectRiskProfileOverview';
 import IssuesBreakdownChart from './IssuesBreakdownChart';
 import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
+import CostVarianceTrendGraph from './Financials/CostVarianceTrendGraph';
 import CostBreakDown from './Financials/CostBreakDown/CostBreakDown';
-import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
+import FinancialsTrackingSection from './ExpenditureChart/FinancialsTrackingSection';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
-import EmbedInteractiveMap from '../InteractiveMap/EmbedInteractiveMap';
 import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
 import LossTrackingLineChart from './Financials/LossTrackingLineCharts/LossTrackingLineChart';
@@ -29,8 +31,10 @@ import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
 import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
-import IssueCharts from '../Issues/openIssueCharts';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
+import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
+import InjurySeverityChart from '../Injuries/InjurySeverityChart';
+import CostPredictionChart from './CostPredictionChart';
 
 const projectStatusButtons = [
   {
@@ -131,56 +135,6 @@ const projectStatusButtons = [
   },
 ];
 
-export function WeeklyProjectSummaryContent() {
-  const dispatch = useDispatch();
-  const materials = useSelector(state => state.materials?.materialslist || []);
-  const [openSections, setOpenSections] = useState({});
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-
-  const darkMode = useSelector(state => state.theme.darkMode);
-  const projectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter || '');
-  const dateRangeFilter = useSelector(state => state.weeklyProjectSummary?.dateRangeFilter || '');
-
-  const getColorScheme = percentage => {
-    if (percentage === '-') return 'neutral';
-    if (percentage > 0) return 'positive';
-    if (percentage < 0) return 'negative';
-    return 'neutral';
-  };
-
-  const colorScheme = getColorScheme(monthOverMonth);
-
-  const titleClass = title.replace(/\s+/g, '-').toLowerCase();
-
-  return (
-    <div
-      className={`financial-card ${colorScheme} custom-box-shadow financial-card-background-${titleClass}`}
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
-    >
-      <div className="financial-card-title">{title}</div>
-      <div className={`financial-card-ellipse financial-card-ellipse-${titleClass}`} />
-      <div className="financial-card-value">{value === '-' ? '-' : value.toLocaleString()}</div>
-      <div className={`financial-card-month-over-month ${colorScheme}`}>
-        {monthOverMonth === '-'
-          ? '-'
-          : `${monthOverMonth > 0 ? '+' : ''}${monthOverMonth}% month over month`}
-      </div>
-
-      {showTooltip && Object.keys(additionalInfo).length > 0 && (
-        <div className="financial-card-tooltip">
-          {Object.entries(additionalInfo).map(([key]) => (
-            <div key={key} className="financial-card-tooltip-item">
-              <span className="tooltip-key">{key}:</span>
-              <span className="tooltip-value">{value}</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
 function WeeklyProjectSummary() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);
@@ -209,6 +163,19 @@ function WeeklyProjectSummary() {
       [category]: !prev[category],
     }));
   };
+
+  const bmProjects = useSelector(state => state.bmProjects || []);
+
+  // Fetch initial data
+  useEffect(() => {
+    if (materials.length === 0) {
+      dispatch(fetchAllMaterials());
+    }
+
+    if (bmProjects.length === 0) {
+      dispatch(fetchBMProjects());
+    }
+  }, [dispatch, materials.length, bmProjects.length]);
 
   const sections = useMemo(
     () => [
@@ -259,6 +226,16 @@ function WeeklyProjectSummary() {
         ),
       },
       {
+        title: 'Injury Severity by Projects',
+        key: 'Injury Severity by Projects',
+        className: 'full',
+        content: (
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
+            <InjurySeverityChart />
+          </div>
+        ),
+      },
+      {
         title: 'Material Consumption',
         key: 'Material Consumption',
         className: 'full',
@@ -285,12 +262,8 @@ function WeeklyProjectSummary() {
       {
         title: 'Issue Tracking',
         key: 'Issue Tracking',
-        className: 'full',
-        content: (
-          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-            <IssueCharts />
-          </div>
-        ),
+        className: 'small',
+        content: <IssuesCharts bmProjects={bmProjects} />,
       },
       {
         title: 'Tools and Equipment Tracking',
@@ -323,14 +296,14 @@ function WeeklyProjectSummary() {
       {
         title: 'Lessons Learned',
         key: 'Lessons Learned',
-        className: 'half',
+        className: 'full',
         content: [
           <div
             key="frequent-tags-card"
             className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
             style={{ minHeight: '520px', height: 'auto', overflow: 'visible' }}
           >
-            <MostFrequentKeywords darkMode={darkMode} />
+            <MostFrequentKeywords />
           </div>,
           <div
             key="injury-chart"
@@ -351,12 +324,45 @@ function WeeklyProjectSummary() {
         key: 'Financials',
         className: 'large',
         content: (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-small financial-chart">
-              <ExpenseBarChart />
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '15px',
+              width: '100%',
+            }}
+          >
+            {/* Top Left: Planned vs Actual Cost */}
+            <div
+              className="weekly-project-summary-card financial-small financial-chart"
+              style={{
+                width: '100%',
+                minHeight: '550px',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <ExpenseBarChart darkMode={darkMode} />
             </div>
-            <div className="weekly-project-summary-card financial-big">
+
+            {/* Top Right: Cost Variance Trend */}
+            <div
+              className="weekly-project-summary-card financial-small financial-chart"
+              style={{
+                width: '100%',
+                minHeight: '550px',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <CostVarianceTrendGraph darkMode={darkMode} />
+            </div>
+
+            {/* Bottom: Cost Breakdown Pie Chart (Spans across both columns) */}
+            <div
+              className="weekly-project-summary-card financial-big"
+              style={{ gridColumn: 'span 2', width: '100%', minHeight: '400px' }}
+            >
               <CostBreakDown />
             </div>
           </div>
@@ -388,41 +394,63 @@ function WeeklyProjectSummary() {
       {
         title: 'Labor and Time Tracking',
         key: 'Labor and Time Tracking',
-        className: 'half',
-        content: [1, 2].map((_, index) => {
-          const uniqueId = uuidv4();
-          return (
+        className: 'full',
+        content: (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+              gap: '15px',
+              width: '100%',
+            }}
+          >
             <div
-              key={uniqueId}
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+              style={{ width: '100%', minHeight: '650px' }}
             >
-              {index === 1 ? <PaidLaborCost /> : <DistributionLaborHours />}
+              <DistributionLaborHours />
             </div>
-          );
-        }),
+            <div
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+              style={{
+                width: '100%',
+                minHeight: '650px',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <PaidLaborCost />
+            </div>
+          </div>
+        ),
       },
       {
         title: 'Financials Tracking',
         key: 'Financials Tracking',
         className: 'full',
-        content: [1, 2, 3, 4].map((_, index) => {
-          const uniqueId = uuidv4();
-          return (
+        content: (
+          <div style={{ gridColumn: '1 / -1', width: '100%' }}>
+            <FinancialsTrackingSection />
             <div
-              key={uniqueId}
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: '15px',
+                marginTop: '15px',
+              }}
             >
-              {(() => {
-                if (index === 2) return <CostPredictionChart projectId={1} />;
-                if (index === 3) return <ActualVsPlannedCost />;
-                return '📊 Card';
-              })()}
+              <div className="weekly-project-summary-card financial-small financial-chart">
+                <CostPredictionChart projectId={1} />
+              </div>
+              <div className="weekly-project-summary-card financial-small financial-chart">
+                <ActualVsPlannedCost />
+              </div>
             </div>
-          );
-        }),
+          </div>
+        ),
       },
     ],
-    [quantityOfMaterialsUsedData],
+    [quantityOfMaterialsUsedData, darkMode],
   );
 
   const handleSaveAsPDF = async () => {
@@ -485,9 +513,7 @@ function WeeklyProjectSummary() {
           'button, .weekly-project-summary-dropdown-icon, .no-print, .weekly-summary-header-controls',
         )
         .forEach(el => {
-          if (el.parentNode) {
-            el.parentNode.removeChild(el);
-          }
+          el.remove();
         });
 
       // Add styles for PDF
@@ -550,7 +576,7 @@ function WeeklyProjectSummary() {
       const dateStr = now.toISOString().slice(0, 10);
       const projectName = projectFilter || 'All-Projects';
       const dateRange = dateRangeFilter
-        ? dateRangeFilter.replace(/\s+/g, '-').replace(/,/g, '')
+        ? dateRangeFilter.replaceAll(/\s+/g, '-').replaceAll(/,/g, '')
         : dateStr;
       const fileName = `weekly-project-summary-${projectName}-${dateRange}.pdf`;
 
@@ -558,7 +584,7 @@ function WeeklyProjectSummary() {
 
       // Clean up
       if (document.body.contains(pdfContainer)) {
-        document.body.removeChild(pdfContainer);
+        pdfContainer.remove();
       }
 
       // Dismiss loading toast and show success
@@ -591,7 +617,7 @@ function WeeklyProjectSummary() {
       // Clean up PDF container if it exists
       const pdfContainer = document.getElementById('pdf-export-container');
       if (pdfContainer && document.body.contains(pdfContainer)) {
-        document.body.removeChild(pdfContainer);
+        pdfContainer.remove();
       }
     } finally {
       setOpenSections(currentOpenSections);
@@ -604,7 +630,7 @@ function WeeklyProjectSummary() {
       ref={containerRef}
       className={`weekly-project-summary-container ${styles.weeklyProjectSummaryContainer} ${
         darkMode ? styles.darkMode : ''
-      }`}
+      } ${darkMode ? 'dark-mode' : ''}`}
       data-testid="weekly-project-summary-container"
     >
       <WeeklyProjectSummaryHeader
