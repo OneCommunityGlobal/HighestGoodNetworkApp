@@ -43,15 +43,30 @@
 }
 
 .singleForm {
+  /* Align each filter label with its dropdown within a consistent group width. */
   display: flex !important;
+  align-items: center;
   gap: 5px;
   text-align: center !important;
   margin-right: 40px;
-  width: 200px;
+  width: 320px;
+  max-width: 100%;
+}
+
+/* Keep the Filter and Sort labels the same width beside their matching selects. */
+.singleForm :global(.form-label) {
+  flex: 0 0 50px;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 0;
+  text-align: left;
 }
 
 .singleFormSelect {
+  /* Keep the Filter and Sort dropdowns at the same compact width. */
   background-color: #f2f2f266 !important;
+  width: 200px;
+  max-width: 100%;
 }
 
 .tagContainer {
