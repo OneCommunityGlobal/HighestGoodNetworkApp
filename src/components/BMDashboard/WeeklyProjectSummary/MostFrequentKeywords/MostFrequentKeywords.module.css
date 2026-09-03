@@ -1005,8 +1005,11 @@
   opacity: 1 !important;
 }
 
-.mfkContainer :global(.react-datepicker__navigation-icon--previous::before),
-.mfkContainer :global(.react-datepicker__navigation-icon--next::before) {
+/* Scope to the popper class (applied to the portaled calendar) so this only
+   affects Most Frequent Keywords' own datepicker. An unscoped rule here used
+   to override every other page's react-datepicker arrows app-wide. */
+.mfkDarkPopper :global(.react-datepicker__navigation-icon--previous::before),
+.mfkDarkPopper :global(.react-datepicker__navigation-icon--next::before) {
   border-color: #e2e8f0 !important;
   border-width: 2px 2px 0 0 !important;
   opacity: 1 !important;

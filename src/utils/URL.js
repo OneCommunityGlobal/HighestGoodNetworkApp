@@ -474,6 +474,9 @@ export const ENDPOINTS = {
   BM_TAG_ADD: `${APIEndpoint}/bm/tags`,
   BM_TAGS_DELETE: `${APIEndpoint}/bm/tags`,
 
+  BM_LONGEST_OPEN_ISSUES: `${APIEndpoint}/bm/issues/longest-open`,
+  BM_MOST_EXPENSIVE_ISSUES: `${APIEndpoint}/bm/issues/most-expensive`,
+
   BM_ORGS_WITH_LOCATION: `${APIEndpoint}/bm/orgLocation`,
   ORG_DETAILS: projectId => `${APIEndpoint}/bm/orgLocation/${projectId}`,
   BM_PROJECT_MEMBERS: projectId => `${APIEndpoint}/bm/project/${projectId}/users`,
