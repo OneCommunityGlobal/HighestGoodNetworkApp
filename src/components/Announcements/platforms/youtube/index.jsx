@@ -713,12 +713,25 @@ function YoutubeAutoPoster({ platform }) {
       )}
       {error && <p role="alert">Error: {error}</p>}
       {result?.video && (
-        <p>
-          Upload complete:{' '}
-          <a href={result.video.url} target="_blank" rel="noreferrer">
-            Open video on YouTube
-          </a>
-        </p>
+        <section className={styles.uploadResult} role="status" aria-live="polite">
+          <div className={styles.uploadResultIcon} aria-hidden="true">
+            ✓
+          </div>
+          <div className={styles.uploadResultContent}>
+            <h2 className={styles.uploadResultTitle}>Your video is ready</h2>
+            <p className={styles.uploadResultMessage}>
+              Upload complete. View it on YouTube to review or share it.
+            </p>
+            <a
+              className={styles.uploadResultLink}
+              href={result.video.url}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Open video on YouTube <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </section>
       )}
     </main>
   );

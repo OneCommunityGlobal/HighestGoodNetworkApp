@@ -241,6 +241,71 @@
   gap: 0.5rem;
 }
 
+.youtubeAutoPoster .uploadResult {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: 1rem 1.125rem;
+  margin-top: 1rem;
+  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+  border: 1px solid #a7f3d0;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgb(16 185 129 / 10%);
+}
+
+.youtubeAutoPoster .uploadResultIcon {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  color: #fff;
+  background-color: #059669;
+  border-radius: 50%;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.youtubeAutoPoster .uploadResultContent {
+  min-width: 0;
+}
+
+.youtubeAutoPoster .uploadResultTitle {
+  margin: 0;
+  color: #065f46 !important;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.youtubeAutoPoster .uploadResultMessage {
+  margin: 0.25rem 0 0.625rem;
+  color: #166534 !important;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.youtubeAutoPoster .uploadResultLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: #047857 !important;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.youtubeAutoPoster .uploadResultLink:hover {
+  color: #065f46 !important;
+  text-decoration: underline;
+}
+
+.youtubeAutoPoster .uploadResultLink:focus-visible {
+  border-radius: 3px;
+  outline: 3px solid rgb(5 150 105 / 28%);
+  outline-offset: 2px;
+}
+
 .youtubeAutoPoster .horizontal {
   display: flex;
   flex-direction: column;
@@ -962,6 +1027,28 @@
   background-color: #303846;
   border-color: #242a33;
   box-shadow: 0 0 0 1px #4b5563;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .uploadResult {
+  background: linear-gradient(135deg, #12352d 0%, #17382d 100%);
+  border-color: #176b50;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 20%);
+}
+
+:global(.dark-mode) .youtubeAutoPoster .uploadResultTitle {
+  color: #a7f3d0 !important;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .uploadResultMessage {
+  color: #bbf7d0 !important;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .uploadResultLink {
+  color: #6ee7b7 !important;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .uploadResultLink:hover {
+  color: #a7f3d0 !important;
 }
 
 :global(.dark-mode) .youtubeAutoPoster .channelUrl,
