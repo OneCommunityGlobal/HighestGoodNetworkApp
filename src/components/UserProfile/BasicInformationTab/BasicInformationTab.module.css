@@ -131,3 +131,15 @@
   border-color: #007bff;
   background-color: transparent;
 }  
+
+.dark-mode :global([class*="toggleDark"]),
+:global(body.dark-mode) :global([class*="toggleDark"]) {
+  background-color: #475569 !important;
+  border: 1px solid #94a3b8 !important;
+}
+
+.dark-mode :global([class*="toggleDark"]):checked,
+:global(body.dark-mode) :global([class*="toggleDark"]):checked {
+  background-color: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+}
