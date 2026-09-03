@@ -112,6 +112,40 @@
   outline-offset: 2px;
 }
 
+.youtubeAutoPoster .disconnectButton {
+  padding: 0.45rem 0.75rem;
+  margin-top: 0.45rem;
+  color: #b42318;
+  background: transparent;
+  border: 1px solid #f1a7a1;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.youtubeAutoPoster .disconnectButton:focus-visible {
+  outline: 3px solid rgb(180 35 24 / 24%);
+  outline-offset: 2px;
+}
+
+.youtubeAutoPoster .disconnectButton:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .disconnectButton {
+  color: #fff !important;
+  background-color: #3a222b;
+  border-color: #b85c6b;
+}
+
+.youtubeAutoPoster .disconnectButton:hover:not(:disabled) {
+  color: #fff;
+  background-color: #d9002b;
+  border-color: #d9002b;
+}
+
 .youtubeAutoPoster .connectionPrompt {
   position: relative;
   display: flex;
@@ -1027,6 +1061,12 @@
   background-color: #303846;
   border-color: #242a33;
   box-shadow: 0 0 0 1px #4b5563;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .disconnectButton:hover:not(:disabled) {
+  color: #fff !important;
+  background-color: #d9002b;
+  border-color: #d9002b;
 }
 
 :global(.dark-mode) .youtubeAutoPoster .uploadResult {

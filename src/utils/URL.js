@@ -767,6 +767,7 @@ export const ENDPOINTS = {
   APPLICATION_TIME_DATA_ROLES: `${APIEndpoint}/analytics/application-time/roles`,
   YOUTUBE_AUTOPOSTER_AUTH_URL: `${APIEndpoint}/youtube/auth-url`,
   YOUTUBE_AUTOPOSTER_STATUS_URL: `${APIEndpoint}/youtube/status`,
+  YOUTUBE_AUTOPOSTER_DISCONNECT_URL: `${APIEndpoint}/youtube/disconnect`,
   YOUTUBE_AUTOPOSTER_CATEGORIES_URL: (regionCode = 'US', hl = 'en') =>
     `${APIEndpoint}/youtube/categories?regionCode=${encodeURIComponent(regionCode)}&hl=${encodeURIComponent(hl)}`,
   YOUTUBE_AUTOPOSTER_UPLOAD_URL: `${APIEndpoint}/youtube/upload`,

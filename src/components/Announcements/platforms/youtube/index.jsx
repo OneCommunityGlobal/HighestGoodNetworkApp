@@ -86,6 +86,7 @@ function YoutubeAutoPoster({ platform }) {
 
   const [connected, setConnected] = useState(false);
   const [checking, setChecking] = useState(true);
+  const [disconnecting, setDisconnecting] = useState(false);
 
   useEffect(() => {
     if (!videoFile) {
@@ -179,6 +180,45 @@ function YoutubeAutoPoster({ platform }) {
 
     return result;
   }
+
+  async function disconnectYouTube() {
+    const token = localStorage.getItem('token');
+    const response = await fetch(ENDPOINTS.YOUTUBE_AUTOPOSTER_DISCONNECT_URL, {
+      method: 'POST',
+      headers: {
+        Authorization: token,
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    });
+
+    const result = await response.json().catch(() => null);
+    if (!response.ok || !result?.success) {
+      throw new Error(result?.message || 'Failed to disconnect YouTube');
+    }
+
+    return result;
+  }
+
+  const handleDisconnect = async () => {
+    setDisconnecting(true);
+    try {
+      await disconnectYouTube();
+      setConnected(false);
+      setAccount(null);
+      setCategories([]);
+      setSelectedCategoryId('');
+      setResult(null);
+      setError('');
+      toast.success('YouTube account disconnected successfully');
+    } catch (disconnectError) {
+      toast.error(
+        disconnectError instanceof Error ? disconnectError.message : 'Failed to disconnect YouTube',
+      );
+    } finally {
+      setDisconnecting(false);
+    }
+  };
 
   async function uploadYouTubeVideo(videoFile, values) {
     const token = localStorage.getItem('token');
@@ -360,6 +400,14 @@ function YoutubeAutoPoster({ platform }) {
             >
               {account.customUrl}
             </a>
+            <button
+              className={styles.disconnectButton}
+              type="button"
+              onClick={() => void handleDisconnect()}
+              disabled={disconnecting}
+            >
+              {disconnecting ? 'Disconnecting…' : 'Disconnect YouTube'}
+            </button>
           </div>
         </section>
       ) : (
