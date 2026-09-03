@@ -83,7 +83,7 @@ export default function EquipmentUpdateLog() {
       style={{ height: '100%' }}
     >
       <div className={`container py-4 ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
-        <h3 className={`${darkMode ? `${styles.historyTitleDark} ` : styles.historyTitle} fw-bold`}>
+        <h3 className={`${darkMode ? styles.historyTitleDark : styles.historyTitle} fw-bold`}>
           Tool/Equipment History Log
         </h3>
 
@@ -143,9 +143,9 @@ export default function EquipmentUpdateLog() {
 
         <div className="table-responsive">
           <table
-            className={`table ${
-              darkMode ? `${styles.equipmentTableDark} ` : styles.equipmentTable
-            }  table-sm ${styles.equipmentTable}`}
+            className={`table table-sm ${styles.equipmentTable} ${
+              darkMode ? styles.equipmentTableDark : ''
+            }`}
           >
             <thead>
               <tr>

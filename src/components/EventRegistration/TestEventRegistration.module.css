@@ -578,14 +578,14 @@
 
 /* Dark mode button styles */
 .darkMode .submitBtn {
-  background: #4CAF50;
+  background: #2e7d32;
   color: #fff;
-  border: 1px solid #45a049;
+  border: 1px solid #1b5e20;
 }
 
 .darkMode .submitBtn:hover {
-  background: #45a049;
-  border-color: #3d8b40;
+  background: #256a2b;
+  border-color: #1b5e20;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgb(76 175 80 / 30%);
 }
@@ -604,12 +604,12 @@
 }
 
 .darkMode .modalBtn {
-  background: #4CAF50;
+  background: #2e7d32;
   color: #fff;
-  border: 1px solid #45a049;
+  border: 1px solid #1b5e20;
 }
 
 .darkMode .modalBtn:hover {
-  background: #45a049;
-  border-color: #3d8b40;
+  background: #256a2b;
+  border-color: #1b5e20;
 }
