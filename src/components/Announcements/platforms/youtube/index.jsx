@@ -245,7 +245,12 @@ function YoutubeAutoPoster({ platform }) {
             const categoryItems = Array.isArray(categoriesResult)
               ? categoriesResult
               : categoriesResult.items ?? categoriesResult.categories ?? [];
-            setCategories(categoryItems.filter(category => category.snippet?.assignable !== false));
+
+            setCategories(
+              categoryItems.filter(
+                category => category.assignable === true || category.snippet?.assignable === true,
+              ),
+            );
           }
           setCategoriesLoading(false);
         }
@@ -289,6 +294,7 @@ function YoutubeAutoPoster({ platform }) {
     try {
       const form = event.currentTarget;
       const formData = new FormData(form);
+      console.log(formData);
 
       if (!videoFile || videoFile.size === 0 || !videoFile.type.startsWith('video/')) {
         throw new Error('Select a video file to upload');
