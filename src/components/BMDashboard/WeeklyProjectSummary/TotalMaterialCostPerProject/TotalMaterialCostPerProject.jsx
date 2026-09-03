@@ -59,6 +59,12 @@ function TotalMaterialCostPerProject() {
         labels: { color: textColor },
       },
       title: { display: false },
+      datalabels: {
+        color: darkMode ? '#fff' : '#1a1a1a',
+        anchor: 'end',
+        align: 'end',
+        formatter: value => Number(value ?? 0).toFixed(3),
+      },
       tooltip: {
         backgroundColor: darkMode ? '#22272e' : '#fff',
         titleColor: textColor,

@@ -154,3 +154,49 @@
 :global(.darkMode .recharts-xAxis .recharts-cartesian-axis-tick-value) {
   fill: #fff !important;
 }
+
+/* ================= DARK MODE CALENDAR POPUP ================= */
+/* Self-contained so the popup stays readable even when the shared
+   paid-labor-cost calendar styles are not bundled on this page. */
+:global(.paid-labor-cost-dark-calendar.react-datepicker) {
+  background-color: #253342 !important;
+  border-color: #2d4059 !important;
+  color: #fff !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__header) {
+  background-color: #2d4059 !important;
+  border-bottom-color: #3a506b !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__current-month),
+:global(.paid-labor-cost-dark-calendar .react-datepicker__day-name) {
+  color: #fff !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__day) {
+  color: #e0e0e0 !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__day:hover) {
+  background-color: #3a506b !important;
+  color: #fff !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__day--selected),
+:global(.paid-labor-cost-dark-calendar .react-datepicker__day--keyboard-selected) {
+  background-color: #e8a71c !important;
+  color: #1a1a1a !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__day--outside-month) {
+  color: #8a94a3 !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__day--disabled) {
+  color: #5a6472 !important;
+}
+
+:global(.paid-labor-cost-dark-calendar .react-datepicker__navigation-icon::before) {
+  border-color: #fff !important;
+}
