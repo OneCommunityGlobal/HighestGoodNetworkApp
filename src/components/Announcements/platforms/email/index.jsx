@@ -16,6 +16,8 @@ export default function EmailPanel({ title, initialEmail }) {
   const history = useHistory();
   const location = useLocation();
 
+  const containerClass = `${styles.emailUpdateContainer} ${darkMode ? 'dark-mode' : 'light-mode'}`;
+
   const getViewFromPath = useCallback(() => {
     const path = location.pathname;
 
@@ -174,16 +176,12 @@ export default function EmailPanel({ title, initialEmail }) {
 
   // Dashboard view - show platform selection cards
   if (currentView === 'dashboard') {
-    return (
-      <div className={`${styles.emailUpdateContainer} ${darkMode ? 'dark-mode' : 'light-mode'}`}>
-        {renderViewSelector}
-      </div>
-    );
+    return <div className={containerClass}>{renderViewSelector}</div>;
   }
 
   if (currentView === 'templates') {
     return (
-      <div className={`${styles.emailUpdateContainer} ${darkMode ? 'dark-mode' : 'light-mode'}`}>
+      <div className={containerClass}>
         <div className="mb-3">
           <button
             onClick={() => handleViewChange('dashboard')}
@@ -218,7 +216,7 @@ export default function EmailPanel({ title, initialEmail }) {
   // Email view with tabs (Send and Outbox)
   if (currentView === 'email') {
     return (
-      <div className={`${styles.emailUpdateContainer} ${darkMode ? 'dark-mode' : 'light-mode'}`}>
+      <div className={containerClass}>
         <div className="mb-3">
           <button
             onClick={() => handleViewChange('dashboard')}
@@ -326,7 +324,7 @@ export default function EmailPanel({ title, initialEmail }) {
 
   // Default fallback - should never reach here
   return (
-    <div className={`${styles.emailUpdateContainer} ${darkMode ? 'dark-mode' : 'light-mode'}`}>
+    <div className={containerClass}>
       <div
         className={styles.emailContentArea}
         role="tabpanel"

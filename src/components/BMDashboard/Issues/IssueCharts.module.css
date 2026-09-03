@@ -259,26 +259,6 @@ Issue Charts Module CSS
 }
 
 .issueChartSelect {
-  padding: 2px 10px;
-  font-size: 16px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  background-color: #fff;
-  color: #333;
-  cursor: pointer;
-  transition: border-color 0.3s ease;
-  outline: none;
-  margin-bottom: 20px;
-}
-
-.issueChartSelectDark {
-  background-color: #22272e;
-  border: 1px solid #3d444d;
-  color: #cfd7e3;
-}
-
-.filterSelect,
-.issueChartSelect {
   height: 60px;
   padding: 8px 12px;
   font-size: 15px;
@@ -288,15 +268,17 @@ Issue Charts Module CSS
   color: #2d3748;
   width: 100%;
   box-sizing: border-box;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+  outline: none;
+  margin-bottom: 20px;
 }
 
-.filterSelectDark,
 .issueChartSelectDark {
   background-color: #2d3748;
   border: 1px solid #4a5568;
   color: #edf2f7;
 }
-
 
 .issueChartSelect:focus,
 .issueChartSelectDark:focus {
@@ -329,7 +311,11 @@ Issue Charts Module CSS
 }
 
 .filterSelect {
+  height: 60px;
+  width: 100%;
+  box-sizing: border-box;
   padding: 6px 8px;
+  font-size: 15px;
   border: 1px solid #ccc;
   border-radius: 4px;
   background-color: #fff;
@@ -363,41 +349,6 @@ Issue Charts Module CSS
   height: 38px;
 }
 
-/* Calendar popup styling (light mode) */
-.lightCalendar :global(.react-datepicker__header) {
-  background: #f8fafc;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.lightCalendar :global(.react-datepicker__navigation-icon::before) {
-  border-color: #0f172a;
-}
-
-/* Calendar popup styling (dark mode) */
-.darkCalendar {
-  background-color: #22272e;
-  border-color: #3d444d;
-}
-
-.darkCalendar :global(.react-datepicker__header) {
-  background: #1a1e24;
-  border-bottom: 1px solid #3d444d;
-}
-
-.darkCalendar :global(.react-datepicker__navigation-icon::before) {
-  border-color: #cfd7e3;
-}
-
-.darkCalendar :global(.react-datepicker__day),
-.darkCalendar :global(.react-datepicker__current-month),
-.darkCalendar :global(.react-datepicker__day-name) {
-  color: #cfd7e3;
-}
-
-.darkCalendar :global(.react-datepicker__day:hover) {
-  background-color: #3d444d;
-}
-
 .filterSelect:focus,
 .issueChartSelect:focus {
   border-color: #4caf50;
@@ -428,11 +379,6 @@ Issue Charts Module CSS
 }
 
 /* ----- No Data Messages ----- */
-.noDataMessage,
-.noDataContent {
-  text-align: center;
-}
-
 .noDataMessage {
   display: flex;
   align-items: center;
@@ -440,6 +386,7 @@ Issue Charts Module CSS
   height: 100%;
   width: 100%;
   color: #666;
+  text-align: center;
 }
 
 .noDataMessageDark {
@@ -450,6 +397,7 @@ Issue Charts Module CSS
 .noDataContent {
   padding: 40px 20px;
   max-width: 400px;
+  text-align: center;
 }
 
 .noDataContent h3 {
@@ -488,99 +436,4 @@ Issue Charts Module CSS
   .filter {
     width: 100%;
   }
-}
-
-/* ----- React DatePicker calendar overrides -----
-   calendarClassName is passed as a plain string ('darkCalendar' / 'lightCalendar'),
-   not a CSS-module-scoped class, so these must be :global to actually apply. */
-:global(.lightCalendar) {
-  font-family: inherit;
-  border: 1px solid #e2e8f0 !important;
-  background-color: #fff !important;
-  color: #333 !important;
-}
-
-:global(.lightCalendar) :global(.react-datepicker__header) {
-  background-color: #f0f0f0 !important;
-  border-bottom: 1px solid #e0e0e0 !important;
-}
-
-:global(.lightCalendar) :global(.react-datepicker__current-month),
-:global(.lightCalendar) :global(.react-datepicker__day-name) {
-  color: #333 !important;
-}
-
-:global(.lightCalendar) :global(.react-datepicker__day) {
-  color: #333 !important;
-}
-
-:global(.lightCalendar) :global(.react-datepicker__day:hover) {
-  background-color: #e0e0e0 !important;
-}
-
-:global(.lightCalendar) :global(.react-datepicker__day--in-range) {
-  background-color: #d6e9ff !important;
-  color: #333 !important;
-}
-
-:global(.lightCalendar) :global(.react-datepicker__day--range-start),
-:global(.lightCalendar) :global(.react-datepicker__day--range-end),
-:global(.lightCalendar) :global(.react-datepicker__day--selected) {
-  background-color: #0056b3 !important;
-  color: #fff !important;
-}
-
-:global(.darkCalendar) {
-  font-family: inherit;
-  border: 1px solid #4a5568 !important;
-  background-color: #1c2541 !important;
-  color: #fff !important;
-}
-
-:global(.darkCalendar) :global(.react-datepicker__header) {
-  background-color: #0f1729 !important;
-  border-bottom: 1px solid #4a5568 !important;
-}
-
-:global(.darkCalendar) :global(.react-datepicker__current-month),
-:global(.darkCalendar) :global(.react-datepicker__day-name) {
-  color: #fff !important;
-}
-
-:global(.darkCalendar) :global(.react-datepicker__day) {
-  color: #e2e8f0 !important;
-}
-
-:global(.darkCalendar) :global(.react-datepicker__day:hover) {
-  background-color: #2d3748 !important;
-  color: #fff !important;
-}
-
-:global(.darkCalendar) :global(.react-datepicker__day--selected),
-:global(.darkCalendar) :global(.react-datepicker__day--keyboard-selected),
-:global(.darkCalendar) :global(.react-datepicker__day--in-range) {
-  background-color: #0056b3 !important;
-  color: #fff !important;
-}
-
-:global(.darkCalendar) :global(.react-datepicker__day--disabled) {
-  color: #6c757d !important;
-}
-
-:global(.lightCalendar) :global(.react-datepicker__navigation),
-:global(.darkCalendar) :global(.react-datepicker__navigation) {
-  top: 8px !important;
-}
-
-:global(.lightCalendar) :global(.react-datepicker__navigation-icon::before) {
-  border-color: #333 !important;
-}
-
-:global(.darkCalendar) :global(.react-datepicker__navigation-icon::before) {
-  border-color: #fff !important;
-}
-
-:global(.lightCalendar) :global(.react-datepicker__triangle),
-:global(.darkCalendar) :global(.react-datepicker__triangle) {
-  display: none !important;
 }
