@@ -665,6 +665,90 @@ FileUploadField.defaultProps = {
   required: false,
 };
 
+function JobPositionSelect({ value, forms, onChange }) {
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef(null);
+  const label = value || 'Select a position';
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const onDoc = event => {
+      if (!wrapRef.current?.contains(event.target)) setOpen(false);
+    };
+    const onKey = event => {
+      if (event.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('mousedown', onDoc);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDoc);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  const choose = next => {
+    onChange(next);
+    setOpen(false);
+  };
+
+  return (
+    <div className={styles.jobSelectWrap} ref={wrapRef}>
+      <button
+        type="button"
+        className={styles.jobSelect}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-label="Select a position"
+        onClick={() => setOpen(isOpen => !isOpen)}
+      >
+        <span className={styles.jobSelectLabel}>{label}</span>
+      </button>
+      {open && (
+        <ul className={styles.jobSelectMenu} role="listbox" aria-label="Positions">
+          <li
+            role="option"
+            aria-selected={!value}
+            className={!value ? styles.jobSelectOptionActive : undefined}
+          >
+            <button type="button" onClick={() => choose('')}>
+              Select a position
+            </button>
+          </li>
+          {forms.map(form => (
+            <li
+              key={form._id || form.id}
+              role="option"
+              aria-selected={value === form.title}
+              className={value === form.title ? styles.jobSelectOptionActive : undefined}
+            >
+              <button type="button" onClick={() => choose(form.title)}>
+                {form.title}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+JobPositionSelect.propTypes = {
+  value: PropTypes.string,
+  forms: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string,
+      id: PropTypes.string,
+      title: PropTypes.string,
+    }),
+  ),
+  onChange: PropTypes.func.isRequired,
+};
+
+JobPositionSelect.defaultProps = {
+  value: '',
+  forms: [],
+};
+
 function JobApplicationForm() {
   const routerLocation = useLocation();
 
@@ -879,8 +963,7 @@ function JobApplicationForm() {
     setFieldErrors({});
   }, [selectedJob, forms]);
 
-  const handleJobChange = e => {
-    const next = e.target.value;
+  const handleJobChange = next => {
     setSelectedJob(next);
     setBannerJobTitle(next);
   };
@@ -1170,7 +1253,15 @@ function JobApplicationForm() {
 
     setIsSubmitting(true);
     try {
+      const answersPayload = visibleQuestions.map((q, idx) => ({
+        questionId: q._id,
+        answer: serializeAnswerForSubmit(q, idx, answers, questionFiles),
+      }));
+
       const formData = new FormData();
+      formData.append('respondent', applicantName.trim());
+      formData.append('email', applicantEmail.trim());
+      formData.append('answers', JSON.stringify(answersPayload));
       formData.append(
         'payload',
         JSON.stringify({
@@ -1187,10 +1278,7 @@ function JobApplicationForm() {
             hoursPerWeek,
             roleSkills,
           },
-          answers: visibleQuestions.map((q, idx) => ({
-            questionId: q._id,
-            answer: serializeAnswerForSubmit(q, idx, answers, questionFiles),
-          })),
+          answers: answersPayload,
         }),
       );
 
@@ -1211,14 +1299,15 @@ function JobApplicationForm() {
       toast.success('Application submitted successfully. A confirmation email will be sent.');
       resetFormAfterSubmit();
     } catch (err) {
+      const apiMessage = err.response?.data?.message || err.response?.data?.error;
       if (err.response?.status === 409) {
-        toast.error(err.response?.data?.message || 'Application already submitted', {
+        toast.error(apiMessage || 'Application already submitted', {
           autoClose: 7000,
         });
       } else {
-        const message =
-          err.response?.data?.message || err.message || 'Failed to submit application.';
-        toast.error(message, { autoClose: 7000 });
+        toast.error(apiMessage || err.message || 'Failed to submit application.', {
+          autoClose: 7000,
+        });
       }
     } finally {
       setIsSubmitting(false);
@@ -1252,19 +1341,7 @@ function JobApplicationForm() {
             </button>
           </div>
           <div className={styles.headerRight}>
-            <select
-              className={styles.jobSelect}
-              value={selectedJob}
-              onChange={handleJobChange}
-              aria-label="Select a position"
-            >
-              <option value="">Select a position</option>
-              {forms.map(form => (
-                <option key={form._id || form.id} value={form.title}>
-                  {form.title}
-                </option>
-              ))}
-            </select>
+            <JobPositionSelect value={selectedJob} forms={forms} onChange={handleJobChange} />
           </div>
         </section>
         <section className={styles.formContainer}>
@@ -1724,7 +1801,7 @@ function JobApplicationForm() {
                       )}
                     {isIndividualOrgQuestion ? (
                       <fieldset
-                        className={styles.optionFieldset}
+                        className={`${styles.optionFieldset} ${styles.optionFieldsetInline}`}
                         aria-labelledby={`${formKey}-heading`}
                       >
                         {(q.options?.length ? q.options : ['Individual', 'Organization']).map(
