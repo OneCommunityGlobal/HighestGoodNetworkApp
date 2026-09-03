@@ -149,12 +149,12 @@
 
 /* Dark mode */
 .darkMode {
-  background-color: #1B2A41;
+  background-color: #1b2a41;
   color: #f8f9fa;
 }
 
 .darkMode .formContainer {
-  background-color: #1C2541;
+  background-color: #1c2541;
   border-radius: 8px;
   padding: 1rem;
 }
@@ -180,8 +180,8 @@
 }
 
 .tagContainerDark {
-  background-color: #1C2541;
-  border: 1px solid #3A506B;
+  background-color: #1c2541;
+  border: 1px solid #3a506b;
   border-radius: 6px;
 }
 
@@ -238,9 +238,18 @@
 }
 
 .lightMode {
-  background-color: #ffffff;
+  background-color: #e8f4f9;
   color: #212529;
 }
+
+/* Match the dark-mode page container with a distinct light dashboard surface. */
+.lightMode .formContainer {
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
 .lightMode label {
   color: #212529 !important;
 }
