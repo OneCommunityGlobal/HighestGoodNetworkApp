@@ -769,6 +769,10 @@ export const ENDPOINTS = {
     return url.slice(0);
   },
   APPLICATION_TIME_DATA_ROLES: `${APIEndpoint}/analytics/application-time/roles`,
+
+  // Education Portal analytics endpoints
+  ANALYTICS_OVERVIEW: `${APIEndpoint}/analytics/overview`,
+  ANALYTICS_STUDENT: studentId => `${APIEndpoint}/analytics/student/${studentId}`,
 };
 
 export const ApiEndpoint = APIEndpoint;
