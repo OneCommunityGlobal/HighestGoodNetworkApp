@@ -29,13 +29,13 @@ function renderDisplayBox(darkMode = false) {
     theme: { darkMode },
   });
 
-  render(
+  const view = render(
     <Provider store={store}>
       <DisplayBox onClose={onClose} darkMode={darkMode} />
     </Provider>,
   );
 
-  return { onClose };
+  return { onClose, unmount: view.unmount };
 }
 
 describe('DisplayBox promotion confirmation modal', () => {
@@ -137,5 +137,23 @@ describe('DisplayBox promotion confirmation modal', () => {
     });
 
     expect(toast.success).toHaveBeenCalled();
+  });
+
+  it('keeps promoted reviewers off the list after a remount', async () => {
+    const { unmount } = renderDisplayBox();
+
+    await userEvent.click(screen.getByLabelText('Select reviewer Akshay - Jayaram'));
+    await userEvent.click(screen.getByRole('button', { name: 'Confirm' }));
+
+    await waitFor(() => {
+      expect(toast.success).toHaveBeenCalled();
+    });
+
+    unmount();
+    renderDisplayBox();
+
+    expect(screen.getByText('Akshay - Jayaram')).toBeInTheDocument();
+    expect(screen.queryByText('Ghazi1212')).not.toBeInTheDocument();
+    expect(screen.queryByText('Diya Test 1')).not.toBeInTheDocument();
   });
 });

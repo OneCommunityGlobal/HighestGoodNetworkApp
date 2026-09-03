@@ -101,8 +101,9 @@ export default function DisplayBox({ onClose, darkMode = false }) {
 
       const remaining = promotions.filter((_, index) => !checkedItems[index]);
       setPendingPromotionReviewers(remaining);
-      setPromotions(remaining);
-      setCheckedItems(remaining.map(() => true));
+      const nextPromotions = getPendingPromotionReviewers();
+      setPromotions(nextPromotions);
+      setCheckedItems(nextPromotions.map(() => true));
 
       const message = `Successfully promoted ${selectedCount} reviewer(s).`;
       setStatusMessage(message);

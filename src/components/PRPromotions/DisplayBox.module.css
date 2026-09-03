@@ -110,7 +110,7 @@
 }
 
 .popupDark .popupTable tbody tr:hover td {
-  background-color: #2f4157;
+  background-color: #334155;
 }
 
 .messageCell {
@@ -189,6 +189,40 @@
   background-color: #f00;
 }
 
+/* Dark-mode badges must beat `.popupDark .popupTable td` color inheritance. */
+.popupDark .popupTable .prCountBadge {
+  color: #111827;
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 55%);
+}
+
+.popupDark .popupTable .color0 {
+  background-color: #e879f9;
+}
+
+.popupDark .popupTable .color1 {
+  background-color: #a78bfa;
+}
+
+.popupDark .popupTable .color2 {
+  background-color: #38bdf8;
+}
+
+.popupDark .popupTable .color3 {
+  background-color: #4ade80;
+}
+
+.popupDark .popupTable .color4 {
+  background-color: #facc15;
+}
+
+.popupDark .popupTable .color5 {
+  background-color: #fb923c;
+}
+
+.popupDark .popupTable .color6 {
+  background-color: #f87171;
+}
+
 .buttonRow {
   display: flex;
   justify-content: space-between;
@@ -219,6 +253,16 @@
   background-color: #00f;
 }
 
+.popupDark .cancelButton {
+  background-color: #ef4444;
+  color: #fff;
+}
+
+.popupDark .confirmButton {
+  background-color: #3b82f6;
+  color: #fff;
+}
+
 .cancelButton:hover:not(:disabled) {
   background-color: #d60000;
 }
@@ -227,9 +271,17 @@
   background-color: #00c;
 }
 
+.popupDark .cancelButton:hover:not(:disabled) {
+  background-color: #f87171;
+}
+
+.popupDark .confirmButton:hover:not(:disabled) {
+  background-color: #60a5fa;
+}
+
 .popupDark .button:disabled {
   background-color: #4b5563;
-  color: #d1d5db;
+  color: #e5e7eb;
 }
 
 @media (width <= 700px) {

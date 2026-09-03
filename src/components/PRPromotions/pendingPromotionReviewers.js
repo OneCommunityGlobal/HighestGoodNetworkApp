@@ -1,3 +1,5 @@
+const STORAGE_KEY = 'hgn.prPromotions.promotedReviewerIds';
+
 const INITIAL_PENDING_PROMOTION_REVIEWERS = [
   {
     id: 'pending-akshay',
@@ -69,16 +71,53 @@ function cloneReviewers(reviewers) {
   }));
 }
 
-let pendingPromotionReviewers = cloneReviewers(INITIAL_PENDING_PROMOTION_REVIEWERS);
+function readPromotedIds() {
+  if (typeof localStorage === 'undefined') {
+    return [];
+  }
+
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter(id => typeof id === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
+function writePromotedIds(ids) {
+  if (typeof localStorage === 'undefined') {
+    return;
+  }
+
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([...new Set(ids)]));
+  } catch {
+    // Ignore storage quota / private-mode failures; the in-session list still updates.
+  }
+}
 
 export function getPendingPromotionReviewers() {
-  return pendingPromotionReviewers;
+  const promotedIds = new Set(readPromotedIds());
+  return cloneReviewers(INITIAL_PENDING_PROMOTION_REVIEWERS).filter(
+    reviewer => !promotedIds.has(reviewer.id),
+  );
 }
 
 export function setPendingPromotionReviewers(reviewers) {
-  pendingPromotionReviewers = reviewers;
+  const remainingIds = new Set((reviewers || []).map(reviewer => reviewer.id));
+  const promotedIds = INITIAL_PENDING_PROMOTION_REVIEWERS.filter(
+    reviewer => !remainingIds.has(reviewer.id),
+  ).map(reviewer => reviewer.id);
+  writePromotedIds(promotedIds);
 }
 
 export function resetPendingPromotionReviewers() {
-  pendingPromotionReviewers = cloneReviewers(INITIAL_PENDING_PROMOTION_REVIEWERS);
+  if (typeof localStorage !== 'undefined') {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // Ignore storage access errors in tests or private mode.
+    }
+  }
 }
