@@ -55,6 +55,7 @@ import {
   PROJECTS,
   REPORTS,
   SEND_EMAILS,
+  SCHEDULE_MEETINGS,
   TEAM_LOCATIONS,
   TEAMS,
   TIMELOG,
@@ -67,7 +68,9 @@ import {
   WEEKLY_SUMMARIES_REPORT,
   WELCOME,
 } from '../../languages/en/ui';
+import { permissions } from '../../utils/constants';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
+import RoutePermissions from '../../utils/routePermissions';
 import PermissionWatcher from '../Auth/PermissionWatcher';
 import Logout from '../Logout/Logout';
 import NotificationCard from '../Notification/notificationCard';
@@ -174,59 +177,49 @@ export function Header(props) {
   );
   const headerDisabled = isAuthUser ? false : !canInteractWithViewingUser;
 
-  const canGetReports = props.hasPermission('getReports', !isAuthUser);
-  const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries', !isAuthUser);
-  const canGetWeeklyVolunteerSummary = props.hasPermission('getWeeklySummaries');
-  const canGetJobAnalytics = props.hasPermission('getJobReports');
+// Reports / nav access — prefer RoutePermissions lists (OR any key)
+  const canGetReports = props.hasPermission(RoutePermissions.reports, !isAuthUser);
+  const canGetWeeklySummaries = props.hasPermission(
+    RoutePermissions.weeklySummariesReport,
+    !isAuthUser,
+  );
+  const canGetWeeklyVolunteerSummary = props.hasPermission(
+    permissions.getWeeklySummaries,
+    !isAuthUser,
+  );
+  const canGetJobAnalytics = props.hasPermission(permissions.getJobReports, !isAuthUser);
 
+  // Users — RoutePermissions + setFinalDay (still checked in Header)
   const canAccessUserManagement =
-    props.hasPermission('postUserProfile', !isAuthUser) ||
-    props.hasPermission('deleteUserProfile', !isAuthUser) ||
-    props.hasPermission('changeUserStatus', !isAuthUser) ||
-    props.hasPermission('getUserProfiles', !isAuthUser) ||
-    props.hasPermission('setFinalDay', !isAuthUser) ||
-    props.hasPermission('interactWithPauseUserButton', !isAuthUser);
+    props.hasPermission(RoutePermissions.userManagement, !isAuthUser) ||
+    props.hasPermission(permissions.setFinalDay, !isAuthUser);
 
-  const canAccessBadgeManagement =
-    props.hasPermission('seeBadges', !isAuthUser) ||
-    props.hasPermission('createBadges', !isAuthUser) ||
-    props.hasPermission('updateBadges', !isAuthUser) ||
-    props.hasPermission('deleteBadges', !isAuthUser);
-
-  const canAccessProjects =
-    props.hasPermission('postProject', !isAuthUser) ||
-    props.hasPermission('deleteProject', !isAuthUser) ||
-    props.hasPermission('putProject', !isAuthUser) ||
-    props.hasPermission('getProjectMembers', !isAuthUser) ||
-    props.hasPermission('assignProjectToUsers', !isAuthUser) ||
-    props.hasPermission('postWbs', !isAuthUser) ||
-    props.hasPermission('deleteWbs', !isAuthUser) ||
-    props.hasPermission('postTask', !isAuthUser) ||
-    props.hasPermission('updateTask', !isAuthUser) ||
-    props.hasPermission('deleteTask', !isAuthUser);
-
-  const canUpdateTask = props.hasPermission('updateTask', !isAuthUser);
-
-  const canAccessTeams =
-    props.hasPermission('postTeam', !isAuthUser) ||
-    props.hasPermission('putTeam', !isAuthUser) ||
-    props.hasPermission('deleteTeam', !isAuthUser) ||
-    props.hasPermission('assignTeamToUsers', !isAuthUser);
-
+  // Badges / Projects / Teams / Permissions via RoutePermissions
+  const canAccessBadgeManagement = props.hasPermission(
+    RoutePermissions.badgeManagement,
+    !isAuthUser,
+  );
+  const canAccessProjects = props.hasPermission(RoutePermissions.projects, !isAuthUser);
+  const canUpdateTask = props.hasPermission(permissions.updateTask, !isAuthUser);
+  const canAccessTeams = props.hasPermission(RoutePermissions.teams, !isAuthUser);
   const canAccessPopups =
-    props.hasPermission('createPopup', !isAuthUser) ||
-    props.hasPermission('updatePopup', !isAuthUser);
+    props.hasPermission(permissions.createPopup, !isAuthUser) ||
+    props.hasPermission(permissions.updatePopup, !isAuthUser);
+  const canAccessSendEmails = props.hasPermission(
+    RoutePermissions.announcements,
+    !isAuthUser,
+  );
+  const canAccessScheduleMeetings = props.hasPermission(permissions.scheduleMeetings, !isAuthUser);
+  const canAccessPermissionsManagement = props.hasPermission(
+    RoutePermissions.permissionsManagement,
+    !isAuthUser,
+  );
 
-  const canAccessSendEmails = props.hasPermission('sendEmails', !isAuthUser);
-
-  const canAccessPermissionsManagement =
-    props.hasPermission('postRole', !isAuthUser) ||
-    props.hasPermission('putRole', !isAuthUser) ||
-    props.hasPermission('deleteRole', !isAuthUser) ||
-    props.hasPermission('putUserProfilePermissions', !isAuthUser);
-
-  const canAccessBlueSquareEmailManagement = props.hasPermission('resendBlueSquareAndSummaryEmails', !isAuthUser);
-  const canAccessPRDashboard = props.hasPermission('accessPRTeamDashboard', !isAuthUser);
+  const canAccessBlueSquareEmailManagement = props.hasPermission(
+    permissions.resendBlueSquareAndSummaryEmails,
+    !isAuthUser,
+  );
+  const canAccessPRDashboard = props.hasPermission(RoutePermissions.prDashboard, !isAuthUser);
 
   const userId = user.userid;
   const viewerTimeZone = resolveUserTimeZone(props.userProfile?.timeZone);
@@ -856,7 +849,7 @@ export function Header(props) {
                   </NavItem>
                 )}
 
-                {(canAccessUserManagement || canAccessBadgeManagement || canAccessProjects || canAccessTeams || canAccessPopups || canAccessSendEmails || canAccessPermissionsManagement || canAccessBlueSquareEmailManagement) && (
+                {(canAccessUserManagement || canAccessBadgeManagement || canAccessProjects || canAccessTeams || canAccessPopups || canAccessSendEmails || canAccessScheduleMeetings || canAccessPermissionsManagement || canAccessBlueSquareEmailManagement) && (
                   <UncontrolledDropdown
                     nav
                     inNavbar
@@ -869,6 +862,16 @@ export function Header(props) {
                       {canAccessProjects && <DropdownItem tag={Link} to="/projects" className={fontColor} disabled={headerDisabled}>{PROJECTS}</DropdownItem>}
                       {canAccessTeams && <DropdownItem tag={Link} to="/teams" className={fontColor} disabled={headerDisabled}>{TEAMS}</DropdownItem>}
                       {canAccessSendEmails && <DropdownItem tag={Link} to="/announcements" className={fontColor} disabled={headerDisabled}>{SEND_EMAILS}</DropdownItem>}
+                      {canAccessScheduleMeetings && (
+                        <DropdownItem
+                          tag={Link}
+                          to="/schedulemeetings"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
+                          {SCHEDULE_MEETINGS}
+                        </DropdownItem>
+                      )}
                       {canAccessPermissionsManagement && (
                         <>
                           <DropdownItem divider className={styles.hideInMobile} />

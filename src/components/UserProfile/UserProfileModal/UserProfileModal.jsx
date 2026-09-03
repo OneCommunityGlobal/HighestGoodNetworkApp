@@ -24,6 +24,7 @@ import BlueSquareEmailCCPopup from '../BlueSquareEmailCCPopup';
 import CcUserList from './CCUserList';
 import PropTypes from 'prop-types';
 
+import { permissions } from '../../../utils/constants';
 // Helper component to render blue square metadata (manual assignment and edit history)
 const BlueSquareMetadata = ({ blueSquareData, fontColor, darkMode }) => {
   const hasEditHistory = blueSquareData?.editedBy && blueSquareData.editedBy.length > 0;
@@ -115,9 +116,9 @@ const UserProfileModal = props => {
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const canPutUserProfile = props.hasPermission('putUserProfile');
-  const canEditInfringements = props.hasPermission('editInfringements');
-  const canDeleteInfringements = props.hasPermission('deleteInfringements');
+  const canPutUserProfile = props.hasPermission(permissions.putUserProfile);
+  const canEditInfringements = props.hasPermission(permissions.editInfringements);
+  const canDeleteInfringements = props.hasPermission(permissions.deleteInfringements);
 
   const [warningType, setWarningType] = useState('');
 

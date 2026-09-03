@@ -24,6 +24,7 @@ import {
   normalizeLoadedQuestions,
 } from './jobFormQuestionUtils';
 
+import { permissions } from '../../utils/constants';
 function JobFormBuilder() {
   const dispatch = useDispatch();
   const { auth } = useSelector(state => state);
@@ -32,10 +33,11 @@ function JobFormBuilder() {
   const rolePermissions = useSelector(state => state.role?.roles);
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const canManageJobForms = useMemo(
-    () => userRole === 'Owner' || dispatch(hasPermission('manageJobForms')),
-    [dispatch, userRole, frontPermissions, rolePermissions],
-  );
+  const canManageJobForms = useMemo(() => dispatch(hasPermission(permissions.manageJobForms)), [
+    dispatch,
+    frontPermissions,
+    rolePermissions,
+  ]);
 
   const getRequestor = () => buildJobFormRequestor(auth?.user);
   const [formFields, setFormFields] = useState([]);

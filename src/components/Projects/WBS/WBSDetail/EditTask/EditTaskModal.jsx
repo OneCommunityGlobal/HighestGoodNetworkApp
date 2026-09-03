@@ -24,6 +24,7 @@ import styles from '../wbs.module.css';
 import TagsSearch from '../components/TagsSearch';
 
 
+import { permissions } from '../../../../../utils/constants';
 /** tiny reusable v8 DateInput - manual control without useInput **/
 function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled, darkMode }) {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -109,8 +110,8 @@ function EditTaskModal(props) {
   const { /* allMembers, */ error, darkMode } = props;
 
   // permissions
-  const canUpdateTask = props.hasPermission('updateTask');
-  const canSuggestTask = props.hasPermission('suggestTask');
+  const canUpdateTask = props.hasPermission(permissions.updateTask);
+  const canSuggestTask = props.hasPermission(permissions.suggestTask);
   const editable = canSuggestTask || canUpdateTask;
 
   // states from hooks

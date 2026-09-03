@@ -21,6 +21,7 @@ import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 
 
+import { permissions } from '../../utils/constants';
 const Projects = function(props) {
   const { role } = props.state.userProfile;
   const { darkMode } = props.state.theme;
@@ -93,7 +94,7 @@ const Projects = function(props) {
 
   const debouncedSearchName = useDebounce(searchName, 300);
 
-  const canPostProject = props.hasPermission('postProject');
+  const canPostProject = props.hasPermission(permissions.postProject);
 
   const onClickArchiveBtn = projectData => {
     setProjectTarget(projectData);

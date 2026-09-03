@@ -21,6 +21,7 @@ import { getPopupById } from '../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from '../../../../constants/popupId';
 import { formatDate } from '~/utils/formatDate';
 
+import { permissions } from '../../../../utils/constants';
 const TINY_MCE_INIT_OPTIONS =
 {
   license_key: 'gpl',
@@ -40,8 +41,8 @@ function SingleTask(props) {
   const [modal, setModal] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
   const toggleModel = () => setModal(!modal);
-  const canPostProject = props.hasPermission('postProject');
-  const canDeleteTask = props.hasPermission('deleteTask');
+  const canPostProject = props.hasPermission(permissions.postProject);
+  const canDeleteTask = props.hasPermission(permissions.deleteTask);
 
   const history = useHistory();
   useEffect(() => {
