@@ -450,6 +450,13 @@ const TeamMemberTasks = React.memo(props => {
     role => role === displayUser.role,
   );
 
+  const inactiveBg = darkMode ? '#1c2541' : 'white';
+  const inactiveColor = darkMode ? '#fff' : '#17a2b8';
+  const trackersButtonBg = showTrackers ? '#17a2b8' : inactiveBg;
+  const trackersButtonColor = showTrackers ? 'white' : inactiveColor;
+  const tasksButtonBg = showTasks ? inactiveBg : '#17a2b8';
+  const tasksButtonColor = showTasks ? inactiveColor : 'white';
+
   return (
     <div
       data-testid="team-member-tasks-container"
@@ -734,12 +741,8 @@ const TeamMemberTasks = React.memo(props => {
                                 fontSize: '12px',
                                 borderRadius: '4px',
                                 border: '1px solid #17a2b8',
-                                backgroundColor: showTrackers
-                                  ? '#17a2b8'
-                                  : darkMode
-                                  ? '#1c2541'
-                                  : 'white',
-                                color: showTrackers ? 'white' : darkMode ? '#fff' : '#17a2b8',
+                                backgroundColor: trackersButtonBg,
+                                color: trackersButtonColor,
                                 cursor: 'pointer',
                                 whiteSpace: 'nowrap',
                                 flexShrink: 0,
@@ -759,12 +762,8 @@ const TeamMemberTasks = React.memo(props => {
                                 fontSize: '12px',
                                 borderRadius: '4px',
                                 border: '1px solid #17a2b8',
-                                backgroundColor: showTasks
-                                  ? darkMode
-                                    ? '#1c2541'
-                                    : 'white'
-                                  : '#17a2b8',
-                                color: showTasks ? (darkMode ? '#fff' : '#17a2b8') : 'white',
+                                backgroundColor: tasksButtonBg,
+                                color: tasksButtonColor,
                                 cursor: 'pointer',
                                 whiteSpace: 'nowrap',
                                 flexShrink: 0,
