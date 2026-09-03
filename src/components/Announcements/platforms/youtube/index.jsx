@@ -294,7 +294,6 @@ function YoutubeAutoPoster({ platform }) {
     try {
       const form = event.currentTarget;
       const formData = new FormData(form);
-      console.log(formData);
 
       if (!videoFile || videoFile.size === 0 || !videoFile.type.startsWith('video/')) {
         throw new Error('Select a video file to upload');
@@ -321,7 +320,7 @@ function YoutubeAutoPoster({ platform }) {
       setMadeForKids('false');
       setSelectedCategoryId('');
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : 'Upload failed');
+      toast.error(requestError instanceof Error ? requestError.message : 'Upload failed');
     } finally {
       setUploading(false);
     }
