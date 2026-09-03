@@ -313,6 +313,8 @@ function YoutubeAutoPoster({ platform }) {
       form.reset();
       setVideoFile(null);
       setVideoDuration(null);
+      setVideoTitleLength(0);
+      setVideoDescriptionLength(0);
       setTags([]);
       setTagDraft('');
       setPrivacyStatus('public');
