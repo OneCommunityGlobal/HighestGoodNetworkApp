@@ -137,8 +137,9 @@ function pickInitialForm(formsArr, navState) {
   if (navState?.jobTitle) {
     const matched = findFormForJobTitle(formsArr, navState.jobTitle);
     if (matched) return matched;
+    return formsArr.find(f => f.questions?.length) || formsArr[0];
   }
-  return formsArr.find(f => f.questions?.length) || formsArr[0];
+  return null;
 }
 
 function parseFormsResponse(res) {
@@ -190,7 +191,7 @@ function getInitialFormState(chosen, navTitle) {
     };
   }
   return {
-    selectedJob: chosen.title,
+    selectedJob: '',
     filteredForm: chosen,
     answers: initialAnswersForQuestions(getVisibleQuestionsForForm(chosen)),
     bannerJobTitle: navTitle || chosen.title,
@@ -965,6 +966,15 @@ function JobApplicationForm() {
 
   const handleJobChange = next => {
     setSelectedJob(next);
+    if (!next) {
+      setBannerJobTitle('');
+      setFilteredForm(null);
+      setAnswers([]);
+      setQuestionFiles({});
+      questionFileInputRefs.current = {};
+      setFieldErrors({});
+      return;
+    }
     setBannerJobTitle(next);
   };
 

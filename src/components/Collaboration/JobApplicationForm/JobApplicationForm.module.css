@@ -36,7 +36,7 @@
   width: min(960px, 92vw);
   max-width: 100%;
   padding: clamp(0.75rem, 2vw, 1.25rem);
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
   box-sizing: border-box;
@@ -53,7 +53,9 @@
 .headerRight {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   flex: 0 1 auto;
+  margin-left: auto;
   min-width: 0;
 }
 
@@ -102,7 +104,8 @@
 .jobSelectMenu {
   position: absolute;
   top: calc(100% + 4px);
-  left: 0;
+  right: 0;
+  left: auto;
   z-index: 30;
   margin: 0;
   padding: 4px 0;
