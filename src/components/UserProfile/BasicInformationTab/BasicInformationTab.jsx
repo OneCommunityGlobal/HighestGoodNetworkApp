@@ -1025,21 +1025,21 @@ const BasicInformationTab = props => {
               {videoCallPreferenceComponent}
               <Col md="1" lg="1"></Col>
             </Row>
-            <Row style={{ marginBottom: '10px' }}>
+            <Row>
               {roleComponent}
               <Col md="1" lg="1"></Col>
             </Row>
-            <Row style={{  marginBottom: '10px' }}>
+            <Row>
               {locationComponent}
               <Col md="1"></Col>
             </Row>
-            <Row style={{ marginTop: '15px', marginBottom: '10px' }}>
+            <Row>
               {timeZoneComponent}
               <Col md="1"></Col>
             </Row>
-            <Row style={{ marginBottom: '10px' }}>{timeZoneDifferenceComponent}<Col md="1"></Col></Row>
-            <Row style={{ marginBottom: '10px' }}>{statusComponent}<Col md="1"></Col></Row>
-            <Row style={{ marginBottom: '10px' }}>{endDateComponent}<Col md="1"></Col></Row>
+            <Row>{timeZoneDifferenceComponent}<Col md="1"></Col></Row>
+            <Row>{statusComponent}<Col md="1"></Col></Row>
+            <Row>{endDateComponent}<Col md="1"></Col></Row>
           </>
         ) : (
           <>
