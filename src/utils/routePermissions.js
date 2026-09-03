@@ -32,6 +32,7 @@ const RoutePermissions = {
     permissions.postTask,
     permissions.updateTask,
     permissions.deleteTask,
+    permissions.rescheduleEvent,
   ],
   teams: [
     permissions.postTeam,

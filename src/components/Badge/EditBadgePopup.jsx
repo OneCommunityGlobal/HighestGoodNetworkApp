@@ -79,30 +79,37 @@ function EditBadgePopup(props) {
   };
 
   useEffect(() => {
+    if (!props.open || !props.badgeValues?._id) {
+      return;
+    }
+
     const badge = props.badgeValues;
     setBadgeValues(badge);
-    setBadgeId(badge?._id ?? null);
-    setBadgeName(badge?.badgeName ?? '');
-    setImageUrl(badge?.imageUrl ?? '');
-    setDescription(badge?.description ?? '');
-    setRanking(badge?.ranking ?? 0);
-    setType(badge?.type ?? 'Custom');
-    setCategory(badge?.category ?? 'Unspecified');
-    setTotalHrs(badge?.totalHrs ?? 0);
-    setWeeks(badge?.weeks ?? 0);
-    setMonths(badge?.months ?? 0);
-    setMultiple(badge?.multiple ?? 0);
-    setPeople(badge?.people ?? 0);
-    displayTypeRelatedFields(badge?.type ?? 'Custom');
-  }, [props.badgeValues]);
+    setBadgeId(badge._id ?? null);
+    setBadgeName(badge.badgeName ?? '');
+    setImageUrl(badge.imageUrl ?? badge.imageURL ?? '');
+    setDescription(badge.description ?? '');
+    setRanking(badge.ranking ?? 0);
+    setType(badge.type ?? 'Custom');
+    setCategory(badge.category ?? 'Unspecified');
+    setTotalHrs(badge.totalHrs ?? 0);
+    setWeeks(badge.weeks ?? 0);
+    setMonths(badge.months ?? 0);
+    setMultiple(badge.multiple ?? 0);
+    setPeople(badge.people ?? 0);
+    displayTypeRelatedFields(badge.type ?? 'Custom');
+  }, [props.badgeValues, props.open]);
 
   const validRanking = badgeRanking => {
     const pattern = /^[0-9]*$/;
     return pattern.test(badgeRanking);
   };
 
-  const enableButton =
-    !badgeName?.length || !imageUrl?.length || !description?.length || !validRanking(ranking);
+  const isSubmitDisabled =
+    !badgeName.trim().length ||
+    !imageUrl.trim().length ||
+    !description.trim().length ||
+    !validRanking(ranking);
 
   const closePopup = () => {
     props.setEditPopup(false);
@@ -475,7 +482,7 @@ function EditBadgePopup(props) {
         <Button
           color="info"
           onClick={handleSubmit}
-          disabled={enableButton}
+          disabled={isSubmitDisabled}
           style={darkMode ? boxStyleDark : boxStyle}
         >
           Update

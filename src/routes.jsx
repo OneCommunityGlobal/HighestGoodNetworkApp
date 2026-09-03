@@ -156,6 +156,9 @@ import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import CPLogin from './components/CommunityPortal/Login';
 import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
+import FaqSection from './components/CommunityPortal/Activities/FaqSection';
+import RescheduleEvent from './components/CommunityPortal/Activities/RescheduleEvent';
+import ReschedulePoll from './components/CommunityPortal/Activities/ReschedulePoll';
 import ActivityComments from './components/CommunityPortal/Activities/activityId/ActivityComments';
 import Feedbackform from './components/CommunityPortal/Activities/Feedbackform';
 import FollowUpEmailTemplate from './components/CommunityPortal/Activities/FollowUpEmailTemplate';
@@ -225,6 +228,7 @@ import SimpleToolChart from './components/BMDashboard/Tools/SimpleToolChart';
 import SupportLogin from './components/SupportPortal/SupportLogin';
 import SupportDashboard from './components/SupportPortal/SupportDashboard';
 import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
+import ProjectStatus from './components/ProjectStatus/ProjectStatus';
 import MaterialUtilizationChart from './components/MaterialUtilization/MaterialUtilizationChart';
 
 // High Good Education
@@ -420,6 +424,7 @@ export default (
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
         <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
         <ProtectedRoute path="/taskeditsuggestions" component={TaskEditSuggestions} />
+        <ProtectedRoute path="/projectstatus" exact component={ProjectStatus} fallback />
         <ProtectedRoute
           path="/job-analytics-competitive-roles"
           exact
@@ -875,6 +880,16 @@ export default (
         <CPProtectedRoute path="/communityportal/calendar" exact component={CommunityCalendar} />
         <CPProtectedRoute path="/communityportal/database/design" exact component={EventList} />
         <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
+        <CPProtectedRoute
+          path="/communityportal/activities/:activityid/faq"
+          exact
+          component={FaqSection}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activities/:activityId/manage"
+          component={RescheduleEvent}
+        />
+        <Route path="/communityportal/ReschedulePoll" component={ReschedulePoll} />
         <CPProtectedRoute
           path="/communityportal/profile/:userId"
           fallback

@@ -34,6 +34,7 @@ const LEGACY_OR_EXTRA_KEYS = [
   'infringementAuthorizer',
   'manageAdminLinks',
   'postTeam', // still used for create-team UI; may nest under Teams in Permissions.json
+  'rescheduleEvent',
   'scheduleMeetings',
   'seeProjectManagement',
   'seeQSC',
@@ -103,6 +104,7 @@ export const permissionCategories = Object.freeze({
     updateTask: permissions.updateTask,
     deleteTask: permissions.deleteTask,
     suggestTask: permissions.suggestTask,
+    rescheduleEvent: permissions.rescheduleEvent,
   },
   teams: {
     postTeam: permissions.postTeam,

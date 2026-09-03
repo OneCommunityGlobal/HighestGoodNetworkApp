@@ -39,7 +39,7 @@ function BadgeDevelopmentTable(props) {
   const [deleteName, setDeleteName] = useState('');
   const [deletePopup, setDeletePopup] = useState(false);
 
-  const [editBadgeValues, setEditBadgeValues] = useState('');
+  const [editBadgeValues, setEditBadgeValues] = useState(null);
   const [editPopup, setEditPopup] = useState(false);
 
   const [sortedBadges, setSortedBadges] = useState([]);
