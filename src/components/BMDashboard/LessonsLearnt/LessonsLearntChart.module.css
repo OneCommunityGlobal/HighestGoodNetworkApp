@@ -69,10 +69,105 @@
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
+.filter input::placeholder {
+  color: #64748b;
+}
+
+.filter :global(.react-datepicker__input-container input) {
+  cursor: pointer;
+}
+
 .darkMode .filter input {
   background: #334155;
-  color: #f1f5f9;
+  color: #f8fafc;
   border-color: #475569;
+}
+
+.darkMode .filter input::placeholder {
+  color: #cbd5e1;
+  opacity: 1;
+}
+
+.darkMode .filter input:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 1px #60a5fa;
+  outline: none;
+}
+
+.darkMode .filter :global(.react-datepicker__input-container input) {
+  background: #334155 !important;
+  color: #f8fafc !important;
+  border-color: #475569 !important;
+}
+
+.darkMode .filter :global(.react-datepicker__input-container input::placeholder) {
+  color: #cbd5e1 !important;
+  opacity: 1;
+}
+
+.darkMode .filter :global(.react-datepicker__input-container input:focus) {
+  border-color: #60a5fa !important;
+  box-shadow: 0 0 0 1px #60a5fa !important;
+  outline: none;
+}
+
+/* Dark-mode popup styles for Lessons Learnt date pickers. */
+:global(.lessons-dark-popper) {
+  z-index: 6;
+}
+
+:global(.lessons-dark-popper .react-datepicker),
+:global(.lessons-dark-calendar) {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+:global(.lessons-dark-popper .react-datepicker__month-container),
+:global(.lessons-dark-calendar .react-datepicker__month-container),
+:global(.lessons-dark-popper .react-datepicker__month),
+:global(.lessons-dark-calendar .react-datepicker__month) {
+  background-color: #0f172a !important;
+}
+
+:global(.lessons-dark-popper .react-datepicker__header),
+:global(.lessons-dark-calendar .react-datepicker__header) {
+  background-color: #1e293b !important;
+  border-bottom-color: #334155 !important;
+}
+
+:global(.lessons-dark-calendar .react-datepicker__current-month),
+:global(.lessons-dark-calendar .react-datepicker__day-name),
+:global(.lessons-dark-calendar .react-datepicker__day),
+:global(.lessons-dark-popper .react-datepicker__current-month),
+:global(.lessons-dark-popper .react-datepicker__day-name),
+:global(.lessons-dark-popper .react-datepicker__day) {
+  color: #f8fafc !important;
+}
+
+:global(.lessons-dark-calendar .react-datepicker__day:hover),
+:global(.lessons-dark-popper .react-datepicker__day:hover),
+:global(.lessons-dark-calendar .react-datepicker__day--keyboard-selected),
+:global(.lessons-dark-popper .react-datepicker__day--keyboard-selected) {
+  background-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+:global(.lessons-dark-calendar .react-datepicker__day--selected),
+:global(.lessons-dark-popper .react-datepicker__day--selected) {
+  background-color: #3b82f6 !important;
+  color: #fff !important;
+}
+
+:global(.lessons-dark-calendar .react-datepicker__day--outside-month),
+:global(.lessons-dark-popper .react-datepicker__day--outside-month),
+:global(.lessons-dark-calendar .react-datepicker__day--disabled),
+:global(.lessons-dark-popper .react-datepicker__day--disabled) {
+  color: #64748b !important;
+}
+
+:global(.lessons-dark-calendar .react-datepicker__navigation-icon::before),
+:global(.lessons-dark-popper .react-datepicker__navigation-icon::before) {
+  border-color: #cbd5e1 !important;
 }
 
 .chartWrapper {
@@ -80,10 +175,13 @@
   flex: 1;
   min-height: 0;
   margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .barContainer {
-  height: 300px;
+  flex: 1;
+  min-height: 300px;
   width: 100%;
 }
 

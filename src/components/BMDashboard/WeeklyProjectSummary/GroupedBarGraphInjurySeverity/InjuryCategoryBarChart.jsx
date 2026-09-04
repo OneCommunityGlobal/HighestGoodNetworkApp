@@ -11,7 +11,7 @@ import {
 } from 'recharts';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+
 import styles from './InjuryCategoryBarChart.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -20,7 +20,7 @@ import {
   fetchInjuryTypes,
   fetchInjuryProjects,
 } from '../../../../actions/bmdashboard/injuryActions';
-
+import 'react-datepicker/dist/react-datepicker.css';
 // YYYY-MM-DD (no tz shift)
 const toYMD = d =>
   d instanceof Date && !isNaN(d)
@@ -47,6 +47,7 @@ function InjuryCategoryBarChart() {
   const [injuryTypeFilter, setInjuryTypeFilter] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [unfilteredProjects, setUnfilteredProjects] = useState([]);
 
   // ✅ NEW: key to force Recharts remount when needed (fixes "renders only on hover")
   const [chartKey, setChartKey] = useState(0);
@@ -70,18 +71,47 @@ function InjuryCategoryBarChart() {
   const projects = Array.isArray(injuryProjects) ? injuryProjects : [];
   const sevList = Array.isArray(severities) ? severities : [];
   const typeList = Array.isArray(injuryTypes) ? injuryTypes : [];
+  const hasProjectListFilters =
+    severityFilter.length > 0 || injuryTypeFilter.length > 0 || startDate || endDate;
+
+  useEffect(() => {
+    if (!hasProjectListFilters && projects.length) {
+      // Keep the original project set so duplicate-name labels do not change after filtering.
+      setUnfilteredProjects(projects);
+    }
+  }, [hasProjectListFilters, projects]);
+
+  const projectLabelById = useMemo(() => {
+    const labelSourceProjects = unfilteredProjects.length ? unfilteredProjects : projects;
+    const nameCounts = new Map();
+    for (const p of labelSourceProjects) {
+      const name = p?.name ?? '';
+      if (name) nameCounts.set(name, (nameCounts.get(name) || 0) + 1);
+    }
+
+    const labels = new Map();
+    for (const p of labelSourceProjects) {
+      const name = p?.name ?? '';
+      const id = String(p?._id ?? '');
+      if (!name || !id) continue;
+
+      // Use project identity from the unfiltered set so duplicate labels stay stable.
+      labels.set(id, nameCounts.get(name) > 1 ? `${name} (${id.slice(0, 6)})` : name);
+    }
+    return labels;
+  }, [projects, unfilteredProjects]);
 
   const projectNameOptions = useMemo(() => {
-    const seen = new Set();
     const opts = [];
     for (const p of projects) {
-      const name = p?.name ?? '';
-      if (!name || seen.has(name)) continue;
-      seen.add(name);
-      opts.push({ value: name, label: name });
+      const id = String(p?._id ?? '');
+      // Reuse the stable label when filtered options are rebuilt from project IDs.
+      const label = projectLabelById.get(id);
+      if (!id || !label) continue;
+      opts.push({ value: id, label });
     }
     return opts.sort((a, b) => a.label.localeCompare(b.label));
-  }, [projects]);
+  }, [projects, projectLabelById]);
 
   useEffect(() => {
     if (!projectNameFilter.length) return;
@@ -95,7 +125,7 @@ function InjuryCategoryBarChart() {
 
   useEffect(() => {
     const params = {
-      projectNames: projectNameFilter.length ? projectNameFilter.map(p => p.value).join(',') : '',
+      projectIds: projectNameFilter.length ? projectNameFilter.map(p => p.value).join(',') : '',
       startDate: toYMD(startDate),
       endDate: toYMD(endDate),
       severities: severityFilter.map(s => s.value).join(','),
@@ -130,19 +160,36 @@ function InjuryCategoryBarChart() {
     const set = new Set(data.map(d => String(d?.projectId ?? 'unknown')));
     return Array.from(set);
   }, [data]);
+  const allSeriesProjectIds = useMemo(() => {
+    const set = new Set(projects.map(p => String(p._id)));
+    return Array.from(set);
+  }, [projects]);
+  const colorProjectIds = useMemo(() => {
+    const source = unfilteredProjects.length ? unfilteredProjects : projects;
+    const set = new Set(source.map(project => String(project._id)));
+    return Array.from(set);
+  }, [unfilteredProjects, projects]);
 
   const showLabels = seriesProjectIds.length <= 4;
 
   const COLOR_PALETTE = [
     '#34D399', // green
-    '#60A5FA', // blue
+    '#2563EB', // blue
     '#F472B6', // pink
     '#FBBF24', // amber
     '#A78BFA', // purple
-    '#4ADE80', // light green
+    '#FB923C', // orange
     '#F87171', // red
     '#38BDF8', // cyan
   ];
+
+  const projectColorById = new Map();
+  [...colorProjectIds]
+    .sort((a, b) => a.localeCompare(b))
+    .forEach((pid, index) => {
+      // Sort by project ID so colors do not depend on API or filter response order.
+      projectColorById.set(pid, COLOR_PALETTE[index % COLOR_PALETTE.length]);
+    });
 
   // Force a resize/reflow after data/filter changes so chart draws immediately (no hover needed)
   useEffect(() => {
@@ -288,85 +335,108 @@ function InjuryCategoryBarChart() {
         </div>
       </div>
 
-      {loading && <p>Loading…</p>}
-      {!loading && error && <p className="error">Error: {String(error)}</p>}
+      {loading && <p className={darkMode ? styles.darkMode : ''}>Loading…</p>}
+      {!loading && error && <p className={styles.error}>Error: {String(error)}</p>}
 
       {!loading && !error && chartData.length > 0 && (
-        <ResponsiveContainer key={chartKey} width="100%" height={420}>
-          <BarChart
-            data={chartData}
-            margin={{ top: 16, right: 24, bottom: 8, left: 8 }}
-            style={{
-              backgroundColor: darkMode ? '#1e2a3a' : '#fff',
-              borderRadius: '8px',
-              padding: '8px',
-            }}
-          >
-            <XAxis
-              dataKey="workerCategory"
-              interval={0}
-              angle={-45}
-              textAnchor="end"
-              height={80}
-              tick={{ fill: darkMode ? '#fff' : '#000' }}
-              axisLine={{ stroke: darkMode ? '#888' : '#000' }}
-              tickLine={{ stroke: darkMode ? '#888' : '#000' }}
-            />
-            <YAxis
-              allowDecimals={false}
-              tick={{ fill: darkMode ? '#fff' : '#000' }}
-              axisLine={{ stroke: darkMode ? '#888' : '#000' }}
-              tickLine={{ stroke: darkMode ? '#888' : '#000' }}
-            />
-            <Tooltip
-              //tooltip only; no shaded hover overlay across the chart
-              cursor={false}
-              contentStyle={{
-                backgroundColor: darkMode ? '#2b3e59' : '#fff',
-                border: `1px solid ${darkMode ? '#4a5568' : '#cccccc'}`,
-                color: darkMode ? '#fff' : '#000',
+        <div className={styles.chartArea}>
+          <ResponsiveContainer key={chartKey} width="100%" height="100%">
+            <BarChart
+              data={chartData}
+              margin={{ top: 8, right: 16, bottom: 0, left: 0 }}
+              style={{
+                backgroundColor: darkMode ? '#1e2a3a' : '#fff',
+                borderRadius: '8px',
+                padding: '8px',
               }}
-              labelStyle={{
-                color: darkMode ? '#fff' : '#000',
-              }}
-              formatter={(value, name) => [
-                value,
-                projectNameById.get(String(name)) || 'Unknown Project',
-              ]}
-            />
-            <Legend
-              wrapperStyle={{
-                maxHeight: 72,
-                overflowY: 'auto',
-                color: darkMode ? '#fff' : '#000',
-              }}
-              payload={seriesProjectIds.map((pid, index) => ({
-                id: pid,
-                type: 'square',
-                color: COLOR_PALETTE[index % COLOR_PALETTE.length],
-                value: projectNameById.get(pid) || 'Unknown Project',
-              }))}
-            />
-            {seriesProjectIds.map((pid, index) => (
-              <Bar
-                key={pid}
-                dataKey={pid}
-                fill={COLOR_PALETTE[index % COLOR_PALETTE.length]}
-                stroke={darkMode ? '#E5E7EB' : '#ffffff'}
-                strokeWidth={1}
-              >
-                {showLabels && (
-                  <LabelList
-                    dataKey={pid}
-                    position="top"
-                    formatter={v => (v > 0 ? v : '')}
-                    // fill={darkMode ? '#fff' : '#000'}
-                  />
-                )}
-              </Bar>
-            ))}
-          </BarChart>
-        </ResponsiveContainer>
+            >
+              <XAxis
+                dataKey="workerCategory"
+                interval={0}
+                angle={-45}
+                textAnchor="end"
+                height={80}
+                tick={{ fill: darkMode ? '#fff' : '#000' }}
+                axisLine={{ stroke: darkMode ? '#888' : '#000' }}
+                tickLine={{ stroke: darkMode ? '#888' : '#000' }}
+              />
+              <YAxis
+                allowDecimals={false}
+                tick={{ fill: darkMode ? '#fff' : '#000' }}
+                axisLine={{ stroke: darkMode ? '#888' : '#000' }}
+                tickLine={{ stroke: darkMode ? '#888' : '#000' }}
+              />
+              <Tooltip
+                //tooltip only; no shaded hover overlay across the chart
+                cursor={false}
+                content={({ active, payload, label }) => {
+                  if (!active || !payload?.length) return null;
+
+                  return (
+                    <div
+                      style={{
+                        backgroundColor: darkMode ? '#2b3e59' : '#fff',
+                        border: darkMode ? '1px solid #555' : '1px solid #ccc',
+                        padding: 10,
+                      }}
+                    >
+                      <div style={{ color: darkMode ? '#fff' : '#000', margin: 0 }}>{label}</div>
+                      {payload.map(entry => {
+                        const projectId = String(entry.dataKey);
+                        const projectColor =
+                          projectColorById.get(projectId) || entry.color || '#000';
+                        const projectLabel =
+                          projectLabelById.get(projectId) ||
+                          projectNameById.get(projectId) ||
+                          'Unknown Project';
+
+                        return (
+                          <div
+                            key={projectId}
+                            className={styles.tooltipSeriesRow}
+                            style={{ '--tooltip-series-color': projectColor }}
+                          >
+                            {projectLabel} : {entry.value}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                }}
+              />
+              <Legend
+                wrapperStyle={{
+                  color: darkMode ? '#fff' : '#000',
+                  paddingBottom: 10,
+                }}
+                payload={allSeriesProjectIds.map(pid => ({
+                  id: pid,
+                  type: 'square',
+                  color: projectColorById.get(pid),
+                  value: projectLabelById.get(pid) || projectNameById.get(pid) || 'Unknown Project',
+                }))}
+              />
+              {seriesProjectIds.map(pid => (
+                <Bar
+                  key={pid}
+                  dataKey={pid}
+                  fill={projectColorById.get(pid)}
+                  stroke={darkMode ? '#E5E7EB' : '#ffffff'}
+                  strokeWidth={1}
+                >
+                  {showLabels && (
+                    <LabelList
+                      dataKey={pid}
+                      position="top"
+                      formatter={v => (v > 0 ? v : '')}
+                      // fill={darkMode ? '#fff' : '#000'}
+                    />
+                  )}
+                </Bar>
+              ))}
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       )}
 
       {!loading && !error && chartData.length === 0 && (
