@@ -15,11 +15,17 @@ import {
 import { GET_TIME_ENTRIES_PERIOD, GET_TIME_ENTRIES_WEEK } from '../../constants/timeEntries';
 // Import ENDPOINTS
 import { ENDPOINTS } from '~/utils/URL';
+import { fetchServerTime, getServerMoment } from '~/utils/serverTime';
 // Import moment for date manipulation
 // Mock axios for HTTP requests
 
 // Mock axios module
 vi.mock('axios');
+
+vi.mock('~/utils/serverTime', () => ({
+  fetchServerTime: vi.fn(() => Promise.resolve()),
+  getServerMoment: vi.fn(() => moment()),
+}));
 
 describe('timeEntries action creators', () => {
   // Mock console.error to suppress error output during tests
@@ -164,7 +170,7 @@ describe('timeEntries action creators', () => {
     // Test case to ensure the response status is returned
     it('should return the response status', async () => {
       const dispatchMock = vi.fn(); // Mock dispatch function
-      const timeEntry = { entryType: 'default', dateOfWork: moment().toISOString() }; // Sample time entry
+      const timeEntry = { entryType: 'default', dateOfWork: moment().format('YYYY-MM-DD') }; // Sample time entry
       axios.post.mockResolvedValue({ status: 200 }); // Mock axios post response
 
       const status = await postTimeEntry(timeEntry)(dispatchMock); // Call postTimeEntry
@@ -175,7 +181,7 @@ describe('timeEntries action creators', () => {
     // Test case to handle errors and return the error response status
     it('should handle errors and return the error response status', async () => {
       const dispatchMock = vi.fn(); // Mock dispatch function
-      const timeEntry = { entryType: 'default', dateOfWork: moment().toISOString() }; // Sample time entry
+      const timeEntry = { entryType: 'default', dateOfWork: moment().format('YYYY-MM-DD') }; // Sample time entry
       axios.post.mockRejectedValue({ response: { status: 500 } }); // Mock axios post error response
 
       const status = await postTimeEntry(timeEntry)(dispatchMock); // Call postTimeEntry
