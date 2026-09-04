@@ -1006,9 +1006,10 @@ function Timer({ authUser, darkMode, isPopout }) {
           </button>
           {!started || paused ? (
             <button
+              key={'timer-btn-start'}
               type="button"
               disabled={isButtonDisabled}
-              onMouseDown={handleStartButton}
+              onClick={handleStartButton}
               aria-label="Start timer"
               style={{ background: 'none', border: 'none' }}
             >
@@ -1029,7 +1030,8 @@ function Timer({ authUser, darkMode, isPopout }) {
             <button
               type="button"
               disabled={isButtonDisabled}
-              onMouseDown={sendPause}
+              key={'timer-btn-pause'}
+              onClick={sendPause}
               aria-label="Pause timer"
               style={{ background: 'none', border: 'none' }}
             >
@@ -1046,7 +1048,7 @@ function Timer({ authUser, darkMode, isPopout }) {
           <button
             type="button"
             disabled={!started || isButtonDisabled}
-            onMouseDown={handleStopButton}
+            onClick={handleStopButton}
             title="Stop timer and log time"
             aria-label="Stop timer and log time"
             style={{ background: 'none', border: 'none' }}
