@@ -61,12 +61,7 @@ function CreateEventModal({ isOpen, toggle, onEventCreated = () => {} }) {
 
   const handleToggle = () => {
     if (!loading) {
-      if (isOpen) {
-        toggle();
-      } else {
-        resetForm();
-        toggle();
-      }
+      toggle();
     }
   };
 
@@ -85,6 +80,11 @@ function CreateEventModal({ isOpen, toggle, onEventCreated = () => {} }) {
 
   const validateForm = () => {
     const newErrors = {};
+    const maxAttendees = Number(formData.maxAttendees);
+
+    if (!Number.isInteger(maxAttendees) || maxAttendees < 1) {
+      newErrors.maxAttendees = 'Max Attendees must be a positive integer';
+    }
 
     if (!formData.title.trim()) {
       newErrors.title = 'Title is required';
@@ -114,10 +114,6 @@ function CreateEventModal({ isOpen, toggle, onEventCreated = () => {} }) {
 
     if (!formData.endTime) {
       newErrors.endTime = 'End time is required';
-    }
-
-    if (formData.maxAttendees < 1) {
-      newErrors.maxAttendees = 'Max attendees must be at least 1';
     }
 
     // Validate that end time is after start time
@@ -169,8 +165,9 @@ function CreateEventModal({ isOpen, toggle, onEventCreated = () => {} }) {
     try {
       const result = await dispatch(createEvent(eventData));
       if (result?.success) {
-        onEventCreated();
-        handleToggle();
+        onEventCreated(result.event);
+        resetForm();
+        toggle();
       }
     } catch (error) {
       setErrors('Unable to create a new event. Please try again later.');
