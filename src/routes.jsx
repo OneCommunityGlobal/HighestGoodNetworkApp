@@ -168,6 +168,8 @@ import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPa
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
 // Community Calendar
 import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
+import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
+import PRGradingScreenContainer from './components/PRGradingScreen';
 // Kicthen and Inventory Portal
 import KitchenandInventoryLogin from './components/KitchenandInventory/Login';
 import OrchardManagement from './components/KitchenandInventory/OrchardManagement/OrchardManagement';
@@ -1231,6 +1233,12 @@ export default (
           path="/pr-grading-dashboard"
           exact
           component={PRGradingDashboard}
+          fallback
+        />
+        <ProtectedRoute
+          path="/pr-grading-screen"
+          exact
+          component={PRGradingScreenContainer}
           fallback
         />
         <ProtectedRoute path="/pr-dashboard/overview" exact component={PRDashboardOverview} />
