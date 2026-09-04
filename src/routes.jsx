@@ -1101,7 +1101,6 @@ export default (
           exact
           component={GardenManagement}
         />
-        <Route path="/kitchenandinventory/orders" component={OrdersPage} />
         <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} />
         <ProtectedRoute path="/kitchenandinventory/recipes" exact component={RecipesLandingPage} />
         {/* ----- End of Kitchen and Inventory Portal Routes ----- */}
@@ -1110,7 +1109,8 @@ export default (
         <Route path="/subscribe" component={SubscribePage} />
         <Route path="/unsubscribe" component={UnsubscribePage} />
         <Route path="/collaboration" component={Collaboration} />
-        <ProtectedRoute path="/kitchenandinventory/orders" component={OrdersPage} />
+        <Route path="/kitchenandinventory/orders" component={OrdersPage} />
+        <Route path="/kitchenandinventory/suppliers" component={OrdersPage} />
         <Route path="/suggestedjobslist" component={SuggestedJobsList} />
         <ProtectedRoute path="/jobformbuilder" fallback component={JobFormBuilder} />
         <ProtectedRoute path="/materials/mostwastedmaterials" component={MostWastedMaterials} />
