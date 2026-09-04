@@ -1,4 +1,14 @@
-/* ============ BASE CONTAINER & VARIABLES ============ */
+.utilizationChartPage {
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  background-color: #fff;
+  transition: background-color 0.3s ease;
+}
+
+.darkPage {
+  background-color: #0d1b2a;
+}
+
 .utilizationChartContainer {
   padding: 2rem;
   max-width: 1200px;
