@@ -13,7 +13,12 @@ function ReminderModal({
   const { modalStatus, updateModalStatus } = useContext(ModalContext);
 
   return (
-    <div className={styles['ContainerReminder']}>
+    <div
+      className={styles['ContainerReminder']}
+      style={{
+        backgroundColor: darkMode ? '#1b2a41' : 'white',
+      }}
+    >
       <div className={styles['ReminderTitle']}>
         <h2>Remember to Save Your Changes!</h2>
       </div>
