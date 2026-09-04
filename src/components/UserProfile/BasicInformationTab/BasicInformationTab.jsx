@@ -1025,21 +1025,26 @@ const BasicInformationTab = props => {
               {videoCallPreferenceComponent}
               <Col md="1" lg="1"></Col>
             </Row>
-            <Row style={{ marginBottom: '10px' }}>
+            <Row>
               {roleComponent}
               <Col md="1" lg="1"></Col>
             </Row>
-            <Row style={{  marginBottom: '10px' }}>
+            {/* Removed inline margins to align with standard CSS spacing and prevent dark mode layout gaps */}
+            <Row>
               {locationComponent}
               <Col md="1"></Col>
             </Row>
-            <Row style={{ marginTop: '15px', marginBottom: '10px' }}>
+            {/* Removed inline margins to align with standard CSS spacing and prevent dark mode layout gaps */}
+            <Row>
               {timeZoneComponent}
               <Col md="1"></Col>
             </Row>
-            <Row style={{ marginBottom: '10px' }}>{timeZoneDifferenceComponent}<Col md="1"></Col></Row>
-            <Row style={{ marginBottom: '10px' }}>{statusComponent}<Col md="1"></Col></Row>
-            <Row style={{ marginBottom: '10px' }}>{endDateComponent}<Col md="1"></Col></Row>
+            {/* Removed inline margins to align with standard CSS spacing and prevent dark mode layout gaps */}
+            <Row>{timeZoneDifferenceComponent}<Col md="1"></Col></Row>
+            {/* Removed inline margins to align with standard CSS spacing and prevent dark mode layout gaps */}
+            <Row>{statusComponent}<Col md="1"></Col></Row>
+            {/* Removed inline margins to align with standard CSS spacing and prevent dark mode layout gaps */}
+            <Row>{endDateComponent}<Col md="1"></Col></Row>
           </>
         ) : (
           <>
