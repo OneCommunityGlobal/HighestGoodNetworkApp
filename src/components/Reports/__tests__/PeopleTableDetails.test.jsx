@@ -94,7 +94,7 @@ describe('Unit Test case for PeopleTableDetails component', () => {
   it('shows resource toggle button when there are more than 2 resources', () => {
     render(<PeopleTableDetails taskData={taskFixtureThreeNamedResources} />);
 
-    expect(screen.getByText('Project 2')).toBeInTheDocument();
+   expect(screen.getAllByText('Project 2')[0]).toBeInTheDocument();
     const toggleButton = screen.getByText('1+');
     expect(toggleButton).toBeInTheDocument();
   });
