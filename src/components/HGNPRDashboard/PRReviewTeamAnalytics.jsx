@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { connect } from 'react-redux';
 import {
   ResponsiveContainer,
@@ -11,16 +12,16 @@ import {
   CartesianGrid,
 } from 'recharts';
 import { boxStyle, boxStyleDark } from '~/styles';
+import { ENDPOINTS } from '~/utils/URL';
 import DurationFilter from './DurationFilter';
 import styles from './PRReviewTeamAnalytics.module.css';
-import PRData from './PRData';
 import '../Header/index.module.css';
 
 const DURATION_OPTIONS = [
-  { label: 'Last Week', value: 'last_week' },
-  { label: 'Last 2 weeks', value: 'last_2_weeks' },
-  { label: 'Last Month', value: 'last_month' },
-  { label: 'All Time', value: 'all_time' },
+  { label: 'Last Week', value: 'lastWeek' },
+  { label: 'Last 2 weeks', value: 'last2weeks' },
+  { label: 'Last Month', value: 'lastMonth' },
+  { label: 'All Time', value: 'allTime' },
 ];
 
 function getXTicksAndDomain(data) {
@@ -46,7 +47,7 @@ function CustomTooltip({ active, payload, tooltipBg, tooltipText }) {
           <h4 style={{ color: tooltipText }}>{tooltipData.prNumber}</h4>
         </div>
         <p className={styles['tooltip-title']} style={{ color: tooltipText }}>
-          {tooltipData.title}
+          {tooltipData.prTitle}
         </p>
         <div className={styles['tooltip-details']}>
           <p style={{ color: tooltipText }}>
@@ -70,40 +71,24 @@ function PRReviewTeamAnalytics({ state }) {
   const { darkMode } = state.theme;
 
   useEffect(() => {
-    setLoading(true);
-    setError(null);
-    setTimeout(() => {
+    const fetchPopularPRs = async () => {
+      setLoading(true);
+      setError(null);
+
       try {
-        // Calculate date range based on duration
-        const today = new Date();
-        let cutoffDate;
-
-        switch (duration) {
-          case 'last_week':
-            cutoffDate = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-            break;
-          case 'last_2_weeks':
-            cutoffDate = new Date(today.getTime() - 14 * 24 * 60 * 60 * 1000);
-            break;
-          case 'last_month':
-            cutoffDate = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
-            break;
-          case 'all_time':
-          default:
-            cutoffDate = new Date(0); // Beginning of time
-            break;
-        }
-
-        // Filter PRs by date and sort by review count
-        const filtered = PRData.filter(pr => pr.createdDate >= cutoffDate);
-        const sorted = [...filtered].sort((a, b) => b.reviewCount - a.reviewCount);
-        setData(sorted.slice(0, 20)); // Get Top 20 PRs based on review count
-        setLoading(false);
+        const response = await axios.get(ENDPOINTS.POPULAR_PRS(duration), {
+          headers: { Authorization: window.localStorage.getItem('token') },
+        });
+        setData(Array.isArray(response.data) ? response.data : []);
       } catch (err) {
         setError('Failed to load PR data');
+        setData([]);
+      } finally {
         setLoading(false);
       }
-    }, 800);
+    };
+
+    fetchPopularPRs();
   }, [duration]);
 
   const selectedDurationLabel =

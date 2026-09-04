@@ -702,6 +702,7 @@ export const ENDPOINTS = {
 
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
+  POPULAR_PRS: duration => `${APIEndpoint}/analytics/popular-prs?duration=${duration}`,
   GITHUB_REVIEW_SUMMARY: (duration, sort = 'desc', team) => {
     const params = new URLSearchParams({
       duration,
