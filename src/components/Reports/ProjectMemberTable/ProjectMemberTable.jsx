@@ -6,7 +6,6 @@ import { Stub } from '../../common/Stub';
 import styles from './ProjectMemberTable.module.css';
 
 export function ProjectMemberTable({ projectMembers, skip, take, handleMemberCount, darkMode, counts }) {
-  console.log('skip:', skip, 'take:', take);
   const [allMemberList, setAllMemberList] = useState([]);
   const [activeMemberList, setActiveMemberList] = useState([]);
   const [memberFilter, setMemberFilter] = useState('active');
