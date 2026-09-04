@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { ENDPOINTS } from '../../../utils/URL';
 import HeaderRenderer from '../../Header/HeaderRenderer';
 import styles from './LBRegister.module.css';
-import logo from '../../../assets/images/logo2.png';
+import logo from '../../../assets/images/logo2.webp';
 
 function LBRegister() {
   const [formData, setFormData] = useState({

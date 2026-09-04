@@ -75,7 +75,7 @@ export function Header(props) {
   const userProfileLink = (
     <NavLink tag={Link} to={`${PROFILE_ROUTE}/${displayUserId}`}>
       <img
-        src={profilePic || '/pfp-default-header.png'}
+        src={profilePic || '/pfp-default-header.jpg'}
         alt=""
         style={{ maxWidth: '60px', maxHeight: '60px' }}
         className="dashboardimg"

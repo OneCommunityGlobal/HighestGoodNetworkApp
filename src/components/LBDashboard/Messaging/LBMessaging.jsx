@@ -19,8 +19,8 @@ import {
   updateChatState,
   markMessagesAsReadViaSocket,
 } from '../../../utils/messagingSocket';
-import logo from '../../../assets/images/logo2.png';
 import Header from '../../Header/Header';
+import logo from '../../../assets/images/logo2.webp';
 
 export default function LBMessaging() {
   const dispatch = useDispatch();
@@ -169,7 +169,7 @@ export default function LBMessaging() {
         userId: user.userId || user._id,
         firstName: user.firstName,
         lastName: user.lastName,
-        profilePic: user.profilePic || '/pfp-default-header.png',
+        profilePic: user.profilePic || '/pfp-default-header.jpg',
       };
 
       updateSelectedUser(newSelectedUser);
@@ -206,7 +206,7 @@ export default function LBMessaging() {
       userId: host.userId,
       firstName: matched?.firstName ?? host.firstName,
       lastName: matched?.lastName ?? host.lastName,
-      profilePic: matched?.profilePic || host.profilePic || '/pfp-default-header.png',
+      profilePic: matched?.profilePic || host.profilePic || '/pfp-default-header.jpg',
     });
 
     params.delete('listingId');
@@ -348,12 +348,37 @@ export default function LBMessaging() {
       );
     }
 
-    return sidebarContacts.map(user =>
-      renderContactButton(user.userId || user._id, user, () => {
-        updateSelection(user);
-        setMobileHamMenu(false);
-      }),
-    );
+    // return sidebarContacts.map(user =>
+    //   renderContactButton(user.userId || user._id, user, () => {
+    //     updateSelection(user);
+    //     setMobileHamMenu(false);
+    //   }),
+    // );
+    return sidebarContacts.map(user => (
+      <button
+        key={user.userId || user._id}
+        type="button"
+        className={`${styles.lbMessagingContact}`}
+        onClick={() => {
+          updateSelection(user);
+          setMobileHamMenu(false);
+        }}
+      >
+        <img
+          src={user.profilePic || '/pfp-default-header.jpg'}
+          alt="User Profile"
+          onError={e => {
+            e.target.onerror = null;
+            e.target.src = '/pfp-default-header.jpg';
+          }}
+        />
+        <div className={`${styles.lbMessagingContactInfo}`}>
+          <div className={`${styles.lbMessagingContactName} ${mobileView ? styles.black : ''}`}>
+            {user.firstName} {user.lastName}
+          </div>
+        </div>
+      </button>
+    ));
   };
 
   const renderChatMessages = () => {
@@ -467,12 +492,41 @@ export default function LBMessaging() {
                             className={`${styles.lbMessagingContactsBody} ${styles.activeInlbMessagingContactsBody}`}
                           >
                             {showContacts
-                              ? safeSearchResults.map(user =>
-                                  renderContactButton(user.userId, user, () => {
-                                    updateSelection(user);
-                                    setMobileHamMenu(false);
-                                  }),
-                                )
+                              ? // ? safeSearchResults.map(user =>
+                                //     renderContactButton(user.userId, user, () => {
+                                //       updateSelection(user);
+                                //       setMobileHamMenu(false);
+                                //     }),
+                                //   )
+                                safeSearchResults.map(user => (
+                                  <button
+                                    key={user.userId}
+                                    type="button"
+                                    className={`${styles.lbMessagingContact}`}
+                                    onClick={() => {
+                                      updateSelection(user);
+                                      setMobileHamMenu(false);
+                                    }}
+                                  >
+                                    <img
+                                      src={user.profilePic || '/pfp-default-header.jpg'}
+                                      alt="User Profile"
+                                      onError={e => {
+                                        e.target.onerror = null;
+                                        e.target.src = '/pfp-default-header.jpg';
+                                      }}
+                                    />
+                                    <div className={`${styles.lbMessagingContactInfo}`}>
+                                      <div
+                                        className={`${styles.lbMessagingContactName} ${
+                                          mobileView ? styles.black : ''
+                                        }`}
+                                      >
+                                        {user.firstName} {user.lastName}
+                                      </div>
+                                    </div>
+                                  </button>
+                                ))
                               : renderContacts()}
                           </div>
                         </div>
@@ -520,9 +574,31 @@ export default function LBMessaging() {
                     className={`${styles.lbMessagingContactsBody} ${styles.activeInlbMessagingContactsBody}`}
                   >
                     {showContacts
-                      ? safeSearchResults.map(user =>
-                          renderContactButton(user._id, user, () => updateSelection(user)),
-                        )
+                      ? // ? safeSearchResults.map(user =>
+                        //     renderContactButton(user._id, user, () => updateSelection(user)),
+                        //   )
+                        safeSearchResults.map(user => (
+                          <button
+                            key={user._id}
+                            type="button"
+                            className={`${styles.lbMessagingContact}`}
+                            onClick={() => updateSelection(user)}
+                          >
+                            <img
+                              src={user.profilePic || '/pfp-default-header.jpg'}
+                              alt="User Profile"
+                              onError={e => {
+                                e.target.onerror = null;
+                                e.target.src = '/pfp-default-header.jpg';
+                              }}
+                            />
+                            <div className={`${styles.lbMessagingContactInfo}`}>
+                              <div className={`${styles.lbMessagingContactName}`}>
+                                {user.firstName} {user.lastName}
+                              </div>
+                            </div>
+                          </button>
+                        ))
                       : renderContacts()}
                   </div>
                 </div>
@@ -533,10 +609,10 @@ export default function LBMessaging() {
                 <div className={styles.lbMessagingMessageWindowHeader}>
                   <div className={styles.lbMessagingHeaderIdentity}>
                     <img
-                      src={selectedUser.profilePic || '/pfp-default-header.png'}
+                      src={selectedUser.profilePic || '/pfp-default-header.jpg'}
                       onError={e => {
                         e.target.onerror = null;
-                        e.target.src = '/pfp-default-header.png';
+                        e.target.src = '/pfp-default-header.jpg';
                       }}
                       alt="Profile"
                     />

@@ -49,25 +49,25 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
   const appConfigs = {
     github: {
       name: 'GitHub',
-      icon: '/github_icon.png',
+      icon: '/github_icon.webp',
       color: '#333',
       bgColor: '#f6f8fa',
     },
     dropbox: {
       name: 'Dropbox',
-      icon: '/dropbox_icon.png',
+      icon: '/dropbox_icon.webp',
       color: '#0061fe',
       bgColor: '#f0f8ff',
     },
     slack: {
       name: 'Slack',
-      icon: '/slack_icon.png',
+      icon: '/slack_icon.webp',
       color: '#4a154b',
       bgColor: '#f8f0ff',
     },
     sentry: {
       name: 'Sentry',
-      icon: '/sentry_icon.png',
+      icon: '/sentry_icon.webp',
       color: '#362d59',
       bgColor: '#f5f0ff',
     },

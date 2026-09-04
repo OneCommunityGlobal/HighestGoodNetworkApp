@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
-import ActivityImg from '../../../assets/images/yoga-img.png';
+import ActivityImg from '../../../assets/images/yoga-img.webp';
 
 // Helper function to format time string
 const formatTime = timeString => {

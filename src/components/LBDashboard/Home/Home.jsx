@@ -12,7 +12,7 @@ import { BsSliders } from 'react-icons/bs';
 import 'leaflet/dist/leaflet.css';
 import { useHistory, useLocation } from 'react-router-dom';
 import L from 'leaflet';
-import logo from '../../../assets/images/logo2.png';
+import logo from '../../../assets/images/logo2.webp';
 import { fetchVillages, FIXED_VILLAGES } from './data';
 import styles from './Home.module.css';
 import ThemeIconToggle from '../ThemeIconToggle';

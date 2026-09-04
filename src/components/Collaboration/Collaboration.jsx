@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import OneCommunityImage from '../../assets/images/logo2.png';
+import OneCommunityImage from '../../assets/images/logo2.webp';
 
 const ADS_PER_PAGE = 18;
 

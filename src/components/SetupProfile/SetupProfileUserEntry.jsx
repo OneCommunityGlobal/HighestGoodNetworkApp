@@ -36,7 +36,7 @@ import DeleteHomeCountryModal from './deleteHomeCountryModal';
 import collaborationOptions from './collaborationSuggestionData';
 import 'react-phone-input-2/lib/style.css';
 import './SetupProfileUserEntry.module.css';
-import logo from '../../assets/images/logo.png';
+import logo from '../../assets/images/logo.webp';
 import TimeZoneDropDown from '../UserProfile/TimeZoneDropDown';
 
 function SetupProfileUserEntry({ token, userEmail }) {
@@ -616,7 +616,7 @@ function SetupProfileUserEntry({ token, userEmail }) {
           <Row>
             <Col md="3" className="text-md-right pb-3">
               <Image
-                src={userProfile.profilePicture || '/Portrait_Placeholder.png'}
+                src={userProfile.profilePicture || '/Portrait_Placeholder.webp'}
                 alt=""
                 id="profile-picture"
               />

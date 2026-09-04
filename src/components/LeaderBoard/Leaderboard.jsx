@@ -299,7 +299,7 @@ function LeaderBoard({
         firstName,
         lastName,
         email,
-        profilePic: profilePic || '/pfp-default-header.png',
+        profilePic: profilePic || '/pfp-default-header.jpg',
       };
       sessionStorage.setItem('viewingUser', JSON.stringify(viewingUser));
       window.dispatchEvent(new Event('storage'));

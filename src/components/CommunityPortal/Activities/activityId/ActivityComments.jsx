@@ -99,11 +99,11 @@ const randomUsers = [
   },
   {
     name: 'John Smith',
-    profilePic: '/Portrait_Placeholder.png',
+    profilePic: '/Portrait_Placeholder.webp',
   },
   {
     name: 'Maria Garcia',
-    profilePic: '/pfp-default-header.png',
+    profilePic: '/pfp-default-header.jpg',
   },
   {
     name: 'James Wilson',
@@ -123,8 +123,8 @@ const mockEvent = {
   status: 'Activated',
   avatars: [
     '/pfp-default.png',
-    '/Portrait_Placeholder.png',
-    '/pfp-default-header.png',
+    '/Portrait_Placeholder.webp',
+    '/pfp-default-header.jpg',
     '/profilepic.webp',
     '/pfp-default.png',
   ],
@@ -147,7 +147,7 @@ const mockComments = [
   {
     id: 2,
     name: 'Alex Rodriguez',
-    profilePic: '/Portrait_Placeholder.png',
+    profilePic: '/Portrait_Placeholder.webp',
     createdAt: new Date(Date.now() - 15 * 60 * 1000), // 15 minutes ago (fixed time)
     fixedTimestamp: '15 minutes ago', // Fixed display timestamp
     text:
@@ -159,7 +159,7 @@ const mockComments = [
       {
         id: 101,
         name: 'Emma Thompson',
-        profilePic: '/pfp-default-header.png',
+        profilePic: '/pfp-default-header.jpg',
         createdAt: new Date(Date.now() - 10 * 60 * 1000), // 10 minutes ago (fixed time)
         fixedTimestamp: '10 minutes ago', // Fixed display timestamp
         text: 'I agree! Would love to connect with you on LinkedIn.',
@@ -170,7 +170,7 @@ const mockComments = [
   {
     id: 3,
     name: 'Emma Thompson',
-    profilePic: '/pfp-default-header.png',
+    profilePic: '/pfp-default-header.jpg',
     createdAt: new Date(Date.now() - 45 * 60 * 1000), // 45 minutes ago (fixed time)
     fixedTimestamp: '45 minutes ago', // Fixed display timestamp
     text:
@@ -211,7 +211,7 @@ const mockFeedbacks = [
   {
     id: 1,
     name: 'Sarah Johnson',
-    profilePic: '/Portrait_Placeholder.png',
+    profilePic: '/Portrait_Placeholder.webp',
     createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago (fixed time)
     fixedTimestamp: '2 hours ago', // Fixed display timestamp that won't change
     rating: 5,
@@ -233,7 +233,7 @@ const mockFeedbacks = [
   {
     id: 3,
     name: 'Mike Chen',
-    profilePic: '/pfp-default-header.png',
+    profilePic: '/pfp-default-header.jpg',
     createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago (fixed time)
     fixedTimestamp: '1 day ago', // Fixed display timestamp that won't change
     rating: 3,
@@ -333,12 +333,12 @@ function ActivityComments() {
     const usersPool = [
       { id: 1, name: 'Michael Johnson', profilePic: '/profilepic.webp' },
       { id: 2, name: 'Jennifer Smith', profilePic: '/pfp-default.png' },
-      { id: 3, name: 'Patricia Davis', profilePic: '/pfp-default-header.png' },
-      { id: 4, name: 'Robert Wilson', profilePic: '/Portrait_Placeholder.png' },
+      { id: 3, name: 'Patricia Davis', profilePic: '/pfp-default-header.jpg' },
+      { id: 4, name: 'Robert Wilson', profilePic: '/Portrait_Placeholder.webp' },
       { id: 5, name: 'Amanda Lee', profilePic: '/pfp-default.png' },
       { id: 6, name: 'David Brown', profilePic: '/profilepic.webp' },
-      { id: 7, name: 'Michelle Kim', profilePic: '/pfp-default-header.png' },
-      { id: 8, name: 'Christopher Martinez', profilePic: '/Portrait_Placeholder.png' },
+      { id: 7, name: 'Michelle Kim', profilePic: '/pfp-default-header.jpg' },
+      { id: 8, name: 'Christopher Martinez', profilePic: '/Portrait_Placeholder.webp' },
       { id: 9, name: 'Rachel Green', profilePic: '/pfp-default.png' },
       { id: 10, name: 'Thomas Anderson', profilePic: '/profilepic.webp' },
     ];

@@ -1,11 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-
-import logo from '../../../../assets/images/logo2.png';
-import mastermap from '../../../../assets/images/masterMap.png';
-import mapRouter from '../../../../assets/images/routeMarker.png';
-import pin from '../../../../assets/images/pin-point.png';
+import logo from '../../../../assets/images/logo2.webp';
+import mastermap from '../../../../assets/images/masterMap.webp';
+import mapRouter from '../../../../assets/images/routeMarker.webp';
+import pin from '../../../../assets/images/pin-point.webp';
 import styles from './MasterPlan.module.css';
 import { getVillageDropdownFilterData } from '~/actions/lbdashboard/villageDetailsAction';
 

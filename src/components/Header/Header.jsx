@@ -802,7 +802,13 @@ export function Header(props) {
                 <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>                
                 <NavItem className={styles.showInMobile}>
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
-                    <img src={`${profilePic || '/pfp-default-header.png'}`} alt="" style={{ maxWidth: '60px', maxHeight: '60px' }} className="dashboardimg" />
+                    {/* <img src={`${profilePic || '/pfp-default-header.png'}`} alt="" style={{ maxWidth: '60px', maxHeight: '60px' }} className="dashboardimg" /> */}
+                    <img
+                      src={`${profilePic || '/pfp-default-header.jpg'}`}
+                      alt=""
+                      style={{ maxWidth: '60px', maxHeight: '60px' }}
+                      className="dashboardimg"
+                    />
                   </NavLink>
                 </NavItem>
 
@@ -1027,7 +1033,20 @@ export function Header(props) {
 
                 <NavItem className={styles.hideInMobile}>
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
-                    <div style={{ width: '60px', height: '60px', minWidth: '60px', minHeight: '60px', backgroundImage: `url(${profilePic || '/pfp-default-header.png'})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} className="dashboardimg" />
+                    {/* <div style={{ width: '60px', height: '60px', minWidth: '60px', minHeight: '60px', backgroundImage: `url(${profilePic || '/pfp-default-header.png'})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} className="dashboardimg" /> */}
+                    <div
+                      style={{
+                        width: '60px',
+                        height: '60px',
+                        minWidth: '60px',
+                        minHeight: '60px',
+                        backgroundImage: `url(${profilePic || '/pfp-default-header.jpg'})`,
+                        backgroundSize: 'contain',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat',
+                      }}
+                      className="dashboardimg"
+                    />
                   </NavLink>
                 </NavItem>
 

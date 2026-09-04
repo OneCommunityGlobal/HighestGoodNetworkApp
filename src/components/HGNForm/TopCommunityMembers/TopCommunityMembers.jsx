@@ -7,7 +7,7 @@ import httpService from '../../../services/httpService';
 import { ENDPOINTS } from '../../../utils/URL';
 import styles from './TopCommunityMembers.module.css';
 import { FaEnvelope, FaPhone } from 'react-icons/fa';
-import slackLogo from '../../../assets/images/slack.png';
+import slackLogo from '../../../assets/images/slack.webp';
 
 const skillOptions = [
   'HTML',

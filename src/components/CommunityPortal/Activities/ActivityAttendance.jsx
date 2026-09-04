@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { FaRegClock, FaIdCard, FaEllipsisV, FaInfoCircle } from 'react-icons/fa';
 import styles from './ActivityAttendance.module.css';
 import { useState } from 'react';
-import profileImg from '../../../assets/images/profile.png';
+import profileImg from '../../../assets/images/profile.webp';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 

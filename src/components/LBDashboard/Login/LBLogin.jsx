@@ -13,7 +13,7 @@ import {
 } from 'reactstrap';
 import { loginBMUser } from '~/actions/authActions';
 import styles from './Login.module.css';
-import logo from '../../../assets/images/logo2.png';
+import logo from '../../../assets/images/logo2.webp';
 import isEmail from 'validator/lib/isEmail';
 
 function LBLogin(props) {
