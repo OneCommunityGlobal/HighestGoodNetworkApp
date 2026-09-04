@@ -4,6 +4,12 @@ import { useTable } from 'react-table';
 import styles from './PeopleTableDetails.module.css';
 import TableFilter from './TableFilter/TableFilter';
 
+/**
+ * TaskResourceCell Component
+ * Renders the primary profile pictures for assigned resources (up to 2),
+ * a collapse/expand toggle button for additional resources, and a hidden/visible 
+ * container for extra resources when expanded.
+ */
 export function TaskResourceCell({
   row,
   column,
@@ -57,6 +63,10 @@ export function TaskResourceCell({
   );
 }
 
+/**
+ * YesNoCell Component
+ * Renders a centered checkmark for 'Yes' values or a cross mark otherwise.
+ */
 export function YesNoCell({ value }) {
   return (
     <div style={{ textAlign: 'center' }}>
@@ -65,11 +75,21 @@ export function YesNoCell({ value }) {
   );
 }
 
+/**
+ * CenteredValueCell Component
+ * Renders any standard text value centered within its table cell.
+ */
 export function CenteredValueCell({ value }) {
   return <div style={{ textAlign: 'center' }}>{value}</div>;
 }
 
+/**
+ * PeopleTableDetails Main Component
+ * Manages filtering states, table data configuration using react-table, 
+ * desktop table layout, and responsive mobile card view.
+ */
 function PeopleTableDetails(props) {
+  // Filter search states
   const [name, setName] = useState('');
   const [priority, setPriority] = useState('');
   const [status, setStatus] = useState('');
@@ -140,7 +160,6 @@ function PeopleTableDetails(props) {
     return filteredList;
   };
 
-  // REFACTORED: Toggle using state instead of direct DOM manipulation
   const toggleMoreResources = useCallback((id) => {
     setExpandedTasks((prev) => ({
       ...prev,
@@ -244,6 +263,7 @@ function PeopleTableDetails(props) {
           Clear Filters
         </button>
       </div>
+
       <div className={styles['people-table-scrollable']}>
         <table {...getTableProps()} className={styles.peopleTableReact}>
           <thead className={darkMode ? styles['reports-table-head-dark'] : undefined}>
@@ -282,6 +302,51 @@ function PeopleTableDetails(props) {
             })}
           </tbody>
         </table>
+      </div>
+
+      <div className={styles['mobileCardContainer']}>
+        {filteredTasks.map((task) => (
+          <div key={task._id} className={`${styles['task-card']} ${darkMode ? styles['task-card-dark'] : ''}`}>
+            <div className={styles['task-header']}>
+              <span className={styles['people-report-task-name']}>{task.taskName}</span>
+              <span className={styles['task-status']}>{task.status || 'Started'}</span>
+            </div>
+            <div className={styles['task-details']}>
+              <div className={styles['task-info']}>
+                <div className={styles['sub-head']}>Priority</div>
+                <div className={styles['sub-details']}>{task.priority}</div>
+              </div>
+              <div className={styles['task-info']}>
+                <div className={styles['sub-head']}>Resources</div>
+                <div className={styles['sub-details']}>
+                  {(task.resources || []).flat().map((res, i) => (
+                    <img key={i} alt={res.name} src={res.profilePic || '/pfp-default.png'} className={styles['img-circle']} />
+                  ))}
+                </div>
+              </div>
+              <div className={styles['task-info']}>
+                <div className={styles['sub-head']}>Active</div>
+                <div className={styles['sub-details']}>{task.active}</div>
+              </div>
+              <div className={styles['task-info']}>
+                <div className={styles['sub-head']}>Assign</div>
+                <div className={styles['sub-details']}>{task.assign}</div>
+              </div>
+              <div className={styles['task-info']}>
+                <div className={styles['sub-head']}>Estimated Hours</div>
+                <div className={styles['sub-details']}>{task.estimatedHours}</div>
+              </div>
+              <div className={styles['task-info']}>
+                <div className={styles['sub-head']}>Start Date</div>
+                <div className={styles['sub-details']}>{task.startDate}</div>
+              </div>
+              <div className={styles['task-info']}>
+                <div className={styles['sub-head']}>End Date</div>
+                <div className={styles['sub-details']}>{task.endDate}</div>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </>
   );
