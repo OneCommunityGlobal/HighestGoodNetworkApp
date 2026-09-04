@@ -11,6 +11,8 @@ import styles from './VolunteerHoursReport.module.css';
 import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 import PropTypes from 'prop-types';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 
 const VolunteerHoursReport = ({
@@ -180,32 +182,32 @@ const VolunteerHoursReport = ({
                 <Col md={6}>
                   <FormGroup>
                     <Label for="fromDate">From Date</Label>
-                    <Input
-                      type="date"
+                    <DatePicker
                       id="fromDate"
-                      value={moment(dateRange.startDate).format('YYYY-MM-DD')}
-                      min="2010-01-01"
-                      max={moment(dateRange.endDate).format('YYYY-MM-DD')}
-                      onChange={(e) => setDateRange({
+                      selected={dateRange.startDate}
+                      minDate={moment('2010-01-01').toDate()}
+                      maxDate={dateRange.endDate}
+                      onChange={(date) => setDateRange({
                         ...dateRange,
-                        startDate: moment(e.target.value).toDate()
+                        startDate: date
                       })}
+                      dateFormat="yyyy-MM-dd"
                     />
                   </FormGroup>
                 </Col>
                 <Col md={6}>
                   <FormGroup>
                     <Label for="toDate">To Date</Label>
-                    <Input
-                      type="date"
+                    <DatePicker
                       id="toDate"
-                      value={moment(dateRange.endDate).format('YYYY-MM-DD')}
-                      max={moment().format('YYYY-MM-DD')}
-                      min={moment(dateRange.startDate).format('YYYY-MM-DD')}
-                      onChange={(e) => setDateRange({
+                      selected={dateRange.endDate}
+                      maxDate={moment().toDate()}
+                      minDate={dateRange.startDate}
+                      onChange={(date) => setDateRange({
                         ...dateRange,
-                        endDate: moment(e.target.value).toDate()
+                        endDate: date
                       })}
+                      dateFormat="yyyy-MM-dd"
                     />
                   </FormGroup>
                 </Col>
