@@ -123,6 +123,7 @@ import LBBidOverview from './components/LBDashboard/BiddingOverview/BiddingOverv
 import BiddingHomepage from './components/LBDashboard/BiddingHomepage/BiddingHomepage';
 import WishList from './components/LBDashboard/WishList/WishList';
 import WishListItem from './components/LBDashboard/WishList/ItemOverview';
+import WishlistAvailabilityPage from './components/LBDashboard/WishList/WishlistAvailabilityPage';
 
 // Most Wasted Materials
 import MostWastedMaterials from './components/MostWastedMaterials/MostWastedMaterials.jsx';
@@ -360,6 +361,17 @@ export default (
           <AutoUpdate />
           <ToastContainer />
           <WishList />
+        </>
+      )}
+    />
+    <LBProtectedRoute
+      exact
+      path="/lbdashboard/wishlist/:id/availability"
+      render={() => (
+        <>
+          <AutoUpdate />
+          <ToastContainer />
+          <WishlistAvailabilityPage />
         </>
       )}
     />

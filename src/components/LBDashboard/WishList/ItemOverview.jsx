@@ -2,10 +2,9 @@ import PropTypes from 'prop-types';
 import styles from './ItemOverview.module.css';
 import { useEffect, useState } from 'react';
 import { connect, useSelector } from 'react-redux';
-
 import { FaMapMarkerAlt } from 'react-icons/fa';
-import { IoMdHeart, IoMdHeartEmpty } from 'react-icons/io';
 import { BsChat } from 'react-icons/bs';
+import { IoMdHeart, IoMdHeartEmpty } from 'react-icons/io';
 import ImageCarousel from '../Components/ImageCarousel';
 import Header from '../Header';
 import { Link, useParams } from 'react-router-dom';
@@ -40,7 +39,6 @@ function WishListItem(props) {
 
   const { wishlistItem, wishlists } = props;
 
-  // Hide global "back to top" control while this page is mounted (element may not exist).
   useEffect(() => {
     const backToTopButton = document.querySelector('.top');
     if (!backToTopButton) return undefined;

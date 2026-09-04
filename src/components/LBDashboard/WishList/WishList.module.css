@@ -359,3 +359,32 @@ h1.listItemTitleMobile {
   font-size: 1.2rem;
   font-weight: 600;
 }
+
+.noResults {
+  margin: 20px 40px;
+  padding: 2rem;
+  background: #e0e0e0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.listDetails {
+  display: inline-block;
+  color: #0d47a1;
+  text-decoration: underline;
+  overflow-wrap: anywhere;
+  line-height: 1.4;
+  margin-top: 0.5rem;
+}
+
+.pageRootDark .listDetails,
+.pageRootDark .listDetails:visited {
+  color: #7eb8ff !important;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.pageRootDark .listDetails:hover,
+.pageRootDark .listDetails:focus-visible {
+  color: #b8d9ff !important;
+}
