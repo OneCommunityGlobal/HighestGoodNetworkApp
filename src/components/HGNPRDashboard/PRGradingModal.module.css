@@ -1,0 +1,48 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  background: rgb(0 0 0 / 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal {
+  width: min(1200px, 95vw);
+  max-height: 90vh;
+  background: #fff;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dark {
+  background: #1f1f1f;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.modalHeader h2 {
+  margin: 0;
+}
+
+.closeButton {
+  border: none;
+  background: transparent;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.modalContent {
+  overflow-y: auto;
+}

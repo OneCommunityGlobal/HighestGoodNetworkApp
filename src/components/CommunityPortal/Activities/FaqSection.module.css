@@ -131,20 +131,20 @@
 
 .faqSearchDark {
   background-color: #2b3e59;
-  color: #ffffff;
+  color: #fff;
   border-color: #4a5a77;
 }
 
 .faqSearchDark::placeholder {
-  color: #8899aa;
+  color: #89a;
 }
 
 .faqCategoryDark {
   background-color: #2b3e59;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #4a5a77;
 }
 
 .faqQuestionDark {
-  color: #ffffff;
+  color: #fff;
 }

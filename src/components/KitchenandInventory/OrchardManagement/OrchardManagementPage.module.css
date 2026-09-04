@@ -15,13 +15,13 @@
 
 /* ===== NAVBAR ===== */
 .nav {
-  background: #ffffff;
+  background: #fff;
   border-bottom: 1px solid #e8edf2;
   padding: 12px 32px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 6%);
   transition: background 0.3s, border-color 0.3s;
 }
 
@@ -131,11 +131,11 @@
 }
 
 .dashCard {
-  background: #ffffff;
+  background: #fff;
   border: 1px solid #e8edf2;
   border-radius: 12px;
   padding: 16px 20px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 5%);
   transition: background 0.3s, border-color 0.3s;
 }
 
@@ -193,7 +193,7 @@
 .tabBtnActive {
   background: #1a1a1a !important;
   border-color: #1a1a1a !important;
-  color: #ffffff !important;
+  color: #fff !important;
   font-weight: 500;
 }
 
@@ -204,11 +204,11 @@
 
 /* ===== CARD ===== */
 .card {
-  background: #ffffff;
+  background: #fff;
   border: 1px solid #e8edf2;
   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 5%);
   transition: background 0.3s, border-color 0.3s;
 }
 
@@ -238,7 +238,7 @@
 /* ===== BUTTONS ===== */
 .btnGreen {
   background: #3a7d44;
-  color: #ffffff;
+  color: #fff;
   border: none;
   border-radius: 8px;
   padding: 8px 16px;
@@ -339,7 +339,7 @@
 
 .badgeShipped {
   background: #1a1a1a;
-  color: #ffffff;
+  color: #fff;
 }
 
 .badgeDelivered {
@@ -419,7 +419,7 @@
 .modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.45);
+  background: rgb(0 0 0 / 45%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -427,12 +427,12 @@
 }
 
 .modalBox {
-  background: #ffffff;
+  background: #fff;
   border-radius: 14px;
   padding: 28px;
   width: 440px;
   max-width: 90vw;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 32px rgb(0 0 0 / 15%);
   transition: background 0.3s;
 }
 
@@ -504,13 +504,13 @@
 }
 
 /* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .dashGrid { grid-template-columns: repeat(2, 1fr); }
   .navLinks { display: none; }
   .main { padding: 16px; }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .dashGrid { grid-template-columns: 1fr; }
   .pageTitle { font-size: 20px; }
 }

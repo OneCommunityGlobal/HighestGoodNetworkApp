@@ -705,9 +705,9 @@ export const ENDPOINTS = {
     }
     return `${APIEndpoint}/analytics/review-summary?${params.toString()}`;
   },
-  PR_GRADING_CONFIG: `${APIEndpoint}/pr-grading-config`,
-  WEEKLY_GRADING: `${APIEndpoint}/weekly-grading`,
-  WEEKLY_GRADING_SAVE: `${APIEndpoint}/weekly-grading/save`,
+  // PR_GRADING_CONFIG: `${APIEndpoint}/pr-grading-config`,
+  // WEEKLY_GRADING: `${APIEndpoint}/weekly-grading`,
+  // WEEKLY_GRADING_SAVE: `${APIEndpoint}/weekly-grading/save`,
 
   PM_EDUCATORS: () => `${APIEndpoint}/pm/educators`,
   PM_EDUCATOR_STUDENTS: educatorId =>
@@ -765,8 +765,24 @@ export const ENDPOINTS = {
     return url.slice(0);
   },
   APPLICATION_TIME_DATA_ROLES: `${APIEndpoint}/analytics/application-time/roles`,
-  REVIEWER_GROUPS: '/api/reviewer-groups',
-  REVIEWER_GROUPS_NEW: '/api/reviewer-groups/new',
+  REVIEWER_GROUPS: `${APIEndpoint}/reviewer-groups`,
+  REVIEWER_GROUPS_NEW: `${APIEndpoint}/reviewer-groups/new`,
+  // PR grading endpoints
+  PR_GRADING_CONFIG: `${APIEndpoint}/pr-grading-config`,
+  WEEKLY_GRADING: `${APIEndpoint}/weekly-grading`,
+  WEEKLY_GRADING_SAVE: `${APIEndpoint}/weekly-grading/save`,
+  PR_RATINGS: `${APIEndpoint}/promotion-eligibility/pr-ratings`,
+  PROMOTION_PR_ENTRIES: reviewerId =>
+    `${APIEndpoint}/promotion-eligibility/${reviewerId}/pr-entries`,
+  PR_GRADING_ADD_ENTRY: reviewerId =>
+    `${APIEndpoint}/promotion-eligibility/${reviewerId}/pr-entries/new`,
+  PR_GRADING_IMPORT_ENTRIES: reviewerId =>
+    `${APIEndpoint}/promotion-eligibility/${reviewerId}/pr-entries/import`,
+  PR_GRADING_UPDATE_RATING: entryId =>
+    `${APIEndpoint}/promotion-eligibility/pr-entries/${entryId}/rating`,
+  PR_GRADING_UPDATE_NEEDED: reviewerId =>
+    `${APIEndpoint}/promotion-eligibility/${reviewerId}/prs-needed`,
+  PROMOTE_MEMBERS_PREVIEW: `${APIEndpoint}/promote-members/preview`,
 };
 
 export const ApiEndpoint = APIEndpoint;
