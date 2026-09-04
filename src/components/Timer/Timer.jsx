@@ -1004,47 +1004,44 @@ function Timer({ authUser, darkMode, isPopout }) {
               />
             </div>
           </button>
-          {!started || paused ? (
-            <button
-              key={'timer-btn-start'}
-              type="button"
-              disabled={isButtonDisabled}
-              onClick={handleStartButton}
-              aria-label="Start timer"
-              style={{ background: 'none', border: 'none' }}
+          <button
+            key="persistent-timer-toggle-btn"
+            type="button"
+            disabled={isButtonDisabled}
+            onClick={e => {
+              console.log('DEBUG Clicked', e.target);
+              e.preventDefault();
+              e.stopPropagation();
+              if (!started || paused) {
+                handleStartButton();
+                console.log('DEBUG Start');
+              } else {
+                sendPause();
+                console.log('DEBUG Pause');
+              }
+            }}
+            aria-label={!started || paused ? 'Start timer' : 'Pause timer'}
+            style={{ background: 'none', border: 'none' }}
+          >
+            <div
+              className={cs(
+                css.iconWrapper,
+                isButtonDisabled ? css.btnDisabled : css.transitionColor,
+              )}
+              style={{ pointerEvents: 'none' }}
             >
-              <div
-                className={cs(
-                  css.iconWrapper,
-                  isButtonDisabled ? css.btnDisabled : css.transitionColor,
-                )}
-              >
+              {/* Only the inner visual icon changes, leaving the parent button completely untouched */}
+              {!started || paused ? (
                 <FaPlayCircle
                   className={remaining !== 0 ? css.btn : css.btnDisabled}
                   fontSize="1.5rem"
                   title="Start timer"
                 />
-              </div>
-            </button>
-          ) : (
-            <button
-              type="button"
-              disabled={isButtonDisabled}
-              key={'timer-btn-pause'}
-              onClick={sendPause}
-              aria-label="Pause timer"
-              style={{ background: 'none', border: 'none' }}
-            >
-              <div
-                className={cs(
-                  css.iconWrapper,
-                  isButtonDisabled ? css.btnDisabled : css.transitionColor,
-                )}
-              >
+              ) : (
                 <FaPauseCircle className={css.btn} fontSize="1.5rem" title="Pause timer" />
-              </div>
-            </button>
-          )}
+              )}
+            </div>
+          </button>
           <button
             type="button"
             disabled={!started || isButtonDisabled}
