@@ -1,3 +1,4 @@
+/* 1. Normalize background color for main content wrapper in dark mode */
 :global(body.dark-mode) :global(#myTabContent) {
   background-color: #1c2541 !important;
 }
@@ -51,6 +52,7 @@
   width: 100%;
 }
 
+/* 2. Set consistent dark mode background for desktop info container */
 .basic-info-tab-desktop.dark-mode {
   background-color: #1c2541;
 }
@@ -78,6 +80,7 @@
   background-color: #1c2541;
 }
 
+/* 3. Normalize dark label container backgrounds in dark mode */
 :global(.bg-yinmn-blue) .dark-label-col {
   background-color: #1c2541;
 }
@@ -86,6 +89,7 @@
   color: white;
 }
 
+/* 4. Fix profile desktop functions background and layout in dark mode */
 .dark-mode :global(.profile-functions-desktop) {
   background-color: #1c2541;
   border: none;
@@ -93,11 +97,13 @@
   padding-bottom: 16px;
 }
 
+/* 5. Override container and profile wrapper backgrounds to remove right-edge gaps in dark mode */
 .dark-mode :global(.container),
 .dark-mode :global(#containerProfile) {
   background-color: #1c2541;
 }
 
+/* 6. Ensure active tab pane background consistency in dark mode */
 .dark-mode :global(.tab-pane.active) {
   background-color: #1c2541;
   padding-bottom: 20px;
