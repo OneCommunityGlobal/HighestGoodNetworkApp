@@ -15,6 +15,16 @@ const drawRoundedRect = (ctx, x, y, width, height, radius) => {
 
 const defaultFormatter = ({ value, percentage }) => [String(value), `(${percentage}%)`];
 
+// The legacy/"radial" placement's offset/spread options (below) are fixed pixel
+// values, hand-tuned against the two callers' typical desktop chart size (~120px
+// outer radius). They don't shrink with the chart, so at narrow/split-screen
+// widths (smaller outerRadius) the labels drift onto the ring and center text.
+// Scaling by outerRadius/REFERENCE_RADIUS keeps them proportional to the chart
+// at any size, while leaving today's tuning untouched at the reference size.
+// ponytail: single global constant, not per-caller config — retune here if a
+// caller's chart is drawn much larger/smaller than ~120px outer radius.
+const REFERENCE_RADIUS = 120;
+
 const getMappedOption = (map, index, fallback) => {
   if (map == null) {
     return fallback;
@@ -437,14 +447,16 @@ const externalLabelGuidesPlugin = {
 
       const angle = (arc.startAngle + arc.endAngle) / 2;
       const { x, y, outerRadius } = arc;
+      const radiusScale = outerRadius / REFERENCE_RADIUS;
+      const scaledOffset = options.offset * radiusScale;
 
       const direction = getLabelDirection(options, index, angle);
       const baseX = x + Math.cos(angle) * outerRadius;
       const baseY = y + Math.sin(angle) * outerRadius;
-      const midX = x + Math.cos(angle) * (outerRadius + options.offset * options.guideBendRatio);
-      const midY = y + Math.sin(angle) * (outerRadius + options.offset * options.guideBendRatio);
-      const elbowX = x + Math.cos(angle) * (outerRadius + options.offset);
-      const elbowY = y + Math.sin(angle) * (outerRadius + options.offset);
+      const midX = x + Math.cos(angle) * (outerRadius + scaledOffset * options.guideBendRatio);
+      const midY = y + Math.sin(angle) * (outerRadius + scaledOffset * options.guideBendRatio);
+      const elbowX = x + Math.cos(angle) * (outerRadius + scaledOffset);
+      const elbowY = y + Math.sin(angle) * (outerRadius + scaledOffset);
 
       // Measure text block
       ctx.font = `${options.fontWeight} ${options.fontSize}px ${options.fontFamily}`;
@@ -455,15 +467,14 @@ const externalLabelGuidesPlugin = {
       const boxWidth = textWidth + padding.x * 2;
       const boxHeight = textHeight + padding.y * 2;
 
-      const horizontalSpread = getMappedOption(
-        options.horizontalSpreadMap,
-        index,
-        options.horizontalSpread,
-      );
+      const horizontalSpread =
+        getMappedOption(options.horizontalSpreadMap, index, options.horizontalSpread) * radiusScale;
 
       let boxX = getInitialLabelBoxX(elbowX, direction, padding.x, horizontalSpread, boxWidth);
       let boxY =
-        elbowY - boxHeight / 2 + (getMappedOption(options.verticalOffsetMap, index, 0) || 0);
+        elbowY -
+        boxHeight / 2 +
+        (getMappedOption(options.verticalOffsetMap, index, 0) || 0) * radiusScale;
 
       ({ boxX, boxY } = containLegacyLabelBox(
         boxX,
