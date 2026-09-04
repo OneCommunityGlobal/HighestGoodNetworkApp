@@ -4,13 +4,14 @@ import { Dropdown, Input } from 'reactstrap';
 import debounce from 'lodash/debounce';
 import './TeamsAndProjects.module.css';
 import { useSelector } from 'react-redux';
+import appStyles from '~/App.module.css';
 
 const TEAM_NAME_MAX_LENGTH = 100;
 const SEARCH_DEBOUNCE_MS = 300;
 
 // eslint-disable-next-line react/display-name
 const AddTeamsAutoComplete = React.memo((props) => {
-  const { teamsData, searchText, setSearchText, setInputs, onCreateNewTeam } = props;
+  const { teamsData, searchText, setSearchText, onDropDownSelect, onCreateNewTeam } = props;
   const [isOpen, setIsOpen] = React.useState(false);
   const darkMode = useSelector((state) => state.theme.darkMode);
   const inputRef = useRef(null);
@@ -51,10 +52,10 @@ const AddTeamsAutoComplete = React.memo((props) => {
   }, [allTeams, debouncedSearchText]);
 
   const handlePick = (team) => {
-    setInputs(team);                 // parent expects the TEAM OBJECT
+    onDropDownSelect(team);
     setSearchText(team.teamName);
     setIsOpen(false);
-  };
+    };
 
   const trimmedSearchText = (searchText ?? '').toString().trim();
   const showCreateNew =
@@ -83,23 +84,23 @@ const AddTeamsAutoComplete = React.memo((props) => {
           setIsOpen(true);
         }}
         maxLength={TEAM_NAME_MAX_LENGTH}
-        className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
+        className={darkMode ? `${appStyles['bg-darkmode-liblack']} border-0 text-light` : ''}
         placeholder="Search or select a team..."
         aria-label="Add to Team"
       />
-      <small 
-        className={darkMode ? 'text-light' : 'text-muted'} 
+      <small
+        className={darkMode ? 'text-light' : 'text-muted'}
         style={{ display: 'block', marginTop: '0.25rem', fontSize: '0.875rem' }}
       >
         {searchText.length}/{TEAM_NAME_MAX_LENGTH} characters
       </small>
-      
+
       {isOpen && (
         <div
           tabIndex="-1"
           role="menu"
           aria-hidden="false"
-          className={`dropdown-menu show ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
+          className={`dropdown-menu show ${darkMode ? `${appStyles['bg-darkmode-liblack']} text-light` : ''}`}
           style={{ marginTop: 0, width: '100%', maxHeight: 260, overflowY: 'auto' }}
         >
           {/* If input is empty and we have nothing yet, show nothing (quiet state) */}
@@ -147,7 +148,7 @@ AddTeamsAutoComplete.propTypes = {
   ]),
   searchText: PropTypes.string,
   setSearchText: PropTypes.func.isRequired,
-  setInputs: PropTypes.func.isRequired,
+  onDropDownSelect: PropTypes.func.isRequired,
   onCreateNewTeam: PropTypes.func,
 };
 

@@ -87,11 +87,11 @@ function ReportTableSearchPanel({ onSearch, wildCardSearchText, onSearchClick })
 
   return (
     <div>
-      <div className="input-group" id="new_team">
+      <div className={`input-group`} id="new_team">
         <div className="input-group-prepend">
           <button
             type="button"
-            className={`btn ${darkMode ? 'bg-yinmn-blue text-light' : 'btn-secondary'}`}
+            className={`btn ${styles['report-filter-label-action']} ${darkMode ? 'bg-yinmn-blue text-light' : 'btn-secondary'}`}
             onClick={handleSearchClick}
           >
             {SEARCH}

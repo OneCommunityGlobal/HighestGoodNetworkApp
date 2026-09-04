@@ -4,7 +4,7 @@ import HoursWorkedPieChart from '../HoursWorkedPieChart/HoursWorkedPieChart';
 // Components
 import Loading from '../../common/Loading';
 
-const COLORS = ['#00AFF4', '#FFA500', '#00B030', '#EC52CB', '#F8FF00'];
+const COLORS = ['#00AFF4', '#FFA500', '#00B030', '#EC52CB', '#F8FF00', '#7C4DFF'];
 
 // --- Helper Functions ---
 
@@ -83,26 +83,28 @@ export function formatRangeLabel(rangeStr) {
   const normalizedRange = normalizeBucketId(rangeStr);
 
   if (normalizedRange.includes('+')) {
-    // assignToBucket's overflow bucket is strictly greater than the
-    // threshold (e.g. '50+' means weeklyAverage > 50), so the label
-    // should start one hour above that threshold to avoid implying
-    // overlap with the adjacent bucket.
-    const threshold = Number(normalizedRange.replace('+', ''));
-    return `${threshold + 1}+ hrs`;
+    // FIX: Prefer Number() over parseFloat() for safer numeric string conversions
+    const num = Number(normalizedRange.replace('+', ''));
+    return `${num}+ hrs`;
+  } else {
+    const num = Number(normalizedRange);
+    return `${num}-${num + 9} hrs`;
   }
-
-  const num = Number(normalizedRange);
-  // assignToBucket buckets are inclusive upper thresholds (<=10, <=20, ...),
-  // so each bucket's lower bound is one above the previous threshold —
-  // except the very first bucket, which starts at 0, not 1.
-  const lowerBound = num === 10 ? 0 : num - 9;
-  return `${lowerBound}-${num} hrs`;
 }
 
-function buildChartData(hoursData, totalHoursData) {
+export function formatCommittedRangeLabel(rangeStr) {
+  const normalizedRange = normalizeBucketId(rangeStr);
+  if (normalizedRange === '40') return '40 hrs';
+  if (normalizedRange === '40+') return 'Over 40 hrs';
+  return formatRangeLabel(normalizedRange);
+}
+
+function buildChartData(hoursData, totalHoursData, useBucketCounts = false) {
   const normalizedHoursData = mergeHoursBuckets(hoursData);
   const totalVolunteers = normalizedHoursData.reduce((total, cur) => total + (cur.count || 0), 0);
-  const totalHoursWorked = Number(totalHoursData?.current ?? totalHoursData?.count ?? 0);
+  const totalHoursWorked = useBucketCounts
+    ? totalVolunteers
+    : Number(totalHoursData?.current ?? totalHoursData?.count ?? 0);
 
   const hoursByBucket = allocateRoundedHoursByCount(normalizedHoursData, totalHoursWorked);
   const totalAllocatedHours = hoursByBucket.reduce(
@@ -111,15 +113,18 @@ function buildChartData(hoursData, totalHoursData) {
   );
 
   const userData = hoursByBucket.map(range => {
-    const value = totalHoursWorked > 0 ? range.allocatedHours || 0 : range.count || 0;
-    const denominator = totalHoursWorked > 0 ? totalAllocatedHours : totalVolunteers;
-    const valueType = totalHoursWorked > 0 ? 'hours' : 'volunteers';
+    let value = range.count || 0;
+    let denominator = totalVolunteers;
+    if (!useBucketCounts && totalHoursWorked > 0) {
+      value = range.allocatedHours || 0;
+      denominator = totalAllocatedHours;
+    }
 
     return {
-      name: formatRangeLabel(range._id),
+      name: useBucketCounts ? formatCommittedRangeLabel(range._id) : formatRangeLabel(range._id),
       value,
       percentage: denominator ? Math.round((value / denominator) * 100) : 0,
-      valueType,
+      ...(useBucketCounts && { valueType: 'volunteers' }),
     };
   });
 
@@ -128,21 +133,23 @@ function buildChartData(hoursData, totalHoursData) {
 
 // --- Sub-Components ---
 
-function HoursWorkList({ data, darkMode }) {
+function HoursWorkList({ data, darkMode, title = 'Hours Worked', useCommittedLabels = false }) {
   if (!data) return <div />;
 
   const ranges = data.map((elem, index) => {
     return {
       name: elem._id,
       count: elem.count,
-      displayName: formatRangeLabel(elem._id),
+      displayName: useCommittedLabels
+        ? formatCommittedRangeLabel(elem._id)
+        : formatRangeLabel(elem._id),
       color: COLORS[index % COLORS.length],
     };
   });
 
   return (
     <div>
-      <h6 style={{ color: darkMode ? 'white' : 'grey' }}>Hours Worked</h6>
+      <h6 style={{ color: darkMode ? 'white' : 'grey' }}>{title}</h6>
       <div>
         <ul className="list-unstyled">
           {ranges.map(item => (
@@ -171,6 +178,10 @@ export default function VolunteerHoursDistribution({
   darkMode,
   hoursData,
   totalHoursData,
+  title = 'Actual Hours Worked',
+  legendTitle = 'Hours Worked',
+  centerLabelLines = ['TOTAL HOURS', 'WORKED'],
+  useBucketCounts = false,
 }) {
   // FIXED: Comparing with 'undefined' directly instead of using 'typeof' on an object property
   const [windowSize, setWindowSize] = useState({
@@ -207,21 +218,31 @@ export default function VolunteerHoursDistribution({
   const { normalizedHoursData, userData, totalHoursWorked } = buildChartData(
     hoursData,
     totalHoursData,
+    useBucketCounts,
   );
 
   return (
-    <div
-      className="d-flex flex-row flex-wrap align-items-center justify-content-center"
-      style={{ gap: '20px' }}
-    >
-      <HoursWorkedPieChart
-        darkMode={darkMode}
-        windowSize={windowSize}
-        userData={userData}
-        totalHours={totalHoursWorked}
-        colors={COLORS}
-      />
-      <HoursWorkList data={normalizedHoursData} darkMode={darkMode} />
+    <div className="d-flex flex-column align-items-center">
+      <h5 style={{ color: darkMode ? 'white' : 'inherit' }}>{title}</h5>
+      <div
+        className="d-flex flex-row flex-wrap align-items-center justify-content-center"
+        style={{ gap: '20px' }}
+      >
+        <HoursWorkedPieChart
+          darkMode={darkMode}
+          windowSize={windowSize}
+          userData={userData}
+          totalHours={totalHoursWorked}
+          colors={COLORS}
+          centerLabelLines={centerLabelLines}
+        />
+        <HoursWorkList
+          data={normalizedHoursData}
+          darkMode={darkMode}
+          title={legendTitle}
+          useCommittedLabels={useBucketCounts}
+        />
+      </div>
     </div>
   );
 }
@@ -229,7 +250,11 @@ export default function VolunteerHoursDistribution({
 // Extra named exports for automated testing
 export { HoursWorkList, mergeHoursBuckets };
 
-export function computeDistribution(hoursData, totalHoursData) {
-  const { userData, totalVolunteers, totalHoursWorked } = buildChartData(hoursData, totalHoursData);
+export function computeDistribution(hoursData, totalHoursData, useBucketCounts = false) {
+  const { userData, totalVolunteers, totalHoursWorked } = buildChartData(
+    hoursData,
+    totalHoursData,
+    useBucketCounts,
+  );
   return { userData, totalVolunteers, totalHoursWorked };
 }
