@@ -303,9 +303,9 @@
 }
 
 /* Fix bottom white strip */
+html,
 body.dark-mode,
-body.dark-mode html,
-html {
+body.dark-mode html {
   background-color: #1a1d23 !important;
   margin: 0 !important;
   padding: 0 !important;

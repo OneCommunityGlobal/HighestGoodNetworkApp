@@ -8,6 +8,27 @@
   white-space: nowrap;
 }
 
+.purchaseRecordTableContainer :global(table) {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.purchaseRecordTableContainer :global(th),
+.purchaseRecordTableContainer :global(td) {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.purchaseRecordActionColumn {
+  width: 175px;
+  white-space: nowrap !important;
+}
+
+:global(.dark-mode) .purchaseRecordActionColumn {
+  width: calc(175px + 0.75rem);
+  padding-right: 0.75rem !important;
+}
+
 @media (width >= 1200px) {
 :global(.dark-mode) .records_modal_table_container,
 :global(.dark-mode) .recordsModalTableContainer {
@@ -127,6 +148,22 @@
 .statusPending {
   color: #e6a800;
   font-weight: bold;
+}
+
+/* Keep purchase status colors above dark table cell color overrides. */
+:global(.dark-mode) .records_modal_table_container .statusApproved,
+:global(.dark-mode) .recordsModalTableContainer .statusApproved {
+  color: green !important;
+}
+
+:global(.dark-mode) .records_modal_table_container .statusRejected,
+:global(.dark-mode) .recordsModalTableContainer .statusRejected {
+  color: red !important;
+}
+
+:global(.dark-mode) .records_modal_table_container .statusPending,
+:global(.dark-mode) .recordsModalTableContainer .statusPending {
+  color: #e6a800 !important;
 }
 
 .darkTable .stickyThead th {

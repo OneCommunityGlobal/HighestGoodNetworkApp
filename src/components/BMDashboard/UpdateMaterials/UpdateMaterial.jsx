@@ -302,7 +302,9 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
                 </Label>
                 <Col sm={6} className={`${styles.materialFormValue}`}>
                   <span
-                    className={updateRecord.newAvailable < 0 ? 'materialFormErrorClr' : undefined}
+                    className={
+                      updateRecord.newAvailable < 0 ? styles.materialFormErrorClr : undefined
+                    }
                   >
                     {updateRecord.newAvailable}
                   </span>

@@ -50,7 +50,11 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
         </ModalHeader>
 
         <ModalBody className={darkMode ? 'dark-modal-body bg-yinmn-blue text-light' : ''}>
-          <div className={styles.records_modal_table_container}>
+          <div
+            className={`${styles.records_modal_table_container} ${
+              recordType === 'Purchase' ? styles.purchaseRecordTableContainer : ''
+            }`}
+          >
             <Table className={darkMode ? 'dark-table bg-yinmn-blue text-white' : ''}>
               <Record
                 record={record}
@@ -223,7 +227,7 @@ export function Record({ record, recordType, setRecord, itemType }) {
             <th>Email</th>
             <th>Date</th>
             <th>Status</th>
-            {canApproveReject && <th>Action</th>}
+            {canApproveReject && <th className={styles.purchaseRecordActionColumn}>Action</th>}
           </tr>
         </thead>
 
@@ -256,7 +260,7 @@ export function Record({ record, recordType, setRecord, itemType }) {
                       </span>
                     </td>
                     {canApproveReject && (
-                      <td>
+                      <td className={styles.purchaseRecordActionColumn}>
                         {isLoading ? (
                           <Spinner size="sm" />
                         ) : (
