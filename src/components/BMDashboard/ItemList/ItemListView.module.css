@@ -1,6 +1,6 @@
 /* stylelint-disable no-descending-specificity */
-table thead th,
-table td {
+.itemsListContainer table thead th,
+.itemsListContainer table td {
   vertical-align: middle !important;
 }
 
@@ -311,6 +311,15 @@ table td {
   padding-bottom: 2rem;
 }
 
+/* Form element Dark Mode Fallbacks */
+.darkMode input,
+.darkMode select,
+.darkMode option {
+  background-color: #1e2632;
+  color: #fff;
+  border-color: #30363d;
+}
+
 .darkMode table {
   background-color: #14253d !important;
   color: #fff !important;
@@ -374,7 +383,7 @@ table td {
   background-color: #1f2a37;
 }
 
-:global(.dark-mode) .items_cell svg {
+.darkMode .itemsCell svg {
   color: #fff;
 }
 

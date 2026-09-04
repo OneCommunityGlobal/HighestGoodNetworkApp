@@ -404,104 +404,104 @@
   box-shadow: none !important;
 }
 
-:global(.mfk-dark-popper) {
+.mfkDarkPopper {
   z-index: 6;
   background-color: transparent !important;
   padding: 0 !important;
   box-shadow: none !important;
 }
 
-:global(.mfk-dark-popper .react-datepicker) {
+.mfkDarkPopper :global(.react-datepicker) {
   background-color: #0f172a !important;
   border-color: #334155 !important;
   margin: 0 !important;
 }
 
-:global(.mfk-dark-calendar) {
+.mfkDarkCalendar {
   background-color: #0f172a !important;
   border-color: #334155 !important;
   box-shadow: 0 20px 25px -5px rgb(0 0 0 / 50%), 0 10px 10px -5px rgb(0 0 0 / 30%) !important;
 }
 
-:global(.mfk-dark-popper .react-datepicker__month-container),
-:global(.mfk-dark-calendar .react-datepicker__month-container) {
+.mfkDarkPopper :global(.react-datepicker__month-container),
+.mfkDarkCalendar :global(.react-datepicker__month-container) {
   background-color: #0f172a !important;
 }
 
-:global(.mfk-dark-popper .react-datepicker__month),
-:global(.mfk-dark-calendar .react-datepicker__month) {
+.mfkDarkPopper :global(.react-datepicker__month),
+.mfkDarkCalendar :global(.react-datepicker__month) {
   background-color: #0f172a !important;
 }
 
-:global(.mfk-dark-popper .react-datepicker__header),
-:global(.mfk-dark-calendar .react-datepicker__header) {
+.mfkDarkPopper :global(.react-datepicker__header),
+.mfkDarkCalendar :global(.react-datepicker__header) {
   background-color: #1e293b !important;
   border-bottom-color: #334155 !important;
 }
 
-:global(.mfk-dark-calendar .react-datepicker__navigation) {
+.mfkDarkCalendar :global(.react-datepicker__navigation) {
   display: none !important;
 }
 
-:global(.mfk-dark-calendar .react-datepicker__current-month) {
+.mfkDarkCalendar :global(.react-datepicker__current-month) {
   color: #f8fafc !important;
 }
 
-:global(.mfk-dark-calendar .react-datepicker__day-name) {
+.mfkDarkCalendar :global(.react-datepicker__day-name) {
   color: #e2e8f0 !important;
   background-color: transparent !important;
 }
 
-:global(.mfk-dark-calendar .react-datepicker__day) {
+.mfkDarkCalendar :global(.react-datepicker__day) {
   color: #f1f5f9 !important;
   background-color: transparent !important;
 }
 
-:global(.mfk-dark-calendar .react-datepicker__day:hover) {
+.mfkDarkCalendar :global(.react-datepicker__day:hover) {
   background-color: #334155 !important;
 }
 
-:global(.mfk-dark-calendar .react-datepicker__day--selected) {
+.mfkDarkCalendar :global(.react-datepicker__day--selected) {
   background-color: #3b82f6 !important;
   color: #fff !important;
   box-shadow: 0 2px 4px rgb(59 130 246 / 50%) !important;
 }
 
-:global(.mfk-dark-calendar .react-datepicker__day--selected:hover) {
+.mfkDarkCalendar :global(.react-datepicker__day--selected:hover) {
   background-color: #2563eb !important;
 }
 
-:global(.mfk-dark-calendar .react-datepicker__day--keyboard-selected) {
+.mfkDarkCalendar :global(.react-datepicker__day--keyboard-selected) {
   background-color: #334155 !important;
   color: #f1f5f9 !important;
 }
 
-:global(.mfk-dark-calendar .react-datepicker__day--in-range) {
+.mfkDarkCalendar :global(.react-datepicker__day--in-range) {
   background-color: #1e3a8a !important;
   color: #fff !important;
 }
 
-:global(.mfk-dark-calendar .react-datepicker__day--in-selecting-range) {
+.mfkDarkCalendar :global(.react-datepicker__day--in-selecting-range) {
   background-color: #2d3748 !important;
   color: #f1f5f9 !important;
 }
 
-:global(.mfk-dark-calendar .react-datepicker__day--range-start),
-:global(.mfk-dark-calendar .react-datepicker__day--range-end) {
+.mfkDarkCalendar :global(.react-datepicker__day--range-start),
+.mfkDarkCalendar :global(.react-datepicker__day--range-end) {
   background-color: #3b82f6 !important;
   color: #fff !important;
   box-shadow: 0 2px 4px rgb(59 130 246 / 50%) !important;
 }
 
-:global(.mfk-dark-calendar .react-datepicker__day--outside-month) {
+.mfkDarkCalendar :global(.react-datepicker__day--outside-month) {
   color: #64748b !important;
 }
 
-:global(.mfk-dark-calendar .react-datepicker__day--disabled) {
+.mfkDarkCalendar :global(.react-datepicker__day--disabled) {
   color: #4a5568 !important;
 }
 
-:global(.mfk-dark-calendar .react-datepicker__navigation-icon::before) {
+.mfkDarkCalendar :global(.react-datepicker__navigation-icon::before) {
   border-color: #cbd5e1 !important;
   border-width: 2px 2px 0 0 !important;
   width: 10px !important;
@@ -510,7 +510,7 @@
   opacity: 1 !important;
 }
 
-:global(.mfk-dark-calendar .react-datepicker__close-icon::after) {
+.mfkDarkCalendar :global(.react-datepicker__close-icon::after) {
   background-color: #3b82f6 !important;
   color: #fff !important;
 }
@@ -951,35 +951,20 @@
 }
 
 /* Final dark popup override for From/To calendars */
-:global(.mfk-dark-calendar-container) {
-  background-color: transparent !important;
-  border-radius: 0.75rem !important;
-  padding: 0 !important;
-}
-
-:global(.mfk-dark-calendar-container .react-datepicker),
-:global(.mfk-dark-popper .react-datepicker),
-:global(.mfk-dark-popper .react-datepicker__month-container) {
+.mfkDarkPopper :global(.react-datepicker),
+.mfkDarkPopper :global(.react-datepicker__month-container) {
   background-color: #0f172a !important;
   border-color: #334155 !important;
 }
 
-:global(.mfk-dark-calendar-container .react-datepicker__month-container) {
-  background-color: #0f172a !important;
-}
-
-:global(.mfk-dark-calendar-container .react-datepicker__header),
-:global(.mfk-dark-popper .react-datepicker__header) {
+.mfkDarkPopper :global(.react-datepicker__header) {
   background-color: #1e293b !important;
   border-bottom-color: #334155 !important;
 }
 
-:global(.mfk-dark-calendar-container .react-datepicker__current-month),
-:global(.mfk-dark-calendar-container .react-datepicker__day-name),
-:global(.mfk-dark-calendar-container .react-datepicker__day),
-:global(.mfk-dark-popper .react-datepicker__current-month),
-:global(.mfk-dark-popper .react-datepicker__day-name),
-:global(.mfk-dark-popper .react-datepicker__day) {
+.mfkDarkPopper :global(.react-datepicker__current-month),
+.mfkDarkPopper :global(.react-datepicker__day-name),
+.mfkDarkPopper :global(.react-datepicker__day) {
   color: #f8fafc !important;
 }
 
@@ -1020,11 +1005,11 @@
   opacity: 1 !important;
 }
 
-/* Missing .darkMode guard here made this apply globally (light mode too),
-   overriding every other page's react-datepicker arrows app-wide since it
-   has higher selector specificity than an unscoped default. */
-.darkMode :global(.react-datepicker__navigation-icon--previous::before),
-.darkMode :global(.react-datepicker__navigation-icon--next::before) {
+/* Scope to the popper class (applied to the portaled calendar) so this only
+   affects Most Frequent Keywords' own datepicker. An unscoped rule here used
+   to override every other page's react-datepicker arrows app-wide. */
+.mfkDarkPopper :global(.react-datepicker__navigation-icon--previous::before),
+.mfkDarkPopper :global(.react-datepicker__navigation-icon--next::before) {
   border-color: #e2e8f0 !important;
   border-width: 2px 2px 0 0 !important;
   opacity: 1 !important;

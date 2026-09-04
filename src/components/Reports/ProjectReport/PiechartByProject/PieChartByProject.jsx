@@ -75,7 +75,9 @@ export function PieChartByProject({ mergedProjectUsersArray, projectName, darkMo
   }, [mergedProjectUsersArray, showMembers, projectName]);
 
   return (
-    <div className={`${darkMode ? 'text-light' : ''} ${styles.pieChartRoot} w-100`}>
+    <div
+      className={`${styles.pieChartByProject} ${styles.pieChartRoot} ${darkMode ? 'text-light' : ''} w-100`}
+    >
       <div className={`${darkMode ? 'text-light' : ''} ${styles.pieChartTitle} w-100`}>
         <h4 className={styles.pieChartHeading}>Pie Charts</h4>
       </div>

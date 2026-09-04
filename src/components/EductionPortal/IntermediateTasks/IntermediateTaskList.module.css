@@ -527,126 +527,87 @@
   border-color: #404040;
 }
 
-/* Form Modal Dark Mode Styles - Using global selectors for reactstrap Modal */
-:global(.dark-mode .modal-content) {
+/* Form Modal Dark Mode Styles - scoped to this component's own modal/form elements */
+:global(.dark-mode) .modalContent {
   background-color: #2d2d2d !important;
   border-color: #404040 !important;
 }
 
-:global(.dark-mode .modal-header) {
+:global(.dark-mode) .modalHeaderBox {
   background-color: #2d2d2d !important;
   border-bottom-color: #404040 !important;
   color: #fff !important;
 }
 
-:global(.dark-mode .modal-header .close) {
+:global(.dark-mode) .modalHeaderBox :global(.close) {
   color: #fff !important;
   opacity: 0.8;
 }
 
-:global(.dark-mode .modal-header .close:hover) {
+:global(.dark-mode) .modalHeaderBox :global(.close:hover) {
   opacity: 1;
 }
 
-:global(.dark-mode .modal-body) {
+:global(.dark-mode) .modalBodyBox {
   background-color: #2d2d2d !important;
   color: #fff !important;
 }
 
-:global(.dark-mode .modal-footer) {
+:global(.dark-mode) .modalFooterBox {
   background-color: #2d2d2d !important;
   border-top-color: #404040 !important;
 }
 
-:global(.dark-mode .form-control) {
+:global(.dark-mode) .formControl {
   background-color: #1a1a1a !important;
   border-color: #404040 !important;
   color: #fff !important;
 }
 
-:global(.dark-mode .form-control:focus) {
+:global(.dark-mode) .formControl:focus {
   background-color: #1a1a1a !important;
   border-color: #60a5fa !important;
   color: #fff !important;
   box-shadow: 0 0 0 0.2rem rgb(96 165 250 / 25%) !important;
 }
 
-:global(.dark-mode .form-control::placeholder) {
+:global(.dark-mode) .formControl::placeholder {
   color: #6b7280 !important;
 }
 
-:global(.dark-mode label) {
+:global(.dark-mode) .formLabel {
   color: #d1d5db !important;
 }
 
-:global(.dark-mode .btn-secondary) {
+:global(.dark-mode) .btnSecondary {
   background-color: #404040 !important;
   border-color: #525252 !important;
   color: #fff !important;
 }
 
-:global(.dark-mode .btn-secondary:hover) {
+:global(.dark-mode) .btnSecondary:hover {
   background-color: #525252 !important;
   border-color: #636363 !important;
 }
 
-:global(.dark-mode .btn-primary) {
+:global(.dark-mode) .btnPrimary {
   background-color: #2563eb !important;
   border-color: #2563eb !important;
   color: #fff !important;
 }
 
-:global(.dark-mode .btn-primary:hover) {
+:global(.dark-mode) .btnPrimary:hover {
   background-color: #1d4ed8 !important;
   border-color: #1d4ed8 !important;
 }
 
-:global(.dark-mode select.form-control) {
+:global(.dark-mode) select.formControl {
   background-color: #1a1a1a !important;
   border-color: #404040 !important;
   color: #fff !important;
 }
 
-:global(.dark-mode select.form-control option) {
-  background-color: #1a1a1a !important;
-  color: #fff !important;
-}
-
-/* Additional styles for form inputs when using bg-yinmn-blue and bg-space-cadet */
-:global(.bg-yinmn-blue .form-control),
-:global(.bg-space-cadet .form-control) {
-  background-color: #1a1a1a !important;
-  border-color: #404040 !important;
-  color: #fff !important;
-}
-
-:global(.bg-yinmn-blue .form-control:focus),
-:global(.bg-space-cadet .form-control:focus) {
-  background-color: #1a1a1a !important;
-  border-color: #60a5fa !important;
-  color: #fff !important;
-  box-shadow: 0 0 0 0.2rem rgb(96 165 250 / 25%) !important;
-}
-
-:global(.bg-yinmn-blue .form-control::placeholder),
-:global(.bg-space-cadet .form-control::placeholder) {
-  color: #6b7280 !important;
-}
-
-:global(.bg-yinmn-blue label),
-:global(.bg-space-cadet label) {
-  color: #d1d5db !important;
-}
-
-:global(.bg-yinmn-blue select.form-control),
-:global(.bg-space-cadet select.form-control) {
-  background-color: #1a1a1a !important;
-  border-color: #404040 !important;
-  color: #fff !important;
-}
-
-:global(.bg-yinmn-blue select.form-control option),
-:global(.bg-space-cadet select.form-control option) {
+:global(.dark-mode) select.formControl option {
   background-color: #1a1a1a !important;
   color: #fff !important;
 }

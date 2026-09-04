@@ -165,7 +165,7 @@ const EducationExperienceDonutChart = () => {
   const filtersClass = `${styles.filters} ${isMobile ? styles.filtersMobile : ''}`;
   const sectionClass = `${styles.section} ${isMobile ? styles.sectionFull : ''}`;
   const titleClass = `${styles.sectionTitle} ${darkMode ? styles.sectionTitleDark : ''}`;
-  const datePickerClass = `${styles.datePicker} ${darkMode ? 'hgn-datepicker-dark' : ''}`;
+  const datePickerClass = `${styles.datePicker} ${darkMode ? styles.hgnDatepickerDark : ''}`;
   const chartWrapperClass = `${styles.chartWrapper} ${isMobile ? styles.chartWrapperMobile : ''}`;
 
   return (
@@ -192,7 +192,7 @@ const EducationExperienceDonutChart = () => {
                 dateFormat="yyyy-MM-dd"
                 maxDate={endDate || undefined}
                 className={datePickerClass}
-                calendarClassName={darkMode ? 'hgn-datepicker-dark-calendar' : undefined}
+                calendarClassName={darkMode ? styles.hgnDatepickerDarkCalendar : undefined}
               />
               <DatePicker
                 selected={endDate}
@@ -202,7 +202,7 @@ const EducationExperienceDonutChart = () => {
                 dateFormat="yyyy-MM-dd"
                 minDate={startDate || undefined}
                 className={datePickerClass}
-                calendarClassName={darkMode ? 'hgn-datepicker-dark-calendar' : undefined}
+                calendarClassName={darkMode ? styles.hgnDatepickerDarkCalendar : undefined}
               />
             </div>
           </div>

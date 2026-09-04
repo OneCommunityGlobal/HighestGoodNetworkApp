@@ -146,7 +146,7 @@ function LBLogin(props) {
                   className={`${darkMode ? styles.darkMail : ''}`}
                 />
                 {touched.email && fieldErrors.email && (
-                  <FormFeedback className="error" id="email-error">
+                  <FormFeedback className={styles.errorText} id="email-error">
                     {fieldErrors.email}
                   </FormFeedback>
                 )}
@@ -187,7 +187,7 @@ function LBLogin(props) {
                 </InputGroup>
                 {capsLockOn && <span className={styles.capsMsg}> &nbsp; Caps Lock is ON</span>}
                 {touched.password && fieldErrors.password && (
-                  <FormFeedback id="password-error" className="d-block error">
+                  <FormFeedback id="password-error" className={`d-block ${styles.errorText}`}>
                     {fieldErrors.password}
                   </FormFeedback>
                 )}

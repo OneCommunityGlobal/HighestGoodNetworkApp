@@ -17,7 +17,7 @@
   padding: 8px 16px;
   text-decoration: none;
   z-index: 9999;
-  border-radius: 0 0 4px 0;
+  border-radius: 0 0 4px;
 }
 
 .skip-link:focus {
@@ -38,7 +38,7 @@
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   white-space: nowrap;
   border-width: 0;
 }
@@ -56,12 +56,12 @@
 
 .stat-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
 }
 
 .stat-card:active {
   transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
 }
 
 .stat-card::before {
@@ -76,7 +76,7 @@
 }
 
 .stat-card:hover::before {
-  background: currentColor;
+  background: currentcolor;
 }
 
 /* ===================================================================
@@ -90,7 +90,7 @@
 }
 
 /* Make table cells wrap better on mobile */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .table td,
   .table th {
     padding: 0.75rem 0.5rem;
@@ -125,7 +125,7 @@
   flex-wrap: wrap;
 }
 
-@media (max-width: 576px) {
+@media (width <= 576px) {
   .action-buttons {
     flex-direction: column;
     width: 100%;
@@ -134,28 +134,6 @@
   .action-buttons .btn {
     width: 100%;
   }
-}
-
-/* Tooltip on hover for icon-only buttons */
-[data-tooltip] {
-  position: relative;
-}
-
-[data-tooltip]:hover::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 4px 8px;
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  font-size: 0.75rem;
-  white-space: nowrap;
-  border-radius: 4px;
-  pointer-events: none;
-  z-index: 1000;
-  margin-bottom: 4px;
 }
 
 /* ===================================================================
@@ -167,7 +145,7 @@
   overflow-y: auto;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .modal-dialog {
     margin: 0.5rem;
   }
@@ -206,11 +184,8 @@
 
 .loading-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.9);
+  inset: 0;
+  background: rgb(255 255 255 / 90%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -218,7 +193,7 @@
 }
 
 .loading-overlay.dark-mode {
-  background: rgba(0, 0, 0, 0.8);
+  background: rgb(0 0 0 / 80%);
 }
 
 /* ===================================================================
@@ -275,7 +250,7 @@
   background: #e9ecef;
   border-color: #adb5bd;
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
 .variable-chip .variable-code {
@@ -333,7 +308,7 @@
   object-fit: contain;
 }
 
-@media (max-width: 576px) {
+@media (width <= 576px) {
   .image-preview-container {
     max-width: 100%;
   }
@@ -405,16 +380,17 @@
 }
 
 .hover-shadow:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
 }
 
 /* 13. ANIMATIONS */
 
-@keyframes fadeIn {
+@keyframes fade-in {
   from {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -422,14 +398,15 @@
 }
 
 .fade-in {
-  animation: fadeIn 0.3s ease;
+  animation: fade-in 0.3s ease;
 }
 
-@keyframes slideIn {
+@keyframes slide-in {
   from {
     opacity: 0;
     transform: translateX(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -437,7 +414,7 @@
 }
 
 .slide-in {
-  animation: slideIn 0.3s ease;
+  animation: slide-in 0.3s ease;
 }
 
 /* ===================================================================
@@ -459,7 +436,7 @@
 }
 
 .dark-mode .table-striped tbody tr:nth-of-type(odd) {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgb(255 255 255 / 5%);
 }
 
 .dark-mode .btn-outline-primary {
@@ -476,7 +453,7 @@
    15. RESPONSIVE BREAKPOINTS
    =================================================================== */
 
-@media (max-width: 576px) {
+@media (width <= 576px) {
   .email-outbox-header {
     flex-direction: column;
     align-items: flex-start !important;
@@ -527,7 +504,7 @@
   }
 
   .table {
-    page-break-inside: avoid;
+    break-inside: avoid;
   }
 }
 
@@ -535,9 +512,10 @@
    17. HIGH CONTRAST MODE SUPPORT
    =================================================================== */
 
+/* stylelint-disable-next-line media-feature-name-value-no-unknown -- "high" is a valid prefers-contrast value */
 @media (prefers-contrast: high) {
   .stat-card {
-    border: 2px solid currentColor;
+    border: 2px solid currentcolor;
   }
 
   .btn {

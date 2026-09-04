@@ -322,20 +322,15 @@ font-size: .8em;
   background-color: #4fc3f7;
 }
 
-:global(body.dark-mode .form-control) {
+:global(.dark-mode) .addMaterialForm :global(.form-control) {
   background-color: #2a3f5f !important;
 }
 
-:global(body.dark-mode select.form-control), :global(body.bm-dashboard-dark  select.form-control){
+:global(.dark-mode) .addMaterialForm :global(select.form-control) {
   background-image: none !important;
 }
 
-:global(body.dark-mode:not(.no-global-theme) select.form-control),
-:global(body.bm-dashboard-dark:not(.no-global-theme) select.form-control){
-  background-image: none !important;
-}
-
-:global(.bm-dashboard-dark select){
+:global(.dark-mode) .addMaterialForm select {
   background-color: #2e5061;
   border: none;
 }

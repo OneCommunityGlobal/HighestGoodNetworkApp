@@ -385,6 +385,13 @@ export function LBDashboard() {
   const [openDD, setOpenDD] = useState({ DEMAND: false, REVENUE: false, VACANCY: false });
   const darkMode = useSelector(state => state.theme.darkMode);
 
+  // Marks the body only while this page is mounted, so the base page
+  // styling in LBDashboard.module.css doesn't leak onto other routes.
+  useEffect(() => {
+    document.body.classList.add('lb-dashboard-body');
+    return () => document.body.classList.remove('lb-dashboard-body');
+  }, []);
+
   // Date range state - default to last 365 days
   const [fromDate, setFromDate] = useState(
     moment()
