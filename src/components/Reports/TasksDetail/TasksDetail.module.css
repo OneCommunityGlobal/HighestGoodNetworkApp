@@ -1,10 +1,11 @@
 /* TasksTable.css */
+
 .tasks-block {
   width: 100%;
   overflow-x: auto;
 }
 
-.tasks-detail-total{
+.tasks-detail-total {
   float: left;
 }
 
@@ -14,10 +15,9 @@
   min-width: 800px; /* Minimum width to maintain table layout on smaller screens */
 }
 
-
 .tasks-detail-table th,
 .tasks-detail-table td {
-  padding: 0 16px;
+  padding: 10px 16px;
   border: none;
   text-align: left;
   vertical-align: middle;
@@ -28,9 +28,17 @@
   font-weight: bold;
 }
 
+.tasks-detail-table-row {
+  border-bottom: 3px solid #f8f7f8;
+  text-align: left;
+}
 
 .tasks-detail-table-head tr {
   border-bottom: 3px solid #f8f7f8;
+}
+
+.tasks-detail-table-head tr:hover {
+  background-color: #eee7f8;
 }
 
 .tasks-detail-table-head th {
@@ -41,8 +49,6 @@
   vertical-align: middle;
 }
 
-
-
 .tasks-detail-table-head th:first-child {
   border-radius: 4px 0 0 4px;
 }
@@ -50,15 +56,6 @@
 .tasks-detail-table-head th:last-child {
   border-radius: 0 4px 4px 0;
 }
-
-
-
-
-.tasks-detail-table-row {
-  border-bottom: 3px solid #f8f7f8;
-  text-align: left;
-}
-
 
 .tasks-detail-center-cells {
   text-align: center;
@@ -77,13 +74,12 @@
 }
 
 .dark-mode-row {
-  background-color: #3A506B ;
+  background-color: #1a2639;
   color: #fff;
 }
 
-
 .dark-mode-row:hover {
-  background-color: #111831;
+  background-color: #3a506b;
   color: #fff;
 }
 
