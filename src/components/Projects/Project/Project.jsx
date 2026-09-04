@@ -104,7 +104,7 @@ const Project = props => {
 
         <td
           data-testid="projects__name--input"
-          className={styles['projects__name--input']}
+          className={`${styles['projects__name--input']} text-break`}
         >
           {canPutProject || canSeeProjectManagementFullFunctionality ? (
             <input
@@ -117,11 +117,11 @@ const Project = props => {
               onBlur={onUpdateProjectName}
             />
           ) : (
-            projectName
+            <span className="d-block text-break">{projectName}</span>
           )}
         </td>
 
-        <td className="projects__category--input">
+        <td className="projects__category--input text-break">
           {canEditCategoryAndStatus || canPutProject ? (
             <select
               data-testid="projects__category--input" // added for unit test
@@ -140,7 +140,7 @@ const Project = props => {
               <option value="Other">Other</option>
             </select>
           ) : (
-            category
+            <span className="d-block text-break">{category}</span>
           )}
         </td>
 
