@@ -34,11 +34,39 @@
   gap: 10px;
   align-items: center;
   justify-content: center;
+  margin-bottom: 10px;
 }
 
 .dateFilterContainer > select {
   margin-top: 0;
   width: min-content;
+}
+
+:global(.react-datepicker) {
+  background-color: #111827 !important;
+  color: #f8fafc !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+:global(.react-datepicker__header) {
+  background-color: #1f2937 !important;
+  border-bottom-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+:global(.react-datepicker__current-month),
+:global(.react-datepicker__day-name),
+:global(.react-datepicker__day) {
+  color: #f8fafc !important;
+}
+
+:global(.react-datepicker__day:hover) {
+  background-color: #374151 !important;
+}
+
+:global(.react-datepicker__day--selected),
+:global(.react-datepicker__day--in-range) {
+  background-color: #328d1b !important;
+  color: #ffffff !important;
 }
 
 @media (width <= 500px) {
