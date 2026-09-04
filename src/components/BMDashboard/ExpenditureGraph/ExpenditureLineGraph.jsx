@@ -92,6 +92,59 @@ function filterExpenditureData(data, selectedProject, dateRange) {
   return filterByDateRange(byProject, dateRange);
 }
 
+function applyDarkModeBodyStyle(darkMode) {
+  if (darkMode) {
+    document.body.style.backgroundColor = '#1b2a41';
+    document.body.style.color = '#ffffff';
+    document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+  } else {
+    document.body.style.backgroundColor = '#f9f9f9';
+    document.body.style.color = 'inherit';
+  }
+}
+
+function resetBodyStyle() {
+  document.body.style.backgroundColor = '';
+  document.body.style.color = '';
+  document.body.style.transition = '';
+}
+
+const filterItemStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '4px',
+  flex: '1 1 160px',
+  maxWidth: '280px',
+};
+
+function buildThemeStyles(darkMode) {
+  const inputStyle = {
+    width: '100%',
+    boxSizing: 'border-box',
+    padding: '6px 10px',
+    borderRadius: '4px',
+    border: darkMode ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid #ddd',
+    backgroundColor: darkMode ? '#253342' : '#fff',
+    color: darkMode ? '#ffffff' : 'inherit',
+    colorScheme: darkMode ? 'dark' : 'light',
+  };
+
+  const labelStyle = { color: darkMode ? '#ffffff' : 'inherit' };
+
+  const errorStyle = {
+    color: darkMode ? '#ff6b6b' : '#d32f2f',
+    backgroundColor: darkMode ? '#2a3a5a' : 'rgba(211, 47, 47, 0.05)',
+    padding: '10px',
+    borderRadius: '4px',
+    border: darkMode ? '1px solid #ff6b6b' : '1px solid #d32f2f',
+    textAlign: 'center',
+    maxWidth: '800px',
+    margin: '0 auto 20px auto',
+  };
+
+  return { inputStyle, labelStyle, errorStyle };
+}
+
 export default function ExpenditureLineGraph() {
   const chartRef = useRef(null);
   const [chartInstance, setChartInstance] = useState(null);
@@ -110,19 +163,8 @@ export default function ExpenditureLineGraph() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
-    if (darkMode) {
-      document.body.style.backgroundColor = '#1b2a41';
-      document.body.style.color = '#ffffff';
-      document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
-    } else {
-      document.body.style.backgroundColor = '#f9f9f9';
-      document.body.style.color = 'inherit';
-    }
-    return () => {
-      document.body.style.backgroundColor = '';
-      document.body.style.color = '';
-      document.body.style.transition = '';
-    };
+    applyDarkModeBodyStyle(darkMode);
+    return resetBodyStyle;
   }, [darkMode]);
 
   useEffect(() => {
@@ -336,27 +378,7 @@ export default function ExpenditureLineGraph() {
 
   const todayStr = new Date().toISOString().slice(0, 10);
 
-  const inputStyle = {
-    padding: '6px 10px',
-    borderRadius: '4px',
-    border: darkMode ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid #ddd',
-    backgroundColor: darkMode ? '#253342' : '#fff',
-    color: darkMode ? '#ffffff' : 'inherit',
-    colorScheme: darkMode ? 'dark' : 'light',
-  };
-
-  const labelStyle = { color: darkMode ? '#ffffff' : 'inherit' };
-
-  const errorStyle = {
-    color: darkMode ? '#ff6b6b' : '#d32f2f',
-    backgroundColor: darkMode ? '#2a3a5a' : 'rgba(211, 47, 47, 0.05)',
-    padding: '10px',
-    borderRadius: '4px',
-    border: darkMode ? '1px solid #ff6b6b' : '1px solid #d32f2f',
-    textAlign: 'center',
-    maxWidth: '800px',
-    margin: '0 auto 20px auto',
-  };
+  const { inputStyle, labelStyle, errorStyle } = buildThemeStyles(darkMode);
 
   return (
     <div
@@ -377,6 +399,7 @@ export default function ExpenditureLineGraph() {
             color: darkMode ? '#ffffff' : 'inherit',
             textAlign: 'center',
             margin: '0 0 10px 0',
+            fontSize: 'clamp(1.4rem, 4vw + 0.5rem, 2.25rem)',
           }}
         >
           Cost Breakdown by Type of Expenditures
@@ -391,12 +414,10 @@ export default function ExpenditureLineGraph() {
               width: '100%',
               padding: '0 20px',
               gap: '20px',
+              boxSizing: 'border-box',
             }}
           >
-            <div
-              className="project-filter"
-              style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}
-            >
+            <div className="project-filter" style={filterItemStyle}>
               <label htmlFor="project-select" style={labelStyle}>
                 Filter by project:
               </label>
@@ -415,7 +436,7 @@ export default function ExpenditureLineGraph() {
                 ))}
               </select>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <div style={filterItemStyle}>
               <label htmlFor="start-date" style={labelStyle}>
                 From:
               </label>
@@ -429,7 +450,7 @@ export default function ExpenditureLineGraph() {
                 style={inputStyle}
               />
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <div style={filterItemStyle}>
               <label htmlFor="end-date" style={labelStyle}>
                 To:
               </label>
@@ -457,7 +478,13 @@ export default function ExpenditureLineGraph() {
         {noDataError && <p style={errorStyle}>{noDataError}</p>}
 
         <div
-          style={{ display: 'flex', justifyContent: 'center', width: '100%', padding: '0 20px' }}
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            width: '100%',
+            padding: '0 20px',
+            boxSizing: 'border-box',
+          }}
         >
           <div
             style={{
@@ -466,9 +493,10 @@ export default function ExpenditureLineGraph() {
               border: darkMode ? '1px solid #233554' : '1px solid rgba(0, 0, 0, 0.08)',
               boxShadow: darkMode ? 'none' : '0 2px 4px rgba(0,0,0,0.1)',
               padding: '20px',
+              boxSizing: 'border-box',
               maxWidth: '1100px',
               width: '100%',
-              height: '550px',
+              height: 'clamp(320px, 60vh, 550px)',
               position: 'relative',
               transition: 'all 0.3s ease',
             }}
