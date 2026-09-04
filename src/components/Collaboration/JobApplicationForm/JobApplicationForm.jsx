@@ -137,8 +137,9 @@ function pickInitialForm(formsArr, navState) {
   if (navState?.jobTitle) {
     const matched = findFormForJobTitle(formsArr, navState.jobTitle);
     if (matched) return matched;
+    return formsArr.find(f => f.questions?.length) || formsArr[0];
   }
-  return formsArr.find(f => f.questions?.length) || formsArr[0];
+  return null;
 }
 
 function parseFormsResponse(res) {
@@ -150,6 +151,21 @@ function resolveNavigationJobTitle(jobDataFromRedirect, location) {
     (jobDataFromRedirect?.jobTitle && String(jobDataFromRedirect.jobTitle).trim()) ||
     getJobTitleFromNavigation(location)
   );
+}
+
+function resolveJobDetailsLink(jobData, jobsList, title) {
+  const fromNav = jobData?.jobDetailsLink;
+  if (fromNav && String(fromNav).trim()) return String(fromNav).trim();
+  const t = String(title || '')
+    .trim()
+    .toLowerCase();
+  if (!t || !jobsList?.length) return '';
+  const match = jobsList.find(j => {
+    const jobTitle = String(j.title || '').toLowerCase();
+    const jobPosition = String(j.position || '').toLowerCase();
+    return jobTitle === t || jobPosition === t;
+  });
+  return (match?.jobDetailsLink && String(match.jobDetailsLink).trim()) || '';
 }
 
 function notifyInitialFormSelection(navTitle, formMatch, chosen) {
@@ -175,7 +191,7 @@ function getInitialFormState(chosen, navTitle) {
     };
   }
   return {
-    selectedJob: chosen.title,
+    selectedJob: '',
     filteredForm: chosen,
     answers: initialAnswersForQuestions(getVisibleQuestionsForForm(chosen)),
     bannerJobTitle: navTitle || chosen.title,
@@ -650,11 +666,96 @@ FileUploadField.defaultProps = {
   required: false,
 };
 
+function JobPositionSelect({ value, forms, onChange }) {
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef(null);
+  const label = value || 'Select a position';
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const onDoc = event => {
+      if (!wrapRef.current?.contains(event.target)) setOpen(false);
+    };
+    const onKey = event => {
+      if (event.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('mousedown', onDoc);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDoc);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  const choose = next => {
+    onChange(next);
+    setOpen(false);
+  };
+
+  return (
+    <div className={styles.jobSelectWrap} ref={wrapRef}>
+      <button
+        type="button"
+        className={styles.jobSelect}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-label="Select a position"
+        onClick={() => setOpen(isOpen => !isOpen)}
+      >
+        <span className={styles.jobSelectLabel}>{label}</span>
+      </button>
+      {open && (
+        <ul className={styles.jobSelectMenu} role="listbox" aria-label="Positions">
+          <li
+            role="option"
+            aria-selected={!value}
+            className={!value ? styles.jobSelectOptionActive : undefined}
+          >
+            <button type="button" onClick={() => choose('')}>
+              Select a position
+            </button>
+          </li>
+          {forms.map(form => (
+            <li
+              key={form._id || form.id}
+              role="option"
+              aria-selected={value === form.title}
+              className={value === form.title ? styles.jobSelectOptionActive : undefined}
+            >
+              <button type="button" onClick={() => choose(form.title)}>
+                {form.title}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+JobPositionSelect.propTypes = {
+  value: PropTypes.string,
+  forms: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string,
+      id: PropTypes.string,
+      title: PropTypes.string,
+    }),
+  ),
+  onChange: PropTypes.func.isRequired,
+};
+
+JobPositionSelect.defaultProps = {
+  value: '',
+  forms: [],
+};
+
 function JobApplicationForm() {
   const routerLocation = useLocation();
 
   const [forms, setForms] = useState([]);
   const [selectedJob, setSelectedJob] = useState('');
+  const [jobsData, setJobsData] = useState([]);
   const [answers, setAnswers] = useState([]);
   const [jobTitleInput, setJobTitleInput] = useState('');
   const [filteredForm, setFilteredForm] = useState(null);
@@ -759,17 +860,19 @@ function JobApplicationForm() {
 
   const fetchJobData = async jobId => {
     try {
-      const response = await axios.get(`${ENDPOINTS.GET_JOB}/${jobId}`);
-      if (response.data) {
+      const response = await axios.get(`${ENDPOINTS.APIEndpoint()}/jobs/${jobId}`);
+      const job = response.data?.job || response.data;
+      if (job) {
         setJobDataFromRedirect({
-          jobId: response.data._id,
-          jobTitle: response.data.title,
-          jobDescription: response.data.description || '',
-          requirements: response.data.requirements || [],
-          category: response.data.category || 'General',
+          jobId: job._id,
+          jobTitle: job.title,
+          jobDescription: job.description || '',
+          requirements: job.requirements || [],
+          category: job.category || 'General',
+          jobDetailsLink: job.jobDetailsLink || '',
         });
-        if (response.data.title) {
-          setJobTitleInput(response.data.title);
+        if (job.title) {
+          setJobTitleInput(job.title);
         }
       }
     } catch (error) {
@@ -804,6 +907,15 @@ function JobApplicationForm() {
 
     async function fetchForms() {
       try {
+        try {
+          const jobsRes = await axios.get(`${ENDPOINTS.APIEndpoint()}/jobs?limit=1000`);
+          if (!cancelled && jobsRes.data?.jobs) {
+            setJobsData(Array.isArray(jobsRes.data.jobs) ? jobsRes.data.jobs : []);
+          }
+        } catch {
+          /* Job listings are only used for optional details links; form load can continue. */
+        }
+
         const res = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
         if (cancelled) return;
         const formsArr = parseFormsResponse(res);
@@ -852,9 +964,17 @@ function JobApplicationForm() {
     setFieldErrors({});
   }, [selectedJob, forms]);
 
-  const handleJobChange = e => {
-    const next = e.target.value;
+  const handleJobChange = next => {
     setSelectedJob(next);
+    if (!next) {
+      setBannerJobTitle('');
+      setFilteredForm(null);
+      setAnswers([]);
+      setQuestionFiles({});
+      questionFileInputRefs.current = {};
+      setFieldErrors({});
+      return;
+    }
     setBannerJobTitle(next);
   };
 
@@ -929,8 +1049,12 @@ function JobApplicationForm() {
     });
   }, [answers, visibleQuestions]);
 
-  const handleShowDescription = e => {
-    e.preventDefault();
+  const currentJobDetailsLink = useMemo(
+    () => resolveJobDetailsLink(jobDataFromRedirect, jobsData, bannerJobTitle || selectedJob),
+    [jobDataFromRedirect, jobsData, bannerJobTitle, selectedJob],
+  );
+
+  const handleKnowMoreClick = () => {
     setShowDescription(true);
   };
 
@@ -1139,7 +1263,15 @@ function JobApplicationForm() {
 
     setIsSubmitting(true);
     try {
+      const answersPayload = visibleQuestions.map((q, idx) => ({
+        questionId: q._id,
+        answer: serializeAnswerForSubmit(q, idx, answers, questionFiles),
+      }));
+
       const formData = new FormData();
+      formData.append('respondent', applicantName.trim());
+      formData.append('email', applicantEmail.trim());
+      formData.append('answers', JSON.stringify(answersPayload));
       formData.append(
         'payload',
         JSON.stringify({
@@ -1156,10 +1288,7 @@ function JobApplicationForm() {
             hoursPerWeek,
             roleSkills,
           },
-          answers: visibleQuestions.map((q, idx) => ({
-            questionId: q._id,
-            answer: serializeAnswerForSubmit(q, idx, answers, questionFiles),
-          })),
+          answers: answersPayload,
         }),
       );
 
@@ -1177,11 +1306,19 @@ function JobApplicationForm() {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      toast.success('Application submitted successfully.');
+      toast.success('Application submitted successfully. A confirmation email will be sent.');
       resetFormAfterSubmit();
     } catch (err) {
-      const message = err.response?.data?.message || err.message || 'Failed to submit application.';
-      toast.error(message, { autoClose: 7000 });
+      const apiMessage = err.response?.data?.message || err.response?.data?.error;
+      if (err.response?.status === 409) {
+        toast.error(apiMessage || 'Application already submitted', {
+          autoClose: 7000,
+        });
+      } else {
+        toast.error(apiMessage || err.message || 'Failed to submit application.', {
+          autoClose: 7000,
+        });
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -1214,13 +1351,7 @@ function JobApplicationForm() {
             </button>
           </div>
           <div className={styles.headerRight}>
-            <select className={styles.jobSelect} value={selectedJob} onChange={handleJobChange}>
-              {forms.map(form => (
-                <option key={form._id || form.id} value={form.title}>
-                  {form.title}
-                </option>
-              ))}
-            </select>
+            <JobPositionSelect value={selectedJob} forms={forms} onChange={handleJobChange} />
           </div>
         </section>
         <section className={styles.formContainer}>
@@ -1228,9 +1359,20 @@ function JobApplicationForm() {
             Job Application – {(bannerJobTitle || selectedJob || 'this role').trim()}
           </h1>
           <p className={styles.formSubtitle}>
-            <a href="#learnMore" onClick={handleShowDescription}>
-              Click to know more about this position
-            </a>
+            {currentJobDetailsLink ? (
+              <a href={currentJobDetailsLink} target="_blank" rel="noopener noreferrer">
+                Click to know more about this position
+              </a>
+            ) : (
+              <button
+                type="button"
+                className={styles.linkButton}
+                onClick={handleKnowMoreClick}
+                aria-haspopup="dialog"
+              >
+                Click to know more about this position
+              </button>
+            )}
           </p>
           {showDescription && filteredForm && (
             <div className={styles.popupOverlay}>
@@ -1645,38 +1787,49 @@ function JobApplicationForm() {
                         ))}
                       </fieldset>
                     )}
-                    {qt === 'radio' && q.options && q.options.length > 0 && (
-                      <fieldset
-                        className={styles.optionFieldset}
-                        aria-labelledby={`${formKey}-heading`}
-                      >
-                        {q.options.map(opt => (
-                          <label key={String(opt)}>
-                            <input
-                              type="radio"
-                              name={`question-${formKey}`}
-                              value={opt}
-                              checked={answers[idx] === opt}
-                              onChange={() => handleAnswerChange(idx, opt)}
-                            />{' '}
-                            {opt}
-                          </label>
-                        ))}
-                      </fieldset>
-                    )}
+                    {qt === 'radio' &&
+                      q.options &&
+                      q.options.length > 0 &&
+                      !isIndividualOrgQuestion && (
+                        <fieldset
+                          className={styles.optionFieldset}
+                          aria-labelledby={`${formKey}-heading`}
+                        >
+                          {q.options.map(opt => (
+                            <label key={String(opt)}>
+                              <input
+                                type="radio"
+                                name={`question-${formKey}`}
+                                value={opt}
+                                checked={answers[idx] === opt}
+                                onChange={() => handleAnswerChange(idx, opt)}
+                              />{' '}
+                              {opt}
+                            </label>
+                          ))}
+                        </fieldset>
+                      )}
                     {isIndividualOrgQuestion ? (
-                      <select
-                        className={styles.selectField}
-                        value={Array.isArray(answers[idx]) ? '' : answers[idx] || ''}
-                        onChange={e => handleAnswerChange(idx, e.target.value, label)}
-                        required={req}
-                        aria-required={req}
+                      <fieldset
+                        className={`${styles.optionFieldset} ${styles.optionFieldsetInline}`}
                         aria-labelledby={`${formKey}-heading`}
                       >
-                        <option value="">Select an option</option>
-                        <option value="Individual">Individual</option>
-                        <option value="Organization">Organization</option>
-                      </select>
+                        {(q.options?.length ? q.options : ['Individual', 'Organization']).map(
+                          opt => (
+                            <label key={String(opt)}>
+                              <input
+                                type="radio"
+                                name={`question-${formKey}`}
+                                value={opt}
+                                checked={answers[idx] === opt}
+                                onChange={() => handleAnswerChange(idx, opt, label)}
+                                required={req}
+                              />{' '}
+                              {opt}
+                            </label>
+                          ),
+                        )}
+                      </fieldset>
                     ) : (
                       qt === 'dropdown' && (
                         <select
@@ -1718,7 +1871,8 @@ function JobApplicationForm() {
                       'radio',
                       'dropdown',
                     ].includes(qt) &&
-                      !isFileUploadQuestion(q) && (
+                      !isFileUploadQuestion(q) &&
+                      !isIndividualOrgQuestion && (
                         <input
                           type="text"
                           placeholder="Type your response here"
