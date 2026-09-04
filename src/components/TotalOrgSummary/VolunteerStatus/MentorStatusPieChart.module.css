@@ -35,7 +35,8 @@
 }
 
 .mentorStatusHeading {
-  color: #828282;
+  /* #828282 on white was ~3.9:1, under the 4.5:1 WCAG AA minimum for text. */
+  color: #595959;
   letter-spacing: 0.5px;
   text-transform: uppercase;
 
@@ -47,12 +48,10 @@
 
   /* Scale font-size based on chart container width (not viewport width) */
 
-  /* At 280px container: 0.95rem, At 320px container: 1.2rem */
-
-  /* Uses container query width units (cqw): 1cqw = 1% of container width */
-
-  /* Percentage-based scaling: ~5.43-6% of container width */
-  font-size: clamp(0.95rem, 5.71cqw, 1.2rem);
+  /* Floor lowered from 0.95rem: the chart can render narrower than its 280px
+     design width (split screen / DevTools), and the old floor stopped
+     shrinking before the text fit inside the donut's cutout. */
+  font-size: clamp(0.75rem, 5.71cqw, 1.2rem);
 }
 
 .mentorCount {
@@ -65,12 +64,8 @@
 
   /* Scale font-size based on chart container width (not viewport width) */
 
-  /* At 280px container: 1.35rem, At 320px container: 1.8rem */
-
-  /* Uses container query width units (cqw): 1cqw = 1% of container width */
-
-  /* Percentage-based scaling: ~7.71-9% of container width */
-  font-size: clamp(1.35rem, 8.36cqw, 1.8rem);
+  /* Floor lowered from 1.35rem — see .mentorStatusHeading. */
+  font-size: clamp(1.05rem, 8.36cqw, 1.8rem);
 }
 
 .mentorPercentageChange {
@@ -78,6 +73,16 @@
 
   /* Spacing is handled by the flex gap above. */
   margin: 0;
+
+  /* Smaller than heading/count: this 3rd line is what pushes the stack past
+     the donut's cutout radius in comparison mode, so it gets the least room. */
+  font-size: clamp(0.6rem, 3.2cqw, 0.75rem);
+}
+
+/* Comparison line adds a 3rd row of text; tighten the stack so the total
+   height has a better chance of staying inside the cutout circle. */
+.hasComparison {
+  gap: 3px;
 }
 
 .mentorStatusLabels {
@@ -122,17 +127,10 @@
 }
 
 @media (width <= 768px) {
-  .mentorStatusChart {
-    width: min(280px, 100%);
-  }
-
+  /* No sibling chart to share space with at this width (they stack), so
+     don't shrink the chart here — that was fighting for room it didn't
+     need to give up, which is what made the center text feel cramped. */
   .mentorStatusLabels {
     gap: 12px;
-  }
-}
-
-@media (width >= 768px) {
-  .mentorStatusChart {
-    max-width: 280px;
   }
 }

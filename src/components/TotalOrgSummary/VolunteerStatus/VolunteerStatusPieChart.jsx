@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart, ArcElement } from 'chart.js';
+import { useSelector } from 'react-redux';
 import styles from './VolunteerStatusPieChart.module.css';
 import externalLabelGuidesPlugin from './externalLabelGuidesPlugin';
 
@@ -10,6 +11,7 @@ function VolunteerStatusPieChart({
   data: { totalVolunteers, percentageChange, data: volunteerData },
   comparisonType,
 }) {
+  const darkMode = useSelector(state => state?.theme?.darkMode);
   // Debug: Log the data used for the chart
   // console.log('VolunteerStatusPieChart data:', { volunteerData, totalVolunteers });
   const chartData = {
@@ -45,10 +47,19 @@ function VolunteerStatusPieChart({
         sideMap: { 0: 1, 1: -1, 2: 1 },
         total: totalVolunteers,
         formatter: ({ value, percentage }) => [`${value}`, `(${percentage}%)`],
+        // Callout boxes are canvas-drawn, so they don't pick up the page's dark-mode
+        // CSS automatically — the plugin's own white-box default was low-contrast/
+        // visually inconsistent against the dark theme.
+        backgroundColor: darkMode ? 'rgba(35,35,40,0.95)' : 'rgba(255, 255, 255, 0.95)',
+        lineColor: darkMode ? '#e6e6e6' : '#4f4f4f',
+        borderColor: darkMode ? '#5a5a5a' : '#d0d0d0',
       },
     },
     maintainAspectRatio: false,
-    cutout: '55%',
+    // The comparison line adds a 3rd row of center text; shrinking fonts alone
+    // couldn't reliably fit that inside a fixed-size hole, so widen the hole
+    // itself when it's showing instead.
+    cutout: comparisonType !== 'No Comparison' ? '65%' : '55%',
     layout: {
       padding: 24,
     },
@@ -65,11 +76,16 @@ function VolunteerStatusPieChart({
         aria-label="Volunteer Status Pie Chart"
       >
         <Doughnut data={chartData} options={options} plugins={[externalLabelGuidesPlugin]} />
-        <div className={styles.volunteerStatusCenter}>
+        <div
+          className={`${styles.volunteerStatusCenter} ${
+            comparisonType !== 'No Comparison' ? styles.hasComparison : ''
+          }`}
+        >
           <h2 className={styles.volunteerStatusHeading}>TOTAL VOLUNTEERS*</h2>
           <p className={styles.volunteerCount}>{totalVolunteers}</p>
           {comparisonType !== 'No Comparison' && (
             <p
+              className={styles.volunteerPercentageChange}
               style={{ color: percentageChangeColor }}
               aria-label={`Percentage change: ${percentageChange}% ${comparisonType.toLowerCase()}`}
             >
