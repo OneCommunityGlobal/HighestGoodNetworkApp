@@ -19,6 +19,7 @@ import EmailPanel from './platforms/email';
 import RedditAutoPoster from './platforms/reddit';
 import SlashdotAutoPoster from './platforms/slashdot';
 import SocialMediaComposer from './platforms/social/SocialMediaComposer';
+import PinterestPinComposer from './platforms/pinterest';
 
 function Announcements({ title, email: initialEmail }) {
   const [activeTab, setActiveTab] = useState('email');
@@ -241,6 +242,9 @@ function Announcements({ title, email: initialEmail }) {
                 break;
               case 'reddit':
                 PlatformComposer = RedditAutoPoster;
+                break;
+              case 'pinterest':
+                PlatformComposer = PinterestPinComposer;
                 break;
               default:
                 PlatformComposer = SocialMediaComposer;
