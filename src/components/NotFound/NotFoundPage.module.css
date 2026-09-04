@@ -1,41 +1,84 @@
-/* stylelint-disable  */
 .notFoundContainer {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  height: 100vh;
   text-align: center;
-  width: 100%;
-  position: absolute;
-  top: 0;
+  color: #333;
+  background-color: #fff;
 }
 
-.notFoundContent {
-  padding: 5px;
+.sectionImage {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px 0;
+  height: 20rem;
+  width: 70%;
   border-radius: 20px;
-  width: 60%;
+}
+
+.sectionImageLight {
+  border: 2px solid #000;
+}
+
+.sectionImageDark {
+  border: 2px solid #fff;
+}
+
+.headingLight {
+  color: #000;
+}
+
+.headingDark {
+  color: #fff;
+}
+
+.linkSpacing {
+  margin-left: 6px;
+}
+
+.linkSpacingLg {
+  margin-left: 8px;
+}
+
+.linkDark {
+  color: #90caf9 !important;
+}
+
+.linkDark:hover {
+  color: #64b5f6 !important;
+}
+
+/* Override global body.dark-mode * { color: #fff !important } which wins via higher specificity */
+:global(body.dark-mode) .linkDark,
+:global(body.bm-dashboard-dark) .linkDark {
+  color: #90caf9 !important;
+}
+
+:global(body.dark-mode) .linkDark:hover,
+:global(body.bm-dashboard-dark) .linkDark:hover {
+  color: #64b5f6 !important;
+}
+
+.loggedOutText {
+  margin: 10px 20px;
 }
 
 .notFoundImage {
+  flex-grow: 1;
   max-width: 100%;
-  height: auto;
-
-  /* margin-bottom:-20px; */
+  width: 100%;
+  display: block;
+  object-fit: contain;
+  height: 38%;
 }
 
 .notFoundText {
   padding: 0 20px;
-}
-
-.notFoundText h1 {
-  font-size: 2em;
-  margin-bottom: 10px;
-}
-
-.notFoundText p {
-  font-size: 1.1em;
-  margin-bottom: 10px;
+  position: relative;
 }
 
 .backHomeLink {
@@ -51,31 +94,23 @@
 
 .darkMode {
   color: #f1f1f1;
+}
+
+.bgBlack {
   background-color: #121212;
 }
 
-@media (width <= 1039px) {
-  .notFoundContent {
-    margin-top: 20rem;
-  }
-}
-
-@media (width <= 1200px) {
-  .notFoundContent {
-    width: 92%;
-  }
-}
-
 @media (width <= 768px) {
-  .notFoundContent {
-    margin-top: 0;
-  }
-
   .notFoundText h1 {
     font-size: 1.5em;
   }
 
   .notFoundText p {
     font-size: 1em;
+  }
+
+  .notFoundImage {
+    flex-grow: 0;
+    max-width: 95%;
   }
 }
