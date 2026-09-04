@@ -7,6 +7,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import debounce from 'lodash/debounce';
 import { connect } from 'react-redux';
 import { Container, Spinner } from 'reactstrap';
 import { Table } from 'react-bootstrap';
@@ -55,6 +56,7 @@ class UserManagement extends React.PureComponent {
       weeklyHrsSearchText: '',
       emailSearchText: '',
       wildCardSearchText: '',
+      rawSearchText: '',
       selectedPage: props.state.userPagination.pagestats.selectedPage,
       pageSize: props.state.userPagination.pagestats.pageSize,
       allSelected: undefined,
@@ -86,6 +88,14 @@ class UserManagement extends React.PureComponent {
     this.onDeleteButtonClick = this.onDeleteButtonClick.bind(this);
     this.onFinalDayClick = this.onFinalDayClick.bind(this);
     this.onActiveInactiveClick = this.onActiveInactiveClick.bind(this);
+    // Debounce committing the wildcard search text to state, since that state
+    // drives the (expensive) full user-list filter/re-render in componentDidUpdate.
+    // The input itself stays responsive via rawSearchText, updated on every keystroke.
+    this.debouncedApplyWildCardSearch = debounce(
+      searchText => this.setState({ wildCardSearchText: searchText, selectedPage: 1 }),
+      300,
+      { leading: true, trailing: true },
+    );
   }
 
   componentDidMount() {
@@ -111,6 +121,7 @@ class UserManagement extends React.PureComponent {
   componentWillUnmount() {
     document.body.classList.remove('no-global-theme');
     window.removeEventListener('resize', this.handleResize);
+    this.debouncedApplyWildCardSearch.cancel();
   }
 
   handleResize = () => {
@@ -644,13 +655,12 @@ class UserManagement extends React.PureComponent {
   };
 
   onWildCardSearch = (searchText) => {
-    this.setState(
-      {
-        wildCardSearchText: searchText,
-        selectedPage: 1,
-      },
-      () => this.updateGetFilteredData(),
-    );
+    // Update the visible input immediately; debounce the state change that
+    // actually re-filters/re-renders the (potentially large) user list.
+    // componentDidUpdate already re-runs getFilteredData when wildCardSearchText
+    // changes, so the debounced update below doesn't need its own explicit call.
+    this.setState({ rawSearchText: searchText });
+    this.debouncedApplyWildCardSearch(searchText);
   };
 
   onActiveFilter = (value) => {
@@ -794,7 +804,7 @@ class UserManagement extends React.PureComponent {
       <>
         <UserSearchPanel
           onSearch={this.onWildCardSearch}
-          searchText={this.state.wildCardSearchText}
+          searchText={this.state.rawSearchText}
           onActiveFilter={this.onActiveFilter}
           onNewUserClick={this.onNewUserClick}
           handleNewUserSetupPopup={this.handleNewUserSetupPopup}
