@@ -23,6 +23,21 @@ const getToday = () => {
   return `${year}-${month}-${day}`;
 };
 
+const toYMD = d => (d ? new Date(d).toISOString().slice(0, 10) : '');
+
+const timeFromObjectId = id => {
+  if (!id || typeof id !== 'string' || id.length < 8) return '—';
+  const ts = parseInt(id.slice(0, 8), 16);
+  if (Number.isNaN(ts)) return '—';
+  const dt = new Date(ts * 1000);
+  return dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+};
+
+const objectIdToMs = id => {
+  if (!id || typeof id !== 'string' || id.length < 8) return 0;
+  return parseInt(id.slice(0, 8), 16) * 1000;
+};
+
 const buildToolNumbers = (name = 'EQ', qty = 0) => {
   const prefix = (
     name
@@ -136,9 +151,13 @@ function EDailyActivityLog(props) {
 
   const [selectedProject, setSelectedProject] = useState(null);
   const [date, setDate] = useState(getToday());
+  // Separate from the submission date so historical logs can be reviewed without backdating new logs.
+  const [previousLogsDate, setPreviousLogsDate] = useState(getToday());
   const [logType, setLogType] = useState('check-in'); // 'check-in' | 'check-out'
 
   const [rows, setRows] = useState([]);
+  const [showPreviousLogs, setShowPreviousLogs] = useState(false);
+  const [previousLogs, setPreviousLogs] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -160,6 +179,50 @@ function EDailyActivityLog(props) {
     }
   }, [selectedProject, dispatch]);
 
+  // Previous Logs uses its own date filter so the main Date field remains submission-only.
+  useEffect(() => {
+    if (!selectedProject || !previousLogsDate) {
+      setPreviousLogs([]);
+      return;
+    }
+
+    const previousLogEntries = (equipments || []).flatMap(e => {
+      const working = (e.purchaseRecord || []).reduce((sum, rec) => sum + (rec?.quantity || 0), 0);
+
+      const allLogsSorted = (e.logRecord || [])
+        .slice()
+        .sort((a, b) => objectIdToMs(a._id) - objectIdToMs(b._id));
+
+      let using = 0;
+      const rows = [];
+
+      for (const l of allLogsSorted) {
+        if (l.type === 'Check In') using += 1;
+        if (l.type === 'Check Out') using = Math.max(using - 1, 0);
+
+        const available = Math.max(working - using, 0);
+
+        if (toYMD(l.date) === previousLogsDate) {
+          rows.push({
+            equipmentName: e.itemType?.name || 'Unknown',
+            working,
+            available,
+            using,
+            type: l.type,
+            time: timeFromObjectId(l._id),
+          });
+        }
+      }
+
+      return rows;
+    });
+
+    previousLogEntries.sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+
+    setPreviousLogs(previousLogEntries);
+  }, [selectedProject, previousLogsDate, equipments]);
+
+  /* build rows whenever equipments slice updates */
   const derived = useMemo(() => buildRows(equipments), [equipments]);
   useEffect(() => setRows(derived), [derived]);
 
@@ -350,7 +413,7 @@ function EDailyActivityLog(props) {
               htmlFor="date"
               style={darkMode ? { color: '#f8f9fa' } : {}}
             >
-              Date
+              Log Date
             </label>
             <input
               type="date"
@@ -526,6 +589,88 @@ function EDailyActivityLog(props) {
               })}
           </tbody>
         </Table>
+        {/* Previous Logs Panel */}
+        {selectedProject && (
+          <div className={`mt-4 ${darkMode ? 'text-light' : 'text-dark'}`}>
+            <Button
+              color="link"
+              className="fw-bold px-0"
+              onClick={() => setShowPreviousLogs(p => !p)}
+            >
+              {showPreviousLogs ? '▼' : '▶'} Previous Logs (for selected project)
+            </Button>
+
+            {showPreviousLogs && (
+              <>
+                <div className="mb-2" style={{ maxWidth: 260 }}>
+                  <label
+                    className={`form-label fw-bold mb-1 ${darkMode ? 'text-light' : 'text-dark'}`}
+                    htmlFor="previous-logs-date"
+                    style={darkMode ? { color: '#f8f9fa' } : {}}
+                  >
+                    Previous Logs Date
+                  </label>
+                  {/* No min date here: this input is only for filtering historical logs. */}
+                  <input
+                    type="date"
+                    id="previous-logs-date"
+                    className={`form-control ${darkMode ? 'dark-date-input' : 'light-date-input'}`}
+                    value={previousLogsDate}
+                    onChange={e => {
+                      setPreviousLogsDate(e.target.value);
+                      e.target.blur();
+                    }}
+                    style={
+                      darkMode
+                        ? {
+                            backgroundColor: '#343a40',
+                            color: '#f8f9fa',
+                            borderColor: '#495057',
+                          }
+                        : {}
+                    }
+                  />
+                  <small className={`mt-1 d-block ${darkMode ? 'text-light' : 'text-muted'}`}>
+                    Select a date to view historical logs.
+                  </small>
+                </div>
+
+                <Table bordered size="sm" className={darkMode ? 'table-dark' : 'table-light'}>
+                  <thead>
+                    <tr>
+                      <th>Equipment</th>
+                      <th>Working</th>
+                      <th>Available</th>
+                      <th>Using</th>
+                      <th>Type</th>
+                      <th>Time</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {previousLogs.length === 0 && (
+                      <tr>
+                        <td colSpan="6" className="text-center">
+                          No logs found for this date.
+                        </td>
+                      </tr>
+                    )}
+
+                    {previousLogs.map((log, i) => (
+                      <tr key={i}>
+                        <td>{log.equipmentName}</td>
+                        <td>{log.working}</td>
+                        <td>{log.available}</td>
+                        <td>{log.using}</td>
+                        <td>{log.type}</td>
+                        <td>{log.time}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </>
+            )}
+          </div>
+        )}
 
         <div className={styles.actionContainer}>
           <Button color="secondary" onClick={handleCancel} disabled={isSubmitting}>
