@@ -226,14 +226,23 @@ const Projects = function(props) {
         }
       }
 
-      if (column === "MEMBERS") {
+       if (column === "MEMBERS") {
+        // Helper function to safely retrieve active member count, supporting various ID types (string, number, or object)
+        const getCount = (projectId) => {
+          if (!projectId) return 0;
+          return activeMemberCounts[projectId] || 
+                 activeMemberCounts[String(projectId)] || 
+                 activeMemberCounts[projectId.toString()] || 0;
+        };
+
+        const countA = getCount(a._id);
+        const countB = getCount(b._id);
+
         if (direction === "ASC") {
-          const countA = activeMemberCounts[a._id] || 0;
-          const countB = activeMemberCounts[b._id] || 0;
+          // Sort in ascending order based on active member counts
           return countA - countB;
         } else if (direction === "DESC") {
-          const countA = activeMemberCounts[a._id] || 0;
-          const countB = activeMemberCounts[b._id] || 0;
+          // Sort in descending order based on active member counts
           return countB - countA;
         } else {
           return 0; // Default: keep same order as PROJECT sorting
