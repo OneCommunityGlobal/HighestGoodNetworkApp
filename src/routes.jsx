@@ -166,6 +166,7 @@ import ActivityDetailPage from './components/CommunityPortal/Activities/Activity
 import Register from './components/CommunityPortal/Activities/Register/Register';
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
+import EventPage from './components/CommunityPortal/EventManagement/EventPage';
 // Community Calendar
 import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
 // Kicthen and Inventory Portal
@@ -1062,6 +1063,11 @@ export default (
           path="/communityportal/reports/resourceusage"
           exact
           component={ResourceUsage}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityid/event"
+          exact
+          component={EventPage}
         />
         <CPProtectedRoute
           path="/communityportal/activity/:activityid"

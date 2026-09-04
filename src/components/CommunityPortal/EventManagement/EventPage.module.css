@@ -1,0 +1,269 @@
+.eventPage {
+  padding: 50px;
+}
+
+.eventCard {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  background: var(--background);
+  color: var(--text-color);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
+  border: 1px solid #d3d3d3;
+}
+
+.eventCard:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+.eventCardLeft {
+  width: 20%;
+  height: 90%;
+}
+
+.eventCardMiddle {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.eventCardRight {
+  width: 20%;
+  max-height: 90%;
+  padding-top: 90px;
+}
+
+.eventCardImage {
+  width: 100%;
+  height: 400px;
+  background: #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.eventCardMediaUpload {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.eventCardTitle {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+}
+
+.eventCardType {
+  margin: 0;
+}
+
+.eventCard12 {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 98%;
+  padding: 15px;
+  margin: 10px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 10%);
+  margin-right: 10px;
+  transition: background-color 0.2s;
+}
+
+.eventCardInfo,
+.eventCardExtra {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.infoItem,
+.extraItem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+  padding: 5px;
+  margin: 0 5px;
+  width: auto;
+}
+
+.inputField {
+  font-size: 0.9rem;
+  font-family: inherit;
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: transparent;
+}
+
+.statusDropdown {
+  font-size: 0.9rem;
+  font-family: inherit;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.eventDescription {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.textarea {
+  width: 100%;
+  height: 90px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.mediaUploadContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.descriptionMediaUpload {
+  margin-right: 10px;
+}
+
+.postBtn {
+  min-height: 10px;
+  border-radius: 10px;
+  width: 250px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #2e5061;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.postBtn:hover {
+  color: #fff;
+}
+
+.eventTabs {
+  margin-top: 20px;
+}
+
+.errorText {
+  color: #c0392b;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.successText {
+  color: #27ae60;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.star {
+  font-size: 1rem;
+}
+
+.filled {
+  color: #f5a623;
+}
+
+.calendarTileDisabled {
+  color: #ccc;
+  pointer-events: none;
+}
+
+/* Dark Mode */
+.eventPageDark {
+  background-color: #1b2a41;
+  color: #fff;
+  min-height: 100%;
+}
+
+.inputDark {
+  background-color: #2c2c2c;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 5px;
+}
+
+.statusDropdownDark {
+  background-color: #fff;
+  color: #2c2c2c;
+  border: 1px solid #444;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.postBtnDark {
+  background-color: #fff;
+  color: #2e5061;
+  border: 1px solid #666;
+}
+
+.postBtnDark:hover {
+  background-color: #2e5061;
+}
+
+.eventCard12Dark {
+  background-color: #1c2541;
+}
+
+.eventCardInfoDark,
+.eventCardExtraDark {
+  background-color: #3a506b;
+  color: #fff;
+  border: 1px solid #444;
+}
+
+.eventCardRightDark {
+  background-color: transparent;
+}
+
+/* Dark mode overrides for card and textarea */
+.eventPageDark .eventCard {
+  background-color: #253554;
+  border-color: #3a506b;
+  color: #fff;
+}
+
+.eventPageDark .eventCard12 {
+  background-color: #1c2541;
+}
+
+.eventPageDark .eventCardInfo,
+.eventPageDark .eventCardExtra {
+  background-color: #3a506b;
+  border: 1px solid #444;
+}
+
+.eventPageDark .textarea {
+  background-color: #2c2c2c;
+  color: #fff;
+  border: 1px solid #444;
+}
+
+/* Calendar tile highlight - uses global override since react-calendar injects its own classes */
+:global(.react-calendar__tile--active) {
+  background: #0057b8 !important;
+  color: white !important;
+  font-weight: bold;
+}

@@ -59,6 +59,7 @@
     "dompurify": "^3.4.12",
     "elliptic": "^6.6.1",
     "font-awesome": "^4.7.0",
+    "framer-motion": "^12.9.2",
     "fs-extra": "^11.3.0",
     "history": "^4.10.1",
     "html-react-parser": "^1.4.14",
