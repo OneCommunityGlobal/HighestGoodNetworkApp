@@ -769,6 +769,9 @@ export const ENDPOINTS = {
     return url.slice(0);
   },
   APPLICATION_TIME_DATA_ROLES: `${APIEndpoint}/analytics/application-time/roles`,
+  YOUTUBE_AUTOPOSTER_AUTH_URL: `${APIEndpoint}/youtube/auth-url`,
+  YOUTUBE_AUTOPOSTER_STATUS_URL: `${APIEndpoint}/youtube/status`,
+  YOUTUBE_AUTOPOSTER_UPLOAD_URL: `${APIEndpoint}/youtube/upload`,
 };
 
 export const ApiEndpoint = APIEndpoint;

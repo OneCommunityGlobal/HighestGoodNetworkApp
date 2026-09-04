@@ -1,0 +1,923 @@
+.youtubeAutoPoster .form {
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
+}
+
+.youtubeAutoPoster .formColumns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.youtubeAutoPoster .formColumn {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.youtubeAutoPoster {
+  background-color: #fff;
+}
+
+.youtubeAutoPoster .emptyStatePage {
+  display: flex;
+  flex-direction: column;
+}
+
+.youtubeAutoPoster .accountCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background-color: #f7f8fa;
+  border: 1px solid #e4e6eb;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgb(32 33 36 / 6%);
+}
+
+.youtubeAutoPoster .channelThumbnail {
+  flex: 0 0 auto;
+  width: 4.5rem;
+  height: 4.5rem;
+  object-fit: cover;
+  background-color: #f1f3f4;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px #e4e6eb;
+}
+
+.youtubeAutoPoster .channelDetails {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+}
+
+.youtubeAutoPoster .connectedBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.5rem;
+  color: #047857 !important;
+  background-color: #d1fae5;
+  border-radius: 9999px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.05rem;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.youtubeAutoPoster .connectedDot {
+  width: 0.4rem;
+  height: 0.4rem;
+  background-color: #10b981;
+  border-radius: 50%;
+}
+
+.youtubeAutoPoster .channelName {
+  max-width: 100%;
+  margin: 0.2rem 0 0;
+  overflow: hidden;
+  color: #202124 !important;
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.youtubeAutoPoster .channelUrl {
+  max-width: 100%;
+  overflow: hidden;
+  color: #5f6368 !important;
+  font-size: 0.8125rem;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.youtubeAutoPoster .channelUrl:hover {
+  color: #f03 !important;
+  text-decoration: underline;
+}
+
+.youtubeAutoPoster .channelUrl:focus-visible {
+  border-radius: 3px;
+  outline: 3px solid rgb(255 0 51 / 28%);
+  outline-offset: 2px;
+}
+
+.youtubeAutoPoster .connectionPrompt {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-height: 32rem;
+  padding: clamp(2rem, 7vw, 5rem) 1.5rem;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 45%, rgb(255 0 51 / 8%), transparent 34%),
+    linear-gradient(180deg, #fff 0%, #fff9fa 100%);
+  border: 1px solid #e4e6eb;
+  border-radius: 16px;
+}
+
+.youtubeAutoPoster .emptyStateContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: min(100%, 34rem);
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.youtubeAutoPoster .youtubeMark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 5rem;
+  height: 3.5rem;
+  margin-bottom: 1.5rem;
+  background: #f03;
+  border-radius: 1rem;
+  box-shadow: 0 12px 28px rgb(255 0 51 / 25%);
+}
+
+.youtubeAutoPoster .playIcon {
+  width: 0;
+  height: 0;
+  margin-left: 0.25rem;
+  border-top: 0.625rem solid transparent;
+  border-bottom: 0.625rem solid transparent;
+  border-left: 1rem solid #fff;
+}
+
+.youtubeAutoPoster .emptyStateEyebrow {
+  margin-bottom: 0.625rem;
+  color: #b00020 !important;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12rem;
+  text-transform: uppercase;
+}
+
+.youtubeAutoPoster .connectionTitle {
+  margin: 0;
+  color: #202124 !important;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.youtubeAutoPoster .connectionDescription {
+  max-width: 29rem;
+  margin: 0.875rem 0 0;
+  color: #5f6368 !important;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.youtubeAutoPoster .connectButton {
+  min-width: 12rem;
+  margin-top: 1.75rem;
+  padding: 0.8rem 1.25rem;
+  color: #fff !important;
+  background-color: #f03;
+  border: 1px solid #f03;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.youtubeAutoPoster .connectButton:hover {
+  background-color: #d9002b;
+  border-color: #d9002b;
+}
+
+.youtubeAutoPoster .connectButton:focus-visible {
+  outline: 3px solid rgb(255 0 51 / 28%);
+  outline-offset: 2px;
+}
+
+.youtubeAutoPoster .connectionHint {
+  margin: 0.75rem 0 0;
+  color: #878787 !important;
+  font-size: 0.75rem;
+}
+
+@media (width < 600px) {
+  .youtubeAutoPoster .connectionPrompt {
+    min-height: 26rem;
+    padding-inline: 1.25rem;
+  }
+
+  .youtubeAutoPoster .connectButton {
+    width: min(100%, 18rem);
+  }
+}
+
+.youtubeAutoPoster .card {
+  padding: 1rem;
+  background-color: #f7f8fa;
+  border: 1px solid #e4e6eb;
+  border-radius: 12px;
+}
+
+.youtubeAutoPoster .cardTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.youtubeAutoPoster .cardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.youtubeAutoPoster .horizontal {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.youtubeAutoPoster .inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.youtubeAutoPoster .inputLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0;
+}
+
+.youtubeAutoPoster .inputRequired {
+  color: #f03 !important;
+}
+
+.youtubeAutoPoster .inputOptional {
+  color: #878787 !important;
+  font-weight: 400;
+  font-size: 0.65rem;
+}
+
+.youtubeAutoPoster .inputField {
+  border-radius: 8px;
+  border: 1px solid #e4e6eb;
+}
+
+.youtubeAutoPoster .fileInput {
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.youtubeAutoPoster .videoSourceTile {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 0;
+}
+
+.youtubeAutoPoster .videoThumb {
+  display: flex;
+  flex: 0 0 160px;
+  align-items: center;
+  justify-content: center;
+  width: 160px;
+  max-height: 210px;
+  overflow: hidden;
+  color: #fff !important;
+  background: #202124;
+  border-radius: 10px;
+  font-size: 1.75rem;
+}
+
+.youtubeAutoPoster .videoThumb video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.youtubeAutoPoster .videoMeta {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.youtubeAutoPoster .videoCaption {
+  color: #878787 !important;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.075rem;
+}
+
+.youtubeAutoPoster .videoFilename {
+  overflow: hidden;
+  color: #202124 !important;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 0;
+}
+
+.youtubeAutoPoster .emptyVideoPrompt {
+  color: #5f6368 !important;
+  font-weight: 500;
+}
+
+.youtubeAutoPoster .videoSpecs {
+  display: flex;
+  gap: 0.875rem;
+  color: #878787 !important;
+  font-size: 0.75rem;
+}
+
+.youtubeAutoPoster .videoSpecs strong {
+  color: #5f6368 !important;
+}
+
+.youtubeAutoPoster .form .replaceButton {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0.625rem 0.875rem;
+  color: #202124 !important;
+  background-color: #fff;
+  border: 1px solid #e4e6eb;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.youtubeAutoPoster .form .replaceButton:hover {
+  border-color: #f03;
+  color: #f03 !important;
+}
+
+.youtubeAutoPoster .form .replaceButton:focus-within {
+  outline: 3px solid rgb(255 0 51 / 28%);
+  outline-offset: 2px;
+}
+
+@media (width < 600px) {
+  .youtubeAutoPoster .videoSourceTile {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .youtubeAutoPoster .videoThumb {
+    width: 100%;
+    flex-basis: auto;
+  }
+
+  .youtubeAutoPoster .form .replaceButton {
+    width: 100%;
+  }
+}
+
+.youtubeAutoPoster .tagsHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.youtubeAutoPoster .tagCount {
+  font-size: 0.75rem;
+  color: #878787 !important;
+}
+
+.youtubeAutoPoster .tagsWrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-top: 0.5rem;
+}
+
+.youtubeAutoPoster .tagChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.625rem;
+  border-radius: 9999px;
+  background-color: #ffe5eb;
+  color: #f03 !important;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+  max-width: 12rem;
+}
+
+.youtubeAutoPoster .tagText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.youtubeAutoPoster .tagRemove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: inherit !important;
+  font-size: 0.625rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.youtubeAutoPoster .tagRemove:hover {
+  color: #c90028 !important;
+}
+
+.youtubeAutoPoster .addTagChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.375rem 0.625rem;
+  border-radius: 9999px;
+  border: 1px solid #e4e6eb;
+  color: #5f6368 !important;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+  background-color: white;
+}
+
+.youtubeAutoPoster .addTagInput {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: inherit;
+  font-weight: inherit;
+  color: #202124 !important;
+  width: 6rem;
+  padding: 0;
+}
+
+.youtubeAutoPoster .addTagInput:focus-visible {
+  outline: none;
+}
+
+.youtubeAutoPoster .addTagInput::placeholder {
+  color: #878787 !important;
+  font-weight: 400;
+}
+
+.youtubeAutoPoster .addTagInput:disabled {
+  cursor: not-allowed;
+}
+
+.youtubeAutoPoster .tagHint {
+  margin: 0.75rem 0 0;
+  font-size: 0.75rem;
+  color: #878787 !important;
+  line-height: 1.3;
+}
+
+.youtubeAutoPoster .visibilityHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.youtubeAutoPoster .visibilityTitle {
+  margin: 0;
+  color: #1a1a1a !important;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.youtubeAutoPoster .visibilityStatus {
+  display: inline-flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.375rem;
+  padding: 0.1875rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.0625rem;
+}
+
+.youtubeAutoPoster .publicStatus {
+  color: #047857 !important;
+  background-color: #d1fae5;
+}
+
+.youtubeAutoPoster .unlistedStatus {
+  color: #fff !important;
+  background-color: #0a0a0a;
+}
+
+.youtubeAutoPoster .privateStatus {
+  color: #5f6368 !important;
+  background-color: #e5e7eb;
+}
+
+.youtubeAutoPoster .visibilityOptions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.625rem;
+}
+
+.youtubeAutoPoster .visibilityChoice {
+  flex: 1;
+  display: inline-flex;
+  margin: 0;
+  color: #1a1a1a !important;
+  cursor: pointer;
+}
+
+.youtubeAutoPoster .visibilityInput {
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.youtubeAutoPoster .visibilityOption {
+  display: inline-flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.youtubeAutoPoster .visibilityChoice:hover .visibilityOption {
+  border-color: #f03;
+}
+
+.youtubeAutoPoster .visibilityInput:checked + .visibilityOption {
+  color: #fff !important;
+  background-color: #f03 !important;
+  border-color: #f03 !important;
+}
+
+.youtubeAutoPoster .visibilityInput:focus-visible + .visibilityOption {
+  outline: 3px solid rgb(255 0 51 / 28%);
+  outline-offset: 2px;
+}
+
+.youtubeAutoPoster .togglesCard {
+  box-sizing: border-box;
+  padding: 1.25rem;
+  margin-top: 0.75rem;
+  border: 0;
+  border-radius: 16px;
+  font-family: Inter, sans-serif;
+}
+
+.youtubeAutoPoster .togglesTitle {
+  margin: 0;
+  color: #1a1a1a !important;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.youtubeAutoPoster .togglesList {
+  display: flex;
+  flex-direction: column;
+}
+
+.youtubeAutoPoster .toggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.875rem;
+  padding: 0.875rem 0;
+  margin: 0;
+  color: #1a1a1a !important;
+  font-weight: 400;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.youtubeAutoPoster .toggleRow:last-child {
+  border-bottom: 0;
+}
+
+.youtubeAutoPoster .toggleText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.youtubeAutoPoster .toggleLabel {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.25;
+  margin-bottom: 0;
+}
+
+.youtubeAutoPoster .toggleDescription {
+  color: #888 !important;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.35;
+  margin-bottom: 0;
+}
+
+.youtubeAutoPoster .form .switchControl {
+  display: inline-flex;
+  flex: 0 0 auto;
+  margin: 0;
+  cursor: pointer;
+}
+
+.youtubeAutoPoster .toggleInput {
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.youtubeAutoPoster .toggleTrack {
+  display: inline-flex;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  align-items: center;
+  width: 2.25rem;
+  height: 1.375rem;
+  padding: 0.1875rem;
+  background-color: #e5e7eb;
+  border-radius: 9999px;
+  transition: background-color 150ms ease;
+}
+
+.youtubeAutoPoster .toggleKnob {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  background-color: #fff;
+  border-radius: 50%;
+  transition: transform 150ms ease;
+}
+
+.youtubeAutoPoster .toggleInput:checked + .toggleTrack {
+  background-color: #f03 !important;
+}
+
+.youtubeAutoPoster .toggleInput:checked + .toggleTrack .toggleKnob {
+  transform: translateX(0.875rem);
+}
+
+.youtubeAutoPoster .toggleInput:focus-visible + .toggleTrack {
+  outline: 3px solid rgb(255 0 51 / 28%);
+  outline-offset: 2px;
+}
+
+.youtubeAutoPoster .toggleRow:hover .toggleTrack {
+  box-shadow: 0 0 0 2px rgb(255 0 51 / 10%);
+}
+
+.youtubeAutoPoster .uploadButton {
+  display: inline-flex;
+  align-self: center;
+  align-items: center;
+  justify-content: center;
+  min-width: 10rem;
+  min-height: 2.75rem;
+  padding: 0.75rem 1.5rem;
+  color: #fff !important;
+  background-color: #f03;
+  border: 1px solid #f03;
+  border-radius: 8px;
+  box-shadow: 0 6px 14px rgb(255 0 51 / 18%);
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+.youtubeAutoPoster .uploadButton:disabled {
+  color: #9aa0a6 !important;
+  background-color: #e5e7eb;
+  border-color: #e5e7eb;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.youtubeAutoPoster .uploadButton:focus-visible {
+  outline: 3px solid rgb(255 0 51 / 28%);
+  outline-offset: 2px;
+}
+
+.youtubeAutoPoster .uploadButton:hover:not(:disabled) {
+  background-color: #d9002b;
+  border-color: #d9002b;
+  box-shadow: 0 8px 18px rgb(255 0 51 / 24%);
+  transform: translateY(-1px);
+}
+
+.youtubeAutoPoster .uploadButton:active:not(:disabled) {
+  box-shadow: 0 3px 8px rgb(255 0 51 / 18%);
+  transform: translateY(0);
+}
+
+.youtubeAutoPoster .uploadButton[aria-busy='true']::before {
+  width: 0.875rem;
+  height: 0.875rem;
+  margin-right: 0.5rem;
+  border: 2px solid rgb(154 160 166 / 40%);
+  border-top-color: #9aa0a6;
+  border-radius: 50%;
+  animation: upload-spin 700ms linear infinite;
+  content: '';
+}
+
+@keyframes upload-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .youtubeAutoPoster .uploadButton {
+    transition: none;
+  }
+
+  .youtubeAutoPoster .uploadButton[aria-busy='true']::before {
+    animation: none;
+  }
+}
+
+@media (width < 600px) {
+  .youtubeAutoPoster .uploadButton {
+    width: 100%;
+  }
+}
+
+@media (width >= 768px) {
+  .youtubeAutoPoster .visibilityChoice {
+    flex: 1;
+  }
+
+  .youtubeAutoPoster .visibilityOption {
+    width: 100%;
+  }
+}
+
+@media (width >= 1024px) {
+  .youtubeAutoPoster .formColumns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+
+/* Dark mode overrides are kept together so the YouTube composer remains easy to theme. */
+:global(.dark-mode) .youtubeAutoPoster {
+  color: #e5e7eb !important;
+  background-color: #1a1d23;
+}
+
+:global(.dark-mode) .youtubeAutoPoster h1,
+:global(.dark-mode) .youtubeAutoPoster h2,
+:global(.dark-mode) .youtubeAutoPoster h4,
+:global(.dark-mode) .youtubeAutoPoster .channelName,
+:global(.dark-mode) .youtubeAutoPoster .visibilityTitle,
+:global(.dark-mode) .youtubeAutoPoster .togglesTitle,
+:global(.dark-mode) .youtubeAutoPoster .toggleLabel {
+  color: #f3f4f6 !important;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .accountCard,
+:global(.dark-mode) .youtubeAutoPoster .card {
+  background-color: #242a33;
+  border-color: #3b4553;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 20%);
+}
+
+:global(.dark-mode) .youtubeAutoPoster .channelThumbnail {
+  background-color: #303846;
+  border-color: #242a33;
+  box-shadow: 0 0 0 1px #4b5563;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .channelUrl,
+:global(.dark-mode) .youtubeAutoPoster .connectionDescription,
+:global(.dark-mode) .youtubeAutoPoster .connectionHint,
+:global(.dark-mode) .youtubeAutoPoster .tagHint,
+:global(.dark-mode) .youtubeAutoPoster .tagCount,
+:global(.dark-mode) .youtubeAutoPoster .videoSpecs,
+:global(.dark-mode) .youtubeAutoPoster .toggleDescription {
+  color: #aeb7c4 !important;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .connectionPrompt {
+  background: radial-gradient(circle at 50% 45%, rgb(255 0 51 / 12%), transparent 34%),
+    linear-gradient(180deg, #1f252e 0%, #24232a 100%);
+  border-color: #3b4553;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .inputField,
+:global(.dark-mode) .youtubeAutoPoster .form .visibilityOption,
+:global(.dark-mode) .youtubeAutoPoster .form .replaceButton,
+:global(.dark-mode) .youtubeAutoPoster .addTagChip {
+  color: #f3f4f6 !important;
+  background-color: #1f252e;
+  border-color: #4b5563;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .inputField::placeholder,
+:global(.dark-mode) .youtubeAutoPoster .addTagInput::placeholder {
+  color: #9ca3af !important;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .form .replaceButton:hover {
+  color: #ff6680 !important;
+  border-color: #ff6680;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .tagChip {
+  color: #ff6680 !important;
+  background-color: rgb(255 0 51 / 18%);
+}
+
+:global(.dark-mode) .youtubeAutoPoster .visibilityTitle,
+:global(.dark-mode) .youtubeAutoPoster .toggleRow {
+  color: #e5e7eb !important;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .toggleRow {
+  border-bottom-color: #3b4553;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .form .toggleTrack,
+:global(.dark-mode) .youtubeAutoPoster .uploadButton:disabled {
+  background-color: #4b5563;
+  border-color: #4b5563;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .form .visibilityOption {
+  color: #d1d5db;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .visibilityChoice:hover .visibilityOption {
+  border-color: #f03;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .privateStatus {
+  color: #d1d5db !important;
+  background-color: #374151;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .unlistedStatus {
+  color: #f3f4f6 !important;
+  background-color: #111827;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .videoThumb {
+  background-color: #111827;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .videoFilename {
+  color: #f3f4f6 !important;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .emptyVideoPrompt,
+:global(.dark-mode) .youtubeAutoPoster .videoSpecs strong {
+  color: #cbd5e1 !important;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .addTagInput {
+  color: #f3f4f6 !important;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .tagText {
+  color: #ff6680 !important;
+}
