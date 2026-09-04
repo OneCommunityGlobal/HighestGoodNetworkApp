@@ -6,11 +6,9 @@ table td {
 
 .itemsListContainer {
   width: 100%;
+  max-width: 1536px;
   margin: 0 auto;
   padding: 0 1rem;
-  min-height: 100vh;
-  background-color: #fff;
-  color: #1f2937;
 }
 
 .itemsTableContainer {
@@ -19,22 +17,6 @@ table td {
   max-height: 600px;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
-  background-color: #fff;
-}
-
-.itemsTableContainer table {
-  background-color: #fff;
-  color: #1f2937;
-  margin-bottom: 0;
-}
-
-.itemsTableContainer table tbody tr {
-  background-color: #fff;
-}
-
-.itemsTableContainer table th,
-.itemsTableContainer table td {
-  white-space: nowrap;
 }
 
 .items_list_container section {
@@ -70,6 +52,19 @@ table td {
 
 .itemsCell svg:hover {
   color: black;
+}
+
+.materialsActionGroup {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.itemsCell .materialsActionGroup svg {
+  margin-right: 0;
 }
 
 .searchRow {
@@ -146,7 +141,7 @@ table td {
 .selectInput {
   display: flex;
   align-items: flex-end;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: 15px;
   width: 100%;
   max-width: 1200px;
@@ -155,26 +150,6 @@ table td {
 
 .selectInput :global(.react-select__menu) {
   z-index: 10;
-}
-
-.filterItem {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 180px;
-  max-width: 200px;
-  margin-bottom: 8px;
-}
-
-.filterItemSelect {
-  flex: 2;
-  max-width: 380px;
-}
-
-.filterItem label {
-  text-align: left;
-  white-space: nowrap;
-  margin-bottom: 8px;
 }
 
 .resetContainer {
@@ -209,7 +184,8 @@ table td {
   margin-bottom: 8px;
 }
 
-.datePickerCell input {
+.selectInput input,
+.selectInput select {
   height: 38px;
   width: 100%;
   min-width: 180px;
@@ -217,6 +193,12 @@ table td {
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.selectInput input[type='text'] {
+  padding: 5px;
+  margin-bottom: 8px;
 }
 
 .btnPrimary {
@@ -237,6 +219,15 @@ table td {
 
 .btnPrimary:hover {
   background-color: #3b82f6;
+}
+
+.selectableRow {
+  cursor: pointer;
+}
+
+.selectedRow td {
+  background-color: #d8e9fb !important;
+  color: #102033 !important;
 }
 
 .paginationBar {
@@ -305,7 +296,7 @@ table td {
 
 .darkMode {
   color: #e8edf4;
-  background-color: #1a1d23 !important;
+  background-color: #0f1b2b !important;
   min-height: 100vh;
   padding-top: 1rem;
   padding-bottom: 2rem;
@@ -315,6 +306,37 @@ table td {
   background-color: #14253d !important;
   color: #fff !important;
   border-color: #1d3c52 !important;
+}
+
+.darkMode table thead th {
+  background-color: #0b1420 !important;
+  color: #fff !important;
+  border-color: #1d3c52 !important;
+}
+
+.darkMode table tbody td {
+  background-color: #14253d !important;
+  color: #fff !important;
+  border-color: #1d3c52 !important;
+}
+
+.darkMode table tbody tr:nth-child(even) td {
+  background-color: #0f1b2b !important;
+}
+
+.darkMode table tbody tr:hover td {
+  background-color: #1c3354 !important;
+  color: #fff !important;
+}
+
+.darkMode table tbody tr.selectedRow td {
+  background-color: #315983 !important;
+  color: #fff !important;
+}
+
+.darkTable tbody td,
+.darkTable tbody th {
+  border-color: #2f4157 !important;
 }
 
 .darkTable tbody tr:nth-child(odd) {
@@ -328,25 +350,6 @@ table td {
 .darkTable .stickyThead th {
   background-color: #2f4157;
   border-bottom: 1px solid #3f5269;
-}
-
-/* Dark mode container/table base (overrides the light defaults above) */
-.darkTableWrapper {
-  background-color: #1f2e45;
-}
-
-.darkTableWrapper table,
-.itemsTableContainer .darkTable {
-  background-color: #1f2e45;
-  color: #e8edf4;
-}
-
-.itemsTableContainer .darkTable tbody tr:nth-child(odd) {
-  background-color: #1f2e45;
-}
-
-.itemsTableContainer .darkTable tbody tr:nth-child(even) {
-  background-color: #23375b;
 }
 
 :global(.dark-mode) .items_table_container {
@@ -436,58 +439,47 @@ table td {
   border: 1px solid #3f5269;
 }
 
-.darkDatePickerInput::placeholder {
-  color: #8fa0b9 !important;
-}
-
-.darkDatePickerInput:focus {
-  outline: none !important;
-  border-color: #4a90e2 !important;
-  box-shadow: 0 0 0 1px #4a90e2 !important;
-}
-
-/* 2. THIS STYLES THE POP-UP CALENDAR CONTAINER */
-.darkDatePicker {
-  background-color: #1f2e45 !important;
-  border: 1px solid #3f5269 !important;
-}
-
-/* The rest of your header/time picker global overrides go below here... */
-.darkDatePicker :global(.react-datepicker__header) {
-  background-color: #2f4157 !important;
-  border-color: #3f5269 !important;
-}
-
-.darkDatePicker :global(input) {
+.darkDatePickerInput {
   background-color: #2a3f5f !important;
   color: #e8edf4 !important;
   border: 1px solid #3f5269 !important;
 }
 
-.darkDatePicker :global(input)::placeholder {
+.darkDatePickerInput::placeholder {
   color: #c8d2e0 !important;
 }
 
-.darkDatePicker :global(.react-datepicker__time-header),
-.darkDatePicker :global(.react-datepicker-time__header) {
+.darkDatePicker {
+  background-color: #1f2e45 !important;
+  color: #e8edf4 !important;
+  border: 1px solid #3f5269 !important;
+}
+
+.darkDatePicker .react-datepicker__header {
+  background-color: #2f4157;
+  border-color: #3f5269;
+}
+
+.darkDatePicker .react-datepicker__time-header {
   color: #f2f6ff !important;
   background-color: #2f4157 !important;
+  border-bottom: 1px solid #3f5269 !important;
 }
 
-.darkDatePicker :global(.react-datepicker__current-month),
-.darkDatePicker :global(.react-datepicker-year-header) {
+.darkDatePicker .react-datepicker__current-month,
+.darkDatePicker .react-datepicker-year-header {
   color: #f2f6ff !important;
 }
 
-.darkDatePicker :global(.react-datepicker__day-name),
-.darkDatePicker :global(.react-datepicker__day),
-.darkDatePicker :global(.react-datepicker__time-name) {
-  color: #e8edf4 !important;
+.darkDatePicker .react-datepicker__day-name,
+.darkDatePicker .react-datepicker__day,
+.darkDatePicker .react-datepicker__time-name {
+  color: #e8edf4;
 }
 
-.darkDatePicker :global(.react-datepicker__day--selected),
-.darkDatePicker :global(.react-datepicker__day--keyboard-selected),
-.darkDatePicker :global(.react-datepicker__time-list-item--selected) {
+.darkDatePicker .react-datepicker__day--selected,
+.darkDatePicker .react-datepicker__day--keyboard-selected,
+.darkDatePicker .react-datepicker__time-list-item--selected {
   background-color: #468ef9 !important;
   color: #fff !important;
   border-color: #468ef9 !important;
@@ -521,7 +513,7 @@ table td {
   color: #fff !important;
 }
 
-.darkDatePickerPopper :global(.react-datepicker__triangle) {
+.darkDatePickerPopper .react-datepicker__triangle {
   display: none;
 }
 
@@ -645,40 +637,227 @@ table td {
 
 @media (width <= 900px) {
   .selectInput {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: flex-start;
     max-width: 100%;
-    flex-wrap: wrap;
   }
 
   .selectInput label {
     text-align: left;
   }
 
-  .datePickerCell input {
+  .selectInput input,
+  .selectInput select {
     max-width: 100%;
     min-width: 0;
+    width: 100%;
+  }
+}
+
+/* ── Inventory Navigation Bar ── */
+.inventoryNav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.returnBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 16px;
+  background-color: #0d5675;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.returnBtn:hover {
+  background-color: #1a73c0;
+  color: #fff;
+}
+
+.categoryIcons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.categoryIconLink {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 10px;
+  border: 1px solid #78bdda;
+  border-radius: 8px;
+  color: #0d5675;
+  text-decoration: none;
+  font-size: 0.75rem;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.categoryIconLink:hover {
+  background-color: #0d5675;
+  color: #fff;
+  border-color: #0d5675;
+}
+
+.iconWrapper {
+  font-size: 1.2rem;
+}
+
+.iconLabel {
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.darkMode .returnBtn {
+  background-color: #2e5061;
+  color: #fff;
+}
+
+.darkMode .returnBtn:hover {
+  background-color: #1a73c0;
+}
+
+.darkMode .categoryIconLink {
+  border-color: #4a9bc2;
+  color: #5eb3e4;
+}
+
+.darkMode .categoryIconLink:hover {
+  background-color: #2e5061;
+  color: #fff;
+  border-color: #4a9bc2;
+}
+
+/* ── Page Title with Icon ── */
+.pageTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pageTitleIcon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.2rem;
+  color: #0d5675;
+}
+
+.darkMode .pageTitleIcon {
+  color: #5eb3e4;
+}
+
+/* ── Mobile responsive improvements ── */
+@media (width <= 768px) {
+  .itemsListContainer {
+    padding: 0 0.5rem;
   }
 
-  .filterItemSelect {
+  .itemsTableContainer {
+    max-height: 70vh;
+  }
+
+  .itemsTableContainer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 24px;
+    background: linear-gradient(to right, transparent, rgb(0 0 0 / 8%));
+    pointer-events: none;
+  }
+
+  .darkMode .itemsTableContainer::after {
+    background: linear-gradient(to right, transparent, rgb(255 255 255 / 8%));
+  }
+
+  .inventoryNav {
+    gap: 10px;
+  }
+
+  .returnBtn {
+    flex: 1 1 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .categoryIcons {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .pageTitle {
+    font-size: 1.4rem;
+  }
+
+  .searchRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .searchBox {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .searchBox input {
+    width: 100%;
     max-width: 100%;
   }
 
+  .foundCount {
+    text-align: left;
+  }
+
+  .buttonsRow {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .btnPrimary {
+    width: 100%;
+  }
+
+  .paginationBar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .pageButtons {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .rowsPerPage {
+    justify-content: space-between;
+  }
 }
 
-/* DatePicker Input Dark Mode Overrides */
-.darkMode :global(.react-datepicker-wrapper) .darkDatePickerInput {
-  background-color: #1b2439 !important;
-  color: #fff !important;
-  border: 1px solid #3f5269 !important;
-}
+@media (width <= 480px) {
+  .pageButtons button {
+    min-width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+    padding: 0 5px;
+  }
 
-.darkMode :global(.react-datepicker-wrapper) .darkDatePickerInput:focus {
-  outline: none !important;
-  border-color: #4a90e2 !important;
-  box-shadow: 0 0 0 1px #4a90e2 !important;
-}
+  .categoryIconLink {
+    padding: 5px 8px;
+    font-size: 0.7rem;
+  }
 
-.darkMode :global(.react-datepicker-wrapper) .darkDatePickerInput::placeholder {
-  color: #8fa0b9 !important;
+  .iconWrapper {
+    font-size: 1rem;
+  }
 }
- 
