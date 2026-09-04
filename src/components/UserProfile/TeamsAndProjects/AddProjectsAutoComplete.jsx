@@ -71,8 +71,7 @@ const AddProjectsAutoComplete = React.memo(props => {
           {props.projectsData
             .filter(project => {
               if (
-                //prettier-ignore
-                props.formatText(project.projectName).indexOf(props.formatText(debouncedSearchText)) >-1
+                props.formatText(project.projectName).includes(props.formatText(debouncedSearchText))
               ) {
                 return project;
               }
