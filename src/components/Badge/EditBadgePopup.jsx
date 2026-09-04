@@ -82,7 +82,7 @@ function EditBadgePopup(props) {
     setBadgeValues(props.badgeValues);
     setBadgeId(props.badgeValues ? props.badgeValues._id : null);
     setBadgeName(props.badgeValues ? props.badgeValues.badgeName : '');
-    setImageUrl(props.badgeValues ? props.badgeValues.imageUrl : '');
+    setImageUrl(props.badgeValues?.imageUrl ?? '');
     setDescription(props.badgeValues ? props.badgeValues.description : '');
     setRanking(props.badgeValues ? props.badgeValues.ranking : 0);
     setType(props.badgeValues ? props.badgeValues.type : 'Custom');

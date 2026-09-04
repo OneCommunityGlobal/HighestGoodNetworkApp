@@ -170,3 +170,8 @@
     font-size: 0.75rem !important;
   }
 }
+
+:global(.dark-mode) .badge-development-table tbody tr:hover td {
+  background-color: #1e3a5f !important;
+  color: #fff !important;
+}

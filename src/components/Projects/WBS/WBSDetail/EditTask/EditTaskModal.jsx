@@ -275,18 +275,11 @@ function EditTaskModal(props) {
       }
     }
   }, [startedDate, dueDate]);
-  const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
+
   const parseDate = (str, format, locale) => {
-    // Allow empty string for partial typing
-    if (!str || str.trim() === '') return undefined;
-    
-    try {
-      const parsed = dateFnsParse(str, format, new Date(), { locale });
-      if (isValid(parsed)) {
-        return parsed;
-      }
-    } catch (error) {
-      // Return undefined for invalid dates while typing
+    const parsed = dateFnsParse(str, format, new Date(), { locale });
+    if (DateUtils.isDate(parsed)) {
+      return parsed;
     }
     return undefined;
   };
