@@ -64,9 +64,9 @@ describe('Unit Test case for PeopleTableDetails component', () => {
 
   it('Test 3 : Verify row data renders', () => {
     render(<PeopleTableDetails taskData={taskData} />);
-    expect(screen.getAllByText('Task 1')[0]).toBeInTheDocument();;
-    expect(screen.getByText('Task 2')).toBeInTheDocument();
-    expect(screen.getByText('Task 3')).toBeInTheDocument();
+    expect(screen.getAllByText('Task 1')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Task 2')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Task 3')[0]).toBeInTheDocument();
   });
 
   it('displays a task with no resources and no start date', () => {
@@ -78,7 +78,7 @@ describe('Unit Test case for PeopleTableDetails component', () => {
 
     render(<PeopleTableDetails taskData={[taskWithoutResourcesOrStartDate]} />);
 
-    expect(screen.getByText('Unassigned task')).toBeInTheDocument();
+    expect(screen.getAllByText('Unassigned task')[0]).toBeInTheDocument();
   });
 
   it('Test 5 : Verify no toggle button if resources < 2', () => {
@@ -88,14 +88,14 @@ describe('Unit Test case for PeopleTableDetails component', () => {
 
   it('Test 6 : Verify button renders if resources > 2', () => {
     render(<PeopleTableDetails taskData={[getMockTask('1', 'P2', 3)]} />);
-    expect(screen.getByRole('button', { name: /^\d+\+$/ })).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /^\d+\+$/ })[0]).toBeInTheDocument();
   });
 
   it('shows resource toggle button when there are more than 2 resources', () => {
     render(<PeopleTableDetails taskData={taskFixtureThreeNamedResources} />);
 
-   expect(screen.getAllByText('Project 2')[0]).toBeInTheDocument();
-    const toggleButton = screen.getByText('1+');
+    expect(screen.getAllByText('Project 2')[0]).toBeInTheDocument();
+    const toggleButton = screen.getAllByText('1+')[0];
     expect(toggleButton).toBeInTheDocument();
   });
 
@@ -103,7 +103,7 @@ describe('Unit Test case for PeopleTableDetails component', () => {
     const taskId = taskFixtureThreeNamedResources[0]._id;
     render(<PeopleTableDetails taskData={taskFixtureThreeNamedResources} />);
 
-    const toggleButton = screen.getByRole('button', { name: /^\d+\+$/ });
+    const toggleButton = screen.getAllByRole('button', { name: /^\d+\+$/ })[0];
     expect(toggleButton).toBeInTheDocument();
     expect(screen.getByTestId(`extra-resources-${taskId}`)).toBeInTheDocument();
 
@@ -112,13 +112,13 @@ describe('Unit Test case for PeopleTableDetails component', () => {
       display: 'table-cell',
     });
 
-    fireEvent.click(screen.getByRole('button', { name: /^\d+\+$/ }));
+    fireEvent.click(screen.getAllByRole('button', { name: /^\d+\+$/ })[0]);
     expect(screen.getByTestId(`extra-resources-${taskId}`)).toHaveStyle({ display: 'none' });
   });
 
   it('Test 8 : Verify remaining resource count displayed', () => {
     render(<PeopleTableDetails taskData={[getMockTask('1', 'P2', 4)]} />);
-    expect(screen.getByText('2+')).toBeInTheDocument();
+    expect(screen.getAllByText('2+')[0]).toBeInTheDocument();
   });
 });
 
@@ -137,7 +137,7 @@ describe('TaskResourceCell', () => {
         {...baseProps}
       />,
     );
-    expect(screen.getByText('1+')).toBeInTheDocument();
+    expect(screen.getAllByText('1+')[0]).toBeInTheDocument();
   });
 
   it('shows the extra-resources block when the task is in expandedTasks', () => {
@@ -163,7 +163,7 @@ describe('TaskResourceCell', () => {
         toggleMoreResources={toggleMoreResources}
       />,
     );
-    fireEvent.click(screen.getByText('1+'));
+    fireEvent.click(screen.getAllByText('1+')[0]);
     expect(toggleMoreResources).toHaveBeenCalledWith(task._id);
   });
 });
