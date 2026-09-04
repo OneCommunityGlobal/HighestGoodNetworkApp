@@ -14,7 +14,6 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import DurationFilter from './DurationFilter';
 import styles from './PRReviewTeamAnalytics.module.css';
 import PRData from './PRData';
-import '../Header/index.module.css';
 
 const DURATION_OPTIONS = [
   { label: 'Last Week', value: 'last_week' },
@@ -33,25 +32,18 @@ function getXTicksAndDomain(data) {
   return { domain: [0, upper], ticks };
 }
 
-function CustomTooltip({ active, payload, tooltipBg, tooltipText }) {
+function CustomTooltip({ active, payload, darkMode }) {
   if (active && payload && payload.length) {
     const tooltipData = payload[0].payload;
-    const tooltipLabel = tooltipText; // Use tooltipText for the label color
     return (
-      <div
-        className={styles['custom-tooltip']}
-        style={{ background: tooltipBg, color: tooltipText }}
-      >
+      <div className={`${styles['custom-tooltip']} ${darkMode ? styles.dark : ''}`}>
         <div className={styles['tooltip-header']}>
-          <h4 style={{ color: tooltipText }}>{tooltipData.prNumber}</h4>
+          <h4>{tooltipData.prNumber}</h4>
         </div>
-        <p className={styles['tooltip-title']} style={{ color: tooltipText }}>
-          {tooltipData.title}
-        </p>
+        <p className={styles['tooltip-title']}>{tooltipData.title}</p>
         <div className={styles['tooltip-details']}>
-          <p style={{ color: tooltipText }}>
-            <strong style={{ color: tooltipLabel, fontSize: '0.9em' }}>Reviews:</strong>{' '}
-            {tooltipData.reviewCount}
+          <p>
+            <strong>Reviews:</strong> {tooltipData.reviewCount}
           </p>
         </div>
       </div>
@@ -60,21 +52,19 @@ function CustomTooltip({ active, payload, tooltipBg, tooltipText }) {
   return null;
 }
 
-function PRReviewTeamAnalytics({ state }) {
+function PRReviewTeamAnalytics({ darkMode }) {
   const [duration, setDuration] = useState(DURATION_OPTIONS[0].value);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Get dark mode from global Redux state
-  const { darkMode } = state.theme;
+  const dm = darkMode ? styles.dark : '';
 
   useEffect(() => {
     setLoading(true);
     setError(null);
     setTimeout(() => {
       try {
-        // Calculate date range based on duration
         const today = new Date();
         let cutoffDate;
 
@@ -90,14 +80,13 @@ function PRReviewTeamAnalytics({ state }) {
             break;
           case 'all_time':
           default:
-            cutoffDate = new Date(0); // Beginning of time
+            cutoffDate = new Date(0);
             break;
         }
 
-        // Filter PRs by date and sort by review count
         const filtered = PRData.filter(pr => pr.createdDate >= cutoffDate);
         const sorted = [...filtered].sort((a, b) => b.reviewCount - a.reviewCount);
-        setData(sorted.slice(0, 20)); // Get Top 20 PRs based on review count
+        setData(sorted.slice(0, 20));
         setLoading(false);
       } catch (err) {
         setError('Failed to load PR data');
@@ -111,43 +100,32 @@ function PRReviewTeamAnalytics({ state }) {
 
   const { domain, ticks } = getXTicksAndDomain(data);
 
-  // Calculate insights metrics
   const totalPRs = data.length;
   const totalReviews = data.reduce((sum, pr) => sum + pr.reviewCount, 0);
   const avgReviews = totalPRs > 0 ? (totalReviews / totalPRs).toFixed(1) : 0;
   const mostReviewedPR = data.length > 0 ? data[0] : null;
 
-  // Theme-based color scheme using global dark mode
-  const chartBg = darkMode ? '#1e2936' : '#f8fafc';
-  const labelColor = darkMode ? '#f8fafc' : '#052C65';
+  // Recharts SVG props must stay as JS values — CSS cannot target SVG attributes
   const barColor = darkMode ? '#4a9eff' : '#052C65';
   const axisLineColor = darkMode ? '#4a5568' : '#bfc7d1';
   const tickColor = darkMode ? '#f8fafc' : '#052C65';
-  const tooltipBg = darkMode ? '#2d3748' : 'rgba(255,255,255,0.95)';
-  const tooltipText = darkMode ? '#f8fafc' : '#052C65';
-  const containerBg = darkMode ? '#2d3e55' : '#e0e3ea';
-  const boxStyling = darkMode ? boxStyleDark : boxStyle;
 
   let content;
   if (loading) {
     content = (
-      <div className={styles['pr-review-analytics-loading']} style={{ color: labelColor }}>
-        <div
-          className={styles['loading-spinner']}
-          style={darkMode ? { borderTop: '4px solid #f8fafc' } : {}}
-        />
-        <p style={{ color: labelColor }}>Loading PR Analytics...</p>
+      <div className={`${styles['pr-review-analytics-loading']} ${dm}`}>
+        <div className={`${styles['loading-spinner']} ${dm}`} />
+        <p>Loading PR Analytics...</p>
       </div>
     );
   } else if (error) {
     content = (
-      <div className={styles['pr-review-analytics-error']} style={{ color: labelColor }}>
+      <div className={`${styles['pr-review-analytics-error']} ${dm}`}>
         <div className={styles['error-icon']}>⚠️</div>
-        <p style={{ color: labelColor }}>{error}</p>
+        <p>{error}</p>
         <button
           type="button"
           className={styles['retry-button']}
-          style={{ color: labelColor }}
           onClick={() => window.location.reload()}
         >
           Retry
@@ -156,27 +134,18 @@ function PRReviewTeamAnalytics({ state }) {
     );
   } else if (data.length === 0) {
     content = (
-      <div className={styles['pr-review-analytics-empty']} style={{ color: labelColor }}>
+      <div className={`${styles['pr-review-analytics-empty']} ${dm}`}>
         <div className={styles['empty-icon']}>📊</div>
-        <p style={{ color: labelColor }}>No PR data available</p>
+        <p>No PR data available</p>
       </div>
     );
   } else {
     content = (
       <div className={styles['pr-review-analytics-fixed-labels-layout']}>
-        <div
-          className={styles['pr-review-analytics-yaxis-fixed-label']}
-          style={{ color: labelColor, background: containerBg }}
-        >
-          <span style={{ color: labelColor }}>Top 20 Most Popular PRs</span>
+        <div className={`${styles['pr-review-analytics-yaxis-fixed-label']} ${dm}`}>
+          <span>Top 20 Most Popular PRs</span>
         </div>
-        <div
-          className={styles['pr-review-analytics-bars-scrollable-area']}
-          style={{
-            '--chart-bg': chartBg,
-            background: 'var(--chart-bg)',
-          }}
-        >
+        <div className={`${styles['pr-review-analytics-bars-scrollable-area']} ${dm}`}>
           <ResponsiveContainer width="100%" height={Math.max(400, data.length * 28)}>
             <BarChart
               layout="vertical"
@@ -209,9 +178,7 @@ function PRReviewTeamAnalytics({ state }) {
                 domain={domain}
                 ticks={ticks}
               />
-              <Tooltip
-                content={<CustomTooltip tooltipBg={tooltipBg} tooltipText={tooltipText} />}
-              />
+              <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
               <Bar
                 dataKey="reviewCount"
                 fill={barColor}
@@ -224,11 +191,8 @@ function PRReviewTeamAnalytics({ state }) {
             </BarChart>
           </ResponsiveContainer>
         </div>
-        <div
-          className={styles['pr-review-analytics-xaxis-fixed-label']}
-          style={{ color: labelColor, background: containerBg }}
-        >
-          <span style={{ color: labelColor }}>No of Reviews</span>
+        <div className={`${styles['pr-review-analytics-xaxis-fixed-label']} ${dm}`}>
+          <span>No of Reviews</span>
         </div>
       </div>
     );
@@ -236,36 +200,14 @@ function PRReviewTeamAnalytics({ state }) {
 
   return (
     <div
-      className={`${styles['pr-review-analytics-container']} ${styles['pr-review-analytics-bg']} ${
-        darkMode ? 'dark-mode' : ''
-      }`}
-      style={{
-        background: containerBg,
-        color: labelColor,
-        ...boxStyling,
-      }}
+      className={`${styles['pr-review-analytics-container']} ${styles['pr-review-analytics-bg']} ${dm}`}
+      style={darkMode ? boxStyleDark : boxStyle}
     >
-      <div
-        className={styles['pr-review-analytics-header']}
-        style={{
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-        }}
-      >
-        <h2 className={styles['pr-review-analytics-title']} style={{ color: labelColor }}>
-          Top 20 Most Popular PRs
-        </h2>
+      <div className={styles['pr-review-analytics-header']}>
+        <h2 className={`${styles['pr-review-analytics-title']} ${dm}`}>Top 20 Most Popular PRs</h2>
         <div className={styles['pr-review-analytics-dropdown-wrapper']}>
-          <span
-            className={styles['pr-review-analytics-dropdown-label']}
-            style={{ color: labelColor }}
-          >
-            Duration
-          </span>
-          <div
-            className={styles['pr-review-analytics-dropdown-value']}
-            style={{ color: labelColor }}
-          >
+          <span className={`${styles['pr-review-analytics-dropdown-label']} ${dm}`}>Duration</span>
+          <div className={`${styles['pr-review-analytics-dropdown-value']} ${dm}`}>
             {selectedDurationLabel}
           </div>
           <DurationFilter
@@ -277,43 +219,23 @@ function PRReviewTeamAnalytics({ state }) {
         </div>
       </div>
       {!loading && !error && data.length > 0 && (
-        <div
-          className={styles['pr-insights-panel']}
-          style={{
-            background: darkMode ? '#2d3748' : '#ffffff',
-            borderColor: darkMode ? '#4a5568' : '#cbd5e0',
-          }}
-        >
+        <div className={`${styles['pr-insights-panel']} ${dm}`}>
           <div className={styles['pr-insights-item']}>
-            <div className={styles['pr-insights-label']} style={{ color: labelColor }}>
-              Total PRs
-            </div>
-            <div className={styles['pr-insights-value']} style={{ color: barColor }}>
-              {totalPRs}
-            </div>
+            <div className={`${styles['pr-insights-label']} ${dm}`}>Total PRs</div>
+            <div className={`${styles['pr-insights-value']} ${dm}`}>{totalPRs}</div>
           </div>
           <div className={styles['pr-insights-item']}>
-            <div className={styles['pr-insights-label']} style={{ color: labelColor }}>
-              Avg Reviews/PR
-            </div>
-            <div className={styles['pr-insights-value']} style={{ color: barColor }}>
-              {avgReviews}
-            </div>
+            <div className={`${styles['pr-insights-label']} ${dm}`}>Avg Reviews/PR</div>
+            <div className={`${styles['pr-insights-value']} ${dm}`}>{avgReviews}</div>
           </div>
           <div
-            className={`${styles['pr-insights-item']} ${styles['pr-insights-item-highlight']}`}
-            style={{
-              background: darkMode ? '#1a365d' : '#e6f2ff',
-              borderColor: barColor,
-            }}
+            className={`${styles['pr-insights-item']} ${styles['pr-insights-item-highlight']} ${dm}`}
           >
-            <div className={styles['pr-insights-label']} style={{ color: labelColor }}>
-              Most Reviewed PR
-            </div>
-            <div className={styles['pr-insights-value-highlight']} style={{ color: barColor }}>
+            <div className={`${styles['pr-insights-label']} ${dm}`}>Most Reviewed PR</div>
+            <div className={`${styles['pr-insights-value-highlight']} ${dm}`}>
               {mostReviewedPR?.prNumber}
             </div>
-            <div className={styles['pr-insights-subtext']} style={{ color: labelColor }}>
+            <div className={`${styles['pr-insights-subtext']} ${dm}`}>
               {mostReviewedPR?.reviewCount} reviews
             </div>
           </div>
@@ -324,6 +246,6 @@ function PRReviewTeamAnalytics({ state }) {
   );
 }
 
-const mapStateToProps = state => ({ state });
+const mapStateToProps = state => ({ darkMode: state.theme.darkMode });
 
 export default connect(mapStateToProps)(PRReviewTeamAnalytics);

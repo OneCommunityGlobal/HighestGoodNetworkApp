@@ -560,32 +560,6 @@ export function Header(props) {
     return () => window.removeEventListener('storage', handleStorageEvent);
   }, [user.userid, props.auth.firstName]);
 
-  useEffect(() => {
-    const handleResize = () => {
-      const currentWidth = window.innerWidth;
-      // eslint-disable-next-line no-console
-      console.log(`[Header Debug] Window resized to: ${currentWidth}px`);
-      if (currentWidth >= 1728) {
-        // eslint-disable-next-line no-console
-        console.log(`[Header Debug] Breakpoint: Large screen (90%+) - Owner message below timer`);
-      } else if (currentWidth >= 1400) {
-        // eslint-disable-next-line no-console
-        console.log(`[Header Debug] Breakpoint: Desktop - Centered layout`);
-      } else if (currentWidth >= 1200) {
-        // eslint-disable-next-line no-console
-        console.log(`[Header Debug] Breakpoint: Medium desktop - Centered layout`);
-      } else if (currentWidth >= 768) {
-        // eslint-disable-next-line no-console
-        console.log(`[Header Debug] Breakpoint: Tablet - Stacked layout`);
-      } else {
-        // eslint-disable-next-line no-console
-        console.log(`[Header Debug] Breakpoint: Mobile - Compact vertical layout`);
-      }
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   useEffect(() => {
     if (props.auth.isAuthenticated) {

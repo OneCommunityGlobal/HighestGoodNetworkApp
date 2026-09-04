@@ -593,7 +593,89 @@
   }
 }
 
-/* Comprehensive Dark Mode Support with higher specificity */
+/* Dark mode via CSS module .dark class */
+.pr-review-analytics-container.pr-review-analytics-bg.dark {
+  background: #1b2a42;
+  color: #f8fafc;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
+}
+
+.pr-review-analytics-title.dark {
+  color: #f8fafc;
+}
+
+.pr-review-analytics-dropdown-label.dark,
+.pr-review-analytics-dropdown-value.dark {
+  color: #f8fafc;
+}
+
+.pr-review-analytics-yaxis-fixed-label.dark {
+  background: #1b2a42;
+  color: #f8fafc;
+}
+
+.pr-review-analytics-yaxis-fixed-label.dark span {
+  color: #f8fafc;
+}
+
+.pr-review-analytics-xaxis-fixed-label.dark {
+  background: #1b2a42;
+  color: #f8fafc;
+}
+
+.pr-review-analytics-xaxis-fixed-label.dark span {
+  color: #f8fafc;
+}
+
+.pr-review-analytics-bars-scrollable-area.dark {
+  background: #1e2936;
+}
+
+.pr-review-analytics-loading.dark,
+.pr-review-analytics-error.dark,
+.pr-review-analytics-empty.dark {
+  color: #f8fafc;
+}
+
+.loading-spinner.dark {
+  border-color: #4a5568;
+  border-top-color: #f8fafc;
+}
+
+.pr-insights-panel.dark {
+  background: #2d3748;
+  border-color: #4a5568;
+}
+
+.pr-insights-label.dark,
+.pr-insights-subtext.dark {
+  color: #f8fafc;
+}
+
+.pr-insights-value.dark,
+.pr-insights-value-highlight.dark {
+  color: #4a9eff;
+}
+
+.pr-insights-item-highlight.dark {
+  background: #1a365d;
+  border-color: #4a9eff;
+}
+
+.custom-tooltip.dark {
+  background: #2d3748;
+  border-color: #4a5568;
+  color: #f8fafc;
+}
+
+.custom-tooltip.dark .tooltip-header h4,
+.custom-tooltip.dark .tooltip-title,
+.custom-tooltip.dark .tooltip-details p,
+.custom-tooltip.dark .tooltip-details strong {
+  color: #f8fafc;
+}
+
+/* Legacy dark-mode class — kept for backward compat */
 .dark-mode .pr-review-analytics-container.pr-review-analytics-bg {
   background: #1b2a42;
   color: #f8fafc;
