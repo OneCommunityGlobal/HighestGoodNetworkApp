@@ -140,7 +140,6 @@ function PeopleTableDetails(props) {
     return filteredList;
   };
 
-  // REFACTORED: Toggle using state instead of direct DOM manipulation
   const toggleMoreResources = useCallback((id) => {
     setExpandedTasks((prev) => ({
       ...prev,
@@ -244,6 +243,7 @@ function PeopleTableDetails(props) {
           Clear Filters
         </button>
       </div>
+
       <div className={styles['people-table-scrollable']}>
         <table {...getTableProps()} className={styles.peopleTableReact}>
           <thead className={darkMode ? styles['reports-table-head-dark'] : undefined}>
@@ -282,6 +282,51 @@ function PeopleTableDetails(props) {
             })}
           </tbody>
         </table>
+      </div>
+
+      <div className={styles['mobileCardContainer']}>
+        {filteredTasks.map((task) => (
+          <div key={task._id} className={`${styles['task-card']} ${darkMode ? styles['task-card-dark'] : ''}`}>
+            <div className={styles['task-header']}>
+              <span className={styles['people-report-task-name']}>{task.taskName}</span>
+              <span className={styles['task-status']}>{task.status || 'Started'}</span>
+            </div>
+            <div className={styles['task-details']}>
+              <div className={styles['task-info']}>
+                <div className={styles['sub-head']}>Priority</div>
+                <div className={styles['sub-details']}>{task.priority}</div>
+              </div>
+              <div className={styles['task-info']}>
+                <div className={styles['sub-head']}>Resources</div>
+                <div className={styles['sub-details']}>
+                  {(task.resources || []).flat().map((res, i) => (
+                    <img key={i} alt={res.name} src={res.profilePic || '/pfp-default.png'} className={styles['img-circle']} />
+                  ))}
+                </div>
+              </div>
+              <div className={styles['task-info']}>
+                <div className={styles['sub-head']}>Active</div>
+                <div className={styles['sub-details']}>{task.active}</div>
+              </div>
+              <div className={styles['task-info']}>
+                <div className={styles['sub-head']}>Assign</div>
+                <div className={styles['sub-details']}>{task.assign}</div>
+              </div>
+              <div className={styles['task-info']}>
+                <div className={styles['sub-head']}>Estimated Hours</div>
+                <div className={styles['sub-details']}>{task.estimatedHours}</div>
+              </div>
+              <div className={styles['task-info']}>
+                <div className={styles['sub-head']}>Start Date</div>
+                <div className={styles['sub-details']}>{task.startDate}</div>
+              </div>
+              <div className={styles['task-info']}>
+                <div className={styles['sub-head']}>End Date</div>
+                <div className={styles['sub-details']}>{task.endDate}</div>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </>
   );
