@@ -4,11 +4,14 @@ import styles from './PRGradingScreen.module.css';
 
 const ReviewerCell = ({ reviewer, isPromoted, onPromote }) => {
   return (
+    /* Vertical container anchoring the reviewer name and action button */
     <div
       className={styles['pr-reviewer-cell'] || ''}
       style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '6px' }}
     >
+      {/* Display the reviewer name */}
       <span style={{ fontWeight: 600 }}>{reviewer.reviewer}</span>
+      {/* Render the Promote / Promoted button directly beneath the reviewer name */}
       <Button
         variant={isPromoted ? 'secondary' : 'primary'}
         size="sm"
