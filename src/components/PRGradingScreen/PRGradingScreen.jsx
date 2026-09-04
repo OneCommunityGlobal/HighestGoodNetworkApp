@@ -198,6 +198,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                       </td>
                     </tr>
                   ) : (
+                    /* Render each reviewer row followed by its inline summary component using React.Fragment */
                     filteredReviewers.map(reviewer => (
                       <React.Fragment key={reviewer.id}>
                         <tr>

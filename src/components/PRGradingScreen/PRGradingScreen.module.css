@@ -81,8 +81,6 @@
   margin-bottom: 20px;
 }
 
-
-
 /* Table Styles */
 .pr-grading-screen-table-container {
   margin: 20px auto 0;
@@ -518,49 +516,47 @@
   font-weight: 600;
 }
 
-
-
 /* Responsive adjustments */
 @media (width <= 768px) {
   .pr-grading-screen-title {
     font-size: 1.5rem;
   }
-  
+
   .pr-grading-screen-team-info {
     font-size: 1rem;
   }
-  
+
   .pr-grading-screen-container {
     padding: 10px;
   }
-  
+
   .pr-grading-screen-header-content {
     flex-direction: column;
     gap: 15px;
   }
-  
+
   .pr-grading-screen-header-right {
     margin-left: 0;
     align-self: flex-end;
   }
-  
+
   .pr-grading-screen-table {
     font-size: 0.9rem;
   }
-  
+
   .pr-grading-screen-table th,
   .pr-grading-screen-table td {
     padding: 10px 8px;
   }
-  
+
   .pr-grading-screen-td-name {
     width: 20%;
   }
-  
+
   .pr-grading-screen-td-numbers {
     width: 60%;
   }
-  
+
   .pr-grading-screen-pr-input {
     width: 50px;
     padding: 3px 6px;
@@ -1019,6 +1015,11 @@
   border-top: none !important;
 }
 
+/* ==========================================================
+   Inline PR Summary Styles (PR #5493)
+   Scoped strictly with pr-grading-inline-* to avoid global pollution
+   ========================================================== */
+
 .pr-grading-inline-summary-container {
   padding: 16px 20px;
   background-color: #fff;
@@ -1027,6 +1028,7 @@
   box-shadow: 0 2px 6px rgb(0 0 0 / 4%);
 }
 
+/* Dark mode support for inline summary container */
 .pr-grading-inline-summary-container.dark-mode {
   background-color: #2b2b2b;
   border-color: rgb(255 255 255 / 15%);
