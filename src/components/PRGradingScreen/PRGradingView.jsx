@@ -123,7 +123,7 @@ const PRGradingView = ({
                         <td>
                           <ReviewerCell
                             reviewer={reviewer}
-                            promoted={promotedReviewerIds.has(reviewer.id)}
+                            isPromoted={promotedReviewerIds.has(reviewer.id)}
                             onPromoteClick={() => onPromoteClick(reviewer)}
                             darkMode={darkMode}
                           />
@@ -208,7 +208,7 @@ const PRGradingView = ({
       {promotingReviewer && (
         <PromotionConfirmationBox
           reviewer={promotingReviewer}
-          onConfirm={onConfirmPromotion}
+          onConfirm={() => onConfirmPromotion(promotingReviewer.reviewerName, promotingReviewer.id)}
           onCancel={onCancelPromotion}
           darkMode={darkMode}
         />

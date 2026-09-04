@@ -2,7 +2,10 @@ import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import styles from './PRGradingScreen.module.css';
 
-const ReviewerCell = ({ reviewer, isPromoted, onPromote }) => {
+const ReviewerCell = ({ reviewer, isPromoted, promoted, onPromoteClick }) => {
+  // Compatibility fallback for promotion status props
+  const promotedState = isPromoted !== undefined ? isPromoted : promoted;
+
   return (
     /* Vertical container anchoring the reviewer name and action button */
     <div
@@ -11,12 +14,13 @@ const ReviewerCell = ({ reviewer, isPromoted, onPromote }) => {
     >
       {/* Display the reviewer name */}
       <span style={{ fontWeight: 600 }}>{reviewer.reviewer}</span>
+
       {/* Render the Promote / Promoted button directly beneath the reviewer name */}
       <Button
-        variant={isPromoted ? 'secondary' : 'primary'}
+        variant={promotedState ? 'secondary' : 'primary'}
         size="sm"
-        disabled={isPromoted}
-        onClick={() => onPromote(reviewer)}
+        disabled={promotedState}
+        onClick={() => onPromoteClick(reviewer)}
         style={{
           fontSize: '12px',
           padding: '3px 10px',
@@ -26,7 +30,7 @@ const ReviewerCell = ({ reviewer, isPromoted, onPromote }) => {
           gap: '4px',
         }}
       >
-        {isPromoted ? 'Promoted' : 'Promote'}
+        {promotedState ? 'Promoted' : 'Promote'}
       </Button>
     </div>
   );
@@ -37,8 +41,9 @@ ReviewerCell.propTypes = {
     id: PropTypes.string.isRequired,
     reviewer: PropTypes.string.isRequired,
   }).isRequired,
-  isPromoted: PropTypes.bool.isRequired,
-  onPromote: PropTypes.func.isRequired,
+  isPromoted: PropTypes.bool,
+  promoted: PropTypes.bool,
+  onPromoteClick: PropTypes.func.isRequired,
 };
 
 export default ReviewerCell;
