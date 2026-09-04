@@ -1,0 +1,191 @@
+
+.container {
+  min-height: 100vh;
+  padding: 24px;
+  background-color: #f7f8f5;
+  color: #222;
+}
+
+.title {
+  margin: 0 0 24px;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+/* Alerts */
+
+.alertSection {
+  margin-bottom: 24px;
+}
+
+.alertSection h2 {
+  margin: 0 0 12px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.alertList,
+.harvestList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.alertCard,
+.harvestCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.alertIcon,
+.harvestIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  background-color: #f1f3ec;
+  border-radius: 50%;
+  font-size: 20px;
+}
+
+.alertContent h3,
+.harvestCard h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.alertContent p,
+.harvestCard p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+/* Metrics */
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.metricCard {
+  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.metricHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.metricHeader span {
+  font-size: 20px;
+}
+
+.metricHeader h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.metricValue {
+  margin-top: 16px;
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.metricInfo {
+  margin: 4px 0 0;
+  color: #666;
+  font-size: 14px;
+}
+
+/* Dark mode */
+
+:global(body.dark-mode) .container {
+  background-color: #121212;
+  color: #fff;
+}
+
+:global(body.dark-mode) .title {
+  color: #fff;
+}
+
+:global(body.dark-mode) .alertSection h2 {
+  color: #fff;
+}
+
+:global(body.dark-mode) .alertCard,
+:global(body.dark-mode) .harvestCard,
+:global(body.dark-mode) .metricCard {
+  background-color: #1e1e1e;
+  border-color: #444;
+  color: #fff;
+}
+
+:global(body.dark-mode) .alertContent h3,
+:global(body.dark-mode) .harvestCard h3,
+:global(body.dark-mode) .metricHeader h2,
+:global(body.dark-mode) .metricValue {
+  color: #fff;
+}
+
+:global(body.dark-mode) .alertContent p,
+:global(body.dark-mode) .harvestCard p,
+:global(body.dark-mode) .metricInfo {
+  color: #aaa;
+}
+
+:global(body.dark-mode) .alertIcon,
+:global(body.dark-mode) .harvestIcon {
+  background-color: #2d2d2d;
+}
+
+/* Responsive */
+
+@media (width <= 900px) {
+  .metricsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .alertList,
+  .harvestList {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (width <= 600px) {
+  .container {
+    padding: 16px;
+  }
+
+  .header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .priorityIndicator {
+    align-self: flex-start;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .metricsGrid {
+    grid-template-columns: 1fr;
+  }
+}
