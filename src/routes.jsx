@@ -957,6 +957,53 @@ export default (
           component={Register}
         />
         <CPProtectedRoute
+          path="/communityportal/usermanagement"
+          exact
+          component={UserManagement}
+          fallback
+          allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
+          routePermissions={RoutePermissions.userManagement}
+        />
+        <CPProtectedRoute
+          path="/communityportal/badgemanagement"
+          exact
+          component={BadgeManagement}
+          fallback
+          routePermissions={RoutePermissions.badgeManagement}
+        />
+        <CPProtectedRoute
+          path="/communityportal/projects"
+          exact
+          component={Projects}
+          fallback
+          allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
+          routePermissions={RoutePermissions.projects}
+        />
+        <CPProtectedRoute
+          path="/communityportal/teams"
+          exact
+          component={Teams}
+          fallback
+          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+          routePermissions={RoutePermissions.teams}
+        />
+        <CPProtectedRoute
+          path="/communityportal/announcements"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <CPProtectedRoute
+          path="/communityportal/permissionsmanagement"
+          exact
+          component={PermissionsManagement}
+          fallback
+          routePermissions={[
+            ...RoutePermissions.permissionsManagement,
+            ...RoutePermissions.userPermissionsManagement,
+          ].flat()}
+        />
+        <CPProtectedRoute
           path="/communityportal/activity/:activityId/attendance"
           exact
           component={LogAttendance}
@@ -980,7 +1027,7 @@ export default (
           fallback
         />
         <CPProtectedRoute
-          path="/communityportal/activity/:activityId/ResourceManagement"
+          path="/communityportal/activity/:activityId/resourcemanagement"
           exact
           component={ResourceManagement}
           fallback
