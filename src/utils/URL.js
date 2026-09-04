@@ -224,6 +224,13 @@ export const ENDPOINTS = {
   STUDENT_TASKS: () => `${APIEndpoint}/student/tasks`,
   STUDENT_TASK_MARK_DONE: taskId => `${APIEndpoint}/student/tasks/${taskId}/mark-done`,
   STUDENT_TASK_LOG_HOURS: taskId => `${APIEndpoint}/student/tasks/${taskId}/log-hours`,
+  STUDENT_TIMER_START: `${APIEndpoint}/student/timer/start`,
+  STUDENT_TIMER_PAUSE: `${APIEndpoint}/student/timer/pause`,
+  STUDENT_TIMER_RESUME: `${APIEndpoint}/student/timer/resume`,
+  STUDENT_TIMER_STOP: `${APIEndpoint}/student/timer/stop`,
+  STUDENT_TIMER_RESET: `${APIEndpoint}/student/timer/reset`,
+  STUDENT_TIMER_ADJUST: `${APIEndpoint}/student/timer/adjust`,
+  STUDENT_TIMER_STATUS: `${APIEndpoint}/student/timer/status`,
 
   // Intermediate Tasks (Education Portal)
   INTERMEDIATE_TASKS: () => `${APIEndpoint}/educator/intermediate-tasks`,
