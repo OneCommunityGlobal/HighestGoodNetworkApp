@@ -42,6 +42,7 @@ import EDailyActivityLog from './components/BMDashboard/Equipment/DailyActivityL
 import EquipmentUpdateLog from './components/BMDashboard/Equipment/EHistory';
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 import OrdersPage from './components/KitchenInventory/Orders/OrdersPage';
+import GardenManagementPage from './components/KitchenInventory/GardenManagement/GardenManagementPage';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
@@ -172,7 +173,7 @@ import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCa
 import KitchenandInventoryLogin from './components/KitchenandInventory/Login';
 import OrchardManagement from './components/KitchenandInventory/OrchardManagement/OrchardManagement';
 import OrchardManagementPage from './components/KitchenandInventory/OrchardManagement/OrchardManagementPage';
-import GardenManagement from './components/KitchenandInventory/GardenManagement/GardenManagement';
+// import GardenManagement from './components/KitchenandInventory/GardenManagement/GardenManagement';
 import RecipesLandingPage from './components/KitchenandInventory/Recipes';
 
 import KIDashboard from './components/KitchenandInventory/KIDashboard/KIDashboard';
@@ -1096,11 +1097,11 @@ export default (
           exact
           component={OrchardManagementPage}
         />
-        <ProtectedRoute
+        {/* <ProtectedRoute
           path="/kitchenandinventory/gardenmanagement"
           exact
           component={GardenManagement}
-        />
+        /> */}
         <Route path="/kitchenandinventory/orders" component={OrdersPage} />
         <Route path="/kitchenandinventory/login" exact component={KitchenandInventoryLogin} />
         <ProtectedRoute path="/kitchenandinventory/recipes" exact component={RecipesLandingPage} />
@@ -1111,6 +1112,10 @@ export default (
         <Route path="/unsubscribe" component={UnsubscribePage} />
         <Route path="/collaboration" component={Collaboration} />
         <ProtectedRoute path="/kitchenandinventory/orders" component={OrdersPage} />
+        <ProtectedRoute
+          path="/kitchenandinventory/gardenmanagement"
+          component={GardenManagementPage}
+        />
         <Route path="/suggestedjobslist" component={SuggestedJobsList} />
         <ProtectedRoute path="/jobformbuilder" fallback component={JobFormBuilder} />
         <ProtectedRoute path="/materials/mostwastedmaterials" component={MostWastedMaterials} />
