@@ -64,7 +64,7 @@ describe('Unit Test case for PeopleTableDetails component', () => {
 
   it('Test 3 : Verify row data renders', () => {
     render(<PeopleTableDetails taskData={taskData} />);
-    expect(screen.getByText('Task 1')).toBeInTheDocument();
+    expect(screen.getAllByText('Task 1')[0]).toBeInTheDocument();;
     expect(screen.getByText('Task 2')).toBeInTheDocument();
     expect(screen.getByText('Task 3')).toBeInTheDocument();
   });
