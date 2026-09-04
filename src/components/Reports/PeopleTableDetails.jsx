@@ -4,6 +4,12 @@ import { useTable } from 'react-table';
 import styles from './PeopleTableDetails.module.css';
 import TableFilter from './TableFilter/TableFilter';
 
+/**
+ * TaskResourceCell Component
+ * Renders the primary profile pictures for assigned resources (up to 2),
+ * a collapse/expand toggle button for additional resources, and a hidden/visible 
+ * container for extra resources when expanded.
+ */
 export function TaskResourceCell({
   row,
   column,
@@ -57,6 +63,10 @@ export function TaskResourceCell({
   );
 }
 
+/**
+ * YesNoCell Component
+ * Renders a centered checkmark for 'Yes' values or a cross mark otherwise.
+ */
 export function YesNoCell({ value }) {
   return (
     <div style={{ textAlign: 'center' }}>
@@ -65,11 +75,21 @@ export function YesNoCell({ value }) {
   );
 }
 
+/**
+ * CenteredValueCell Component
+ * Renders any standard text value centered within its table cell.
+ */
 export function CenteredValueCell({ value }) {
   return <div style={{ textAlign: 'center' }}>{value}</div>;
 }
 
+/**
+ * PeopleTableDetails Main Component
+ * Manages filtering states, table data configuration using react-table, 
+ * desktop table layout, and responsive mobile card view.
+ */
 function PeopleTableDetails(props) {
+  // Filter search states
   const [name, setName] = useState('');
   const [priority, setPriority] = useState('');
   const [status, setStatus] = useState('');
