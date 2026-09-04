@@ -150,12 +150,15 @@
 .project-member-badge {
   position: absolute;
   top: -10px;
-  right: -32px;
-  min-width: 22px;
-  height: 22px;
+  right: -48px;
+  /* Replaced fixed dimensions with padding so the badge expands gracefully for multi-digit numbers */
+  padding: 2px 5px;
+  /* min-width: 22px; */
+  min-height: 22px;
   background: lawngreen;
-  color: #111;
-  border-radius: 50%;
+  color: #111 !important;
+  border-radius: 50px; /* Adapts from a circle to a clean pill shape as text length increases */
+  
   display: flex;
   align-items: center;
   justify-content: center;
@@ -164,6 +167,15 @@
   box-shadow: 0 0 2px #888;
   z-index: 2;
 }
+
+/* :global(.bg-oxford-blue) span.project-member-badge,
+span.project-member-badge {
+  color: #111 !important;
+} */
+ .badgeTextBlack {
+  color: #111 !important;
+}
+
 
 .project-member-btn .fa-users {
   font-size: 1.5rem;
@@ -221,6 +233,31 @@ tr:hover {
   background-color: #0056b3;
 }
 
+
+/* Standardize dropdown toggle button dimensions and alignment */
+:global(.dropdown-toggle) {
+  width: 30px !important;
+  height: 30px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Completely remove default dropdown arrows, pseudo-elements, and borders */
+:global(.dropdown-toggle)::after {
+  display: none !important;
+  content: none !important;
+  border: none !important;
+}
+
+@media (width <= 375px) {
+  #new_project .form-control {
+    flex: 1 1 auto;
+    width: 50%;
+  }
+}
+
 @media (width <= 375px) {
   #new_project .form-control {
     flex: 1 1 auto;
@@ -230,3 +267,4 @@ tr:hover {
 .searchLabelDark {
   background-color: #1f3b63 !important;
 }
+

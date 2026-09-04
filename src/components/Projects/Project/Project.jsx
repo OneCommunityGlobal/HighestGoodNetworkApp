@@ -189,7 +189,12 @@ const Project = props => {
               placement="top"
               overlay={<Tooltip>Active members</Tooltip>}
             >
-              <span className={styles['project-member-badge']}>
+             {/* 
+                Applied the dedicated modular CSS class 'badgeTextBlack' to permanently 
+                lock the active member count text color to black, ensuring high contrast 
+                and satisfying requirement 1.3 across both light and dark modes.
+              */}
+              <span className={`${styles['project-member-badge']} ${styles.badgeTextBlack}`}>
                 {props.activeMemberCounts}
               </span>
             </OverlayTrigger>
