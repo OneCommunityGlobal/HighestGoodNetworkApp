@@ -124,11 +124,11 @@ class ReportsPage extends Component {
 
     // parallel api calls
 
-    await Promise.all([fetchProjects]);
+    await fetchProjects;
     this.setState({ loadingCardFirst: false });
-    await Promise.all([fetchTeams]);
+    await fetchTeams;
     this.setState({ loadingCardSecond: false });
-    await Promise.all([fetchUserProfile]);
+    await fetchUserProfile;
     this.setState({ loadingCardThird: false });
 
     const userIds = this.props.state.allUserProfilesBasicInfo.userProfilesBasicInfo.map(
