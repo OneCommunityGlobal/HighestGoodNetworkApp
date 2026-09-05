@@ -73,7 +73,7 @@ function TotalMaterialCostPerProject() {
         },
       },
       y: {
-        grid: { color: '#ccc' },
+        grid: { color: darkMode ? '#8b949e' : '#ccc' },
         ticks: { color: textColor },
       },
     },
