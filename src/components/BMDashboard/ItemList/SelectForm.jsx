@@ -1,15 +1,20 @@
 import { useEffect, useMemo } from 'react';
-import { Form, FormGroup, Label } from 'reactstrap';
+
 import Select from 'react-select';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import styles from './ItemListView.module.css';
 import { getReactSelectStyles } from './selectStyles.js';
 
-const PROJECT_KEY = 'tool_selected_projects';
-
-export default function SelectForm({ items, setSelectedProject, localValues, setLocalValues }) {
+export default function SelectForm({
+  items,
+  setSelectedProject,
+  localValues,
+  setLocalValues,
+  itemType,
+}) {
   const darkMode = useSelector(state => state.theme?.darkMode || false);
+  const projectKey = `${itemType}_selected_projects`;
 
   const projectOptions = useMemo(() => {
     if (!items?.length) return [];
@@ -19,7 +24,7 @@ export default function SelectForm({ items, setSelectedProject, localValues, set
 
   useEffect(() => {
     try {
-      const saved = JSON.parse(localStorage.getItem(PROJECT_KEY));
+      const saved = JSON.parse(localStorage.getItem(projectKey));
       if (Array.isArray(saved) && saved.length > 0) {
         setLocalValues(saved);
         setSelectedProject(saved.map(p => p.value));
@@ -33,28 +38,28 @@ export default function SelectForm({ items, setSelectedProject, localValues, set
     const values = selected || [];
     setLocalValues(values);
     setSelectedProject(values.map(v => v.value));
-    localStorage.setItem(PROJECT_KEY, JSON.stringify(values));
+    localStorage.setItem(projectKey, JSON.stringify(values));
   };
 
   return (
-    <Form className={styles.filterForm} onSubmit={e => e.preventDefault()}>
-      <FormGroup className={styles.selectInput}>
-        <Label htmlFor="select-project">Project:</Label>
-        <Select
-          inputId="select-project"
-          isMulti
-          isSearchable
-          isClearable
-          options={projectOptions}
-          value={localValues}
-          onChange={handleChange}
-          isDisabled={!items?.length}
-          placeholder="Search or select projects..."
-          classNamePrefix="react-select"
-          styles={getReactSelectStyles(darkMode)}
-        />
-      </FormGroup>
-    </Form>
+    <div className={`${styles.filterItem} ${styles.filterItemSelect}`}>
+      <label htmlFor="select-project" style={{ fontWeight: 'bold' }}>
+        Project:
+      </label>
+      <Select
+        inputId="select-project"
+        isMulti
+        isSearchable
+        isClearable
+        options={projectOptions}
+        value={localValues}
+        onChange={handleChange}
+        isDisabled={!items?.length}
+        placeholder="Search or select projects..."
+        classNamePrefix="react-select"
+        styles={getReactSelectStyles(darkMode)}
+      />
+    </div>
   );
 }
 
@@ -63,4 +68,5 @@ SelectForm.propTypes = {
   setSelectedProject: PropTypes.func.isRequired,
   localValues: PropTypes.array.isRequired,
   setLocalValues: PropTypes.func.isRequired,
+  itemType: PropTypes.string.isRequired,
 };
