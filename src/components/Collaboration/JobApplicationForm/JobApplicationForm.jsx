@@ -155,9 +155,9 @@ function resolveNavigationJobTitle(jobDataFromRedirect, location) {
 function notifyInitialFormSelection(navTitle, formMatch, chosen) {
   if (!navTitle || formMatch) return;
   if (chosen) {
-    toast.info(
+    toast.warn(
       `Could not match "${navTitle}" to a form title. Showing "${chosen.title}" — pick another role from the dropdown if this is not the right application.`,
-      { autoClose: 7000 },
+      { autoClose: false, closeOnClick: false },
     );
     return;
   }
