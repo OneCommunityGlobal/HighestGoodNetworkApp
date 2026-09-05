@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/media-has-caption */
+import { setUser } from '@sentry/browser';
 import cs from 'classnames';
 import moment from 'moment';
 import PropTypes from 'prop-types';
@@ -126,6 +127,10 @@ function Timer({ authUser, darkMode, isPopout }) {
   const timeToLog = moment.duration(goal - remaining);
   const logHours = timeToLog.hours();
   const logMinutes = timeToLog.minutes();
+
+  // Handle visual race conditions for the timer start and pause buttons
+  const [userIntent, setUserIntent] = useState(null); // Tracks 'START' or 'PAUSE' locally
+  const isCurrentlyPaused = userIntent ? userIntent === 'PAUSE' : !started || paused;
 
   const sendJsonMessageNoQueue = useCallback(msg => sendJsonMessage(msg, false), [sendMessage]);
 
@@ -324,8 +329,14 @@ function Timer({ authUser, darkMode, isPopout }) {
   const wsJsonMessageHandler = useMemo(() => {
     if (viewingUserId == null) {
       return {
-        sendStart: () => sendJsonMessageNoQueue({ action: action.START_TIMER }),
-        sendPause: () => sendJsonMessageNoQueue({ action: action.PAUSE_TIMER }, false),
+        sendStart: () => {
+          setUserIntent('START');
+          sendJsonMessageNoQueue({ action: action.START_TIMER });
+        },
+        sendPause: () => {
+          setUserIntent('PAUSE');
+          sendJsonMessageNoQueue({ action: action.PAUSE_TIMER });
+        },
         sendClear: () => sendJsonMessageNoQueue({ action: action.CLEAR_TIMER }),
         sendStop: () => {
           sendJsonMessageNoQueue({ action: action.STOP_TIMER });
@@ -346,10 +357,14 @@ function Timer({ authUser, darkMode, isPopout }) {
       };
     }
     return {
-      sendStart: () =>
-        sendJsonMessageNoQueue({ action: action.START_TIMER, userId: viewingUserId }),
-      sendPause: () =>
-        sendJsonMessageNoQueue({ action: action.PAUSE_TIMER, userId: viewingUserId }),
+      sendStart: () => {
+        setUserIntent('START');
+        sendJsonMessageNoQueue({ action: action.START_TIMER, userId: viewingUserId });
+      },
+      sendPause: () => {
+        setUserIntent('PAUSE');
+        sendJsonMessageNoQueue({ action: action.PAUSE_TIMER, userId: viewingUserId });
+      },
       sendClear: () =>
         sendJsonMessageNoQueue({ action: action.CLEAR_TIMER, userId: viewingUserId }),
       sendStop: () => {
@@ -565,7 +580,19 @@ function Timer({ authUser, darkMode, isPopout }) {
     } = lastJsonMessage || defaultMessage;
 
     setMessage(lastJsonMessage || defaultMessage);
-    setRunning(startedLJM && !pausedLJM);
+    // Clear our visual intent lock the exact moment the server catches up
+    if (userIntent === 'START' && startedLJM && !pausedLJM) {
+      setUserIntent(null);
+    } else if (userIntent === 'PAUSE' && pausedLJM) {
+      setUserIntent(null);
+    }
+
+    // Keep the running flag synced, favoring local user clicks over in-flight frames
+    if (userIntent !== null) {
+      setRunning(userIntent === 'START');
+    } else {
+      setRunning(startedLJM && !pausedLJM);
+    }
 
     // Show inactivity or time-over modals based on message state
     setInacModal(forcedPauseLJM);
@@ -1004,44 +1031,45 @@ function Timer({ authUser, darkMode, isPopout }) {
               />
             </div>
           </button>
-          <button
-            key="persistent-timer-toggle-btn"
-            type="button"
-            disabled={isButtonDisabled}
-            onClick={e => {
-              console.log('DEBUG Clicked', e.target);
-              e.preventDefault();
-              e.stopPropagation();
-              if (!started || paused) {
-                handleStartButton();
-                console.log('DEBUG Start');
-              } else {
-                sendPause();
-                console.log('DEBUG Pause');
-              }
-            }}
-            aria-label={!started || paused ? 'Start timer' : 'Pause timer'}
-            style={{ background: 'none', border: 'none' }}
-          >
-            <div
-              className={cs(
-                css.iconWrapper,
-                isButtonDisabled ? css.btnDisabled : css.transitionColor,
-              )}
-              style={{ pointerEvents: 'none' }}
+          {isCurrentlyPaused ? (
+            <button
+              type="button"
+              disabled={isButtonDisabled}
+              onClick={handleStartButton}
+              aria-label="Start timer"
+              style={{ background: 'none', border: 'none' }}
             >
-              {/* Only the inner visual icon changes, leaving the parent button completely untouched */}
-              {!started || paused ? (
+              <div
+                className={cs(
+                  css.iconWrapper,
+                  isButtonDisabled ? css.btnDisabled : css.transitionColor,
+                )}
+              >
                 <FaPlayCircle
                   className={remaining !== 0 ? css.btn : css.btnDisabled}
                   fontSize="1.5rem"
                   title="Start timer"
                 />
-              ) : (
+              </div>
+            </button>
+          ) : (
+            <button
+              type="button"
+              disabled={isButtonDisabled}
+              onClick={sendPause}
+              aria-label="Pause timer"
+              style={{ background: 'none', border: 'none' }}
+            >
+              <div
+                className={cs(
+                  css.iconWrapper,
+                  isButtonDisabled ? css.btnDisabled : css.transitionColor,
+                )}
+              >
                 <FaPauseCircle className={css.btn} fontSize="1.5rem" title="Pause timer" />
-              )}
-            </div>
-          </button>
+              </div>
+            </button>
+          )}
           <button
             type="button"
             disabled={!started || isButtonDisabled}
