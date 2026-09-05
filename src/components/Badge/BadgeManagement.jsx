@@ -20,6 +20,21 @@ function BadgeManagement(props) {
     setActiveTab(tabId);
   };
 
+  const getTabStyle = (isActive, isHovered) => {
+    if (darkMode && !isActive) {
+      return {
+        ...boxStyleDark,
+        cursor: 'pointer',
+        backgroundColor: isHovered ? '#4a6072' : '#3a506b',
+        color: '#ffffff',
+      };
+    }
+    if (darkMode) {
+      return { ...boxStyleDark, cursor: 'pointer' };
+    }
+    return { ...boxStyle, cursor: 'pointer' };
+  };
+
   useEffect(() => {
     if (!activeTab) {
       setActiveTab('1');
@@ -51,18 +66,7 @@ function BadgeManagement(props) {
             onClick={() => handleTabChange('1')}
             onMouseEnter={() => setHoveredTab('1')}
             onMouseLeave={() => setHoveredTab(null)}
-            style={
-              darkMode && activeTab !== '1'
-                ? {
-                    ...boxStyleDark,
-                    cursor: 'pointer',
-                    backgroundColor: hoveredTab === '1' ? '#4a6072' : '#3a506b',
-                    color: '#ffffff',
-                  }
-                : darkMode
-                ? { ...boxStyleDark, cursor: 'pointer' }
-                : { ...boxStyle, cursor: 'pointer' }
-            }
+            style={getTabStyle(activeTab === '1', hoveredTab === '1')}
           >
             Badge Assignment
           </NavLink>
@@ -73,18 +77,7 @@ function BadgeManagement(props) {
             onClick={() => handleTabChange('2')}
             onMouseEnter={() => setHoveredTab('2')}
             onMouseLeave={() => setHoveredTab(null)}
-            style={
-              darkMode && activeTab !== '2'
-                ? {
-                    ...boxStyleDark,
-                    cursor: 'pointer',
-                    backgroundColor: hoveredTab === '2' ? '#4a6072' : '#3a506b',
-                    color: '#ffffff',
-                  }
-                : darkMode
-                ? { ...boxStyleDark, cursor: 'pointer' }
-                : { ...boxStyle, cursor: 'pointer' }
-            }
+            style={getTabStyle(activeTab === '2', hoveredTab === '2')}
           >
             Badge Development
           </NavLink>
