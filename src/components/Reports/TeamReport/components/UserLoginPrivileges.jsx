@@ -4,7 +4,7 @@ import TeamReportLogs from './TeamReportLogs';
 import TeamsReportLogs from './TeamsReportLogs';
 import TeamReportCharts from './TeamReportCharts';
 import TeamsReportCharts from './TeamsReportCharts';
-import './ReportCharts.css';
+import './ReportCharts.module.css';
 
 function UserLoginPrivileges({
   role,

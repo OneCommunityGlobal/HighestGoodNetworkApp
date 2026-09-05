@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { Component, useEffect } from 'react';
+import { Component, useEffect, Suspense } from 'react';
 import { Provider, useSelector } from 'react-redux';
 import { BrowserRouter as Router, useLocation } from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
@@ -9,7 +9,7 @@ import initAuth from '../utils/authInit';
 import routes from '../routes';
 import logger from '../services/logService';
 import Loading from './common/Loading';
-import '../App.css';
+import '../App.module.css';
 import { initMessagingSocket } from '../utils/messagingSocket';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ThemeManager from './common/ThemeManager';
@@ -109,11 +109,12 @@ function UpdateDocumentTitle() {
     { pattern: /^\/$/, title: `Dashboard - ${fullName}` },
     { pattern: /^\/kitchenandinventory\/login$/, title: 'Kitchen and Inventory Login' },
     { pattern: /^\/kitchenandinventory$/, title: 'Kitchen and Inventory Dashboard' },
-    { pattern: /.*/, title: 'HGN APP' }, // Default case
+    { pattern: /^\/bmdashboard\/lessons\/add$/, title: 'Add Lessons' },
     {
       pattern: /^\/communityportal\/activity\/activityid\/feedback$/,
       title: 'Activity Feedback',
     },
+    { pattern: /.*/, title: 'HGN APP' }, // Default case
   ];
 
   useEffect(() => {
@@ -233,7 +234,7 @@ class App extends Component {
               <Router>
                 <ThemeManager />
                 <UpdateDocumentTitle />
-                {routes}
+                <Suspense fallback={<Loading />}>{routes}</Suspense>
               </Router>
             </ModalProvider>
           </QueryClientProvider>

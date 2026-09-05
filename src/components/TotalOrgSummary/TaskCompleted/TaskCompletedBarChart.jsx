@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 import TinyBarChart from '../TinyBarChart';
 import Loading from '../../common/Loading';
 

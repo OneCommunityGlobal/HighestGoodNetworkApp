@@ -10,30 +10,41 @@ function FollowUpInfoModal() {
 
   const [open, setOpen] = useState(false);
   const btnRef = useRef(null);
-  const [pos, setPos] = useState({ top: 0, left: 0, maxWidth: 440 });
+
+  // Keep tooltip width consistent with CSS
+  const TOOLTIP_WIDTH = 440;
+  const GAP = 8;
+  const [pos, setPos] = useState({ top: 0, left: 0, maxWidth: TOOLTIP_WIDTH });
 
   const computePosition = useCallback(() => {
     const el = btnRef.current;
     if (!el) return;
+
     const r = el.getBoundingClientRect();
-    const gap = 8;
-    const tooltipWidth = 440; // keep in sync with CSS width/max-width
     const vw = window.innerWidth;
 
-    // place below the icon, clamp horizontally to stay within viewport
-    const left = Math.max(12, Math.min(r.right - tooltipWidth, vw - tooltipWidth - 12));
-    const top = r.bottom + gap;
+    // Never allow tooltip to exceed viewport width
+    const clampedWidth = Math.min(TOOLTIP_WIDTH, vw - 24);
 
-    setPos({ top, left, maxWidth: tooltipWidth });
+    // Place below the icon, clamp horizontally to stay within viewport
+    const left = Math.min(Math.max(12, r.left), vw - clampedWidth - 12);
+    const top = r.bottom + GAP;
+
+    setPos({ top, left, maxWidth: clampedWidth });
   }, []);
 
   useLayoutEffect(() => {
     if (!open) return;
+
     computePosition();
-    const onScroll = computePosition;
-    const onResize = computePosition;
+
+    const onScroll = () => computePosition();
+    const onResize = () => computePosition();
+
+    // capture phase so it updates even for nested scroll containers
     window.addEventListener('scroll', onScroll, true);
     window.addEventListener('resize', onResize);
+
     return () => {
       window.removeEventListener('scroll', onScroll, true);
       window.removeEventListener('resize', onResize);
@@ -41,11 +52,11 @@ function FollowUpInfoModal() {
   }, [open, computePosition]);
 
   return (
-    <div className="fu-trigger">
+    <div className={styles['fu-trigger']}>
       <button
         ref={btnRef}
         type="button"
-        className="fu-btn"
+        className={styles['followup-info-modal-button']}
         aria-label="Follow up info"
         onMouseEnter={() => setOpen(true)}
         onFocus={() => setOpen(true)}
@@ -66,7 +77,6 @@ function FollowUpInfoModal() {
               darkMode ? styles['fu--dark'] : styles['fu--light']
             }`}
             style={{ top: pos.top, left: pos.left, maxWidth: pos.maxWidth }}
-            // allow moving the mouse into the tooltip without it disappearing
             onMouseEnter={() => setOpen(true)}
             onMouseLeave={() => setOpen(false)}
           >

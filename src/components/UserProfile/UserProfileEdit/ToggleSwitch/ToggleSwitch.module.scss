@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .toggle {
   height: 21px;
   width: 36px;
@@ -7,8 +8,6 @@
   margin: 5px;
   background: dodgerblue;
   transition: all 0.5s ease;
-  -webkit-appearance: none;
-  -moz-appearance: none;
   appearance: none;
   -webkit-tap-highlight-color: transparent;
   cursor: pointer;
@@ -17,7 +16,7 @@
     outline: 0;
   }
 
-  &:after {
+  &::after {
     content: '';
     position: absolute;
     top: 3px;
@@ -27,15 +26,15 @@
     border-radius: 50%;
     background: dodgerblue;
     background: white;
-    box-shadow: 0 1px 2px rgba(44, 44, 44, 0.2);
+    box-shadow: 0 1px 2px rgb(44 44 44 / 20%);
     transition: all 0.2s cubic-bezier(0.5, 0.1, 0.75, 1.35);
   }
 
   &:checked {
     background: darkslategrey;
 
-    &:after {
-      transform: translatex(15px);
+    &::after {
+      transform: translateX(15px);
     }
   }
 }
@@ -49,8 +48,6 @@
   margin: 5px;
   background: dodgerblue;
   transition: all 0.5s ease;
-  -webkit-appearance: none;
-  -moz-appearance: none;
   appearance: none;
   -webkit-tap-highlight-color: transparent;
   cursor: pointer;
@@ -59,7 +56,7 @@
     outline: 0;
   }
 
-  &:after {
+  &::after {
     content: '';
     position: absolute;
     top: 3px;
@@ -69,15 +66,15 @@
     border-radius: 50%;
     background: dodgerblue;
     background: white;
-    box-shadow: 0 1px 2px rgba(44, 44, 44, 0.2);
+    box-shadow: 0 1px 2px rgb(44 44 44 / 20%);
     transition: all 0.2s cubic-bezier(0.5, 0.1, 0.75, 1.35);
   }
 
   &:checked {
-    background: rgb(0, 0, 0);
+    background: rgb(0 0 0);
 
-    &:after {
-      transform: translatex(15px);
+    &::after {
+      transform: translateX(15px);
     }
   }
 }

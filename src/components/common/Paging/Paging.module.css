@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .pagingWrapper {
   height: 100%;
   position: relative;
@@ -44,7 +45,7 @@
 }
 
 .pageIndexButton.activeButton:hover {
-  background-color: rgb(179, 104, 210);
+  background-color: rgb(179 104 210);
 }
 
 /* DARK MODE */
@@ -57,7 +58,7 @@
   margin: 8px;
   cursor: pointer;
   border-radius: 4px;
-  color: #ffffff;
+  color: #fff;
 }
 
 .pageIndexButtonDark:not(.disabled):hover {

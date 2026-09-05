@@ -3,7 +3,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Input } from
 import hasPermission from '../../../utils/permissions';
 import { deleteTitleById } from '~/actions/title';
 import { useSelector } from 'react-redux';
-import '../../Header/index.css';
+import '../../Header/index.module.css';
 import { toast } from "react-toastify";
 
 function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfile, setTitleOnSet, refreshModalTitles, updateUserProfile, handleSubmit}) {

@@ -1,0 +1,416 @@
+/* React-select styles are handled EXCLUSIVELY via inline styles in the component */
+
+/* No global CSS overrides - inline styles have higher specificity and are the proper way */
+
+/* Removing any global overrides that might conflict */
+
+/* Date picker input - consistent sizing in all modes */
+
+/* Base styles define size - dark mode only changes colors */
+:global(.datePickerInput),
+:global(.react-datepicker-wrapper input),
+:global(.react-datepicker-wrapper .datePickerInput) {
+  font-size: 13px !important;
+  padding: 8px 12px !important;
+  height: 38px !important;
+  line-height: 1.5 !important;
+  border-radius: 6px !important;
+  border-width: 1px !important;
+  border-style: solid !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  background-color: #fff !important;
+  color: #000 !important;
+  border-color: #ccc !important;
+}
+
+/* Date picker input - dark mode (ONLY colors change, sizes stay the same) */
+:global(.react-datepicker-wrapper.darkThemeDatePickerWrapper .datePickerInput),
+:global(.react-datepicker-wrapper.darkThemeDatePickerWrapper input),
+:global(.tools-availability-page.dark-mode .react-datepicker-wrapper input.datePickerInput),
+:global(.tools-availability-page.dark-mode .datePickerInput),
+:global(.tools-availability-page.dark-mode .react-datepicker-wrapper input),
+:global(.react-datepicker-wrapper.darkThemeDatePickerWrapper input[type="text"]),
+:global(.react-datepicker-wrapper.darkThemeDatePickerWrapper input[type="text"].datePickerInput) {
+  /* Only override colors - sizes inherit from base */
+  background-color: #2b3e59 !important;
+  color: #fff !important;
+  border-color: #666 !important;
+}
+
+/* Light mode calendar styles */
+:global(.customCalendar) {
+  background-color: #fff !important;
+  color: #000 !important;
+  border: 1px solid #ccc !important;
+}
+
+:global(.customCalendar .react-datepicker__header) {
+  background-color: #f0f0f0 !important;
+  color: #000 !important;
+  border-bottom: 1px solid #ccc !important;
+}
+
+:global(.customCalendar .react-datepicker__day) {
+  color: #000 !important;
+}
+
+:global(.customCalendar .react-datepicker__day--keyboard-selected) {
+  background-color: #5a5a5a !important;
+  color: #fff !important;
+}
+
+:global(.customCalendar .react-datepicker__navigation-icon::before) {
+  border-color: #222 !important;
+}
+
+/* Hover day styling in dark theme */
+:global(.customCalendar .react-datepicker__day:hover) {
+  background-color: #e0e0e0 !important;
+  color: #000 !important;
+  border-radius: 50%;
+}
+
+:global(.customCalendar .react-datepicker__day--selected) {
+  background-color: #06c !important;
+  color: #fff !important;
+  border-radius: 50%;
+}
+
+:global(.customCalendar .react-datepicker__current-month),
+:global(.customCalendar .react-datepicker__day-name) {
+  color: #000 !important;
+}
+
+/* Dark theme calendar container */
+:global(.darkThemeCalendar) { 
+  background-color: #2b3e59 !important;
+  color: #fff !important;
+  border: 1px solid #6b6767 !important;
+}
+
+:global(.darkThemeCalendar .react-datepicker__current-month),
+:global(.darkThemeCalendar .react-datepicker__day-name) {
+  color: #fff !important;
+}
+
+/* Dark theme header */
+:global(.darkThemeCalendar .react-datepicker__header) {
+  background-color: #1c2541 !important;
+  color: #e0e0e0 !important;
+  border-bottom: 1px solid #666 !important;
+  font-size: 12px !important;
+}
+
+/* Selected day styling in dark theme */
+:global(.darkThemeCalendar .react-datepicker__day--selected) {
+  background-color: #1a5fa8 !important;
+  color: #fff !important;
+  border-radius: 50%;
+}
+
+:global(.darkThemeCalendar .react-datepicker__day--keyboard-selected) {
+  background-color: #316893 !important;
+}
+
+/* Hover day styling in dark theme */
+:global(.darkThemeCalendar .react-datepicker__day:hover) {
+  background-color: #3b5a81 !important;
+  color: #fff !important;
+  border-radius: 50%;
+}
+
+/* React-select styling is handled ONLY via inline styles in JSX */
+
+/* No CSS overrides needed or wanted - inline styles are the proper method */
+
+/* Chart container - sized by explicit chart height, no overflow clipping */
+:global(.tools-horizontal-chart-container) {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  background-color: #fff !important; /* White background to show through transparent canvas */
+  overflow: visible; /* Allow chart labels and tooltips to render outside */
+}
+
+.chartCanvasWrapper {
+  position: relative;
+  width: 100%;
+  height: 400px;
+}
+
+@media (width <= 480px) {
+  .chartCanvasWrapper {
+    height: 300px;
+  }
+}
+
+/* Dark mode for chart container */
+:global(.tools-availability-page.dark-mode .tools-horizontal-chart-container) {
+  background-color: var(--card-bg, #2b3e59) !important;
+}
+
+/* Ensure Chart.js canvas wrapper has background */
+:global(.tools-horizontal-chart-container > div) {
+  background-color: #fff !important;
+}
+
+:global(.tools-availability-page.dark-mode .tools-horizontal-chart-container > div) {
+  background-color: var(--card-bg, #2b3e59) !important;
+}
+
+/* Override min-height for tools-availability-page when used in card context */
+:global(.tools-availability-page) {
+  min-height: auto !important; /* Override 100vh from ToolsAvailabilityPage.css */
+  height: 100%; /* Fill parent card height */
+  padding: 8px; /* Remove excessive padding (24px) since card already has padding */
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  background-color: #fff !important; /* White background in light mode to prevent grey parent card background from showing through - !important to override any conflicting styles */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Dark mode background for tools-availability-page */
+:global(.tools-availability-page.dark-mode) {
+  background-color: var(--card-bg, #2b3e59) !important;
+}
+
+/* Chart title styling */
+:global(.tools-availability-page .tools-chart-title) {
+  flex-shrink: 0;
+  color: #000;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* Dark mode for chart title */
+:global(.tools-availability-page.dark-mode .tools-chart-title) {
+  color: #fff !important;
+  background-color: transparent !important;
+}
+
+:global(.tools-availability-page .row) {
+  flex-shrink: 0;
+}
+
+/* Filters row - ensure consistent spacing */
+.filtersRow {
+  gap: 12px;
+  align-items: flex-end; /* Align filter inputs at the bottom */
+}
+
+.resetWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+}
+
+.resetButton {
+  width: 100%;
+  height: 38px; /* Match other input heights */
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Filter wrapper - symmetric and modular layout */
+.filterWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  min-width: 0; /* Allow shrinking */
+}
+
+.datepickerWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0; /* Allow shrinking */
+}
+
+.datePickerContainer {
+  flex: 1;
+  min-width: 0;
+}
+
+.datePickerContainer :global(.react-datepicker-wrapper) {
+  display: block;
+  width: 100%;
+}
+
+.projectRowWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.projectSelectContainer {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Date picker input group - includes input and clear button */
+.datePickerInputGroup {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  width: 100%;
+}
+
+.datePickerInputGroup :global(.react-datepicker-wrapper) {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+}
+
+.datePickerInputGroup :global(.react-datepicker-wrapper input) {
+  flex: 1;
+  min-width: 0;
+}
+
+.datePickerInputGroup :global(button) {
+  flex-shrink: 0;
+  min-width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+/* Filter label styles - consistent across all filters */
+.filterLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #000;
+  margin: 0;
+  line-height: 1.4;
+  display: block;
+  min-height: 19px; /* Ensure consistent height for alignment */
+}
+
+/* Dark mode for filter labels - white text */
+:global(.tools-availability-page.dark-mode) .filterLabel,
+:global(.tools-availability-page.dark-mode .filterLabel) {
+  color: #fff !important;
+}
+
+/* Filter controls layout for small screens - gradient scaling */
+@media (width <= 480px) {
+  :global(.tools-availability-page) {
+    padding: 4px;
+  }
+
+  :global(.tools-chart-title) {
+    font-size: 0.85rem;
+    margin-bottom: 0.6rem;
+  }
+
+  /* Bootstrap Row/Col fixes for mobile */
+  :global(.tools-availability-page .row) {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  :global(.tools-availability-page .col),
+  :global(.tools-availability-page [class*='col-']) {
+    width: 100%;
+    max-width: 100%;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin-bottom: 8px;
+  }
+
+  .datepickerWrapper {
+    gap: 5px;
+  }
+
+  .filterWrapper {
+    gap: 5px;
+  }
+
+  .resetWrapper {
+    gap: 5px;
+  }
+
+  .filterLabel {
+    font-size: 11px;
+    min-height: 16px;
+  }
+
+  .resetButton {
+    height: 36px;
+    font-size: 11px;
+  }
+
+  :global(.tools-horizontal-chart-container) {
+    padding: 0;
+  }
+}
+
+@media (width >= 481px) and (width <= 768px) {
+  :global(.tools-availability-page) {
+    padding: 6px;
+  }
+
+  :global(.tools-chart-title) {
+    font-size: 0.9rem;
+    margin-bottom: 0.8rem;
+  }
+
+  /* Bootstrap Row/Col fixes for mobile */
+  :global(.tools-availability-page .row) {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  :global(.tools-availability-page .col),
+  :global(.tools-availability-page [class*='col-']) {
+    width: 100%;
+    max-width: 100%;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin-bottom: 8px;
+  }
+
+  .filterLabel {
+    font-size: 11.5px;
+    min-height: 17px;
+  }
+
+  .resetWrapper {
+    gap: 5px;
+  }
+
+  .resetButton {
+    height: 36px;
+    font-size: 11.5px;
+  }
+}
+
+/* Tablet adjustments */
+@media (width >= 769px) and (width <= 1024px) {
+  :global(.tools-availability-page) {
+    padding: 10px;
+  }
+}

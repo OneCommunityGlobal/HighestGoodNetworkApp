@@ -3,12 +3,12 @@ import { useDispatch, connect, useSelector } from 'react-redux';
 import MemberAutoComplete from '~/components/Teams/MembersAutoComplete';
 import AddProjectsAutoComplete from '~/components/UserProfile/TeamsAndProjects/AddProjectsAutoComplete';
 import AddTeamsAutoComplete from '~/components/UserProfile/TeamsAndProjects/AddTeamsAutoComplete';
-import "../reportsPage.css";
+import styles from "../reportsPage.module.css";
 import { Editor } from '@tinymce/tinymce-react';
 import moment from 'moment-timezone';
 import { Button, Col, Form, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 import { getFontColor, getBoxStyling } from '~/styles';
-import '../../Header/index.css'
+import '../../Header/index.module.css'
 import { isEmpty, isEqual } from 'lodash';
 import { getUserProfile } from '~/actions/userProfile';
 import { postTimeEntry } from '~/actions/timeEntries';
@@ -41,11 +41,10 @@ function AddLostTime(props) {
       .trim()
       .replace(/\s+/g, '');
      } catch (error) {
-      console.log(error);
-      return "null";
+        return error;
      }
   }
-    
+
 
   const TINY_MCE_INIT_OPTIONS = {
     license_key: 'gpl',
@@ -70,7 +69,7 @@ function AddLostTime(props) {
   const [entryType, setEntryType] = useState('');
   const [isSubmitting, setSubmitting] = useState(false);
   const [inputs, setInputs] = useState(initialForm);
-  
+
   const [selectedTeam, setSelectTeam] = useState(undefined);
   const [selectedProject, setSelectProject] = useState(undefined);
   const [searchText, setSearchText] = useState('');
@@ -128,16 +127,18 @@ function AddLostTime(props) {
     }
   };
 
-  const selectTeam = team => {
-    setInputs(prevInputs => ({
-      ...prevInputs,
-      projectId: undefined,
-      personId: undefined,
-      teamId: team._id,
-    }));
-    setSelectTeam(team);
-  };
+  const selectTeam = (team) => {
+    setInputs(prev => {
+    const next = {
+        ...prev,
+        teamId: team._id,
+      };
+      return next;
+  });
 
+setSelectTeam(team);        // optional, remove if unused
+  setSearchTeamText(team.teamName);
+};
   const handleFormContent = () => {
     if (entryType === 'project') {
       return (
@@ -182,12 +183,12 @@ function AddLostTime(props) {
     } if (entryType === 'team') {
       return (
         <FormGroup>
-          <Label className={fontColor}>Team Name</Label> 
+          <Label className={fontColor}>Team Name</Label>
           <span className="red-asterisk">* </span>
           <AddTeamsAutoComplete
             teamsData={{allTeams: props.teams}}
             onDropDownSelect={selectTeam}
-            setNewTeamName={setNewTeamName} 
+            setNewTeamName={setNewTeamName}
             setInputs={setInputs}
             newTeamName={newTeamName}
             selectedTeam={selectedTeam}
@@ -202,7 +203,7 @@ function AddLostTime(props) {
           )}
         </FormGroup>
       )
-    } 
+    }
       return null
   };
 
@@ -318,7 +319,7 @@ function AddLostTime(props) {
     setErrors(result);
     return isEmpty(result);
   };
-  
+
 
   const handleSubmit = async event => {
     if (event) event.preventDefault();
@@ -348,6 +349,7 @@ function AddLostTime(props) {
 
     setInputs(initialForm);
     setErrors({});
+    toast.success('Lost time entry added successfully.');
     if (props.isOpen) props.toggle();
   };
 
@@ -357,7 +359,7 @@ function AddLostTime(props) {
 
   return (
     <Modal isOpen={props.isOpen} toggle={props.toggle} className={darkMode ? 'text-light dark-mode' : ''}>
-      <ModalHeader toggle={props.toggle} className={darkMode ? 'bg-space-cadet' : ''}>
+      <ModalHeader toggle={props.toggle} className={darkMode ? `bg-space-cadet ${styles['add-lost-time-header']}` : ''}>
         Add Lost Time
       </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -366,8 +368,8 @@ function AddLostTime(props) {
             <Label for="entryType" className={fontColor} >Type</Label>
             <span className="red-asterisk">* </span>
             <br/>
-            <div className={`type-container ${fontColor}`}>
-              <div className='type-item' style={{paddingLeft: '20px'}} >
+            <div className={`${styles['type-container']} ${fontColor}`}>
+              <div className={styles['type-item']} style={{paddingLeft: '20px'}} >
                 <Input
                   type="radio"
                   id="project"
@@ -377,8 +379,8 @@ function AddLostTime(props) {
                 />
                 <Label htmlFor="project" className={fontColor}>Project</Label>
               </div>
-              <div className='type-item'>
-                <Input  
+              <div className={styles['type-item']}>
+                <Input
                   type="radio"
                   id="person"
                   name='entryType'
@@ -387,7 +389,7 @@ function AddLostTime(props) {
                 />
                 <Label htmlFor="person" className={fontColor}>Person</Label>
               </div>
-              <div className='type-item'>
+              <div className={styles['type-item']}>
                 <Input
                   type="radio"
                   id="team"
@@ -396,7 +398,7 @@ function AddLostTime(props) {
                   onChange={handleTypeChange}
                 />
                 <Label htmlFor="team" className={fontColor}>Team</Label>
-              </div>              
+              </div>
             </div>
             {'events' in errors && (
                   <div className="text-danger">

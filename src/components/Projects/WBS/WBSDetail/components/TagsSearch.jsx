@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { connect } from 'react-redux';
 import TagSent from './TagSent';
-import './TagsSearch.css';
+import styles from './TagsSearch.module.css';
 import ReadOnlySectionWrapper from '../EditTask/ReadOnlySectionWrapper';
 import { findProjectMembers } from '../../../../../actions/projectMembers';
 
@@ -123,7 +123,7 @@ function TagsSearch(props) {
           )}
 
           {shouldShowDropdown && (
-            <ul className="my-element dropdown-menu d-flex flex-column align-items-start justify-content-start w-100 scrollbar shadow-lg rounded-3 position-absolute top-100 start-0 z-3 bg-light scrollable-menu">
+            <ul className={`my-element dropdown-menu d-flex flex-column align-items-start justify-content-start w-100 ${styles.scrollbar} shadow-lg rounded-3 position-absolute top-100 start-0 z-3 bg-light ${styles['scrollable-menu']}`}>
               {filteredMembers.map((member, index) => (
                 <li
                 key={member._id || member.userID || index}
@@ -131,7 +131,7 @@ function TagsSearch(props) {
               >
                 <button
                   type="button"
-                  className="btn w-100 text-start p-0 text-dark"
+                  className="btn w-100 text-left p-1 text-dark"
                   onMouseDown={event => handleClick(event, member)}
                 >
                   {`${member.firstName || member.first} ${member.lastName || member.last}`}

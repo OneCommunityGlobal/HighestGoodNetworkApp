@@ -1,0 +1,32 @@
+/* Resend Email Modal Styles */
+.resend-email-modal .modal-content {
+    border-radius: 8px;
+}
+
+.resend-email-modal .modal-header {
+    border-bottom: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+}
+
+.resend-email-modal .modal-body {
+    padding: 1.5rem;
+}
+
+.resend-email-modal .form-group {
+    margin-bottom: 1rem;
+}
+
+.resend-email-modal label.check {
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+}
+
+.resend-email-modal label.check input[type="radio"] {
+    margin-top: 0.25rem;
+}
+
+.resend-email-modal textarea {
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+

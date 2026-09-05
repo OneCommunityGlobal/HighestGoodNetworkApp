@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { fetchListingAvailability } from '../../../actions/lbDashboard/listOverviewAction';
+import { fetchListingAvailability } from '../../../actions/lbdashboard/listOverviewAction';
 import styles from './Listoverview.module.css';
 
 const AVAILABILITY_COLORS = {

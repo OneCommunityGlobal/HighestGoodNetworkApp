@@ -144,6 +144,8 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
       );
     }
   };
+
+  const darkMode = useSelector(state => state.theme.darkMode);
   return bulk === true ? (
     <>
       <tr key={record._id}>
@@ -215,13 +217,24 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
       </tr>
     </>
   ) : (
-    <Container fluid className={`${styles.updateMaterialContainer}`}>
-      <div className={`${styles.updateMaterialPage}`}>
-        <div className={`${styles.updateMaterial}`}>
+    <Container fluid className={`${styles.updateMaterialContainer} ${darkMode ? 'dark-mode' : ''}`}>
+      <div
+        className={`${styles.updateMaterialPage}`}
+        style={darkMode ? { backgroundColor: '#3A506B', color: '#ffffff' } : {}}
+      >
+        <div
+          className={`${styles.updateMaterial}`}
+          style={darkMode ? { backgroundColor: '#1B2A41', color: '#ffffff' } : {}}
+        >
           <Form>
             {/* <img className={`${styles.materialImage}`} alt='materialImage' src={riversand} /> */}
             <FormGroup row className="align-items-center justify-content-start">
-              <Label for="updateMaterialName" sm={4} className={`${styles.materialFormLabel}`}>
+              <Label
+                for="updateMaterialName"
+                sm={4}
+                className={`${styles.materialFormLabel}`}
+                style={darkMode ? { color: '#4DA8DA' } : {}}
+              >
                 Material
               </Label>
               <Col sm={6} className={`${styles.materialFormValue}`}>
@@ -230,7 +243,12 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
             </FormGroup>
 
             <FormGroup row className="align-items-center">
-              <Label for="updateMaterialProject" sm={4} className={`${styles.materialFormLabel}`}>
+              <Label
+                for="updateMaterialProject"
+                sm={4}
+                className={`${styles.materialFormLabel}`}
+                style={darkMode ? { color: '#4DA8DA' } : {}}
+              >
                 Project Name
               </Label>
               <Col sm={8} className={`${styles.materialFormValue}`}>
@@ -239,7 +257,12 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
             </FormGroup>
 
             <FormGroup row className="align-items-center justify-content-start">
-              <Label for="updateMaterialDate" sm={4} className={`${styles.materialFormLabel}`}>
+              <Label
+                for="updateMaterialDate"
+                sm={4}
+                className={`${styles.materialFormLabel}`}
+                style={darkMode ? { color: '#4DA8DA' } : {}}
+              >
                 Date
               </Label>
               <Col sm={6} className={`${styles.materialFormValue}`}>
@@ -254,7 +277,12 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
             </FormGroup>
 
             <FormGroup row className="align-items-center justify-content-start">
-              <Label for="updateMaterialUnit" sm={4} className={`${styles.materialFormLabel}`}>
+              <Label
+                for="updateMaterialUnit"
+                sm={4}
+                className={`${styles.materialFormLabel}`}
+                style={darkMode ? { color: '#4DA8DA' } : {}}
+              >
                 Available
               </Label>
               <Col sm={6} className={`${styles.materialFormValue}`}>
@@ -264,7 +292,12 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
 
             {updateRecord.newAvailable !== undefined && (
               <FormGroup row className="align-items-center justify-content-start">
-                <Label for="updateMaterialUnit" sm={4} className={`${styles.materialFormLabel}`}>
+                <Label
+                  for="updateMaterialUnit"
+                  sm={4}
+                  className={`${styles.materialFormLabel}`}
+                  style={darkMode ? { color: '#4DA8DA' } : {}}
+                >
                   New Available
                 </Label>
                 <Col sm={6} className={`${styles.materialFormValue}`}>
@@ -282,6 +315,7 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
                 for="updateMaterialQuantityUsed"
                 sm={4}
                 className={`${styles.materialFormLabel}`}
+                style={darkMode ? { color: '#4DA8DA' } : {}}
               >
                 Quantity Used
               </Label>
@@ -324,6 +358,7 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
                 for="updateMaterialquantityWasted"
                 sm={4}
                 className={`${styles.materialFormLabel}`}
+                style={darkMode ? { color: '#4DA8DA' } : {}}
               >
                 Quantity Wasted
               </Label>
@@ -377,6 +412,7 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
               <Button
                 disabled={postMaterialUpdateResult.loading || updateRecord.newAvailable < 0}
                 className={`${styles.materialButtonBg}`}
+                style={darkMode ? { backgroundColor: '#1C2541', color: '#ffffff' } : {}}
                 onClick={e => submitHandler(e)}
               >
                 Update Material

@@ -21,7 +21,8 @@ import BadgeTableFilter from './BadgeTableFilter';
 import EditBadgePopup from './EditBadgePopup';
 import DeleteBadgePopup from './DeleteBadgePopup';
 import hasPermission from '../../utils/permissions';
-import './Badge.css';
+import './Badge.module.css';
+import styles from './BadgeDevelopmentTable.module.css';
 
 function BadgeDevelopmentTable(props) {
   const { darkMode } = props;
@@ -271,7 +272,9 @@ function BadgeDevelopmentTable(props) {
   return (
     <Container fluid>
       <table
-        className={`table table-bordered ${darkMode ? 'bg-yinmn-blue text-light dark-mode' : ''}`}
+        className={`table table-bordered ${
+          darkMode ? `bg-yinmn-blue text-light ${styles.tableDark}` : ''
+        }`}
       >
         <thead>
           <BadgeTableHeader

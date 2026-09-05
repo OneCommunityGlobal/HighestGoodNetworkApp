@@ -35,7 +35,7 @@ import ProfilePictureModal from './profilePictureModal';
 import DeleteHomeCountryModal from './deleteHomeCountryModal';
 import collaborationOptions from './collaborationSuggestionData';
 import 'react-phone-input-2/lib/style.css';
-import './SetupProfileUserEntry.css';
+import './SetupProfileUserEntry.module.css';
 import logo from '../../assets/images/logo.png';
 import TimeZoneDropDown from '../UserProfile/TimeZoneDropDown';
 

@@ -1,11 +1,27 @@
 import { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { boxStyle, boxStyleDark } from '~/styles';
 import BadgeDevelopmentTable from './BadgeDevelopmentTable';
 import BadgeTypes from './BadgeTypes';
 import CreateNewBadgePopup from './CreateNewBadgePopup';
-import '../Header/index.css';
-import { matches } from 'lodash';
+import '../Header/index.module.css';
+import styles from './BadgeDevelopment.module.css';
+
+function normalize(str) {
+  return str.replace(/\s+/g, '').toLowerCase();
+}
+
+function badgeMatchesFilters(badge, searchName, searchType, rankFilter, chooseRankFilterNumber) {
+  if (searchName !== '' && !normalize(badge.badgeName).includes(normalize(searchName)))
+    return false;
+  if (searchType !== '' && !normalize(badge.type).includes(normalize(searchType))) return false;
+  if (badge.ranking > rankFilter) return false;
+  if (chooseRankFilterNumber !== null && badge.ranking !== chooseRankFilterNumber) return false;
+  return true;
+}
+
+function getDark(darkMode, darkClass, lightClass = '') {
+  return darkMode ? darkClass : lightClass;
+}
 
 function BadgeDevelopment(props) {
   const { darkMode, allBadgeData = [] } = props;
@@ -19,64 +35,47 @@ function BadgeDevelopment(props) {
   const toggle = () => setCreateNewBadgePopupOpen(prevIsOpen => !prevIsOpen);
   const toggleFilters = () => setAddFiltersOpen(prevState => !prevState);
 
-  // convert rank number into integer
   const chooseRankFilterNumber = chooseRankFilter ? Number(chooseRankFilter) : null;
 
-  // filter badge data based on type, report, and rank
-  const filteredBadgeData = allBadgeData.filter(badge => {
-    const matchesType =
-      searchType === '' ||
-      badge.type
-        .replace(/\s+/g, '')
-        .toLowerCase()
-        .includes(searchType.replace(/\s+/g, '').toLowerCase());
-    const matchesRank = badge.ranking <= rankFilter;
-    const matchesChoosenRank =
-      chooseRankFilterNumber === null || badge.ranking === chooseRankFilterNumber;
-    const matchesName =
-      searchName === '' ||
-      badge.badgeName
-        .replace(/\s+/g, '')
-        .toLowerCase()
-        .includes(searchName.replace(/\s+/g, '').toLowerCase());
+  const filteredBadgeData = allBadgeData.filter(badge =>
+    badgeMatchesFilters(badge, searchName, searchType, rankFilter, chooseRankFilterNumber),
+  );
 
-    return matchesType && matchesRank && matchesName && matchesChoosenRank;
-  });
+  const labelClass = `${styles.filterLabel} ${getDark(darkMode, 'text-light', 'text-dark')}`;
+  const inputClass = `${styles.filterInput} ${getDark(darkMode, styles.filterInputDark)}`;
 
   return (
-    <div className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
+    <div className={getDark(darkMode, 'bg-yinmn-blue text-light')}>
       <Button
-        className="btn--dark-sea-green"
+        className={`btn--dark-sea-green ${getDark(darkMode, styles.btnDark, styles.btn)}`}
         onClick={toggle}
-        style={darkMode ? { ...boxStyleDark, margin: 20 } : { ...boxStyle, margin: 20 }}
       >
         Create New Badge
       </Button>
       <Button
-        className="btn--dark-sea-green"
+        className={`btn--dark-sea-green ${getDark(darkMode, styles.btnDark, styles.btn)}`}
         onClick={toggleFilters}
-        style={darkMode ? { ...boxStyleDark, margin: 20 } : { ...boxStyle, margin: 20 }}
       >
-        Add Filters
+        {isAddFiltersOpen ? 'Hide Filters' : 'Add Filters'}
       </Button>
       {isAddFiltersOpen && (
-        <div style={{ marginTop: '20px', paddingLeft: '20px' }}>
-          <div style={{ marginBottom: '10px' }}>
-            <p style={{ display: 'inline', marginRight: '8px' }}>Search for a badge:</p>
+        <div className={styles.filtersContainer}>
+          <div className={styles.filterRow}>
+            <p className={labelClass}>Search for a badge:</p>
             <input
               type="text"
               placeholder="Enter name here"
               value={searchName}
               onChange={e => setSearchName(e.target.value)}
-              className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+              className={inputClass}
             />
           </div>
-          <div style={{ marginBottom: '10px' }}>
-            <p style={{ display: 'inline', marginRight: '8px' }}>Filter by type:</p>
+          <div className={styles.filterRow}>
+            <p className={labelClass}>Filter by type:</p>
             <select
               value={searchType}
               onChange={e => setSearchType(e.target.value)}
-              className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+              className={inputClass}
             >
               <option value="">Select a type</option>
               {BadgeTypes.map((type, index) => (
@@ -86,10 +85,8 @@ function BadgeDevelopment(props) {
               ))}
             </select>
           </div>
-          <div>
-            <p style={{ display: 'inline', marginRight: '8px' }}>
-              Filter by Rank (0 - {rankFilter}):
-            </p>
+          <div className={styles.filterRowLast}>
+            <p className={labelClass}>Filter by Rank (0 - {rankFilter}):</p>
             <input
               type="range"
               id="rank-filter"
@@ -97,36 +94,41 @@ function BadgeDevelopment(props) {
               max="300"
               value={rankFilter}
               onChange={e => setRankFilter(e.target.value)}
+              className={getDark(darkMode, styles.rangeInputDark)}
             />
-            <div style={{ display: 'inline-block', marginLeft: '8px', verticalAlign: 'middle' }}>
-              <p style={{ display: 'inline', marginRight: '8px' }}>Or choose a rank:</p>
-              <input
-                type="text"
-                placeholder="Rank Number"
-                value={chooseRankFilter}
-                onChange={e => setChooseRankFilter(e.target.value)}
-                style={{ width: '80px', textAlign: 'center' }}
-                className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
-              />
-            </div>
+            <p
+              className={`${styles.filterLabelMid} ${getDark(darkMode, 'text-light', 'text-dark')}`}
+            >
+              Or choose a rank:
+            </p>
+            <input
+              type="text"
+              placeholder="Rank Number"
+              value={chooseRankFilter}
+              onChange={e => setChooseRankFilter(e.target.value)}
+              className={`${styles.rankInput} ${getDark(darkMode, styles.filterInputDark)}`}
+            />
           </div>
         </div>
       )}
       <Modal
         isOpen={isCreateNewBadgePopupOpen}
         toggle={toggle}
-        className={darkMode ? 'text-light dark-mode' : ''}
+        className={getDark(darkMode, 'text-light dark-mode')}
       >
-        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggle}>
+        <ModalHeader className={getDark(darkMode, 'bg-space-cadet')} toggle={toggle}>
           New Badge
         </ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <ModalBody className={getDark(darkMode, 'bg-yinmn-blue')}>
           <CreateNewBadgePopup toggle={toggle} />
         </ModalBody>
       </Modal>
       <br />
       {filteredBadgeData.length === 0 ? (
-        <p> No badges match the current filters.</p>
+        <p className={getDark(darkMode, 'text-light', 'text-dark')}>
+          {' '}
+          No badges match the current filters.
+        </p>
       ) : (
         <BadgeDevelopmentTable allBadgeData={filteredBadgeData} />
       )}

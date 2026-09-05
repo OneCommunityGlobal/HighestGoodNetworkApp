@@ -14,7 +14,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from 'reactstrap';
-import DarkModeButton from '~/components/Header/DarkModeButton';
+import DarkModeButton from '../../Header/DarkModeButton';
 import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
 import BellNotification from '~/components/Header/BellNotification';
 import { getHeaderData } from '../../../actions/authActions';
@@ -61,7 +61,7 @@ import {
   KI_CALENDAR,
 } from '../../../languages/en/ui';
 import Logout from '../../Logout/Logout';
-// import './CPHeader.css';
+// import './CPHeader.module.css';
 import styles from '../../Header/Header.module.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../../utils/permissions';
 

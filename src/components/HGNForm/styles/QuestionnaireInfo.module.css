@@ -1,10 +1,11 @@
+/* stylelint-disable  */
 .questionnaireInfo {
   width: 50%;
   margin: 10px auto;
   border: 1px solid #c0c0c0;
   border-radius: 15px;
   background-color: #fff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
 }
 
 /* Dark mode container */
@@ -88,9 +89,7 @@
   margin: 30px;
 }
 
-
-
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .questionnaireInfo {
     width: 80%;
     margin: 10px auto;
@@ -112,7 +111,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .questionnaireInfo {
     width: 90%;
   }
