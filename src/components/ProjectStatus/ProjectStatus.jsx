@@ -14,6 +14,8 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 const centerTextPlugin = {
   id: 'centerText',
   afterDraw(chart) {
+    if (!chart.options.plugins.centerText?.enabled) return;
+
     const { ctx } = chart;
     const { width, height } = chart;
     const isDarkMode = chart.options.plugins.centerText?.darkMode || false;
@@ -177,6 +179,7 @@ export default function ProjectStatus() {
         },
         title: { display: false },
         centerText: {
+          enabled: true,
           total: data?.totalProjects ?? 0,
           darkMode,
         },

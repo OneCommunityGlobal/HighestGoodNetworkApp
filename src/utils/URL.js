@@ -11,7 +11,6 @@ export const ENDPOINTS = {
   USER_PAUSE: userId => `${APIEndpoint}/userProfile/${userId}/pause`,
   VERIFY_PRODUCTION_IDENTITY: `${APIEndpoint}/production-identity/verify`,
   UPDATE_REHIREABLE_STATUS: userId => `${APIEndpoint}/userprofile/${userId}/rehireable`,
-  TOGGLE_VISIBILITY: userId => `${APIEndpoint}/userprofile/${userId}/toggleInvisibility`,
   USER_PROFILE_UPDATE: `${APIEndpoint}/userprofile/update`,
   ADD_BLUE_SQUARE: userId => `${APIEndpoint}/userprofile/${userId}/addInfringement`,
 
@@ -49,6 +48,7 @@ export const ENDPOINTS = {
   USER_AUTOCOMPLETE: searchText => `${APIEndpoint}/userProfile/autocomplete/${searchText}`,
   SEARCH_USER: `${APIEndpoint}/users/search`,
   TOGGLE_BIO_STATUS: userId => `${APIEndpoint}/userProfile/${userId}/toggleBio`,
+  TOGGLE_VISIBILITY: userId => `${APIEndpoint}/userProfile/${userId}/toggleVisibility`,
 
   INFO_COLLECTIONS: `${APIEndpoint}/informations`,
   INFO_COLLECTION: infoId => `${APIEndpoint}/informations/${infoId}`,
@@ -150,7 +150,8 @@ export const ENDPOINTS = {
     `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate ||
     ''}&comparisonEndDate=${comparisonEndDate || ''}`,
   VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate) =>
-    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${customStartDate ? `&customStartDate=${customStartDate}` : ''
+    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${
+      customStartDate ? `&customStartDate=${customStartDate}` : ''
     }${customEndDate ? `&customEndDate=${customEndDate}` : ''}`,
   HOURS_TOTAL_ORG_SUMMARY: (startDate, endDate) =>
     `${APIEndpoint}/reports/overviewsummaries/taskandprojectstats?startDate=${startDate}&endDate=${endDate}`,
@@ -161,9 +162,11 @@ export const ENDPOINTS = {
   POPUP_EDITOR_BY_ID: id => `${APIEndpoint}/popupeditor/${id}`,
   POPUP_EDITOR_BACKUP_BY_ID: id => `${APIEndpoint}/backup/popupeditor/${id}`,
 
+  
+  
+
   TEAM_MEMBERS: teamId => `${APIEndpoint}/team/${teamId}/users`,
   TEAM_BY_ID: teamId => `${APIEndpoint}/team/${teamId}`,
-  APPLICANT_VOLUNTEER_RATIO: `${APIEndpoint}/applicant-volunteer-ratio`,
   USER_UNREAD_TASK_NOTIFICATIONS: userId => `${APIEndpoint}/tasknotification/user/${userId}`,
   BADGE: () => `${APIEndpoint}/badge`,
   BADGE_ASSIGN_MULTIPLE: `${APIEndpoint}/badge/assign`,
@@ -336,7 +339,6 @@ export const ENDPOINTS = {
   },
 
   GET_ALL_FOLLOWUPS: () => `${APIEndpoint}/followup`,
-
   SET_USER_FOLLOWUP: (userId, taskId) => `${APIEndpoint}/followup/${userId}/${taskId}`,
   GET_PROJECT_BY_PERSON: searchName => `${APIEndpoint}/userProfile/projects/${searchName}`,
 
@@ -373,9 +375,9 @@ export const ENDPOINTS = {
   BM_REUSABLE_TYPES: `${APIEndpoint}/bm/invtypes/reusables`,
   BM_REUSABLES: `${APIEndpoint}/bm/reusables`,
   BM_PURCHASE_REUSABLES: `${APIEndpoint}/bm/reusables/purchase`,
+  BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
   BM_EQUIPMENT_TYPES: `${APIEndpoint}/bm/invtypes/equipments`,
   BM_EQUIPMENT_PURCHASE: `${APIEndpoint}/bm/equipment/purchase`,
-  BM_EQUIPMENT_LOGS: `${APIEndpoint}/bm/equipments/logRecords`,
   BM_PROJECTS: `${APIEndpoint}/bm/projects`,
   BM_PROJECTS_WITH_LOCATION: `${APIEndpoint}/bm/projects/location`,
   BM_PROJECT_EXPENSE_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}/expenses`,
@@ -423,8 +425,10 @@ export const ENDPOINTS = {
   BM_TOOL_UTILIZATION_EXPORT: `${APIEndpoint}/tools/utilization/export`,
   BM_EQUIPMENT_BY_ID: singleEquipmentId => `${APIEndpoint}/bm/equipment/${singleEquipmentId}`,
   BM_EQUIPMENT_STATUS_UPDATE: (equipmentId) => `${APIEndpoint}/bm/equipment/${equipmentId}/status`,
-  BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
   BM_INVTYPE_TYPE: type => `${APIEndpoint}/bm/invtypes/${type}`,
+  BM_EXPENDITURE: `${APIEndpoint}/bm/expenditure`,
+  BM_PROJECT_NAMES: `${APIEndpoint}/bm/projectsNames`,
+
   BM_ISSUE_CHART: `${APIEndpoint}/bm/issue/issue-chart`,
   BM_EQUIPMENT_INVTYPE: `${APIEndpoint}/bm/invtypes/equipment`,
   BM_REUSABLES_INVTYPE: `${APIEndpoint}/bm/invtypes/reusables`,
