@@ -167,6 +167,7 @@ const VolunteerHoursReport = ({
                 <Label for="reportType">Report Type</Label>
                 <Input
                   type="select"
+                  className={styles.reportTypePicker}
                   id="reportType"
                   value={reportType}
                   onChange={(e) => setReportType(e.target.value)}
@@ -184,6 +185,7 @@ const VolunteerHoursReport = ({
                     <Label for="fromDate">From Date</Label>
                     <DatePicker
                       id="fromDate"
+                      className={styles.datePickerInput}
                       selected={dateRange.startDate}
                       minDate={moment('2010-01-01').toDate()}
                       maxDate={dateRange.endDate}
@@ -200,6 +202,7 @@ const VolunteerHoursReport = ({
                     <Label for="toDate">To Date</Label>
                     <DatePicker
                       id="toDate"
+                      className={styles.datePickerInput}
                       selected={dateRange.endDate}
                       maxDate={moment().toDate()}
                       minDate={dateRange.startDate}
@@ -216,13 +219,16 @@ const VolunteerHoursReport = ({
             <Col md={2}>
               <FormGroup>
 
-                <Button
+             <Col md={6} className={styles.refreshButtonContainer}>
+              <Button
                   color="success"
+                  className={styles.refreshButton}
                   onClick={generateReport}
                   disabled={loading}
                 >
                   {loading ? 'Refreshing...' : 'Refresh Report'}
                 </Button>
+                </Col>
               </FormGroup>
             </Col>
           </Row>
@@ -285,8 +291,8 @@ const VolunteerHoursReport = ({
 
           {reportData.length === 0 && !loading && (
             <div className="text-center text-muted">
-              <p>No data found for the selected criteria and date range.</p>
-              <p>Try adjusting your date range or report type.</p>
+              <p className={darkMode ? styles.darkModeText : ''}>No data found for the selected criteria and date range.</p>
+              <p className={darkMode ? styles.darkModeText : ''}>Try adjusting your date range or report type.</p>
             </div>
           )}
         </CardBody>
