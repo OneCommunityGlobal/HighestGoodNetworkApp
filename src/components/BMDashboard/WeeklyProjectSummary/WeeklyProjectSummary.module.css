@@ -17,7 +17,6 @@
   width: 95%;
   margin: auto;
   padding: 20px;
-  background: var(--bg-color);
   color: var(--text-color);
 }
 
@@ -736,9 +735,9 @@
   .darkMode .weeklySummaryShareBtn {
     background: #e8a71c !important;
     color: #000 !important; /* readable in dark mode */
-  /* Tools and Equipment Tracking - 2 column layout on tablet */
   }
-  
+
+  /* Tools and Equipment Tracking - 2 column layout on tablet */
   .weeklyProjectSummaryDashboardCategoryContent {
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;

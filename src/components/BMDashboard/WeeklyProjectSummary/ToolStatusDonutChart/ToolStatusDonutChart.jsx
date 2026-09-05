@@ -89,8 +89,6 @@ const CustomTooltip = ({
 
   const data = payload[0];
   const percentage = total > 0 ? ((data.value / total) * 100).toFixed(1) : '0.0';
-  const textColor = darkMode ? '#e0e0e0' : '#333';
-  const subTextColor = darkMode ? '#c5d0dd' : '#666';
 
   return (
     <div style={getTooltipContainerStyle(darkMode)}>
@@ -204,17 +202,17 @@ export default function ToolStatusDonutChart() {
   let outerRadius;
   let chartHeight;
   if (isXS) {
-    innerRadius = 25;
-    outerRadius = 40;
-    chartHeight = 180;
-  } else if (windowWidth <= 768) {
     innerRadius = 30;
     outerRadius = 50;
-    chartHeight = 200;
-  } else {
-    innerRadius = 35;
-    outerRadius = 60;
     chartHeight = 220;
+  } else if (windowWidth <= 768) {
+    innerRadius = 40;
+    outerRadius = 65;
+    chartHeight = 260;
+  } else {
+    innerRadius = 50;
+    outerRadius = 80;
+    chartHeight = 300;
   }
 
   const wrapperClass = `${styles.toolDonutWrapper} ${darkMode ? styles.toolDonutWrapperDark : ''}`;

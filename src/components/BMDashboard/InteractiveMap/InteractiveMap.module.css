@@ -146,6 +146,51 @@
   border-color: #6acfde !important;
 }
 
+.calendarDark :global(.react-datepicker) {
+  background-color: #3a506b;
+  border-color: #465a74;
+}
+
+.calendarDark :global(.react-datepicker__header) {
+  background-color: #1c2541;
+  border-bottom-color: #465a74;
+}
+
+.calendarDark :global(.react-datepicker__current-month),
+.calendarDark :global(.react-datepicker__day-name) {
+  color: #fff;
+}
+
+.calendarDark :global(.react-datepicker__day) {
+  color: #e6e6e6;
+}
+
+.calendarDark :global(.react-datepicker__day:hover) {
+  background-color: #6acfde;
+  color: #0d1b2a;
+}
+
+.calendarDark :global(.react-datepicker__day--selected),
+.calendarDark :global(.react-datepicker__day--keyboard-selected),
+.calendarDark :global(.react-datepicker__day--in-selecting-range),
+.calendarDark :global(.react-datepicker__day--in-range) {
+  background-color: #3a8bbd;
+  color: #fff;
+}
+
+.calendarDark :global(.react-datepicker__day--outside-month) {
+  color: #8a94a3;
+}
+
+.calendarDark :global(.react-datepicker__navigation-icon::before) {
+  border-color: #fff;
+}
+
+.calendarDark :global(.react-datepicker__triangle) {
+  fill: #3a506b !important;
+  color: #3a506b !important;
+}
+
 .dateInputDark:focus {
   outline: none;
   border-color: #6acfde !important;
@@ -487,6 +532,48 @@
   height: 13px;
   border-radius: 50%;
   margin-right: 8px;
+}
+
+/* ----------------------------------
+   POPUP STATUS TEXT
+---------------------------------- */
+.statusActive,
+.statusDelayed,
+.statusCompleted,
+.statusDefault {
+  font-weight: 700;
+}
+
+.statusActive {
+  color: #b84040;
+}
+
+.statusDelayed {
+  color: #8a6d00;
+}
+
+.statusCompleted {
+  color: #1a8fa0;
+}
+
+.statusDefault {
+  color: #666;
+}
+
+.darkPage .statusActive {
+  color: #ff8a80;
+}
+
+.darkPage .statusDelayed {
+  color: #ffd166;
+}
+
+.darkPage .statusCompleted {
+  color: #5ee2f0;
+}
+
+.darkPage .statusDefault {
+  color: #ccc;
 }
 
 /* ----------------------------------
