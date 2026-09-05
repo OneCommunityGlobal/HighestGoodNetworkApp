@@ -119,14 +119,26 @@
 /* ============================================
    SCORE & PRIVATE HELPERS
    ============================================ */
+.scoreCell {
+  white-space: nowrap;
+}
+
 .lowScore {
-  color: #e53e3e;
+  color: #c53030;
   font-weight: 700;
 }
 
 .highScore {
-  color: #38a169;
+  color: #2f855a;
   font-weight: 700;
+}
+
+.darkMode .lowScore {
+  color: #fc8181;
+}
+
+.darkMode .highScore {
+  color: #68d391;
 }
 
 .private {
