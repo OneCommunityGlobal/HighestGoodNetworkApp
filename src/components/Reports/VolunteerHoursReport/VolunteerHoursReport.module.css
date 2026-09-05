@@ -4,6 +4,12 @@
   margin: 0 auto;
 }
 
+.container :global(.card),
+
+.container :global(.card-body) {
+  overflow: visible !important;
+}
+
 .dateRangeContainer {
   position: relative;
 }
@@ -68,7 +74,7 @@
 :global(.dark-mode) :global(.react-datepicker) {
   background-color: #000 !important;
   border-color: #000 !important;
-  color: #f1f1f1 !important;
+  color: #fff !important;
   overflow: visible !important;
 }
 
@@ -99,8 +105,14 @@
   background-color: transparent !important;
 }
 
-:global(.react-datepicker-popper) {
+/* :global(.react-datepicker-popper) {
   z-index: 9999 !important;
+} */
+
+:global(.dark-mode) .datePickerInput {
+  background-color: #000 !important;
+  color: #fff !important;
+  border-color: #000 !important;
 }
 
 /* Responsive design */
