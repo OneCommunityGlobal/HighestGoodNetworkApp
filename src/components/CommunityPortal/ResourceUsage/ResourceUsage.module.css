@@ -25,6 +25,7 @@
 
 .filters {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.75rem;
 }
 
@@ -32,8 +33,10 @@
   background: transparent !important;
   border: 1px solid #e5e7eb !important;
   color: #374151 !important;
-  padding: 0.5rem 1rem !important;
-  width: 8.75rem !important;
+  /* min-width, not width: still can't shrink when the selection changes
+     (PR #5224 / #5246), but longer labels no longer crowd the icon. */
+  padding: 0.5rem 0.875rem !important;
+  min-width: 8.75rem !important;
   font-size: 0.875rem !important;
   border-radius: 0.375rem !important;
   box-shadow: none !important;
@@ -48,6 +51,37 @@
 .customDropdown:focus {
   background-color: #b7b7b8 !important;
   border-color: #e5e7eb !important;
+}
+
+.filterIcon {
+  margin-right: 0.375rem;
+  vertical-align: -0.15em;
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+
+/* Menu rows: icon column stays a fixed width so labels align whether the row
+   shows a type icon, a selection check, or neither. */
+.filterOption {
+  display: flex !important;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem !important;
+  font-size: 0.875rem;
+}
+
+.filterOptionIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+
+/* Hairline between rows, never above the first one. */
+.filterOption + .filterOption {
+  border-top: 1px solid rgb(0 0 0 / 6%);
 }
 
 .customDropdown::after {
@@ -173,7 +207,6 @@
   font-weight: 600;
   margin: 0;
   color: #111827;
-  border-left: 1px solid #e5e7eb;
 }
 
 .darkInsightsSection .insightsHeader h2 {
@@ -250,30 +283,48 @@
   font-weight: 600;
 }
 
-/* DARK MODE DROPDOWN */
-.dark-mode .customDropdown,
-.dark-mode .dropdown-toggle.customDropdown {
+/* DARK MODE DROPDOWN
+   Scoped to .resourceUsageContainer, which CSS Modules hashes, so nothing here
+   can affect dropdowns elsewhere in the app. `dark-mode` and reactstrap's
+   dropdown classes are global names and need :global() to survive hashing —
+   without it these rules never matched, which is why dark mode looked unstyled. */
+.resourceUsageContainer:global(.dark-mode) .customDropdown {
   background-color: #1C2541 !important;
   color: #fff !important;
   border-color: #3A506B !important;
 }
 
-.dark-mode .dropdown-toggle.customDropdown.show,
-.dark-mode .show > .customDropdown.dropdown-toggle {
+/* react-bootstrap marks the open toggle with aria-expanded, not a .show class,
+   and Bootstrap's own .btn-primary focus colour (#1D4ED8) otherwise flashes
+   bright blue against the dark chart. */
+.resourceUsageContainer:global(.dark-mode) .customDropdown:hover,
+.resourceUsageContainer:global(.dark-mode) .customDropdown:focus,
+.resourceUsageContainer:global(.dark-mode) .customDropdown:focus-visible,
+.resourceUsageContainer:global(.dark-mode) .customDropdown:active,
+.resourceUsageContainer:global(.dark-mode) .customDropdown[aria-expanded='true'] {
   background-color: #243B5A !important;
+  color: #fff !important;
+  border-color: #3A506B !important;
+  box-shadow: none !important;
 }
 
-.dark-mode .dropdown-menu {
+.resourceUsageContainer:global(.dark-mode) :global(.dropdown-menu) {
   background-color: #1C2541 !important;
   border-color: #3A506B !important;
 }
 
-.dark-mode .dropdown-item {
+.resourceUsageContainer:global(.dark-mode) :global(.dropdown-item) {
   color: #fff !important;
 }
 
-.dark-mode .dropdown-item:hover {
+.resourceUsageContainer:global(.dark-mode) :global(.dropdown-item):hover,
+.resourceUsageContainer:global(.dark-mode) :global(.dropdown-item):focus {
   background-color: #3A506B !important;
+  color: #fff !important;
+}
+
+.resourceUsageContainer:global(.dark-mode) .filterOption + .filterOption {
+  border-top-color: rgb(255 255 255 / 10%);
 }
 
 /* Chart ticks */
@@ -318,6 +369,28 @@
 
 /* Mobile: single-column insights, smaller padding and chart */
 @media (width <= 480px) {
+  /* Three fixed-width pills plus gaps need ~450px, so below this they stack
+     to full width instead of overflowing the header. */
+  .filters {
+    width: 100%;
+  }
+
+  .filters > * {
+    flex: 1 1 100%;
+  }
+
+  .customDropdown {
+    width: 100% !important;
+
+    /* Full width would otherwise strand the label mid-button, between the
+       icon and the caret. Keep icon and label together, caret to the edge. */
+    justify-content: flex-start !important;
+  }
+
+  .customDropdown::after {
+    margin-left: auto !important;
+  }
+
   .chartSection,
   .insightsSection {
     padding: 1rem;
