@@ -760,7 +760,11 @@ function LeaderBoard({
                 </tr>
               </thead>
               <tbody className="my-custome-scrollbar responsive-font-size">
-                <tr className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}>
+                <tr
+                  className={
+                    darkMode ? styles['dark-leaderboard-row'] : styles['light-leaderboard-row']
+                  }
+                >
                   {isAbbreviatedView ? (
                     <td colSpan={2}>
                       <div className="leaderboard-totals-container text-center">
@@ -792,6 +796,7 @@ function LeaderBoard({
                     </>
                   )}
 
+                  <td className="align-middle" aria-label="Description" />
                   <td className="align-middle" aria-label="Description" />
                   <td className="align-middle">
                     <span title="Tangible time">
@@ -827,7 +832,6 @@ function LeaderBoard({
                         .toFixed(2)}
                     </span>
                   </td>
-                  <td aria-label="Placeholder" />
                 </tr>
                 {filteredUsers.map(item => {
                   const { hasTimeOff, isCurrentlyOff, additionalWeeks } = getTimeOffStatus(
@@ -841,26 +845,8 @@ function LeaderBoard({
                   return (
                     <tr
                       key={item.personId}
-                      className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}
-                      onMouseEnter={
-                        darkMode
-                          ? e => {
-                              e.currentTarget.querySelectorAll('td, th, span, p, a').forEach(el => {
-                                el.style.color = '#000';
-                                el.style.backgroundColor = '#fff';
-                              });
-                            }
-                          : undefined
-                      }
-                      onMouseLeave={
-                        darkMode
-                          ? e => {
-                              e.currentTarget.querySelectorAll('td, th, span, p, a').forEach(el => {
-                                el.style.color = '';
-                                el.style.backgroundColor = '';
-                              });
-                            }
-                          : undefined
+                      className={
+                        darkMode ? styles['dark-leaderboard-row'] : styles['light-leaderboard-row']
                       }
                     >
                       <td className="align-middle">

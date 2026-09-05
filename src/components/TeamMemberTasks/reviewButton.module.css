@@ -26,9 +26,26 @@
 }
 
 .review-button-dropdown {
-  max-height: 240px;
+  max-height: 280px;
+  max-width: calc(100vw - 24px);
   overflow-y: auto;
   z-index: 9999;
+}
+
+.review-button-dropdown-dark {
+  background-color: #1c2541 !important;
+  border-color: #3a506b !important;
+}
+
+.dark-mode-btn {
+  background-color: #1c2541 !important;
+  color: #f1f1f1 !important;
+}
+
+.dark-mode-btn:hover,
+.dark-mode-btn:focus {
+  background-color: #3a506b !important;
+  color: #fff !important;
 }
 
 .reviewBtn-dropdown-wrapper {
@@ -61,7 +78,7 @@
   }
 
   .review-button-dropdown {
-    max-height: 200px;
+    max-height: 280px;
   }
 
   .edit-link-btn {
@@ -77,8 +94,7 @@
   }
 
   .review-button-dropdown {
-    max-height: 150px;
-    width: 100%;
+    max-height: 280px;
   }
 
   .edit-link-btn {
@@ -95,8 +111,7 @@
   }
 
   .review-button-dropdown {
-    max-height: 150px;
-    width: 100%;
+    max-height: 280px;
   }
 
   .edit-link-btn {
@@ -112,8 +127,7 @@
   }
 
   .review-button-dropdown {
-    max-height: 120px;
-    width: 100%;
+    max-height: 280px;
   }
 
   .edit-link-btn {
