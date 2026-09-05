@@ -20,9 +20,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 import '../../Teams/Team.module.css';
 import styles from './ProjectReport.module.css';
 
-import { boxStyle, boxStyleDark } from '../../../styles';
-
-
 // eslint-disable-next-line import/prefer-default-export
 export function ProjectReport({ match }) {
   const [memberCount, setMemberCount] = useState(0);

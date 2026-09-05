@@ -11,7 +11,6 @@ import { Checkbox } from '~/components/common/Checkbox';
 import TextSearchBox from '~/components/UserManagement/TextSearchBox';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { TasksDetail } from '../TasksDetail';
-import { stubArray } from 'lodash';
 
 export function TasksTable({ darkMode, tasks, projectId }) {
   const [isActive, setActive] = useState(true);
@@ -23,6 +22,12 @@ export function TasksTable({ darkMode, tasks, projectId }) {
     classification: '',
     users: '',
   });
+
+  // Derived values / constants
+  const darkModeSelectClass = darkMode ? styles['dark-mode-select'] : '';
+  const darkModeCheckboxClass = darkMode ? styles['dark-mode-checkbox'] : '';
+  const darkModeButtonClass = darkMode ? styles['dark-mode-button'] : '';
+  const currentBoxStyle = darkMode ? boxStyleDark : boxStyle;
 
   const userRef = useRef(null);
 
@@ -81,7 +86,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             options={getUserOptions()}
             placeholder="Any user"
             onChange={(selectedOption) => handleSelectChange(selectedOption, 'users')}
-            className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']} ${darkMode ? styles['dark-mode-select'] : ''}`}
+            className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']} ${darkModeSelectClass}`}
             classNamePrefix="select"
             menuPortalTarget={document.body}
             value={filters.users ? { value: filters.users, label: filters.users } : null}
@@ -90,7 +95,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             options={getOptions('classification')}
             placeholder="Any classification"
             onChange={(selectedOption) => handleSelectChange(selectedOption, 'classification')}
-            className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']} ${darkMode ? styles['dark-mode-select'] : ''}`}
+            className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']} ${darkModeSelectClass}`}
             classNamePrefix="select"
             menuPortalTarget={document.body}
             value={filters.classification ? { value: filters.classification, label: filters.classification } : null}
@@ -99,7 +104,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             options={getOptions('priority')}
             placeholder="Any priority"
             onChange={(selectedOption) => handleSelectChange(selectedOption, 'priority')}
-            className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']} ${darkMode ? styles['dark-mode-select'] : ''}`}
+            className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']} ${darkModeSelectClass}`}
             classNamePrefix="select"
             menuPortalTarget={document.body}
             value={filters.priority ? { value: filters.priority, label: filters.priority } : null}
@@ -108,7 +113,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             options={getOptions('status')}
             placeholder="Any status"
             onChange={(selectedOption) => handleSelectChange(selectedOption, 'status')}
-            className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']} ${darkMode ? styles['dark-mode-select'] : ''}`}
+            className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']} ${darkModeSelectClass}`}
             classNamePrefix="select"
             menuPortalTarget={document.body}
             value={filters.status ? { value: filters.status, label: filters.status } : null}
@@ -123,7 +128,7 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             onChange={() => setActive(!isActive)}
             id="active_checkbox"
             wrapperClassname={styles['tasks-table-filter-item']}
-            backgroundColorCN={darkMode ? styles['dark-mode-checkbox'] : ''}
+            backgroundColorCN={darkModeCheckboxClass}
             label="Active"
           />
           <Checkbox
@@ -131,24 +136,24 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             onChange={() => setAssigned(!isAssigned)}
             id="assign_checkbox"
             wrapperClassname={styles['tasks-table-filter-item']}
-            backgroundColorCN={darkMode ? styles['dark-mode-checkbox'] : ''}
+            backgroundColorCN={darkModeCheckboxClass}
             label="Assign"
           />
         </div>
 
         <div className='d-flex'>
           <button
-            className={`${styles['tasks-table-edit-tasks-button']} ${darkMode ? styles['dark-mode-button'] : ''} `}
+            className={`${styles['tasks-table-edit-tasks-button']} ${darkModeButtonClass}`}
             onClick={() => setToggleEditTasks(!toggleEditTasks)}
-            style={darkMode ? boxStyleDark : boxStyle}
+            style={currentBoxStyle}
           >
             Edit Tasks
           </button>
 
           <button
-            className={`${styles['tasks-table-clear-filter-button']} ${darkMode ? styles['dark-mode-button'] : ''}`}
+            className={`${styles['tasks-table-clear-filter-button']} ${darkModeButtonClass}`}
             onClick={() => resetAllFilters()}
-            style={darkMode ? boxStyleDark : boxStyle}
+            style={currentBoxStyle}
           >
             Clear filters
           </button>
