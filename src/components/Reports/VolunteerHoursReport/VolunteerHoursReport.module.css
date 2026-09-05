@@ -1,0 +1,212 @@
+.container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.container :global(.card),
+
+.container :global(.card-body) {
+  overflow: visible !important;
+}
+
+.dateRangeContainer {
+  position: relative;
+}
+
+.dateButton {
+  width: 100%;
+  text-align: left;
+  font-size: 14px;
+  padding: 8px 12px;
+}
+
+
+.datePickerInput {
+  width: 100%;
+  height: 54px;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+}
+
+
+.tableContainer {
+  max-height: 600px;
+  overflow-y: auto;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+}
+
+.hoursCell {
+  text-align: center;
+  font-weight: 500;
+  min-width: 100px;
+}
+
+.totalRow {
+  background-color: #f8f9fa;
+  font-weight: bold;
+}
+
+.totalRow td {
+  border-top: 2px solid #dee2e6;
+}
+
+/* Dark mode styles */
+
+:global(.bg-dark) .form-control[type='date'] {
+  background-color: black !important;
+  color: black !important;
+  border-color: #6c757d !important;
+  color-scheme: dark;
+}
+
+:global(.bg-dark) .form-control[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+:global(.bg-dark) .totalRow {
+  background-color: #495057;
+}
+
+:global(.dark-mode) :global(.react-datepicker) {
+  background-color: #000 !important;
+  border-color: #000 !important;
+  color: #fff !important;
+  overflow: visible !important;
+}
+
+:global(.dark-mode) :global(.react-datepicker__header) {
+  background-color: #000 !important;
+  border-bottom-color: #000 !important;
+}
+
+:global(.dark-mode) :global(.react-datepicker__current-month),
+:global(.dark-mode) :global(.react-datepicker__day-name),
+:global(.dark-mode) :global(.react-datepicker__day) {
+  color: #fff !important;
+}
+
+:global(.dark-mode) :global(.react-datepicker__day:hover) {
+  background-color: #2c2c2c !important;
+}
+
+:global(.dark-mode) :global(.react-datepicker__day--selected),
+:global(.dark-mode) :global(.react-datepicker__day--keyboard-selected) {
+  background-color: #0d22e4 !important;
+  color: #fff !important;
+}
+
+:global(.dark-mode) :global(.react-datepicker__day--disabled),
+:global(.dark-mode) :global(.react-datepicker__day--disabled:hover) {
+  color: #6b7280 !important;
+  background-color: transparent !important;
+}
+
+/* :global(.react-datepicker-popper) {
+  z-index: 9999 !important;
+} */
+
+:global(.dark-mode) .datePickerInput {
+  background-color: #000 !important;
+  color: #fff !important;
+  border-color: #000 !important;
+}
+
+/* Responsive design */
+@media (width <= 768px) {
+  .container {
+    padding: 10px;
+  }
+  
+  .datePicker {
+    min-width: 280px;
+  }
+  
+  .tableContainer {
+    max-height: 400px;
+  }
+}
+
+@media (width <= 576px) {
+  .dateButton {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+  
+  .hoursCell {
+    min-width: 80px;
+    font-size: 14px;
+  }
+}
+
+.reportTable th,
+.reportTable td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Dark mode table */
+.reportTable:global(.table-dark) {
+  background-color: #343a40 !important;
+  color: #fff !important;
+}
+
+/* Dark mode table header */
+.reportTable:global(.table-dark) thead th {
+  background-color: #343a40 !important;
+  color: #fff !important;
+  border-color: #495057 !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  user-select: none;
+}
+
+.reportTable:global(.table-dark) thead th:hover {
+  background-color: #343a40 !important;
+  color: #fff !important;
+}
+
+/* Keep header exactly the same when hovering */
+.reportTable:global(.table-dark) thead tr:hover,
+.reportTable:global(.table-dark) thead tr:hover th,
+
+/* Dark mode table body */
+.reportTable:global(.table-dark) tbody td {
+  background-color: #212529 !important;
+  color: #fff !important;
+  border-color: #495057 !important;
+}
+
+/* Total row */
+.reportTable:global(.table-dark) .totalRow td {
+  background-color: #343a40 !important;
+  color: #fff !important;
+}
+
+/* Body hover */
+.reportTable:global(.table-dark) tbody tr:hover td {
+  background-color: #343a40 !important;
+  color: #fff !important;
+}
+
+.refreshButtonContainer {
+  padding-top: 31px;
+}
+
+.refreshButton {
+  min-width: 150px;
+  height: 54px;
+  white-space:nowrap ;
+}
+
+.reportTypePicker{
+  min-width: 100px;
+  height: 54px;
+}
+
+.darkModeText {
+  color: #fff;
+}

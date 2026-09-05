@@ -1,8 +1,9 @@
 // eslint-disable-next-line no-unused-vars
 import { React, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import './TeamTable.module.css';
-import { Input, FormGroup, FormFeedback } from 'reactstrap';
+import PropTypes from 'prop-types';
+import styles from './TeamTable.module.css';
+import { Input, FormGroup, FormFeedback, Button } from 'reactstrap';
 import { connect } from 'react-redux';
 import hasPermission from '~/utils/permissions';
 import { updateTeam, getAllUserTeams } from '~/actions/allTeamsAction';
@@ -17,6 +18,15 @@ function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
   let TeamsList = [];
   const canEditTeamCode = hasPermission('editTeamCode') || auth.user.role === 'Owner';
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+const totalPages = Math.ceil(allTeams?.length / itemsPerPage);
+
+const paginatedTeams = allTeams?.slice(
+  (currentPage - 1) * itemsPerPage,
+  currentPage * itemsPerPage,
+);
   // Refresh team data when component mounts
   useEffect(() => {
     refreshTeams();
@@ -37,7 +47,7 @@ function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
         if (result && result.status === 200) {
           // Update saved filters when team code changes
           if (teamData.teamCode && value && teamData.teamCode !== value) {
-            const res = await updateFilterWithIndividualCodesChange({
+             await updateFilterWithIndividualCodesChange({
               oldTeamCode: teamData.teamCode,
               newTeamCode,
               userId: teamData._id,
@@ -102,14 +112,23 @@ function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
     );
   }
 
+  EditTeamCode.propTypes = {
+  team: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    teamName: PropTypes.string.isRequired,
+    isActive: PropTypes.bool.isRequired,
+    teamCode: PropTypes.string,
+  }).isRequired,
+ };
+
   if (allTeams.length > 0) {
-    TeamsList = allTeams.map((team, index) => (
+    TeamsList  = paginatedTeams.map((team, index) => (
       <tr id={`tr_${team._id}`} key={team._id}>
         <th scope="row">
-          <div className={darkMode ? 'text-light' : ''}>{index + 1}</div>
+          <div className={darkMode ? 'text-light' : ''}>{(currentPage - 1) * itemsPerPage + index + 1}</div>
         </th>
-        <td>
-          <Link to={`/teamreport/${team._id}`} className={darkMode ? 'text-light' : ''}>
+        <td className="team-name-cell">
+          <Link to={`/teamreport/${team._id}`} className={darkMode ? 'text-light team-name-link' : ''}>
             {team.teamName}
           </Link>
         </td>
@@ -130,12 +149,15 @@ function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
       </tr>
     ));
   }
+
+
   return (
+  <>
     <table
       className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`}
       style={darkMode ? boxStyleDark : boxStyle}
     >
-      <thead>
+     <thead>
         <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
           <th scope="col" id="projects__order">
             #
@@ -151,7 +173,33 @@ function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
       </thead>
       <tbody className={darkMode ? 'dark-mode' : ''}>{TeamsList}</tbody>
     </table>
-  );
+
+    {totalPages > 1 && (
+      <div className="d-flex justify-content-center align-items-center mt-3 gap-2">
+        <Button
+          size="sm"
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(prev => prev - 1)}
+        >
+          Previous
+        </Button>
+
+        <span className={darkMode ? 'text-light' : ''}>
+          Page {currentPage} of {totalPages}
+        </span>
+
+        <Button
+          size="sm"
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage(prev => prev + 1)}
+        >
+          Next
+        </Button>
+      </div>
+    )}
+  </>
+);
+
 }
 
 const mapStateToProps = state => ({
@@ -166,5 +214,23 @@ const mapDispatchToProps = dispatch => ({
     dispatch(updateSavedFiltersForIndividualTeamCodeChange(oldTeamCode, newTeamCode, userId)),
   refreshTeams: () => dispatch(getAllUserTeams()),
 });
+
+TeamTable.propTypes = {
+  allTeams: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      teamName: PropTypes.string.isRequired,
+      isActive: PropTypes.bool.isRequired,
+      teamCode: PropTypes.string,
+    }),
+  ),
+  auth: PropTypes.shape({
+    user: PropTypes.shape({
+      role: PropTypes.string,
+    }),
+  }).isRequired,
+  darkMode: PropTypes.bool,
+  refreshTeams: PropTypes.func.isRequired,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(TeamTable);
