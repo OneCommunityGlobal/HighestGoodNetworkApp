@@ -11,6 +11,7 @@ const ProtectedRoute = ({
   roles,
   allowedRoles,
   routePermissions,
+  permissionDeniedRedirectState,
   fallback,
   ...rest
 }) => {
@@ -43,7 +44,14 @@ const ProtectedRoute = ({
           return <Redirect to={{ pathname: '/login', state: { from: props.location } }} />;
         }
         if (routePermissions && !hasPermissionToAccess) {
-          return <Redirect to={{ pathname: '/dashboard', state: { from: props.location } }} />;
+          return (
+            <Redirect
+              to={{
+                pathname: '/dashboard',
+                state: { from: props.location, ...permissionDeniedRedirectState },
+              }}
+            />
+          );
         }
         // eslint-disable-next-line react/jsx-props-no-spreading, no-nested-ternary
         return Component && fallback ? (
