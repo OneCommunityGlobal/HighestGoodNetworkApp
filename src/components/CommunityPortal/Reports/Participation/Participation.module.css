@@ -352,12 +352,69 @@
 }
 
 .trackingRateGreen {
-  color: green;
+  /* !important needed: `.trackingRateValue span` (below) has higher specificity
+     and would otherwise override this to gray even in light mode. */
+  color: green !important;
   font-weight: bold;
 }
 
 .trackingRateRed {
-  color: red;
+  /* !important needed: same reason as .trackingRateGreen above. */
+  color: red !important;
+}
+
+/* public/index.css sets `body.dark-mode * { color: #fff !important }`, which otherwise
+   washes out these semantic colors in the per-event table below. Match its
+   specificity + importance to keep them. The `*` descendant selectors are needed
+   too: that global rule matches every descendant directly, not just the element
+   carrying this class. */
+:global(body.dark-mode) .trackingRateGreen,
+:global(body.bm-dashboard-dark) .trackingRateGreen,
+:global(body.dark-mode) .trackingRateGreen *,
+:global(body.bm-dashboard-dark) .trackingRateGreen * {
+  color: green !important;
+}
+
+:global(body.dark-mode) .trackingRateRed,
+:global(body.bm-dashboard-dark) .trackingRateRed,
+:global(body.dark-mode) .trackingRateRed *,
+:global(body.bm-dashboard-dark) .trackingRateRed * {
+  color: red !important;
+}
+
+/* Summary-card "since Last week" +/-% values only (NOT the table above) — red/green
+   in both light and dark mode, same as .trackingRateRed/.trackingRateGreen. Kept as
+   separate classes in case the two ever need to diverge again; currently identical
+   in behavior to the table's classes. */
+.summaryRateGreen {
+  color: green !important;
+}
+
+.summaryRateRed {
+  color: red !important;
+}
+
+:global(body.dark-mode) .summaryRateGreen,
+:global(body.bm-dashboard-dark) .summaryRateGreen,
+:global(body.dark-mode) .summaryRateGreen *,
+:global(body.bm-dashboard-dark) .summaryRateGreen * {
+  color: green !important;
+}
+
+:global(body.dark-mode) .summaryRateRed,
+:global(body.bm-dashboard-dark) .summaryRateRed,
+:global(body.dark-mode) .summaryRateRed *,
+:global(body.bm-dashboard-dark) .summaryRateRed * {
+  color: red !important;
+}
+
+/* The "Last week" summary line's leading +5% is plain text (not wrapped in a
+   colored span), styled red via .trackingRateValue's own color — but the same
+   global dark-mode rule above washes it out to white. Restore red here without
+   affecting the "since Last week" line's spans, which have their own color rules. */
+:global(body.dark-mode) .trackingRateValue,
+:global(body.bm-dashboard-dark) .trackingRateValue {
+  color: red !important;
 }
 
 /* Insights Section */
@@ -618,6 +675,11 @@
   font-size: 0.9rem;
   font-weight: bold;
   color: var(--color-text-dark);
+}
+
+:global(body.dark-mode) .insightsPercentageDark,
+:global(body.bm-dashboard-dark) .insightsPercentageDark {
+  color: red !important;
 }
 
 /* ---------- PDF/Print helpers ---------- */
