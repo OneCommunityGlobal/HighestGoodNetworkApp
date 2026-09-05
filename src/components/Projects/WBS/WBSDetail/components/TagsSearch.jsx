@@ -123,15 +123,15 @@ function TagsSearch(props) {
           )}
 
           {shouldShowDropdown && (
-            <ul className={`my-element dropdown-menu d-flex flex-column align-items-start justify-content-start w-100 ${styles.scrollbar} shadow-lg rounded-3 position-absolute top-100 start-0 z-3 bg-light ${styles['scrollable-menu']}`}>
+            <ul className={`my-element dropdown-menu d-flex flex-column align-items-start justify-content-start w-100 ${styles.scrollbar} shadow-lg rounded-3 position-absolute top-100 start-0 z-3 ${darkMode ? styles.darkDropdown : 'bg-light'} ${styles['scrollable-menu']}`}>
               {filteredMembers.map((member, index) => (
                 <li
-                key={member._id || member.userID || index}
-                className="dropdown-item border-bottom fs-6 w-100 p-1"
-              >
+                key={member._id || member.userID || index} 
+                className={`dropdown-item border-bottom fs-6 w-100 p-1 ${darkMode ? styles.darkDropdownItem : ''}`}
+                >
                 <button
                   type="button"
-                  className="btn w-100 text-left p-1 text-dark"
+                  className={`btn w-100 text-left p-1 ${darkMode ? 'text-light' : 'text-dark'}`}
                   onMouseDown={event => handleClick(event, member)}
                 >
                   {`${member.firstName || member.first} ${member.lastName || member.last}`}
@@ -142,7 +142,6 @@ function TagsSearch(props) {
           )}
         </div>
       </div>
-
       <div className="d-flex flex-wrap align-items-start justify-content-start">
         {resourceItems?.map((elm, index) => (
           <ul
