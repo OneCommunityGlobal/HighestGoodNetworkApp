@@ -81,8 +81,6 @@
   margin-bottom: 20px;
 }
 
-
-
 /* Table Styles */
 .pr-grading-screen-table-container {
   margin: 20px auto 0;
@@ -518,49 +516,47 @@
   font-weight: 600;
 }
 
-
-
 /* Responsive adjustments */
 @media (width <= 768px) {
   .pr-grading-screen-title {
     font-size: 1.5rem;
   }
-  
+
   .pr-grading-screen-team-info {
     font-size: 1rem;
   }
-  
+
   .pr-grading-screen-container {
     padding: 10px;
   }
-  
+
   .pr-grading-screen-header-content {
     flex-direction: column;
     gap: 15px;
   }
-  
+
   .pr-grading-screen-header-right {
     margin-left: 0;
     align-self: flex-end;
   }
-  
+
   .pr-grading-screen-table {
     font-size: 0.9rem;
   }
-  
+
   .pr-grading-screen-table th,
   .pr-grading-screen-table td {
     padding: 10px 8px;
   }
-  
+
   .pr-grading-screen-td-name {
     width: 20%;
   }
-  
+
   .pr-grading-screen-td-numbers {
     width: 60%;
   }
-  
+
   .pr-grading-screen-pr-input {
     width: 50px;
     padding: 3px 6px;
@@ -1006,4 +1002,113 @@
 
 .pr-grading-screen-no-results.dark-mode {
   color: #9ab0cc;
+}
+
+/* ---------------- INLINE PR SUMMARY ---------------- */
+
+.pr-grading-inline-summary-row {
+  background-color: transparent;
+}
+
+.pr-grading-inline-summary-cell {
+  padding: 8px 16px 16px !important;
+  border-top: none !important;
+}
+
+/* ==========================================================
+   Inline PR Summary Styles (PR #5493)
+   Scoped strictly with pr-grading-inline-* to avoid global pollution
+   ========================================================== */
+
+.pr-grading-inline-summary-container {
+  padding: 16px 20px;
+  background-color: #fff;
+  border: 1px solid rgb(0 0 0 / 12%);
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 4%);
+}
+
+/* Dark mode support for inline summary container */
+.pr-grading-inline-summary-container.dark-mode {
+  background-color: #2b2b2b;
+  border-color: rgb(255 255 255 / 15%);
+  box-shadow: none;
+}
+
+.pr-grading-inline-summary-table {
+  width: 100%;
+  margin-bottom: 0;
+  border-collapse: collapse;
+}
+
+.pr-grading-inline-header-cell {
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+  text-align: center;
+  border-bottom: 1px solid rgb(0 0 0 / 8%);
+}
+
+.pr-grading-inline-header-cell.dark-mode {
+  color: #bbb;
+  border-bottom-color: rgb(255 255 255 / 10%);
+}
+
+.pr-grading-inline-header-cell.pr-grading-inline-pr-col {
+  text-align: left;
+}
+
+.pr-grading-inline-data-cell {
+  padding: 10px 12px;
+  vertical-align: middle;
+  border-top: 1px solid rgb(0 0 0 / 5%);
+}
+
+.pr-grading-inline-data-cell.dark-mode {
+  border-top-color: rgb(255 255 255 / 5%);
+}
+
+.pr-grading-inline-pr-cell {
+  width: 25%;
+  text-align: left;
+}
+
+.pr-grading-inline-pr-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 4px;
+}
+
+.pr-grading-inline-single-tag {
+  color: #333;
+  background-color: #e5e5e5;
+}
+
+.pr-grading-inline-single-tag.dark-mode {
+  color: #eee;
+  background-color: #444;
+}
+
+.pr-grading-inline-pair-tag {
+  color: #155724;
+  background-color: #c3e6cb;
+}
+
+.pr-grading-inline-pair-tag.dark-mode {
+  color: #a3e9b7;
+  background-color: #1b4d29;
+}
+
+.pr-grading-inline-checkbox-cell {
+  text-align: center;
+}
+
+.pr-grading-inline-checkbox {
+  width: 17px;
+  height: 17px;
+  cursor: pointer;
+  accent-color: #59359a;
 }
