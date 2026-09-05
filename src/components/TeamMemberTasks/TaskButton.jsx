@@ -3,7 +3,7 @@ import { getAllUserProfile } from '~/actions/userManagement';
 import { deleteSelectedTask } from './reducer';
 import { fetchAllTasks, updateTask } from '~/actions/task';
 import { useDispatch } from 'react-redux';
-import './style.css';
+import styles from './style.module.css';
 
 function TaskButton({ task }) {
   const dispatch = useDispatch();
@@ -42,7 +42,7 @@ function TaskButton({ task }) {
         data-toggle="tooltip"
         data-placement="top"
         title="MARK AS DONE. MARKING THIS AS DONE WOULD REMOVE THE TASK PERMANENTLY."
-        className="markAsDoneButton"
+        className={styles.markAsDoneButton}
       >
         X
       </button>

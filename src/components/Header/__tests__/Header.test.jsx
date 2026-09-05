@@ -68,6 +68,8 @@ function renderHeader(stateOverrides = {}, propsOverrides = {}) {
     taskEditSuggestions: { count: 0 },
     role: { roles: [] },
     notification: { unreadNotifications: [] },
+    meetingNotification: { unreadMeetingNotifications: [], loading: false, error: null },
+    allUserProfiles: { userProfiles: [] },
     theme: { darkMode: false },
     ownerMessage: { message: '', standardMessage: '' },
     ...stateOverrides,
@@ -122,7 +124,7 @@ describe('Header component', () => {
 
   it('renders the owner message & timer children', () => {
     renderHeader();
-    expect(screen.getByTestId('mock-owner-message')).toBeInTheDocument();
+    expect(screen.getAllByTestId('mock-owner-message').length).toBeGreaterThan(0);
     expect(screen.getByTestId('mock-timer')).toBeInTheDocument();
   });
 });

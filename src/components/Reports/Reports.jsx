@@ -2,37 +2,37 @@
 /* eslint-disable react/no-unused-state */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/sort-comp */
-import { Component } from 'react';
-import { connect } from 'react-redux';
-import { Container, Button } from 'reactstrap';
 import moment from 'moment-timezone';
-import { boxStyle, boxStyleDark } from '~/styles';
-import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
-import { searchWithAccent } from '~/utils/search';
-import { fetchAllProjects } from '../../actions/projects';
-import { getAllUserTeams } from '../../actions/allTeamsAction';
-import TeamTable from './TeamTable';
-import PeopleTable from './PeopleTable';
-import ProjectTable from './ProjectTable';
-import { getUserProfileBasicInfo } from '../../actions/userManagement';
-import { fetchAllTasks } from '../../actions/task';
+import { Component } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
-import './reportsPage.css';
-import projectsImage from './images/Projects.svg';
+import { connect } from 'react-redux';
+import { Button, Container } from 'reactstrap';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { searchWithAccent } from '~/utils/search';
+import { getAllUserTeams } from '../../actions/allTeamsAction';
+import { fetchAllProjects } from '../../actions/projects';
+import { fetchAllTasks } from '../../actions/task';
+import { getUsersTotalHoursForSpecifiedPeriod } from '../../actions/timeEntries';
+import { getUserProfileBasicInfo } from '../../actions/userManagement';
+import Loading from '../common/Loading';
+import '../Header/index.module.css';
+import styles from './reportsPage.module.css';
 import peopleImage from './images/People.svg';
+import projectsImage from './images/Projects.svg';
 import teamsImage from './images/Teams.svg';
-import TotalPeopleReport from './TotalReport/TotalPeopleReport';
-import TotalTeamReport from './TotalReport/TotalTeamReport';
-import TotalProjectReport from './TotalReport/TotalProjectReport';
-import TotalContributorsReport from './TotalReport/TotalContributorsReport';
 import AddLostTime from './LostTime/AddLostTime';
 import LostTimeHistory from './LostTime/LostTimeHistory';
-import '../Header/DarkMode.css';
-import ViewReportByDate from './ViewReportsByDate/ViewReportsByDate';
+import PeopleTable from './PeopleTable';
+import ProjectTable from './ProjectTable';
 import ReportFilter from './ReportFilter/ReportFilter';
-import Loading from '../common/Loading';
-import { getUsersTotalHoursForSpecifiedPeriod } from '../../actions/timeEntries';
 import CircularProgress from '@mui/material/CircularProgress';
+import TeamTable from './TeamTable';
+import TotalContributorsReport from './TotalReport/TotalContributorsReport';
+import TotalPeopleReport from './TotalReport/TotalPeopleReport';
+import TotalProjectReport from './TotalReport/TotalProjectReport';
+import TotalTeamReport from './TotalReport/TotalTeamReport';
+import ViewReportByDate from './ViewReportsByDate/ViewReportsByDate';
 
 const DATE_PICKER_MIN_DATE = '01/01/2010';
 
@@ -113,12 +113,14 @@ class ReportsPage extends Component {
     this.onDateChange = this.onDateChange.bind(this);
     this.handleClearFilters = this.handleClearFilters.bind(this);
     this.showContributorsReport = this.showContributorsReport.bind(this);
+    this.handleSearchClick = this.handleSearchClick.bind(this);
   }
 
   async componentDidMount() {
     const fetchProjects = this.props.fetchAllProjects();
     const fetchTeams = this.props.getAllUserTeams();
-    const fetchUserProfile = this.props.getUserProfileBasicInfo();
+    // Added 'Report' parameter to identify the source for fetching all user basic info
+    const fetchUserProfile = this.props.getUserProfileBasicInfo({source:'Report'});
 
     // parallel api calls
 
@@ -166,8 +168,18 @@ class ReportsPage extends Component {
 
   handleClearFilters() {
     this.setState({
-      startDate: new Date(DATE_PICKER_MIN_DATE),
-      endDate: new Date(),
+     startDate: moment()
+  .tz('America/Los_Angeles')
+  .subtract(1, 'week')
+  .startOf('week')
+  .toDate(),
+
+endDate: moment()
+  .tz('America/Los_Angeles')
+  .subtract(1, 'week')
+  .endOf('week')
+  .toDate(),
+
       wildCardSearchText: '',
       filterStatus: 'all',
     });
@@ -209,6 +221,7 @@ class ReportsPage extends Component {
       showAddProjHistory: false,
       showAddPersonHistory: false,
       showAddTeamHistory: false,
+      showCharts: !prevState.showAddTimeForm,
     }));
   }
 
@@ -416,6 +429,7 @@ class ReportsPage extends Component {
       showAddPersonHistory: false,
       showAddTeamHistory: false,
       showContributorsReport: false,
+      showCharts: !prevState.showAddProjHistory
     }));
   }
 
@@ -432,6 +446,7 @@ class ReportsPage extends Component {
       showAddPersonHistory: !prevState.showAddPersonHistory,
       showAddTeamHistory: false,
       showContributorsReport: false,
+      showCharts: !prevState.showAddPersonHistory
     }));
   }
 
@@ -448,6 +463,7 @@ class ReportsPage extends Component {
       showAddPersonHistory: false,
       showAddTeamHistory: !prevState.showAddTeamHistory,
       showContributorsReport: false,
+      showCharts: !prevState.showAddTeamHistory
     }));
   }
 
@@ -467,6 +483,13 @@ class ReportsPage extends Component {
       showCharts: !prevState.showContributorsReport,
     }));
   }
+
+  handleSearchClick() {
+    // This function is called when the search button is clicked
+    // The actual scroll behavior is handled in ReportTableSearchPanel
+    // No additional action needed here
+  }
+
 
   render() {
     const { darkMode } = this.props.state.theme;
@@ -507,15 +530,15 @@ class ReportsPage extends Component {
       this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
     }
 
-    const isOxfordBlue = darkMode ? 'bg-oxford-blue' : '';
+    const isOxfordBlue = darkMode ? 'bg-oxford-blue text-light' : 'bg-white-smoke';
     const isYinmnBlue = darkMode ? 'bg-yinmn-blue' : '';
     const textColor = darkMode ? 'text-blue-400' : 'text-dark';
     const boxStyling = darkMode ? boxStyleDark : boxStyle;
 
     return (
-      <Container fluid className={`mb-5 container-component-wrapper ${isOxfordBlue}`}>
+      <Container fluid className={`mb-5 ${styles['container-component-wrapper']} ${isOxfordBlue}`} style={darkMode ? { backgroundColor: '#1C2B3A' } : {}}>
         <div
-          className={`category-data-container ${isOxfordBlue} ${
+          className={`${styles['category-data-container']} ${isOxfordBlue} ${
             this.state.showPeople ||
             this.state.showProjects ||
             this.state.showTeams ||
@@ -528,20 +551,21 @@ class ReportsPage extends Component {
             this.state.showAddProjHistory ||
             this.state.showContributorsReport
               ? ''
-              : 'no-active-selection'
+              : styles['no-active-selection']
           }`}
+          style={darkMode ? { backgroundColor: '#1C2B3A' } : {}}
           type="button"
         >
-          <div className="container-component-category">
-            <h2 className="mt-3 mb-5">
+          <div className={styles['container-component-category']}>
+            <h2 className="mt-3 ">
               {/* Loading spinner at the top */}
               {this.state.loading && (
-                <div className="loading-spinner-top">
+                <div className={styles['loading-spinner-top']}>
                   <Loading align="center" darkMode={darkMode} />
                 </div>
               )}
               <div className="d-flex align-items-center">
-                <h2 className="mr-2">Reports Page</h2>
+                <h2 className="mr-2" style={darkMode ? { color: '#fff' } : undefined}>Reports Page</h2>
                 <EditableInfoModal
                   areaName="ReportsPage"
                   areaTitle="Reports Page"
@@ -554,7 +578,7 @@ class ReportsPage extends Component {
               </div>
             </h2>
             <div>
-              <div className={darkMode ? `text-white` : ``}>Select a Category</div>
+              <p className={darkMode ? styles['text-light'] : undefined}>Select a Category</p>
             </div>
             <div className="report-container-data">
               <div
@@ -653,6 +677,7 @@ class ReportsPage extends Component {
                     setFilterStatus={this.setFilterStatus}
                     onWildCardSearch={this.onWildCardSearch}
                     onCreateNewTeamShow={this.onCreateNewTeamShow}
+                    onSearchClick={this.handleSearchClick}
                     darkMode={darkMode}
                   />
                   <ViewReportByDate
@@ -662,8 +687,8 @@ class ReportsPage extends Component {
                     onDateChange={this.onDateChange}
                     darkMode={darkMode}
                   />
-                  <div className="total-report-container">
-                    <div className="total-report-item">
+                  <div className={styles['total-report-container']}>
+                    <div className={styles['total-report-item']}>
                       <Button type="button" color="info" onClick={this.showTotalProject}>
                         {this.state.showTotalProject
                           ? 'Hide Total Project Report'
@@ -680,7 +705,7 @@ class ReportsPage extends Component {
                         />
                       </div>
                     </div>
-                    <div className="total-report-item">
+                    <div className={styles['total-report-item']}>
                       <Button type="button" color="info" onClick={this.showTotalPeople}>
                         {this.state.showTotalPeople
                           ? 'Hide Total People Report'
@@ -697,7 +722,7 @@ class ReportsPage extends Component {
                         />
                       </div>
                     </div>
-                    <div className="total-report-item">
+                    <div className={styles['total-report-item']}>
                       <Button color="info" onClick={this.showTotalTeam}>
                         {this.state.showTotalTeam
                           ? 'Hide Total Team Report'
@@ -714,8 +739,12 @@ class ReportsPage extends Component {
                         />
                       </div>
                     </div>
-                    <div className="total-report-item">
-                      <Button type="button" color="info" onClick={this.showContributorsReport}>
+                    <div className={styles['total-report-item']}>
+                      <Button
+                        type="button"
+                        color="info"
+                        onClick={this.showContributorsReport}
+                      >
                         {this.state.showContributorsReport
                           ? 'Hide Contributors Report'
                           : 'Show Contributors Report'}
@@ -734,8 +763,8 @@ class ReportsPage extends Component {
                     </div>
                   </div>
                   {myRole !== 'Owner' && (
-                    <div className="lost-time-container">
-                      <div className="lost-time-item">
+                    <div className={styles['lost-time-container']}>
+                      <div className={styles['lost-time-item']}>
                         <Button color="info" onClick={this.showAddProjHistory}>
                           {this.state.showAddProjHistory
                             ? 'Hide Project Lost Time'
@@ -752,7 +781,7 @@ class ReportsPage extends Component {
                           />
                         </div>
                       </div>
-                      <div className="lost-time-item">
+                      <div className={styles['lost-time-item']}>
                         <Button color="info" onClick={this.showAddPersonHistory}>
                           {this.state.showAddPersonHistory
                             ? 'Hide Person Lost Time'
@@ -769,7 +798,7 @@ class ReportsPage extends Component {
                           />
                         </div>
                       </div>
-                      <div className="lost-time-item">
+                      <div className={styles['lost-time-item']}>
                         <Button color="info" onClick={this.showAddTeamHistory}>
                           {this.state.showAddTeamHistory
                             ? 'Hide Team Lost Time'
@@ -795,8 +824,8 @@ class ReportsPage extends Component {
                     className={`mt-4 p-3 rounded-lg ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}
                     style={darkMode ? boxStyleDark : boxStyle}
                   >
-                    <div className="lost-time-container">
-                      <div className="lost-time-item">
+                    <div className={styles['lost-time-container']}>
+                      <div className={styles['lost-time-item']}>
                         <Button color="success" onClick={this.setAddTime}>
                           Add Lost Time
                         </Button>
@@ -812,8 +841,8 @@ class ReportsPage extends Component {
                         </div>
                       </div>
                     </div>
-                    <div className="lost-time-container">
-                      <div className="lost-time-item">
+                    <div className={styles['lost-time-container']}>
+                      <div className={styles['lost-time-item']}>
                         <Button color="info" onClick={this.showAddProjHistory}>
                           {this.state.showAddProjHistory
                             ? 'Hide Project Lost Time'
@@ -869,14 +898,7 @@ class ReportsPage extends Component {
                 )}
               </div>
               {this.state.showCharts && (
-                <div
-                  className="table-data-container"
-                  style={
-                    this.state.showPeople || this.state.showProjects || this.state.showTeams
-                      ? { overflowY: 'auto' }
-                      : { overflowY: 'none' }
-                  }
-                >
+                <div className={styles['table-data-container']} style={(this.state.showPeople || this.state.showProjects || this.state.showTeams) ? { overflowY: 'auto' } : {overflowY: 'none'}}>
                   {this.state.showPeople && (
                     <PeopleTable userProfiles={this.state.peopleSearchData} darkMode={darkMode} />
                   )}

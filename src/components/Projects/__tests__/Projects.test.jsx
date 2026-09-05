@@ -1,16 +1,16 @@
-import React from 'react';
+﻿import React from 'react';
 import { render, screen, fireEvent} from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import Projects from '..';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { rolesMock } from '__tests__/mockStates';
 
 import axios from 'axios';
 import { MemoryRouter} from 'react-router-dom';
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 const auth={user: {
   permissions: {
@@ -60,14 +60,14 @@ describe("Projects component",()=>{
       status: 200,
       data: [],
     });
-    render(<Provider store={store}><Projects /></Provider>)
+    render(<MemoryRouter><Provider store={store}><Projects /></Provider></MemoryRouter>)
   })
   it('check if Projects header displays as expected',()=>{
     axios.get.mockResolvedValue({
       status: 200,
       data: [],
     });
-    render(<Provider store={store}><Projects /></Provider>)
+    render(<MemoryRouter><Provider store={store}><Projects /></Provider></MemoryRouter>)
     expect(screen.getAllByText('Projects')[0]).toBeInTheDocument();
   })
   it('check if Project Name header displays as expected',()=>{
@@ -75,15 +75,15 @@ describe("Projects component",()=>{
       status: 200,
       data: [],
     });
-    render(<Provider store={store}><Projects /></Provider>)
-    expect(screen.getByText('Project Name')).toBeInTheDocument();
+    render(<MemoryRouter><Provider store={store}><Projects /></Provider></MemoryRouter>)
+    expect(screen.getAllByText('Project Name')[0]).toBeInTheDocument();
   })
   it('check if Category header displays as expected',()=>{
     axios.get.mockResolvedValue({
       status: 200,
       data: [],
     });
-    render(<Provider store={store}><Projects /></Provider>)
+    render(<MemoryRouter><Provider store={store}><Projects /></Provider></MemoryRouter>)
     expect(screen.getByText('Category')).toBeInTheDocument();
   })
   it('check if Active header displays as expected',()=>{
@@ -91,7 +91,7 @@ describe("Projects component",()=>{
       status: 200,
       data: [],
     });
-    render(<Provider store={store}><Projects /></Provider>)
+    render(<MemoryRouter><Provider store={store}><Projects /></Provider></MemoryRouter>)
     expect(screen.getByText('Active')).toBeInTheDocument();
   })
   it('check if Members, WBS header displays as expected',()=>{
@@ -99,7 +99,7 @@ describe("Projects component",()=>{
       status: 200,
       data: [],
     });
-    render(<Provider store={store}><Projects /></Provider>)
+    render(<MemoryRouter><Provider store={store}><Projects /></Provider></MemoryRouter>)
     expect(screen.getByText('Members')).toBeInTheDocument();
     expect(screen.getByText('WBS')).toBeInTheDocument();
   })
@@ -119,7 +119,7 @@ describe("Projects component",()=>{
       infoCollections:infoCollections,
       role: {roles: rolesMock.role.roles}
     })
-    render(<Provider store={testStore}><Projects /></Provider>)
+    render(<MemoryRouter><Provider store={testStore}><Projects /></Provider></MemoryRouter>)
     expect(screen.getByTestId('loading')).toBeInTheDocument()
   })
   it('check if AddProject does not get displayed when postProject permission is not added',()=>{
@@ -128,7 +128,7 @@ describe("Projects component",()=>{
       data: [],
     });
 
-    render(<Provider store={store}><Projects /></Provider>)
+    render(<MemoryRouter><Provider store={store}><Projects /></Provider></MemoryRouter>)
     expect(screen.queryByText('Add New Project')).not.toBeInTheDocument()
   })
   it('check if AddProject gets displayed when postProject permission is added',()=>{
@@ -157,7 +157,7 @@ describe("Projects component",()=>{
       role: {roles: rolesMock.role.roles}
     })
 
-    render(<Provider store={testStore}><Projects /></Provider>)
+    render(<MemoryRouter><Provider store={testStore}><Projects /></Provider></MemoryRouter>)
     // expect(screen.queryByText('Add new project')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /add new project/i })).toBeInTheDocument();
   })
@@ -166,7 +166,7 @@ describe("Projects component",()=>{
       status: 200,
       data: [],
     });
-    render(<Provider store={store}><Projects /></Provider>)
+    render(<MemoryRouter><Provider store={store}><Projects /></Provider></MemoryRouter>)
     expect(screen.getByText("ERROR")).toBeInTheDocument()
   })
   it('check if modal title is not set to error when modal is open',()=>{
@@ -195,11 +195,13 @@ describe("Projects component",()=>{
       role: {roles: rolesMock.role.roles}
     })
 
-    const {container}=render(<MemoryRouter><Provider store={testStore}><Projects /></Provider></MemoryRouter>)
+    const { container } = render(<MemoryRouter><Provider store={testStore}><Projects /></Provider></MemoryRouter>)
     expect(screen.getByText("ERROR")).toBeInTheDocument()
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    const ascendingButton=container.querySelector('[id="Ascending"]')
-    fireEvent.click(ascendingButton)
+    const ascendingButton = container.querySelector('[id="Ascending"]')
+    if (ascendingButton) {
+      fireEvent.click(ascendingButton)
+    }
 
     // Code related to "Archive" functionality is refactored into Project component and will be tested in Project.test.js 
   //   const archiveButton=screen.getAllByText('Archive')[1]

@@ -17,7 +17,7 @@ import CommonInput from '~/components/common/Input';
 import DuplicateNamePopup from '~/components/UserManagement/DuplicateNamePopup';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import './UserProfileAdd.scss';
-import { createUser } from '../../../services/userProfileService';
+import { createUser, verifyProductionIdentity } from '../../../services/userProfileService';
 import { toast } from 'react-toastify';
 import TeamsTab from '../TeamsAndProjects/TeamsTab';
 import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
@@ -48,6 +48,8 @@ import { ENDPOINTS } from '~/utils/URL';
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 const DATE_PICKER_MIN_DATE = '01/01/2010';
 const DEFAULT_PASSWORD = '123Welcome!';
+const PRODUCTION_IDENTITY_ENABLED =
+  process.env.REACT_APP_PRODUCTION_IDENTITY_VERIFICATION_ENABLED === 'true';
 
 class UserProfileAdd extends Component {
   constructor(props) {
@@ -92,8 +94,8 @@ class UserProfileAdd extends Component {
         lastName: 'Last Name is required',
         email: 'Email is required',
         phoneNumber: 'Phone Number is required',
-        actualEmail: 'Actual Email is required',
-        actualPassword: 'Actual Password is required',
+        actualEmail: 'Must use of your PRODUCTION sign-in email',
+        actualPassword: 'Must use your PRODUCTION sign-in password',
         actualConfirmedPassword: 'Actual Confirmed Password is required',
         defaultPassword: 'Default Password is required',
         jobTitle: 'Job Title is required',
@@ -105,11 +107,128 @@ class UserProfileAdd extends Component {
       inputAutoComplete: [],
       inputAutoStatus: null,
       isLoading: false,
+      productionEmail: '',
+      productionPassword: '',
+      productionVerificationToken: '',
+      productionIdentityVerified: false,
+      verifyingProductionIdentity: false,
+      productionVerifyError: '',
     };
 
     const { user } = this.props.auth;
     this.canAddDeleteEditOwners = user && user.role === 'Owner';
   }
+
+  normalizeName = s => (s || '').toLowerCase().replace(/[^a-z]/g, '');
+
+  verifyProductionIdentity = async () => {
+    const { productionEmail, productionPassword } = this.state;
+
+    if (!productionEmail || !productionPassword) {
+      toast.error('Production email and password are required.');
+      return;
+    }
+
+    this.setState({ verifyingProductionIdentity: true, productionVerifyError: '' });
+
+    try {
+      const response = await verifyProductionIdentity({
+        productionEmail: productionEmail.trim(),
+        productionPassword,
+      });
+
+      const { firstName, lastName, email, verificationToken } = response.data;
+
+      this.setState((prevState) => ({
+        productionIdentityVerified: true,
+        productionVerificationToken: verificationToken,
+        verifyingProductionIdentity: false,
+        userProfile: {
+          ...prevState.userProfile,
+          firstName,
+          lastName,
+          email,
+        },
+        formErrors: {
+          ...prevState.formErrors,
+          firstName: '',
+          lastName: '',
+          email: '',
+        },
+      }));
+
+      toast.success('Production identity verified. Name and email are now locked.');
+    } catch (error) {
+      const message =
+        error?.response?.data?.error ||
+        'Production identity verification failed. Please try again.';
+      const retryable = error?.response?.data?.retryable;
+
+      this.setState({
+        verifyingProductionIdentity: false,
+        productionVerifyError: message,
+      });
+
+      toast.error(retryable ? `${message} You can retry.` : message);
+    }
+  };
+
+  isIdentityFieldsLocked = () =>
+    PRODUCTION_IDENTITY_ENABLED && this.state.productionIdentityVerified;
+
+  productionNameIsIncluded = () => {
+    if (PRODUCTION_IDENTITY_ENABLED) {
+      return this.state.productionIdentityVerified;
+    }
+
+    console.log('NODE_ENV =', process.env.NODE_ENV);
+  // ✅ DO NOT enforce name rules in production
+    if (process.env.NODE_ENV === 'production') {
+      return true;
+    }
+
+    const prodFirstRaw = this.props?.auth?.user?.firstName || '';
+    const prodLastRaw  = this.props?.auth?.user?.lastName || '';
+
+    const prodFirst  = this.normalizeName(prodFirstRaw);
+    const prodLast   = this.normalizeName(prodLastRaw);
+    const inputFirst = this.normalizeName(this.state.userProfile.firstName);
+    const inputLast  = this.normalizeName(this.state.userProfile.lastName);
+
+    // If we don't know the prod user name, don't block
+    if (!prodFirst || !prodLast) return true;
+
+    const combined = `${inputFirst}${inputLast}`;
+    const hasFirst = combined.includes(prodFirst);
+    const hasLast  = combined.includes(prodLast);
+
+    if (!hasFirst || !hasLast) {
+      toast.error(
+        (
+          <div style={{ lineHeight: 1.5 }}>
+            <div>
+              Your account names (first and last names) must include your Production first name&nbsp;
+              <b>&quot;{prodFirstRaw}&quot;</b> and last name&nbsp;
+              <b>&quot;{prodLastRaw}&quot;</b>.
+            </div>
+
+            <div style={{ marginTop: 8, fontWeight: 600 }}>Allowed examples:</div>
+            <ul style={{ margin: '6px 0', paddingLeft: '1.5rem' }}>
+              <li>{`${prodFirstRaw} ${prodLastRaw} Admin`}</li>
+              <li>{`${prodFirstRaw}${prodLastRaw} Test`}</li>
+              <li>{`${prodFirstRaw} ${prodLastRaw}A`}</li>
+              <li>{`${prodLastRaw}Test ${prodFirstRaw}`}</li>
+              <li>{`${prodLastRaw}Owner ${prodFirstRaw}`}</li>
+            </ul>
+          </div>
+        ),
+        { autoClose: 7000 }
+      );
+      return false;
+    }
+    return true;
+  };
+  
 
   popupClose = () => {
     this.setState({
@@ -137,6 +256,14 @@ class UserProfileAdd extends Component {
       this.setState({ isLoading: true })
 
       const response = await axios.get(url);
+      
+      // Check if response.data exists and is an array
+      if (!response.data || !Array.isArray(response.data)) {
+        console.warn('Invalid response format from weekly summaries endpoint:', response.data);
+        this.setState({ inputAutoComplete: [], isLoading: false });
+        return;
+      }
+
       const stringWithValue = response.data.map(item => item.teamCode).filter(Boolean);
       const stringNoRepeat = stringWithValue
         .map(item => item)
@@ -177,6 +304,16 @@ class UserProfileAdd extends Component {
     const phoneNumberEntered =
       this.state.userProfile.phoneNumber === null ||
       this.state.userProfile.phoneNumber.length === 0;
+
+      let verifyButtonText;
+
+      if (this.state.verifyingProductionIdentity) {
+        verifyButtonText = 'Verifying...';
+      } else if (this.state.productionIdentityVerified) {
+        verifyButtonText = 'Verified';
+      } else {
+        verifyButtonText = 'Verify Production Identity';
+      }
     return (
       <StickyContainer>
         <DuplicateNamePopup
@@ -185,467 +322,520 @@ class UserProfileAdd extends Component {
           onClose={this.props.closePopup}
           createUserProfile={this.createUserProfile}
         />
-        <Container className={`emp-profile add-new-user ${darkMode ? 'bg-yinmn-blue' : ''}`}>
-          <Row>
-            <Col md="12">
-              <Form>
+        <Container className={`emp-profile ${darkMode ? 'bg-yinmn-blue' : ''}`}>
+        
+          <Form>
+            {PRODUCTION_IDENTITY_ENABLED && (
+              <Row className="user-add-row">
+                <Col md={{ size: 4, offset: 2 }} className="text-md-right my-2">
+                  <Label className={fontColor}>Production Identity</Label>
+                </Col>
+                <Col md="6">
+                  <FormGroup>
+                    <Input
+                      type="email"
+                      name="productionEmail"
+                      id="productionEmail"
+                      value={this.state.productionEmail}
+                      onChange={(e) =>
+                        this.setState({ productionEmail: e.target.value, productionIdentityVerified: false })
+                      }
+                      placeholder="Production Email"
+                      disabled={this.state.productionIdentityVerified}
+                      className={darkMode ? 'bg-darkmode-liblack text-light border-0 mb-2' : 'mb-2'}
+                    />
+                    <CommonInput
+                      type="password"
+                      name="productionPassword"
+                      id="productionPassword"
+                      value={this.state.productionPassword}
+                      onChange={(e) =>
+                        this.setState({
+                          productionPassword: e.target.value,
+                          productionIdentityVerified: false,
+                        })
+                      }
+                      placeholder="Production Password"
+                      disabled={this.state.productionIdentityVerified}
+                      className="d-flex justify-start items-start mb-2"
+                    />
+                    <Button
+                      color="primary"
+                      type="button"
+                      disabled={
+                        this.state.verifyingProductionIdentity || this.state.productionIdentityVerified
+                      }
+                      onClick={this.verifyProductionIdentity}
+                    >
+                      {verifyButtonText}
+                    </Button>
+                    {this.state.productionVerifyError && (
+                      <div className="text-danger mt-2">{this.state.productionVerifyError}</div>
+                    )}
+                    {this.state.productionIdentityVerified && (
+                      <div className="text-success mt-2">
+                        Production identity verified. Name and email are locked to match Production.
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+              </Row>
+            )}
+            <Row className="user-add-row">
+              <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
+                <Label className={fontColor} >Name <span style={{ color: 'red' }}>*</span> </Label>
+              </Col>
+              <Col md="3">
+                <FormGroup>
+                  <Input
+                    type="text"
+                    name="firstName"
+                    id="firstName"
+                    value={firstName}
+                    onChange={(e) => this.handleUserProfile(e)}
+                    placeholder="First Name"
+                    disabled={this.isIdentityFieldsLocked()}
+                    readOnly={this.isIdentityFieldsLocked()}
+                    invalid={!!(this.state.formSubmitted && this.state.formErrors.firstName)}
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+                  />
+                  {this.state.formSubmitted && this.state.formErrors.firstName && (
+                    <FormFeedback className={fontWeight}>
+                      {this.state.formErrors.firstName}
+                    </FormFeedback>
+                  )}
+                </FormGroup>
+              </Col>
+              <Col md="3">
+                <FormGroup>
+                  <Input
+                    type="text"
+                    name="lastName"
+                    id="lastName"
+                    value={lastName}
+                    onChange={(e) => this.handleUserProfile(e)}
+                    placeholder="Last Name"
+                    disabled={this.isIdentityFieldsLocked()}
+                    readOnly={this.isIdentityFieldsLocked()}
+                    invalid={this.state.formSubmitted && (!!this.state.formErrors.lastName || lastName.length < 2)}
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+                  />
+                  {this.state.formSubmitted && this.state.formErrors.lastName && (
+                    <FormFeedback className={fontWeight}>
+                      {this.state.formErrors.lastName}
+                    </FormFeedback>
+                  )}
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row className="user-add-row">
+              <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
+                <Label className={fontColor}>Job Title <span style={{ color: 'red' }}>*</span> </Label>
+              </Col>
+              <Col md={{ size: 6 }}>
+                <FormGroup>
+                  <Input
+                    type="text"
+                    name="jobTitle"
+                    id="jobTitle"
+                    value={jobTitle}
+                    onChange={(e) => this.handleUserProfile(e)}
+                    placeholder="Job Title"
+                    invalid={!!(this.state.formSubmitted && this.state.formErrors.jobTitle)}
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+                  />
+                  {this.state.formSubmitted && this.state.formErrors.jobTitle && (
+                    <FormFeedback className={fontWeight}>
+                      {this.state.formErrors.jobTitle}
+                    </FormFeedback>)}
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row className="user-add-row">
+              <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
+                <Label className={fontColor}>Email <span style={{ color: 'red' }}>*</span> </Label>
+              </Col>
+              <Col md="6">
+                <FormGroup>
+                  <Input
+                    type="email"
+                    name="email"
+                    id="email"
+                    value={email}
+                    onChange={(e) => this.handleUserProfile(e)}
+                    placeholder="Email"
+                    disabled={this.isIdentityFieldsLocked()}
+                    readOnly={this.isIdentityFieldsLocked()}
+                    invalid={!!(this.state.formSubmitted && this.state.formErrors.email)}
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+                  />
+                  {this.state.formSubmitted && this.state.formErrors.email && (
+                    <FormFeedback className={fontWeight}>
+                      {this.state.formErrors.email}
+                    </FormFeedback>)}
+                  <ToggleSwitch
+                    switchType="email"
+                    state={this.state.userProfile.privacySettings?.email}
+                    handleUserProfile={this.handleUserProfile}
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row className="user-add-row">
+              <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
+                <Label className={fontColor}>Phone <span style={{ color: 'red' }}>*</span> </Label>
+              </Col>
+              <Col md="6">
+                <FormGroup>
+                  <PhoneInput
+                    country="US"
+                    regions={['america', 'europe', 'asia', 'oceania', 'africa']}
+                    limitMaxLength="true"
+                    value={phoneNumber}
+                    onChange={phone => this.phoneChange(phone)}
+                  />
+                  {phoneNumberEntered && this.state.formSubmitted && (
+                    <div className={`required-user-field ${fontWeight}`}>
+                      {this.state.formErrors.phoneNumber}
+                    </div>
+                  )}
+                  <ToggleSwitch
+                    switchType="phone"
+                    state={this.state.userProfile.privacySettings?.phoneNumber}
+                    handleUserProfile={this.handleUserProfile}
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row className="user-add-row">
+              <Col md={{ size: 4 }} className="text-md-right my-2">
+                <Label className={fontColor}>Weekly Committed Hours <span style={{ color: 'red' }}>*</span></Label>
+              </Col>
+              <Col md="6">
+                <FormGroup>
+                  <Input
+                    type="number"
+                    name="weeklyCommittedHours"
+                    min={0}
+                    max={168}
+                    id="weeklyCommittedHours"
+                    value={this.state.userProfile.weeklyCommittedHours}
+                    onChange={(e) => this.handleUserProfile(e)}
+                    onKeyDown={event => {
+                      if (event.key === 'Backspace' || event.key === 'Delete') {
+                        this.setState({
+                          userProfile: {
+                            ...this.state.userProfile,
+                            [event.target.id]: "",
+                          },
+                          formValid: {
+                            ...this.state.formValid,
+                            [event.target.id]: false,
+                          },
+                          formErrors: {
+                            ...this.state.formErrors,
+                            weeklyCommittedHours: 'Committed hours can not be empty',
+                          },
+                        });
+                      }
+                    }}
+                    placeholder="Weekly Committed Hours"
+                    invalid={
+                      this.state.formValid.weeklyCommittedHours === undefined
+                        ? false
+                        : !this.state.formValid.weeklyCommittedHours
+                    }
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+                  />
+                  <FormFeedback className={fontWeight}>{this.state.formErrors.weeklyCommittedHours}</FormFeedback>
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row className="user-add-row">
+              <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
+                <Label className={fontColor}>Role</Label>
+              </Col>
+              <Col md="6">
+                <FormGroup>
+                  <Input
+                    type="select"
+                    name="role"
+                    id="role"
+                    defaultValue="Volunteer"
+                    onChange={(e) => this.handleUserProfile(e)}
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+                  >
+                    {this.props.role.roles.map(({ roleName }, index) => {
+                      if (roleName === 'Owner') return;
+                      return (
+                        <option value={roleName} key={index}>
+                          {roleName}
+                        </option>
+                      );
+                    })}
+                    {this.canAddDeleteEditOwners && <option value="Owner">Owner</option>}
+                  </Input>
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row className="user-add-row">
+              <Col md={{ size: 4 }} className="text-md-right my-2">
+                <Label className={fontColor}>Default Password</Label>
+              </Col>
+              <Col md="6">
+                <FormGroup>
+                  <CommonInput
+                    type="password"
+                    name="defaultPassword"
+                    id="defaultPassword"
+                    value={DEFAULT_PASSWORD}
+                    disabled
+                    readOnly
+                    
+                    className="d-flex justify-start items-start"
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+            {(role === 'Administrator' || role === 'Owner') && !PRODUCTION_IDENTITY_ENABLED && (
+              <>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label className={fontColor} >Name <span style={{ color: 'red' }}>*</span> </Label>
-                  </Col>
-                  <Col md="3">
-                    <FormGroup>
-                      <Input
-                        type="text"
-                        name="firstName"
-                        id="firstName"
-                        value={firstName}
-                        onChange={(e) => this.handleUserProfile(e)}
-                        placeholder="First Name"
-                        invalid={!!(this.state.formSubmitted && this.state.formErrors.firstName)}
-                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
-                      />
-                      {this.state.formSubmitted && this.state.formErrors.firstName && (
-                        <FormFeedback className={fontWeight}>
-                          {this.state.formErrors.firstName}
-                        </FormFeedback>
-                      )}
-                    </FormGroup>
-                  </Col>
-                  <Col md="3">
-                    <FormGroup>
-                      <Input
-                        type="text"
-                        name="lastName"
-                        id="lastName"
-                        value={lastName}
-                        onChange={(e) => this.handleUserProfile(e)}
-                        placeholder="Last Name"
-                        invalid={this.state.formSubmitted && (!!this.state.formErrors.lastName || lastName.length < 2)}
-                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
-                      />
-                      {this.state.formSubmitted && this.state.formErrors.lastName && (
-                        <FormFeedback className={fontWeight}>
-                          {this.state.formErrors.lastName}
-                        </FormFeedback>
-                      )}
-                    </FormGroup>
-                  </Col>
-                </Row>
-                <Row className="user-add-row">
-                  <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Job Title <span style={{ color: 'red' }}>*</span> </Label>
-                  </Col>
-                  <Col md={{ size: 6 }}>
-                    <FormGroup>
-                      <Input
-                        type="text"
-                        name="jobTitle"
-                        id="jobTitle"
-                        value={jobTitle}
-                        onChange={(e) => this.handleUserProfile(e)}
-                        placeholder="Job Title"
-                        invalid={!!(this.state.formSubmitted && this.state.formErrors.jobTitle)}
-                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
-                      />
-                      {this.state.formSubmitted && this.state.formErrors.jobTitle && (
-                        <FormFeedback className={fontWeight}>
-                          {this.state.formErrors.jobTitle}
-                        </FormFeedback>)}
-                    </FormGroup>
-                  </Col>
-                </Row>
-                <Row className="user-add-row">
-                  <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Email <span style={{ color: 'red' }}>*</span> </Label>
+                    <Label className={fontColor}>Actual Email</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
                       <Input
-                        type="email"
-                        name="email"
-                        id="email"
-                        value={email}
+                        type="actualEmail"
+                        name="actualEmail"
+                        id="actualEmail"
+                        value={actualEmail}
                         onChange={(e) => this.handleUserProfile(e)}
-                        placeholder="Email"
-                        invalid={!!(this.state.formSubmitted && this.state.formErrors.email)}
+                        placeholder="Actual Email"
+                        invalid={!!this.state.formErrors.actualEmail}
                         className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
-                      {this.state.formSubmitted && this.state.formErrors.email && (
-                        <FormFeedback className={fontWeight}>
-                          {this.state.formErrors.email}
-                        </FormFeedback>)}
-                      <ToggleSwitch
-                        switchType="email"
-                        state={this.state.userProfile.privacySettings?.email}
-                        handleUserProfile={this.handleUserProfile}
-                      />
-                    </FormGroup>
-                  </Col>
-                </Row>
-                <Row className="user-add-row">
-                  <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Phone <span style={{ color: 'red' }}>*</span> </Label>
-                  </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <PhoneInput
-                        country="US"
-                        regions={['america', 'europe', 'asia', 'oceania', 'africa']}
-                        limitMaxLength="true"
-                        value={phoneNumber}
-                        onChange={phone => this.phoneChange(phone)}
-                      />
-                      {phoneNumberEntered && this.state.formSubmitted && (
-                        <div className={`required-user-field ${fontWeight}`}>
-                          {this.state.formErrors.phoneNumber}
-                        </div>
-                      )}
-                      <ToggleSwitch
-                        switchType="phone"
-                        state={this.state.userProfile.privacySettings?.phoneNumber}
-                        handleUserProfile={this.handleUserProfile}
-                      />
+                      <FormFeedback className={fontWeight}>{this.state.formErrors.actualEmail}</FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Weekly Committed Hours <span style={{ color: 'red' }}>*</span></Label>
-                  </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <Input
-                        type="number"
-                        name="weeklyCommittedHours"
-                        min={0}
-                        max={168}
-                        id="weeklyCommittedHours"
-                        value={this.state.userProfile.weeklyCommittedHours}
-                        onChange={(e) => this.handleUserProfile(e)}
-                        onKeyDown={event => {
-                          if (event.key === 'Backspace' || event.key === 'Delete') {
-                            this.setState({
-                              userProfile: {
-                                ...this.state.userProfile,
-                                [event.target.id]: "",
-                              },
-                              formValid: {
-                                ...this.state.formValid,
-                                [event.target.id]: false,
-                              },
-                              formErrors: {
-                                ...this.state.formErrors,
-                                weeklyCommittedHours: 'Committed hours can not be empty',
-                              },
-                            });
-                          }
-                        }}
-                        placeholder="Weekly Committed Hours"
-                        invalid={
-                          this.state.formValid.weeklyCommittedHours === undefined
-                            ? false
-                            : !this.state.formValid.weeklyCommittedHours
-                        }
-                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
-                      />
-                      <FormFeedback className={fontWeight}>{this.state.formErrors.weeklyCommittedHours}</FormFeedback>
-                    </FormGroup>
-                  </Col>
-                </Row>
-                <Row className="user-add-row">
-                  <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Role</Label>
-                  </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <Input
-                        type="select"
-                        name="role"
-                        id="role"
-                        defaultValue="Volunteer"
-                        onChange={(e) => this.handleUserProfile(e)}
-                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
-                      >
-                        {this.props.role.roles.map(({ roleName }, index) => {
-                          if (roleName === 'Owner') return;
-                          return (
-                            <option value={roleName} key={index}>
-                              {roleName}
-                            </option>
-                          );
-                        })}
-                        {this.canAddDeleteEditOwners && <option value="Owner">Owner</option>}
-                      </Input>
-                    </FormGroup>
-                  </Col>
-                </Row>
-                <Row className="user-add-row">
-                  <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Default Password</Label>
+                    <Label className={fontColor}>Actual Password</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
                       <CommonInput
                         type="password"
-                        name="defaultPassword"
-                        id="defaultPassword"
-                        value={DEFAULT_PASSWORD}
-                        disabled
-                        readOnly
-                        
+                        name="actualPassword"
+                        id="actualPassword"
+                        value={actualPassword}
+                        onChange={(e) => this.handleUserProfile(e)}
+                        placeholder="Actual Password"
+                        invalid={!!this.state.formErrors.actualPassword}
                         className="d-flex justify-start items-start"
                       />
                     </FormGroup>
                   </Col>
                 </Row>
-                {(role === 'Administrator' || role === 'Owner') && (
-                  <>
-                    <Row className="user-add-row">
-                      <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                        <Label className={fontColor}>Actual Email</Label>
-                      </Col>
-                      <Col md="6">
-                        <FormGroup>
-                          <Input
-                            type="actualEmail"
-                            name="actualEmail"
-                            id="actualEmail"
-                            value={actualEmail}
-                            onChange={(e) => this.handleUserProfile(e)}
-                            placeholder="Actual Email"
-                            invalid={!!this.state.formErrors.actualEmail}
-                            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
-                          />
-                          <FormFeedback className={fontWeight}>{this.state.formErrors.actualEmail}</FormFeedback>
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                    <Row className="user-add-row">
-                      <Col md={{ size: 4 }} className="text-md-right my-2">
-                        <Label className={fontColor}>Actual Password</Label>
-                      </Col>
-                      <Col md="6">
-                        <FormGroup>
-                          <CommonInput
-                            type="password"
-                            name="actualPassword"
-                            id="actualPassword"
-                            value={actualPassword}
-                            onChange={(e) => this.handleUserProfile(e)}
-                            placeholder="Actual Password"
-                            invalid={!!this.state.formErrors.actualPassword}
-                            className="d-flex justify-start items-start"
-                          />
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                    <Row className="user-add-row">
-                      <Col md={{ size: 4 }} className="text-md-right my-2">
-                        <Label className={fontColor}>Confirm Actual Password</Label>
-                      </Col>
-                      <Col md="6">
-                        <FormGroup>
-                          <CommonInput
-                            type="password"
-                            name="actualConfirmedPassword"
-                            id="actualConfirmedPassword"
-                            value={actualConfirmedPassword}
-                            onChange={(e) => this.handleUserProfile(e)}
-                            placeholder="Confirm Actual Password"
-                            invalid={actualPassword !== actualConfirmedPassword ? "Passwords do not match" : ""}
-                            className="d-flex justify-start items-start"
-                          />
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                  </>
-                )}
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className={`weeklySummaryOptionsLabel ${fontColor}`}>Weekly Summary Options</Label>
-                  </Col>
-                  <Col md="6">
-                    <WeeklySummaryOptions handleUserProfile={this.handleUserProfile} />
-                  </Col>
-                </Row>
-                <Row className="user-add-row">
-                  <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Video Call Preference</Label>
+                    <Label className={fontColor}>Confirm Actual Password</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
-                      <Input
-                        type="text"
-                        name="collaborationPreference"
-                        id="collaborationPreference"
-                        value={this.state.userProfile.collaborationPreference}
+                      <CommonInput
+                        type="password"
+                        name="actualConfirmedPassword"
+                        id="actualConfirmedPassword"
+                        value={actualConfirmedPassword}
                         onChange={(e) => this.handleUserProfile(e)}
-                        placeholder="Skype, Zoom, etc."
-                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+                        placeholder="Confirm Actual Password"
+                        invalid={actualPassword !== actualConfirmedPassword ? "Passwords do not match" : ""}
+                        className="d-flex justify-start items-start"
                       />
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row className="user-add-row">
-                  <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Admin Document</Label>
-                  </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <Input
-                        type="text"
-                        name="googleDoc"
-                        id="googleDoc"
-                        value={this.state.userProfile.googleDoc}
-                        onChange={(e) => this.handleUserProfile(e)}
-                        placeholder="Google Doc"
-                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
-                      />
-                    </FormGroup>
-                  </Col>
-                </Row>
-                <Row className="user-add-row">
-                  <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Link to Media Files</Label>
-                  </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <Input
-                        type="text"
-                        name="dropboxDoc"
-                        id="dropboxDoc"
-                        value={this.state.userProfile.dropboxDoc}
-                        onChange={(e) => this.handleUserProfile(e)}
-                        placeholder="DropBox Folder"
-                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
-                      />
-                    </FormGroup>
-                  </Col>
-                </Row>
-                <Row className="user-add-row">
-                  <Col md={{ size: 4, offset: 0 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Location</Label>
-                  </Col>
-                  <Col md="6">
-                    <Row>
-                      <Col md="6">
-                        <Input id="location" onChange={this.handleLocation} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}/>
-                      </Col>
-                      <Col md="6">
-                        <div className="w-100 pt-1 mb-2 mx-auto">
-                          <Button
-                            color="secondary"
-                            block
-                            size="sm"
-                            onClick={this.onClickGetTimeZone}
-                            style={darkMode ? {} : boxStyle}
-                          >
-                            Get Time Zone
-                          </Button>
-                        </div>
-                      </Col>
-                    </Row>
-                  </Col>
-                </Row>
-                <Row className="user-add-row">
-                  <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Time Zone</Label>
-                  </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <TimeZoneDropDown
-                        filter={this.state.timeZoneFilter}
-                        onChange={(e) => this.handleUserProfile(e)}
-                        selected={'America/Los_Angeles'}
-                        id="timeZone"
-                      />
-                    </FormGroup>
-                  </Col>
-                </Row>
-                <Row className="user-add-row">
-                  <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Start Date</Label>
-                  </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <div className="date-picker-item">
-                        <DatePicker
-                          selected={this.state.userProfile.startDate}
-                          minDate={new Date()}
-                          onChange={date =>
-                            this.setState({
-                              userProfile: {
-                                ...this.state.userProfile,
-                                startDate: date == '' || date == null ? new Date() : date,
-                              },
-                            })
-                          }
-                          className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
-                        />
-                      </div>
-                    </FormGroup>
-                  </Col>
-                </Row>
-              </Form>
-            </Col>
-          </Row>
-          <Row>
-            <Col md="12">
-              <TabContent id="myTabContent" className={darkMode ? 'bg-yinmn-blue border-0' : ''}>
-                <TabPane>
-                  <ProjectsTab
-                    userProjects={this.state.projects}
-                    projectsData={this.props ? this.props.allProjects.projects : []}
-                    onAssignProject={this.onAssignProject}
-                    onDeleteProject={this.onDeleteProject}
-                    isUserAdmin={true}
-                    role={this.props.auth.user.role}
-                    edit
-                    darkMode={darkMode}
+              </>
+            )}
+            <Row className="user-add-row">
+              <Col md={{ size: 4 }} className="text-md-right my-2">
+                <Label className={`weeklySummaryOptionsLabel ${fontColor}`}>Weekly Summary Options</Label>
+              </Col>
+              <Col md="6">
+                <WeeklySummaryOptions handleUserProfile={this.handleUserProfile} />
+              </Col>
+            </Row>
+            <Row className="user-add-row">
+              <Col md={{ size: 4 }} className="text-md-right my-2">
+                <Label className={fontColor}>Video Call Preference</Label>
+              </Col>
+              <Col md="6">
+                <FormGroup>
+                  <Input
+                    type="text"
+                    name="collaborationPreference"
+                    id="collaborationPreference"
+                    value={this.state.userProfile.collaborationPreference}
+                    onChange={(e) => this.handleUserProfile(e)}
+                    placeholder="Skype, Zoom, etc."
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                   />
-                </TabPane>
-                <TabPane>
-                  <TeamsTab
-                    userTeams={this.state.teams}
-                    teamsData={this.props ? this.props.allTeams.allTeamsData : []}
-                    onAssignTeam={this.onAssignTeam}
-                    onAssignTeamCode={this.onAssignTeamCode}
-                    onDeleteTeam={this.onDeleteTeam}
-                    isUserAdmin={true}
-                    role={this.props.auth.user.role}
-                    teamCode={this.state.teamCode}
-                    canEditTeamCode={true}
-                    codeValid={this.state.codeValid}
-                    setCodeValid={this.setCodeValid}
-                    edit
-                    darkMode={darkMode}
-                    inputAutoComplete={this.state.inputAutoComplete}
-                    inputAutoStatus={this.state.inputAutoStatus}
-                    isLoading={this.state.isLoading}
-                    fetchTeamCodeAllUsers={this.fetchTeamCodeAllUsers}
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row className="user-add-row">
+              <Col md={{ size: 4 }} className="text-md-right my-2">
+                <Label className={fontColor}>Admin Document</Label>
+              </Col>
+              <Col md="6">
+                <FormGroup>
+                  <Input
+                    type="text"
+                    name="googleDoc"
+                    id="googleDoc"
+                    value={this.state.userProfile.googleDoc}
+                    onChange={(e) => this.handleUserProfile(e)}
+                    placeholder="Google Doc"
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                   />
-                </TabPane>
-              </TabContent>
-            </Col>
-          </Row>
-          <Row>
-            {/* <Col></Col> */}
-            <Col md="12">
-              <div className="w-50 pt-4 mx-auto">
-                <Button
-                  color="primary"
-                  block
-                  size="lg"
-                  data-testid="create-userProfile"
-                  onClick={() => this.createUserProfile(true)}
-                  style={darkMode ? boxStyleDark : boxStyle}
-                >
-                  Create
-                </Button>
-              </div>
-            </Col>
-          </Row>
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row className="user-add-row">
+              <Col md={{ size: 4 }} className="text-md-right my-2">
+                <Label className={fontColor}>Link to Media Files</Label>
+              </Col>
+              <Col md="6">
+                <FormGroup>
+                  <Input
+                    type="text"
+                    name="dropboxDoc"
+                    id="dropboxDoc"
+                    value={this.state.userProfile.dropboxDoc}
+                    onChange={(e) => this.handleUserProfile(e)}
+                    placeholder="DropBox Folder"
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row className="user-add-row">
+              <Col md={{ size: 4, offset: 0 }} className="text-md-right my-2">
+                <Label className={fontColor}>Location</Label>
+              </Col>
+              <Col md="6">
+                <Row>
+                  <Col lg="6" md="12">
+                    <Input id="location" onChange={this.handleLocation} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}/>
+                  </Col>
+                  <Col lg="6" md="12">
+                    <div className="w-100 pt-1 mb-2 mx-auto">
+                      <Button
+                        color="secondary"
+                        block
+                        size="sm"
+                        onClick={this.onClickGetTimeZone}
+                        style={darkMode ? {} : boxStyle}
+                      >
+                        Get Time Zone
+                      </Button>
+                    </div>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+            <Row className="user-add-row">
+              <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
+                <Label className={fontColor}>Time Zone</Label>
+              </Col>
+              <Col md="6">
+                <FormGroup>
+                  <TimeZoneDropDown
+                    filter={this.state.timeZoneFilter}
+                    onChange={(e) => this.handleUserProfile(e)}
+                    selected={'America/Los_Angeles'}
+                    id="timeZone"
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row className="user-add-row">
+              <Col md={{ size: 4 }} className="text-md-right my-2">
+                <Label className={fontColor}>Start Date</Label>
+              </Col>
+              <Col md="6">
+                <FormGroup>
+                  <div className="date-picker-item">
+                    <DatePicker
+                      selected={this.state.userProfile.startDate}
+                      minDate={new Date()}
+                      onChange={date =>
+                        this.setState({
+                          userProfile: {
+                            ...this.state.userProfile,
+                            startDate: date == '' || date == null ? new Date() : date,
+                          },
+                        })
+                      }
+                      className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+                    />
+                  </div>
+                </FormGroup>
+              </Col>
+            </Row>
+          </Form>
+       
+          <TabContent id="myTabContent" className={darkMode ? 'bg-yinmn-blue border-0' : ''}>
+            <TabPane>
+              <ProjectsTab
+                userProjects={this.state.projects}
+                projectsData={this.props ? this.props.allProjects.projects : []}
+                onAssignProject={this.onAssignProject}
+                onDeleteProject={this.onDeleteProject}
+                isUserAdmin={true}
+                role={this.props.auth.user.role}
+                edit
+                darkMode={darkMode}
+              />
+            </TabPane>
+            <TabPane>
+              <TeamsTab
+                userTeams={this.state.teams}
+                teamsData={this.props ? this.props.allTeams.allTeamsData : []}
+                onAssignTeam={this.onAssignTeam}
+                onAssignTeamCode={this.onAssignTeamCode}
+                onDeleteTeam={this.onDeleteTeam}
+                isUserAdmin={true}
+                role={this.props.auth.user.role}
+                teamCode={this.state.teamCode}
+                canEditTeamCode={true}
+                codeValid={this.state.codeValid}
+                setCodeValid={this.setCodeValid}
+                edit
+                darkMode={darkMode}
+                inputAutoComplete={this.state.inputAutoComplete}
+                inputAutoStatus={this.state.inputAutoStatus}
+                isLoading={this.state.isLoading}
+                fetchTeamCodeAllUsers={this.fetchTeamCodeAllUsers}
+              />
+            </TabPane>
+          </TabContent>
+      
+          <div className="w-50 pt-4 mx-auto">
+            <Button
+              color="primary"
+              block
+              size="lg"
+              data-testid="create-userProfile"
+              onClick={() => this.createUserProfile(false)}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Create
+            </Button>
+          </div>
+        
         </Container>
       </StickyContainer>
     );
@@ -745,6 +935,16 @@ class UserProfileAdd extends Component {
     } else if (this.state.teamCode && !this.state.codeValid) {
       toast.error('Team Code is invalid');
       return false;
+    } else if (
+      !PRODUCTION_IDENTITY_ENABLED &&
+      (role === 'Administrator' || role === 'Owner') &&
+      !this.state.userProfile.actualPassword
+    ) {
+      toast.error('Must use your Production sign-in password');
+      return false;
+    } else if (PRODUCTION_IDENTITY_ENABLED && !this.state.productionIdentityVerified) {
+      toast.error('Verify Production identity before creating this account.');
+      return false;
     } else if (role !== 'Administrator' && role !== 'Owner' && !defaultPassword) {
       toast.error('Default Password is required for non-admin users');
       return false;
@@ -773,7 +973,110 @@ class UserProfileAdd extends Component {
     else return false;
   };
 
-  createUserProfile = () => {
+  // Validates the Google Doc link (if provided) and appends it to userData.adminLinks.
+  // Returns true if creation should proceed, false if it should stop here.
+  validateAndAddGoogleDoc = (googleDoc, userData) => {
+    if (!googleDoc) return true;
+
+    if (isValidGoogleDocsUrl(googleDoc)) {
+      userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc.trim() });
+      return true;
+    }
+
+    toast.error('Invalid Google Doc link. Please provide a valid Google Doc URL.');
+    this.setState(prevState => ({
+      formValid: {
+        ...prevState.formValid,
+        googleDoc: false,
+      },
+      formErrors: {
+        ...prevState.formErrors,
+        googleDoc: 'Invalid Google Doc URL',
+      },
+    }));
+    return false;
+  };
+
+  // Validates the Dropbox/media link (if provided) and appends it to userData.adminLinks.
+  // Returns true if creation should proceed, false if it should stop here.
+  validateAndAddDropboxDoc = (dropboxDoc, userData) => {
+    if (!dropboxDoc) return true;
+
+    if (isValidMediaUrl(dropboxDoc)) {
+      userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc.trim() });
+      return true;
+    }
+
+    toast.error('Invalid DropBox link. Please provide a valid Drop Box URL.');
+    this.setState(prevState => ({
+      formValid: {
+        ...prevState.formValid,
+        dropboxDoc: false,
+      },
+      formErrors: {
+        ...prevState.formErrors,
+        dropboxDoc: 'Invalid Dropbox Link URL',
+      },
+    }));
+    return false;
+  };
+
+  // Centralized error handling for the createUser API call, extracted out of
+  // createUserProfile to keep that method's cognitive complexity in check.
+  handleCreateUserError = err => {
+    const res = err.response;
+    const status = res?.status;
+    const data = res?.data || {};
+
+    if (!res) {
+      toast.error(`Network error: ${err.message}`);
+      return;
+    }
+
+    // Handle Mongoose validation error cleanup
+    if (data?.errors && typeof data.errors === 'object') {
+      const firstErrorKey = Object.keys(data.errors)[0];
+      const firstError = data.errors[firstErrorKey];
+      const fieldName = firstError.path || firstErrorKey;
+      const message = firstError.message;
+
+      toast.error(`${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}: ${message}`);
+      return;
+    }
+
+    // Fallback to known type-based errors
+    if (data.type) {
+      switch (data.type) {
+        case 'email':
+          toast.error('Email already exists');
+          return;
+        case 'phoneNumber':
+          toast.error('Phone number already exists');
+          return;
+        case 'name':
+          toast.error('A user with this first and last name already exists');
+          return;
+        case 'credentials': {
+          // Prefer the backend’s explanation if available
+          const detail =
+            (typeof data.error === 'string' && data.error) ||
+            data?.error?.message ||
+            data?.message ||
+            '';
+          const suffix = detail ? `: ${detail}` : '';
+          toast.error(`Admin credentials were not accepted${suffix}`);
+          return;
+        }
+        default:
+          break;
+      }
+    }
+
+    // Generic fallback
+    toast.error(`Create failed${status ? ` (${status})` : ''}: ${data.error || 'Unknown error occurred.'}`);
+  };
+
+  createUserProfile = (skipDuplicateCheck = false) => {
     let that = this;
     const {
       firstName,
@@ -815,7 +1118,7 @@ class UserProfileAdd extends Component {
       collaborationPreference: collaborationPreference,
       timeZone: timeZone,
       location: location,
-      allowsDuplicateName: true,
+      allowsDuplicateName: skipDuplicateCheck,
       createdDate: createdDate,
       teamCode: this.state.teamCode,
       actualEmail: role === 'Administrator' || role === 'Owner' ? actualEmail : '',
@@ -823,119 +1126,71 @@ class UserProfileAdd extends Component {
       startDate: startDate,
     };
 
+    if (PRODUCTION_IDENTITY_ENABLED) {
+      userData.productionVerificationToken = this.state.productionVerificationToken;
+      delete userData.actualEmail;
+      delete userData.actualPassword;
+    }
+
     this.setState({ formSubmitted: true });
 
-    if (actualPassword != actualConfirmedPassword) {
+    if (!this.productionNameIsIncluded()) {
+      return;
+    }
+
+    if (
+      !PRODUCTION_IDENTITY_ENABLED &&
+      actualPassword != actualConfirmedPassword
+    ) {
       toast.error('Your passwords do not match!');
       return;
     }
 
-    if (googleDoc) {
-      if (isValidGoogleDocsUrl(googleDoc)) {
-        userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc.trim() });
-      } else {
-        toast.error('Invalid Google Doc link. Please provide a valid Google Doc URL.');
-        this.setState({
-          formValid: {
-            ...that.state.formValid,
-            googleDoc: false,
-          },
-          formErrors: {
-            ...that.state.formErrors,
-            googleDoc: 'Invalid Google Doc URL',
-          },
-        });
-        return;
-      }
+    if (!this.validateAndAddGoogleDoc(googleDoc, userData)) {
+      return;
     }
-    if (dropboxDoc) {
-      if (isValidMediaUrl(dropboxDoc)) {
-        userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc.trim() });
-      } else {
-        toast.error('Invalid DropBox link. Please provide a valid Drop Box URL.');
-        this.setState({
-          formValid: {
-            ...that.state.formValid,
-            dropboxDoc: false,
-          },
-          formErrors: {
-            ...that.state.formErrors,
-            dropboxDoc: 'Invalid Dropbox Link URL',
-          },
-        });
-        return;
-      }
+    if (!this.validateAndAddDropboxDoc(dropboxDoc, userData)) {
+      return;
     }
-    if (this.fieldsAreValid()) {
-      this.setState({ showphone: false });
-      if (!email.match(patt)) {
-        toast.error('Email is not valid. Please include @ followed by .com format');
-      } else {
-        createUser(userData)
-          .then(res => {
-            if (res.data.warning) {
-              toast.warn(res.data.warning);
-            } else {
-              toast.success('User profile created.');
-              // eslint-disable-next-line react/no-direct-mutation-state
-              this.state.userProfile._id = res.data._id;
-              if (this.state.teams.length > 0) {
-                this.state.teams.forEach(team => {
-                  this.props.addTeamMember(
-                    team._id,
-                    res.data._id,
-                    res.data.firstName,
-                    res.data.lastName,
-                  );
-                });
-              }
-            }
-            this.props.userCreated();
-          })
-          .catch(err => {
-            const res = err.response;
-            const status = res?.status;
-            const data = res?.data || {};
-
-            if (!res) {
-              toast.error(`Network error: ${err.message}`);
-              return;
-            }
-
-            // Handle Mongoose validation error cleanup
-            if (data?.errors && typeof data.errors === 'object') {
-              const firstErrorKey = Object.keys(data.errors)[0];
-              const firstError = data.errors[firstErrorKey];
-              const fieldName = firstError.path || firstErrorKey;
-              const message = firstError.message;
-          
-              toast.error(`${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}: ${message}`);
-              return;
-            }
-
-            // Fallback to known type-based errors
-            if (data.type) {
-              switch (data.type) {
-                case 'email':
-                  toast.error('Email already exists');
-                  return;
-                case 'phoneNumber':
-                  toast.error('Phone number already exists');
-                  return;
-                case 'name':
-                  toast.error('A user with this first and last name already exists');
-                  return;
-                case 'credentials':
-                  toast.error('Admin credentials were not accepted');
-                  return;
-              }
-            }
-
-            // Generic fallback
-            toast.error(`Create failed${status ? ` (${status})` : ''}: ${data.error || 'Unknown error occurred.'}`);
-          });
-      }
+    if (!this.fieldsAreValid()) {
+      return;
     }
+    if (!email.match(patt)) {
+      toast.error('Email is not valid. Please include @ followed by .com format');
+      return;
+    }
+    if (!skipDuplicateCheck && this.checkIfDuplicate(firstName, lastName)) {
+      this.setState({ popupOpen: true });
+      return;
+    }
+
+    this.setState({ showphone: false });
+    createUser(userData)
+      .then(res => {
+        if (res.data.warning) {
+          toast.warn(
+            typeof res.data.warning === 'string'
+              ? res.data.warning
+              : res.data.warning?.message || JSON.stringify(res.data.warning),
+          );
+        } else {
+          toast.success('User profile created.');
+          // eslint-disable-next-line react/no-direct-mutation-state
+          this.state.userProfile._id = res.data._id;
+          if (this.state.teams.length > 0) {
+            this.state.teams.forEach(team => {
+              this.props.addTeamMember(
+                team._id,
+                res.data._id,
+                res.data.firstName,
+                res.data.lastName,
+              );
+            });
+          }
+        }
+        this.props.userCreated();
+      })
+      .catch(err => this.handleCreateUserError(err));
   };
 
   handleImageUpload = async e => {
@@ -1235,7 +1490,7 @@ class UserProfileAdd extends Component {
           },
           formErrors: {
             ...formErrors,
-            actualPassword: event.target.value.length > 0 ? '' : 'Actual Password is required',
+            actualPassword: event.target.value.length > 0 ? '' : 'Must use your Production sign-in password',
           },
         });
         break;

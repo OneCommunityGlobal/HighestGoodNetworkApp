@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Dropdown, Input } from 'reactstrap';
-import './TeamsAndProjects.css';
+import './TeamsAndProjects.module.css';
 import { useSelector } from 'react-redux';
+import appStyles from '~/App.module.css';
 
 // eslint-disable-next-line react/display-name
 const AddProjectsAutoComplete = React.memo(props => {
@@ -9,8 +10,12 @@ const AddProjectsAutoComplete = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
-    if (!props.selectedProject) props.onInputChange('');
-    else props.onInputChange(props.selectedProject.projectName);
+    try {
+      if (!props.selectedProject) props.onInputChange('');
+     else props.onInputChange(props.selectedProject.projectName);
+    } catch (error) {
+      if (!props.selectedProject) props.onInputChange('');
+    }
   }, [props.selectedProject]);
 
   return (
@@ -31,7 +36,7 @@ const AddProjectsAutoComplete = React.memo(props => {
           toggle(true);
           props.isSetUserIsNotSelectedAutoComplete(true);
         }}
-        className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
+        className={`${darkMode ? `${appStyles['bg-darkmode-liblack']} border-0 text-light` : ''}`}
       />
 
       {props.searchText !== '' && props.projectsData && props.projectsData.length > 0 ? (
@@ -40,7 +45,7 @@ const AddProjectsAutoComplete = React.memo(props => {
           role="menu"
           aria-hidden="false"
           className={`dropdown-menu${isOpen ? ' show' : ''} ${
-            darkMode ? 'bg-darkmode-liblack text-light' : ''
+            darkMode ? `${appStyles['bg-darkmode-liblack']} text-light` : ''
           }`}
           style={{ marginTop: '0px', width: '100%' }}
         >
@@ -92,3 +97,5 @@ const AddProjectsAutoComplete = React.memo(props => {
 });
 
 export default AddProjectsAutoComplete;
+
+

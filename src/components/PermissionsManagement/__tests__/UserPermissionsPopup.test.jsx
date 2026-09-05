@@ -12,7 +12,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import thunk from 'redux-thunk';
 import mockAdminState from '__tests__/mockAdminState';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { toast } from 'react-toastify';
 import axios from 'axios';
@@ -20,7 +20,7 @@ import { themeMock } from '__tests__/mockStates';
 import { ModalContext } from '~/context/ModalContext';
 import UserPermissionsPopUp from '../UserPermissionsPopUp';
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 let store;
 
 const mockModalContext = {
@@ -153,7 +153,7 @@ describe('UserPermissionsPopup component', () => {
         email: 'Test2.Manager@gmail.com',
       },
     });
-    axios.put.mockResolvedValue({ status: 200 });
+    axios.patch.mockResolvedValue({ status: 200 });
 
     render(
       <Provider store={store}>
@@ -168,8 +168,8 @@ describe('UserPermissionsPopup component', () => {
     await waitFor(() => {
       expect(toast.success).toHaveBeenCalledWith(
         `
-        Permissions have been updated successfully. 
-        Please inform the user to log out and log back in for the new permissions to take effect.`,
+            Permissions have been updated successfully. 
+            Please inform the user to log out and log back in for the new permissions to take effect.`,
         {
           autoClose: 10000,
         },
@@ -187,7 +187,7 @@ describe('UserPermissionsPopup component', () => {
         email: 'Test2.Manager@gmail.com',
       },
     });
-    axios.put.mockResolvedValue({ status: 200 });
+    axios.patch.mockResolvedValue({ status: 200 });
 
     render(
       <Provider store={store}>
@@ -201,8 +201,8 @@ describe('UserPermissionsPopup component', () => {
     await waitFor(() => {
       expect(toast.success).not.toHaveBeenCalledWith(
         `
-        Permissions have been updated successfully. 
-        Please inform the user to log out and log back in for the new permissions to take effect.`,
+            Permissions have been updated successfully. 
+            Please inform the user to log out and log back in for the new permissions to take effect.`,
         {
           autoClose: 10000,
         },
@@ -220,7 +220,7 @@ describe('UserPermissionsPopup component', () => {
         email: 'Test2.Manager@gmail.com',
       },
     });
-    axios.put.mockRejectedValue({ err: 'server error' });
+    axios.patch.mockRejectedValue({ err: 'server error' });
     render(
       <Provider store={store}>
         <ModalContext.Provider value={mockModalContext}>
@@ -237,7 +237,7 @@ describe('UserPermissionsPopup component', () => {
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
         `
-        Permission updated failed. ${mockObject}
+          Permission update failed. ${mockObject}
         `,
         {
           autoClose: 10000,

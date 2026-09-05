@@ -19,55 +19,130 @@ import {
   getFirstName,
   getLastName,
   assignBadges,
-  assignBadgesByUserID,
+  assignBadgesToMultipleUserID,
   clearNameAndSelected,
   closeAlert,
   validateBadges,
   getUserId,
 } from '../../actions/badgeManagement';
 import { getAllUserProfile } from '../../actions/userManagement';
-import '../Header/DarkMode.css';
+import '../Header/index.module.css';
+
+const matchesName = (user, trimmedName) => {
+  const userFullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+  return userFullName.includes(trimmedName.toLowerCase());
+};
+
+const getFilteredUsers = (fullName, allUserProfiles) => {
+  if (typeof fullName !== 'string') throw new Error('Full name must be a string');
+  const trimmedName = fullName.trim();
+  if (!trimmedName) return null;
+  return allUserProfiles.filter(user => matchesName(user, trimmedName));
+};
+
+const toggleSelection = (prev, id) => {
+  if (prev.includes(id)) return prev.filter(existing => existing !== id);
+  return [...prev, id];
+};
+
+function doToggle(isOpen, didSubmit, selectedUserIds, onSubmit, setOpen, props) {
+  if (isOpen && didSubmit === true) {
+    onSubmit();
+  } else if (selectedUserIds?.length > 0) {
+    setOpen(prev => !prev);
+  } else {
+    props.validateBadges(props.firstName, props.lastName);
+  }
+}
+
+function UserList({ filteredUsers, fullName, darkMode, selectedUserIds, onUserSelect }) {
+  if (filteredUsers.length > 0) {
+    return (
+      <div className="table-responsive mb-3">
+        <Table
+          className={`table table-bordered ${darkMode ? 'dark-mode bg-yinmn-blue text-light' : ''}`}
+        >
+          <thead>
+            <tr className={darkMode ? 'bg-space-cadet text-light' : 'table-primary'}>
+              <th>Select</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredUsers.map(user => (
+              <tr
+                key={user._id}
+                onClick={() => onUserSelect(user)}
+                style={{
+                  cursor: 'pointer',
+                  backgroundColor: selectedUserIds?.includes(user._id) ? '#e9ecef' : '',
+                }}
+                className={
+                  darkMode && selectedUserIds?.includes(user._id) ? 'bg-dark text-light' : ''
+                }
+              >
+                <td>
+                  <input
+                    type="checkbox"
+                    name="user"
+                    checked={selectedUserIds?.includes(user._id)}
+                    readOnly
+                  />
+                </td>
+                <td>{user.firstName}</td>
+                <td>{user.lastName}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
+    );
+  }
+  if (fullName) {
+    return (
+      <p className={`${darkMode ? 'text-light' : 'text-dark'} text-center`}>No user is found.</p>
+    );
+  }
+  return null;
+}
 
 function AssignBadge(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [isOpen, setOpen] = useState(false);
   const [fullName, setFullName] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
-  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedUserIds, setSelectedUserIds] = useState([]);
+  const selectedBadges = useSelector(state => state.badge.selectedBadges || []);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    props.getAllUserProfile();
-    props.clearNameAndSelected();
-    props.closeAlert();
+    const fetchData = async () => {
+      await props.getAllUserProfile();
+      props.clearNameAndSelected();
+      props.closeAlert();
+    };
+    fetchData();
   }, []);
 
   useEffect(() => {
     try {
-      if (typeof fullName !== 'string') {
-        throw new Error('Full name must be a string');
-      }
-
-      const trimmedName = fullName.trim();
-      if (trimmedName) {
-        const filtered = props.allUserProfiles.filter(user => {
-          const userFullName = `${user.firstName} ${user.lastName}`.toLowerCase();
-          return userFullName.includes(trimmedName.toLowerCase());
-        });
-        setFilteredUsers(filtered);
-      } else {
+      const filtered = getFilteredUsers(fullName, props.allUserProfiles);
+      if (filtered === null) {
         setFilteredUsers([]);
-        // Clear selectedUserId when input is empty
-        setSelectedUserId(null);
+        setSelectedUserIds([]);
         props.clearNameAndSelected();
+        setError(null);
+        return;
       }
+      setFilteredUsers(filtered);
       setError(null);
     } catch (err) {
+      /* eslint-disable no-console */
       console.error('Error filtering users:', err);
       setError(err.message);
       setFilteredUsers([]);
-      // Also clear selection on error
-      setSelectedUserId(null);
+      setSelectedUserIds([]);
       props.clearNameAndSelected();
     }
   }, [fullName, props.allUserProfiles]);
@@ -77,44 +152,25 @@ function AssignBadge(props) {
   };
 
   const handleUserSelect = user => {
-    if (selectedUserId === user._id) {
-      setSelectedUserId(null);
+    setSelectedUserIds(prev => toggleSelection(prev, user._id));
+  };
+
+  const submit = async () => {
+    if (selectedUserIds?.length > 0 && props.selectedBadges?.length > 0) {
+      await props.assignBadgesToMultipleUserID(selectedUserIds, props.selectedBadges);
+      setOpen(false);
+      setSelectedUserIds([]);
       props.clearNameAndSelected();
-    } else {
-      setSelectedUserId(user._id);
-      props.getFirstName(user.firstName);
-      props.getLastName(user.lastName);
-      props.getUserId(user._id);
     }
   };
 
-  const toggle = (didSubmit = false) => {
-    const { selectedBadges, firstName, lastName, userId } = props;
-    if (isOpen && didSubmit === true) {
-      if (userId) {
-        props.assignBadgesByUserID(userId, selectedBadges);
-      } else {
-        props.assignBadges(firstName, lastName, selectedBadges);
-      }
-      setOpen(prevIsOpen => !prevIsOpen);
-      props.clearNameAndSelected();
-      setSelectedUserId(null);
-    } else if (firstName && lastName) {
-      setOpen(prevIsOpen => !prevIsOpen);
-    } else {
-      props.validateBadges(firstName, lastName);
-    }
-  };
-
-  const submit = () => {
-    toggle(true);
-  };
+  const toggle = (didSubmit = false) =>
+    doToggle(isOpen, didSubmit, selectedUserIds, submit, setOpen, props);
 
   return (
     <Form
       className={`container-fluid ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
       style={{ padding: 20 }}
-      onSubmit={e => e.preventDefault()}
     >
       <div className="row align-items-center mb-3">
         <Label
@@ -139,10 +195,10 @@ function AssignBadge(props) {
           >
             <p className="badge_info_icon_text">
               Start typing a name and a list of the active members (matching what you type) will be
-              auto-generated. Then you........ CHOOSE ONE!
+              auto-generated. Then you can select one or multiple users.
             </p>
             <p className="badge_info_icon_text">
-              After selecting a person, click &quot;Assign Badge&quot; and choose one or multiple
+              After selecting users, click &quot;Assign Badge&quot; and choose one or multiple
               badges. Click &quot;confirm&quot; then &quot;submit&quot; and those badges will be
               assigned.
             </p>
@@ -154,85 +210,57 @@ function AssignBadge(props) {
             placeholder="Full Name"
             value={fullName}
             onChange={handleFullNameChange}
-            className={`form-control ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
+            className={`form-control col-sm-12 ${
+              darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''
+            }`}
           />
         </div>
       </div>
-
       {error && (
         <Alert color="danger" className="mt-3">
           {error}
         </Alert>
       )}
 
-      {filteredUsers.length > 0 && (
-        <div className="table-responsive mb-3">
-          <Table
-            className={`table table-bordered ${
-              darkMode ? 'dark-mode bg-yinmn-blue text-light' : ''
-            }`}
-          >
-            <thead>
-              <tr className={darkMode ? 'bg-space-cadet text-light' : 'table-primary'}>
-                <th>Select</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.map(user => (
-                <tr
-                  key={user._id}
-                  onClick={() => handleUserSelect(user)}
-                  style={{
-                    cursor: 'pointer',
-                    backgroundColor: selectedUserId === user._id ? '#e9ecef' : '',
-                  }}
-                  className={darkMode && selectedUserId === user._id ? 'bg-dark text-light' : ''}
-                >
-                  <td>
-                    <input
-                      type="radio"
-                      name="user"
-                      checked={selectedUserId === user._id}
-                      readOnly
-                    />
-                  </td>
-                  <td>{user.firstName}</td>
-                  <td>{user.lastName}</td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </div>
-      )}
+      <UserList
+        filteredUsers={filteredUsers}
+        fullName={fullName}
+        darkMode={darkMode}
+        selectedUserIds={selectedUserIds}
+        onUserSelect={handleUserSelect}
+      />
       <FormGroup className="mb-3">
         <Button
           className="btn--dark-sea-green"
           onClick={toggle}
-          style={darkMode ? { ...boxStyleDark, margin: 20 } : { ...boxStyle, margin: 20 }}
-          disabled={!selectedUserId}
+          style={darkMode ? { ...boxStyleDark } : { ...boxStyle }}
+          disabled={selectedUserIds?.length === 0}
         >
           Assign Badge
         </Button>
-        <Modal isOpen={isOpen} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
-          <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggle}>
+        <Modal
+          isOpen={isOpen}
+          toggle={() => toggle(false)}
+          backdrop="static"
+          className={darkMode ? 'text-light dark-mode' : ''}
+        >
+          <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={() => toggle(false)}>
             Assign Badge
           </ModalHeader>
           <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
             <AssignBadgePopup
               allBadgeData={props.allBadgeData}
-              submit={submit}
-              selectedBadges={props.selectedBadges}
+              submit={() => toggle(true)}
+              selectedBadges={selectedBadges}
             />
           </ModalBody>
         </Modal>
         <FormText color={darkMode ? 'white' : 'muted'}>
-          Please select a badge from the badge list.
+          Please select badge(s) from the badge list.
         </FormText>
         <Alert color="dark" className="mt-3">
-          {' '}
-          {props.selectedBadges ? props.selectedBadges.length : '0'} badges selected
+          {selectedUserIds?.length} user(s) selected,
+          {selectedBadges?.length} badge(s) selected
         </Alert>
       </FormGroup>
     </Form>
@@ -240,7 +268,7 @@ function AssignBadge(props) {
 }
 
 const mapStateToProps = state => ({
-  selectedBadges: state.badge.selectedBadges,
+  selectedBadges: state.badge.selectedBadges || [],
   firstName: state.badge.firstName,
   lastName: state.badge.lastName,
   userId: state.badge.userId,
@@ -257,7 +285,8 @@ const mapDispatchToProps = dispatch => ({
   getUserId: userId => dispatch(getUserId(userId)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
   clearNameAndSelected: () => dispatch(clearNameAndSelected()),
-  assignBadgesByUserID: (id, selectedBadge) => dispatch(assignBadgesByUserID(id, selectedBadge)),
+  assignBadgesToMultipleUserID: (userIds, selectedBadges) =>
+    dispatch(assignBadgesToMultipleUserID(userIds, selectedBadges)),
   assignBadges: (firstName, lastName, selectedBadge) =>
     dispatch(assignBadges(firstName, lastName, selectedBadge)),
   validateBadges: (firstName, lastName) => dispatch(validateBadges(firstName, lastName)),

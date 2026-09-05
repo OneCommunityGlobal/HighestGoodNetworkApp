@@ -4,9 +4,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faSave } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { getAllUserProfile } from '../../actions/userManagement';
+import { getAllUserProfile, finishUserInfoUpdate } from '../../actions/userManagement';
 import { ENDPOINTS } from '~/utils/URL';
 import userTableDataPermissions from '../../utils/userTableDataPermissions';
+import PropTypes from 'prop-types';
 import {
   ACTIVE,
   FIRST_NAME,
@@ -21,6 +22,7 @@ import {
   USER_START_DATE,
   USER_END_DATE,
 } from '../../languages/en/ui';
+import styles from './usermanagement.module.css';
 
 /**
  * The header row of the user table.
@@ -34,6 +36,11 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
         const response = await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE, updatedData);
         if (response.status === 200) {
           const toastId = toast.success(' Saving Data...', { autoClose: false });
+          // Clear the pending edit queue now that it has been saved successfully.
+          // Without this, these edits would remain queued and get resubmitted
+          // (replayed) the next time any user's info is saved, silently
+          // overwriting that user's data with stale values.
+          dispatch(finishUserInfoUpdate());
           await dispatch(getAllUserProfile());
           toast.update(toastId, {
             render: 'Data Updated successfully !',
@@ -62,11 +69,11 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
       <tr className={darkMode ? 'bg-space-cadet' : ''}
           style={{fontSize: isMobile ? mobileFontSize : 'initial'}}
       >
-        <th scope="col" id="usermanagement_active" style={darkModeStyle}>
+        <th scope="col" className={styles.userManagementColActive} style={darkModeStyle}>
           {ACTIVE}
         </th>
         <th scope="col" id="usermanagement_first" className="p-auto" style={darkModeStyle}>
-          <div className="text-center flex">
+        <div className={styles.userManagementHeaderCell}>
             <span className="m-auto">{FIRST_NAME}</span>
             {(() => {
               if (authRole === 'Owner') {
@@ -74,7 +81,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                   return (
                     <FontAwesomeIcon
                       icon={faEdit}
-                      className="editbutton"
+                      className={styles.editbutton}
                       onClick={() => enableEdit({ ...editFlag, first: 0 })}
                     />
                   );
@@ -82,7 +89,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                 return (
                   <FontAwesomeIcon
                     icon={faSave}
-                    className="editbutton"
+                    className={styles.editbutton}
                     onClick={() => disableEdit({ ...editFlag, first: 1 })}
                   />
                 );
@@ -92,7 +99,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
           </div>
         </th>
         <th scope="col" id="usermanagement_last_name" className="" style={darkModeStyle}>
-          <div className="text-center">
+        <div className={styles.userManagementHeaderCell}>
             <span className="m-auto">{LAST_NAME}</span>
             {(() => {
               if (authRole === 'Owner') {
@@ -100,7 +107,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                   return (
                     <FontAwesomeIcon
                       icon={faEdit}
-                      className="editbutton"
+                      className={styles.editbutton}
                       onClick={() => enableEdit({ ...editFlag, last: 0 })}
                     />
                   );
@@ -108,7 +115,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                 return (
                   <FontAwesomeIcon
                     icon={faSave}
-                    className="editbutton"
+                    className={styles.editbutton}
                     onClick={() => disableEdit({ ...editFlag, last: 1 })}
                   />
                 );
@@ -117,8 +124,8 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
             })()}
           </div>
         </th>
-        <th scope="col" id="usermanagement_role" style={darkModeStyle}>
-          <div className="text-center">
+        <th scope="col" className={styles.roleCell} style={darkModeStyle}>
+        <div className={styles.userManagementHeaderCell}>
             <span className="m-auto">{ROLE}</span>
             {(() => {
               if (authRole === 'Owner') {
@@ -126,7 +133,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                   return (
                     <FontAwesomeIcon
                       icon={faEdit}
-                      className="editbutton"
+                      className={styles.editbutton}
                       onClick={() => enableEdit({ ...editFlag, role: 0 })}
                     />
                   );
@@ -134,7 +141,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                 return (
                   <FontAwesomeIcon
                     icon={faSave}
-                    className="editbutton"
+                    className={styles.editbutton}
                     onClick={() => disableEdit({ ...editFlag, role: 1 })}
                   />
                 );
@@ -143,9 +150,9 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
             })()}
           </div>
         </th>
-        <th scope="col" id="usermanagement_title" style={darkModeStyle}>
+        <th scope="col" className={styles.titleClamp} style={darkModeStyle}>
           <div>
-            <div className="text-center">
+          <div className={styles.userManagementHeaderCell}>
               <span className="m-auto">{TITLE}</span>
               {(() => {
                 if (authRole === 'Owner') {
@@ -153,7 +160,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                     return (
                       <FontAwesomeIcon
                         icon={faEdit}
-                        className="editbutton"
+                        className={styles.editbutton}
                         onClick={() => enableEdit({ ...editFlag, jobTitle: 0 })}
                       />
                     );
@@ -161,7 +168,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                   return (
                     <FontAwesomeIcon
                       icon={faSave}
-                      className="editbutton"
+                      className={styles.editbutton}
                       onClick={() => disableEdit({ ...editFlag, jobTitle: 1 })}
                     />
                   );
@@ -173,7 +180,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
         </th>
 
         <th scope="col" id="usermanagement_email" style={darkModeStyle}>
-          <div className="text-center">
+        <div className={styles.userManagementHeaderCell}>
             <span className="m-auto text-center">{EMAIL}</span>
             {(() => {
               if (authRole === 'Owner') {
@@ -181,7 +188,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                   return (
                     <FontAwesomeIcon
                       icon={faEdit}
-                      className="editbutton"
+                      className={styles.editbutton}
                       onClick={() => enableEdit({ ...editFlag, email: 0 })}
                     />
                   );
@@ -189,7 +196,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                 return (
                   <FontAwesomeIcon
                     icon={faSave}
-                    className="editbutton"
+                    className={styles.editbutton}
                     onClick={() => disableEdit({ ...editFlag, email: 1 })}
                   />
                 );
@@ -199,7 +206,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
           </div>
         </th>
         <th scope="col" id="usermanagement_hrs" style={darkModeStyle}>
-          <div className="text-center">
+        <div className={styles.userManagementHeaderCell}>
             <span className="m-auto">{WKLY_COMMITTED_HRS}</span>
             {(() => {
               if (authRole === 'Owner') {
@@ -207,7 +214,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                   return (
                     <FontAwesomeIcon
                       icon={faEdit}
-                      className="editbutton"
+                      className={styles.editbutton}
                       onClick={() => enableEdit({ ...editFlag, weeklycommittedHours: 0 })}
                     />
                   );
@@ -215,7 +222,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                 return (
                   <FontAwesomeIcon
                     icon={faSave}
-                    className="editbutton"
+                    className={styles.editbutton}
                     onClick={() => disableEdit({ ...editFlag, weeklycommittedHours: 1 })}
                   />
                 );
@@ -252,12 +259,12 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
           <div className="text-center m-auto">{MANAGE_FINAL_DAY}</div>
         </th>
 
-        <th scope="col" id="usermanagement_resume_date" style={darkModeStyle}>
+        <th scope="col" className={styles.userManagementColResumeDate} style={darkModeStyle}>
           <div className="text-center m-auto">{USER_RESUME_DATE}</div>
         </th>
 
-        <th scope="col" id="usermanagement_resume_date" style={darkModeStyle}>
-          <div className="text-center">
+        <th scope="col" className={styles.userManagementColResumeDate} style={darkModeStyle}>
+        <div className={styles.userManagementHeaderCell}>
             <span className="m-auto text-center">{USER_START_DATE}</span>
             {(() => {
               if (authRole === 'Owner') {
@@ -265,7 +272,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                   return (
                     <FontAwesomeIcon
                       icon={faEdit}
-                      className="editbutton"
+                      className={styles.editbutton}
                       onClick={() => enableEdit({ ...editFlag, startDate: 0 })}
                     />
                   );
@@ -273,7 +280,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                 return (
                   <FontAwesomeIcon
                     icon={faSave}
-                    className="editbutton"
+                    className={styles.editbutton}
                     onClick={() => disableEdit({ ...editFlag, startDate: 1 })}
                   />
                 );
@@ -283,8 +290,8 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
           </div>
         </th>
 
-        <th scope="col" id="usermanagement_resume_date" style={darkModeStyle}>
-          <div className="text-center">
+        <th scope="col" className={styles.userManagementColResumeDate} style={darkModeStyle}>
+        <div className={styles.userManagementHeaderCell}>
             <span className="m-auto text-center">{USER_END_DATE}</span>
             {(() => {
               if (authRole === 'Owner') {
@@ -292,7 +299,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                   return (
                     <FontAwesomeIcon
                       icon={faEdit}
-                      className="editbutton"
+                      className={styles.editbutton}
                       onClick={() => enableEdit({ ...editFlag, endDate: 0 })}
                     />
                   );
@@ -300,7 +307,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                 return (
                   <FontAwesomeIcon
                     icon={faSave}
-                    className="editbutton"
+                    className={styles.editbutton}
                     onClick={() => disableEdit({ ...editFlag, endDate: 1 })}
                   />
                 );
@@ -311,11 +318,23 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
         </th>
 
         {userTableDataPermissions(authRole, roleSearchText) && (
-          <th scope="col" id="usermanagement_delete" aria-label="Delete User" style={darkModeStyle} />
+          <th scope="col" className={styles.userManagementColDelete} aria-label="Delete User" style={darkModeStyle} />
         )}
       </tr>
     );
   };
+
+UserTableHeaderComponent.propTypes = {
+  authRole: PropTypes.string.isRequired,
+  roleSearchText: PropTypes.string,
+  darkMode: PropTypes.bool,
+  editUser: PropTypes.object,
+  enableEditUserInfo: PropTypes.func.isRequired,
+  disableEditUserInfo: PropTypes.func.isRequired,
+  isMobile: PropTypes.bool,
+  mobileFontSize: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+ 
+};
 
 const UserTableHeader = React.memo(UserTableHeaderComponent);
 UserTableHeader.displayName = 'UserTableHeader';

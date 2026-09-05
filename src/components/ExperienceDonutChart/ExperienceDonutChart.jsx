@@ -1,32 +1,75 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Pie } from 'react-chartjs-2';
-import 'chart.js/auto';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
-import './ExperienceDonutChart.css';
+﻿import { useEffect, useMemo, useState } from 'react';
+import { useSelector } from 'react-redux';
+import axios from 'axios'; // Added axios import to fix network request errors
+import { PieChart, Pie, Cell, ResponsiveContainer, Sector } from 'recharts';
+import styles from './ExperienceDonutChart.module.css';
 
-function LoadingSpinner() {
-  return <div className="spinner">Loading...</div>;
+const SEGMENT_COLORS = [
+  '#FF6384',
+  '#36A2EB',
+  '#FFCE56',
+  '#4BC0C0',
+  '#FF9F40',
+  '#8B5CF6',
+  '#10B981',
+];
+
+const EXPERIENCE_LABELS = ['0-1 years', '1-3 years', '3-5 years', '5+ years'];
+
+function getContrastColor(hexColor) {
+  const hex = hexColor.replace('#', '');
+  const bigint = parseInt(hex, 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  return brightness > 150 ? '#111827' : '#ffffff';
 }
 
-function ExperienceDonutChart() {
+function Spinner() {
+  return (
+    <div className={styles['spinner-container']} role="status" aria-live="polite" aria-busy="true">
+      <div className={styles.spinner} />
+      <p>Loading…</p>
+    </div>
+  );
+}
+
+const TODAY = new Date().toISOString().split('T')[0];
+
+const PREFERS_REDUCED_MOTION =
+  typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    : false;
+
+export default function ExperienceDonutChart() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [selectedRoles, setSelectedRoles] = useState([]);
 
+  const [appliedFilters, setAppliedFilters] = useState({ startDate: '', endDate: '', roles: [] });
+
   const [chartData, setChartData] = useState(null);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const segmentColors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'];
-  const experienceLabels = ['0-1 years', '1-3 years', '3-5 years', '5+ years'];
+  const darkMode = useSelector(state => state.theme.darkMode);
 
-  // Helper to fetch data with given filters
-  const fetchDataWithFilters = async ({
-    startDate: filterStartDate,
-    endDate: filterEndDate,
-    roles: filterRoles,
-  }) => {
+  const hasFilters = useMemo(
+    () =>
+      Boolean(
+        appliedFilters.startDate ||
+          appliedFilters.endDate ||
+          (appliedFilters.roles?.length ?? 0) > 0 ||
+          startDate ||
+          endDate ||
+          selectedRoles.length > 0,
+      ),
+    [appliedFilters, startDate, endDate, selectedRoles],
+  );
+
+  const fetchData = async () => {
     setLoading(true);
     setError(null);
 
@@ -34,14 +77,17 @@ function ExperienceDonutChart() {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No token found. Please log in.');
 
-      const url = 'http://localhost:4500/api/experience-breakdown';
+      // Fixed API endpoint path to include /applicant-analytics
+      const url = `${process.env.REACT_APP_APIENDPOINT}/applicant-analytics/experience-breakdown`;
       const params = {};
 
-      if (filterStartDate && filterEndDate) {
-        params.startDate = filterStartDate;
-        params.endDate = filterEndDate;
-      } else if (filterRoles && filterRoles.length > 0) {
-        params.roles = filterRoles.join(',');
+      // Replaced undefined filter variables with correctly scoped appliedFilters
+      if (appliedFilters.startDate && appliedFilters.endDate) {
+        params.startDate = appliedFilters.startDate;
+        params.endDate = appliedFilters.endDate;
+      }
+      if (appliedFilters.roles && appliedFilters.roles.length > 0) {
+        params.roles = appliedFilters.roles.join(',');
       }
 
       const response = await axios.get(url, {
@@ -53,177 +99,362 @@ function ExperienceDonutChart() {
 
       if (!data || data.length === 0) {
         setChartData(null);
-        setLoading(false);
+        setTotal(0);
         return;
       }
 
-      const counts = experienceLabels.map(label => {
+      // Re-formatted chart data as an array of objects for Recharts compatibility
+      const formattedData = EXPERIENCE_LABELS.map((label, index) => {
         const found = data.find(d => d.experience === label);
-        return found ? found.count : 0;
+        return {
+          name: label,
+          value: found ? found.count : 0,
+          color: SEGMENT_COLORS[index % SEGMENT_COLORS.length], // Fixed case sensitivity for constants
+        };
       });
 
-      const totalCount = counts.reduce((a, b) => a + b, 0);
+      const totalCount = formattedData.reduce((a, b) => a + b.value, 0);
 
-      const chart = {
-        labels: experienceLabels,
-        datasets: [
-          {
-            data: counts,
-            backgroundColor: segmentColors,
-            hoverOffset: 20,
-          },
-        ],
-      };
-
-      setChartData({ chart, totalCount });
+      setChartData(formattedData);
+      setTotal(totalCount); // Added state update for chart center total
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Error fetching data.');
       setChartData(null);
+      setTotal(0);
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch initial data with no filters
   useEffect(() => {
-    fetchDataWithFilters({ startDate: '', endDate: '', roles: [] });
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appliedFilters]);
+
+  const visibleChartData = useMemo(() => chartData?.filter(d => d.value > 0) ?? [], [chartData]);
+
+  // Hide counts until the sweep animation finishes so they don't bleed through
+  const [animationDone, setAnimationDone] = useState(false);
+  useEffect(() => {
+    setAnimationDone(PREFERS_REDUCED_MOTION);
+  }, [chartData]);
+
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' && window.innerWidth < 450,
+  );
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 450);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
+  const pieMargin = isMobile
+    ? { top: 5, right: 5, bottom: 5, left: 5 }
+    : { top: 20, right: 115, bottom: 20, left: 115 };
 
-  // Handle Roles change: clear dates, fetch by roles
-  const handleRoleChange = e => {
-    const newRoles = Array.from(e.target.selectedOptions, option => option.value);
-    setSelectedRoles(newRoles);
-
-    // Clear dates
-    if (startDate !== '' || endDate !== '') {
-      setStartDate('');
-      setEndDate('');
-    }
-
-    fetchDataWithFilters({ roles: newRoles, startDate: '', endDate: '' });
+  // Renders the hovered segment with a slightly larger outer radius
+  const renderActiveShape = props => {
+    const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
+    return (
+      <Sector
+        cx={cx}
+        cy={cy}
+        innerRadius={innerRadius - 3}
+        outerRadius={outerRadius + 10}
+        startAngle={startAngle}
+        endAngle={endAngle}
+        fill={fill}
+      />
+    );
   };
 
-  // Handle Start Date change: clear roles, fetch if endDate present
-  const handleStartDateChange = e => {
-    const newStart = e.target.value;
-    setStartDate(newStart);
-
-    if (selectedRoles.length > 0) {
-      setSelectedRoles([]);
-    }
-
-    if (newStart && endDate) {
-      fetchDataWithFilters({ startDate: newStart, endDate, roles: [] });
-    }
+  // Draws the count at the visual center of each segment — only after animation completes
+  const renderInsideCount = ({ cx, cy, midAngle, innerRadius, outerRadius, value, index }) => {
+    if (!value || !animationDone) return null;
+    const isHovered = index === hoveredIndex;
+    const RADIAN = Math.PI / 180;
+    // Push centroid outward slightly when hovered to stay centered in the expanded segment
+    const expandedOuter = isHovered ? outerRadius + 10 : outerRadius;
+    const radius = (innerRadius - (isHovered ? 3 : 0) + expandedOuter) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+    return (
+      <text
+        x={x}
+        y={y}
+        textAnchor="middle"
+        dominantBaseline="central"
+        fill={getContrastColor(visibleChartData[index]?.color ?? '#000')}
+        style={{
+          fontSize: isHovered ? '1.35rem' : '1.2rem',
+          fontWeight: 800,
+          pointerEvents: 'none',
+          transition: 'font-size 0.15s ease',
+        }}
+      >
+        {value.toLocaleString()}
+      </text>
+    );
   };
 
-  // Handle End Date change: clear roles, fetch if startDate present
-  const handleEndDateChange = e => {
-    const newEnd = e.target.value;
-    setEndDate(newEnd);
+  // Draws name on top line, percentage below — outside the segment, only after animation completes
+  const renderOutsideLabel = ({ cx, cy, midAngle, outerRadius, name, percent, index }) => {
+    if (!animationDone) return null;
+    // On very small screens hide outside labels — inside counts are still visible
+    if (isMobile) return null;
+    const isHovered = index === hoveredIndex;
+    const RADIAN = Math.PI / 180;
+    const expandedOuter = isHovered ? outerRadius + 10 : outerRadius;
+    const lineStart = expandedOuter + 8;
+    const lineEnd = expandedOuter + (isMobile ? 30 : 50);
+    const sx = cx + lineStart * Math.cos(-midAngle * RADIAN);
+    const sy = cy + lineStart * Math.sin(-midAngle * RADIAN);
+    const ex = cx + lineEnd * Math.cos(-midAngle * RADIAN);
+    const ey = cy + lineEnd * Math.sin(-midAngle * RADIAN);
+    const isRight = ex > cx;
+    const elbowX = ex + (isRight ? 18 : -18);
+    const textX = elbowX + (isRight ? 4 : -4);
+    const textAnchor = isRight ? 'start' : 'end';
+    const pct = `${(percent * 100).toFixed(1)}%`;
+    const labelColor = darkMode ? '#f8fafc' : '#0f172a';
+    const lineColor = darkMode ? '#94a3b8' : '#64748b';
+    const nameFontSize = isHovered ? '1.2rem' : '1.05rem';
+    const pctFontSize = isHovered ? '1.05rem' : '0.95rem';
+    const strokeWidth = isHovered ? 2.5 : 1.5;
 
-    if (selectedRoles.length > 0) {
-      setSelectedRoles([]);
-    }
-
-    if (startDate && newEnd) {
-      fetchDataWithFilters({ startDate, endDate: newEnd, roles: [] });
-    }
+    return (
+      <g style={{ transition: 'all 0.15s ease' }}>
+        <path
+          d={`M${sx},${sy} L${ex},${ey} L${elbowX},${ey}`}
+          fill="none"
+          stroke={lineColor}
+          strokeWidth={strokeWidth}
+        />
+        <text
+          x={textX}
+          y={ey}
+          textAnchor={textAnchor}
+          fill={labelColor}
+          style={{ fontWeight: 700 }}
+        >
+          <tspan x={textX} dy="-0.55em" style={{ fontSize: nameFontSize }}>
+            {name}
+          </tspan>
+          <tspan x={textX} dy="1.2em" style={{ fontSize: pctFontSize, opacity: 0.75 }}>
+            {pct}
+          </tspan>
+        </text>
+      </g>
+    );
   };
 
-  // Optionally, you can keep the apply button for manual fetch or remove it since we fetch on change now
+  const applyFilters = () => {
+    if (startDate && startDate > TODAY) {
+      setError('Start date cannot be in the future.');
+      return;
+    }
+    if (endDate && endDate > TODAY) {
+      setError('End date cannot be in the future.');
+      return;
+    }
+    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+      setError('Start date must be before end date.');
+      return;
+    }
+    setError(null);
+    setAppliedFilters({ startDate, endDate, roles: selectedRoles });
+  };
 
-  const options = chartData
-    ? {
-        cutout: '70%',
-        plugins: {
-          tooltip: {
-            enabled: true,
-            callbacks: {
-              label: context => {
-                const count = context.parsed || 0;
-                const total = chartData.totalCount || 1;
-                const percentage = ((count / total) * 100).toFixed(1);
-                return `${context.label}: ${percentage}% (${count})`;
-              },
-            },
-          },
-          datalabels: {
-            color: '#fff',
-            font: {
-              weight: 'bold',
-              size: 14,
-            },
-            formatter: value => {
-              const count = value;
-              const total = chartData.totalCount || 1;
-              const percentage = ((count / total) * 100).toFixed(1);
-              return `${percentage}%\n(${count})`;
-            },
-          },
-          legend: {
-            display: false,
-          },
-        },
-        responsive: true,
-        maintainAspectRatio: false,
-      }
-    : {};
+  const resetFilters = () => {
+    setStartDate('');
+    setEndDate('');
+    setSelectedRoles([]);
+    setError(null);
+    setAppliedFilters({ startDate: '', endDate: '', roles: [] });
+  };
 
   return (
-    <div className="chart-container">
-      <h2>Breakdown of Applicants by Experience</h2>
-
-      <div className="filter-section">
-        <div className="filter-group">
-          <label htmlFor="startDate">Start Date</label>
-          <input
-            id="startDate"
-            type="date"
-            value={startDate}
-            onChange={handleStartDateChange}
-            max={endDate || ''}
-          />
+    <div
+      className={`${styles['experience-donut-chart']} ${darkMode &&
+        styles['experience-donut-chart-dark-mode']}`}
+    >
+      <div className={styles['experience-chart-container']}>
+        <div className={styles['chart-header']}>
+          <h2 className={styles['chart-title']}>Applicants by Experience</h2>
         </div>
 
-        <div className="filter-group">
-          <label htmlFor="endDate">End Date</label>
-          <input
-            id="endDate"
-            type="date"
-            value={endDate}
-            onChange={handleEndDateChange}
-            min={startDate || ''}
-          />
-        </div>
+        <section className={styles['filter-section']}>
+          <div className={styles['filter-row']}>
+            <div className={styles['filter-group']}>
+              <label className={styles['filter-label']} htmlFor="startDate">
+                Start Date
+              </label>
+              <input
+                id="startDate"
+                type="date"
+                className={styles['filter-input']}
+                value={startDate}
+                max={TODAY}
+                onChange={e => setStartDate(e.target.value)}
+              />
+            </div>
 
-        <div className="filter-group">
-          <label htmlFor="roles">Roles</label>
-          <select id="roles" multiple value={selectedRoles} onChange={handleRoleChange}>
-            <option value="Frontend Developer">Frontend Developer</option>
-            <option value="DevOps Engineer">DevOps Engineer</option>
-            <option value="Project Manager">Project Manager</option>
-            <option value="Junior Developer">Junior Developer</option>
-            <option value="Full Stack Developer">Full Stack Developer</option>
-          </select>
-        </div>
+            <div className={styles['filter-group']}>
+              <label className={styles['filter-label']} htmlFor="endDate">
+                End Date
+              </label>
+              <input
+                id="endDate"
+                type="date"
+                className={styles['filter-input']}
+                value={endDate}
+                max={TODAY}
+                onChange={e => setEndDate(e.target.value)}
+              />
+            </div>
 
-        {/* Optional: Remove if not needed */}
-        {/* <button type="button" onClick={() => fetchDataWithFilters({ startDate, endDate, roles: selectedRoles })}>
-          Apply Filters
-        </button> */}
-      </div>
+            <div className={styles['filter-group']}>
+              <fieldset className={styles['checkbox-fieldset']}>
+                <legend className={styles['filter-label']}>Roles</legend>
+                <div className={styles['checkbox-list']}>
+                  {[
+                    'Frontend Developer',
+                    'DevOps Engineer',
+                    'Project Manager',
+                    'Junior Developer',
+                    'Full Stack Developer',
+                  ].map(role => (
+                    <label key={role} className={styles['checkbox-item']}>
+                      <input
+                        type="checkbox"
+                        value={role}
+                        checked={selectedRoles.includes(role)}
+                        onChange={e => {
+                          setSelectedRoles(prev =>
+                            e.target.checked ? [...prev, role] : prev.filter(r => r !== role),
+                          );
+                        }}
+                      />
+                      {role}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            </div>
+          </div>
 
-      <div className="chart-area" style={{ minHeight: '320px', position: 'relative' }}>
-        {loading && <LoadingSpinner />}
-        {!loading && error && <p className="error-message">{error}</p>}
-        {!loading && !error && !chartData && <p className="no-data-available">No Data Available</p>}
-        {!loading && chartData && (
-          <Pie data={chartData.chart} options={options} plugins={[ChartDataLabels]} />
-        )}
+          <div className={styles['filter-actions']}>
+            <button className={`${styles.btn} ${styles.primary}`} onClick={applyFilters}>
+              Apply
+            </button>
+            <button
+              className={`${styles.btn} ${styles.ghost} ${
+                hasFilters ? styles['ghost-active'] : ''
+              }`}
+              onClick={resetFilters}
+              disabled={!hasFilters}
+            >
+              Reset
+            </button>
+          </div>
+        </section>
+
+        <section className={styles['chart-section']}>
+          <div className={styles['chart-area']}>
+            {loading && <Spinner />}
+
+            {!loading && !error && chartData && total > 0 && (
+              <>
+                <div className={styles['chart-canvas']}>
+                  <ResponsiveContainer width="100%" aspect={1.2}>
+                    <PieChart margin={pieMargin}>
+                      <Pie
+                        data={visibleChartData}
+                        cx="50%"
+                        cy="50%"
+                        dataKey="value"
+                        innerRadius="42%"
+                        outerRadius="78%"
+                        stroke={darkMode ? '#1c2441' : '#fff'}
+                        strokeWidth={3}
+                        labelLine={false}
+                        label={renderOutsideLabel}
+                        isAnimationActive={!PREFERS_REDUCED_MOTION}
+                        onAnimationEnd={() => setAnimationDone(true)}
+                        activeIndex={hoveredIndex}
+                        activeShape={renderActiveShape}
+                        onMouseEnter={(_, index) => setHoveredIndex(index)}
+                        onMouseLeave={() => setHoveredIndex(null)}
+                      >
+                        {visibleChartData.map(d => (
+                          <Cell key={d.name} fill={d.color} className={styles['pie-cell']} />
+                        ))}
+                      </Pie>
+                      {/* Inside counts rendered as a second label pass — animation disabled to prevent double-sweep */}
+                      <Pie
+                        data={visibleChartData}
+                        cx="50%"
+                        cy="50%"
+                        dataKey="value"
+                        innerRadius="42%"
+                        outerRadius="78%"
+                        stroke="none"
+                        strokeWidth={0}
+                        labelLine={false}
+                        label={renderInsideCount}
+                        isAnimationActive={false}
+                        style={{ pointerEvents: 'none' }}
+                      >
+                        {visibleChartData.map(d => (
+                          <Cell key={d.name} fill="transparent" />
+                        ))}
+                      </Pie>
+                      {animationDone && (
+                        <text
+                          x="50%"
+                          y="50%"
+                          dominantBaseline="middle"
+                          textAnchor="middle"
+                          style={{
+                            fontWeight: 800,
+                            fontSize: '1.25rem',
+                            fill: darkMode ? '#f8fafc' : '#0f172a',
+                          }}
+                        >
+                          {total.toLocaleString()}
+                        </text>
+                      )}
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                {isMobile && (
+                  <div className={styles['mobile-legend']}>
+                    {visibleChartData.map(d => {
+                      const pct = total > 0 ? ((d.value / total) * 100).toFixed(1) : 0;
+                      return (
+                        <div key={d.name} className={styles['mobile-legend-item']}>
+                          <span
+                            className={styles['mobile-legend-dot']}
+                            style={{ backgroundColor: d.color }}
+                          />
+                          <span className={styles['mobile-legend-name']}>{d.name}</span>
+                          <span className={styles['mobile-legend-pct']}>{pct}%</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
+            )}
+
+            {!loading && !error && (!chartData || total === 0) && <p>No Data Available 😢</p>}
+
+            {!loading && error && <p className={styles['error-message']}>{error}</p>}
+          </div>
+        </section>
       </div>
     </div>
   );
 }
-
-export default ExperienceDonutChart;

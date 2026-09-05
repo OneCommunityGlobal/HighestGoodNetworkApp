@@ -1,15 +1,24 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { Dropdown, Input } from 'reactstrap';
-import './TeamsAndProjects.css';
+import './TeamsAndProjects.module.css';
 import { useSelector } from 'react-redux';
+import appStyles from '~/App.module.css';
+
+const TEAM_NAME_MAX_LENGTH = 100;
 
 // eslint-disable-next-line react/display-name
 const AddTeamsAutoComplete = React.memo((props) => {
-  const { teamsData, searchText, setSearchText, setInputs, onCreateNewTeam } = props;
+  const { teamsData, searchText, setSearchText, onDropDownSelect, onCreateNewTeam } = props;
   const [isOpen, setIsOpen] = React.useState(false);
   const darkMode = useSelector((state) => state.theme.darkMode);
+  const inputRef = useRef(null);
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
-  console.log("Teams data", teamsData)
 
   // Accept both shapes: { allTeams: [...] } OR just [...]
   const allTeamsRaw = teamsData?.allTeams ?? teamsData ?? [];
@@ -25,18 +34,19 @@ const AddTeamsAutoComplete = React.memo((props) => {
   }, [allTeams, searchText]);
 
   const handlePick = (team) => {
-    setInputs(team);                 // parent expects the TEAM OBJECT
+    onDropDownSelect(team);
     setSearchText(team.teamName);
     setIsOpen(false);
-  };
+    };
 
+  const trimmedSearchText = (searchText ?? '').toString().trim();
   const showCreateNew =
-    !!searchText &&
-    !allTeams.some((t) => normalize(t.teamName) === normalize(searchText));
+    trimmedSearchText.length > 0 &&
+    !allTeams.some((t) => normalize(t.teamName) === normalize(trimmedSearchText));
 
   // NEW: don’t show “No teams found” when input is empty
   const shouldShowNoTeams =
-    searchText.trim().length > 0 && suggestions.length === 0;
+    trimmedSearchText.length > 0 && suggestions.length === 0;
 
   return (
     <Dropdown
@@ -47,24 +57,32 @@ const AddTeamsAutoComplete = React.memo((props) => {
       <Input
         type="text"
         value={searchText}
-        autoFocus
+        innerRef={inputRef}
+        //autoFocus // eslint-disable-line jsx-a11y/no-autofocus
         onFocus={() => setIsOpen(true)}
         onBlur={() => setTimeout(() => setIsOpen(false), 120)}
         onChange={(e) => {
           setSearchText(e.target.value);
           setIsOpen(true);
         }}
-        className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
+        maxLength={TEAM_NAME_MAX_LENGTH}
+        className={darkMode ? `${appStyles['bg-darkmode-liblack']} border-0 text-light` : ''}
         placeholder="Search or select a team..."
         aria-label="Add to Team"
       />
+      <small
+        className={darkMode ? 'text-light' : 'text-muted'}
+        style={{ display: 'block', marginTop: '0.25rem', fontSize: '0.875rem' }}
+      >
+        {searchText.length}/{TEAM_NAME_MAX_LENGTH} characters
+      </small>
 
       {isOpen && (
         <div
           tabIndex="-1"
           role="menu"
           aria-hidden="false"
-          className={`dropdown-menu show ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
+          className={`dropdown-menu show ${darkMode ? `${appStyles['bg-darkmode-liblack']} text-light` : ''}`}
           style={{ marginTop: 0, width: '100%', maxHeight: 260, overflowY: 'auto' }}
         >
           {/* If input is empty and we have nothing yet, show nothing (quiet state) */}
@@ -74,6 +92,7 @@ const AddTeamsAutoComplete = React.memo((props) => {
             </div>
           ) : (
             suggestions.slice(0, 100).map((item) => (
+               // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
               <div
                 key={item._id}
                 className="team-auto-complete"
@@ -86,15 +105,16 @@ const AddTeamsAutoComplete = React.memo((props) => {
           )}
 
           {showCreateNew && (
+            // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
             <div
               className="team-auto-complete"
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => {
                 setIsOpen(false);
-                onCreateNewTeam?.(searchText);
+                onCreateNewTeam?.(trimmedSearchText);
               }}
             >
-              Create new team: {searchText}
+              Create new team: {trimmedSearchText}
             </div>
           )}
         </div>
@@ -103,4 +123,23 @@ const AddTeamsAutoComplete = React.memo((props) => {
   );
 });
 
+AddTeamsAutoComplete.propTypes = {
+  teamsData: PropTypes.oneOfType([
+    PropTypes.shape({ allTeams: PropTypes.array }),
+    PropTypes.array,
+  ]),
+  searchText: PropTypes.string,
+  setSearchText: PropTypes.func.isRequired,
+  onDropDownSelect: PropTypes.func.isRequired,
+  onCreateNewTeam: PropTypes.func,
+};
+
+AddTeamsAutoComplete.defaultProps = {
+  teamsData: {},
+  searchText: '',
+  onCreateNewTeam: undefined,
+};
+
 export default AddTeamsAutoComplete;
+
+
