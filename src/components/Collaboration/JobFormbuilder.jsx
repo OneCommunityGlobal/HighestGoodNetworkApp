@@ -20,7 +20,6 @@ import {
   buildJobFormRequestor,
   isFieldRequired,
   normalizeQuestionForApi,
-  prepareQuestionClone,
   normalizeLoadedQuestions,
 } from './jobFormQuestionUtils';
 
@@ -143,33 +142,6 @@ function JobFormBuilder() {
   };
 
   // CRUD Functions with Dynamic Form ID
-  const cloneField = async (field, index) => {
-    const clonedField = prepareQuestionClone(field);
-    const previousFields = formFields;
-
-    const newFields = [
-      ...formFields.slice(0, index + 1),
-      clonedField,
-      ...formFields.slice(index + 1),
-    ];
-    setFormFields(newFields);
-
-    if (currentFormId) {
-      await syncFieldAction(
-        'clone question',
-        async () => {
-          await axios.post(ENDPOINTS.ADD_QUESTION(currentFormId), {
-            question: clonedField,
-            position: index + 1,
-            requestor: getRequestor(),
-          });
-          markAsSaved(newFields);
-        },
-        () => setFormFields(previousFields),
-      );
-    }
-  };
-
   const moveField = async (index, direction) => {
     const newIndex = direction === 'up' ? index - 1 : index + 1;
 
@@ -473,7 +445,6 @@ function JobFormBuilder() {
                       field={field}
                       index={index}
                       totalFields={formFields.length}
-                      onClone={cloneField}
                       onMove={moveField}
                       onDelete={deleteField}
                       onEdit={editField}
