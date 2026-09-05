@@ -34,7 +34,7 @@ const matchesName = (user, trimmedName) => {
 };
 
 const getFilteredUsers = (fullName, allUserProfiles) => {
-  if (typeof fullName !== 'string') throw new Error('Full name must be a string');
+  if (typeof fullName !== 'string') throw new TypeError('Full name must be a string');
   const trimmedName = fullName.trim();
   if (!trimmedName) return null;
   return allUserProfiles.filter(user => matchesName(user, trimmedName));
@@ -44,16 +44,6 @@ const toggleSelection = (prev, id) => {
   if (prev.includes(id)) return prev.filter(existing => existing !== id);
   return [...prev, id];
 };
-
-function doToggle(isOpen, didSubmit, selectedUserIds, onSubmit, setOpen, props) {
-  if (isOpen && didSubmit === true) {
-    onSubmit();
-  } else if (selectedUserIds?.length > 0) {
-    setOpen(prev => !prev);
-  } else {
-    props.validateBadges(props.firstName, props.lastName);
-  }
-}
 
 function UserList({ filteredUsers, fullName, darkMode, selectedUserIds, onUserSelect }) {
   if (filteredUsers.length > 0) {
@@ -76,10 +66,11 @@ function UserList({ filteredUsers, fullName, darkMode, selectedUserIds, onUserSe
                 onClick={() => onUserSelect(user)}
                 style={{
                   cursor: 'pointer',
-                  backgroundColor: selectedUserIds?.includes(user._id) ? '#e9ecef' : '',
+                  backgroundColor:
+                    !darkMode && selectedUserIds?.includes(user._id) ? '#e9ecef' : '',
                 }}
                 className={
-                  darkMode && selectedUserIds?.includes(user._id) ? 'bg-dark text-light' : ''
+                  darkMode && selectedUserIds?.includes(user._id) ? 'bg-oxford-blue text-light' : ''
                 }
               >
                 <td>
@@ -164,8 +155,22 @@ function AssignBadge(props) {
     }
   };
 
-  const toggle = (didSubmit = false) =>
-    doToggle(isOpen, didSubmit, selectedUserIds, submit, setOpen, props);
+  // Opens the badge-picker modal when users are selected, otherwise nudges the
+  // admin to enter a name. Also used as the modal's close handler.
+  const handleModalToggle = () => {
+    if (selectedUserIds?.length > 0) {
+      setOpen(prev => !prev);
+    } else {
+      props.validateBadges(props.firstName, props.lastName);
+    }
+  };
+
+  // Confirms the picker selection and assigns the badges.
+  const handleConfirmAssignment = () => {
+    if (isOpen) {
+      submit();
+    }
+  };
 
   return (
     <Form
@@ -232,7 +237,7 @@ function AssignBadge(props) {
       <FormGroup className="mb-3">
         <Button
           className="btn--dark-sea-green"
-          onClick={toggle}
+          onClick={handleModalToggle}
           style={darkMode ? { ...boxStyleDark } : { ...boxStyle }}
           disabled={selectedUserIds?.length === 0}
         >
@@ -240,17 +245,17 @@ function AssignBadge(props) {
         </Button>
         <Modal
           isOpen={isOpen}
-          toggle={() => toggle(false)}
+          toggle={handleModalToggle}
           backdrop="static"
           className={darkMode ? 'text-light dark-mode' : ''}
         >
-          <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={() => toggle(false)}>
+          <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={handleModalToggle}>
             Assign Badge
           </ModalHeader>
           <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
             <AssignBadgePopup
               allBadgeData={props.allBadgeData}
-              submit={() => toggle(true)}
+              submit={handleConfirmAssignment}
               selectedBadges={selectedBadges}
             />
           </ModalBody>
@@ -258,7 +263,7 @@ function AssignBadge(props) {
         <FormText color={darkMode ? 'white' : 'muted'}>
           Please select badge(s) from the badge list.
         </FormText>
-        <Alert color="dark" className="mt-3">
+        <Alert color="dark" className={`mt-3 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
           {selectedUserIds?.length} user(s) selected,
           {selectedBadges?.length} badge(s) selected
         </Alert>
