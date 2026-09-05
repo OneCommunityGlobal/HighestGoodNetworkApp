@@ -188,10 +188,13 @@ function AssignBadge(props) {
                   onClick={() => handleUserSelect(user)}
                   style={{
                     cursor: 'pointer',
-                    backgroundColor: selectedUserIds?.includes(user._id) ? '#e9ecef' : '',
+                    backgroundColor:
+                      !darkMode && selectedUserIds?.includes(user._id) ? '#e9ecef' : '',
                   }}
                   className={
-                    darkMode && selectedUserIds?.includes(user._id) ? 'bg-dark text-light' : ''
+                    darkMode && selectedUserIds?.includes(user._id)
+                      ? 'bg-oxford-blue text-light'
+                      : ''
                   }
                 >
                   <td>
@@ -239,11 +242,7 @@ function AssignBadge(props) {
         <FormText color={darkMode ? 'white' : 'muted'}>
           Please select badge(s) from the badge list.
         </FormText>
-        <Alert
-          color="dark"
-          className="mt-3"
-          style={darkMode ? { backgroundColor: '#4b5563', color: '#ffffff' } : {}}
-        >
+        <Alert color="dark" className={`mt-3 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
           {selectedUserIds?.length} user(s) selected,
           {selectedBadges?.length} badge(s) selected
         </Alert>
