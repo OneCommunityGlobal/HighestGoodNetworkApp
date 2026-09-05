@@ -4,6 +4,14 @@
   margin: 0;
 }
 
+.spinner-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .red-asterisk {
   color: #e00000;
 }
@@ -79,6 +87,7 @@
   margin: 8px;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
   transform-origin: center center;
+  height: 15rem;
 }
 
 .report-container-data {

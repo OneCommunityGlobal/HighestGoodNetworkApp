@@ -26,6 +26,7 @@ import LostTimeHistory from './LostTime/LostTimeHistory';
 import PeopleTable from './PeopleTable';
 import ProjectTable from './ProjectTable';
 import ReportFilter from './ReportFilter/ReportFilter';
+import CircularProgress from '@mui/material/CircularProgress';
 import TeamTable from './TeamTable';
 import TotalContributorsReport from './TotalReport/TotalContributorsReport';
 import TotalPeopleReport from './TotalReport/TotalPeopleReport';
@@ -83,6 +84,9 @@ class ReportsPage extends Component {
       fetchError: null,
       checkActive: '',
       loading: false,
+      loadingCardFirst: true,
+      loadingCardSecond: true,
+      loadingCardThird: true,
       teamSearchData: {},
       peopleSearchData: [],
       projectSearchData: {},
@@ -119,7 +123,13 @@ class ReportsPage extends Component {
     const fetchUserProfile = this.props.getUserProfileBasicInfo({source:'Report'});
 
     // parallel api calls
-    await Promise.all([fetchProjects, fetchTeams, fetchUserProfile]);
+
+    await fetchProjects;
+    this.setState({ loadingCardFirst: false });
+    await fetchTeams;
+    this.setState({ loadingCardSecond: false });
+    await fetchUserProfile;
+    this.setState({ loadingCardThird: false });
 
     const userIds = this.props.state.allUserProfilesBasicInfo.userProfilesBasicInfo.map(
       userProfile => userProfile._id,
@@ -297,7 +307,7 @@ endDate: moment()
       showAddPersonHistory: false,
       showAddTeamHistory: false,
       showCharts: !prevState.showProjects,
-      showContributorsReport: false
+      showContributorsReport: false,
     }));
   }
 
@@ -314,7 +324,7 @@ endDate: moment()
       showAddPersonHistory: false,
       showAddTeamHistory: false,
       showCharts: !prevState.showTeams,
-      showContributorsReport: false
+      showContributorsReport: false,
     }));
   }
 
@@ -331,7 +341,7 @@ endDate: moment()
       showAddPersonHistory: false,
       showAddTeamHistory: false,
       showCharts: !prevState.showPeople,
-      showContributorsReport: false
+      showContributorsReport: false,
     }));
   }
 
@@ -348,7 +358,7 @@ endDate: moment()
       showAddPersonHistory: false,
       showAddTeamHistory: false,
       showCharts: !prevState.showTotalPeople,
-      showContributorsReport: false
+      showContributorsReport: false,
     }));
   }
 
@@ -365,7 +375,7 @@ endDate: moment()
       showAddPersonHistory: false,
       showAddTeamHistory: false,
       showCharts: !prevState.showTotalTeam,
-      showContributorsReport: false
+      showContributorsReport: false,
     }));
   }
 
@@ -392,7 +402,7 @@ endDate: moment()
         showAddProjHistory: false,
         showAddPersonHistory: false,
         showAddTeamHistory: false,
-        showContributorsReport: false
+        showContributorsReport: false,
       },
       () => {
         setTimeout(() => {
@@ -400,7 +410,7 @@ endDate: moment()
             loading: false,
             showTotalProject: true, // Show the report after loading completes
             showCharts: true,
-        });
+          });
         }, 2000); // Adjust the delay as needed
       },
     );
@@ -470,7 +480,7 @@ endDate: moment()
       showAddProjHistory: false,
       showAddPersonHistory: false,
       showAddTeamHistory: false,
-      showCharts: !prevState.showContributorsReport
+      showCharts: !prevState.showContributorsReport,
     }));
   }
 
@@ -570,60 +580,96 @@ endDate: moment()
             <div>
               <p className={darkMode ? styles['text-light'] : undefined}>Select a Category</p>
             </div>
-            <div className={styles['report-container-data']}>
-              <div className={styles['data-container']} style={this.state.showCharts ? {width: '50%'} : {width: '100%'}}>
-                <div className={styles['category-container']}>
+            <div className="report-container-data">
+              <div
+                className="data-container"
+                style={this.state.showCharts ? { width: '50%' } : { width: '100%' }}
+              >
+                <div className="category-container">
                   <button
                     type="button"
-                    className={`${styles['card-category-item']} ${this.state.showProjects ? styles.selected : ''
-                      } ${isYinmnBlue}`}
-                    style={{
-                      ...(darkMode ? boxStyleDark : boxStyle),
-                      ...(darkMode ? { backgroundColor: '#2a3f6f', color: '#fff' } : {})
-                    }}
+                    className={`card-category-item ${
+                      this.state.showProjects ? 'selected' : ''
+                    } ${isYinmnBlue}`}
+                    style={boxStyling}
                     onClick={this.showProjectTable}
                   >
-                    <h3 className={styles['card-category-item-title']}> Projects</h3>
-                    <h3 className={styles['card-category-item-number']}>
-                      {this.state.projectSearchData.length}
-                      {' '}
-                    </h3>
-                    <img src={projectsImage} alt="Projects" />
+                    {this.state.loadingCardFirst ? (
+                      <div className="spinner-container">
+                        <CircularProgress
+                          enableTrackSlot
+                          size="5rem"
+                          sx={{ marginBottom: '1.5rem' }}
+                        />
+                      </div>
+                    ) : (
+                      <>
+                        <h3 className="card-category-item-title"> Projects</h3>
+                        <h3 className="card-category-item-number">
+                          {this.state.projectSearchData.length}{' '}
+                        </h3>
+                        <img src={projectsImage} alt="Projects" />
+                      </>
+                    )}
                   </button>
                   <button
                     type="button"
-                    className={`${styles['card-category-item']} ${this.state.showPeople ? styles.selected : ''
-                      } ${isYinmnBlue}`}
-                    style={{
-                      ...(darkMode ? boxStyleDark : boxStyle),
-                      ...(darkMode ? { backgroundColor: '#2a3f6f', color: '#fff' } : {})
-                    }}
+                    className={`card-category-item ${
+                      this.state.showPeople ? 'selected' : ''
+                    } ${isYinmnBlue}`}
+                    style={boxStyling}
                     onClick={this.showPeopleTable}
                   >
-                    <h3 className={styles['card-category-item-title']}> People </h3>
-                    <h3 className={styles['card-category-item-number']}>
-                      {this.state.peopleSearchData.length}
-                    </h3>
-                    <img src={peopleImage} alt="that representes the people" />
+                    {this.state.loadingCardThird ? (
+                      <div className="spinner-container">
+                        <CircularProgress
+                          enableTrackSlot
+                          size="5rem"
+                          sx={{ marginBottom: '1.5rem' }}
+                        />
+                      </div>
+                    ) : (
+                      <>
+                        <h3 className="card-category-item-title"> People </h3>
+                        <h3 className="card-category-item-number">
+                          {this.state.peopleSearchData.length}
+                        </h3>
+                        <img src={peopleImage} alt="that representes the people" />
+                      </>
+                    )}
                   </button>
+
                   <button
                     type="button"
-                    className={`${styles['card-category-item']} ${this.state.showTeams ? styles.selected : ''
-                      } ${isYinmnBlue}`}
-                    style={{
-                      ...(darkMode ? boxStyleDark : boxStyle),
-                      ...(darkMode ? { backgroundColor: '#2a3f6f', color: '#fff' } : {})
-                    }}
+                    className={`card-category-item ${
+                      this.state.showTeams ? 'selected' : ''
+                    } ${isYinmnBlue}`}
+                    style={boxStyling}
                     onClick={this.showTeamsTable}
                   >
-                    <h3 className={styles['card-category-item-title']}> Teams </h3>
-                    <h3 className={styles['card-category-item-number']}>{this.state.teamSearchData?.length}</h3>
-                    <img src={teamsImage} alt="that representes the teams" />
+                    {this.state.loadingCardSecond ? (
+                      <div className="spinner-container">
+                        <CircularProgress
+                          enableTrackSlot
+                          size="5rem"
+                          sx={{ marginBottom: '1.5rem' }}
+                        />
+                      </div>
+                    ) : (
+                      <>
+                        <h3 className="card-category-item-title"> Teams </h3>
+                        <h3 className="card-category-item-number">
+                          {this.state.teamSearchData?.length}
+                        </h3>
+                        <img src={teamsImage} alt="that representes the teams" />
+                      </>
+                    )}
                   </button>
                 </div>
                 <div
-                  className={`mt-3 p-3 rounded-lg ${darkMode ? 'bg-yinmn-blue text-light' : 'bg-white'
-                    }`}
+                  className={`mt-3 p-3 rounded-lg ${
+                    darkMode ? 'bg-yinmn-blue text-light' : 'bg-white'
+                  }`}
                   style={darkMode ? boxStyleDark : boxStyle}
                 >
                   <ReportFilter
@@ -692,7 +738,6 @@ endDate: moment()
                           darkMode={darkMode}
                         />
                       </div>
-
                     </div>
                     <div className={styles['total-report-item']}>
                       <Button
@@ -701,8 +746,8 @@ endDate: moment()
                         onClick={this.showContributorsReport}
                       >
                         {this.state.showContributorsReport
-                        ? 'Hide Contributors Report'
-                        : 'Show Contributors Report'}
+                          ? 'Hide Contributors Report'
+                          : 'Show Contributors Report'}
                       </Button>
                       <div style={{ display: 'inline-block', marginLeft: 10 }}>
                         <EditableInfoModal
@@ -892,22 +937,22 @@ endDate: moment()
                     />
                   )}
                   {this.state.showContributorsReport && (
-                  <TotalContributorsReport
-                    startDate={this.state.startDate}
-                    endDate={this.state.endDate}
-                    userProfiles={userProfilesBasicInfo}
-                    darkMode={darkMode}
-                    userRole={userRole}
-                  />
-            )}
+                    <TotalContributorsReport
+                      startDate={this.state.startDate}
+                      endDate={this.state.endDate}
+                      userProfiles={userProfilesBasicInfo}
+                      darkMode={darkMode}
+                      userRole={userRole}
+                    />
+                  )}
                   {this.state.showAddTimeForm && myRole === 'Owner' && (
-                  <AddLostTime
-                    isOpen={this.state.showAddTimeForm}
-                    toggle={this.setAddTime}
-                    projects={projects}
-                    teams={allTeams}
-                    users={userProfilesBasicInfo}
-                  />
+                    <AddLostTime
+                      isOpen={this.state.showAddTimeForm}
+                      toggle={this.setAddTime}
+                      projects={projects}
+                      teams={allTeams}
+                      users={userProfilesBasicInfo}
+                    />
                   )}
                   {this.state.showAddPersonHistory && (
                     <LostTimeHistory
