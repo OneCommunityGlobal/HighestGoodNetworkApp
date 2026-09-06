@@ -63,12 +63,33 @@
   padding: 32px;
 }
 
-.category-container {
+/* Projects / People / Teams tiles.
+   Reports.jsx renders these with plain (non-module) class names, so these rules
+   are declared :global to actually take effect. The container is a centred band
+   holding three equal, comfortably-spaced tiles instead of oversized cards
+   crammed edge to edge. */
+:global(.category-container) {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-evenly;
-  gap: 10px;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+:global(.category-container) > button {
+  flex: 1 1 200px;
+  min-width: 160px;
+  max-width: 240px;
+  padding: 1.25rem;
+}
+
+:global(.category-container) > button img {
+  width: 88px;
+  height: 88px;
+  object-fit: contain;
 }
 
 .card-category-item {
@@ -146,8 +167,99 @@
   background: #2f4157 !important;
 }
 
-.search-field-container {
-  max-width: 100%;
+/* Reports search field — a single rounded control with the magnifier sitting
+   inside it (vertically centred) and a smooth focus ring. Replaces the old
+   input-group + prepended "Search" button layout. */
+.search-field {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+}
+
+.search-field-icon {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #6c757d;
+  cursor: pointer;
+  transition: color 0.15s ease-in-out;
+}
+
+.search-field-icon:hover {
+  color: #343a40;
+}
+
+.search-field-icon:focus-visible {
+  outline: none;
+  border-radius: 6px;
+  box-shadow: 0 0 0 3px rgb(76 154 255 / 30%);
+}
+
+.search-field-input {
+  width: 100%;
+  height: 2.5rem;
+  padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #212529;
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out,
+    background-color 0.15s ease-in-out;
+}
+
+.search-field-input::placeholder {
+  color: #9aa0a6;
+}
+
+.search-field-input:hover {
+  border-color: #b1b8bf;
+}
+
+.search-field-input:focus,
+.search-field-input:focus-visible {
+  outline: none;
+  border-color: #4c9aff;
+  box-shadow: 0 0 0 3px rgb(76 154 255 / 25%);
+}
+
+/* Dark mode */
+.search-field-dark .search-field-icon {
+  color: #adb5bd;
+}
+
+.search-field-dark .search-field-icon:hover {
+  color: #fff;
+}
+
+.search-field-input-dark {
+  color: #fff;
+  background-color: #1c2b3a;
+  border-color: #3a506b;
+}
+
+.search-field-input-dark::placeholder {
+  color: #8b98a5;
+}
+
+.search-field-input-dark:hover {
+  border-color: #4c6a8f;
+}
+
+.search-field-input-dark:focus,
+.search-field-input-dark:focus-visible {
+  border-color: #4c9aff;
+  box-shadow: 0 0 0 3px rgb(76 154 255 / 30%);
 }
 
 .report-filter-panel {

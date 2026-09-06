@@ -61,32 +61,44 @@ function ReportTableSearchPanel({ onSearch, wildCardSearchText, onSearchClick })
   };
 
   return (
-    <div>
-      <div className={`input-group`} id="new_team">
-        <div className="input-group-prepend">
-          <button
-            type="button"
-            className={`btn ${styles['report-filter-label-action']} ${darkMode ? 'bg-yinmn-blue text-light' : 'btn-secondary'}`}
-            onClick={handleSearchClick}
-          >
-            {SEARCH}
-          </button>
-        </div>
+    <div className={`${styles['search-field']} ${darkMode ? styles['search-field-dark'] : ''}`}>
+      <button
+        type="button"
+        className={styles['search-field-icon']}
+        onClick={handleSearchClick}
+        aria-label={SEARCH}
+      >
+        <svg
+          viewBox="0 0 24 24"
+          width="16"
+          height="16"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <line x1="20" y1="20" x2="16.65" y2="16.65" />
+        </svg>
+      </button>
 
-        <input
-          /* eslint-disable-next-line jsx-a11y/no-autofocus */
-          autoFocus
-          type="text"
-          className={`form-control ${styles['search-field-container']} ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
-          aria-label="Search"
-          placeholder="Search Text"
-          id="team-profiles-wild-card-search"
-          value={wildCardSearchText}
-          onChange={e => {
-            onSearch(e.target.value); // Use destructured onSearch directly
-          }}
-        />
-      </div>
+      <input
+        /* eslint-disable-next-line jsx-a11y/no-autofocus */
+        autoFocus
+        type="text"
+        className={`${styles['search-field-input']} ${
+          darkMode ? styles['search-field-input-dark'] : ''
+        }`}
+        aria-label={SEARCH}
+        placeholder="Search Text"
+        id="team-profiles-wild-card-search"
+        value={wildCardSearchText}
+        onChange={e => {
+          onSearch(e.target.value); // Use destructured onSearch directly
+        }}
+      />
     </div>
   );
 }
