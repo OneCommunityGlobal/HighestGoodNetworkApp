@@ -93,8 +93,8 @@
 .new_badges {
   display: flex;
   flex-wrap: wrap;
-  overflow-y: auto;
-  height: 70px;
+  overflow-y: scroll;
+  height: 120px;
 }
 
 .old_badges {

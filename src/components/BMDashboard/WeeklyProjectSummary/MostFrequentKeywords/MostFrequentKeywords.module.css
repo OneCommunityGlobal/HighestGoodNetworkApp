@@ -1020,8 +1020,11 @@
   opacity: 1 !important;
 }
 
-:global(.react-datepicker__navigation-icon--previous::before),
-:global(.react-datepicker__navigation-icon--next::before) {
+/* Missing .darkMode guard here made this apply globally (light mode too),
+   overriding every other page's react-datepicker arrows app-wide since it
+   has higher selector specificity than an unscoped default. */
+.darkMode :global(.react-datepicker__navigation-icon--previous::before),
+.darkMode :global(.react-datepicker__navigation-icon--next::before) {
   border-color: #e2e8f0 !important;
   border-width: 2px 2px 0 0 !important;
   opacity: 1 !important;
