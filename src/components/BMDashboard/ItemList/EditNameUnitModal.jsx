@@ -39,10 +39,21 @@ function EditNameUnitModal({ item, isOpen, toggle }) {
 
   const units = useSelector(state => state.bmInvUnits?.list || []);
   const updateResult = useSelector(state => state.bmInvTypes?.postedUpdateResult);
+  const materialTypes = useSelector(state => state.bmInvTypes?.list || []);
+  const consumableTypes = useSelector(state => state.bmInvTypes?.consumablesList || []);
+  const requestorId = useSelector(state => state.auth?.user?.userid);
 
   const itemTypeObj = item?.itemType ?? null;
 
   const itemType = useMemo(() => ITEM_TYPE_MAP[item?.__t] || null, [item?.__t]);
+  const fullItemTypeObj = useMemo(() => {
+    const inventoryTypes = itemType === 'Consumable' ? consumableTypes : materialTypes;
+    return (
+      inventoryTypes.find(
+        inventoryType => String(inventoryType._id) === String(itemTypeObj?._id),
+      ) || itemTypeObj
+    );
+  }, [consumableTypes, itemType, itemTypeObj, materialTypes]);
 
   const [itemName, setItemName] = useState('');
   const [measurement, setMeasurement] = useState('');
@@ -54,6 +65,16 @@ function EditNameUnitModal({ item, isOpen, toggle }) {
   useEffect(() => {
     dispatch(fetchInvUnits());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (!isOpen || !itemType) return;
+
+    if (itemType === 'Material') {
+      dispatch(fetchMaterialTypes());
+    } else if (itemType === 'Consumable') {
+      dispatch(fetchConsumableTypes());
+    }
+  }, [dispatch, isOpen, itemType]);
 
   // Initialize form values when modal opens
   useEffect(() => {
@@ -121,11 +142,19 @@ function EditNameUnitModal({ item, isOpen, toggle }) {
 
     if (!hasChanges) return;
 
+    const description = fullItemTypeObj?.description;
+    if (!description) {
+      toast.error('Unable to load existing description for this material.');
+      return;
+    }
+
     dispatch(
       updateNameAndUnit(itemTypeObj._id, {
         type: itemType,
         name: itemName.trim(),
+        description,
         unit: measurement,
+        requestor: { requestorId },
       }),
     );
   };

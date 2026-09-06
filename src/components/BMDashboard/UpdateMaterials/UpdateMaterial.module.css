@@ -56,6 +56,22 @@
   color: red;
 }
 
+:global(.dark-mode) .materialFormError,
+:global(.dark-mode) .materialFormErrorClr {
+  color: red !important;
+}
+
+:global(body.dark-mode) :global([class*="logMaterialTable"]) tbody tr td .materialFormError,
+:global(body.bm-dashboard-dark) :global([class*="logMaterialTable"]) tbody tr td .materialFormError,
+:global(body.dark-mode) :global([class*="logMaterialTable"]) tbody tr td.materialFormTableError,
+:global(body.bm-dashboard-dark) :global([class*="logMaterialTable"]) tbody tr td.materialFormTableError,
+:global(body.dark-mode) :global([class*="logMaterialTable"]) tbody tr td .materialFormTableError,
+:global(body.bm-dashboard-dark) :global([class*="logMaterialTable"]) tbody tr td .materialFormTableError,
+:global(body.dark-mode) :global([class*="logMaterialTable"]) tbody tr td .materialFormErrorClr,
+:global(body.bm-dashboard-dark) :global([class*="logMaterialTable"]) tbody tr td .materialFormErrorClr {
+  color: red !important;
+}
+
 .materialFormValue {
   font-weight: 400;
   font-size: 15px;
