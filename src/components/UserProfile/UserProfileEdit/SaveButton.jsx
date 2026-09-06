@@ -37,6 +37,7 @@ const SaveButton = props => {
   const [isLoading, setIsLoading] = useState(false);
   const [isErr, setIsErr] = useState(false);
   const scrollSnapshot = useRef([]);
+  const pendingRestoreFrame = useRef(null);
 
   const captureScrollPosition = event => {
     const parentModalBody = event?.currentTarget
@@ -62,15 +63,25 @@ const SaveButton = props => {
   };
 
   const restoreScrollPosition = useCallback(() => {
-    const restore = () => {
+    const applySnapshot = () => {
       scrollSnapshot.current.forEach(({ element, left, top }) => {
         element.scrollLeft = left;
         element.scrollTop = top;
       });
     };
 
-    restore();
-    requestAnimationFrame(() => requestAnimationFrame(restore));
+    if (pendingRestoreFrame.current !== null) {
+      cancelAnimationFrame(pendingRestoreFrame.current);
+    }
+
+    applySnapshot();
+    pendingRestoreFrame.current = requestAnimationFrame(() => {
+      applySnapshot();
+      pendingRestoreFrame.current = requestAnimationFrame(() => {
+        applySnapshot();
+        pendingRestoreFrame.current = null;
+      });
+    });
   }, []);
 
   const handleSave = async event => {
@@ -119,6 +130,15 @@ const SaveButton = props => {
       );
     }
   }, [modal, userProfile.teamCode]);
+
+  useEffect(
+    () => () => {
+      if (pendingRestoreFrame.current !== null) {
+        cancelAnimationFrame(pendingRestoreFrame.current);
+      }
+    },
+    [],
+  );
 
   useLayoutEffect(() => {
     if (modal && scrollSnapshot.current.length > 0) {
