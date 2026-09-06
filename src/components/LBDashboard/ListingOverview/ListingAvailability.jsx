@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { fetchListingAvailability } from '../../../actions/lbdashboard/listOverviewAction';
 import styles from './Listoverview.module.css';
 
@@ -46,6 +46,8 @@ function getMonthDays(year, month) {
 
 export default function ListingAvailability({ listingId, availability, loading, error, onClose }) {
   const dispatch = useDispatch();
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const cx = base => `${styles[base]} ${darkMode ? styles[`${base}--dark`] : ''}`;
 
   const [month, setMonth] = useState(() => {
     const now = new Date();
@@ -92,16 +94,16 @@ export default function ListingAvailability({ listingId, availability, loading, 
   });
 
   return (
-    <div className={`${styles.availabilityModal}`}>
-      <button type="button" className={`${styles.closeBtn}`} onClick={onClose}>
+    <div className={cx('availabilityModal')}>
+      <button type="button" className={cx('closeBtn')} onClick={onClose}>
         ×
       </button>
-      <h2 className={`${styles.headingCalendar}`}>Availability Calendar</h2>
+      <h2 className={cx('headingCalendar')}>Availability Calendar</h2>
       {loading && <div>Loading...</div>}
-      {!loading && error && <div className="error-message">{error}</div>}
+      {!loading && error && <div className={cx('availabilityError')}>{error}</div>}
       {!loading && !error && availability && (
         <>
-          <div className={`${styles.calendarNav}`}>
+          <div className={cx('calendarNav')}>
             <button type="button" onClick={handlePrevMonth}>
               &lt;
             </button>
@@ -115,7 +117,7 @@ export default function ListingAvailability({ listingId, availability, loading, 
               &gt;
             </button>
           </div>
-          <table className={`${styles.simpleCalendar}`}>
+          <table className={cx('simpleCalendar')}>
             <thead>
               <tr>
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
@@ -151,7 +153,7 @@ export default function ListingAvailability({ listingId, availability, loading, 
               ))}
             </tbody>
           </table>
-          <div className={`${styles.calendarLegend}`} style={{ marginTop: 16 }}>
+          <div className={cx('calendarLegend')} style={{ marginTop: 16 }}>
             <span
               style={{ background: AVAILABILITY_COLORS.available }}
               className={`${styles.legendDot}`}
@@ -171,15 +173,11 @@ export default function ListingAvailability({ listingId, availability, loading, 
         </>
       )}
       <div className={`${styles.contactHostSection}`}>
-        <button
-          type="button"
-          onClick={() => setContactOpen(true)}
-          className={`${styles.contactHostBtn}`}
-        >
+        <button type="button" onClick={() => setContactOpen(true)} className={cx('contactHostBtn')}>
           Contact Host
         </button>
         {contactOpen && (
-          <form className={`${styles.contactForm}`} onSubmit={handleContactSubmit}>
+          <form className={cx('contactForm')} onSubmit={handleContactSubmit}>
             <input
               type="text"
               placeholder="Your Name"
@@ -200,12 +198,12 @@ export default function ListingAvailability({ listingId, availability, loading, 
               onChange={e => setContactForm({ ...contactForm, message: e.target.value })}
               required
             />
-            <button type="submit" className={`${styles.sendInfoBtn} ${styles.contactHostBtn}`}>
+            <button type="submit" className={`${styles.sendInfoBtn} ${cx('contactHostBtn')}`}>
               Send
             </button>
             <button
               type="button"
-              className={`${styles.cancelInfoBtn} ${styles.contactHostBtn}`}
+              className={`${styles.cancelInfoBtn} ${cx('contactHostBtn')}`}
               onClick={() => setContactOpen(false)}
             >
               Cancel
