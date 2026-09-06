@@ -1,20 +1,17 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background-color: rgb(0 0 0 / 50%);
+  z-index: 2000;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: rgb(0 0 0 / 50%);
 }
-
-/* ======================================================
-   POPUP CONTAINER
-   ====================================================== */
 
 .popup {
   padding: 24px;
   width: 90%;
-  max-width: 900px;
+  max-width: 960px;
   max-height: 85vh;
   overflow-y: auto;
   border: 1px solid #d1d5db;
@@ -29,10 +26,6 @@
   color: #f9fafb;
 }
 
-/* ======================================================
-   HEADING
-   ====================================================== */
-
 .popupHeading {
   margin-bottom: 16px;
   font-size: 20px;
@@ -44,39 +37,39 @@
   color: #f9fafb;
 }
 
-/* ======================================================
-   TABLE
-   ====================================================== */
+.errorMessage,
+.statusMessage {
+  margin: 0 0 12px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.errorMessage {
+  color: #b91c1c;
+}
+
+.statusMessage {
+  color: #1d4ed8;
+}
+
+.popupDark .errorMessage {
+  color: #fca5a5;
+}
+
+.popupDark .statusMessage {
+  color: #93c5fd;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+}
 
 .popupTable {
   width: 100%;
+  min-width: 640px;
   border-collapse: collapse;
 }
-
-/* DARK TABLE CELLS — must come before .popupTable thead th */
-
-.popupTableDark {
-  background-color: #1f2937;
-}
-
-.popupTableDark th,
-.popupTableDark td {
-  border: 1px solid #4b5563;
-  color: #f9fafb;
-  background-color: #1f2937;
-}
-
-.popup-table-dark {
-  background-color: #374151;
-}
-
-.popup-table-dark th,
-.popup-table-dark td {
-  color: #e5e7eb;
-  border-color: #4b5563;
-}
-
-/* LIGHT TABLE CELLS — after dark so specificity is correct */
 
 .popupTable th,
 .popupTable td {
@@ -86,34 +79,155 @@
   color: #111827;
 }
 
-/* DARK TABLE HEADERS — must come before .popupTable thead th */
-
-.popupTableDark thead th {
-  background-color: #374151;
-  color: #f9fafb;
-}
-
-.popup-table-dark thead th {
-  background-color: #374151;
-  color: #e5e7eb;
-}
-
-/* LIGHT TABLE HEADER — after dark thead rules */
-
 .popupTable thead th {
   font-weight: 600;
   background-color: #f3f4f6;
   color: #111827;
 }
 
-/* ======================================================
-   BUTTONS
-   ====================================================== */
+.popupDark .popupHeading {
+  color: #f9fafb;
+}
+
+.popupDark .popupTable th,
+.popupDark .popupTable td {
+  border: 1px solid #4b5563;
+  color: #f9fafb;
+  background-color: #1f2937;
+}
+
+.popupDark .popupTable thead th {
+  background-color: #374151;
+  color: #f9fafb;
+}
+
+.popupTable tbody tr {
+  cursor: pointer;
+}
+
+.popupTable tbody tr:hover td {
+  background-color: #f0f8ff;
+}
+
+.popupDark .popupTable tbody tr:hover td {
+  background-color: #334155;
+}
+
+.messageCell {
+  text-align: center;
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #2563eb;
+  cursor: pointer;
+}
+
+.popupDark .checkbox {
+  accent-color: #60a5fa;
+}
+
+.prBadgeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  min-width: 0;
+}
+
+.prCountBadge {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.emptyWeeklyPRs {
+  color: #6b7280;
+}
+
+.popupDark .emptyWeeklyPRs {
+  color: #9ca3af;
+}
+
+.color0 {
+  background-color: #9400d3;
+}
+
+.color1 {
+  background-color: #4b0082;
+}
+
+.color2 {
+  background-color: #00f;
+}
+
+.color3 {
+  background-color: #0f0;
+  color: #000;
+}
+
+.color4 {
+  background-color: #ff0;
+  color: #000;
+}
+
+.color5 {
+  background-color: #ffa500;
+  color: #000;
+}
+
+.color6 {
+  background-color: #f00;
+}
+
+/* Dark-mode badges must beat `.popupDark .popupTable td` color inheritance. */
+.popupDark .popupTable .prCountBadge {
+  color: #111827;
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 55%);
+}
+
+.popupDark .popupTable .color0 {
+  background-color: #e879f9;
+}
+
+.popupDark .popupTable .color1 {
+  background-color: #a78bfa;
+}
+
+.popupDark .popupTable .color2 {
+  background-color: #38bdf8;
+}
+
+.popupDark .popupTable .color3 {
+  background-color: #4ade80;
+}
+
+.popupDark .popupTable .color4 {
+  background-color: #facc15;
+}
+
+.popupDark .popupTable .color5 {
+  background-color: #fb923c;
+}
+
+.popupDark .popupTable .color6 {
+  background-color: #f87171;
+}
 
 .buttonRow {
   display: flex;
   justify-content: space-between;
   margin-top: 32px;
+  gap: 12px;
 }
 
 .button {
@@ -131,20 +245,22 @@
   opacity: 0.6;
 }
 
-/* These action colors are intentionally shared by light and dark mode. */
-
 .cancelButton {
   background-color: #f00;
 }
 
-.confirmButton:not(:disabled) {
+.confirmButton {
   background-color: #00f;
 }
 
-/* LIGHT HOVER — after dark base button rules */
+.popupDark .cancelButton {
+  background-color: #ef4444;
+  color: #fff;
+}
 
-.button:hover:not(:disabled) {
-  background-color: #e5e7eb;
+.popupDark .confirmButton {
+  background-color: #3b82f6;
+  color: #fff;
 }
 
 .cancelButton:hover:not(:disabled) {
@@ -155,214 +271,30 @@
   background-color: #00c;
 }
 
+.popupDark .cancelButton:hover:not(:disabled) {
+  background-color: #f87171;
+}
+
+.popupDark .confirmButton:hover:not(:disabled) {
+  background-color: #60a5fa;
+}
+
 .popupDark .button:disabled {
   background-color: #4b5563;
-  color: #d1d5db;
-}
-
-/* ======================================================
-   CHECKBOXES
-   ====================================================== */
-
-.popupDark input[type='checkbox'] {
-  accent-color: #60a5fa;
-  background-color: #1f2937;
-  border: 1px solid #6b7280;
-}
-
-/* ======================================================
-   PR BADGES
-   ====================================================== */
-
-.prCountBadge,
-.pr-count-badge {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0 4px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  color: black;
-  font-size: 12px;
-  font-weight: bold;
-}
-
-.popupDark .prCountBadge {
-  filter: brightness(0.9);
-}
-
-/* COLORS */
-
-/* Keep both CSS Module lookup styles aligned with getBadgeClassName. */
-
-.color0,
-.color-0 {
-  color: #fff;
-  background-color: #9400d3;
-}
-
-.color1,
-.color-1 {
-  background-color: #4b0082;
-  color: #fff;
-}
-
-.color-2 {
-  background-color: #00f;
-  color: white;
-}
-
-.color-3 {
-  background-color: #0f0;
-  color: black;
-}
-
-.color-4 {
-  background-color: #ff0;
-  color: black;
-}
-
-.color2 {
-  color: #fff;
-  background-color: #00f;
-}
-
-.color3 {
-  color: #000;
-  background-color: #0f0;
-}
-
-.color4 {
-  color: #000;
-  background-color: #ff0;
-}
-
-.color5,
-.color-5 {
-  color: #fff;
-  background-color: #c45c00;
-}
-
-.color-6 {
-  background-color: #f00;
-  color: white;
-}
-
-/* ======================================================
-   DARK MODE — PAGE AND HEADING
-   ====================================================== */
-
-.page-dark {
   color: #e5e7eb;
 }
 
-.heading-dark {
-  color: #e5e7eb;
-}
+@media (width <= 700px) {
+  .popup {
+    width: 96%;
+    padding: 16px;
+  }
 
-.page-dark .promoteButton {
-  background-color: #374151;
-  color: #e5e7eb;
-}
+  .buttonRow {
+    flex-direction: column-reverse;
+  }
 
-/* ======================================================
-   DARK MODE — POPUP LEGACY CLASSES
-   ====================================================== */
-
-.popup-dark {
-  background-color: #1f2937;
-  border-color: #4b5563;
-}
-
-.popup-heading-dark {
-  color: #e5e7eb;
-}
-
-/* ======================================================
-   PR BADGE OVERRIDES FOR DARK MODE
-   ====================================================== */
-
-:global(body.dark-mode) .popup-table-dark .pr-count-badge.color-0,
-:global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-0 {
-  color: #fff !important;
-  background-color: #9400d3 !important;
-}
-
-:global(body.dark-mode) .popup-table-dark .pr-count-badge.color-1,
-:global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-1 {
-  color: #fff !important;
-  background-color: #4b0082 !important;
-}
-
-:global(body.dark-mode) .popup-table-dark .pr-count-badge.color-2,
-:global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-2 {
-  color: #fff !important;
-  background-color: #00f !important;
-}
-
-:global(body.dark-mode) .popup-table-dark .pr-count-badge.color-3,
-:global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-3 {
-  color: #000 !important;
-  background-color: #0f0 !important;
-}
-
-:global(body.dark-mode) .popup-table-dark .pr-count-badge.color-4,
-:global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-4 {
-  color: #000 !important;
-  background-color: #ff0 !important;
-}
-
-:global(body.dark-mode) .popup-table-dark .pr-count-badge.color-5,
-:global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-5 {
-  color: #fff !important;
-  background-color: #a94f00 !important;
-}
-
-:global(body.dark-mode) .popup-table-dark .pr-count-badge.color-6,
-:global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-6 {
-  color: #fff !important;
-  background-color: #b00000 !important;
-}
-
-/* Dark modal content rules must come after the base table rules so they win in CSS order. */
-
-.popupDark .popupHeading {
-  color: #f9fafb;
-}
-
-.popupDark .popupTable {
-  background-color: #1f2937;
-}
-
-.popupDark .popupTable th,
-.popupDark .popupTable td {
-  border-color: #4b5563;
-  background-color: #1f2937;
-  color: #f9fafb;
-}
-
-.popupDark .popupTable thead th {
-  background-color: #374151;
-  color: #f9fafb;
-}
-
-.popupTable tbody tr {
-  cursor: pointer;
-}
-
-.popupTable tbody tr:hover td {
-  background-color: #f0f8ff;
-}
-
-.popupDark .popupTable tbody tr:hover td {
-  background-color: #2f4157;
-}
-
-.prBadgeRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-  min-width: 0;
+  .button {
+    width: 100%;
+  }
 }
