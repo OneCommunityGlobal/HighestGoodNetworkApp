@@ -184,6 +184,7 @@ const localReducers = {
   dashboard: dashboardReducer,
   injuries: injuriesReducer,
   weeklyProjectSummary: weeklyProjectSummaryReducer,
+  issue: issueReducer,
   knowledgeEvolution: knowledgeEvolutionReducer,
   costBreakdown: costBreakdownReducer,
 
