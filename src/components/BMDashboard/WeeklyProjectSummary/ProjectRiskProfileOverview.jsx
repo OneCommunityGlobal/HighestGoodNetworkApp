@@ -300,6 +300,9 @@ export default function ProjectRiskProfileOverview() {
       },
       labelStyle: { color: darkMode ? '#eee' : '#222' },
       itemStyle: { color: darkMode ? '#eee' : '#222' },
+      allowEscapeViewBox: { x: true, y: true },
+      wrapperStyle: { zIndex: 2000, pointerEvents: 'none' },
+      position: { y: -60 },
     }),
     [darkMode],
   );

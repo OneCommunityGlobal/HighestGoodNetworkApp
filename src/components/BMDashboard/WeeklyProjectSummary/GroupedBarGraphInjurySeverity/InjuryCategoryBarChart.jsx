@@ -13,6 +13,7 @@ import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import styles from './InjuryCategoryBarChart.module.css';
+import { buildChartSelectStyles } from '../sharedSelectStyles';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   fetchInjuryData,
@@ -48,7 +49,6 @@ function InjuryCategoryBarChart() {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
-  // ✅ NEW: key to force Recharts remount when needed (fixes "renders only on hover")
   const [chartKey, setChartKey] = useState(0);
 
   useEffect(() => {
@@ -168,35 +168,7 @@ function InjuryCategoryBarChart() {
     endDate,
   ]);
 
-  const selectStyles = darkMode && {
-    control: base => ({
-      ...base,
-      backgroundColor: '#2b3e59',
-      color: 'white',
-    }),
-    menu: base => ({
-      ...base,
-      backgroundColor: '#2b3e59',
-      color: 'white',
-    }),
-    option: (base, state) => ({
-      ...base,
-      color: 'white',
-      backgroundColor: state.isSelected
-        ? 'rgba(255, 255, 255, 0.15)'
-        : state.isFocused
-        ? 'rgba(255, 255, 255, 0.1)'
-        : 'transparent',
-      '&:active': {
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-      },
-    }),
-    singleValue: base => ({
-      ...base,
-      color: 'white',
-    }),
-  };
-  // : {};
+  const selectStyles = buildChartSelectStyles(darkMode);
 
   return (
     <div className={`injury-chart-container ${darkMode && 'darkMode'}`}>
@@ -266,6 +238,7 @@ function InjuryCategoryBarChart() {
               maxDate={endDate || undefined}
               placeholderText="Start date"
               className="injury-date-input"
+              calendarClassName={darkMode ? 'paid-labor-cost-dark-calendar' : ''}
             />
           </div>
 
@@ -283,6 +256,7 @@ function InjuryCategoryBarChart() {
               minDate={startDate || undefined}
               placeholderText="End date"
               className="injury-date-input"
+              calendarClassName={darkMode ? 'paid-labor-cost-dark-calendar' : ''}
             />
           </div>
         </div>

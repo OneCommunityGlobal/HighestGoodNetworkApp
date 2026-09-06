@@ -283,6 +283,7 @@ function LessonsLearntChart({ darkMode: propDarkMode }) {
             dateFormat="MM/dd/yyyy"
             isClearable
             maxDate={endDate || today}
+            calendarClassName={darkMode ? 'lessons-learnt-dark-calendar' : undefined}
           />
         </div>
         <div className={styles.filter}>
@@ -298,6 +299,7 @@ function LessonsLearntChart({ darkMode: propDarkMode }) {
             isClearable
             minDate={startDate}
             maxDate={today}
+            calendarClassName={darkMode ? 'lessons-learnt-dark-calendar' : undefined}
           />
         </div>
       </div>
