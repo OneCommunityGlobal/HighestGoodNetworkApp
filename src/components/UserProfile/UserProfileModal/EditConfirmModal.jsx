@@ -1,9 +1,7 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { boxStyle, boxStyleDark } from '~/styles';
-import { useSelector } from 'react-redux';
 
 const EditConfirmModal = props => {
   const {
@@ -11,12 +9,10 @@ const EditConfirmModal = props => {
     closeModal,
     modalTitle,
     modalMessage,
-    userProfile,
     disabled,
     darkMode,
     preserveScroll,
   } = props;
-  const history = useHistory();
   const toggle = () => {
     closeModal();
   };
@@ -49,7 +45,6 @@ EditConfirmModal.propTypes = {
   closeModal: PropTypes.func.isRequired,
   modalTitle: PropTypes.string.isRequired,
   modalMessage: PropTypes.string.isRequired,
-  userProfile: PropTypes.object.isRequired,
   isOpen: PropTypes.bool.isRequired,
   disabled: PropTypes.bool.isRequired,
   preserveScroll: PropTypes.func,

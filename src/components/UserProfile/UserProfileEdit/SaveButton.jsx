@@ -151,7 +151,6 @@ const SaveButton = props => {
       <EditConfirmModal
         isOpen={modal}
         closeModal={closeModal}
-        userProfile={userProfile}
         modalTitle={getMessage('title')}
         modalMessage={getMessage('message')}
         disabled={isLoading}

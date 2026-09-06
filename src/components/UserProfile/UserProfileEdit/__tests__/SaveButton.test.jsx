@@ -94,4 +94,22 @@ describe('<SaveButton />', () => {
 
     expect(modalBody.scrollTop).toBe(320);
   });
+
+  it('cancels a pending scroll restoration when unmounted', () => {
+    const requestFrame = vi.spyOn(window, 'requestAnimationFrame').mockReturnValue(42);
+    const cancelFrame = vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {});
+    const handleSubmit = vi.fn(() => new Promise(() => {}));
+    const { unmount } = render(<SaveButton {...createProps({ handleSubmit })} />);
+
+    const saveButton = screen.getByRole('button', { name: /save changes/i });
+    fireEvent.mouseDown(saveButton);
+    fireEvent.click(saveButton);
+    expect(requestFrame).toHaveBeenCalled();
+
+    unmount();
+
+    expect(cancelFrame).toHaveBeenCalledWith(42);
+    requestFrame.mockRestore();
+    cancelFrame.mockRestore();
+  });
 });
