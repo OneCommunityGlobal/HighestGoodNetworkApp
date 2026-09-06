@@ -53,6 +53,7 @@ function TotalMaterialCostPerProject() {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    layout: { padding: { top: 24 } },
     plugins: {
       legend: {
         position: 'top',
@@ -63,6 +64,11 @@ function TotalMaterialCostPerProject() {
         color: darkMode ? '#fff' : '#1a1a1a',
         anchor: 'end',
         align: 'end',
+        offset: 4,
+        clamp: true,
+        font: { weight: '600' },
+        textStrokeColor: darkMode ? '#1a1f26' : '#fff',
+        textStrokeWidth: 3,
         formatter: value => Number(value ?? 0).toFixed(3),
       },
       tooltip: {

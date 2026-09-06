@@ -40,6 +40,7 @@
   background-color: #253342;
   color: #fff;
   border-color: #4a5a77;
+  color-scheme: dark;
 }
 
 .darkMode .selectorGroup select option {

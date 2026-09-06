@@ -339,7 +339,7 @@ function WeeklyProjectSummary() {
           >
             <div className="weekly-project-summary-card financial-small">📊 Card</div>
             <div className="weekly-project-summary-card financial-small financial-chart">
-              <ExpenseBarChart />
+              <ExpenseBarChart darkMode={darkMode} />
             </div>
 
             {/* Bottom: Cost Breakdown Pie Chart (Spans across both columns) */}

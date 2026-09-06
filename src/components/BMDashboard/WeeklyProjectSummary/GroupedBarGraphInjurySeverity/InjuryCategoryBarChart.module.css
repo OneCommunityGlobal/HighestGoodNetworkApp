@@ -54,6 +54,19 @@
   color: #f3f4f6 !important;
 } */
 
+/* Filter row spacing so the date fields and their separator arrow are not cramped */
+:global(.injury-chart-filters) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  align-items: flex-end;
+}
+
+:global(.injury-chart-filters .injury-filter) {
+  display: flex;
+  flex-direction: column;
+}
+
 /* ---- HOTFIX: react-select classNamePrefix is `injury-select` (with a hyphen), so we must target those global classes ---- */
 
 :global(.darkMode .injury-select__control) {

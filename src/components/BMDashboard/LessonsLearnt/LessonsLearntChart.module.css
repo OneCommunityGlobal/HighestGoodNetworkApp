@@ -116,6 +116,55 @@
   color: #34d399;
 }
 
+/* Dark mode calendar popup */
+:global(.react-datepicker.lessons-learnt-dark-calendar) {
+  background-color: #253342;
+  border-color: #4a5a77;
+  color: #f1f5f9;
+}
+
+:global(.lessons-learnt-dark-calendar .react-datepicker__header) {
+  background-color: #2d4059;
+  border-bottom-color: #4a5a77;
+}
+
+:global(.lessons-learnt-dark-calendar .react-datepicker__current-month),
+:global(.lessons-learnt-dark-calendar .react-datepicker__day-name),
+:global(.lessons-learnt-dark-calendar .react-datepicker-time__header) {
+  color: #f1f5f9;
+}
+
+:global(.lessons-learnt-dark-calendar .react-datepicker__day) {
+  color: #e0e0e0;
+}
+
+:global(.lessons-learnt-dark-calendar .react-datepicker__day:hover) {
+  background-color: #3a506b;
+  color: #fff;
+}
+
+:global(.lessons-learnt-dark-calendar .react-datepicker__day--outside-month) {
+  color: #8a94a3;
+}
+
+:global(.lessons-learnt-dark-calendar .react-datepicker__day--disabled) {
+  color: #5a6472;
+}
+
+:global(.lessons-learnt-dark-calendar .react-datepicker__day--selected),
+:global(.lessons-learnt-dark-calendar .react-datepicker__day--keyboard-selected) {
+  background-color: #2b73b6;
+  color: #fff;
+}
+
+:global(.lessons-learnt-dark-calendar .react-datepicker__navigation-icon::before) {
+  border-color: #cbd5e1;
+}
+
+:global(.lessons-learnt-dark-calendar .react-datepicker__triangle) {
+  display: none;
+}
+
 /* Responsive */
 @media (width <= 768px) {
   .chartContainer {
