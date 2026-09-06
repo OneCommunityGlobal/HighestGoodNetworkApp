@@ -725,7 +725,6 @@ function BlueskyPostDetails() {
           {status.replace(/^\[(OK|ERROR|INFO)\]\s*/, '')}
         </Alert>
       )}
-
       {isConnected ? (
         <>
           {/* Connected header bar */}
@@ -826,7 +825,6 @@ function BlueskyPostDetails() {
           onConnect={connectToBluesky}
         />
       )}
-
       <Modal show={showDeleteModal} onHide={cancelDelete} centered>
         <Modal.Header closeButton className={styles['modal-header']}>
           <Modal.Title>Delete Post</Modal.Title>
