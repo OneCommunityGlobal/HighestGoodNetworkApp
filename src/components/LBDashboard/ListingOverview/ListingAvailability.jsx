@@ -47,7 +47,10 @@ function getMonthDays(year, month) {
 export default function ListingAvailability({ listingId, availability, loading, error, onClose }) {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
-  const cx = base => `${styles[base]} ${darkMode ? styles[`${base}--dark`] : ''}`;
+  const cx = base => {
+    const darkClass = darkMode ? styles[`${base}--dark`] : '';
+    return `${styles[base]} ${darkClass}`;
+  };
 
   const [month, setMonth] = useState(() => {
     const now = new Date();
