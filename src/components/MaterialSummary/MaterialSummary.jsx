@@ -250,6 +250,13 @@ export default function MaterialUsageDashboard() {
                               },
                             },
                           },
+                          datalabels: {
+                            color: '#000',
+                            font: {
+                              size: 14,
+                              weight: 'bold',
+                            },
+                          },
                         },
                       }}
                       plugins={[
