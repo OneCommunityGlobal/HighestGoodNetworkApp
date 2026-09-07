@@ -87,7 +87,7 @@ function PMResourceDashboard() {
               role="tabpanel"
               aria-labelledby="resource-requests-tab"
             >
-              {activeTab === 'requests' && <ResourceRequestsTab darkMode={darkMode} />}
+              <ResourceRequestsTab darkMode={darkMode} />
             </TabPane>
             <TabPane
               tabId="certifications"
@@ -95,7 +95,7 @@ function PMResourceDashboard() {
               role="tabpanel"
               aria-labelledby="certifications-tab"
             >
-              {activeTab === 'certifications' && <CertificationsTab darkMode={darkMode} />}
+              <CertificationsTab darkMode={darkMode} />
             </TabPane>
           </TabContent>
         </Col>

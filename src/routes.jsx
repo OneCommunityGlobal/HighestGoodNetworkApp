@@ -413,12 +413,7 @@ export default (
             return <Timelog userId={userId} />;
           }}
         />
-        <ProtectedRoute
-          path="/peoplereport/:userId"
-          component={PeopleReport}
-          fallback
-          routePermissions={RoutePermissions.reports}
-        />
+        <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} fallback />
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
         <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
         <ProtectedRoute path="/taskeditsuggestions" component={TaskEditSuggestions} />
