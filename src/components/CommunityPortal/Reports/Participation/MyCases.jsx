@@ -22,15 +22,16 @@ function MyCases() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const filteredEvents = filterEventsByDate(events, filter).filter(
-    event => new Date(event.eventDate).getTime() >= now.getTime(),
+    event => event.isNew || new Date(event.eventDate).getTime() >= now.getTime(),
   );
 
   const handleEventCreated = createdEvent => {
     if (!createdEvent) return;
-    const eventDate = createdEvent.startTime || createdEvent.date;
+    const eventDate = createdEvent.startTime || createdEvent.date || Date.now();
     setEvents(prev => [
       {
         id: createdEvent._id || createdEvent.id || `local-${Date.now()}`,
+        isNew: true,
         eventType: createdEvent.type || 'all',
         eventDate: new Date(eventDate).toISOString(),
         eventTime: new Date(eventDate).toLocaleString('en-US', {
