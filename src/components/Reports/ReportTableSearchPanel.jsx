@@ -1,13 +1,38 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import debounce from 'lodash/debounce';
 import { SEARCH } from '../../languages/en/ui';
 import styles from './reportsPage.module.css';
+
+const SEARCH_DEBOUNCE_MS = 300;
 
 /**
  * The search panel stateless component for Report grid
  */
 function ReportTableSearchPanel({ onSearch, wildCardSearchText, onSearchClick }) {
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  // Keep the input responsive to every keystroke while debouncing the (expensive)
+  // filter recompute that onSearch triggers upstream in ReportsPage.
+  const [localSearchText, setLocalSearchText] = useState(wildCardSearchText ?? '');
+  const onSearchRef = useRef(onSearch);
+  onSearchRef.current = onSearch;
+
+  const debouncedSearch = useRef(
+    debounce(value => onSearchRef.current(value), SEARCH_DEBOUNCE_MS, {
+      leading: true,
+      trailing: true,
+    }),
+  ).current;
+
+  useEffect(() => () => debouncedSearch.cancel(), [debouncedSearch]);
+
+  // Stay in sync when the search text is reset externally (e.g. "Clear Filters").
+  useEffect(() => {
+    if (wildCardSearchText === '' && localSearchText !== '') {
+      setLocalSearchText('');
+    }
+  }, [wildCardSearchText]);
 
   const handleSearchClick = () => {
     // Call the parent's search click handler if provided
@@ -81,9 +106,11 @@ function ReportTableSearchPanel({ onSearch, wildCardSearchText, onSearchClick })
           aria-label="Search"
           placeholder="Search Text"
           id="team-profiles-wild-card-search"
-          value={wildCardSearchText}
+          value={localSearchText}
           onChange={e => {
-            onSearch(e.target.value); // Use destructured onSearch directly
+            const { value } = e.target;
+            setLocalSearchText(value);
+            debouncedSearch(value);
           }}
         />
       </div>
