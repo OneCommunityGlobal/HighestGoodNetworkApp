@@ -133,12 +133,14 @@
   font-weight: 700;
 }
 
+/* Global dark-mode rule (body.dark-mode * { color: #fff !important }) forces
+   white text, so these overrides need !important to apply the score colors. */
 .darkMode .lowScore {
-  color: #fc8181;
+  color: #fc8181 !important;
 }
 
 .darkMode .highScore {
-  color: #68d391;
+  color: #68d391 !important;
 }
 
 .private {
