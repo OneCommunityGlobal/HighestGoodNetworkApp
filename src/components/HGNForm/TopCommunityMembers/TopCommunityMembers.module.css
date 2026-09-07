@@ -133,12 +133,14 @@
   font-weight: 700;
 }
 
+/* Global dark-mode rule (body.dark-mode * { color: #fff !important }) forces
+   white text, so these overrides need !important to apply the score colors. */
 .darkMode .lowScore {
-  color: #fc8181;
+  color: #fc8181 !important;
 }
 
 .darkMode .highScore {
-  color: #68d391;
+  color: #68d391 !important;
 }
 
 .private {
@@ -422,4 +424,24 @@
 .underlineLinkDark:hover {
   text-decoration: none;
   color: #f5b13a;
+}
+
+/* Global dark-mode rule forces link text to white; restore legible link
+   colors (both clear 4.5:1 on the dark table surface). */
+.darkMode .iconLinkDark,
+.darkMode .iconLinkDark span {
+  color: #63b3ed !important;
+}
+
+.darkMode .iconLinkDark:hover,
+.darkMode .iconLinkDark:hover span {
+  color: #90cdf4 !important;
+}
+
+.darkMode .underlineLinkDark {
+  color: #63b3ed !important;
+}
+
+.darkMode .underlineLinkDark:hover {
+  color: #90cdf4 !important;
 }
