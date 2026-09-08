@@ -653,8 +653,6 @@ export const ENDPOINTS = {
   return params.length > 0 ? `${url}?${params.join("&")}` : url;
 },
 
-
-
   // job analytics
   HOURS_PLEDGED: `${APIEndpoint}/analytics/hours-pledged`,
   JOB_HITS_AND_APPLICATIONS: `${APIEndpoint}/analytics/job-hits-and-applications`,
