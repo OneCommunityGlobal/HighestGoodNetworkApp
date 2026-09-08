@@ -80,6 +80,8 @@ function RankedUserList({ selectedSkills, selectedPreferences, searchQuery, sort
         const users = Array.isArray(response.data) ? response.data : [];
         setAllUsers(users.map(normalizeUser));
       } catch (err) {
+        // Network/parse failures are surfaced to the user via the error state below;
+        // there is nothing else to recover here.
         setError('Unable to load community members. Please try again later.');
         setAllUsers([]);
       } finally {
@@ -101,9 +103,9 @@ function RankedUserList({ selectedSkills, selectedPreferences, searchQuery, sort
     }
 
     if (selectedPreferences && selectedPreferences.length > 0) {
-      const userPreferences = (user.preferences || []).map(pref => pref.toLowerCase());
+      const userPreferences = new Set((user.preferences || []).map(pref => pref.toLowerCase()));
       const matchesPreferences = selectedPreferences.every(pref =>
-        userPreferences.includes(pref.toLowerCase()),
+        userPreferences.has(pref.toLowerCase()),
       );
       if (!matchesPreferences) return false;
     }
