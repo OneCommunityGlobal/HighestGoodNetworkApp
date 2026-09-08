@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styles from './DisplayBox.module.css';
 
+const VIBGYOR_COLOR_COUNT = 7;
+
 export default function DisplayBox({ onClose, darkMode = false }) {
   const mockPromotionData = [
     {
@@ -48,37 +50,34 @@ export default function DisplayBox({ onClose, darkMode = false }) {
 
   const handleConfirm = () => {
     const selectedReviewers = mockPromotionData.filter((_, index) => checkedItems[index]);
+
     console.log('Selected reviewers:', selectedReviewers);
     onClose();
   };
 
-  const tableClassName = [
-    styles.popupTable,
-    darkMode ? styles.popupTableDark : '',
-    darkMode ? styles['popup-table-dark'] : '',
-  ]
+  const tableClassName = [styles.popupTable, darkMode ? styles.popupTableDark : '']
     .filter(Boolean)
     .join(' ');
 
   const getBadgeClassName = index =>
-    [
-      styles.prCountBadge,
-      styles['pr-count-badge'],
-      styles[`color-${index}`] || styles[`color${index}`],
-    ]
-      .filter(Boolean)
-      .join(' ');
+    [styles.prCountBadge, styles[`color-${index % VIBGYOR_COLOR_COUNT}`]].filter(Boolean).join(' ');
+
   const modalRef = useRef(null);
   const overlayRef = useRef(null);
 
   useEffect(() => {
-    const overlayClickHandler = e => {
-      if (e.target.id === 'overlay') onClose();
+    const overlayClickHandler = event => {
+      if (event.target.id === 'overlay') {
+        onClose();
+      }
     };
 
     document.addEventListener('click', overlayClickHandler);
-    return () => document.removeEventListener('click', overlayClickHandler);
-  }, []);
+
+    return () => {
+      document.removeEventListener('click', overlayClickHandler);
+    };
+  }, [onClose]);
 
   return (
     <div className={styles.overlay} ref={overlayRef} id="overlay">
@@ -102,6 +101,7 @@ export default function DisplayBox({ onClose, darkMode = false }) {
                   aria-label="Select all reviewers"
                 />
               </th>
+
               <th>PR Reviewer</th>
               <th>Team Code</th>
               <th>Team Leader Name</th>
@@ -120,9 +120,11 @@ export default function DisplayBox({ onClose, darkMode = false }) {
                     aria-label={`Select reviewer ${promotion.prReviewer}`}
                   />
                 </td>
+
                 <td>{promotion.prReviewer}</td>
                 <td>{promotion.teamCode}</td>
                 <td>{promotion.teamReviewerName}</td>
+
                 <td>
                   <div className={styles.prBadgeRow}>
                     {promotion.weeklyPRs.map((pr, prIndex) => (
@@ -139,6 +141,7 @@ export default function DisplayBox({ onClose, darkMode = false }) {
             ))}
           </tbody>
         </table>
+
         <div className={styles.buttonRow}>
           <button
             type="button"
