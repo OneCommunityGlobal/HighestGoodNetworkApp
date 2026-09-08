@@ -39,15 +39,17 @@ function UserCard({ user }) {
       </div>
 
       <div className={`${styles.scoreSkillsWrapper}`}>
-        <div className={`${styles.scoreLine}`}>
-          <span className={`${styles.scoreLabel}`}>Score:</span>
-          <span
-            className={`${styles.scoreValue} ${score >= 5 ? styles.scoreHigh : styles.scoreLow}`}
-          >
-            {score}
-          </span>
-          <span className={`${styles.scoreMax}`}> / 10</span>
-        </div>
+        {typeof score === 'number' && (
+          <div className={`${styles.scoreLine}`}>
+            <span className={`${styles.scoreLabel}`}>Score:</span>
+            <span
+              className={`${styles.scoreValue} ${score >= 5 ? styles.scoreHigh : styles.scoreLow}`}
+            >
+              {score}
+            </span>
+            <span className={`${styles.scoreMax}`}> / 10</span>
+          </div>
+        )}
 
         <div className={`${styles.skillsSection}`}>
           <div className={`${styles.skillsLabel}`}>Top Skills:</div>

@@ -758,6 +758,7 @@ export const ENDPOINTS = {
 
   // Help Request & Feedback Modal endpoints
   HGN_FORM_RANKED: `${APIEndpoint}/hgnform/ranked`,
+  HGN_COMMUNITY_MEMBERS: `${APIEndpoint}/hgnHelp/community`,
   HELP_REQUEST_CHECK_MODAL: userId => `${APIEndpoint}/helprequest/check-modal/${userId}`,
   FEEDBACK_CLOSE_PERMANENTLY: `${APIEndpoint}/feedback/close-permanently`,
   FEEDBACK_SUBMIT: `${APIEndpoint}/feedback/submit`,
