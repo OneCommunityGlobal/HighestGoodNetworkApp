@@ -448,6 +448,26 @@
   color: #f3f4f6;
 }
 
+:global(.dark-mode) .filterInput[type='date'] {
+  background: #1f2937;
+  border-color: #404040;
+  color: #f3f4f6;
+  color-scheme: dark;
+}
+
+:global(.dark-mode) .filterInput[type='date']::-webkit-datetime-edit-text,
+:global(.dark-mode) .filterInput[type='date']::-webkit-datetime-edit-month-field,
+:global(.dark-mode) .filterInput[type='date']::-webkit-datetime-edit-day-field,
+:global(.dark-mode) .filterInput[type='date']::-webkit-datetime-edit-year-field {
+  color: #f3f4f6;
+  -webkit-text-fill-color: #f3f4f6;
+}
+
+:global(.dark-mode) .filterInput[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.8;
+}
+
 :global(.dark-mode) .filterSelect option {
   background: #1f2937;
   color: #f3f4f6;
