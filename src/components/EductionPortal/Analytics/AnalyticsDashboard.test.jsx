@@ -76,6 +76,43 @@ describe('AnalyticsDashboard API integration', () => {
     );
   });
 
+  it('formats percentage-point engagement and preserves valid zero metrics', async () => {
+    httpService.get.mockResolvedValue({
+      data: {
+        averageScore: 0,
+        averageTimeSpentMinutes: 0,
+        averageEngagementRate: 11.333,
+        totalStudents: 0,
+      },
+    });
+
+    render(<AnalyticsDashboard />);
+
+    expect(await screen.findByText('Average Score: 0.0%')).toBeInTheDocument();
+    expect(screen.getByText('Time Spent: 0h 0m')).toBeInTheDocument();
+    expect(screen.getByText('Engagement Rate: 11.3%')).toBeInTheDocument();
+    expect(screen.getByText('Total Students: 0')).toBeInTheDocument();
+    expect(screen.queryByText('Engagement Rate: 1133.3%')).not.toBeInTheDocument();
+  });
+
+  it('uses N/A for missing or invalid overview metrics', async () => {
+    httpService.get.mockResolvedValue({
+      data: {
+        averageScore: null,
+        averageTimeSpentMinutes: 'invalid',
+        averageEngagementRate: Infinity,
+        totalStudents: undefined,
+      },
+    });
+
+    render(<AnalyticsDashboard />);
+
+    expect(await screen.findByText('Average Score: N/A')).toBeInTheDocument();
+    expect(screen.getByText('Time Spent: N/A')).toBeInTheDocument();
+    expect(screen.getByText('Engagement Rate: N/A')).toBeInTheDocument();
+    expect(screen.getByText('Total Students: N/A')).toBeInTheDocument();
+  });
+
   it('renders an API failure without throwing and uses the valid logger method', async () => {
     httpService.get.mockRejectedValue({ response: { status: 500 } });
 

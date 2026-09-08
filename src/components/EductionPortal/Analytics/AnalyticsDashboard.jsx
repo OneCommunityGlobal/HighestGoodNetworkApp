@@ -11,6 +11,13 @@ import FilterPanel from './FilterPanel';
 import { Clock, TrendingUp, Users, BookOpen } from 'lucide-react';
 import styles from './AnalyticsDashboard.module.css';
 
+const toFiniteMetric = value => {
+  if (value === null || value === undefined || value === '') return null;
+
+  const numericValue = typeof value === 'number' ? value : Number(value);
+  return Number.isFinite(numericValue) ? numericValue : null;
+};
+
 const AnalyticsDashboard = () => {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [loading, setLoading] = useState(true);
@@ -66,12 +73,14 @@ const AnalyticsDashboard = () => {
       const data = response.data || {};
       const backendMetrics = data.metrics || data;
       const metrics = {
-        averageScore: backendMetrics.averageScore || 0,
-        totalTimeSpent:
-          backendMetrics.totalTimeSpent ?? backendMetrics.averageTimeSpentMinutes ?? 0,
-        engagementRate:
-          backendMetrics.engagementRate ?? (backendMetrics.averageEngagementRate || 0) * 100,
-        totalStudents: backendMetrics.totalStudents || 0,
+        averageScore: toFiniteMetric(backendMetrics.averageScore),
+        totalTimeSpent: toFiniteMetric(
+          backendMetrics.totalTimeSpent ?? backendMetrics.averageTimeSpentMinutes,
+        ),
+        engagementRate: toFiniteMetric(
+          backendMetrics.engagementRate ?? backendMetrics.averageEngagementRate,
+        ),
+        totalStudents: toFiniteMetric(backendMetrics.totalStudents),
       };
 
       setOverviewData({ ...data, metrics });
@@ -186,6 +195,7 @@ const AnalyticsDashboard = () => {
   }
 
   const metrics = overviewData?.metrics || {};
+  const hasMetricValue = value => Number.isFinite(value);
 
   return (
     <div className={styles.dashboard}>
@@ -210,7 +220,9 @@ const AnalyticsDashboard = () => {
           <Col md={3} sm={6}>
             <MetricCard
               title="Average Score"
-              value={metrics.averageScore ? `${metrics.averageScore.toFixed(1)}%` : 'N/A'}
+              value={
+                hasMetricValue(metrics.averageScore) ? `${metrics.averageScore.toFixed(1)}%` : 'N/A'
+              }
               icon={TrendingUp}
               subtitle="Overall performance"
             />
@@ -219,7 +231,7 @@ const AnalyticsDashboard = () => {
             <MetricCard
               title="Time Spent"
               value={
-                metrics.totalTimeSpent
+                hasMetricValue(metrics.totalTimeSpent)
                   ? `${Math.floor(metrics.totalTimeSpent / 60)}h ${Math.floor(
                       metrics.totalTimeSpent % 60,
                     )}m`
@@ -232,7 +244,11 @@ const AnalyticsDashboard = () => {
           <Col md={3} sm={6}>
             <MetricCard
               title="Engagement Rate"
-              value={metrics.engagementRate ? `${metrics.engagementRate.toFixed(1)}%` : 'N/A'}
+              value={
+                hasMetricValue(metrics.engagementRate)
+                  ? `${metrics.engagementRate.toFixed(1)}%`
+                  : 'N/A'
+              }
               icon={Users}
               subtitle="Active participation"
             />
@@ -240,7 +256,7 @@ const AnalyticsDashboard = () => {
           <Col md={3} sm={6}>
             <MetricCard
               title="Total Students"
-              value={metrics.totalStudents || 0}
+              value={hasMetricValue(metrics.totalStudents) ? metrics.totalStudents : 'N/A'}
               icon={BookOpen}
               subtitle="Enrolled learners"
             />
