@@ -2,9 +2,9 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
 import httpService from '~/services/httpService';
+import logService from '~/services/logService';
 import MetricCard from './MetricCard';
 import ReportChart from './ReportChart';
 import FilterPanel from './FilterPanel';
@@ -37,6 +37,8 @@ const AnalyticsDashboard = () => {
 
   // Fetch overview data
   const fetchOverviewData = async () => {
+    const url = ENDPOINTS.ANALYTICS_OVERVIEW;
+
     try {
       setLoading(true);
       setError(null);
@@ -60,12 +62,21 @@ const AnalyticsDashboard = () => {
         ...(dateRange?.end && { endDate: dateRange.end }),
       };
 
-      const url = ENDPOINTS.ANALYTICS_OVERVIEW;
-
       const response = await httpService.get(url, { params });
+      const data = response.data || {};
+      const backendMetrics = data.metrics || data;
+      const metrics = {
+        averageScore: backendMetrics.averageScore || 0,
+        totalTimeSpent:
+          backendMetrics.totalTimeSpent ?? backendMetrics.averageTimeSpentMinutes ?? 0,
+        engagementRate:
+          backendMetrics.engagementRate ?? (backendMetrics.averageEngagementRate || 0) * 100,
+        totalStudents: backendMetrics.totalStudents || 0,
+      };
 
-      setOverviewData(response.data);
+      setOverviewData({ ...data, metrics });
     } catch (err) {
+      logService.logError(err);
       if (err.response?.status === 401) {
         setError(
           'Authentication failed (401). Please ensure you are logged in and your session is valid. ' +
@@ -114,6 +125,7 @@ const AnalyticsDashboard = () => {
 
       setStudentData(response.data);
     } catch (err) {
+      logService.logError(err);
       if (err.response?.status === 401) {
         toast.error('Authentication failed. Please log in again.');
       } else if (err.response?.status === 404) {
