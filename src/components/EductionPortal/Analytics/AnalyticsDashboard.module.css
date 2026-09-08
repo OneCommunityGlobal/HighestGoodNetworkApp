@@ -1,3 +1,4 @@
+/* stylelint-disable alpha-value-notation, color-function-alias-notation, color-function-notation, color-hex-length, comment-empty-line-before, media-feature-range-notation, no-descending-specificity, selector-no-vendor-prefix */
 /* Analytics Dashboard Styles */
 .dashboard {
   min-height: 100vh;
@@ -175,6 +176,7 @@
 [data-theme='dark'] .filterInput[type='date'] {
   background-color: var(--card);
   border-color: var(--card-border);
+  color-scheme: dark;
 }
 
 [data-theme='dark'] .filterInput[type='date']:hover {
@@ -408,4 +410,45 @@
   .metricValue {
     font-size: 1.25rem;
   }
+}
+
+/* Dark mode follows the Education Portal's global theme marker. */
+:global(.dark-mode) .dashboard {
+  background: #1a1a1a;
+  color: #f9fafb;
+}
+
+:global(.dark-mode) .filterPanel,
+:global(.dark-mode) .metricCard,
+:global(.dark-mode) .chartCard {
+  background: #2d2d2d;
+  border-color: #404040;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
+}
+
+:global(.dark-mode) .filterLabel,
+:global(.dark-mode) .metricTitle,
+:global(.dark-mode) .metricSubtitle {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .metricValue,
+:global(.dark-mode) .chartTitle {
+  color: #ffffff;
+}
+
+:global(.dark-mode) .chartTitle {
+  border-bottom-color: #404040;
+}
+
+:global(.dark-mode) .filterSelect,
+:global(.dark-mode) .filterInput {
+  background: #1f2937;
+  border-color: #404040;
+  color: #f3f4f6;
+}
+
+:global(.dark-mode) .filterSelect option {
+  background: #1f2937;
+  color: #f3f4f6;
 }

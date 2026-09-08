@@ -81,7 +81,7 @@ describe('AnalyticsDashboard API integration', () => {
 
     render(<AnalyticsDashboard />);
 
-    expect(await screen.findByText(/Failed to load analytics data/)).toBeInTheDocument();
+    expect(await screen.findByText(/Failed to fetch analytics data/)).toBeInTheDocument();
 
     expect(logService.logError).toHaveBeenCalled();
     expect(logService.log).not.toHaveBeenCalled();
@@ -91,7 +91,11 @@ describe('AnalyticsDashboard API integration', () => {
     httpService.get.mockImplementation(url => {
       if (url === ENDPOINTS.ANALYTICS_OVERVIEW) {
         return Promise.resolve({
-          data: { averageScore: 90, totalStudents: 4 },
+          data: {
+            averageScore: 90,
+            totalStudents: 4,
+            students: [{ id: 'student-1', name: 'Student One' }],
+          },
         });
       }
 

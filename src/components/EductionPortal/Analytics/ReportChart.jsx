@@ -21,6 +21,15 @@ const ReportChart = ({ data, type = 'line', title, dataKey, xAxisKey = 'date' })
     primary: darkMode ? '#60a5fa' : '#3b82f6',
     secondary: darkMode ? '#34d399' : '#10b981',
     tertiary: darkMode ? '#fbbf24' : '#f59e0b',
+    axis: darkMode ? '#d1d5db' : '#6b7280',
+    tooltipText: darkMode ? '#f3f4f6' : '#111827',
+  };
+
+  const tooltipStyle = {
+    backgroundColor: darkMode ? '#1f2937' : '#ffffff',
+    border: `1px solid ${darkMode ? '#374151' : '#e5e7eb'}`,
+    borderRadius: '8px',
+    color: chartColors.tooltipText,
   };
 
   if (!data || data.length === 0) {
@@ -42,16 +51,14 @@ const ReportChart = ({ data, type = 'line', title, dataKey, xAxisKey = 'date' })
       return (
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#374151' : '#e5e7eb'} />
-          <XAxis dataKey={xAxisKey} stroke={darkMode ? '#9ca3af' : '#6b7280'} />
-          <YAxis stroke={darkMode ? '#9ca3af' : '#6b7280'} />
+          <XAxis dataKey={xAxisKey} stroke={chartColors.axis} tick={{ fill: chartColors.axis }} />
+          <YAxis stroke={chartColors.axis} tick={{ fill: chartColors.axis }} />
           <Tooltip
-            contentStyle={{
-              backgroundColor: darkMode ? '#1f2937' : '#ffffff',
-              border: `1px solid ${darkMode ? '#374151' : '#e5e7eb'}`,
-              borderRadius: '8px',
-            }}
+            contentStyle={tooltipStyle}
+            labelStyle={{ color: chartColors.tooltipText }}
+            itemStyle={{ color: chartColors.tooltipText }}
           />
-          <Legend />
+          <Legend wrapperStyle={{ color: chartColors.axis }} />
           <Bar dataKey={dataKey} fill={chartColors.primary} radius={[6, 6, 0, 0]} />
         </BarChart>
       );
@@ -60,16 +67,14 @@ const ReportChart = ({ data, type = 'line', title, dataKey, xAxisKey = 'date' })
     return (
       <LineChart data={data}>
         <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#374151' : '#e5e7eb'} />
-        <XAxis dataKey={xAxisKey} stroke={darkMode ? '#9ca3af' : '#6b7280'} />
-        <YAxis stroke={darkMode ? '#9ca3af' : '#6b7280'} />
+        <XAxis dataKey={xAxisKey} stroke={chartColors.axis} tick={{ fill: chartColors.axis }} />
+        <YAxis stroke={chartColors.axis} tick={{ fill: chartColors.axis }} />
         <Tooltip
-          contentStyle={{
-            backgroundColor: darkMode ? '#1f2937' : '#ffffff',
-            border: `1px solid ${darkMode ? '#374151' : '#e5e7eb'}`,
-            borderRadius: '8px',
-          }}
+          contentStyle={tooltipStyle}
+          labelStyle={{ color: chartColors.tooltipText }}
+          itemStyle={{ color: chartColors.tooltipText }}
         />
-        <Legend />
+        <Legend wrapperStyle={{ color: chartColors.axis }} />
         <Line
           type="monotone"
           dataKey={dataKey}
