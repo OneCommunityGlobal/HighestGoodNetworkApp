@@ -80,9 +80,8 @@ function RankedUserList({ selectedSkills, selectedPreferences, searchQuery, sort
         const users = Array.isArray(response.data) ? response.data : [];
         setAllUsers(users.map(normalizeUser));
       } catch (err) {
-        // Network/parse failures are surfaced to the user via the error state below;
-        // there is nothing else to recover here.
-        setError('Unable to load community members. Please try again later.');
+        const detail = err.response?.status ? ` (${err.response.status})` : '';
+        setError(`Unable to load community members. Please try again later.${detail}`);
         setAllUsers([]);
       } finally {
         setLoading(false);
