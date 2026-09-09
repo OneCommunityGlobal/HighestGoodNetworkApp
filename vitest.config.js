@@ -85,12 +85,19 @@ export default defineConfig({
       'joi-browser': resolve('node_modules/joi'),
       'react/jsx-runtime$': resolve('node_modules/react/jsx-runtime.js'),
       'react/jsx-dev-runtime$': resolve('node_modules/react/jsx-dev-runtime.js'),
+      styles: resolve('src/styles.js'),
     },
   },
   css: {
     modules: {
       classNameStrategy: 'non-scoped',
     },
+  },
+
+  esbuild: {
+    include: /src\/.*\.[jt]sx?$/,
+    exclude: [],
+    loader: 'jsx',
   },
 
   optimizeDeps: {

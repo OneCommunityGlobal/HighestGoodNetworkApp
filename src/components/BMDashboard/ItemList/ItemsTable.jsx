@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Table, Button } from 'reactstrap';
+import { Table, Button, Badge } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
@@ -57,7 +57,7 @@ export default function ItemsTable({
   };
 
   const handleViewRecordsClick = (data, type) => {
-    if (type === 'UsageRecord') {
+    if (isMaterialsView && type === 'UsageRecord') {
       const projectId = data.project?._id || data.projectId;
 
       if (projectId) {
@@ -78,7 +78,12 @@ export default function ItemsTable({
     return path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
   };
 
-  const emptyStateColSpan = 4 + dynamicColumns.length + (isMaterialsView ? 3 : 0);
+  const filteredDynamicColumns = (dynamicColumns || []).filter(
+    col => col.label !== 'Project' && col.label !== 'Name',
+  );
+
+  const emptyStateColSpan = 5 + filteredDynamicColumns.length + (isMaterialsView ? 2 : 0);
+
   const getIconFor = key => {
     if (!sortConfig?.key || sortConfig.key !== key) return faSort;
     return sortConfig.direction === 'asc' ? faSortUp : faSortDown;
@@ -92,18 +97,17 @@ export default function ItemsTable({
     Hold: 'hold',
   };
 
-  const getColumnStyle = (isAction = false) => {
-    const base = { verticalAlign: 'middle', textAlign: 'center' };
+  const numericKeys = new Set(['stockBought', 'stockUsed', 'stockAvailable', 'stockWasted']);
+
+  const getColumnStyle = (key, isAction = false) => {
+    const base = { verticalAlign: 'middle' };
+    if (key && numericKeys.has(key)) base.textAlign = 'right';
     if (isAction) {
       base.borderLeft = '2px solid #dee2e6';
+      base.textAlign = 'center';
     }
     return base;
   };
-
-  // Remove Project and Name from the dynamic list so they don't render twice
-  const filteredDynamicColumns = (dynamicColumns || []).filter(
-    col => col.label !== 'Project' && col.label !== 'Name',
-  );
 
   return (
     <>
@@ -125,28 +129,8 @@ export default function ItemsTable({
       {UpdateItemModal && (
         <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
       )}
-      {darkMode && (
-        <style>
-          {`
-            .dark-mode .items_table_container .table thead th {
-              background-color: #1C2541 !important;
-              color: #ffffff !important;
-              border-color: #555 !important;
-            }
-
-            .dark-mode .items_table_container .table thead tr {
-              background-color: #1C2541 !important;
-            }
-
-            .dark-mode .items_table_container .table tbody tr:hover {
-              background-color: #1C2541 !important;
-            }
-          `}
-        </style>
-      )}
-
       <div className={`${styles.itemsTableContainer} ${darkMode ? styles.darkTableWrapper : ''}`}>
-        <Table bordered striped hover className={darkMode ? styles.darkTable : ''}>
+        <Table className={darkMode ? styles.darkTable : ''}>
           <thead className={styles.stickyThead}>
             <tr>
               <th
@@ -171,19 +155,17 @@ export default function ItemsTable({
                     key={label || key}
                     onClick={clickable ? () => onSort?.(sortKey) : undefined}
                     className={clickable ? styles.sortableTh : undefined}
-                    style={getColumnStyle()}
+                    style={getColumnStyle(key)}
                   >
                     {label} {clickable && <FontAwesomeIcon icon={getIconFor(sortKey)} size="lg" />}
                   </th>
                 );
               })}
-              {isMaterialsView && <th style={getColumnStyle()}>Usage %</th>}
-              {isMaterialsView && <th style={getColumnStyle()}>Stock Health</th>}
-              {isMaterialsView && (
-                <th style={getColumnStyle(true)} title="View usage history and charts">
-                  Usage Record
-                </th>
-              )}
+              {isMaterialsView && <th style={getColumnStyle(null)}>Usage %</th>}
+              {isMaterialsView && <th style={getColumnStyle(null)}>Stock Health</th>}
+              <th style={getColumnStyle(null, true)} title="View usage history and charts">
+                Usage Record
+              </th>
               <th
                 style={{ verticalAlign: 'middle', textAlign: 'center' }}
                 title="View history of manual updates"
@@ -198,84 +180,97 @@ export default function ItemsTable({
               </th>
             </tr>
           </thead>
-
-          <tbody
-            className={darkMode ? 'dark-tbody' : ''}
-            style={darkMode ? { backgroundColor: '#3A506B', color: '#ffffff' } : {}}
-          >
+          <tbody>
             {filteredItems && filteredItems.length > 0 ? (
               filteredItems.map(el => (
-                <tr
-                  key={el._id}
-                  className={darkMode ? 'dark-row' : ''}
-                  style={
-                    darkMode ? { backgroundColor: '#3A506B', borderBottom: '1px solid #333' } : {}
-                  }
-                >
-                  <td style={darkMode ? { color: '#ffffff' } : {}}>{el.project?.name}</td>
-                  <td style={darkMode ? { color: '#ffffff' } : {}}>{el.itemType?.name}</td>
-                  {filteredDynamicColumns.map(({ label, key }) => (
-                    <td key={label} style={darkMode ? { color: '#ffffff' } : {}}>
-                      {getNestedValue(el, key) ?? 'N/A'}
-                    </td>
-                  ))}
+                <tr key={el._id}>
+                  <td style={{ verticalAlign: 'middle' }}>{el.project?.name}</td>
+                  <td style={{ verticalAlign: 'middle' }}>{el.itemType?.name}</td>
+                  {filteredDynamicColumns.map(({ label, key }) => {
+                    const value = getNestedValue(el, key);
+                    if (
+                      key === 'stockAvailable' &&
+                      value !== null &&
+                      value !== undefined &&
+                      Number(value) < 10
+                    ) {
+                      return (
+                        <td key={label || key} style={getColumnStyle(key)}>
+                          <Badge
+                            color="danger"
+                            pill
+                            className="me-2"
+                            style={{ marginRight: '8px' }}
+                          >
+                            Low
+                          </Badge>
+                          {value}
+                        </td>
+                      );
+                    }
+                    return (
+                      <td key={label || key} style={getColumnStyle(key)}>
+                        {value}
+                      </td>
+                    );
+                  })}
                   {isMaterialsView && (
-                    <td style={darkMode ? { color: '#ffffff' } : {}}>
+                    <td style={getColumnStyle(null)}>
                       <UsagePercentageBar material={el} darkMode={darkMode} />
                     </td>
                   )}
                   {isMaterialsView && (
-                    <td style={darkMode ? { color: '#ffffff' } : {}}>
+                    <td style={getColumnStyle(null)}>
                       <StockHealthIndicator material={el} darkMode={darkMode} />
                     </td>
                   )}
-                  {isMaterialsView && (
-                    <td style={darkMode ? { color: '#ffffff' } : {}}>
-                      <Button
-                        color="primary"
-                        outline={!darkMode}
-                        style={darkMode ? { borderColor: '#4a90e2', color: '#ffffff' } : {}}
-                        size="sm"
-                        onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
-                      >
-                        View
-                      </Button>
-                    </td>
-                  )}
-                  <td className={styles.items_cell}>
-                    <div
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        flexWrap: 'nowrap',
-                        whiteSpace: 'nowrap',
-                      }}
+                  <td
+                    className={`${styles.itemsCell} ${styles.actionCell}`}
+                    style={getColumnStyle(null, true)}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
+                      aria-label="Edit Record"
                     >
-                      <button
-                        type="button"
-                        style={darkMode ? { color: '#4a90e2' } : {}}
-                        onClick={() => handleEditRecordsClick(el, 'Update')}
-                        aria-label="Edit Record"
-                      >
-                        <BiPencil />
-                      </button>
-                      <Button
-                        color="primary"
-                        outline={!darkMode}
-                        style={darkMode ? { borderColor: '#4a90e2', color: '#ffffff' } : {}}
-                        size="sm"
-                        onClick={() => handleViewRecordsClick(el, 'Update')}
-                      >
-                        View
-                      </Button>
-                    </div>
-                  </td>
-                  <td>
+                      <BiPencil />
+                    </button>
                     <Button
                       color="primary"
-                      outline={!darkMode}
-                      style={darkMode ? { borderColor: '#4a90e2', color: '#ffffff' } : {}}
+                      outline
+                      size="sm"
+                      onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
+                    >
+                      View
+                    </Button>
+                  </td>
+                  <td
+                    className={`${styles.itemsCell} ${styles.actionCell}`}
+                    style={{ verticalAlign: 'middle', textAlign: 'center' }}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => handleEditRecordsClick(el, 'Update')}
+                      aria-label="Edit Record"
+                    >
+                      <BiPencil />
+                    </button>
+                    <Button
+                      color="primary"
+                      outline
+                      size="sm"
+                      onClick={() => handleViewRecordsClick(el, 'Update')}
+                    >
+                      View
+                    </Button>
+                  </td>
+                  <td
+                    className={styles.actionCell}
+                    style={{ verticalAlign: 'middle', textAlign: 'center' }}
+                  >
+                    <Button
+                      color="primary"
+                      outline
                       size="sm"
                       onClick={() => handleViewRecordsClick(el, 'Purchase')}
                     >
