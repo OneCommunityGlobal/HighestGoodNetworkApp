@@ -165,7 +165,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "@babel/core": "^7.28.0",
+    "@babel/core": "^7.29.6",
     "@babel/eslint-parser": "^7.28.0",
     "@babel/helper-validator-identifier": "^7.12.11",
     "@babel/plugin-transform-nullish-coalescing-operator": "^7.27.1",
@@ -212,7 +212,7 @@
     "stylelint-config-css-modules": "^4.5.1",
     "stylelint-config-standard": "^39.0.1",
     "typescript": "^4.8.4",
-    "vite": "^6.3.5",
+    "vite": "^6.4.3",
     "vitest": "^3.2.4"
   },
   "lint-staged": {
