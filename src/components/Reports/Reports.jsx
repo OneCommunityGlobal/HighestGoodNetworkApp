@@ -587,7 +587,7 @@ endDate: moment()
                     <h3 className={styles['card-category-item-title']}> Projects</h3>
                       <h3 className={styles['card-category-item-number']}>
                         {this.props.state.allProjects.fetching ? (
-                          <Loading align="center" darkMode={darkMode} className="fa-lg" />
+                          <Loading align="center" darkMode={darkMode} className="fa-lg" containerClassName={styles['card-spinner']}/>
                         ) : (
                           this.state.projectSearchData.length
                           )}
@@ -607,7 +607,7 @@ endDate: moment()
                     <h3 className={styles['card-category-item-title']}> People </h3>
                     <h3 className={styles['card-category-item-number']}>
                       {this.props.state.allUserProfilesBasicInfo.fetching ? (
-                        <Loading align="center" darkMode={darkMode} className="fa-lg" />
+                        <Loading align="center" darkMode={darkMode} className="fa-lg" containerClassName={styles['card-spinner']}/>
                       ) : (
                         this.state.peopleSearchData.length
                         )}
@@ -627,7 +627,7 @@ endDate: moment()
                     <h3 className={styles['card-category-item-title']}> Teams </h3>
                     <h3 className={styles['card-category-item-number']}>
                       {this.props.state.allTeamsData.fetching ? (
-                        <Loading align="center" darkMode={darkMode} className="fa-lg" />
+                        <Loading align="center" darkMode={darkMode} className="fa-lg" containerClassName={styles['card-spinner']}/>
                       ) : (
                         this.state.teamSearchData.length
                       )}
