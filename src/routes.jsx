@@ -718,7 +718,7 @@ export default (
           exact
           component={AnalyticsDashboard}
           fallback
-        // allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+          // allowedRoles={[UserRole.Administrator, UserRole.Owner]}
         />
         <ProtectedRoute
           path="/analytics/roles-hits-and-applications"
@@ -1027,7 +1027,8 @@ export default (
         <EPProtectedRoute
           path="/educationportal/educator/review/:submissionId"
           exact
-          component={SubmissionReviewPage} />
+          component={SubmissionReviewPage}
+        />
         <EPProtectedRoute
           path="/educationportal/pm/dashboard/training"
           exact
