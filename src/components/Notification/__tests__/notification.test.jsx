@@ -15,7 +15,11 @@ describe('NotificationCard', () => {
   let store;
 
   beforeEach(() => {
-    store = mockStore({});
+    store = mockStore({
+      theme: {
+        darkMode: false,
+      },
+    });
 
     store.dispatch = vi.fn();
   });
@@ -35,7 +39,7 @@ describe('NotificationCard', () => {
       </Provider>,
     );
 
-    expect(screen.getByText(/You have a new notification!/)).toBeInTheDocument();
+    expect(screen.getByText(/You have a new notification/)).toBeInTheDocument();
     expect(
       screen.getByText((content, node) => {
         const hasText = thisnode => thisnode.textContent === 'This is a test message';
