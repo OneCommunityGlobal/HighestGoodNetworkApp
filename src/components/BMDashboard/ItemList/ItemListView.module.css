@@ -61,6 +61,10 @@ table td {
   cursor: pointer;
 }
 
+.actionCell {
+  white-space: nowrap;
+}
+
 .itemsCell svg {
   width: 20px;
   height: 20px;
@@ -70,6 +74,10 @@ table td {
 
 .itemsCell svg:hover {
   color: black;
+}
+
+.darkTable .itemsCell svg {
+  color: #e8edf4;
 }
 
 .searchRow {
@@ -145,8 +153,11 @@ table td {
    off-screen when there were fewer items than columns */
 .selectInput {
   display: flex;
-  align-items: flex-end;
-  flex-wrap: nowrap;
+
+  /* flex-start (not flex-end): a taller sibling (e.g. multi-select wrapping to
+     more lines) must not shift every other field's alignment when it grows */
+  align-items: flex-start;
+  flex-wrap: wrap;
   gap: 15px;
   width: 100%;
   max-width: 1200px;
@@ -157,29 +168,96 @@ table td {
   z-index: 10;
 }
 
-.filterItem {
+/* Size the row's real children. SelectForm/SelectItem wrap their field in a
+   <form>, so the row's flex items are: the Time div, two forms, then the reset
+   — not the .filterGroup elements. Sizing them uniformly here is what keeps
+   all three fields the same width; without it each form shrink-wraps its own
+   content and a longer placeholder produces a wider field. */
+.selectInput > * {
+  flex: 1 1 300px;
+  min-width: 0;
+}
+
+.selectInput > .resetContainer {
+  flex: 0 0 auto;
+}
+
+/* One label+control unit (Time / Project / Consumables all share this so
+   they stay the same size and stay aligned — previously SelectForm/SelectItem
+   reused .selectInput itself for their FormGroup, nesting the row's own
+   flex/centering rules inside each field and making them inconsistent). */
+.filterGroup {
   display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 180px;
-  max-width: 200px;
-  margin-bottom: 8px;
+  align-items: center;
+
+  /* Spacing comes from the label's margin, not gap: while the calendar is open
+     react-datepicker appends a focus-trap div here, and a gap would reserve
+     space around that empty element and shrink the input on click. */
+  flex: 1 1 300px;
+  min-width: 0;
 }
 
-.filterItemSelect {
-  flex: 2;
-  max-width: 380px;
-}
-
-.filterItem label {
-  text-align: left;
+.filterGroup label {
+  margin: 0 8px 0 0;
   white-space: nowrap;
-  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+/* The control wrapper — react-datepicker's .react-datepicker-wrapper and
+   react-select's container (an emotion-hashed class like css-*-container, so
+   it can't be targeted by name). Direct-child selector covers both.
+   flex-basis 0 + min-width 0 is what makes every control the same width:
+   otherwise each sizes to its own content and a longer placeholder
+   ("...Consumables..." vs "...projects...") yields a wider box. */
+
+/* Target only the two real control wrappers, never react-datepicker's popper
+   or focus-trap (which are also direct children while the calendar is open —
+   a min-width:0 on the popper lets it shrink and wraps its time column). */
+.filterGroup > :global(.react-datepicker-wrapper),
+.filterGroup > div[class*='-container'] {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+
+.filterGroup :global(.react-select__control) {
+  width: 100%;
+  min-height: 38px;
+}
+
+/* Keep the placeholder on one line — a long one ("Search or select
+   Consumables...") otherwise wraps and makes that field taller than its
+   siblings. */
+.filterGroup :global(.react-select__placeholder) {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* react-select renders its own <input> for typeahead inside the control.
+   The generic ".selectInput input" sizing below (meant for native inputs)
+   would force it to 180px wide / 38px tall / +8px margin, inflating the
+   control and pushing every chip onto its own line. Neutralise it here. */
+.filterGroup :global(.react-select__input) {
+  height: auto !important;
+  min-width: 2px !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+  margin-bottom: 0 !important;
+  border: none !important;
 }
 
 .resetContainer {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+/* reactstrap's Form/FormGroup add their own bottom margin, which would drop
+   the filter controls below the row's shared baseline. */
+.selectInput form,
+.selectInput :global(.form-group) {
+  margin-bottom: 0;
 }
 
 .btnReset {
@@ -209,7 +287,8 @@ table td {
   margin-bottom: 8px;
 }
 
-.datePickerCell input {
+.selectInput input,
+.selectInput select {
   height: 38px;
   width: 100%;
   min-width: 180px;
@@ -217,6 +296,32 @@ table td {
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.selectInput input[type='text'] {
+  padding: 5px;
+  margin-bottom: 8px;
+}
+
+/* Declared after the generic .selectInput rules above so these win on equal
+   specificity: inside a filter group the label is a flex sibling (no bottom
+   margin) and the date input fills the group like the selects do. */
+
+/* Shared label width so every control starts at the same offset inside its
+   group and they all end up the same size — otherwise "Time:" and
+   "Consumables:" leave different room and the boxes don't line up.
+   min-width (not width) so longer labels on sibling pages still fit. */
+.selectInput .filterGroup label {
+  margin-bottom: 0;
+  min-width: 104px;
+  text-align: right;
+}
+
+.selectInput .filterGroup input {
+  max-width: 100%;
+  min-width: 0;
+  margin-bottom: 0;
 }
 
 .btnPrimary {
@@ -305,16 +410,40 @@ table td {
 
 .darkMode {
   color: #e8edf4;
-  background-color: #1a1d23 !important;
-  min-height: 100vh;
-  padding-top: 1rem;
-  padding-bottom: 2rem;
+  background-color: #0f1b2b !important;
 }
 
 .darkMode table {
   background-color: #14253d !important;
   color: #fff !important;
   border-color: #1d3c52 !important;
+}
+
+.darkMode table thead th {
+  background-color: #0b1420 !important;
+  color: #fff !important;
+  border-color: #1d3c52 !important;
+}
+
+.darkMode table tbody td {
+  background-color: #14253d !important;
+  color: #fff !important;
+  border-color: #1d3c52 !important;
+}
+
+.darkMode table tbody tr:nth-child(even) td {
+  background-color: #0f1b2b !important;
+}
+
+.darkMode table tbody tr:hover td {
+  background-color: #1c3354 !important;
+  color: #fff !important;
+}
+
+.darkTable tbody td,
+.darkTable tbody th {
+  border-color: #2f4157 !important;
+  color: #e8edf4 !important;
 }
 
 .darkTable tbody tr:nth-child(odd) {
@@ -328,6 +457,7 @@ table td {
 .darkTable .stickyThead th {
   background-color: #2f4157;
   border-bottom: 1px solid #3f5269;
+  color: #e8edf4 !important;
 }
 
 /* Dark mode container/table base (overrides the light defaults above) */
@@ -436,29 +566,8 @@ table td {
   border: 1px solid #3f5269;
 }
 
-.darkDatePickerInput::placeholder {
-  color: #8fa0b9 !important;
-}
-
-.darkDatePickerInput:focus {
-  outline: none !important;
-  border-color: #4a90e2 !important;
-  box-shadow: 0 0 0 1px #4a90e2 !important;
-}
-
-/* 2. THIS STYLES THE POP-UP CALENDAR CONTAINER */
-.darkDatePicker {
-  background-color: #1f2e45 !important;
-  border: 1px solid #3f5269 !important;
-}
-
-/* The rest of your header/time picker global overrides go below here... */
-.darkDatePicker :global(.react-datepicker__header) {
-  background-color: #2f4157 !important;
-  border-color: #3f5269 !important;
-}
-
-.darkDatePicker :global(input) {
+.darkDatePickerInput {
+  width: 100%;
   background-color: #2a3f5f !important;
   color: #e8edf4 !important;
   border: 1px solid #3f5269 !important;
@@ -468,10 +577,48 @@ table td {
   color: #c8d2e0 !important;
 }
 
-.darkDatePicker :global(.react-datepicker__time-header),
-.darkDatePicker :global(.react-datepicker-time__header) {
+/* ToolsStoppageHorizontalBarChart.module.css declares a global
+   ":global(.react-datepicker-wrapper input) { background:#fff !important }",
+   which leaks to every datepicker in the app and outranks the plain
+   .darkDatePickerInput class above (0,1,1 vs 0,1,0, both !important) — that is
+   what kept this input white in dark mode. Out-specify it locally rather than
+   editing the other component's file and changing its page. */
+.selectInput :global(.react-datepicker-wrapper) input.darkDatePickerInput {
+  background-color: #2a3f5f !important;
+  color: #e8edf4 !important;
+  border: 1px solid #3f5269 !important;
+}
+
+.selectInput :global(.react-datepicker-wrapper) input.darkDatePickerInput::placeholder {
+  color: #c8d2e0 !important;
+}
+
+.selectInput :global(.react-datepicker-wrapper) input.lightDatePickerInput {
+  background-color: #fff !important;
+  color: #111827 !important;
+  border: 1px solid #d1d5db !important;
+}
+
+.darkDatePicker {
+  background-color: #1f2e45 !important;
+  color: #e8edf4 !important;
+  border: 1px solid #3f5269 !important;
+}
+
+/* All of these are react-datepicker's own class names, so each must sit inside
+   :global() — without it CSS Modules hashes them and the rule silently never
+   matches, leaving the library's light defaults showing through (this is what
+   left a white patch above the time column: .react-datepicker__header--time). */
+.darkDatePicker :global(.react-datepicker__header),
+.darkDatePicker :global(.react-datepicker__header--time) {
+  background-color: #2f4157;
+  border-color: #3f5269;
+}
+
+.darkDatePicker :global(.react-datepicker__time-header) {
   color: #f2f6ff !important;
   background-color: #2f4157 !important;
+  border-bottom: 1px solid #3f5269 !important;
 }
 
 .darkDatePicker :global(.react-datepicker__current-month),
@@ -482,12 +629,23 @@ table td {
 .darkDatePicker :global(.react-datepicker__day-name),
 .darkDatePicker :global(.react-datepicker__day),
 .darkDatePicker :global(.react-datepicker__time-name) {
-  color: #e8edf4 !important;
+  color: #e8edf4;
+}
+
+.darkDatePicker :global(.react-datepicker__day:hover) {
+  background-color: #3a506b;
+}
+
+.darkDatePicker :global(.react-datepicker__day--outside-month) {
+  color: #8a97a8;
+}
+
+.darkDatePicker :global(.react-datepicker__navigation-icon::before) {
+  border-color: #c8d2e0;
 }
 
 .darkDatePicker :global(.react-datepicker__day--selected),
-.darkDatePicker :global(.react-datepicker__day--keyboard-selected),
-.darkDatePicker :global(.react-datepicker__time-list-item--selected) {
+.darkDatePicker :global(.react-datepicker__day--keyboard-selected) {
   background-color: #468ef9 !important;
   color: #fff !important;
   border-color: #468ef9 !important;
@@ -521,11 +679,19 @@ table td {
   color: #fff !important;
 }
 
+/* Must clear .stickyThead th (z-index 2), or the calendar renders behind the
+   table header. :global() is required — these are react-datepicker's own
+   class names, so CSS Modules would otherwise hash them and never match. */
+.darkDatePickerPopper {
+  z-index: 20;
+}
+
 .darkDatePickerPopper :global(.react-datepicker__triangle) {
   display: none;
 }
 
 .lightDatePickerInput {
+  width: 100%;
   background-color: #fff !important;
   color: #111827 !important;
   border: 1px solid #d1d5db !important;
@@ -537,49 +703,28 @@ table td {
   border: 1px solid #d1d5db !important;
 }
 
-.lightDatePicker .react-datepicker__header {
+.lightDatePicker :global(.react-datepicker__header),
+.lightDatePicker :global(.react-datepicker__header--time) {
   background-color: #f1f5f9;
   border-color: #d1d5db;
 }
 
-.lightDatePicker .react-datepicker__current-month,
-.lightDatePicker .react-datepicker__time-header,
-.lightDatePicker .react-datepicker-year-header {
+.lightDatePicker :global(.react-datepicker__current-month),
+.lightDatePicker :global(.react-datepicker__time-header),
+.lightDatePicker :global(.react-datepicker-year-header) {
   color: #111827 !important;
 }
 
-.lightDatePicker .react-datepicker__day-name,
-.lightDatePicker .react-datepicker__day,
-.lightDatePicker .react-datepicker__time-name {
+.lightDatePicker :global(.react-datepicker__day-name),
+.lightDatePicker :global(.react-datepicker__day),
+.lightDatePicker :global(.react-datepicker__time-name) {
   color: #1f2937;
 }
 
-.lightDatePicker .react-datepicker__day--selected,
-.lightDatePicker .react-datepicker__day--keyboard-selected,
-.lightDatePicker .react-datepicker__time-list-item--selected {
+.lightDatePicker :global(.react-datepicker__day--selected),
+.lightDatePicker :global(.react-datepicker__day--keyboard-selected) {
   background-color: #468ef9 !important;
   color: #fff !important;
-}
-
-.lightDatePicker .react-datepicker__time-container {
-  border-color: #d1d5db !important;
-  background-color: #fff !important;
-}
-
-.lightDatePicker .react-datepicker__time-container .react-datepicker__time {
-  background-color: #fff !important;
-  border-color: #d1d5db !important;
-}
-
-.lightDatePicker .react-datepicker__time-container .react-datepicker__time-box {
-  background-color: #fff !important;
-  border-color: #d1d5db !important;
-}
-
-.lightDatePicker .react-datepicker__time-container .react-datepicker__time-list {
-  background-color: #fff !important;
-  color: #1f2937 !important;
-  border-color: #d1d5db !important;
 }
 
 .lightDatePicker :global(.react-datepicker__time-container),
@@ -622,7 +767,11 @@ table td {
   border-color: #555 !important;
 }
 
-.lightDatePickerPopper .react-datepicker__triangle {
+.lightDatePickerPopper {
+  z-index: 20;
+}
+
+.lightDatePickerPopper :global(.react-datepicker__triangle) {
   display: none;
 }
 
@@ -654,31 +803,123 @@ table td {
     text-align: left;
   }
 
-  .datePickerCell input {
+  .selectInput input,
+  .selectInput select {
     max-width: 100%;
     min-width: 0;
+    width: 100%;
   }
 
-  .filterItemSelect {
-    max-width: 100%;
+  .filterGroup {
+    width: 100%;
+    flex: 1 1 100%;
   }
-
 }
 
-/* DatePicker Input Dark Mode Overrides */
-.darkMode :global(.react-datepicker-wrapper) .darkDatePickerInput {
-  background-color: #1b2439 !important;
-  color: #fff !important;
-  border: 1px solid #3f5269 !important;
+/* ── Inventory Navigation Bar ── */
+.inventoryNav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
 }
 
-.darkMode :global(.react-datepicker-wrapper) .darkDatePickerInput:focus {
-  outline: none !important;
-  border-color: #4a90e2 !important;
-  box-shadow: 0 0 0 1px #4a90e2 !important;
+.returnBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 16px;
+  background-color: #0d5675;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
 }
 
-.darkMode :global(.react-datepicker-wrapper) .darkDatePickerInput::placeholder {
-  color: #8fa0b9 !important;
+.returnBtn:hover {
+  background-color: #1a73c0;
+  color: #fff;
 }
- 
+
+.categoryIcons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.categoryIconLink {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 10px;
+  border: 1px solid #78bdda;
+  border-radius: 8px;
+  color: #0d5675;
+  text-decoration: none;
+  font-size: 0.75rem;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.categoryIconLink:hover {
+  background-color: #0d5675;
+  color: #fff;
+  border-color: #0d5675;
+}
+
+.iconWrapper {
+  font-size: 1.2rem;
+}
+
+.iconLabel {
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.darkMode .returnBtn {
+  background-color: #2e5061;
+  color: #fff;
+}
+
+.darkMode .returnBtn:hover {
+  background-color: #1a73c0;
+}
+
+.darkMode .categoryIconLink {
+  border-color: #4a9bc2;
+  color: #5eb3e4;
+}
+
+.darkMode .categoryIconLink:hover {
+  background-color: #2e5061;
+  color: #fff;
+  border-color: #4a9bc2;
+}
+
+/* ── Page Title with Icon ── */
+.pageTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pageTitleIcon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.2rem;
+  color: #0d5675;
+}
+
+.darkMode .pageTitleIcon {
+  color: #5eb3e4;
+}
+
+/* ── Mobile responsive improvements ── */
+@media (width <= 768px) {
+  .itemsListContainer {
+    padding: 0 0.5rem;
+  }
+}
