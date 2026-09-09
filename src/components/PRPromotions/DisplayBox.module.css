@@ -1,10 +1,10 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background-color: rgb(0 0 0 / 50%);
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: rgb(0 0 0 / 50%);
 }
 
 /* ======================================================
@@ -12,21 +12,21 @@
    ====================================================== */
 
 .popup {
-  padding: 24px;
   width: 90%;
   max-width: 900px;
   max-height: 85vh;
+  padding: 24px;
   overflow-y: auto;
+  background-color: #fff;
   border: 1px solid #d1d5db;
   border-radius: 10px;
-  background-color: #fff;
   box-shadow: 0 8px 24px rgb(0 0 0 / 25%);
 }
 
 .popupDark {
-  border: 1px solid #4b5563;
-  background-color: #1f2937;
   color: #f9fafb;
+  background-color: #1f2937;
+  border: 1px solid #4b5563;
 }
 
 /* ======================================================
@@ -35,13 +35,13 @@
 
 .popupHeading {
   margin-bottom: 16px;
+  color: #111827;
   font-size: 20px;
   text-align: center;
-  color: #111827;
 }
 
 .popupHeadingDark {
-  color: #f9fafb;
+  color: #e5e7eb;
 }
 
 /* ======================================================
@@ -56,35 +56,33 @@
 .popupTable th,
 .popupTable td {
   padding: 10px;
-  border: 1px solid #d1d5db;
-  text-align: left;
   color: #111827;
+  text-align: left;
+  border: 1px solid #d1d5db;
 }
 
-/* ======================================================
-   DARK MODE TABLE
-   ====================================================== */
+/* Keep this before .popupTable thead th to satisfy
+   no-descending-specificity. */
+.popupTableDark th,
+.popupTableDark td {
+  color: #e5e7eb;
+  background-color: #1f2937;
+  border-color: #4b5563;
+}
+
+.popupTable thead th {
+  color: #111827;
+  font-weight: 600;
+  background-color: #f3f4f6;
+}
 
 .popupTableDark {
   background-color: #1f2937;
 }
 
-.popupTableDark th,
-.popupTableDark td {
-  border-color: #4b5563;
-  background-color: #1f2937;
-  color: #f9fafb;
-}
-
-.popupTable thead th {
-  font-weight: 600;
-  background-color: #f3f4f6;
-  color: #111827;
-}
-
 .popupTableDark thead th {
+  color: #e5e7eb;
   background-color: #374151;
-  color: #f9fafb;
 }
 
 /* ======================================================
@@ -99,124 +97,137 @@
 
 .button {
   padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
   color: #fff;
   font-weight: 600;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
 }
 
 .button:disabled {
-  background-color: #ccc;
   cursor: not-allowed;
+  background-color: #ccc;
   opacity: 0.6;
 }
 
 .cancelButton {
-  background-color: #f00;
+  background-color: #b91c1c;
 }
 
 .confirmButton:not(:disabled) {
-  background-color: #00f;
-}
-
-.button:hover:not(:disabled) {
-  background-color: #e5e7eb;
+  background-color: #1d4ed8;
 }
 
 .cancelButton:hover:not(:disabled) {
-  background-color: #d60000;
+  background-color: #991b1b;
 }
 
 .confirmButton:hover:not(:disabled) {
-  background-color: #00c;
+  background-color: #1e40af;
 }
 
 .popupDark .button:disabled {
-  background-color: #4b5563;
   color: #d1d5db;
+  background-color: #4b5563;
 }
 
 /* ======================================================
    CHECKBOXES
    ====================================================== */
 
-.popupDark input[type='checkbox'] {
+.checkbox {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: #2563eb;
+}
+
+.popupDark .checkbox {
   accent-color: #60a5fa;
-  background-color: #1f2937;
-  border: 1px solid #6b7280;
+  outline: 1px solid #9ca3af;
+  outline-offset: 1px;
 }
 
 /* ======================================================
    PR BADGES
    ====================================================== */
 
-.prCountBadge,
-.pr-count-badge {
+.prCountBadge {
   display: inline-flex;
-  justify-content: center;
   align-items: center;
-  margin: 0 4px;
+  justify-content: center;
   width: 24px;
   height: 24px;
-  border-radius: 50%;
+  margin: 0 4px;
   font-size: 12px;
-  font-weight: bold;
+  font-weight: 700;
+  border-radius: 50%;
 }
 
 /* ======================================================
    VIBGYOR COLORS
-
    Violet → Indigo → Blue → Green → Yellow → Orange → Red
-
-   Same colors are used in both light and dark modes.
    ====================================================== */
 
 .color-0 {
-  background-color: #9400d3;
   color: #fff;
+  background-color: #9400d3;
 }
 
-.color1,
 .color-1 {
-  background-color: #4b0082;
   color: #fff;
   background-color: #4b0082;
-  color: #fff;
 }
 
 .color-2 {
-  background-color: #00f;
   color: #fff;
+  background-color: #00f;
 }
 
 .color-3 {
-  background-color: #0f0;
   color: #000;
+  background-color: #0f0;
 }
 
 .color-4 {
+  color: #000 !important;
   background-color: #ff0;
-  color: #000;
 }
 
 .color-5 {
+  color: #000 !important;
   background-color: #ff7f00;
-  color: #000;
 }
 
 .color-6 {
-  background-color: #f00;
   color: #000;
+  background-color: #f00;
+}
+
+/* ======================================================
+   DARK MODE BADGE OVERRIDES
+   ====================================================== */
+
+.popupDark .prCountBadge.color-0,
+.popupDark .prCountBadge.color-1,
+.popupDark .prCountBadge.color-2 {
+  color: #e5e7eb;
+}
+
+.popupDark .prCountBadge.color-3,
+.popupDark .prCountBadge.color-6 {
+  color: #000;
+}
+
+.popupDark .prCountBadge.color-4,
+.popupDark .prCountBadge.color-5 {
+  color: #000 !important;
 }
 
 /* ======================================================
    TABLE ROW INTERACTION
    ====================================================== */
-
-.popupTable tbody tr {
-  cursor: pointer;
-}
 
 .popupTable tbody tr:hover td {
   background-color: #f0f8ff;
