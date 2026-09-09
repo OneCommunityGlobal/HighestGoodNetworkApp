@@ -23,7 +23,6 @@ const AnalyticsDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [overviewData, setOverviewData] = useState(null);
-  const [studentData, setStudentData] = useState(null);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [selectedClass, setSelectedClass] = useState(null);
   const [dateRange, setDateRange] = useState(() => {
@@ -37,6 +36,7 @@ const AnalyticsDashboard = () => {
   });
   const [students, setStudents] = useState([]);
   const [classes, setClasses] = useState([]);
+  const [dateError, setDateError] = useState(null);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
@@ -109,49 +109,15 @@ const AnalyticsDashboard = () => {
     }
   };
 
-  // Fetch student-specific data if student is selected
-  const fetchStudentData = async () => {
-    if (!selectedStudent) {
-      setStudentData(null);
+  useEffect(() => {
+    if (dateRange.start && dateRange.end && dateRange.start > dateRange.end) {
+      setDateError('Start Date must be on or before End Date.');
       return;
     }
 
-    try {
-      // Ensure token is set
-      const token = localStorage.getItem('token');
-      if (token) {
-        httpService.setjwt(token);
-      }
-
-      const params = {
-        ...(dateRange?.start && { startDate: dateRange.start }),
-        ...(dateRange?.end && { endDate: dateRange.end }),
-      };
-
-      const url = ENDPOINTS.ANALYTICS_STUDENT(selectedStudent);
-
-      const response = await httpService.get(url, { params });
-
-      setStudentData(response.data);
-    } catch (err) {
-      logService.logError(err);
-      if (err.response?.status === 401) {
-        toast.error('Authentication failed. Please log in again.');
-      } else if (err.response?.status === 404) {
-        toast.warning('Student analytics endpoint not found.');
-      } else {
-        toast.error('Failed to load student analytics');
-      }
-    }
-  };
-
-  useEffect(() => {
+    setDateError(null);
     fetchOverviewData();
   }, [selectedStudent, selectedClass, dateRange]);
-
-  useEffect(() => {
-    fetchStudentData();
-  }, [selectedStudent, dateRange]);
 
   // Extract students and classes from overview data
   useEffect(() => {
@@ -165,13 +131,7 @@ const AnalyticsDashboard = () => {
 
   // Prepare chart data
   const chartData = useMemo(() => {
-    if (!overviewData?.timeSeriesData) return [];
-    return overviewData.timeSeriesData.map(item => ({
-      date: new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      averageScore: item.averageScore || 0,
-      timeSpent: item.timeSpent || 0,
-      engagementRate: item.engagementRate || 0,
-    }));
+    return Array.isArray(overviewData?.timeSeriesData) ? overviewData.timeSeriesData : [];
   }, [overviewData]);
 
   if (loading && !overviewData) {
@@ -214,6 +174,7 @@ const AnalyticsDashboard = () => {
           setDateRange={setDateRange}
           students={students}
           classes={classes}
+          dateError={dateError}
         />
 
         <Row className={styles.metricsRow}>

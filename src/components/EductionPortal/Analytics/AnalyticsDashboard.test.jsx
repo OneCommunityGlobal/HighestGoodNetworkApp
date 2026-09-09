@@ -39,10 +39,24 @@ vi.mock('./MetricCard', () => ({
 }));
 
 vi.mock('./ReportChart', () => ({
-  default: ({ title }) => <div>{title}</div>,
+  default: ({ title, data, dataKey }) => (
+    <div data-testid={`chart-${dataKey}`}>
+      {title}: {data.length ? JSON.stringify(data) : 'No data available'}
+    </div>
+  ),
 }));
 
 describe('AnalyticsDashboard API integration', () => {
+  const overviewData = {
+    averageScore: 90,
+    averageTimeSpentMinutes: 120,
+    averageEngagementRate: 0.75,
+    totalStudents: 4,
+    students: [{ id: 'student-1', name: 'Student One' }],
+    classes: [{ id: 'class-1', name: 'Math' }],
+    timeSeriesData: [{ date: '2026-09-01', averageScore: 80, timeSpent: 30, engagementRate: 0.2 }],
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.setItem('token', 'test-token');
@@ -53,14 +67,7 @@ describe('AnalyticsDashboard API integration', () => {
   });
 
   it('loads overview data from the backend contract without requesting student data', async () => {
-    httpService.get.mockResolvedValue({
-      data: {
-        averageScore: 90,
-        averageTimeSpentMinutes: 120,
-        averageEngagementRate: 0.75,
-        totalStudents: 4,
-      },
-    });
+    httpService.get.mockResolvedValue({ data: overviewData });
 
     render(<AnalyticsDashboard />);
 
@@ -124,36 +131,108 @@ describe('AnalyticsDashboard API integration', () => {
     expect(logService.log).not.toHaveBeenCalled();
   });
 
-  it('requests selected student analytics from the read-only endpoint', async () => {
-    httpService.get.mockImplementation(url => {
-      if (url === ENDPOINTS.ANALYTICS_OVERVIEW) {
-        return Promise.resolve({
-          data: {
-            averageScore: 90,
-            totalStudents: 4,
-            students: [{ id: 'student-1', name: 'Student One' }],
-          },
-        });
-      }
-
-      return Promise.resolve({ data: { studentId: 'student-1', metrics: { averageScore: 95 } } });
-    });
+  it('uses overview data for selected student filters without a redundant student request', async () => {
+    httpService.get
+      .mockResolvedValueOnce({ data: overviewData })
+      .mockResolvedValueOnce({ data: { ...overviewData, averageScore: 75 } });
 
     render(<AnalyticsDashboard />);
-    expect(await screen.findByText('All Students')).toBeInTheDocument();
+    expect(await screen.findByRole('option', { name: 'Student One' })).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText('Student'), { target: { value: 'student-1' } });
 
     await waitFor(() => {
       expect(httpService.get).toHaveBeenCalledWith(
-        ENDPOINTS.ANALYTICS_STUDENT('student-1'),
-        expect.objectContaining({ params: expect.any(Object) }),
+        ENDPOINTS.ANALYTICS_OVERVIEW,
+        expect.objectContaining({ params: expect.objectContaining({ studentId: 'student-1' }) }),
       );
     });
+    expect(await screen.findByText('Average Score: 75.0%')).toBeInTheDocument();
 
     expect(httpService.get).not.toHaveBeenCalledWith(
-      expect.stringContaining('/refresh'),
+      expect.stringContaining('/analytics/student/'),
       expect.anything(),
     );
+  });
+
+  it('removes studentId when returning to All Students', async () => {
+    httpService.get.mockResolvedValue({ data: overviewData });
+    render(<AnalyticsDashboard />);
+    await screen.findByRole('option', { name: 'Student One' });
+
+    fireEvent.change(screen.getByLabelText('Student'), { target: { value: 'student-1' } });
+    await waitFor(() =>
+      expect(httpService.get).toHaveBeenLastCalledWith(
+        ENDPOINTS.ANALYTICS_OVERVIEW,
+        expect.objectContaining({ params: expect.objectContaining({ studentId: 'student-1' }) }),
+      ),
+    );
+
+    fireEvent.change(screen.getByLabelText('Student'), { target: { value: '' } });
+    await waitFor(() => {
+      const [, config] = httpService.get.mock.calls.at(-1);
+      expect(config.params.studentId).toBeUndefined();
+    });
+  });
+
+  it('sends class, student, and date filters together and removes cleared dates', async () => {
+    httpService.get.mockResolvedValue({ data: overviewData });
+    render(<AnalyticsDashboard />);
+    await screen.findByRole('option', { name: 'Student One' });
+
+    fireEvent.change(screen.getByLabelText('Student'), { target: { value: 'student-1' } });
+    fireEvent.change(screen.getByLabelText('Class'), { target: { value: 'class-1' } });
+    fireEvent.change(screen.getByLabelText('Start Date'), { target: { value: '2026-09-01' } });
+    fireEvent.change(screen.getByLabelText('End Date'), { target: { value: '2026-09-01' } });
+
+    await waitFor(() => {
+      const [, config] = httpService.get.mock.calls.at(-1);
+      expect(config.params).toMatchObject({
+        studentId: 'student-1',
+        classId: 'class-1',
+        startDate: '2026-09-01',
+        endDate: '2026-09-01',
+      });
+    });
+
+    fireEvent.change(screen.getByLabelText('Start Date'), { target: { value: '' } });
+    await waitFor(() => {
+      const [, config] = httpService.get.mock.calls.at(-1);
+      expect(config.params.startDate).toBeUndefined();
+    });
+  });
+
+  it('blocks reversed date ranges without an API request', async () => {
+    httpService.get.mockResolvedValue({ data: overviewData });
+    render(<AnalyticsDashboard />);
+    await screen.findByRole('option', { name: 'Student One' });
+
+    fireEvent.change(screen.getByLabelText('Start Date'), { target: { value: '2026-09-03' } });
+    await waitFor(() => expect(httpService.get).toHaveBeenCalledTimes(2));
+    const requestCount = httpService.get.mock.calls.length;
+
+    fireEvent.change(screen.getByLabelText('End Date'), { target: { value: '2026-09-02' } });
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Start Date must be on or before End Date.',
+    );
+    expect(httpService.get).toHaveBeenCalledTimes(requestCount);
+  });
+
+  it('renders backend time-series data through all existing charts and preserves empty data', async () => {
+    httpService.get
+      .mockResolvedValueOnce({ data: overviewData })
+      .mockResolvedValueOnce({ data: { ...overviewData, timeSeriesData: [] } });
+    render(<AnalyticsDashboard />);
+
+    expect(await screen.findByTestId('chart-averageScore')).toHaveTextContent('2026-09-01');
+    expect(screen.getByTestId('chart-timeSpent')).toHaveTextContent('"timeSpent":30');
+    expect(screen.getByTestId('chart-engagementRate')).toHaveTextContent('"engagementRate":0.2');
+
+    fireEvent.change(screen.getByLabelText('Class'), { target: { value: 'class-1' } });
+
+    await waitFor(() => {
+      expect(screen.getAllByText(/No data available/)).toHaveLength(3);
+    });
   });
 });

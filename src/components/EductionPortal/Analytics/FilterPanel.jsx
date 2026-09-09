@@ -11,6 +11,7 @@ const FilterPanel = ({
   setDateRange,
   students = [],
   classes = [],
+  dateError,
 }) => {
   return (
     <div className={styles.filterPanel}>
@@ -77,6 +78,11 @@ const FilterPanel = ({
             />
           </Col>
         </Row>
+        {dateError && (
+          <p className={styles.filterLabel} role="alert">
+            {dateError}
+          </p>
+        )}
       </Container>
     </div>
   );
