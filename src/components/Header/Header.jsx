@@ -71,7 +71,6 @@ import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permission
 import PermissionWatcher from '../Auth/PermissionWatcher';
 import Logout from '../Logout/Logout';
 import NotificationCard from '../Notification/notificationCard';
-import OwnerMessage from '../OwnerMessage/OwnerMessage';
 import DisplayBox from '../PRPromotions/DisplayBox';
 import Timer from '../Timer/Timer';
 import BellNotification from './BellNotification';
@@ -768,7 +767,11 @@ export function Header(props) {
         )}
 
         <div className={styles.headerRow}>
-          <div className={styles.leftSection}>{isAuthenticated && <Timer darkMode={darkMode} />}</div>
+          <div className={styles.leftSection}>
+            {isAuthenticated && (
+              <Timer darkMode={darkMode} />
+            )}
+            </div>
           <div className={styles.centerSection}>
              {isAuthenticated && (
                 <img 

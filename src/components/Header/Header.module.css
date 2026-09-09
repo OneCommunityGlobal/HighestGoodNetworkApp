@@ -94,6 +94,7 @@
   flex-wrap: wrap;
   flex-direction: row !important;
   width: 100%;
+  gap: 1rem;
 }
 
 /* Right section container: horizontal layout */
@@ -125,6 +126,7 @@
   flex-wrap: wrap;
   flex-direction: row !important;
   width: auto;
+  gap: 1rem;
 }
 
 
@@ -526,6 +528,7 @@
   .menuContainer {
     order: 2 !important;
     flex-direction: column !important;
+    gap: 0.5rem;
   }
 
   .centerSection {
@@ -593,6 +596,7 @@
     margin-right: 0 !important;
     padding-left: 1rem;
     max-height: 80vh;
+    gap: 0.5rem;
     overflow-y: auto;
   } 
 
@@ -668,6 +672,7 @@
     order: 2 !important;
     flex-direction: row !important;
     flex-wrap: nowrap !important;
+    gap: 1rem;
   }
 
   .headerRow {
@@ -709,6 +714,7 @@
     order: 2 !important;
     flex-direction: row !important;
     flex-wrap: wrap !important;
+    gap: 1rem;
   }
 
   .hideInMobile {

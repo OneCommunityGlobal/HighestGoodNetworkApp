@@ -149,6 +149,7 @@
     "start": "vite",
     "start:skip-tests": "vite",
     "build": "vite build",
+    "preview": "vite preview",
     "test": "cross-env CI=true vitest",
     "test:watch": "vitest --reporter=verbose",
     "test:coverage": "cross-env CI=true vitest --coverage --reporter=verbose",
