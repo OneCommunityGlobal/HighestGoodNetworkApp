@@ -31,7 +31,10 @@ const centerTextPlugin = {
     ctx.restore();
   },
 };
-ChartJS.register(centerTextPlugin);
+// NOTE: do NOT ChartJS.register(centerTextPlugin) — a globally registered plugin
+// runs on every chart.js chart in the app and would paint "Total Projects / N"
+// onto unrelated charts (e.g. the Issue Tracking bar chart on the Weekly Project
+// Summary page). It is passed per-instance on the <Doughnut> below instead.
 
 const COLORS = {
   active: '#A78BFA',
@@ -301,7 +304,7 @@ export default function ProjectStatus() {
             {hasData ? (
               <>
                 <div className={styles.chartWrapper}>
-                  <Doughnut data={chartData} options={chartOptions} />
+                  <Doughnut data={chartData} options={chartOptions} plugins={[centerTextPlugin]} />
                   {hoverInfo && (
                     <div
                       className={styles.customTooltip}
