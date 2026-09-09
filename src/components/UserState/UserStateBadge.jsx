@@ -10,13 +10,7 @@ function formatDate(dateStr) {
 
 // function UserStateBadge({ item, darkMode, canEdit, onRemove, onClick }) {
 // Replaced deprecated defaultProps with ES6 default parameters to prevent React deprecation warnings
-function UserStateBadge({ 
-  item, 
-  darkMode, 
-  canEdit = false, 
-  onRemove = null, 
-  onClick = undefined 
-}) {
+function UserStateBadge({ item, darkMode, canEdit = false, onRemove = null, onClick = undefined }) {
   const { bg, text } = getStateColor(item.color, darkMode);
   return (
     <button
@@ -63,6 +57,5 @@ UserStateBadge.propTypes = {
 };
 
 // UserStateBadge.defaultProps has been removed in favor of function default parameters above.
-
 
 export default UserStateBadge;
