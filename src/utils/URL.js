@@ -737,9 +737,8 @@ export const ENDPOINTS = {
    //PM Dashboard Certification endpoints
   PM_EDUCATOR_CERTIFICATIONS: ()=> `${APIEndpoint}/pm/educators/certifications`,
   PM_CERTIFICATIONS: () => `${APIEndpoint}/pm/certifications`,
-  PM_ASSIGN_CERTIFICATIONS: (educatorId) => `${APIEndpoint}/pm/educators/${encodeURIComponent(educatorId)}/certifications` 
+  PM_ASSIGN_CERTIFICATIONS: (educatorId) => `${APIEndpoint}/pm/educators/${encodeURIComponent(educatorId)}/certifications` ,
 
-  
   // Kitchen and Inventory
   KITCHEN_PROCESSING_PROJECTS: `${APIEndpoint}/kitchenandinventory/processing`,
 
