@@ -95,6 +95,8 @@ import ParticipationTrends from './components/CommunityPortal/Reports/Participat
 import EventPerformance from './components/CommunityPortal/Reports/Participation/EventPerformance';
 import LogAttendance from './components/CommunityPortal/Activities/LogAttendance';
 import NoShowList from './components/CommunityPortal/Activities/NoShow/NoShowList';
+
+import { EventPageOrganizer as EventManagementPage } from './components/CommunityPortal/Activities/activityId/EventPageOrganizer/EventPageOrganizer';
 import MaterialSummary from './components/MaterialSummary/MaterialSummary';
 // Activity Feedback Modal
 import FeedbackRatingEntry from './components/FeedbackActivityModal/FeedbackActivityEntry';
@@ -141,7 +143,6 @@ import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLe
 import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
 import InjuriesDonutChart from './components/InjuriesAnalytics/InjuriesDonutChart';
 import CostPredictionPage from './components/BMDashboard/CostPrediction/CostPredictionPage';
-//import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
 import JobsHitsApplicationsChart from './components/JobAnalytics/JobsHitsApplicationsChart/JobsHitsApplicationsChart';
 
 import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
@@ -957,6 +958,11 @@ export default (
           component={Register}
         />
         <CPProtectedRoute
+          path="/communityportal/activity/:activityId/event"
+          exact
+          component={EventManagementPage}
+        />
+        <CPProtectedRoute
           path="/communityportal/activity/:activityId/attendance"
           exact
           component={LogAttendance}
@@ -987,6 +993,7 @@ export default (
           routePermissions={RoutePermissions.resourceManagement}
         />
         {/* Listing and Bidding Routes - Additional routes with parameters */}
+        <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
         <LBProtectedRoute path="/lbdashboard/listOverview/:id" exact component={ListOveriew} />
         <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
         <Route path="/lbdashboard/login" component={LBLogin} />
