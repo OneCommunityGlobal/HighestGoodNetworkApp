@@ -1,6 +1,9 @@
 /* stylelint-disable declaration-property-value-no-unknown */
-.tableResponsive {
+.tableResponsive,
+.table-responsive {
   overflow-x: auto;
+  width: 100%;
+  max-width: 100%;
 }
 
 .highlight-row {
@@ -11,6 +14,20 @@
 
 .highlight-row:hover {
   background-color: #b2ebf2;           
+}
+
+.darkModeRow:hover {
+  background-color: #1c2541 !important;
+}
+
+.dark-highlight-row {
+  background-color: #012758;
+  border-left: 4px solid #007281;      
+  transition: background 0.2s ease;
+}
+
+.dark-highlight-row:hover {
+  background-color: #12328a;
 }
 
 .permission-change-log-table {

@@ -1,3 +1,5 @@
+/* stylelint-disable no-descending-specificity */
+
 /* ======================
    Light Mode Base
    ====================== */
@@ -22,7 +24,7 @@
   box-sizing: border-box;
   border-radius: 8px;
   background-color: #fff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 5%);
 }
 
 /* Chart controls + filters */
@@ -89,6 +91,7 @@ select,
   border-radius: 6px;
   cursor: pointer;
 }
+
 /* States */
 .loading,
 .error,
@@ -233,5 +236,5 @@ select,
 .darkMode .chartWrapper {
   background-color: #1b2a41;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 2px 10px rgb(255 255 255 / 5%);
 }

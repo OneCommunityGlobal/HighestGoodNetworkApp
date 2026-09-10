@@ -496,18 +496,18 @@
   overflow-x: auto;
 }
 
-table {
+.tableWrapper table {
   width: 100%;
   border-collapse: collapse;
   min-width: 700px;
 }
 
-thead {
+.tableWrapper thead {
   background: #f1f5f9;
 }
 
-th,
-td {
+.tableWrapper th,
+.tableWrapper td {
   padding: 14px 18px;
   border-bottom: 1px solid #e2e8f0;
   text-align: left;

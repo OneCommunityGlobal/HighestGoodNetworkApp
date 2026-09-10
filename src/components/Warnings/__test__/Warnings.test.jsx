@@ -1,39 +1,45 @@
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { Provider, useSelector } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import { Provider } from 'react-redux';
+import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import Warning from '../Warnings';
 import * as warningActions from '../../../actions/warnings';
 
 vi.mock('../../../actions/warnings', () => ({
-  getWarningsByUserId: vi.fn(() => () => Promise.resolve([])),
+  getWarningsByUserId: vi.fn(() => () => Promise.resolve([{ title: 'Warning 1', warnings: [] }])),
   postWarningByUserId: vi.fn(() => () => Promise.resolve([])),
   deleteWarningsById: vi.fn(() => () => Promise.resolve([])),
 }));
-
-vi.mock('react-redux', async () => {
-  const actual = await vi.importActual('react-redux');
-  return {
-    __esModule: true,
-    ...actual,
-    useSelector: vi.fn(),
-  };
-});
-
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 describe('Warning Component', () => {
   let store;
   const initialState = {
     role: {
-      roles: ['User'],
+      roles: [
+        {
+          roleName: 'Administrator',
+          permissions: [],
+        },
+        {
+          roleName: 'User',
+          permissions: [],
+        },
+      ],
     },
     auth: {
       user: {
         role: 'User',
+        permissions: {
+          frontPermissions: [],
+          backPermissions: [],
+        },
       },
+    },
+    theme: {
+      darkMode: false,
     },
   };
   const mockPersonId = '123';
@@ -41,7 +47,6 @@ describe('Warning Component', () => {
 
   beforeEach(() => {
     store = mockStore(initialState);
-    vi.clearAllMocks();
   });
 
   test('renders nothing for non-admin users', () => {
@@ -65,16 +70,6 @@ describe('Warning Component', () => {
   });
 
   test('toggles warnings display on button click', async () => {
-    warningActions.getWarningsByUserId.mockImplementation(() => () =>
-      Promise.resolve([{ title: 'Warning 1', warnings: [] }]),
-    );
-
-    useSelector.mockImplementation(selector =>
-      selector({
-        theme: { darkMode: false },
-      }),
-    );
-
     render(
       <Provider store={store}>
         <Warning personId={mockPersonId} username={mockUsername} userRole="Administrator" />

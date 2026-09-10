@@ -1,0 +1,52 @@
+/* =========================================================
+   🌙 Dark Mode Styling
+   Matches the palette used elsewhere in the app for dark-mode
+   modals (see Modal.jsx / DeleteUserPopup.jsx): space-cadet header,
+   yinmn-blue body.
+   ========================================================= */
+:global(body.dark-mode) .studentBadgeModal :global(.modal-content) {
+  background-color: #1c2541 !important;
+  color: #fff !important;
+  border: 1px solid #2e3d55 !important;
+}
+
+:global(body.dark-mode) .studentBadgeModal :global(.modal-header) {
+  background-color: #1c2541 !important;
+  color: #fff !important;
+  border-bottom: 1px solid #2e3d55 !important;
+}
+
+/* Direct match — a global rule elsewhere (EmailTemplateEditor.module.css) targets
+   body.bm-dashboard-dark .modal-title unscoped, so this needs its own override
+   rather than relying on inheritance from .modal-header. That same rule also sets
+   filter: invert(1) on .modal-title, which visually inverts our white text back
+   to black on screen even though its computed color is #fff — cancel it here. */
+:global(body.dark-mode) .studentBadgeModal :global(.modal-title) {
+  color: #fff !important;
+  filter: none !important;
+}
+
+.badgeName {
+  color: #212529 !important;
+}
+
+.badgeName.darkMode {
+  color: #fff !important;
+}
+
+:global(body.dark-mode) .studentBadgeModal :global(.modal-body) {
+  background-color: #3a506b !important;
+  color: #fff !important;
+}
+
+:global(body.dark-mode) .studentBadgeModal :global(.modal-body) p,
+:global(body.dark-mode) .studentBadgeModal :global(.modal-body) div,
+:global(body.dark-mode) .studentBadgeModal :global(.modal-body) strong {
+  color: #fff !important;
+}
+
+:global(body.dark-mode) .studentBadgeModal :global(.close) {
+  color: #fff !important;
+  opacity: 0.8 !important;
+  text-shadow: none !important;
+}

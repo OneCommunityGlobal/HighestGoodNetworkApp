@@ -412,7 +412,7 @@ const TeamMemberTask = React.memo(
                           <td
                             colSpan={2}
                             className={styles['team-member-tasks-user-name']}
-                            style={{ textAlign: 'left', alignItems: 'flex-start' }}
+                            style={{ textAlign: 'center', alignItems: 'center' }}
                           >
                             <Link
                               className={styles['team-member-tasks-user-name-link']}

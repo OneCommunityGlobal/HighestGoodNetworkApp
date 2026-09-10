@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import hasPermission from '~/utils/permissions';
 import { ENDPOINTS } from '~/utils/URL';
+import { enqueueTask } from '~/utils/requestQueue';
 import {
   deleteWarningsById,
   getWarningsByUserId,
@@ -48,7 +49,7 @@ export default function Warning({
     dispatch(hasPermission('deleteWarningTracker'));
 
   const fetchUsersWarningsById = async () => {
-    dispatch(getWarningsByUserId(personId))
+    return dispatch(getWarningsByUserId(personId))
       .then(res => {
         if (!res || res.error) {
           setUsersWarnings([]);
@@ -70,15 +71,11 @@ export default function Warning({
     if (showTrackers) {
       setToggle(true);
       if (usersWarnings.length === 0) {
-        const index = Array.from(personId ?? '').reduce(
-          (acc, c) => acc + (c.codePointAt(0) ?? 0),
-          0,
-        );
-        const delay = index % 5000;
-        const timer = setTimeout(() => {
-          fetchUsersWarningsById();
-        }, delay);
-        return () => clearTimeout(timer);
+        let cancelled = false;
+        enqueueTask(() => (cancelled ? Promise.resolve() : fetchUsersWarningsById()));
+        return () => {
+          cancelled = true;
+        };
       }
     } else {
       setToggle(false);

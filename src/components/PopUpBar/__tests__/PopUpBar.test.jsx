@@ -1,5 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { render, screen, fireEvent } from '@testing-library/react';
+import { Button } from 'reactstrap';
 import PopUpBar from '../PopUpBar';
 
 // render Component
@@ -37,7 +38,7 @@ describe('Test Suite for PopUpBar', () => {
     const onClickClose = vi.fn();
     renderComponent({ onClickClose });
 
-    const closeButton = screen.getByText('X');
+    const closeButton = screen.getByRole('button', { name: /close/i });
     fireEvent.click(closeButton);
 
     expect(onClickClose).toHaveBeenCalled();

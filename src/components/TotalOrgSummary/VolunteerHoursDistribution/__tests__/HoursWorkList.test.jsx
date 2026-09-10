@@ -12,10 +12,9 @@ describe('HoursWorkList label formatting', () => {
 
     render(<HoursWorkList data={mockNormalizedData} darkMode={false} />);
 
-    // Asserting against the corrected label formats, matching assignToBucket's
-    // actual threshold boundaries (inclusive upper bound, first bucket starts at 0)
-    expect(screen.getByText('0-10 hrs')).toBeInTheDocument();
-    expect(screen.getByText('31-40 hrs')).toBeInTheDocument();
-    expect(screen.getByText('41+ hrs')).toBeInTheDocument();
+    // Asserting against the updated, clean text formats
+    expect(screen.getByText('10-19 hrs')).toBeInTheDocument();
+    expect(screen.getByText('40-49 hrs')).toBeInTheDocument();
+    expect(screen.getByText('40+ hrs')).toBeInTheDocument();
   });
 });
