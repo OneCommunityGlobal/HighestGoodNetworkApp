@@ -27,11 +27,9 @@
   margin-top: 5px; /* Space above input fields */
   width: 100%;
   padding: 12px;
-  /* Increased padding */
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
-  /* Ensures padding is included in width */
 }
 
 .inputFileUpload {
@@ -44,11 +42,9 @@ button.sendButton {
   border: none;
   border-radius: 4px;
   padding: 12px 24px;
-  /* Increased padding */
   cursor: pointer;
   margin-top: 20px;
   box-sizing: border-box;
-  /* Ensures padding is included in width */
 }
 
 button.sendButton:hover {
@@ -107,13 +103,10 @@ button.sendButton:hover {
 .emails {
   margin-top: 65px;
   padding: 24px;
-  /* Increased padding */
   border: solid 1px #cacaca;
   border-radius: 20px;
   width: 300px;
-  box-sizing: border-box; /* Ensures padding is included in width */
-
-  /* Set a fixed width for the email inputs container */
+  box-sizing: border-box;
 }
 
 .emails :global(h3) {
@@ -170,27 +163,21 @@ button.sendButton:hover {
     width: 100%;
     margin-top: 20px;
     padding: 20px 12px;
-    /* Adjust padding for smaller screens */
     box-sizing: border-box;
-    /* Ensures padding is included in width */
   }
   
   .sendButton {
     width: 100%;
     margin-bottom: 10px;
     padding: 12px;
-    /* Ensures padding is consistent */
     box-sizing: border-box;
-    /* Ensures padding is included in width */
   }
   
   .inputTextForAnnouncement,
   :global(textarea) {
     width: 100%;
     padding: 12px;
-    /* Ensures padding is consistent */
     box-sizing: border-box;
-    /* Ensures padding is included in width */
   }
 }
 
@@ -545,6 +532,7 @@ button.sendButton:hover {
   box-shadow: -2px 0 6px rgb(0 0 0 / 12%), 2px 0 6px rgb(0 0 0 / 12%),
     0 6px 6px rgb(0 0 0 / 20%);
 }
+
 /* Dark mode background fix for entire announcements area */
 .dark-mode {
   background-color: #1a1d23 !important;
@@ -561,6 +549,7 @@ button.sendButton:hover {
 .dark-mode .tab-content {
   background-color: #1a1d23 !important;
 }
+
 /* CRITICAL: Remove white padding in dark mode */
 .dark-mode,
 .dark-mode > div,
@@ -569,4 +558,12 @@ button.sendButton:hover {
   background-color: #1a1d23 !important;
   padding-left: 0 !important;
   padding-right: 0 !important;
+}
+
+.announcementsTab {
+  padding: 1rem;
+
+  :global(.tab-content) {
+    border: none;
+  }
 }
