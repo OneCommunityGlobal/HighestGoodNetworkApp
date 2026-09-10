@@ -19,8 +19,13 @@ export default function WeeklySummariesToggleFilter({
     toggleField(setState, 'selectedTrophies');
   };
 
-  const handleBioStatusToggleChange = () => {
-    toggleField(setState, 'selectedBioStatus');
+  const handleBioStatusChange = (e, status) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setState(prevState => ({
+      ...prevState,
+      selectedBioStatus: prevState.selectedBioStatus === status ? null : status,
+    }));
   };
 
   const handleOverHoursToggleChange = () => {
@@ -28,53 +33,111 @@ export default function WeeklySummariesToggleFilter({
   };
 
   const textColorClass = darkMode ? `${styles.filterLabel} text-light` : styles.filterLabel;
+  const bioStatusOptions = [
+    { value: 'default', label: 'Not requested/posted' },
+    { value: 'requested', label: 'Requested' },
+    { value: 'posted', label: 'Posted' },
+  ];
 
   return (
-    <div className={styles.specialColorsRow}>
-      <span className={styles.filterGroupLabel}>Filter by:</span>
-
+    <>
       {(hasPermissionToFilter || hasPermission?.('highlightEligibleBios')) && (
-        <div className={styles.specialColorsItem}>
-          <span className={textColorClass}>Bio Status</span>
-          <div style={{ marginTop: '10px' }}>
-            <SlideToggle
-              color="default"
-              onChange={() => toggleField(setState, 'selectedBioStatus')}
-              style={{ marginTop: '20px' }}
-            />
+        <div className={styles.filterRow}>
+          <div className={styles.specialColorsRow}>
+            <span className={styles.filterGroupLabel}>Filter by Bio Status:</span>
+            {bioStatusOptions.map(option => (
+              <div key={option.value} className={styles.specialColorsItem}>
+                <span className={styles.specialColorsToggleWrap}>
+                  <button
+                    type="button"
+                    className={styles.bioStatusButton}
+                    onClick={e => handleBioStatusChange(e, option.value)}
+                    onMouseDown={e => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    style={{
+                      padding: '3px 8px',
+                      borderRadius: '4px',
+                      border: '1px solid #ccc',
+                      backgroundColor:
+                        state.selectedBioStatus === option.value ? '#007bff' : '#fff',
+                      color: state.selectedBioStatus === option.value ? '#fff' : '#000',
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      fontWeight: 500,
+                      transition: 'all 0.2s',
+                      outline: 'none',
+                      boxShadow: 'none',
+                      userSelect: 'none',
+                      WebkitUserSelect: 'none',
+                      MozUserSelect: 'none',
+                      msUserSelect: 'none',
+                      transform: 'translateZ(0)',
+                    }}
+                    onMouseOver={e => {
+                      if (state.selectedBioStatus !== option.value) {
+                        e.target.style.backgroundColor = '#f0f0f0';
+                      }
+                    }}
+                    onFocus={e => {
+                      if (state.selectedBioStatus !== option.value) {
+                        e.target.style.backgroundColor = '#f0f0f0';
+                      }
+                    }}
+                    onMouseOut={e => {
+                      if (state.selectedBioStatus !== option.value) {
+                        e.target.style.backgroundColor = '#fff';
+                      }
+                    }}
+                    onBlur={e => {
+                      if (state.selectedBioStatus !== option.value) {
+                        e.target.style.backgroundColor = '#fff';
+                      }
+                    }}
+                  >
+                    {state.selectedBioStatus === option.value ? '✓' : ''} {option.label}
+                  </button>
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       )}
 
       {hasPermissionToFilter && (
-        <div className={styles.specialColorsItem}>
-          <span className={textColorClass}>Trophies</span>
-          <div style={{ marginTop: '10px' }}>
-            <SlideToggle
-              color="default"
-              onChange={() => toggleField(setState, 'selectedTrophies')}
-            />
-          </div>
-        </div>
-      )}
+        <div className={styles.filterRow}>
+          <div className={styles.specialColorsRow}>
+            <span className={styles.filterGroupLabel}>Filter by:</span>
 
-      {hasPermissionToFilter && (
-        <div className={styles.specialColorsItem}>
-          <span className={textColorClass}>Over Hours</span>
-          <div style={{ marginTop: '10px' }}>
-            <SlideToggle
-              color="default"
-              onChange={() => toggleField(setState, 'selectedOverTime')}
-            />
+            <div className={styles.specialColorsItem}>
+              <span className={textColorClass}>Trophies</span>
+              <div style={{ marginTop: '10px' }}>
+                <SlideToggle
+                  color="default"
+                  onChange={() => toggleField(setState, 'selectedTrophies')}
+                />
+              </div>
+            </div>
+
+            <div className={styles.specialColorsItem}>
+              <span className={textColorClass}>Over Hours</span>
+              <div style={{ marginTop: '10px' }}>
+                <SlideToggle
+                  color="default"
+                  onChange={() => toggleField(setState, 'selectedOverTime')}
+                />
+              </div>
+              <ReactTooltip id="filterTooltip" place="top" effect="solid">
+                <span style={{ whiteSpace: 'normal', wordWrap: 'break-word', maxWidth: '200px' }}>
+                  Filter people who contributed more than 25% of their committed hours
+                </span>
+              </ReactTooltip>
+            </div>
           </div>
-          <ReactTooltip id="filterTooltip" place="top" effect="solid">
-            <span style={{ whiteSpace: 'normal', wordWrap: 'break-word', maxWidth: '200px' }}>
-              Filter people who contributed more than 25% of their committed hours
-            </span>
-          </ReactTooltip>
         </div>
       )}
-    </div>
+    </>
   );
 }
 

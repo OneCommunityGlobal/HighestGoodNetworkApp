@@ -128,7 +128,7 @@ const initialState = {
   auth: [],
   selectedLoggedHoursRange: '',
   selectedOverTime: false,
-  selectedBioStatus: false,
+  selectedBioStatus: null, // null = no filter, 'default' | 'requested' | 'posted' = filter by that status
   selectedTrophies: false,
   chartShow: false,
   replaceCode: '',
@@ -768,12 +768,9 @@ const WeeklySummariesReport = props => {
             return false;
           }
 
-          const isMeetCriteria =
-            summary.totalTangibleHrs > 80 &&
-            summary.weeklySummariesCount >= 8 &&
-            summary.bioPosted !== 'posted';
-
-          const isBio = !selectedBioStatus || isMeetCriteria;
+          // Bio Status Filter: when filter is enabled, show people matching the selected bio status
+          // selectedBioStatus can be null (no filter), or one of: 'default', 'requested', 'posted'
+          const isBio = !selectedBioStatus || summary.bioPosted === selectedBioStatus;
 
           const isOverHours =
             !selectedOverTime ||

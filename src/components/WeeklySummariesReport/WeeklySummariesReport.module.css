@@ -637,20 +637,25 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 18px;
+  gap: 10px;
   margin-top: 8px;
 }
 
 .specialColorsItem {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 3px;
+  height: 32px;
+  flex-wrap: nowrap;
 }
 
 .specialColorsToggleWrap {
   display: inline-flex;
   align-items: center;
-  height: 24px;
+  justify-content: center;
+  gap: 3px;
+  height: 32px;
+  flex-shrink: 0;
 }
 
 .specialColorsToggle {
@@ -700,4 +705,26 @@
 :global(.bg-yinmn-blue .list-group-item) {
   background-color: #3a506b !important;
   color: #ffffff !important;
+}
+
+/* Bio Status Button - prevent any movement on click */
+.bioStatusButton {
+  display: inline-block;
+  height: 32px;
+  line-height: 1;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+.bioStatusButton:active,
+.bioStatusButton:focus {
+  transform: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.bioStatusButton:active {
+  background-color: inherit !important;
+  color: inherit !important;
+  border: inherit !important;
 }
