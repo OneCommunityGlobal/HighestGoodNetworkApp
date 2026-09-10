@@ -71,7 +71,7 @@ function PRQualityGraph({ selectedTeams, qualityData, isDataViewActive, orderedT
         enabled: true,
         callbacks: {
           // Heading: the chart's own title ("PR Quality Distribution for <team>").
-          title: items => (items && items[0] && items[0].dataset ? items[0].dataset.label : ''),
+          title: items => items?.[0]?.dataset?.label ?? '',
           // Colour-key line: the hovered slice's category and its value
           // ("Sufficient: 1", or "Sufficient: 33.3%" in the percentage view).
           label: ctx => {
