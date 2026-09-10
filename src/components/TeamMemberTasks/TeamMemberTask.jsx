@@ -522,7 +522,7 @@ const TeamMemberTask = React.memo(
                               showTrackers={showTrackers}
                             />
                             <div
-                              style={{ textAlign: 'center', marginTop: '8px' }}
+                              style={{ textAlign: 'center' }}
                               className={`${styles['team-clocks']} ${darkMode ? 'text-light' : ''}`}
                             >
                               <div style={{ display: 'block', whiteSpace: 'nowrap' }}>
