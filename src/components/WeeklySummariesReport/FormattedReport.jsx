@@ -687,8 +687,9 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
 }
 
 function Bio({ bioCanEdit, ...props }) {
+  // Debug: always show BioSwitch regardless of permission to test visibility
   // eslint-disable-next-line react/jsx-props-no-spreading
-  return bioCanEdit ? <BioSwitch {...props} /> : <BioLabel {...props} />;
+  return <BioSwitch {...props} />;
 }
 
 function BioSwitch({ userId, bioPosted, summary, getWeeklySummariesReport }) {
@@ -696,6 +697,9 @@ function BioSwitch({ userId, bioPosted, summary, getWeeklySummariesReport }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useDispatch();
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
+
+  // Debug log
+  console.log('BioSwitch rendered for userId:', userId, 'bioPosted:', bioPosted);
 
   // Sync local state with props when bioPosted changes from Redux store
   useEffect(() => {
