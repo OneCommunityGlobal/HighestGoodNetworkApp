@@ -4,92 +4,30 @@ import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
 import { useSelector } from 'react-redux';
 
-const MONTH_NAMES = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
+const CATEGORIES = [
+  { key: 'plumbing', label: 'Plumbing' },
+  { key: 'electrical', label: 'Electrical' },
+  { key: 'structural', label: 'Structural' },
+  { key: 'mechanical', label: 'Mechanical' },
 ];
 const CHART_COLORS = ['#6293CC', '#C55151', '#E8D06B', '#94B66F'];
 
-function getDateRangeFromData(data) {
-  const dates = data.map(item => new Date(item.date));
-  return { minDate: new Date(Math.min(...dates)), maxDate: new Date(Math.max(...dates)) };
+function isInvalidDateRange(startDate, endDate) {
+  return Boolean(startDate) && Boolean(endDate) && startDate > endDate;
 }
 
-function compareMonthYear(a, b) {
-  const [monthA, yearA] = a.split(' ');
-  const [monthB, yearB] = b.split(' ');
-  if (yearA !== yearB) return Number.parseInt(yearA, 10) - Number.parseInt(yearB, 10);
-  return MONTH_NAMES.indexOf(monthA) - MONTH_NAMES.indexOf(monthB);
-}
-
-function buildGroupedData(expenditureDataArr) {
-  const groupedByMonth = {};
-  const categories = new Set();
-  expenditureDataArr.forEach(item => {
-    const date = new Date(item.date);
-    const month = date.toLocaleString('default', { month: 'short' });
-    const monthYear = `${month} ${date.getFullYear()}`;
-    if (!groupedByMonth[monthYear]) groupedByMonth[monthYear] = {};
-    if (!groupedByMonth[monthYear][item.category]) groupedByMonth[monthYear][item.category] = 0;
-    groupedByMonth[monthYear][item.category] += item.cost;
-    categories.add(item.category);
-  });
-  return { groupedByMonth, categories };
-}
-
-function buildLabels(groupedByMonth) {
-  const labels = Object.keys(groupedByMonth).sort(compareMonthYear);
-  if (labels.length === 1) {
-    const [month, year] = labels[0].split(' ');
-    const monthIndex = MONTH_NAMES.indexOf(month);
-    const nextMonthIndex = (monthIndex + 1) % 12;
-    const nextYear =
-      nextMonthIndex === 0 ? Number.parseInt(year, 10) + 1 : Number.parseInt(year, 10);
-    labels.push(`${MONTH_NAMES[nextMonthIndex]} ${nextYear}`);
-  }
-  return labels;
-}
-
-function buildDatasets(categories, labels, groupedByMonth, darkMode) {
-  return Array.from(categories).map((category, index) => {
+function buildDatasets(actual, darkMode) {
+  return CATEGORIES.map(({ key, label }, index) => {
     const color = CHART_COLORS[index % CHART_COLORS.length];
     return {
-      label: category,
-      data: labels.map(month => groupedByMonth[month]?.[category] || 0),
+      label,
+      data: actual.map(entry => entry[key] || 0),
       borderColor: color,
       backgroundColor: darkMode ? `${color}33` : `${color}1A`,
       tension: 0.1,
       fill: false,
     };
   });
-}
-
-function isInvalidDateRange(dateRange) {
-  return dateRange.start && dateRange.end && dateRange.start > dateRange.end;
-}
-
-function filterByDateRange(data, dateRange) {
-  if (!dateRange.start || !dateRange.end) return data;
-  return data.filter(item => {
-    const itemDate = new Date(item.date);
-    return itemDate >= dateRange.start && itemDate <= dateRange.end;
-  });
-}
-
-function filterExpenditureData(data, selectedProject, dateRange) {
-  const byProject =
-    selectedProject === 'all' ? data : data.filter(item => item.projectId === selectedProject);
-  return filterByDateRange(byProject, dateRange);
 }
 
 function applyDarkModeBodyStyle(darkMode) {
@@ -150,7 +88,7 @@ export default function ExpenditureLineGraph() {
   const [chartInstance, setChartInstance] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [expenditureData, setExpenditureData] = useState([]);
+  const [actualData, setActualData] = useState([]);
   const [projects, setProjects] = useState([]);
   const [projectNameMap, setProjectNameMap] = useState({});
   const [selectedProject, setSelectedProject] = useState('all');
@@ -158,7 +96,6 @@ export default function ExpenditureLineGraph() {
   const [noDataError, setNoDataError] = useState(null);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [dateRange, setDateRange] = useState({ start: null, end: null });
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -167,40 +104,20 @@ export default function ExpenditureLineGraph() {
     return resetBodyStyle;
   }, [darkMode]);
 
+  // Populate the project filter dropdown once on load.
   useEffect(() => {
-    const fetchExpenditureData = async () => {
+    const fetchProjectIds = async () => {
       try {
-        setLoading(true);
-        const response = await axios.get(ENDPOINTS.BM_EXPENDITURE);
+        const response = await axios.get(ENDPOINTS.EXPENDITURE_PROJECT_IDS);
         if (response?.data?.success) {
-          const { data } = response.data;
-          setExpenditureData(data);
-          setProjects([...new Set(data.map(item => item.projectId))]);
-          if (data.length > 0) {
-            const { minDate } = getDateRangeFromData(data);
-            setDateRange({ start: minDate, end: new Date() });
-          }
-        } else {
-          setError('Failed to fetch the data');
+          setProjects(response.data.data);
         }
       } catch (err) {
-        setError(`Error fetching data: ${err.message}`);
-      } finally {
-        setLoading(false);
+        // eslint-disable-next-line no-console
+        console.error('Error fetching project ids:', err);
       }
     };
 
-    fetchExpenditureData();
-
-    return () => {
-      if (chartInstance) {
-        chartInstance.destroy();
-        setChartInstance(null);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
     const fetchProjectNames = async () => {
       try {
         const response = await axios.get(ENDPOINTS.BM_PROJECT_NAMES);
@@ -217,7 +134,52 @@ export default function ExpenditureLineGraph() {
       }
     };
 
+    fetchProjectIds();
     fetchProjectNames();
+  }, []);
+
+  // Fetch the (already aggregated) cost breakdown whenever the project or date filters change.
+  // This also covers the initial "land on the page" load, since it runs on mount with the
+  // default filters (selectedProject: 'all', no date range).
+  useEffect(() => {
+    setDateError(null);
+    setNoDataError(null);
+
+    if (isInvalidDateRange(startDate, endDate)) {
+      setDateError('Start date cannot be greater than end date');
+      return;
+    }
+
+    const fetchCostBreakdown = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await axios.get(
+          ENDPOINTS.PROJECT_COST_BREAKDOWN(selectedProject, startDate, endDate),
+        );
+        const actual = response?.data?.actual || [];
+        setActualData(actual);
+        if (actual.length === 0) {
+          setNoDataError('No data available for the selected date range and project');
+        }
+      } catch (err) {
+        setError(`Error fetching data: ${err.message}`);
+        setActualData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCostBreakdown();
+  }, [selectedProject, startDate, endDate]);
+
+  useEffect(() => {
+    return () => {
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -225,24 +187,14 @@ export default function ExpenditureLineGraph() {
       chartInstance.destroy();
       setChartInstance(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [darkMode]);
-
-  const processDataForChart = expenditureDataArr => {
-    const { groupedByMonth, categories } = buildGroupedData(expenditureDataArr);
-    const labels = buildLabels(groupedByMonth);
-    const datasets = buildDatasets(categories, labels, groupedByMonth, darkMode);
-    return { labels, datasets };
-  };
 
   const createChart = chartData => {
     if (!chartRef.current) return;
 
     const ctx = chartRef.current.getContext('2d');
-    const chartTitle =
-      selectedProject === 'all'
-        ? 'Cost Breakdown by Type of Expenditure (all projects)'
-        : `Cost Breakdown by Type of Expenditure (Project: ${projectNameMap[selectedProject] ||
-            selectedProject})`;
+    const chartTitle = 'Cost Breakdown by Type of Expenditure';
 
     const gridColor = darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
     const textColor = darkMode ? '#ffffff' : '#666666';
@@ -331,50 +283,23 @@ export default function ExpenditureLineGraph() {
   };
 
   useEffect(() => {
-    if (expenditureData.length === 0 || !chartRef.current) return;
+    if (!chartRef.current) return;
 
-    setDateError(null);
-    setNoDataError(null);
-
-    if (isInvalidDateRange(dateRange)) {
-      setDateError('Start date cannot be greater than end date');
+    if (dateError || noDataError || actualData.length === 0) {
       clearChart();
       return;
     }
 
-    const filteredData = filterExpenditureData(expenditureData, selectedProject, dateRange);
-
-    if (filteredData.length === 0) {
-      setNoDataError('No data available for the selected date range and project');
-      clearChart();
-      return;
-    }
-
-    createChart(processDataForChart(filteredData));
-  }, [selectedProject, dateRange, expenditureData, darkMode, projectNameMap]);
+    createChart({
+      labels: actualData.map(entry => entry.month),
+      datasets: buildDatasets(actualData, darkMode),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [actualData, dateError, noDataError, darkMode]);
 
   const handleProjectChange = e => setSelectedProject(e.target.value);
-
-  const handleStartDateChange = e => {
-    const newStartDate = e.target.value;
-    setStartDate(newStartDate);
-    if (newStartDate) {
-      setDateRange(prev => ({ ...prev, start: new Date(newStartDate) }));
-    } else {
-      const { minDate } = getDateRangeFromData(expenditureData);
-      setDateRange(prev => ({ ...prev, start: minDate }));
-    }
-  };
-
-  const handleEndDateChange = e => {
-    const newEndDate = e.target.value;
-    setEndDate(newEndDate);
-    if (newEndDate) {
-      setDateRange(prev => ({ ...prev, end: new Date(newEndDate) }));
-    } else {
-      setDateRange(prev => ({ ...prev, end: new Date() }));
-    }
-  };
+  const handleStartDateChange = e => setStartDate(e.target.value);
+  const handleEndDateChange = e => setEndDate(e.target.value);
 
   const todayStr = new Date().toISOString().slice(0, 10);
 
@@ -402,7 +327,7 @@ export default function ExpenditureLineGraph() {
             fontSize: 'clamp(1.4rem, 4vw + 0.5rem, 2.25rem)',
           }}
         >
-          Cost Breakdown by Type of Expenditures
+          Cost Breakdown by Type of Expenditure
         </h1>
         <div className="filter-controls" style={{ marginBottom: '30px' }}>
           <div
@@ -425,7 +350,7 @@ export default function ExpenditureLineGraph() {
                 id="project-select"
                 value={selectedProject}
                 onChange={handleProjectChange}
-                disabled={loading || projects.length === 0}
+                disabled={loading && projects.length === 0}
                 style={inputStyle}
               >
                 <option value="all">All Projects</option>
@@ -445,7 +370,6 @@ export default function ExpenditureLineGraph() {
                 type="date"
                 value={startDate}
                 onChange={handleStartDateChange}
-                disabled={loading}
                 max={todayStr}
                 style={inputStyle}
               />
@@ -459,7 +383,6 @@ export default function ExpenditureLineGraph() {
                 type="date"
                 value={endDate}
                 onChange={handleEndDateChange}
-                disabled={loading}
                 min={startDate}
                 max={todayStr}
                 style={inputStyle}
@@ -475,7 +398,7 @@ export default function ExpenditureLineGraph() {
         )}
         {error && <p style={errorStyle}>Error: {error}</p>}
         {dateError && <p style={errorStyle}>{dateError}</p>}
-        {noDataError && <p style={errorStyle}>{noDataError}</p>}
+        {noDataError && !dateError && <p style={errorStyle}>{noDataError}</p>}
 
         <div
           style={{

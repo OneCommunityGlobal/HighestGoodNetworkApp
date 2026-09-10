@@ -428,6 +428,15 @@ export const ENDPOINTS = {
   BM_INVTYPE_TYPE: type => `${APIEndpoint}/bm/invtypes/${type}`,
   BM_EXPENDITURE: `${APIEndpoint}/bm/expenditure`,
   BM_PROJECT_NAMES: `${APIEndpoint}/bm/projectsNames`,
+  EXPENDITURE_PROJECT_IDS: `${APIEndpoint}/projects/with-expenditure`,
+  PROJECT_COST_BREAKDOWN: (projectId, startDate, endDate) => {
+    let url = `${APIEndpoint}/projects/${projectId || 'all'}/cost-breakdown`;
+    const params = [];
+    if (startDate) params.push(`startDate=${encodeURIComponent(startDate)}`);
+    if (endDate) params.push(`endDate=${encodeURIComponent(endDate)}`);
+    if (params.length > 0) url += `?${params.join('&')}`;
+    return url;
+  },
 
   BM_ISSUE_CHART: `${APIEndpoint}/bm/issue/issue-chart`,
   BM_EQUIPMENT_INVTYPE: `${APIEndpoint}/bm/invtypes/equipment`,
