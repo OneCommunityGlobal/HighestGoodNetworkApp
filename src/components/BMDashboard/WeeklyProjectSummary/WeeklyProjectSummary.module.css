@@ -113,6 +113,81 @@
   background-color: var(--section-title-hover) !important;
 }
 
+/* Match the Total Org Summary comparison dropdown interaction inside this header only. */
+.weeklySummaryComparisonDropdown {
+  flex: 0 0 auto;
+}
+
+.weeklySummaryComparisonDropdown :global(.dropdown-toggle) {
+  box-sizing: border-box;
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 0 14px !important;
+  border: none !important;
+  border-radius: 6px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  line-height: 1.25 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 150px !important;
+  background-color: #6f42c1 !important;
+  color: white !important;
+  box-shadow: 0 2px 6px rgb(111 66 193 / 30%) !important;
+  transition: all 0.3s ease !important;
+}
+
+.weeklySummaryComparisonDropdown :global(.dropdown-toggle):hover {
+  background-color: #5a359a !important;
+  box-shadow: 0 4px 12px rgb(111 66 193 / 40%) !important;
+}
+
+.weeklySummaryComparisonDropdown :global(.dropdown-toggle):focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgb(111 66 193 / 30%) !important;
+}
+
+.weeklySummaryComparisonDropdown :global(.dropdown-menu) {
+  min-width: 180px !important;
+  padding: 8px 0 !important;
+  margin-top: 8px !important;
+  border: none !important;
+  border-radius: 12px !important;
+  background-color: white !important;
+  box-shadow: 0 8px 25px rgb(0 0 0 / 15%) !important;
+}
+
+.weeklySummaryComparisonDropdown :global(.dropdown-item) {
+  padding: 12px 20px !important;
+  border: none !important;
+  background-color: transparent !important;
+  color: #333 !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+}
+
+.weeklySummaryComparisonDropdown :global(.dropdown-item):hover {
+  background-color: #f8f9fa !important;
+  color: #6f42c1 !important;
+  transform: translateX(4px) !important;
+}
+
+.darkMode .weeklySummaryComparisonDropdown :global(.dropdown-menu) {
+  background-color: #34495e !important;
+  border: 1px solid #6f42c1 !important;
+  box-shadow: 0 8px 25px rgb(0 0 0 / 30%) !important;
+}
+
+.darkMode .weeklySummaryComparisonDropdown :global(.dropdown-item) {
+  color: #fff !important;
+}
+
+.darkMode .weeklySummaryComparisonDropdown :global(.dropdown-item):hover {
+  background-color: #6f42c1 !important;
+  color: #fff !important;
+}
+
 /* Share Button — override Bootstrap .btn so it lines up with .form-control selects */
 
 /* Bootstrap .btn defaults to flex-shrink: 1; when the row is tight the button shrinks and
