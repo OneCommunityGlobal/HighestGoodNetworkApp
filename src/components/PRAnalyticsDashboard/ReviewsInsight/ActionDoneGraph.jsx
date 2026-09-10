@@ -43,6 +43,10 @@ function ActionDoneGraph({ selectedTeams, teamData, orderedTeamIds }) {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
+      // ProjectStatus.jsx registers a "centerText" plugin globally, so it draws
+      // "Total Projects / 0" on top of every chart.js chart app-wide. Opt this
+      // chart out (chart.js skips a plugin whose options key is literally false).
+      centerText: false,
       legend: {
         display: true,
         labels: {
@@ -135,7 +139,9 @@ function ActionDoneGraph({ selectedTeams, teamData, orderedTeamIds }) {
             <br />
             Changes Requested: Reviewer requested changes before approval <br />
             <br />
-            Commented: Reviewer left comments but did not approve or request changes
+            Commented: Reviewer left comments but did not approve or request changes <br />
+            <br />
+            The circled number after each team code is that team&apos;s member count.
           </span>
         </span>
       </h2>

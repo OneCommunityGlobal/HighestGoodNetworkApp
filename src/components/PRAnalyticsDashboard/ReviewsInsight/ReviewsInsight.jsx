@@ -166,6 +166,54 @@ function ReviewsInsight() {
                 color: darkMode ? '#f1f1f1' : '#000',
                 cursor: 'pointer',
               }),
+
+              // Selected-team chips: without these, react-select's default light
+              // grey chip stays light in dark mode.
+              multiValue: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#334155' : base.backgroundColor,
+              }),
+
+              multiValueLabel: base => ({
+                ...base,
+                color: darkMode ? '#f1f1f1' : base.color,
+              }),
+
+              multiValueRemove: base => ({
+                ...base,
+                color: darkMode ? '#f1f1f1' : base.color,
+                ':hover': {
+                  backgroundColor: darkMode ? '#48597e' : '#ffbdad',
+                  color: darkMode ? '#fff' : '#de350b',
+                },
+              }),
+
+              placeholder: base => ({
+                ...base,
+                color: darkMode ? '#b8c1d9' : base.color,
+              }),
+
+              input: base => ({
+                ...base,
+                color: darkMode ? '#f1f1f1' : base.color,
+              }),
+
+              indicatorSeparator: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#48597e' : base.backgroundColor,
+              }),
+
+              dropdownIndicator: base => ({
+                ...base,
+                color: darkMode ? '#b8c1d9' : base.color,
+                ':hover': { color: darkMode ? '#f1f1f1' : base.color },
+              }),
+
+              clearIndicator: base => ({
+                ...base,
+                color: darkMode ? '#b8c1d9' : base.color,
+                ':hover': { color: darkMode ? '#f1f1f1' : base.color },
+              }),
             }}
           />
         </div>
