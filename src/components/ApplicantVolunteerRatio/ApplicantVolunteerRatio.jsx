@@ -1,11 +1,17 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, LabelList, ResponsiveContainer } from 'recharts';
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
+
 import { getAllApplicantVolunteerRatios } from '../../services/applicantVolunteerRatioService';
 import styles from './ApplicantVolunteerRatio.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
+
+const ALL_ROLES_OPTION = {
+  label: 'All Roles',
+  value: '__all__',
+};
 
 function ApplicantVolunteerRatio() {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -14,30 +20,79 @@ function ApplicantVolunteerRatio() {
   const [allRoles, setAllRoles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedRoles, setSelectedRoles] = useState([]);
+
+  const [selectedRoles, setSelectedRoles] = useState([ALL_ROLES_OPTION]);
+
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [validationError, setValidationError] = useState('');
   const [viewMode, setViewMode] = useState('count');
 
-  // Fetch all available roles
+  const isAllRolesSelected = selectedRoles.some(role => role.value === ALL_ROLES_OPTION.value);
+
+  /*
+   * Highlight the currently hovered role row.
+   *
+   * Dark mode:
+   * subtle light overlay
+   *
+   * Light mode:
+   * subtle blue overlay
+   */
+  const hoverCursor = {
+    fill: darkMode ? 'rgba(255, 255, 255, 0.07)' : 'rgba(25, 118, 210, 0.08)',
+  };
+
+  /*
+   * Fetch available roles.
+   */
   useEffect(() => {
     const fetchAllRoles = async () => {
       try {
         const response = await getAllApplicantVolunteerRatios({});
         const apiData = response?.data ?? [];
-        const uniqueRoles = [...new Set(apiData.map(item => item.role))];
-        const roleOptions = uniqueRoles.map(role => ({ label: role, value: role }));
-        setAllRoles(roleOptions);
-        setSelectedRoles(roleOptions);
+
+        const uniqueRoles = [...new Set(apiData.map(item => item.role).filter(Boolean))];
+
+        const roleOptions = uniqueRoles.map(role => ({
+          label: role,
+          value: role,
+        }));
+
+        setAllRoles([ALL_ROLES_OPTION, ...roleOptions]);
       } catch (err) {
         setError('Failed to load roles. Please try again.');
       }
     };
+
     fetchAllRoles();
   }, []);
 
-  // Fetch filtered data
+  /*
+   * Handle role selection.
+   *
+   * Selecting All Roles removes individual role selections.
+   *
+   * Selecting an individual role while All Roles is active
+   * removes All Roles automatically.
+   */
+  const handleRoleChange = (newValue, actionMeta) => {
+    const updatedRoles = newValue || [];
+    const selectedOption = actionMeta?.option;
+
+    if (selectedOption?.value === ALL_ROLES_OPTION.value) {
+      setSelectedRoles([ALL_ROLES_OPTION]);
+      return;
+    }
+
+    const individualRoles = updatedRoles.filter(role => role.value !== ALL_ROLES_OPTION.value);
+
+    setSelectedRoles(individualRoles);
+  };
+
+  /*
+   * Fetch filtered analytics data.
+   */
   useEffect(() => {
     const fetchFilteredData = async () => {
       if (startDate && endDate && startDate > endDate) {
@@ -47,25 +102,39 @@ function ApplicantVolunteerRatio() {
         return;
       }
 
-      if (validationError) setValidationError('');
+      setValidationError('');
 
       try {
         setLoading(true);
+        setError(null);
+
         const filters = {};
-        if (startDate) filters.startDate = startDate.toISOString().split('T')[0];
-        if (endDate) filters.endDate = endDate.toISOString().split('T')[0];
-        if (selectedRoles.length > 0) {
+
+        if (startDate) {
+          filters.startDate = startDate.toISOString().split('T')[0];
+        }
+
+        if (endDate) {
+          filters.endDate = endDate.toISOString().split('T')[0];
+        }
+
+        /*
+         * An empty roles filter means all roles.
+         */
+        if (!isAllRolesSelected && selectedRoles.length > 0) {
           filters.roles = selectedRoles.map(role => role.value).join(',');
         } else {
-          filters.roles = ''; // fetch all roles
+          filters.roles = '';
         }
 
         const response = await getAllApplicantVolunteerRatios(filters);
+
         const apiData = response?.data ?? [];
+
         const transformedData = apiData.map(item => ({
           role: item.role,
-          applicants: item.totalApplicants,
-          hired: item.totalHired,
+          applicants: Number(item.totalApplicants) || 0,
+          hired: Number(item.totalHired) || 0,
         }));
 
         setData(transformedData);
@@ -75,29 +144,48 @@ function ApplicantVolunteerRatio() {
         setLoading(false);
       }
     };
+
     fetchFilteredData();
-  }, [startDate, endDate, selectedRoles]);
+  }, [startDate, endDate, selectedRoles, isAllRolesSelected]);
 
-  // Prepare chart data
+  /*
+   * Prepare chart data.
+   */
   const chartData = useMemo(() => {
-    const filtered = data.filter(d => selectedRoles.map(r => r.value).includes(d.role));
+    let filteredData = data;
 
+    /*
+     * All Roles displays everything.
+     *
+     * Otherwise only display the individually selected roles.
+     */
+    if (!isAllRolesSelected) {
+      const selectedRoleValues = selectedRoles.map(role => role.value);
+
+      filteredData = data.filter(item => selectedRoleValues.includes(item.role));
+    }
+
+    /*
+     * Percentage view = hires / applicants * 100.
+     */
     if (viewMode === 'percentage') {
-      return filtered.map(item => {
-        const percentage =
+      return filteredData.map(item => {
+        const hiredPercentage =
           item.applicants > 0 ? Number(((item.hired / item.applicants) * 100).toFixed(1)) : 0;
 
         return {
           ...item,
-          hiredPercentage: percentage,
+          hiredPercentage,
         };
       });
     }
 
-    return filtered;
-  }, [data, selectedRoles, viewMode]);
+    return filteredData;
+  }, [data, selectedRoles, isAllRolesSelected, viewMode]);
 
-  // Apply dark mode
+  /*
+   * Apply global dark mode styling.
+   */
   useEffect(() => {
     if (darkMode) {
       document.body.classList.add('dark-mode-body');
@@ -110,22 +198,82 @@ function ApplicantVolunteerRatio() {
     };
   }, [darkMode]);
 
-  const legendTextColor = darkMode ? '#e0e0e0' : '#333';
+  /*
+   * Count View tooltip.
+   */
+  const renderCountTooltip = ({ active, payload, label }) => {
+    if (!active || !payload?.length) {
+      return null;
+    }
 
+    const item = payload[0]?.payload;
+
+    if (!item) {
+      return null;
+    }
+
+    return (
+      <div className={styles.customTooltip}>
+        <strong>{label || item.role}</strong>
+
+        <div>Total Applications: {item.applicants}</div>
+
+        <div>People Hired: {item.hired}</div>
+      </div>
+    );
+  };
+
+  /*
+   * Percentage View tooltip.
+   */
+  const renderPercentageTooltip = ({ active, payload }) => {
+    if (!active || !payload?.length) {
+      return null;
+    }
+
+    const item = payload[0]?.payload;
+
+    if (!item) {
+      return null;
+    }
+
+    return (
+      <div className={styles.customTooltip}>
+        <strong>{item.role}</strong>
+
+        <div>Total Applications: {item.applicants}</div>
+
+        <div>People Hired: {item.hired}</div>
+
+        <div>Hire Rate: {item.hiredPercentage}%</div>
+      </div>
+    );
+  };
+
+  /*
+   * Loading state.
+   */
   if (loading) {
     return (
       <div className={`${styles.page} ${darkMode ? styles.dark : ''}`}>
         <h2 className={styles.heading}>Number of People Hired vs. Total Applications</h2>
+
         <div className={styles.statusMessage}>Loading...</div>
       </div>
     );
   }
 
+  /*
+   * Error state.
+   */
   if (error) {
     return (
       <div className={`${styles.page} ${darkMode ? styles.dark : ''}`}>
         <h2 className={styles.heading}>Number of People Hired vs. Total Applications</h2>
-        <div className={`${styles.statusMessage} ${styles.errorMessage}`}>{error}</div>
+
+        <div className={`${styles.statusMessage} ${styles.errorMessage}`} role="alert">
+          {error}
+        </div>
       </div>
     );
   }
@@ -134,12 +282,18 @@ function ApplicantVolunteerRatio() {
     <div className={`${styles.page} ${darkMode ? styles.dark : ''}`}>
       <h2 className={styles.heading}>Number of People Hired vs. Total Applications</h2>
 
-      {/* Filters */}
+      {/* =========================
+          Filters
+      ========================== */}
+
       <div className={styles.filters}>
+        {/* Date Range */}
+
         <div className={styles.filterGroup}>
           <label htmlFor="start-date" className={styles.label}>
             Date Range:
           </label>
+
           <div className={styles.dateInputWrapper}>
             <DatePicker
               id="start-date"
@@ -148,10 +302,13 @@ function ApplicantVolunteerRatio() {
               selectsStart
               startDate={startDate}
               endDate={endDate}
+              maxDate={endDate || undefined}
               placeholderText="Start Date"
-              dateFormat="yyyy/MM/dd"
+              dateFormat="MM/dd/yyyy"
             />
-            <span>to</span>
+
+            <span className={styles.dateSeparator}>to</span>
+
             <DatePicker
               id="end-date"
               selected={endDate}
@@ -161,9 +318,10 @@ function ApplicantVolunteerRatio() {
               endDate={endDate}
               minDate={startDate}
               placeholderText="End Date"
-              dateFormat="yyyy/MM/dd"
+              dateFormat="MM/dd/yyyy"
             />
           </div>
+
           {validationError && (
             <div className={styles.validationError} role="alert">
               {validationError}
@@ -171,194 +329,182 @@ function ApplicantVolunteerRatio() {
           )}
         </div>
 
+        {/* Role Selector */}
+
         <div className={styles.filterGroupInline}>
           <label htmlFor="role-select" className={styles.label}>
             Role:
           </label>
+
           <Select
-            id="role-select"
+            inputId="role-select"
             isMulti
             options={allRoles}
             value={selectedRoles}
-            onChange={setSelectedRoles}
+            onChange={handleRoleChange}
             placeholder="Select roles..."
             classNamePrefix="custom-select"
+            closeMenuOnSelect={false}
+            hideSelectedOptions={false}
             menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
           />
         </div>
       </div>
 
-      {/* Toggle Buttons */}
-      <div style={{ marginBottom: '12px', display: 'flex', gap: '8px' }}>
-        <button
-          type="button"
-          onClick={() => setViewMode('count')}
-          style={{
-            padding: '6px 12px',
-            cursor: 'pointer',
-            backgroundColor: viewMode === 'count' ? '#1976d2' : '#e0e0e0',
-            color: viewMode === 'count' ? '#fff' : '#000',
-            border: 'none',
-            borderRadius: '4px',
-          }}
-        >
-          Count View
-        </button>
+      {/* =========================
+          Chart Controls
+      ========================== */}
 
-        <button
-          type="button"
-          onClick={() => setViewMode('percentage')}
-          style={{
-            padding: '6px 12px',
-            cursor: 'pointer',
-            backgroundColor: viewMode === 'percentage' ? '#1976d2' : '#e0e0e0',
-            color: viewMode === 'percentage' ? '#fff' : '#000',
-            border: 'none',
-            borderRadius: '4px',
-          }}
-        >
-          Percentage View
-        </button>
+      <div className={styles.chartControls}>
+        {/* Count / Percentage Toggle */}
+
+        <div className={styles.viewToggle} role="group" aria-label="Chart display mode">
+          <button
+            type="button"
+            onClick={() => setViewMode('count')}
+            className={`${styles.toggleButton} ${
+              viewMode === 'count' ? styles.toggleButtonActive : ''
+            }`}
+            aria-pressed={viewMode === 'count'}
+          >
+            Count
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setViewMode('percentage')}
+            className={`${styles.toggleButton} ${
+              viewMode === 'percentage' ? styles.toggleButtonActive : ''
+            }`}
+            aria-pressed={viewMode === 'percentage'}
+          >
+            Percentage
+          </button>
+        </div>
+
+        {/* Legend */}
+
+        <div className={styles.legend}>
+          {viewMode === 'count' ? (
+            <>
+              <span className={styles.legendItem}>
+                <span
+                  className={`${styles.legendMarker} ${styles.applicationMarker}`}
+                  aria-hidden="true"
+                />
+                Total Applications
+              </span>
+
+              <span className={styles.legendItem}>
+                <span
+                  className={`${styles.legendMarker} ${styles.hiredMarker}`}
+                  aria-hidden="true"
+                />
+                People Hired
+              </span>
+            </>
+          ) : (
+            <span className={styles.legendItem}>
+              <span className={`${styles.legendMarker} ${styles.hiredMarker}`} aria-hidden="true" />
+              Hire Rate
+            </span>
+          )}
+        </div>
       </div>
+
+      {/* =========================
+          Chart
+      ========================== */}
 
       {chartData.length > 0 ? (
         <div className={styles.chartContainer}>
-          <ResponsiveContainer width="100%" height={350}>
-            <BarChart
-              data={chartData}
-              layout="vertical"
-              margin={{ top: 20, right: 40, left: 80, bottom: 20 }}
-              barCategoryGap={24}
-              barSize={16}
-            >
-              <XAxis
-                type="number"
-                domain={viewMode === 'percentage' ? [0, 100] : ['auto', 'auto']}
-                allowDecimals={viewMode === 'percentage'}
-              />
-
-              <YAxis
-                dataKey="role"
-                type="category"
-                width={180}
-                label={{ value: 'Role', angle: -90, position: 'insideLeft' }}
-              />
-
-              <Tooltip />
-
-              {viewMode === 'count' ? (
-                <>
-                  <Bar dataKey="applicants" fill="#1976d2">
-                    <LabelList dataKey="applicants" position="right" />
-                  </Bar>
-
-                  <Bar dataKey="hired" fill="#43a047">
-                    <LabelList dataKey="hired" position="right" />
-                  </Bar>
-                </>
-              ) : (
-                <Bar dataKey="hiredPercentage" fill="#43a047">
-                  <LabelList
-                    dataKey="hiredPercentage"
-                    position="right"
-                    formatter={value => `${value}%`}
-                  />
-                </Bar>
-              )}
-            </BarChart>
-          </ResponsiveContainer>
-
-          {/* Manual Legend */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              gap: '16px',
-              marginTop: '12px',
-              fontWeight: 500,
-            }}
-          >
-            {viewMode === 'count' ? (
-              <>
-                <span
-                  style={{
-                    color: legendTextColor,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                  }}
-                >
-                  <span
-                    style={{
-                      width: '12px',
-                      height: '12px',
-                      backgroundColor: '#1976d2',
-                      display: 'inline-block',
-                      borderRadius: '2px',
-                    }}
-                  />
-                  Total Applications
-                </span>
-
-                <span
-                  style={{
-                    color: legendTextColor,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                  }}
-                >
-                  <span
-                    style={{
-                      width: '12px',
-                      height: '12px',
-                      backgroundColor: '#43a047',
-                      display: 'inline-block',
-                      borderRadius: '2px',
-                    }}
-                  />
-                  People Hired
-                </span>
-              </>
-            ) : (
-              <span
-                style={{
-                  color: legendTextColor,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
+          <div className={styles.chartWrapper}>
+            <ResponsiveContainer width="100%" height={350}>
+              <BarChart
+                data={chartData}
+                layout="vertical"
+                margin={{
+                  top: 8,
+                  right: 55,
+                  left: 70,
+                  bottom: 10,
                 }}
+                barCategoryGap={20}
+                barSize={16}
               >
-                <span
-                  style={{
-                    width: '12px',
-                    height: '12px',
-                    backgroundColor: '#43a047',
-                    display: 'inline-block',
-                    borderRadius: '2px',
+                <XAxis
+                  type="number"
+                  domain={viewMode === 'percentage' ? [0, 100] : [0, 'auto']}
+                  allowDecimals={viewMode === 'percentage'}
+                  tickFormatter={viewMode === 'percentage' ? value => `${value}%` : undefined}
+                />
+
+                <YAxis
+                  dataKey="role"
+                  type="category"
+                  width={180}
+                  label={{
+                    value: 'Role',
+                    angle: -90,
+                    position: 'insideLeft',
                   }}
                 />
-                People Hired (%)
-              </span>
-            )}
-          </div>
 
-          {/* Axis Title */}
-          <div
-            style={{
-              textAlign: 'center',
-              marginTop: '10px',
-              fontWeight: 500,
-            }}
-          >
-            {viewMode === 'percentage'
-              ? 'Percentage of People Hired (%)'
-              : 'Number of Applications / Hires'}
+                {/* 
+                  The cursor highlights the entire
+                  hovered role/category.
+
+                  Light mode:
+                  subtle blue background.
+
+                  Dark mode:
+                  subtle light overlay.
+                */}
+
+                {viewMode === 'percentage' ? (
+                  <Tooltip content={renderPercentageTooltip} cursor={hoverCursor} />
+                ) : (
+                  <Tooltip content={renderCountTooltip} cursor={hoverCursor} />
+                )}
+
+                {viewMode === 'count' ? (
+                  <>
+                    <Bar dataKey="applicants" fill="#1976d2" name="Total Applications">
+                      <LabelList dataKey="applicants" position="right" />
+                    </Bar>
+
+                    <Bar dataKey="hired" fill="#43a047" name="People Hired">
+                      <LabelList dataKey="hired" position="right" />
+                    </Bar>
+                  </>
+                ) : (
+                  <Bar dataKey="hiredPercentage" fill="#43a047" name="Hire Rate">
+                    <LabelList
+                      dataKey="hiredPercentage"
+                      position="right"
+                      formatter={value => `${value}%`}
+                    />
+                  </Bar>
+                )}
+              </BarChart>
+            </ResponsiveContainer>
+
+            {/* X Axis Title */}
+
+            <div className={styles.axisTitle}>
+              {viewMode === 'percentage' ? 'Hire Rate (%)' : 'Number of Applications and Hires'}
+            </div>
           </div>
         </div>
       ) : (
         <div className={styles.noData}>
-          No data available. Please add some applicant volunteer ratio data.
+          <p className={styles.noDataTitle}>No data available</p>
+
+          <p className={styles.noDataText}>
+            {selectedRoles.length === 0
+              ? 'Select at least one role or choose All Roles to view hiring data.'
+              : 'No application or hiring data is available for the selected roles and date range.'}
+          </p>
         </div>
       )}
     </div>
