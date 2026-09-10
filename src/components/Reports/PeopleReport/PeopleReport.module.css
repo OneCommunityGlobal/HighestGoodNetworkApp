@@ -462,40 +462,50 @@ body {
   width: 100%;
 }
 
+/* Right-side stats card with flexbox layout for even vertical distribution */
 .reportStats {
-  flex-grow: 1;
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  align-items: center;
   background-color: white;
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 0 12px rgb(0 0 0 / 8%);
-  height: 698px;
-  margin-top: 2rem;
+  height: 100%;
+  margin-top: 0;
+  width: 100%;
+  gap: 12px; /* Uniform spacing between internal elements (name, role, title, dates) */
+}
+
+/* Ensure all direct children of reportStats participate in flex layout */
+.reportStats > * {
+  width: 100%;
+  flex-shrink: 0;
 }
 
 @media (width >= 1489px) and (width <= 1784px) {
   .reportStats {
-    height: 721px;
+    /* height removed - now 100% from parent */
   }
 }
 
 @media (width >= 1156px) and (width <= 1488px) {
   .reportStats {
-    height: 869px;
+    /* height removed - now 100% from parent */
   }
 }
 
 @media (width >= 1025px) and (width <= 1155px) {
   .reportStats {
-    height: 873px;
+    /* height removed - now 100% from parent */
   }
 }
 
 @media (width >= 960px) and (width <= 1024px) {
   .reportStats {
-    height: 895px;
+    /* height removed - now 100% from parent */
   }
 } 
 
