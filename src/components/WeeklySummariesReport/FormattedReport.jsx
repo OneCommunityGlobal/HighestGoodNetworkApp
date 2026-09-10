@@ -693,6 +693,7 @@ function Bio({ bioCanEdit, ...props }) {
 
 function BioSwitch({ userId, bioPosted, summary, getWeeklySummariesReport }) {
   const [bioStatus, setBioStatus] = useState(bioPosted);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useDispatch();
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
 
@@ -702,10 +703,12 @@ function BioSwitch({ userId, bioPosted, summary, getWeeklySummariesReport }) {
   }, [bioPosted]);
 
   // eslint-disable-next-line no-shadow
-  const handleChangeBioPosted = async (userId, bioStatus) => {
-    const res = await dispatch(toggleUserBio(userId, bioStatus));
+  const handleChangeBioPosted = async (userId, newBioStatus) => {
+    const res = await dispatch(toggleUserBio(userId, newBioStatus));
     if (res.status === 200) {
+      setBioStatus(newBioStatus);
       toast.success('You have changed the bio announcement status of this user.');
+      setIsModalOpen(false);
 
       // Force refresh the weekly summaries data to get updated bio status
       try {
@@ -731,21 +734,46 @@ function BioSwitch({ userId, bioPosted, summary, getWeeklySummariesReport }) {
     }
   };
 
+  const getBioStatusLabel = () => {
+    if (bioStatus === 'default') return 'Not requested/posted';
+    if (bioStatus === 'posted') return 'Posted';
+    return 'Requested';
+  };
+
   return (
     <div>
       <div className={styles.bioToggle}>
-        <b>Bio announcement:</b>
+        <b>Bio announcement:</b> {getBioStatusLabel()}
       </div>
       <div className={styles.bioToggle}>
-        <ToggleSwitch
-          switchType="bio"
-          state={bioStatus}
-          handleUserProfile={bio => {
-            setBioStatus(bio);
-            handleChangeBioPosted(userId, bio);
-          }}
-        />
+        <button
+          type="button"
+          onClick={() => setIsModalOpen(true)}
+          className="btn btn-sm btn-info"
+          style={{ marginTop: '8px' }}
+        >
+          Set State
+        </button>
       </div>
+
+      <Modal isOpen={isModalOpen} toggle={() => setIsModalOpen(false)}>
+        <ModalHeader toggle={() => setIsModalOpen(false)}>Set Bio Announcement Status</ModalHeader>
+        <ModalBody>
+          <div style={{ padding: '1rem 0' }}>
+            {['default', 'requested', 'posted'].map(option => (
+              <Button
+                key={option}
+                color={bioStatus === option ? 'success' : 'secondary'}
+                block
+                onClick={() => handleChangeBioPosted(userId, option)}
+                style={{ margin: '0.5rem 0', textTransform: 'capitalize' }}
+              >
+                {option === 'default' ? 'Not requested/posted' : option}
+              </Button>
+            ))}
+          </div>
+        </ModalBody>
+      </Modal>
     </div>
   );
 }
