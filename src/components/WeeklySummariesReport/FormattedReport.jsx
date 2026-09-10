@@ -749,8 +749,7 @@ function BioSwitch({ userId, bioPosted, summary, getWeeklySummariesReport }) {
         <button
           type="button"
           onClick={() => setIsModalOpen(true)}
-          className="btn btn-sm btn-info"
-          style={{ marginTop: '8px' }}
+          className="btn btn-sm btn-primary"
         >
           Set State
         </button>
