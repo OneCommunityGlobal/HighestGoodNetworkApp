@@ -1,10 +1,15 @@
 /* stylelint-disable no-descending-specificity */
+
 .hoursPledgedChart {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-height: 100vh;
+  padding: clamp(16px, 3vw, 32px);
+  overflow-x: hidden;
   font-family: Arial, sans-serif;
-  padding: 20px;
   background-color: #fff;
   color: #000;
-  min-height: 100vh;
   transition: background-color 0.3s, color 0.3s;
 }
 
@@ -12,53 +17,132 @@
   background-color: #1b2a41;
 }
 
+.hoursPledgedChart h2 {
+  max-width: 960px;
+  margin: 0 auto clamp(20px, 3vw, 32px);
+  color: inherit;
+  font-size: clamp(1.2rem, 2.4vw, 1.6rem);
+  line-height: 1.3;
+  text-align: center;
+}
+
 .hpFilters {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 20px;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(240px, 1fr);
+  align-items: start;
+  gap: clamp(16px, 3vw, 32px);
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto clamp(24px, 4vw, 40px);
+  padding: clamp(16px, 2vw, 24px);
+  box-sizing: border-box;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background-color: #f8fafc;
 }
 
 .darkMode .hpFilters {
+  border-color: #334155;
   background-color: #1c2541;
   box-shadow: 2px 2px 4px 1px black;
 }
 
 .darkMode .hpChartContainer {
+  border: none;
   background-color: #1c2541;
   color: #f1f1f1;
   box-shadow: 2px 2px 4px 1px black;
-  border: none;
 }
 
 .hpChartContainer {
   display: flex;
   justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .hpDateFilter,
 .hpRoleFilter {
   display: flex;
   flex-direction: column;
-  padding: 1% 10%;
-  align-items: center;
-  gap: 10px;
-}
-
-.hpDateFilter input {
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  align-items: stretch;
+  gap: 8px;
   width: 100%;
+  min-width: 0;
 }
 
-label {
+.hpFilters label {
+  margin: 0;
   font-weight: bold;
-  margin-bottom: 5px;
+  line-height: 1.3;
 }
 
 .darkMode label {
   color: #f1f1f1 !important;
+}
+
+.hpDateInputs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+}
+
+.hpDateInputs :global(.react-datepicker-wrapper),
+.hpDateInputs :global(.react-datepicker__input-container) {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.hpDatePicker {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #111827;
+  font-size: 0.95rem;
+}
+
+.hpDatePicker::placeholder {
+  color: #64748b;
+  opacity: 1;
+}
+
+.hpDatePicker:focus {
+  border-color: #64748b;
+  outline: 2px solid rgb(100 116 139 / 25%);
+  outline-offset: 1px;
+}
+
+.darkMode .hpDatePicker {
+  border-color: #475569;
+  background-color: #334155;
+  color: #f8fafc;
+}
+
+.darkMode .hpDatePicker::placeholder {
+  color: #cbd5e1;
+}
+
+.hpRoleSelect {
+  width: 100%;
+  min-width: 0;
+}
+
+.hpRoleSelect :global(.hpRoleSelect__control) {
+  width: 100%;
+  cursor: pointer;
+}
+
+.hpRoleSelect :global(.hpRoleSelect__value-container) {
+  min-width: 0;
 }
 
 .hpSpinner {
@@ -77,4 +161,30 @@ label {
   text-align: center;
   color: #888;
   font-style: italic;
+}
+
+@media (width <= 768px) {
+  .hpFilters {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .hpChartContainer {
+    justify-content: flex-start;
+  }
+}
+
+@media (width <= 480px) {
+  .hoursPledgedChart {
+    padding: 16px 12px;
+  }
+
+  .hpFilters {
+    padding: 14px;
+  }
+
+  .hpDateInputs {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
 }

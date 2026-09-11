@@ -93,40 +93,85 @@ function HoursPledgedChart() {
       <h2>Average Number of Hours/Week Pledged by Role</h2>
 
       <div className={`${styles.hpFilters}`}>
-        <div className={`${styles.hpDateFilter}`}>
+        <div className={styles.hpDateFilter}>
           <label htmlFor="start-date">Date Range:</label>
-          <DatePicker
-            id="start-date"
-            selected={startDate}
-            onChange={handleStartDateChange}
-            selectsStart
-            startDate={startDate}
-            endDate={endDate}
-            placeholderText="Start Date"
-          />
-          <DatePicker
-            id="end-date"
-            selected={endDate}
-            onChange={handleEndDateChange}
-            selectsEnd
-            startDate={startDate}
-            endDate={endDate}
-            placeholderText="End Date"
-          />
+          <div className={styles.hpDateInputs}>
+            <DatePicker
+              id="start-date"
+              selected={startDate}
+              onChange={handleStartDateChange}
+              selectsStart
+              startDate={startDate}
+              endDate={endDate}
+              placeholderText="Start Date"
+              className={styles.hpDatePicker}
+            />
+            <DatePicker
+              id="end-date"
+              selected={endDate}
+              onChange={handleEndDateChange}
+              selectsEnd
+              startDate={startDate}
+              endDate={endDate}
+              placeholderText="End Date"
+              className={styles.hpDatePicker}
+            />
+          </div>
         </div>
 
-        <div className={`${styles.hpRoleFilter}`}>
+        <div className={styles.hpRoleFilter}>
           <label htmlFor="role-select">Roles:</label>
           <Select
             id="role-select"
+            className={styles.hpRoleSelect}
+            classNamePrefix="hpRoleSelect"
             isMulti
             options={roleOptions}
             onChange={setSelectedRoles}
             placeholder="Select Roles"
             styles={{
+              container: base => ({
+                ...base,
+                width: '100%',
+              }),
+              control: base => ({
+                ...base,
+                minHeight: '42px',
+                backgroundColor: darkMode ? '#334155' : '#fff',
+                borderColor: darkMode ? '#475569' : '#cbd5e1',
+                boxShadow: 'none',
+              }),
+              input: base => ({
+                ...base,
+                color: darkMode ? '#f8fafc' : '#111827',
+              }),
               placeholder: base => ({
                 ...base,
-                color: 'black',
+                color: darkMode ? '#cbd5e1' : '#64748b',
+              }),
+              menu: base => ({
+                ...base,
+                zIndex: 10,
+                backgroundColor: darkMode ? '#1e293b' : '#fff',
+              }),
+              option: (base, state) => ({
+                ...base,
+                backgroundColor: state.isFocused
+                  ? darkMode
+                    ? '#334155'
+                    : '#e2e8f0'
+                  : darkMode
+                  ? '#1e293b'
+                  : '#fff',
+                color: darkMode ? '#f8fafc' : '#111827',
+              }),
+              multiValue: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#475569' : '#e2e8f0',
+              }),
+              multiValueLabel: base => ({
+                ...base,
+                color: darkMode ? '#f8fafc' : '#1e293b',
               }),
             }}
           />
