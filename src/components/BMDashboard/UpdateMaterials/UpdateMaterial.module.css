@@ -149,3 +149,11 @@
   background-color: #1B2A41; /* Muted Oxford Blue */
   color: #fff;
 }
+
+:global(.dark-mode) .updateMaterialContainer .materialFormError {
+  color: red !important;
+}
+
+:global(.dark-mode) .updateMaterialContainer .materialFormErrorClr {
+  color: red !important;
+}
