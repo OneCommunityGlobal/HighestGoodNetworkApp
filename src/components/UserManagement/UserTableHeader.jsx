@@ -27,12 +27,36 @@ import styles from './usermanagement.module.css';
 /**
  * The header row of the user table.
  */
-const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser, enableEditUserInfo, disableEditUserInfo, isMobile, mobileFontSize }) => {
+const UserTableHeaderComponent = ({ authUser, roleSearchText, darkMode, editUser, enableEditUserInfo, disableEditUserInfo, isMobile, mobileFontSize, roles }) => {
+    const authRole = authUser?.role;
     const dispatch = useDispatch();
     const [editFlag, setEditFlag] = useState(editUser);
     const updatedUserData = useSelector(state => state.userProfileEdit.newUserData);
     const saveUserInformation = async updatedData => {
       try {
+        const requestor = authUser;
+        const roleUpdateData = updatedUserData.filter(change => change.item === 'role')
+        for(const roleUpdate of roleUpdateData) {
+          const user = await axios.get(ENDPOINTS.USER_PROFILE(roleUpdate.user_id));
+          const permissions = {
+            frontPermissions: user.data?.permissions.frontPermissions,
+            removedDefaultPermissions: user.data.permissions?.removedDefaultPermissions,
+          };
+          const permissionURL = `${ENDPOINTS.PERMISSION_MANAGEMENT_UPDATE()}/user/${roleUpdate.user_id}`;
+          const role = roles?.find(
+            ({ roleName }) => roleName === roleUpdate.value
+          )
+          const rolePermissions = role?.permissions ?? [];
+          permissions.defaultPermissions = rolePermissions
+          const permissionData = {
+            reason: `Role Changed to **${roleUpdate.value}** from **${user.data.role}**.`,
+            permissions: permissions,
+            requestor: requestor,
+          }
+
+          await axios.patch(permissionURL, permissionData).catch(err => console.error(err))
+        }
+        
         const response = await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE, updatedData);
         if (response.status === 200) {
           const toastId = toast.success(' Saving Data...', { autoClose: false });
@@ -325,7 +349,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
   };
 
 UserTableHeaderComponent.propTypes = {
-  authRole: PropTypes.string.isRequired,
+  authUser: PropTypes.object.isRequired,
   roleSearchText: PropTypes.string,
   darkMode: PropTypes.bool,
   editUser: PropTypes.object,
@@ -333,6 +357,7 @@ UserTableHeaderComponent.propTypes = {
   disableEditUserInfo: PropTypes.func.isRequired,
   isMobile: PropTypes.bool,
   mobileFontSize: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  roles: PropTypes.object,
  
 };
 
