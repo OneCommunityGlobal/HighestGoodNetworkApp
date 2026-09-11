@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { Label } from 'reactstrap';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styles from '../WeeklySummariesReport.module.css';
 import ReactTooltip from 'react-tooltip';
 import { toggleField } from '~/utils/stateHelper';
@@ -19,6 +19,17 @@ export default function WeeklySummariesToggleFilter({
   // Local state for optimistic UI update with lazy initialization
   // Initialize with current Redux state to avoid initial delay
   const [pendingBioStatus, setPendingBioStatus] = useState(() => state.selectedBioStatus);
+  // Track if current component initiated the state change
+  const isInternalUpdateRef = useRef(false);
+
+  // Sync pendingBioStatus with Redux state when Redux update comes from external source
+  useEffect(() => {
+    if (!isInternalUpdateRef.current) {
+      setPendingBioStatus(state.selectedBioStatus);
+    } else {
+      isInternalUpdateRef.current = false;
+    }
+  }, [state.selectedBioStatus]);
 
   const handleTrophyToggleChange = () => {
     toggleField(setState, 'selectedTrophies');
@@ -31,6 +42,8 @@ export default function WeeklySummariesToggleFilter({
   const handleBioStatusChange = (e, status) => {
     e.preventDefault();
     e.stopPropagation();
+    // Mark this as an internal update to prevent useEffect from overwriting pendingBioStatus
+    isInternalUpdateRef.current = true;
     // Optimistic update: immediately show the new selection
     const newSelection = (pendingBioStatus ?? state.selectedBioStatus) === status ? null : status;
     setPendingBioStatus(newSelection);
