@@ -2,12 +2,327 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { ApiEndpoint } from '~/utils/URL';
 import CharacterCounter from '../../CharacterCounter';
 import ConfirmationModal from '../../ConfirmationModal';
-import './SocialMediaComposer.module.css';
+import styles from './SocialMediaComposer.module.css';
+
 const PREFS_KEY = 'mastodon_composer_prefs';
 
-export default function SocialMediaComposer({ platform }) {
+const removeTrailingSlashes = value => {
+  let end = value.length;
+  while (end > 0 && value[end - 1] === '/') end -= 1;
+  return value.slice(0, end);
+};
+
+const SOCIAL_API_BASE = removeTrailingSlashes(ApiEndpoint);
+
+const X_STATUS_BADGES = {
+  ready: '⏰ Ready to Post',
+  pending: '🕐 Pending',
+  posted: '✓ Posted',
+  skipped: '— Skipped',
+};
+
+const getPostNowLabel = (isPosting, platform) => {
+  if (isPosting) return 'Posting…';
+  if (platform === 'x') return 'Copy & Post to X';
+  return 'Post Now';
+};
+
+const getScheduleButtonLabel = (isPosting, editingPostId) => {
+  if (isPosting) return editingPostId ? 'Updating…' : 'Scheduling…';
+  return editingPostId ? 'Update Post' : 'Schedule Post';
+};
+
+// Pure formatter (no component state) — module-scope so both the composer and the
+// preview modal reference it directly without prop-drilling.
+const formatScheduledTime = isoString => {
+  try {
+    return new Date(isoString).toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+  } catch {
+    return isoString;
+  }
+};
+
+// Platform API abstraction
+// Keeps every handler free of platform conditionals.
+// Add new platforms here; the rest of the component stays unchanged.
+const platformAPI = {
+  mastodon: {
+    postNow: (content, image, altText, crossPostTo) => ({
+      url: `${SOCIAL_API_BASE}/mastodon/createPin`,
+      body: {
+        title: 'Mastodon Post',
+        description: content,
+        imgType: image ? 'FILE' : 'URL',
+        mediaItems: image ? `data:image/png;base64,${image.base64}` : '',
+        mediaAltText: altText || null,
+        crossPostTo,
+      },
+    }),
+    schedule: (content, image, altText, scheduledTime, crossPostTo) => ({
+      url: `${SOCIAL_API_BASE}/mastodon/schedule`,
+      body: {
+        title: 'Mastodon Scheduled Post',
+        description: content,
+        imgType: image ? 'FILE' : 'URL',
+        mediaItems: image ? `data:image/png;base64,${image.base64}` : '',
+        mediaAltText: altText || null,
+        scheduledTime,
+        crossPostTo,
+      },
+    }),
+    deleteSchedule: id => `${SOCIAL_API_BASE}/mastodon/schedule/${id}`,
+    getScheduled: () => `${SOCIAL_API_BASE}/mastodon/schedule`,
+    getHistory: () => `${SOCIAL_API_BASE}/mastodon/history?limit=20`,
+    // Mastodon stores post content inside a JSON-encoded postData field
+    parseScheduledText: post => {
+      try {
+        return JSON.parse(post.postData).status || 'No content';
+      } catch {
+        return 'Invalid post data';
+      }
+    },
+    parseScheduledImage: post => {
+      try {
+        return JSON.parse(post.postData).local_media_base64 || null;
+      } catch {
+        return null;
+      }
+    },
+    parseScheduledTime: post => post.scheduledTime,
+  },
+
+  x: {
+    postNow: content => ({
+      url: `${SOCIAL_API_BASE}/x/post`,
+      body: { content },
+    }),
+    schedule: (content, _image, _altText, scheduledTime) => ({
+      url: `${SOCIAL_API_BASE}/x/schedule`,
+      body: { content, scheduledAt: scheduledTime },
+    }),
+    deleteSchedule: id => `${SOCIAL_API_BASE}/x/schedule/${id}`,
+    getScheduled: () => `${SOCIAL_API_BASE}/x/schedule`,
+    getHistory: () => `${SOCIAL_API_BASE}/x/history?limit=20`,
+    // X model stores fields at top level
+    parseScheduledText: post => post.content || 'No content',
+    parseScheduledImage: () => null, // media support comes later
+    parseScheduledTime: post => post.scheduledAt,
+  },
+};
+
+// Fallback to mastodon shape for any platform not yet wired
+const getAPI = platform => platformAPI[platform] || platformAPI.mastodon;
+
+const parseHistoryResponse = (platform, data) => {
+  if (platform !== 'x') {
+    const posts = Array.isArray(data) ? data : [];
+    return { posts, total: posts.length };
+  }
+
+  if (
+    !data ||
+    Array.isArray(data) ||
+    !Array.isArray(data.posts) ||
+    !Number.isSafeInteger(data.total) ||
+    data.total < 0
+  ) {
+    throw new TypeError('Invalid X history response');
+  }
+
+  return { posts: data.posts, total: data.total };
+};
+
+// X-only notice: auto-posting to X is not supported, so the user posts manually.
+// The platform === 'x' guard stays at the call site — this component is unconditional.
+function XManualPostingNotice({ darkMode }) {
+  return (
+    <div
+      style={{
+        padding: '0.75rem 1rem',
+        background: darkMode ? '#664d03' : '#fff3cd',
+        border: '1px solid #ffc107',
+        borderRadius: '6px',
+        marginBottom: '1rem',
+        fontSize: '0.9rem',
+        color: darkMode ? '#ffc107' : '#856404',
+      }}
+    >
+      Auto-posting to X is not currently supported. Compose your posts here and post them manually
+      with just a few clicks.
+    </div>
+  );
+}
+
+XManualPostingNotice.propTypes = {
+  darkMode: PropTypes.bool,
+};
+
+// Self-contained, platform-agnostic preview modal extracted from the composer to keep the
+// component's cognitive complexity down. References module-scope styles / formatScheduledTime
+// / getPostNowLabel directly; everything stateful is threaded via props.
+function PostPreviewModal({
+  isOpen,
+  toggle,
+  previewData,
+  display,
+  platform,
+  darkMode,
+  charLimit,
+  isPosting,
+  onSchedule,
+  onPostNow,
+}) {
+  return (
+    <Modal
+      isOpen={isOpen}
+      toggle={toggle}
+      size="lg"
+      centered
+      modalClassName={
+        platform === 'x' && darkMode ? `${styles.dark} ${styles['x-scope']}` : undefined
+      }
+    >
+      <ModalHeader toggle={toggle}>Post Preview</ModalHeader>
+      <ModalBody>
+        {previewData && (
+          <div className={styles['preview-container']}>
+            <div className={styles['preview-header']}>
+              {display.icon && (
+                <img
+                  src={display.icon}
+                  alt={display.name}
+                  style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%',
+                    marginRight: '12px',
+                  }}
+                />
+              )}
+              <div>
+                <div style={{ fontWeight: 'bold', fontSize: '1rem' }}>Your Account</div>
+                <div
+                  style={{
+                    fontSize: '0.875rem',
+                    color: platform === 'x' && darkMode ? '#a0a0a0' : '#666',
+                  }}
+                >
+                  {previewData.scheduledTime
+                    ? `Scheduled for ${formatScheduledTime(previewData.scheduledTime)}`
+                    : 'Posting now'}
+                </div>
+              </div>
+            </div>
+            <div
+              className={styles['preview-content']}
+              style={{
+                marginTop: '1rem',
+                whiteSpace: 'pre-wrap',
+                fontSize: '1rem',
+                lineHeight: '1.5',
+              }}
+            >
+              {previewData.content}
+            </div>
+            {previewData.image && (
+              <div style={{ marginTop: '1rem' }}>
+                <img
+                  src={previewData.image.preview}
+                  alt={previewData.altText || 'Post preview'}
+                  style={{ maxWidth: '100%', borderRadius: '8px', border: '1px solid #ddd' }}
+                />
+                {previewData.altText && (
+                  <div
+                    style={{
+                      marginTop: '0.5rem',
+                      padding: '0.5rem',
+                      background: platform === 'x' && darkMode ? '#2a2a2a' : '#f0f0f0',
+                      borderRadius: '4px',
+                      fontSize: '0.875rem',
+                    }}
+                  >
+                    <strong>Alt text:</strong> {previewData.altText}
+                  </div>
+                )}
+              </div>
+            )}
+            {previewData.crossPostTo.length > 0 && (
+              <div
+                style={{
+                  marginTop: '1rem',
+                  padding: '0.75rem',
+                  background: platform === 'x' && darkMode ? '#14233a' : '#e7f3ff',
+                  borderRadius: '6px',
+                  fontSize: '0.875rem',
+                }}
+              >
+                <strong>📤 Will also be selected for:</strong> {previewData.crossPostTo.join(', ')}
+              </div>
+            )}
+            <div
+              style={{
+                marginTop: '1rem',
+                fontSize: '0.875rem',
+                color: platform === 'x' && darkMode ? '#a0a0a0' : '#666',
+              }}
+            >
+              <strong>Character count:</strong> {previewData.content.length} / {charLimit}
+            </div>
+          </div>
+        )}
+      </ModalBody>
+      <ModalFooter>
+        <Button color="secondary" onClick={toggle}>
+          Close
+        </Button>
+        {previewData?.scheduledTime ? (
+          <Button color="success" onClick={onSchedule} disabled={isPosting}>
+            {isPosting ? 'Scheduling...' : 'Schedule Post'}
+          </Button>
+        ) : (
+          <Button color="primary" onClick={onPostNow} disabled={isPosting}>
+            {getPostNowLabel(isPosting, platform)}
+          </Button>
+        )}
+      </ModalFooter>
+    </Modal>
+  );
+}
+
+PostPreviewModal.propTypes = {
+  isOpen: PropTypes.bool,
+  toggle: PropTypes.func,
+  previewData: PropTypes.shape({
+    content: PropTypes.string,
+    scheduledTime: PropTypes.string,
+    altText: PropTypes.string,
+    image: PropTypes.shape({ preview: PropTypes.string }),
+    crossPostTo: PropTypes.arrayOf(PropTypes.string),
+  }),
+  display: PropTypes.shape({
+    icon: PropTypes.string,
+    name: PropTypes.string,
+  }),
+  platform: PropTypes.string,
+  darkMode: PropTypes.bool,
+  charLimit: PropTypes.number,
+  isPosting: PropTypes.bool,
+  onSchedule: PropTypes.func,
+  onPostNow: PropTypes.func,
+};
+
+// Component
+export default function SocialMediaComposer({ platform, darkMode }) {
   const PLATFORM_CHAR_LIMITS = {
     mastodon: 500,
     x: 280,
@@ -18,6 +333,7 @@ export default function SocialMediaComposer({ platform }) {
   };
 
   const charLimit = PLATFORM_CHAR_LIMITS[platform] || 500;
+  const api = getAPI(platform);
 
   const [postContent, setPostContent] = useState('');
   const [activeSubTab, setActiveSubTab] = useState('composer');
@@ -28,7 +344,7 @@ export default function SocialMediaComposer({ platform }) {
   const [isLoadingScheduled, setIsLoadingScheduled] = useState(false);
   const [uploadedImage, setUploadedImage] = useState(null);
   const [imageAltText, setImageAltText] = useState('');
-  const [postHistory, setPostHistory] = useState([]);
+  const [postHistory, setPostHistory] = useState({ posts: [], total: 0 });
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [crossPostPlatforms, setCrossPostPlatforms] = useState({
     facebook: false,
@@ -70,10 +386,11 @@ export default function SocialMediaComposer({ platform }) {
     { id: 'details', label: '🧩 Details' },
   ];
 
+  // Load data when switching tabs (now works for all wired platforms)
   useEffect(() => {
-    if (activeSubTab === 'scheduled' && platform === 'mastodon') {
+    if (activeSubTab === 'scheduled' && platformAPI[platform]) {
       loadScheduledPosts();
-    } else if (activeSubTab === 'history' && platform === 'mastodon') {
+    } else if (activeSubTab === 'history' && platformAPI[platform]) {
       loadPostHistory();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -85,10 +402,14 @@ export default function SocialMediaComposer({ platform }) {
     localStorage.setItem(PREFS_KEY, JSON.stringify(newPrefs));
   };
 
+  // API calls (platform-routed)
   const loadScheduledPosts = async () => {
     setIsLoadingScheduled(true);
     try {
-      const response = await fetch('/api/mastodon/schedule');
+      const token = localStorage.getItem('token');
+      const response = await fetch(api.getScheduled(), {
+        headers: { ...(token && { Authorization: token }) },
+      });
       if (response.ok) {
         const data = await response.json();
         setScheduledPosts(data || []);
@@ -105,10 +426,13 @@ export default function SocialMediaComposer({ platform }) {
   const loadPostHistory = async () => {
     setIsLoadingHistory(true);
     try {
-      const response = await fetch('/api/mastodon/history?limit=20');
+      const token = localStorage.getItem('token');
+      const response = await fetch(api.getHistory(), {
+        headers: { ...(token && { Authorization: token }) },
+      });
       if (response.ok) {
         const data = await response.json();
-        setPostHistory(data || []);
+        setPostHistory(parseHistoryResponse(platform, data));
       } else {
         toast.error('Failed to load post history');
       }
@@ -200,8 +524,34 @@ export default function SocialMediaComposer({ platform }) {
     setPreviewOpen(false);
   };
 
+  const reserveXPopup = () => {
+    const xWindow = window.open('', '_blank');
+    if (!xWindow) {
+      toast.error('Could not open X. Please allow pop-ups and try again.');
+      return null;
+    }
+    return xWindow;
+  };
+
+  const copyAndOpenX = async (content, xWindow) => {
+    try {
+      await navigator.clipboard.writeText(content);
+    } catch {
+      xWindow.close();
+      toast.error('Could not copy content to clipboard. Please try again.');
+      return false;
+    }
+    xWindow.location.href = `https://x.com/intent/tweet?text=${encodeURIComponent(content)}`;
+    toast.success('Content copied to clipboard! X is opening — paste and post.', {
+      autoClose: 5000,
+    });
+    return true;
+  };
+
+  // Post Now (platform-routed)
   const handlePostNow = async () => {
-    if (!postContent.trim()) {
+    const content = postContent.trim();
+    if (!content) {
       toast.error('Post cannot be empty!');
       return;
     }
@@ -210,43 +560,56 @@ export default function SocialMediaComposer({ platform }) {
       return;
     }
 
+    let xWindow = null;
+    if (platform === 'x') {
+      xWindow = reserveXPopup();
+      if (!xWindow) return;
+    }
+
     const selectedPlatforms = Object.keys(crossPostPlatforms).filter(p => crossPostPlatforms[p]);
 
     setIsPosting(true);
     try {
-      const response = await fetch('/api/mastodon/createPin', {
+      const { url, body } = api.postNow(content, uploadedImage, imageAltText, selectedPlatforms);
+
+      const token = localStorage.getItem('token');
+      const response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: 'Mastodon Post',
-          description: postContent.trim(),
-          imgType: uploadedImage ? 'FILE' : 'URL',
-          mediaItems: uploadedImage ? `data:image/png;base64,${uploadedImage.base64}` : '',
-          mediaAltText: imageAltText || null,
-          crossPostTo: selectedPlatforms,
-        }),
+        headers: { 'Content-Type': 'application/json', ...(token && { Authorization: token }) },
+        body: JSON.stringify(body),
       });
 
-      if (response.ok) {
-        let message = `Successfully posted to ${platform}!`;
-        if (selectedPlatforms.length > 0) {
-          message += ` (Selected for: ${selectedPlatforms.join(', ')})`;
-        }
-        toast.success(message, { autoClose: 5000 });
-        clearComposer();
-        if (activeSubTab === 'history') {
-          loadPostHistory();
-        }
+      if (!response.ok) {
+        xWindow?.close();
+        const err = await response.json().catch(() => null);
+        toast.error(err?.detail || `Failed to post to ${platform}.`);
+        return;
+      }
+
+      if (platform === 'x') {
+        const copied = await copyAndOpenX(content, xWindow);
+        if (!copied) return;
+        xWindow = null;
       } else {
-        toast.error(`Failed to post to ${platform}.`);
+        const crossPostSuffix = selectedPlatforms.length
+          ? ` (Selected for: ${selectedPlatforms.join(', ')})`
+          : '';
+        toast.success(`Successfully posted to ${platform}!${crossPostSuffix}`, { autoClose: 5000 });
+      }
+
+      clearComposer();
+      if (activeSubTab === 'history') {
+        loadPostHistory();
       }
     } catch (err) {
+      xWindow?.close();
       toast.error(`Error while posting to ${platform}.`);
     } finally {
       setIsPosting(false);
     }
   };
 
+  // Schedule Post (platform-routed)
   const handleSchedulePost = async () => {
     if (!postContent.trim()) {
       toast.error('Post cannot be empty!');
@@ -271,23 +634,28 @@ export default function SocialMediaComposer({ platform }) {
 
     setIsPosting(true);
     try {
+      const token = localStorage.getItem('token');
+
       // If editing, delete the old version first
       if (editingPostId) {
-        await fetch(`/api/mastodon/schedule/${editingPostId}`, { method: 'DELETE' });
+        await fetch(api.deleteSchedule(editingPostId), {
+          method: 'DELETE',
+          headers: { ...(token && { Authorization: token }) },
+        });
       }
 
-      const response = await fetch('/api/mastodon/schedule', {
+      const { url, body } = api.schedule(
+        postContent.trim(),
+        uploadedImage,
+        imageAltText,
+        scheduledDateTime.toISOString(),
+        selectedPlatforms,
+      );
+
+      const response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: 'Mastodon Scheduled Post',
-          description: postContent.trim(),
-          imgType: uploadedImage ? 'FILE' : 'URL',
-          mediaItems: uploadedImage ? `data:image/png;base64,${uploadedImage.base64}` : '',
-          mediaAltText: imageAltText || null,
-          scheduledTime: scheduledDateTime.toISOString(),
-          crossPostTo: selectedPlatforms,
-        }),
+        headers: { 'Content-Type': 'application/json', ...(token && { Authorization: token }) },
+        body: JSON.stringify(body),
       });
 
       if (response.ok) {
@@ -308,38 +676,41 @@ export default function SocialMediaComposer({ platform }) {
     }
   };
 
+  // Edit / Delete / Post-Now for scheduled posts
   const handleEditScheduled = post => {
     try {
-      const postData = JSON.parse(post.postData);
+      const content = api.parseScheduledText(post);
+      setPostContent(content);
 
-      // Load post content
-      setPostContent(postData.status || '');
-
-      // Load image if exists
-      if (postData.local_media_base64) {
+      // Load image if exists (Mastodon-specific for now)
+      const imageBase64 = api.parseScheduledImage(post);
+      if (imageBase64) {
         setUploadedImage({
-          base64: postData.local_media_base64.replace(/^data:image\/\w+;base64,/, ''),
-          preview: postData.local_media_base64,
+          base64: imageBase64.replace(/^data:image\/\w+;base64,/, ''),
+          preview: imageBase64,
           name: 'scheduled-image.png',
         });
       }
 
       // Load alt text if exists
-      setImageAltText(postData.mediaAltText || '');
+      if (platform === 'mastodon') {
+        try {
+          const postData = JSON.parse(post.postData);
+          setImageAltText(postData.mediaAltText || '');
+        } catch {
+          // ignore
+        }
+      }
 
       // Load scheduled time
-      const scheduledTime = new Date(post.scheduledTime);
+      const scheduledTime = new Date(api.parseScheduledTime(post));
       const dateStr = scheduledTime.toISOString().split('T')[0];
       const timeStr = scheduledTime.toTimeString().slice(0, 5);
       setScheduleDate(dateStr);
       setScheduleTime(timeStr);
 
-      // Set editing mode
       setEditingPostId(post._id);
-
-      // Switch to composer tab
       setActiveSubTab('composer');
-
       toast.info('Editing scheduled post. Modify and click "Schedule Post" to update.');
     } catch (err) {
       toast.error('Failed to load post for editing');
@@ -355,8 +726,10 @@ export default function SocialMediaComposer({ platform }) {
   const handleDeleteScheduled = async (postId, skipConfirmation = false) => {
     const performDelete = async () => {
       try {
-        const response = await fetch(`/api/mastodon/schedule/${postId}`, {
+        const token = localStorage.getItem('token');
+        const response = await fetch(api.deleteSchedule(postId), {
           method: 'DELETE',
+          headers: { ...(token && { Authorization: token }) },
         });
         if (response.ok) {
           toast.success('Scheduled post deleted!');
@@ -385,45 +758,127 @@ export default function SocialMediaComposer({ platform }) {
   };
 
   const handlePostScheduledNow = async post => {
-    const performPost = async () => {
+    const performPost = async reservedXWindow => {
+      let xWindow = reservedXWindow;
       try {
+        const content = api.parseScheduledText(post);
+
+        if (platform === 'x') {
+          const copied = await copyAndOpenX(content, xWindow);
+          if (!copied) return;
+          xWindow = null;
+          const token = localStorage.getItem('token');
+          try {
+            const response = await fetch(`${SOCIAL_API_BASE}/x/schedule/${post._id}/mark-posted`, {
+              method: 'PATCH',
+              headers: { ...(token && { Authorization: token }) },
+            });
+            if (!response.ok) {
+              toast.error('Could not mark scheduled post as posted. Please try again.');
+              return;
+            }
+          } catch {
+            toast.error('Could not mark scheduled post as posted. Please try again.');
+            return;
+          }
+          loadScheduledPosts();
+          return;
+        }
+
+        // Mastodon path - preserve original image/alt handling
         const postData = JSON.parse(post.postData);
-        const response = await fetch('/api/mastodon/createPin', {
+        const req = api.postNow(
+          postData.status,
+          postData.local_media_base64
+            ? { base64: postData.local_media_base64.replace(/^data:image\/\w+;base64,/, '') }
+            : null,
+          postData.mediaAltText,
+          [],
+        );
+
+        const token = localStorage.getItem('token');
+        const response = await fetch(req.url, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            title: 'Mastodon Post',
-            description: postData.status,
-            imgType: postData.local_media_base64 ? 'FILE' : 'URL',
-            mediaItems: postData.local_media_base64 || '',
-            mediaAltText: postData.mediaAltText || null,
-          }),
+          headers: { 'Content-Type': 'application/json', ...(token && { Authorization: token }) },
+          body: JSON.stringify(req.body),
         });
 
         if (response.ok) {
           toast.success('Posted successfully!');
           await handleDeleteScheduled(post._id, true);
         } else {
-          toast.error('Failed to post.');
+          const err = await response.json().catch(() => null);
+          toast.error(err?.detail || 'Failed to post.');
         }
       } catch (err) {
+        if (xWindow) xWindow.close();
         toast.error('Error posting.');
       }
     };
 
+    const reserveAndPost = () => {
+      if (platform !== 'x') return performPost(null);
+
+      const xWindow = reserveXPopup();
+      if (!xWindow) return Promise.resolve();
+      return performPost(xWindow);
+    };
+
     if (!preferences.confirmPostNow) {
-      await performPost();
+      await reserveAndPost();
     } else {
       showModal({
         title: 'Post Immediately',
         message:
-          'This will post immediately to Mastodon and remove it from your scheduled posts. Continue?',
-        onConfirm: performPost,
-        confirmText: 'Post Now',
+          platform === 'x'
+            ? 'This will copy the content to your clipboard and open X. The post will be marked as completed.'
+            : `This will post immediately to ${platform} and remove it from your scheduled posts. Continue?`,
+        onConfirm: reserveAndPost,
+        confirmText: platform === 'x' ? 'Copy & Open X' : 'Post Now',
         confirmColor: 'success',
         showDontShowAgain: true,
         preferenceKey: 'confirmPostNow',
       });
+    }
+  };
+
+  const handleMarkAsPosted = async postId => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${SOCIAL_API_BASE}/x/schedule/${postId}/mark-posted`, {
+        method: 'PATCH',
+        headers: { ...(token && { Authorization: token }) },
+      });
+      if (response.ok) {
+        toast.success('Post marked as posted!');
+        loadScheduledPosts();
+      } else {
+        toast.error('Failed to mark post as posted.');
+      }
+    } catch (err) {
+      // Network failure surfaced to user via toast; no further handling needed.
+      console.error('Mark-as-posted request failed:', err);
+      toast.error('Error marking post as posted.');
+    }
+  };
+
+  const handleSkipPost = async postId => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${SOCIAL_API_BASE}/x/schedule/${postId}/skip`, {
+        method: 'PATCH',
+        headers: { ...(token && { Authorization: token }) },
+      });
+      if (response.ok) {
+        toast.success('Post skipped.');
+        loadScheduledPosts();
+      } else {
+        toast.error('Failed to skip post.');
+      }
+    } catch (err) {
+      // Network failure surfaced to user via toast; no further handling needed.
+      console.error('Skip-post request failed:', err);
+      toast.error('Error skipping post.');
     }
   };
 
@@ -432,58 +887,53 @@ export default function SocialMediaComposer({ platform }) {
     toast.info('Preference saved! This confirmation will not show again.', { autoClose: 3000 });
   };
 
-  const formatScheduledTime = isoString => {
-    try {
-      return new Date(isoString).toLocaleString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true,
-      });
-    } catch {
-      return isoString;
-    }
-  };
-
-  const getScheduledPostImage = post => {
-    try {
-      const postData = JSON.parse(post.postData);
-      return postData.local_media_base64 || null;
-    } catch {
-      return null;
-    }
-  };
-
   const stripHtml = html => {
     const tmp = document.createElement('DIV');
     tmp.innerHTML = html;
     return tmp.textContent || tmp.innerText || '';
   };
 
-  return (
-    <div className="social-media-composer">
-      <h3 className="platform-title">{platform}</h3>
+  // Platform display names / icons
+  const platformDisplay = {
+    mastodon: { name: 'Mastodon', icon: 'https://cdn-icons-png.flaticon.com/512/6295/6295417.png' },
+    x: { name: 'X', icon: 'https://cdn-icons-png.flaticon.com/512/5969/5969020.png' },
+  };
 
-      <div className="tabs-container">
+  const display = platformDisplay[platform] || { name: platform, icon: null };
+
+  // Render
+  return (
+    <div
+      className={`${styles['social-media-composer']} ${darkMode ? styles.dark : ''} ${
+        platform === 'x' ? styles['x-scope'] : ''
+      }`}
+    >
+      <h3 className={styles['platform-title']}>{platform}</h3>
+
+      <div className={styles['tabs-container']}>
         {tabOrder.map(({ id, label }) => (
           <button
             key={id}
             onClick={() => setActiveSubTab(id)}
-            className={`tab-button ${activeSubTab === id ? 'active' : ''}`}
+            className={`${styles['tab-button']} ${activeSubTab === id ? styles.active : ''}`}
           >
             {id.charAt(0).toUpperCase() + id.slice(1)}
           </button>
         ))}
       </div>
 
+      {platform === 'x' && <XManualPostingNotice darkMode={darkMode} />}
+
       {activeSubTab === 'composer' && (
-        <div className="composer-content">
+        <div className={styles['composer-content']}>
           {editingPostId && (
-            <div className="edit-banner">
+            <div className={styles['edit-banner']}>
               <span>✏️ Editing scheduled post</span>
-              <button type="button" onClick={handleCancelEdit} className="btn-cancel-edit">
+              <button
+                type="button"
+                onClick={handleCancelEdit}
+                className={styles['btn-cancel-edit']}
+              >
                 Cancel Edit
               </button>
             </div>
@@ -493,78 +943,85 @@ export default function SocialMediaComposer({ platform }) {
             value={postContent}
             onChange={e => setPostContent(e.target.value)}
             placeholder={`Write your ${platform} post here...`}
-            className="post-textarea"
+            className={styles['post-textarea']}
           />
           <CharacterCounter currentLength={postContent.length} maxLength={charLimit} />
 
-          <div className="upload-section">
-            <label htmlFor="image-upload" className="section-label">
-              Add Image (optional):
-            </label>
-            <input
-              id="image-upload"
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="file-input"
-            />
-            {uploadedImage && (
-              <div>
-                <div className="image-preview-container">
-                  <img src={uploadedImage.preview} alt="Upload preview" className="image-preview" />
-                  <button
-                    type="button"
-                    onClick={handleRemoveImage}
-                    className="remove-image-btn"
-                    title="Remove image"
-                  >
-                    ✕
-                  </button>
-                </div>
-                <div className="alt-text-section">
-                  <label htmlFor="alt-text" className="section-label">
-                    Alt Text (for accessibility):
-                  </label>
-                  <input
-                    id="alt-text"
-                    type="text"
-                    value={imageAltText}
-                    onChange={e => setImageAltText(e.target.value)}
-                    placeholder="Describe the image for screen readers..."
-                    className="alt-text-input"
-                    maxLength={1500}
-                  />
-                  <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.25rem' }}>
-                    {imageAltText.length} / 1500 characters
+          {/* Image upload - hide for X until media support is added */}
+          {platform !== 'x' && (
+            <div className={styles['upload-section']}>
+              <label htmlFor="image-upload" className={styles['section-label']}>
+                Add Image (optional):
+              </label>
+              <input
+                id="image-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className={styles['file-input']}
+              />
+              {uploadedImage && (
+                <div>
+                  <div className={styles['image-preview-container']}>
+                    <img
+                      src={uploadedImage.preview}
+                      alt="Upload preview"
+                      className={styles['image-preview']}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className={styles['remove-image-btn']}
+                      title="Remove image"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <div className={styles['alt-text-section']}>
+                    <label htmlFor="alt-text" className={styles['section-label']}>
+                      Alt Text (for accessibility):
+                    </label>
+                    <input
+                      id="alt-text"
+                      type="text"
+                      value={imageAltText}
+                      onChange={e => setImageAltText(e.target.value)}
+                      placeholder="Describe the image for screen readers..."
+                      className={styles['alt-text-input']}
+                      maxLength={1500}
+                    />
+                    <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.25rem' }}>
+                      {imageAltText.length} / 1500 characters
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
 
-          <div className="schedule-section">
-            <label htmlFor="schedule-date" className="section-label">
+          <div className={styles['schedule-section']}>
+            <label htmlFor="schedule-date" className={styles['section-label']}>
               Schedule for later (optional):
             </label>
-            <div className="datetime-inputs">
+            <div className={styles['datetime-inputs']}>
               <input
                 id="schedule-date"
                 type="date"
                 value={scheduleDate}
                 onChange={e => setScheduleDate(e.target.value)}
-                className="datetime-input"
+                className={styles['datetime-input']}
               />
               <input
                 id="schedule-time"
                 type="time"
                 value={scheduleTime}
                 onChange={e => setScheduleTime(e.target.value)}
-                className="datetime-input"
+                className={styles['datetime-input']}
               />
             </div>
           </div>
 
-          <div className="action-buttons">
+          <div className={styles['action-buttons']}>
             <button
               type="button"
               onClick={handleShowPreview}
@@ -579,7 +1036,7 @@ export default function SocialMediaComposer({ platform }) {
               disabled={isPosting}
               className="btn btn-primary"
             >
-              {isPosting ? 'Posting…' : 'Post Now'}
+              {getPostNowLabel(isPosting, platform)}
             </button>
             <button
               type="button"
@@ -587,16 +1044,10 @@ export default function SocialMediaComposer({ platform }) {
               disabled={isPosting}
               className="btn btn-success"
             >
-              {isPosting
-                ? editingPostId
-                  ? 'Updating…'
-                  : 'Scheduling…'
-                : editingPostId
-                ? 'Update Post'
-                : 'Schedule Post'}
+              {getScheduleButtonLabel(isPosting, editingPostId)}
             </button>
 
-            <div className="crosspost-container">
+            <div className={styles['crosspost-container']}>
               <button
                 type="button"
                 onClick={() => setShowCrossPost(!showCrossPost)}
@@ -605,8 +1056,8 @@ export default function SocialMediaComposer({ platform }) {
                 Also post to {showCrossPost ? '▴' : '▾'}
               </button>
               {showCrossPost && (
-                <div className="crosspost-dropdown">
-                  <label className="crosspost-option">
+                <div className={styles['crosspost-dropdown']}>
+                  <label className={styles['crosspost-option']}>
                     <input
                       type="checkbox"
                       checked={crossPostPlatforms.facebook}
@@ -614,7 +1065,7 @@ export default function SocialMediaComposer({ platform }) {
                     />
                     <span>Facebook</span>
                   </label>
-                  <label className="crosspost-option">
+                  <label className={styles['crosspost-option']}>
                     <input
                       type="checkbox"
                       checked={crossPostPlatforms.linkedin}
@@ -622,7 +1073,7 @@ export default function SocialMediaComposer({ platform }) {
                     />
                     <span>LinkedIn</span>
                   </label>
-                  <label className="crosspost-option">
+                  <label className={styles['crosspost-option']}>
                     <input
                       type="checkbox"
                       checked={crossPostPlatforms.instagram}
@@ -630,7 +1081,7 @@ export default function SocialMediaComposer({ platform }) {
                     />
                     <span>Instagram</span>
                   </label>
-                  <label className="crosspost-option">
+                  <label className={styles['crosspost-option']}>
                     <input
                       type="checkbox"
                       checked={crossPostPlatforms.x}
@@ -638,7 +1089,7 @@ export default function SocialMediaComposer({ platform }) {
                     />
                     <span>X (Twitter)</span>
                   </label>
-                  <p className="crosspost-note">
+                  <p className={styles['crosspost-note']}>
                     Note: Cross-posting functionality coming soon. Currently shows selection only.
                   </p>
                 </div>
@@ -649,56 +1100,97 @@ export default function SocialMediaComposer({ platform }) {
       )}
 
       {activeSubTab === 'scheduled' && (
-        <div className="scheduled-content">
+        <div className={styles['scheduled-content']}>
           <h4>Scheduled Posts for {platform}</h4>
           {isLoadingScheduled && <p>Loading...</p>}
-          {!isLoadingScheduled && scheduledPosts.length === 0 && <p>No scheduled posts yet.</p>}
+          {!isLoadingScheduled && scheduledPosts.length === 0 && (
+            <p className={styles['scheduled-empty-state']}>No scheduled posts yet.</p>
+          )}
           {!isLoadingScheduled && scheduledPosts.length > 0 && (
-            <div className="posts-list">
+            <div className={styles['posts-list']}>
               {scheduledPosts.map(post => {
-                let postText = '';
-                try {
-                  const postData = JSON.parse(post.postData);
-                  postText = postData.status || 'No content';
-                } catch {
-                  postText = 'Invalid post data';
-                }
-                const imageBase64 = getScheduledPostImage(post);
+                const postText = api.parseScheduledText(post);
+                const imageBase64 = api.parseScheduledImage(post);
+                const time = api.parseScheduledTime(post);
+                const isX = platform === 'x';
+                const xStatus = isX ? post.status : null;
+
+                const xStatusBadge = X_STATUS_BADGES[xStatus] ?? null;
+                const xCardClass = isX ? styles[`x-card-${xStatus}`] ?? '' : '';
 
                 return (
-                  <div key={post._id} className="post-card">
-                    <div className="post-card-content">
-                      <p className="post-text">{postText}</p>
-                      <p className="post-meta">📅 {formatScheduledTime(post.scheduledTime)}</p>
+                  <div key={post._id} className={`${styles['post-card']} ${xCardClass}`.trim()}>
+                    <div className={styles['post-card-content']}>
+                      <p className={styles['post-text']}>{postText}</p>
+                      <p className={styles['post-meta']}>📅 {formatScheduledTime(time)}</p>
+                      {isX && xStatusBadge && (
+                        <span
+                          className={`${styles['status-badge']} ${
+                            styles[`status-badge-${xStatus}`]
+                          }`}
+                        >
+                          {xStatusBadge}
+                        </span>
+                      )}
                       {imageBase64 && (
-                        <img src={imageBase64} alt="Post thumbnail" className="post-thumbnail" />
+                        <img
+                          src={imageBase64}
+                          alt="Post thumbnail"
+                          className={styles['post-thumbnail']}
+                        />
                       )}
                     </div>
-                    <div className="post-card-actions">
-                      <button
-                        type="button"
-                        onClick={() => handleEditScheduled(post)}
-                        className="action-btn edit"
-                        title="Edit"
-                      >
-                        ✏️
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handlePostScheduledNow(post)}
-                        className="action-btn success"
-                        title="Post now"
-                      >
-                        ✓
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteScheduled(post._id)}
-                        className="action-btn danger"
-                        title="Delete"
-                      >
-                        ✕
-                      </button>
+                    <div className={styles['post-card-actions']}>
+                      {(!isX || xStatus === 'pending' || xStatus === 'ready') && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => handleEditScheduled(post)}
+                            className={`${styles['action-btn']} ${styles.edit}`}
+                            title="Edit"
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handlePostScheduledNow(post)}
+                            className={`${styles['action-btn']} ${styles.success}`}
+                            title={isX ? 'Copy & post to X' : 'Post now'}
+                          >
+                            ✔
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteScheduled(post._id)}
+                            className={`${styles['action-btn']} ${styles.danger}`}
+                            title="Delete"
+                          >
+                            ✕
+                          </button>
+                        </>
+                      )}
+                      {isX && (xStatus === 'pending' || xStatus === 'ready') && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => handleMarkAsPosted(post._id)}
+                            title="Mark as already posted"
+                            style={{ color: '#4caf50' }}
+                            className={styles['action-btn']}
+                          >
+                            ✓
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleSkipPost(post._id)}
+                            title="Skip this post"
+                            style={{ color: darkMode ? '#c0c0c0' : '#9e9e9e' }}
+                            className={styles['action-btn']}
+                          >
+                            ⊘
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 );
@@ -709,59 +1201,98 @@ export default function SocialMediaComposer({ platform }) {
       )}
 
       {activeSubTab === 'history' && (
-        <div className="history-content">
+        <div className={styles['history-content']}>
           <h4>Post History for {platform}</h4>
           {isLoadingHistory && <p>Loading...</p>}
-          {!isLoadingHistory && postHistory.length === 0 && <p>No posts found in history.</p>}
-          {!isLoadingHistory && postHistory.length > 0 && (
-            <div className="posts-list">
-              {postHistory.map(post => (
-                <div key={post.id} className="post-card">
-                  <div className="post-card-full">
-                    <p className="post-text">{stripHtml(post.content)}</p>
-                    <p className="post-meta">📅 {formatScheduledTime(post.created_at)}</p>
-                    <div className="post-stats">
-                      <span>❤️ {post.favourites_count}</span>
-                      <span>🔄 {post.reblogs_count}</span>
+          {!isLoadingHistory && postHistory.posts.length === 0 && <p>No posts found in history.</p>}
+          {!isLoadingHistory && postHistory.posts.length > 0 && (
+            <div className={styles['posts-list']}>
+              {postHistory.posts.map(post => {
+                // Normalize fields across platforms
+                const key = post.id || post._id;
+                const content = post.content || '';
+                const timestamp = post.created_at || post.postedAt || post.createdAt;
+                const isMastodon = platform === 'mastodon';
+
+                return (
+                  <div key={key} className={styles['post-card']}>
+                    <div className={styles['post-card-full']}>
+                      <p className={styles['post-text']}>{stripHtml(content)}</p>
+                      <p className={styles['post-meta']}>📅 {formatScheduledTime(timestamp)}</p>
+
+                      {/* Mastodon stats */}
+                      {isMastodon && (
+                        <div className={styles['post-stats']}>
+                          <span>❤️ {post.favourites_count}</span>
+                          <span>🔄 {post.reblogs_count}</span>
+                        </div>
+                      )}
+
+                      {/* X stats */}
+                      {platform === 'x' && (
+                        <div className={styles['post-stats']}>
+                          <span
+                            className={`${styles['status-badge']} ${styles['status-badge-posted']}`}
+                          >
+                            ✓ Posted
+                          </span>
+                          {post.postedAt && (
+                            <span
+                              style={{ fontSize: '0.8rem', color: darkMode ? '#a0a0a0' : '#666' }}
+                            >
+                              Posted {formatScheduledTime(post.postedAt)}
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Mastodon media */}
+                      {isMastodon && post.media_attachments?.length > 0 && (
+                        <div className={styles['post-media']}>
+                          {post.media_attachments.map((media, idx) => (
+                            <img
+                              key={idx}
+                              src={media.preview_url || media.url}
+                              alt="Post media"
+                              className={styles['post-thumbnail']}
+                            />
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Platform-specific link */}
+                      {isMastodon && post.url && (
+                        <a
+                          href={post.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={styles['post-link']}
+                        >
+                          View on Mastodon →
+                        </a>
+                      )}
+                      {/* No direct link to X post — content was posted manually */}
                     </div>
-                    {post.media_attachments?.length > 0 && (
-                      <div className="post-media">
-                        {post.media_attachments.map((media, idx) => (
-                          <img
-                            key={idx}
-                            src={media.preview_url || media.url}
-                            alt="Post media"
-                            className="post-thumbnail"
-                          />
-                        ))}
-                      </div>
-                    )}
-                    <a
-                      href={post.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="post-link"
-                    >
-                      View on Mastodon →
-                    </a>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
       )}
 
       {activeSubTab === 'details' && (
-        <div className="details-content">
+        <div className={styles['details-content']}>
           <p>
             <strong>{platform}-Specific Details</strong>
           </p>
           <ul>
             <li>Max characters: {charLimit}</li>
             <li>Supports hashtags: Yes</li>
-            <li>Image support: Yes</li>
-            <li>Alt text support: Yes (up to 1500 characters)</li>
+            <li>Image support: {platform === 'x' ? 'Coming soon' : 'Yes'}</li>
+            <li>
+              Alt text support: {platform === 'x' ? 'Coming soon' : 'Yes (up to 1500 characters)'}
+            </li>
             <li>Recommended dimensions: 1200x675 px</li>
             <li>Max image size: 5MB</li>
           </ul>
@@ -769,7 +1300,7 @@ export default function SocialMediaComposer({ platform }) {
             style={{
               marginTop: '1.5rem',
               padding: '1rem',
-              background: 'var(--card-bg, #f8f9fa)',
+              background: platform === 'x' && darkMode ? '#2a2a2a' : 'var(--card-bg, #f8f9fa)',
               borderRadius: '6px',
             }}
           >
@@ -806,104 +1337,25 @@ export default function SocialMediaComposer({ platform }) {
         confirmColor={modalConfig.confirmColor}
         showDontShowAgain={modalConfig.showDontShowAgain}
         onDontShowAgainChange={() => handleDontShowAgainChange(modalConfig.preferenceKey)}
+        modalClassName={darkMode ? styles['confirmation-modal-dark'] : undefined}
       />
 
-      <Modal isOpen={previewOpen} toggle={() => setPreviewOpen(false)} size="lg" centered>
-        <ModalHeader toggle={() => setPreviewOpen(false)}>Post Preview</ModalHeader>
-        <ModalBody>
-          {previewData && (
-            <div className="preview-container">
-              <div className="preview-header">
-                <img
-                  src="https://cdn-icons-png.flaticon.com/512/6295/6295417.png"
-                  alt="Mastodon"
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    marginRight: '12px',
-                  }}
-                />
-                <div>
-                  <div style={{ fontWeight: 'bold', fontSize: '1rem' }}>Your Account</div>
-                  <div style={{ fontSize: '0.875rem', color: '#666' }}>
-                    {previewData.scheduledTime
-                      ? `Scheduled for ${formatScheduledTime(previewData.scheduledTime)}`
-                      : 'Posting now'}
-                  </div>
-                </div>
-              </div>
-              <div
-                className="preview-content"
-                style={{
-                  marginTop: '1rem',
-                  whiteSpace: 'pre-wrap',
-                  fontSize: '1rem',
-                  lineHeight: '1.5',
-                }}
-              >
-                {previewData.content}
-              </div>
-              {previewData.image && (
-                <div style={{ marginTop: '1rem' }}>
-                  <img
-                    src={previewData.image.preview}
-                    alt={previewData.altText || 'Post preview'}
-                    style={{ maxWidth: '100%', borderRadius: '8px', border: '1px solid #ddd' }}
-                  />
-                  {previewData.altText && (
-                    <div
-                      style={{
-                        marginTop: '0.5rem',
-                        padding: '0.5rem',
-                        background: '#f0f0f0',
-                        borderRadius: '4px',
-                        fontSize: '0.875rem',
-                      }}
-                    >
-                      <strong>Alt text:</strong> {previewData.altText}
-                    </div>
-                  )}
-                </div>
-              )}
-              {previewData.crossPostTo.length > 0 && (
-                <div
-                  style={{
-                    marginTop: '1rem',
-                    padding: '0.75rem',
-                    background: '#e7f3ff',
-                    borderRadius: '6px',
-                    fontSize: '0.875rem',
-                  }}
-                >
-                  <strong>📤 Will also be selected for:</strong>{' '}
-                  {previewData.crossPostTo.join(', ')}
-                </div>
-              )}
-              <div style={{ marginTop: '1rem', fontSize: '0.875rem', color: '#666' }}>
-                <strong>Character count:</strong> {previewData.content.length} / {charLimit}
-              </div>
-            </div>
-          )}
-        </ModalBody>
-        <ModalFooter>
-          <Button color="secondary" onClick={() => setPreviewOpen(false)}>
-            Close
-          </Button>
-          {previewData?.scheduledTime ? (
-            <Button color="success" onClick={handleSchedulePost} disabled={isPosting}>
-              {isPosting ? 'Scheduling...' : 'Schedule Post'}
-            </Button>
-          ) : (
-            <Button color="primary" onClick={handlePostNow} disabled={isPosting}>
-              {isPosting ? 'Posting...' : 'Post Now'}
-            </Button>
-          )}
-        </ModalFooter>
-      </Modal>
+      <PostPreviewModal
+        isOpen={previewOpen}
+        toggle={() => setPreviewOpen(false)}
+        previewData={previewData}
+        display={display}
+        platform={platform}
+        darkMode={darkMode}
+        charLimit={charLimit}
+        isPosting={isPosting}
+        onSchedule={handleSchedulePost}
+        onPostNow={handlePostNow}
+      />
     </div>
   );
 }
 SocialMediaComposer.propTypes = {
   platform: PropTypes.string,
+  darkMode: PropTypes.bool,
 };
