@@ -318,17 +318,47 @@
 }
 
 .paginationButton {
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
   background-color: #fff;
+  color: #374151;
+  font-weight: 600;
   cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease;
 }
 
-.paginationButtonActive {
-  background-color: #9c0;
-  border-color: #9c0;
-  font-weight: 700;
+.paginationButton:hover {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.paginationButton:focus-visible,
+.paginationButton.active:focus-visible {
+  outline: 3px solid rgb(101 163 13 / 35%);
+  outline-offset: 2px;
+}
+
+.paginationButton.active {
+  background-color: #65a30d;
+  border-color: #65a30d;
+  color: #fff;
+  cursor: default;
+  box-shadow: 0 2px 6px rgb(101 163 13 / 35%);
+}
+
+.paginationButton.active:hover {
+  background-color: #65a30d;
+  border-color: #65a30d;
 }
 
 /* ================= DARK MODE – PAGINATION ================= */
@@ -339,10 +369,20 @@
   border: 1px solid var(--border);
 }
 
-.dark .paginationButtonActive {
+.dark .paginationButton:hover {
+  background-color: #1e293b;
+  border-color: #64748b;
+}
+
+.dark .paginationButton.active {
   background-color: var(--accent);
   border-color: var(--accent);
   color: #020617;
+}
+
+.dark .paginationButton.active:hover {
+  background-color: var(--accent);
+  border-color: var(--accent);
 }
 
 /* ======================================================
@@ -442,4 +482,3 @@
 .dark .closeButton {
   color: var(--text-primary);
 }
-

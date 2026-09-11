@@ -319,9 +319,10 @@ function Collaboration() {
                 key={i}
                 type="button"
                 onClick={() => goToPage(i + 1)}
-                className={
-                  currentPage === i + 1 ? styles.paginationButtonActive : styles.paginationButton
-                }
+                aria-current={currentPage === i + 1 ? 'page' : undefined}
+                className={`${styles.paginationButton} ${
+                  currentPage === i + 1 ? styles.active : ''
+                }`}
               >
                 {i + 1}
               </button>
