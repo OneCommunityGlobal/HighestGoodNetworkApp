@@ -44,14 +44,8 @@ function TypeRow(props) {
       }
       const result = await dispatch(updateInvType(category, itemType._id, payload));
 
-      if (!result.success) {
+      if (result.success) {
         setIsEditing(false);
-        setEditType({
-          name: itemType.name,
-          description: itemType.description,
-          unit: itemType.unit || '',
-          fuel: itemType.fuelType || '',
-        });
       }
     }
   };
