@@ -239,6 +239,7 @@ import StudentBadgeGallery from './components/StudentBadgeGallery/StudentBadgeGa
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
+const PMResourceDashboard = lazy(() => import('./components/PMDashboard/PMResourceDashboard'));
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
 const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
 const MaterialListView = lazy(() => import('./components/BMDashboard/MaterialList'));
@@ -318,9 +319,6 @@ import ReviewsInsight from './components/PRAnalyticsDashboard/ReviewsInsight/Rev
 import ProjectsGlobalDistribution from './components/ProjectsGlobalDistribution/ProjectsGlobalDistribution';
 const JobAnalyticsPage = lazy(() =>
   import('./components/Reports/HitsAndApplicationRatio/JobAnalyticsPage'),
-);
-const ResourceManagementDashboard = lazy(() =>
-  import('./components/ResourceRequest/ResourceManagementDashboard/ResourceManagementDashboard'),
 );
 const ResourceRequestList = lazy(() =>
   import('./components/ResourceRequest/ResourceRequestList/ResourceRequestList'),
@@ -984,12 +982,6 @@ export default (
           component={ResourcesUsage}
         />
         <ProtectedRoute path="/educator/requests" exact component={ResourceRequestList} fallback />
-        <ProtectedRoute
-          path="/pm/dashboard/resources"
-          exact
-          component={ResourceManagementDashboard}
-          fallback
-        />
         <CPProtectedRoute
           path="/communityportal/activity/:activityId/ResourceManagement"
           exact
@@ -1059,6 +1051,18 @@ export default (
           path="/educationportal/tasks/intermediate"
           exact
           component={IntermediateTaskList}
+        />
+        {/* PM Resource Dashboard Route */}
+        <ProtectedRoute
+          path="/pm/dashboard/resources"
+          exact
+          component={PMResourceDashboard}
+          fallback
+          allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
+          routePermissions={RoutePermissions.accessPMResourceDashboard}
+          permissionDeniedRedirectState={{
+            permissionDeniedMessage: 'You do not have access to the Resource Dashboard.',
+          }}
         />
         <EPProtectedRoute path="/educationportal/dashboard" exact component={StudentDashboard} />
         <EPProtectedRoute path="/educationportal/student/tasks" exact component={StudentTasks} />

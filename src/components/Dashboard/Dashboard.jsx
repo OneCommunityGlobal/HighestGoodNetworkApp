@@ -20,7 +20,7 @@ export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
   const [filteredUserTeamIds, setFilteredUserTeamIds] = useState([]);
   const [summaryBarData, setSummaryBarData] = useState(null);
-  const { match, authUser } = props;
+  const { match, authUser, location, history } = props;
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage);
   const [displayUserId, setDisplayUserId] = useState(
@@ -67,6 +67,23 @@ export function Dashboard(props) {
   useEffect(() => {
     dispatch(updateSummaryBarData({ summaryBarData }));
   }, [summaryBarData]);
+
+  useEffect(() => {
+    const permissionDeniedMessage = location?.state?.permissionDeniedMessage;
+
+    if (!permissionDeniedMessage) {
+      return;
+    }
+
+    toast.error(`Permission Denied: ${permissionDeniedMessage}`);
+
+    const remainingState = { ...location.state };
+    delete remainingState.permissionDeniedMessage;
+    history?.replace({
+      ...location,
+      state: Object.keys(remainingState).length ? remainingState : undefined,
+    });
+  }, [history, location]);
 
   return (
     <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
