@@ -188,12 +188,12 @@ function Collaboration() {
 
           {summaries.jobs?.length ? (
             summaries.jobs.map(job => (
-              <div key={job._id}>
-                <h4>
+              <article key={job._id} className={styles.summaryItem}>
+                <h4 className={styles.summaryTitle}>
                   <a href={job.jobDetailsLink}>{job.title}</a>
                 </h4>
-                <p>{job.description}</p>
-              </div>
+                <p className={styles.summaryDescription}>{job.description}</p>
+              </article>
             ))
           ) : (
             <p>No summaries found.</p>
