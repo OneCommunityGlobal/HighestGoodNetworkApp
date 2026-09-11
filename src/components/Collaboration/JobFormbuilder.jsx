@@ -405,13 +405,13 @@ function JobFormBuilder() {
             </select>
           </div>
         </div>
-        <h1 className={styles.jobformTitle}>FORM CREATION</h1>
+        <h1 className={styles.jobformTitle}>Job Question Set Builder</h1>
         {canManageJobForms ? (
           <div className={styles.customForm}>
             <p className={styles.jobformDesc}>
-              Fill the form with questions about a specific position you want to create an ad for.
-              The default questions will automatically appear and are alredy selected. You can pick
-              and choose them with the checkbox.
+              Use this page to create or edit question templates for job postings. Default questions
+              are preselected automatically, and you can customize the form by adding, removing, or
+              rearranging fields.
             </p>
             <QuestionSetManager
               formFields={formFields}
