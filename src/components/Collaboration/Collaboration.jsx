@@ -221,18 +221,25 @@ function Collaboration() {
         <nav className={styles.navbar}>
           <form className={styles.searchForm} onSubmit={handleSubmit}>
             <input
+              className={styles.searchInput}
               type="text"
               placeholder="Search by title..."
               value={query}
               onChange={e => setQuery(e.target.value)}
             />
-            <button type="submit" className="btn btn-secondary">
+            <button type="submit" className={styles.searchButton}>
               Go
             </button>
           </form>
 
-          <div ref={dropdownRef} style={{ position: 'relative' }}>
-            <button type="button" onClick={() => setShowCategoryDropdown(p => !p)}>
+          <div ref={dropdownRef} className={styles.categoryDropdown}>
+            <button
+              type="button"
+              className={styles.categoryButton}
+              onClick={() => setShowCategoryDropdown(p => !p)}
+              aria-expanded={showCategoryDropdown}
+              aria-haspopup="true"
+            >
               Select Categories ▼
             </button>
 
