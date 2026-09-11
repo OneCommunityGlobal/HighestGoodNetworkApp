@@ -95,9 +95,9 @@ export default function WeeklySummariesToggleFilter({
                       cursor: 'pointer',
                       fontSize: '12px',
                       fontWeight: 500,
-                      transition: 'all 0.2s',
+                      transition: 'background-color 0.2s',
                       outline: 'none',
-                      boxShadow: 'none',
+                      boxShadow: 'none !important',
                       userSelect: 'none',
                       WebkitUserSelect: 'none',
                       MozUserSelect: 'none',
@@ -110,7 +110,6 @@ export default function WeeklySummariesToggleFilter({
                         state.selectedBioStatus !== option.value
                       ) {
                         e.target.style.backgroundColor = '#f0f0f0';
-                        e.target.style.color = '#000';
                       }
                     }}
                     onFocus={e => {
@@ -119,7 +118,6 @@ export default function WeeklySummariesToggleFilter({
                         state.selectedBioStatus !== option.value
                       ) {
                         e.target.style.backgroundColor = '#f0f0f0';
-                        e.target.style.color = '#000';
                       }
                     }}
                     onMouseOut={e => {
@@ -128,7 +126,6 @@ export default function WeeklySummariesToggleFilter({
                         state.selectedBioStatus !== option.value
                       ) {
                         e.target.style.backgroundColor = '#fff';
-                        e.target.style.color = '#000';
                       }
                     }}
                     onBlur={e => {
@@ -137,7 +134,6 @@ export default function WeeklySummariesToggleFilter({
                         state.selectedBioStatus !== option.value
                       ) {
                         e.target.style.backgroundColor = '#fff';
-                        e.target.style.color = '#000';
                       }
                     }}
                   >

@@ -725,6 +725,5 @@
 
 .bioStatusButton:active {
   background-color: inherit !important;
-  color: inherit !important;
   border: inherit !important;
 }
