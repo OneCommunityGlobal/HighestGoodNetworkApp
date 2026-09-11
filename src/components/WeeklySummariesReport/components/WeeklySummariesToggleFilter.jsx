@@ -94,14 +94,18 @@ export default function WeeklySummariesToggleFilter({
                     style={{
                       padding: '3px 8px',
                       borderRadius: '4px',
-                      border: '1px solid #ccc',
+                      border: `1px solid ${darkMode ? '#555' : '#ccc'}`,
                       backgroundColor:
                         (pendingBioStatus ?? state.selectedBioStatus) === option.value
                           ? '#007bff'
+                          : darkMode
+                          ? '#2a2a2a'
                           : '#fff',
                       color:
                         (pendingBioStatus ?? state.selectedBioStatus) === option.value
                           ? '#fff'
+                          : darkMode
+                          ? '#ddd'
                           : '#000',
                       cursor: 'pointer',
                       fontSize: '12px',
@@ -117,22 +121,22 @@ export default function WeeklySummariesToggleFilter({
                     }}
                     onMouseOver={e => {
                       if ((pendingBioStatus ?? state.selectedBioStatus) !== option.value) {
-                        e.target.style.backgroundColor = '#f0f0f0';
+                        e.target.style.backgroundColor = darkMode ? '#3a3a3a' : '#f0f0f0';
                       }
                     }}
                     onFocus={e => {
                       if ((pendingBioStatus ?? state.selectedBioStatus) !== option.value) {
-                        e.target.style.backgroundColor = '#f0f0f0';
+                        e.target.style.backgroundColor = darkMode ? '#3a3a3a' : '#f0f0f0';
                       }
                     }}
                     onMouseOut={e => {
                       if ((pendingBioStatus ?? state.selectedBioStatus) !== option.value) {
-                        e.target.style.backgroundColor = '#fff';
+                        e.target.style.backgroundColor = darkMode ? '#2a2a2a' : '#fff';
                       }
                     }}
                     onBlur={e => {
                       if ((pendingBioStatus ?? state.selectedBioStatus) !== option.value) {
-                        e.target.style.backgroundColor = '#fff';
+                        e.target.style.backgroundColor = darkMode ? '#2a2a2a' : '#fff';
                       }
                     }}
                   >
