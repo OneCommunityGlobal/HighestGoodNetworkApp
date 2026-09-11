@@ -66,8 +66,8 @@ export const AutoCompleteTeamCode = props => {
             className="overflow-auto mb-2 scrollAutoComplete"
             style={{
               height: isLoading ? '7rem' : arrayInputAutoComplete.length <= 30 ? 'auto' : '23rem',
-              width: 'auto',
-              position: arrayInputAutoComplete.length <= 3 || isLoading ? '' : 'relative',
+              width: '100%',
+              position: 'relative',
             }}
           >
             {!isLoading ? (
@@ -86,21 +86,29 @@ export const AutoCompleteTeamCode = props => {
                   className={classNameStyleP}
                   style={
                     darkMode
-                      ? { ...styleP, ...colordarkWithBorder, width: 'auto' }
-                      : { ...styleP, width: 'auto' }
+                      ? { ...styleP, ...colordarkWithBorder, width: '100%' }
+                      : { ...styleP, width: '100%' }
                   }
                 >
                   No options
                 </p>
               ) : (
                 <div
-                  className={`${arrayInputAutoComplete.length > 3 &&
-                    'row row-cols-lg-5 row-cols-sm-4'}`}
+                  className={
+                    arrayInputAutoComplete.length > 3
+                      ? 'row row-cols-lg-5 row-cols-sm-4'
+                      : 'teamCodeResultsSmall'
+                  }
+                  style={{
+                    marginLeft: 0,
+                    marginRight: 0,
+                    width: '100%',
+                  }}
                 >
                   {arrayInputAutoComplete.map(item => (
                     <div
                       key={item}
-                      className={`${arrayInputAutoComplete.length <= 3 ? '' : 'col col-cols-3'}`}
+                      className={`${arrayInputAutoComplete.length <= 3 ? 'w-100' : 'col col-cols-3'}`}
                     >
                       {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions */}
                       <p

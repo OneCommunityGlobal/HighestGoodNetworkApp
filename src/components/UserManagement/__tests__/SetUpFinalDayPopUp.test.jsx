@@ -6,9 +6,9 @@ import moment from 'moment';
 import { Provider } from 'react-redux';
 // eslint-disable import/no-named-as-default 
 // eslint-disable-next-line import/no-named-as-default
-import configureStore from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import SetUpFinalDayPopUp from '../SetUpFinalDayPopUp.jsx';
-const mockStore = configureStore([]);
+const mockStore = configureMockStore([]);
 const onSaveMock = vi.fn();
 const onCloseMock = vi.fn();
 

@@ -6,28 +6,19 @@ import {
   Col,
   Button,
   Input,
-  InputGroup,
   Dropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem,
-  Pagination,
   PaginationItem,
   PaginationLink,
   Label,
+  Pagination,
 } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import {
-  FaFilter,
-  FaMapMarkerAlt,
-  FaComment,
-  FaBell,
-  FaUser,
-  FaChevronLeft,
-  FaChevronRight,
-} from 'react-icons/fa';
+import { FaFilter, FaMapMarkerAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import styles from './BiddingHomepage.module.css';
 import logo from '../../Collaboration/One-Community-Horizontal-Homepage-Header-980x140px-2.png';
+import Header from '../Header';
 
 const propertyListings = [
   {
@@ -262,22 +253,22 @@ const propertyListings = [
   },
 ];
 
+const ITEMS_PER_PAGE = 6;
+const END_OF_DAY_HOURS = 23;
+const END_OF_DAY_MINUTES = 59;
+const END_OF_DAY_SECONDS = 59;
+const END_OF_DAY_MS = 999;
+
 function BiddingHomepage() {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState('Filter by Village');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedFilter] = useState('Filter by Village');
+  const [searchQuery] = useState('');
 
-  // Date filter states - replaced dropdown with date inputs
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [dateFilterDropdownOpen, setDateFilterDropdownOpen] = useState(false);
 
-  // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6; // Show 6 items per page
-
-  const toggle = () => setDropdownOpen(prevState => !prevState);
 
   const toggleDateFilterDropdown = () => setDateFilterDropdownOpen(prevState => !prevState);
 
@@ -285,6 +276,24 @@ function BiddingHomepage() {
     setStartDate('');
     setEndDate('');
     setCurrentPage(1);
+  };
+
+  const isWithinDateRange = propertyDate => {
+    if (startDate) {
+      const startFilterDate = new Date(startDate);
+      if (propertyDate < startFilterDate) return false;
+    }
+    if (endDate) {
+      const endFilterDate = new Date(endDate);
+      endFilterDate.setHours(
+        END_OF_DAY_HOURS,
+        END_OF_DAY_MINUTES,
+        END_OF_DAY_SECONDS,
+        END_OF_DAY_MS,
+      );
+      if (propertyDate > endFilterDate) return false;
+    }
+    return true;
   };
 
   const filteredProperties = propertyListings.filter(property => {
@@ -305,27 +314,15 @@ function BiddingHomepage() {
 
     if (startDate || endDate) {
       const propertyDate = new Date(property.createdDate);
-
-      if (startDate) {
-        const startFilterDate = new Date(startDate);
-        if (propertyDate < startFilterDate) return false;
-      }
-
-      if (endDate) {
-        const endFilterDate = new Date(endDate);
-        // Set end date to end of day for inclusive filtering
-        endFilterDate.setHours(23, 59, 59, 999);
-        if (propertyDate > endFilterDate) return false;
-      }
+      if (!isWithinDateRange(propertyDate)) return false;
     }
 
     return true;
   });
 
-  // Pagination logic
-  const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
+  const totalPages = Math.ceil(filteredProperties.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentProperties = filteredProperties.slice(startIndex, endIndex);
 
   const handlePageChange = page => {
@@ -345,7 +342,7 @@ function BiddingHomepage() {
   };
 
   return (
-    <div className={`${styles.biddingBg} ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={`${styles.biddingBg} ${darkMode ? styles['dark-mode'] : ''}`}>
       <div className={styles.logoContainer}>
         <img
           src={logo}
@@ -353,68 +350,10 @@ function BiddingHomepage() {
           className={styles.mainLogo}
         />
       </div>
-      <Container
-        fluid
-        className={`${styles.containerFluid} ${styles.biddingHomepageContainer} ${
-          darkMode ? 'dark-mode' : ''
-        }`}
-      >
-        <div className={`${styles.biddingHeader} ${darkMode ? 'dark-mode' : ''}`}>
-          <Row className={styles.rowCustom}>
-            <Col md={6} className={styles.colCustom}>
-              <Dropdown isOpen={dropdownOpen} toggle={toggle} className={styles.villageFilter}>
-                <DropdownToggle caret className={styles.dropdownToggle}>
-                  {selectedFilter}
-                </DropdownToggle>
-                <DropdownMenu className={styles.dropdownMenu}>
-                  <DropdownItem onClick={() => setSelectedFilter('Filter by Village')}>
-                    All Villages
-                  </DropdownItem>
-                  <DropdownItem onClick={() => setSelectedFilter('Earthbag Village')}>
-                    Earthbag Village
-                  </DropdownItem>
-                  <DropdownItem onClick={() => setSelectedFilter('Straw Bale Village')}>
-                    Straw Bale Village
-                  </DropdownItem>
-                  <DropdownItem onClick={() => setSelectedFilter('Recycle Materials Village')}>
-                    Recycle Materials Village
-                  </DropdownItem>
-                  <DropdownItem onClick={() => setSelectedFilter('Cob Village')}>
-                    Cob Village
-                  </DropdownItem>
-                  <DropdownItem onClick={() => setSelectedFilter('Tree House Village')}>
-                    Tree House Village
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-              <InputGroup className={styles.searchBar}>
-                <Input
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                />
-                <Button className={styles.goButton}>Go</Button>
-              </InputGroup>
-            </Col>
-            <Col md={6} className={styles.colRightAligned}>
-              <span className={styles.userWelcome}>WELCOME USER_NAME</span>
-              <div className={styles.userControls}>
-                <div className={styles.messages}>
-                  <FaComment />
-                </div>
-                <div className={styles.notifications}>
-                  <FaBell />
-                  <span className={styles.notificationBadge}>1</span>
-                </div>
-                <div className={styles.userProfile}>
-                  <FaUser />
-                </div>
-              </div>
-            </Col>
-          </Row>
-        </div>
-        <div className={`${styles.navigationTabs} ${darkMode ? 'dark-mode' : ''}`}>
-          <div className={`${styles.filterByDate} d-flex align-items-center gap-3`}>
+      <Container fluid className={styles.biddingHomepageContainer}>
+        <Header />
+        <div className={styles.navigationTabs}>
+          <div className="filter-by-date d-flex align-items-center gap-3">
             <Dropdown
               isOpen={dateFilterDropdownOpen}
               toggle={toggleDateFilterDropdown}
@@ -498,7 +437,9 @@ function BiddingHomepage() {
           {currentProperties.length > 0 ? (
             currentProperties.map(property => (
               <Col md={4} key={property.id} className={styles.propertyCardCol}>
-                <div className={`${styles.propertyCardGray} ${darkMode ? 'dark-mode' : ''}`}>
+                <div
+                  className={`${styles.propertyCardGray} ${darkMode ? styles['dark-mode'] : ''}`}
+                >
                   <div className={styles.propertyImage}>
                     <img src={property.image} alt={property.title} />
                   </div>
@@ -526,13 +467,14 @@ function BiddingHomepage() {
           )}
         </Row>
 
-        {/* Pagination */}
-        {filteredProperties.length > itemsPerPage && (
+        {filteredProperties.length > ITEMS_PER_PAGE && (
           <Row className="justify-content-center mb-4">
             <Col xs="auto">
-              <Pagination className={`${styles.customPagination} ${darkMode ? 'dark-mode' : ''}`}>
+              <Pagination
+                className={`${styles.customPagination} ${darkMode ? styles['dark-mode'] : ''}`}
+              >
                 <PaginationItem disabled={currentPage === 1}>
-                  <PaginationLink onClick={handlePrevPage}>
+                  <PaginationLink onClick={handlePrevPage} aria-label="Previous page">
                     <FaChevronLeft />
                   </PaginationLink>
                 </PaginationItem>
@@ -544,7 +486,7 @@ function BiddingHomepage() {
                 ))}
 
                 <PaginationItem disabled={currentPage === totalPages}>
-                  <PaginationLink onClick={handleNextPage}>
+                  <PaginationLink onClick={handleNextPage} aria-label="Next page">
                     <FaChevronRight />
                   </PaginationLink>
                 </PaginationItem>
@@ -553,7 +495,6 @@ function BiddingHomepage() {
           </Row>
         )}
 
-        {/* Results info */}
         <Row className="mb-3">
           <Col xs={12} className="text-center">
             <small className={`text-muted ${darkMode ? 'text-light' : ''}`}>

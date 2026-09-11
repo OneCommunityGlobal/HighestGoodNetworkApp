@@ -12,6 +12,7 @@ import {
   FormText,
   FormFeedback,
   UncontrolledTooltip,
+  Alert,
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import './Badge.module.css';
@@ -81,9 +82,9 @@ function EditBadgePopup(props) {
   useEffect(() => {
     setBadgeValues(props.badgeValues);
     setBadgeId(props.badgeValues ? props.badgeValues._id : null);
-    setBadgeName(props.badgeValues ? props.badgeValues.badgeName : '');
-    setImageUrl(props.badgeValues ? props.badgeValues.imageUrl : '');
-    setDescription(props.badgeValues ? props.badgeValues.description : '');
+    setBadgeName(props.badgeValues?.badgeName ?? '');
+    setImageUrl(props.badgeValues?.imageUrl ?? '');
+    setDescription(props.badgeValues?.description ?? '');
     setRanking(props.badgeValues ? props.badgeValues.ranking : 0);
     setType(props.badgeValues ? props.badgeValues.type : 'Custom');
     setCategory(props.badgeValues ? props.badgeValues.category : 'Unspecified');
@@ -100,11 +101,10 @@ function EditBadgePopup(props) {
     return pattern.test(badgeRanking);
   };
 
-  const enableButton =
-    badgeName.length === 0 ||
-    imageUrl.length === 0 ||
-    description.length === 0 ||
-    !validRanking(ranking);
+  const hasMissingRequiredFields =
+    badgeName.length === 0 || imageUrl.length === 0 || description.length === 0;
+
+  const enableButton = hasMissingRequiredFields || !validRanking(ranking);
 
   const closePopup = () => {
     props.setEditPopup(false);
@@ -192,6 +192,12 @@ function EditBadgePopup(props) {
         Edit Badge
       </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+        {hasMissingRequiredFields && (
+          <Alert color="warning">
+            This badge is missing required information. Please complete all required fields before
+            saving.
+          </Alert>
+        )}
         <Form id="badgeEdit">
           <FormGroup>
             <Label for="badgeName" className={fontColor}>

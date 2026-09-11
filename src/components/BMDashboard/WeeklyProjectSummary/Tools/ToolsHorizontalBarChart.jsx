@@ -6,7 +6,6 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGri
 import axios from 'axios';
 import { ENDPOINTS } from '../../../../utils/URL';
 import styles from './ToolsHorizontalBarChart.module.css';
-
 function CustomTooltip({ active, payload, label, darkMode }) {
   if (!active || !payload || !payload.length) {
     return null;
@@ -71,6 +70,7 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
   const [allTools, setAllTools] = useState([]);
   const [selectedTools, setSelectedTools] = useState([]);
   const [isPreviewHovering, setIsPreviewHovering] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   const currentDate = new Date();
   const startDate12MonthsAgo = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), 1);
@@ -79,6 +79,13 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
   const [startDate, setStartDate] = useState(startDate12MonthsAgo.toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(endOfCurrentMonth.toISOString().split('T')[0]);
 
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Fetch projects list
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -495,8 +502,11 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
               <YAxis
                 type="category"
                 dataKey="name"
-                tick={{ fill: darkMode ? '#e0e0e0' : '#333', fontSize: 12 }}
-                width={80}
+                tick={{
+                  fill: darkMode ? '#e0e0e0' : '#333',
+                  fontSize: getChartFontSize(windowWidth),
+                }}
+                width={getYAxisWidth(windowWidth)}
                 axisLine={false}
                 tickLine={false}
               />

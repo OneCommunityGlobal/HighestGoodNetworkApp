@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { ChevronLeft, ChevronRight, Calendar, X } from 'lucide-react';
 import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import * as XLSX from 'xlsx';
 import styles from './ResourceManagement.module.css';
 import { MOCK_RESOURCES } from './MockData';

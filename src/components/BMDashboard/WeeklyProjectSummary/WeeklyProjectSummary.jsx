@@ -10,7 +10,10 @@ import { toast } from 'react-toastify';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
+
+import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import IssuesCharts from '../Issues/LongestOpenIssuesChart';
 import ProjectRiskProfileOverview from './ProjectRiskProfileOverview';
 import IssuesBreakdownChart from './IssuesBreakdownChart';
 import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
@@ -28,8 +31,10 @@ import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
 import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
-import IssueCharts from '../Issues/openIssueCharts';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
+import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
+import InjurySeverityChart from '../Injuries/InjurySeverityChart';
+import CostPredictionChart from './CostPredictionChart';
 
 const projectStatusButtons = [
   {
@@ -130,56 +135,6 @@ const projectStatusButtons = [
   },
 ];
 
-export function WeeklyProjectSummaryContent() {
-  const dispatch = useDispatch();
-  const materials = useSelector(state => state.materials?.materialslist || []);
-  const [openSections, setOpenSections] = useState({});
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-
-  const darkMode = useSelector(state => state.theme.darkMode);
-  const projectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter || '');
-  const dateRangeFilter = useSelector(state => state.weeklyProjectSummary?.dateRangeFilter || '');
-
-  const getColorScheme = percentage => {
-    if (percentage === '-') return 'neutral';
-    if (percentage > 0) return 'positive';
-    if (percentage < 0) return 'negative';
-    return 'neutral';
-  };
-
-  const colorScheme = getColorScheme(monthOverMonth);
-
-  const titleClass = title.replace(/\s+/g, '-').toLowerCase();
-
-  return (
-    <div
-      className={`financial-card ${colorScheme} custom-box-shadow financial-card-background-${titleClass}`}
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
-    >
-      <div className="financial-card-title">{title}</div>
-      <div className={`financial-card-ellipse financial-card-ellipse-${titleClass}`} />
-      <div className="financial-card-value">{value === '-' ? '-' : value.toLocaleString()}</div>
-      <div className={`financial-card-month-over-month ${colorScheme}`}>
-        {monthOverMonth === '-'
-          ? '-'
-          : `${monthOverMonth > 0 ? '+' : ''}${monthOverMonth}% month over month`}
-      </div>
-
-      {showTooltip && Object.keys(additionalInfo).length > 0 && (
-        <div className="financial-card-tooltip">
-          {Object.entries(additionalInfo).map(([key]) => (
-            <div key={key} className="financial-card-tooltip-item">
-              <span className="tooltip-key">{key}:</span>
-              <span className="tooltip-value">{value}</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
 function WeeklyProjectSummary() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);
@@ -208,6 +163,19 @@ function WeeklyProjectSummary() {
       [category]: !prev[category],
     }));
   };
+
+  const bmProjects = useSelector(state => state.bmProjects || []);
+
+  // Fetch initial data
+  useEffect(() => {
+    if (materials.length === 0) {
+      dispatch(fetchAllMaterials());
+    }
+
+    if (bmProjects.length === 0) {
+      dispatch(fetchBMProjects());
+    }
+  }, [dispatch, materials.length, bmProjects.length]);
 
   const sections = useMemo(
     () => [
@@ -258,6 +226,16 @@ function WeeklyProjectSummary() {
         ),
       },
       {
+        title: 'Injury Severity by Projects',
+        key: 'Injury Severity by Projects',
+        className: 'full',
+        content: (
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
+            <InjurySeverityChart />
+          </div>
+        ),
+      },
+      {
         title: 'Material Consumption',
         key: 'Material Consumption',
         className: 'full',
@@ -284,12 +262,8 @@ function WeeklyProjectSummary() {
       {
         title: 'Issue Tracking',
         key: 'Issue Tracking',
-        className: 'full',
-        content: (
-          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-            <IssueCharts />
-          </div>
-        ),
+        className: 'small',
+        content: <IssuesCharts bmProjects={bmProjects} />,
       },
       {
         title: 'Tools and Equipment Tracking',
@@ -457,6 +431,21 @@ function WeeklyProjectSummary() {
         content: (
           <div style={{ gridColumn: '1 / -1', width: '100%' }}>
             <FinancialsTrackingSection />
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: '15px',
+                marginTop: '15px',
+              }}
+            >
+              <div className="weekly-project-summary-card financial-small financial-chart">
+                <CostPredictionChart projectId={1} />
+              </div>
+              <div className="weekly-project-summary-card financial-small financial-chart">
+                <ActualVsPlannedCost />
+              </div>
+            </div>
           </div>
         ),
       },
@@ -587,7 +576,7 @@ function WeeklyProjectSummary() {
       const dateStr = now.toISOString().slice(0, 10);
       const projectName = projectFilter || 'All-Projects';
       const dateRange = dateRangeFilter
-        ? dateRangeFilter.replace(/\s+/g, '-').replace(/,/g, '')
+        ? dateRangeFilter.replaceAll(/\s+/g, '-').replaceAll(/,/g, '')
         : dateStr;
       const fileName = `weekly-project-summary-${projectName}-${dateRange}.pdf`;
 
@@ -595,7 +584,7 @@ function WeeklyProjectSummary() {
 
       // Clean up
       if (document.body.contains(pdfContainer)) {
-        document.body.removeChild(pdfContainer);
+        pdfContainer.remove();
       }
 
       // Dismiss loading toast and show success
@@ -628,7 +617,7 @@ function WeeklyProjectSummary() {
       // Clean up PDF container if it exists
       const pdfContainer = document.getElementById('pdf-export-container');
       if (pdfContainer && document.body.contains(pdfContainer)) {
-        document.body.removeChild(pdfContainer);
+        pdfContainer.remove();
       }
     } finally {
       setOpenSections(currentOpenSections);

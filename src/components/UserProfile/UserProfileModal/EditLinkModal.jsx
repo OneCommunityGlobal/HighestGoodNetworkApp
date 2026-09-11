@@ -28,30 +28,32 @@ const EditLinkModal = props => {
     { Name: 'Media Folder', Link: '' },
   ];
   const emptyLink = { Name: '', Link: '' };
+  const copyLinks = links => (links || []).map(link => ({ ...link }));
+  const getSavedDraftState = () => {
+    const savedAdminLinks = copyLinks(userProfile.adminLinks);
+    const googleDocLink =
+      savedAdminLinks.find(link => link.Name === 'Google Doc') || initialAdminLinkState[0];
+    const mediaLink =
+      savedAdminLinks.find(link => link.Name === 'Media Folder') || initialAdminLinkState[1];
+
+    return {
+      googleLink: { ...googleDocLink },
+      mediaFolderLink: { ...mediaLink },
+      adminLinks: savedAdminLinks
+        .filter(link => link.Name !== 'Google Doc')
+        .filter(link => link.Name !== 'Media Folder'),
+      personalLinks: copyLinks(userProfile.personalLinks),
+    };
+  };
+  const savedDraftState = getSavedDraftState();
 
   const [newAdminLink, setNewAdminLink] = useState(emptyLink);
   const [newPersonalLink, setNewPersonalLink] = useState(emptyLink);
 
-  const [googleLink, setGoogleLink] = useState(
-    userProfile.adminLinks.find(link => link.Name === 'Google Doc')
-      ? userProfile.adminLinks.find(link => link.Name === 'Google Doc')
-      : initialAdminLinkState[0],
-  );
-  const [mediaFolderLink, setMediaFolderLink] = useState(
-    userProfile.adminLinks.find(link => link.Name === 'Media Folder')
-      ? userProfile.adminLinks.find(link => link.Name === 'Media Folder')
-      : initialAdminLinkState[1],
-  );
-  const [adminLinks, setAdminLinks] = useState(
-    userProfile.adminLinks
-      ? userProfile.adminLinks
-          .filter(link => link.Name !== 'Google Doc')
-          .filter(link => link.Name !== 'Media Folder')
-      : [],
-  );
-  const [personalLinks, setPersonalLinks] = useState(
-    userProfile.personalLinks ? userProfile.personalLinks : [],
-  );
+  const [googleLink, setGoogleLink] = useState(savedDraftState.googleLink);
+  const [mediaFolderLink, setMediaFolderLink] = useState(savedDraftState.mediaFolderLink);
+  const [adminLinks, setAdminLinks] = useState(savedDraftState.adminLinks);
+  const [personalLinks, setPersonalLinks] = useState(savedDraftState.personalLinks);
   const originalMediaFolderLink = useRef(mediaFolderLink.Link);
 
   const [isChanged, setIsChanged] = useState(false);
@@ -59,6 +61,34 @@ const EditLinkModal = props => {
   const [isWarningPopupOpen, setIsWarningPopupOpen] = useState(false);
   const [isMediaFolderLinkChanged, setIsMediaFolderLinkChanged] = useState(false);
   const [isValidLink, setIsValidLink] = useState(true);
+  const [duplicateNameError, setDuplicateNameError] = useState(false);
+
+  const resetTransientState = () => {
+    setNewAdminLink(emptyLink);
+    setNewPersonalLink(emptyLink);
+    setIsChanged(false);
+    setIsValidLink(true);
+    setDuplicateNameError(false);
+    setIsWarningPopupOpen(false);
+    setIsMediaFolderLinkChanged(false);
+  };
+
+  const resetDraftFromSavedProfile = () => {
+    // Keep edits in a local draft so Cancel/X can discard unsaved modal changes.
+    const draftState = getSavedDraftState();
+    setGoogleLink(draftState.googleLink);
+    setMediaFolderLink(draftState.mediaFolderLink);
+    setAdminLinks(draftState.adminLinks);
+    setPersonalLinks(draftState.personalLinks);
+    originalMediaFolderLink.current = draftState.mediaFolderLink.Link;
+    resetTransientState();
+  };
+
+  const handleCloseWithoutUpdate = () => {
+    // Closing without Update reloads saved values and clears temporary validation state.
+    resetDraftFromSavedProfile();
+    closeModal();
+  };
 
   const handleNameChanges = (e, links, index, setLinks) => {
     const updateLinks = [...links];
@@ -91,16 +121,22 @@ const EditLinkModal = props => {
   };
 
   const addNewLink = (links, setLinks, newLink, clearInput) => {
-    if (
-      isDuplicateLink([googleLink, mediaFolderLink, ...links], newLink) ||
-      !isValidUrl(newLink.Link)
-    ) {
+    const isDuplicateName = isDuplicateLink([googleLink, mediaFolderLink, ...links], newLink);
+    const isDuplicateUrl = links.some(link => link.Link.trim().toLowerCase() === newLink.Link.trim().toLowerCase());
+    const hasInvalidUrl = !isValidUrl(newLink.Link);
+
+    if (isDuplicateName || isDuplicateUrl) {
+      setDuplicateNameError(true); 
+      setIsValidLink(true);
+    } else if (hasInvalidUrl) {
+      setDuplicateNameError(false);
       setIsValidLink(false);
     } else {
       const newLinks = [...links, { Name: newLink.Name, Link: newLink.Link }];
       setLinks(newLinks);
       setIsChanged(true);
       setIsValidLink(true);
+      setDuplicateNameError(false);
       clearInput();
     }
   };
@@ -136,6 +172,24 @@ const EditLinkModal = props => {
     }
   };
 
+  // Checks edited rows before saving, since plus-button validation does not cover existing links.
+  const hasDuplicateEditedLinks = (links, includeReservedNames = false) => {
+    const names = new Set();
+    const urls = new Set();
+    const linksToCheck = includeReservedNames ? [googleLink, mediaFolderLink, ...links] : links;
+
+    return linksToCheck.some(link => {
+      const name = link.Name.trim().toLowerCase();
+      const url = link.Link.trim().toLowerCase();
+
+      if ((name && names.has(name)) || (url && urls.has(url))) return true;
+
+      if (name) names.add(name);
+      if (url) urls.add(url);
+      return false;
+    });
+  };
+
   const isValidUrl = url => {
     try {
       const pattern = /^(?:https?:\/\/)?[\w.-]+\.[a-zA-Z]{2,}(?:\/\S*)?$/;
@@ -151,12 +205,19 @@ const EditLinkModal = props => {
     // Validate the Google Doc and Media Folder links
     const isGoogleDocsValid = googleLink.Link === '' || isValidGoogleDocsUrl(googleLink.Link);
     const isMediaFolderValid = mediaFolderLink.Link === '' || isValidMediaUrl(mediaFolderLink.Link);
+    const hasDuplicateLinks =
+      hasDuplicateEditedLinks(adminLinks, true) || hasDuplicateEditedLinks(personalLinks);
 
-    if (isGoogleDocsValid && isMediaFolderValid) {
+    // Stop update when an edited existing link duplicates another visible link.
+    if (hasDuplicateLinks) {
+      setDuplicateNameError(true);
+      setIsValidLink(true);
+    } else if (isGoogleDocsValid && isMediaFolderValid) {
       const linksToUpdate = [googleLink, mediaFolderLink, ...adminLinks];
       await updateLink(personalLinks, linksToUpdate, mediaFolderLink.Link);
       handleSubmit();
       setIsValidLink(true);
+      setDuplicateNameError(false);
       setIsChanged(false);
       closeModal();
       toast.success('Link added successfully');
@@ -170,27 +231,23 @@ const EditLinkModal = props => {
   }, [mediaFolderLink.Link, userProfile.mediaUrl]);
 
   useEffect(() => {
-    if (userProfile.adminLinks) {
-      setGoogleLink(
-        userProfile.adminLinks.find(link => link.Name === 'Google Doc') || initialAdminLinkState[0],
-      );
-      setMediaFolderLink(
-        userProfile.adminLinks.find(link => link.Name === 'Media Folder') ||
-          initialAdminLinkState[1],
-      );
-      setAdminLinks(
-        userProfile.adminLinks
-          .filter(link => link.Name !== 'Google Doc')
-          .filter(link => link.Name !== 'Media Folder'),
-      );
+    if (isOpen) {
+      resetDraftFromSavedProfile();
     }
-  }, [userProfile.adminLinks]);
+  }, [isOpen, userProfile.adminLinks, userProfile.personalLinks]);
 
   return (
     <React.Fragment>
-      <Modal isOpen={isOpen} toggle={closeModal} className={darkMode ? 'text-light dark-mode' : ''}>
-        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closeModal}>
-          Edit Links
+      <Modal
+        isOpen={isOpen}
+        toggle={handleCloseWithoutUpdate}
+        className={darkMode ? 'text-light dark-mode' : ''}
+      >
+        <ModalHeader
+          className={darkMode ? 'bg-space-cadet text-white' : ''}
+          toggle={handleCloseWithoutUpdate}
+        >
+          <span className="modal-title">Edit Links</span>
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div>
@@ -199,7 +256,7 @@ const EditLinkModal = props => {
                 <Card style={{ padding: '16px' }} className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Label
                     style={{ display: 'flex', margin: '5px' }}
-                    className={darkMode ? 'text-light' : ''}
+                    className={darkMode ? styles['modal-label-dark'] : ''}
                   >
                     Admin Links:
                   </Label>
@@ -215,16 +272,18 @@ const EditLinkModal = props => {
                     </span>
                   )}
                   <div>
+
                     <div
                       style={{ display: 'flex', margin: '5px' }}
                       className={`${styles['link-fields']}`}
                     >
                       <label
-                        className={`${styles['custom-label']} ${darkMode ? 'text-light' : ''}`}
+                        className={`${styles['custom-label']} ${darkMode ? styles['modal-label-dark'] : ''}`}
                         htmlFor="google-doc-link"
                       >
                         Google Doc
                       </label>
+
                       <input
                         id="google-doc-link"
                         className={styles.customEdit}
@@ -236,16 +295,20 @@ const EditLinkModal = props => {
                         }}
                       />
                     </div>
+
                     <div
                       style={{ display: 'flex', margin: '5px' }}
                       className={`${styles['link-fields']}`}
                     >
-                      <label
-                        className={`${styles['custom-label']} ${darkMode ? 'text-light' : ''}`}
-                        htmlFor="media-folder-link"
-                      >
+                       <label
+                          className={`${styles['custom-label']} ${
+                            darkMode ? styles['modal-label-dark'] : ''
+                          }`}
+                          htmlFor="media-folder-link"
+                        >
                         Media Folder
                       </label>
+
                       <input
                         className={styles.customEdit}
                         id="media-folder-link"
@@ -307,6 +370,7 @@ const EditLinkModal = props => {
                         onChange={e => {
                           const { value } = e.target;
                           setNewAdminLink(prev => ({ ...prev, Name: value }));
+                          setDuplicateNameError(false);
                         }}
                       />
                       <input
@@ -339,12 +403,14 @@ const EditLinkModal = props => {
             )}
             <CardBody>
               <Card style={{ padding: '16px' }} className={darkMode ? 'bg-yinmn-blue' : ''}>
+
                 <Label
-                  style={{ display: 'flex', margin: '5px' }}
-                  className={darkMode ? 'text-light' : ''}
-                >
-                  Personal Links:
-                </Label>
+                    style={{ display: 'flex', margin: '5px' }}
+                    className={darkMode ? styles['modal-label-dark'] : ''}
+                  >
+                    Personal Links:
+                  </Label>
+
                 <div>
                   {personalLinks.map((link, index) => (
                     <div
@@ -395,6 +461,7 @@ const EditLinkModal = props => {
                         const { value } = e.target;
                         setNewPersonalLink(prev => ({ ...prev, Name: value }));
                         setIsChanged(true);
+                        setDuplicateNameError(false);
                       }}
                     />
                     <input
@@ -421,14 +488,27 @@ const EditLinkModal = props => {
                   </div>
                 </div>
               </Card>
-              {!isValidLink && (
-                <p
-                  className={`${styles['invalid-help-context']}`}
-                  data-testid="invalid-url-warning"
-                >
-                  Please enter valid URLs for each link.
-                </p>
+
+              {(!isValidLink || duplicateNameError) && (
+                <div className={`${styles['invalid-help-context']}`}>
+                  {!isValidLink && (
+                    <p
+                      className={styles['invalid-help-context']}
+                      data-testid='invalid-url-warning'
+                    >
+                      Please enter valid URLs for each link.
+                    </p>
+                  )}
+                  {duplicateNameError && (
+                    <p data-testid='duplicate-name-warning'
+                      className={styles['invalid-help-context']}
+                      >
+                      This link name or URL already exists.
+                    </p>
+                  )}
+                </div>
               )}
+
             </CardBody>
           </div>
         </ModalBody>
@@ -445,11 +525,7 @@ const EditLinkModal = props => {
           </Button>
           <Button
             color="primary"
-            onClick={() => {
-              setIsMediaFolderLinkChanged(false);
-              setMediaFolderLink({ ...mediaFolderLink, Link: originalMediaFolderLink.current });
-              closeModal();
-            }}
+            onClick={handleCloseWithoutUpdate}
             style={darkMode ? boxStyleDark : boxStyle}
           >
             Cancel

@@ -23,10 +23,7 @@ const JobAnalyticsCompetitiveRolesPage = () => {
   const requestUrl = useMemo(() => {
     const start = filters.dateMode === "Custom" ? filters.startDate : "";
     const end = filters.dateMode === "Custom" ? filters.endDate : "";
-    const gran =
-      filters.dateMode === "Custom" && filters.granularity !== "totals"
-        ? filters.granularity
-        : undefined;
+    const gran = filters.granularity !== "totals" ? filters.granularity : undefined;
 
     return ENDPOINTS.JOB_ANALYTICS_QUERY(start, end, filters.roles, gran);
   }, [filters]);

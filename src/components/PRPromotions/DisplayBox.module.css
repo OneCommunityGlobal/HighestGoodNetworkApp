@@ -50,7 +50,7 @@
 
 .popupTable {
   width: 100%;
-  border: 6px solid black;
+  border-collapse: collapse;
 }
 
 /* DARK TABLE CELLS — must come before .popupTable thead th */
@@ -113,6 +113,7 @@
 .buttonRow {
   display: flex;
   justify-content: space-between;
+  margin-top: 32px;
 }
 
 .button {
@@ -120,8 +121,8 @@
   border-radius: 4px;
   border: none;
   cursor: pointer;
+  color: #fff;
   font-weight: 600;
-  transition: background-color 0.2s ease;
 }
 
 .button:disabled {
@@ -130,17 +131,14 @@
   opacity: 0.6;
 }
 
-/* DARK BUTTONS — must come before .button:hover:not(:disabled) */
+/* These action colors are intentionally shared by light and dark mode. */
 
-.popupDark .button {
-  border: 1px solid #6b7280;
-  background-color: #374151;
-  color: #f9fafb;
+.cancelButton {
+  background-color: #f00;
 }
 
-.popup-dark .button {
-  background-color: #374151;
-  color: #e5e7eb;
+.confirmButton:not(:disabled) {
+  background-color: #00f;
 }
 
 /* LIGHT HOVER — after dark base button rules */
@@ -149,24 +147,18 @@
   background-color: #e5e7eb;
 }
 
-/* DARK DISABLED AND HOVER — must come after .button:hover:not(:disabled) */
+.cancelButton:hover:not(:disabled) {
+  background-color: #d60000;
+}
+
+.confirmButton:hover:not(:disabled) {
+  background-color: #00c;
+}
 
 .popupDark .button:disabled {
-  border: 1px solid #4b5563;
-  background-color: #2d3748;
-  color: #9ca3af;
-}
-
-
-.popup-dark .button:disabled {
   background-color: #4b5563;
+  color: #d1d5db;
 }
-
-.popupDark .button:hover:not(:disabled) {
-  background-color: #4b5563;
-}
-
-
 
 /* ======================================================
    CHECKBOXES
@@ -182,7 +174,8 @@
    PR BADGES
    ====================================================== */
 
-.prCountBadge {
+.prCountBadge,
+.pr-count-badge {
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -201,13 +194,18 @@
 
 /* COLORS */
 
-.color0 {
+/* Keep both CSS Module lookup styles aligned with getBadgeClassName. */
+
+.color0,
+.color-0 {
   color: #fff;
   background-color: #9400d3;
 }
 
+.color1,
 .color-1 {
-  background-color: rgb(77 82 174);
+  background-color: #4b0082;
+  color: #fff;
 }
 
 .color-2 {
@@ -240,7 +238,8 @@
   background-color: #ff0;
 }
 
-.color5 {
+.color5,
+.color-5 {
   color: #fff;
   background-color: #c45c00;
 }
@@ -324,4 +323,46 @@
 :global(body.bm-dashboard-dark) .popup-table-dark .pr-count-badge.color-6 {
   color: #fff !important;
   background-color: #b00000 !important;
+}
+
+/* Dark modal content rules must come after the base table rules so they win in CSS order. */
+
+.popupDark .popupHeading {
+  color: #f9fafb;
+}
+
+.popupDark .popupTable {
+  background-color: #1f2937;
+}
+
+.popupDark .popupTable th,
+.popupDark .popupTable td {
+  border-color: #4b5563;
+  background-color: #1f2937;
+  color: #f9fafb;
+}
+
+.popupDark .popupTable thead th {
+  background-color: #374151;
+  color: #f9fafb;
+}
+
+.popupTable tbody tr {
+  cursor: pointer;
+}
+
+.popupTable tbody tr:hover td {
+  background-color: #f0f8ff;
+}
+
+.popupDark .popupTable tbody tr:hover td {
+  background-color: #2f4157;
+}
+
+.prBadgeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  min-width: 0;
 }
