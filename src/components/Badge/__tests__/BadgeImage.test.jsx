@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import BadgeImage from '../BadgeImage';
+import styles from '../Badge.module.css';
 
 describe('BadgeImage Component', () => {
   const mockBadgeData = {
@@ -27,5 +28,22 @@ describe('BadgeImage Component', () => {
     render(<BadgeImage {...mockProps} />);
     const badgeCount = screen.getByText('50');
     expect(badgeCount).toBeInTheDocument();
+    expect(badgeCount).toHaveClass(styles.badge_count_personalmax);
+  });
+
+  test('uses the standard style for counts below 100', () => {
+    render(
+      <BadgeImage {...mockProps} badgeData={{ ...mockBadgeData, type: 'Hours' }} count={99} />,
+    );
+
+    expect(screen.getByText('99')).toHaveClass(styles.badge_count);
+  });
+
+  test('uses the compact style for counts of 100 or more', () => {
+    render(
+      <BadgeImage {...mockProps} badgeData={{ ...mockBadgeData, type: 'Hours' }} count={100} />,
+    );
+
+    expect(screen.getByText('100')).toHaveClass(styles.badge_count_3_digit);
   });
 });
