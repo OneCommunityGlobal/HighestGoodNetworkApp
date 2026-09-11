@@ -10,7 +10,7 @@ export function ReportBlock({ className, children, firstColor, secondColor, dark
   if (secondColor) {
     backgroundColor = color;
   } else if (darkMode) {
-    backgroundColor = '#3A506B';
+  backgroundColor = '#1a2639';   // dark navy, matches the rest of dark mode
   } else {
     backgroundColor = firstColor || 'white';
   }

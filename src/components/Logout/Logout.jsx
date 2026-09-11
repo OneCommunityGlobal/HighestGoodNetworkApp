@@ -1,11 +1,12 @@
-import { Redirect } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../Header/DarkMode.css';
+import '../Header/index.module.css';
 import { logoutUser } from '../../actions/authActions';
 
 function Logout({ setLogoutPopup, open }) {
+  const history = useHistory();
   const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
 
@@ -22,7 +23,7 @@ function Logout({ setLogoutPopup, open }) {
 
     closePopup();
     dispatch(logoutUser());
-    return <Redirect to="/login" auth={false} />;
+    return history.push('/login');
   };
 
   return (

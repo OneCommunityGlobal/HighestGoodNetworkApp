@@ -22,7 +22,7 @@ jobs:
         run: yarn install
 
       - name: Run tests
-        run: yarn test
+        run: NODE_OPTIONS="--max-old-space-size=4096" yarn test
 
       - name: Upload test results
         if: failure()

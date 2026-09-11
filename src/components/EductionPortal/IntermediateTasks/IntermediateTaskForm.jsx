@@ -80,11 +80,11 @@ const IntermediateTaskForm = ({ task, onSubmit, onCancel }) => {
   };
 
   return (
-    <Modal isOpen={true} toggle={onCancel} size="lg" className={styles.formModal}>
+    <Modal isOpen={true} toggle={onCancel} size="lg">
       <ModalHeader toggle={onCancel}>
         {task ? 'Edit Intermediate Task' : 'Add Intermediate Task'}
       </ModalHeader>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit} className={styles.formModal}>
         <ModalBody>
           <FormGroup>
             <Label for="title">Title *</Label>

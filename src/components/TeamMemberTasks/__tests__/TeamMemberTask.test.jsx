@@ -3,7 +3,7 @@ import '@testing-library/jest-dom/extend-expect';
 import TeamMemberTask from '~/components/TeamMemberTasks/TeamMemberTask';
 import { authMock, rolesMock, userProfileMock, themeMock } from '../../../__tests__/mockStates.js';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 
@@ -40,7 +40,7 @@ const props = {
   weeklycommittedHours: 10,
 };
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 const store = mockStore({
   auth: authMock,
@@ -85,10 +85,11 @@ describe('Team Member Task Component', () => {
     // verify if the icon changes to red or green based on whether the user has completed their weekly committed hours
 
     const icon = screen.getByTestId('icon');
+    const iconColor = window.getComputedStyle(icon).color;
     if (props.totaltangibletime_hrs >= props.weeklycommittedHours) {
-      expect(icon).toHaveStyle('color: rgb(0, 128, 0)');
+      expect(['rgb(0, 128, 0)', 'green']).toContain(iconColor);
     } else {
-      expect(icon).toHaveStyle('color: red');
+      expect(['rgb(255, 0, 0)', 'red']).toContain(iconColor);
     }
   });
   it('team member name and link should be displayed properly', () => {

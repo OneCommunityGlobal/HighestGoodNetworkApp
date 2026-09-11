@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useMemo, Suspense } from 'react';
 import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
-import './TotalReport.css';
+import styles from './TotalReport.module.css';
 import { Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import Loading from '../../common/Loading';
+import { generateBarData as generateBarDataUtil } from './generateBarData';
 
 const LazyTotalReportBarGraph = React.lazy(() => import('./TotalReportBarGraph'));
 
@@ -237,11 +238,8 @@ function TotalTeamReport(props) {
     }, []);
   };
 
-  const generateBarData = groupedData => {
-    return groupedData.map(range => ({
-      label: `${range.timeRange}`,
-      value: range.teamsOfTime.length,
-    }));
+  const generateBarData = (groupedData, isYear = false) => {
+    return generateBarDataUtil(groupedData, isYear, startDate, endDate, 'teamsOfTime');
   };
   // Filter teams by end date to remove those created after the selected period
   const filterTeamByEndDate = (teams, endDateTime) => {
@@ -358,18 +356,18 @@ function TotalTeamReport(props) {
   const totalTeamInfo = totalTeam => {
     const totalTangibleTime = totalTeam.reduce((acc, obj) => acc + Number(obj.tangibleTime), 0);
     return (
-      <div className={`total-container ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
-        <div className={`total-title ${darkMode ? 'text-azure' : ''}`}>Total Team Report</div>
-        <div className="total-period">
+      <div className={`${styles.totalContainer} ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+        <div className={`${styles.totalTitle} ${darkMode ? 'text-azure' : ''}`}>Total Team Report</div>
+        <div className={styles.totalPeriod}>
           From {startDate.toLocaleDateString()} to {endDate.toLocaleDateString()}:
         </div>
-        <div className="total-item">
-          <span className="total-number">{totalTeam.length}</span>
-          <span className="total-text">teams contributed over 10 hours.</span>
+        <div className={styles.totalItem}>
+          <span className={styles.totalNumber}>{totalTeam.length}</span>
+          <span className={styles.totalText}>teams contributed over 10 hours.</span>
         </div>
-        <div className="total-item">
-          <span className="total-number">{totalTangibleTime.toFixed(2)}</span>
-          <span className="total-text">hours of tangible time logged.</span>
+        <div className={styles.totalItem}>
+          <span className={styles.totalNumber}>{totalTangibleTime.toFixed(2)}</span>
+          <span className={styles.totalText}>hours of tangible time logged.</span>
         </div>
         <div>
           {showMonthly && teamInMonth.length > 0 && (
@@ -392,7 +390,7 @@ function TotalTeamReport(props) {
           )}
         </div>
         {totalTeam.length ? (
-          <div className="total-detail">
+          <div className={styles.totalDetail}>
             {/* eslint-disable-next-line no-unused-vars, no-use-before-define */}
             <Button onClick={e => onClickTotalTeamDetail()}>
               {showTotalTeamTable ? 'Hide Details' : 'Show Details'}
@@ -480,7 +478,7 @@ function TotalTeamReport(props) {
               </tr>
               <tr
                 id={`tr_${team.teamId}_child`}
-                className={darkMode ? 'teams_child bg-yinmn-blue text-light' : 'teams_child'}
+                className={darkMode ? `${styles.teamsChild} bg-yinmn-blue text-light` : styles.teamsChild}
                 key={`${team.teamId}_child`}
               >
                 <td className={darkMode ? 'hover-effect-reports-page-dark-mode' : ''} colSpan={3}>

@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import classnames from 'classnames';
-import './Paging.css';
+import styles from './Paging.module.css';
 
 // eslint-disable-next-line react/function-component-definition
 const Paging = ({ maxElemPerPage = 6, totalElementsCount, children, darkMode }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
-  const pageIndexButton = darkMode ? 'page-index-button-dark' : 'page-index-button';
-  const paginationButtons = darkMode ? 'pagination-buttons-dark' : 'pagination-buttons';
+  const pageIndexButton = darkMode ? styles.pageIndexButtonDark : styles.pageIndexButton;
+
+  const paginationButtons = darkMode ? styles.paginationButtonsDark : styles.paginationButtons;
 
   const pagesCount = Math.ceil(totalElementsCount / maxElemPerPage);
 
@@ -22,12 +23,10 @@ const Paging = ({ maxElemPerPage = 6, totalElementsCount, children, darkMode }) 
           setCurrentPage(pageNumber);
         }
       }}
-      className={classnames(
-        `${pageIndexButton}`,
-        darkMode
-          ? { 'active-button-dark': pageNumber === currentPage }
-          : { 'active-button': pageNumber === currentPage },
-      )}
+      className={classnames(pageIndexButton, {
+        [styles.activeButton]: !darkMode && pageNumber === currentPage,
+        [styles.activeButtonDark]: darkMode && pageNumber === currentPage,
+      })}
       key={pageNumber}
     >
       {pageNumber}
@@ -41,7 +40,6 @@ const Paging = ({ maxElemPerPage = 6, totalElementsCount, children, darkMode }) 
       for (let i = 1; i <= pagesCount; i += 1) {
         indexesButtons.push(renderPageNumberButton(i));
       }
-
       return <div className={paginationButtons}>{indexesButtons}</div>;
     }
 
@@ -49,12 +47,9 @@ const Paging = ({ maxElemPerPage = 6, totalElementsCount, children, darkMode }) 
       for (let i = 1; i <= 5; i += 1) {
         indexesButtons.push(renderPageNumberButton(i));
       }
-
       return (
         <div className={paginationButtons}>
-          {indexesButtons}
-          ...
-          <div>{renderPageNumberButton(pagesCount)}</div>
+          {indexesButtons}…{renderPageNumberButton(pagesCount)}
         </div>
       );
     }
@@ -65,9 +60,7 @@ const Paging = ({ maxElemPerPage = 6, totalElementsCount, children, darkMode }) 
       }
       return (
         <div className={paginationButtons}>
-          {renderPageNumberButton(1)}
-          ...
-          {indexesButtons}
+          {renderPageNumberButton(1)}…{indexesButtons}
         </div>
       );
     }
@@ -78,59 +71,45 @@ const Paging = ({ maxElemPerPage = 6, totalElementsCount, children, darkMode }) 
 
     return (
       <div className={paginationButtons}>
-        {renderPageNumberButton(1)}
-        ...
-        {indexesButtons}
-        ...
-        {renderPageNumberButton(pagesCount)}
+        {renderPageNumberButton(1)}…{indexesButtons}…{renderPageNumberButton(pagesCount)}
       </div>
     );
   };
 
-  const handlePrevArrowClick = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  const handleNextArrowClick = () => {
-    if (currentPage < pagesCount) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
   return (
-    <div className="paging-wrapper">
+    <div className={styles.pagingWrapper}>
       {React.cloneElement(children, {
         skip: maxElemPerPage * (currentPage - 1),
         take: maxElemPerPage,
       })}
 
       {totalElementsCount > maxElemPerPage && (
-        <div className="pagination-buttons-wrapper">
+        <div className={styles.paginationButtonsWrapper}>
           <FiChevronLeft
             role="button"
             tabIndex="0"
             aria-label="Previous Page"
-            className={classnames(`${pageIndexButton}`, {
-              disabled: currentPage === 1,
+            className={classnames(pageIndexButton, {
+              [styles.disabled]: currentPage === 1,
             })}
-            onClick={handlePrevArrowClick}
+            onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
           />
 
           {renderPageIndexes()}
+
           <FiChevronRight
             role="button"
             tabIndex="0"
             aria-label="Next Page"
-            className={classnames(`${pageIndexButton}`, {
-              disabled: currentPage === pagesCount,
+            className={classnames(pageIndexButton, {
+              [styles.disabled]: currentPage === pagesCount,
             })}
-            onClick={handleNextArrowClick}
+            onClick={() => currentPage < pagesCount && setCurrentPage(currentPage + 1)}
           />
         </div>
       )}
     </div>
   );
 };
+
 export default Paging;

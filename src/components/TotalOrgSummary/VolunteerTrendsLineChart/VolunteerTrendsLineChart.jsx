@@ -62,6 +62,21 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
   const [customDateRange, setCustomDateRange] = useState([null, null]);
   const [customStartDate = new Date(), customEndDate = new Date()] = customDateRange;
 
+  //dropdown styling - dark mode
+  const selectStyle = {
+    backgroundColor: darkMode ? '#111827' : '#ffffff',
+    color: darkMode ? '#f8fafc' : '#111827',
+    border: darkMode ? '1px solid rgba(255, 255, 255, 0.25)' : '1px solid #ccc',
+    borderRadius: 4,
+    padding: '2px 8px',
+  };
+
+  // option colors
+  const optionStyle = {
+    backgroundColor: darkMode ? '#111827' : '#ffffff',
+    color: darkMode ? '#f8fafc' : '#111827',
+  };
+
   useEffect(() => {
     // Gets backend data
     const getData = async () => {
@@ -214,17 +229,41 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
     <div className={styles.chartContainer}>
       {/* DATE FILTERS */}
       <div className={styles.dateFilterContainer}>
-        <select name="timeframe-filter" id="timeframe-filter" onChange={setTimeframeFilter}>
-          <option value="years1">This year</option>
-          <option value="years2">Last 2 years</option>
-          <option value="years3">Last 3 years</option>
-          <option value="years5">Last 5 years</option>
-          <option value="years10">Last 10 years</option>
-          <option value="years0">All-time</option>
-          <option value="yearsCustom">Choose Date Range</option>
+        <select
+          name="timeframe-filter"
+          id="timeframe-filter"
+          onChange={setTimeframeFilter}
+          style={selectStyle}
+        >
+          <option value="years1" style={optionStyle}>
+            This year
+          </option>
+          <option value="years2" style={optionStyle}>
+            Last 2 years
+          </option>
+          <option value="years3" style={optionStyle}>
+            Last 3 years
+          </option>
+          <option value="years5" style={optionStyle}>
+            Last 5 years
+          </option>
+          <option value="years10" style={optionStyle}>
+            Last 10 years
+          </option>
+          <option value="years0" style={optionStyle}>
+            All-time
+          </option>
+          <option value="yearsCustom" style={optionStyle}>
+            Choose Date Range
+          </option>
         </select>
         by
-        <select name="offset-filter" id="offset-filter" onChange={setOffsetFilter}>
+        <select
+          name="offset-filter"
+          id="offset-filter"
+          onChange={setOffsetFilter}
+          style={selectStyle}
+        >
           <option value="week">week</option>
           <option value="month">month</option>
         </select>

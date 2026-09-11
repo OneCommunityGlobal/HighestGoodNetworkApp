@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector as useReduxSelector, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { useDispatch, useSelector, useSelector as useReduxSelector } from 'react-redux';
-import { setformData } from '~/actions/hgnFormAction';
 import { Spinner } from 'reactstrap';
+import { setformData } from '~/actions/hgnFormAction';
 import styles from '../styles/InfoForm.module.css';
 
 function InfoForm() {
@@ -11,10 +11,13 @@ function InfoForm() {
   const dispatch = useDispatch();
   const user = useSelector(state => state.auth.user);
   const isOwner = user.role === 'Owner';
-  const userProfile = useSelector(state => state.allUserProfilesBasicInfo?.userProfilesBasicInfo);
-
+  const userProfiles = useSelector(state => state.allUserProfilesBasicInfo?.userProfilesBasicInfo);
+  const userProfile = Array.isArray(userProfiles)
+    ? userProfiles.find(p => p._id === user.userid)
+    : userProfiles;
   const [newVolunteer, setNewVolunteer] = useState({
     ...formData,
+    name: formData?.name || '',
     github: formData?.github || '',
     slack: formData?.slack || '',
   });
@@ -42,11 +45,13 @@ function InfoForm() {
   }, [newVolunteer.name, newVolunteer.slack]);
 
   useEffect(() => {
-    if (user && userProfile && formData) {
+    if (user && formData) {
+      const firstName = userProfile?.firstName || user?.firstName || '';
+      const lastName = userProfile?.lastName || user?.lastName || '';
       setNewVolunteer(prevState => ({
         ...formData,
         ...prevState, // This preserves any user input
-        name: `${userProfile?.firstName} ${userProfile?.lastName}`,
+        name: firstName && lastName ? `${firstName} ${lastName}` : '',
         email: user.email,
         github: prevState.github || formData.github || '', // Preserve GitHub value
         slack: prevState.slack || formData.slack || '', // Preserve

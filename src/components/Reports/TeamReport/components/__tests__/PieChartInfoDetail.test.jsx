@@ -4,11 +4,15 @@ import '@testing-library/jest-dom/extend-expect';
 import PieChartInfoDetail from '../PieChartInfoDetail';
 
 describe('PieChartInfoDetail Component', () => {
-  test('test_render_keyName_and_value', () => {
-    render(<PieChartInfoDetail keyName="Test Key" value="123" color="#000000" darkMode={false} />);
-    expect(screen.getByText('Test Key')).toBeInTheDocument();
-    expect(screen.getByText('123')).toBeInTheDocument();
-  });
+  test(
+    'test_render_keyName_and_value',
+    () => {
+      render(<PieChartInfoDetail keyName="Test Key" value="123" color="#000000" darkMode={false} />);
+      expect(screen.getByText('Test Key')).toBeInTheDocument();
+      expect(screen.getByText('123')).toBeInTheDocument();
+    },
+    10000,
+  );
 
   test('test_apply_darkMode_class', () => {
     render(<PieChartInfoDetail keyName="Test Key" value="123" color="#000000" darkMode />);

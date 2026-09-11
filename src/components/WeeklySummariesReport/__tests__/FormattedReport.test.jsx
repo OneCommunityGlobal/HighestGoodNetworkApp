@@ -59,7 +59,7 @@ const dummySummary = {
       uploadDate: moment().toISOString(),
     },
   ],
-  weeklySummariesCount: '5',
+  weeklySummariesCount: 10,
   teamCode: 'ABC123',
   mediaUrl: 'http://example.com/media',
   adminLinks: [{ Name: 'Media Folder', Link: 'http://example.com/folder' }],
@@ -71,7 +71,6 @@ const dummySummary = {
     .add(1, 'days')
     .format(),
   totalTangibleHrs: 100,
-  daysInTeam: 70,
   bioPosted: 'default',
   weeklySummaryOption: 'Default',
 };

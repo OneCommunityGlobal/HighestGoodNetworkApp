@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './SummaryCards.module.css';
 
-const SummaryCards = ({ data }) => {
+const SummaryCards = ({ data, darkMode = false }) => {
   const cards = [
     {
       title: 'Total Time Logged',

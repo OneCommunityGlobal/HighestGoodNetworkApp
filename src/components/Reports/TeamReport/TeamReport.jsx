@@ -17,7 +17,7 @@ import {
   addTeamMember,
 } from '../../../actions/allTeamsAction';
 
-import './TeamReport.css';
+import styles from './TeamReport.module.css';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import UserLoginPrivileges from './components/UserLoginPrivileges';
 
@@ -38,7 +38,7 @@ export function TeamReport({ match }) {
     isActive: false,
     isInactive: false,
   });
-  
+
   // Add state for the search input value (separate from searchParams)
   const [searchInputValue, setSearchInputValue] = useState('');
   const hasFetchIds = useRef(new Set());
@@ -63,13 +63,13 @@ export function TeamReport({ match }) {
 
   // Helper function to format status
   // eslint-disable-next-line no-unused-vars
-  const handleStatus = (isActive) => {
+  const handleStatus = isActive => {
     return isActive ? 'Active' : 'Inactive';
   };
 
   // Helper function to format dates
   // eslint-disable-next-line no-unused-vars
-  const handleDate = (date) => {
+  const handleDate = date => {
     if (!date) return 'N/A';
     return moment(date).format('MMM-DD-YY');
   };
@@ -85,7 +85,7 @@ export function TeamReport({ match }) {
 
   // Helper function to get current team members
   // eslint-disable-next-line no-unused-vars
-  const getCurrentTeamMembers = (teamId) => {
+  const getCurrentTeamMembers = teamId => {
     // This function would fetch and display current team members
     // Implementation depends on your requirements
     // eslint-disable-next-line no-console
@@ -99,33 +99,36 @@ export function TeamReport({ match }) {
     if (!allTeams || !Array.isArray(allTeams)) {
       return [];
     }
-    
+
     return allTeams.filter(teamData => {
       // Filter by team name
-      if (searchParams.teamName && !teamData.teamName?.toLowerCase().includes(searchParams.teamName.toLowerCase())) {
+      if (
+        searchParams.teamName &&
+        !teamData.teamName?.toLowerCase().includes(searchParams.teamName.toLowerCase())
+      ) {
         return false;
       }
-      
+
       // Filter by creation date
       if (searchParams.createdAt && new Date(teamData.createdDatetime) < searchParams.createdAt) {
         return false;
       }
-      
+
       // Filter by modification date
       if (searchParams.modifiedAt && new Date(teamData.modifiedDatetime) < searchParams.modifiedAt) {
         return false;
       }
-      
+
       // Filter by active status
       if (searchParams.isActive && !teamData.isActive) {
         return false;
       }
-      
+
       // Filter by inactive status
       if (searchParams.isInactive && teamData.isActive) {
         return false;
       }
-      
+
       return true;
     });
   };
@@ -193,7 +196,6 @@ export function TeamReport({ match }) {
     }
   }, [dispatch, allTeams]);
 
-
   useEffect(() => {
     let isMounted = true; // flag to check component mount status
     const fetchTeamDetails = async teamId => {
@@ -253,8 +255,7 @@ export function TeamReport({ match }) {
       if (timeEntry.isTangible) {
         hours.totalTangibleHrs += parseFloat(timeEntry.hours) + parseFloat(timeEntry.minutes) / 60;
       } else {
-        hours.totalIntangibleHrs +=
-          parseFloat(timeEntry.hours) + parseFloat(timeEntry.minutes) / 60;
+        hours.totalIntangibleHrs += parseFloat(timeEntry.hours) + parseFloat(timeEntry.minutes) / 60;
       }
     }
     return hours;
@@ -271,9 +272,7 @@ export function TeamReport({ match }) {
       .format('YYYY-MM-DD');
 
     try {
-      const res = await axios.get(
-        ENDPOINTS.TIME_ENTRIES_PERIOD(member._id, startOfWeek, endOfWeek),
-      );
+      const res = await axios.get(ENDPOINTS.TIME_ENTRIES_PERIOD(member._id, startOfWeek, endOfWeek));
       const timeEntries = res.data;
       const output = calculateTotalHrsForPeriod(timeEntries);
       const totalTangibleHrs = output.totalTangibleHrs.toFixed(2);
@@ -291,9 +290,7 @@ export function TeamReport({ match }) {
   useEffect(() => {
     const getTeamMembersWeeklyEffort = async () => {
       try {
-        const weeklyEfforts = await Promise.all(
-          teamMembers.map(member => getWeeklyTangibleHours(member)),
-        );
+        const weeklyEfforts = await Promise.all(teamMembers.map(member => getWeeklyTangibleHours(member)));
         setTeamMembersWeeklyEffort(weeklyEfforts.filter(effort => !!effort));
       } catch (err) {
         // eslint-disable-next-line no-console
@@ -353,7 +350,7 @@ export function TeamReport({ match }) {
 
   return (
     <ReportPage
-      contentClassName="team-report-blocks"
+      contentClassName={styles['team-report-blocks']}
       darkMode={darkMode}
       renderProfile={() => (
         <ReportPage.ReportHeader
@@ -369,18 +366,22 @@ export function TeamReport({ match }) {
         </ReportPage.ReportHeader>
       )}
     >
-      <ReportPage.ReportBlock className="team-report-main-info-wrapper" darkMode={darkMode}>
-        <div className="team-report-main-info-id">
+      <ReportPage.ReportBlock className={styles['team-report-main-info-wrapper']} darkMode={darkMode}>
+        <div className={styles['team-report-main-info-id']}>
           <div className="team-info-container" style={{ color: darkMode ? 'white' : '' }}>
             <div className="team-report-id">
-              <span className="team-report-star">&#9733;</span> Team ID: {team._id}
+              <span className={styles['team-report-star']}>&#9733;</span> Team ID: {team._id}
             </div>
-            <div className="team-report-last-updated" style={{ color: darkMode ? 'white' : '' }}>
+            <div
+              className={styles['team-report-last-updated']}
+              style={{ color: darkMode ? 'white' : '' }}
+            >
               Last updated: {moment(team.modifiedDatetime).format('MMM-DD-YY')}
             </div>
           </div>
         </div>
       </ReportPage.ReportBlock>
+
       <UserLoginPrivileges
         role={user.role}
         handleInputChange={handleInputChange}
@@ -393,15 +394,13 @@ export function TeamReport({ match }) {
         darkMode={darkMode}
         teamDataLoading={teamDataLoading}
       />
-      <div className="table-mobile">
+
+      <div className={styles['table-mobile']}>
         <ReportPage.ReportBlock darkMode={darkMode}>
           <div className="input-group input-group-sm d-flex flex-row flex-nowrap justify-content-between align-items-center active-inactive-container gap-3">
             {/* Name Search */}
             <div className="d-flex flex-column flex-shrink-0">
-              <label
-                htmlFor="search-by-name"
-                className={`text-left ${darkMode ? 'text-light' : ''}`}
-              >
+              <label htmlFor="search-by-name" className={`text-left ${darkMode ? 'text-light' : ''}`}>
                 Name
               </label>
               <div className="input-group">
@@ -449,10 +448,7 @@ export function TeamReport({ match }) {
 
             {/* Created After Date Picker */}
             <div className="d-flex flex-column flex-shrink-0">
-              <label
-                htmlFor="search-by-startDate"
-                className={`text-left ${darkMode ? 'text-light' : ''}`}
-              >
+              <label htmlFor="search-by-startDate" className={`text-left ${darkMode ? 'text-light' : ''}`}>
                 Created After
               </label>
               <DatePicker
@@ -470,10 +466,7 @@ export function TeamReport({ match }) {
 
             {/* Modified After Date Picker */}
             <div className="d-flex flex-column flex-shrink-0">
-              <label
-                htmlFor="search-by-endDate"
-                className={`text-left ${darkMode ? 'text-light' : ''}`}
-              >
+              <label htmlFor="search-by-endDate" className={`text-left ${darkMode ? 'text-light' : ''}`}>
                 Modified After
               </label>
               <DatePicker
@@ -515,6 +508,7 @@ export function TeamReport({ match }) {
               />
             </div>
           </div>
+
           <table className="table tableHeader" style={{ marginTop: '10px' }}>
             <thead className={`table table-hover ${darkMode ? 'text-light table-hover-dark' : ''}`}>
               <tr className={darkMode ? 'bg-space-cadet' : ''}>
@@ -541,10 +535,16 @@ export function TeamReport({ match }) {
                 </td>
               </tr>
             </thead>
+
             <tbody className="table">
               {allTeamsMembers && allTeamsMembers.length > 0 ? (
                 handleSearch().map((teamData, index) => (
-                  <tr className={`table-row ${darkMode ? 'bg-yinmn-blue text-light table-hover-dark' : ''}`} key={teamData._id}>
+                  <tr
+                    className={`${styles['table-row']} ${
+                      darkMode ? 'bg-yinmn-blue text-light table-hover-dark' : ''
+                    }`}
+                    key={teamData._id}
+                  >
                     <td>
                       <input
                         type="checkbox"
@@ -570,21 +570,25 @@ export function TeamReport({ match }) {
                         >
                           See
                         </button>
-                        {showMembersForTeam === teamData?._id && (
-                          <div className="mt-2 p-2 border rounded" style={{ backgroundColor: '#f8f9fa' }}>
-                            {allTeamsMembers[index] && allTeamsMembers[index].length > 1 ? (
-                              allTeamsMembers[index].map(member => (
-                                <div key={`${teamData?._id}-${member?._id}`} className="mb-1">
-                                  {member?.firstName} {member?.lastName}
-                                </div>
-                              ))
-                            ) : (
-                              <div className="text-muted">
-                                <strong>This team has no members!</strong>
-                              </div>
-                            )}
-                          </div>
-                        )}
+                      
+  {showMembersForTeam === teamData?._id && (
+  <div
+    className={`mt-2 p-2 border rounded ${darkMode ? 'text-light' : 'text-muted'}`}
+    style={{ backgroundColor: darkMode ? '#162e4c' : '#f8f9fa' }}
+  >
+    {allTeamsMembers[index] && allTeamsMembers[index].length > 1 ? (
+      allTeamsMembers[index].map(member => (
+        <div key={`${teamData?._id}-${member?._id}`} className="mb-1">
+          {member?.firstName} {member?.lastName}
+        </div>
+      ))
+    ) : (
+      <div className={darkMode ? 'text-light' : 'text-muted'}>
+        <strong>This team has no members!</strong>
+      </div>
+    )}
+  </div>
+)}
                       </div>
                     </td>
                     <td>{teamData._id}</td>
@@ -596,8 +600,8 @@ export function TeamReport({ match }) {
                 <tr style={{ backgroundColor: darkMode ? '#3A506B' : 'white' }}>
                   <td colSpan="7" className="text-center">
                     <strong className={darkMode ? 'text-light' : ''}>
-                      {allTeamsMembers && allTeamsMembers.length === 0 
-                        ? 'No teams found. Please check your permissions or contact an administrator.' 
+                      {allTeamsMembers && allTeamsMembers.length === 0
+                        ? 'No teams found. Please check your permissions or contact an administrator.'
                         : 'Loading teams...'}
                     </strong>
                   </td>

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { Modal, ModalBody, Button, ModalHeader } from 'reactstrap';
@@ -8,9 +9,9 @@ import {
   deleteTask,
   deleteChildrenTasks,
 } from '../../../../../actions/task.js';
-import './tagcolor.css';
-import './task.css';
-import '../../../../Header/DarkMode.css'
+import './tagcolor.module.css';
+import styles from './task.module.css';
+import '../../../../Header/index.module.css'
 import { Editor } from '@tinymce/tinymce-react';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { boxStyle, boxStyleDark } from '~/styles';
@@ -187,7 +188,7 @@ function Task(props) {
               className={`tag_color tag_color_${props.num?.length > 0 ? props.num.split('.')[0] : props.num
                 } tag_color_lv_${props.level}`}
             ></td>
-            <td>
+            <td className={styles.centerAction}>
               <Button
                 color="primary"
                 size="sm"
@@ -201,17 +202,28 @@ function Task(props) {
                 <span className="action-edit-btn">EDIT</span>
                 {controllerRow ? <BsFillCaretUpFill /> : <BsFillCaretDownFill />}
               </Button>
+              {props.taskSelectionMode && (
+                <Button
+                  color="success"
+                  size="sm"
+                  className="mt-1"
+                  onClick={() => props.onSelectTask({ _id: props.taskId, taskName: props.name })}
+                  style={darkMode ? boxStyleDark : boxStyle}
+                >
+                  Select
+                </Button>
+              )}
             </td>
             <td
               id={`r_${props.num}_${props.taskId}`}
               // eslint-disable-next-line jsx-a11y/scope
               scope="row"
-              className={`taskNum ${props.hasChildren ? 'has_children' : ''} text-left`}
+              className={`taskNum ${props.hasChildren ? styles.has_children : ''} ${styles.textLeft}`}
               onClick={openChild}
             >
               {props.num.replaceAll('.0', '')}
             </td>
-            <td className="taskName">
+            <td className={`taskName ${styles.textLeft}`}>
               {
                 <div
                   className={`level-space-${props.level}`}
@@ -221,7 +233,7 @@ function Task(props) {
                   <span
                     onClick={openChild}
                     id={`task_name_${props.taskId}`}
-                    className={props.hasChildren ? 'has_children' : ''}
+                    className={props.hasChildren ? styles.has_children : ''}
                   >
                     {props.hasChildren ? (
                       <i className={`fa fa-folder${isOpen ? '-open' : ''}`} aria-hidden="true"></i>
@@ -244,46 +256,57 @@ function Task(props) {
                 <i data-tip="Tertiary" className="fa fa-star-o" aria-hidden="true" />
               ) : null}
             </td>
-            <td className="desktop-view">
-              {props.resources.length
-                ? props.resources
-                  .filter((elm, i) => i < 2 || showMoreResources)
-                  .map((elm, i) => {
-                    const name = elm.name; //Getting initials and formatting them here
-                    const initials = getInitials(name);
-                    //getting background color here
-                    const bg = colors_objs[name].color;
-                    return (
-                      <a
-                        key={`res_${i}`}
-                        data-tip={elm.name}
-                        className="name"
-                        href={`/userprofile/${elm.userID}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        {!elm.profilePic || elm.profilePic === '/defaultprofilepic.png' ? (
-                          <span className="dot" style={{ backgroundColor: bg }}>
-                            {initials}{' '}
-                          </span>
-                        ) : (
-                          // eslint-disable-next-line jsx-a11y/alt-text
-                          <img className="img-circle" src={elm.profilePic} />
-                        )}
-                      </a>
-                    );
-                  })
-                : null}
+            <td>
+                {props.resources.length
+                  ? props.resources
+                      .filter((elm, i) => i < 2 || showMoreResources)
+                      .map((elm, i) => {
+                        const name = elm.name;
+                        const initials = getInitials(name);
+                        const bg = colors_objs[name].color;
+                        return (
+                          <a
+                            key={`res_${i}`}
+                            data-tip={elm.name}
+                            className={styles.name}
+                            href={`/userprofile/${elm.userID}`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {!elm.profilePic || elm.profilePic === '/defaultprofilepic.png' ? (
+                              <span
+                                className={styles.dot}
+                                style={{ backgroundColor: bg }}
+                              >
+                                {initials}
+                              </span>
+                            ) : (
+                              <img
+                                className={styles.imgCircle}
+                                src={elm.profilePic}
+                                alt={elm.name}
+                              />
+                            )}
+                          </a>
+                        );
+                      })
+                  : null}
+
               {props.resources.length > 2 ? (
-                // eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
-                <a
-                  className="resourceMoreToggle"
+                <button
+                  type="button"
+                  className={styles.resourceMoreToggle}
                   onClick={() => setShowMoreResources(!showMoreResources)}
+                  aria-label={
+                    showMoreResources
+                      ? 'Show fewer assigned resources'
+                      : `Show ${props.resources.length - 2} more assigned resources`
+                  }
                 >
-                  <span className="dot">
+                  <span className={styles.dot}>
                     {showMoreResources ? <BsFillCaretLeftFill /> : `${props.resources.length - 2}+`}
                   </span>
-                </a>
+                </button>
               ) : null}
             </td>
             <td>
@@ -293,7 +316,7 @@ function Task(props) {
                 <i data-tip="Not Assigned" className="fa fa-square-o" aria-hidden="true" />
               )}
             </td>
-            <td className="desktop-view">
+            <td>
               {props.status === 'Started' || props.status === 'Active' ? (
                 <i data-tip="Active" className="fa fa-clock-o" aria-hidden="true" />
               ) : null}
@@ -311,43 +334,39 @@ function Task(props) {
               ) : null}
             </td>
             <td
-              className="desktop-view"
               data-tip={`Hours-Best-case: ${parseFloat(props.hoursBest / 8).toFixed(2)} day(s)`}
             >
               {props.hoursBest}
             </td>
             <td
-              className="desktop-view"
               data-tip={`Hours-Worst-case: ${parseFloat(props.hoursWorst / 8).toFixed(2)} day(s)`}
             >
               {props.hoursWorst}
             </td>
             <td
-              className="desktop-view"
               data-tip={`Hours-Most-case: ${parseFloat(props.hoursMost / 8).toFixed(2)} day(s)`}
             >
               {props.hoursMost}
             </td>
             <td
-              className="desktop-view"
               data-tip={`Estimated Hours: ${parseFloat(props.estimatedHours / 8).toFixed(
                 2,
               )} day(s)`}
             >
               {parseFloat(props.estimatedHours).toFixed(2)}
             </td>
-            <td className="desktop-view">
+            <td>
               {startedDate ? 
                 `${startedDate.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' })}-${startedDate.getUTCDate().toString().padStart(2, '0')}-${startedDate.getUTCFullYear()}` 
                 : null}
               <br />
             </td>
-            <td className="desktop-view">
+            <td>
               {dueDate ? 
                 `${dueDate.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' })}-${dueDate.getUTCDate().toString().padStart(2, '0')}-${dueDate.getUTCFullYear()}` 
                 : null}
             </td>
-            <td className="desktop-view">
+            <td>
               {props.links.map((link, i) =>
                 link.length > 1 ? (
                   <a key={i} href={link} target="_blank" data-tip={link} rel="noreferrer">
@@ -356,7 +375,7 @@ function Task(props) {
                 ) : null,
               )}
             </td>
-            <td className="desktop-view" onClick={toggleModal}>
+            <td onClick={toggleModal}>
               <i className="fa fa-book" aria-hidden="true" data-tip="More info" />
             </td>
             <Modal isOpen={modal} toggle={toggleModal} className={darkMode ? 'text-light dark-mode' : ''}>
@@ -457,6 +476,8 @@ function Task(props) {
               load={props.load}
               pageLoadTime={props.pageLoadTime}
               setIsLoading={props.setIsLoading}
+              taskSelectionMode={props.taskSelectionMode}
+              onSelectTask={props.onSelectTask}
             />
           ))
           : null
@@ -464,6 +485,20 @@ function Task(props) {
     </>
   );
 }
+
+Task.propTypes = {
+  taskSelectionMode: PropTypes.bool,
+  onSelectTask: PropTypes.func,
+  taskId: PropTypes.string,
+  name: PropTypes.string,
+};
+
+Task.defaultProps = {
+  taskSelectionMode: false,
+  onSelectTask: () => {},
+  taskId: '',
+  name: '',
+};
 
 const mapStateToProps = state => ({
   // tasks: state.tasks.taskItems,

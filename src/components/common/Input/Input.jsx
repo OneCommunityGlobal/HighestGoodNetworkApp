@@ -3,7 +3,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import './input.css';
+import styles from './input.module.css';
 import { useSelector } from 'react-redux';
 
 // eslint-disable-next-line react/function-component-definition
@@ -30,7 +30,7 @@ const Input = ({ label, name, error, className, type, invalid, textColor, ...res
         {label}
       </label>
       {type === 'password' ? (
-        <div className="input-text w-100">
+        <div className={`${styles.inputText} w-100`}>
           <input
             {...rest}
             type={password}
@@ -38,7 +38,10 @@ const Input = ({ label, name, error, className, type, invalid, textColor, ...res
             name={name}
             className={`form-control ${darkmode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
           />
-          <i onClick={toggleEye} className={`fa ${eye ? 'fa-eye-slash' : 'fa-eye'}`} />
+          <i
+            onClick={toggleEye}
+            className={`fa ${eye ? 'fa-eye-slash' : 'fa-eye'} ${styles.eyeIcon}`}
+          />
           {invalid && (
             <div className="text-danger" style={{ fontSize: '14px' }}>
               {invalid}

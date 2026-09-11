@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
@@ -11,6 +12,7 @@ import styles from './BlueSquareEmailManagement.module.css';
 const BlueSquareEmailManagement = ({
   auth,
   darkMode,
+  roles,
   resendBlueSquareEmails,
   resendWeeklySummaryEmails,
 }) => {
@@ -20,7 +22,15 @@ const BlueSquareEmailManagement = ({
 
   // Check if user has the required permission
   const userPermissions = auth.user?.permissions?.frontPermissions || [];
-  const hasEmailPermission = userPermissions.includes('resendBlueSquareAndSummaryEmails');
+  const removedPermissions = auth.user?.permissions?.removedDefaultPermissions || [];
+  const userRole = auth.user?.role;
+
+  const userRoleData = roles?.find(r => r.roleName === userRole);
+  const roleDefaultPermissions = userRoleData?.permissions || [];
+  const hasEmailPermission =
+    (roleDefaultPermissions.includes('resendBlueSquareAndSummaryEmails') &&
+      !removedPermissions.includes('resendBlueSquareAndSummaryEmails')) ||
+    userPermissions.includes('resendBlueSquareAndSummaryEmails');
 
   const handleBlueSquareResend = async () => {
     setIsLoading(true);
@@ -223,11 +233,33 @@ const BlueSquareEmailManagement = ({
 const mapStateToProps = state => ({
   auth: state.auth,
   darkMode: state.theme.darkMode,
+  roles: state.role.roles,
 });
 
 const mapDispatchToProps = dispatch => ({
   resendBlueSquareEmails: () => dispatch(resendBlueSquareEmails()),
   resendWeeklySummaryEmails: () => dispatch(resendWeeklySummaryEmails()),
 });
+
+BlueSquareEmailManagement.propTypes = {
+  auth: PropTypes.shape({
+    user: PropTypes.shape({
+      permissions: PropTypes.shape({
+        frontPermissions: PropTypes.arrayOf(PropTypes.string),
+        removedDefaultPermissions: PropTypes.arrayOf(PropTypes.string),
+      }),
+      role: PropTypes.string,
+    }),
+  }),
+  darkMode: PropTypes.bool,
+  roles: PropTypes.arrayOf(
+    PropTypes.shape({
+      roleName: PropTypes.string,
+      permissions: PropTypes.arrayOf(PropTypes.string),
+    }),
+  ),
+  resendBlueSquareEmails: PropTypes.func.isRequired,
+  resendWeeklySummaryEmails: PropTypes.func.isRequired,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(BlueSquareEmailManagement);

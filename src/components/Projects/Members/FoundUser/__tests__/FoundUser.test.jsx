@@ -33,6 +33,7 @@ describe('FoundUser Component', () => {
     uid: 'user123',
     firstName: 'John',
     lastName: 'Smith',
+    fullName: 'John Smith',
     isActive: 'true',
     email: 'john.smith@example.com',
     assigned: false,
