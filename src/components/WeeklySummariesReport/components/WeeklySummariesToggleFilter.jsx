@@ -110,6 +110,7 @@ export default function WeeklySummariesToggleFilter({
                         state.selectedBioStatus !== option.value
                       ) {
                         e.target.style.backgroundColor = '#f0f0f0';
+                        e.target.style.color = '#000';
                       }
                     }}
                     onFocus={e => {
@@ -118,6 +119,7 @@ export default function WeeklySummariesToggleFilter({
                         state.selectedBioStatus !== option.value
                       ) {
                         e.target.style.backgroundColor = '#f0f0f0';
+                        e.target.style.color = '#000';
                       }
                     }}
                     onMouseOut={e => {
@@ -126,6 +128,7 @@ export default function WeeklySummariesToggleFilter({
                         state.selectedBioStatus !== option.value
                       ) {
                         e.target.style.backgroundColor = '#fff';
+                        e.target.style.color = '#000';
                       }
                     }}
                     onBlur={e => {
@@ -134,6 +137,7 @@ export default function WeeklySummariesToggleFilter({
                         state.selectedBioStatus !== option.value
                       ) {
                         e.target.style.backgroundColor = '#fff';
+                        e.target.style.color = '#000';
                       }
                     }}
                   >
