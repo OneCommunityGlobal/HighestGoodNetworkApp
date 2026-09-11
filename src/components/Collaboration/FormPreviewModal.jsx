@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import styles from './FormPreviewModal.module.css';
 import {
   normalizeQuestionType,
@@ -7,6 +8,31 @@ import {
   isFieldRequired,
   numberedQuestionLabel,
 } from './jobFormQuestionUtils';
+
+/**
+ * Shared label block for preview fields: renders the live position-based
+ * number + question text + required marker. Extracted to avoid repeating
+ * this block across every question-type render case below.
+ */
+function PreviewFieldLabel({ text, index, requiredMark }) {
+  return (
+    <label className={styles.previewLabel}>
+      {numberedQuestionLabel(text, index)}
+      {requiredMark}
+    </label>
+  );
+}
+
+PreviewFieldLabel.propTypes = {
+  text: PropTypes.string,
+  index: PropTypes.number.isRequired,
+  requiredMark: PropTypes.node,
+};
+
+PreviewFieldLabel.defaultProps = {
+  text: '',
+  requiredMark: null,
+};
 
 /**
  * FormPreviewModal Component
@@ -40,10 +66,7 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
       case 'textbox':
         return (
           <div key={fieldKey} className={styles.previewField}>
-            <label className={styles.previewLabel}>
-              {numberedQuestionLabel(questionText, index)}
-              {requiredMark}
-            </label>
+            <PreviewFieldLabel text={questionText} index={index} requiredMark={requiredMark} />
             <input
               type={resolveInputType(field)}
               placeholder={
@@ -58,10 +81,7 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
       case 'textarea':
         return (
           <div key={fieldKey} className={styles.previewField}>
-            <label className={styles.previewLabel}>
-              {numberedQuestionLabel(questionText, index)}
-              {requiredMark}
-            </label>
+            <PreviewFieldLabel text={questionText} index={index} requiredMark={requiredMark} />
             <textarea placeholder="Enter text here" disabled className={styles.previewTextarea} />
           </div>
         );
@@ -69,10 +89,7 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
       case 'date':
         return (
           <div key={fieldKey} className={styles.previewField}>
-            <label className={styles.previewLabel}>
-              {numberedQuestionLabel(questionText, index)}
-              {requiredMark}
-            </label>
+            <PreviewFieldLabel text={questionText} index={index} requiredMark={requiredMark} />
             <input type="date" disabled className={styles.previewInput} />
           </div>
         );
@@ -80,10 +97,7 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
       case 'file':
         return (
           <div key={fieldKey} className={styles.previewField}>
-            <label className={styles.previewLabel}>
-              {numberedQuestionLabel(questionText, index)}
-              {requiredMark}
-            </label>
+            <PreviewFieldLabel text={questionText} index={index} requiredMark={requiredMark} />
             <input type="file" disabled className={styles.previewInput} />
           </div>
         );
@@ -91,10 +105,7 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
       case 'checkbox':
         return (
           <div key={fieldKey} className={styles.previewField}>
-            <label className={styles.previewLabel}>
-              {numberedQuestionLabel(questionText, index)}
-              {requiredMark}
-            </label>
+            <PreviewFieldLabel text={questionText} index={index} requiredMark={requiredMark} />
             <div className={styles.previewOptions}>
               {options &&
                 options.map((option, optIdx) => (
@@ -120,10 +131,7 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
       case 'radio':
         return (
           <div key={fieldKey} className={styles.previewField}>
-            <label className={styles.previewLabel}>
-              {numberedQuestionLabel(questionText, index)}
-              {requiredMark}
-            </label>
+            <PreviewFieldLabel text={questionText} index={index} requiredMark={requiredMark} />
             <div className={styles.previewOptions}>
               {options &&
                 options.map((option, optIdx) => (
@@ -150,10 +158,7 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
       case 'dropdown':
         return (
           <div key={fieldKey} className={styles.previewField}>
-            <label className={styles.previewLabel}>
-              {numberedQuestionLabel(questionText, index)}
-              {requiredMark}
-            </label>
+            <PreviewFieldLabel text={questionText} index={index} requiredMark={requiredMark} />
             <select disabled className={styles.previewSelect}>
               <option>Select an option</option>
               {options &&
@@ -169,10 +174,7 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
       default:
         return (
           <div key={fieldKey} className={styles.previewField}>
-            <label className={styles.previewLabel}>
-              {numberedQuestionLabel(questionText, index)}
-              {requiredMark}
-            </label>
+            <PreviewFieldLabel text={questionText} index={index} requiredMark={requiredMark} />
             <input
               type="text"
               placeholder="Enter text here"
