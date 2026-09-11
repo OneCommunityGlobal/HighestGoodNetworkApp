@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { Label } from 'reactstrap';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import styles from '../WeeklySummariesReport.module.css';
 import ReactTooltip from 'react-tooltip';
 import { toggleField } from '~/utils/stateHelper';
@@ -19,11 +19,6 @@ export default function WeeklySummariesToggleFilter({
   // Local state for optimistic UI update: immediately show selected bio status button
   const [pendingBioStatus, setPendingBioStatus] = useState(null);
 
-  // Sync pending state with Redux state once Redux update completes
-  useEffect(() => {
-    setPendingBioStatus(state.selectedBioStatus);
-  }, [state.selectedBioStatus]);
-
   const handleTrophyToggleChange = () => {
     toggleField(setState, 'selectedTrophies');
   };
@@ -36,7 +31,7 @@ export default function WeeklySummariesToggleFilter({
     e.preventDefault();
     e.stopPropagation();
     // Optimistic update: immediately show the new selection
-    const newSelection = pendingBioStatus === status ? null : status;
+    const newSelection = (pendingBioStatus ?? state.selectedBioStatus) === status ? null : status;
     setPendingBioStatus(newSelection);
     // Update Redux state
     setState(prevState => ({
@@ -83,13 +78,11 @@ export default function WeeklySummariesToggleFilter({
                       borderRadius: '4px',
                       border: '1px solid #ccc',
                       backgroundColor:
-                        pendingBioStatus === option.value ||
-                        state.selectedBioStatus === option.value
+                        (pendingBioStatus ?? state.selectedBioStatus) === option.value
                           ? '#007bff'
                           : '#fff',
                       color:
-                        pendingBioStatus === option.value ||
-                        state.selectedBioStatus === option.value
+                        (pendingBioStatus ?? state.selectedBioStatus) === option.value
                           ? '#fff'
                           : '#000',
                       cursor: 'pointer',
@@ -105,41 +98,27 @@ export default function WeeklySummariesToggleFilter({
                       transform: 'translateZ(0)',
                     }}
                     onMouseOver={e => {
-                      if (
-                        pendingBioStatus !== option.value &&
-                        state.selectedBioStatus !== option.value
-                      ) {
+                      if ((pendingBioStatus ?? state.selectedBioStatus) !== option.value) {
                         e.target.style.backgroundColor = '#f0f0f0';
                       }
                     }}
                     onFocus={e => {
-                      if (
-                        pendingBioStatus !== option.value &&
-                        state.selectedBioStatus !== option.value
-                      ) {
+                      if ((pendingBioStatus ?? state.selectedBioStatus) !== option.value) {
                         e.target.style.backgroundColor = '#f0f0f0';
                       }
                     }}
                     onMouseOut={e => {
-                      if (
-                        pendingBioStatus !== option.value &&
-                        state.selectedBioStatus !== option.value
-                      ) {
+                      if ((pendingBioStatus ?? state.selectedBioStatus) !== option.value) {
                         e.target.style.backgroundColor = '#fff';
                       }
                     }}
                     onBlur={e => {
-                      if (
-                        pendingBioStatus !== option.value &&
-                        state.selectedBioStatus !== option.value
-                      ) {
+                      if ((pendingBioStatus ?? state.selectedBioStatus) !== option.value) {
                         e.target.style.backgroundColor = '#fff';
                       }
                     }}
                   >
-                    {pendingBioStatus === option.value || state.selectedBioStatus === option.value
-                      ? '✓'
-                      : ''}{' '}
+                    {(pendingBioStatus ?? state.selectedBioStatus) === option.value ? '✓' : ''}{' '}
                     {option.label}
                   </button>
                 </span>
