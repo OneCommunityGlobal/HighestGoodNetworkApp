@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { Label } from 'reactstrap';
+import { useState, useEffect, useRef, startTransition } from 'react';
 import styles from '../WeeklySummariesReport.module.css';
 import ReactTooltip from 'react-tooltip';
 import { toggleField } from '~/utils/stateHelper';
@@ -15,12 +16,46 @@ export default function WeeklySummariesToggleFilter({
   canSeeBioHighlight,
   darkMode,
 }) {
+  // Local state for optimistic UI update with lazy initialization
+  // Initialize with current Redux state to avoid initial delay
+  const [pendingBioStatus, setPendingBioStatus] = useState(() => state.selectedBioStatus);
+  // Track if current component initiated the state change
+  const isInternalUpdateRef = useRef(false);
+
+  // Sync pendingBioStatus with Redux state when Redux update comes from external source
+  useEffect(() => {
+    if (!isInternalUpdateRef.current) {
+      setPendingBioStatus(state.selectedBioStatus);
+    } else {
+      isInternalUpdateRef.current = false;
+    }
+  }, [state.selectedBioStatus]);
+
   const handleTrophyToggleChange = () => {
     toggleField(setState, 'selectedTrophies');
   };
 
-  const handleBioStatusToggleChange = () => {
-    toggleField(setState, 'selectedBioStatus');
+  // Bio Status Filter Handler: Toggle selected bio status between null (no filter) and specific status
+  // Supports three states: 'default', 'requested', 'posted'
+  // Clicking the same button twice will deselect it (set to null)
+  // Uses optimistic update to immediately change button color on click
+  const handleBioStatusChange = (e, status) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Mark this as an internal update to prevent useEffect from overwriting pendingBioStatus
+    isInternalUpdateRef.current = true;
+    // Optimistic update: immediately show the new selection
+    const newSelection = (pendingBioStatus ?? state.selectedBioStatus) === status ? null : status;
+    setPendingBioStatus(newSelection);
+    // Use startTransition to defer heavy Redux state update and filtering
+    // This ensures the optimistic UI update (button color change) happens immediately
+    // without being blocked by the expensive filterWeeklySummaries operation
+    startTransition(() => {
+      setState(prevState => ({
+        ...prevState,
+        selectedBioStatus: newSelection,
+      }));
+    });
   };
 
   const handleOverHoursToggleChange = () => {
@@ -28,53 +63,126 @@ export default function WeeklySummariesToggleFilter({
   };
 
   const textColorClass = darkMode ? `${styles.filterLabel} text-light` : styles.filterLabel;
+  const bioStatusOptions = [
+    { value: 'default', label: 'Not requested/posted' },
+    { value: 'requested', label: 'Requested' },
+    { value: 'posted', label: 'Posted' },
+  ];
 
   return (
-    <div className={styles.specialColorsRow}>
-      <span className={styles.filterGroupLabel}>Filter by:</span>
-
+    <>
       {(hasPermissionToFilter || hasPermission?.('highlightEligibleBios')) && (
-        <div className={styles.specialColorsItem}>
-          <span className={textColorClass}>Bio Status</span>
-          <div style={{ marginTop: '10px' }}>
-            <SlideToggle
-              color="default"
-              onChange={() => toggleField(setState, 'selectedBioStatus')}
-              style={{ marginTop: '20px' }}
-            />
+        <div className={styles.filterRow}>
+          <div className={styles.specialColorsRow}>
+            {/* Bio Status Filter Buttons: Three inline buttons for filtering by bio status
+                - Not requested/posted: Shows users with default bio status
+                - Requested: Shows users with requested bio status
+                - Posted: Shows users with posted bio status
+                Supports click-to-deselect behavior for flexible filtering */}
+            <span className={styles.filterGroupLabel}>Filter by Bio Status:</span>
+            {bioStatusOptions.map(option => (
+              <div key={option.value} className={styles.specialColorsItem}>
+                <span className={styles.specialColorsToggleWrap}>
+                  <button
+                    type="button"
+                    className={styles.bioStatusButton}
+                    onClick={e => handleBioStatusChange(e, option.value)}
+                    onMouseDown={e => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    style={{
+                      padding: '3px 8px',
+                      borderRadius: '4px',
+                      border: `1px solid ${darkMode ? '#555' : '#ccc'}`,
+                      backgroundColor:
+                        (pendingBioStatus ?? state.selectedBioStatus) === option.value
+                          ? '#007bff'
+                          : darkMode
+                          ? '#2a2a2a'
+                          : '#fff',
+                      color:
+                        (pendingBioStatus ?? state.selectedBioStatus) === option.value
+                          ? '#fff'
+                          : darkMode
+                          ? '#ddd'
+                          : '#000',
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      fontWeight: 500,
+                      transition: 'background-color 0.2s',
+                      outline: 'none',
+                      boxShadow: 'none !important',
+                      userSelect: 'none',
+                      WebkitUserSelect: 'none',
+                      MozUserSelect: 'none',
+                      msUserSelect: 'none',
+                      transform: 'translateZ(0)',
+                    }}
+                    onMouseOver={e => {
+                      if ((pendingBioStatus ?? state.selectedBioStatus) !== option.value) {
+                        e.target.style.backgroundColor = darkMode ? '#3a3a3a' : '#f0f0f0';
+                      }
+                    }}
+                    onFocus={e => {
+                      if ((pendingBioStatus ?? state.selectedBioStatus) !== option.value) {
+                        e.target.style.backgroundColor = darkMode ? '#3a3a3a' : '#f0f0f0';
+                      }
+                    }}
+                    onMouseOut={e => {
+                      if ((pendingBioStatus ?? state.selectedBioStatus) !== option.value) {
+                        e.target.style.backgroundColor = darkMode ? '#2a2a2a' : '#fff';
+                      }
+                    }}
+                    onBlur={e => {
+                      if ((pendingBioStatus ?? state.selectedBioStatus) !== option.value) {
+                        e.target.style.backgroundColor = darkMode ? '#2a2a2a' : '#fff';
+                      }
+                    }}
+                  >
+                    {(pendingBioStatus ?? state.selectedBioStatus) === option.value ? '✓' : ''}{' '}
+                    {option.label}
+                  </button>
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       )}
 
       {hasPermissionToFilter && (
-        <div className={styles.specialColorsItem}>
-          <span className={textColorClass}>Trophies</span>
-          <div style={{ marginTop: '10px' }}>
-            <SlideToggle
-              color="default"
-              onChange={() => toggleField(setState, 'selectedTrophies')}
-            />
-          </div>
-        </div>
-      )}
+        <div className={styles.filterRow}>
+          <div className={styles.specialColorsRow}>
+            <span className={styles.filterGroupLabel}>Filter by:</span>
 
-      {hasPermissionToFilter && (
-        <div className={styles.specialColorsItem}>
-          <span className={textColorClass}>Over Hours</span>
-          <div style={{ marginTop: '10px' }}>
-            <SlideToggle
-              color="default"
-              onChange={() => toggleField(setState, 'selectedOverTime')}
-            />
+            <div className={styles.specialColorsItem}>
+              <span className={textColorClass}>Trophies</span>
+              <div style={{ marginTop: '10px' }}>
+                <SlideToggle
+                  color="default"
+                  onChange={() => toggleField(setState, 'selectedTrophies')}
+                />
+              </div>
+            </div>
+
+            <div className={styles.specialColorsItem}>
+              <span className={textColorClass}>Over Hours</span>
+              <div style={{ marginTop: '10px' }}>
+                <SlideToggle
+                  color="default"
+                  onChange={() => toggleField(setState, 'selectedOverTime')}
+                />
+              </div>
+              <ReactTooltip id="filterTooltip" place="top" effect="solid">
+                <span style={{ whiteSpace: 'normal', wordWrap: 'break-word', maxWidth: '200px' }}>
+                  Filter people who contributed more than 25% of their committed hours
+                </span>
+              </ReactTooltip>
+            </div>
           </div>
-          <ReactTooltip id="filterTooltip" place="top" effect="solid">
-            <span style={{ whiteSpace: 'normal', wordWrap: 'break-word', maxWidth: '200px' }}>
-              Filter people who contributed more than 25% of their committed hours
-            </span>
-          </ReactTooltip>
         </div>
       )}
-    </div>
+    </>
   );
 }
 
