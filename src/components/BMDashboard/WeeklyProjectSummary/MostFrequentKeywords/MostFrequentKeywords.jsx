@@ -1,17 +1,442 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
-import DatePicker from 'react-datepicker';
+import DatePicker, { CalendarContainer } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import * as d3 from 'd3';
-import { FaTrash } from 'react-icons/fa';
 import styles from './MostFrequentKeywords.module.css';
 import Select, { components as selectComponents } from 'react-select';
+import PropTypes from 'prop-types';
+
+const calculateDistance = (x1, y1, x2, y2) => Math.hypot(x1 - x2, y1 - y2);
+
+function deduplicateByTag(sorted, maxItems) {
+  const latestItems = [];
+  const usedTags = new Set();
+  for (const item of sorted) {
+    if (!usedTags.has(item.tag)) {
+      latestItems.push(item);
+      usedTags.add(item.tag);
+      if (latestItems.length >= maxItems) break;
+    }
+  }
+  return latestItems;
+}
+
+function checkDateInRange(itemDate, startDate, endDate) {
+  if (startDate && endDate) {
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+    return itemDate >= start && itemDate <= end;
+  }
+  if (startDate) {
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    return itemDate >= start;
+  }
+  if (endDate) {
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+    return itemDate <= end;
+  }
+  return true;
+}
+
 const formatCalendarMonth = date =>
   date.toLocaleString('en-US', {
     month: 'long',
     year: 'numeric',
   });
+
+function buildSelectStyles(palette, isMobile) {
+  return {
+    control: (base, state) => ({
+      ...base,
+      backgroundColor: palette.controlBg,
+      borderColor: state.isFocused ? '#60a5fa' : palette.controlBorder,
+      minHeight: '40px',
+      height: '40px',
+      fontSize: isMobile ? '11px' : '12px',
+      borderRadius: '12px',
+      boxShadow: state.isFocused ? 'inset 0 0 0 1px #60a5fa' : 'none',
+      overflow: 'hidden',
+      alignItems: 'stretch',
+      '&:hover': {
+        borderColor: state.isFocused ? '#60a5fa' : palette.controlBorderHover,
+      },
+    }),
+    valueContainer: base => ({
+      ...base,
+      color: palette.text,
+      backgroundColor: palette.controlBg,
+      minHeight: '40px',
+      height: '40px',
+      padding: '0 14px',
+      borderRadius: '12px 0 0 12px',
+      display: 'flex',
+      alignItems: 'center',
+    }),
+    input: base => ({ ...base, color: palette.text }),
+    placeholder: base => ({ ...base, color: palette.mutedText }),
+    singleValue: base => ({ ...base, color: palette.text }),
+    indicatorSeparator: base => ({ ...base, backgroundColor: 'transparent', width: 0 }),
+    indicatorsContainer: base => ({
+      ...base,
+      backgroundColor: palette.controlBg,
+      minHeight: '40px',
+      height: '40px',
+      width: '44px',
+      minWidth: '44px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: '0 12px 12px 0',
+      flexShrink: 0,
+    }),
+    dropdownIndicator: base => ({
+      ...base,
+      color: palette.indicator,
+      backgroundColor: 'transparent',
+      padding: 0,
+      width: '44px',
+      height: '40px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      '&:hover': { color: palette.text, backgroundColor: 'transparent' },
+    }),
+    clearIndicator: base => ({
+      ...base,
+      color: palette.indicator,
+      backgroundColor: 'transparent',
+      padding: 0,
+      width: '44px',
+      height: '40px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      '&:hover': { color: palette.text, backgroundColor: 'transparent' },
+    }),
+    menu: base => ({
+      ...base,
+      backgroundColor: palette.menuBg,
+      border: `1px solid ${palette.controlBorder}`,
+      boxShadow: palette.shadow,
+    }),
+    menuList: base => ({ ...base, backgroundColor: palette.menuBg }),
+    option: (base, state) => {
+      let optionBg = palette.optionBg;
+      if (state.isSelected) optionBg = palette.optionSelectedBg;
+      else if (state.isFocused) optionBg = palette.optionHoverBg;
+      return {
+        ...base,
+        backgroundColor: optionBg,
+        color: palette.text,
+        fontSize: isMobile ? '10px' : '11px',
+        padding: isMobile ? '3px 5px' : '4px 8px',
+        ':active': { backgroundColor: palette.optionHoverBg },
+      };
+    },
+    groupHeading: base => ({
+      ...base,
+      color: palette.groupHeading,
+      backgroundColor: palette.menuBg,
+      fontSize: isMobile ? '8px' : '9px',
+      fontWeight: '600',
+      padding: isMobile ? '2px 5px' : '3px 8px',
+    }),
+    noOptionsMessage: base => ({
+      ...base,
+      color: palette.mutedText,
+      backgroundColor: palette.menuBg,
+    }),
+    loadingMessage: base => ({
+      ...base,
+      color: palette.mutedText,
+      backgroundColor: palette.menuBg,
+    }),
+  };
+}
+
+function buildPalette(darkMode) {
+  if (darkMode) {
+    return {
+      controlBg: '#243447',
+      controlBorder: '#475569',
+      controlBorderHover: '#64748b',
+      text: '#f8fafc',
+      mutedText: '#cbd5e1',
+      indicator: '#e2e8f0',
+      menuBg: '#243447',
+      optionBg: '#243447',
+      optionHoverBg: '#31465f',
+      optionSelectedBg: '#3b82f6',
+      groupHeading: '#94a3b8',
+      shadow: '0 10px 24px rgba(2, 6, 23, 0.45)',
+    };
+  }
+  return {
+    controlBg: '#ffffff',
+    controlBorder: '#d1d5db',
+    controlBorderHover: '#3b82f6',
+    text: '#0f172a',
+    mutedText: '#64748b',
+    indicator: '#475569',
+    menuBg: '#ffffff',
+    optionBg: '#ffffff',
+    optionHoverBg: '#e2e8f0',
+    optionSelectedBg: '#dbeafe',
+    groupHeading: '#475569',
+    shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+  };
+}
+
+function applyDarkCalendarStyles() {
+  const poppers = Array.from(document.querySelectorAll('.react-datepicker-popper'));
+  const activePopper = poppers.find(popper => popper.offsetParent !== null) || poppers.at(-1);
+  if (!activePopper) return;
+
+  const datepicker = activePopper.querySelector('.react-datepicker');
+  const monthContainer = activePopper.querySelector('.react-datepicker__month-container');
+  const header = activePopper.querySelector('.react-datepicker__header');
+  const currentMonth = activePopper.querySelector('.react-datepicker__current-month');
+  const dayNames = activePopper.querySelectorAll('.react-datepicker__day-name');
+  const days = activePopper.querySelectorAll('.react-datepicker__day');
+
+  if (datepicker) {
+    datepicker.style.backgroundColor = '#0f172a';
+    datepicker.style.borderColor = '#334155';
+  }
+  if (monthContainer) monthContainer.style.backgroundColor = '#0f172a';
+  if (header) {
+    header.style.backgroundColor = '#1e293b';
+    header.style.borderBottomColor = '#334155';
+  }
+  if (currentMonth) currentMonth.style.color = '#f8fafc';
+
+  dayNames.forEach(dayName => {
+    dayName.style.color = '#e2e8f0';
+    dayName.style.backgroundColor = 'transparent';
+  });
+
+  days.forEach(day => {
+    if (!day.classList.contains('react-datepicker__day--selected')) {
+      day.style.color = '#f8fafc';
+      day.style.backgroundColor = 'transparent';
+    }
+  });
+}
+
+const TEST_DATASETS = {
+  sustainability: {
+    label: 'Sustainability',
+    type: 'test',
+    data: [
+      { tag: 'Solar Panels', count: 98, date: '2023-03-15' },
+      { tag: 'Wind Energy', count: 87, date: '2023-07-22' },
+      { tag: 'Recycled Materials', count: 76, date: '2023-11-08' },
+      { tag: 'Green Roof', count: 65, date: '2024-02-14' },
+      { tag: 'Rainwater Harvest', count: 54, date: '2024-05-19' },
+      { tag: 'LED Lighting', count: 92, date: '2024-08-25' },
+      { tag: 'HVAC Efficiency', count: 84, date: '2024-10-30' },
+      { tag: 'Smart Meter', count: 71, date: '2025-01-12' },
+    ],
+  },
+  construction: {
+    label: 'Construction',
+    type: 'test',
+    data: [
+      { tag: 'Modular Design', count: 82, date: '2023-04-10' },
+      { tag: 'Prefabrication', count: 73, date: '2023-08-17' },
+      { tag: 'Green Concrete', count: 68, date: '2023-12-03' },
+      { tag: 'Bamboo Floor', count: 54, date: '2024-03-22' },
+      { tag: 'Reclaimed Wood', count: 77, date: '2024-11-11' },
+      { tag: 'Steel Recycling', count: 69, date: '2025-02-05' },
+      { tag: 'Solar Tiles', count: 88, date: '2025-07-15' },
+      { tag: 'Passive House', count: 81, date: '2026-07-31' },
+    ],
+  },
+  energy: {
+    label: 'Energy',
+    type: 'test',
+    data: [
+      { tag: 'Photovoltaic', count: 95, date: '2023-05-25' },
+      { tag: 'Wind Turbine', count: 78, date: '2023-09-12' },
+      { tag: 'Geothermal', count: 62, date: '2024-01-08' },
+      { tag: 'Biomass', count: 51, date: '2024-04-30' },
+      { tag: 'Hydro Power', count: 43, date: '2024-07-17' },
+      { tag: 'Smart Grid', count: 83, date: '2025-03-06' },
+      { tag: 'Energy Storage', count: 91, date: '2025-08-14' },
+      { tag: 'Microgrid', count: 74, date: '2025-11-09' },
+    ],
+  },
+  materials: {
+    label: 'Materials',
+    type: 'test',
+    data: [
+      { tag: 'Recycled Steel', count: 79, date: '2023-06-07' },
+      { tag: 'Sustainable Timber', count: 88, date: '2023-10-28' },
+      { tag: 'Low Carbon Concrete', count: 82, date: '2024-02-11' },
+      { tag: 'Bamboo', count: 61, date: '2024-05-24' },
+      { tag: 'Hempcrete', count: 53, date: '2024-08-19' },
+      { tag: 'Reclaimed Wood', count: 71, date: '2025-03-17' },
+      { tag: 'Green Insulation', count: 64, date: '2025-09-01' },
+      { tag: 'Natural Stone', count: 58, date: '2026-06-21' },
+    ],
+  },
+};
+
+function generateProjectSpecificData(projectName) {
+  if (projectName.toLowerCase().includes('duplicable city center')) {
+    return [
+      { tag: 'Modular Design', count: 85, date: '2025-03-15' },
+      { tag: 'Prefabrication', count: 78, date: '2025-04-22' },
+      { tag: 'Replicable Units', count: 72, date: '2025-05-10' },
+      { tag: 'Standard Parts', count: 64, date: '2025-06-18' },
+      { tag: 'Urban Planning', count: 81, date: '2025-08-30' },
+      { tag: 'Smart City Tech', count: 69, date: '2025-10-05' },
+      { tag: 'Energy Efficiency', count: 76, date: '2026-01-19' },
+      { tag: 'Mixed Use', count: 68, date: '2026-05-08' },
+    ];
+  }
+  return [
+    { tag: 'Site Planning', count: 72, date: '2024-03-15' },
+    { tag: 'Foundation', count: 65, date: '2024-06-22' },
+    { tag: 'Framing', count: 58, date: '2024-09-10' },
+    { tag: 'Electrical', count: 62, date: '2025-01-18' },
+    { tag: 'Plumbing', count: 54, date: '2025-04-25' },
+    { tag: 'HVAC', count: 67, date: '2025-07-30' },
+    { tag: 'Finishing', count: 59, date: '2025-11-14' },
+    { tag: 'Landscaping', count: 51, date: '2026-02-05' },
+  ];
+}
+
+function MFKDatePickers({
+  darkMode,
+  isMobile,
+  startDate,
+  endDate,
+  today,
+  handleStartDateChange,
+  handleEndDateChange,
+  handleClearDates,
+  renderCalendarContainer,
+  applyDarkCalendarTheme,
+  renderCalendarHeader,
+  mfkStyles,
+}) {
+  return (
+    <>
+      <div className={mfkStyles.controlGroup}>
+        <label htmlFor="start-date" className={mfkStyles.mfkLabel}>
+          From
+        </label>
+        <DatePicker
+          id="start-date"
+          selected={startDate}
+          onChange={handleStartDateChange}
+          className={`${mfkStyles.mfkDatepicker} ${darkMode ? mfkStyles.mfkDatepickerDark : ''}`}
+          calendarClassName={darkMode ? 'mfk-dark-calendar' : ''}
+          popperClassName={darkMode ? 'mfk-dark-popper' : ''}
+          placeholderText="Start"
+          dateFormat={isMobile ? 'MM/dd/yyyy' : 'MM/dd/yy'}
+          maxDate={endDate || today}
+          minDate={new Date('2023-01-01')}
+          calendarContainer={renderCalendarContainer}
+          onCalendarOpen={applyDarkCalendarTheme}
+          renderCustomHeader={darkMode ? renderCalendarHeader : undefined}
+        />
+      </div>
+      <div className={mfkStyles.controlGroup}>
+        <label htmlFor="end-date" className={mfkStyles.mfkLabel}>
+          To
+        </label>
+        <DatePicker
+          id="end-date"
+          selected={endDate}
+          onChange={handleEndDateChange}
+          className={`${mfkStyles.mfkDatepicker} ${darkMode ? mfkStyles.mfkDatepickerDark : ''}`}
+          calendarClassName={darkMode ? 'mfk-dark-calendar' : ''}
+          popperClassName={darkMode ? 'mfk-dark-popper' : ''}
+          placeholderText="End"
+          dateFormat={isMobile ? 'MM/dd/yyyy' : 'MM/dd/yy'}
+          minDate={startDate || new Date('2023-01-01')}
+          maxDate={today}
+          calendarContainer={renderCalendarContainer}
+          onCalendarOpen={applyDarkCalendarTheme}
+          renderCustomHeader={darkMode ? renderCalendarHeader : undefined}
+        />
+      </div>
+      {(startDate || endDate) && (
+        <button
+          type="button"
+          className={mfkStyles.clearButton}
+          onClick={handleClearDates}
+          title="Clear"
+        >
+          ✕
+        </button>
+      )}
+    </>
+  );
+}
+
+const mfkStylesShape = PropTypes.shape({
+  controlGroup: PropTypes.string,
+  mfkLabel: PropTypes.string,
+  mfkDatepicker: PropTypes.string,
+  mfkDatepickerDark: PropTypes.string,
+  clearButton: PropTypes.string,
+  mfkChartContainer: PropTypes.string,
+  mfkLoading: PropTypes.string,
+  mfkError: PropTypes.string,
+  mfkEmpty: PropTypes.string,
+});
+
+MFKDatePickers.propTypes = {
+  darkMode: PropTypes.bool,
+  isMobile: PropTypes.bool,
+  startDate: PropTypes.instanceOf(Date),
+  endDate: PropTypes.instanceOf(Date),
+  today: PropTypes.instanceOf(Date),
+  handleStartDateChange: PropTypes.func,
+  handleEndDateChange: PropTypes.func,
+  handleClearDates: PropTypes.func,
+  renderCalendarContainer: PropTypes.func,
+  applyDarkCalendarTheme: PropTypes.func,
+  renderCalendarHeader: PropTypes.func,
+  mfkStyles: mfkStylesShape,
+};
+
+function MFKChartArea({ isLoading, error, tags, selectedOption, svgRef, containerRef, mfkStyles }) {
+  return (
+    <div ref={containerRef} className={mfkStyles.mfkChartContainer}>
+      {isLoading && <div className={mfkStyles.mfkLoading}>Loading...</div>}
+      {!isLoading && error && <div className={mfkStyles.mfkError}>{error}</div>}
+      {!isLoading && !error && tags.length === 0 && (
+        <div className={mfkStyles.mfkEmpty}>{selectedOption ? 'No data' : 'Select source'}</div>
+      )}
+      {!isLoading && !error && tags.length > 0 && (
+        <svg ref={svgRef} style={{ width: '100%', height: '100%' }} />
+      )}
+    </div>
+  );
+}
+
+MFKChartArea.propTypes = {
+  isLoading: PropTypes.bool,
+  error: PropTypes.string,
+  tags: PropTypes.arrayOf(PropTypes.shape({ tag: PropTypes.string, count: PropTypes.number })),
+  selectedOption: PropTypes.shape({ value: PropTypes.string, type: PropTypes.string }),
+  svgRef: PropTypes.oneOfType([PropTypes.func, PropTypes.shape({ current: PropTypes.object })]),
+  containerRef: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.shape({ current: PropTypes.object }),
+  ]),
+  mfkStyles: mfkStylesShape,
+};
 
 const DropdownIndicator = props => (
   <selectComponents.DropdownIndicator {...props}>
@@ -64,8 +489,7 @@ function isWithinDateRange(item, startDate, endDate) {
   return true;
 }
 
-function MostFrequentKeywords() {
-  const darkMode = useSelector(state => state.theme.darkMode);
+function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
   const svgRef = useRef();
   const containerRef = useRef();
   const [projects, setProjects] = useState([]);
@@ -80,99 +504,13 @@ function MostFrequentKeywords() {
   const [isMobile, setIsMobile] = useState(false);
   const [tooltip, setTooltip] = useState({ visible: false, text: '', x: 0, y: 0 });
   const API_BASE = process.env.REACT_APP_APIENDPOINT;
-  const palette = darkMode
-    ? {
-        controlBg: '#243447',
-        controlBorder: '#475569',
-        controlBorderHover: '#64748b',
-        text: '#f8fafc',
-        mutedText: '#cbd5e1',
-        indicator: '#e2e8f0',
-        menuBg: '#243447',
-        optionBg: '#243447',
-        optionHoverBg: '#31465f',
-        optionSelectedBg: '#3b82f6',
-        groupHeading: '#94a3b8',
-        shadow: '0 10px 24px rgba(2, 6, 23, 0.45)',
-      }
-    : {
-        controlBg: '#ffffff',
-        controlBorder: '#d1d5db',
-        controlBorderHover: '#3b82f6',
-        text: '#0f172a',
-        mutedText: '#64748b',
-        indicator: '#475569',
-        menuBg: '#ffffff',
-        optionBg: '#ffffff',
-        optionHoverBg: '#e2e8f0',
-        optionSelectedBg: '#dbeafe',
-        groupHeading: '#475569',
-        shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-      };
+  const reduxDarkMode = useSelector(state => state.theme.darkMode);
+  const darkMode = propDarkMode ?? reduxDarkMode;
+  const palette = buildPalette(darkMode);
 
   // Get today's date for max date restriction
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-
-  // Clean datasets with reasonable text lengths
-  const testDatasets = {
-    sustainability: {
-      label: 'Sustainability',
-      type: 'test',
-      data: [
-        { tag: 'Solar Panels', count: 98, date: '2023-03-15' },
-        { tag: 'Wind Energy', count: 87, date: '2023-07-22' },
-        { tag: 'Recycled Materials', count: 76, date: '2023-11-08' },
-        { tag: 'Green Roof', count: 65, date: '2024-02-14' },
-        { tag: 'Rainwater Harvest', count: 54, date: '2024-05-19' },
-        { tag: 'LED Lighting', count: 92, date: '2024-08-25' },
-        { tag: 'HVAC Efficiency', count: 84, date: '2024-10-30' },
-        { tag: 'Smart Meter', count: 71, date: '2025-01-12' },
-      ],
-    },
-    construction: {
-      label: 'Construction',
-      type: 'test',
-      data: [
-        { tag: 'Modular Design', count: 82, date: '2023-04-10' },
-        { tag: 'Prefabrication', count: 73, date: '2023-08-17' },
-        { tag: 'Green Concrete', count: 68, date: '2023-12-03' },
-        { tag: 'Bamboo Floor', count: 54, date: '2024-03-22' },
-        { tag: 'Reclaimed Wood', count: 77, date: '2024-11-11' },
-        { tag: 'Steel Recycling', count: 69, date: '2025-02-05' },
-        { tag: 'Solar Tiles', count: 88, date: '2025-07-15' },
-        { tag: 'Passive House', count: 81, date: '2026-07-31' },
-      ],
-    },
-    energy: {
-      label: 'Energy',
-      type: 'test',
-      data: [
-        { tag: 'Photovoltaic', count: 95, date: '2023-05-25' },
-        { tag: 'Wind Turbine', count: 78, date: '2023-09-12' },
-        { tag: 'Geothermal', count: 62, date: '2024-01-08' },
-        { tag: 'Biomass', count: 51, date: '2024-04-30' },
-        { tag: 'Hydro Power', count: 43, date: '2024-07-17' },
-        { tag: 'Smart Grid', count: 83, date: '2025-03-06' },
-        { tag: 'Energy Storage', count: 91, date: '2025-08-14' },
-        { tag: 'Microgrid', count: 74, date: '2025-11-09' },
-      ],
-    },
-    materials: {
-      label: 'Materials',
-      type: 'test',
-      data: [
-        { tag: 'Recycled Steel', count: 79, date: '2023-06-07' },
-        { tag: 'Sustainable Timber', count: 88, date: '2023-10-28' },
-        { tag: 'Low Carbon Concrete', count: 82, date: '2024-02-11' },
-        { tag: 'Bamboo', count: 61, date: '2024-05-24' },
-        { tag: 'Hempcrete', count: 53, date: '2024-08-19' },
-        { tag: 'Reclaimed Wood', count: 71, date: '2025-03-17' },
-        { tag: 'Green Insulation', count: 64, date: '2025-09-01' },
-        { tag: 'Natural Stone', count: 58, date: '2026-06-21' },
-      ],
-    },
-  };
 
   const fetchProjects = async () => {
     try {
@@ -182,13 +520,14 @@ function MostFrequentKeywords() {
       });
       setProjects(res.data || []);
     } catch (err) {
-      if (process.env.NODE_ENV !== 'production') {
+      if (process.env.NODE_ENV === 'development') {
+        // eslint-disable-next-line no-console
         console.error('Failed to fetch projects', err);
       }
     }
   };
 
-  const fetchProjectData = async projectId => {
+  const fetchProjectData = async (projectId, projectName) => {
     try {
       setIsLoading(true);
       setError('');
@@ -236,7 +575,7 @@ function MostFrequentKeywords() {
     }
 
     if (selected.type === 'test') {
-      setAllTags(testDatasets[selected.value].data);
+      setAllTags(TEST_DATASETS[selected.value].data);
     } else if (selected.type === 'project') {
       const project = projects.find(p => p._id === selected.value);
       if (project) {
@@ -286,6 +625,17 @@ function MostFrequentKeywords() {
     };
   }, [dimensions, isMobile]);
 
+  const getLatestData = useCallback(
+    data => {
+      if (!data || data.length === 0) return [];
+      const sorted = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
+      const maxItems = isMobile ? 6 : 8;
+      if (sorted.length >= maxItems) return deduplicateByTag(sorted, maxItems);
+      return sorted;
+    },
+    [isMobile],
+  );
+
   const filterTagsByDate = useCallback(
     tagsToFilter => {
       if (!tagsToFilter || tagsToFilter.length === 0) return [];
@@ -294,7 +644,11 @@ function MostFrequentKeywords() {
         return getLatestData(tagsToFilter, isMobile);
       }
 
-      const filtered = tagsToFilter.filter(item => isWithinDateRange(item, startDate, endDate));
+      const filtered = tagsToFilter.filter(item => {
+        const itemDate = new Date(item.date);
+        itemDate.setHours(0, 0, 0, 0);
+        return checkDateInRange(itemDate, startDate, endDate);
+      });
 
       const sorted = [...filtered].sort((a, b) => b.count - a.count);
       const maxItems = isMobile ? 6 : 8;
@@ -358,11 +712,6 @@ function MostFrequentKeywords() {
     if (tag.length <= maxLength) return tag;
     return `${tag.substring(0, maxLength - 2)}…`;
   }, []);
-
-  // Helper function to calculate distance
-  const calculateDistance = (x1, y1, x2, y2) => {
-    return Math.hypot(x1 - x2, y1 - y2);
-  };
 
   // Simple, reliable position calculation
   const getPositions = useCallback(
@@ -842,7 +1191,7 @@ function MostFrequentKeywords() {
 
     options.push({
       label: '📊 TEST DATASETS',
-      options: Object.entries(testDatasets).map(([key, dataset]) => ({
+      options: Object.entries(TEST_DATASETS).map(([key, dataset]) => ({
         label: dataset.label,
         value: key,
         type: 'test',
@@ -879,133 +1228,18 @@ function MostFrequentKeywords() {
     setError('');
   };
 
-  // Helper function to get control styles
-  const getControlStyles = (base, state) => ({
-    ...base,
-    backgroundColor: palette.controlBg,
-    borderColor: state.isFocused ? '#60a5fa' : palette.controlBorder,
-    minHeight: '40px',
-    height: '40px',
-    fontSize: isMobile ? '11px' : '12px',
-    borderRadius: '12px',
-    boxShadow: state.isFocused ? 'inset 0 0 0 1px #60a5fa' : 'none',
-    overflow: 'hidden',
-    alignItems: 'stretch',
-    '&:hover': {
-      borderColor: state.isFocused ? '#60a5fa' : palette.controlBorderHover,
-    },
-  });
+  const selectStyles = buildSelectStyles(palette, isMobile);
 
-  const getValueContainerStyles = base => ({
-    ...base,
-    color: palette.text,
-    backgroundColor: palette.controlBg,
-    minHeight: '40px',
-    height: '40px',
-    padding: '0 14px',
-    borderRadius: '12px 0 0 12px',
-    display: 'flex',
-    alignItems: 'center',
-  });
+  const applyDarkCalendarTheme = useCallback(() => {
+    requestAnimationFrame(applyDarkCalendarStyles);
+  }, []);
 
-  const getInputStyles = base => ({
-    ...base,
-    color: palette.text,
-  });
-
-  const getPlaceholderStyles = base => ({
-    ...base,
-    color: palette.mutedText,
-  });
-
-  const getSingleValueStyles = base => ({
-    ...base,
-    color: palette.text,
-  });
-
-  const getIndicatorSeparatorStyles = base => ({
-    ...base,
-    backgroundColor: 'transparent',
-    width: 0,
-  });
-
-  const getIndicatorsContainerStyles = base => ({
-    ...base,
-    backgroundColor: palette.controlBg,
-    minHeight: '40px',
-    height: '40px',
-    width: '44px',
-    minWidth: '44px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: '0 12px 12px 0',
-    flexShrink: 0,
-  });
-
-  const getIndicatorStyles = base => ({
-    ...base,
-    color: palette.indicator,
-    backgroundColor: 'transparent',
-    padding: 0,
-    width: '44px',
-    height: '40px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    '&:hover': {
-      color: palette.text,
-      backgroundColor: 'transparent',
-    },
-  });
-
-  const getMenuStyles = base => ({
-    ...base,
-    backgroundColor: palette.menuBg,
-    border: `1px solid ${palette.controlBorder}`,
-    boxShadow: palette.shadow,
-  });
-
-  const getMenuListStyles = base => ({
-    ...base,
-    backgroundColor: palette.menuBg,
-  });
-
-  const getOptionStyles = (base, state) => {
-    let backgroundColor = palette.optionBg;
-
-    if (state.isSelected) {
-      backgroundColor = palette.optionSelectedBg;
-    } else if (state.isFocused) {
-      backgroundColor = palette.optionHoverBg;
-    }
-
-    return {
-      ...base,
-      backgroundColor,
-      color: palette.text,
-      fontSize: isMobile ? '10px' : '11px',
-      padding: isMobile ? '3px 5px' : '4px 8px',
-      ':active': {
-        backgroundColor: palette.optionHoverBg,
-      },
-    };
-  };
-
-  const getGroupHeadingStyles = base => ({
-    ...base,
-    color: palette.groupHeading,
-    backgroundColor: palette.menuBg,
-    fontSize: isMobile ? '8px' : '9px',
-    fontWeight: '600',
-    padding: isMobile ? '2px 5px' : '3px 8px',
-  });
-
-  const getNoOptionsMessageStyles = base => ({
-    ...base,
-    color: palette.mutedText,
-    backgroundColor: palette.menuBg,
-  });
+  const renderCalendarContainer = useCallback(
+    ({ className, children }) => (
+      <CalendarContainer className={className}>{children}</CalendarContainer>
+    ),
+    [],
+  );
 
   const renderCalendarHeader = useCallback(
     ({ date, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled }) => (
@@ -1059,88 +1293,34 @@ function MostFrequentKeywords() {
             isClearable
             isSearchable
             components={{ DropdownIndicator }}
-            styles={{
-              control: getControlStyles,
-              valueContainer: getValueContainerStyles,
-              input: getInputStyles,
-              placeholder: getPlaceholderStyles,
-              singleValue: getSingleValueStyles,
-              indicatorSeparator: getIndicatorSeparatorStyles,
-              indicatorsContainer: getIndicatorsContainerStyles,
-              dropdownIndicator: getIndicatorStyles,
-              clearIndicator: getIndicatorStyles,
-              menu: getMenuStyles,
-              menuList: getMenuListStyles,
-              option: getOptionStyles,
-              groupHeading: getGroupHeadingStyles,
-              noOptionsMessage: getNoOptionsMessageStyles,
-              loadingMessage: getNoOptionsMessageStyles,
-            }}
+            styles={selectStyles}
           />
         </div>
-        <div className={styles.controlGroup}>
-          <label htmlFor="start-date" className={styles.mfkLabel}>
-            From
-          </label>
-          <DatePicker
-            id="start-date"
-            selected={startDate}
-            onChange={handleStartDateChange}
-            className={`${styles.mfkDatepicker} ${darkMode ? styles.mfkDatepickerDark : ''}`}
-            calendarClassName={darkMode ? 'mfk-dark-calendar' : ''}
-            popperClassName={darkMode ? 'mfk-dark-popper' : ''}
-            placeholderText="Start"
-            dateFormat={isMobile ? 'MM/dd/yyyy' : 'MM/dd/yy'}
-            maxDate={endDate || today}
-            minDate={new Date('2023-01-01')}
-            renderCustomHeader={darkMode ? renderCalendarHeader : undefined}
-          />
-        </div>
-        <div className={styles.controlGroup}>
-          <label htmlFor="end-date" className={styles.mfkLabel}>
-            To
-          </label>
-          <DatePicker
-            id="end-date"
-            selected={endDate}
-            onChange={handleEndDateChange}
-            className={`${styles.mfkDatepicker} ${darkMode ? styles.mfkDatepickerDark : ''}`}
-            calendarClassName={darkMode ? 'mfk-dark-calendar' : ''}
-            popperClassName={darkMode ? 'mfk-dark-popper' : ''}
-            placeholderText="End"
-            dateFormat={isMobile ? 'MM/dd/yyyy' : 'MM/dd/yy'}
-            minDate={startDate || new Date('2023-01-01')}
-            maxDate={today}
-            renderCustomHeader={darkMode ? renderCalendarHeader : undefined}
-          />
-        </div>
-        {(startDate || endDate) && (
-          <button
-            type="button"
-            className={styles.clearButton}
-            onClick={handleClearDates}
-            title="Clear dates"
-            aria-label="Clear dates"
-          >
-            <FaTrash size={11} />
-          </button>
-        )}
+        <MFKDatePickers
+          darkMode={darkMode}
+          isMobile={isMobile}
+          startDate={startDate}
+          endDate={endDate}
+          today={today}
+          handleStartDateChange={handleStartDateChange}
+          handleEndDateChange={handleEndDateChange}
+          handleClearDates={handleClearDates}
+          renderCalendarContainer={renderCalendarContainer}
+          applyDarkCalendarTheme={applyDarkCalendarTheme}
+          renderCalendarHeader={renderCalendarHeader}
+          mfkStyles={styles}
+        />
       </div>
 
-      <div ref={containerRef} className={styles.mfkChartContainer}>
-        {isLoading && <div className={styles.mfkLoading}>Loading...</div>}
-        {!isLoading && error && <div className={styles.mfkError}>{error}</div>}
-        {!isLoading && !error && tags.length === 0 && (
-          <div className={styles.mfkEmpty}>
-            {selectedOption
-              ? 'No keywords available for selected filters'
-              : 'Select a data source to view keywords'}
-          </div>
-        )}
-        {!isLoading && !error && tags.length > 0 && dimensions.width > 0 && (
-          <svg ref={svgRef} style={{ width: '100%', height: '100%' }} />
-        )}
-      </div>
+      <MFKChartArea
+        isLoading={isLoading}
+        error={error}
+        tags={tags}
+        selectedOption={selectedOption}
+        svgRef={svgRef}
+        containerRef={containerRef}
+        mfkStyles={styles}
+      />
     </div>
   );
 }

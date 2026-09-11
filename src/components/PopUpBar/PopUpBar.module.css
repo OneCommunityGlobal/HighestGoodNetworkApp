@@ -91,6 +91,17 @@
   padding: 0;
 }
 
+.popupContainer.permissionsChanged {
+  align-items: flex-start;
+  gap: 0px;
+  padding: 0px;
+}
+
+.popupContainer.permissionsChanged > .popupMessage {
+  white-space: pre-line;
+  padding: 5px 40px;
+}
+
 @media (width <= 768px) {
   .meetingNotification .popupMessage {
     font-size: 0.8rem;

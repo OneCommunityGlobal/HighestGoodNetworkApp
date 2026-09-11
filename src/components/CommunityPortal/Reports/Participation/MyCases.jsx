@@ -16,9 +16,13 @@ function MyCases() {
   const isExporting =
     typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true';
 
+  const now = new Date();
+
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const filteredEvents = filterEventsByDate(mockEvents, filter);
+  const filteredEvents = filterEventsByDate(mockEvents, filter).filter(
+    event => new Date(event.eventDate).getTime() >= now.getTime(),
+  );
 
   let visibleEvents = filteredEvents;
 

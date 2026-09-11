@@ -258,7 +258,20 @@ export function Header(props) {
   const history = useHistory();
 
   useEffect(() => {
-    setShowProjectDropdown(location.pathname.startsWith('/bmdashboard/'));
+    const path = location.pathname;
+    // BM Projects accordion: any BM dashboard route.
+    setShowProjectDropdown(path === '/bmdashboard' || path.startsWith('/bmdashboard/'));
+  }, [location.pathname]);
+
+  // Injuries Tracking should only show in real BM Dashboard context — not on Report
+  // pages that happen to live under /bmdashboard/* (e.g. Total Construction Summary).
+  const showInjuriesTrackingLink = useMemo(() => {
+    const path = location.pathname;
+    if (path === '/bmdashboard' || path === '/bmdashboard/') return true;
+    if (path.startsWith('/bmdashboard/injurychart')) return true;
+    if (!path.startsWith('/bmdashboard/')) return false;
+    const excludedPrefixes = ['/bmdashboard/totalconstructionsummary'];
+    return !excludedPrefixes.some(prefix => path.startsWith(prefix));
   }, [location.pathname]);
   const MeetingNotificationAudioRef = useRef(null);
   const dismissedMeetingModalIdRef = useRef(null);
@@ -887,6 +900,17 @@ export function Header(props) {
                         BM Dashboard
                       </DropdownItem>
 
+                      {/* Visible only in BM Dashboard context; route stays /bmdashboard/injurychart. */}
+                      {showInjuriesTrackingLink && (
+                        <DropdownItem
+                          tag={Link}
+                          to="/bmdashboard/injurychart"
+                          className={`${fontColor} ${styles.bmSubItem}`}
+                        >
+                          Injuries Tracking
+                        </DropdownItem>
+                      )}
+
                       {/* BM Projects accordion — only shown when on a bmdashboard route */}
                       {showProjectDropdown && (
                         <>
@@ -1072,16 +1096,6 @@ export function Header(props) {
           />
         ))}
       <PermissionWatcher props={props} />
-      {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged === false && (
-        <PopUpBar
-          firstName={viewingUser?.firstName || firstName}
-          lastName={viewingUser?.lastName}
-          message="Heads Up, there were permission changes made to this account"
-          onClickClose={handlePermissionChangeAck}
-          textColor="black_text"
-          isLoading={isAckLoading}
-        />
-      )}
       <div>
         <Modal
           isOpen={popup}
@@ -1097,8 +1111,10 @@ export function Header(props) {
       </div>
       {props.auth.isAuthenticated && isModalVisible && (
         <div className={`${darkMode ? 'bg-oxford-blue' : ''} ${styles.cardWrapper}`}>
-          <Card color="primary" className={styles.headerCard}>
-            <div className="close-button"><Button close onClick={closeModal} /></div>
+          <Card color="primary" className={`${styles.headerCard} ${styles.dashboardHeader}`}>
+            <div className="close-button" style={{ paddingRight: '5px'}}>
+              <Button close onClick={closeModal} />
+            </div>
             <div className={`${styles.cardContent}`}>{modalContent}</div>
           </Card>
         </div>

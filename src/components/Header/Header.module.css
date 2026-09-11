@@ -112,6 +112,10 @@
   position: relative;
 }
 
+.headerCard.dashboardHeader {
+  flex-direction: row-reverse;
+}
+
 .cardWrapper {
   padding: 1rem 0;
   width: 100%;

@@ -2,10 +2,10 @@ import React from 'react';
 import EditBadgePopup from '../EditBadgePopup';
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { themeMock } from '__tests__/mockStates';
 
-const mockStore = configureStore([]);
+const mockStore = configureMockStore([]);
 const mockBadgeValues = {
   badgeName: 'Test Name',
   category: 'Test Category',
@@ -178,5 +178,32 @@ describe('EditBadgePopup Component', () => {
     //test for options dropdown and dynamic hours field
     expect(options).toEqual(expectedCategories);
     expect(screen.getByLabelText('Hours'));
+  });
+  test('handles null required fields without crashing and shows warning', () => {
+    const badgeWithNullFields = {
+      ...mockBadgeValues,
+      type: 'Custom',
+      imageUrl: null,
+      description: null,
+    };
+
+    const store = mockStore({
+      theme: themeMock,
+    });
+
+    render(
+      <Provider store={store}>
+        <EditBadgePopup open={true} badgeValues={badgeWithNullFields} />
+      </Provider>,
+    );
+
+    expect(screen.getByLabelText('Image URL')).toHaveValue('');
+    expect(screen.getByLabelText('Description')).toHaveValue('');
+    expect(
+      screen.getByText(
+        'This badge is missing required information. Please complete all required fields before saving.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Update' })).toBeDisabled();
   });
 });
