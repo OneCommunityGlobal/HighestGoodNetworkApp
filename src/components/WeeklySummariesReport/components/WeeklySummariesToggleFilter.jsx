@@ -16,8 +16,9 @@ export default function WeeklySummariesToggleFilter({
   canSeeBioHighlight,
   darkMode,
 }) {
-  // Local state for optimistic UI update: immediately show selected bio status button
-  const [pendingBioStatus, setPendingBioStatus] = useState(null);
+  // Local state for optimistic UI update with lazy initialization
+  // Initialize with current Redux state to avoid initial delay
+  const [pendingBioStatus, setPendingBioStatus] = useState(() => state.selectedBioStatus);
 
   const handleTrophyToggleChange = () => {
     toggleField(setState, 'selectedTrophies');
