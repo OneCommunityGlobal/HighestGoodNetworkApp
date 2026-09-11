@@ -40,6 +40,23 @@ function generatePageNumbers(current, total) {
   return [1, '...', current - 1, current, current + 1, '...', total];
 }
 
+// The partial record a bulk action applies, used for the optimistic UI update.
+function bulkActionPatch(action, notes) {
+  if (action === 'hold') return { stockHold: true };
+  if (action === 'review') return { isReviewed: true };
+  if (action === 'notes') return { notes: (notes || '').trim() };
+  return {};
+}
+
+// Unambiguous success message so the toast never shows a raw action code or "undefined".
+function buildBulkActionMessage(action, count) {
+  const noun = count === 1 ? 'material' : 'materials';
+  if (action === 'hold') return `Marked ${count} ${noun} as On Hold.`;
+  if (action === 'review') return `Marked ${count} ${noun} as Reviewed.`;
+  if (action === 'notes') return `Added notes to ${count} ${noun}.`;
+  return `Applied bulk action to ${count} ${noun}.`;
+}
+
 export default function ItemsTable({
   selectedProject,
   selectedItem,
@@ -71,6 +88,9 @@ export default function ItemsTable({
   const [notesModalOpen, setNotesModalOpen] = useState(false);
   const [bulkNotesValue, setBulkNotesValue] = useState('');
   const [isBulkActionLoading, setIsBulkActionLoading] = useState(false);
+  // Optimistic hold/review/note state keyed by material id, so the Bulk Status
+  // column updates immediately; cleared once fresh server data arrives.
+  const [statusOverrides, setStatusOverrides] = useState({});
   const isMaterialsTable = itemType?.toLowerCase() === 'materials';
   const pageItems = filteredItems || [];
 
@@ -78,6 +98,7 @@ export default function ItemsTable({
   useEffect(() => {
     setSelectedItems(new Set());
     setSelectAll(false);
+    setStatusOverrides({});
   }, [filteredItems]);
 
   useEffect(() => {
@@ -129,6 +150,26 @@ export default function ItemsTable({
     return value;
   };
 
+  // Resolve a row's hold/review/note flags, merging any optimistic override.
+  const getRowStatus = item => {
+    const override = statusOverrides[item._id] || {};
+    const noteText = override.notes ?? item.notes;
+    return {
+      hasHold: Boolean(item.stockHold || override.stockHold),
+      hasReview: Boolean(item.isReviewed || override.isReviewed),
+      hasNote: Boolean(noteText && noteText.trim()),
+    };
+  };
+
+  const bulkStatusText = item => {
+    const { hasHold, hasReview, hasNote } = getRowStatus(item);
+    const tags = [];
+    if (hasHold) tags.push('On Hold');
+    if (hasReview) tags.push('Reviewed');
+    if (hasNote) tags.push('Has Note');
+    return tags.length ? tags.join(', ') : '-';
+  };
+
   // Round floats to 2 decimals to avoid noise like 1.806000000000001; pass other values through.
   const roundIfNumber = value =>
     typeof value === 'number' && !Number.isInteger(value) ? Number(value.toFixed(2)) : value;
@@ -149,7 +190,13 @@ export default function ItemsTable({
   const exportToCsv = data => {
     if (data.length === 0) return;
 
-    const headers = ['Project', 'Name', ...dynamicColumns.map(col => col.label), 'Stock Available'];
+    const headers = [
+      'Project',
+      'Name',
+      ...dynamicColumns.map(col => col.label),
+      'Stock Available',
+      ...(isMaterialsTable ? ['Bulk Status'] : []),
+    ];
     const csvContent = [
       headers.map(escapeCsv).join(','),
       ...data.map(item =>
@@ -158,6 +205,7 @@ export default function ItemsTable({
           item.itemType?.name || '',
           ...dynamicColumns.map(col => formatValue(getNestedValue(item, col.key))),
           item.stockAvailable || '',
+          ...(isMaterialsTable ? [bulkStatusText(item)] : []),
         ]
           .map(escapeCsv)
           .join(','),
@@ -178,26 +226,37 @@ export default function ItemsTable({
   const exportToPdf = data => {
     if (data.length === 0) return;
 
-    const doc = new jsPDF();
+    // Landscape + line-wrapping keeps wide material tables readable instead of
+    // squeezing headers like "Stock Available" into a single unreadable column.
+    const doc = new jsPDF({ orientation: 'landscape' });
 
     doc.setFontSize(16);
     doc.text(`${itemType} Selected Items`, 14, 16);
 
-    const headers = ['Project', 'Name', ...dynamicColumns.map(col => col.label), 'Stock Available'];
+    const headers = [
+      'Project',
+      'Name',
+      ...dynamicColumns.map(col => col.label),
+      'Stock Available',
+      ...(isMaterialsTable ? ['Bulk Status'] : []),
+    ];
     const body = data.map(item => [
       item.project?.name || '',
       item.itemType?.name || '',
       ...dynamicColumns.map(col => formatValue(roundIfNumber(getNestedValue(item, col.key)))),
       roundIfNumber(item.stockAvailable ?? 0),
+      ...(isMaterialsTable ? [bulkStatusText(item)] : []),
     ]);
 
     autoTable(doc, {
       startY: 24,
       head: [headers],
       body,
-      headStyles: { fillColor: [0, 123, 255] },
+      headStyles: { fillColor: [0, 123, 255], halign: 'left' },
       alternateRowStyles: { fillColor: [245, 245, 245] },
-      styles: { fontSize: 9 },
+      styles: { fontSize: 9, cellPadding: 3, overflow: 'linebreak', valign: 'middle' },
+      margin: { left: 14, right: 14 },
+      tableWidth: 'auto',
     });
 
     doc.save(`${itemType}_selected_items.pdf`);
@@ -206,25 +265,40 @@ export default function ItemsTable({
   const applyServerBulkAction = async (action, payload = {}) => {
     if (selectedItems.size === 0 || isBulkActionLoading) return;
 
+    const selectedIds = Array.from(selectedItems);
     setIsBulkActionLoading(true);
-    const response = await postMaterialsBulkAction({
-      materialIds: Array.from(selectedItems),
-      action,
-      ...payload,
-    });
 
-    if (response?.status >= 200 && response?.status < 300) {
-      toast.success(response.data?.result || 'Bulk action applied successfully.');
+    try {
+      const result = await postMaterialsBulkAction({
+        materialIds: selectedIds,
+        action,
+        ...payload,
+      });
+      // Prefer the real server count; fall back to the selection size if the
+      // backend response omits it so the toast never reads "undefined".
+      const count = result?.modifiedCount ?? result?.matchedCount ?? selectedIds.length;
+      toast.success(buildBulkActionMessage(action, count));
+
+      // Optimistically reflect the change in the Bulk Status column, then refetch
+      // so the persisted server values become the source of truth.
+      const patch = bulkActionPatch(action, payload.notes);
+      setStatusOverrides(prev => {
+        const next = { ...prev };
+        selectedIds.forEach(id => {
+          next[id] = { ...next[id], ...patch };
+        });
+        return next;
+      });
       dispatch(fetchAllMaterials());
+
       setSelectedItems(new Set());
       setSelectAll(false);
       setBulkActionsDropdownOpen(false);
-    } else {
-      const message = response?.data || 'Failed to apply bulk action.';
-      toast.error(typeof message === 'string' ? message : 'Failed to apply bulk action.');
+    } catch (err) {
+      toast.error(err.message || 'Failed to apply bulk action.');
+    } finally {
+      setIsBulkActionLoading(false);
     }
-
-    setIsBulkActionLoading(false);
   };
 
   const handleBulkAction = async action => {
@@ -302,9 +376,19 @@ export default function ItemsTable({
         <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
       )}
 
-      <Modal isOpen={notesModalOpen} toggle={() => setNotesModalOpen(false)}>
-        <ModalHeader toggle={() => setNotesModalOpen(false)}>Add / Update Notes</ModalHeader>
-        <ModalBody>
+      <Modal
+        isOpen={notesModalOpen}
+        toggle={() => setNotesModalOpen(false)}
+        className={darkMode ? 'dark-modal' : ''}
+        contentClassName={darkMode ? 'dark-oxford-modal' : ''}
+      >
+        <ModalHeader
+          toggle={() => setNotesModalOpen(false)}
+          className={darkMode ? 'dark-modal-header bg-space-cadet text-white' : ''}
+        >
+          Add / Update Notes
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'dark-modal-body bg-yinmn-blue text-light' : ''}>
           <Input
             type="textarea"
             value={bulkNotesValue}
@@ -313,7 +397,7 @@ export default function ItemsTable({
             rows={5}
           />
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter className={darkMode ? 'dark-modal-footer bg-space-cadet text-white' : ''}>
           <Button color="secondary" outline onClick={() => setNotesModalOpen(false)}>
             Cancel
           </Button>
@@ -431,9 +515,7 @@ export default function ItemsTable({
             {pageItems.length > 0 ? (
               pageItems.map(el => {
                 const isSelected = selectedItems.has(el._id);
-                const hasHold = Boolean(el.stockHold);
-                const hasReview = Boolean(el.isReviewed);
-                const hasNote = Boolean(el.notes?.trim());
+                const { hasHold, hasReview, hasNote } = getRowStatus(el);
 
                 return (
                   <tr key={el._id} className={isSelected ? styles.selectedRow : ''}>

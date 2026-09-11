@@ -213,6 +213,10 @@ table td {
   display: flex;
   align-items: center;
   gap: 6px;
+
+  /* Wrap instead of overflowing so the next/last-page buttons stay reachable on narrow screens. */
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .pageButtons button {
@@ -694,4 +698,25 @@ table td {
   background: #334155;
   color: #d1dae7;
   border-color: #41556f;
+}
+
+/* Keep the Bulk Actions dropdown menu dark; otherwise reactstrap renders a light
+   menu with a light-gray hover that clashes with the dark toolbar. */
+.darkBulkActions :global(.dropdown-menu) {
+  background-color: #2f4157;
+  border: 1px solid #3f5269;
+}
+
+.darkBulkActions :global(.dropdown-item) {
+  color: #e8edf4;
+}
+
+.darkBulkActions :global(.dropdown-item:hover),
+.darkBulkActions :global(.dropdown-item:focus) {
+  background-color: #3f5269;
+  color: #fff;
+}
+
+.darkBulkActions :global(.dropdown-divider) {
+  border-top-color: #3f5269;
 }
