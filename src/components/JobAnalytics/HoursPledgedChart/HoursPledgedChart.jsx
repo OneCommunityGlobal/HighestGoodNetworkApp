@@ -3,9 +3,35 @@ import { useSelector, useDispatch } from 'react-redux';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LabelList, Label } from 'recharts';
 import DatePicker from 'react-datepicker';
 import styles from './HoursPledgedChart.module.css';
-import Select from 'react-select';
+import Select, { components } from 'react-select';
 import { fetchHoursPledged } from '../../../actions/jobAnalytics/hoursPledgedActions';
 import 'react-datepicker/dist/react-datepicker.css';
+
+const MAX_VISIBLE_ROLES = 2;
+
+const RoleMultiValue = props => {
+  const { index, getValue } = props;
+  const selectedRoles = getValue();
+
+  if (index < MAX_VISIBLE_ROLES) {
+    return <components.MultiValue {...props} />;
+  }
+
+  if (index === MAX_VISIBLE_ROLES) {
+    const hiddenRoleCount = selectedRoles.length - MAX_VISIBLE_ROLES;
+    return (
+      <div
+        className={styles.hpRoleOverflow}
+        title={`${hiddenRoleCount} additional role${hiddenRoleCount === 1 ? '' : 's'}`}
+        aria-label={`${hiddenRoleCount} additional role${hiddenRoleCount === 1 ? '' : 's'}`}
+      >
+        + {hiddenRoleCount} role{hiddenRoleCount === 1 ? '' : 's'}
+      </div>
+    );
+  }
+
+  return null;
+};
 
 function HoursPledgedChart() {
   const [startDate, setStartDate] = useState(null);
@@ -129,6 +155,7 @@ function HoursPledgedChart() {
             options={roleOptions}
             onChange={setSelectedRoles}
             placeholder="Select Roles"
+            components={{ MultiValue: RoleMultiValue }}
             styles={{
               container: base => ({
                 ...base,

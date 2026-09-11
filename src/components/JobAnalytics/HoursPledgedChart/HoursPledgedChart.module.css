@@ -145,6 +145,28 @@
   min-width: 0;
 }
 
+.hpRoleOverflow {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  margin: 2px;
+  padding: 4px 8px;
+  overflow: hidden;
+  border-radius: 4px;
+  background-color: #e2e8f0;
+  color: #1e293b;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.darkMode .hpRoleOverflow {
+  background-color: #475569;
+  color: #f8fafc;
+}
+
 .hpSpinner {
   text-align: center;
   font-size: 18px;
