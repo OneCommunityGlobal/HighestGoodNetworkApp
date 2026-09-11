@@ -403,9 +403,20 @@
 
 .jobList {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 20px;
-  padding: 24px 20px 8px;
+  padding: 20px 0;
+}
+
+@media(width >= 768px) {
+  .jobList {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media(width >= 1024px) {
+  .jobList {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 .jobAd {
