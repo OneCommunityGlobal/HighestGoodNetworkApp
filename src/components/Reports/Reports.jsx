@@ -570,6 +570,7 @@ endDate: moment()
             <div>
               <p className={darkMode ? styles['text-light'] : undefined}>Select a Category</p>
             </div>
+            
             <div className={styles['report-container-data']}>
               <div className={styles['data-container']} style={this.state.showCharts ? {width: '50%'} : {width: '100%'}}>
                 <div className={styles['category-container']}>
@@ -584,10 +585,13 @@ endDate: moment()
                     onClick={this.showProjectTable}
                   >
                     <h3 className={styles['card-category-item-title']}> Projects</h3>
-                    <h3 className={styles['card-category-item-number']}>
-                      {this.state.projectSearchData.length}
-                      {' '}
-                    </h3>
+                      <h3 className={styles['card-category-item-number']}>
+                        {this.props.state.allProjects.fetching ? (
+                          <Loading align="center" darkMode={darkMode} className="fa-lg" containerClassName={styles['card-spinner']}/>
+                        ) : (
+                          this.state.projectSearchData.length
+                          )}
+                      </h3>
                     <img src={projectsImage} alt="Projects" />
                   </button>
                   <button
@@ -602,7 +606,11 @@ endDate: moment()
                   >
                     <h3 className={styles['card-category-item-title']}> People </h3>
                     <h3 className={styles['card-category-item-number']}>
-                      {this.state.peopleSearchData.length}
+                      {this.props.state.allUserProfilesBasicInfo.fetching ? (
+                        <Loading align="center" darkMode={darkMode} className="fa-lg" containerClassName={styles['card-spinner']}/>
+                      ) : (
+                        this.state.peopleSearchData.length
+                        )}
                     </h3>
                     <img src={peopleImage} alt="that representes the people" />
                   </button>
@@ -617,9 +625,14 @@ endDate: moment()
                     onClick={this.showTeamsTable}
                   >
                     <h3 className={styles['card-category-item-title']}> Teams </h3>
-                    <h3 className={styles['card-category-item-number']}>{this.state.teamSearchData?.length}</h3>
-                    <img src={teamsImage} alt="that representes the teams" />
-                  </button>
+                    <h3 className={styles['card-category-item-number']}>
+                      {this.props.state.allTeamsData.fetching ? (
+                        <Loading align="center" darkMode={darkMode} className="fa-lg" containerClassName={styles['card-spinner']}/>
+                      ) : (
+                        this.state.teamSearchData.length
+                      )}
+                    </h3><img src={teamsImage} alt="that representes the teams" />
+                    </button>
                 </div>
                 <div
                   className={`mt-3 p-3 rounded-lg ${darkMode ? 'bg-yinmn-blue text-light' : 'bg-white'

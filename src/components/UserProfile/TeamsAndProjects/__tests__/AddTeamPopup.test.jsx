@@ -6,7 +6,7 @@ import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { postNewTeam, getAllUserTeams } from '~/actions/allTeamsAction';
-import { ADD_NEW_TEAM, RECEIVE_ALL_USER_TEAMS } from '~/constants/allTeamsConstants';
+import { ADD_NEW_TEAM, RECEIVE_ALL_USER_TEAMS, FETCH_USER_TEAMS_START } from '~/constants/allTeamsConstants';
 import axios from 'axios';
 import { vi } from 'vitest';
 
@@ -195,7 +195,10 @@ describe('AddTeamPopup component', () => {
     });
 
     const actionStore = mockStore({});
-    const expectedActions = [{ type: RECEIVE_ALL_USER_TEAMS, payload: responseData }];
+    const expectedActions = [
+      { type: FETCH_USER_TEAMS_START },
+      { type: RECEIVE_ALL_USER_TEAMS, payload: responseData },
+    ];
 
     await actionStore.dispatch(getAllUserTeams());
     expect(actionStore.getActions()).toEqual(expectedActions);
@@ -229,8 +232,11 @@ describe('AddTeamPopup component', () => {
     axios.get.mockRejectedValue();
 
     const actionStore = mockStore({});
-    const expectedActions = [{ type: RECEIVE_ALL_USER_TEAMS, payload: undefined }];
-
+    const expectedActions = [
+      { type: FETCH_USER_TEAMS_START },
+      { type: RECEIVE_ALL_USER_TEAMS, payload: undefined },
+    ];
+    
     await actionStore.dispatch(getAllUserTeams());
     expect(actionStore.getActions()).toEqual(expectedActions);
   });

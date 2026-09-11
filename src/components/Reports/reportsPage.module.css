@@ -301,6 +301,10 @@
   margin-bottom: 1rem;
 }
 
+.card-spinner {
+  background-color: transparent !important;
+}
+
 @media screen and (width <= 1350px) {
   .container-component-wrapper {
     padding: 16px;
