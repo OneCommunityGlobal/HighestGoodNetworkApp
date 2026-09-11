@@ -188,12 +188,12 @@ function Collaboration() {
 
           {summaries.jobs?.length ? (
             summaries.jobs.map(job => (
-              <div key={job._id}>
-                <h4>
+              <article key={job._id} className={styles.summaryItem}>
+                <h4 className={styles.summaryTitle}>
                   <a href={job.jobDetailsLink}>{job.title}</a>
                 </h4>
-                <p>{job.description}</p>
-              </div>
+                <p className={styles.summaryDescription}>{job.description}</p>
+              </article>
             ))
           ) : (
             <p>No summaries found.</p>
@@ -221,18 +221,25 @@ function Collaboration() {
         <nav className={styles.navbar}>
           <form className={styles.searchForm} onSubmit={handleSubmit}>
             <input
+              className={styles.searchInput}
               type="text"
               placeholder="Search by title..."
               value={query}
               onChange={e => setQuery(e.target.value)}
             />
-            <button type="submit" className="btn btn-secondary">
+            <button type="submit" className={styles.searchButton}>
               Go
             </button>
           </form>
 
-          <div ref={dropdownRef} style={{ position: 'relative' }}>
-            <button type="button" onClick={() => setShowCategoryDropdown(p => !p)}>
+          <div ref={dropdownRef} className={styles.categoryDropdown}>
+            <button
+              type="button"
+              className={styles.categoryButton}
+              onClick={() => setShowCategoryDropdown(p => !p)}
+              aria-expanded={showCategoryDropdown}
+              aria-haspopup="true"
+            >
               Select Categories ▼
             </button>
 
@@ -260,7 +267,7 @@ function Collaboration() {
 
         {/* QUERY TEXT */}
         <div className="job-queries">
-          <p>{getListingText()}</p>
+          {/* <p>{getListingText()}</p> */}
           <button type="button" className="btn btn-secondary" onClick={handleShowSummaries}>
             Show Summaries
           </button>
@@ -271,7 +278,15 @@ function Collaboration() {
           <div className={styles.jobQueries}>
             {categoriesSelected.map(cat => (
               <span key={cat} className={styles.chip}>
-                {cat}
+                <span>{cat}</span>
+                <button
+                  type="button"
+                  className={styles.chipRemove}
+                  aria-label={`Remove ${cat} filter`}
+                  onClick={() => handleCategoryToggle(cat)}
+                >
+                  ×
+                </button>
               </span>
             ))}
             <button type="button" className={styles.clearAllButton} onClick={handleClearAllFilters}>
@@ -290,13 +305,7 @@ function Collaboration() {
                 className={styles.jobAd}
                 onClick={() => handleJobClick(ad)}
               >
-                <img
-                  src={
-                    ad.imageUrl ||
-                    `/api/placeholder/640/480?text=${encodeURIComponent(ad.category || 'Job')}`
-                  }
-                  alt={ad.title}
-                />
+                <img src="/Portrait_Placeholder.png" alt={ad.title} />
                 <h3>{ad.title}</h3>
               </button>
             ))
@@ -312,20 +321,23 @@ function Collaboration() {
         </div>
 
         {/* PAGINATION */}
-        <div className={styles.pagination}>
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => goToPage(i + 1)}
-              className={
-                currentPage === i + 1 ? styles.paginationButtonActive : styles.paginationButton
-              }
-            >
-              {i + 1}
-            </button>
-          ))}
-        </div>
+        {jobAds.length > 0 && (
+          <div className={styles.pagination}>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => goToPage(i + 1)}
+                aria-current={currentPage === i + 1 ? 'page' : undefined}
+                className={`${styles.paginationButton} ${
+                  currentPage === i + 1 ? styles.active : ''
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* MODAL */}

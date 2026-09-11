@@ -38,6 +38,7 @@ describe('Collaboration Component', () => {
                   title: 'Frontend Engineer',
                   category: 'Engineering',
                   description: 'Build UI components',
+                  imageUrl: 'https://example.com/frontend-engineer.jpg',
                 },
               ],
             }),
@@ -52,6 +53,55 @@ describe('Collaboration Component', () => {
 
     // Using regex to handle potential element splitting
     expect(await screen.findByText(/Frontend Engineer/i)).toBeInTheDocument();
+  });
+
+  it('uses the placeholder image for job ads', async () => {
+    renderWithProviders(<Collaboration />);
+
+    const jobImage = await screen.findByAltText('Frontend Engineer');
+    expect(jobImage).toHaveAttribute('src', '/Portrait_Placeholder.png');
+  });
+
+  it('removes an individual selected category from its chip', async () => {
+    renderWithProviders(<Collaboration />);
+
+    fireEvent.click(screen.getByRole('button', { name: /select categories/i }));
+    fireEvent.click(await screen.findByLabelText('Engineering'));
+
+    const removeButton = await screen.findByRole('button', {
+      name: 'Remove Engineering filter',
+    });
+    fireEvent.click(removeButton);
+
+    expect(
+      screen.queryByRole('button', { name: 'Remove Engineering filter' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('does not render pagination when no jobs are displayed', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(url => {
+        if (url.toString().includes('/jobs/categories')) {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ categories: ['Engineering'] }),
+          });
+        }
+
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ jobs: [], pagination: { totalPages: 1 } }),
+        });
+      }),
+    );
+
+    renderWithProviders(<Collaboration />);
+
+    expect(
+      await screen.findByText(/No job listings found matching your criteria/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '1', exact: true })).not.toBeInTheDocument();
   });
 
   it('updates search term on form submission', async () => {

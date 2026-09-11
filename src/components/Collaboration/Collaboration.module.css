@@ -46,6 +46,57 @@
   color: var(--text-primary);
 }
 
+.summaryItem {
+  padding: 18px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.summaryItem:last-of-type {
+  border-bottom: none;
+}
+
+.summaryTitle {
+  margin: 0 0 8px;
+  font-size: 1.15rem;
+  line-height: 1.35;
+}
+
+.summaryTitle a {
+  color: #1d4ed8 !important;
+  text-decoration: none;
+  transition: color 150ms ease, text-decoration-color 150ms ease;
+}
+
+.summaryTitle a:hover,
+.summaryTitle a:focus-visible {
+  color: #1e3a8a;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.summaryDescription {
+  margin: 0;
+  color: #475569;
+  line-height: 1.65;
+}
+
+.dark .summaryItem {
+  border-bottom-color: var(--border);
+}
+
+.dark .summaryTitle a {
+  color: #bef264;
+}
+
+.dark .summaryTitle a:hover,
+.dark .summaryTitle a:focus-visible {
+  color: #ecfccb;
+}
+
+.dark .summaryDescription {
+  color: var(--text-secondary);
+}
+
 /* ======================================================
    HEADER
    ====================================================== */
@@ -87,14 +138,84 @@
   justify-content: space-between;
   align-items: center;
   background-color: #9c0;
-  padding: 12px;
-  gap: 12px;
+  padding: 14px 16px;
+  gap: 16px;
   overflow: visible;
 }
 
 .searchForm {
   display: flex;
+  flex: 1;
+  max-width: 560px;
   gap: 8px;
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 0;
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid rgb(15 23 42 / 22%);
+  border-radius: 8px;
+  background-color: #fff;
+  color: #172033;
+  font-size: 0.95rem;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 10%);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.searchInput::placeholder {
+  color: #64748b;
+}
+
+.searchInput:focus {
+  border-color: #166534;
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(22 101 52 / 20%);
+}
+
+.searchButton,
+.categoryButton {
+  height: 42px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.searchButton {
+  min-width: 64px;
+  padding: 0 18px;
+  border: 1px solid #14532d;
+  background-color: #166534;
+  color: #fff;
+}
+
+.searchButton:hover {
+  background-color: #14532d;
+  box-shadow: 0 3px 8px rgb(20 83 45 / 25%);
+}
+
+.categoryDropdown {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.categoryButton {
+  min-width: 190px;
+  padding: 0 16px;
+  border: 1px solid rgb(15 23 42 / 22%);
+  background-color: #fff;
+  color: #172033;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 10%);
+}
+
+.categoryButton:hover,
+.categoryButton[aria-expanded='true'] {
+  border-color: #166534;
+  background-color: #f0fdf4;
+  box-shadow: 0 3px 8px rgb(15 23 42 / 14%);
 }
 
 .emptyState {
@@ -149,7 +270,8 @@
 /* ================= DARK MODE – NAVBAR ================= */
 
 .dark .navbar {
-  background-color: #84cc16;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border);
 }
 
 .dropdownItem input {
@@ -158,25 +280,43 @@
   flex-shrink: 0;
 }
 
-.dark .navbar button,
-.dark .navbar input {
-  color: #020617;
-}
-
-.dark .searchForm input {
-  background-color: var(--bg-main);
+.dark .searchInput {
+  background-color: #020617;
   color: var(--text-primary);
   border: 1px solid var(--border);
+  box-shadow: none;
 }
 
-.dark .searchForm input::placeholder {
+.dark .searchInput::placeholder {
   color: var(--text-secondary);
 }
 
-.dark .dropdownWrapper button {
-  background-color: var(--bg-main);
+.dark .searchInput:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgb(101 163 13 / 25%);
+}
+
+.dark .searchButton {
+  background-color: #a3e635;
+  border-color: #bef264;
+  color: #172033;
+}
+
+.dark .searchButton:hover {
+  background-color: #bef264;
+}
+
+.dark .categoryButton {
+  background-color: #1e293b;
   color: var(--text-primary);
   border: 1px solid var(--border);
+  box-shadow: none;
+}
+
+.dark .categoryButton:hover,
+.dark .categoryButton[aria-expanded='true'] {
+  background-color: var(--bg-surface);
+  border-color: var(--accent);
 }
 
 .dark .dropdownWrapper button:disabled {
@@ -263,9 +403,20 @@
 
 .jobList {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 20px;
-  padding: 24px 20px 8px;
+  padding: 20px 0;
+}
+
+@media(width >= 768px) {
+  .jobList {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media(width >= 1024px) {
+  .jobList {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 .jobAd {
@@ -318,17 +469,47 @@
 }
 
 .paginationButton {
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
   background-color: #fff;
+  color: #374151;
+  font-weight: 600;
   cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease;
 }
 
-.paginationButtonActive {
-  background-color: #9c0;
-  border-color: #9c0;
-  font-weight: 700;
+.paginationButton:hover {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.paginationButton:focus-visible,
+.paginationButton.active:focus-visible {
+  outline: 3px solid rgb(101 163 13 / 35%);
+  outline-offset: 2px;
+}
+
+.paginationButton.active {
+  background-color: #65a30d;
+  border-color: #65a30d;
+  color: #fff;
+  cursor: default;
+  box-shadow: 0 2px 6px rgb(101 163 13 / 35%);
+}
+
+.paginationButton.active:hover {
+  background-color: #65a30d;
+  border-color: #65a30d;
 }
 
 /* ================= DARK MODE – PAGINATION ================= */
@@ -339,10 +520,20 @@
   border: 1px solid var(--border);
 }
 
-.dark .paginationButtonActive {
+.dark .paginationButton:hover {
+  background-color: #1e293b;
+  border-color: #64748b;
+}
+
+.dark .paginationButton.active {
   background-color: var(--accent);
   border-color: var(--accent);
   color: #020617;
+}
+
+.dark .paginationButton.active:hover {
+  background-color: var(--accent);
+  border-color: var(--accent);
 }
 
 /* ======================================================
@@ -357,19 +548,62 @@
 }
 
 .chip {
-  background-color: #9c0;
-  padding: 6px 12px;
-  border-radius: 16px;
-  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 7px 5px 12px;
+  border: 1px solid #65a30d;
+  border-radius: 999px;
+  background-color: #ecfccb;
+  color: #365314;
+  font-size: 0.85rem;
   font-weight: 600;
 }
 
-.clearAllButton {
-  border: 1px solid #333;
-  background: transparent;
-  padding: 6px 12px;
-  border-radius: 16px;
+.chipRemove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background-color: transparent;
+  color: #3f6212;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1;
   cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+
+.chipRemove:hover,
+.chipRemove:focus-visible {
+  border-color: #65a30d;
+  background-color: #d9f99d;
+  color: #1a2e05;
+  outline: none;
+}
+
+.clearAllButton {
+  padding: 5px 13px;
+  border: 1px solid #64748b;
+  border-radius: 999px;
+  background-color: #f8fafc;
+  color: #334155;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.clearAllButton:hover,
+.clearAllButton:focus-visible {
+  border-color: #334155;
+  background-color: #e2e8f0;
+  color: #0f172a;
+  outline: none;
 }
 
 /* ================= DARK MODE – CHIPS ================= */
@@ -377,11 +611,32 @@
 .dark .chip {
   background-color: var(--accent);
   color: #020617;
+  border-color: #a3e635;
+}
+
+.dark .chipRemove {
+  color: #1a2e05;
+}
+
+.dark .chipRemove:hover,
+.dark .chipRemove:focus-visible {
+  border-color: #f8fafc;
+  background-color: #0f172a;
+  color: #f8fafc;
 }
 
 .dark .clearAllButton {
   border: 1px solid var(--border);
-  color: var(--text-primary);
+  background-color: #1e293b;
+  color: #e2e8f0;
+}
+
+.dark .clearAllButton:hover,
+.dark .clearAllButton:focus-visible {
+  border-color: #cbd5e1;
+  background-color: #334155;
+  color: #fff;
+  outline: none;
 }
 
 /* ======================================================
@@ -443,3 +698,24 @@
   color: var(--text-primary);
 }
 
+@media (max-width: 640px) {
+  .navbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .searchForm {
+    max-width: none;
+  }
+
+  .categoryDropdown,
+  .categoryButton {
+    width: 100%;
+  }
+
+  .jobSelect {
+    right: 0;
+    left: auto;
+    width: min(240px, 100%);
+  }
+}
