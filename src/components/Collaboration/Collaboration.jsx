@@ -267,7 +267,7 @@ function Collaboration() {
 
         {/* QUERY TEXT */}
         <div className="job-queries">
-          <p>{getListingText()}</p>
+          {/* <p>{getListingText()}</p> */}
           <button type="button" className="btn btn-secondary" onClick={handleShowSummaries}>
             Show Summaries
           </button>
@@ -278,7 +278,15 @@ function Collaboration() {
           <div className={styles.jobQueries}>
             {categoriesSelected.map(cat => (
               <span key={cat} className={styles.chip}>
-                {cat}
+                <span>{cat}</span>
+                <button
+                  type="button"
+                  className={styles.chipRemove}
+                  aria-label={`Remove ${cat} filter`}
+                  onClick={() => handleCategoryToggle(cat)}
+                >
+                  ×
+                </button>
               </span>
             ))}
             <button type="button" className={styles.clearAllButton} onClick={handleClearAllFilters}>

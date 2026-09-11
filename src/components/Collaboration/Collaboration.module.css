@@ -486,19 +486,62 @@
 }
 
 .chip {
-  background-color: #9c0;
-  padding: 6px 12px;
-  border-radius: 16px;
-  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 7px 5px 12px;
+  border: 1px solid #65a30d;
+  border-radius: 999px;
+  background-color: #ecfccb;
+  color: #365314;
+  font-size: 0.85rem;
   font-weight: 600;
 }
 
-.clearAllButton {
-  border: 1px solid #333;
-  background: transparent;
-  padding: 6px 12px;
-  border-radius: 16px;
+.chipRemove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background-color: transparent;
+  color: #3f6212;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1;
   cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+
+.chipRemove:hover,
+.chipRemove:focus-visible {
+  border-color: #65a30d;
+  background-color: #d9f99d;
+  color: #1a2e05;
+  outline: none;
+}
+
+.clearAllButton {
+  padding: 5px 13px;
+  border: 1px solid #64748b;
+  border-radius: 999px;
+  background-color: #f8fafc;
+  color: #334155;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.clearAllButton:hover,
+.clearAllButton:focus-visible {
+  border-color: #334155;
+  background-color: #e2e8f0;
+  color: #0f172a;
+  outline: none;
 }
 
 /* ================= DARK MODE – CHIPS ================= */
@@ -506,11 +549,32 @@
 .dark .chip {
   background-color: var(--accent);
   color: #020617;
+  border-color: #a3e635;
+}
+
+.dark .chipRemove {
+  color: #1a2e05;
+}
+
+.dark .chipRemove:hover,
+.dark .chipRemove:focus-visible {
+  border-color: #f8fafc;
+  background-color: #0f172a;
+  color: #f8fafc;
 }
 
 .dark .clearAllButton {
   border: 1px solid var(--border);
-  color: var(--text-primary);
+  background-color: #1e293b;
+  color: #e2e8f0;
+}
+
+.dark .clearAllButton:hover,
+.dark .clearAllButton:focus-visible {
+  border-color: #cbd5e1;
+  background-color: #334155;
+  color: #fff;
+  outline: none;
 }
 
 /* ======================================================

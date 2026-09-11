@@ -62,6 +62,22 @@ describe('Collaboration Component', () => {
     expect(jobImage).toHaveAttribute('src', '/Portrait_Placeholder.png');
   });
 
+  it('removes an individual selected category from its chip', async () => {
+    renderWithProviders(<Collaboration />);
+
+    fireEvent.click(screen.getByRole('button', { name: /select categories/i }));
+    fireEvent.click(await screen.findByLabelText('Engineering'));
+
+    const removeButton = await screen.findByRole('button', {
+      name: 'Remove Engineering filter',
+    });
+    fireEvent.click(removeButton);
+
+    expect(
+      screen.queryByRole('button', { name: 'Remove Engineering filter' }),
+    ).not.toBeInTheDocument();
+  });
+
   it('does not render pagination when no jobs are displayed', async () => {
     vi.stubGlobal(
       'fetch',
