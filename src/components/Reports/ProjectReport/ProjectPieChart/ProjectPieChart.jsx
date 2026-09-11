@@ -4,50 +4,74 @@ import { useEffect, useId, useRef, useState } from "react";
 import PropTypes from 'prop-types';
 import { LabelList, Pie, PieChart, ResponsiveContainer, Sector } from 'recharts';
 import TwoWayToggleSwitch from '../../../common/TwoWayToggleSwitch/TwoWayToggleSwitch';
+import styles from './ProjectPieChart.module.css';
 
 const RAD = Math.PI / 180;
 
-// Smart label layout: distribute from center outward to prevent overlap
-function distributeLabels(items, minGap, top, bottom, centerY) {
-  if (items.length === 0) return;
-  
-  // Sort by distance from center
-  items.sort((a, b) => Math.abs(a.rawY - centerY) - Math.abs(b.rawY - centerY));
-  
-  // Place items starting from closest to center, expanding outward
-  const placed = [];
-  
-  for (const item of items) {
-    let y = item.rawY;
-    
-    // Find non-overlapping position
-    for (const p of placed) {
-      if (Math.abs(y - p.y) < minGap) {
-        // Push away from center
-        if (y < centerY) {
-          y = p.y - minGap;
-        } else {
-          y = p.y + minGap;
-        }
-      }
-    }
-    
-    // Clamp to bounds
-    y = Math.max(top, Math.min(y, bottom));
-    item.y = y;
-    placed.push(item);
+export const getChartLayout = availableWidth => {
+  if (availableWidth <= 400) {
+    return {
+      innerRadius: 44,
+      outerRadius: 78,
+      textOffset: 12,
+      fontSize: 10,
+      availableHeight: 280,
+      horizontalMargin: 24,
+      switchScale: 0.55,
+    };
   }
-  
-  // Final adjustment: if any item is out of bounds, shift all
-  const minY = Math.min(...items.map(i => i.y));
-  const maxY = Math.max(...items.map(i => i.y));
-  
-  if (minY < top) {
-    const shift = top - minY;
-    items.forEach(it => it.y += shift);
-  } else if (maxY > bottom) {
-    const shift = bottom - maxY;
-    items.forEach(it => it.y += shift);
+  if (availableWidth <= 576) {
+    return {
+      innerRadius: 50,
+      outerRadius: 90,
+      textOffset: 20,
+      fontSize: 11,
+      availableHeight: 320,
+      horizontalMargin: 24,
+      switchScale: 0.65,
+    };
+  }
+  if (availableWidth <= 640) {
+    return {
+      innerRadius: 60,
+      outerRadius: 120,
+      textOffset: 50,
+      fontSize: 11,
+      availableHeight: 380,
+      horizontalMargin: 16,
+      switchScale: 1,
+    };
+  }
+
+  const circleSize = availableWidth <= 1280 ? (availableWidth / 10) * 0.5 : 30;
+  return {
+    innerRadius: 60 + circleSize,
+    outerRadius: 120 + circleSize,
+    textOffset: 85,
+    fontSize: 13,
+    availableHeight: 480,
+    horizontalMargin: 0,
+    switchScale: 1,
+  };
+};
+
+// Place labels in angular order, then resolve collisions in both directions.
+export function distributeLabels(items, minGap, top, bottom) {
+  if (items.length === 0) return;
+
+  items.sort((a, b) => a.rawY - b.rawY);
+  const availableSpace = Math.max(bottom - top, 0);
+  const gap =
+    items.length > 1 ? Math.min(minGap, availableSpace / (items.length - 1)) : minGap;
+
+  items[0].y = Math.max(top, Math.min(items[0].rawY, bottom));
+  for (let index = 1; index < items.length; index += 1) {
+    items[index].y = Math.max(items[index].rawY, items[index - 1].y + gap);
+  }
+
+  items[items.length - 1].y = Math.min(items[items.length - 1].y, bottom);
+  for (let index = items.length - 2; index >= 0; index -= 1) {
+    items[index].y = Math.min(items[index].y, items[index + 1].y - gap);
   }
 }
 
@@ -99,47 +123,12 @@ const generateRandomHexColor = () => {
   return hexColor;
 }
 
-const renderActiveShape = (props, darkMode, showAllValues, accumulatedValues, windowSize) => {
+const renderActiveShape = props => {
   const hexColor = generateRandomHexColor()
-  const RADIAN = Math.PI / 180;
-  const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
-  const sin = Math.sin(-RADIAN * midAngle);
-  const cos = Math.cos(-RADIAN * midAngle);
-  const mx = cx + (outerRadius + 30) * cos;
-  const my = cy + (outerRadius + 30) * sin;
-  const ex = mx + (cos >= 0 ? 1 : -1) * 22;
-  const ey = my;
-  const textAnchor = cos >= 0 ? 'start' : 'end';
+  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle } = props;
 
   return (
     <g>
-      {!showAllValues ? (
-        <>
-        <svg className="flex flex-column justify-content-center align-items-center">
-          <text x={cx} y={cy} dy={-32} textAnchor="middle" fill={darkMode ? 'white' : fill}>
-            Selected values
-          </text>
-          <text x={cx} y={cy} dy={-14} textAnchor="middle" fill={darkMode ? 'white' : fill}>
-            {accumulatedValues.toFixed(2)}hrs.
-          </text>
-          <text x={cx} y={cy} dy={4} textAnchor="middle" fill={darkMode ? 'white' : fill}>
-            Total hrs.({payload.totalHoursCalculated?.toFixed(2) || 0})
-          </text>
-        </svg>
-          <text x={ex * .94 + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill={darkMode ? 'white' : '#333'}>
-            {`${payload.name?.substring(0, 14) || ''}`} {`${payload.lastName?.substring(0, 1) || ''}`} {`${value?.toFixed(2) || 0}hrs`} ({`${((percent || 0) * 100).toFixed(2)}%`})
-          </text>
-        </>
-      ) : (
-        <>
-        <text x={cx} y={cy} dy={windowSize <= 400 ? -20 : -25} textAnchor="middle" fill={darkMode ? 'white' : fill} fontSize={windowSize <= 400 ? (showAllValues ? 11 : 10) : (showAllValues ? 14 : 12)}>
-          {showAllValues ? 'All' : 'Selected'}
-        </text>
-        <text x={cx} y={cy} dy={windowSize <= 400 ? -8 : -10} textAnchor="middle" fill={darkMode ? 'white' : fill} fontSize={windowSize <= 400 ? (showAllValues ? 9 : 8) : (showAllValues ? 12 : 10)}>
-          {showAllValues ? `${payload.totalHoursCalculated?.toFixed(0) || 0}h` : `${accumulatedValues?.toFixed(1) || 0}h`}
-        </text>
-        </>
-      )}
       <Sector
         cx={cx} cy={cy} innerRadius={innerRadius} outerRadius={outerRadius}
         startAngle={startAngle} endAngle={endAngle} fill={hexColor}
@@ -159,7 +148,33 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
   const switchId = useId();
   const layoutRef = useRef(null);
   const layoutVersionRef = useRef(0);
-  
+  const chartContainerRef = useRef(null);
+  const [measuredWidth, setMeasuredWidth] = useState(null);
+
+  useEffect(() => {
+    const chartContainer = chartContainerRef.current;
+    if (!chartContainer) return undefined;
+
+    const updateMeasuredWidth = width => {
+      if (width > 0) setMeasuredWidth(width);
+    };
+
+    updateMeasuredWidth(chartContainer.getBoundingClientRect().width);
+
+    if (typeof ResizeObserver === 'undefined') return undefined;
+
+    const resizeObserver = new ResizeObserver(entries => {
+      updateMeasuredWidth(entries[0]?.contentRect.width || 0);
+    });
+    resizeObserver.observe(chartContainer);
+
+    return () => resizeObserver.disconnect();
+  }, []);
+
+  const availableWidth = measuredWidth || windowSize;
+  const chartLayout = getChartLayout(availableWidth);
+  const isCompact = availableWidth <= 576;
+
   // Aggregate data to handle small values - recalculate when userData changes
   const aggregatedResult = aggregateSmallValues(userData, windowSize <= 640 ? 0.05 : 0.03);
   const aggregatedData = aggregatedResult.aggregatedData;
@@ -168,7 +183,7 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
   useEffect(() => { 
     layoutRef.current = null;
     layoutVersionRef.current += 1;
-  }, [userData, windowSize, showAllValues, darkMode]);
+  }, [userData, availableWidth, showAllValues, darkMode]);
 
   const onPieEnter = (data, index, event) => {
     if (event.ctrlKey) {
@@ -193,30 +208,8 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
     setShowAllValues(!showAllValues);
   };
 
-  // Responsive circle size - adjusted for mobile to prevent center text cutoff
-  let circleSize = 30;
-  if (windowSize <= 400) {
-    circleSize = -45; // Smaller pie on small mobile (outerRadius = 75, innerRadius = 15)
-  } else if (windowSize <= 576) {
-    circleSize = -35; // Smaller pie on mobile (outerRadius = 85, innerRadius = 25)
-  } else if (windowSize <= 640) {
-    circleSize = 0; // Medium on large mobile (outerRadius = 120, innerRadius = 60)
-  } else if (windowSize <= 1280) {
-    circleSize = windowSize / 10 * 0.5;
-  }
-
-  // Responsive container dimensions - constrain on mobile
-  const containerWidth = windowSize <= 400 ? 280 : windowSize <= 576 ? 320 : windowSize <= 640 ? 380 : 640;
-  const containerHeight = windowSize <= 400 ? 320 : windowSize <= 576 ? 380 : windowSize <= 640 ? 460 : 640;
-  const containerMinHeight = 280;
-
-  // Text offset based on screen size - much smaller for mobile
-  // Reduced to prevent text from being cut off at container edges
-  const textOffset = windowSize <= 400 ? 10 : windowSize <= 576 ? 20 : windowSize <= 640 ? 50 : 85;
-  
-  // Font size based on screen
-  const fontSize = windowSize <= 400 ? 10 : windowSize <= 640 ? 11 : 13;
-  const lineStrokeWidth = windowSize <= 400 ? 1 : 1.5;
+  const { innerRadius, outerRadius, textOffset, fontSize, availableHeight } = chartLayout;
+  const lineStrokeWidth = availableWidth <= 400 ? 1 : 1.5;
 
   // Inline styles for mobile responsiveness (replacing CSS media queries)
   // Button should be centered in the pie chart (cx=50%, cy=50% of container)
@@ -229,48 +222,64 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
     pointerEvents: 'auto',
   };
 
-  // Button scale: smaller when selected (showAllValues=false) to fit in smaller inner radius
-  const getSwitchScale = () => {
-    if (windowSize <= 400) {
-      return showAllValues ? 0.55 : 0.45;
-    } else if (windowSize <= 576) {
-      return showAllValues ? 0.65 : 0.55;
-    }
-    return 1;
-  };
-  
   const switchWrapperStyle = {
-    transform: `scale(${getSwitchScale()})`,
+    transform: `scale(${chartLayout.switchScale})`,
     transition: 'transform 0.2s ease',
   };
 
-  return (
-    <div className={`position-relative ${darkMode ? 'text-light' : ''} h-100`}>
-      <div style={buttonContainerStyle}>
-        <div style={switchWrapperStyle}>
-          <TwoWayToggleSwitch
-            id={switchId}
-            isOn={showAllValues} 
-            handleToggle={toggleShowAllValues} 
-          />
-        </div>
+  const displayedTotalHours =
+    userData[0]?.totalHoursCalculated ?? userData.reduce((total, item) => total + item.value, 0);
+
+  const centerContent = (
+    <div className={`${styles.centerContent} ${darkMode ? styles.centerContentDark : ''}`}>
+      <div className={styles.centerSummary} aria-live="polite">
+        <span>{showAllValues ? 'All values' : 'Selected values'}</span>
+        {!showAllValues && <span>{accumulatedValues.toFixed(2)} hrs</span>}
+        <span>Total hrs ({Number(displayedTotalHours || 0).toFixed(2)})</span>
       </div>
-      <ResponsiveContainer maxWidth={containerWidth} maxHeight={containerHeight} minWidth={280} minHeight={containerMinHeight}>
-        <PieChart>
+      <div className={styles.centerToggleWrapper} style={switchWrapperStyle}>
+        <TwoWayToggleSwitch
+          className={styles.centerToggle}
+          id={switchId}
+          isOn={showAllValues}
+          handleToggle={toggleShowAllValues}
+        />
+      </div>
+    </div>
+  );
+
+  return (
+    <div
+      ref={chartContainerRef}
+      className={`position-relative ${darkMode ? 'text-light' : ''} ${styles.chartRoot} ${
+        isCompact ? styles.compactRoot : 'h-100'
+      }`}
+    >
+      <div className={`${styles.chartCanvas} ${isCompact ? styles.compactCanvas : ''}`}>
+      {!isCompact && <div style={buttonContainerStyle}>{centerContent}</div>}
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart
+          margin={{
+            top: 0,
+            right: chartLayout.horizontalMargin,
+            bottom: 0,
+            left: chartLayout.horizontalMargin,
+          }}
+        >
           <Pie
             activeIndex={activeIndices}
-            activeShape={(props) => renderActiveShape(props, darkMode, showAllValues, accumulatedValues, windowSize)}
+            activeShape={renderActiveShape}
             data={aggregatedData}
             cx="50%"
             cy="50%"
-            innerRadius={60 + circleSize}
-            outerRadius={120 + circleSize}
+            innerRadius={innerRadius}
+            outerRadius={outerRadius}
             fill="#8884d8"
             dataKey="value"
             onMouseEnter={showAllValues ? null : (data, index, event) => onPieEnter(data, index, event.nativeEvent)}
             darkMode={darkMode}
           >
-            {showAllValues && (
+            {!isCompact && (
               <LabelList
                 dataKey="value"
                 content={(props) => {
@@ -283,8 +292,6 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
                     const R = outerRadius + 6;
                     const centerY = cy;
                     
-                    // Calculate available vertical space
-                    const availableHeight = windowSize <= 400 ? 280 : windowSize <= 576 ? 320 : windowSize <= 640 ? 380 : 480;
                     const topBound = centerY - availableHeight / 2;
                     const botBound = centerY + availableHeight / 2;
                     
@@ -311,12 +318,12 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
                       
                       // Generate text based on screen size - shorter for mobile
                       let text;
-                      if (windowSize <= 400) {
+                      if (availableWidth <= 400) {
                         // Very small screens: show only hours to prevent cutoff
                         text = d.isOthers 
                           ? d.name 
                           : `${d.value.toFixed(1)}h`;
-                      } else if (windowSize <= 640) {
+                      } else if (availableWidth <= 640) {
                         // Mobile: shorter text
                         text = d.isOthers
                           ? d.name
@@ -339,8 +346,8 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
                     
                     // Distribute labels with adaptive gap
                     const minGap = getAdaptiveGap(availableHeight, Math.max(left.length, right.length));
-                    distributeLabels(left, minGap, topBound, botBound, centerY);
-                    distributeLabels(right, minGap, topBound, botBound, centerY);
+                    distributeLabels(left, minGap, topBound, botBound);
+                    distributeLabels(right, minGap, topBound, botBound);
                     
                     // Build lookup map
                     const map = { version: currentVersion };
@@ -350,6 +357,7 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
                   
                   const node = layoutRef.current[index];
                   if (!node) return null;
+                  if (!showAllValues && !activeIndices.includes(index)) return null;
                   
                   return (
                     <g>
@@ -366,7 +374,7 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
                         fill={darkMode ? '#fff' : '#333'}
                         dominantBaseline="middle"
                         fontSize={fontSize}
-                        fontWeight={windowSize <= 400 ? 500 : 400}
+                        fontWeight={availableWidth <= 400 ? 500 : 400}
                         style={{ 
                           pointerEvents: 'none',
                           textShadow: darkMode ? 'none' : '0 0 2px rgba(255,255,255,0.8)'
@@ -382,6 +390,23 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
           </Pie>
         </PieChart>
       </ResponsiveContainer>
+      </div>
+      {isCompact && centerContent}
+      {isCompact && (
+        <div className={styles.mobileLegend} aria-label="Chart member values">
+          {aggregatedData.map(item => (
+            <div
+              className={styles.mobileLegendItem}
+              key={`${item.name}-${item.lastName}-${item.originalIndex ?? 'others'}`}
+            >
+              <span className={styles.mobileLegendName}>
+                {item.name} {item.lastName}
+              </span>
+              <span>{Number(item.value || 0).toFixed(2)} hrs</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

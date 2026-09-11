@@ -15,9 +15,9 @@ describe('TasksTable component', () => {
 
   const store = mockStore(mockState);
 
-  const renderComponent = () => render(
+  const renderComponent = props => render(
     <Provider store={store}>
-      <TasksTable tasks={[]} />
+      <TasksTable tasks={[]} {...props} />
     </Provider>
   );
 
@@ -47,5 +47,17 @@ describe('TasksTable component', () => {
 
   it('passes correct props to TasksDetail', () => {
     renderComponent();
+  });
+
+  it('applies scoped dark styles to the Project Report filters', () => {
+    renderComponent({ darkMode: true });
+
+    expect(screen.getByPlaceholderText('Estimated hours').className).toContain(
+      'tasksTableDarkTextInput',
+    );
+    expect(screen.getByText('Any user').className).toContain('tasks-color-select__placeholder');
+    expect(screen.getByText('Active', { selector: 'label' }).className).toContain(
+      'tasksTableDarkLabel',
+    );
   });
 });
