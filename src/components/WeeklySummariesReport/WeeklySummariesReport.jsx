@@ -738,6 +738,8 @@ const WeeklySummariesReport = props => {
         selectedLoggedHoursRange,
         summaries,
         selectedOverTime,
+        // Bio Status Filter: Changed from boolean to nullable enum for flexible filtering
+        // null = no filter, 'default'|'requested'|'posted' = filter by specific status
         selectedBioStatus,
         selectedTrophies,
         COLORS,
@@ -768,8 +770,9 @@ const WeeklySummariesReport = props => {
             return false;
           }
 
-          // Bio Status Filter: when filter is enabled, show people matching the selected bio status
-          // selectedBioStatus can be null (no filter), or one of: 'default', 'requested', 'posted'
+          // Bio Status Filter: Simplified logic using flexible enum matching
+          // Replaces previous strict criteria (>80 work hours AND >=8 summaries AND bio not posted)
+          // Now supports flexible selection: null (show all) or specific status ('default'|'requested'|'posted')
           const isBio = !selectedBioStatus || summary.bioPosted === selectedBioStatus;
 
           const isOverHours =

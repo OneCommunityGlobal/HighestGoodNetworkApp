@@ -19,6 +19,9 @@ export default function WeeklySummariesToggleFilter({
     toggleField(setState, 'selectedTrophies');
   };
 
+  // Bio Status Filter Handler: Toggle selected bio status between null (no filter) and specific status
+  // Supports three states: 'default', 'requested', 'posted'
+  // Clicking the same button twice will deselect it (set to null)
   const handleBioStatusChange = (e, status) => {
     e.preventDefault();
     e.stopPropagation();
@@ -44,6 +47,11 @@ export default function WeeklySummariesToggleFilter({
       {(hasPermissionToFilter || hasPermission?.('highlightEligibleBios')) && (
         <div className={styles.filterRow}>
           <div className={styles.specialColorsRow}>
+            {/* Bio Status Filter Buttons: Three inline buttons for filtering by bio status
+                - Not requested/posted: Shows users with default bio status
+                - Requested: Shows users with requested bio status
+                - Posted: Shows users with posted bio status
+                Supports click-to-deselect behavior for flexible filtering */}
             <span className={styles.filterGroupLabel}>Filter by Bio Status:</span>
             {bioStatusOptions.map(option => (
               <div key={option.value} className={styles.specialColorsItem}>
