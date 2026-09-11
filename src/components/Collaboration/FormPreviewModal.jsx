@@ -5,6 +5,7 @@ import {
   resolveInputType,
   STANDARD_APPLICANT_FIELDS,
   isFieldRequired,
+  numberedQuestionLabel,
 } from './jobFormQuestionUtils';
 
 /**
@@ -40,7 +41,7 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
         return (
           <div key={fieldKey} className={styles.previewField}>
             <label className={styles.previewLabel}>
-              {questionText}
+              {numberedQuestionLabel(questionText, index)}
               {requiredMark}
             </label>
             <input
@@ -58,7 +59,7 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
         return (
           <div key={fieldKey} className={styles.previewField}>
             <label className={styles.previewLabel}>
-              {questionText}
+              {numberedQuestionLabel(questionText, index)}
               {requiredMark}
             </label>
             <textarea placeholder="Enter text here" disabled className={styles.previewTextarea} />
@@ -69,7 +70,7 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
         return (
           <div key={fieldKey} className={styles.previewField}>
             <label className={styles.previewLabel}>
-              {questionText}
+              {numberedQuestionLabel(questionText, index)}
               {requiredMark}
             </label>
             <input type="date" disabled className={styles.previewInput} />
@@ -80,7 +81,7 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
         return (
           <div key={fieldKey} className={styles.previewField}>
             <label className={styles.previewLabel}>
-              {questionText}
+              {numberedQuestionLabel(questionText, index)}
               {requiredMark}
             </label>
             <input type="file" disabled className={styles.previewInput} />
@@ -91,7 +92,7 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
         return (
           <div key={fieldKey} className={styles.previewField}>
             <label className={styles.previewLabel}>
-              {questionText}
+              {numberedQuestionLabel(questionText, index)}
               {requiredMark}
             </label>
             <div className={styles.previewOptions}>
@@ -120,7 +121,7 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
         return (
           <div key={fieldKey} className={styles.previewField}>
             <label className={styles.previewLabel}>
-              {questionText}
+              {numberedQuestionLabel(questionText, index)}
               {requiredMark}
             </label>
             <div className={styles.previewOptions}>
@@ -150,7 +151,7 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
         return (
           <div key={fieldKey} className={styles.previewField}>
             <label className={styles.previewLabel}>
-              {questionText}
+              {numberedQuestionLabel(questionText, index)}
               {requiredMark}
             </label>
             <select disabled className={styles.previewSelect}>
@@ -169,7 +170,7 @@ function FormPreviewModal({ isOpen, onClose, formFields, jobTitle, darkMode }) {
         return (
           <div key={fieldKey} className={styles.previewField}>
             <label className={styles.previewLabel}>
-              {questionText}
+              {numberedQuestionLabel(questionText, index)}
               {requiredMark}
             </label>
             <input
