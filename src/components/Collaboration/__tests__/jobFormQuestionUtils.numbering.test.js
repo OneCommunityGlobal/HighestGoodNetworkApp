@@ -1,20 +1,13 @@
 import { stripLeadingQuestionNumber, numberedQuestionLabel } from '../jobFormQuestionUtils';
 
 describe('stripLeadingQuestionNumber', () => {
-  it('strips a "N.)" style prefix', () => {
-    expect(stripLeadingQuestionNumber('13.) What is your name?')).toBe('What is your name?');
-  });
-
-  it('strips a "N." style prefix', () => {
-    expect(stripLeadingQuestionNumber('2. What is your email?')).toBe('What is your email?');
-  });
-
-  it('strips a "N)" style prefix', () => {
-    expect(stripLeadingQuestionNumber('7) What is your role?')).toBe('What is your role?');
-  });
-
-  it('strips a "N-" style prefix', () => {
-    expect(stripLeadingQuestionNumber('4- What is your role?')).toBe('What is your role?');
+  it.each([
+    ['13.) What is your name?', 'What is your name?', '"N.)" style prefix'],
+    ['2. What is your email?', 'What is your email?', '"N." style prefix'],
+    ['7) What is your role?', 'What is your role?', '"N)" style prefix'],
+    ['4- What is your role?', 'What is your role?', '"N-" style prefix'],
+  ])('strips a %s (%s)', (input, expected) => {
+    expect(stripLeadingQuestionNumber(input)).toBe(expected);
   });
 
   it('leaves text without a leading number untouched', () => {
