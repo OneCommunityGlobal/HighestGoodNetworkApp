@@ -55,8 +55,8 @@ const Projects = function(props) {
     category: '',
   });
   const [projectList, setProjectList] = useState(null);
-  const [searchName, setSearchName] = useState('');
   const [allProjects, setAllProjects] = useState(null);
+  const [searchName, setSearchName] = useState('');
   const [isChangingStatus, setIsChangingStatus] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
   const [searchMode, setSearchMode] = useState('person');
@@ -116,7 +116,9 @@ const Projects = function(props) {
       // If the project is archived, allow unarchiving
       setModalData({
         showModal: true,
-        modalMessage: `<p style="${darkMode ? 'color: white' : 'color: black'}">${PROJECT_INACTIVE_CONFIRMATION}</p>`,
+        modalMessage: `<p style="${
+          darkMode ? 'color: white' : 'color: black'
+        }">${PROJECT_INACTIVE_CONFIRMATION}</p>`,
         modalTitle: `Inactive Confirmation - ${projectData.projectName} `,
         hasConfirmBtn: false,
         hasInactiveBtn: true, // No need for inactive button
@@ -125,7 +127,9 @@ const Projects = function(props) {
     } else {
       setModalData({
         showModal: true,
-        modalMessage: `<p style="${darkMode ? 'color: white' : 'color: black;'}">${PROJECT_ACTIVE_CONFIRMATION}</p>`,
+        modalMessage: `<p style="${
+          darkMode ? 'color: white' : 'color: black;'
+        }">${PROJECT_ACTIVE_CONFIRMATION}</p>`,
         modalTitle: `Active Confirmation - ${projectData.projectName} `,
         hasConfirmBtn: false,
         hasInactiveBtn: false, // No need for inactive button
@@ -189,7 +193,7 @@ const Projects = function(props) {
   const setProjectStatus = async () => {
     setIsChangingStatus(true);
     const updatedProject = { ...projectTarget, isActive: !projectTarget.isActive };
-    await onUpdateProject(updatedProject)
+    await onUpdateProject(updatedProject);
     setIsChangingStatus(false);
     // Close the modal after update
     onCloseModal();
@@ -377,14 +381,17 @@ const Projects = function(props) {
               </div>
             )}
         </div>
-        <div className="d-flex mb-3" style={{ gap: '10px' }}>
+        <div className="d-flex flex-wrap mb-3" style={{ gap: '10px' }}>
           <SearchProjectByPerson
             onSearch={handleSearchName}
             searchMode={searchMode}
             handleFetchArchivedProjects={handleFetchArchivedProjects}
             showArchived={showArchived}
           />
-          <div className="input-group" style={{ maxWidth: '260px', maxHeight: '38px' }}>
+          <div
+            className="input-group"
+            style={{ maxWidth: '260px', maxHeight: '38px', flexShrink: 0 }}
+          >
             <div className="input-group-prepend">
               <span
                   className={`input-group-text ${darkMode ? styles.searchLabelDark + ' text-light' : ''}`}
@@ -413,8 +420,11 @@ const Projects = function(props) {
           {showArchived ? 'Hide Archived' : 'Show Archived'}
         </button>
         </div>
-        <div>
-        <table className="table table-bordered table-responsive-sm">
+        <div className="table-responsive-sm w-100">
+        <table
+          className={`table table-bordered ${styles.projectsTable}`}
+          style={{ tableLayout: 'fixed', width: '100%' }}
+        >
           <thead className={styles.projectsTableHead}>
             <ProjectTableHeader
               onChange={onChangeCategory}

@@ -20,7 +20,7 @@ export default function SearchProjectByPerson({
     onSearch(value); // Trigger search in the parent component
     if (value.trim() === '') {
       // When input is cleared, notify the parent to reset the project list
-      onSelectSuggestion(null); // Pass null or reset value to parent to fetch all projects
+      // onSelectSuggestion(null); // Pass null or reset value to parent to fetch all projects
       setShowSuggestions(false); // Hide suggestions if input is empty
     } else {
       setShowSuggestions(true); // Show suggestions when the user types
@@ -48,7 +48,9 @@ export default function SearchProjectByPerson({
         </div>
         <input
           type="text"
-          className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
+          className={`form-control ${styles.searchInput} ${
+            darkMode ? 'bg-darkmode-liblack text-light' : ''
+          }`}
           placeholder={searchMode === 'person' ? 'Search by Person Name' : 'Search by Project Name'}
           value={inputValue}
           onChange={handleInputChange} // Trigger input change
