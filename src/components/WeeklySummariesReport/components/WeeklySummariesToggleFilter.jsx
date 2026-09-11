@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { Label } from 'reactstrap';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, startTransition } from 'react';
 import styles from '../WeeklySummariesReport.module.css';
 import ReactTooltip from 'react-tooltip';
 import { toggleField } from '~/utils/stateHelper';
@@ -47,11 +47,15 @@ export default function WeeklySummariesToggleFilter({
     // Optimistic update: immediately show the new selection
     const newSelection = (pendingBioStatus ?? state.selectedBioStatus) === status ? null : status;
     setPendingBioStatus(newSelection);
-    // Update Redux state
-    setState(prevState => ({
-      ...prevState,
-      selectedBioStatus: newSelection,
-    }));
+    // Use startTransition to defer heavy Redux state update and filtering
+    // This ensures the optimistic UI update (button color change) happens immediately
+    // without being blocked by the expensive filterWeeklySummaries operation
+    startTransition(() => {
+      setState(prevState => ({
+        ...prevState,
+        selectedBioStatus: newSelection,
+      }));
+    });
   };
 
   const handleOverHoursToggleChange = () => {
