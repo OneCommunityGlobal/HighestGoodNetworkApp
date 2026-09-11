@@ -54,6 +54,32 @@ describe('Collaboration Component', () => {
     expect(await screen.findByText(/Frontend Engineer/i)).toBeInTheDocument();
   });
 
+  it('does not render pagination when no jobs are displayed', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(url => {
+        if (url.toString().includes('/jobs/categories')) {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ categories: ['Engineering'] }),
+          });
+        }
+
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ jobs: [], pagination: { totalPages: 1 } }),
+        });
+      }),
+    );
+
+    renderWithProviders(<Collaboration />);
+
+    expect(
+      await screen.findByText(/No job listings found matching your criteria/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '1', exact: true })).not.toBeInTheDocument();
+  });
+
   it('updates search term on form submission', async () => {
     renderWithProviders(<Collaboration />);
 

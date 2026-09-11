@@ -312,20 +312,22 @@ function Collaboration() {
         </div>
 
         {/* PAGINATION */}
-        <div className={styles.pagination}>
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => goToPage(i + 1)}
-              className={
-                currentPage === i + 1 ? styles.paginationButtonActive : styles.paginationButton
-              }
-            >
-              {i + 1}
-            </button>
-          ))}
-        </div>
+        {jobAds.length > 0 && (
+          <div className={styles.pagination}>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => goToPage(i + 1)}
+                className={
+                  currentPage === i + 1 ? styles.paginationButtonActive : styles.paginationButton
+                }
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* MODAL */}
