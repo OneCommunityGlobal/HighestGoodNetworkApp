@@ -1,52 +1,135 @@
-/* stylelint-disable  */
+/* stylelint-disable */
+
+/* Planned vs Actual Cost component */
+.componentContainer {
+  padding: 10px;
+  color: var(--text-color);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.title {
+  margin: 0 0 4px;
+  color: var(--text-color);
+  font-size: large;
+}
+
+.subtitle {
+  margin: 0 auto 4px;
+  color: var(--text-color);
+  font-size: 0.78rem;
+  opacity: 0.78;
+}
+
+.filterSummary {
+  color: var(--text-color);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
 /* === selectors layout === */
 .selectorsContainer {
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
-  margin-bottom: 3px;
-}
-
-.title {
-  color: var(--text-color);
+  margin-bottom: 12px;
 }
 
 .selectorGroup {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 180px;
 }
 
 .selectorGroup label {
-  font-size: small;
   margin-bottom: 3px;
   color: var(--text-color);
+  font-size: small;
+  font-weight: 600;
 }
 
 .selectorGroup select {
-  font-size: small;
   width: 100%;
   max-height: 200px;
+  padding: 6px 8px;
   overflow-y: auto;
-  background-color: var(--card-bg);
-  color: var(--text-color);
+  box-sizing: border-box;
   border: 1px solid var(--button-hover);
   border-radius: 4px;
-  padding: 4px 8px;
-  box-sizing: border-box;
-}
-
-.chartCaption {
-  text-align: center;
-  font-size: medium;
-  margin-top: 4px;
+  background-color: var(--card-bg);
   color: var(--text-color);
+  font-size: small;
 }
 
-.varianceSummaryContainer {
-  margin-top: 12px;
+.chartContainer {
+  width: 100%;
+  height: 280px;
+  min-height: 240px;
+}
+
+.chartState {
+  display: flex;
+  height: 280px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--text-color);
+  font-style: italic;
+}
+
+/* Custom analytical tooltip */
+.customTooltip {
+  min-width: 185px;
+  padding: 10px 12px;
+  border: 1px solid var(--button-hover);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text-color);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  font-size: 0.78rem;
+}
+
+.customTooltipDark {
+  border-color: #45505e;
+  background: #1f242b;
+}
+
+.tooltipTitle {
+  margin-bottom: 8px;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.tooltipRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 4px;
+}
+
+.tooltipDivider {
+  margin: 7px 0;
   border-top: 1px solid var(--button-hover);
+}
+
+.tooltipStatus {
+  margin-top: 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* Variance summary */
+.varianceSummaryContainer {
+  margin-top: 14px;
   padding-top: 10px;
+  border-top: 1px solid var(--button-hover);
 }
 
 .varianceSummaryHeader {
@@ -54,35 +137,35 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  margin-bottom: 10px;
   flex-wrap: wrap;
+  margin-bottom: 10px;
 }
 
 .varianceSummaryTitle {
-  font-size: 0.9rem;
   margin: 0;
   color: var(--text-color);
+  font-size: 0.9rem;
 }
 
 .totalOverrunBadge,
 .totalOnTrackBadge {
+  padding: 5px 9px;
+  border: 1px solid transparent;
+  border-radius: 999px;
   font-size: 0.75rem;
   font-weight: 700;
-  padding: 4px 8px;
-  border-radius: 999px;
-  border: 1px solid transparent;
 }
 
 .totalOverrunBadge {
-  color: #b63d30;
-  background: rgba(231, 74, 59, 0.14);
   border-color: rgba(231, 74, 59, 0.35);
+  background: rgba(231, 74, 59, 0.14);
+  color: #b63d30;
 }
 
 .totalOnTrackBadge {
-  color: #0f7f5b;
-  background: rgba(28, 200, 138, 0.14);
   border-color: rgba(28, 200, 138, 0.35);
+  background: rgba(28, 200, 138, 0.14);
+  color: #0f7f5b;
 }
 
 .varianceCardsRow {
@@ -92,107 +175,155 @@
 }
 
 .varianceCard {
-  border-radius: 8px;
+  padding: 11px;
   border: 1px solid transparent;
-  padding: 10px;
+  border-radius: 8px;
 }
 
 .varianceOverrun {
-  background: rgba(231, 74, 59, 0.1);
   border-color: rgba(231, 74, 59, 0.35);
+  background: rgba(231, 74, 59, 0.1);
 }
 
 .varianceUnder {
-  background: rgba(28, 200, 138, 0.1);
   border-color: rgba(28, 200, 138, 0.35);
+  background: rgba(28, 200, 138, 0.1);
 }
 
 .varianceNeutral {
-  background: rgba(128, 128, 128, 0.08);
   border-color: rgba(128, 128, 128, 0.2);
+  background: rgba(128, 128, 128, 0.08);
 }
 
 .varianceCardCategory {
+  margin-bottom: 8px;
+  color: var(--text-color);
   font-size: 0.82rem;
   font-weight: 700;
-  color: var(--text-color);
-  margin-bottom: 8px;
 }
 
 .varianceCardRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 3px;
   color: var(--text-color);
   font-size: 0.8rem;
-  margin-bottom: 3px;
+}
+
+.varianceCardHighlight {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 9px;
+  padding-top: 7px;
+  border-top: 1px solid rgba(128, 128, 128, 0.2);
+}
+
+.varianceCardHighlightLabel {
+  color: var(--text-color);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.varianceValueOverrun,
+.varianceValueUnder,
+.varianceValueNeutral {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.varianceValueOverrun {
+  color: #b63d30;
+}
+
+.varianceValueUnder {
+  color: #0f7f5b;
+}
+
+.varianceValueNeutral {
+  color: var(--text-color);
 }
 
 .varianceCardPct {
-  margin-top: 4px;
+  margin-top: 2px;
+  color: var(--text-color);
   font-size: 0.78rem;
   font-weight: 700;
-  color: var(--text-color);
   text-align: right;
 }
 
 .varianceCardStatus {
   margin-top: 6px;
+  color: var(--text-color);
   font-size: 0.72rem;
   font-weight: 700;
-  text-transform: uppercase;
   letter-spacing: 0.02em;
-  color: var(--text-color);
+  text-transform: uppercase;
 }
 
+/* Dark mode */
 .darkMode .totalOverrunBadge {
-  color: #ffb7af;
-  background: rgba(231, 74, 59, 0.2);
   border-color: rgba(255, 183, 175, 0.45);
+  background: rgba(231, 74, 59, 0.2);
+  color: #ffb7af;
 }
 
 .darkMode .totalOnTrackBadge {
-  color: #9ce7cb;
-  background: rgba(28, 200, 138, 0.2);
   border-color: rgba(156, 231, 203, 0.45);
+  background: rgba(28, 200, 138, 0.2);
+  color: #9ce7cb;
 }
 
 .darkMode .varianceOverrun {
-  background: rgba(231, 74, 59, 0.18);
   border-color: rgba(255, 183, 175, 0.3);
+  background: rgba(231, 74, 59, 0.18);
 }
 
 .darkMode .varianceUnder {
-  background: rgba(28, 200, 138, 0.18);
   border-color: rgba(156, 231, 203, 0.3);
+  background: rgba(28, 200, 138, 0.18);
 }
 
 .darkMode .varianceNeutral {
-  background: rgba(160, 170, 190, 0.12);
   border-color: rgba(160, 170, 190, 0.28);
+  background: rgba(160, 170, 190, 0.12);
+}
+
+.darkMode .varianceValueOverrun {
+  color: #ffb7af;
+}
+
+.darkMode .varianceValueUnder {
+  color: #9ce7cb;
 }
 
 /* Keep dashed grid lines visible in dark mode. Overrides the app-wide
    `:global(.dark-mode) .recharts-cartesian-grid-* line` rule that leaks
-   from EventPopularity.module.css (stroke #334155 !important). */
+   from EventPopularity.module.css. */
 :global(.dark-mode) .darkMode :global(.recharts-cartesian-grid-horizontal) line,
 :global(.dark-mode) .darkMode :global(.recharts-cartesian-grid-vertical) line {
   stroke: #aab4c2 !important;
 }
 
 .overBudgetWarning {
-  text-align: center;
-  font-size: 12px;
-  font-weight: 600;
-  color: #dc2626;
   margin-top: 4px;
   padding: 4px 8px;
-  background-color: #fef2f2;
-  border-radius: 4px;
   border: 1px solid #fca5a5;
+  border-radius: 4px;
+  background-color: #fef2f2;
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
 }
 
 @media (width <= 768px) {
+  .componentContainer {
+    padding: 8px 4px;
+  }
+
   .selectorsContainer {
     flex-direction: column;
     gap: 0.5rem;
@@ -200,5 +331,20 @@
 
   .selectorGroup {
     width: 100%;
+  }
+
+  .chartContainer,
+  .chartState {
+    height: 240px;
+  }
+
+  .varianceSummaryHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .totalOverrunBadge,
+  .totalOnTrackBadge {
+    align-self: flex-start;
   }
 }
