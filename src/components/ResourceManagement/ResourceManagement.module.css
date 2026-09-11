@@ -121,6 +121,7 @@
 
 .itemsPerPage {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   align-items: center;
   gap: 8px;
@@ -129,6 +130,7 @@
 }
 
 .itemsPerPage select {
+  min-height: 44px;
   padding: 6px 10px;
   border: 1px solid #ced4da;
   border-radius: 4px;
@@ -137,6 +139,7 @@
 }
 
 .darkModeResourceManagementDashboard .itemsPerPage select {
+  min-height: 44px;
   background-color: #172f53;
   border-color: #2d4a77;
   color: #fff;
@@ -320,6 +323,7 @@
 /* --- Pagination --- */
 .paginationContainer {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   justify-content: center;
   margin-top: 30px;
@@ -604,4 +608,40 @@
     transform: scale(1);
     opacity: 1;
   }
+}
+
+.paginationContainer > button {
+  flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.paginationEllipsis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 24px;
+  min-height: 44px;
+}
+
+.emptyState {
+  padding: 24px 16px;
+  text-align: center;
+}
+
+.emptyState button {
+  min-height: 44px;
+}
+
+.paginationContainer button:focus-visible,
+.itemsPerPage select:focus-visible,
+.emptyState button:focus-visible {
+  outline: 3px solid #007bff;
+  outline-offset: 3px;
+}
+
+.darkModeResourceManagementDashboard button:focus-visible,
+.darkModeResourceManagementDashboard select:focus-visible {
+  outline-color: #90caf9;
 }

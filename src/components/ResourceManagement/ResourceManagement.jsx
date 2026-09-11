@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { ChevronLeft, ChevronRight, Calendar, X } from 'lucide-react';
 import { toast } from 'react-toastify';
@@ -8,7 +8,14 @@ import * as XLSX from 'xlsx';
 import styles from './ResourceManagement.module.css';
 import { MOCK_RESOURCES } from './MockData';
 
-function SearchBar({ onSortToggle, darkMode, searchTerm, onSearchTermChange, onClearSearch }) {
+function SearchBar({
+  onSortToggle,
+  darkMode,
+  searchTerm,
+  onSearchTermChange,
+  onClearSearch,
+  searchInputRef,
+}) {
   return (
     <div
       className={`${styles.searchBarContainer} ${
@@ -33,6 +40,8 @@ function SearchBar({ onSortToggle, darkMode, searchTerm, onSearchTermChange, onC
           type="text"
           className={styles.searchInput}
           placeholder="Search ..."
+          aria-label="Search resources"
+          ref={searchInputRef}
           value={searchTerm}
           onChange={onSearchTermChange}
         />
@@ -191,7 +200,8 @@ const Pagination = ({ totalPages, currentPage, setCurrentPage, darkMode }) => {
   };
 
   return (
-    <div
+    <nav
+      aria-label="Resource pagination"
       className={`${styles.paginationContainer} ${
         darkMode ? styles.darkModePaginationContainer : ''
       }`}
@@ -206,20 +216,25 @@ const Pagination = ({ totalPages, currentPage, setCurrentPage, darkMode }) => {
         <ChevronLeft size={20} />
       </button>
 
-      {getPaginationGroup().map((value, index) => (
-        <button
-          key={`page-${value}-${index}`}
-          type="button"
-          className={value === currentPage ? styles.activePage : styles.paginationButtonIndexes}
-          onClick={() => {
-            if (typeof value === 'number') setCurrentPage(value);
-            else toast.info('Navigate using numbers or arrows.');
-          }}
-          disabled={value === currentPage}
-        >
-          {value}
-        </button>
-      ))}
+      {getPaginationGroup().map((value, index) =>
+        typeof value === 'number' ? (
+          <button
+            key={`page-${value}-${index}`}
+            type="button"
+            className={value === currentPage ? styles.activePage : styles.paginationButtonIndexes}
+            onClick={() => setCurrentPage(value)}
+            disabled={value === currentPage}
+            aria-label={`Go to page ${value}`}
+            aria-current={value === currentPage ? 'page' : undefined}
+          >
+            {value}
+          </button>
+        ) : (
+          <span key={`ellipsis-${index}`} className={styles.paginationEllipsis} aria-hidden="true">
+            {value}
+          </span>
+        ),
+      )}
 
       <button
         type="button"
@@ -230,12 +245,13 @@ const Pagination = ({ totalPages, currentPage, setCurrentPage, darkMode }) => {
       >
         <ChevronRight size={20} />
       </button>
-    </div>
+    </nav>
   );
 };
 
 function ResourceManagement() {
   const darkMode = useSelector(state => state.theme.darkMode);
+  const searchInputRef = useRef(null);
   const [resources, setResources] = useState(MOCK_RESOURCES);
   const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'desc' });
   const [searchTerm, setSearchTerm] = useState('');
@@ -261,6 +277,7 @@ function ResourceManagement() {
   const handleClearSearch = () => {
     setSearchTerm('');
     setCurrentPage(1);
+    searchInputRef.current?.focus();
   };
 
   const filteredResources = useMemo(() => {
@@ -439,6 +456,7 @@ function ResourceManagement() {
         searchTerm={searchTerm}
         onSearchTermChange={onSearchTermChange}
         onClearSearch={handleClearSearch}
+        searchInputRef={searchInputRef}
       />
 
       <div className={styles.itemsPerPage}>
@@ -507,6 +525,16 @@ function ResourceManagement() {
             </div>
           </div>
 
+          {totalItems === 0 && (
+            <div className={styles.emptyState}>
+              <p>{searchTerm.trim() ? 'No matching resources' : 'No resources available'}</p>
+              {searchTerm.trim() && (
+                <button type="button" className={styles.clearButton} onClick={handleClearSearch}>
+                  Clear search
+                </button>
+              )}
+            </div>
+          )}
           {currentResources.map(resource => (
             <div key={resource.id} className={styles.resourceItem}>
               <div className={styles.colCheck}>
@@ -544,7 +572,7 @@ function ResourceManagement() {
         darkMode={darkMode}
       />
 
-      <div className={styles.recordCount}>
+      <div className={styles.recordCount} role="status" aria-live="polite" aria-atomic="true">
         Showing {totalItems === 0 ? 0 : startIndex + 1}-{Math.min(endIndex, totalItems)} of{' '}
         {totalItems}
       </div>
@@ -574,6 +602,7 @@ SearchBar.propTypes = {
   searchTerm: PropTypes.string.isRequired,
   onSearchTermChange: PropTypes.func.isRequired,
   onClearSearch: PropTypes.func.isRequired,
+  searchInputRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
 };
 
 SearchBar.defaultProps = {
