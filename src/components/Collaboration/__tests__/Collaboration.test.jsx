@@ -38,6 +38,7 @@ describe('Collaboration Component', () => {
                   title: 'Frontend Engineer',
                   category: 'Engineering',
                   description: 'Build UI components',
+                  imageUrl: 'https://example.com/frontend-engineer.jpg',
                 },
               ],
             }),
@@ -52,6 +53,13 @@ describe('Collaboration Component', () => {
 
     // Using regex to handle potential element splitting
     expect(await screen.findByText(/Frontend Engineer/i)).toBeInTheDocument();
+  });
+
+  it('uses the placeholder image for job ads', async () => {
+    renderWithProviders(<Collaboration />);
+
+    const jobImage = await screen.findByAltText('Frontend Engineer');
+    expect(jobImage).toHaveAttribute('src', '/Portrait_Placeholder.png');
   });
 
   it('does not render pagination when no jobs are displayed', async () => {

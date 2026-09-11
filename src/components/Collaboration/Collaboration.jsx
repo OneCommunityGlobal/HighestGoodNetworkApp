@@ -290,13 +290,7 @@ function Collaboration() {
                 className={styles.jobAd}
                 onClick={() => handleJobClick(ad)}
               >
-                <img
-                  src={
-                    ad.imageUrl ||
-                    `/api/placeholder/640/480?text=${encodeURIComponent(ad.category || 'Job')}`
-                  }
-                  alt={ad.title}
-                />
+                <img src="/Portrait_Placeholder.png" alt={ad.title} />
                 <h3>{ad.title}</h3>
               </button>
             ))
