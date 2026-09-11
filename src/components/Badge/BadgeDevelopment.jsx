@@ -52,14 +52,16 @@ function BadgeDevelopment(props) {
       >
         Create New Badge
       </Button>
+      {/* Toggle button for showing/hiding filters - button text changes between "Add Filters" and "Remove Filters" */}
       <Button
         className={`btn--dark-sea-green ${getDark(darkMode, styles.btnDark, styles.btn)}`}
         onClick={toggleFilters}
       >
-        {isAddFiltersOpen ? 'Hide Filters' : 'Add Filters'}
+        {isAddFiltersOpen ? 'Remove Filters' : 'Add Filters'}
       </Button>
       {isAddFiltersOpen && (
         <div className={styles.filtersContainer}>
+          {/* Filter container with dark mode support - labels appear in white and inputs are styled for dark mode */}
           <div className={styles.filterRow}>
             <p className={labelClass}>Search for a badge:</p>
             <input
