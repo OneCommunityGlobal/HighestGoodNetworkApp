@@ -141,6 +141,8 @@ function HoursPledgedChart() {
               startDate={startDate}
               endDate={endDate}
               placeholderText="Start Date"
+              isClearable={startDate}
+              clearButtonTitle="Clear start date"
               className={styles.hpDatePicker}
               calendarClassName={darkMode ? styles.hpDateCalendarDark : styles.hpDateCalendar}
               popperClassName={styles.hpDatePopper}
@@ -154,6 +156,8 @@ function HoursPledgedChart() {
               startDate={startDate}
               endDate={endDate}
               placeholderText="End Date"
+              isClearable={endDate}
+              clearButtonTitle="Clear end date"
               className={styles.hpDatePicker}
               calendarClassName={darkMode ? styles.hpDateCalendarDark : styles.hpDateCalendar}
               popperClassName={styles.hpDatePopper}

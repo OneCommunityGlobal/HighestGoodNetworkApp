@@ -136,6 +136,26 @@
   color: #cbd5e1;
 }
 
+.hpDateInputs :global(.react-datepicker__close-icon::after) {
+  background-color: #64748b;
+  color: #fff;
+}
+
+.hpDateInputs :global(.react-datepicker__close-icon:hover::after),
+.hpDateInputs :global(.react-datepicker__close-icon:focus::after) {
+  background-color: #475569;
+}
+
+.darkMode .hpDateInputs :global(.react-datepicker__close-icon::after) {
+  background-color: #94a3b8;
+  color: #0f172a;
+}
+
+.darkMode .hpDateInputs :global(.react-datepicker__close-icon:hover::after),
+.darkMode .hpDateInputs :global(.react-datepicker__close-icon:focus::after) {
+  background-color: #cbd5e1;
+}
+
 .hpDateCalendar {
   border: 1px solid #cbd5e1;
   border-radius: 8px;
