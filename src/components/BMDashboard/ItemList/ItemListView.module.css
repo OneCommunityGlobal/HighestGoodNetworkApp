@@ -116,10 +116,24 @@ table td {
 .sortableTh {
   cursor: pointer;
   user-select: none;
+  white-space: nowrap;
 }
 
 .sortableTh:hover {
   text-decoration: underline;
+}
+
+.thContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.thContent svg {
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
 }
 
 .selectInput {
@@ -248,8 +262,6 @@ table td {
 .darkMode {
   color: #e8edf4;
   background-color: #0d1117 !important;
-
-/*   color: #fff !important; */
   min-height: 100vh;
   padding-bottom: 2rem;
 }
@@ -429,7 +441,7 @@ table td {
 }
 
 .darkDatePicker :global(.react-datepicker__time-list-item--selected) {
-  background-color: #468ef9 !important;
+  background-color: #1565c0 !important;
   color: #fff !important;
 }
 
@@ -469,7 +481,7 @@ table td {
 .lightDatePicker .react-datepicker__day--selected,
 .lightDatePicker .react-datepicker__day--keyboard-selected,
 .lightDatePicker .react-datepicker__time-list-item--selected {
-  background-color: #468ef9 !important;
+  background-color: #1565c0 !important;
   color: #fff !important;
 }
 

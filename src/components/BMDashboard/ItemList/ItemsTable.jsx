@@ -157,7 +157,7 @@ export default function ItemsTable({
     return {
       hasHold: Boolean(item.stockHold || override.stockHold),
       hasReview: Boolean(item.isReviewed || override.isReviewed),
-      hasNote: Boolean(noteText && noteText.trim()),
+      hasNote: Boolean(noteText?.trim()),
     };
   };
 
@@ -470,14 +470,18 @@ export default function ItemsTable({
                 className={styles.sortableTh}
                 style={{ verticalAlign: 'middle' }}
               >
-                Project <FontAwesomeIcon icon={getIconFor('project')} size="lg" />
+                <span className={styles.thContent}>
+                  Project <FontAwesomeIcon icon={getIconFor('project')} />
+                </span>
               </th>
               <th
                 onClick={() => onSort?.('name')}
                 className={styles.sortableTh}
                 style={{ verticalAlign: 'middle' }}
               >
-                Name <FontAwesomeIcon icon={getIconFor('name')} size="lg" />
+                <span className={styles.thContent}>
+                  Name <FontAwesomeIcon icon={getIconFor('name')} />
+                </span>
               </th>
               {(dynamicColumns || []).map(({ label, key }) => {
                 const sortKey = dynamicSortKeyByLabel[label];
@@ -489,7 +493,9 @@ export default function ItemsTable({
                     className={clickable ? styles.sortableTh : undefined}
                     style={getColumnStyle(key)}
                   >
-                    {label} {clickable && <FontAwesomeIcon icon={getIconFor(sortKey)} size="lg" />}
+                    <span className={styles.thContent}>
+                      {label} {clickable && <FontAwesomeIcon icon={getIconFor(sortKey)} />}
+                    </span>
                   </th>
                 );
               })}
