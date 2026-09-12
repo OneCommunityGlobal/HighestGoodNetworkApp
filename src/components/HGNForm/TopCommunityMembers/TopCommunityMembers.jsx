@@ -190,7 +190,7 @@ function TopCommunityMembers() {
                       </a>
                     )}
                   </td>
-                  <td>
+                  <td className={styles.scoreCell}>
                     <span className={scoreVal < 5 ? styles.lowScore : styles.highScore}>
                       {scoreVal}
                     </span>
