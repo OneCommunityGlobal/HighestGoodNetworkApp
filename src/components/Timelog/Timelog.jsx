@@ -1156,7 +1156,7 @@ return (
                   <TabContent
                     activeTab={timeLogState.activeTab}
                     className={
-                      darkMode ? styles.tabContentDark : styles.tabContentLight
+                      darkMode ? timeLog.tabContentDark : timeLog.tabContentLight
                     }
                   >
                     {renderViewingTimeEntriesFrom()}

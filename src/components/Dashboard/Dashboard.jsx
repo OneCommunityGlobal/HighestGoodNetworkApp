@@ -15,6 +15,7 @@ import SummaryBar from '../SummaryBar/SummaryBar';
 import Timelog from '../Timelog/Timelog';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
+import styles from './Dashboard.module.css';
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
@@ -99,6 +100,10 @@ export function Dashboard(props) {
               />
             </div>
           </div>
+        </Col>
+      </Row>
+      <Row className="w-100 ml-1">
+        <Col lg={5} className={`order-lg-2 order-2 ${styles.leaderboardCol}`}>
           <Leaderboard
             displayUserId={displayUserId}
             isNotAllowedToEdit={isNotAllowedToEdit}
