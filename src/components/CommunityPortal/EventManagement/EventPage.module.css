@@ -1,0 +1,340 @@
+.eventPage {
+  padding: 50px;
+}
+
+.eventCard {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  background: var(--background);
+  color: var(--text-color);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
+  border: 1px solid #d3d3d3;
+}
+
+.eventCard:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+.eventCardLeft {
+  width: 20%;
+  height: 90%;
+}
+
+.eventCardMiddle {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.eventCardRight {
+  width: 20%;
+  max-height: 90%;
+  padding-top: 90px;
+}
+
+.eventCardImage {
+  width: 100%;
+  height: 400px;
+  background: #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.eventCardMediaUpload {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.eventCardTitle {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+}
+
+.eventCardType {
+  margin: 0;
+}
+
+.eventCard12 {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 98%;
+  padding: 15px;
+  margin: 10px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 10%);
+  margin-right: 10px;
+  transition: background-color 0.2s;
+}
+
+.eventCardInfo,
+.eventCardExtra {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.infoItem,
+.extraItem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+  padding: 5px;
+  margin: 0 5px;
+  width: auto;
+}
+
+.inputField {
+  font-size: 0.9rem;
+  font-family: inherit;
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: transparent;
+}
+
+.statusDropdown {
+  font-size: 0.9rem;
+  font-family: inherit;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.eventDescription {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.textarea {
+  width: 100%;
+  height: 90px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.mediaUploadContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.descriptionMediaUpload {
+  margin-right: 10px;
+}
+
+.postBtn {
+  min-height: 10px;
+  border-radius: 10px;
+  width: 250px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #2e5061;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.postBtn:hover {
+  color: #fff;
+}
+
+.eventTabs {
+  margin-top: 20px;
+}
+
+.errorText {
+  color: #c0392b;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.successText {
+  color: #27ae60;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.star {
+  font-size: 1rem;
+}
+
+.filled {
+  color: #f5a623;
+}
+
+.calendarTileDisabled {
+  color: #ccc;
+  pointer-events: none;
+}
+
+.eventPageDark :global(.react-calendar__tile).calendarTileDisabledDark {
+  color: #8a9bbd;
+  background-color: #22304d;
+  pointer-events: none;
+}
+
+/* Dark Mode */
+.eventPageDark {
+  background-color: #1b2a41;
+  color: #fff;
+  min-height: 100%;
+}
+
+.inputDark {
+  background-color: #22304d;
+  color: #fff;
+  border: 1px solid #7a90b3;
+  border-radius: 5px;
+}
+
+.inputDark::placeholder {
+  color: #b8c4d8;
+}
+
+.statusDropdownDark {
+  background-color: #22304d;
+  color: #fff;
+  border: 1px solid #7a90b3;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.postBtn.postBtnDark {
+  background-color: #7a90b3;
+  color: #1b2a41;
+  border: 1px solid #7a90b3;
+}
+
+.postBtn.postBtnDark:hover {
+  background-color: #9fb1cc;
+  color: #1b2a41;
+}
+
+.eventCard12Dark {
+  background-color: #1c2541;
+}
+
+.eventCardInfoDark,
+.eventCardExtraDark {
+  background-color: #3a506b;
+  color: #fff;
+  border: 1px solid #444;
+}
+
+.eventCardRightDark {
+  background-color: transparent;
+}
+
+/* Dark mode overrides for card and textarea */
+.eventPageDark .eventCard {
+  background-color: #253554;
+  border-color: #3a506b;
+  color: #fff;
+}
+
+.eventPageDark .eventCard12 {
+  background-color: #1c2541;
+}
+
+.eventPageDark .eventCardInfo,
+.eventPageDark .eventCardExtra {
+  background-color: #3a506b;
+  border: 1px solid #444;
+}
+
+.eventPageDark .textarea {
+  background-color: #22304d;
+  color: #fff;
+  border: 1px solid #7a90b3;
+}
+
+.eventPageDark .eventCardImage {
+  background-color: #3a506b;
+  color: #e6ecf5;
+}
+
+.successTextDark {
+  color: #4ade80;
+}
+
+.errorTextDark {
+  color: #f4a3a3;
+}
+
+/* Calendar tile highlight - uses global override since react-calendar injects its own classes */
+:global(.react-calendar__tile--active) {
+  background: #0057b8 !important;
+  color: white !important;
+  font-weight: bold;
+}
+
+/* Dark mode for the third-party react-calendar and react-datepicker widgets,
+   which render their own global class names outside CSS Modules scope */
+.eventPageDark :global(.react-calendar),
+.eventPageDark :global(.react-datepicker) {
+  background-color: #22304d;
+  color: #fff;
+  border: 1px solid #7a90b3;
+}
+
+.eventPageDark :global(.react-calendar__navigation button),
+.eventPageDark :global(.react-calendar__month-view__weekdays__weekday),
+.eventPageDark :global(.react-calendar__tile),
+.eventPageDark :global(.react-datepicker__day),
+.eventPageDark :global(.react-datepicker__current-month),
+.eventPageDark :global(.react-datepicker__day-name) {
+  color: #fff;
+}
+
+.eventPageDark :global(.react-calendar__navigation button:enabled:hover),
+.eventPageDark :global(.react-calendar__navigation button:enabled:focus),
+.eventPageDark :global(.react-calendar__tile:enabled:hover),
+.eventPageDark :global(.react-calendar__tile:enabled:focus),
+.eventPageDark :global(.react-datepicker__day:hover) {
+  background-color: #3a506b;
+}
+
+.eventPageDark :global(.react-calendar__month-view__days__day--neighboringMonth),
+.eventPageDark :global(.react-calendar__tile:disabled),
+.eventPageDark :global(.react-datepicker__day--disabled) {
+  color: #8a9bbd;
+  background-color: #22304d;
+}
+
+.eventPageDark :global(.react-datepicker__header),
+.eventPageDark :global(.react-datepicker__triangle) {
+  background-color: #3a506b;
+  border-bottom-color: #7a90b3;
+}
+
+.eventPageDark :global(.react-datepicker-wrapper),
+.eventPageDark :global(.react-datepicker__input-container input) {
+  background-color: #22304d;
+  color: #fff;
+  border: 1px solid #7a90b3;
+  border-radius: 4px;
+}
