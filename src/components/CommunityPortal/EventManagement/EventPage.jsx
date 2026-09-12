@@ -226,9 +226,15 @@ function EventPage() {
           }}
           placeholder="Enter event description..."
         />
-        {descriptionError && <p className={styles.errorText}>{descriptionError}</p>}
+        {descriptionError && (
+          <p className={`${styles.errorText} ${darkMode ? styles.errorTextDark : ''}`}>
+            {descriptionError}
+          </p>
+        )}
         {descriptionPosted && (
-          <p className={styles.successText}>Description posted successfully!</p>
+          <p className={`${styles.successText} ${darkMode ? styles.successTextDark : ''}`}>
+            Description posted successfully!
+          </p>
         )}
         <div className={styles.mediaUploadContainer}>
           <input

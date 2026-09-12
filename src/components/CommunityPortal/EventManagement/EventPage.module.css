@@ -270,11 +270,11 @@
   color: #e6ecf5;
 }
 
-.eventPageDark .successText {
+.successTextDark {
   color: #4ade80;
 }
 
-.eventPageDark .errorText {
+.errorTextDark {
   color: #f4a3a3;
 }
 
@@ -315,10 +315,19 @@
 .eventPageDark :global(.react-calendar__tile:disabled),
 .eventPageDark :global(.react-datepicker__day--disabled) {
   color: #8a9bbd;
+  background-color: #22304d;
 }
 
 .eventPageDark :global(.react-datepicker__header),
 .eventPageDark :global(.react-datepicker__triangle) {
   background-color: #3a506b;
   border-bottom-color: #7a90b3;
+}
+
+.eventPageDark :global(.react-datepicker-wrapper),
+.eventPageDark :global(.react-datepicker__input-container input) {
+  background-color: #22304d;
+  color: #fff;
+  border: 1px solid #7a90b3;
+  border-radius: 4px;
 }
