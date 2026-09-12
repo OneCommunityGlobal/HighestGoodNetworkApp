@@ -1,4 +1,5 @@
-/* stylelint-disable  */
+/* stylelint-disable */
+
 .container {
   border-radius: 8px;
   padding: 12px;
@@ -7,7 +8,9 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 .title {
@@ -25,40 +28,74 @@
   color: #2563eb !important;
 }
 
+/* =========================
+   FILTERS
+   ========================= */
+
 .filters {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: flex-end;
   gap: 12px;
   margin-bottom: 16px;
 }
 
-.filters label {
+.filterGroup {
   display: flex;
   flex-direction: column;
-  font-size: 0.9rem;
+  gap: 5px;
+  min-width: 110px;
 }
 
-/* Dark mode: make filter labels readable */
-:global(.dark) .filters label,
-:global(.dark-mode) .filters label,
-:global([data-theme='dark']) .filters label {
+.filterGroup label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Dark mode filter labels */
+:global(.dark) .filterGroup label,
+:global(.dark-mode) .filterGroup label,
+:global(.bm-dashboard-dark) .filterGroup label,
+:global([data-theme='dark']) .filterGroup label {
   color: #fff;
 }
 
-/* Scope to date inputs only — react-select renders its own <input> inside
-   .filters, and this box styling must not apply to it. */
-.filters input[type='date'] {
-  height: auto !important;
+/* Date inputs */
+.filterGroup input[type='date'] {
+  min-height: 38px;
   border-radius: 6px;
   box-sizing: border-box;
   font-size: 0.95rem;
   line-height: 1.2;
+  padding: 7px 9px;
+  border: 1px solid #d1d5db;
 }
 
-/* Give the dropdowns enough width and keep option text on one line */
+/* Dark mode date input */
+:global(.dark) .filterGroup input[type='date'],
+:global(.dark-mode) .filterGroup input[type='date'],
+:global(.bm-dashboard-dark) .filterGroup input[type='date'],
+:global([data-theme='dark']) .filterGroup input[type='date'] {
+  background-color: #1f2937 !important;
+  color: #f9fafb !important;
+  border: 1px solid #374151 !important;
+  color-scheme: dark;
+}
+
+/* =========================
+   REACT SELECT
+   ========================= */
+
 :global(.react-select-container) {
-  min-width: 100px;
+  min-width: 110px;
+}
+
+:global(.react-select__control) {
+  min-height: 38px !important;
+  cursor: pointer !important;
 }
 
 :global(.react-select__option),
@@ -67,80 +104,158 @@
   font-weight: normal !important;
 }
 
+:global(.react-select__menu) {
+  z-index: 9999 !important;
+}
+
+:global(.react-select__menu-portal) {
+  z-index: 9999 !important;
+}
+
+/* Dark mode select control */
 :global(.dark) :global(.react-select__control),
 :global(.dark-mode) :global(.react-select__control),
+:global(.bm-dashboard-dark) :global(.react-select__control),
 :global([data-theme='dark']) :global(.react-select__control) {
   background-color: #1f2937 !important;
   border-color: #374151 !important;
 }
 
+/* Selected text */
 :global(.dark) :global(.react-select__single-value),
 :global(.dark-mode) :global(.react-select__single-value),
-:global([data-theme='dark']) :global(.react-select__single-value),
+:global(.bm-dashboard-dark) :global(.react-select__single-value),
+:global([data-theme='dark']) :global(.react-select__single-value) {
+  color: #f9fafb !important;
+}
+
+/* React Select internal input */
 :global(.dark) :global(.react-select__input),
 :global(.dark-mode) :global(.react-select__input),
+:global(.bm-dashboard-dark) :global(.react-select__input),
 :global([data-theme='dark']) :global(.react-select__input) {
   color: #f9fafb !important;
 }
 
+/* Placeholder */
 :global(.dark) :global(.react-select__placeholder),
 :global(.dark-mode) :global(.react-select__placeholder),
+:global(.bm-dashboard-dark) :global(.react-select__placeholder),
 :global([data-theme='dark']) :global(.react-select__placeholder) {
   color: #9ca3af !important;
 }
 
-/* Dim the vertical separator between the value and the dropdown arrow */
+/* Separator */
 :global(.react-select__indicator-separator) {
   background-color: #ccc !important;
 }
 
-/* Dark mode: use the panel color for the separator */
 :global(.dark) :global(.react-select__indicator-separator),
 :global(.dark-mode) :global(.react-select__indicator-separator),
+:global(.bm-dashboard-dark) :global(.react-select__indicator-separator),
 :global([data-theme='dark']) :global(.react-select__indicator-separator) {
-  background-color: #2d4059 !important;
+  background-color: #4b5563 !important;
 }
 
-/* Make the dropdown arrow a light gray (not bright white) in both modes */
+/* Arrow */
 :global(.react-select__dropdown-indicator) {
   color: #ccc !important;
 }
 
+/* Dark dropdown menu */
 :global(.dark) :global(.react-select__menu),
 :global(.dark-mode) :global(.react-select__menu),
+:global(.bm-dashboard-dark) :global(.react-select__menu),
 :global([data-theme='dark']) :global(.react-select__menu) {
   background-color: #1f2937 !important;
   border: 1px solid #374151 !important;
-  z-index: 10;
 }
 
+/* Dark dropdown options */
 :global(.dark) :global(.react-select__option),
 :global(.dark-mode) :global(.react-select__option),
+:global(.bm-dashboard-dark) :global(.react-select__option),
 :global([data-theme='dark']) :global(.react-select__option) {
   background-color: #1f2937 !important;
   color: #f9fafb !important;
+  cursor: pointer;
 }
 
+/* Focused option */
 :global(.dark) :global(.react-select__option--is-focused),
 :global(.dark-mode) :global(.react-select__option--is-focused),
+:global(.bm-dashboard-dark) :global(.react-select__option--is-focused),
 :global([data-theme='dark']) :global(.react-select__option--is-focused) {
   background-color: #374151 !important;
-  color: #ffffff !important;
-}
-/* Dark mode: style date inputs only (not react-select's internal input) */
-:global(.dark) .filters input[type='date'],
-:global(.dark-mode) .filters input[type='date'],
-:global([data-theme='dark']) .filters input[type='date'] {
-  background-color: #1f2937 !important;
-  color: #f9fafb !important;
-  border: 1px solid #374151 !important;
+  color: #fff !important;
 }
 
-:global(.dark) .filters input[type='date'],
-:global(.dark-mode) .filters input[type='date'],
-:global([data-theme='dark']) .filters input[type='date'] {
-  color-scheme: dark;
+/* Selected option */
+:global(.dark) :global(.react-select__option--is-selected),
+:global(.dark-mode) :global(.react-select__option--is-selected),
+:global(.bm-dashboard-dark) :global(.react-select__option--is-selected),
+:global([data-theme='dark']) :global(.react-select__option--is-selected) {
+  background-color: #2563eb !important;
+  color: #fff !important;
 }
+
+/* =========================
+   SUBMIT BUTTON
+   ========================= */
+
+.buttonContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 5px;
+  min-height: 38px;
+}
+
+.button {
+  background-color: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #1d4ed8;
+}
+
+.button:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+:global(.dark) .button,
+:global(.dark-mode) .button,
+:global(.bm-dashboard-dark) .button,
+:global([data-theme='dark']) .button {
+  background-color: #2563eb;
+  color: #fff;
+}
+
+.appliedMessage {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #166534;
+}
+
+:global(.dark) .appliedMessage,
+:global(.dark-mode) .appliedMessage,
+:global(.bm-dashboard-dark) .appliedMessage,
+:global([data-theme='dark']) .appliedMessage {
+  color: #86efac;
+}
+
+/* =========================
+   CHART
+   ========================= */
 
 .chartWrapper {
   display: flex;
@@ -163,69 +278,16 @@
   font-size: 0.85rem;
 }
 
+.legendText {
+  line-height: 1.25;
+}
+
 .colorBox {
   width: 12px;
   height: 12px;
   margin-right: 8px;
   border-radius: 2px;
-}
-
-.tooltip {
-  background-color: #f3f4f6;
-  color: #111827; /* darker percentage text in light mode */
-  padding: 8px;
-  border-radius: 6px;
-}
-
-/* Dark mode: ensure tooltip text is white on hover */
-:global(.dark) .tooltip,
-:global(.dark-mode) .tooltip,
-:global([data-theme='dark']) .tooltip {
-  color: #fff;
-}
-
-:global(.dark) .tooltip:hover,
-:global(.dark-mode) .tooltip:hover,
-:global([data-theme='dark']) .tooltip:hover {
-  color: #fff;
-}
-
-/* Dark mode: force ALL tooltip text to white */
-:global(.dark) .tooltip *,
-:global(.dark-mode) .tooltip *,
-:global([data-theme='dark']) .tooltip * {
-  color: #fff !important;
-}
-
-.buttonContainer {
-  width: 100%;           
-  display: flex;
-  justify-content: center;
-  margin-top: 5px;
-}
-
-/* Submit button – light & dark mode safe */
-.button {
-  background-color: #2563eb; /* blue */
-  color: #fff;            /* white text */
-  border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-/* Hover */
-.button:hover {
-  background-color: #1d4ed8;
-}
-
-/* Dark mode – keep same button color (no brightness jump) */
-:global(.dark) .button,
-:global(.dark-mode) .button,
-:global([data-theme='dark']) .button {
-  background-color: #2563eb;
-  color: #fff;
+  flex-shrink: 0;
 }
 
 .pieChartContainer {
@@ -235,6 +297,61 @@
   width: 100%;
 }
 
+/* =========================
+   TOOLTIP
+   ========================= */
+
+.tooltip {
+  background-color: #f3f4f6;
+  color: #111827;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.tooltip p {
+  margin: 2px 0;
+}
+
+:global(.dark) .tooltip,
+:global(.dark-mode) .tooltip,
+:global(.bm-dashboard-dark) .tooltip,
+:global([data-theme='dark']) .tooltip {
+  color: #fff;
+}
+
+:global(.dark) .tooltip *,
+:global(.dark-mode) .tooltip *,
+:global(.bm-dashboard-dark) .tooltip *,
+:global([data-theme='dark']) .tooltip * {
+  color: #fff !important;
+}
+
+/* =========================
+   NO DATA
+   ========================= */
+
+.noData {
+  width: 100%;
+  min-height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.95rem;
+  color: #4b5563;
+}
+
+:global(.dark) .noData,
+:global(.dark-mode) .noData,
+:global(.bm-dashboard-dark) .noData,
+:global([data-theme='dark']) .noData {
+  color: #d1d5db;
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
 @media (width <= 768px) {
   .chartWrapper {
     flex-direction: column;
@@ -243,7 +360,7 @@
 
   .legend {
     margin-bottom: 16px;
-    align-items: center;
+    align-items: flex-start;
   }
 
   .filters {
@@ -252,7 +369,16 @@
     gap: 10px;
   }
 
-  .filters label {
+  .filterGroup {
     width: 100%;
+    max-width: 280px;
+  }
+
+  :global(.react-select-container) {
+    width: 100%;
+  }
+
+  .buttonContainer {
+    max-width: 280px;
   }
 }
