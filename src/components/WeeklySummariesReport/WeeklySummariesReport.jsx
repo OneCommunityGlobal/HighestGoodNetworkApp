@@ -136,6 +136,7 @@ const initialState = {
   replaceCodeLoading: false,
   allRoleInfo: [],
   teamCodeWarningUsers: [],
+  showOnlyMismatched: false,
   loadedTabs: [navItems[1]],
   summariesByTab: {},
   tabsLoading: { [navItems[1]]: false },
@@ -1723,6 +1724,21 @@ const WeeklySummariesReport = props => {
   const { error } = props;
   const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
   const { authEmailWeeklySummaryRecipient } = props;
+  const mismatchedInCurrentFilter = state.filteredSummaries.filter(s => s.teamCodeWarning);
+  const displayedSummaries = state.showOnlyMismatched
+    ? mismatchedInCurrentFilter
+    : state.filteredSummaries;
+
+  useEffect(() => {
+    // The toggle icon only renders while there's a mismatch to show. If the
+    // last mismatch gets resolved while the filter is active, the icon
+    // disappears -- reset the filter so the view doesn't get stuck showing
+    // an empty list with no way to turn it back off.
+    if (state.showOnlyMismatched && mismatchedInCurrentFilter.length === 0) {
+      setState(prev => ({ ...prev, showOnlyMismatched: false }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mismatchedInCurrentFilter.length, state.showOnlyMismatched]);
 
   if (error) {
     return (
@@ -1925,22 +1941,44 @@ const WeeklySummariesReport = props => {
 
           <div>
             <div className={styles.teamCodeSelectRow}>
-              {state.teamCodeWarningUsers.length > 0 && (
+              {mismatchedInCurrentFilter.length > 0 && (
                 <>
                   <i
                     className="fa fa-info-circle text-danger"
                     data-tip
                     data-placement="top"
                     data-for="teamCodeWarningTooltip"
+                    role="button"
+                    tabIndex={0}
+                    aria-pressed={state.showOnlyMismatched}
+                    aria-label="Toggle filter for users with mismatched team codes"
+                    onClick={() =>
+                      setState(prev => ({
+                        ...prev,
+                        showOnlyMismatched: !prev.showOnlyMismatched,
+                      }))
+                    }
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setState(prev => ({
+                          ...prev,
+                          showOnlyMismatched: !prev.showOnlyMismatched,
+                        }));
+                      }
+                    }}
                     style={{
                       fontSize: '20px',
                       cursor: 'pointer',
                       marginRight: '8px',
                       alignSelf: 'center',
+                      borderRadius: '50%',
+                      boxShadow: state.showOnlyMismatched ? '0 0 0 2px #dc3545' : 'none',
                     }}
                   />
                   <ReactTooltip id="teamCodeWarningTooltip" place="top" effect="solid">
-                    {state.teamCodeWarningUsers.length} users have mismatched team codes!
+                    {mismatchedInCurrentFilter.length} users have mismatched team codes! Smash this
+                    &quot;i&quot; button to see who they are 👊
                   </ReactTooltip>
                 </>
               )}
@@ -2275,7 +2313,7 @@ const WeeklySummariesReport = props => {
                         style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}
                       >
                         <GeneratePdfReport
-                          summaries={state.filteredSummaries}
+                          summaries={displayedSummaries}
                           weekIndex={index}
                           weekDates={weekDates[index]}
                           darkMode={darkMode}
@@ -2312,17 +2350,17 @@ const WeeklySummariesReport = props => {
                         </Button>
                       </Col>
                     </Row>
-                    {state.filteredSummaries && state.filteredSummaries.length > 0 ? (
+                    {displayedSummaries && displayedSummaries.length > 0 ? (
                       <>
                         <Row>
                           <Col>
-                            <b>Total Team Members:</b> {state.filteredSummaries.length}
+                            <b>Total Team Members:</b> {displayedSummaries.length}
                           </Col>
                         </Row>
                         <Row>
                           <Col>
                             <FormattedReport
-                              summaries={state.filteredSummaries}
+                              summaries={displayedSummaries}
                               weekIndex={index}
                               bioCanEdit={permissionState.bioEditPermission}
                               canEditSummaryCount={permissionState.canEditSummaryCount}
