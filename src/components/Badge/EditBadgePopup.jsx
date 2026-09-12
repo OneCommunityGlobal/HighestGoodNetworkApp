@@ -12,6 +12,7 @@ import {
   FormText,
   FormFeedback,
   UncontrolledTooltip,
+  Alert,
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import './Badge.module.css';
@@ -105,6 +106,9 @@ function EditBadgePopup(props) {
     return pattern.test(badgeRanking);
   };
 
+  const hasMissingRequiredFields =
+    badgeName.length === 0 || imageUrl.length === 0 || description.length === 0;
+
   const isSubmitDisabled =
     !badgeName.trim().length ||
     !imageUrl.trim().length ||
@@ -197,6 +201,12 @@ function EditBadgePopup(props) {
         Edit Badge
       </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+        {hasMissingRequiredFields && (
+          <Alert color="warning">
+            This badge is missing required information. Please complete all required fields before
+            saving.
+          </Alert>
+        )}
         <Form id="badgeEdit">
           <FormGroup>
             <Label for="badgeName" className={fontColor}>
