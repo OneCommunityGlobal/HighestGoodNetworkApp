@@ -146,9 +146,12 @@ export default function ListingAvailability({ listingId, availability, loading, 
             </tbody>
           </table>
           <div className={cx('calendarLegend')}>
-            <span className={`${styles.legendDot} ${styles['legendDot-available']}`} /> Available
-            <span className={`${styles.legendDot} ${styles['legendDot-booked']}`} /> Booked
-            <span className={`${styles.legendDot} ${styles['legendDot-blocked']}`} /> Blocked
+            <span className={`${styles.legendDot} ${styles['legendDot-available']}`} />
+            <span>Available</span>
+            <span className={`${styles.legendDot} ${styles['legendDot-booked']}`} />
+            <span>Booked</span>
+            <span className={`${styles.legendDot} ${styles['legendDot-blocked']}`} />
+            <span>Blocked</span>
           </div>
         </>
       )}
