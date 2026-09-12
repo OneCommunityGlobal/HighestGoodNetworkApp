@@ -3,12 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchListingAvailability } from '../../../actions/lbdashboard/listOverviewAction';
 import styles from './Listoverview.module.css';
 
-const AVAILABILITY_COLORS = {
-  available: '#4caf50', // green
-  booked: '#f44336', // red
-  blocked: '#9e9e9e', // gray
-};
-
 function getDateStatus(date, availability) {
   const d = date.toISOString().split('T')[0];
 
@@ -137,14 +131,9 @@ export default function ListingAvailability({ listingId, availability, loading, 
                     return (
                       <td
                         key={date.toISOString()}
-                        className={status ? `${styles[`calendar-${status}`]}` : ''}
-                        style={{
-                          background: status ? AVAILABILITY_COLORS[status] : undefined,
-                          color: status ? '#fff' : undefined,
-                          borderRadius: status ? '50%' : undefined,
-                          cursor: status ? 'pointer' : undefined,
-                          position: 'relative',
-                        }}
+                        className={`${styles.calendarDay} ${
+                          status ? styles[`calendar-${status}`] : ''
+                        }`}
                         title={status ? status.charAt(0).toUpperCase() + status.slice(1) : ''}
                       >
                         {date.getDate()}
@@ -156,22 +145,10 @@ export default function ListingAvailability({ listingId, availability, loading, 
               ))}
             </tbody>
           </table>
-          <div className={cx('calendarLegend')} style={{ marginTop: 16 }}>
-            <span
-              style={{ background: AVAILABILITY_COLORS.available }}
-              className={`${styles.legendDot}`}
-            />{' '}
-            Available
-            <span
-              style={{ background: AVAILABILITY_COLORS.booked }}
-              className={`${styles.legendDot}`}
-            />{' '}
-            Booked
-            <span
-              style={{ background: AVAILABILITY_COLORS.blocked }}
-              className={`${styles.legendDot}`}
-            />{' '}
-            Blocked
+          <div className={cx('calendarLegend')}>
+            <span className={`${styles.legendDot} ${styles['legendDot-available']}`} /> Available
+            <span className={`${styles.legendDot} ${styles['legendDot-booked']}`} /> Booked
+            <span className={`${styles.legendDot} ${styles['legendDot-blocked']}`} /> Blocked
           </div>
         </>
       )}

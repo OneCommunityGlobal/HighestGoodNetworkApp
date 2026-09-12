@@ -340,19 +340,29 @@ p {
   font-size: 1rem;
 }
 
+.calendarDay {
+  position: relative;
+}
+
 .calendar-available {
   background: #4caf50 !important;
   color: #fff;
+  border-radius: 50%;
+  cursor: pointer;
 }
 
 .calendar-booked {
   background: #f44336 !important;
   color: #fff;
+  border-radius: 50%;
+  cursor: pointer;
 }
 
 .calendar-blocked {
   background: #9e9e9e !important;
   color: #fff;
+  border-radius: 50%;
+  cursor: pointer;
 }
 
 .calendarLegend {
@@ -360,6 +370,7 @@ p {
   gap: 1rem;
   align-items: center;
   margin-bottom: 1rem;
+  margin-top: 1rem;
 }
 
 .legendDot {
@@ -368,6 +379,18 @@ p {
   height: 16px;
   border-radius: 50%;
   margin-right: 4px;
+}
+
+.legendDot-available {
+  background: #4caf50;
+}
+
+.legendDot-booked {
+  background: #f44336;
+}
+
+.legendDot-blocked {
+  background: #9e9e9e;
 }
 
 .contactHostSection {
