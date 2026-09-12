@@ -25,7 +25,7 @@
   background-color: #fff !important;
 }
 
-:global(.btn):disabled {
+.weeklysummarypane :global(.btn):disabled {
   cursor: not-allowed;
 }
 
@@ -101,11 +101,11 @@
   padding: 10px !important;
 }
 
-:global(.nav-tabs) :global(.nav-link) {
+.summaryNavTabs :global(.nav-link) {
   cursor: pointer;
 }
 
-:global(.tab-content) {
+.weeklysummarypane:global(.tab-content) {
   background-color: #fff;
   border: 1px solid transparent;
   border-color: #fff #dee2e6 #dee2e6;

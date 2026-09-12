@@ -23,7 +23,10 @@ function ToolsAvailabilityPage() {
       setError(null);
       try {
         const response = await axios.get(ENDPOINTS.TOOLS_AVAILABILITY_PROJECTS);
-        setProjects(response.data);
+        // The endpoint can return a non-array body (e.g. an error/permission
+        // payload for some roles); guard so the render below never calls
+        // .map on a non-array and crashes the page.
+        setProjects(Array.isArray(response.data) ? response.data : []);
       } catch (err) {
         // Error logging should be replaced with proper logging service
         // eslint-disable-next-line no-console
@@ -37,7 +40,7 @@ function ToolsAvailabilityPage() {
     fetchProjects();
   }, []);
 
-  const projectOptions = projects.map(project => ({
+  const projectOptions = (Array.isArray(projects) ? projects : []).map(project => ({
     value: project.projectId,
     label: project.projectId,
   }));

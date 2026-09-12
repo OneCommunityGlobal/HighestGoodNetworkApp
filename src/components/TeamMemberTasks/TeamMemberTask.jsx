@@ -783,7 +783,9 @@ const TeamMemberTask = React.memo(
                       <Modal
                         isOpen={isDashboardModalOpen}
                         toggle={closeDashboardModal}
-                        className={darkMode ? 'text-light dark-mode' : ''}
+                        className={`${styles.teamMemberTasksModal} ${
+                          darkMode ? 'text-light dark-mode' : ''
+                        }`}
                       >
                         <ModalHeader
                           toggle={closeDashboardModal}

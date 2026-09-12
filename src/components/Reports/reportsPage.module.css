@@ -1,5 +1,6 @@
 /* stylelint-disable  */
-* {
+.container-component-wrapper,
+.container-component-wrapper * {
   box-sizing: border-box;
   margin: 0;
 }
@@ -204,6 +205,52 @@
 .date-picker-item :global(.react-datepicker__input-container),
 .date-picker-item input {
   width: 100%;
+}
+
+/* Dark mode for the Start/End date filter calendars.
+   ViewReportsByDate puts a global `dark-mode` class on .date-picker-container
+   and the calendar renders inline (no portal), so scoping to the container
+   keeps these rules from leaking to other pages' datepickers. */
+.date-picker-container:global(.dark-mode) :global(.react-datepicker) {
+  background-color: #1f2937 !important;
+  color: #fff !important;
+  border: 1px solid #374151 !important;
+}
+
+.date-picker-container:global(.dark-mode) :global(.react-datepicker__header) {
+  background-color: #111827 !important;
+  border-bottom: 1px solid #374151 !important;
+}
+
+.date-picker-container:global(.dark-mode) :global(.react-datepicker__current-month),
+.date-picker-container:global(.dark-mode) :global(.react-datepicker__day-name),
+.date-picker-container:global(.dark-mode) :global(.react-datepicker__day) {
+  color: #fff !important;
+}
+
+.date-picker-container:global(.dark-mode) :global(.react-datepicker__day:hover) {
+  background-color: #374151 !important;
+}
+
+.date-picker-container:global(.dark-mode) :global(.react-datepicker__day--selected),
+.date-picker-container:global(.dark-mode) :global(.react-datepicker__day--keyboard-selected),
+.date-picker-container:global(.dark-mode) :global(.react-datepicker__day--in-range),
+.date-picker-container:global(.dark-mode) :global(.react-datepicker__day--in-selecting-range) {
+  background-color: #2563eb !important;
+  color: #fff !important;
+}
+
+.date-picker-container:global(.dark-mode) :global(.react-datepicker__day--outside-month),
+.date-picker-container:global(.dark-mode) :global(.react-datepicker__day--disabled) {
+  color: #6b7280 !important;
+}
+
+.date-picker-container:global(.dark-mode) :global(.react-datepicker__navigation-icon::before) {
+  border-color: #cbd5e1 !important;
+}
+
+.date-picker-container:global(.dark-mode) :global(.react-datepicker__triangle) {
+  display: none !important;
 }
 
 @media screen and (width <= 575px) {

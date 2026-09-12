@@ -553,7 +553,7 @@ function CountryOfApplicationMapChart() {
             value={selectedRoleOptions}
             onChange={opts => setSelectedRoles(opts ? opts.map(o => o.value) : [])}
             placeholder="All roles"
-            classNamePrefix="custom-select"
+            classNamePrefix="countryMapSelect"
             className={styles.roleSelect}
             styles={roleSelectStyles}
             menuPortalTarget={typeof document !== 'undefined' ? document.body : null}

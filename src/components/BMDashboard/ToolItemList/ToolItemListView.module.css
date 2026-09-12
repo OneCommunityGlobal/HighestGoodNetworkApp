@@ -1,6 +1,6 @@
 /* stylelint-disable no-descending-specificity */
-table thead th,
-table td {
+.itemsListContainer table thead th,
+.itemsListContainer table td {
   vertical-align: middle !important;
 }
 

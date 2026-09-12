@@ -123,7 +123,9 @@ function AgeChart({ data, compareLabel, darkMode }) {
 
   return (
     <div
-      className={darkMode ? 'bg-oxford-blue text-light' : 'bg-white text-black'}
+      className={`${styles.chartWrapper} ${
+        darkMode ? 'bg-oxford-blue text-light' : 'bg-white text-black'
+      }`}
       style={{
         width: '100%',
         maxWidth: '100%',

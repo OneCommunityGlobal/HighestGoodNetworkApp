@@ -33,250 +33,243 @@ import { fetchAllProjects } from '../../../../../actions/projects';
 // Replace the darkModeStyles with this:
 const darkModeStyles = `
   /* Only target dark mode elements */
-  .dark-mode .modal-content,
-  .dark-mode .modal-header,
-  .dark-mode .modal-body,
-  .dark-mode .modal-footer {
+  .addTaskModalScope.dark-mode .modal-content,
+  .addTaskModalScope.dark-mode .modal-header,
+  .addTaskModalScope.dark-mode .modal-body,
+  .addTaskModalScope.dark-mode .modal-footer {
     background-color: #1a2639 !important;
     color: #fff !important;
   }
 
-  .dark-mode .modal-header {
+  .addTaskModalScope.dark-mode .modal-header {
     border-bottom-color: #2d3a5a !important;
   }
 
-  .dark-mode .modal-footer {
+  .addTaskModalScope.dark-mode .modal-footer {
     border-top-color: #2d3a5a !important;
   }
 
   /* Form elements */
-  .dark-mode input,
-  .dark-mode textarea,
-  .dark-mode select {
+  .addTaskModalScope.dark-mode input,
+  .addTaskModalScope.dark-mode textarea,
+  .addTaskModalScope.dark-mode select {
     background-color: #1e2b4a !important;
     color: #fff !important;
     border-color: #2d3a5a !important;
   }
-    .dark-mode select option {
+    .addTaskModalScope.dark-mode select option {
     background-color: #1e2b4a !important;
     color: #fff !important;
   }
 
-  .dark-mode select option:hover,
-  .dark-mode select option:focus,
-  .dark-mode select option:checked {
+  .addTaskModalScope.dark-mode select option:hover,
+  .addTaskModalScope.dark-mode select option:focus,
+  .addTaskModalScope.dark-mode select option:checked {
     background-color: #3b82f6 !important;
     color: #fff !important;
   }
 
-  .dark-mode label,
-  .dark-mode span:not(.badge) {
+  .addTaskModalScope.dark-mode label,
+  .addTaskModalScope.dark-mode span:not(.badge) {
     color: #fff !important;
   }
 
   /* Borders */
-  .dark-mode .border,
-  .dark-mode .border-left,
-  .dark-mode .border-right,
-  .dark-mode .border-top,
-  .dark-mode .border-bottom {
+  .addTaskModalScope.dark-mode .border,
+  .addTaskModalScope.dark-mode .border-left,
+  .addTaskModalScope.dark-mode .border-right,
+  .addTaskModalScope.dark-mode .border-top,
+  .addTaskModalScope.dark-mode .border-bottom {
     border-color: #2d3a5a !important;
   }
 
   /* Warning text */
-  .dark-mode .warning {
+  .addTaskModalScope.dark-mode .warning {
     color: #ff6b6b !important;
   }
 
   /* Buttons */
-  .dark-mode .btn-primary {
+  .addTaskModalScope.dark-mode .btn-primary {
     background-color: #3b82f6 !important;
     border-color: #3b82f6 !important;
   }
 
-  .dark-mode .btn-danger {
+  .addTaskModalScope.dark-mode .btn-danger {
     background-color: #dc3545 !important;
     border-color: #dc3545 !important;
   }
   
-  .dark-mode .tox-tinymce {
+  .addTaskModalScope.dark-mode .tox-tinymce {
     background-color: #1e2b4a !important;
     border-color: #2d3a5a !important;
   }
 
-  .dark-mode .tox-editor-container {
+  .addTaskModalScope.dark-mode .tox-editor-container {
     background-color: #1e2b4a !important;
   }
 
-  .dark-mode .tox-edit-area {
+  .addTaskModalScope.dark-mode .tox-edit-area {
     background-color: #1e2b4a !important;
   }
 
-  .dark-mode .tox-edit-area iframe {
+  .addTaskModalScope.dark-mode .tox-edit-area iframe {
     background-color: #1e2b4a !important;
   }
 
-  .dark-mode .tox-toolbar {
+  .addTaskModalScope.dark-mode .tox-toolbar {
     background-color: #1a2639 !important;
     border-bottom-color: #2d3a5a !important;
   }
 
-  .dark-mode .tox-toolbar__primary {
+  .addTaskModalScope.dark-mode .tox-toolbar__primary {
     background-color: #1a2639 !important;
   }
 
-  .dark-mode .tox-tbtn {
+  .addTaskModalScope.dark-mode .tox-tbtn {
     color: #fff !important;
   }
 
-  .dark-mode .tox-tbtn:hover {
+  .addTaskModalScope.dark-mode .tox-tbtn:hover {
     background-color: #2d3a5a !important;
   }
 
-  .dark-mode .tox-tbtn--enabled {
+  .addTaskModalScope.dark-mode .tox-tbtn--enabled {
     background-color: #3b82f6 !important;
   }
   
-  .dark-mode .tox .tox-tbtn svg {
+  .addTaskModalScope.dark-mode .tox .tox-tbtn svg {
     fill: #fff !important;
   }
 
-  .dark-mode .tox .tox-tbtn:hover svg {
+  .addTaskModalScope.dark-mode .tox .tox-tbtn:hover svg {
     fill: #fff !important;
   }
 
-  .dark-mode .tox .tox-tbtn--enabled svg {
+  .addTaskModalScope.dark-mode .tox .tox-tbtn--enabled svg {
     fill: #fff !important;
   }
 
-  .dark-mode .tox .tox-split-button svg {
+  .addTaskModalScope.dark-mode .tox .tox-split-button svg {
     fill: #fff !important;
   }
 
-  .dark-mode .tox-statusbar {
+  .addTaskModalScope.dark-mode .tox-statusbar {
     background-color: #1a2639 !important;
     border-top-color: #2d3a5a !important;
     color: #aaa !important;
   }
 
   /* Date inputs */
-  .dark-mode [class*="form-date"] {
+  .addTaskModalScope.dark-mode [class*="form-date"] {
     color: #fff !important;
   }
 
   /* Remove any white backgrounds */
-  .dark-mode div[style*="background-color: white"] {
+  .addTaskModalScope.dark-mode div[style*="background-color: white"] {
     background-color: #1a2639 !important;
   }
   
-  .dark-mode hr,
-  .dark-mode .divider,
-  .dark-mode [class*="separator"] {
+  .addTaskModalScope.dark-mode hr,
+  .addTaskModalScope.dark-mode .divider,
+  .addTaskModalScope.dark-mode [class*="separator"] {
     border-color: #2d3a5a !important;
     background-color: #2d3a5a !important;
   }
 
   /* Fix table borders and lines */
-  .dark-mode .table,
-  .dark-mode .table-bordered,
-  .dark-mode .table-bordered th,
-  .dark-mode .table-bordered td,
-  .dark-mode .table td,
-  .dark-mode .table th {
+  .addTaskModalScope.dark-mode .table,
+  .addTaskModalScope.dark-mode .table-bordered,
+  .addTaskModalScope.dark-mode .table-bordered th,
+  .addTaskModalScope.dark-mode .table-bordered td,
+  .addTaskModalScope.dark-mode .table td,
+  .addTaskModalScope.dark-mode .table th {
     border-color: #2d3a5a !important;
   }
 
   /* Fix all text to be white in dark mode */
-  .dark-mode,
-  .dark-mode *,
-  .dark-mode .text-dark,
-  .dark-mode .text-body,
-  .dark-mode p,
-  .dark-mode span,
-  .dark-mode div,
-  .dark-mode h1,
-  .dark-mode h2,
-  .dark-mode h3,
-  .dark-mode h4,
-  .dark-mode h5,
-  .dark-mode h6,
-  .dark-mode label,
-  .dark-mode .form-label,
-  .dark-mode .add_new_task_form-label,
-  .dark-mode [class*="form-label"],
-  .dark-mode [class*="add_new_task_form-label"] {
+  .addTaskModalScope.dark-mode,
+  .addTaskModalScope.dark-mode *,
+  .addTaskModalScope.dark-mode .text-dark,
+  .addTaskModalScope.dark-mode .text-body,
+  .addTaskModalScope.dark-mode p,
+  .addTaskModalScope.dark-mode span,
+  .addTaskModalScope.dark-mode div,
+  .addTaskModalScope.dark-mode h1,
+  .addTaskModalScope.dark-mode h2,
+  .addTaskModalScope.dark-mode h3,
+  .addTaskModalScope.dark-mode h4,
+  .addTaskModalScope.dark-mode h5,
+  .addTaskModalScope.dark-mode h6,
+  .addTaskModalScope.dark-mode label,
+  .addTaskModalScope.dark-mode .form-label,
+  .addTaskModalScope.dark-mode .add_new_task_form-label,
+  .addTaskModalScope.dark-mode [class*="form-label"],
+  .addTaskModalScope.dark-mode [class*="add_new_task_form-label"] {
     color: #fff !important;
   }
 
   /* Fix input placeholders */
-  .dark-mode input::placeholder,
-  .dark-mode textarea::placeholder {
+  .addTaskModalScope.dark-mode input::placeholder,
+  .addTaskModalScope.dark-mode textarea::placeholder {
     color: #aaa !important;
     opacity: 1 !important;
   }
 
   /* Fix the WBS # text */
-  .dark-mode [data-tip="WBS ID"] {
-    color: #fff !important;
-  }
-
-  /* Fix the Add Task button */
-  .dark-mode .controlBtn {
-    background-color: #3b82f6 !important;
-    border-color: #3b82f6 !important;
+  .addTaskModalScope.dark-mode [data-tip="WBS ID"] {
     color: #fff !important;
   }
 
   /* Fix radio buttons and checkboxes */
-  .dark-mode .form-check-input {
+  .addTaskModalScope.dark-mode .form-check-input {
     background-color: #1e2b4a !important;
     border-color: #2d3a5a !important;
   }
 
-  .dark-mode .form-check-input:checked {
+  .addTaskModalScope.dark-mode .form-check-input:checked {
     background-color: #3b82f6 !important;
     border-color: #3b82f6 !important;
   }
 
   /* Fix the RT button */
-  .dark-mode [class*="replicate-btn"] {
+  .addTaskModalScope.dark-mode [class*="replicate-btn"] {
     background-color: #1e2b4a !important;
     border-color: #2d3a5a !important;
     color: #fff !important;
   }
 
-  .dark-mode [class*="replicate-btn"]:hover {
+  .addTaskModalScope.dark-mode [class*="replicate-btn"]:hover {
     background-color: #2d3a5a !important;
   }
 
   /* Fix the Close button in date picker */
-  .dark-mode .rdp button {
+  .addTaskModalScope.dark-mode .rdp button {
     color: #fff !important;
   }
 
-  .dark-mode .rdp-head_cell {
+  .addTaskModalScope.dark-mode .rdp-head_cell {
     color: #fff !important;
   }
   
     /* Add this after the .tox-statusbar styles */
-  .dark-mode .tox .tox-tbtn--select {
+  .addTaskModalScope.dark-mode .tox .tox-tbtn--select {
     width: auto !important;
   }
 
-.dark-mode .tox .tox-tbtn__select-label {
+.addTaskModalScope.dark-mode .tox .tox-tbtn__select-label {
   color: #fff !important;
 }
 
-.dark-mode .tox .tox-collection__item {
+.addTaskModalScope.dark-mode .tox .tox-collection__item {
   color: #fff !important;
   background-color: #1e2b4a !important;
 }
 
-.dark-mode .tox .tox-collection__item--active {
+.addTaskModalScope.dark-mode .tox .tox-collection__item--active {
   background-color: #3b82f6 !important;
 }
 
-.dark-mode .tox-tbtn--enabled {
+.addTaskModalScope.dark-mode .tox-tbtn--enabled {
     background-color: #3b82f6 !important;
   }
 `;
@@ -951,7 +944,11 @@ useEffect(() => {
   return (
     <>
     {darkMode && <style>{darkModeStyles}</style>}
-      <Modal isOpen={modal} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
+      <Modal
+        isOpen={modal}
+        toggle={toggle}
+        className={darkMode ? 'text-light dark-mode addTaskModalScope' : 'addTaskModalScope'}
+      >
         <ModalHeader
           toggle={toggle}
           className={`w-100 align-items-center ${darkMode ? 'bg-space-cadet' : ''}`}
