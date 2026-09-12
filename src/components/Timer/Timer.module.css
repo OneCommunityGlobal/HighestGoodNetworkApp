@@ -1,0 +1,237 @@
+/* stylelint-disable  */
+.timerContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 30;
+  user-select: none;
+}
+
+.btnDiv {
+  border: none;
+  padding: 0;
+  background: transparent;
+  line-height: 0;
+}
+
+.previewContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.disconnected {
+  width: 140px;
+  min-height: 42px;
+  background-color: rgb(82 92 102 / 100%);
+  color: rgb(238 10 10);
+  border-radius: 0 0 0.5rem 0.5rem;
+  padding: 0.25rem 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  font-size: 1rem;
+  font-weight: bold;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.disconnectedRefreshBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.disconnectedRefreshBtn:hover {
+  color: #ed688a;
+}
+
+.preview {
+  font-size: 1.2rem;
+  font-weight: bold;
+  width: 100px;
+  background-color: rgb(82 92 102 / 100%);
+  color: white;
+  border-radius: 0 0 0.5rem 0.5rem;
+  border: none;
+  padding: 0.25rem;
+  box-shadow: none;
+  appearance: none;
+}
+
+.btns {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  border: none;
+}
+
+.timer {
+  position: absolute;
+  width: 280px;
+  height: 400px;
+  left: 0;
+  top: 4rem;
+  background: #343a40;
+  border-radius: 1rem;
+  overflow: hidden;
+  border-color: #343a40;
+}
+
+.timerContent {
+  padding: 1rem;
+  margin-bottom: auto;
+  margin-top: auto;
+  gap: 1rem;
+  color: white;
+}
+
+.hideTimer {
+  display: none;
+}
+
+/* Base buttons (must come before hover to satisfy no-descending-specificity) */
+.btn {
+  cursor: pointer;
+  color: white;
+  background-color: #343a40;
+  border-color: #343a40;
+  margin: 0;
+  outline: none;
+}
+
+.btn:hover {
+  color: #ed688a;
+}
+
+.preview:focus,
+.preview:active,
+.preview:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+.btnDisabled {
+  cursor: not-allowed;
+  color: #837175;
+  border: none;
+  outline: none;
+}
+
+.transitionColor {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+  border: none;
+  outline: none;
+}
+
+/* Specific versions inside timer */
+.timer .btnNormal {
+  color: rgb(237 104 138 / 100%);
+  cursor: pointer;
+}
+
+.timer .btnDisabled {
+  color: gray;
+  cursor: not-allowed;
+}
+
+.btnNormal:hover {
+  color: #fda4af;
+  background-color: #881337;
+}
+
+.timerContainer .disabled {
+  cursor: not-allowed;
+  color: gray;
+  background: transparent;
+  border: none;
+}
+
+/* Use "context/range" media queries (what stylelint is asking for) */
+@media (width <= 530px) {
+  .btnDiv {
+    display: none;
+  }
+}
+
+@media (width <= 460px) {
+  .btns {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+  }
+
+  .btns button {
+    padding: 1px 5px;
+  }
+}
+
+@media (width <= 410px) {
+  .btns {
+    display: grid;
+    grid-template-columns: auto auto auto;
+  }
+
+  .btns button {
+    padding: 1px 3px;
+  }
+}
+
+@media (width <= 360px) {
+  .btns {
+    display: grid;
+    grid-template-columns: auto auto;
+  }
+
+  .btns button {
+    padding: 1px;
+  }
+}
+
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: auto;
+  min-width: max-content;
+  min-height: max-content;
+}
+
+@media print {
+  .iconWrapper {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: auto !important;
+    height: auto !important;
+    min-width: max-content !important;
+    min-height: max-content !important;
+    transform: none !important;
+    transform-origin: 0 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .iconWrapper svg {
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+    min-height: 24px !important;
+    display: block !important;
+    position: relative !important;
+    transform: none !important;
+    transform-origin: 0 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

@@ -1,0 +1,72 @@
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import styles from '../styles/RightSection.module.css';
+import AdditionalInfo from './AdditionalInfo';
+import BackendSkills from './BackendSkills';
+import DeploymentSkills from './DeploymentSkills';
+import FrontendSkills from './FrontendSkills';
+import ProfileDetails from './ProfileDetails';
+import RadarChart from './RadarChart';
+import Skills from './Skills';
+import SkillSummaryCards from './SkillSummaryCards';
+import SoftwarePractices from './SoftwarePractices';
+
+function RightSection() {
+  const profileData = useSelector(state => state.userSkills.profileData);
+  const darkMode = useSelector(s => s?.theme?.darkMode);
+
+  const [selectedSkill, setSelectedSkill] = useState('Dashboard');
+  const [skillsData, setSkillsData] = useState([]);
+
+  const handleSkillClick = skill => {
+    setSelectedSkill(skill);
+  };
+
+  const renderContent = () => {
+    switch (selectedSkill) {
+      case 'Dashboard':
+        return (
+          <div className={styles.dashboardWrapper}>
+            <SkillSummaryCards skillsData={skillsData} />
+
+            <RadarChart
+              key={selectedSkill}
+              profileData={profileData}
+              onSkillsDataReady={setSkillsData}
+            />
+          </div>
+        );
+
+      case 'Frontend':
+        return <FrontendSkills profileData={profileData} />;
+
+      case 'Backend':
+        return <BackendSkills profileData={profileData} />;
+
+      case 'Deployment & DevOps':
+        return <DeploymentSkills profileData={profileData} />;
+
+      case 'Software Practices':
+        return <SoftwarePractices profileData={profileData} />;
+
+      default:
+        return <RadarChart profileData={profileData} />;
+    }
+  };
+
+  return (
+    <section className={`${styles.rightSection} ${darkMode ? styles.rightSectionDark : ''}`}>
+      <ProfileDetails profileData={profileData} />
+      <div className={`${styles.skillsAndChart} ${darkMode ? styles.skillsAndChartDark : ''}`}>
+        <Skills selectedSkill={selectedSkill} onSkillClick={handleSkillClick} />
+        {renderContent()}
+      </div>
+
+      <div className="workExperience-and-additionalInfo">
+        <AdditionalInfo profileData={profileData} />
+      </div>
+    </section>
+  );
+}
+
+export default RightSection;

@@ -1,0 +1,560 @@
+﻿/* stylelint-disable  */
+/* ===================== Global reset ===================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ===================== Container ===================== */
+.experience-chart-container {
+  position: relative;
+  width: 100%;
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 1.75rem 1.75rem 0.5rem;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 0 rgb(0 0 0 / 4%), 0 12px 30px rgb(2 6 23 / 8%);
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* center children horizontally */
+  text-align: center; /* center text by default */
+}
+
+.experience-chart-container::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto auto 0;
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    #ff6384 0%,
+    #36a2eb 25%,
+    #ffce56 50%,
+    #4bc0c0 75%,
+    #ff9f40 100%
+  );
+  border-radius: 16px 16px 0 0;
+}
+
+/* ===================== Header ===================== */
+.chart-header {
+  margin-bottom: 1.25rem;
+  padding-top: 0.25rem;
+}
+
+.chart-title {
+  margin: 0;
+  color: #0f172a;
+  letter-spacing: -0.015em;
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+/* ===================== Filters ===================== */
+.filter-section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 0rem;
+  width: 100%;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center !important; /* center items in the row */
+  align-items: center; /* equal vertical alignment */
+  gap: 1rem;
+  width: 100%;
+  margin: 0 auto;
+  margin-bottom: 10px;
+}
+
+.filter-group,
+.filter-actions {
+  flex: 1 1 220px; /* grow/shrink; base width ~220px */
+  max-width: 320px; /* avoid overly wide inputs */
+  min-width: 200px; /* don't get too tiny */
+  text-align: left; /* labels/inputs left-aligned inside */
+}
+
+.filter-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #334155;
+  letter-spacing: 0.04em;
+}
+
+.filter-input,
+.filter-select,
+.filter-group select {
+  width: 100%;
+  height: 44px; /* consistent control height */
+  line-height: 44px;
+  padding: 0 0.9rem;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: #fff;
+  transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s;
+}
+
+.filter-select {
+  resize: vertical;
+  overflow-y: auto;
+}
+
+.checkbox-fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.checkbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.5rem 0;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #334155;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-item input[type='checkbox'] {
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  accent-color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.filter-input:hover,
+.filter-select:hover {
+  border-color: #9ca3af;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgb(59 130 246 / 12%);
+  transform: translateY(-1px);
+}
+
+.filter-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.2s, background-color 0.2s;
+  height: 44px; /* same height as inputs */
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn.primary {
+  background: #3b82f6;
+  color: #fff;
+  box-shadow: 0 6px 20px rgb(59 130 246 / 25%);
+}
+
+.btn.primary:hover {
+  transform: translateY(-1px);
+}
+
+.btn.ghost {
+  background: #fff;
+  color: #0f172a;
+  border-color: #e2e8f0;
+}
+
+.btn.ghost:hover {
+  box-shadow: 0 6px 20px rgb(2 6 23 / 8%);
+  transform: translateY(-1px);
+}
+
+.btn.ghost-active {
+  background: #fff1f2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+
+.btn.ghost-active:hover {
+  background: #ffe4e6;
+  border-color: #f87171;
+  box-shadow: 0 6px 20px rgb(220 38 38 / 15%);
+  transform: translateY(-1px);
+}
+
+/* --- Normalize native date inputs across browsers --- */
+.filter-input[type='date'] {
+  height: 44px;
+  line-height: 44px;
+  padding: 0 0.9rem;
+}
+
+.filter-input[type='date']::-webkit-datetime-edit,
+.filter-input[type='date']::-webkit-datetime-edit-fields-wrapper,
+.filter-input[type='date']::-webkit-datetime-edit-text,
+.filter-input[type='date']::-webkit-datetime-edit-month-field,
+.filter-input[type='date']::-webkit-datetime-edit-day-field,
+.filter-input[type='date']::-webkit-datetime-edit-year-field {
+  padding: 0;
+  line-height: 1;
+}
+
+.filter-input[type='date']::-webkit-calendar-picker-indicator {
+  margin: 0;
+  padding: 0;
+}
+
+/* Firefox normalization - removed deprecated hack */
+
+/* ===================== Chart Area ===================== */
+.chart-section {
+  width: 100%;
+  padding: 0 !important;
+}
+
+.chart-area {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.chart-canvas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.recharts-wrapper {
+  overflow: visible !important;
+}
+
+.recharts-wrapper,
+.recharts-surface {
+  display: block;
+  overflow: visible !important;
+}
+
+.chart-canvas,
+.recharts-wrapper {
+  direction: ltr;
+}
+
+/* Recharts wrappers: enforce centering */
+.chart-canvas .recharts-wrapper {
+  margin: 0 auto !important;
+}
+
+/* ===================== States ===================== */
+.spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 0;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner-container p {
+  color: #64748b;
+  font-weight: 600;
+  margin: 0;
+}
+
+.error-message {
+  margin: 1.25rem auto 0;
+  padding: 0.9rem 1rem;
+  max-width: 680px;
+  width: 100%;
+  color: #dc2626;
+  background: #fef3f2;
+  border: 1px solid #fca5a5;
+  border-radius: 10px;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* ===================== Print & prefers-color-scheme ===================== */
+@media print {
+  .experience-donut-chart-dark-mode .experience-chart-container {
+    background: #fff;
+    color: #0f172a;
+    box-shadow: none;
+    border: 1px solid #cbd5e1;
+  }
+}
+
+/* Keep prefers-color-scheme consistent with your chosen dark */
+@media (prefers-color-scheme: dark) {
+  .experience-donut-chart-dark-mode .experience-chart-container {
+    background: #1c2441;
+  }
+}
+
+/* ===================== DARK MODE (scoped to wrapper) ===================== */
+
+.experience-donut-chart.experience-donut-chart-dark-mode,
+.experience-donut-chart-dark-mode,
+.experience-donut-chart-dark-mode .experience-chart-container,
+.experience-donut-chart-dark-mode .chart-section,
+.experience-donut-chart-dark-mode .chart-area {
+  background-color: #1c2441 !important;
+  color: #f1f5f9;
+}
+
+.experience-donut-chart-dark-mode {
+  margin-top: -35px;
+}
+
+.experience-donut-chart-dark-mode .experience-chart-container::before {
+  background: linear-gradient(
+    90deg,
+    #60a5fa 0%,
+    #34d399 25%,
+    #fbbf24 50%,
+    #22d3ee 75%,
+    #f97316 100%
+  );
+}
+
+.experience-donut-chart-dark-mode .chart-title {
+  color: #fff !important;
+}
+
+.experience-donut-chart-dark-mode .chart-header {
+  color: #f1f5f9;
+}
+
+/* ===================== Filters (dark) ===================== */
+.experience-donut-chart-dark-mode .filter-section {
+  background: #232d53;
+  border-color: #3b4a75;
+}
+
+.experience-donut-chart-dark-mode .filter-label {
+  color: #dbe3ff;
+}
+
+.experience-donut-chart-dark-mode .filter-input,
+.experience-donut-chart-dark-mode .filter-select,
+.experience-donut-chart-dark-mode .filter-group select {
+  background: #232d53;
+  color: #e5e7eb;
+  border-color: #3b4a75;
+  color-scheme: dark;
+}
+
+.experience-donut-chart-dark-mode .filter-input:hover,
+.experience-donut-chart-dark-mode .filter-select:hover {
+  border-color: #4c5a8a;
+}
+
+.experience-donut-chart-dark-mode .filter-input:focus,
+.experience-donut-chart-dark-mode .filter-select:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 4px rgb(96 165 250 / 25%);
+}
+
+.experience-donut-chart-dark-mode .filter-input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(0.9);
+}
+
+.experience-donut-chart-dark-mode .checkbox-item {
+  color: #dbe3ff;
+}
+
+/* ===================== Buttons (dark) ===================== */
+.experience-donut-chart-dark-mode .btn {
+  color: #e5e7eb;
+}
+
+.experience-donut-chart-dark-mode .btn.primary {
+  background-color: #3b4a75;
+  color: #f8fafc;
+}
+
+.experience-donut-chart-dark-mode .btn.primary:hover {
+  filter: brightness(1.05);
+}
+
+.experience-donut-chart-dark-mode .btn.ghost {
+  background: #232d53;
+  border-color: #4c5a8a;
+  color: #e5e7eb;
+}
+
+.experience-donut-chart-dark-mode .btn.ghost:hover {
+  box-shadow: 0 6px 20px rgb(0 0 0 / 35%);
+}
+
+.experience-donut-chart-dark-mode .btn.ghost-active {
+  background: #3b1f28;
+  color: #fca5a5;
+  border-color: #7f2a3a;
+}
+
+.experience-donut-chart-dark-mode .btn.ghost-active:hover {
+  background: #4c2030;
+  border-color: #f87171;
+  box-shadow: 0 6px 20px rgb(220 38 38 / 25%);
+}
+
+/* ===================== Chart canvas (dark) ===================== */
+.experience-donut-chart-dark-mode .chart-canvas {
+  background: transparent;
+}
+
+.experience-donut-chart-dark-mode .recharts-text,
+.experience-donut-chart-dark-mode .recharts-label {
+  fill: #e5e7eb !important;
+  color: #e5e7eb !important;
+}
+
+/* ===================== States (dark) ===================== */
+.experience-donut-chart-dark-mode .spinner {
+  border-color: #2a355f;
+  border-top-color: #60a5fa;
+}
+
+.experience-donut-chart-dark-mode .spinner-container p {
+  color: #dbe3ff;
+}
+
+.experience-donut-chart-dark-mode .error-message {
+  color: #ffd2d2;
+  background: #3b1f28;
+  border-color: #7f2a3a;
+}
+
+/* ===================== Slices ===================== */
+.pie-cell {
+  transition: opacity 0.15s ease, filter 0.15s ease;
+}
+
+/* ===================== Responsive ===================== */
+@media (width <= 640px) {
+  .filter-group,
+  .filter-actions {
+    max-width: 320px;
+    min-width: 220px;
+  }
+
+  .chart-canvas {
+    max-width: 100%;
+  }
+}
+
+/* ===================== Accessibility ===================== */
+@media (prefers-contrast: more) {
+  .experience-chart-container {
+    border: 2px solid #000;
+  }
+
+  .filter-input,
+  .filter-select {
+    border: 2px solid #000;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+
+  .btn,
+  .filter-input,
+  .filter-select,
+  .pie-cell {
+    transition: none;
+  }
+}
+
+/* ===================== Mobile legend (shown instead of outside labels) ===================== */
+.mobile-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1rem;
+  padding: 0.75rem 0.5rem 0.25rem;
+  width: 100%;
+}
+
+.mobile-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.mobile-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.mobile-legend-pct {
+  color: #2563eb;
+  font-weight: 700;
+}
+
+.experience-donut-chart-dark-mode .mobile-legend-item {
+  color: #e2e8f0;
+}
+
+.experience-donut-chart-dark-mode .mobile-legend-pct {
+  color: #93c5fd;
+}

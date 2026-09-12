@@ -1,0 +1,489 @@
+/* stylelint-disable */
+
+/* ======================== ROOT PAGE ======================== */
+.page {
+  min-height: 100vh;
+  padding: 24px;
+  padding-right: 32px;
+  background-color: #f9fafb;
+  color: #111827;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-family: Arial, sans-serif;
+}
+
+/* ======================== DARK MODE ========================
+   Applied via className on the root .page div — matches the
+   HoursPledgedChart pattern. No document.documentElement side-effects.
+   Every dark rule is scoped under .darkMode so it only affects
+   this component and never bleeds into other pages.
+*/
+.darkMode {
+  background-color: #111827;
+  color: #f9fafb;
+}
+
+/* ======================== HEADER ======================== */
+.header {
+  max-width: 1600px;
+  margin: 0 auto 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  overflow: visible;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+/* ======================== BUTTONS ======================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btnPrimary {
+  background: #3b82f6;
+  color: #fff;
+  box-shadow: 0 6px 14px rgb(59 130 246 / 25%);
+}
+
+.darkMode .btnPrimary {
+  background: #60a5fa;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.btnGhost {
+  background: #fff;
+  color: #111827;
+  border: 1px solid #e5e7eb;
+}
+
+.darkMode .btnGhost {
+  background: #1f2937;
+  color: #f9fafb;
+  border-color: #374151;
+}
+
+.btnGhost:hover:not(:disabled) {
+  box-shadow: 0 6px 14px rgb(0 0 0 / 8%);
+  transform: translateY(-1px);
+}
+
+.btnLink {
+  color: #ef4444;
+  border: none;
+  background: none;
+  padding: 0;
+}
+
+.darkMode .btnLink {
+  color: #f87171;
+}
+
+/* ======================== INPUTS ======================== */
+.input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #fff;
+  color: #111827;
+  font-size: 0.875rem;
+  border: 1px solid #e5e7eb;
+  color-scheme: light;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 20%);
+}
+
+.darkMode .input {
+  background: #1f2937;
+  color: #f9fafb;
+  border-color: #374151;
+  color-scheme: dark;
+}
+
+.darkMode .input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+/* ======================== LOADING ======================== */
+.loading {
+  min-height: 240px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 12px;
+}
+
+.darkMode .spinner {
+  border-color: #374151;
+  border-top-color: #60a5fa;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loadingText {
+  color: #6b7280;
+}
+
+.darkMode .loadingText {
+  color: #9ca3af;
+}
+
+/* ======================== ERROR ======================== */
+.errorBox {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 16px;
+  border-radius: 12px;
+  margin: 16px 0;
+  color: #991b1b;
+}
+
+.darkMode .errorBox {
+  background: #7f1d1d;
+  border-color: #991b1b;
+  color: #fee2e2;
+}
+
+.errorText {
+  margin: 0 0 8px;
+}
+
+/* ======================== ACCESS DENIED ======================== */
+.accessWrapper {
+  min-height: 60vh;
+  display: grid;
+  place-items: center;
+}
+
+.accessCard {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 8%), 0 1px 2px rgb(0 0 0 / 5%);
+  padding: 32px;
+  border-radius: 12px;
+  max-width: 500px;
+  text-align: center;
+}
+
+.darkMode .accessCard {
+  background: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 40%), 0 1px 2px rgb(0 0 0 / 20%);
+}
+
+.accessIcon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px;
+  color: #ef4444;
+}
+
+.darkMode .accessIcon {
+  color: #f87171;
+}
+
+/* ======================== FILTER SELECTOR ======================== */
+.selectorCard {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 8%), 0 1px 2px rgb(0 0 0 / 5%);
+  margin-bottom: 24px;
+}
+
+.darkMode .selectorCard {
+  background: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 40%), 0 1px 2px rgb(0 0 0 / 20%);
+}
+
+.selectorRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.selectorCol {
+  flex: 1 1 320px;
+  min-width: 260px;
+}
+
+.selectorColNarrow {
+  min-width: 200px;
+}
+
+.label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #6b7280;
+}
+
+.darkMode .label {
+  color: #9ca3af;
+}
+
+.quickRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.datesRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.to {
+  color: #6b7280;
+}
+
+.darkMode .to {
+  color: #9ca3af;
+}
+
+/* ======================== METRICS ======================== */
+.metricsGrid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  margin-bottom: 24px;
+}
+
+.metricCard {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 8%), 0 1px 2px rgb(0 0 0 / 5%);
+  transition: transform 0.15s ease;
+}
+
+.darkMode .metricCard {
+  background: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 40%), 0 1px 2px rgb(0 0 0 / 20%);
+}
+
+.metricCard:hover {
+  transform: translateY(-3px);
+}
+
+.metricTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.metricIconWrap {
+  background: rgb(0 0 0 / 5%);
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.darkMode .metricIconWrap {
+  background: rgb(255 255 255 / 6%);
+}
+
+.metricIcon {
+  color: #6b7280;
+}
+
+.darkMode .metricIcon {
+  color: #9ca3af;
+}
+
+.change {
+  font-weight: 600;
+  display: flex;
+  gap: 4px;
+}
+
+.positive {
+  color: #10b981;
+}
+
+.darkMode .positive {
+  color: #34d399;
+}
+
+.negative {
+  color: #ef4444;
+}
+
+.darkMode .negative {
+  color: #f87171;
+}
+
+.metricValue {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.metricTitle {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.darkMode .metricTitle {
+  color: #9ca3af;
+}
+
+/* ======================== CHARTS GRID ======================== */
+.chartsGrid {
+  width: 100%;
+  display: grid;
+  gap: 24px;
+}
+
+.chartsGrid[data-mobile='1'] {
+  grid-template-columns: 1fr;
+}
+
+@media (width >= 641px) and (width <= 1199px) {
+  .chartsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width >= 1200px) {
+  .chartsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-flow: dense;
+    gap: 24px;
+  }
+}
+
+/* ======================== CHART CARD ======================== */
+.chartCard {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 22px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 8%), 0 1px 2px rgb(0 0 0 / 5%);
+  transition: transform 0.15s ease;
+}
+
+.darkMode .chartCard {
+  background: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 40%), 0 1px 2px rgb(0 0 0 / 20%);
+}
+
+.chartCard:hover {
+  transform: translateY(-3px);
+}
+
+.chartHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.chartIconWrap {
+  background: rgb(0 0 0 / 5%);
+  padding: 8px;
+  border-radius: 10px;
+}
+
+.darkMode .chartIconWrap {
+  background: rgb(255 255 255 / 6%);
+}
+
+.chartIcon {
+  color: #6b7280;
+}
+
+.darkMode .chartIcon {
+  color: #9ca3af;
+}
+
+.chartTitle {
+  margin: 0;
+  font-weight: 700;
+}
+
+.chartBody {
+  margin: 0 -4px;
+}
+
+.fullWidth {
+  grid-column: 1 / -1 !important;
+}
+
+/* ======================== RECHARTS GRID LINES ======================== */
+/* Light mode */
+.gridStroke line {
+  stroke: #e5e7eb !important;
+}
+
+/* Dark mode — scoped under .darkMode ancestor */
+.darkMode .gridStroke line {
+  stroke: #374151 !important;
+}
+
+/* ======================== MISC ======================== */
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.select {
+  width: auto;
+  min-width: 140px;
+  max-width: 180px;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}

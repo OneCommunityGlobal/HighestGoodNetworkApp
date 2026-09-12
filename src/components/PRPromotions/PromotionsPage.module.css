@@ -1,0 +1,44 @@
+.page {
+  padding: 20px;
+}
+
+.pageDark {
+  min-height: 100vh;
+  padding: 20px;
+  background-color: #142847;
+  color: #f8fafc;
+}
+
+.heading {
+  margin-bottom: 16px;
+  color: #111827;
+}
+
+.headingDark {
+  margin-bottom: 16px;
+  color: #f8fafc;
+}
+
+.promoteButton {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  background-color: #f3f4f6;
+  color: #111827;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.promoteButton:hover {
+  background-color: #e5e7eb;
+}
+
+.pageDark .promoteButton {
+  background-color: #374151;
+  color: #f9fafb;
+}
+
+.pageDark .promoteButton:hover {
+  background-color: #4b5563;
+}

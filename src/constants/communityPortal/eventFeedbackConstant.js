@@ -1,0 +1,1 @@
+export const ADD_EVENT_FEEDBACK = 'ADD_EVENT_FEEDBACK';

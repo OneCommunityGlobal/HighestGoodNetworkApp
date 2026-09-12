@@ -1,0 +1,70 @@
+/* stylelint-disable  */
+.summaryWrapper {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.groupTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f7f7f7;
+  padding: 10px 14px;
+  border-radius: 10px;
+  min-width: 200px;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 8%);
+}
+
+.skillName {
+  flex: 1;
+  font-size: 14px;
+}
+
+.score {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.iconSuccess {
+  color: #2ecc71;
+  font-weight: bold;
+}
+
+.iconWarning {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+/* Dark mode */
+:global(.dark-mode) .groupTitle {
+  color: #fff;
+}
+
+:global(.dark-mode) .card {
+  background: #2a2a2a;
+  color: #fff;
+}
+
+:global(.dark-mode) .card .iconSuccess {
+  color: #22c55e !important;
+}
+
+:global(.dark-mode) .card .iconWarning {
+  color: #ef4444 !important;
+}

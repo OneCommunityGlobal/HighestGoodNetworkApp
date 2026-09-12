@@ -1,0 +1,12 @@
+/* stylelint-disable  */
+.role-info-content.dark-mode,
+.role-info-content.dark-mode * {
+  color: #fff !important;
+}
+
+.role-info-content:not(.dark-mode),
+.role-info-content:not(.dark-mode) * {
+  color: #000 !important;
+}
+
+

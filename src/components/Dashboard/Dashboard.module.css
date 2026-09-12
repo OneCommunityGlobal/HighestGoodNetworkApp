@@ -1,0 +1,10 @@
+/* stylelint-disable  */
+.tabPane {
+  overflow-y: auto;
+}
+
+@media screen and (width <= 800px) {
+  .tabPane {
+    max-height: 1500px;
+  }
+}
