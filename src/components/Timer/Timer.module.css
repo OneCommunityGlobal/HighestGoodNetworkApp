@@ -94,6 +94,26 @@
   color: white;
 }
 
+.resetConfirmationModal :global(.modal-content),
+.resetConfirmationModal :global(.modal-header),
+.resetConfirmationModal :global(.modal-body),
+.resetConfirmationModal :global(.modal-footer) {
+  background-color: #343a40;
+  color: white;
+  border-color: #343a40;
+}
+
+.resetConfirmationModal :global(.close) {
+  color: white;
+  opacity: 0.85;
+  text-shadow: none;
+}
+
+.resetConfirmationModal :global(.close:hover) {
+  color: white;
+  opacity: 1;
+}
+
 .hideTimer {
   display: none;
 }
