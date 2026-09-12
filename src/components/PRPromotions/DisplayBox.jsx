@@ -1,93 +1,113 @@
-import { useState, useRef, useEffect } from 'react';
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+import { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import styles from './DisplayBox.module.css';
 
+const VIBGYOR_COLOR_COUNT = 7;
+
+const MOCK_PROMOTION_DATA = [
+  {
+    prReviewer: 'Akshay - Jayram',
+    teamCode: '123',
+    teamReviewerName: 'Team Leader 1',
+    weeklyPRs: [
+      { week: '2024-06-01', prCount: 12 },
+      { week: '2024-06-08', prCount: 15 },
+      { week: '2024-06-15', prCount: 10 },
+      { week: '2024-06-22', prCount: 18 },
+      { week: '2024-06-29', prCount: 14 },
+      { week: '2024-07-06', prCount: 16 },
+      { week: '2024-07-13', prCount: 20 },
+    ],
+  },
+  {
+    prReviewer: 'Ghazi1212',
+    teamCode: '456',
+    teamReviewerName: 'Team Leader 2',
+    weeklyPRs: [
+      { week: '2024-06-01', prCount: 12 },
+      { week: '2024-06-08', prCount: 15 },
+      { week: '2024-06-15', prCount: 10 },
+      { week: '2024-06-22', prCount: 18 },
+      { week: '2024-06-29', prCount: 14 },
+    ],
+  },
+];
+
 export default function DisplayBox({ onClose, darkMode = false }) {
-  const mockPromotionData = [
-    {
-      prReviewer: 'Akshay - Jayram',
-      teamCode: '123',
-      teamReviewerName: 'Team Leader 1',
-      weeklyPRs: [
-        { week: '2024-06-01', prCount: 12 },
-        { week: '2024-06-08', prCount: 15 },
-        { week: '2024-06-15', prCount: 10 },
-        { week: '2024-06-22', prCount: 18 },
-        { week: '2024-06-29', prCount: 14 },
-        { week: '2024-07-06', prCount: 16 },
-        { week: '2024-07-13', prCount: 20 },
-      ],
-    },
-    {
-      prReviewer: 'Ghazi1212',
-      teamCode: '456',
-      teamReviewerName: 'Team Leader 2',
-      weeklyPRs: [
-        { week: '2024-06-01', prCount: 12 },
-        { week: '2024-06-08', prCount: 15 },
-        { week: '2024-06-15', prCount: 10 },
-        { week: '2024-06-22', prCount: 18 },
-        { week: '2024-06-29', prCount: 14 },
-      ],
-    },
-  ];
+  const [checkedItems, setCheckedItems] = useState(() => MOCK_PROMOTION_DATA.map(() => true));
 
-  const [checkedItems, setCheckedItems] = useState(new Array(mockPromotionData.length).fill(true));
+  const masterCheckboxRef = useRef(null);
 
-  const allChecked = checkedItems.every(Boolean);
+  const allChecked = checkedItems.length > 0 && checkedItems.every(Boolean);
+
+  const someChecked = checkedItems.some(Boolean);
+
+  useEffect(() => {
+    if (masterCheckboxRef.current) {
+      masterCheckboxRef.current.indeterminate = someChecked && !allChecked;
+    }
+  }, [someChecked, allChecked]);
+
+  useEffect(() => {
+    const handleKeyDown = event => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose]);
 
   const handleCheckedBoxChange = index => {
-    const updated = [...checkedItems];
-    updated[index] = !updated[index];
-    setCheckedItems(updated);
+    setCheckedItems(currentItems =>
+      currentItems.map((checked, itemIndex) => (itemIndex === index ? !checked : checked)),
+    );
   };
 
-  const handleSelectAll = () => {
-    setCheckedItems(new Array(mockPromotionData.length).fill(!allChecked));
+  const handleSelectAll = event => {
+    const shouldSelectAll = event.target.checked;
+
+    setCheckedItems(currentItems => currentItems.map(() => shouldSelectAll));
   };
 
   const handleConfirm = () => {
-    const selectedReviewers = mockPromotionData.filter((_, index) => checkedItems[index]);
+    const selectedReviewers = MOCK_PROMOTION_DATA.filter((_, index) => checkedItems[index]);
+
     console.log('Selected reviewers:', selectedReviewers);
+
     onClose();
   };
 
-  const tableClassName = [
-    styles.popupTable,
-    darkMode ? styles.popupTableDark : '',
-    darkMode ? styles['popup-table-dark'] : '',
-  ]
+  const handleOverlayMouseDown = event => {
+    if (event.target === event.currentTarget) {
+      onClose();
+    }
+  };
+
+  const tableClassName = [styles.popupTable, darkMode ? styles.popupTableDark : '']
     .filter(Boolean)
     .join(' ');
 
   const getBadgeClassName = index =>
-    [
-      styles.prCountBadge,
-      styles['pr-count-badge'],
-      styles[`color-${index}`] || styles[`color${index}`],
-    ]
-      .filter(Boolean)
-      .join(' ');
-  const modalRef = useRef(null);
-  const overlayRef = useRef(null);
-
-  useEffect(() => {
-    const overlayClickHandler = e => {
-      if (e.target.id === 'overlay') onClose();
-    };
-
-    document.addEventListener('click', overlayClickHandler);
-    return () => document.removeEventListener('click', overlayClickHandler);
-  }, []);
+    [styles.prCountBadge, styles[`color-${index % VIBGYOR_COLOR_COUNT}`]].filter(Boolean).join(' ');
 
   return (
-    <div className={styles.overlay} ref={overlayRef} id="overlay">
+    <div className={styles.overlay} onMouseDown={handleOverlayMouseDown}>
       <div
         className={`${styles.popup} ${darkMode ? styles.popupDark : ''}`}
-        ref={modalRef}
-        id="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="promotion-dialog-heading"
       >
-        <h2 className={`${styles.popupHeading} ${darkMode ? styles.popupHeadingDark : ''}`}>
+        <h2
+          id="promotion-dialog-heading"
+          className={`${styles.popupHeading} ${darkMode ? styles.popupHeadingDark : ''}`}
+        >
           Are you sure you want to promote these PR reviewers?
         </h2>
 
@@ -96,12 +116,15 @@ export default function DisplayBox({ onClose, darkMode = false }) {
             <tr>
               <th>
                 <input
+                  ref={masterCheckboxRef}
+                  className={styles.checkbox}
                   type="checkbox"
                   checked={allChecked}
                   onChange={handleSelectAll}
                   aria-label="Select all reviewers"
                 />
               </th>
+
               <th>PR Reviewer</th>
               <th>Team Code</th>
               <th>Team Leader Name</th>
@@ -110,19 +133,22 @@ export default function DisplayBox({ onClose, darkMode = false }) {
           </thead>
 
           <tbody>
-            {mockPromotionData.map((promotion, index) => (
+            {MOCK_PROMOTION_DATA.map((promotion, index) => (
               <tr key={`${promotion.prReviewer}-${promotion.teamCode}`}>
                 <td>
                   <input
+                    className={styles.checkbox}
                     type="checkbox"
                     checked={checkedItems[index]}
                     onChange={() => handleCheckedBoxChange(index)}
                     aria-label={`Select reviewer ${promotion.prReviewer}`}
                   />
                 </td>
+
                 <td>{promotion.prReviewer}</td>
                 <td>{promotion.teamCode}</td>
                 <td>{promotion.teamReviewerName}</td>
+
                 <td>
                   <div className={styles.prBadgeRow}>
                     {promotion.weeklyPRs.map((pr, prIndex) => (
@@ -139,6 +165,7 @@ export default function DisplayBox({ onClose, darkMode = false }) {
             ))}
           </tbody>
         </table>
+
         <div className={styles.buttonRow}>
           <button
             type="button"
@@ -151,7 +178,7 @@ export default function DisplayBox({ onClose, darkMode = false }) {
           <button
             type="button"
             className={`${styles.button} ${styles.confirmButton}`}
-            disabled={!checkedItems.some(Boolean)}
+            disabled={!someChecked}
             onClick={handleConfirm}
           >
             Confirm
