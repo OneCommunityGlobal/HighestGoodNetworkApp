@@ -342,6 +342,17 @@
   margin: 5px;
 }
 
+
+.datePicker :global(.rdp-day:hover) {
+  background-color: #111831;
+  color: #fff;
+}
+
+.datePicker :global(.rdp-button:hover:not([disabled])) {
+  background-color: #2d3748;
+  color: #fff;
+}
+
 @media (width <= 968px) {
   .wbs-button-group {
     align-items: flex-start;
@@ -393,4 +404,36 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+.editTaskTableDark tr:hover {
+  background: #111831;
+}
+
+.editTaskTextareaDark {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+}
+
+.darkDateInput {
+  background-color: #1e293b;
+  color: #fff;
+}
+
+
+.datePickerClose {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+.datePickerCloseDark {
+  background-color: #1e293b;
+  color: #fff;
+}
+
+.datePickerCloseDark:hover {
+  background-color: #111831;
 }
