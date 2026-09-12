@@ -5,6 +5,7 @@ import hasPermission from '../../utils/permissions';
 import { connect } from 'react-redux';
 import { boxStyle, boxStyleDark } from '~/styles';
 
+import { permissions } from '../../utils/constants';
 /**
  * Shows the dates and times a user has edited their time entries. Admins are given the ability to delete these edits.
  * @param {*} props.userProfile
@@ -16,7 +17,7 @@ const TimeEntryEditHistory = props => {
 
   const editHistory = [...props.userProfile.timeEntryEditHistory].reverse();
 
-  const canDeleteTimeEntry = props.hasPermission('deleteTimeEntry') ;
+  const canDeleteTimeEntry = props.hasPermission(permissions.deleteTimeEntry) ;
  
   const secondsToHms = seconds => {
     let h = new String(Math.floor(seconds / 3600));

@@ -6,3 +6,6 @@ export const DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY =
 // General protected accounts modification warning message
 export const PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE =
   'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.';
+
+// Permission key constants (PR #2052) — single source via Permissions.json + legacy keys
+export { permissions, permissionCategories } from './permissionKeys';

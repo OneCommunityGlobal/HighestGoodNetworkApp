@@ -17,6 +17,7 @@ import { rejectTaskEditSuggestionHTTP } from '../service';
 import { rejectTaskEditSuggestionSuccess } from '../actions';
 import { fetchTaskEditSuggestions } from '../thunks';
 
+import { permissions } from '../../../utils/constants';
 export default function TaskEditSuggestionsModal({
   isTaskEditSuggestionModalOpen,
   taskEditSuggestion,
@@ -33,7 +34,7 @@ export default function TaskEditSuggestionsModal({
         updateTask(
           taskEditSuggestion.taskId,
           taskEditSuggestion.newTask,
-          dispatch(hasPermission('updateTask')),
+          dispatch(hasPermission(permissions.updateTask)),
         )(dispatch, getState);
       });
       dispatch(rejectTaskEditSuggestionSuccess(taskEditSuggestion._id));

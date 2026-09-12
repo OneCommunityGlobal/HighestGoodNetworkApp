@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import UserStateDisplay from '../UserState/UserStateDisplay';
+import { permissions } from '../../utils/constants';
 // import moment from 'moment';
 // import 'moment-timezone';
 import { faCopy, faMailBulk } from '@fortawesome/free-solid-svg-icons';
@@ -105,7 +106,7 @@ function FormattedReport({
   getWeeklySummariesReport,
 }) {
   const dispatch = useDispatch();
-  const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
+  const isEditCount = dispatch(hasPermission(permissions.totalValidWeeklySummaries));
 
   // Only proceed if summaries is valid
   // if (!summaries || !Array.isArray(summaries) || summaries.length === 0) {
@@ -392,7 +393,7 @@ function ReportDetails({
                 </p>
                 <UserStateDisplay
                   userId={summary._id}
-                  canEdit={dispatch(hasPermission('manage_user_state_indicator'))}
+                  canEdit={dispatch(hasPermission(permissions.manage_user_state_indicator))}
                 />
               </div>
             </ListGroupItem>

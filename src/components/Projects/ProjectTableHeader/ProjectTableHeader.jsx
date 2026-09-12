@@ -17,6 +17,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faArrowDown, faSortDown } from '@fortawesome/free-solid-svg-icons';
 import { Dropdown,DropdownButton } from 'react-bootstrap';
 
+import { permissions } from '../../../utils/constants';
 // import DropdownButton from 'react-bootstrap/DropdownButton';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { Button } from 'reactstrap';
@@ -24,7 +25,7 @@ import { Button } from 'reactstrap';
 
 const ProjectTableHeader = props => {
   const { role, darkMode } = props;
-  const canDeleteProject = hasPermission('deleteProject')
+  const canDeleteProject = hasPermission(permissions.deleteProject)
 
   const categoryList = ['Unspecified', 'Food', 'Energy', 'Housing', 'Education', 'Society', 'Economics', 'Stewardship', 'Other'];
   const statusList = ['Active', 'Inactive'];

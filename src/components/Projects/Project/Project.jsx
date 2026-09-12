@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import { modifyProject } from '../../../actions/projects';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
+import { permissions } from '../../../utils/constants';
 const Project = props => {
   const { darkMode, index } = props;
   const [projectData, setProjectData] = useState(props.projectData);
@@ -20,11 +21,11 @@ const Project = props => {
     props.projectData?.category || props.category || 'Unspecified',
   );
 
-  const canPutProject = props.hasPermission('putProject');
-  const canDeleteProject = props.hasPermission('deleteProject');
+  const canPutProject = props.hasPermission(permissions.putProject);
+  const canDeleteProject = props.hasPermission(permissions.deleteProject);
 
-  const canSeeProjectManagementFullFunctionality = props.hasPermission('seeProjectManagement');
-  const canEditCategoryAndStatus = props.hasPermission('editProject');
+  const canSeeProjectManagementFullFunctionality = props.hasPermission(permissions.seeProjectManagement);
+  const canEditCategoryAndStatus = props.hasPermission(permissions.editProject);
 
   const persistProjectUpdate = async (field, value) => {
     if (!projectData) return;

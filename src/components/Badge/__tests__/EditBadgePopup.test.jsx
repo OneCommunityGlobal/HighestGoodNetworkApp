@@ -70,6 +70,17 @@ describe('EditBadgePopup Component', () => {
     expect(rankingField).toHaveValue(1);
   });
 
+  test('enables Update when required fields including image URL are present', () => {
+    const store = mockStore({ theme: themeMock });
+    render(
+      <Provider store={store}>
+        <EditBadgePopup open={true} badgeValues={mockBadgeValues} />
+      </Provider>,
+    );
+
+    expect(screen.getByText('Update')).not.toBeDisabled();
+  });
+
   test('shows months feild and correct data in it in No Infringement Streak Badge Popup', () => {
     mockBadgeValues.type = 'No Infringement Streak';
     mockBadgeValues.months = 3;
