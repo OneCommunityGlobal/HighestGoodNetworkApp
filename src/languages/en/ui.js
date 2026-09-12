@@ -6,6 +6,7 @@ export const ACTIVE = 'Active';
 export const TITLE = 'Title'
 export const INACTIVE = 'InActive';
 export const ACTIVE_PROJECTS = 'Active Projects';
+export const ARCHIVED_PROJECTS = 'Archived Projects';
 export const BM_DASHBOARD = 'BM Dashboard';
 export const CP_DASHBOARD = 'CP Dashboard';
 export const BM_PROJECT = 'Project';
