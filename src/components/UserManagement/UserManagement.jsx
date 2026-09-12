@@ -102,9 +102,6 @@ class UserManagement extends React.PureComponent {
       rolesPermissions,
       timeOffRequests,
       darkMode,
-      this.state.editable,
-      this.state.isMobile,
-      this.state.mobileFontSize,
     );
   }
 
@@ -114,7 +111,10 @@ class UserManagement extends React.PureComponent {
   }
 
   handleResize = () => {
-    this.setState({ isMobile: window.innerWidth <= 750 });
+    const isMobile = window.innerWidth <= 750;
+    if (isMobile !== this.state.isMobile) {
+      this.setState({ isMobile });
+    }
   };
 
   // eslint-disable-next-line react/sort-comp
@@ -130,10 +130,15 @@ class UserManagement extends React.PureComponent {
         rolesPermissions,
         timeOffRequests,
         darkMode,
-        this.state.editable,
-        this.state.isMobile,
-        this.state.mobileFontSize,
       );
+    }
+
+    if (prevState.isMobile !== this.state.isMobile) {
+      const { darkMode } = this.props.state.theme;
+      const { userProfiles } = this.props.state.allUserProfiles;
+      const { roles: rolesPermissions } = this.props.state.role;
+      const { requests: timeOffRequests } = this.props.state.timeOffRequests;
+      this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode);
     }
 
     const searchStateChanged =
@@ -165,9 +170,6 @@ class UserManagement extends React.PureComponent {
         rolesPermissions,
         timeOffRequests,
         darkMode,
-        this.state.editable,
-        this.state.isMobile,
-        this.state.mobileFontSize,
       );
 
       this.setState({
@@ -334,22 +336,18 @@ class UserManagement extends React.PureComponent {
     rolesPermissions,
     timeOffRequests,
     darkMode,
-    editUser,
-    isMobile,
-    mobileFontSize,
   ) => {
-    this.setState({
+    this.setState(prevState => ({
       userTableItems: this.userTableElements(
         userProfiles,
         rolesPermissions,
         timeOffRequests,
         darkMode,
-        editUser,
-        isMobile,
-        mobileFontSize,
+        prevState.isMobile,
+        prevState.mobileFontSize,
       ),
       isFilteringTable: false,
-    });
+    }));
   };
 
   filteredUserList = (userProfiles) => {
@@ -464,9 +462,6 @@ class UserManagement extends React.PureComponent {
       this.props.state.role.roles,
       this.props.state.timeOffRequests.requests,
       this.props.state.theme.darkMode,
-      this.state.editable,
-      this.state.isMobile,
-      this.state.mobileFontSize,
     );
   };
 
@@ -930,5 +925,7 @@ const mapDispatchToProps = (dispatch) => ({
   disableEditUserInfo: () => dispatch(disableEditUserInfo()),
   getAllRoles: () => dispatch(getAllRoles()),
 });
+
+export { UserManagement as UnconnectedUserManagement };
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserManagement);
