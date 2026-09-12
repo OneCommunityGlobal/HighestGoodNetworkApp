@@ -169,6 +169,8 @@ function HoursPledgedChart() {
             className={styles.hpRoleSelect}
             classNamePrefix="hpRoleSelect"
             isMulti
+            closeMenuOnSelect={false}
+            hideSelectedOptions={false}
             options={roleOptions}
             onChange={setSelectedRoles}
             placeholder="Select Roles"
@@ -200,14 +202,19 @@ function HoursPledgedChart() {
               }),
               option: (base, state) => ({
                 ...base,
-                backgroundColor: state.isFocused
+                backgroundColor: state.isSelected
+                  ? darkMode
+                    ? '#2563eb'
+                    : '#3b82f6'
+                  : state.isFocused
                   ? darkMode
                     ? '#334155'
                     : '#e2e8f0'
                   : darkMode
                   ? '#1e293b'
                   : '#fff',
-                color: darkMode ? '#f8fafc' : '#111827',
+                color: state.isSelected ? '#fff' : darkMode ? '#f8fafc' : '#111827',
+                cursor: 'pointer',
               }),
               multiValue: base => ({
                 ...base,
