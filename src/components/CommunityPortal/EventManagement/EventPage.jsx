@@ -66,6 +66,26 @@ function EventPage() {
     }
   };
 
+  const handleCalendarChange = date => {
+    if (date >= new Date().setHours(0, 0, 0, 0)) {
+      setStartDate(date);
+      setEndDate(date);
+    }
+  };
+
+  const getCalendarTileClassName = ({ date, view }) => {
+    if (view === 'month' && date < new Date().setHours(0, 0, 0, 0)) {
+      return styles.calendarTileDisabled;
+    }
+    return null;
+  };
+
+  const handleDescriptionChange = e => {
+    setDescription(e.target.value);
+    if (descriptionError) setDescriptionError('');
+    if (descriptionPosted) setDescriptionPosted(false);
+  };
+
   return (
     <div className={`${styles.eventPage} ${darkMode ? styles.eventPageDark : ''}`}>
       <div className={styles.eventCard}>
@@ -193,20 +213,10 @@ function EventPage() {
 
         <div className={`${styles.eventCardRight} ${darkMode ? styles.eventCardRightDark : ''}`}>
           <Calendar
-            onChange={date => {
-              if (date >= new Date().setHours(0, 0, 0, 0)) {
-                setStartDate(date);
-                setEndDate(date);
-              }
-            }}
+            onChange={handleCalendarChange}
             value={startDate}
             minDate={new Date()}
-            tileClassName={({ date, view }) => {
-              if (view === 'month' && date < new Date().setHours(0, 0, 0, 0)) {
-                return styles.calendarTileDisabled;
-              }
-              return null;
-            }}
+            tileClassName={getCalendarTileClassName}
           />
         </div>
       </div>
@@ -219,11 +229,7 @@ function EventPage() {
         <textarea
           className={`${styles.textarea} ${darkMode ? styles.inputDark : ''}`}
           value={description}
-          onChange={e => {
-            setDescription(e.target.value);
-            if (descriptionError) setDescriptionError('');
-            if (descriptionPosted) setDescriptionPosted(false);
-          }}
+          onChange={handleDescriptionChange}
           placeholder="Enter event description..."
         />
         {descriptionError && (
