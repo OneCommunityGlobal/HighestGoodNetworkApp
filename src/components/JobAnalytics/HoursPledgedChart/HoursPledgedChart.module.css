@@ -14,7 +14,7 @@
 }
 
 .hoursPledgedChart.darkMode {
-  background-color: #1b2a41;
+  background-color: #0f1b2b;
 }
 
 .hoursPledgedChart h2 {
@@ -30,7 +30,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1.35fr) minmax(240px, 1fr);
   align-items: start;
-  gap: clamp(16px, 3vw, 32px);
+  gap: 1rem;
   width: 100%;
   max-width: 1100px;
   margin: 0 auto clamp(24px, 4vw, 40px);
@@ -43,15 +43,13 @@
 
 .darkMode .hpFilters {
   border-color: #334155;
-  background-color: #1c2541;
+  background-color: #1e293b;
   box-shadow: 2px 2px 4px 1px black;
 }
 
 .darkMode .hpChartContainer {
   border: none;
-  background-color: #1c2541;
   color: #f1f1f1;
-  box-shadow: 2px 2px 4px 1px black;
 }
 
 .hpChartContainer {
@@ -83,11 +81,14 @@
 }
 
 .hpDateInputs {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  position: relative;
+  display: flex;
   width: 100%;
   min-width: 0;
+}
+
+.hpDateInputs :global(.react-datepicker-wrapper:first-child) {
+  margin-right: 1rem;
 }
 
 .hpDateInputs :global(.react-datepicker-wrapper),
@@ -95,6 +96,10 @@
   display: block;
   width: 100%;
   min-width: 0;
+}
+
+.hpDatePopper {
+  z-index: 30 !important;
 }
 
 .hpDatePicker {
@@ -129,6 +134,20 @@
 
 .darkMode .hpDatePicker::placeholder {
   color: #cbd5e1;
+}
+
+.hpDateCalendar {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgb(15 23 42 / 18%);
+}
+
+.hpDateCalendarDark {
+  border: 1px solid #475569 !important;
+  border-radius: 8px;
+  background-color: #0f172a !important;
+  color: #e2e8f0 !important;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 45%);
 }
 
 .hpRoleSelect {
@@ -188,7 +207,7 @@
 @media (width <= 768px) {
   .hpFilters {
     grid-template-columns: 1fr;
-    gap: 18px;
+    gap: 1rem;
   }
 
   .hpChartContainer {
@@ -209,4 +228,123 @@
     grid-template-columns: 1fr;
     gap: 8px;
   }
+}
+
+.hpDateInputs :global(.react-datepicker__navigation-icon::before) {
+  border-color: #08060d !important;
+}
+
+.hpDateInputs :global(.react-datepicker__navigation-icon) {
+  font-size: initial !important;
+}
+
+.hpDateInputs :global(.react-datepicker__day--disabled:hover) {
+  background-color: transparent !important;
+  cursor:not-allowed;
+}
+
+.hpDateInputs :global(.react-datepicker__day--disabled) {
+  color: #9ca3af !important;
+}
+
+.hpDateInputs :global(.react-datepicker__day--keyboard-selected) {
+  background-color: #fff;
+  color: #000;
+}
+
+.hpDateInputs :global(.react-datepicker__day--in-selecting-range:not(.react-datepicker__day--in-range)) {
+  color: #000 !important;
+  background-color: #f0f0f0;
+}
+
+.hpDateInputs :global(.react-datepicker__day--in-range) {
+  color: #000 !important;
+}
+
+.hpDateInputs :global(.react-datepicker__day--in-range.react-datepicker__day--in-selecting-range) {
+  background-color: #3b82f6 !important;
+  color: #fff !important;
+}
+
+.hpDateInputs :global(.react-datepicker__day--in-range.react-datepicker__day--outside-month) {
+  color: #fff !important;
+}
+
+.hpDateInputs :global(.react-datepicker__month--selecting-range .react-datepicker__day--in-range:not(.react-datepicker__day--in-selecting-range)) {
+  color: #000 !important;
+}
+
+/* Date picker dark mode. */
+:global(.dark-mode) .hpDateInputs :global(.react-datepicker__input-container input) {
+  background-color: #334155 !important;
+  color: #f9fafb !important;
+  border: 1px solid #52677d !important;
+  color-scheme: dark;
+}
+
+:global(.dark-mode) .hpDateInputs :global(.react-datepicker) {
+  background-color: #1b2a41;
+  color: #f9fafb;
+  border-color: #374151;
+}
+
+:global(.dark-mode) .hpDateInputs :global(.react-datepicker__header) {
+  background-color: #111827;
+  border-bottom: 1px solid #374151;
+}
+
+:global(.dark-mode) .hpDateInputs :global(.react-datepicker__current-month),
+:global(.dark-mode) .hpDateInputs :global(.react-datepicker__day-name),
+:global(.dark-mode) .hpDateInputs :global(.react-datepicker__day),
+:global(.dark-mode) .hpDateInputs :global(.react-datepicker__time-name) {
+  color: #f9fafb;
+}
+
+:global(.dark-mode) .hpDateInputs :global(.react-datepicker__day:hover) {
+  background-color: #374151;
+}
+
+:global(.dark-mode) .hpDateInputs :global(.react-datepicker__day--disabled) {
+  color: #9ca3af !important;
+}
+
+:global(.dark-mode) .hpDateInputs :global(.react-datepicker__day--keyboard-selected) {
+  background-color: #1b2a41;
+  color: #fff;
+}
+
+:global(.dark-mode) .hpDateInputs :global(.react-datepicker__day--in-selecting-range:not(.react-datepicker__day--in-range)) {
+  color: #fff !important;
+  background-color: #ffffff1b;
+}
+
+:global(.dark-mode) .hpDateInputs :global(.react-datepicker__day--in-range) {
+  color: #fff !important;
+  background-color: #3b82f6;
+}
+
+:global(.dark-mode) .hpDateInputs :global(.react-datepicker__day--in-range.react-datepicker__day--in-selecting-range) {
+  background-color: #3b82f6 !important;
+  color: #fff !important;
+}
+
+:global(.dark-mode) .hpDateInputs :global(.react-datepicker__day--in-range.react-datepicker__day--outside-month) {
+  color: #fff !important;
+}
+
+:global(.dark-mode) .hpDateInputs :global(.react-datepicker__month--selecting-range .react-datepicker__day--in-range:not(.react-datepicker__day--in-selecting-range)) {
+  color: #fff !important;
+  background-color: #ffffff1b;
+}
+
+:global(.dark-mode) .hpDateInputs :global(.react-datepicker__day--disabled) {
+  color: #6b7280;
+}
+
+:global(.dark-mode) .hpDateInputs :global(.react-datepicker__triangle) {
+  display: none;
+}
+
+:global(.dark-mode) .hpDateInputs :global(.react-datepicker__navigation-icon::before) {
+  border-color: #fff !important;
 }
