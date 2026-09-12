@@ -578,10 +578,10 @@ function JobFormBuilder() {
                       }));
                     }}
                   >
-                    <option value="textbox">TextBox</option>
+                    <option value="textbox">Text Box</option>
                     <option value="email">Email</option>
-                    <option value="textarea">Textarea</option>
-                    <option value="checkbox">Checkbox</option>
+                    <option value="textarea">Text Area</option>
+                    <option value="checkbox">Check Box</option>
                     <option value="radio">Radio</option>
                     <option value="dropdown">Dropdown</option>
                     <option value="date">Date</option>

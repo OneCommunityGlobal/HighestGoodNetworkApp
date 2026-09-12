@@ -313,6 +313,12 @@
   background-color: var(--jfb-blue);
 }
 
+.darkMode .previewEmptyMessage {
+  color: #bbb;
+  background-color: #333;
+  border-color: #555;
+}
+
 /* Responsive Design */
 @media (width <= 768px) {
   .modalContainer {
