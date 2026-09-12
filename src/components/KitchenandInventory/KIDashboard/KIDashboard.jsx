@@ -4,103 +4,78 @@ import styles from './KIDashboard.module.css';
 const metrics = [
   {
     title: 'Total Ingredients',
-    value: 128,
+    value: 247,
     info: '+12 this week',
-    icon: '🥕',
+    icon: '◈',
+    iconClass: 'blue',
   },
   {
     title: 'Onsite Grown',
-    value: 46,
+    value: 89,
     info: '36% of total',
-    icon: '🌱',
+    icon: '♧',
+    iconClass: 'green',
   },
   {
     title: 'Upcoming Meals',
-    value: 8,
+    value: 28,
     info: 'Next 7 days',
-    icon: '🍽️',
+    icon: '▣',
+    iconClass: 'purple',
   },
   {
     title: 'Pending Orders',
-    value: 5,
+    value: 3,
     info: '$1,247 total',
-    icon: '📦',
-  },
-];
-
-const lowStockItems = [
-  {
-    name: 'Tomatoes',
-    current: '4 kg',
-    minimum: '10 kg',
-  },
-  {
-    name: 'Spinach',
-    current: '2 kg',
-    minimum: '8 kg',
-  },
-  {
-    name: 'Carrots',
-    current: '3 kg',
-    minimum: '7 kg',
-  },
-];
-
-const upcomingHarvests = [
-  {
-    name: 'Tomatoes',
-    location: 'Garden A',
-    date: 'Sep 8',
-  },
-  {
-    name: 'Carrots',
-    location: 'Garden B',
-    date: 'Sep 12',
+    icon: '🛒',
+    iconClass: 'orange',
   },
 ];
 
 const KIDashboard = () => {
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Kitchen & Inventory Dashboard</h1>
-
-      {/* Low Stock Alerts */}
-      <section className={styles.alertSection}>
-        <h2>Low Stock Alerts</h2>
-
-        <div className={styles.alertList}>
-          {lowStockItems.map(item => (
-            <div className={styles.alertCard} key={item.name}>
-              <div className={styles.alertIcon}>⚠️</div>
-
-              <div className={styles.alertContent}>
-                <h3>{item.name}</h3>
-                <p>
-                  {item.current} remaining · Minimum {item.minimum}
-                </p>
-              </div>
-            </div>
-          ))}
+      {/* Header */}
+      <header className={styles.header}>
+        <div>
+          <h1 className={styles.title}>Dashboard</h1>
+          <p className={styles.subtitle}>Real-time overview of kitchen operations</p>
         </div>
-      </section>
 
-      {/* Upcoming Harvests */}
-      <section className={styles.alertSection}>
-        <h2>Upcoming Harvests</h2>
+        <button type="button" className={styles.priorityButton}>
+          <span className={styles.bellIcon}>♧</span>
+          <span>Priority Ingredients</span>
+          <span className={styles.priorityBadge}>9</span>
+        </button>
+      </header>
 
-        <div className={styles.harvestList}>
-          {upcomingHarvests.map(harvest => (
-            <div className={styles.harvestCard} key={`${harvest.name}-${harvest.date}`}>
-              <div className={styles.harvestIcon}>🌱</div>
+      {/* Alerts */}
+      <section className={styles.alerts}>
+        <div className={`${styles.alertBanner} ${styles.lowStockAlert}`}>
+          <div className={styles.alertBannerIcon}>!</div>
 
-              <div>
-                <h3>{harvest.name}</h3>
-                <p>
-                  {harvest.location} · {harvest.date}
-                </p>
-              </div>
-            </div>
-          ))}
+          <div className={styles.alertBannerContent}>
+            <h2>Low Stock Alert</h2>
+            <p>Olive oil needs reordering (2 days remaining)</p>
+          </div>
+        </div>
+
+        <div className={`${styles.alertBanner} ${styles.harvestAlert}`}>
+          <div className={styles.alertBannerIcon}>□</div>
+
+          <div className={styles.alertBannerContent}>
+            <h2>Harvest Upcoming</h2>
+            <p>Tomatoes ready for harvest in 3 days (estimated 25 lbs)</p>
+          </div>
+        </div>
+
+        <div className={`${styles.alertBanner} ${styles.seasonalAlert}`}>
+          <div className={styles.alertBannerIcon}>⌁</div>
+
+          <div className={styles.alertBannerContent}>
+            <h2>Seasonal Recommendation</h2>
+            <p>Fall harvest available: Consider root vegetable dishes</p>
+          </div>
         </div>
       </section>
 
@@ -109,8 +84,14 @@ const KIDashboard = () => {
         {metrics.map(metric => (
           <div className={styles.metricCard} key={metric.title}>
             <div className={styles.metricHeader}>
-              <span aria-hidden="true">{metric.icon}</span>
               <h2>{metric.title}</h2>
+
+              <span
+                className={`${styles.metricIcon} ${styles[metric.iconClass]}`}
+                aria-hidden="true"
+              >
+                {metric.icon}
+              </span>
             </div>
 
             <div className={styles.metricValue}>{metric.value}</div>
