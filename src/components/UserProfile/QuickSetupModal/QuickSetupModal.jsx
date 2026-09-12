@@ -72,23 +72,28 @@ function QuickSetupModal(props) {
   };
 
   useEffect(() => {
-    if (stateTeamCodes.length > 0 || !props.fetchTeamCodeAllUsers) return;
+  if (!props.fetchTeamCodeAllUsers) return;
 
-    props
-      .fetchTeamCodeAllUsers()
-      .then(fetchedCodes => {
-        const formatted = (fetchedCodes || [])
-          .filter(code => typeof code === 'string' && code.trim() !== '')
-          .map(code => ({
-            value: code,
-            label: code,
-          }));
+  props
+    .fetchTeamCodeAllUsers()
+    .then(fetchedCodes => {
+      const formatted = [
+        ...new Set(
+          (fetchedCodes || [])
+            .filter(code => typeof code === 'string' && code.trim() !== '')
+            .map(code => code.trim())
+        ),
+      ].map(code => ({
+        value: code,
+        label: code,
+      }));
 
-        props.setTeamCodes(formatted);
-      })
-      // eslint-disable-next-line no-console
-      .catch(err => console.error('Failed to fetch team codes:', err));
-  }, [stateTeamCodes, props.fetchTeamCodeAllUsers, props.setTeamCodes]);
+      props.setTeamCodes(formatted);
+    })
+    .catch(err => {
+      console.error('Failed to fetch team codes:', err);
+    });
+}, [props.fetchTeamCodeAllUsers, props.setTeamCodes]);
 
   return (
     <div className={darkMode ? 'bg-yinmn-blue text-light border-0' : ''}>
