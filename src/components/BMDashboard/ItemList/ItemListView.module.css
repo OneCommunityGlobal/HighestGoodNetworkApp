@@ -142,10 +142,24 @@ table td {
 .sortableTh {
   cursor: pointer;
   user-select: none;
+  white-space: nowrap;
 }
 
 .sortableTh:hover {
   text-decoration: underline;
+}
+
+.thContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.thContent svg {
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
 }
 
 /* Changed from grid to flexbox to handle variable number of filter items
@@ -380,6 +394,10 @@ table td {
   display: flex;
   align-items: center;
   gap: 6px;
+
+  /* Wrap instead of overflowing so the next/last-page buttons stay reachable on narrow screens. */
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .pageButtons button {
@@ -723,7 +741,7 @@ table td {
 
 .lightDatePicker :global(.react-datepicker__day--selected),
 .lightDatePicker :global(.react-datepicker__day--keyboard-selected) {
-  background-color: #468ef9 !important;
+  background-color: #1a56db !important;
   color: #fff !important;
 }
 
@@ -922,4 +940,153 @@ table td {
   .itemsListContainer {
     padding: 0 0.5rem;
   }
+}
+
+.bulkActionsContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 15px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.bulkActionsButton {
+  background-color: #1565c0;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.bulkActionsButton:hover {
+  background-color: #0d4ea8;
+}
+
+.bulkActionsButton:disabled {
+  background-color: #9aa6b2;
+  cursor: not-allowed;
+}
+
+.selectedCount {
+  font-weight: bold;
+  color: #495057;
+}
+
+.selectedRow {
+  background-color: #e3f2fd !important;
+}
+
+.selectedRow:hover {
+  background-color: #bbdefb !important;
+}
+
+.bulkStatusCell {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.bulkTagHold,
+.bulkTagReviewed,
+.bulkTagNote,
+.bulkTagNone {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.bulkTagHold {
+  background: #fff4e5;
+  color: #a44900;
+  border: 1px solid #ffcf99;
+}
+
+.bulkTagReviewed {
+  background: #e8f7ef;
+  color: #106c3f;
+  border: 1px solid #b8e6cb;
+}
+
+.bulkTagNote {
+  background: #eaf1ff;
+  color: #1f4ba8;
+  border: 1px solid #c5d6ff;
+}
+
+.bulkTagNone {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #d8e0e8;
+}
+
+.darkBulkActions {
+  background-color: #2f4157;
+  border: 1px solid #3f5269;
+  color: #e8edf4;
+}
+
+.darkBulkActions .selectedCount {
+  color: #e8edf4;
+}
+
+.darkTable .selectedRow {
+  background-color: #3f5269 !important;
+}
+
+.darkTable .selectedRow:hover {
+  background-color: #4a5f7a !important;
+}
+
+.darkTable .bulkTagHold {
+  background: #5a3a12;
+  color: #ffd8a6;
+  border-color: #7a4b1a;
+}
+
+.darkTable .bulkTagReviewed {
+  background: #0f4a34;
+  color: #b7f7d7;
+  border-color: #166848;
+}
+
+.darkTable .bulkTagNote {
+  background: #203a69;
+  color: #d3e3ff;
+  border-color: #2d4f89;
+}
+
+.darkTable .bulkTagNone {
+  background: #334155;
+  color: #d1dae7;
+  border-color: #41556f;
+}
+
+/* Keep the Bulk Actions dropdown menu dark; otherwise reactstrap renders a light
+   menu with a light-gray hover that clashes with the dark toolbar. */
+.darkBulkActions :global(.dropdown-menu) {
+  background-color: #2f4157;
+  border: 1px solid #3f5269;
+}
+
+.darkBulkActions :global(.dropdown-item) {
+  color: #e8edf4;
+}
+
+.darkBulkActions :global(.dropdown-item:hover),
+.darkBulkActions :global(.dropdown-item:focus) {
+  background-color: #3f5269;
+  color: #fff;
+}
+
+.darkBulkActions :global(.dropdown-divider) {
+  border-top-color: #3f5269;
 }
