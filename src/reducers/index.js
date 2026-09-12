@@ -90,6 +90,7 @@ import { jobApplicationReducer } from './jobApplication/jobApplicationReducer';
 import emailOutboxReducer from './emailOutboxReducer';
 import emailTemplateReducer from './emailTemplateReducer';
 import wishListReducer from './listBidDashboard/wishListItemReducer';
+import wishlistsReducer from './listBidDashboard/wishlistReducer';
 import villageDetailsReducer from './listBidDashboard/villageDetailsReducer';
 
 import { optStatusBreakdownReducer } from './optStatusBreakdownReducer';
@@ -190,6 +191,7 @@ const localReducers = {
 
   // lbdashboard
   wishlistItem: wishListReducer,
+  wishlists: wishlistsReducer,
   villageDetails: villageDetailsReducer,
 
   bmissuechart: issueReducer,

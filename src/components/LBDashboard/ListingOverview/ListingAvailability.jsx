@@ -1,13 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { fetchListingAvailability } from '../../../actions/lbdashboard/listOverviewAction';
 import styles from './Listoverview.module.css';
-
-const AVAILABILITY_COLORS = {
-  available: '#4caf50', // green
-  booked: '#f44336', // red
-  blocked: '#9e9e9e', // gray
-};
 
 function getDateStatus(date, availability) {
   const d = date.toISOString().split('T')[0];
@@ -46,6 +40,11 @@ function getMonthDays(year, month) {
 
 export default function ListingAvailability({ listingId, availability, loading, error, onClose }) {
   const dispatch = useDispatch();
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const cx = base => {
+    const darkClass = darkMode ? styles[`${base}--dark`] : '';
+    return `${styles[base]} ${darkClass}`;
+  };
 
   const [month, setMonth] = useState(() => {
     const now = new Date();
@@ -92,16 +91,16 @@ export default function ListingAvailability({ listingId, availability, loading, 
   });
 
   return (
-    <div className={`${styles.availabilityModal}`}>
-      <button type="button" className={`${styles.closeBtn}`} onClick={onClose}>
+    <div className={cx('availabilityModal')}>
+      <button type="button" className={cx('closeBtn')} onClick={onClose}>
         ×
       </button>
-      <h2 className={`${styles.headingCalendar}`}>Availability Calendar</h2>
+      <h2 className={cx('headingCalendar')}>Availability Calendar</h2>
       {loading && <div>Loading...</div>}
-      {!loading && error && <div className="error-message">{error}</div>}
+      {!loading && error && <div className={cx('availabilityError')}>{error}</div>}
       {!loading && !error && availability && (
         <>
-          <div className={`${styles.calendarNav}`}>
+          <div className={cx('calendarNav')}>
             <button type="button" onClick={handlePrevMonth}>
               &lt;
             </button>
@@ -115,7 +114,7 @@ export default function ListingAvailability({ listingId, availability, loading, 
               &gt;
             </button>
           </div>
-          <table className={`${styles.simpleCalendar}`}>
+          <table className={cx('simpleCalendar')}>
             <thead>
               <tr>
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
@@ -132,14 +131,9 @@ export default function ListingAvailability({ listingId, availability, loading, 
                     return (
                       <td
                         key={date.toISOString()}
-                        className={status ? `${styles[`calendar-${status}`]}` : ''}
-                        style={{
-                          background: status ? AVAILABILITY_COLORS[status] : undefined,
-                          color: status ? '#fff' : undefined,
-                          borderRadius: status ? '50%' : undefined,
-                          cursor: status ? 'pointer' : undefined,
-                          position: 'relative',
-                        }}
+                        className={`${styles.calendarDay} ${
+                          status ? styles[`calendar-${status}`] : ''
+                        }`}
                         title={status ? status.charAt(0).toUpperCase() + status.slice(1) : ''}
                       >
                         {date.getDate()}
@@ -151,35 +145,22 @@ export default function ListingAvailability({ listingId, availability, loading, 
               ))}
             </tbody>
           </table>
-          <div className={`${styles.calendarLegend}`} style={{ marginTop: 16 }}>
-            <span
-              style={{ background: AVAILABILITY_COLORS.available }}
-              className={`${styles.legendDot}`}
-            />{' '}
-            Available
-            <span
-              style={{ background: AVAILABILITY_COLORS.booked }}
-              className={`${styles.legendDot}`}
-            />{' '}
-            Booked
-            <span
-              style={{ background: AVAILABILITY_COLORS.blocked }}
-              className={`${styles.legendDot}`}
-            />{' '}
-            Blocked
+          <div className={cx('calendarLegend')}>
+            <span className={`${styles.legendDot} ${styles['legendDot-available']}`} />
+            <span>Available</span>
+            <span className={`${styles.legendDot} ${styles['legendDot-booked']}`} />
+            <span>Booked</span>
+            <span className={`${styles.legendDot} ${styles['legendDot-blocked']}`} />
+            <span>Blocked</span>
           </div>
         </>
       )}
       <div className={`${styles.contactHostSection}`}>
-        <button
-          type="button"
-          onClick={() => setContactOpen(true)}
-          className={`${styles.contactHostBtn}`}
-        >
+        <button type="button" onClick={() => setContactOpen(true)} className={cx('contactHostBtn')}>
           Contact Host
         </button>
         {contactOpen && (
-          <form className={`${styles.contactForm}`} onSubmit={handleContactSubmit}>
+          <form className={cx('contactForm')} onSubmit={handleContactSubmit}>
             <input
               type="text"
               placeholder="Your Name"
@@ -200,12 +181,12 @@ export default function ListingAvailability({ listingId, availability, loading, 
               onChange={e => setContactForm({ ...contactForm, message: e.target.value })}
               required
             />
-            <button type="submit" className={`${styles.sendInfoBtn} ${styles.contactHostBtn}`}>
+            <button type="submit" className={`${styles.sendInfoBtn} ${cx('contactHostBtn')}`}>
               Send
             </button>
             <button
               type="button"
-              className={`${styles.cancelInfoBtn} ${styles.contactHostBtn}`}
+              className={`${styles.cancelInfoBtn} ${cx('contactHostBtn')}`}
               onClick={() => setContactOpen(false)}
             >
               Cancel
