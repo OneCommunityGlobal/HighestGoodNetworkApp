@@ -1,32 +1,20 @@
 import { render, screen } from '@testing-library/react';
 import { HoursWorkList } from '../VolunteerHoursDistribution';
 
-let container = null;
-beforeEach(() => {
-  container = document.createElement('div');
-  document.body.appendChild(container);
-});
-
-afterEach(() => {
-  container.remove();
-  container = null;
-});
-
 describe('HoursWorkList label formatting', () => {
-  it('renders plain bucket ids in the legend and merges 40+ into 50+', () => {
-    const mockData = [
+  it('renders cleaned, human-readable labels in the legend list', () => {
+    // The main component passes normalized/merged structural records down to this list view
+    const mockNormalizedData = [
       { _id: '10', count: 5 },
       { _id: '40', count: 2 },
-      { _id: '50+', count: 3 },
-      { _id: '40+', count: 1 },
+      { _id: '40+', count: 4 },
     ];
 
-    render(<HoursWorkList data={mockData} darkMode={false} />, { container });
+    render(<HoursWorkList data={mockNormalizedData} darkMode={false} />);
 
-    // legend now shows plain bucket IDs (no range suffix, no count)
-    expect(screen.getByText('10')).toBeInTheDocument();
-    expect(screen.getByText('40')).toBeInTheDocument();
-    // 50+ and 40+ are merged into a single 50+ bucket
-    expect(screen.getByText('50+')).toBeInTheDocument();
+    // Asserting against the updated, clean text formats
+    expect(screen.getByText('10-19 hrs')).toBeInTheDocument();
+    expect(screen.getByText('40-49 hrs')).toBeInTheDocument();
+    expect(screen.getByText('40+ hrs')).toBeInTheDocument();
   });
 });

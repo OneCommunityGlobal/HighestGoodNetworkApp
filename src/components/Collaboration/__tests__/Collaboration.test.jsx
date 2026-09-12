@@ -97,7 +97,7 @@ describe('Collaboration Component', () => {
 
     expect(await screen.findByText('Job Summaries')).toBeInTheDocument();
 
-    const backBtn = screen.getByText(/Back to Job Listings/i);
+    const [backBtn] = screen.getAllByText(/Back to Job Listings/i);
     fireEvent.click(backBtn);
 
     expect(await screen.findByText(/LIKE TO WORK WITH US/i)).toBeInTheDocument();

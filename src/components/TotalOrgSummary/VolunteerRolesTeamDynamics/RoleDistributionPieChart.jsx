@@ -63,7 +63,13 @@ const RoleDistributionPieChart = ({ roleDistributionStats = [], isLoading, darkM
     );
   }
 
-  const sortedStats = [...roleDistributionStats].sort((a, b) => b.count - a.count);
+  // Safely resolve the array from either the direct prop or a nested property
+  const rawData = Array.isArray(roleDistributionStats)
+    ? roleDistributionStats
+    : roleDistributionStats?.comparison || [];
+
+  // Sort by count descending
+  const sortedStats = [...rawData].sort((a, b) => (b.count || 0) - (a.count || 0));
 
   const data = sortedStats.map((item, index) => ({
     name: item._id,

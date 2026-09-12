@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addEventFeedback } from '../../../actions/communityPortal/eventFeedback';
 import styles from './Feedbackform.module.css';
@@ -61,7 +61,9 @@ const isValidEmail = email => {
 
 function Feedbackform() {
   const dispatch = useDispatch();
+  const history = useHistory();
   const { eventId } = useParams();
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   /** 🔹 Dynamic event context (read-only, safe) */
   const event = useSelector(state =>
@@ -145,9 +147,11 @@ function Feedbackform() {
   };
 
   const handleCancel = () => {
-    setFormData({ ...initialFormState });
-    setErrors({});
-    setAcceptCommentsEmpty(false);
+    if (history.length > 2) {
+      history.goBack();
+    } else {
+      history.push('/communityportal');
+    }
   };
 
   const handleChange = e => {
@@ -160,7 +164,11 @@ function Feedbackform() {
   };
 
   return (
-    <div className={styles['Feedback-form-container']}>
+    <div
+      className={`${styles['Feedback-form-container']} ${
+        darkMode ? styles['Feedback-form-container-dark'] : ''
+      }`}
+    >
       <h2>Event Feedback</h2>
 
       {/* ✅ Dynamic event context */}

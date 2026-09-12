@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, forwardRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
@@ -14,6 +14,16 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 import styles from './InteractiveMap.module.css';
+
+const MapDateInput = forwardRef(({ darkMode, className, ...props }, ref) => (
+  <input
+    {...props}
+    ref={ref}
+    className={`${styles.dateInput} ${
+      darkMode ? styles.dateInputDark : styles.dateInputLight
+    } ${className || ''}`}
+  />
+));
 
 /* -----------------------------------------------------
    APPLY DARK MODE STYLING TO MAP
@@ -419,9 +429,14 @@ export default function InteractiveMap() {
             <DatePicker
               selected={startDate}
               onChange={date => setStartDate(date)}
-              className={`${styles.dateInput} ${darkMode ? styles.dateInputDark : ''}`}
+              customInput={<MapDateInput darkMode={darkMode} />}
+              wrapperClassName={`${styles.datePickerWrapper} ${
+                darkMode ? styles.datePickerWrapperDark : styles.datePickerWrapperLight
+              }`}
               placeholderText="Start Date"
               calendarClassName={darkMode ? styles.calendarDark : styles.calendarLight}
+              popperClassName={styles.datePickerPopper}
+              popperPlacement="bottom-start"
               dateFormat="MM/dd/yyyy"
               isClearable
               selectsStart
@@ -431,9 +446,14 @@ export default function InteractiveMap() {
             <DatePicker
               selected={endDate}
               onChange={date => setEndDate(date)}
-              className={`${styles.dateInput} ${darkMode ? styles.dateInputDark : ''}`}
+              customInput={<MapDateInput darkMode={darkMode} />}
+              wrapperClassName={`${styles.datePickerWrapper} ${
+                darkMode ? styles.datePickerWrapperDark : styles.datePickerWrapperLight
+              }`}
               placeholderText="End Date"
               calendarClassName={darkMode ? styles.calendarDark : styles.calendarLight}
+              popperClassName={styles.datePickerPopper}
+              popperPlacement="bottom-start"
               dateFormat="MM/dd/yyyy"
               isClearable
               selectsEnd
@@ -444,7 +464,9 @@ export default function InteractiveMap() {
             <select
               value={statusFilter}
               onChange={e => setStatusFilter(e.target.value)}
-              className={`${styles.dateInput} ${darkMode ? styles.dateInputDark : ''}`}
+              className={`${styles.dateInput} ${styles.statusSelect} ${
+                darkMode ? styles.dateInputDark : styles.dateInputLight
+              }`}
             >
               <option value="">All Statuses</option>
               <option value="active">Active</option>
@@ -469,6 +491,14 @@ export default function InteractiveMap() {
               key={mapKey}
               center={[40, 0]}
               zoom={3}
+              minZoom={2}
+              maxZoom={15}
+              maxBounds={[
+                [-85, -180],
+                [85, 180],
+              ]}
+              maxBoundsViscosity={1.0}
+              worldCopyJump={false}
               scrollWheelZoom
               zoomControl={false}
               className={styles.mapContainer}
@@ -476,11 +506,18 @@ export default function InteractiveMap() {
             >
               <MapThemeUpdater darkMode={darkMode} />
               <TileLayer
+                noWrap
+                bounds={[
+                  [-85, -180],
+                  [85, 180],
+                ]}
                 url={
                   darkMode
                     ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
                     : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
                 }
+                minZoom={2}
+                maxZoom={15}
               />
               <MarkerClusterGroup maxClusterRadius={70} chunkedLoading>
                 {filteredOrgs.map(org => (

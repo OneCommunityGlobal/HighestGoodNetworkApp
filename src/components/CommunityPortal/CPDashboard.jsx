@@ -1,11 +1,97 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { Container, Row, Alert, Col, Card, CardBody, Button, Input } from 'reactstrap';
-import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
+import {
+  FaCalendarAlt,
+  FaMapMarkerAlt,
+  FaUserAlt,
+  FaSearch,
+  FaTimes,
+  FaHistory,
+} from 'react-icons/fa';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { isTomorrow, isComingWeekend } from './utils';
+
+const RECENT_SEARCHES_KEY = 'cp_recent_searches';
+const MAX_RECENT_SEARCHES = 10;
+
+function useRecentSearches(key = RECENT_SEARCHES_KEY, maxItems = MAX_RECENT_SEARCHES) {
+  const [recentSearches, setRecentSearches] = useState(() => {
+    try {
+      const stored = localStorage.getItem(key);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const addSearch = useCallback(
+    query => {
+      const trimmed = query.trim();
+      if (!trimmed) return;
+      setRecentSearches(prev => {
+        const updated = [trimmed, ...prev.filter(s => s !== trimmed)].slice(0, maxItems);
+        localStorage.setItem(key, JSON.stringify(updated));
+        return updated;
+      });
+    },
+    [key, maxItems],
+  );
+
+  const removeSearch = useCallback(
+    query => {
+      setRecentSearches(prev => {
+        const updated = prev.filter(s => s !== query);
+        localStorage.setItem(key, JSON.stringify(updated));
+        return updated;
+      });
+    },
+    [key],
+  );
+
+  return { recentSearches, addSearch, removeSearch };
+}
+
+function RecentSearchDropdown({ searches, onSelect, onRemove, darkMode }) {
+  if (!searches.length) return null;
+  return (
+    <div
+      className={`${styles.recentSearchDropdown} ${
+        darkMode ? styles.darkRecentSearchDropdown : ''
+      }`}
+    >
+      <div className={styles.recentSearchHeader}>
+        <FaHistory className={darkMode ? styles.recentIconDark : styles.recentIcon} />
+        <span>Recently Searched</span>
+      </div>
+      {searches.map(term => (
+        <div key={term} className={styles.recentSearchItem}>
+          <button
+            type="button"
+            className={`${styles.recentSearchTerm} ${darkMode ? styles.darkRecentSearchTerm : ''}`}
+            onClick={() => onSelect(term)}
+          >
+            <FaSearch className={darkMode ? styles.recentIconDark : styles.recentIcon} />
+            {term}
+          </button>
+          <button
+            type="button"
+            className={`${styles.recentSearchRemove} ${
+              darkMode ? styles.darkRecentSearchRemove : ''
+            }`}
+            onClick={() => onRemove(term)}
+            aria-label={`Remove ${term}`}
+          >
+            <FaTimes />
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 const FixedRatioImage = ({ src, alt, fallback }) => (
   <div
@@ -42,16 +128,35 @@ const DEFAULT_FILTERS = {
   categories: '',
 };
 
+function passesFilters(
+  event,
+  { showPastEvents, isPastEvent, onlineOnly, dateFilter, searchQuery },
+) {
+  if (!showPastEvents && isPastEvent(event)) return false;
+  if (onlineOnly && event.location?.toLowerCase() !== 'virtual') return false;
+  if (dateFilter === 'tomorrow') return isTomorrow(event.date);
+  if (dateFilter === 'weekend') return isComingWeekend(event.date);
+  if (!searchQuery) return true;
+  const term = searchQuery.toLowerCase();
+  return (
+    event.title?.toLowerCase().includes(term) ||
+    event.location?.toLowerCase().includes(term) ||
+    event.organizer?.toLowerCase().includes(term)
+  );
+}
+
 export function CPDashboard() {
   const [events, setEvents] = useState([]);
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
-  const [onlineOnly, setOnlineOnly] = useState(false);
+  const [onlineOnly] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showPastEvents, setShowPastEvents] = useState(false);
+  const [showRecentSearches, setShowRecentSearches] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
+  const { recentSearches, addSearch, removeSearch } = useRecentSearches();
 
   // Hide the global back-to-top button — not needed on this page
   useEffect(() => {
@@ -97,6 +202,13 @@ export function CPDashboard() {
     fetchEvents();
   }, []);
 
+  // Darken the page body in dark mode (app-wide pattern) so the area
+  // behind the dashboard isn't left white.
+  useEffect(() => {
+    document.body.classList.toggle('dark-mode-body', darkMode);
+    return () => document.body.classList.remove('dark-mode-body');
+  }, [darkMode]);
+
   useEffect(() => {
     const handler = setTimeout(() => {
       setSearchQuery(searchInput.trim());
@@ -109,11 +221,13 @@ export function CPDashboard() {
   const handleSearchClick = () => {
     const trimmed = searchInput.trim();
     setSearchQuery(trimmed);
+    addSearch(trimmed);
     setPagination(prev => ({ ...prev, currentPage: 1 }));
+    setShowRecentSearches(false);
   };
 
   // keep this near your refs/functions
-  const BASE_HEIGHT = 36;
+  const BASE_HEIGHT = 32;
 
   const autoGrow = el => {
     if (!el) return;
@@ -122,6 +236,9 @@ export function CPDashboard() {
   };
 
   const searchRef = useRef(null);
+  const recentDropdownRef = useRef(null);
+  const blurTimeoutRef = useRef(null);
+
   useEffect(() => {
     autoGrow(searchRef.current); // ✅ runs even when you clear via button
   }, [searchInput]);
@@ -131,8 +248,34 @@ export function CPDashboard() {
       e.preventDefault(); // ✅ stops newline
       const trimmed = searchInput.trim();
       setSearchQuery(trimmed);
+      addSearch(trimmed);
       setPagination(prev => ({ ...prev, currentPage: 1 }));
+      setShowRecentSearches(false);
     }
+  };
+
+  const handleSearchFocus = () => {
+    setShowRecentSearches(true);
+  };
+
+  const handleSearchBlur = () => {
+    blurTimeoutRef.current = setTimeout(() => {
+      setShowRecentSearches(false);
+    }, 200);
+  };
+
+  const handleRecentDropdownMouseDown = () => {
+    if (blurTimeoutRef.current) {
+      clearTimeout(blurTimeoutRef.current);
+    }
+  };
+
+  const handleSelectRecent = term => {
+    setSearchInput(term);
+    setSearchQuery(term);
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
+    setShowRecentSearches(false);
+    if (searchRef.current) searchRef.current.focus();
   };
 
   const formatDate = dateStr => {
@@ -145,29 +288,6 @@ export function CPDashboard() {
       hour: 'numeric',
       minute: '2-digit',
     });
-  };
-
-  const isTomorrow = dateString => {
-    const input = new Date(dateString);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
-    return input >= tomorrow && input < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
-  };
-
-  const isComingWeekend = dateString => {
-    const input = new Date(dateString);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const day = today.getDay();
-    const daysUntilSaturday = (6 - day + 7) % 7 || 7;
-    const saturday = new Date(today);
-    saturday.setDate(today.getDate() + daysUntilSaturday);
-    const sunday = new Date(saturday);
-    sunday.setDate(saturday.getDate() + 1);
-    sunday.setHours(23, 59, 59, 999);
-    return input >= saturday && input <= sunday;
   };
 
   // Handler to update pending filter values
@@ -188,56 +308,26 @@ export function CPDashboard() {
   const handleClearFilters = () => {
     setPendingFilters(DEFAULT_FILTERS);
     setAppliedFilters(DEFAULT_FILTERS);
-    setSelectedDate('');
     setPagination(prev => ({ ...prev, currentPage: 1 }));
   };
+
+  const now = new Date();
 
   const isPastEvent = event => {
     const ref = event.startTime || event.date;
     if (!ref) return false;
-
-    const eventDate = new Date(ref);
-    const today = new Date();
-
-    today.setHours(0, 0, 0, 0);
-    eventDate.setHours(0, 0, 0, 0);
-
-    return eventDate < today;
+    return new Date(ref) < now;
   };
-  // Filter events based on applied filters
-  const filteredEvents = events.filter(event => {
-    if (!showPastEvents && isPastEvent(event)) return false;
-    // Filter by online only
-    if (appliedFilters.onlineOnly) {
-      const isOnlineEvent = event.location?.toLowerCase() === 'virtual';
-      if (!isOnlineEvent) return false;
-    }
 
-    // Filter by specific date if one is selected
-    if (selectedDate) {
-      const eventDate = new Date(event.date);
-      const normalizedEventDate = eventDate.toISOString().split('T')[0];
-
-      if (normalizedEventDate !== selectedDate) return false;
-    }
-
-    // Filter by date
-    if (appliedFilters.dateFilter === 'tomorrow') {
-      if (!isTomorrow(event.date)) return false;
-    } else if (appliedFilters.dateFilter === 'weekend') {
-      if (!isComingWeekend(event.date)) return false;
-    }
-
-    // Filter by search query
-    if (!searchQuery) return true;
-
-    const term = searchQuery.toLowerCase();
-    return (
-      event.title?.toLowerCase().includes(term) ||
-      event.location?.toLowerCase().includes(term) ||
-      event.organizer?.toLowerCase().includes(term)
-    );
-  });
+  const filteredEvents = events.filter(event =>
+    passesFilters(event, {
+      showPastEvents,
+      isPastEvent,
+      onlineOnly: appliedFilters.onlineOnly,
+      dateFilter: appliedFilters.dateFilter,
+      searchQuery,
+    }),
+  );
 
   // Reset pagination to page 1 when filters change
   useEffect(() => {
@@ -257,7 +347,7 @@ export function CPDashboard() {
 
   if (isLoading) {
     return (
-      <Container className={styles.dashboardContainer}>
+      <Container className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}>
         <p>Loading events...</p>
       </Container>
     );
@@ -265,7 +355,7 @@ export function CPDashboard() {
 
   if (error) {
     return (
-      <Container className={styles.dashboardContainer}>
+      <Container className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}>
         <p className={styles.errorText}>{error}</p>
       </Container>
     );
@@ -273,11 +363,7 @@ export function CPDashboard() {
 
   let eventsContent;
 
-  if (isLoading) {
-    eventsContent = <div className={styles.noEvents}>Loading events...</div>;
-  } else if (error) {
-    eventsContent = <div className={styles.noEvents}>{error}</div>;
-  } else if (displayedEvents.length > 0) {
+  if (displayedEvents.length > 0) {
     eventsContent = displayedEvents.map(event => (
       <Col md={4} key={event.id} className={`${styles.eventCardCol}`}>
         <Link
@@ -320,7 +406,7 @@ export function CPDashboard() {
   }
 
   return (
-    <Container className={styles.dashboardContainer}>
+    <Container className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}>
       <header className={`${styles.dashboardHeader} ${darkMode ? styles.darkHeader : ''}`}>
         <h1>All Events</h1>
       </header>
@@ -349,6 +435,8 @@ export function CPDashboard() {
                       value={searchInput}
                       onChange={e => setSearchInput(e.target.value)}
                       onKeyDown={handleSearchKeyDown}
+                      onFocus={handleSearchFocus}
+                      onBlur={handleSearchBlur}
                       className={`${styles.dashboardSearchTextarea} ${
                         darkMode ? styles.darkSearchTextarea : ''
                       }`}
@@ -379,6 +467,22 @@ export function CPDashboard() {
                   </div>
                   {searchInput.length >= 100 && (
                     <Alert className={styles.charCountWarning}>Max 100 characters</Alert>
+                  )}
+                  {showRecentSearches && (
+                    <div
+                      ref={recentDropdownRef}
+                      onMouseDown={handleRecentDropdownMouseDown}
+                      role="menu"
+                      aria-label="Recent searches"
+                      tabIndex={-1}
+                    >
+                      <RecentSearchDropdown
+                        searches={recentSearches}
+                        onSelect={handleSelectRecent}
+                        onRemove={removeSearch}
+                        darkMode={darkMode}
+                      />
+                    </div>
                   )}
                 </div>
               </div>
@@ -417,13 +521,11 @@ export function CPDashboard() {
 
                 <Input
                   type="date"
-                  placeholder="Ending After"
-                  className={`${styles.dateFilter} ${darkMode ? styles.darkDateFilter : ''}`}
+                  placeholder="Select Date"
+                  className={styles.dateFilter}
                   value={selectedDate}
-                  onChange={e => {
-                    setSelectedDate(e.target.value);
-                    setPagination(prev => ({ ...prev, currentPage: 1 }));
-                  }}
+                  onChange={e => setSelectedDate(e.target.value)}
+                  style={{ marginTop: '10px' }}
                 />
               </div>
 

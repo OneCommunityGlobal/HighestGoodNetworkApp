@@ -1,0 +1,12 @@
+.tableDark {
+  color: #fff;
+}
+
+.tableDark tbody tr:hover,
+.tableDark tbody tr:hover td,
+.tableDark thead tr:hover,
+.tableDark thead tr:hover th,
+.tableDark thead tr:hover i {
+  background-color: #2b3553;
+  color: #fff;
+}

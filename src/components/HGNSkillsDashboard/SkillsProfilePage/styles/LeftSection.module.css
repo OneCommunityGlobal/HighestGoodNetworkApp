@@ -26,7 +26,7 @@
   text-shadow: none !important;
   filter: none !important;
   overflow-wrap: break-word;
-  word-break: break-all;
+  word-break: break-word;
   max-width: 100%;
   hyphens: auto;
 }
@@ -76,14 +76,11 @@
   }
 }
 
+/* Dark mode - parent selector */
 :global(.dark-mode) .leftSection {
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
   border-color: #303030;
   color: #e6e6e6;
-}
-
-:global(.dark-mode) .leftSection h1 {
-  color: #fff;
 }
 
 :global(.dark-mode) .leftSection .userName {
@@ -94,7 +91,20 @@
   color: #f9fafb !important;
 }
 
-
 :global(.dark-mode) .leftSection a {
   color: #9ecbff;
+}
+
+/* Dark mode - same element selector */
+.leftSection:global(.dark-mode) {
+  background: linear-gradient(135deg, #1c2541 0%, #0b132b 100%);
+  border-color: #3a506b;
+}
+
+.leftSection:global(.dark-mode) h1 {
+  color: #ffffff;
+}
+
+.leftSection:global(.dark-mode) h3 {
+  color: #cccccc;
 }

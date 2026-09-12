@@ -1,5 +1,6 @@
 import BadgeImage from './BadgeImage';
 import { WEEK_DIFF } from '../../constants/badge';
+import styles from './Badge.module.css';
 
 function BadgeHistory({ badges, personalBestMaxHrs }) {
   const filterBadges = allBadges => {
@@ -31,7 +32,7 @@ function BadgeHistory({ badges, personalBestMaxHrs }) {
   const filteredBadges = filterBadges(badges);
 
   return (
-    <div className="badge_history_container">
+    <div className={styles.badge_history_container}>
       {filteredBadges.map((value, index) =>
         value && value.badge ? (
           <BadgeImage

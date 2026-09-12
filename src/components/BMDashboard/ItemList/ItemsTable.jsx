@@ -29,6 +29,9 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { fetchAllMaterials, postMaterialsBulkAction } from '~/actions/bmdashboard/materialsActions';
 import RecordsModal from './RecordsModal';
+import MaterialUsageChart from '../MaterialUsage/MaterialUsageChart';
+import StockHealthIndicator from '../MaterialList/StockHealthIndicator';
+import UsagePercentageBar from '../MaterialList/UsagePercentageBar';
 import styles from './ItemListView.module.css';
 
 const rowsPerPageOptions = [25, 50, 100];
@@ -88,10 +91,12 @@ export default function ItemsTable({
   const [notesModalOpen, setNotesModalOpen] = useState(false);
   const [bulkNotesValue, setBulkNotesValue] = useState('');
   const [isBulkActionLoading, setIsBulkActionLoading] = useState(false);
+  const [showChartModal, setShowChartModal] = useState(false);
+  const [chartProjectId, setChartProjectId] = useState(null);
   // Optimistic hold/review/note state keyed by material id, so the Bulk Status
   // column updates immediately; cleared once fresh server data arrives.
   const [statusOverrides, setStatusOverrides] = useState({});
-  const isMaterialsTable = itemType?.toLowerCase() === 'materials';
+  const isMaterialsView = itemType === 'Materials';
   const pageItems = filteredItems || [];
 
   // Reset selection whenever the visible rows change (filter, sort, or page change).
@@ -113,6 +118,16 @@ export default function ItemsTable({
   };
 
   const handleViewRecordsClick = (data, type) => {
+    if (isMaterialsView && type === 'UsageRecord') {
+      const projectId = data.project?._id || data.projectId;
+
+      if (projectId) {
+        setChartProjectId(projectId);
+        setShowChartModal(true);
+        return;
+      }
+    }
+
     setModal(true);
     setRecord(data);
     setRecordType(type);
@@ -174,8 +189,17 @@ export default function ItemsTable({
   const roundIfNumber = value =>
     typeof value === 'number' && !Number.isInteger(value) ? Number(value.toFixed(2)) : value;
 
-  const getNestedValue = (obj, path) =>
-    path ? path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj) : null;
+  const getNestedValue = (obj, path) => {
+    if (!path) return null;
+    if (path === 'product id') return obj.productId ?? 'N/A';
+    return path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
+  };
+
+  const filteredDynamicColumns = (dynamicColumns || []).filter(
+    col => col.label !== 'Project' && col.label !== 'Name',
+  );
+
+  const emptyStateColSpan = 5 + filteredDynamicColumns.length + (isMaterialsView ? 4 : 0);
 
   const escapeCsv = value => {
     const str = String(value ?? '');
@@ -193,9 +217,9 @@ export default function ItemsTable({
     const headers = [
       'Project',
       'Name',
-      ...dynamicColumns.map(col => col.label),
+      ...filteredDynamicColumns.map(col => col.label),
       'Stock Available',
-      ...(isMaterialsTable ? ['Bulk Status'] : []),
+      ...(isMaterialsView ? ['Bulk Status'] : []),
     ];
     const csvContent = [
       headers.map(escapeCsv).join(','),
@@ -203,9 +227,9 @@ export default function ItemsTable({
         [
           item.project?.name || '',
           item.itemType?.name || '',
-          ...dynamicColumns.map(col => formatValue(getNestedValue(item, col.key))),
+          ...filteredDynamicColumns.map(col => formatValue(getNestedValue(item, col.key))),
           item.stockAvailable || '',
-          ...(isMaterialsTable ? [bulkStatusText(item)] : []),
+          ...(isMaterialsView ? [bulkStatusText(item)] : []),
         ]
           .map(escapeCsv)
           .join(','),
@@ -236,16 +260,18 @@ export default function ItemsTable({
     const headers = [
       'Project',
       'Name',
-      ...dynamicColumns.map(col => col.label),
+      ...filteredDynamicColumns.map(col => col.label),
       'Stock Available',
-      ...(isMaterialsTable ? ['Bulk Status'] : []),
+      ...(isMaterialsView ? ['Bulk Status'] : []),
     ];
     const body = data.map(item => [
       item.project?.name || '',
       item.itemType?.name || '',
-      ...dynamicColumns.map(col => formatValue(roundIfNumber(getNestedValue(item, col.key)))),
+      ...filteredDynamicColumns.map(col =>
+        formatValue(roundIfNumber(getNestedValue(item, col.key))),
+      ),
       roundIfNumber(item.stockAvailable ?? 0),
-      ...(isMaterialsTable ? [bulkStatusText(item)] : []),
+      ...(isMaterialsView ? [bulkStatusText(item)] : []),
     ]);
 
     autoTable(doc, {
@@ -372,6 +398,13 @@ export default function ItemsTable({
         recordType={recordType}
         itemType={itemType}
       />
+      {showChartModal && chartProjectId && (
+        <MaterialUsageChart
+          projectId={chartProjectId}
+          toggle={() => setShowChartModal(false)}
+          darkMode={darkMode}
+        />
+      )}
       {UpdateItemModal && (
         <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
       )}
@@ -407,7 +440,7 @@ export default function ItemsTable({
         </ModalFooter>
       </Modal>
 
-      {isMaterialsTable && (
+      {isMaterialsView && (
         <div className={`${styles.bulkActionsContainer} ${darkMode ? styles.darkBulkActions : ''}`}>
           <span className={styles.selectedCount}>
             {selectedItems.size} item{selectedItems.size === 1 ? '' : 's'} selected
@@ -455,7 +488,7 @@ export default function ItemsTable({
         <Table className={darkMode ? styles.darkTable : ''}>
           <thead className={styles.stickyThead}>
             <tr>
-              {isMaterialsTable && (
+              {isMaterialsView && (
                 <th style={{ verticalAlign: 'middle' }}>
                   <input
                     type="checkbox"
@@ -468,7 +501,7 @@ export default function ItemsTable({
               <th
                 onClick={() => onSort?.('project')}
                 className={styles.sortableTh}
-                style={{ verticalAlign: 'middle' }}
+                style={{ verticalAlign: 'middle', textAlign: 'center' }}
               >
                 <span className={styles.thContent}>
                   Project <FontAwesomeIcon icon={getIconFor('project')} />
@@ -477,13 +510,13 @@ export default function ItemsTable({
               <th
                 onClick={() => onSort?.('name')}
                 className={styles.sortableTh}
-                style={{ verticalAlign: 'middle' }}
+                style={{ verticalAlign: 'middle', textAlign: 'center' }}
               >
                 <span className={styles.thContent}>
                   Name <FontAwesomeIcon icon={getIconFor('name')} />
                 </span>
               </th>
-              {(dynamicColumns || []).map(({ label, key }) => {
+              {(filteredDynamicColumns || []).map(({ label, key }) => {
                 const sortKey = dynamicSortKeyByLabel[label];
                 const clickable = Boolean(sortKey);
                 return (
@@ -499,7 +532,9 @@ export default function ItemsTable({
                   </th>
                 );
               })}
-              {isMaterialsTable && <th style={{ verticalAlign: 'middle' }}>Bulk Status</th>}
+              {isMaterialsView && <th style={{ verticalAlign: 'middle' }}>Bulk Status</th>}
+              {isMaterialsView && <th style={getColumnStyle(null)}>Usage %</th>}
+              {isMaterialsView && <th style={getColumnStyle(null)}>Stock Health</th>}
               <th style={getColumnStyle(null, true)} title="View usage history and charts">
                 Usage Record
               </th>
@@ -525,7 +560,7 @@ export default function ItemsTable({
 
                 return (
                   <tr key={el._id} className={isSelected ? styles.selectedRow : ''}>
-                    {isMaterialsTable && (
+                    {isMaterialsView && (
                       <td style={{ verticalAlign: 'middle' }}>
                         <input
                           type="checkbox"
@@ -537,7 +572,7 @@ export default function ItemsTable({
                     )}
                     <td style={{ verticalAlign: 'middle' }}>{el.project?.name}</td>
                     <td style={{ verticalAlign: 'middle' }}>{el.itemType?.name}</td>
-                    {(dynamicColumns || []).map(({ label, key }) => {
+                    {(filteredDynamicColumns || []).map(({ label, key }) => {
                       const value = getNestedValue(el, key);
                       if (
                         key === 'stockAvailable' &&
@@ -565,7 +600,7 @@ export default function ItemsTable({
                         </td>
                       );
                     })}
-                    {isMaterialsTable && (
+                    {isMaterialsView && (
                       <td style={{ verticalAlign: 'middle' }}>
                         <div className={styles.bulkStatusCell}>
                           {hasHold && <span className={styles.bulkTagHold}>On Hold</span>}
@@ -577,7 +612,20 @@ export default function ItemsTable({
                         </div>
                       </td>
                     )}
-                    <td className={styles.itemsCell} style={getColumnStyle(null, true)}>
+                    {isMaterialsView && (
+                      <td style={getColumnStyle(null)}>
+                        <UsagePercentageBar material={el} darkMode={darkMode} />
+                      </td>
+                    )}
+                    {isMaterialsView && (
+                      <td style={getColumnStyle(null)}>
+                        <StockHealthIndicator material={el} darkMode={darkMode} />
+                      </td>
+                    )}
+                    <td
+                      className={`${styles.itemsCell} ${styles.actionCell}`}
+                      style={getColumnStyle(null, true)}
+                    >
                       <button
                         type="button"
                         onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
@@ -595,7 +643,7 @@ export default function ItemsTable({
                       </Button>
                     </td>
                     <td
-                      className={styles.itemsCell}
+                      className={`${styles.itemsCell} ${styles.actionCell}`}
                       style={{ verticalAlign: 'middle', textAlign: 'center' }}
                     >
                       <button
@@ -614,7 +662,10 @@ export default function ItemsTable({
                         View
                       </Button>
                     </td>
-                    <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
+                    <td
+                      className={styles.actionCell}
+                      style={{ verticalAlign: 'middle', textAlign: 'center' }}
+                    >
                       <Button
                         color="primary"
                         outline
@@ -629,10 +680,7 @@ export default function ItemsTable({
               })
             ) : (
               <tr>
-                <td
-                  colSpan={(dynamicColumns?.length || 0) + (isMaterialsTable ? 7 : 5)}
-                  style={{ textAlign: 'center' }}
-                >
+                <td colSpan={emptyStateColSpan} style={{ textAlign: 'center' }}>
                   No items data
                 </td>
               </tr>

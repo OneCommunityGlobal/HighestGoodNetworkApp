@@ -1,7 +1,13 @@
 /* stylelint-disable  */
 .issueFormContainer {
   margin: 0 auto;
-  max-width: 625px;
+  width: 100%;
+  padding: 5px;
+  background-color: white;
+}
+
+.darkModeIssueFormContainer{
+  color: white;
 }
 
 .redText {

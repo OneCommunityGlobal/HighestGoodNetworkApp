@@ -1,6 +1,10 @@
 /* stylelint-disable  */
 /* ActivityComments.module.css - pixel-perfect styles for Engagement tab */
 
+.container {
+  padding: 20px;
+}
+
 .eventCard {
   display: flex;
   background: #fff;

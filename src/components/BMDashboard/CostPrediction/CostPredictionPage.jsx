@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect, useMemo, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import {
   LineChart,
@@ -13,10 +13,11 @@ import {
 } from 'recharts';
 import moment from 'moment';
 import Select from 'react-select';
-import { getProjectCosts, getProjectIds } from '../../../services/projectCostTrackingService';
-import { useSelector } from 'react-redux';
+import { getProjectCosts } from '../../../services/projectCostTrackingService';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
 import ReactTooltip from 'react-tooltip';
-import { Info } from 'lucide-react';
+import { Info, AlertTriangle, TrendingUp, ShieldCheck } from 'lucide-react';
 import styles from './CostPredictionPage.module.css';
 import {
   DARK,
@@ -92,6 +93,87 @@ const LaborDot = createDotComponent('Labor');
 const MaterialsDot = createDotComponent('Materials');
 const EquipmentDot = createDotComponent('Equipment');
 const TotalDot = createDotComponent('Total');
+
+// Cost overrun thresholds for budget alerts
+const BUDGET_THRESHOLDS = {
+  INFO: 5,
+  WARNING: 15,
+  CRITICAL: 25,
+};
+
+// Compute forecast confidence score from data coverage and consistency
+const computeConfidenceScore = (chartData, selectedCosts) => {
+  if (!chartData || chartData.length === 0) return null;
+
+  const activeCosts = selectedCosts;
+
+  let totalActual = 0;
+  let totalPredicted = 0;
+
+  activeCosts.forEach(category => {
+    totalActual += chartData.filter(d => d[category] !== undefined && d[category] !== null).length;
+    totalPredicted += chartData.filter(
+      d => d[`${category}Predicted`] !== undefined && d[`${category}Predicted`] !== null,
+    ).length;
+  });
+
+  if (totalPredicted === 0) return null;
+
+  // More actual data relative to predicted = higher confidence
+  const ratio = totalActual / (totalActual + totalPredicted);
+  const dataBonus = Math.min(30, chartData.length * 3);
+  const score = Math.round(Math.min(100, ratio * 70 + dataBonus));
+  return score;
+};
+
+const getConfidenceLevel = score => {
+  if (score === null) return null;
+  if (score >= 75) return { label: 'High', color: '#22c55e', icon: ShieldCheck };
+  if (score >= 45) return { label: 'Medium', color: '#f59e0b', icon: TrendingUp };
+  return { label: 'Low', color: '#ef4444', icon: AlertTriangle };
+};
+
+// Detect categories where predicted cost exceeds the last actual cost
+const detectOverBudgetAlerts = (chartData, lastPredictedValues, selectedCosts) => {
+  if (!chartData || chartData.length === 0) return [];
+
+  const activeCosts = selectedCosts;
+  const alerts = [];
+
+  activeCosts.forEach(category => {
+    const lastActualPoint = [...chartData]
+      .reverse()
+      .find(d => d[category] !== undefined && d[category] !== null);
+    const predictedEnd = lastPredictedValues[category];
+
+    if (lastActualPoint && predictedEnd && lastActualPoint[category] > 0) {
+      const overrunPct =
+        ((predictedEnd - lastActualPoint[category]) / lastActualPoint[category]) * 100;
+
+      if (overrunPct > BUDGET_THRESHOLDS.CRITICAL) {
+        alerts.push({ category, pct: overrunPct, level: 'critical' });
+      } else if (overrunPct > BUDGET_THRESHOLDS.WARNING) {
+        alerts.push({ category, pct: overrunPct, level: 'warning' });
+      } else if (overrunPct > BUDGET_THRESHOLDS.INFO) {
+        alerts.push({ category, pct: overrunPct, level: 'info' });
+      }
+    }
+  });
+
+  return alerts;
+};
+
+const ALERT_STYLES = {
+  critical: { bg: '#fef2f2', border: '#fca5a5', color: '#991b1b', icon: '🔴' },
+  warning: { bg: '#fffbeb', border: '#fcd34d', color: '#92400e', icon: '🟡' },
+  info: { bg: '#eff6ff', border: '#93c5fd', color: '#1e40af', icon: '🔵' },
+};
+
+const ALERT_STYLES_DARK = {
+  critical: { bg: '#450a0a', border: '#dc2626', color: '#fca5a5', icon: '🔴' },
+  warning: { bg: '#451a03', border: '#d97706', color: '#fcd34d', icon: '🟡' },
+  info: { bg: '#172554', border: '#3b82f6', color: '#93c5fd', icon: '🔵' },
+};
 
 // Calculate last predicted values for reference lines
 const getLastPredictedValues = costData => {
@@ -320,37 +402,48 @@ CustomTooltip.propTypes = {
 
 function CostPredictionPage({ projectId }) {
   const [data, setData] = useState([]);
-  const [selectedCosts, setSelectedCosts] = useState(['Labor', 'Materials']);
-  const [loading, setLoading] = useState(true);
+  const [selectedCosts, setSelectedCosts] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currency] = useState('$');
-  const [availableProjects, setAvailableProjects] = useState([]);
-  const [selectedProject, setSelectedProject] = useState(null);
+  const [selectedProjectId, setSelectedProjectId] = useState(projectId || null);
   const [lastPredictedValues, setLastPredictedValues] = useState({});
   const darkMode = useSelector(state => state.theme.darkMode);
+  const dispatch = useDispatch();
+  const bmProjects = useSelector(state => state.bmProjects || []);
+
+  // Build dropdown options from building projects (id -> name)
+  const availableProjects = useMemo(
+    () => bmProjects.map(project => ({ value: project._id, label: project.name })),
+    [bmProjects],
+  );
+
+  const selectedProject = useMemo(
+    () => availableProjects.find(option => option.value === selectedProjectId) || null,
+    [availableProjects, selectedProjectId],
+  );
+
+  // Compute confidence score and over-budget alerts from current data
+  const confidenceScore = useMemo(() => computeConfidenceScore(data, selectedCosts), [
+    data,
+    selectedCosts,
+  ]);
+  const confidenceLevel = useMemo(() => getConfidenceLevel(confidenceScore), [confidenceScore]);
+  const overBudgetAlerts = useMemo(
+    () => detectOverBudgetAlerts(data, lastPredictedValues, selectedCosts),
+    [data, lastPredictedValues, selectedCosts],
+  );
 
   useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const projectIds = await getProjectIds();
-        setAvailableProjects(projectIds.map(id => ({ value: id, label: id })));
-        if (projectIds.length > 0) {
-          const initialProject = projectId || projectIds[0];
-          setSelectedProject({ value: initialProject, label: initialProject });
-        }
-      } catch {
-        setError('Failed to load projects');
-      }
-    };
-    fetchProjects();
-  }, [projectId]);
+    dispatch(fetchBMProjects());
+  }, [dispatch]);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!selectedProject) return;
+      if (!selectedProjectId) return;
       setLoading(true);
       try {
-        const costData = await getProjectCosts(selectedProject.value);
+        const costData = await getProjectCosts(selectedProjectId);
         setData(processDataForChart(costData));
         setLastPredictedValues(getLastPredictedValues(costData));
         setLoading(false);
@@ -360,13 +453,13 @@ function CostPredictionPage({ projectId }) {
       }
     };
     fetchData();
-  }, [selectedProject]);
+  }, [selectedProjectId]);
 
   const handleCostChange = selected => {
     const selectedValues = selected ? selected.map(option => option.value) : [];
     setSelectedCosts(selectedValues);
   };
-  const handleProjectChange = selected => setSelectedProject(selected);
+  const handleProjectChange = selected => setSelectedProjectId(selected ? selected.value : null);
 
   // Pick the right dot component by name
   const getDotRenderer = category => {
@@ -440,6 +533,20 @@ function CostPredictionPage({ projectId }) {
       <div className={styles.costPredictionWrapper}>
         <div className={styles.chartTitleContainer}>
           <h2 className={styles.costPredictionTitle}>Planned v Actual Costs Tracking</h2>
+          {confidenceLevel && (
+            <span
+              className={styles.confidenceBadge}
+              style={{
+                backgroundColor: `${confidenceLevel.color}20`,
+                color: confidenceLevel.color,
+                border: `1px solid ${confidenceLevel.color}`,
+              }}
+              title={`Forecast confidence: ${confidenceScore}%`}
+            >
+              <confidenceLevel.icon size={12} />
+              {confidenceLevel.label} Confidence ({confidenceScore}%)
+            </span>
+          )}
           <button
             type="button"
             className={styles.costPredictionInfoButton}
@@ -472,11 +579,44 @@ function CostPredictionPage({ projectId }) {
             classNamePrefix="custom-select"
             className={`${styles.dropdownItem} ${styles.multiSelect}`}
             menuPosition="fixed"
-            closeMenuOnSelect={false}
+            closeMenuOnSelect
             hideSelectedOptions={false}
             styles={getMultiSelectStyles(darkMode)}
           />
         </div>
+
+        {/* Over-budget alert banners */}
+        {!loading && overBudgetAlerts.length > 0 && (
+          <div className={styles.alertContainer}>
+            {overBudgetAlerts.map(alert => {
+              const alertStyle = darkMode
+                ? ALERT_STYLES_DARK[alert.level]
+                : ALERT_STYLES[alert.level];
+              return (
+                <div
+                  key={alert.category}
+                  className={styles.alertBanner}
+                  style={{
+                    backgroundColor: alertStyle.bg,
+                    borderLeft: `4px solid ${alertStyle.border}`,
+                    color: alertStyle.color,
+                  }}
+                >
+                  <AlertTriangle size={14} />
+                  <span>
+                    {alertStyle.icon} <strong>{alert.category}</strong> cost forecast exceeds budget
+                    by <strong>{alert.pct.toFixed(1)}%</strong>
+                    {(() => {
+                      if (alert.level === 'critical') return ' — Immediate review recommended';
+                      if (alert.level === 'warning') return ' — Monitor closely';
+                      return '';
+                    })()}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         <div className={styles.costPredictionChartContainer}>
           {loading && <div className={styles.costChartLoading}>Loading...</div>}
@@ -548,10 +688,7 @@ function CostPredictionPage({ projectId }) {
                   />
 
                   {/* Reference Lines for Last Predicted Values */}
-                  {(selectedCosts.length > 0
-                    ? selectedCosts
-                    : ['Labor', 'Materials']
-                  ).map(category =>
+                  {selectedCosts.map(category =>
                     lastPredictedValues[category] ? (
                       <ReferenceLine
                         key={`ref-${category}`}
@@ -563,49 +700,47 @@ function CostPredictionPage({ projectId }) {
                   )}
 
                   {/* Dynamically render lines based on selected costs */}
-                  {(selectedCosts.length > 0 ? selectedCosts : ['Labor', 'Materials']).map(
-                    category => (
-                      <Fragment key={`${category}-container`}>
-                        {/* Actual cost line */}
-                        <Line
-                          key={category}
-                          type="linear"
-                          dataKey={category}
-                          name={`${category} Cost`}
-                          stroke={costColors[category]}
-                          strokeWidth={2}
-                          connectNulls={true}
-                          dot={{
-                            r: 3,
-                            fill: costColors[category],
-                            stroke: costColors[category],
-                            strokeWidth: 0,
-                          }}
-                          activeDot={{
-                            r: 4,
-                            fill: costColors[category],
-                            stroke: costColors[category],
-                            strokeWidth: 0,
-                          }}
-                          isAnimationActive={false}
-                        />
-                        {/* Predicted cost line */}
-                        <Line
-                          key={`${category}Predicted`}
-                          type="linear"
-                          dataKey={`${category}Predicted`}
-                          name={`${category} Cost (Predicted)`}
-                          stroke={costColors[category]}
-                          strokeWidth={2}
-                          strokeDasharray="8 4"
-                          connectNulls={true}
-                          dot={getDotRenderer(category)}
-                          activeDot={{ r: 4 }}
-                          isAnimationActive={false}
-                        />
-                      </Fragment>
-                    ),
-                  )}
+                  {selectedCosts.map(category => (
+                    <Fragment key={`${category}-container`}>
+                      {/* Actual cost line */}
+                      <Line
+                        key={category}
+                        type="linear"
+                        dataKey={category}
+                        name={`${category} Cost`}
+                        stroke={costColors[category]}
+                        strokeWidth={2}
+                        connectNulls={true}
+                        dot={{
+                          r: 3,
+                          fill: costColors[category],
+                          stroke: costColors[category],
+                          strokeWidth: 0,
+                        }}
+                        activeDot={{
+                          r: 4,
+                          fill: costColors[category],
+                          stroke: costColors[category],
+                          strokeWidth: 0,
+                        }}
+                        isAnimationActive={false}
+                      />
+                      {/* Predicted cost line */}
+                      <Line
+                        key={`${category}Predicted`}
+                        type="linear"
+                        dataKey={`${category}Predicted`}
+                        name={`${category} Cost (Predicted)`}
+                        stroke={costColors[category]}
+                        strokeWidth={2}
+                        strokeDasharray="8 4"
+                        connectNulls={true}
+                        dot={getDotRenderer(category)}
+                        activeDot={{ r: 4 }}
+                        isAnimationActive={false}
+                      />
+                    </Fragment>
+                  ))}
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -614,9 +749,11 @@ function CostPredictionPage({ projectId }) {
           {!loading && !error && data.length === 0 && (
             <div
               className={styles.costChartEmpty}
-              style={{ color: darkMode ? DARK.text : 'inherit' }}
+              style={{ color: darkMode ? '#ffffff' : '#000000' }}
             >
-              <p>No data available</p>
+              <p style={{ color: 'inherit' }}>
+                {selectedProjectId ? 'No data available' : 'Please select a project'}
+              </p>
             </div>
           )}
         </div>

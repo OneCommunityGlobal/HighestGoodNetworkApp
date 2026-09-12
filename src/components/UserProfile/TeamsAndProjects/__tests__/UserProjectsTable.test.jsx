@@ -1,7 +1,7 @@
 import { Provider } from 'react-redux';
 import UserProjectsTable from '../UserProjectsTable';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { render, screen, within } from '@testing-library/react';
 import { userProfileMock } from '../../../../__tests__/mockStates.js';
 
@@ -17,7 +17,7 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 const userTaskMock = [
   {

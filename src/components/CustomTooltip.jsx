@@ -32,6 +32,7 @@ const getTooltipData = (payload, label) => {
     name: data._id || data.name || label || '',
     percentage: data.percentage,
     hoursValue: data.value,
+    valueType: data.valueType,
     totalHours: data.totalHours !== undefined ? data.totalHours : data.value,
     change: data.change,
   };
@@ -41,7 +42,10 @@ function CustomTooltip({ active, payload, label, tooltipType, darkMode = false }
   if (!active || !payload || !payload.length) return null;
 
   const isDarkMode = darkMode;
-  const { name, percentage, hoursValue, totalHours, change } = getTooltipData(payload, label);
+  const { name, percentage, hoursValue, valueType, totalHours, change } = getTooltipData(
+    payload,
+    label,
+  );
   const textColor = isDarkMode ? '#fff' : '#222';
 
   const renderMainValue = () => {
@@ -49,9 +53,11 @@ function CustomTooltip({ active, payload, label, tooltipType, darkMode = false }
       const exactHours = formatNumber(hoursValue);
       const compactHours = formatCompactNumber(hoursValue);
       const showCompactAndExact = compactHours.toLowerCase().includes('k');
+      const displayValue = showCompactAndExact ? `${compactHours} (${exactHours})` : exactHours;
+      const valueLabel = valueType === 'volunteers' ? 'Volunteers' : 'Hours';
       return (
         <div style={{ color: textColor, fontWeight: 'bold' }}>
-          Hours: {showCompactAndExact ? `${compactHours} (${exactHours})` : exactHours}
+          {valueLabel}: {displayValue}
         </div>
       );
     }

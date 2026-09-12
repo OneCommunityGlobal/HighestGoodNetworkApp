@@ -3,6 +3,7 @@
 /* eslint-disable react/sort-comp */
 import React from 'react';
 import PropTypes from 'prop-types';
+import styles from './Team.module.css';
 import { connect } from 'react-redux';
 import { Container } from 'reactstrap';
 import { toast } from 'react-toastify';
@@ -241,15 +242,32 @@ class Teams extends React.PureComponent {
     }
 
     if (this.state.teams.length === 0) {
+      const { wildCardSearchText } = this.state;
       return (
         <div
           className={`d-flex justify-content-center align-items-center py-5 ${
             darkMode ? 'dark-mode' : ''
           }`}
         >
-          <h1 className="warning-text">
-            <strong>Team Not Found</strong>
-          </h1>
+          {wildCardSearchText ? (
+            <div className={styles.teamNotFoundContainer}>
+              <p className={darkMode ? 'text-light' : 'text-dark'}>
+                No team found matching &quot;{wildCardSearchText}&quot;, but you can create it by
+                clicking the button below.
+              </p>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={this.onCreateNewTeamFromSearch}
+              >
+                Create Team
+              </button>
+            </div>
+          ) : (
+            <h1 className="warning-text">
+              <strong>Team Not Found</strong>
+            </h1>
+          )}
         </div>
       );
     }
@@ -257,7 +275,7 @@ class Teams extends React.PureComponent {
     return (
       <div className="table-responsive mt-3">
         <table className={tableClass}>
-          <thead>
+          <thead className={styles.teamsTableHead}>
             <TeamTableHeader
               onTeamNameSort={this.toggleTeamNameSort}
               onTeamActiveSort={this.toggleTeamActiveSort}
@@ -363,6 +381,7 @@ class Teams extends React.PureComponent {
           open={this.state.createNewTeamPopupOpen}
           onClose={this.onCreateNewTeamPopupClose}
           onOkClick={this.onCreateNewTeamOkClick}
+          teamName={this.state.createNewTeamName}
         />
       </>
     );
@@ -381,6 +400,7 @@ class Teams extends React.PureComponent {
     await this.props.updateTeamMemeberVisibility(this.state.selectedTeamId, userId, visibility);
     const freshMembers = await this.props.getTeamMembers(this.state.selectedTeamId);
     this.setState({ selectedTeamMembers: freshMembers || [] });
+    await this.props.getAllUserTeams();
   };
 
   // NOTE: Team component calls (id, name, code) and we open immediately
@@ -402,10 +422,14 @@ class Teams extends React.PureComponent {
 
   onTeamMembersPopupClose = () => {
     this.props.clearTeamMembers();
+    // Do NOT clear selectedTeamId here — setting it to undefined causes
+    // getTeamMembers(undefined) on the next toggle, which fires a 400 error
+    // and briefly wipes selectedTeamData, resetting all toggles to ON.
+    // selectedTeamId gets overwritten correctly when the next team is opened.
     this.setState({
-      selectedTeamId: undefined,
       selectedTeam: '',
       teamMembersPopupOpen: false,
+      selectedTeamMembers: [],
     });
   };
 
@@ -435,11 +459,18 @@ class Teams extends React.PureComponent {
   };
 
   onCreateNewTeamShow = () => {
-    this.setState({ createNewTeamPopupOpen: true });
+    this.setState({ createNewTeamPopupOpen: true, createNewTeamName: '' });
+  };
+
+  onCreateNewTeamFromSearch = () => {
+    this.setState(prevState => ({
+      createNewTeamPopupOpen: true,
+      createNewTeamName: prevState.wildCardSearchText,
+    }));
   };
 
   onCreateNewTeamPopupClose = () => {
-    this.setState({ createNewTeamPopupOpen: false });
+    this.setState({ createNewTeamPopupOpen: false, createNewTeamName: '' });
   };
 
   onCreateNewTeamOkClick = async teamName => {

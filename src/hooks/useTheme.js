@@ -14,12 +14,6 @@ function useTheme() {
       body.classList.remove('dark-mode');
       body.classList.remove('bm-dashboard-dark');
     }
-
-    // Cleanup function
-    return () => {
-      body.classList.remove('dark-mode');
-      body.classList.remove('bm-dashboard-dark');
-    };
   }, [darkMode]);
 
   return darkMode;

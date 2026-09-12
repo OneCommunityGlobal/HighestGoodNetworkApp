@@ -104,9 +104,33 @@
   color: #212529;
 }
 
+:global(body.dark-mode) .tableWrapper tbody td,
+:global(body.bm-dashboard-dark) .tableWrapper tbody td {
+  color: #fff !important;
+  background-color: #14253d !important;
+  border-color: #1d3c52 !important;
+}
+
+:global(body.dark-mode) .tableWrapper tbody tr,
+:global(body.bm-dashboard-dark) .tableWrapper tbody tr {
+  background-color: #14253d !important;
+  border-color: #1d3c52 !important;
+}
+
+:global(body.dark-mode) .tableWrapper tbody tr:nth-child(even) td,
+:global(body.bm-dashboard-dark) .tableWrapper tbody tr:nth-child(even) td {
+  background-color: #0f1b2b !important;
+}
+
+:global(body.dark-mode) .tableWrapper tbody tr:hover td,
+:global(body.bm-dashboard-dark) .tableWrapper tbody tr:hover td {
+  background-color: #1c3354 !important;
+  color: #fff !important;
+}
+
 /* Link Styling */
 .linkButton {
-  color: #0d6efd; 
+  color: #0d6efd;
   text-decoration: none;
   font-weight: 500;
   transition: all 0.2s ease;
@@ -213,19 +237,17 @@ body.bm-dashboard-dark table {
   border-color: #404040 !important;
 }
 
-/* Table headers - FORCE background */
 body.dark-mode table thead,
 body.dark-mode table thead tr,
 body.dark-mode table thead th,
 body.bm-dashboard-dark table thead,
 body.bm-dashboard-dark table thead tr,
 body.bm-dashboard-dark table thead th {
-  background-color: #3d3d3d !important;
+  background-color: #0b1420 !important;
   color: #fff !important;
-  border-color: #404040 !important;
+  border-color: #1d3c52 !important;
 }
 
-/* Table body - FORCE background */
 body.dark-mode table tbody,
 body.dark-mode table tbody tr,
 body.dark-mode table tbody td,
@@ -237,7 +259,6 @@ body.bm-dashboard-dark table tbody td {
   border-color: #404040 !important;
 }
 
-/* Remove any white backgrounds on hover */
 body.dark-mode table tbody tr:hover,
 body.dark-mode table tbody tr:hover td,
 body.bm-dashboard-dark table tbody tr:hover,
@@ -246,7 +267,6 @@ body.bm-dashboard-dark table tbody tr:hover td {
   color: #fff !important;
 }
 
-/* Reactstrap table classes */
 body.dark-mode .table,
 body.dark-mode .table-responsive,
 body.bm-dashboard-dark .table,
@@ -265,13 +285,11 @@ body.bm-dashboard-dark .table-responsive {
   color: #fff !important;
 }
 
-/* Force all table descendants */
 body.dark-mode .table *,
 body.bm-dashboard-dark .table * {
   border-color: #404040 !important;
 }
 
-/* Buttons inside tables */
 body.dark-mode table button,
 body.dark-mode table .btn,
 body.bm-dashboard-dark table button,
@@ -290,7 +308,6 @@ body.bm-dashboard-dark table .btn:hover {
   border-color: #4dabf7 !important;
 }
 
-/* Specific button styles */
 body.dark-mode .btn-outline-primary,
 body.bm-dashboard-dark .btn-outline-primary {
   color: #4dabf7 !important;
@@ -309,7 +326,6 @@ body.bm-dashboard-dark .btn-outline-primary:active {
   border-color: #4dabf7 !important;
 }
 
-/* Icon buttons */
 body.dark-mode table button[type="button"],
 body.bm-dashboard-dark table button[type="button"] {
   color: #4dabf7 !important;
@@ -322,7 +338,6 @@ body.bm-dashboard-dark table button[type="button"]:hover {
   color: #74c0fc !important;
 }
 
-/* Links in tables */
 body.dark-mode table a,
 body.bm-dashboard-dark table a {
   color: #4dabf7 !important;
@@ -334,7 +349,6 @@ body.bm-dashboard-dark table a:hover {
   color: #74c0fc !important;
 }
 
-/* React-Select in dark mode */
 body.dark-mode .css-b62m3t-container,
 body.dark-mode .css-b62m3t-container *,
 body.bm-dashboard-dark .css-b62m3t-container,
@@ -385,7 +399,6 @@ body.bm-dashboard-dark .css-10wo9uf-option:hover {
   background-color: #3d3d3d !important;
 }
 
-/* Modal styling */
 body.dark-mode .modal-content,
 body.dark-mode .modal-header,
 body.dark-mode .modal-body,
@@ -399,7 +412,6 @@ body.bm-dashboard-dark .modal-footer {
   border-color: #404040 !important;
 }
 
-/* Form labels */
 body.dark-mode label,
 body.dark-mode .form-label,
 body.bm-dashboard-dark label,
@@ -407,7 +419,6 @@ body.bm-dashboard-dark .form-label {
   color: #fff !important;
 }
 
-/* Tooltip */
 body.dark-mode .tooltip,
 body.dark-mode .tooltip-inner,
 body.bm-dashboard-dark .tooltip,
@@ -416,7 +427,6 @@ body.bm-dashboard-dark .tooltip-inner {
   color: #fff !important;
 }
 
-/* Container backgrounds */
 body.dark-mode .container,
 body.dark-mode .container-fluid,
 body.bm-dashboard-dark .container,
@@ -424,7 +434,6 @@ body.bm-dashboard-dark .container-fluid {
   background-color: transparent !important;
 }
 
-/* Row backgrounds */
 body.dark-mode .row,
 body.dark-mode .col,
 body.dark-mode [class*="col-"],
@@ -434,45 +443,239 @@ body.bm-dashboard-dark [class*="col-"] {
   background-color: transparent !important;
 }
 
-/* Dark Mode Additional Enhancements */
 body.dark-mode .Box,
 body.bm-dashboard-dark .Box {
-  background: #1a1a1a !important;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 40%);
+  background: #0f1b2b !important;
+  box-shadow: none;
 }
 
 body.dark-mode .BuildingTitle,
-body.bm-dashboard-dark .BuildingTitle {
+body.dark-mode .BuildingTitle svg,
+body.bm-dashboard-dark .BuildingTitle,
+body.bm-dashboard-dark .BuildingTitle svg {
   color: #fff !important;
   border-bottom-color: #4dabf7;
 }
 
-body.dark-mode .PageViewContainer,
-body.bm-dashboard-dark .PageViewContainer {
-  background-color: #0a0a0a;
-}
-
 /* Responsive Design */
-@media (width <= 768px) {
+@media (width <=768px) {
   .PageViewContainer {
     padding: 1rem 0.5rem;
   }
-  
+
   .Box {
     padding: 1rem;
   }
-  
+
   .BuildingTitle {
     font-size: 1.5rem;
   }
-  
+
   .tableWrapper {
     border-radius: 6px;
+    position: relative;
   }
-  
+
+  .tableWrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 24px;
+    background: linear-gradient(to right, transparent, rgb(0 0 0 / 8%));
+    pointer-events: none;
+  }
+
   .tableWrapper tbody td,
   .BuildingTableHeaderLine th {
     padding: 0.75rem 0.5rem;
     font-size: 0.85rem;
   }
+
+  .inventoryNav {
+    gap: 10px;
+  }
+
+  .returnBtn {
+    flex: 1 1 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .categoryIcons {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (width <= 480px) {
+  .categoryIconLink {
+    padding: 5px 8px;
+    font-size: 0.7rem;
+  }
+
+  .iconWrapper {
+    font-size: 1rem;
+  }
+}
+
+/* ── Inventory Navigation Bar ── */
+.inventoryNav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.returnBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 16px;
+  background-color: #0d5675;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.returnBtn:hover {
+  background-color: #1a73c0;
+  color: #fff;
+}
+
+.categoryIcons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.categoryIconLink {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 10px;
+  border: 1px solid #78bdda;
+  border-radius: 8px;
+  color: #0d5675;
+  text-decoration: none;
+  font-size: 0.75rem;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+:global(body.dark-mode) .categoryIconLink,
+:global(body.bm-dashboard-dark) .categoryIconLink {
+  border-color: #4dabf7 !important;
+  color: #4dabf7 !important;
+}
+
+:global(body.dark-mode) .categoryIconLink:hover,
+:global(body.bm-dashboard-dark) .categoryIconLink:hover {
+  background-color: #4dabf7 !important;
+  color: #0f172a !important;
+  border-color: #4dabf7 !important;
+}
+
+.categoryIconLink:hover {
+  background-color: #0d5675;
+  color: #fff;
+  border-color: #0d5675;
+}
+
+.iconWrapper {
+  font-size: 1.2rem;
+}
+
+.iconLabel {
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.darkMode .returnBtn {
+  background-color: #2e5061;
+  color: #fff;
+}
+
+.darkMode .returnBtn:hover {
+  background-color: #1a73c0;
+}
+
+.darkMode .categoryIconLink {
+  border-color: #4a9bc2;
+  color: #5eb3e4;
+}
+
+.darkMode .categoryIconLink:hover {
+  background-color: #2e5061;
+  color: #fff;
+  border-color: #4a9bc2;
+}
+
+:global(body.dark-mode) .PageViewContainer,
+:global(body.bm-dashboard-dark) .PageViewContainer {
+  background-color: #0f1b2b;
+}
+
+:global(body.dark-mode) .Page,
+:global(body.bm-dashboard-dark) .Page {
+  background-color: #0f1b2b;
+}
+
+.darkTitle {
+  color: #fff !important;
+}
+
+/* ── Reset Button ── */
+.resetCol {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.btnReset {
+  height: 38px;
+  padding: 0 1.2rem;
+  font-weight: 500;
+  background-color: #dc2626;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btnReset:hover {
+  background-color: #b91c1c;
+}
+
+.btnReset:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.helperText {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+body.dark-mode .helperText,
+body.bm-dashboard-dark .helperText {
+  color: #9ca3af;
+}
+
+body.dark-mode .btnReset,
+body.bm-dashboard-dark .btnReset {
+  background-color: #b91c1c;
+}
+
+body.dark-mode .btnReset:hover,
+body.bm-dashboard-dark .btnReset:hover {
+  background-color: #991b1b;
 }

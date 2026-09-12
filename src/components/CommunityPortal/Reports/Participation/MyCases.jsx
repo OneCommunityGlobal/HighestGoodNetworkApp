@@ -3,36 +3,31 @@ import { useSelector } from 'react-redux';
 import styles from './MyCases.module.css';
 import mockEvents from './mockData';
 import CreateEventModal from './CreateEventModal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import { filterEventsByDate } from './FilterByDate';
 
 function MyCases() {
   const [view, setView] = useState('card');
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState('All Time');
   const [expanded, setExpanded] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const isExporting =
-    typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true'; // Sonar: prefer .
+    typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true';
+
+  const now = new Date();
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const filteredEvents = filterEventsByDate(mockEvents, filter);
+  const filteredEvents = filterEventsByDate(mockEvents, filter).filter(
+    event => new Date(event.eventDate).getTime() >= now.getTime(),
+  );
 
-  const filteredEventsByEventType = filteredEvents.filter(event => {
-    if (event.eventType === 'all') {
-      return true; // Simplified: just return true to keep the item
-    } else {
-      return event.eventType === filter;
-    }
-  });
+  let visibleEvents = filteredEvents;
 
-  // Sonar: extract nested ternary into independent statement
-  let visibleEvents = filteredEventsByEventType;
   if (!isExporting) {
-    // Limt to 10 events by default, but show all if when user clicks "More" or when exporting
-    visibleEvents = expanded
-      ? filteredEvents.slice(0, filteredEvents.length)
-      : filteredEvents.slice(0, 10);
+    visibleEvents = expanded ? filteredEvents : filteredEvents.slice(0, 10);
   }
 
   const placeholderAvatar = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
@@ -40,6 +35,7 @@ function MyCases() {
   const isEventToday = dateString => {
     const eventDate = new Date(dateString);
     const now = new Date();
+
     return (
       eventDate.getDate() === now.getDate() &&
       eventDate.getMonth() === now.getMonth() &&
@@ -53,7 +49,7 @@ function MyCases() {
         expanded || isExporting ? styles.expanded : ''
       }`}
     >
-      {visibleEvents?.map(event => (
+      {visibleEvents.map(event => (
         <div
           className={`case-card-global ${styles.caseCard} ${darkMode ? styles.caseCardDark : ''}`}
           key={event.id}
@@ -61,13 +57,16 @@ function MyCases() {
           <span className={styles.eventBadge} data-type={event.eventType}>
             {event.eventType}
           </span>
+
           <span className={`${styles.eventTime} ${darkMode ? styles.eventTimeDark : ''}`}>
             {event.eventTime}
           </span>
+
           <span className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
             {isEventToday(event.eventDate) ? "Today's " : ''}
             {event.eventName}
           </span>
+
           <div className={`${styles.attendeesInfo} ${darkMode ? styles.attendeesInfoDark : ''}`}>
             <div className={styles.avatars}>
               <img
@@ -79,9 +78,15 @@ function MyCases() {
                 loading="lazy"
               />
             </div>
+
             <span
               className={`${styles.attendeesCount} ${darkMode ? styles.attendeesCountDark : ''}`}
-            >{`+${event.attendees}`}</span>
+              title="Number of members who attended this event"
+              data-tooltip="Members Attended"
+            >
+              <FontAwesomeIcon icon={faUsers} className="me-2" />
+              {`+${event.attendees}`} Attendees
+            </span>
           </div>
         </div>
       ))}
@@ -94,7 +99,7 @@ function MyCases() {
         expanded || isExporting ? styles.expanded : ''
       }`}
     >
-      {visibleEvents?.map(event => (
+      {visibleEvents.map(event => (
         <li
           className={`case-list-item-global ${styles.caseListItem} ${
             darkMode ? styles.caseListItemDark : ''
@@ -104,7 +109,15 @@ function MyCases() {
           <span className={styles.eventType}>{event.eventType}</span>
           <span className={styles.eventTime}>{event.eventTime}</span>
           <span className={styles.eventName}>{event.eventName}</span>
-          <span className={styles.attendeesCount}>{`+${event.attendees}`}</span>
+
+          <span
+            className={styles.attendeesCount}
+            title="Number of members who attended this event"
+            data-tooltip="Members Attended"
+          >
+            <FontAwesomeIcon icon={faUsers} className="me-2" />
+            {`+${event.attendees}`} Attendees
+          </span>
         </li>
       ))}
     </ul>
@@ -124,6 +137,7 @@ function MyCases() {
         <h2 className={`${styles.sectionTitle} ${darkMode ? styles.sectionTitleDark : ''}`}>
           Upcoming Events
         </h2>
+
         <div className={styles.headerActions}>
           <div className={`${styles.viewSwitcher} ${darkMode ? styles.viewSwitcherDarkMode : ''}`}>
             <button
@@ -133,6 +147,7 @@ function MyCases() {
             >
               Calendar
             </button>
+
             <button
               type="button"
               className={view === 'card' ? styles.active : ''}
@@ -140,6 +155,7 @@ function MyCases() {
             >
               Card
             </button>
+
             <button
               type="button"
               className={view === 'list' ? styles.active : ''}
@@ -171,6 +187,7 @@ function MyCases() {
           >
             + Create New
           </button>
+
           {filteredEvents.length > 10 && !isExporting && (
             <button
               type="button"
@@ -182,11 +199,13 @@ function MyCases() {
           )}
         </div>
       </header>
-      <main className={`${styles.content}`}>
+
+      <main className={styles.content}>
         {view === 'card' && renderCardView()}
         {view === 'list' && renderListView()}
         {view === 'calendar' && renderCalendarView()}
       </main>
+
       <CreateEventModal
         isOpen={isCreateModalOpen}
         toggle={() => setIsCreateModalOpen(!isCreateModalOpen)}

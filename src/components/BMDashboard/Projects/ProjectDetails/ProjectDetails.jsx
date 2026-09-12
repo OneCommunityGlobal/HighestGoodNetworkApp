@@ -6,8 +6,8 @@ import { LoggingButtons, AddItemButtons, TeamButtons } from './LogBar';
 import RentedToolsDisplay from './RentedTools/RentedToolsDisplay';
 import MaterialsDisplay from './Materials/MaterialsDisplay';
 import ProjectLog from './ProjectLog';
-import { fetchBMProjects } from '../../../../actions/bmdashboard/projectActions';
 import styles from './ProjectDetails.module.css';
+import { fetchBMProjects } from '../../../../actions/bmdashboard/projectActions';
 
 /* -------------------------------------------
    REUSABLE DASHBOARD SECTION COMPONENT (FIXED)
@@ -57,8 +57,11 @@ const DashboardSection = ({ title, icon, children, darkMode }) => (
 );
 
 function ProjectDetails() {
-  const { projectId } = useParams();
   const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchBMProjects());
+  }, []);
+  const { projectId } = useParams();
   const darkMode = useSelector(state => state.theme.darkMode);
   const projects = useSelector(state => state.bmProjects) || [];
   const currProject = projects.find(project => String(project._id) === String(projectId));

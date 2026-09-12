@@ -29,3 +29,28 @@
   text-overflow: ellipsis;
   background-color: mediumseagreen;
 }
+
+.linksSectionDark,
+.linksSectionDark .linksLabelDark,
+.linksSectionDark .userLinkDark,
+.linksSectionDark .editLinkDark {
+  /* White text keeps the Links section readable in dark mode. */
+  color: #fff;
+}
+
+.linksSectionDark .userLinkDark:hover,
+.linksSectionDark .editLinkDark:hover {
+  /* Use the project's blue link color for interactive dark-mode hover states. */
+  color: #007bff;
+  text-decoration: underline;
+}
+
+.editLink {
+  color: grey;
+}
+
+.editLink:hover {
+  /* Match profile link hover affordance so Edit feels consistently interactive. */
+  color: #007bff;
+  text-decoration: underline;
+}
