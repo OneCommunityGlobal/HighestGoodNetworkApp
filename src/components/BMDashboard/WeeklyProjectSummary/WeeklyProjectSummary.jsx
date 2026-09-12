@@ -35,6 +35,7 @@ import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import InjurySeverityChart from '../Injuries/InjurySeverityChart';
 import CostPredictionChart from './CostPredictionChart';
+import { calculateComparisonDates, parseWeeklySummaryDateRange } from './comparisonDateUtils';
 
 const projectStatusButtons = [
   {
@@ -143,7 +144,25 @@ function WeeklyProjectSummary() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const projectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter || '');
   const dateRangeFilter = useSelector(state => state.weeklyProjectSummary?.dateRangeFilter || '');
+  const comparisonPeriodFilter = useSelector(
+    state => state.weeklyProjectSummary?.comparisonPeriodFilter || 'No Comparison',
+  );
   const containerRef = useRef(null);
+  const comparisonEnabled = comparisonPeriodFilter !== 'No Comparison';
+
+  const currentDateRange = useMemo(() => parseWeeklySummaryDateRange(dateRangeFilter), [
+    dateRangeFilter,
+  ]);
+
+  const comparisonDateRange = useMemo(
+    () =>
+      calculateComparisonDates(
+        comparisonPeriodFilter,
+        currentDateRange.startDate,
+        currentDateRange.endDate,
+      ),
+    [comparisonPeriodFilter, currentDateRange.startDate, currentDateRange.endDate],
+  );
 
   useEffect(() => {
     if (materials.length === 0) {
@@ -206,9 +225,14 @@ function WeeklyProjectSummary() {
                   >
                     <span className={`${styles.weeklyStatusValue}`}>{button.value}</span>
                   </div>
-                  <div className="weekly-status-change" style={{ color: button.textColor }}>
-                    {button.change}
-                  </div>
+                  {comparisonEnabled && (
+                    <div className="weekly-status-change" style={{ color: button.textColor }}>
+                      {button.change.replace(
+                        'week over week',
+                        comparisonPeriodFilter.toLowerCase(),
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -242,7 +266,14 @@ function WeeklyProjectSummary() {
         content: [1, 2, 3].map((_, index) => {
           let content;
           if (index === 1) {
-            content = <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />;
+            content = (
+              <QuantityOfMaterialsUsed
+                data={quantityOfMaterialsUsedData}
+                comparisonMode={comparisonPeriodFilter}
+                currentDateRange={currentDateRange}
+                comparisonDateRange={comparisonDateRange}
+              />
+            );
           } else if (index === 2) {
             content = <TotalMaterialCostPerProject />;
           } else {
@@ -450,7 +481,13 @@ function WeeklyProjectSummary() {
         ),
       },
     ],
-    [quantityOfMaterialsUsedData, darkMode],
+    [
+      quantityOfMaterialsUsedData,
+      darkMode,
+      comparisonPeriodFilter,
+      currentDateRange,
+      comparisonDateRange,
+    ],
   );
 
   const handleSaveAsPDF = async () => {

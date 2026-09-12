@@ -7,7 +7,7 @@ import {
 const initialState = {
   projectFilter: 'One Community',
   dateRangeFilter: '',
-  comparisonPeriodFilter: '',
+  comparisonPeriodFilter: 'No Comparison',
 };
 
 // eslint-disable-next-line default-param-last, import/prefer-default-export

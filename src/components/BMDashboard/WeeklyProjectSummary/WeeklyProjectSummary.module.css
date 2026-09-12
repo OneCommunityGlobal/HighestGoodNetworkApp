@@ -113,6 +113,81 @@
   background-color: var(--section-title-hover) !important;
 }
 
+/* Match the Total Org Summary comparison dropdown interaction inside this header only. */
+.weeklySummaryComparisonDropdown {
+  flex: 0 0 auto;
+}
+
+.weeklySummaryComparisonDropdown :global(.dropdown-toggle) {
+  box-sizing: border-box;
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 0 14px !important;
+  border: none !important;
+  border-radius: 6px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  line-height: 1.25 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 150px !important;
+  background-color: #6f42c1 !important;
+  color: white !important;
+  box-shadow: 0 2px 6px rgb(111 66 193 / 30%) !important;
+  transition: all 0.3s ease !important;
+}
+
+.weeklySummaryComparisonDropdown :global(.dropdown-toggle):hover {
+  background-color: #5a359a !important;
+  box-shadow: 0 4px 12px rgb(111 66 193 / 40%) !important;
+}
+
+.weeklySummaryComparisonDropdown :global(.dropdown-toggle):focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgb(111 66 193 / 30%) !important;
+}
+
+.weeklySummaryComparisonDropdown :global(.dropdown-menu) {
+  min-width: 180px !important;
+  padding: 8px 0 !important;
+  margin-top: 8px !important;
+  border: none !important;
+  border-radius: 12px !important;
+  background-color: white !important;
+  box-shadow: 0 8px 25px rgb(0 0 0 / 15%) !important;
+}
+
+.weeklySummaryComparisonDropdown :global(.dropdown-item) {
+  padding: 12px 20px !important;
+  border: none !important;
+  background-color: transparent !important;
+  color: #333 !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+}
+
+.weeklySummaryComparisonDropdown :global(.dropdown-item):hover {
+  background-color: #f8f9fa !important;
+  color: #6f42c1 !important;
+  transform: translateX(4px) !important;
+}
+
+.darkMode .weeklySummaryComparisonDropdown :global(.dropdown-menu) {
+  background-color: #34495e !important;
+  border: 1px solid #6f42c1 !important;
+  box-shadow: 0 8px 25px rgb(0 0 0 / 30%) !important;
+}
+
+.darkMode .weeklySummaryComparisonDropdown :global(.dropdown-item) {
+  color: #fff !important;
+}
+
+.darkMode .weeklySummaryComparisonDropdown :global(.dropdown-item):hover {
+  background-color: #6f42c1 !important;
+  color: #fff !important;
+}
+
 /* Share Button — override Bootstrap .btn so it lines up with .form-control selects */
 
 /* Bootstrap .btn defaults to flex-shrink: 1; when the row is tight the button shrinks and
@@ -381,14 +456,12 @@
   border-top: 1px solid rgb(255 255 255 / 20%);
 }
 
-.weeklyProjectSummaryDashboardSection.half
-  .weeklyProjectSummaryDashboardCategoryContent {
+.weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
   grid-template-columns: repeat(2, 1fr);
   gap: 15px;
 }
 
-.weeklyProjectSummaryDashboardSection.small
-  .weeklyProjectSummaryDashboardCategoryContent {
+.weeklyProjectSummaryDashboardSection.small .weeklyProjectSummaryDashboardCategoryContent {
   display: grid;
   grid-template-columns: 1fr;
   gap: 15px;
@@ -521,7 +594,10 @@
   justify-content: center;
   border-radius: 25px;
   width: 100%;
-  max-width: 284px;
+
+  /* Fill the responsive grid track instead of capping cards at a fixed desktop width. */
+  max-width: none;
+  min-width: 0;
   height: 190px;
   text-align: center;
   box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
@@ -552,15 +628,19 @@
 }
 
 .darkMode .statusCard {
-  background: var(--card-bg) !important;
   color: var(--text-color) !important;
   border-color: rgb(255 255 255 / 10%) !important;
 }
 
-.darkMode .weeklyCardTitle,
-.darkMode .weeklyStatusValue,
-.darkMode .weekly-status-change {
-  color: var(--text-color) !important;
+/* Keep all Project Status text readable on the preserved pastel status cards in dark mode. */
+.darkMode .statusCard .weeklyCardTitle,
+.darkMode .statusCard .weeklyStatusValue {
+  color: #000 !important;
+}
+
+/* Match week-over-week text to the dark title/value color on pastel status cards. */
+.darkMode .statusCard :global(.weekly-status-change) {
+  color: #000 !important;
 }
 
 /* Tooltip styles */
@@ -628,13 +708,20 @@
 /* MERGED: keep ONLY one projectStatusGrid */
 .projectStatusGrid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+
+  /* Let status cards choose the largest safe column count at every viewport width. */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
   gap: 20px;
   justify-content: center;
   align-items: center;
   width: 100%;
   max-width: 1600px;
   margin: auto;
+}
+
+/* Keep Project Status from being squeezed into one parent category column on tablets. */
+.weeklyProjectSummaryDashboardCategoryContent .projectStatusGrid {
+  grid-column: 1 / -1;
 }
 
 /* .projectStatusGrid {
@@ -646,7 +733,10 @@
 
 /* ---------------- OVAL STATUS BUTTON ---------------- */
 .weeklyStatusButton {
-  width: 130px;
+  /* Keep the original pill size for short values while letting longer values fit. */
+  width: auto;
+  min-width: 130px;
+  max-width: 100%;
   height: 65px;
   border-radius: 50px / 32px;
   display: flex;
@@ -654,6 +744,7 @@
   justify-content: center;
   box-shadow: 0 2px 5px rgb(0 0 0 / 15%);
   margin: 12px 0;
+  padding: 0 18px;
 }
 
 /* ---------------- RESPONSIVE BREAKPOINTS ---------------- */
@@ -663,7 +754,7 @@
   .lessonsLearnedGrid {
     min-height: 650px;
   }
-  
+
   .lessonsCard {
     min-height: 650px;
   }
@@ -673,7 +764,7 @@
   .lessonsLearnedGrid {
     min-height: 600px;
   }
-  
+
   .lessonsCard {
     min-height: 600px;
   }
@@ -684,7 +775,7 @@
     min-height: 550px;
     gap: 20px;
   }
-  
+
   .lessonsCard {
     min-height: 550px;
   }
@@ -695,7 +786,7 @@
     min-height: 500px;
     gap: 16px;
   }
-  
+
   .lessonsCard {
     min-height: 500px;
   }
@@ -736,9 +827,10 @@
   .darkMode .weeklySummaryShareBtn {
     background: #e8a71c !important;
     color: #000 !important; /* readable in dark mode */
-  /* Tools and Equipment Tracking - 2 column layout on tablet */
+
+    /* Tools and Equipment Tracking - 2 column layout on tablet */
   }
-  
+
   .weeklyProjectSummaryDashboardCategoryContent {
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
@@ -786,18 +878,14 @@
     grid-column: span 1;
   }
 
-  .projectStatusGrid {
-    grid-template-columns: 1fr;
-  }
-  
   .weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
     grid-template-columns: 1fr;
   }
-  
+
   .weeklyProjectSummaryCard :global(.chartContainer) {
     min-height: 240px;
   }
-  
+
   .normalCard {
     min-height: 280px;
   }
@@ -807,31 +895,31 @@
     gap: 16px;
     min-height: auto;
   }
-  
+
   .lessonsCard {
     min-height: 500px;
   }
-  
+
   .toolsTrackingLayout {
     grid-template-columns: 1fr;
   }
-  
+
   .toolsDonutWrap {
     grid-column: span 1;
   }
-  
+
   .financialsGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .financialsGrid .financialBig {
     grid-column: span 1;
   }
-  
+
   .laborTimeGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .financialsTrackingGrid {
     grid-template-columns: 1fr;
   }
@@ -842,50 +930,19 @@
   .lessonsCard {
     min-height: 450px;
   }
-  
+
   .weeklyProjectSummaryCard :global(.chartContainer) {
     min-height: 220px;
   }
-  
+
   .normalCard {
     min-height: 260px;
   }
-  
+
   .weeklySummaryHeaderTitle {
     font-size: large;
     flex-direction: column;
     gap: 5px;
-  }
-}
-
-/* Status Grid Responsive */
-@media (width >= 1600px) {
-  .projectStatusGrid {
-    grid-template-columns: repeat(6, 1fr);
-  }
-}
-
-@media (width <= 1400px) {
-  .projectStatusGrid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media (width <= 1024px) {
-  .projectStatusGrid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (width <= 768px) {
-  .projectStatusGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (width <= 576px) {
-  .projectStatusGrid {
-    grid-template-columns: repeat(1, 1fr);
   }
 }
 
@@ -916,12 +973,12 @@
   .weeklyProjectSummaryCard {
     break-inside: avoid;
   }
-  
+
   .weeklyProjectSummaryCard :global(.container) {
     box-shadow: none;
     border: 1px solid #ddd;
   }
-  
+
   .lessonsLearnedGrid,
   .toolsTrackingLayout,
   .financialsGrid,
@@ -929,7 +986,7 @@
   .financialsTrackingGrid {
     break-inside: avoid;
   }
-  
+
   .weeklySummaryShareBtn,
   .weeklySummaryHeaderControls select {
     display: none;
