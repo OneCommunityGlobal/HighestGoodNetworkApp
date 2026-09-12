@@ -225,13 +225,13 @@
 
 .postBtn.postBtnDark {
   background-color: #7a90b3;
-  color: #1b2a41;
+  color: #0d1626;
   border: 1px solid #7a90b3;
 }
 
 .postBtn.postBtnDark:hover {
   background-color: #9fb1cc;
-  color: #1b2a41;
+  color: #0d1626;
 }
 
 .eventCard12Dark {
