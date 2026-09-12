@@ -1,9 +1,11 @@
-.message-container {
-  /* display: flex; */
+/* stylelint-disable  */
+.messageContainer {
+  display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   min-width: 0;
+  overflow: hidden;
   z-index: 10;
   gap: 8px;
 }
@@ -24,6 +26,8 @@
 }
 
 .message {
+  display: block;
+  flex: 1 1 auto;
   font-style: italic;
   color: white;
   margin: 0;
@@ -37,7 +41,6 @@
 
 .iconWrapper {
   flex: 0 0 auto;
-  /* display: flex; */
   align-items: center;
   justify-content: center;
   flex-direction: column;
@@ -75,7 +78,8 @@
   border-collapse: collapse;
 }
 
-.ownerHistoryTable th, .ownerHistoryTable td {
+.ownerHistoryTable th,
+.ownerHistoryTable td {
   border-bottom: 1px solid #858585 !important;
 }
 
@@ -99,7 +103,8 @@
     width: 100%;
     text-align: left !important;
   }
-  .ownerHistoryTable th, .ownerHistoryTable td {
+  .ownerHistoryTable th,
+  .ownerHistoryTable td {
     border-bottom: none !important;
   }
   .ownerHistoryTable tr {

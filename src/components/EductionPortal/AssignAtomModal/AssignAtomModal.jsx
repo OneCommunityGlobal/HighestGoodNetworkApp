@@ -248,11 +248,11 @@ const AssignAtomModal = ({
                   style={{ marginTop: '0px', width: '100%' }}
                 >
                   {isLoadingUsers ? (
-                    <div className="user__auto-complete">Loading users...</div>
+                    <div className={styles['user__auto-complete']}>Loading users...</div>
                   ) : filteredUsers.length > 0 ? (
                     filteredUsers.map(user => (
                       <div
-                        className="user__auto-complete"
+                        className={styles['user__auto-complete']}
                         key={user._id}
                         role="button"
                         tabIndex={0}
@@ -267,7 +267,7 @@ const AssignAtomModal = ({
                       </div>
                     ))
                   ) : (
-                    <div className="user__auto-complete">No users found</div>
+                    <div className={styles['user__auto-complete']}>No users found</div>
                   )}
                 </div>
               ) : null}

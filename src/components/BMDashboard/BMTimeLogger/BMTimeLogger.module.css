@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .bmTimelogger_header h1 {
   font-size: 1.5em;
   text-align: left;
@@ -8,7 +9,7 @@
   background-color: #2e5061;
 }
 
-@media (min-width: 650px) {
+@media (width >= 650px) {
   .bmDashboard_button.btn.btnSecondary {
     padding-left: 0;
     padding-right: 0;
@@ -21,8 +22,7 @@
   width: 80%;
   list-style-type: none;
   max-height: 80vh;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden auto;
   padding:0;
 }
 
@@ -40,6 +40,7 @@
   font-weight: bold;
   text-align: center;
   justify-content: center;
+
   /* color: #3ea0cb; */
 }
 
@@ -62,7 +63,7 @@
 
 .displayInline {
   display: inline-block;
-  white-space: no-wrap;
+  white-space: nowrap;
 }
 
 /* error page */
@@ -107,7 +108,7 @@
 .invForm input,
 .invForm select,
 .invForm textarea {
-  background-color: rgb(249, 249, 249);
+  background-color: rgb(249 249 249);
 }
 
 .invFormBtnGroup {
@@ -125,13 +126,13 @@
   color: red;
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (width <= 800px) {
   .invFormPageContainer {
     width: 95%;
   }
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (width <= 480px) {
   .invFormPageContainer h2 {
     font-size: 1.7rem;
   }

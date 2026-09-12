@@ -4,6 +4,7 @@ import { boxStyle } from '../../styles';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import { SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 import { scheduleDeactivationAction, activateUserAction } from '../../actions/userLifecycleActions';
+import styles from './usermanagement.module.css';
 
 function SetUpFinalDayButton(props) {
   const { darkMode, userProfile, loadUserProfile, hasFinalDay } = props;
@@ -42,7 +43,7 @@ function SetUpFinalDayButton(props) {
       />
       <button
         type="button"
-        className={`btn btn-outline-${hasFinalDay ? 'warning' : 'success'} btn-sm`}
+        className={`${styles.userManagementCellControl} btn btn-outline-${hasFinalDay ? 'warning' : 'success'} btn-sm`}
         onClick={handleButtonClick}
         style={{
           ...darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle,

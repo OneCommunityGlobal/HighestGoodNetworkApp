@@ -2,11 +2,11 @@
 import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { themeMock } from '../../../__tests__/mockStates';
 import ResetPasswordPopup from '../ResetPasswordPopup';
 
-const mockStore = configureStore([]);
+const mockStore = configureMockStore([]);
 const store = mockStore({
   theme: themeMock,
 });

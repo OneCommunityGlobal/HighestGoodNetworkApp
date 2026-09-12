@@ -85,6 +85,11 @@ export const enableUserInfoEditReducer = (userProfile = userProfilesInitial, act
       return updateObject(userProfile, { editable: action.payload });
     case 'START_USER_INFO_UPDATE':
       return { ...userProfile, newUserData: userProfile.newUserData.concat(action.payload) };
+    // Clears the pending edit queue after a successful save so that stale
+    // edits from a previous save are never resubmitted on a later save.
+    // See hotfix: User Management stale date replay bug.
+    case types.FINISH_USER_INFO_UPDATE:
+      return { ...userProfile, newUserData: [] };
     default:
       return userProfile;
   }

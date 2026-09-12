@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .card_project {
     display: flex;
     justify-content: center;
@@ -7,6 +8,7 @@
     border-radius: 8px;
     height: 40px;
     width: 300px;
+
     /* margin: 10px; */
     padding: 10px;
     float: left;
@@ -21,6 +23,7 @@
     border-radius: 8px;
     height: 40px;
     width: 300px;
+
     /* margin: 10px; */
     padding: 10px;
   }

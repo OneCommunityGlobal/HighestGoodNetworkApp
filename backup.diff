@@ -1,0 +1,1155 @@
+diff --cc src/components/Projects/Projects.jsx
+index 832bce40c,10d910e3a..000000000
+--- a/src/components/Projects/Projects.jsx
++++ b/src/components/Projects/Projects.jsx
+@@@ -24,8 -13,8 +24,8 @@@ import AddProject from './AddProject'
+  import ProjectTableHeader from './ProjectTableHeader';
+  import Project from './Project';
+  import ModalTemplate from './../common/Modal';
+- // import { CONFIRM_ARCHIVE, PROJECT_INACTIVE_CONFIRMATION, PROJECT_ACTIVE_CONFIRMATION } from './../../languages/en/messages';
++ import { CONFIRM_ARCHIVE, PROJECT_INACTIVE_CONFIRMATION, PROJECT_ACTIVE_CONFIRMATION } from './../../languages/en/messages';
+ -import './projects.module.css';
+ +import styles from './projects.module.css';
+  import Loading from '../common/Loading';
+  import hasPermission from '../../utils/permissions';
+  import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
+@@@ -60,19 -49,13 +60,20 @@@ const Projects = function(props) 
+      active: false,
+      category: '',
+    });
+ -  const [projectList, setProjectList] = useState(null);
+ +  const [projectList, setProjectList] = useState([]); // changed
+    const [searchName, setSearchName] = useState('');
+ -  const [allProjects, setAllProjects] = useState(null);
+ +  const [showArchived, setShowArchived] = useState(false);
+ +
+ +  const [allProjects, setAllProjects] = useState([]); // changed
+    const [isChangingStatus, setIsChangingStatus] = useState(false);
+    const [isArchiving, setIsArchiving] = useState(false);
++   const [searchMode, setSearchMode] = useState('person'); 
+  
+ +  const [suggestions, setSuggestions] = useState([]);
+ +  const [selectedUser, setSelectedUser] = useState(null);
+ +
+ +   // active member counts used in generateProjectList
+ +  const activeMemberCounts = props.state.projectMembers?.activeMemberCounts || {};
+    const useDebounce = (value, delay) => {
+      const [debouncedValue, setDebouncedValue] = useState(value);
+  
+@@@ -905,20 -206,24 +906,21 @@@
+          if (sortedByName === 'SortingByMostActiveMembers') {
+            const lenA = activeMemberCounts[a._id] || 0;
+            const lenB = activeMemberCounts[b._id] || 0;
+ -          return lenB - lenA; // Most active first
+ +          return lenB - lenA;
+          }
+          return 0;
+ -      })
+ -      .map((project, index) => (
+ -        <Project
+ -          // key={project._id}
+ -          key={`${project._id}-${project.isActive}`} 
+ -          index={index}
+ -          projectData={project}
+ -          onUpdateProject={onUpdateProject}
+ -          onClickArchiveBtn={onClickArchiveBtn}
+ -          onClickProjectStatusBtn={onClickProjectStatusBtn}
+ -          darkMode={darkMode}
+ -        />
+ -      ));
+ -    setProjectList(filteredProjects);
+ -    setAllProjects(filteredProjects);
+ +      });
+ +
+ +      // Save raw objects for other logic
+-       setAllProjects(filtered);
+++      // setAllProjects(filtered);
+++      // setAllProjects(generateJSXList(filtered)); // store JSX in local state so we don’t have to recalculate on every render
+ +
+ +      // Build JSX and set list
+ +      setProjectList(generateJSXList(filtered));
+ +    } catch (error) {
+ +      // eslint-disable-next-line no-console
+ +        console.error('generateProjectList error:', error);
+ +    }
+    };
+  
+    const refreshProjects = async () => {
+@@@ -941,192 -238,82 +943,319 @@@
+      props.fetchProjectsWithActiveUsers();
+    }, []);
+  
+ +  // useEffect(() => {
+ +  //   handleProjectArchived(); // fetches either archived or unarchived projects
+ +  // }, [showArchived]);
+ +
+ +  // fetch the correct list on mount and whenever the showArchived toggle changes
+    useEffect(() => {
+ -    // console.log('generateProjectList triggered:', {
+ -    //   fetched: props.state.allProjects.fetched,
+ -    //   fetching: props.state.allProjects.fetching,
+ -    //   dataLength: allReduxProjects?.length || 0,
+ -    //   status: props.state.allProjects.status
+ -    // });
+ -    generateProjectList(categorySelectedForSort, showStatus, sortedByName);
+ -    if (status !== 200) {
+ -      setModalData({
+ -        showModal: true,
+ -        modalMessage: error,
+ -        modalTitle: 'ERROR',
+ -        hasConfirmBtn: false,
+ -        hasInactiveBtn: false,
+ -      });
+ -    }
+ -  }, [categorySelectedForSort, showStatus, sortedByName, allReduxProjects, props.state.theme.darkMode]);
+ +    const doFetch = async () => {
+ +      try {
+ +        if (showArchived) {
+ +          await props.fetchAllArchivedProjects();
+ +        } else {
+ +          await props.fetchAllProjects();
+ +        }
+ +      } catch (err) {
+ +        // keep debugging info
+ +        // eslint-disable-next-line no-console
+ +        console.error('Error fetching projects for showArchived=', showArchived, err);
+ +      }
+ +    };
+ +
+ +    doFetch();
+ +  }, [showArchived, props.fetchAllArchivedProjects, props.fetchAllProjects]);
+ +  // useEffect(() => {
+ +  //   // console.log('generateProjectList triggered:', {
+ +  //   //   fetched: props.state.allProjects.fetched,
+ +  //   //   fetching: props.state.allProjects.fetching,
+ +  //   //   dataLength: allReduxProjects?.length || 0,
+ +  //   //   status: props.state.allProjects.status
+ +  //   // });
+ +  //   generateProjectList(categorySelectedForSort, showStatus, sortedByName);
+ +  //   if (status !== 200) {
+ +  //     setModalData({
+ +  //       showModal: true,
+ +  //       modalMessage: error,
+ +  //       modalTitle: 'ERROR',
+ +  //       hasConfirmBtn: false,
+ +  //       hasInactiveBtn: false,
+ +  //     });
+ +  //   }
+ +  // }, [categorySelectedForSort, showStatus, sortedByName, props.state.allProjects, props.state.theme.darkMode]);
+-   useEffect(() => {
+-   // whenever Redux changes (or filters/sort/showArchived change), rebuild list from Redux raw data
+-     generateProjectList(allReduxProjects);
+-   }, [allReduxProjects, categorySelectedForSort, showStatus, sortedByName, showArchived, props.state.theme.darkMode]);
+-   //above is working code
+++  
+++  // useEffect(() => {
+++  // // whenever Redux changes (or filters/sort/showArchived change), rebuild list from Redux raw data
+++  //   generateProjectList(allReduxProjects);
+++  // }, [allReduxProjects, categorySelectedForSort, showStatus, sortedByName, showArchived, props.state.theme.darkMode]);
+++  // //above is working code
+++
+++  // useEffect(() => {
+++  //   const source = allProjects.length ? allProjects : allReduxProjects;
+++
+++  //   // if (debouncedSearchName) {
+++  //   //   const filtered = source.filter(project =>
+++  //   //     project.name?.toLowerCase().includes(debouncedSearchName.toLowerCase())
+++  //   //   );
+++  //   //   setProjectList(generateJSXList(filtered));
+++  //   // } else {
+++  //   //   setProjectList(generateJSXList(source));
+++  //   // }
+++  //   if (debouncedSearchName) {
+++  //   const filtered = source.filter(project =>
+++  //     (project.projectName || '').toLowerCase().includes(debouncedSearchName.toLowerCase())
+++  //   );
+++  //   setProjectList(generateJSXList(filtered));
+++  //   } else {
+++  //     setProjectList(generateJSXList(source));
+++  //   }
+++  // }, [debouncedSearchName, allProjects, allReduxProjects]);
+ +
+-   useEffect(() => {
+-     const source = allProjects.length ? allProjects : allReduxProjects;
+- 
+-     // if (debouncedSearchName) {
+-     //   const filtered = source.filter(project =>
+-     //     project.name?.toLowerCase().includes(debouncedSearchName.toLowerCase())
+-     //   );
+-     //   setProjectList(generateJSXList(filtered));
+-     // } else {
+-     //   setProjectList(generateJSXList(source));
+-     // }
+-     if (debouncedSearchName) {
+-     const filtered = source.filter(project =>
+-       (project.projectName || '').toLowerCase().includes(debouncedSearchName.toLowerCase())
+-     );
+-     setProjectList(generateJSXList(filtered));
+-     } else {
+-       setProjectList(generateJSXList(source));
+-     }
+-   }, [debouncedSearchName, allProjects, allReduxProjects]);
+ +  // useEffect(() => { generateProjectList(categorySelectedForSort, showStatus, sortedByName); }, [allReduxProjects, categorySelectedForSort, showStatus, sortedByName]);
+    // }, [fetched, categorySelectedForSort, showStatus, sortedByName, props.state.theme.darkMode]);
+  
+ +  // useEffect(() => {
+ +  //   const fetchProjects = async () => {
+ +  //     if (debouncedSearchName) {
+ +  //       const projects = await props.getProjectsByUsersName(debouncedSearchName);
+ +  //       if (projects && allReduxProjects) {
+ +  //         const newProjectList = allProjects.filter(project => 
+ +  //           projects.some(p => p === project._id)
+ +  //         );
+ +  //         // setProjectList(newProjectList);
+ +  //         setProjectList(
+ +  //           newProjectList.map((project, index) => (
+ +  //             <Project
+ +  //               key={`${project._id}-${project.isActive}`}
+ +  //               index={index}
+ +  //               projectData={project}
+ +  //               onUpdateProject={onUpdateProject}
+ +  //               onClickArchiveBtn={onClickArchiveBtn}
+ +  //               onClickProjectStatusBtn={onClickProjectStatusBtn}
+ +  //               darkMode={darkMode}
+ +  //             />
+ +  //           ))
+ +  //         );
+ +  //       } else {
+ +  //         // setProjectList(allProjects);
+ +  //         // fallback → render all projects
+ +  //           setProjectList(
+ +  //             allProjects.map((project, index) => (
+ +  //               <Project
+ +  //                 key={`${project._id}-${project.isActive}`}
+ +  //                 index={index}
+ +  //                 projectData={project}
+ +  //                 onUpdateProject={onUpdateProject}
+ +  //                 onClickArchiveBtn={onClickArchiveBtn}
+ +  //                 onClickProjectStatusBtn={onClickProjectStatusBtn}
+ +  //                 darkMode={darkMode}
+ +  //               />
+ +  //             ))
+ +  //           );
+ +  //         }
+ +  //       }
+ +  //     } else {
+ +  //       // setProjectList(allProjects);
+ +  //       // no search term → render all projects
+ +  //       setProjectList(
+ +  //         allProjects.map((project, index) => (
+ +  //           <Project
+ +  //             key={`${project._id}-${project.isActive}`}
+ +  //             index={index}
+ +  //             projectData={project}
+ +  //             onUpdateProject={onUpdateProject}
+ +  //             onClickArchiveBtn={onClickArchiveBtn}
+ +  //             onClickProjectStatusBtn={onClickProjectStatusBtn}
+ +  //             darkMode={darkMode}
+ +  //           />
+ +  //         ))
+ +  //       );
+ +  //     }
+ +  //   fetchProjects();
+ +  // }, [debouncedSearchName, allProjects, allReduxProjects]);
+ +
+ +  // useEffect(() => {
+ +  //   const fetchProjects = async () => {
+ +  //     if (debouncedSearchName) {
+ +  //       const projects = await props.getProjectsByUsersName(debouncedSearchName);
+ +  //       if (projects && allReduxProjects?.projects) {
+ +  //         const newProjectList = (allProjects || []).filter(project => 
+ +  //           projects.some(p => p === project._id)
+ +  //         );
+ +  //         setProjectList(
+ +  //           newProjectList.map((project, index) => (
+ +  //             <Project
+ +  //               key={`${project._id}-${project.isActive}`}
+ +  //               index={index}
+ +  //               projectData={project}
+ +  //               onUpdateProject={onUpdateProject}
+ +  //               onClickArchiveBtn={onClickArchiveBtn}
+ +  //               onClickProjectStatusBtn={onClickProjectStatusBtn}
+ +  //               darkMode={darkMode}
+ +  //             />
+ +  //           ))
+ +  //         );
+ +  //       } else {
+ +  //         // fallback → render all projects
+ +  //         setProjectList(
+ +  //           allProjects.map((project, index) => (
+ +  //             <Project
+ +  //               key={`${project._id}-${project.isActive}`}
+ +  //               index={index}
+ +  //               projectData={project}
+ +  //               onUpdateProject={onUpdateProject}
+ +  //               onClickArchiveBtn={onClickArchiveBtn}
+ +  //               onClickProjectStatusBtn={onClickProjectStatusBtn}
+ +  //               darkMode={darkMode}
+ +  //             />
+ +  //           ))
+ +  //         );
+ +  //       }
+ +  //     } else {
+ +  //       // no search term → render all projects
+ +  //       setProjectList(
+ +  //         allProjects.map((project, index) => (
+ +  //           <Project
+ +  //             key={`${project._id}-${project.isActive}`}
+ +  //             index={index}
+ +  //             projectData={project}
+ +  //             onUpdateProject={onUpdateProject}
+ +  //             onClickArchiveBtn={onClickArchiveBtn}
+ +  //             onClickProjectStatusBtn={onClickProjectStatusBtn}
+ +  //             darkMode={darkMode}
+ +  //           />
+ +  //         ))
+ +  //       );
+ +  //     }
+ +  //   };
+ +
+ +  //   fetchProjects();
+ +  // }, [debouncedSearchName, allProjects, allReduxProjects]);
+++  
+++//   useEffect(() => {
+++//     const fetchProjects = async () => {
+++//       // if (!debouncedSearchName) {
+++//       //   setProjectList(allProjects);
+++//       //   return;
+++//       // }
+++//       let source = allReduxProjects;
+++//       if (!debouncedSearchName) {
+++//         // const mapped = allReduxProjects.map((project, index) => (
+++//         //   <Project
+++//         //     key={`${project._id}-${project.isActive}`}
+++//         //     index={index}
+++//         //     projectData={project}
+++//         //     onUpdateProject={onUpdateProject}
+++//         //     onClickArchiveBtn={onClickArchiveBtn}
+++//         //     onClickProjectStatusBtn={onClickProjectStatusBtn}
+++//         //     darkMode={darkMode}
+++//         //   />
+++//         // ));
+++//         // const source = showArchived
+++//         //   ? allReduxProjects.filter(p => p.isArchived)
+++//         //   : allReduxProjects.filter(p => !p.isArchived);
+++
+++//         const mapped = source.map((project, index) => (
+++//           <Project
+++//             key={project._id}
+++//             index={index}
+++//             projectData={project}
+++//             onUpdateProject={onUpdateProject}
+++//             onClickArchiveBtn={onClickArchiveBtn}
+++//             onClickProjectStatusBtn={onClickProjectStatusBtn}
+++//             darkMode={darkMode}
+++//           />
+++//         ));
+++
+++//         setProjectList(mapped);
+++//         return;
+++//       }
+++//       // Mode 1: Search by user
+++//       if (searchMode === 'person') {
+++//         const userProjects = await props.getProjectsByUsersName(debouncedSearchName);
+++
+++//         const filteredProjects = allReduxProjects.filter(p =>
+++//           userProjects.includes(p._id)
+++//         );
+++
+++//         const mapped = filteredProjects.map((project, index) => (
+++//           <Project
+++//             key={`${project._id}-${project.isActive}`}
+++//             index={index}
+++//             projectData={project}
+++//             onUpdateProject={onUpdateProject}
+++//             onClickArchiveBtn={onClickArchiveBtn}
+++//             onClickProjectStatusBtn={onClickProjectStatusBtn}
+++//             darkMode={darkMode}
+++//           />
+++//         ));
+++
+++//         setProjectList(mapped);
+++//         return;
+++//       }
+++
+++//       // Mode 2: Search by project name
+++//       if (searchMode === 'project') {
+++//         const filteredProjects = allReduxProjects.filter(p =>
+++//           p.projectName?.toLowerCase().includes(debouncedSearchName.toLowerCase())
+++//         );
+++
+++//         const mapped = filteredProjects.map((project, index) => (
+++//           <Project
+++//             key={`${project._id}-${project.isActive}`}
+++//             index={index}
+++//             projectData={project}
+++//             onUpdateProject={onUpdateProject}
+++//             onClickArchiveBtn={onClickArchiveBtn}
+++//             onClickProjectStatusBtn={onClickProjectStatusBtn}
+++//             darkMode={darkMode}
+++//           />
+++//         ));
+++
+++//         setProjectList(mapped);
+++//         return;
+++//       }
+++//     };
+++
+++//   fetchProjects();
+++// }, [debouncedSearchName, searchMode, allProjects, allReduxProjects]);
+++
++   useEffect(() => {
+ -  const fetchProjects = async () => {
+ -    if (!debouncedSearchName) {
+ -      setProjectList(allProjects);
+ -      return;
+ -    }
+++  let source = allReduxProjects;
++ 
+ -    // Mode 1: Search by user
+ -    if (searchMode === 'person') {
+ -      const userProjects = await props.getProjectsByUsersName(debouncedSearchName);
+ -
+ -      const filteredProjects = allReduxProjects.filter(p =>
+ -        userProjects.includes(p._id)
+ -      );
+ -
+ -      const mapped = filteredProjects.map((project, index) => (
+ -        <Project
+ -          key={`${project._id}-${project.isActive}`}
+ -          index={index}
+ -          projectData={project}
+ -          onUpdateProject={onUpdateProject}
+ -          onClickArchiveBtn={onClickArchiveBtn}
+ -          onClickProjectStatusBtn={onClickProjectStatusBtn}
+ -          darkMode={darkMode}
+ -        />
+ -      ));
+ -
+ -      setProjectList(mapped);
+ -      return;
+ -    }
+++  source = showArchived
+++    ? source.filter(p => p.isArchived)
+++    : source.filter(p => !p.isArchived);
++ 
+ -    // Mode 2: Search by project name
+ -    if (searchMode === 'project') {
+ -      const filteredProjects = allReduxProjects.filter(p =>
+ -        p.projectName?.toLowerCase().includes(debouncedSearchName.toLowerCase())
+ -      );
+ -
+ -      const mapped = filteredProjects.map((project, index) => (
+ -        <Project
+ -          key={`${project._id}-${project.isActive}`}
+ -          index={index}
+ -          projectData={project}
+ -          onUpdateProject={onUpdateProject}
+ -          onClickArchiveBtn={onClickArchiveBtn}
+ -          onClickProjectStatusBtn={onClickProjectStatusBtn}
+ -          darkMode={darkMode}
+ -        />
+ -      ));
+ -
+ -      setProjectList(mapped);
+ -      return;
+ -    }
+ -  };
+++  // Search by project name
+++  if (debouncedSearchName && searchMode === 'project') {
+++    source = source.filter(project =>
+++      (project.projectName || '')
+++        .toLowerCase()
+++        .includes(debouncedSearchName.toLowerCase())
+++    );
+++  }
+++
+++  const mapped = source.map((project, index) => (
+++    <Project
+++      key={project._id}
+++      index={index}
+++      projectData={project}
+++      onUpdateProject={onUpdateProject}
+++      onClickArchiveBtn={onClickArchiveBtn}
+++      onClickProjectStatusBtn={onClickProjectStatusBtn}
+++      darkMode={darkMode}
+++    />
+++  ));
++ 
+ -  fetchProjects();
+ -}, [debouncedSearchName, searchMode, allProjects, allReduxProjects]);
+++  setProjectList(mapped);
+++}, [
+++  allReduxProjects,
+++  showArchived,        // ✅ REQUIRED
+++  debouncedSearchName,
+++  searchMode,
+++  darkMode,
+++]);
+  
+    const handleSearchName = searchNameInput => {
+      setSearchName(searchNameInput);
+@@@ -1135,9 -322,12 +1264,13 @@@
+    return (
+      <>
+        <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
+ +        <div className={`${styles.container} py-3 border border-secondary rounded`} style={darkMode ? { backgroundColor: '#1B2A41' } : {}}>
++         <div
++           className="container py-3 mb-5 rounded"
++           style={darkMode ? { backgroundColor: '#1B2A41' } : {}}
++         >
+            {fetching || !fetched ? <Loading align="center" /> : null}
+-           <div className="d-flex justify-content-center align-items-center">
++           <div className="d-flex align-items-center flex-wrap w-100">
+              <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
+              <EditableInfoModal
+                areaName="projectsInfoModal"
+@@@ -1147,16 -337,31 +1280,41 @@@
+                role={role}
+              />
+              <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
+ +            {canPostProject ? <AddProject hasPermission={hasPermission} onAddNewProject={postProject} /> : null}
+ +          </div>
+ +          <SearchProjectByPerson 
+ +            onSearch={handleSearchName} 
+ +            handleFetchArchivedProjects={handleFetchArchivedProjects} 
+ +            showArchived ={showArchived} 
+ +            suggestions={suggestions}
+ +            onSelectSuggestion={handleSelectSuggestion}
+ +            />
+ +
++ 
++           {canPostProject ? <AddProject hasPermission={hasPermission} /> : null}
++         </div>
+ -        <div className="d-flex" style={{ gap: '10px' }}>
+ -          <SearchProjectByPerson onSearch={handleSearchName} searchMode={searchMode} />
+++        {/* <div className="d-flex" style={{ gap: '10px' }}> */}
+++          {/* <SearchProjectByPerson onSearch={handleSearchName} searchMode={searchMode} /> */}
++           <div className="input-group" style={{ maxWidth: '260px', maxHeight: '38px' }}>
++             <div className="input-group-prepend">
++               <span
++               className={`input-group-text ${darkMode ? 'bg-light-grey' : ''}`}
++               >
++                 Filter by
++               </span>
++             </div>
++             <select
++               value={searchMode}
++               onChange={e => setSearchMode(e.target.value)}
++               className={`form-control ${darkMode ? 'bg-white' : ''}`}
++               aria-label="Filter by"
++             >
++               <option value="person">User Name</option>
++               <option value="project">Project Name</option>
++             </select>
++           </div>
+ -        </div>
+++        {/* </div> */}
++         <div>
+          <table className="table table-bordered table-responsive-sm">
+            <thead>
+              <ProjectTableHeader
+diff --cc src/components/Projects/projects.module.css
+index dfbcf41ee,a15f1f3a5..000000000
+--- a/src/components/Projects/projects.module.css
++++ b/src/components/Projects/projects.module.css
+diff --cc yarn.lock
+index 8e9e5ec08,bb9169413..000000000
+--- a/yarn.lock
++++ b/yarn.lock
+@@@ -295,8 -802,16 +802,16 @@@
+      "@babel/types" "^7.28.2"
+  
+  "@babel/helpers@^7.27.6":
++   version "7.28.3"
++   resolved "https://registry.npmjs.org/@babel/helpers/-/helpers-7.28.3.tgz"
++   integrity sha512-PTNtvUQihsAsDHMOP5pfobP8C6CM4JWXmP8DrEIt46c3r2bf87Ua1zoqevsMo9g+tWDwgWrFP5EIxuBx5RudAw==
++   dependencies:
++     "@babel/template" "^7.27.2"
+ -    "@babel/types" "^7.27.6"
+++    "@babel/types" "^7.28.2"
++ 
++ "@babel/helpers@^7.28.4":
+    version "7.28.4"
+-   resolved "https://registry.npmjs.org/@babel/helpers/-/helpers-7.28.4.tgz"
++   resolved "https://registry.yarnpkg.com/@babel/helpers/-/helpers-7.28.4.tgz#fe07274742e95bdf7cf1443593eeb8926ab63827"
+    integrity sha512-HFN59MmQXGHVyYadKLVumYsA9dBFun/ldYxipEjzA4196jpLZd8UjEEBLkbEkvfYreDqJhZxYAWFPtrfhNpj4w==
+    dependencies:
+      "@babel/template" "^7.27.2"
+@@@ -358,14 -880,6 +880,14 @@@
+      "@babel/helper-plugin-utils" "^7.27.1"
+      "@babel/traverse" "^7.28.3"
+  
+ +"@babel/plugin-proposal-logical-assignment-operators@^7.20.7":
+ +  version "7.20.7"
+-   resolved "https://registry.npmjs.org/@babel/plugin-proposal-logical-assignment-operators/-/plugin-proposal-logical-assignment-operators-7.20.7.tgz"
+++  resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-logical-assignment-operators/-/plugin-proposal-logical-assignment-operators-7.20.7.tgz#dfbcaa8f7b4d37b51e8bfb46d94a5aea2bb89d83"
+ +  integrity sha512-y7C7cZgpMIjWlKE5T7eJwp+tnRYM89HmRvWM5EQuB5BoHEONjmQ8lSNmBUwOyy/GFRsohJED51YBF79hE1djug==
+ +  dependencies:
+ +    "@babel/helper-plugin-utils" "^7.20.2"
+ +    "@babel/plugin-syntax-logical-assignment-operators" "^7.10.4"
+ +
+  "@babel/plugin-proposal-private-property-in-object@7.21.0-placeholder-for-preset-env.2":
+    version "7.21.0-placeholder-for-preset-env.2"
+    resolved "https://registry.npmjs.org/@babel/plugin-proposal-private-property-in-object/-/plugin-proposal-private-property-in-object-7.21.0-placeholder-for-preset-env.2.tgz"
+@@@ -1088,9 -1620,17 +1628,17 @@@
+      "@babel/helper-string-parser" "^7.27.1"
+      "@babel/helper-validator-identifier" "^7.27.1"
+  
+ -"@babel/types@^7.28.4", "@babel/types@^7.28.5":
+++"@babel/types@^7.27.6", "@babel/types@^7.28.4", "@babel/types@^7.28.5":
++   version "7.28.5"
++   resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.28.5.tgz#10fc405f60897c35f07e85493c932c7b5ca0592b"
++   integrity sha512-qQ5m48eI/MFLQ5PxQj4PFaprjyCTLI37ElWMmNs0K8Lk3dVeOdNpB3ks8jc7yM5CDmVC73eMVk/trk3fgmrUpA==
++   dependencies:
++     "@babel/helper-string-parser" "^7.27.1"
++     "@babel/helper-validator-identifier" "^7.28.5"
++ 
+  "@bcoe/v8-coverage@^0.2.3":
+    version "0.2.3"
+-   resolved "https://registry.npmjs.org/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz"
++   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
+    integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
+  
+  "@bundled-es-modules/cookie@^2.0.1":
+@@@ -1401,7 -2114,7 +2122,19 @@@
+    dependencies:
+      eslint-visitor-keys "^3.4.3"
+  
+- "@eslint-community/regexpp@^4.10.0", "@eslint-community/regexpp@^4.6.1":
+++"@eslint-community/eslint-utils@^4.9.1":
+++  version "4.9.1"
+++  resolved "https://registry.yarnpkg.com/@eslint-community/eslint-utils/-/eslint-utils-4.9.1.tgz#4e90af67bc51ddee6cdef5284edf572ec376b595"
+++  integrity sha512-phrYmNiYppR7znFEdqgfWHXR6NCkZEK7hwWDHZUjit/2/U0r6XvkDl0SYnoM51Hq7FhCGdLDT6zxCCOY1hexsQ==
+++  dependencies:
+++    eslint-visitor-keys "^3.4.3"
+++
+++"@eslint-community/regexpp@^4.12.2":
+++  version "4.12.2"
+++  resolved "https://registry.yarnpkg.com/@eslint-community/regexpp/-/regexpp-4.12.2.tgz#bccdf615bcf7b6e8db830ec0b8d21c9a25de597b"
+++  integrity sha512-EriSTlt5OC9/7SXkRSCAhfSxxoSUgBm33OH+IkwbdpgoqsSsUg7y3uh+IICI/Qg4BBWr3U2i39RpmycbxMq4ew==
+++
++ "@eslint-community/regexpp@^4.6.1":
+    version "4.12.1"
+    resolved "https://registry.npmjs.org/@eslint-community/regexpp/-/regexpp-4.12.1.tgz"
+    integrity sha512-CCZCDJuduB9OUkFkY2IgppNZMi2lBQgD2qzwXkEia16cge2pijY/aXi96CJMquDMn3nJdlPV1A5KrJEXwfLNzQ==
+@@@ -1441,9 -2154,9 +2174,9 @@@
+    resolved "https://registry.npmjs.org/@eslint/js/-/js-8.57.1.tgz"
+    integrity sha512-d9zaMRSTIKDLhctzH12MtXvJKSSUhaHcjV+2Z+GK+EEY7XKpP5yR4x+N3TAcHTcu963nIr+TMcCb4DBCYX1z6Q==
+  
+--"@floating-ui/core@^1.7.3":
+++"@floating-ui/core@^1.7.2":
+    version "1.7.3"
+--  resolved "https://registry.npmjs.org/@floating-ui/core/-/core-1.7.3.tgz"
+++  resolved "https://registry.yarnpkg.com/@floating-ui/core/-/core-1.7.3.tgz#462d722f001e23e46d86fd2bd0d21b7693ccb8b7"
+    integrity sha512-sGnvb5dmrJaKEZ+LDIpguvdX3bDlEllmv4/ClQ9awcmCZrlx5jQyyMWFM5kBI+EyNOCDDiKk8il0zeuX3Zlg/w==
+    dependencies:
+      "@floating-ui/utils" "^0.2.10"
+@@@ -1604,10 -2317,10 +2337,15 @@@
+      wrap-ansi "^6.2.0"
+      yoctocolors-cjs "^2.1.2"
+  
+--"@inquirer/figures@^1.0.13":
+--  version "1.0.13"
+--  resolved "https://registry.npmjs.org/@inquirer/figures/-/figures-1.0.13.tgz"
+--  integrity sha512-lGPVU3yO9ZNqA7vTYz26jny41lE7yoQansmqdMLBEfqaGsmdg7V3W9mK9Pvb5IL4EVZ9GnSDGMO/cJXud5dMaw==
+++"@inquirer/figures@^1.0.12":
+++  version "1.0.15"
+++  resolved "https://registry.yarnpkg.com/@inquirer/figures/-/figures-1.0.15.tgz#dbb49ed80df11df74268023b496ac5d9acd22b3a"
+++  integrity sha512-t2IEY+unGHOzAaVM5Xx6DEWKeXlDDcNPeDyUpsRc6CUhBfU3VQOEl+Vssh7VNp1dR8MdUJBWhuObjXCsVpjN5g==
+++
+++"@inquirer/type@^3.0.7":
+++  version "3.0.10"
+++  resolved "https://registry.yarnpkg.com/@inquirer/type/-/type-3.0.10.tgz#11ed564ec78432a200ea2601a212d24af8150d50"
+++  integrity sha512-BvziSRxfz5Ov8ch0z/n3oijRSEcEsHnhggm4xFZe93DHcUCTlutlq9Ox4SVENAfcRD22UQq7T/atg9Wr3k09eA==
+  
+  "@inquirer/type@^3.0.8":
+    version "3.0.8"
+@@@ -2145,16 -2874,29 +2899,30 @@@
+      prop-types "^15.8.1"
+      react-transition-group "^4.4.5"
+  
+- "@mui/x-internals@8.11.2":
+-   version "8.11.2"
+-   resolved "https://registry.npmjs.org/@mui/x-internals/-/x-internals-8.11.2.tgz"
+-   integrity sha512-3BFZ0Njgih+eWQBzSsdKEkRMlHtKRGFWz+/CGUrSBb5IApO0apkUSvG4v5augNYASsjksqWOXVlds7Wwznd0Lg==
++ "@mui/x-internals@8.11.0":
++   version "8.11.0"
++   resolved "https://registry.npmjs.org/@mui/x-internals/-/x-internals-8.11.0.tgz"
++   integrity sha512-SFPMLMkNWSEOxIgKMQ9RqEL01klb1lwIdd4f4d18fJNrJOlTxeIDWd6eVllS5sRLdKVsE5FC1802V+yLe6W+pQ==
+    dependencies:
+      "@babel/runtime" "^7.28.2"
+-     "@mui/utils" "^7.3.2"
++     "@mui/utils" "^7.3.1"
+      reselect "^5.1.1"
+ +    use-sync-external-store "^1.5.0"
+  
++ "@naoak/workerize-transferable@^0.1.0":
++   version "0.1.0"
++   resolved "https://registry.yarnpkg.com/@naoak/workerize-transferable/-/workerize-transferable-0.1.0.tgz#864cc8241b977bffd8661c0be1441da9b4bfb633"
++   integrity sha512-fDLfuP71IPNP5+zSfxFb52OHgtjZvauRJWbVnpzQ7G7BjcbLjTny0OW1d3ZO806XKpLWNKmeeW3MhE0sy8iwYQ==
++ 
++ "@napi-rs/wasm-runtime@^0.2.11":
++   version "0.2.12"
++   resolved "https://registry.yarnpkg.com/@napi-rs/wasm-runtime/-/wasm-runtime-0.2.12.tgz#3e78a8b96e6c33a6c517e1894efbd5385a7cb6f2"
++   integrity sha512-ZVWUcfwY4E/yPitQJl481FjFo3K22D6qF0DuFH6Y/nbnE11GY5uguDxZMGXPQ8WQ0128MXQD7TnfHyK4oWoIJQ==
++   dependencies:
++     "@emnapi/core" "^1.4.3"
++     "@emnapi/runtime" "^1.4.3"
++     "@tybys/wasm-util" "^0.10.0"
++ 
+  "@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1":
+    version "5.1.1-v1"
+    resolved "https://registry.npmjs.org/@nicolo-ribaudo/eslint-scope-5-internals/-/eslint-scope-5-internals-5.1.1-v1.tgz"
+@@@ -2901,49 -3882,15 +3907,49 @@@
+    dependencies:
+      "@types/yargs-parser" "*"
+  
+ +"@typescript-eslint/eslint-plugin@^8.44.1":
+-   version "8.44.1"
+-   resolved "https://registry.npmjs.org/@typescript-eslint/eslint-plugin/-/eslint-plugin-8.44.1.tgz"
+-   integrity sha512-molgphGqOBT7t4YKCSkbasmu1tb1MgrZ2szGzHbclF7PNmOkSTQVHy+2jXOSnxvR3+Xe1yySHFZoqMpz3TfQsw==
+-   dependencies:
+-     "@eslint-community/regexpp" "^4.10.0"
+-     "@typescript-eslint/scope-manager" "8.44.1"
+-     "@typescript-eslint/type-utils" "8.44.1"
+-     "@typescript-eslint/utils" "8.44.1"
+-     "@typescript-eslint/visitor-keys" "8.44.1"
+-     graphemer "^1.4.0"
+-     ignore "^7.0.0"
+++  version "8.52.0"
+++  resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-8.52.0.tgz#9a9f1d2ee974ed77a8b1bda94e77123f697ee8b4"
+++  integrity sha512-okqtOgqu2qmZJ5iN4TWlgfF171dZmx2FzdOv2K/ixL2LZWDStL8+JgQerI2sa8eAEfoydG9+0V96m7V+P8yE1Q==
+++  dependencies:
+++    "@eslint-community/regexpp" "^4.12.2"
+++    "@typescript-eslint/scope-manager" "8.52.0"
+++    "@typescript-eslint/type-utils" "8.52.0"
+++    "@typescript-eslint/utils" "8.52.0"
+++    "@typescript-eslint/visitor-keys" "8.52.0"
+++    ignore "^7.0.5"
+ +    natural-compare "^1.4.0"
+-     ts-api-utils "^2.1.0"
+++    ts-api-utils "^2.4.0"
+ +
+ +"@typescript-eslint/parser@^8.44.1":
+-   version "8.44.1"
+-   resolved "https://registry.npmjs.org/@typescript-eslint/parser/-/parser-8.44.1.tgz"
+-   integrity sha512-EHrrEsyhOhxYt8MTg4zTF+DJMuNBzWwgvvOYNj/zm1vnaD/IC5zCXFehZv94Piqa2cRFfXrTFxIvO95L7Qc/cw==
+-   dependencies:
+-     "@typescript-eslint/scope-manager" "8.44.1"
+-     "@typescript-eslint/types" "8.44.1"
+-     "@typescript-eslint/typescript-estree" "8.44.1"
+-     "@typescript-eslint/visitor-keys" "8.44.1"
+-     debug "^4.3.4"
+++  version "8.52.0"
+++  resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-8.52.0.tgz#9fae9f5f13ebb1c8f31a50c34381bfd6bf96a05f"
+++  integrity sha512-iIACsx8pxRnguSYhHiMn2PvhvfpopO9FXHyn1mG5txZIsAaB6F0KwbFnUQN3KCiG3Jcuad/Cao2FAs1Wp7vAyg==
+++  dependencies:
+++    "@typescript-eslint/scope-manager" "8.52.0"
+++    "@typescript-eslint/types" "8.52.0"
+++    "@typescript-eslint/typescript-estree" "8.52.0"
+++    "@typescript-eslint/visitor-keys" "8.52.0"
+++    debug "^4.4.3"
+ +
+- "@typescript-eslint/project-service@8.44.1":
+-   version "8.44.1"
+-   resolved "https://registry.npmjs.org/@typescript-eslint/project-service/-/project-service-8.44.1.tgz"
+-   integrity sha512-ycSa60eGg8GWAkVsKV4E6Nz33h+HjTXbsDT4FILyL8Obk5/mx4tbvCNsLf9zret3ipSumAOG89UcCs/KRaKYrA==
++ "@typescript-eslint/project-service@8.41.0":
++   version "8.41.0"
++   resolved "https://registry.npmjs.org/@typescript-eslint/project-service/-/project-service-8.41.0.tgz"
++   integrity sha512-b8V9SdGBQzQdjJ/IO3eDifGpDBJfvrNTp2QD9P2BeqWTGrRibgfgIlBSw6z3b6R7dPzg752tOs4u/7yCLxksSQ==
+    dependencies:
+-     "@typescript-eslint/tsconfig-utils" "^8.44.1"
+-     "@typescript-eslint/types" "^8.44.1"
++     "@typescript-eslint/tsconfig-utils" "^8.41.0"
++     "@typescript-eslint/types" "^8.41.0"
+      debug "^4.3.4"
+  
+- "@typescript-eslint/scope-manager@^8.15.0", "@typescript-eslint/scope-manager@8.44.1":
+-   version "8.44.1"
+-   resolved "https://registry.npmjs.org/@typescript-eslint/scope-manager/-/scope-manager-8.44.1.tgz"
+-   integrity sha512-NdhWHgmynpSvyhchGLXh+w12OMT308Gm25JoRIyTZqEbApiBiQHD/8xgb6LqCWCFcxFtWwaVdFsLPQI3jvhywg==
+++"@typescript-eslint/project-service@8.52.0":
+++  version "8.52.0"
+++  resolved "https://registry.yarnpkg.com/@typescript-eslint/project-service/-/project-service-8.52.0.tgz#5fb4c16af4eda6d74c70cbc62f5d3f77b96e4cbe"
+++  integrity sha512-xD0MfdSdEmeFa3OmVqonHi+Cciab96ls1UhIF/qX/O/gPu5KXD0bY9lu33jj04fjzrXHcuvjBcBC+D3SNSadaw==
+ +  dependencies:
+-     "@typescript-eslint/types" "8.44.1"
+-     "@typescript-eslint/visitor-keys" "8.44.1"
+++    "@typescript-eslint/tsconfig-utils" "^8.52.0"
+++    "@typescript-eslint/types" "^8.52.0"
+++    debug "^4.4.3"
+ +
+  "@typescript-eslint/scope-manager@7.18.0":
+    version "7.18.0"
+    resolved "https://registry.npmjs.org/@typescript-eslint/scope-manager/-/scope-manager-7.18.0.tgz"
+@@@ -2952,32 -3899,29 +3958,58 @@@
+      "@typescript-eslint/types" "7.18.0"
+      "@typescript-eslint/visitor-keys" "7.18.0"
+  
+- "@typescript-eslint/tsconfig-utils@^8.44.1", "@typescript-eslint/tsconfig-utils@8.44.1":
+-   version "8.44.1"
+-   resolved "https://registry.npmjs.org/@typescript-eslint/tsconfig-utils/-/tsconfig-utils-8.44.1.tgz"
+-   integrity sha512-B5OyACouEjuIvof3o86lRMvyDsFwZm+4fBOqFHccIctYgBjqR3qT39FBYGN87khcgf0ExpdCBeGKpKRhSFTjKQ==
++ "@typescript-eslint/scope-manager@8.41.0", "@typescript-eslint/scope-manager@^8.15.0":
++   version "8.41.0"
++   resolved "https://registry.npmjs.org/@typescript-eslint/scope-manager/-/scope-manager-8.41.0.tgz"
++   integrity sha512-n6m05bXn/Cd6DZDGyrpXrELCPVaTnLdPToyhBoFkLIMznRUQUEQdSp96s/pcWSQdqOhrgR1mzJ+yItK7T+WPMQ==
++   dependencies:
++     "@typescript-eslint/types" "8.41.0"
++     "@typescript-eslint/visitor-keys" "8.41.0"
+  
+- "@typescript-eslint/type-utils@8.44.1":
+-   version "8.44.1"
+-   resolved "https://registry.npmjs.org/@typescript-eslint/type-utils/-/type-utils-8.44.1.tgz"
+-   integrity sha512-KdEerZqHWXsRNKjF9NYswNISnFzXfXNDfPxoTh7tqohU/PRIbwTmsjGK6V9/RTYWau7NZvfo52lgVk+sJh0K3g==
+++"@typescript-eslint/scope-manager@8.52.0":
+++  version "8.52.0"
+++  resolved "https://registry.yarnpkg.com/@typescript-eslint/scope-manager/-/scope-manager-8.52.0.tgz#9884ff690fad30380ccabfb08af1ac200af6b4e5"
+++  integrity sha512-ixxqmmCcc1Nf8S0mS0TkJ/3LKcC8mruYJPOU6Ia2F/zUUR4pApW7LzrpU3JmtePbRUTes9bEqRc1Gg4iyRnDzA==
+ +  dependencies:
+-     "@typescript-eslint/types" "8.44.1"
+-     "@typescript-eslint/typescript-estree" "8.44.1"
+-     "@typescript-eslint/utils" "8.44.1"
+-     debug "^4.3.4"
+-     ts-api-utils "^2.1.0"
+++    "@typescript-eslint/types" "8.52.0"
+++    "@typescript-eslint/visitor-keys" "8.52.0"
+ +
+- "@typescript-eslint/types@^8.44.1", "@typescript-eslint/types@8.44.1":
+-   version "8.44.1"
+-   resolved "https://registry.npmjs.org/@typescript-eslint/types/-/types-8.44.1.tgz"
+-   integrity sha512-Lk7uj7y9uQUOEguiDIDLYLJOrYHQa7oBiURYVFqIpGxclAFQ78f6VUOM8lI2XEuNOKNB7XuvM2+2cMXAoq4ALQ==
++ "@typescript-eslint/tsconfig-utils@8.41.0", "@typescript-eslint/tsconfig-utils@^8.41.0":
++   version "8.41.0"
++   resolved "https://registry.npmjs.org/@typescript-eslint/tsconfig-utils/-/tsconfig-utils-8.41.0.tgz"
++   integrity sha512-TDhxYFPUYRFxFhuU5hTIJk+auzM/wKvWgoNYOPcOf6i4ReYlOoYN8q1dV5kOTjNQNJgzWN3TUUQMtlLOcUgdUw==
++ 
+++"@typescript-eslint/tsconfig-utils@8.52.0", "@typescript-eslint/tsconfig-utils@^8.52.0":
+++  version "8.52.0"
+++  resolved "https://registry.yarnpkg.com/@typescript-eslint/tsconfig-utils/-/tsconfig-utils-8.52.0.tgz#0296751c22ed05c83787a6eaec65ae221bd8b8ed"
+++  integrity sha512-jl+8fzr/SdzdxWJznq5nvoI7qn2tNYV/ZBAEcaFMVXf+K6jmXvAFrgo/+5rxgnL152f//pDEAYAhhBAZGrVfwg==
+++
+++"@typescript-eslint/type-utils@8.52.0":
+++  version "8.52.0"
+++  resolved "https://registry.yarnpkg.com/@typescript-eslint/type-utils/-/type-utils-8.52.0.tgz#6e554113f8a074cf9b2faa818d2ebfccb867d6c5"
+++  integrity sha512-JD3wKBRWglYRQkAtsyGz1AewDu3mTc7NtRjR/ceTyGoPqmdS5oCdx/oZMWD5Zuqmo6/MpsYs0wp6axNt88/2EQ==
+++  dependencies:
+++    "@typescript-eslint/types" "8.52.0"
+++    "@typescript-eslint/typescript-estree" "8.52.0"
+++    "@typescript-eslint/utils" "8.52.0"
+++    debug "^4.4.3"
+++    ts-api-utils "^2.4.0"
+ +
+  "@typescript-eslint/types@7.18.0":
+    version "7.18.0"
+    resolved "https://registry.npmjs.org/@typescript-eslint/types/-/types-7.18.0.tgz"
+    integrity sha512-iZqi+Ds1y4EDYUtlOOC+aUmxnE9xS/yCigkjA7XpTKV6nCBd3Hp/PRGGmdwnfkV2ThMyYldP1wRpm/id99spTQ==
+  
++ "@typescript-eslint/types@8.41.0", "@typescript-eslint/types@^8.41.0":
++   version "8.41.0"
++   resolved "https://registry.npmjs.org/@typescript-eslint/types/-/types-8.41.0.tgz"
++   integrity sha512-9EwxsWdVqh42afLbHP90n2VdHaWU/oWgbH2P0CfcNfdKL7CuKpwMQGjwev56vWu9cSKU7FWSu6r9zck6CVfnag==
++ 
+++"@typescript-eslint/types@8.52.0", "@typescript-eslint/types@^8.52.0":
+++  version "8.52.0"
+++  resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-8.52.0.tgz#1eb0a16b324824bc23b89d109a267c38c9213c4a"
+++  integrity sha512-LWQV1V4q9V4cT4H5JCIx3481iIFxH1UkVk+ZkGGAV1ZGcjGI9IoFOfg3O6ywz8QqCDEp7Inlg6kovMofsNRaGg==
+++
+  "@typescript-eslint/typescript-estree@7.18.0":
+    version "7.18.0"
+    resolved "https://registry.npmjs.org/@typescript-eslint/typescript-estree/-/typescript-estree-7.18.0.tgz"
+@@@ -3008,6 -3952,6 +4040,31 @@@
+      semver "^7.6.0"
+      ts-api-utils "^2.1.0"
+  
+++"@typescript-eslint/typescript-estree@8.52.0":
+++  version "8.52.0"
+++  resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-8.52.0.tgz#2ad7721c671be2127951286cb7f44c4ce55b0591"
+++  integrity sha512-XP3LClsCc0FsTK5/frGjolyADTh3QmsLp6nKd476xNI9CsSsLnmn4f0jrzNoAulmxlmNIpeXuHYeEQv61Q6qeQ==
+++  dependencies:
+++    "@typescript-eslint/project-service" "8.52.0"
+++    "@typescript-eslint/tsconfig-utils" "8.52.0"
+++    "@typescript-eslint/types" "8.52.0"
+++    "@typescript-eslint/visitor-keys" "8.52.0"
+++    debug "^4.4.3"
+++    minimatch "^9.0.5"
+++    semver "^7.7.3"
+++    tinyglobby "^0.2.15"
+++    ts-api-utils "^2.4.0"
+++
+++"@typescript-eslint/utils@8.52.0":
+++  version "8.52.0"
+++  resolved "https://registry.yarnpkg.com/@typescript-eslint/utils/-/utils-8.52.0.tgz#b249be8264899b80d996fa353b4b84da4662f962"
+++  integrity sha512-wYndVMWkweqHpEpwPhwqE2lnD2DxC6WVLupU/DOt/0/v+/+iQbbzO3jOHjmBMnhu0DgLULvOaU4h4pwHYi2oRQ==
+++  dependencies:
+++    "@eslint-community/eslint-utils" "^4.9.1"
+++    "@typescript-eslint/scope-manager" "8.52.0"
+++    "@typescript-eslint/types" "8.52.0"
+++    "@typescript-eslint/typescript-estree" "8.52.0"
+++
+  "@typescript-eslint/utils@^7.7.1":
+    version "7.18.0"
+    resolved "https://registry.npmjs.org/@typescript-eslint/utils/-/utils-7.18.0.tgz"
+@@@ -3036,22 -3980,114 +4093,122 @@@
+      "@typescript-eslint/types" "7.18.0"
+      eslint-visitor-keys "^3.4.3"
+  
+- "@typescript-eslint/visitor-keys@8.44.1":
+-   version "8.44.1"
+-   resolved "https://registry.npmjs.org/@typescript-eslint/visitor-keys/-/visitor-keys-8.44.1.tgz"
+-   integrity sha512-576+u0QD+Jp3tZzvfRfxon0EA2lzcDt3lhUbsC6Lgzy9x2VR4E+JUiNyGHi5T8vk0TV+fpJ5GLG1JsJuWCaKhw==
++ "@typescript-eslint/visitor-keys@8.41.0":
++   version "8.41.0"
++   resolved "https://registry.npmjs.org/@typescript-eslint/visitor-keys/-/visitor-keys-8.41.0.tgz"
++   integrity sha512-+GeGMebMCy0elMNg67LRNoVnUFPIm37iu5CmHESVx56/9Jsfdpsvbv605DQ81Pi/x11IdKUsS5nzgTYbCQU9fg==
+    dependencies:
+-     "@typescript-eslint/types" "8.44.1"
++     "@typescript-eslint/types" "8.41.0"
++     eslint-visitor-keys "^4.2.1"
++ 
+++"@typescript-eslint/visitor-keys@8.52.0":
+++  version "8.52.0"
+++  resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-8.52.0.tgz#50361c48a6302676230fe498f80f6decce4bf673"
+++  integrity sha512-ink3/Zofus34nmBsPjow63FP5M7IGff0RKAgqR6+CFpdk22M7aLwC9gOcLGYqr7MczLPzZVERW9hRog3O4n1sQ==
+++  dependencies:
+++    "@typescript-eslint/types" "8.52.0"
+ +    eslint-visitor-keys "^4.2.1"
+ +
+  "@ungap/structured-clone@^1.2.0", "@ungap/structured-clone@^1.3.0":
+    version "1.3.0"
+-   resolved "https://registry.npmjs.org/@ungap/structured-clone/-/structured-clone-1.3.0.tgz"
++   resolved "https://registry.yarnpkg.com/@ungap/structured-clone/-/structured-clone-1.3.0.tgz#d06bbb384ebcf6c505fde1c3d0ed4ddffe0aaff8"
+    integrity sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==
+  
++ "@unrs/resolver-binding-android-arm-eabi@1.11.1":
++   version "1.11.1"
++   resolved "https://registry.yarnpkg.com/@unrs/resolver-binding-android-arm-eabi/-/resolver-binding-android-arm-eabi-1.11.1.tgz#9f5b04503088e6a354295e8ea8fe3cb99e43af81"
++   integrity sha512-ppLRUgHVaGRWUx0R0Ut06Mjo9gBaBkg3v/8AxusGLhsIotbBLuRk51rAzqLC8gq6NyyAojEXglNjzf6R948DNw==
++ 
++ "@unrs/resolver-binding-android-arm64@1.11.1":
++   version "1.11.1"
++   resolved "https://registry.yarnpkg.com/@unrs/resolver-binding-android-arm64/-/resolver-binding-android-arm64-1.11.1.tgz#7414885431bd7178b989aedc4d25cccb3865bc9f"
++   integrity sha512-lCxkVtb4wp1v+EoN+HjIG9cIIzPkX5OtM03pQYkG+U5O/wL53LC4QbIeazgiKqluGeVEeBlZahHalCaBvU1a2g==
++ 
++ "@unrs/resolver-binding-darwin-arm64@1.11.1":
++   version "1.11.1"
++   resolved "https://registry.yarnpkg.com/@unrs/resolver-binding-darwin-arm64/-/resolver-binding-darwin-arm64-1.11.1.tgz#b4a8556f42171fb9c9f7bac8235045e82aa0cbdf"
++   integrity sha512-gPVA1UjRu1Y/IsB/dQEsp2V1pm44Of6+LWvbLc9SDk1c2KhhDRDBUkQCYVWe6f26uJb3fOK8saWMgtX8IrMk3g==
++ 
++ "@unrs/resolver-binding-darwin-x64@1.11.1":
++   version "1.11.1"
++   resolved "https://registry.yarnpkg.com/@unrs/resolver-binding-darwin-x64/-/resolver-binding-darwin-x64-1.11.1.tgz#fd4d81257b13f4d1a083890a6a17c00de571f0dc"
++   integrity sha512-cFzP7rWKd3lZaCsDze07QX1SC24lO8mPty9vdP+YVa3MGdVgPmFc59317b2ioXtgCMKGiCLxJ4HQs62oz6GfRQ==
++ 
++ "@unrs/resolver-binding-freebsd-x64@1.11.1":
++   version "1.11.1"
++   resolved "https://registry.yarnpkg.com/@unrs/resolver-binding-freebsd-x64/-/resolver-binding-freebsd-x64-1.11.1.tgz#d2513084d0f37c407757e22f32bd924a78cfd99b"
++   integrity sha512-fqtGgak3zX4DCB6PFpsH5+Kmt/8CIi4Bry4rb1ho6Av2QHTREM+47y282Uqiu3ZRF5IQioJQ5qWRV6jduA+iGw==
++ 
++ "@unrs/resolver-binding-linux-arm-gnueabihf@1.11.1":
++   version "1.11.1"
++   resolved "https://registry.yarnpkg.com/@unrs/resolver-binding-linux-arm-gnueabihf/-/resolver-binding-linux-arm-gnueabihf-1.11.1.tgz#844d2605d057488d77fab09705f2866b86164e0a"
++   integrity sha512-u92mvlcYtp9MRKmP+ZvMmtPN34+/3lMHlyMj7wXJDeXxuM0Vgzz0+PPJNsro1m3IZPYChIkn944wW8TYgGKFHw==
++ 
++ "@unrs/resolver-binding-linux-arm-musleabihf@1.11.1":
++   version "1.11.1"
++   resolved "https://registry.yarnpkg.com/@unrs/resolver-binding-linux-arm-musleabihf/-/resolver-binding-linux-arm-musleabihf-1.11.1.tgz#204892995cefb6bd1d017d52d097193bc61ddad3"
++   integrity sha512-cINaoY2z7LVCrfHkIcmvj7osTOtm6VVT16b5oQdS4beibX2SYBwgYLmqhBjA1t51CarSaBuX5YNsWLjsqfW5Cw==
++ 
++ "@unrs/resolver-binding-linux-arm64-gnu@1.11.1":
++   version "1.11.1"
++   resolved "https://registry.yarnpkg.com/@unrs/resolver-binding-linux-arm64-gnu/-/resolver-binding-linux-arm64-gnu-1.11.1.tgz#023eb0c3aac46066a10be7a3f362e7b34f3bdf9d"
++   integrity sha512-34gw7PjDGB9JgePJEmhEqBhWvCiiWCuXsL9hYphDF7crW7UgI05gyBAi6MF58uGcMOiOqSJ2ybEeCvHcq0BCmQ==
++ 
++ "@unrs/resolver-binding-linux-arm64-musl@1.11.1":
++   version "1.11.1"
++   resolved "https://registry.yarnpkg.com/@unrs/resolver-binding-linux-arm64-musl/-/resolver-binding-linux-arm64-musl-1.11.1.tgz#9e6f9abb06424e3140a60ac996139786f5d99be0"
++   integrity sha512-RyMIx6Uf53hhOtJDIamSbTskA99sPHS96wxVE/bJtePJJtpdKGXO1wY90oRdXuYOGOTuqjT8ACccMc4K6QmT3w==
++ 
++ "@unrs/resolver-binding-linux-ppc64-gnu@1.11.1":
++   version "1.11.1"
++   resolved "https://registry.yarnpkg.com/@unrs/resolver-binding-linux-ppc64-gnu/-/resolver-binding-linux-ppc64-gnu-1.11.1.tgz#b111417f17c9d1b02efbec8e08398f0c5527bb44"
++   integrity sha512-D8Vae74A4/a+mZH0FbOkFJL9DSK2R6TFPC9M+jCWYia/q2einCubX10pecpDiTmkJVUH+y8K3BZClycD8nCShA==
++ 
++ "@unrs/resolver-binding-linux-riscv64-gnu@1.11.1":
++   version "1.11.1"
++   resolved "https://registry.yarnpkg.com/@unrs/resolver-binding-linux-riscv64-gnu/-/resolver-binding-linux-riscv64-gnu-1.11.1.tgz#92ffbf02748af3e99873945c9a8a5ead01d508a9"
++   integrity sha512-frxL4OrzOWVVsOc96+V3aqTIQl1O2TjgExV4EKgRY09AJ9leZpEg8Ak9phadbuX0BA4k8U5qtvMSQQGGmaJqcQ==
++ 
++ "@unrs/resolver-binding-linux-riscv64-musl@1.11.1":
++   version "1.11.1"
++   resolved "https://registry.yarnpkg.com/@unrs/resolver-binding-linux-riscv64-musl/-/resolver-binding-linux-riscv64-musl-1.11.1.tgz#0bec6f1258fc390e6b305e9ff44256cb207de165"
++   integrity sha512-mJ5vuDaIZ+l/acv01sHoXfpnyrNKOk/3aDoEdLO/Xtn9HuZlDD6jKxHlkN8ZhWyLJsRBxfv9GYM2utQ1SChKew==
++ 
++ "@unrs/resolver-binding-linux-s390x-gnu@1.11.1":
++   version "1.11.1"
++   resolved "https://registry.yarnpkg.com/@unrs/resolver-binding-linux-s390x-gnu/-/resolver-binding-linux-s390x-gnu-1.11.1.tgz#577843a084c5952f5906770633ccfb89dac9bc94"
++   integrity sha512-kELo8ebBVtb9sA7rMe1Cph4QHreByhaZ2QEADd9NzIQsYNQpt9UkM9iqr2lhGr5afh885d/cB5QeTXSbZHTYPg==
++ 
++ "@unrs/resolver-binding-linux-x64-gnu@1.11.1":
++   version "1.11.1"
++   resolved "https://registry.yarnpkg.com/@unrs/resolver-binding-linux-x64-gnu/-/resolver-binding-linux-x64-gnu-1.11.1.tgz#36fb318eebdd690f6da32ac5e0499a76fa881935"
++   integrity sha512-C3ZAHugKgovV5YvAMsxhq0gtXuwESUKc5MhEtjBpLoHPLYM+iuwSj3lflFwK3DPm68660rZ7G8BMcwSro7hD5w==
++ 
++ "@unrs/resolver-binding-linux-x64-musl@1.11.1":
++   version "1.11.1"
++   resolved "https://registry.yarnpkg.com/@unrs/resolver-binding-linux-x64-musl/-/resolver-binding-linux-x64-musl-1.11.1.tgz#bfb9af75f783f98f6a22c4244214efe4df1853d6"
++   integrity sha512-rV0YSoyhK2nZ4vEswT/QwqzqQXw5I6CjoaYMOX0TqBlWhojUf8P94mvI7nuJTeaCkkds3QE4+zS8Ko+GdXuZtA==
++ 
++ "@unrs/resolver-binding-wasm32-wasi@1.11.1":
++   version "1.11.1"
++   resolved "https://registry.yarnpkg.com/@unrs/resolver-binding-wasm32-wasi/-/resolver-binding-wasm32-wasi-1.11.1.tgz#752c359dd875684b27429500d88226d7cc72f71d"
++   integrity sha512-5u4RkfxJm+Ng7IWgkzi3qrFOvLvQYnPBmjmZQ8+szTK/b31fQCnleNl1GgEt7nIsZRIf5PLhPwT0WM+q45x/UQ==
++   dependencies:
++     "@napi-rs/wasm-runtime" "^0.2.11"
++ 
++ "@unrs/resolver-binding-win32-arm64-msvc@1.11.1":
++   version "1.11.1"
++   resolved "https://registry.yarnpkg.com/@unrs/resolver-binding-win32-arm64-msvc/-/resolver-binding-win32-arm64-msvc-1.11.1.tgz#ce5735e600e4c2fbb409cd051b3b7da4a399af35"
++   integrity sha512-nRcz5Il4ln0kMhfL8S3hLkxI85BXs3o8EYoattsJNdsX4YUU89iOkVn7g0VHSRxFuVMdM4Q1jEpIId1Ihim/Uw==
++ 
++ "@unrs/resolver-binding-win32-ia32-msvc@1.11.1":
++   version "1.11.1"
++   resolved "https://registry.yarnpkg.com/@unrs/resolver-binding-win32-ia32-msvc/-/resolver-binding-win32-ia32-msvc-1.11.1.tgz#72fc57bc7c64ec5c3de0d64ee0d1810317bc60a6"
++   integrity sha512-DCEI6t5i1NmAZp6pFonpD5m7i6aFrpofcp4LA2i8IIq60Jyo28hamKBxNrZcyOwVOZkgsRp9O2sXWBWP8MnvIQ==
++ 
+  "@unrs/resolver-binding-win32-x64-msvc@1.11.1":
+    version "1.11.1"
+-   resolved "https://registry.npmjs.org/@unrs/resolver-binding-win32-x64-msvc/-/resolver-binding-win32-x64-msvc-1.11.1.tgz"
++   resolved "https://registry.yarnpkg.com/@unrs/resolver-binding-win32-x64-msvc/-/resolver-binding-win32-x64-msvc-1.11.1.tgz#538b1e103bf8d9864e7b85cc96fa8d6fb6c40777"
+    integrity sha512-lrW200hZdbfRtztbygyaq/6jP6AKE8qQN2KvPcJ+x7wiD038YtnYtZ82IMNJ69GJibV7bwL3y9FgK+5w/pYt6g==
+  
+  "@vitejs/plugin-react@^4.5.0":
+@@@ -5815,11 -6942,16 +7058,16 @@@ fb-watchman@^2.0.0, fb-watchman@^2.0.2
+    dependencies:
+      bser "2.1.1"
+  
+--fdir@^6.4.4:
+++fdir@^6.4.4, fdir@^6.5.0:
+    version "6.5.0"
+--  resolved "https://registry.npmjs.org/fdir/-/fdir-6.5.0.tgz"
+++  resolved "https://registry.yarnpkg.com/fdir/-/fdir-6.5.0.tgz#ed2ab967a331ade62f18d077dae192684d50d350"
+    integrity sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg==
+  
++ fecha@^4.2.1:
++   version "4.2.3"
++   resolved "https://registry.yarnpkg.com/fecha/-/fecha-4.2.3.tgz#4d9ccdbc61e8629b259fdca67e65891448d569fd"
++   integrity sha512-OP2IUU6HeYKJi3i0z4A19kHMQoLVs4Hc+DPqqxI2h/DPZHTm/vjsfC6P0b4jCMy14XizLBqvndQ+UilD7707Jw==
++ 
+  fflate@^0.7.3:
+    version "0.7.4"
+    resolved "https://registry.npmjs.org/fflate/-/fflate-0.7.4.tgz"
+@@@ -5920,10 -7057,10 +7173,10 @@@ foreground-child@^3.1.0
+      cross-spawn "^7.0.6"
+      signal-exit "^4.0.1"
+  
+--form-data@^4.0.4:
+--  version "4.0.4"
+--  resolved "https://registry.npmjs.org/form-data/-/form-data-4.0.4.tgz"
+--  integrity sha512-KrGhL9Q4zjj0kiUt5OO4Mr/A/jlI2jDYs5eHBpYHPcBEVSiipAvn2Ko2HnPe20rmcuuvMHNdZFp+4IlGTMF0Ow==
+++form-data@^4.0.0:
+++  version "4.0.5"
+++  resolved "https://registry.yarnpkg.com/form-data/-/form-data-4.0.5.tgz#b49e48858045ff4cbf6b03e1805cebcad3679053"
+++  integrity sha512-8RipRLol37bNs2bhoV67fiTEvdTrbMUYcFTiy3+wuuOnUog2QBHCZWXDRijWQfAkhBj2Uf5UnVaiWwA5vdd82w==
+    dependencies:
+      asynckit "^0.4.0"
+      combined-stream "^1.0.8"
+@@@ -7879,7 -9044,7 +9160,7 @@@ minimatch@^3.0.4, minimatch@^3.0.5, min
+    dependencies:
+      brace-expansion "^1.1.7"
+  
+--minimatch@^9.0.4:
+++minimatch@^9.0.4, minimatch@^9.0.5:
+    version "9.0.5"
+    resolved "https://registry.npmjs.org/minimatch/-/minimatch-9.0.5.tgz"
+    integrity sha512-G6T0ZX48xgozx7587koeX9Ys2NYy6Gmv//P89sEte9V9whIapMNF4idKxnW2QtCcLiTWlb/wfCabAtAFWhhBow==
+@@@ -8351,7 -9549,7 +9665,7 @@@ performance-now@^2.1.0
+    resolved "https://registry.npmjs.org/performance-now/-/performance-now-2.1.0.tgz"
+    integrity sha512-7EAHlyLHI56VEIdK57uwHdHKIaAGbnXPiw0yWbarQZOKaKpvUIgW0jWRVLiatnM+XXlSwsanIBH/hzGMJulMow==
+  
+- picocolors@^1.0.0, picocolors@^1.1.1, picocolors@1.1.1:
+ -picocolors@1.1.1, picocolors@^1.0.0, picocolors@^1.1.1:
+++picocolors@^1.0.0, picocolors@^1.1.1:
+    version "1.1.1"
+    resolved "https://registry.npmjs.org/picocolors/-/picocolors-1.1.1.tgz"
+    integrity sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==
+@@@ -8361,7 -9559,7 +9675,7 @@@ picomatch@^2.0.4, picomatch@^2.2.3, pic
+    resolved "https://registry.npmjs.org/picomatch/-/picomatch-2.3.1.tgz"
+    integrity sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==
+  
+- "picomatch@^3 || ^4", picomatch@^4.0.2:
+ -picomatch@^4.0.2:
+++picomatch@^4.0.2, picomatch@^4.0.3:
+    version "4.0.3"
+    resolved "https://registry.npmjs.org/picomatch/-/picomatch-4.0.3.tgz"
+    integrity sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==
+@@@ -9842,6 -11038,11 +11154,11 @@@ semver@^7.5.3, semver@^7.6.0, semver@^7
+    resolved "https://registry.npmjs.org/semver/-/semver-7.7.2.tgz"
+    integrity sha512-RF0Fw+rO5AMf9MAyaRXI4AV0Ulj5lMHqVxxdSgiVbixSCXoEmmX/jk0CuJw4+3SqroYO9VoUh+HcuJivvtJemA==
+  
+ -semver@^7.5.4:
+++semver@^7.5.4, semver@^7.7.3:
++   version "7.7.3"
++   resolved "https://registry.yarnpkg.com/semver/-/semver-7.7.3.tgz#4b5f4143d007633a8dc671cd0a6ef9147b8bb946"
++   integrity sha512-SdsKMrI9TdgjdweUSR9MweHA4EJ8YxHn8DFaDisvhVlUOe4BF1tLD7GAj0lIqWVl+dPb/rExr0Btby5loQm20Q==
++ 
+  serialize-javascript@^6.0.2:
+    version "6.0.2"
+    resolved "https://registry.npmjs.org/serialize-javascript/-/serialize-javascript-6.0.2.tgz"
+@@@ -10534,7 -11758,7 +11874,15 @@@ tinyglobby@^0.2.13, tinyglobby@^0.2.14
+      fdir "^6.4.4"
+      picomatch "^4.0.2"
+  
+- tinymce@^7.2.0, "tinymce@^8.0.0 || ^7.0.0 || ^6.0.0 || ^5.5.1", tinymce@>=4.0.0:
+++tinyglobby@^0.2.15:
+++  version "0.2.15"
+++  resolved "https://registry.yarnpkg.com/tinyglobby/-/tinyglobby-0.2.15.tgz#e228dd1e638cea993d2fdb4fcd2d4602a79951c2"
+++  integrity sha512-j2Zq4NyQYG5XMST4cbs02Ak8iJUdxRM0XI5QyxXuZOzKOINmWurp3smXu3y5wDcJrptwpSjgXHzIQxR0omXljQ==
+++  dependencies:
+++    fdir "^6.5.0"
+++    picomatch "^4.0.3"
+++
++ tinymce@^7.2.0:
+    version "7.9.1"
+    resolved "https://registry.npmjs.org/tinymce/-/tinymce-7.9.1.tgz"
+    integrity sha512-zaOHwmiP1EqTeLRXAvVriDb00JYnfEjWGPdKEuac7MiZJ5aiDMZ4Unc98Gmajn+PBljOmO1GKV6G0KwWn3+k8A==
+@@@ -10659,6 -11874,6 +11998,11 @@@ ts-api-utils@^2.1.0
+    resolved "https://registry.npmjs.org/ts-api-utils/-/ts-api-utils-2.1.0.tgz"
+    integrity sha512-CUgTZL1irw8u29bzrOD/nH85jqyc74D6SshFgujOIA7osm2Rz7dYH77agkx7H4FBNxDq7Cjf+IjaX/8zwFW+ZQ==
+  
+++ts-api-utils@^2.4.0:
+++  version "2.4.0"
+++  resolved "https://registry.yarnpkg.com/ts-api-utils/-/ts-api-utils-2.4.0.tgz#2690579f96d2790253bdcf1ca35d569ad78f9ad8"
+++  integrity sha512-3TaVTaAv2gTiMB35i3FiGJaRfwb3Pyn/j3m/bfAvGe8FB7CF6u+LMYqYlDh7reQf7UNvoTvdfAqHGmPGOSsPmA==
+++
+  tsconfig-paths@^3.15.0:
+    version "3.15.0"
+    resolved "https://registry.npmjs.org/tsconfig-paths/-/tsconfig-paths-3.15.0.tgz"
+diff --git a/src/components/SearchProjectByPerson/SearchProjectByPerson.jsx b/src/components/SearchProjectByPerson/SearchProjectByPerson.jsx
+index b124d8576..a87406ce9 100644
+--- a/src/components/SearchProjectByPerson/SearchProjectByPerson.jsx
++++ b/src/components/SearchProjectByPerson/SearchProjectByPerson.jsx
+@@ -51,7 +51,20 @@ export default function SearchProjectByPerson({
+           onChange={handleInputChange} // Trigger input change
+         />
+         <div>
+-          <button type="submit" className="archived-button" onClick={handleFetchArchivedProjects}>
++          {/* <button type="submit" className="archived-button" onClick={handleFetchArchivedProjects}>
++            {showArchived ? 'Hide Archived' : 'Show Archived'}
++          </button> */}
++          <button
++            type="button"
++            onClick={handleFetchArchivedProjects}
++            className={`btn ${
++              showArchived
++                ? 'btn-warning'
++                : darkMode
++                ? 'btn-outline-light'
++                : 'btn-outline-secondary'
++            }`}
++          >
+             {showArchived ? 'Hide Archived' : 'Show Archived'}
+           </button>
+         </div>

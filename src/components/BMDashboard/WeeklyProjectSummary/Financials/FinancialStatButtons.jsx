@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
+import { ENDPOINTS } from '../../../../utils/URL';
 import styles from './FinancialStatButtons.module.css';
 
 function formatCurrency(amount) {
-  if (amount === null || amount === undefined || Number.isNaN(Number(amount))) return '-';
+  if (amount === null || amount === undefined || Number.isNaN(Number(amount))) return '$0';
   try {
     return new Intl.NumberFormat(undefined, {
       style: 'currency',
@@ -15,7 +16,7 @@ function formatCurrency(amount) {
   }
 }
 
-export default function FinancialStatButtons({ defaultProjectId }) {
+export default function FinancialStatButtons({ defaultProjectId, darkMode }) {
   const [projects, setProjects] = useState([]); // [{ id, name }]
   const [projectId, setProjectId] = useState(defaultProjectId || '');
   const [loading, setLoading] = useState(true);
@@ -26,6 +27,7 @@ export default function FinancialStatButtons({ defaultProjectId }) {
   const [laborCost, setLaborCost] = useState(null);
   const [equipmentCost, setEquipmentCost] = useState(null);
   const [mom, setMom] = useState(null);
+  const [plannedBudget, setPlannedBudget] = useState(null);
 
   const apiBase = useMemo(() => (process.env.REACT_APP_APIENDPOINT || '').replace(/\/$/, ''), []);
 
@@ -146,6 +148,16 @@ export default function FinancialStatButtons({ defaultProjectId }) {
         setLaborCost(breakdownRes?.data?.laborCost ?? null);
         setEquipmentCost(breakdownRes?.data?.equipmentCost ?? null);
         setMom(momRes?.data ?? null);
+        // Fetch planned budget for over-budget detection
+        try {
+          const expenseRes = await axios.get(ENDPOINTS.BM_PROJECT_EXPENSE_BY_ID(projectId));
+          if (!cancelled) {
+            setPlannedBudget(expenseRes?.data?.totalPlannedCost ?? null);
+          }
+        } catch {
+          // Planned budget endpoint may not exist for all projects
+          if (!cancelled) setPlannedBudget(null);
+        }
       } catch (e) {
         if (cancelled) return;
         setError('Failed to load financials');
@@ -159,8 +171,19 @@ export default function FinancialStatButtons({ defaultProjectId }) {
     };
   }, [apiBase, projectId]);
 
+  // Compute budget status
+  const budgetStatus = useMemo(() => {
+    if (totalCost == null || plannedBudget == null || plannedBudget <= 0) return null;
+    const pct = ((totalCost - plannedBudget) / plannedBudget) * 100;
+    if (pct > 20) return { label: 'Over Budget', color: '#dc2626', pct };
+    if (pct > 10) return { label: 'Near Limit', color: '#f59e0b', pct };
+    if (pct > 0) return { label: 'Slightly Over', color: '#3b82f6', pct };
+    return { label: 'On Budget', color: '#22c55e', pct };
+  }, [totalCost, plannedBudget]);
+
   return (
-    <div className={styles.container}>
+    /* Apply darkMode to the top-level container so the whole component follows the theme */
+    <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
       <div className={styles.controlsRow}>
         <label htmlFor="financials-project" className={styles.label}>
           Project
@@ -190,27 +213,58 @@ export default function FinancialStatButtons({ defaultProjectId }) {
 
       {!loading && !error && (
         <div className={styles.grid}>
-          <button type="button" className={styles.kpiButton} aria-label="Total Project Cost">
+          <button
+            type="button"
+            className={`${styles.kpiButton} ${styles.projectCost}`}
+            aria-label="Total Project Cost"
+          >
             <span className={styles.label}>Total Project Cost</span>
             <span className={styles.value}>{formatCurrency(totalCost)}</span>
+            {budgetStatus && (
+              <span
+                className={styles.budgetBadge}
+                style={{
+                  backgroundColor: `${budgetStatus.color}18`,
+                  color: budgetStatus.color,
+                  border: `1px solid ${budgetStatus.color}`,
+                }}
+              >
+                {budgetStatus.label} ({budgetStatus.pct > 0 ? '+' : ''}
+                {budgetStatus.pct.toFixed(1)}%)
+              </span>
+            )}
           </button>
 
-          <button type="button" className={styles.kpiButton} aria-label="Material Cost">
+          <button
+            type="button"
+            className={`${styles.kpiButton} ${styles.materialCost}`}
+            aria-label="Material Cost"
+          >
             <span className={styles.label}>Material Cost</span>
             <span className={styles.value}>{formatCurrency(materialCost)}</span>
           </button>
 
-          <button type="button" className={styles.kpiButton} aria-label="Labor Cost">
+          <button
+            type="button"
+            className={`${styles.kpiButton} ${styles.laborCost}`}
+            aria-label="Labor Cost"
+          >
             <span className={styles.label}>Labor Cost</span>
             <span className={styles.value}>{formatCurrency(laborCost)}</span>
           </button>
 
-          <button type="button" className={styles.kpiButton} aria-label="Equipment Cost">
+          <button
+            type="button"
+            className={`${styles.kpiButton} ${styles.equipmentCost}`}
+            aria-label="Equipment Cost"
+          >
             <span className={styles.label}>Equipment Cost</span>
             <span className={styles.value}>{formatCurrency(equipmentCost)}</span>
+
             {mom?.equipmentCostChange !== undefined && (
               <span className={styles.subtext}>
-                MoM: {Number(mom.equipmentCostChange).toFixed(2)}%
+                {mom.equipmentCostChange > 0 ? '▲' : '▼'}{' '}
+                {Math.abs(mom.equipmentCostChange).toFixed(1)}%
               </span>
             )}
           </button>

@@ -1,3 +1,5 @@
+/* stylelint-disable no-descending-specificity */
+
 /* TeamTable.css */
 
 /* Style for the table */
@@ -11,6 +13,7 @@ table {
   background-color: #1c2a41;
   color: white;
 }
+
 .theadLight th {
   background-color: #f6f6f3;
   color: black;

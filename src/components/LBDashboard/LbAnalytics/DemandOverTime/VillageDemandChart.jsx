@@ -44,7 +44,7 @@ const VillageDemandChart = ({ data, metric, chartLabel, darkMode }) => {
   return (
     <div className={`${styles.chartCard} ${darkMode ? styles.darkChartCard : ''}`}>
       <div className={darkMode ? styles.darkChartTitle : styles.chartTitle}>{chartTitleText}</div>
-      <div className={styles.chart} style={{ height: 350 }}>
+      <div className={styles.chart}>
         <Line data={chartData} options={options} plugins={[ChartDataLabels]} />
       </div>
     </div>

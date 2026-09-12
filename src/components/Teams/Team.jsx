@@ -1,6 +1,6 @@
 /* eslint-disable react/destructuring-assignment */
-import './Team.module.css';
-import React, { useEffect, useState } from 'react';
+import styles from './Team.module.css';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect, useSelector, useDispatch } from 'react-redux';
 import { Button } from 'reactstrap';
@@ -8,7 +8,11 @@ import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { DELETE } from '../../languages/en/ui';
 import { getTeamMembers } from '../../actions/allTeamsAction';
-import { fetchTeamMembersCached, getCachedTeamMembers } from './teamMembersCache';
+import {
+  fetchTeamMembersCached,
+  getCachedTeamMembers,
+  clearCachedTeamMembers,
+} from './teamMembersCache';
 
 function computeCounts(members, loading, localMembers) {
   const list = Array.isArray(members) ? members : [];
@@ -31,7 +35,34 @@ function computeCounts(members, loading, localMembers) {
 }
 import headerStyles from './TeamTableHeader.module.css';
 
-export function Team(props) {
+export function Team({
+  teamId,
+  name,
+  teamCode = '',
+  index = 0,
+  active = false,
+  onMembersClick = undefined,
+  onStatusClick = undefined,
+  onEditTeam = undefined,
+  onDeleteClick = undefined,
+  team = undefined,
+  hasPermission,
+  ...restProps
+}) {
+  const props = {
+    teamId,
+    name,
+    teamCode,
+    index,
+    active,
+    onMembersClick,
+    onStatusClick,
+    onEditTeam,
+    onDeleteClick,
+    team,
+    hasPermission,
+    ...restProps,
+  };
   const dispatch = useDispatch();
   const darkMode = useSelector(s => s.theme.darkMode);
   const canDeleteTeam = props.hasPermission('deleteTeam');
@@ -46,49 +77,50 @@ export function Team(props) {
   // string key for cache/DOM ids
   const teamIdKey = String(props.teamId ?? '');
 
+  // localMembers is only populated after the user opens the modal or hovers.
+  // On mount we do NOT pre-fetch — that was firing GET /api/team/:id/users
+  // for every single row on page load (thousands of requests = 30s load time).
+  // Member counts are computed from props.team.members which already comes
+  // from the getAllTeams aggregation, so no extra request is needed.
   const [localMembers, setLocalMembers] = useState(() => getCachedTeamMembers(teamIdKey) || null);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const cached = getCachedTeamMembers(teamIdKey);
-    if (cached && !localMembers) setLocalMembers(cached);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [teamIdKey]);
-
-  useEffect(() => {
-    if (!getCachedTeamMembers(teamIdKey) && teamIdKey) {
-      fetchTeamMembersCached(dispatch, getTeamMembers, teamIdKey)
-        .then(setLocalMembers)
-        .catch(() => {});
-    }
-  }, [dispatch, teamIdKey]);
 
   const members = localMembers ?? props.team?.members ?? [];
-  const { total, active, inactive } = computeCounts(members, loading, localMembers);
+  const { total, active: activeCount, inactive } = computeCounts(members, false, localMembers);
 
-  // Fire callback immediately (keeps tests & UX snappy), then refresh members
+  // Fire callback immediately (keeps tests & UX snappy), then refresh members.
+  // We do NOT reset localMembers to null or set loading=true here — doing so
+  // caused the count to flash back to '…' on every click. Since props.team.members
+  // is always available as a fallback, the count stays stable while the fresh
+  // fetch completes in the background.
   const handleOpenMembers = () => {
+    clearCachedTeamMembers(teamIdKey);
     if (typeof props.onMembersClick === 'function') {
-      props.onMembersClick(teamIdRaw, props.name, props.teamCode);
+      props.onMembersClick(teamIdRaw, props.name, props.teamCode); // don't pass localMembers
     }
-
-    setLoading(true);
     fetchTeamMembersCached(dispatch, getTeamMembers, teamIdKey)
-      .then(setLocalMembers)
-      .catch(() => {})
-      .finally(() => setLoading(false));
+      .then(fresh => {
+        setLocalMembers(fresh);
+      })
+      .catch(() => {});
   };
 
   return (
-    <tr className="teams__tr" id={`tr_${teamIdKey}`}>
-      <th className="teams__order--input" scope="row">
+    <tr
+      className={`${styles.teams__tr} ${darkMode ? styles.darkModeRow : ''}`}
+      id={`tr_${teamIdKey}`}
+    >
+      <th
+        className="teams__order--input"
+        scope="row"
+        style={{ textAlign: 'center', verticalAlign: 'middle' }}
+      >
         <div>{(props.index ?? 0) + 1}</div>
       </th>
       {/*  Wrap long names vertically */}
       <td className={headerStyles.teamNameCol}>
-        {props.name} ({total} | {active} | {inactive})
+        {props.name} ({total} | {activeCount} | {inactive})
       </td>
-      <td className="teams__active--input">
+      <td className="teams__active--input" style={{ textAlign: 'center', verticalAlign: 'middle' }}>
         <button
           data-testid="active-marker"
           type="button"
@@ -97,7 +129,7 @@ export function Team(props) {
               props.onStatusClick(props.name, teamIdRaw, props.active, props.teamCode);
             }
           }}
-          // style={boxStyle}
+          style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
           aria-label={`Change status for team ${props.name}`}
         >
           <div className={props.active ? 'isActive' : 'isNotActive'}>
@@ -106,7 +138,10 @@ export function Team(props) {
         </button>
       </td>
 
-      <td className="centered-cell">
+      <td
+        className={styles['centered-cell']}
+        style={{ textAlign: 'center', verticalAlign: 'middle' }}
+      >
         <button
           style={darkMode ? {} : boxStyle}
           type="button"
@@ -121,15 +156,14 @@ export function Team(props) {
           onClick={handleOpenMembers}
           data-testid="members-btn"
           aria-label="Users"
-          disabled={loading}
         >
-          {loading ? <i className="fa fa-spinner fa-spin" /> : <i className="fa fa-users" />}
+          <i className="fa fa-users" />
         </button>
       </td>
 
       {(canDeleteTeam || canPutTeam) && (
-        <td>
-          <span className="usermanagement-actions-cell">
+        <td style={{ verticalAlign: 'middle' }}>
+          <div className={styles.actionButtonsContainer}>
             <Button
               color="success"
               onClick={() => props.onEditTeam(props.name, teamIdRaw, props.active, props.teamCode)}
@@ -138,8 +172,6 @@ export function Team(props) {
             >
               Edit
             </Button>
-          </span>
-          <span className="usermanagement-actions-cell">
             <Button
               color="danger"
               onClick={() =>
@@ -150,7 +182,7 @@ export function Team(props) {
             >
               {DELETE}
             </Button>
-          </span>
+          </div>
         </td>
       )}
     </tr>
@@ -197,17 +229,6 @@ Team.propTypes = {
       PropTypes.instanceOf(Date),
     ]),
   }),
-};
-
-Team.defaultProps = {
-  teamCode: '',
-  index: 0,
-  active: false,
-  onMembersClick: undefined,
-  onStatusClick: undefined,
-  onEditTeam: undefined,
-  onDeleteClick: undefined,
-  team: undefined,
 };
 
 export default connect(null, { hasPermission })(Team);

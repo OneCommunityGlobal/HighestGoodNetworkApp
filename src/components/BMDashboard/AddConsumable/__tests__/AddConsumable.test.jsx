@@ -36,6 +36,9 @@ const mockInvUnits = [
 const initialState = {
   bmInvUnits: { list: mockInvUnits },
   bmInvTypes: { postedResult: null },
+  theme: {
+    darkMode: false,
+  },
 };
 
 const renderComponent = (customState = {}) => {

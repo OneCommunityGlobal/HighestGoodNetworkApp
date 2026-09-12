@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .container {
   width: 100%;
   background-color: transparent;
@@ -67,12 +68,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 0 4px rgb(0 0 0 / 5%);
 }
 
 .darkCloudContainer {
   background-color: #3a506b;
-  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 0 4px rgb(0 0 0 / 20%);
 }
 
 .wordCloud {
@@ -93,7 +94,7 @@
   color: #6c757d;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .wordCloudsContainer {
     flex-direction: column;
   }

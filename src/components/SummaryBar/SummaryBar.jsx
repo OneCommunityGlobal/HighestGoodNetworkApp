@@ -416,70 +416,53 @@ const SummaryBar = React.forwardRef((props, ref) => {
   };
 
   const renderSummary = () => {
-    if (!weeklySummary) {
-      if (weeklySummaryNotReq) {
-        return (
-          <div
-            className={`${styles['border-black']} col-4 bg-super-awesome no-gutters d-flex justify-content-center align-items-center`}
-            style={{ textAlign: 'center' }}
-          >
-            <font className={`${styles['text-center']} text-light`} size="3">
-              SUMMARY
-            </font>
-          </div>
-        );
-      }
+    const isCompleted = weeklySummary || props.submittedSummary;
+
+    // Special case → keep purple
+    if (!weeklySummary && weeklySummaryNotReq) {
       return (
         <div
-          className={`border border-danger col-4 no-gutters ${
-            darkMode ? 'bg-yinmn-blue' : 'bg-white'
-          }`}
+          className={`${styles['border-black']} col-4 ${
+            darkMode ? 'bg-yinmn-blue' : styles['bg--summary-purple']
+          } d-flex justify-content-center align-items-center`}
         >
-          <div className="py-1"> </div>
-          {isAuthUser || canEditData() ? (
-            <div className="d-flex justify-content-center">
-              <button
-                onClick={props.toggleSubmitForm}
-                className={`${styles['summary-toggle']} ${styles['large_text_summary']} text-danger`}
-                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
-                aria-label="Toggle submit form"
-                type="button"
-              >
-                !
-              </button>
-            </div>
-          ) : (
-            <p
-              className={`${styles['text-center']} ${styles['summary-toggle']} ${styles['large_text_summary']} text-danger`}
-            >
-              !
-            </p>
-          )}
-          <font className={`${styles['text-center']}`} size="3">
-            SUMMARY
-          </font>
-          <div className="py-2"> </div>
+          <span className="text-light">SUMMARY</span>
         </div>
       );
     }
-    return (
-      <div className={`${styles['border-green']} col-4 ${styles['bg--dark-green']}`}>
-        <div className="py-1"> </div>
-        <div className="d-flex justify-content-center">
-          <button
-            onClick={props.toggleSubmitForm}
-            className={`${styles['text-center']} ${styles.large_text_summary} ${styles['summary-toggle']}`}
-            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
-            aria-label="Toggle submit form"
-            type="button"
-          >
-            ✓
-          </button>
+
+    if (!isCompleted) {
+      return (
+        <div
+          role="button"
+          tabIndex={0}
+          className={`${styles['summary-incomplete']} border border-danger col-4 ${
+            darkMode ? 'bg-yinmn-blue' : 'bg-white'
+          } d-flex flex-column justify-content-center`}
+          onClick={props.toggleSubmitForm}
+          onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && props.toggleSubmitForm()}
+          aria-label="Submit weekly summary"
+        >
+          <div className="py-1" />
+          <div className="d-flex justify-content-center">
+            <span className={`${styles.large_text_summary} text-danger`}>!</span>
+          </div>
+          <span className="text-center">SUMMARY</span>
+          <div className="py-2" />
         </div>
-        <font className={`${styles['text-center']}`} size="3">
-          SUMMARY
-        </font>
-        <div className="py-2"> </div>
+      );
+    }
+
+    return (
+      <div
+        className={`${styles['border-green']} col-4 ${styles['bg--dark-green']} d-flex flex-column justify-content-center`}
+      >
+        <div className="py-1" />
+        <div className="d-flex justify-content-center">
+          <span className={`${styles.large_text_summary} ${styles['text--black']}`}>✓</span>
+        </div>
+        <span className="text-center">SUMMARY</span>
+        <div className="py-2" />
       </div>
     );
   };
@@ -592,17 +575,15 @@ const SummaryBar = React.forwardRef((props, ref) => {
               </div>
             )}
             {totalEffort >= weeklyCommittedHours && (
-              <div className={`${styles['border-green']} col-4 ${styles['bg--dark-green']}`}>
-                <div className="py-1"> </div>
-                <p
-                  className={`${styles['text-center']} ${styles.large_text_summary} ${styles['text--black']}`}
-                >
-                  ✓
-                </p>
-                <font className={`${styles['text-center']}`} size="3">
-                  HOURS
-                </font>
-                <div className="py-2"> </div>
+              <div
+                className={`${styles['border-green']} col-4 ${styles['bg--dark-green']} d-flex flex-column justify-content-center`}
+              >
+                <div className="py-1" />
+                <div className="d-flex justify-content-center">
+                  <span className={`${styles.large_text_summary} ${styles['text--black']}`}>✓</span>
+                </div>
+                <span className="text-center">HOURS</span>
+                <div className="py-2" />
               </div>
             )}
 
@@ -639,14 +620,14 @@ const SummaryBar = React.forwardRef((props, ref) => {
               }`}
               style={{ border: '1px solid black' }}
             >
-              <div className={`m-auto p-2 ${styles['text-center']}`}>
+              <div className="w-100 p-2 text-center">
                 <span
                   role="button"
                   tabIndex={0}
                   onClick={props.toggleSubmitForm}
                   onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && props.toggleSubmitForm()}
                   className={`${styles['summary-toggle']}`}
-                  style={{ cursor: 'pointer', fontSize: '1.1rem' }}
+                  style={{ cursor: 'pointer', fontSize: '1.1rem', display: 'inline-block' }}
                 >
                   {renderSummaryMessage()}
                 </span>

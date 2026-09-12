@@ -2,12 +2,12 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import BadgeDevelopmentTable from '../BadgeDevelopmentTable';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 
 import { themeMock } from '__tests__/mockStates';
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 // mock data used for testing purpose. You can add your own data to test the component.
 
@@ -204,6 +204,33 @@ describe('BadgeDevelopmentTable component', () => {
         ),
       ).toBeInTheDocument();
     });
+  });
+  it('shows Edit button for a badge with no imageUrl', () => {
+    const noImageData = {
+      ...mockData,
+      allBadgeData: [
+        {
+          _id: 'abc3',
+          badgeName: 'NO IMAGE BADGE',
+          category: 'Stewardship',
+          imageUrl: null,
+          ranking: 1,
+          description: 'A badge without an image URL.',
+          months: null,
+          multiple: null,
+          people: null,
+          totalHrs: null,
+          type: 'Custom',
+          weeks: null,
+          showReport: false,
+        },
+      ],
+    };
+    renderComponent(noImageData);
+    const editButton = screen.getByRole('button', { name: 'Edit' });
+    fireEvent.click(editButton);
+    expect(screen.getByText('Update')).toBeInTheDocument();
+    expect(screen.getByText('Cancel')).toBeInTheDocument();
   });
   it('check reports page notification checkmark', () => {
     const { container } = renderComponent(mockData);

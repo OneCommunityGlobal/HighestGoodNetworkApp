@@ -4,12 +4,12 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { useDispatch, Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { BrowserRouter as Router } from 'react-router-dom';
 import axios from 'axios';
 import LBLogin from '..';
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 let store;
 
 beforeEach(() => {
@@ -20,6 +20,7 @@ beforeEach(() => {
         access: { canAccessCPPortal: true },
       },
     },
+    theme: { darkMode: false },
   });
 });
 
@@ -74,7 +75,7 @@ describe('LBLogin component', () => {
     fireEvent.change(screen.getByLabelText(/email/i), {
       target: { value: 'test@gmail.com' },
     });
-    fireEvent.change(screen.getByLabelText(/password/i), {
+    fireEvent.change(screen.getByTestId('password-input'), {
       target: { value: 'Test12345' },
     });
     fireEvent.click(screen.getByRole('button', { name: /login/i }));

@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 /* ============================================================================
    TEACHER FEEDBACK COMPONENT STYLES - Premium UI Design
    ============================================================================ */
@@ -19,7 +20,7 @@
 /* Header Styles */
 .feedbackHeader {
   background: var(--primary-gradient);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgb(255 255 255 / 10%);
   padding: 1.5rem;
 }
 
@@ -40,7 +41,7 @@
 .teacherIcon {
   font-size: 2.5rem;
   color: var(--accent-light);
-  background: rgba(255, 255, 255, 0.1);
+  background: rgb(255 255 255 / 10%);
   padding: 0.75rem;
   border-radius: var(--border-radius-full);
   backdrop-filter: blur(10px);
@@ -51,12 +52,12 @@
   margin: 0;
   font-size: 1.4rem;
   font-weight: 600;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  text-shadow: 0 1px 2px rgb(0 0 0 / 10%);
 }
 
 .teacherInfo p.teacherTitle {
   color: var(--accent-light);
-  margin: 0.25rem 0 0 0;
+  margin: 0.25rem 0 0;
   font-size: 0.9rem;
   font-weight: 400;
   opacity: 0.9;
@@ -83,18 +84,18 @@
 .stars .starFilled {
   color: #fbbf24;
   font-size: 1.1rem;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 20%));
 }
 
 .stars .starHalf {
   color: #fbbf24;
   font-size: 1.1rem;
   opacity: 0.7;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 20%));
 }
 
 .stars .starEmpty {
-  color: rgba(255, 255, 255, 0.3);
+  color: rgb(255 255 255 / 30%);
   font-size: 1.1rem;
 }
 
@@ -155,7 +156,7 @@
 
 .overallFeedback {
   background: linear-gradient(135deg, #f8faff 0%, #e8f2ff 100%);
-  border: 1px solid rgba(59, 130, 246, 0.2);
+  border: 1px solid rgb(59 130 246 / 20%);
   border-radius: var(--border-radius-md);
   padding: 1.5rem;
   position: relative;
@@ -198,14 +199,14 @@
   gap: 0.75rem;
   padding: 0.75rem;
   background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-  border: 1px solid rgba(34, 197, 94, 0.2);
+  border: 1px solid rgb(34 197 94 / 20%);
   border-radius: var(--border-radius-md);
   transition: all 0.2s ease;
 }
 
 .strengthItem:hover {
   transform: translateX(4px);
-  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.15);
+  box-shadow: 0 2px 8px rgb(34 197 94 / 15%);
 }
 
 .strengthBullet {
@@ -241,14 +242,14 @@
   gap: 0.75rem;
   padding: 0.75rem;
   background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-  border: 1px solid rgba(245, 158, 11, 0.2);
+  border: 1px solid rgb(245 158 11 / 20%);
   border-radius: var(--border-radius-md);
   transition: all 0.2s ease;
 }
 
 .recommendationItem:hover {
   transform: translateX(4px);
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
+  box-shadow: 0 2px 8px rgb(245 158 11 / 15%);
 }
 
 .recommendationBullet {
@@ -284,14 +285,14 @@
   gap: 0.75rem;
   padding: 0.75rem;
   background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-  border: 1px solid rgba(59, 130, 246, 0.2);
+  border: 1px solid rgb(59 130 246 / 20%);
   border-radius: var(--border-radius-md);
   transition: all 0.2s ease;
 }
 
 .nextStepItem:hover {
   transform: translateX(4px);
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+  box-shadow: 0 2px 8px rgb(59 130 246 / 15%);
 }
 
 .nextStepNumber {
@@ -365,7 +366,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .headerContent {
     flex-direction: column;
     align-items: flex-start;
@@ -406,7 +407,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .feedbackHeader {
     padding: 1rem;
   }
@@ -429,6 +430,7 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }

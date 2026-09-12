@@ -1,13 +1,14 @@
+/* stylelint-disable no-descending-specificity */
 :root {
-  --bg: #ffffff;
+  --bg: #fff;
   --muted: #6b7280;
   --primary: #133d68;
   --primary-600: #083a68;
   --danger: #d14343;
   --card: #fafafa;
-  --glass: rgba(11, 116, 222, 0.06);
+  --glass: rgb(11 116 222 / 6%);
   --radius: 0.625rem; /* 10px */
-  --shadow: 0 6px 20px rgba(15, 23, 42, 0.08);
+  --shadow: 0 6px 20px rgb(15 23 42 / 8%);
   --surface-border: #f2f4f7;
   --text: #111827;
   --container-max: 62rem; /* 992px */
@@ -21,10 +22,10 @@
   --primary-600: #083a68;
   --danger: #f87171;
   --card: #23272a;
-  --glass: rgba(96, 165, 250, 0.08);
+  --glass: rgb(96 165 250 / 8%);
   --surface-border: #23272a;
   --text: #f3f4f6;
-  --shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  --shadow: 0 6px 20px rgb(0 0 0 / 25%);
 }
 
 .dark .container {
@@ -67,7 +68,7 @@
 
 .dark .editButton:hover,
 .dark .cancel:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgb(255 255 255 / 4%);
 }
 
 .dark .danger {
@@ -94,7 +95,7 @@
 
 .dark .input:focus {
   border-color: var(--primary);
-  box-shadow: 0 6px 18px rgba(96, 165, 250, 0.12);
+  box-shadow: 0 6px 18px rgb(96 165 250 / 12%);
 }
 
 .dark .checklist {
@@ -103,7 +104,7 @@
 }
 
 .dark .checkItem:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgb(255 255 255 / 4%);
 }
 
 .dark .fieldError {
@@ -221,7 +222,7 @@
 }
 
 .editButton:hover {
-  background: rgba(0, 0, 0, 0.04);
+  background: rgb(0 0 0 / 4%);
   transform: translateY(-1px);
 }
 
@@ -235,7 +236,7 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(2, 6, 23, 0.5);
+  background: rgb(2 6 23 / 50%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -249,8 +250,8 @@
   background: var(--bg);
   border-radius: 0.75rem;
   overflow: hidden;
-  box-shadow: 0 30px 60px rgba(2, 6, 23, 0.35);
-  border: 1px solid rgba(15, 23, 42, 0.04);
+  box-shadow: 0 30px 60px rgb(2 6 23 / 35%);
+  border: 1px solid rgb(15 23 42 / 4%);
   animation: pop 160ms ease;
   margin: 0 auto;
 }
@@ -260,6 +261,7 @@
     transform: translateY(8px) scale(0.995);
     opacity: 0;
   }
+
   to {
     transform: translateY(0) scale(1);
     opacity: 1;
@@ -318,7 +320,7 @@
 }
 
 .input:focus {
-  box-shadow: 0 6px 18px rgba(11, 116, 222, 0.12);
+  box-shadow: 0 6px 18px rgb(11 116 222 / 12%);
   border-color: var(--primary);
 }
 
@@ -358,7 +360,7 @@
 }
 
 .checkItem:hover {
-  background: rgba(0, 0, 0, 0.03);
+  background: rgb(0 0 0 / 3%);
 }
 
 .checkLabel {
@@ -407,10 +409,11 @@
   cursor: not-allowed;
 }
 
-@media (max-width: 880px) {
+@media (width <= 880px) {
   .body {
     grid-template-columns: 1fr;
   }
+
   .modal {
     width: 100%;
     max-width: 44rem;

@@ -1,12 +1,14 @@
+/* stylelint-disable  */
 /* ----------------------------------
    PAGE BACKGROUND
 ---------------------------------- */
 .lightPage {
-  background: #ffffff;
+  background: #fff;
   width: 100%;
   height: 100%;
   color: #222;
-  --legend-bg: rgba(255, 255, 255, 0.9);
+
+  --legend-bg: rgb(255 255 255 / 90%);
 }
 
 .darkPage {
@@ -14,7 +16,8 @@
   width: 100%;
   height: 100%;
   color: #e6e6e6;
-  --legend-bg: rgba(0, 0, 0, 0.55);
+
+  --legend-bg: rgb(0 0 0 / 55%);
 }
 
 /* ----------------------------------
@@ -80,6 +83,12 @@
   z-index: 2000;
 }
 
+.filterLabel {
+  font-weight: 600;
+  white-space: nowrap;
+  color: inherit;
+}
+
 /* ----------------------------------
    DATE INPUT FIELDS
 ---------------------------------- */
@@ -90,43 +99,235 @@
   font-size: 14px;
   width: 150px;
   transition: 0.15s ease;
+  box-sizing: border-box;
+}
+
+.statusSelect {
+  cursor: pointer;
+  appearance: auto;
+  min-width: 150px;
+}
+
+.dateInputLight {
+  background: #fff !important;
+  color: #222 !important;
+  border-color: #ccc !important;
+  color-scheme: light;
+}
+
+.dateInputLight::placeholder {
+  color: #6b7280 !important;
+  opacity: 1;
+}
+
+.dateInputLight:hover {
+  border-color: #6acfde !important;
+}
+
+.dateInputLight:focus {
+  outline: none;
+  border-color: #3a8bbd !important;
+  box-shadow: 0 0 3px rgb(58 139 189 / 60%);
 }
 
 .dateInputDark {
-  background: #1C2541;
-  color: #ffffff;
-  border-color: #465a74;
+  background: #1c2541 !important;
+  color: #f8fafc !important;
+  border-color: #465a74 !important;
+  color-scheme: dark;
+}
+
+.dateInputDark::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1;
 }
 
 .dateInputDark:hover {
-  border-color: #6acfde;
-}
-
-.calendarDark :global(.react-datepicker) {
-  background-color: #3A506B;
+  border-color: #6acfde !important;
 }
 
 .dateInputDark:focus {
   outline: none;
-  border-color: #6acfde;
-  box-shadow: 0 0 4px rgba(106, 207, 222, 0.6);
+  border-color: #6acfde !important;
+  box-shadow: 0 0 4px rgb(106 207 222 / 60%);
 }
 
-/* Light mode */
-.lightPage .dateInput {
-  background: #ffffff;
-  color: #222;
-  border-color: #ccc;
+.dateInputDark option {
+  background: #1c2541;
+  color: #f8fafc;
 }
 
-.lightPage .dateInput:hover {
-  border-color: #6acfde;
+/* Keep datepicker wrappers above the map */
+.filterInputs :global(.react-datepicker-wrapper),
+.filterInputs :global(.react-datepicker__input-container) {
+  display: inline-block;
+  position: relative;
+  z-index: 1;
 }
 
-.lightPage .dateInput:focus {
-  outline: none;
-  border-color: #3a8bbd;
-  box-shadow: 0 0 3px rgba(58, 139, 189, 0.6);
+.filterInputs :global(.react-datepicker__input-container input) {
+  width: 150px;
+}
+
+.datePickerWrapper,
+.datePickerWrapper :global(.react-datepicker__input-container) {
+  display: inline-block;
+}
+
+.datePickerWrapperLight :global(input),
+.datePickerWrapperLight :global(.react-datepicker__input-container input) {
+  background-color: #fff !important;
+  background: #fff !important;
+  color: #222 !important;
+  border: 1px solid #ccc !important;
+  color-scheme: light;
+}
+
+.datePickerWrapperLight :global(input)::placeholder,
+.datePickerWrapperLight :global(.react-datepicker__input-container input)::placeholder {
+  color: #6b7280 !important;
+  opacity: 1;
+}
+
+.datePickerWrapperDark :global(input),
+.datePickerWrapperDark :global(.react-datepicker__input-container input) {
+  background-color: #1c2541 !important;
+  background: #1c2541 !important;
+  color: #f8fafc !important;
+  border: 1px solid #465a74 !important;
+  color-scheme: dark;
+}
+
+.datePickerWrapperDark :global(input)::placeholder,
+.datePickerWrapperDark :global(.react-datepicker__input-container input)::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1;
+}
+
+.darkPage .filterInputs :global(.react-datepicker-wrapper input),
+.darkPage .filterInputs :global(.react-datepicker__input-container input) {
+  background-color: #1c2541 !important;
+  background: #1c2541 !important;
+  color: #f8fafc !important;
+  border: 1px solid #465a74 !important;
+  color-scheme: dark;
+}
+
+.darkPage .filterInputs :global(.react-datepicker-wrapper input)::placeholder,
+.darkPage .filterInputs :global(.react-datepicker__input-container input)::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1;
+}
+
+.lightPage .filterInputs :global(.react-datepicker-wrapper input),
+.lightPage .filterInputs :global(.react-datepicker__input-container input) {
+  background-color: #fff !important;
+  background: #fff !important;
+  color: #222 !important;
+  border: 1px solid #ccc !important;
+}
+
+.filterInputs :global(.react-datepicker__close-icon::after) {
+  background-color: #6b7280;
+  color: #fff;
+}
+
+.darkPage .filterInputs :global(.react-datepicker__close-icon::after) {
+  background-color: #6acfde;
+  color: #0d1b2a;
+}
+
+/* Popper must sit above Leaflet panes */
+.datePickerPopper {
+  z-index: 10050 !important;
+}
+
+.datePickerPopper :global(.react-datepicker) {
+  z-index: 10050 !important;
+}
+
+/* Light calendar */
+.calendarLight,
+.calendarLight:global(.react-datepicker) {
+  background-color: #fff !important;
+  border: 1px solid #d1d5db !important;
+  color: #111827 !important;
+  box-shadow: 0 10px 25px rgb(0 0 0 / 15%);
+}
+
+.calendarLight :global(.react-datepicker__header) {
+  background-color: #f3f4f6 !important;
+  border-bottom: 1px solid #e5e7eb !important;
+}
+
+.calendarLight :global(.react-datepicker__current-month),
+.calendarLight :global(.react-datepicker__day-name),
+.calendarLight :global(.react-datepicker__day) {
+  color: #111827 !important;
+}
+
+.calendarLight :global(.react-datepicker__day:hover) {
+  background-color: #e5e7eb !important;
+}
+
+.calendarLight :global(.react-datepicker__day--selected),
+.calendarLight :global(.react-datepicker__day--keyboard-selected) {
+  background-color: #3a8bbd !important;
+  color: #fff !important;
+}
+
+.calendarLight :global(.react-datepicker__day--outside-month) {
+  color: #9ca3af !important;
+}
+
+.calendarLight :global(.react-datepicker__navigation-icon::before) {
+  border-color: #374151 !important;
+}
+
+/* Dark calendar */
+.calendarDark,
+.calendarDark:global(.react-datepicker) {
+  background-color: #1c2541 !important;
+  border: 1px solid #465a74 !important;
+  color: #f8fafc !important;
+  box-shadow: 0 10px 25px rgb(0 0 0 / 45%);
+}
+
+.calendarDark :global(.react-datepicker__header) {
+  background-color: #0d1b2a !important;
+  border-bottom: 1px solid #465a74 !important;
+}
+
+.calendarDark :global(.react-datepicker__current-month),
+.calendarDark :global(.react-datepicker__day-name),
+.calendarDark :global(.react-datepicker__day) {
+  color: #f8fafc !important;
+}
+
+.calendarDark :global(.react-datepicker__day:hover) {
+  background-color: #3a506b !important;
+}
+
+.calendarDark :global(.react-datepicker__day--selected),
+.calendarDark :global(.react-datepicker__day--keyboard-selected) {
+  background-color: #6acfde !important;
+  color: #0d1b2a !important;
+}
+
+.calendarDark :global(.react-datepicker__day--outside-month) {
+  color: #94a3b8 !important;
+}
+
+.calendarDark :global(.react-datepicker__day--disabled) {
+  color: #64748b !important;
+}
+
+.calendarDark :global(.react-datepicker__navigation-icon::before) {
+  border-color: #e2e8f0 !important;
+}
+
+.calendarDark :global(.react-datepicker__triangle) {
+  display: none;
 }
 
 /* Error message */
@@ -144,21 +345,32 @@
   width: 100%;
   height: 90vh;
   border-radius: 12px;
-  overflow: visible !important;
+  overflow: hidden;
   margin-top: 10px;
+  z-index: 1;
+  isolation: isolate;
 }
 
 .mapContainer {
   width: 100%;
   height: 100%;
   border-radius: 12px;
+  z-index: 1;
+  background: #aadaff;
 }
 
-/* ----------------------------------
-   DARK MAP OVERLAY EFFECT
----------------------------------- */
+.darkPage .mapContainer {
+  background: #0d1b2a;
+}
+
+/* Reduce visible tile seam lines in some browsers */
+.mapContainer :global(.leaflet-tile) {
+  outline: 1px solid transparent;
+}
+
+/* Dark tiles already provide the dark-mode map look; avoid extra dimming. */
 .darkMap {
-  filter: brightness(0.78) contrast(1.1);
+  filter: none;
 }
 
 /* ----------------------------------
@@ -176,7 +388,7 @@
 
 /* Light */
 .lightPage :global(.leaflet-popup-content-wrapper) {
-  background: #ffffff !important;
+  background: #fff !important;
   color: #222 !important;
   border: 1px solid #e3e3e3 !important;
 }
@@ -200,7 +412,7 @@
 }
 
 .lightTooltip {
-  background: #ffffff !important;
+  background: #fff !important;
   border: 1px solid #e3e3e3 !important;
   color: #222 !important;
 }
@@ -208,14 +420,14 @@
 .darkTooltip {
   background: #2d4059 !important;
   border: 1px solid #4b5f79 !important;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* ----------------------------------
    MAP CONTROLS
 ---------------------------------- */
 .darkPage :global(.leaflet-control-attribution) {
-  background: rgba(45, 64, 89, 0.85) !important;
+  background: rgb(45 64 89 / 85%) !important;
   color: #ddd !important;
 }
 
@@ -252,7 +464,7 @@
   left: 12px;
   bottom: 12px;
   padding: 6px 12px;
-  background: rgba(255, 255, 255, 0.75);
+  background: rgb(255 255 255 / 75%);
   border-radius: 8px;
   font-size: 13px;
   backdrop-filter: blur(4px);
@@ -260,8 +472,8 @@
 }
 
 .darkPage .bottomLeftLabel {
-  background: rgba(0, 0, 0, 0.55);
-  color: #ffffff;
+  background: rgb(0 0 0 / 55%);
+  color: #fff;
 }
 
 .legendItem {
@@ -306,24 +518,21 @@
   padding: 10px 12px;
   background: var(--legend-bg);
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 25%);
+  border: 1px solid rgb(0 0 0 / 15%);
   backdrop-filter: blur(4px);
   font-size: 13px;
   z-index: 10000; /* higher than map */
   pointer-events: auto !important;
   opacity: 1 !important;
-  left: auto; /* initial position handled in JSX */
-  top: auto; /* initial position handled in JSX */
-  bottom: 20px; /* fallback bottom-right */
-  right: 20px;
+  inset: auto 20px 20px auto; /* initial position handled in JSX */ /* initial position handled in JSX */ /* fallback bottom-right */
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
 }
 
 .darkPage .legendBox {
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgb(255 255 255 / 15%);
   color: #fff;
 }
 
@@ -335,6 +544,8 @@
   flex-wrap: wrap;
   margin-top: 8px;
   margin-bottom: 16px;
+  position: relative;
+  z-index: 10040;
 }
 
 .filterInputs {
@@ -347,4 +558,25 @@
 .totalProjects {
   font-weight: 500;
   margin-left: auto;
+}
+
+/* Beat leaked global DatePicker input styles (white bg) from other BM charts */
+:global(body.dark-mode) .dateInputDark,
+:global(body.bm-dashboard-dark) .dateInputDark,
+:global(body.dark-mode) .datePickerWrapperDark :global(input),
+:global(body.bm-dashboard-dark) .datePickerWrapperDark :global(input),
+:global(body.dark-mode) .filterInputs :global(.react-datepicker-wrapper input),
+:global(body.bm-dashboard-dark) .filterInputs :global(.react-datepicker-wrapper input) {
+  background-color: #1c2541 !important;
+  background: #1c2541 !important;
+  color: #f8fafc !important;
+  border-color: #465a74 !important;
+}
+
+:global(body.dark-mode) .dateInputDark::placeholder,
+:global(body.bm-dashboard-dark) .dateInputDark::placeholder,
+:global(body.dark-mode) .datePickerWrapperDark :global(input)::placeholder,
+:global(body.bm-dashboard-dark) .datePickerWrapperDark :global(input)::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1;
 }

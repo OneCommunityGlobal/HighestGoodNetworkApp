@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import GradingTable from './GradingTable';
-import SummaryList from './SummaryList';
-import ConfirmationModal from './ConfirmationModal';
 import AddReviewerModal from './AddReviewerModal';
+import ConfirmationModal from './ConfirmationModal';
+import GradingTable from './GradingTable';
+import { MOCK_WEEK_METADATA, MOCK_WEEK_OPTIONS } from './mockWeeklyAuditData';
 import styles from './PRGradingDashboard.module.css';
+import { SelectionProvider } from './SelectionContext';
+import SummaryList from './SummaryList';
 
 const TEAM_CODE = 'TeamA';
 const TEAM_NAME = 'Team Alpha';
@@ -33,6 +36,7 @@ const mockData = [
 ];
 
 function PRGradingDashboard() {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [gradings, setGradings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -40,6 +44,7 @@ function PRGradingDashboard() {
   const [pendingPR, setPendingPR] = useState(null); // { reviewer, prNumbers, grade } or null
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showAddReviewerModal, setShowAddReviewerModal] = useState(false);
+  const [selectedMockWeek, setSelectedMockWeek] = useState('Current Week');
 
   // Fetch data on mount
   useEffect(() => {
@@ -225,6 +230,7 @@ function PRGradingDashboard() {
     month: 'long',
     day: 'numeric',
   });
+  const selectedMockWeekMeta = MOCK_WEEK_METADATA[selectedMockWeek];
 
   if (loading) {
     return (
@@ -243,53 +249,77 @@ function PRGradingDashboard() {
         {/* Header */}
         <div className={styles.header}>
           <div className={styles.headerContent}>
-            <h1 className={styles.title}>{TEAM_NAME}</h1>
-            <p className={styles.date}>{currentDate}</p>
+            <div>
+              <h1 className={styles.title}>{TEAM_NAME}</h1>
+              <p className={styles.date}>{currentDate}</p>
+            </div>
+            <div className={styles.headerControls}>
+              <div className={styles.mockWeekControl}>
+                <label htmlFor="mock-week-selector" className={styles.mockWeekLabel}>
+                  Review Week
+                </label>
+                <select
+                  id="mock-week-selector"
+                  value={selectedMockWeek}
+                  onChange={e => setSelectedMockWeek(e.target.value)}
+                  className={styles.mockWeekSelect}
+                >
+                  {MOCK_WEEK_OPTIONS.map(option => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+                <p className={styles.mockWeekMeta}>{selectedMockWeekMeta.range}</p>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Main Table */}
-        <div className={styles.section}>
-          <div className={styles.tableHeaderActions}>
-            <button
-              type="button"
-              onClick={() => setShowAddReviewerModal(true)}
-              className={styles.addReviewerButton}
-            >
-              + Add Reviewer
-            </button>
+        <SelectionProvider>
+          <div className={styles.section}>
+            <div className={styles.tableHeaderActions}>
+              <button
+                type="button"
+                onClick={() => setShowAddReviewerModal(true)}
+                className={styles.addReviewerButton}
+              >
+                + Add Reviewer
+              </button>
+            </div>
+            <GradingTable
+              gradings={gradings}
+              onUpdatePRsReviewed={updatePRsReviewed}
+              onAddPRClick={setOpenAddModal}
+              openAddModal={openAddModal}
+              onAddGradedPR={requestAddGradedPR}
+              darkMode={darkMode}
+            />
           </div>
-          <GradingTable
-            gradings={gradings}
-            onUpdatePRsReviewed={updatePRsReviewed}
-            onAddPRClick={setOpenAddModal}
-            openAddModal={openAddModal}
-            onAddGradedPR={requestAddGradedPR}
-          />
-        </div>
 
-        {/* Summary Section */}
-        <div className={styles.summarySection}>
-          <h2 className={styles.summaryTitle}>Summary</h2>
-          <SummaryList
-            gradings={gradings}
-            onUpdateGrade={updateGrade}
-            onRemovePR={removeGradedPR}
-          />
-        </div>
+          {/* Summary Section */}
+          <div className={styles.summarySection}>
+            <h2 className={styles.summaryTitle}>Summary</h2>
+            <SummaryList
+              gradings={gradings}
+              onUpdateGrade={updateGrade}
+              onRemovePR={removeGradedPR}
+            />
+          </div>
+        </SelectionProvider>
 
         {/* Footer */}
-        <div className={styles.footer}>
-          <div className={styles.footerContent}>
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              type="button"
-              className={styles.saveButton}
-            >
-              {saving ? 'Saving...' : 'Save'}
-            </button>
-          </div>
+
+        <div className={styles.footerContent}>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            type="button"
+            className={styles.saveButton}
+          >
+            {saving ? 'Saving...' : 'Save'}
+          </button>
         </div>
       </div>
 

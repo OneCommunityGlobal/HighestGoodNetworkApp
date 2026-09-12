@@ -1,35 +1,151 @@
-:global(thead) {
+.userManagementTable thead {
   background: aliceblue;
 }
 
 /* This background color on hover property below is taking precedence over reactstrap and affecting multiple components. */
+
 /* .btn:hover {
   background-color: #0f8292;
 } */
 
-:global(#new_usermanagement) {
+.filtering-message {
+  height: calc(100dvh - 17rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.userManagementActiveCell {
+  position: relative;
+  width: 60px; /* fixed width prevents shifting */
+  min-width: 60px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.userManagementActiveWrapper {
+  position: relative;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.userManagementInfringementCount {
+  position: absolute;
+  bottom: 2px;
+  left: 4px;
+  font-size: 0.7rem;
+  color: dodgerblue;
+}
+
+.userManagementTopRightIcon {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+}
+
+.userManagementBottomRightIcon {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+}
+
+.activeCellGrid {
+  display: grid;
+  grid-template-columns: 18px 34px 18px;
+  grid-template-rows: 1fr 1fr;
+  place-items: center;
+  position: relative;
+  min-height: 42px;
+}
+
+.activeCellLeftTop {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.activeCellLeftBottom {
+  grid-column: 1;
+  grid-row: 2;
+  justify-self: start;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.activeCellDot {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+.activeCellRightTop {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.activeCellRightBottom {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.userManagementHeaderCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.iconLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  padding: 0;
+}
+
+.new_user_management {
   margin-bottom: 10px;
   box-sizing: border-box;
   width: calc(100vw - 45px);
 }
 
-:global(#user-management-table) {
+.userManagementTable {
   width: calc(100vw - 45px);
 }
-:global(#usermanagement_order) {
-  width: 5px;
+
+.userManagementCellControl {
+  margin: 0;
+  box-sizing: border-box;
 }
 
-:global(#usermanagement_active) {
-  width: 10px;
+.userManagementIsActiveIcon {
+  color: lawngreen;
 }
 
-:global(#usermanagement__delete) {
-  width: 20px;
+.userManagementIsNotActive {
+  color: #dee2e6;
 }
 
-:global(#usermanagement_resume_date) {
-  min-width: 125px;
+.userManagementIsDisabled {
+  opacity: 0;
+  transition: opacity 10ms;
+  display: none;
+}
+
+.userManagementCellControlPadded {
+  padding-top: 15px;
+}
+
+.titleClamp {
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .usermanagementTr {
@@ -42,76 +158,32 @@
   padding: 2px;
 }
 
-.usermanagementTr :global(.edituser_input),
-.usermanagementTr :global(.btn),
-.usermanagementTr :global(.copy_icon) {
-  margin: 0;
-  padding-top: 15px;
-  box-sizing: border-box;
-}
-
-:global(#usermanagement_title > div) {
-  width: 180px;
-  min-width: 180px;
-  max-width: 180px;
-  white-space: nowrap;
+.roleCell {
+  width: 100%;
   overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-:global(#user_title > div) {
-  width: 180px;
-  min-width: 180px;
-  max-width: 180px;
+  text-align: center;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.usermanagementOverviewTop {
-  background: gray;
+.roleCell svg {
+  width: 14px;
+  height: 14px;
+  font-size: 14px;
 }
 
-.usermanagementOverviewTop :global(.card) {
-  width: 200px;
-  float: left;
-  margin-right: 10px;
-  margin-bottom: 10px;
+.darkUsermanagementData td,
+.darkUsermanagementData a,
+.darkUsermanagementData span,
+.darkUsermanagementData input {
+  color: #fff !important;
 }
 
-:global(#card_project) {
-  /* background: #1d62f0; */
-  background: linear-gradient(to right bottom, rgb(100, 183, 255) 5%, rgb(146, 138, 239) 100%);
-  background-color: #1d62f0;
-  border-radius: 8px;
-  border: #08397e;
-  color: white;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-:global(#card_team) {
-  background: linear-gradient(to right bottom, rgb(100, 183, 255) 5%, rgb(146, 138, 239) 100%);
-  background-color: dodgerblue;
-  border-radius: 8px;
-  border: #08397e;
-  color: white;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-:global(#card_active) {
-  /* background: #fbad4c; */
-  background: linear-gradient(to right bottom, #ffdb56 5%, #ff9145 100%);
-  background-color: #fac17b;
-  border-radius: 8px;
-  border: #ff9145;
-  color: white;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+.darkSearchBox input,
+.darkSearchBox .form-control,
+.darkSearchRow input {
+  background-color: #2b2b2b !important;
+  color: #fff !important;
+  border: 1px solid #4a4a4a !important;
 }
 
 .emailCell {
@@ -121,6 +193,7 @@
 .emailCell a:hover {
   text-decoration: none;
 }
+
 .titleCell {
   width: 180px;
   min-width: 180px;
@@ -132,23 +205,24 @@
   max-width: 180px;
 }
 
-:global(#usermanagement_role),
-:global(#user_role),
-:global(td#usermanagement_role) {
-  width: 100%;
-  overflow: hidden;
-  text-align: center;
-  white-space: nowrap;
-}
-
-:global(td#usermanagement_role svg) {
-  font-size: 14px; /* Ensures icon fits within 20px */
-  width: 14px;
-  height: 14px;
-}
-
-:global(#user_role) {
+.userRoleCol {
   max-width: initial;
+}
+
+.userManagementColOrder {
+  width: 5px;
+}
+
+.userManagementColActive {
+  width: 10px;
+}
+
+.userManagementColDelete {
+  width: 20px;
+}
+
+.userManagementColResumeDate {
+  min-width: 125px;
 }
 
 .timeDifference {
@@ -161,13 +235,14 @@
 }
 
 .copyIcon {
-  cursor: pointer;
   position: absolute;
-  top: 0;
+  top: 50%;
   right: 0;
-  margin: 2px 2px;
+  transform: translateY(-50%);
+  margin: 0 2px;
   width: 16px;
   height: 16px;
+  cursor: pointer;
 }
 
 .usermanagementOrderInput div {
@@ -187,37 +262,19 @@
   border: 1px solid #dee2e6;
 }
 
-:global(.isActive i) {
-  color: lawngreen;
+.usermanagementActionsCell {
+  display: table-cell;
+  padding-left: 10px;
 }
 
-:global(.fa-circle-isActive) {
-  color: lawngreen;
-}
-
-:global(.isNotActive) {
-  color: #dee2e6;
-}
-
-:global(.isDisabled) {
-  opacity: 0;
-  transition: opacity 10ms;
-  display: none;
+.userManagementTable tbody tr:hover {
+  background: #e9f6ff;
 }
 
 .pageNoLink {
   margin-left: 10px;
   text-align: center;
   margin-top: 7px;
-}
-
-.usermanagementActionsCell {
-  display: table-cell;
-  padding-left: 10px;
-}
-
-:global(tr:hover) {
-  background: #e9f6ff;
 }
 
 .linkButton {
@@ -238,6 +295,7 @@
 
 .addUserModal {
   min-width: 50vw;
+
   /* Occupy the 90% of the screen width */
   max-width: 90vw !important;
 }
@@ -261,7 +319,7 @@
 }
 
 .setupNewUserPopupLabel {
-  margin: 0px;
+  margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
     'Noto Sans', 'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
     'Segoe UI Symbol', 'Noto Color Emoji';
@@ -274,8 +332,30 @@
   height: 36px;
 }
 
-:global(#setup-new-user-popup-btn) {
-  width: fit-content;
+.requestedTimeOffBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.requestedTimeOffBtn:hover {
+  background-color: #95c0fe;
+}
+
+.requestedTimeOffCalendarSvg {
+  fill: #0d6efd;
+}
+
+.requestedTimeOffClockSvg {
+  width: 100%;
+  height: 100%;
+  fill: currentcolor;
+}
+
+.requestedTimeOffClockSvg path {
+  fill: #0d6efd;
 }
 
 .setupNewUserPopupSuccess {
@@ -298,7 +378,7 @@
   padding: 5px;
 }
 
-:global(#usermanagement-footer) {
+.userManagementFooter {
   margin-bottom: 50px;
 }
 
@@ -307,25 +387,9 @@
   vertical-align: middle;
 }
 
-:global(#requested-time-off-btn) {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
 .timeOffRequestBtnMoved {
   position: relative;
   right: -9px;
-}
-
-:global(#requested-time-off-btn:hover) {
-  background-color: #95c0fe;
-}
-
-:global(.requested-time-off-calender-svg) {
-  fill: #0d6efd;
 }
 
 .requestedTimeOffClockIcon {
@@ -339,16 +403,6 @@
   justify-content: center;
   border-radius: 50%;
   background-color: white;
-}
-
-:global(.requested-time-off-clock-icon-svg) {
-  width: 100%;
-  height: 100%;
-  fill: currentColor;
-}
-
-:global(.requested-time-off-clock-icon-svg path) {
-  fill: #0d6efd;
 }
 
 .loggedTimeOffCardsContainer {
@@ -365,7 +419,7 @@
   border-radius: 4px;
   background-color: #e7e7e7;
   border: 1px solid #cacaca;
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0 0 6px rgb(0 0 0 / 30%);
 }
 
 .loggedTimeOffCardsContainer::-webkit-scrollbar-thumb {
@@ -399,7 +453,7 @@
   background-color: #fff;
   border-color: #80bdff;
   outline: 0;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
 }
 
 .editbutton {
@@ -408,29 +462,23 @@
   margin: auto;
 }
 
-:global(td) {
+.userManagementTable td {
   text-align: center;
   padding: 4px;
   vertical-align: middle;
 }
 
-/* custom-toast.css */
-:global(.custom-toast) {
-  background-color: #a69712;
-  color: white;
-}
-
-:global(.custom-toast-progress) {
-  background-color: white;
-}
-
 .darkUsermanagementData {
-  background-color: #3a506b;
+  background-color: #3a506b !important;
+  color: #fff !important;
 }
 
+.userManagementTable tbody tr.darkUsermanagementData:hover,
 .darkUsermanagementData:hover {
-  background-color: #111831;
+  background-color: #111831 !important;
+  color: #fff !important;
 }
+
 
 .lightUsermanagementData {
   background-color: white;
@@ -438,6 +486,12 @@
 
 .lightUsermanagementData:hover {
   background-color: #f0f8ff;
+}
+
+.tooltipContainer::after {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
 }
 
 .tooltipContainer {
@@ -452,7 +506,7 @@
 .tooltipContainer:hover::after {
   content: attr(data-title); /* Show full text when hovered */
   position: absolute;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgb(0 0 0 / 80%);
   color: white;
   padding: 5px;
   border-radius: 4px;
@@ -467,12 +521,6 @@
   opacity: 1;
 }
 
-.tooltipContainer::after {
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity 0.2s ease-in-out;
-}
-
 .infringementCount {
   cursor: pointer;
   position: absolute;
@@ -485,4 +533,97 @@
 
 .infringementCount a:hover {
   text-decoration: none;
+}
+
+.darkSearchRow td {
+  background-color: #3a506b !important;
+  color: #fff !important;
+}
+
+
+
+
+.darkSearchBox input::placeholder,
+.darkSearchBox .form-control::placeholder,
+.darkSearchRow input::placeholder {
+  color: #bdbdbd !important;
+}
+
+.darkSearchBox input:focus,
+.darkSearchBox .form-control:focus,
+.darkSearchRow input:focus {
+  background-color: #2b2b2b !important;
+  color: #fff !important;
+  border-color: #6ea8fe !important;
+  box-shadow: 0 0 0 0.15rem rgb(110 168 254 / 25%) !important;
+}
+
+.darkSearchBox select,
+.darkSearchBox .form-select,
+.darkSearchRow select,
+.darkSearchRow .form-select,
+.darkUsermanagementData select {
+  background-color: #2b2b2b !important;
+  color: #fff !important;
+  border: 1px solid #4a4a4a !important;
+}
+
+.darkSearchBox select option,
+.darkSearchRow select option,
+.darkUsermanagementData select option {
+  background-color: #2b2b2b !important;
+  color: #fff !important;
+}
+
+.darkSearchBox button,
+.darkSearchBox .btn,
+.darkSearchRow button,
+.darkSearchRow .btn,
+.darkUsermanagementData button,
+.darkUsermanagementData .btn {
+  background-color: #1d62f0 !important; /* Standout blue background color */
+  color: #fff !important;            /* Pure white visible text */
+  border: 1px solid #0056b3 !important;
+}
+
+/* Ensures crisp visibility when hovering over those specific buttons */
+.darkSearchBox .btn:hover,
+.darkSearchRow .btn:hover,
+.darkUsermanagementData .btn:hover {
+  background-color: #0b49c4 !important;
+  color: #fff !important;
+}
+
+/* ===================================================
+   DARK MODE TEXT VISIBILITY & CONTRAST FIXES
+   =================================================== */
+
+/* Ensures the text inside the inputs/dropdowns stands out clearly */
+#user-profiles-wild-card-search.text-light,
+#active-filter-dropdown.text-light {
+  color: #fff !important;
+  background-color: #2b2b2b !important;
+  border: 1px solid #4a4a4a !important;
+}
+
+/* Fixes the select menu options container visibility when expanded */
+#active-filter-dropdown.text-light option {
+  background-color: #2b2b2b !important;
+  color: #fff !important;
+}
+
+/* Overrides the browser's dark native dropdown arrow so a clear white one is rendered instead */
+#active-filter-dropdown.text-light {
+  padding-right: 1.75rem !important;
+  appearance: none !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.5rem center !important;
+  background-size: 10px 10px !important;
+}
+
+/* Ensures the placeholder text inside the search bar is legible but distinct */
+#user-profiles-wild-card-search.text-light::placeholder {
+  color: #b0b0b0 !important;
+  opacity: 1;
 }

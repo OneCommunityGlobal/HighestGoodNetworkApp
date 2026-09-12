@@ -1,3 +1,5 @@
+/* stylelint-disable no-descending-specificity */
+
 /* AssignAtomModal Styles */
 
 .modal {
@@ -90,7 +92,7 @@
 .dropdown:focus {
   outline: none;
   border-color: #007bff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
 }
 
 .dropdownMultiple {
@@ -147,7 +149,7 @@
 .noteField:focus {
   outline: none;
   border-color: #007bff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
 }
 
 .characterCount {
@@ -221,7 +223,7 @@
   display: inline-block;
   width: 16px;
   height: 16px;
-  border: 2px solid #ffffff;
+  border: 2px solid #fff;
   border-radius: 50%;
   border-top-color: transparent;
   animation: spin 1s ease-in-out infinite;
@@ -259,7 +261,7 @@
   overflow-y: auto;
   border: 1px solid #ced4da;
   border-radius: 6px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
 }
 
 /* Atom Selection Styles */
@@ -341,7 +343,7 @@
 
 .darkMode .dropdown:focus {
   border-color: #007bff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
 }
 
 .darkMode .noteField {
@@ -352,7 +354,7 @@
 
 .darkMode .noteField:focus {
   border-color: #007bff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
 }
 
 .darkMode .selectedItem {
@@ -397,7 +399,7 @@
 }
 
 /* Responsive design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .modal {
     width: 95%;
     margin: 10px;

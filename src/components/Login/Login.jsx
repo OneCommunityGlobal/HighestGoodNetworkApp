@@ -1,4 +1,4 @@
-import Joi from 'joi-browser';
+import Joi from 'joi';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import NetlifyPoweredLink from '~/components/Footer/NetlifyPoweredLink';
@@ -80,7 +80,13 @@ export class Login extends Form {
             darkMode,
           })}
           <div>
-            {this.renderButton({ label: 'Submit', darkMode })}
+            {this.renderButton({
+              name: 'submit',
+              id: 'submit',
+              label: 'Submit',
+              type: 'submit',
+              darkMode,
+            })}
             <Link to="forgotpassword">
               <span
                 style={{

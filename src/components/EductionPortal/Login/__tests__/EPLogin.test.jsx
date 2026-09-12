@@ -2,12 +2,12 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { useDispatch, Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { BrowserRouter as Router } from 'react-router-dom';
 import axios from 'axios';
 import EPLogin from '../EPLogin';
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 let store;
 
 beforeEach(() => {
@@ -140,6 +140,7 @@ describe('EPLogin component', () => {
   });
   it('check if entering the right email and password logs in as expected', async () => {
     axios.post.mockResolvedValue({
+      status: 200,
       statusText: 'OK',
       data: { token: '1234' },
     });
