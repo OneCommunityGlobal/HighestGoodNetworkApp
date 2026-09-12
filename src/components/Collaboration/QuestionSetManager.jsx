@@ -396,8 +396,12 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
                 onClick={loadTemplate}
                 className={`${styles.loadTemplateButton}`}
                 disabled={isLoading || !selectedTemplate}
+                style={{ position: 'relative' }}
               >
                 {isLoading ? 'Loading...' : 'Clone with Template'}
+                <span className={styles.tooltip}>
+                  Create a copy of this template to modify without changing the original.
+                </span>
               </button>
               <button
                 type="button"
@@ -422,16 +426,22 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
                 onClick={appendTemplate}
                 className={`${styles.appendTemplateButton}`}
                 disabled={isLoading || !selectedTemplate}
+                style={{ position: 'relative' }}
               >
                 {isLoading ? 'Appending...' : 'Append Template'}
+                <span className={styles.tooltip}>
+                  Add additional fields to this existing template.
+                </span>
               </button>
               <button
                 type="button"
                 onClick={deleteTemplate}
                 className={`${styles.deleteTemplateButton}`}
                 disabled={isLoading || !selectedTemplate}
+                style={{ position: 'relative' }}
               >
                 {isLoading ? 'Deleting...' : 'Delete Template'}
+                <span className={styles.tooltip}>Permanently remove this template.</span>
               </button>
             </div>
           </div>
