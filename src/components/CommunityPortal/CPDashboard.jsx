@@ -158,17 +158,6 @@ export function CPDashboard() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const { recentSearches, addSearch, removeSearch } = useRecentSearches();
 
-  // Hide the global back-to-top button — not needed on this page
-  useEffect(() => {
-    const scrollBtn = document.querySelector('.back-to-top');
-    if (!scrollBtn) return;
-    const prevDisplay = scrollBtn.style.display;
-    scrollBtn.style.display = 'none';
-    return () => {
-      scrollBtn.style.display = prevDisplay;
-    };
-  }, []);
-
   // Consolidated filter states
   const [pendingFilters, setPendingFilters] = useState(DEFAULT_FILTERS);
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);

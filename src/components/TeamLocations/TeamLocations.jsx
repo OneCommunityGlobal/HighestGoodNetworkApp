@@ -99,19 +99,6 @@ const TeamLocations = forwardRef(() => {
     }
   }, [currentUser]);
 
-  // We don't need the back to top button on this page
-  useEffect(() => {
-    const btn = document.querySelector('.back-to-top');
-    if (!btn) return;
-
-    const prev = btn.style.display;
-    btn.style.display = 'none';
-
-    return () => {
-      btn.style.display = prev;
-    };
-  }, []);
-
   const searchHandler = e => {
     setSearchText(e.target.value);
   };

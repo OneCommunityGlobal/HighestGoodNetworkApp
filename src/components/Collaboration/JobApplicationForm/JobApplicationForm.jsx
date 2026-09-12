@@ -696,17 +696,6 @@ function JobApplicationForm() {
     }
   });
 
-  /* Global back-to-top lives outside #root in index.html; hide it on this long form page. */
-  useEffect(() => {
-    const btn = document.querySelector('.back-to-top');
-    if (!btn) return undefined;
-    const prev = btn.style.display;
-    btn.style.display = 'none';
-    return () => {
-      btn.style.display = prev;
-    };
-  }, []);
-
   /*
    * Match html/body/#root to the page strip. Global #root is white; dark mode uses !important —
    * route class + :global rules in the module CSS set backgrounds with !important while mounted.
