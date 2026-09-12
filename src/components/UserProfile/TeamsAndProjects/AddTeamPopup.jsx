@@ -189,17 +189,17 @@ const AddTeamPopup = React.memo((props) => {
 
 
 
-  const refreshTeams = async () => {
-    try {
-      setTeamsLoading(true);
-      const resp = await dispatch(getAllUserTeams());
-      const list = extractTeams(resp);
-      if (list.length) setTeams(list);
-    } finally {
-      setTeamsLoading(false);
-    }
-  };
-
+const refreshTeams = async () => {
+  try {
+    setTeamsLoading(true);
+    const resp = await dispatch(getAllUserTeams());
+    const list = extractTeams(resp);
+    setTeams(list);
+    return list;
+  } finally {
+    setTeamsLoading(false);
+  }
+};
   const handleCreateTeamError = (response) => {
     const messageToastError =
       response?.status === 500
@@ -229,15 +229,16 @@ const AddTeamPopup = React.memo((props) => {
       if (response?.status === 200) {
         setDuplicateTeam(false);
         if (!isNotDisplayAlert) setIsNotDisplayAlert(true);
-        await refreshTeams();
-        toast.success('Team created successfully');
-        const list = extractTeams(response);
+        const refreshedTeams = await refreshTeams();
+
         const created =
-          list?.find((t) => normalize(t.teamName) === normalize(newTeamName)) ||
-          allTeams.find((t) => normalize(t.teamName) === normalize(newTeamName)) ||
-          response?.data;
-        setIsLoading(false);
-        onAssignTeam(created);
+        refreshedTeams.find(
+        team => normalize(team.teamName) === normalize(newTeamName)
+  ) ||
+  response?.data;
+
+setIsLoading(false);
+      onAssignTeam(created);
       } else {
         setIsLoading(false);
         handleCreateTeamError(response);
