@@ -1,12 +1,13 @@
 import { useState } from 'react';
 
-import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { useSelector } from 'react-redux';
 import styles from './EventPage.module.css';
 import EventManagementTabs from './EventManagementTabs';
+import EventDescriptionPanel from './EventDescriptionPanel';
+import EventCardMiddle from './EventCardMiddle';
 
 function EventPage() {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -101,115 +102,27 @@ function EventPage() {
           />
         </div>
 
-        <div className={styles.eventCardMiddle}>
-          <input
-            type="text"
-            className={`${styles.eventCardTitle} ${styles.inputField} ${
-              darkMode ? styles.inputDark : ''
-            }`}
-            value={eventName}
-            onChange={e => setEventName(e.target.value)}
-          />
-          <p className={styles.eventCardType}>
-            Type:{' '}
-            <select
-              value={eventType}
-              onChange={e => setEventType(e.target.value)}
-              className={darkMode ? styles.statusDropdownDark : styles.statusDropdown}
-            >
-              <option>In-person</option>
-              <option>Virtual</option>
-            </select>
-          </p>
-          <p>
-            Location:{' '}
-            <input
-              type="text"
-              value={location}
-              onChange={e => setLocation(e.target.value)}
-              className={`${styles.inputField} ${darkMode ? styles.inputDark : ''}`}
-            />
-          </p>
-          <div className={`${styles.eventCard12} ${darkMode ? styles.eventCard12Dark : ''}`}>
-            <div className={`${styles.eventCardInfo} ${darkMode ? styles.eventCardInfoDark : ''}`}>
-              <div className={styles.infoItem}>
-                <p>
-                  📅 Date: <br />
-                </p>
-                <DatePicker
-                  selected={startDate}
-                  onChange={handleDateChange}
-                  minDate={new Date()}
-                  selectsRange
-                  startDate={startDate}
-                  endDate={endDate}
-                />
-              </div>
-              <div className={styles.infoItem}>
-                <p>
-                  ⏰ Time: <br />
-                </p>{' '}
-                <input
-                  type="text"
-                  value={time}
-                  onChange={e => setTime(e.target.value)}
-                  className={`${styles.inputField} ${darkMode ? styles.inputDark : ''}`}
-                />
-              </div>
-              <div className={styles.infoItem}>
-                <p>
-                  👤 Organizer: <br />
-                </p>{' '}
-                <input
-                  type="text"
-                  value={organizer}
-                  onChange={e => setOrganizer(e.target.value)}
-                  className={`${styles.inputField} ${darkMode ? styles.inputDark : ''}`}
-                />
-              </div>
-            </div>
-
-            <div
-              className={`${styles.eventCardExtra} ${darkMode ? styles.eventCardExtraDark : ''}`}
-            >
-              <div className={styles.extraItem}>
-                {' '}
-                <p>
-                  👥 Capacity:
-                  <br />{' '}
-                  <input
-                    type="text"
-                    value={capacity}
-                    onChange={e => setCapacity(e.target.value)}
-                    className={`${styles.inputField} ${darkMode ? styles.inputDark : ''}`}
-                  />
-                </p>
-              </div>
-              <div className={styles.extraItem}>
-                {' '}
-                <p>
-                  ⭐ Overall Rating: <br /> {renderStars()}
-                </p>
-              </div>
-              <div className={styles.extraItem}>
-                {' '}
-                <p>
-                  Status:
-                  <br />
-                  <select
-                    value={status}
-                    onChange={e => setStatus(e.target.value)}
-                    className={darkMode ? styles.statusDropdownDark : styles.statusDropdown}
-                  >
-                    <option>Active</option>
-                    <option>Finished</option>
-                    <option>Participated</option>
-                  </select>
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <EventCardMiddle
+          darkMode={darkMode}
+          eventName={eventName}
+          onEventNameChange={e => setEventName(e.target.value)}
+          eventType={eventType}
+          onEventTypeChange={e => setEventType(e.target.value)}
+          location={location}
+          onLocationChange={e => setLocation(e.target.value)}
+          startDate={startDate}
+          endDate={endDate}
+          onDateChange={handleDateChange}
+          time={time}
+          onTimeChange={e => setTime(e.target.value)}
+          organizer={organizer}
+          onOrganizerChange={e => setOrganizer(e.target.value)}
+          capacity={capacity}
+          onCapacityChange={e => setCapacity(e.target.value)}
+          status={status}
+          onStatusChange={e => setStatus(e.target.value)}
+          stars={renderStars()}
+        />
 
         <div className={`${styles.eventCardRight} ${darkMode ? styles.eventCardRightDark : ''}`}>
           <Calendar
@@ -225,39 +138,15 @@ function EventPage() {
         <EventManagementTabs darkMode={darkMode} />
       </div>
 
-      <div className={styles.eventDescription}>
-        <textarea
-          className={`${styles.textarea} ${darkMode ? styles.inputDark : ''}`}
-          value={description}
-          onChange={handleDescriptionChange}
-          placeholder="Enter event description..."
-        />
-        {descriptionError && (
-          <p className={`${styles.errorText} ${darkMode ? styles.errorTextDark : ''}`}>
-            {descriptionError}
-          </p>
-        )}
-        {descriptionPosted && (
-          <p className={`${styles.successText} ${darkMode ? styles.successTextDark : ''}`}>
-            Description posted successfully!
-          </p>
-        )}
-        <div className={styles.mediaUploadContainer}>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleMediaUpload}
-            className={styles.descriptionMediaUpload}
-          />
-          <button
-            type="button"
-            className={`${styles.postBtn} ${darkMode ? styles.postBtnDark : ''}`}
-            onClick={handlePostDescription}
-          >
-            Post Description
-          </button>
-        </div>
-      </div>
+      <EventDescriptionPanel
+        darkMode={darkMode}
+        description={description}
+        descriptionError={descriptionError}
+        descriptionPosted={descriptionPosted}
+        onDescriptionChange={handleDescriptionChange}
+        onMediaUpload={handleMediaUpload}
+        onPostDescription={handlePostDescription}
+      />
     </div>
   );
 }
