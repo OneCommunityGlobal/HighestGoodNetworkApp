@@ -30,6 +30,46 @@ const toYMD = d =>
       ).padStart(2, '0')}`
     : '';
 
+const COLOR_PALETTE = [
+  '#34D399', // green
+  '#2563EB', // blue
+  '#F472B6', // pink
+  '#FBBF24', // amber
+  '#A78BFA', // purple
+  '#FB923C', // orange
+  '#F87171', // red
+  '#38BDF8', // cyan
+];
+
+const buildDateAndFilterParams = (startDate, endDate, severityFilter, injuryTypeFilter) => ({
+  startDate: toYMD(startDate),
+  endDate: toYMD(endDate),
+  severities: severityFilter.map(s => s.value).join(','),
+  types: injuryTypeFilter.map(t => t.value).join(','),
+});
+
+const buildProjectNameById = (projects, data) => {
+  const m = new Map();
+  for (const p of projects) m.set(String(p._id), p.name);
+  for (const r of data) {
+    const pid = String(r?.projectId ?? 'unknown');
+    if (!m.has(pid) && r?.projectName) m.set(pid, r.projectName);
+  }
+  return m;
+};
+
+const buildChartData = data => {
+  const acc = Object.create(null);
+  for (const r of data) {
+    const workerCategory = r?.workerCategory ?? 'Unknown';
+    const pid = String(r?.projectId ?? 'unknown');
+    const total = Number(r?.totalInjuries) || 0;
+    if (!acc[workerCategory]) acc[workerCategory] = { workerCategory };
+    acc[workerCategory][pid] = (acc[workerCategory][pid] || 0) + total;
+  }
+  return Object.values(acc);
+};
+
 function InjuryCategoryBarChart() {
   const dispatch = useDispatch();
 
@@ -58,12 +98,7 @@ function InjuryCategoryBarChart() {
   }, [dispatch]);
 
   useEffect(() => {
-    const params = {
-      startDate: toYMD(startDate),
-      endDate: toYMD(endDate),
-      severities: severityFilter.map(s => s.value).join(','),
-      types: injuryTypeFilter.map(t => t.value).join(','),
-    };
+    const params = buildDateAndFilterParams(startDate, endDate, severityFilter, injuryTypeFilter);
     dispatch(fetchInjuryProjects(params));
   }, [dispatch, startDate, endDate, severityFilter, injuryTypeFilter]);
 
@@ -126,35 +161,14 @@ function InjuryCategoryBarChart() {
   useEffect(() => {
     const params = {
       projectIds: projectNameFilter.length ? projectNameFilter.map(p => p.value).join(',') : '',
-      startDate: toYMD(startDate),
-      endDate: toYMD(endDate),
-      severities: severityFilter.map(s => s.value).join(','),
-      types: injuryTypeFilter.map(t => t.value).join(','),
+      ...buildDateAndFilterParams(startDate, endDate, severityFilter, injuryTypeFilter),
     };
     dispatch(fetchInjuryData(params));
   }, [dispatch, projectNameFilter, severityFilter, injuryTypeFilter, startDate, endDate]);
 
-  const projectNameById = useMemo(() => {
-    const m = new Map();
-    for (const p of projects) m.set(String(p._id), p.name);
-    for (const r of data) {
-      const pid = String(r?.projectId ?? 'unknown');
-      if (!m.has(pid) && r?.projectName) m.set(pid, r.projectName);
-    }
-    return m;
-  }, [projects, data]);
+  const projectNameById = useMemo(() => buildProjectNameById(projects, data), [projects, data]);
 
-  const chartData = useMemo(() => {
-    const acc = Object.create(null);
-    for (const r of data) {
-      const workerCategory = r?.workerCategory ?? 'Unknown';
-      const pid = String(r?.projectId ?? 'unknown');
-      const total = Number(r?.totalInjuries) || 0;
-      if (!acc[workerCategory]) acc[workerCategory] = { workerCategory };
-      acc[workerCategory][pid] = (acc[workerCategory][pid] || 0) + total;
-    }
-    return Object.values(acc);
-  }, [data]);
+  const chartData = useMemo(() => buildChartData(data), [data]);
 
   const seriesProjectIds = useMemo(() => {
     const set = new Set(data.map(d => String(d?.projectId ?? 'unknown')));
@@ -171,17 +185,6 @@ function InjuryCategoryBarChart() {
   }, [unfilteredProjects, projects]);
 
   const showLabels = seriesProjectIds.length <= 4;
-
-  const COLOR_PALETTE = [
-    '#34D399', // green
-    '#2563EB', // blue
-    '#F472B6', // pink
-    '#FBBF24', // amber
-    '#A78BFA', // purple
-    '#FB923C', // orange
-    '#F87171', // red
-    '#38BDF8', // cyan
-  ];
 
   const projectColorById = new Map();
   [...colorProjectIds]

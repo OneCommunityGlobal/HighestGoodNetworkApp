@@ -537,8 +537,11 @@
   transition: color 0.3s ease;
 }
 
+/* The status oval's background is always the color-coded pastel from
+   projectStatusButtons, so its value text must stay dark for contrast
+   in both themes. */
 .weeklyStatusValue {
-  color: #000;
+  color: #000 !important;
   font-size: 40px;
   font-weight: 600;
   transition: color 0.3s ease;
@@ -558,13 +561,6 @@
 
 .darkMode .weeklyCardTitle {
   color: var(--text-color) !important;
-}
-
-/* The status oval's background is always the color-coded pastel from
-   projectStatusButtons, so its value text must stay dark for contrast
-   in both themes. */
-.weeklyStatusValue {
-  color: #000 !important;
 }
 
 /* The change text sits on the card background, which does switch with the
