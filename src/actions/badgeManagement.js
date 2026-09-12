@@ -35,7 +35,7 @@ const getServerErrorMessage = data => {
   if (!data) return null;
   if (typeof data === 'string') {
     if (data.includes('<!DOCTYPE') || data.includes('<html')) {
-      const preMatch = data.match(/<pre[^>]*>([\s\S]*?)<\/pre>/i);
+      const preMatch = /<pre[^>]*>([\s\S]*?)<\/pre>/i.exec(data);
       return preMatch ? preMatch[1].trim() : 'The server returned an unexpected error page.';
     }
     return data;

@@ -28,7 +28,6 @@ import { permissions } from '../../utils/constants';
 function JobFormBuilder() {
   const dispatch = useDispatch();
   const { auth } = useSelector(state => state);
-  const userRole = auth?.user?.role;
   const frontPermissions = auth?.user?.permissions?.frontPermissions;
   const rolePermissions = useSelector(state => state.role?.roles);
   const darkMode = useSelector(state => state.theme.darkMode);
