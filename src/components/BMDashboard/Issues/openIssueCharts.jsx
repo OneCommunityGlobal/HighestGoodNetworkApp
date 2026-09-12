@@ -19,7 +19,7 @@ import {
   setProjectFilter,
 } from '../../../actions/bmdashboard/issueChartActions';
 import { CustomDateComponent } from './CustomDateComponent';
-import styles from './issueCharts.module.css';
+import styles from './issueChart.module.css';
 
 /* ---------- helpers ---------- */
 
