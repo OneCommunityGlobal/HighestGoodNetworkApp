@@ -206,7 +206,10 @@ function WeeklyProjectSummary() {
                   >
                     <span className={`${styles.weeklyStatusValue}`}>{button.value}</span>
                   </div>
-                  <div className="weekly-status-change" style={{ color: button.textColor }}>
+                  <div
+                    className={styles.weeklyStatusChange}
+                    style={darkMode ? undefined : { color: button.textColor }}
+                  >
                     {button.change}
                   </div>
                 </div>

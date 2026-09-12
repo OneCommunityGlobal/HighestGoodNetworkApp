@@ -218,7 +218,7 @@ function InjuryCategoryBarChart() {
   const selectStyles = buildChartSelectStyles(darkMode);
 
   return (
-    <div className={`injury-chart-container ${darkMode && 'darkMode'}`}>
+    <div className={`injury-chart-container ${darkMode ? 'darkMode' : ''}`}>
       <div className="injury-chart-header">
         <h3 className="injury-chart-title">Injury Severity by Category of Worker Injured</h3>
 
