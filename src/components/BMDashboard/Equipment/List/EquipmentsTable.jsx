@@ -162,51 +162,54 @@ function EquipmentsTable({ equipment, project }) {
           </thead>
           <tbody>
             {equipmentsViewData && equipmentsViewData.length > 0 ? (
-              equipmentsViewData.map(rec => (
-                <tr key={rec._id}>
-                  <td>{rec.project?.name}</td>
-                  <td>
-                    <Link
-                      to={`/bmdashboard/equipment/${rec._id}`}
-                      className={styles.linkButton}
-                      data-tip="Open equipment details"
-                    >
-                      {rec.itemType?.name || rec.name || 'View Details'}
-                    </Link>
-                  </td>
-                  <td>{rec.purchaseStatus === 'Purchased' ? 'Yes' : 'No'}</td>
-                  <td>{rec.purchaseStatus === 'Rental' ? 'Yes' : 'No'}</td>
-                  <td>{new Date(rec.rentedOnDate).toLocaleDateString()}</td>
-                  <td>{new Date(rec.rentalDueDate).toLocaleDateString()}</td>
-                  <td className="materials_cell">
-                    <button
-                      type="button"
-                      onClick={() => handleOpenModal(rec, 'UpdatesEdit')}
-                      aria-label="Edit updates"
-                    >
-                      <BiPencil />
-                    </button>
-                    <Button
-                      color="primary"
-                      outline
-                      size="sm"
-                      onClick={() => handleOpenModal(rec, 'UpdatesView')}
-                    >
-                      View
-                    </Button>
-                  </td>
-                  <td>
-                    <Button
-                      color="primary"
-                      outline
-                      size="sm"
-                      onClick={() => handleOpenModal(rec, 'PurchasesView')}
-                    >
-                      View
-                    </Button>
-                  </td>
-                </tr>
-              ))
+              equipmentsViewData.map(rec => {
+                return (
+                  <tr key={rec._id}>
+                    <td>{rec.project?.name}</td>
+                    <td>
+                      <Link
+                        to={`/bmdashboard/equipment/${rec._id}`}
+                        className={styles.linkButton}
+                        data-tip="Open equipment details"
+                      >
+                        {rec.itemType?.name || rec.name || 'View Details'}
+                      </Link>
+                    </td>
+                    <td>{rec.purchaseStatus === 'Purchased' ? 'Yes' : 'No'}</td>
+                    <td>{rec.purchaseStatus === 'Rental' ? 'Yes' : 'No'}</td>
+                    <td>{new Date(rec.rentedOnDate).toLocaleDateString()}</td>
+                    <td>{new Date(rec.rentalDueDate).toLocaleDateString()}</td>
+
+                    <td className="materials_cell">
+                      <Link
+                        to={`/bmdashboard/tools/${rec._id}/update`}
+                        aria-label="Update equipment status"
+                        style={{ display: 'inline-flex', color: 'inherit', textDecoration: 'none' }}
+                      >
+                        <BiPencil />
+                      </Link>
+                      <Button
+                        color="primary"
+                        outline
+                        size="sm"
+                        onClick={() => handleOpenModal(rec, 'UpdatesView')}
+                      >
+                        View
+                      </Button>
+                    </td>
+                    <td>
+                      <Button
+                        color="primary"
+                        outline
+                        size="sm"
+                        onClick={() => handleOpenModal(rec, 'PurchasesView')}
+                      >
+                        View
+                      </Button>
+                    </td>
+                  </tr>
+                );
+              })
             ) : (
               <tr>
                 <td colSpan={8} style={{ textAlign: 'center' }}>
