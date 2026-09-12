@@ -19,6 +19,7 @@ import EmailPanel from './platforms/email';
 import RedditAutoPoster from './platforms/reddit';
 import SlashdotAutoPoster from './platforms/slashdot';
 import SocialMediaComposer from './platforms/social/SocialMediaComposer';
+import BlueskyPostDetails from './BlueskyPostDetails';
 
 function Announcements({ title, email: initialEmail }) {
   const [activeTab, setActiveTab] = useState('email');
@@ -114,21 +115,25 @@ function Announcements({ title, email: initialEmail }) {
     { id: 'photo', icon: faImage, label: 'Photo' },
     { id: 'video', icon: faVideo, label: 'Video' },
     { id: 'article', icon: faNewspaper, label: 'Article' },
-    { id: 'x', label: 'X', customIconSrc: 'social-media-logos/x_icon.png' },
+    { id: 'x', label: 'X', customIconSrc: '/social-media-logos/x_icon.png' },
     { id: 'facebook', icon: faFacebook, label: 'Facebook' },
     { id: 'linkedin', icon: faLinkedin, label: 'LinkedIn' },
-    { id: 'pinterest', label: 'Pinterest', customIconSrc: 'social-media-logos/pinterest_icon.png' },
-    { id: 'instagram', label: 'Instagram', customIconSrc: 'social-media-logos/insta_icon.png' },
-    { id: 'threads', label: 'Threads', customIconSrc: 'social-media-logos/threads_icon.png' },
-    { id: 'mastodon', label: 'Mastodon', customIconSrc: 'social-media-logos/mastodon_icon.png' },
-    { id: 'bluesky', label: 'BlueSky', customIconSrc: 'social-media-logos/bluesky_icon.png' },
-    { id: 'youtube', label: 'Youtube', customIconSrc: 'social-media-logos/youtube_icon.png' },
-    { id: 'reddit', label: 'Reddit', customIconSrc: 'social-media-logos/reddit_icon.png' },
-    { id: 'tumblr', label: 'Tumblr', customIconSrc: 'social-media-logos/tumblr_icon.png' },
-    { id: 'imgur', label: 'Imgur', customIconSrc: 'social-media-logos/imgur_icon.png' },
-    { id: 'myspace', label: 'Myspace', customIconSrc: 'social-media-logos/myspace_icon.png' },
+    {
+      id: 'pinterest',
+      label: 'Pinterest',
+      customIconSrc: '/social-media-logos/pinterest_icon.png',
+    },
+    { id: 'instagram', label: 'Instagram', customIconSrc: '/social-media-logos/insta_icon.png' },
+    { id: 'threads', label: 'Threads', customIconSrc: '/social-media-logos/threads_icon.png' },
+    { id: 'mastodon', label: 'Mastodon', customIconSrc: '/social-media-logos/mastodon_icon.png' },
+    { id: 'bluesky', label: 'BlueSky', customIconSrc: '/social-media-logos/bluesky_icon.png' },
+    { id: 'youtube', label: 'Youtube', customIconSrc: '/social-media-logos/youtube_icon.png' },
+    { id: 'reddit', label: 'Reddit', customIconSrc: '/social-media-logos/reddit_icon.png' },
+    { id: 'tumblr', label: 'Tumblr', customIconSrc: '/social-media-logos/tumblr_icon.png' },
+    { id: 'imgur', label: 'Imgur', customIconSrc: '/social-media-logos/imgur_icon.png' },
+    { id: 'myspace', label: 'Myspace', customIconSrc: '/social-media-logos/myspace_icon.png' },
     { id: 'medium', icon: faMedium, label: 'Medium' },
-    { id: 'plurk', label: 'Plurk', customIconSrc: 'social-media-logos/plurk_icon.png' },
+    { id: 'plurk', label: 'Plurk', customIconSrc: '/social-media-logos/plurk_icon.png' },
     {
       id: 'livejournal',
       label: 'LiveJournal',
@@ -241,6 +246,9 @@ function Announcements({ title, email: initialEmail }) {
                 break;
               case 'reddit':
                 PlatformComposer = RedditAutoPoster;
+                break;
+              case 'bluesky':
+                PlatformComposer = BlueskyPostDetails;
                 break;
               default:
                 PlatformComposer = SocialMediaComposer;
