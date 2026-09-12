@@ -76,7 +76,7 @@ function EventPage() {
 
   const getCalendarTileClassName = ({ date, view }) => {
     if (view === 'month' && date < new Date().setHours(0, 0, 0, 0)) {
-      return styles.calendarTileDisabled;
+      return darkMode ? styles.calendarTileDisabledDark : styles.calendarTileDisabled;
     }
     return null;
   };

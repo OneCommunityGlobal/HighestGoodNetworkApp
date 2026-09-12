@@ -191,6 +191,12 @@
   pointer-events: none;
 }
 
+.eventPageDark :global(.react-calendar__tile).calendarTileDisabledDark {
+  color: #8a9bbd;
+  background-color: #22304d;
+  pointer-events: none;
+}
+
 /* Dark Mode */
 .eventPageDark {
   background-color: #1b2a41;
@@ -217,14 +223,15 @@
   border-radius: 4px;
 }
 
-.postBtnDark {
-  background-color: #fff;
-  color: #2e5061;
-  border: 1px solid #666;
+.postBtn.postBtnDark {
+  background-color: #7a90b3;
+  color: #1b2a41;
+  border: 1px solid #7a90b3;
 }
 
-.postBtnDark:hover {
-  background-color: #2e5061;
+.postBtn.postBtnDark:hover {
+  background-color: #9fb1cc;
+  color: #1b2a41;
 }
 
 .eventCard12Dark {
