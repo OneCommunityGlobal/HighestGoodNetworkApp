@@ -92,6 +92,45 @@
   overflow: visible;
 }
 
+.jobTooltip {
+  position: relative;
+  width: 250px;
+  margin: 5px 0 16px 12px;
+  box-shadow: 0 4px 6px rgb(0 0 0 / 15%);
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  text-wrap: wrap;
+  z-index: 10;
+}
+
+.jobTooltip p {
+  /* !important needed to beat the global body.dark-mode * { color: #fff !important } rule */
+  color: black !important;
+  margin: 0 0 8px;
+}
+
+.jobTooltip::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  transform: translateX(-50%) rotate(-45deg);
+  border-width: 0 5px 5px 5px;
+  border-style: solid;
+  border-color: transparent #f9f9f9 transparent transparent;
+}
+
+.jobTooltipDismiss {
+  background-color: #6c757d;
+  color: #ffffff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
 .searchForm {
   display: flex;
   gap: 8px;
