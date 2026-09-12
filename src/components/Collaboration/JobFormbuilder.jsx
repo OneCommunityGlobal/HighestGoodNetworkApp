@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
+import { Prompt } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import styles from './JobFormBuilder.module.css';
 import { ENDPOINTS } from '~/utils/URL';
@@ -23,6 +24,7 @@ import {
   prepareQuestionClone,
   normalizeLoadedQuestions,
 } from './jobFormQuestionUtils';
+import { hasUnsavedJobFormChanges } from './jobFormDirtyState';
 
 function JobFormBuilder() {
   const dispatch = useDispatch();
@@ -63,6 +65,7 @@ function JobFormBuilder() {
   };
 
   const [jobTitle, setJobTitle] = useState('Please Choose an option');
+  const [initialJobTitle, setInitialJobTitle] = useState('Please Choose an option');
   const jobPositions = JOB_FORM_POSITION_OPTIONS;
 
   const [newOption, setNewOption] = useState('');
@@ -71,10 +74,24 @@ function JobFormBuilder() {
   const [editingIndex, setEditingIndex] = useState(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  const markAsSaved = fields => {
+  const markAsSaved = (fields, savedJobTitle) => {
     setInitialFormFields(structuredClone(fields));
+    if (savedJobTitle !== undefined) setInitialJobTitle(savedJobTitle);
     setHasUnsavedChanges(false);
   };
+
+  // Prevent refresh while unsaved changes exist
+  useEffect(() => {
+    const handler = event => {
+      if (hasUnsavedChanges) {
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    };
+
+    globalThis.addEventListener('beforeunload', handler);
+    return () => globalThis.removeEventListener('beforeunload', handler);
+  }, [hasUnsavedChanges]);
 
   // Reset builder after template is saved
   const resetBuilderState = () => {
@@ -102,9 +119,12 @@ function JobFormBuilder() {
           const formId = firstForm._id || firstForm.id;
 
           setCurrentFormId(formId);
-          setFormFields(normalizeLoadedQuestions(firstForm.questions || []));
-          setJobTitle(firstForm.title || 'Please Choose an option');
-          markAsSaved(normalizeLoadedQuestions(firstForm.questions || []));
+          const loadedQuestions = normalizeLoadedQuestions(firstForm.questions || []);
+          const loadedTitle = firstForm.title || 'Please Choose an option';
+
+          setFormFields(loadedQuestions);
+          setJobTitle(loadedTitle);
+          markAsSaved(loadedQuestions, loadedTitle);
           setNewField(initialNewField);
 
           console.log('Auto-loaded form:', formId);
@@ -119,14 +139,18 @@ function JobFormBuilder() {
 
   // Detect unsaved changes
   useEffect(() => {
-    const changed =
-      JSON.stringify(formFields) !== JSON.stringify(initialFormFields) ||
-      JSON.stringify(newField) !== JSON.stringify(initialNewField) ||
-      templateName !== '' ||
-      selectedTemplate !== '';
+    const changed = hasUnsavedJobFormChanges({
+      formFields,
+      initialFormFields,
+      newField,
+      initialNewField,
+      templateName,
+      jobTitle,
+      initialJobTitle,
+    });
 
     setHasUnsavedChanges(changed);
-  }, [formFields, newField, templateName, selectedTemplate, initialFormFields]);
+  }, [formFields, initialFormFields, newField, templateName, jobTitle, initialJobTitle]);
 
   const syncFieldAction = async (actionLabel, apiCall, rollback) => {
     try {
@@ -361,7 +385,7 @@ function JobFormBuilder() {
         requestor: getRequestor(),
       });
 
-      markAsSaved(formFields);
+      markAsSaved(formFields, jobTitle);
       console.log('Form updated successfully');
       alert('Form saved successfully!');
     } catch (error) {
@@ -376,6 +400,10 @@ function JobFormBuilder() {
 
   return (
     <div className={`${styles.pageWrapper} ${darkMode ? styles.darkMode : ''}`}>
+      <Prompt
+        when={hasUnsavedChanges}
+        message="You have unsaved changes. Are you sure you want to leave this page?"
+      />
       <div className={styles.formBuilderContainer}>
         <img
           src={OneCommunityImage}
