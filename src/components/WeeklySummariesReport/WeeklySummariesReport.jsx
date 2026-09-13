@@ -6,7 +6,7 @@ import axios from 'axios';
 import moment from 'moment';
 import 'moment-timezone';
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, startTransition } from 'react';
 import { MultiSelect } from 'react-multi-select-component';
 import { connect } from 'react-redux';
 import Select, { components } from 'react-select';
@@ -128,7 +128,7 @@ const initialState = {
   auth: [],
   selectedLoggedHoursRange: '',
   selectedOverTime: false,
-  selectedBioStatus: false,
+  selectedBioStatus: null, // null = no filter, 'default' | 'requested' | 'posted' = filter by that status
   selectedTrophies: false,
   chartShow: false,
   replaceCode: '',
@@ -738,6 +738,8 @@ const WeeklySummariesReport = props => {
         selectedLoggedHoursRange,
         summaries,
         selectedOverTime,
+        // Bio Status Filter: Changed from boolean to nullable enum for flexible filtering
+        // null = no filter, 'default'|'requested'|'posted' = filter by specific status
         selectedBioStatus,
         selectedTrophies,
         COLORS,
@@ -768,12 +770,10 @@ const WeeklySummariesReport = props => {
             return false;
           }
 
-          const isMeetCriteria =
-            summary.totalTangibleHrs > 80 &&
-            summary.weeklySummariesCount >= 8 &&
-            summary.bioPosted !== 'posted';
-
-          const isBio = !selectedBioStatus || isMeetCriteria;
+          // Bio Status Filter: Simplified logic using flexible enum matching
+          // Replaces previous strict criteria (>80 work hours AND >=8 summaries AND bio not posted)
+          // Now supports flexible selection: null (show all) or specific status ('default'|'requested'|'posted')
+          const isBio = !selectedBioStatus || summary.bioPosted === selectedBioStatus;
 
           const isOverHours =
             !selectedOverTime ||

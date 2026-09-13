@@ -4,7 +4,12 @@
 }
 
 .bioToggle {
-  display: inline-block;
+  display: block;
+  margin: 8px 0;
+  
+  button {
+    margin-top: 8px;
+  }
 }
 
 .nameInfo {
