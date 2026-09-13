@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { render, screen, fireEvent} from '@testing-library/react';
+import { act, render, screen, fireEvent} from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import Projects from '..';
 import { Provider } from 'react-redux';
@@ -214,5 +214,67 @@ describe("Projects component",()=>{
   //   fireEvent.click(closeButton)
   //   expect(screen.queryByText('Confirm Archive')).not.toBeInTheDocument();
   })
+
+  it('searches archived projects while the archived view is open', async () => {
+    axios.get.mockResolvedValue({ status: 200, data: [] });
+    const activeProject = { ...projects[0], _id: 'active-project', projectName: 'Active Alpha' };
+    const archivedProject = {
+      ...projects[0],
+      _id: 'archived-project',
+      projectName: 'Archived Alpha',
+      isArchived: true,
+    };
+    const archivedStore = mockStore({
+      ...store.getState(),
+      allProjects: {
+        projects: [activeProject],
+        archivedProjects: [archivedProject],
+        status: 200,
+        fetching: false,
+        fetched: true,
+      },
+    });
+
+    render(
+      <MemoryRouter>
+        <Provider store={archivedStore}>
+          <Projects />
+        </Provider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Show Archived' }));
+    fireEvent.change(screen.getByLabelText('Filter by'), { target: { value: 'project' } });
+    fireEvent.change(screen.getByPlaceholderText('Search by Project Name'), {
+      target: { value: 'Archived Alpha' },
+    });
+
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 350));
+    });
+
+    expect(screen.getByText('Archived Alpha')).toBeInTheDocument();
+    expect(screen.queryByText('Active Alpha')).not.toBeInTheDocument();
+  });
+
+  it('does not use the light Bootstrap button treatment in dark mode', () => {
+    axios.get.mockResolvedValue({ status: 200, data: [] });
+    const darkStore = mockStore({
+      ...store.getState(),
+      theme: { darkMode: true },
+    });
+
+    render(
+      <MemoryRouter>
+        <Provider store={darkStore}>
+          <Projects />
+        </Provider>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole('button', { name: 'Show Archived' })).not.toHaveClass(
+      'btn-outline-light',
+    );
+  });
   
 })

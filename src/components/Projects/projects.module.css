@@ -3,6 +3,19 @@
   background: aliceblue;
 }
 
+.archiveToggleDark {
+  color: #f8f9fa;
+  background-color: #2f415a;
+  border-color: #8fa3b8;
+}
+
+.archiveToggleDark:hover,
+.archiveToggleDark:focus {
+  color: #fff;
+  background-color: #405675;
+  border-color: #b8c7d6;
+}
+
 :global(#new_project) {
   margin-bottom: 10px;
 }

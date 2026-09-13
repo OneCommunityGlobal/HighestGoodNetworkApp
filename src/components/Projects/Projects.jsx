@@ -20,6 +20,10 @@ import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 
+// Stable reference for the empty case. Returning a fresh [] from a selector
+// gives a new identity on every render, which retriggers effects that depend
+// on it.
+const EMPTY_PROJECT_LIST = [];
 
 const Projects = function(props) {
   const { role } = props.state.userProfile;
@@ -28,9 +32,14 @@ const Projects = function(props) {
   const taskSelectionMode = location.state?.taskSelectionMode || false;
   const taskSelectionReturnPath = location.state?.returnPath || '/bmdashboard/AddNewTeam';
   const allReduxProjects = useSelector(state => state.allProjects.projects);
-  const numberOfProjects = props.state.allProjects.projects.length;
-  const numberOfActive = props.state.allProjects.projects.filter(project => project.isActive)
-    .length;
+  const archivedReduxProjects = useSelector(
+    state => state.allProjects.archivedProjects ?? EMPTY_PROJECT_LIST,
+  );
+  // Total counts every project the app knows about, so it does not change when
+  // the archived view is toggled. The second card switches between the active
+  // count and the archived count depending on which list is on screen.
+  const numberOfProjects = allReduxProjects.length + archivedReduxProjects.length;
+  const numberOfActive = allReduxProjects.filter(project => project.isActive).length;
   const { fetching, fetched, status, error } = props.state.allProjects;
   const initialModalData = {
     showModal: false,
@@ -197,8 +206,8 @@ const Projects = function(props) {
 
   const generateProjectList = (categorySelectedForSort, showStatus, isShowingArchived) => {
     const activeMemberCounts = props.state.projectMembers?.activeMemberCounts || {};
-    const filteredProjects = allReduxProjects
-      .filter(project => isShowingArchived ? project.isArchived : !project.isArchived)
+    const sourceProjects = isShowingArchived ? archivedReduxProjects : allReduxProjects;
+    const filteredProjects = sourceProjects
       .filter(project => {
         if (categorySelectedForSort && showStatus){
           return project.category === categorySelectedForSort && project.isActive === showStatus;
@@ -272,7 +281,10 @@ const Projects = function(props) {
 
 
   useEffect(() => {
+    // Both lists are loaded up front so the total is correct before the
+    // archived view is ever opened.
     props.fetchAllProjects();
+    props.fetchAllArchivedProjects();
   }, []);
 
   useEffect(() => {
@@ -290,7 +302,7 @@ const Projects = function(props) {
         hasInactiveBtn: false,
       });
     }
-  }, [categorySelectedForSort, showStatus, sorter, allReduxProjects, props.state.theme.darkMode, props.state.projectMembers?.activeMemberCounts, showArchived]);
+  }, [categorySelectedForSort, showStatus, sorter, allReduxProjects, archivedReduxProjects, props.state.theme.darkMode, props.state.projectMembers?.activeMemberCounts, showArchived]);
 
   useEffect(() => {
   const fetchProjects = async () => {
@@ -299,11 +311,16 @@ const Projects = function(props) {
       return;
     }
 
+    // Search the same collection that is currently rendered. Archived projects
+    // live in their own reducer key, so searching allReduxProjects here would
+    // incorrectly return active projects while the archived view is open.
+    const visibleProjects = showArchived ? archivedReduxProjects : allReduxProjects;
+
     // Mode 1: Search by user
     if (searchMode === 'person') {
       const userProjects = await props.getProjectsByUsersName(debouncedSearchName);
 
-      const filteredProjects = allReduxProjects.filter(p =>
+      const filteredProjects = visibleProjects.filter(p =>
         userProjects.includes(p._id)
       );
 
@@ -323,7 +340,7 @@ const Projects = function(props) {
 
       setProjectList(mapped);
     } else if (searchMode === 'project') {
-      const filteredProjects = allReduxProjects.filter(p =>
+      const filteredProjects = visibleProjects.filter(p =>
         p.projectName?.toLowerCase().includes(debouncedSearchName.toLowerCase())
       );
 
@@ -346,7 +363,14 @@ const Projects = function(props) {
   };
 
   fetchProjects();
-}, [debouncedSearchName, searchMode, allProjects, allReduxProjects]);
+}, [
+  debouncedSearchName,
+  searchMode,
+  allProjects,
+  allReduxProjects,
+  archivedReduxProjects,
+  showArchived,
+]);
 
   const handleSearchName = searchNameInput => {
     setSearchName(searchNameInput);
@@ -369,7 +393,12 @@ const Projects = function(props) {
               isPermissionPage={true}
               role={role}
             />
-            <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
+            <Overview
+              numberOfProjects={numberOfProjects}
+              numberOfActive={numberOfActive}
+              numberOfArchived={archivedReduxProjects.length}
+              showArchived={showArchived}
+            />
             {canPostProject ? <AddProject hasPermission={hasPermission} /> : null}
             {taskSelectionMode && (
               <div className="alert alert-info mb-2" role="alert">
@@ -407,7 +436,11 @@ const Projects = function(props) {
           onClick={handleFetchArchivedProjects}
           style={{ whiteSpace: 'nowrap', height: '38px', flexShrink: 0 }}
           className={`btn px-3 ${
-            showArchived ? 'btn-warning' : darkMode ? 'btn-outline-light' : 'btn-outline-secondary'
+            darkMode
+              ? styles.archiveToggleDark
+              : showArchived
+                ? 'btn-warning'
+                : 'btn-outline-secondary'
           }`}
         >
           {showArchived ? 'Hide Archived' : 'Show Archived'}
