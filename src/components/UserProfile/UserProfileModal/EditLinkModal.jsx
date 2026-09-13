@@ -17,11 +17,12 @@ import { connect, useSelector } from 'react-redux';
 import { isValidGoogleDocsUrl, isValidMediaUrl } from '~/utils/checkValidURL';
 import { toast } from 'react-toastify';
 
+import { permissions } from '../../../utils/constants';
 const EditLinkModal = props => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const { isOpen, closeModal, updateLink, userProfile, handleSubmit } = props;
-  const canManageAdminLinks = props.hasPermission('manageAdminLinks');
+  const canManageAdminLinks = props.hasPermission(permissions.manageAdminLinks);
 
   const initialAdminLinkState = [
     { Name: 'Google Doc', Link: '' },
