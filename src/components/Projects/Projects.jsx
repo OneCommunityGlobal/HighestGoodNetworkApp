@@ -311,11 +311,16 @@ const Projects = function(props) {
       return;
     }
 
+    // Search the same collection that is currently rendered. Archived projects
+    // live in their own reducer key, so searching allReduxProjects here would
+    // incorrectly return active projects while the archived view is open.
+    const visibleProjects = showArchived ? archivedReduxProjects : allReduxProjects;
+
     // Mode 1: Search by user
     if (searchMode === 'person') {
       const userProjects = await props.getProjectsByUsersName(debouncedSearchName);
 
-      const filteredProjects = allReduxProjects.filter(p =>
+      const filteredProjects = visibleProjects.filter(p =>
         userProjects.includes(p._id)
       );
 
@@ -335,7 +340,7 @@ const Projects = function(props) {
 
       setProjectList(mapped);
     } else if (searchMode === 'project') {
-      const filteredProjects = allReduxProjects.filter(p =>
+      const filteredProjects = visibleProjects.filter(p =>
         p.projectName?.toLowerCase().includes(debouncedSearchName.toLowerCase())
       );
 
@@ -358,7 +363,14 @@ const Projects = function(props) {
   };
 
   fetchProjects();
-}, [debouncedSearchName, searchMode, allProjects, allReduxProjects]);
+}, [
+  debouncedSearchName,
+  searchMode,
+  allProjects,
+  allReduxProjects,
+  archivedReduxProjects,
+  showArchived,
+]);
 
   const handleSearchName = searchNameInput => {
     setSearchName(searchNameInput);
@@ -424,7 +436,11 @@ const Projects = function(props) {
           onClick={handleFetchArchivedProjects}
           style={{ whiteSpace: 'nowrap', height: '38px', flexShrink: 0 }}
           className={`btn px-3 ${
-            showArchived ? 'btn-warning' : darkMode ? 'btn-outline-light' : 'btn-outline-secondary'
+            darkMode
+              ? styles.archiveToggleDark
+              : showArchived
+                ? 'btn-warning'
+                : 'btn-outline-secondary'
           }`}
         >
           {showArchived ? 'Hide Archived' : 'Show Archived'}
