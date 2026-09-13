@@ -1,0 +1,30 @@
+/* Badge Management tab dark mode styles */
+
+/* These styles target only the Badge Management tabs for dark mode contrast improvement */
+
+:global(body.dark-mode .badge-management-nav .nav-link.active),
+:global(body.bm-dashboard-dark .badge-management-nav .nav-link.active) {
+  background-color: #007bff !important;
+  color: #fff !important;
+}
+
+:global(body.dark-mode .badge-management-nav .nav-link.active span),
+:global(body.dark-mode .badge-management-nav .nav-link.active a),
+:global(body.bm-dashboard-dark .badge-management-nav .nav-link.active span),
+:global(body.bm-dashboard-dark .badge-management-nav .nav-link.active a) {
+  color: #fff !important;
+}
+
+/* Inactive tabs in dark mode */
+:global(body.dark-mode .badge-management-nav .nav-link:not(.active)),
+:global(body.bm-dashboard-dark .badge-management-nav .nav-link:not(.active)) {
+  background-color: #e8e8e8 !important;
+  color: #000 !important;
+}
+
+:global(body.dark-mode .badge-management-nav .nav-link:not(.active) span),
+:global(body.dark-mode .badge-management-nav .nav-link:not(.active) a),
+:global(body.bm-dashboard-dark .badge-management-nav .nav-link:not(.active) span),
+:global(body.bm-dashboard-dark .badge-management-nav .nav-link:not(.active) a) {
+  color: #000 !important;
+}
