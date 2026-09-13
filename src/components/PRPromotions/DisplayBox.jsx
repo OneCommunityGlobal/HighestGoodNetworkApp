@@ -98,10 +98,9 @@ export default function DisplayBox({ onClose, darkMode = false }) {
 
   return (
     <div className={styles.overlay} onMouseDown={handleOverlayMouseDown}>
-      <div
+      <dialog
+        open
         className={`${styles.popup} ${darkMode ? styles.popupDark : ''}`}
-        role="dialog"
-        aria-modal="true"
         aria-labelledby="promotion-dialog-heading"
       >
         <h2
@@ -184,7 +183,7 @@ export default function DisplayBox({ onClose, darkMode = false }) {
             Confirm
           </button>
         </div>
-      </div>
+      </dialog>
     </div>
   );
 }

@@ -12,9 +12,11 @@
    ====================================================== */
 
 .popup {
+  position: static;
   width: 90%;
   max-width: 900px;
   max-height: 85vh;
+  margin: 0;
   padding: 24px;
   overflow-y: auto;
   background-color: #fff;
