@@ -12,6 +12,7 @@ const EditConfirmModal = props => {
     disabled,
     darkMode,
     preserveScroll,
+    finishScrollRestoration,
   } = props;
   const toggle = () => {
     closeModal();
@@ -26,7 +27,7 @@ const EditConfirmModal = props => {
         autoFocus={false}
         returnFocusAfterClose={false}
         onOpened={preserveScroll}
-        onClosed={preserveScroll}
+        onClosed={finishScrollRestoration}
         className={darkMode ? 'text-light dark-mode' : ''}
       >
         <ModalHeader toggle={disabled ? () => false : closeModal} className={darkMode ? 'bg-space-cadet' : ''}>{modalTitle}</ModalHeader>
@@ -48,6 +49,7 @@ EditConfirmModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   disabled: PropTypes.bool.isRequired,
   preserveScroll: PropTypes.func,
+  finishScrollRestoration: PropTypes.func,
 };
 
 export default EditConfirmModal;

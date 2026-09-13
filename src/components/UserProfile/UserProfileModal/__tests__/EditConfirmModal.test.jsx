@@ -1,32 +1,18 @@
 import React from 'react';
 import { screen, render, fireEvent } from '@testing-library/react';
-import { userProfileMock } from '../../../../__tests__/mockStates';
-import configureStore from 'redux-mock-store';
-import { Provider } from 'react-redux';
 import EditConfirmModal from '../EditConfirmModal';
 
 const closeModalMock = vi.fn();
 describe('UserProfileModal', () => {
-  const mockStore = configureStore([]);
-  const initialState = {
-    theme: { darkMode: false },
-  };
-  const store = mockStore(initialState);
-
   const props = {
     modalTitle: 'Success!',
     modalMessage: '',
-    userProfile: userProfileMock,
     isOpen: true,
     disabled: false,
   };
   beforeEach(() => {
     // eslint-disable-next-line testing-library/no-render-in-lifecycle
-    render(
-      <Provider store={store}>
-        <EditConfirmModal {...props} closeModal={closeModalMock} />
-      </Provider>,
-    );
+    render(<EditConfirmModal {...props} closeModal={closeModalMock} />);
   });
 
   it('should render edit confirm modal', () => {

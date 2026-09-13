@@ -62,27 +62,37 @@ const SaveButton = props => {
     }));
   };
 
-  const restoreScrollPosition = useCallback(() => {
-    const applySnapshot = () => {
-      scrollSnapshot.current.forEach(({ element, left, top }) => {
-        element.scrollLeft = left;
-        element.scrollTop = top;
-      });
-    };
+  const applyScrollSnapshot = useCallback(() => {
+    scrollSnapshot.current.forEach(({ element, left, top }) => {
+      element.scrollLeft = left;
+      element.scrollTop = top;
+    });
+  }, []);
 
+  const cancelPendingRestore = useCallback(() => {
     if (pendingRestoreFrame.current !== null) {
       cancelAnimationFrame(pendingRestoreFrame.current);
+      pendingRestoreFrame.current = null;
     }
+  }, []);
 
-    applySnapshot();
+  const restoreScrollPosition = useCallback(() => {
+    cancelPendingRestore();
+    applyScrollSnapshot();
     pendingRestoreFrame.current = requestAnimationFrame(() => {
-      applySnapshot();
+      applyScrollSnapshot();
       pendingRestoreFrame.current = requestAnimationFrame(() => {
-        applySnapshot();
+        applyScrollSnapshot();
         pendingRestoreFrame.current = null;
       });
     });
-  }, []);
+  }, [applyScrollSnapshot, cancelPendingRestore]);
+
+  const finishScrollRestoration = useCallback(() => {
+    cancelPendingRestore();
+    applyScrollSnapshot();
+    scrollSnapshot.current = [];
+  }, [applyScrollSnapshot, cancelPendingRestore]);
 
   const handleSave = async event => {
     event.preventDefault();
@@ -132,12 +142,8 @@ const SaveButton = props => {
   }, [modal, userProfile.teamCode]);
 
   useEffect(
-    () => () => {
-      if (pendingRestoreFrame.current !== null) {
-        cancelAnimationFrame(pendingRestoreFrame.current);
-      }
-    },
-    [],
+    () => () => cancelPendingRestore(),
+    [cancelPendingRestore],
   );
 
   useLayoutEffect(() => {
@@ -156,6 +162,7 @@ const SaveButton = props => {
         disabled={isLoading}
         darkMode={darkMode}
         preserveScroll={restoreScrollPosition}
+        finishScrollRestoration={finishScrollRestoration}
       />
       <Button
         type="button"
