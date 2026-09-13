@@ -7,8 +7,6 @@ import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import styles from './MyCases.module.css';
 import mockEvents from './mockData';
 import CreateEventModal from './CreateEventModal';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import { filterEventsByDate } from './FilterByDate';
 
 function MyCases() {
@@ -69,17 +67,6 @@ function MyCases() {
     // Check if event has image property, otherwise use fallback
     return event.image || event.imageUrl || FALLBACK_IMG;
   }, []);
-
-  const isEventToday = dateString => {
-    const eventDate = new Date(dateString);
-    const now = new Date();
-
-    return (
-      eventDate.getDate() === now.getDate() &&
-      eventDate.getMonth() === now.getMonth() &&
-      eventDate.getFullYear() === now.getFullYear()
-    );
-  };
 
   const isEventToday = dateString => {
     const eventDate = new Date(dateString);
