@@ -66,13 +66,15 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
     return sanitizer(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
   };
 
-  // Safe link handler to prevent XSS in href attributes
+  // Safe link handler to prevent XSS in href attributes.
+  // Only checks sanitization/well-formedness here, not the allowed-domain
+  // whitelist: that's a submission-time content policy (see
+  // validateAllowedDomainTypes usage in submitReviewRequest/handleEditLink),
+  // not a reason to refuse opening a link that's already stored.
   const handleSafeLink = url => {
-    // Sanitize the URL and validate it's safe to use as href
     const sanitizedUrl = sanitizeUrl(url);
-    const validationResult = validateAllowedDomainTypes(sanitizedUrl);
 
-    if (validationResult.isValid && validURL(sanitizedUrl)) {
+    if (validURL(sanitizedUrl)) {
       return sanitizedUrl;
     }
     return '#'; // Fallback to safe href
@@ -491,7 +493,9 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
             <DropdownMenu
               container="body"
               strategy="fixed"
-              className={style['review-button-dropdown']}
+              className={`${style['review-button-dropdown']} ${
+                darkMode ? style['review-button-dropdown-dark'] : ''
+              }`}
             >
               {task.relatedWorkLinks &&
                 // eslint-disable-next-line no-shadow
@@ -500,14 +504,14 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
                     key={sanitizeText(link)}
                     href={handleSafeLink(link)}
                     target="_blank"
-                    className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
+                    className={darkMode ? `text-light ${style['dark-mode-btn']}` : ''}
                   >
                     <FontAwesomeIcon icon={faExternalLinkAlt} /> View Link
                   </DropdownItem>
                 ))}
               <DropdownItem
                 onClick={toggleEditLinkModal}
-                className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
+                className={darkMode ? `text-light ${style['dark-mode-btn']}` : ''}
               >
                 <FontAwesomeIcon icon={faPencilAlt} /> Edit Link
               </DropdownItem>
@@ -534,7 +538,9 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
             <DropdownMenu
               container="body"
               strategy="fixed"
-              className={style['review-button-dropdown']}
+              className={`${style['review-button-dropdown']} ${
+                darkMode ? style['review-button-dropdown-dark'] : ''
+              }`}
             >
               {task.relatedWorkLinks &&
                 task.relatedWorkLinks.map(dropLink => (
@@ -542,14 +548,14 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
                     key={sanitizeText(dropLink)}
                     href={handleSafeLink(dropLink)}
                     target="_blank"
-                    className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
+                    className={darkMode ? `text-light ${style['dark-mode-btn']}` : ''}
                   >
                     <FontAwesomeIcon icon={faExternalLinkAlt} /> View Link
                   </DropdownItem>
                 ))}
               <DropdownItem
                 onClick={toggleEditLinkModal}
-                className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
+                className={darkMode ? `text-light ${style['dark-mode-btn']}` : ''}
               >
                 <FontAwesomeIcon icon={faPencilAlt} /> Edit Link
               </DropdownItem>
@@ -558,7 +564,7 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
                   setSelectedAction('Complete and Remove');
                   toggleVerify();
                 }}
-                className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
+                className={darkMode ? `text-light ${style['dark-mode-btn']}` : ''}
               >
                 <div className={styles['review-dropdown-item']}>
                   <FontAwesomeIcon className={styles['team-member-tasks-done']} icon={faCheck} />
@@ -570,7 +576,7 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
                   setSelectedAction('More Work Needed');
                   toggleVerify();
                 }}
-                className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
+                className={darkMode ? `text-light ${style['dark-mode-btn']}` : ''}
               >
                 More work needed, reset this button
               </DropdownItem>

@@ -706,6 +706,10 @@
     text-align: center;
   }
 
+  :global(.dark-mode) .team-member-tasks h1 {
+    color: #fff;
+  }
+
   .hours-btn-container {
     display: flex;
     justify-content: space-between;
@@ -743,6 +747,10 @@
     font-size: 0.75rem !important;
   }
 
+  :global(.dark-mode) .table-row {
+    background: #223b5a;
+  }
+
   .table-row td {
     padding: 2px !important;
   }
@@ -766,6 +774,10 @@
     color: black;
     font-size: 14px;
     text-align: center;
+  }
+
+  :global(.dark-mode) .team-member-tasks h1 {
+    color: #fff;
   }
 }
 
@@ -997,4 +1009,27 @@
 
 .task-age-badge-very-old {
   background-color: #dc3545;
+}
+
+:global(.dark-mode) .clockIconNeutral,
+:global(.dark-mode) .clockIconNeutral * {
+  color: lightgray !important;
+}
+
+.clockIconGreen {
+  color: green !important;
+}
+
+.clockIconRed {
+  color: red !important;
+}
+
+:global(.dark-mode) .clockIconGreen,
+:global(.dark-mode) .clockIconGreen * {
+  color: green !important;
+}
+
+:global(.dark-mode) .clockIconRed,
+:global(.dark-mode) .clockIconRed * {
+  color: red !important;
 }
