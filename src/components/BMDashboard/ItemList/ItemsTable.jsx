@@ -300,9 +300,12 @@ export default function ItemsTable({
         action,
         ...payload,
       });
-      // Prefer the real server count; fall back to the selection size if the
-      // backend response omits it so the toast never reads "undefined".
-      const count = result?.modifiedCount ?? result?.matchedCount ?? selectedIds.length;
+      // Prefer matchedCount: it's how many materials the action was applied
+      // to, whereas modifiedCount excludes records already at the target
+      // value (e.g. re-holding an already-held item), which would otherwise
+      // make the toast read "0" even though the action succeeded. Fall back
+      // to the selection size if the backend response omits both.
+      const count = result?.matchedCount ?? result?.modifiedCount ?? selectedIds.length;
       toast.success(buildBulkActionMessage(action, count));
 
       // Optimistically reflect the change in the Bulk Status column, then refetch
