@@ -80,14 +80,16 @@ const IntermediateTaskForm = ({ task, onSubmit, onCancel }) => {
   };
 
   return (
-    <Modal isOpen={true} toggle={onCancel} size="lg">
-      <ModalHeader toggle={onCancel}>
+    <Modal isOpen={true} toggle={onCancel} size="lg" contentClassName={styles.modalContent}>
+      <ModalHeader toggle={onCancel} className={styles.modalHeaderBox}>
         {task ? 'Edit Intermediate Task' : 'Add Intermediate Task'}
       </ModalHeader>
       <Form onSubmit={handleSubmit} className={styles.formModal}>
-        <ModalBody>
+        <ModalBody className={styles.modalBodyBox}>
           <FormGroup>
-            <Label for="title">Title *</Label>
+            <Label for="title" className={styles.formLabel}>
+              Title *
+            </Label>
             <Input
               type="text"
               name="title"
@@ -96,11 +98,14 @@ const IntermediateTaskForm = ({ task, onSubmit, onCancel }) => {
               onChange={handleChange}
               required
               placeholder="Enter task title"
+              className={styles.formControl}
             />
           </FormGroup>
 
           <FormGroup>
-            <Label for="description">Description</Label>
+            <Label for="description" className={styles.formLabel}>
+              Description
+            </Label>
             <Input
               type="textarea"
               name="description"
@@ -109,12 +114,15 @@ const IntermediateTaskForm = ({ task, onSubmit, onCancel }) => {
               value={formData.description}
               onChange={handleChange}
               placeholder="Enter task description"
+              className={styles.formControl}
             />
           </FormGroup>
 
           <div className={styles.formRow}>
             <FormGroup className={styles.formGroupHalf}>
-              <Label for="expectedHours">Expected Hours</Label>
+              <Label for="expectedHours" className={styles.formLabel}>
+                Expected Hours
+              </Label>
               <Input
                 type="number"
                 name="expectedHours"
@@ -124,29 +132,36 @@ const IntermediateTaskForm = ({ task, onSubmit, onCancel }) => {
                 value={formData.expectedHours}
                 onChange={handleChange}
                 placeholder="0"
+                className={styles.formControl}
               />
             </FormGroup>
 
             <FormGroup className={styles.formGroupHalf}>
-              <Label for="dueDate">Due Date</Label>
+              <Label for="dueDate" className={styles.formLabel}>
+                Due Date
+              </Label>
               <Input
                 type="date"
                 name="dueDate"
                 id="dueDate"
                 value={formData.dueDate}
                 onChange={handleChange}
+                className={styles.formControl}
               />
             </FormGroup>
           </div>
 
           <FormGroup>
-            <Label for="status">Status</Label>
+            <Label for="status" className={styles.formLabel}>
+              Status
+            </Label>
             <Input
               type="select"
               name="status"
               id="status"
               value={formData.status}
               onChange={handleChange}
+              className={styles.formControl}
             >
               <option value="pending">Pending</option>
               <option value="in_progress">In Progress</option>
@@ -154,11 +169,11 @@ const IntermediateTaskForm = ({ task, onSubmit, onCancel }) => {
             </Input>
           </FormGroup>
         </ModalBody>
-        <ModalFooter>
-          <Button color="secondary" onClick={onCancel}>
+        <ModalFooter className={styles.modalFooterBox}>
+          <Button color="secondary" className={styles.btnSecondary} onClick={onCancel}>
             Cancel
           </Button>
-          <Button color="primary" type="submit">
+          <Button color="primary" className={styles.btnPrimary} type="submit">
             {task ? 'Update' : 'Create'} Task
           </Button>
         </ModalFooter>

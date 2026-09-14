@@ -230,7 +230,7 @@
   justify-content: center;
 }
 
-input[type='text'] {
+.warnings-container input[type='text'] {
   overflow-wrap: break-word;
   word-break: break-all;
 }

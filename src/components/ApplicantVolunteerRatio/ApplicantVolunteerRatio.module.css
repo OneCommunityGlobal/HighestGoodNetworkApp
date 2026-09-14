@@ -117,110 +117,110 @@
 }
 
 /* React Select Dark Mode Overrides */
-.dark :global(.custom-select__control) {
+.dark :global(.applicantVolunteerSelect__control) {
   background-color: #0b2434 !important;
   border-color: #2b4a6b !important;
   color: #fff !important;
 }
 
-.dark :global(.custom-select__menu) {
+.dark :global(.applicantVolunteerSelect__menu) {
   background-color: #0b2434 !important;
   color: #fff !important;
 }
 
 /* Target menu when it's portaled to body in dark mode */
-:global(.dark-mode-body) :global(.custom-select__menu) {
+:global(.applicant-volunteer-dark-body) :global(.applicantVolunteerSelect__menu) {
   background-color: #0b2434 !important;
   color: #fff !important;
 }
 
-.dark :global(.custom-select__option) {
+.dark :global(.applicantVolunteerSelect__option) {
   background-color: transparent !important;
   color: #fff !important;
 }
 
-:global(.dark-mode-body) :global(.custom-select__option) {
+:global(.applicant-volunteer-dark-body) :global(.applicantVolunteerSelect__option) {
   background-color: transparent !important;
   color: #fff !important;
 }
 
-.dark :global(.custom-select__option--is-focused) {
+.dark :global(.applicantVolunteerSelect__option--is-focused) {
   background-color: rgb(255 255 255 / 6%) !important;
 }
 
-:global(.dark-mode-body) :global(.custom-select__option--is-focused) {
+:global(.applicant-volunteer-dark-body) :global(.applicantVolunteerSelect__option--is-focused) {
   background-color: rgb(255 255 255 / 6%) !important;
 }
 
-.dark :global(.custom-select__option--is-selected) {
+.dark :global(.applicantVolunteerSelect__option--is-selected) {
   background-color: rgb(67 160 71 / 22%) !important;
 }
 
-:global(.dark-mode-body) :global(.custom-select__option--is-selected) {
+:global(.applicant-volunteer-dark-body) :global(.applicantVolunteerSelect__option--is-selected) {
   background-color: rgb(67 160 71 / 22%) !important;
 }
 
-.dark :global(.custom-select__multi-value) {
+.dark :global(.applicantVolunteerSelect__multi-value) {
   background-color: rgb(255 255 255 / 6%) !important;
 }
 
-.dark :global(.custom-select__multi-value__label) {
+.dark :global(.applicantVolunteerSelect__multi-value__label) {
   color: #fff !important;
 }
 
-.dark :global(.custom-select__multi-value__remove) {
+.dark :global(.applicantVolunteerSelect__multi-value__remove) {
   color: #fff !important;
 }
 
-.dark :global(.custom-select__multi-value__remove:hover) {
+.dark :global(.applicantVolunteerSelect__multi-value__remove:hover) {
   background-color: rgb(255 255 255 / 10%) !important;
   color: #fff !important;
 }
 
-.dark :global(.custom-select__placeholder) {
+.dark :global(.applicantVolunteerSelect__placeholder) {
   color: rgb(224 224 224 / 90%) !important;
 }
 
-.dark :global(.custom-select__single-value) {
+.dark :global(.applicantVolunteerSelect__single-value) {
   color: #fff !important;
 }
 
-.dark :global(.custom-select__input-container) {
+.dark :global(.applicantVolunteerSelect__input-container) {
   color: #fff !important;
 }
 
-.dark :global(.custom-select__dropdown-indicator) {
+.dark :global(.applicantVolunteerSelect__dropdown-indicator) {
   color: #fff !important;
 }
 
-.dark :global(.custom-select__clear-indicator) {
+.dark :global(.applicantVolunteerSelect__clear-indicator) {
   color: #fff !important;
 }
 
-.dark :global(.custom-select__indicator-separator) {
+.dark :global(.applicantVolunteerSelect__indicator-separator) {
   background-color: rgb(255 255 255 / 6%) !important;
 }
 
 /* Body Dark Mode */
-:global(.dark-mode-body),
-:global(.dark-mode-body) body,
-:global(.dark-mode-body) #root,
-:global(.dark-mode-body) .App {
+:global(.applicant-volunteer-dark-body),
+:global(.applicant-volunteer-dark-body) body,
+:global(.applicant-volunteer-dark-body) #root,
+:global(.applicant-volunteer-dark-body) .App {
   background-color: #1b2a41 !important;
   color: #e0e0e0 !important;
 }
 
-:global(.dark-mode-body) .header-wrapper,
-:global(.dark-mode-body) .content-wrapper,
-:global(.dark-mode-body) .page,
-:global(.dark-mode-body) .container,
-:global(.dark-mode-body) .container-fluid {
+:global(.applicant-volunteer-dark-body) .header-wrapper,
+:global(.applicant-volunteer-dark-body) .content-wrapper,
+:global(.applicant-volunteer-dark-body) .page,
+:global(.applicant-volunteer-dark-body) .container,
+:global(.applicant-volunteer-dark-body) .container-fluid {
   background-color: #1b2a41 !important;
   color: #e0e0e0 !important;
 }
 
-:global(.dark-mode-body) .recharts-wrapper,
-:global(.dark-mode-body) .recharts-surface {
+:global(.applicant-volunteer-dark-body) .recharts-wrapper,
+:global(.applicant-volunteer-dark-body) .recharts-surface {
   background-color: #1b2a41 !important;
 }
 

@@ -589,7 +589,7 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
   };
 
   const conditionalBoxStyle = darkMode ? boxStyleDark : boxStyle;
-  const modalClassName = darkMode ? 'text-light dark-mode' : '';
+  const modalClassName = `${styles.teamMemberTasksModal} ${darkMode ? 'text-light dark-mode' : ''}`;
   const headerClassName = darkMode ? 'bg-space-cadet' : '';
   const panelClassName = darkMode ? 'bg-yinmn-blue' : '';
 

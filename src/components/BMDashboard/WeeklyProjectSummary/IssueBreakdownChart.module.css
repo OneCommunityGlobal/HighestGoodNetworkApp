@@ -548,7 +548,7 @@
     height: 420px;
   }
 
-  :global(.recharts-label-list text) {
+  .chartContainer :global(.recharts-label-list text) {
     font-size: 10px;
     stroke-width: 2px;
   }
@@ -573,7 +573,7 @@
   }
 
   /* Increase label contrast and adjust stroke width */
-  :global(.recharts-label-list text) {
+  .chartContainer :global(.recharts-label-list text) {
     font-size: 9px;
     fill: var(--chart-label-color, #111827) !important;
     stroke-width: 1px;
@@ -598,71 +598,20 @@
 
   .legendBox {
     border: 1px solid currentcolor;
+  }
 
   /* Reduce label size and opacity instead of hiding */
-  :global(.recharts-label-list text) {
+  .chartContainer :global(.recharts-label-list text) {
     font-size: 8px;
     opacity: 0.85;
     fill: var(--chart-label-color, #111827) !important;
     stroke-width: 1px;
   }
 }
+}
 
-
-:global(.recharts-cartesian-axis-tick-value) {
+.chartContainer :global(.recharts-cartesian-axis-tick-value) {
   fill: var(--chart-axis-color, #374151) !important; /* strong contrast */
   font-weight: 600;
   font-size: 12px;
 }
-
-/* Selected value text — DARK MODE (keep text black) */
-:global(.darkMode .injurySelect__single-value) {
-  color: #000 !important;
-}
-
-:global(.darkMode .injurySelect__multi-value__label) {
-  color: #000 !important;
-}
-
-/* Ensure input text while typing is also black */
-:global(.darkMode .injurySelect__input-container),
-:global(.darkMode .injurySelect__input) {
-  color: #000 !important;
-}
-
-/* Ensure clear (×) and dropdown arrow are black in dark mode */
-:global(.darkMode .injurySelect__clear-indicator),
-:global(.darkMode .injurySelect__dropdown-indicator) {
-  color: #000 !important;
-}
-
-:global(.darkMode .injurySelect__clear-indicator:hover),
-:global(.darkMode .injurySelect__dropdown-indicator:hover) {
-  color: #000 !important;
-}
-
-:global(.filter label) {
-  margin-bottom: 4px;
-}
-
-/* Ensure filter blocks always stack label + input vertically */
-:global(.filter) {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Consistent spacing between label and input */
-
-/* Ensure date inputs behave same as dropdowns */
-:global(.filter .react-datepicker-wrapper) {
-  width: 100%;
-}
-
-:global(.filter .react-datepicker__input-container input) {
-  width: 180px;
-  max-width: 180px;
-}
-
-:global(.filter .injurySelect__control) {
-  width: 100%;
-}}}

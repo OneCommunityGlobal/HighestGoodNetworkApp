@@ -1,4 +1,5 @@
 /* stylelint-disable  */
+.projectsTable :global(thead),
 .projectsTableHead {
   background: aliceblue;
 }
@@ -62,12 +63,12 @@
   padding-left: 20px;
 }
 
-:global(.search-project-person) {
+.searchProjectPerson {
   position: relative;
   width: 100%;
 }
 
-:global(.suggestions-list) {
+.suggestionsList {
   position: absolute;
   background-color: white;
   border: 1px solid #ccc;
@@ -78,30 +79,7 @@
   padding: 0;
 }
 
-:global(.suggestion-item) {
-  padding: 8px;
-  cursor: pointer;
-}
-
-:global(.suggestion-item:hover) {
-  background-color: #f0f0f0;
-}
-
-:global(.suggestion-button) {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  text-align: left;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-:global(.suggestion-button:hover) {
-  background-color: #f0f0f0;
-}
-
-:global(tr:hover) {
+.projectsTable :global(tr:hover) {
   background: #e9f6ff;
 }
 
@@ -171,37 +149,33 @@
   margin-top: 0;
 }
 
-.suggestion-item {
+.suggestionItem {
   padding: 8px;
   cursor: pointer;
 }
 
-.suggestion-item:hover {
+.suggestionItem:hover {
   background-color: #f0f0f0;
 }
 
-.suggestion-button {
+.suggestionButton {
   display: block;
-  width: 100%; 
-  padding: 10px; 
-  text-align: left; 
-  background: none; 
-  border: none; 
-  cursor: pointer; 
+  width: 100%;
+  padding: 10px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
-.suggestion-button:hover {
+.suggestionButton:hover {
   background-color: #f0f0f0;
-}
-
-tr:hover {
-  background: #e9f6ff;
 }
 
 /* In dark mode the page wrapper carries .bg-oxford-blue. Keep the row-hover
    highlight on-theme (yinmn-blue) instead of the light default, so the dark
    inputs/buttons in the hovered row stay legible instead of washing out. */
-:global(.bg-oxford-blue) tr:hover {
+:global(.bg-oxford-blue) .projectsTable :global(tr:hover) {
   background: #3a506b;
 }
 

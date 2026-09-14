@@ -280,12 +280,12 @@
   font-size: 0.8rem;
 }
 
-input[type='number'] {
+.countdown input[type='number'] {
   appearance: textfield;
 }
 
-input[type='number']::-webkit-outer-spin-button,
-input[type='number']::-webkit-inner-spin-button {
+.countdown input[type='number']::-webkit-outer-spin-button,
+.countdown input[type='number']::-webkit-inner-spin-button {
   margin: 0;
   appearance: none;
 }

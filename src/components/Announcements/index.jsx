@@ -152,7 +152,10 @@ function Announcements({ title, email: initialEmail }) {
   };
 
   return (
-    <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
+    <div
+      className={`${styles.announcementsPage} ${darkMode ? 'bg-oxford-blue text-light' : ''}`}
+      style={{ minHeight: '100%' }}
+    >
       <Nav
         className={classnames(styles.tabGrid, {
           [styles.twoRows]: columns === 2,

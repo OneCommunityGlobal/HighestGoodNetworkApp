@@ -15,7 +15,7 @@
   margin-bottom: 1.5rem;
 }
 
-:global(.EquipmentDetailPage__detail_item) {
+.equipmentDetailPageDetailItem {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -24,7 +24,7 @@
   color: #27333c;
 }
 
-:global(.EquipmentDetailPage__span) {
+.equipmentDetailPageSpan {
   background-color: #e2f3ea;
   border: 1px solid #c1e0ce;
   border-radius: 6px;
@@ -34,15 +34,6 @@
   align-items: center;
   color: #1f3b2d;
   font-weight: 600;
-}
-
-:global(.EquipmentDetailPage__image) {
-  border: 1px solid #e5e5e6;
-  border-radius: 8px;
-  width: 220px;
-  height: auto;
-  margin-bottom: 1rem;
-  max-width: 100%;
 }
 
 .equipmentDetailPageImage {
@@ -64,7 +55,7 @@ button.descriptionItem_button:hover {
   text-decoration: underline;
 }
 
-:global(.EquipmentDetailPage__dashed_line) {
+.equipmentDetailPageDashedLine {
   border-top: 1px dashed #5f6d61;
   width: 100%;
   max-width: 440px;
@@ -177,8 +168,8 @@ button.descriptionItem_button:hover {
   color: #fff;
 }
 
-:global(body.dark-mode) :global(.EquipmentDetailPage__dashed_line),
-:global(body.bm-dashboard-dark) :global(.EquipmentDetailPage__dashed_line) {
+:global(body.dark-mode) .equipmentDetailPageDashedLine,
+:global(body.bm-dashboard-dark) .equipmentDetailPageDashedLine {
   border-color: #5a6d7a;
 }
 
@@ -192,13 +183,13 @@ button.descriptionItem_button:hover {
   background-color: #1b2a41;
 }
 
-:global(body.dark-mode) :global(.EquipmentDetailPage__detail_item),
-:global(body.bm-dashboard-dark) :global(.EquipmentDetailPage__detail_item) {
+:global(body.dark-mode) .equipmentDetailPageDetailItem,
+:global(body.bm-dashboard-dark) .equipmentDetailPageDetailItem {
   color: #e0eaf5;
 }
 
-:global(body.dark-mode) :global(.EquipmentDetailPage__span),
-:global(body.bm-dashboard-dark) :global(.EquipmentDetailPage__span) {
+:global(body.dark-mode) .equipmentDetailPageSpan,
+:global(body.bm-dashboard-dark) .equipmentDetailPageSpan {
   background-color: #2d3b4a;
   border-color: #40536a;
   color: #e7f0ff;

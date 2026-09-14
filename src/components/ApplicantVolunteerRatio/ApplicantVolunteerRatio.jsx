@@ -100,13 +100,13 @@ function ApplicantVolunteerRatio() {
   // Apply dark mode
   useEffect(() => {
     if (darkMode) {
-      document.body.classList.add('dark-mode-body');
+      document.body.classList.add('applicant-volunteer-dark-body');
     } else {
-      document.body.classList.remove('dark-mode-body');
+      document.body.classList.remove('applicant-volunteer-dark-body');
     }
 
     return () => {
-      document.body.classList.remove('dark-mode-body');
+      document.body.classList.remove('applicant-volunteer-dark-body');
     };
   }, [darkMode]);
 
@@ -182,7 +182,7 @@ function ApplicantVolunteerRatio() {
             value={selectedRoles}
             onChange={setSelectedRoles}
             placeholder="Select roles..."
-            classNamePrefix="custom-select"
+            classNamePrefix="applicantVolunteerSelect"
             menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
           />
         </div>

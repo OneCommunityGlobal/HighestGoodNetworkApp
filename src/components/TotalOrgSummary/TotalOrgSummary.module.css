@@ -679,11 +679,11 @@
   }
 
   /* Fix AccordianWrapper margins on mobile */
-  :global(.Collapsible) {
+  .containerTotalOrgWrapper :global(.Collapsible) {
     margin: 10px 0 !important;
   }
 
-  :global(.Collapsible__contentInner) {
+  .containerTotalOrgWrapper :global(.Collapsible__contentInner) {
     padding: 10px 5px !important;
   }
 }
@@ -747,7 +747,7 @@
     height: auto !important;
   }
 
-  :global(.row) {
+  .containerTotalOrgWrapper :global(.row) {
     margin-left: 0 !important;
     margin-right: 0 !important;
   }
@@ -762,15 +762,15 @@
   }
 
   /* Fix AccordianWrapper margins on small mobile */
-  :global(.Collapsible) {
+  .containerTotalOrgWrapper :global(.Collapsible) {
     margin: 8px 0 !important;
   }
 
-  :global(.Collapsible__contentInner) {
+  .containerTotalOrgWrapper :global(.Collapsible__contentInner) {
     padding: 8px 4px !important;
   }
 
-  :global(.Collapsible__trigger) {
+  .containerTotalOrgWrapper :global(.Collapsible__trigger) {
     font-size: 24px !important;
     padding-left: 1% !important;
   }

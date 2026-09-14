@@ -340,12 +340,6 @@
 
 :global(.dark-mode) .tabContent {
   background-color: #2e5061 !important;
-  border: none !important;
-}
-
-/* Ensure the Bootstrap tab-content container is also dark */
-:global(.dark-mode) :global(.tab-content) {
-  background-color: #2e5061 !important;
   color: white !important;
   border: none !important;
 }
@@ -529,28 +523,28 @@
   color: #ffc107 !important;
 }
 
-:global(.dark-mode) :global(.dropdown-container) {
+:global(.dark-mode) .report-multi-select-filter :global(.dropdown-container) {
   background-color: #2e3440 !important;
   border: 1px solid #4c566a !important;
   color: #fff !important;
 }
 
-:global(.dark-mode) :global(.dropdown-heading) {
+:global(.dark-mode) .report-multi-select-filter :global(.dropdown-heading) {
   color: #fff !important;
 }
 
-:global(.dark-mode) :global(.dropdown-content) {
+:global(.dark-mode) .report-multi-select-filter :global(.dropdown-content) {
   z-index: 10000 !important;
   background-color: #2e3440 !important;
   border: 1px solid #4c566a !important;
 }
 
-:global(.dark-mode) :global(.select-item) {
+:global(.dark-mode) .report-multi-select-filter :global(.select-item) {
   background-color: #2e3440 !important;
   color: #fff !important;
 }
 
-:global(.dark-mode) :global(.select-item:hover) {
+:global(.dark-mode) .report-multi-select-filter :global(.select-item:hover) {
   background-color: #434c5e !important;
   color: #fff !important;
 }
@@ -677,14 +671,14 @@
 }
 
 /* The search input field inside the dropdown */
-:global(.dark-mode) :global(.dropdown-search) {
+:global(.dark-mode) .report-multi-select-filter :global(.dropdown-search) {
   background-color: #3b4252 !important;
   border: 1px solid #4c566a !important;
   color: #fff !important;
 }
 
 /* The "Select All" label */
-:global(.dark-mode) :global(.select-item.selected) {
+:global(.dark-mode) .report-multi-select-filter :global(.select-item.selected) {
   background-color: #4c566a !important;
   font-weight: bold;
 }
@@ -697,7 +691,3 @@
   height: 35px !important;
 }
 
-:global(.bg-yinmn-blue .list-group-item) {
-  background-color: #3a506b !important;
-  color: #ffffff !important;
-}

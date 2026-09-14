@@ -31,7 +31,7 @@ const TeamMemberTaskInfo = React.memo(() => {
         color={darkMode ? 'lightgray' : ''}
       />
       <Modal
-        className={darkMode ? 'text-light dark-mode' : ''}
+        className={`${styles.teamMemberTasksModal} ${darkMode ? 'text-light dark-mode' : ''}`}
         backdropClassName={styles['task-info-modal-backdrop']}
         isOpen={infoTaskIconModal}
         toggle={toggleInfoTaskIconModal}

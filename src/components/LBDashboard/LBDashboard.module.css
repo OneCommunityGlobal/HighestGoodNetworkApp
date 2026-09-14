@@ -1,5 +1,5 @@
 /* stylelint-disable  */
-body {
+:global(body.lb-dashboard-body) {
   font-family: Poppins, sans-serif;
   background: #fff;
   margin: 0;

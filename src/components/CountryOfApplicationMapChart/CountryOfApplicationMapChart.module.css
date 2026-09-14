@@ -284,105 +284,105 @@
 }
 
 /* React-select: classNamePrefix is a literal DOM class — use :global so CSS modules do not hash selectors */
-:global(.custom-select__control) {
+:global(.countryMapSelect__control) {
   border-radius: 4px !important;
   border: 1px solid #e2e8f0 !important;
   box-shadow: none !important;
   transition: all 0.3s ease !important;
 }
 
-:global(.custom-select__control:hover) {
+:global(.countryMapSelect__control:hover) {
   border-color: #cbd5e0 !important;
 }
 
-.container.darkMode :global(.custom-select__control) {
+.container.darkMode :global(.countryMapSelect__control) {
   border-color: #4a5568 !important;
   background-color: #3a506b !important;
 }
 
-.container.darkMode :global(.custom-select__control:hover) {
+.container.darkMode :global(.countryMapSelect__control:hover) {
   border-color: #68d391 !important;
 }
 
-:global(.custom-select__control--is-focused) {
+:global(.countryMapSelect__control--is-focused) {
   border-color: #68d391 !important;
   box-shadow: 0 0 0 3px rgb(104 211 145 / 10%) !important;
 }
 
-:global(.custom-select__menu) {
+:global(.countryMapSelect__menu) {
   border-radius: 6px !important;
   border: 1px solid #e2e8f0 !important;
   box-shadow: 0 4px 12px rgb(0 0 0 / 15%) !important;
 }
 
-.container.darkMode :global(.custom-select__menu) {
+.container.darkMode :global(.countryMapSelect__menu) {
   border-color: #4a5568 !important;
   background-color: #3a506b !important;
 }
 
 /* Menu is portaled to body — outside .container.darkMode; follow ThemeManager html/body .dark-mode */
-:global(html.dark-mode) :global(.custom-select__menu),
-:global(body.dark-mode) :global(.custom-select__menu) {
+:global(html.dark-mode) :global(.countryMapSelect__menu),
+:global(body.dark-mode) :global(.countryMapSelect__menu) {
   background-color: #2d3748 !important;
   border-color: #4a5568 !important;
   color: #e2e8f0 !important;
 }
 
 /* Light mode only: unscoped :global(.option--is-focused) was winning over inline styles for portaled menus */
-:global(html:not(.dark-mode)) :global(.custom-select__option--is-focused) {
+:global(html:not(.dark-mode)) :global(.countryMapSelect__option--is-focused) {
   background-color: #f7fafc !important;
 }
 
-.container.darkMode :global(.custom-select__option--is-focused) {
+.container.darkMode :global(.countryMapSelect__option--is-focused) {
   background-color: #4a5568 !important;
 }
 
-:global(html.dark-mode) :global(.custom-select__option),
-:global(body.dark-mode) :global(.custom-select__option) {
+:global(html.dark-mode) :global(.countryMapSelect__option),
+:global(body.dark-mode) :global(.countryMapSelect__option) {
   background-color: transparent !important;
   color: #e2e8f0 !important;
 }
 
-:global(html.dark-mode) :global(.custom-select__option--is-focused),
-:global(body.dark-mode) :global(.custom-select__option--is-focused) {
+:global(html.dark-mode) :global(.countryMapSelect__option--is-focused),
+:global(body.dark-mode) :global(.countryMapSelect__option--is-focused) {
   background-color: #4a5568 !important;
   color: #e2e8f0 !important;
 }
 
-:global(.custom-select__option--is-selected) {
+:global(.countryMapSelect__option--is-selected) {
   background-color: #68d391 !important;
   color: #fff !important;
 }
 
-:global(html.dark-mode) :global(.custom-select__option--is-selected),
-:global(body.dark-mode) :global(.custom-select__option--is-selected) {
+:global(html.dark-mode) :global(.countryMapSelect__option--is-selected),
+:global(body.dark-mode) :global(.countryMapSelect__option--is-selected) {
   background-color: #48bb78 !important;
   color: #fff !important;
 }
 
-:global(.custom-select__multi-value) {
+:global(.countryMapSelect__multi-value) {
   background-color: #68d391 !important;
   border-radius: 4px !important;
 }
 
-.container.darkMode :global(.custom-select__multi-value) {
+.container.darkMode :global(.countryMapSelect__multi-value) {
   background-color: #4a5568 !important;
 }
 
-:global(.custom-select__multi-value__label) {
+:global(.countryMapSelect__multi-value__label) {
   color: #fff !important;
   font-size: 12px !important;
 }
 
-:global(.custom-select__multi-value__remove) {
+:global(.countryMapSelect__multi-value__remove) {
   color: #fff !important;
 }
 
-:global(.custom-select__multi-value__remove:hover) {
+:global(.countryMapSelect__multi-value__remove:hover) {
   background-color: #48bb78 !important;
 }
 
-.container.darkMode :global(.custom-select__multi-value__remove:hover) {
+.container.darkMode :global(.countryMapSelect__multi-value__remove:hover) {
   background-color: #68d391 !important;
 }
 

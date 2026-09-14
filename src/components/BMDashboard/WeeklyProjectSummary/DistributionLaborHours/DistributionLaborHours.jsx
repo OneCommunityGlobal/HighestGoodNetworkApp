@@ -105,8 +105,8 @@ export default function DistributionLaborHours() {
             options={projectOptions}
             value={projectOptions.find(opt => opt.value === projectFilter)}
             onChange={opt => setProjectFilter(opt.value)}
-            className="react-select-container"
-            classNamePrefix="react-select"
+            className={styles.distributionLaborSelect}
+            classNamePrefix="distributionLaborSelect"
           />
         </label>
         <label htmlFor="member-filter">
@@ -115,8 +115,8 @@ export default function DistributionLaborHours() {
             options={memberOptions}
             value={memberOptions.find(opt => opt.value === memberFilter)}
             onChange={opt => setMemberFilter(opt.value)}
-            className="react-select-container"
-            classNamePrefix="react-select"
+            className={styles.distributionLaborSelect}
+            classNamePrefix="distributionLaborSelect"
           />
         </label>
 

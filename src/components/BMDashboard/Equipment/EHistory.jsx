@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './EHistory.module.css';
+import styles from './EHistory.module.css';
 import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
 import { fetchAllEquipments } from '~/actions/bmdashboard/equipmentActions';
 import { useDispatch, useSelector } from 'react-redux';
@@ -83,7 +83,7 @@ export default function EquipmentUpdateLog() {
       style={{ height: '100%' }}
     >
       <div className={`container py-4 ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
-        <h3 className={`${darkMode ? 'history-title-dark ' : 'history-title'} fw-bold`}>
+        <h3 className={`${darkMode ? styles.historyTitleDark : styles.historyTitle} fw-bold`}>
           Tool/Equipment History Log
         </h3>
 
@@ -143,9 +143,9 @@ export default function EquipmentUpdateLog() {
 
         <div className="table-responsive">
           <table
-            className={`table ${
-              darkMode ? 'equipment-table-dark ' : 'equipment-table'
-            }  table-sm equipment-table`}
+            className={`table table-sm ${styles.equipmentTable} ${
+              darkMode ? styles.equipmentTableDark : ''
+            }`}
           >
             <thead>
               <tr>

@@ -158,6 +158,13 @@ export function CPDashboard() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const { recentSearches, addSearch, removeSearch } = useRecentSearches();
 
+  // Marks the body only while this page is mounted, so the base page
+  // styling below doesn't leak onto other routes.
+  useEffect(() => {
+    document.body.classList.add('cp-dashboard-body');
+    return () => document.body.classList.remove('cp-dashboard-body');
+  }, []);
+
   // Hide the global back-to-top button — not needed on this page
   useEffect(() => {
     const scrollBtn = document.querySelector('.back-to-top');
