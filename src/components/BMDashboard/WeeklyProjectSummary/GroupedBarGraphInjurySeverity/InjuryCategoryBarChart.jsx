@@ -141,6 +141,93 @@ function InjuryTooltipContent({
   );
 }
 
+function InjuryBarChartView({
+  chartKey,
+  chartData,
+  darkMode,
+  seriesProjectIds,
+  allSeriesProjectIds,
+  projectColorById,
+  projectLabelById,
+  projectNameById,
+  showLabels,
+}) {
+  return (
+    <div className={styles.chartArea}>
+      <ResponsiveContainer key={chartKey} width="100%" height="100%">
+        <BarChart
+          data={chartData}
+          margin={{ top: 8, right: 16, bottom: 0, left: 0 }}
+          style={{
+            backgroundColor: darkMode ? '#1e2a3a' : '#fff',
+            borderRadius: '8px',
+            padding: '8px',
+          }}
+        >
+          <XAxis
+            dataKey="workerCategory"
+            interval={0}
+            angle={-45}
+            textAnchor="end"
+            height={80}
+            tick={{ fill: darkMode ? '#fff' : '#000' }}
+            axisLine={{ stroke: darkMode ? '#888' : '#000' }}
+            tickLine={{ stroke: darkMode ? '#888' : '#000' }}
+          />
+          <YAxis
+            allowDecimals={false}
+            tick={{ fill: darkMode ? '#fff' : '#000' }}
+            axisLine={{ stroke: darkMode ? '#888' : '#000' }}
+            tickLine={{ stroke: darkMode ? '#888' : '#000' }}
+          />
+          <Tooltip
+            //tooltip only; no shaded hover overlay across the chart
+            cursor={false}
+            content={
+              <InjuryTooltipContent
+                darkMode={darkMode}
+                projectColorById={projectColorById}
+                projectLabelById={projectLabelById}
+                projectNameById={projectNameById}
+              />
+            }
+          />
+          <Legend
+            wrapperStyle={{
+              color: darkMode ? '#fff' : '#000',
+              paddingBottom: 10,
+            }}
+            payload={allSeriesProjectIds.map(pid => ({
+              id: pid,
+              type: 'square',
+              color: projectColorById.get(pid),
+              value: projectLabelById.get(pid) || projectNameById.get(pid) || 'Unknown Project',
+            }))}
+          />
+          {seriesProjectIds.map(pid => (
+            <Bar
+              key={pid}
+              dataKey={pid}
+              fill={projectColorById.get(pid)}
+              stroke={darkMode ? '#E5E7EB' : '#ffffff'}
+              strokeWidth={1}
+            >
+              {showLabels && (
+                <LabelList
+                  dataKey={pid}
+                  position="top"
+                  formatter={v => (v > 0 ? v : '')}
+                  // fill={darkMode ? '#fff' : '#000'}
+                />
+              )}
+            </Bar>
+          ))}
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
 function InjuryCategoryBarChart() {
   const dispatch = useDispatch();
 
@@ -370,78 +457,17 @@ function InjuryCategoryBarChart() {
       {!loading && error && <p className={styles.error}>Error: {String(error)}</p>}
 
       {!loading && !error && chartData.length > 0 && (
-        <div className={styles.chartArea}>
-          <ResponsiveContainer key={chartKey} width="100%" height="100%">
-            <BarChart
-              data={chartData}
-              margin={{ top: 8, right: 16, bottom: 0, left: 0 }}
-              style={{
-                backgroundColor: darkMode ? '#1e2a3a' : '#fff',
-                borderRadius: '8px',
-                padding: '8px',
-              }}
-            >
-              <XAxis
-                dataKey="workerCategory"
-                interval={0}
-                angle={-45}
-                textAnchor="end"
-                height={80}
-                tick={{ fill: darkMode ? '#fff' : '#000' }}
-                axisLine={{ stroke: darkMode ? '#888' : '#000' }}
-                tickLine={{ stroke: darkMode ? '#888' : '#000' }}
-              />
-              <YAxis
-                allowDecimals={false}
-                tick={{ fill: darkMode ? '#fff' : '#000' }}
-                axisLine={{ stroke: darkMode ? '#888' : '#000' }}
-                tickLine={{ stroke: darkMode ? '#888' : '#000' }}
-              />
-              <Tooltip
-                //tooltip only; no shaded hover overlay across the chart
-                cursor={false}
-                content={
-                  <InjuryTooltipContent
-                    darkMode={darkMode}
-                    projectColorById={projectColorById}
-                    projectLabelById={projectLabelById}
-                    projectNameById={projectNameById}
-                  />
-                }
-              />
-              <Legend
-                wrapperStyle={{
-                  color: darkMode ? '#fff' : '#000',
-                  paddingBottom: 10,
-                }}
-                payload={allSeriesProjectIds.map(pid => ({
-                  id: pid,
-                  type: 'square',
-                  color: projectColorById.get(pid),
-                  value: projectLabelById.get(pid) || projectNameById.get(pid) || 'Unknown Project',
-                }))}
-              />
-              {seriesProjectIds.map(pid => (
-                <Bar
-                  key={pid}
-                  dataKey={pid}
-                  fill={projectColorById.get(pid)}
-                  stroke={darkMode ? '#E5E7EB' : '#ffffff'}
-                  strokeWidth={1}
-                >
-                  {showLabels && (
-                    <LabelList
-                      dataKey={pid}
-                      position="top"
-                      formatter={v => (v > 0 ? v : '')}
-                      // fill={darkMode ? '#fff' : '#000'}
-                    />
-                  )}
-                </Bar>
-              ))}
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+        <InjuryBarChartView
+          chartKey={chartKey}
+          chartData={chartData}
+          darkMode={darkMode}
+          seriesProjectIds={seriesProjectIds}
+          allSeriesProjectIds={allSeriesProjectIds}
+          projectColorById={projectColorById}
+          projectLabelById={projectLabelById}
+          projectNameById={projectNameById}
+          showLabels={showLabels}
+        />
       )}
 
       {!loading && !error && chartData.length === 0 && (
