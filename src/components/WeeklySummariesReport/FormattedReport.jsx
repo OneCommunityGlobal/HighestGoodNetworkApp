@@ -736,8 +736,10 @@ function BioSwitch({ userId, bioPosted, summary, getWeeklySummariesReport }) {
   return (
     <div className={styles.bioToggleContainer}>
       <b style={style}>Bio announcement:</b>
-      <div className={styles.bioToggle}>
+      <div className={styles.bioToggleWrapper}>
+        <span className={styles.toggleLabel}>posted</span>
         <TriStateToggleSwitch pos={bioStatus || 'default'} onChange={handleChangeBioPosted} />
+        <span className={styles.toggleLabel}>requested</span>
       </div>
     </div>
   );
