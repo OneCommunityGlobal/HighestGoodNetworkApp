@@ -342,6 +342,12 @@
   border-radius: 4px;
 }
 
+.dashboardDark .statusBadge:global(.badge-warning),
+.dashboardDark .priorityBadge:global(.badge-warning) {
+  color: #212529 !important;
+  background-color: #ffc107 !important;
+}
+
 /* Expiry Warnings */
 .expiryWarningExpired {
   color: #dc3545;
