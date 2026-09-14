@@ -317,6 +317,7 @@ const EnhancedPopularityTimelineChart = lazy(() =>
 // PR Analytics Dashboard
 import ReviewsInsight from './components/PRAnalyticsDashboard/ReviewsInsight/ReviewsInsight';
 import ProjectsGlobalDistribution from './components/ProjectsGlobalDistribution/ProjectsGlobalDistribution';
+import YoutubeAutoPosterCallback from '~/components/Announcements/platforms/youtube/YoutubeAutoPosterCallback';
 const JobAnalyticsPage = lazy(() =>
   import('./components/Reports/HitsAndApplicationRatio/JobAnalyticsPage'),
 );
@@ -603,7 +604,6 @@ export default (
         />
         <ProtectedRoute
           path="/announcements"
-          exact
           component={Announcements}
           routePermissions={RoutePermissions.announcements}
         />
@@ -1259,6 +1259,7 @@ export default (
           component={PRDashboardTopReviewedPRs}
         />
         <ProtectedRoute path="/pr-dashboard/details" exact component={PRDashboardDetails} />
+        <ProtectedRoute path="/youtube/callback" exact component={YoutubeAutoPosterCallback} />
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
