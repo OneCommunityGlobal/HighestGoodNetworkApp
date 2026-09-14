@@ -35,6 +35,11 @@ const getScheduleButtonLabel = (isPosting, editingPostId) => {
   return editingPostId ? 'Update Post' : 'Schedule Post';
 };
 
+const getPostSuccessMessage = (platform, selectedPlatforms) => {
+  const suffix = selectedPlatforms.length ? ` (Selected for: ${selectedPlatforms.join(', ')})` : '';
+  return `Successfully posted to ${platform}!${suffix}`;
+};
+
 // Pure formatter (no component state) — module-scope so both the composer and the
 // preview modal reference it directly without prop-drilling.
 const formatScheduledTime = isoString => {
@@ -182,16 +187,13 @@ function PostPreviewModal({
   onSchedule,
   onPostNow,
 }) {
+  const modalClassNames = [];
+  if (platform === 'x') modalClassNames.push(styles['x-scope']);
+  if (platform === 'x' && darkMode) modalClassNames.push(styles.dark);
+  const modalClassName = modalClassNames.join(' ') || undefined;
+
   return (
-    <Modal
-      isOpen={isOpen}
-      toggle={toggle}
-      size="lg"
-      centered
-      modalClassName={
-        platform === 'x' ? `${styles['x-scope']} ${darkMode ? styles.dark : ''}`.trim() : undefined
-      }
-    >
+    <Modal isOpen={isOpen} toggle={toggle} size="lg" centered modalClassName={modalClassName}>
       <ModalHeader toggle={toggle}>Post Preview</ModalHeader>
       <ModalBody>
         {previewData && (
@@ -534,21 +536,22 @@ export default function SocialMediaComposer({ platform, darkMode }) {
   };
 
   const copyXContent = (content, xWindow) => {
-    try {
-      const clipboardWrite = navigator.clipboard.writeText(content);
-      return Promise.resolve(clipboardWrite).then(
-        () => true,
-        () => {
-          xWindow.close();
-          toast.error('Could not copy content to clipboard. Please try again.');
-          return false;
-        },
-      );
-    } catch {
+    const handleClipboardFailure = () => {
       xWindow.close();
       toast.error('Could not copy content to clipboard. Please try again.');
-      return Promise.resolve(false);
+      return false;
+    };
+
+    let clipboardWrite;
+    try {
+      clipboardWrite = navigator.clipboard.writeText(content);
+    } catch {
+      return Promise.resolve(handleClipboardFailure());
     }
+
+    return Promise.resolve(clipboardWrite)
+      .then(() => true)
+      .catch(handleClipboardFailure);
   };
 
   const openX = (content, xWindow) => {
@@ -614,10 +617,7 @@ export default function SocialMediaComposer({ platform, darkMode }) {
         openX(content, xWindow);
         xWindow = null;
       } else {
-        const crossPostSuffix = selectedPlatforms.length
-          ? ` (Selected for: ${selectedPlatforms.join(', ')})`
-          : '';
-        toast.success(`Successfully posted to ${platform}!${crossPostSuffix}`, { autoClose: 5000 });
+        toast.success(getPostSuccessMessage(platform, selectedPlatforms), { autoClose: 5000 });
       }
 
       clearComposer();

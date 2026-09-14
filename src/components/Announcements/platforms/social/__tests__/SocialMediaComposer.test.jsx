@@ -8,6 +8,36 @@ import styles from '../SocialMediaComposer.module.css';
 
 // react-toastify is globally mocked in src/setupTests.js
 const EXPECTED_API_BASE = 'https://configured.example/api';
+const X_POST_CONTENT = 'Post this on X';
+const SCHEDULED_X_POST_ID = 'scheduled-x-post';
+const X_SCHEDULE_URL = `${EXPECTED_API_BASE}/x/schedule`;
+
+const resolveSuccessfulResponse = () =>
+  Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+
+const createScheduledXPost = (overrides = {}) => ({
+  _id: SCHEDULED_X_POST_ID,
+  content: X_POST_CONTENT,
+  scheduledAt: '2026-08-23T12:00:00.000Z',
+  status: 'ready',
+  ...overrides,
+});
+
+const isScheduledXLoad = (url, options) => url === X_SCHEDULE_URL && !options?.method;
+
+const countScheduledXLoads = fetchMock =>
+  fetchMock.mock.calls.filter(([url, options]) => isScheduledXLoad(url, options)).length;
+
+const createScheduledXFetchMock = (
+  post = createScheduledXPost(),
+  handleOtherRequest = resolveSuccessfulResponse,
+) =>
+  vi.fn((url, options) => {
+    if (isScheduledXLoad(url, options)) {
+      return Promise.resolve({ ok: true, json: () => Promise.resolve([post]) });
+    }
+    return handleOtherRequest(url, options);
+  });
 
 const getPostCard = content => {
   // The semantic card class is the stable styling hook under test.
@@ -20,10 +50,7 @@ describe('SocialMediaComposer X 280-character limit', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve({}) })),
-    );
+    vi.stubGlobal('fetch', vi.fn(resolveSuccessfulResponse));
   });
 
   afterEach(() => {
@@ -89,7 +116,7 @@ describe('SocialMediaComposer X 280-character limit', () => {
 });
 
 describe('SocialMediaComposer X clipboard handling', () => {
-  const content = 'Post this on X';
+  const content = X_POST_CONTENT;
   let writeText;
   let open;
   let xWindow;
@@ -191,9 +218,21 @@ describe('SocialMediaComposer X clipboard handling', () => {
     expect(toast.error).not.toHaveBeenCalled();
   });
 
-  it('shows an error and preserves the composer when the clipboard write fails', async () => {
-    writeText.mockRejectedValue(new Error('Clipboard unavailable'));
-    const fetchMock = vi.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve({}) }));
+  it.each([
+    [
+      'rejects asynchronously',
+      () => writeText.mockRejectedValue(new Error('Clipboard unavailable')),
+    ],
+    [
+      'throws synchronously',
+      () =>
+        writeText.mockImplementation(() => {
+          throw new Error('Clipboard unavailable');
+        }),
+    ],
+  ])('shows an error and preserves the composer when clipboard writing %s', async (_case, fail) => {
+    fail();
+    const fetchMock = vi.fn(resolveSuccessfulResponse);
     vi.stubGlobal('fetch', fetchMock);
 
     const postInput = submitPost();
@@ -253,16 +292,11 @@ describe('SocialMediaComposer X clipboard handling', () => {
   });
 
   it('keeps a skipped scheduled post visible and removes pending and ready actions', async () => {
-    const readyPost = {
-      _id: 'scheduled-x-post',
-      content,
-      scheduledAt: '2026-08-23T12:00:00.000Z',
-      status: 'ready',
-    };
+    const readyPost = createScheduledXPost();
     const skippedPost = { ...readyPost, status: 'skipped' };
     let scheduledLoadCount = 0;
     const fetchMock = vi.fn((url, options) => {
-      if (url === `${EXPECTED_API_BASE}/x/schedule` && !options?.method) {
+      if (isScheduledXLoad(url, options)) {
         scheduledLoadCount += 1;
         const posts = scheduledLoadCount === 1 ? [readyPost] : [skippedPost];
         return Promise.resolve({ ok: true, json: () => Promise.resolve(posts) });
@@ -270,7 +304,7 @@ describe('SocialMediaComposer X clipboard handling', () => {
       if (url === `${EXPECTED_API_BASE}/x/schedule/scheduled-x-post/skip`) {
         return Promise.resolve({ ok: true, json: () => Promise.resolve(skippedPost) });
       }
-      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+      return resolveSuccessfulResponse();
     });
 
     await showScheduledPost(fetchMock);
@@ -302,18 +336,7 @@ describe('SocialMediaComposer X clipboard handling', () => {
 
   it('navigates X, marks a scheduled post, and refetches after mark-posted succeeds', async () => {
     writeText.mockResolvedValue();
-    const scheduledPost = {
-      _id: 'scheduled-x-post',
-      content,
-      scheduledAt: '2026-08-23T12:00:00.000Z',
-      status: 'ready',
-    };
-    const fetchMock = vi.fn((url, options) => {
-      if (url === `${EXPECTED_API_BASE}/x/schedule` && !options?.method) {
-        return Promise.resolve({ ok: true, json: () => Promise.resolve([scheduledPost]) });
-      }
-      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
-    });
+    const fetchMock = createScheduledXFetchMock();
     const copyScheduledButton = await showScheduledPost(fetchMock);
 
     fireEvent.click(copyScheduledButton);
@@ -337,30 +360,17 @@ describe('SocialMediaComposer X clipboard handling', () => {
     );
     expect(toast.error).not.toHaveBeenCalled();
     await waitFor(() => {
-      expect(
-        fetchMock.mock.calls.filter(
-          ([url, options]) => url === `${EXPECTED_API_BASE}/x/schedule` && !options?.method,
-        ),
-      ).toHaveLength(2);
+      expect(countScheduledXLoads(fetchMock)).toBe(2);
     });
   });
 
   it('does not refetch scheduled posts when mark-posted returns a non-OK response', async () => {
     writeText.mockResolvedValue();
-    const scheduledPost = {
-      _id: 'scheduled-x-post',
-      content,
-      scheduledAt: '2026-08-23T12:00:00.000Z',
-      status: 'ready',
-    };
-    const fetchMock = vi.fn((url, options) => {
-      if (url === `${EXPECTED_API_BASE}/x/schedule` && !options?.method) {
-        return Promise.resolve({ ok: true, json: () => Promise.resolve([scheduledPost]) });
-      }
+    const fetchMock = createScheduledXFetchMock(createScheduledXPost(), url => {
       if (url === `${EXPECTED_API_BASE}/x/schedule/scheduled-x-post/mark-posted`) {
         return Promise.resolve({ ok: false });
       }
-      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+      return resolveSuccessfulResponse();
     });
     const copyScheduledButton = await showScheduledPost(fetchMock);
 
@@ -371,11 +381,7 @@ describe('SocialMediaComposer X clipboard handling', () => {
         'Could not mark scheduled post as posted. Please try again.',
       );
     });
-    expect(
-      fetchMock.mock.calls.filter(
-        ([url, options]) => url === `${EXPECTED_API_BASE}/x/schedule` && !options?.method,
-      ),
-    ).toHaveLength(1);
+    expect(countScheduledXLoads(fetchMock)).toBe(1);
     expect(xWindow.location.href).toBe(
       `https://x.com/intent/tweet?text=${encodeURIComponent(content)}`,
     );
@@ -383,20 +389,11 @@ describe('SocialMediaComposer X clipboard handling', () => {
 
   it('does not refetch scheduled posts when the mark-posted request rejects', async () => {
     writeText.mockResolvedValue();
-    const scheduledPost = {
-      _id: 'scheduled-x-post',
-      content,
-      scheduledAt: '2026-08-23T12:00:00.000Z',
-      status: 'ready',
-    };
-    const fetchMock = vi.fn((url, options) => {
-      if (url === `${EXPECTED_API_BASE}/x/schedule` && !options?.method) {
-        return Promise.resolve({ ok: true, json: () => Promise.resolve([scheduledPost]) });
-      }
+    const fetchMock = createScheduledXFetchMock(createScheduledXPost(), url => {
       if (url === `${EXPECTED_API_BASE}/x/schedule/scheduled-x-post/mark-posted`) {
         return Promise.reject(new Error('Network unavailable'));
       }
-      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+      return resolveSuccessfulResponse();
     });
     const copyScheduledButton = await showScheduledPost(fetchMock);
 
@@ -407,11 +404,7 @@ describe('SocialMediaComposer X clipboard handling', () => {
         'Could not mark scheduled post as posted. Please try again.',
       );
     });
-    expect(
-      fetchMock.mock.calls.filter(
-        ([url, options]) => url === `${EXPECTED_API_BASE}/x/schedule` && !options?.method,
-      ),
-    ).toHaveLength(1);
+    expect(countScheduledXLoads(fetchMock)).toBe(1);
     expect(xWindow.location.href).toBe(
       `https://x.com/intent/tweet?text=${encodeURIComponent(content)}`,
     );
@@ -419,18 +412,7 @@ describe('SocialMediaComposer X clipboard handling', () => {
 
   it('does not mark a scheduled post as completed when the clipboard write fails', async () => {
     writeText.mockRejectedValue(new Error('Clipboard unavailable'));
-    const scheduledPost = {
-      _id: 'scheduled-x-post',
-      content,
-      scheduledAt: '2026-08-23T12:00:00.000Z',
-      status: 'ready',
-    };
-    const fetchMock = vi.fn((url, options) => {
-      if (url === `${EXPECTED_API_BASE}/x/schedule` && !options?.method) {
-        return Promise.resolve({ ok: true, json: () => Promise.resolve([scheduledPost]) });
-      }
-      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
-    });
+    const fetchMock = createScheduledXFetchMock();
     const copyScheduledButton = await showScheduledPost(fetchMock);
     fireEvent.click(copyScheduledButton);
 
@@ -451,18 +433,7 @@ describe('SocialMediaComposer X clipboard handling', () => {
 
   it('does not mark a scheduled post when the popup is blocked', async () => {
     open.mockReturnValue(null);
-    const scheduledPost = {
-      _id: 'scheduled-x-post',
-      content,
-      scheduledAt: '2026-08-23T12:00:00.000Z',
-      status: 'ready',
-    };
-    const fetchMock = vi.fn((url, options) => {
-      if (url === `${EXPECTED_API_BASE}/x/schedule` && !options?.method) {
-        return Promise.resolve({ ok: true, json: () => Promise.resolve([scheduledPost]) });
-      }
-      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
-    });
+    const fetchMock = createScheduledXFetchMock();
     const copyScheduledButton = await showScheduledPost(fetchMock);
 
     fireEvent.click(copyScheduledButton);
