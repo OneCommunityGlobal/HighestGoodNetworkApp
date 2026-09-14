@@ -70,6 +70,37 @@ const buildChartData = data => {
   return Object.values(acc);
 };
 
+const buildProjectColorById = colorProjectIds => {
+  const projectColorById = new Map();
+  [...colorProjectIds]
+    .sort((a, b) => a.localeCompare(b))
+    .forEach((pid, index) => {
+      // Sort by project ID so colors do not depend on API or filter response order.
+      projectColorById.set(pid, COLOR_PALETTE[index % COLOR_PALETTE.length]);
+    });
+  return projectColorById;
+};
+
+const useChartResizeOnChange = ({ loading, error, deps }) => {
+  const [chartKey, setChartKey] = useState(0);
+
+  // Force a resize/reflow after data/filter changes so chart draws immediately (no hover needed)
+  useEffect(() => {
+    // Only do this once the chart is supposed to be visible
+    if (loading || error) return undefined;
+
+    const raf = requestAnimationFrame(() => {
+      window.dispatchEvent(new Event('resize')); // triggers ResponsiveContainer measure
+      setChartKey(k => k + 1); // extra-safe: forces a clean remount
+    });
+
+    return () => cancelAnimationFrame(raf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, error, ...deps]);
+
+  return chartKey;
+};
+
 function InjuryTooltipContent({
   active,
   payload,
@@ -129,8 +160,6 @@ function InjuryCategoryBarChart() {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [unfilteredProjects, setUnfilteredProjects] = useState([]);
-
-  const [chartKey, setChartKey] = useState(0);
 
   useEffect(() => {
     dispatch(fetchSeverities());
@@ -226,37 +255,22 @@ function InjuryCategoryBarChart() {
 
   const showLabels = seriesProjectIds.length <= 4;
 
-  const projectColorById = new Map();
-  [...colorProjectIds]
-    .sort((a, b) => a.localeCompare(b))
-    .forEach((pid, index) => {
-      // Sort by project ID so colors do not depend on API or filter response order.
-      projectColorById.set(pid, COLOR_PALETTE[index % COLOR_PALETTE.length]);
-    });
+  const projectColorById = useMemo(() => buildProjectColorById(colorProjectIds), [colorProjectIds]);
 
-  // Force a resize/reflow after data/filter changes so chart draws immediately (no hover needed)
-  useEffect(() => {
-    // Only do this once the chart is supposed to be visible
-    if (loading || error) return;
-
-    const raf = requestAnimationFrame(() => {
-      window.dispatchEvent(new Event('resize')); // triggers ResponsiveContainer measure
-      setChartKey(k => k + 1); // extra-safe: forces a clean remount
-    });
-
-    return () => cancelAnimationFrame(raf);
-  }, [
+  const chartKey = useChartResizeOnChange({
     loading,
     error,
-    darkMode,
-    chartData.length,
-    seriesProjectIds.length,
-    projectNameFilter,
-    severityFilter,
-    injuryTypeFilter,
-    startDate,
-    endDate,
-  ]);
+    deps: [
+      darkMode,
+      chartData.length,
+      seriesProjectIds.length,
+      projectNameFilter,
+      severityFilter,
+      injuryTypeFilter,
+      startDate,
+      endDate,
+    ],
+  });
 
   const selectStyles = buildChartSelectStyles(darkMode);
 
@@ -386,15 +400,14 @@ function InjuryCategoryBarChart() {
               <Tooltip
                 //tooltip only; no shaded hover overlay across the chart
                 cursor={false}
-                content={tooltipProps => (
+                content={
                   <InjuryTooltipContent
-                    {...tooltipProps}
                     darkMode={darkMode}
                     projectColorById={projectColorById}
                     projectLabelById={projectLabelById}
                     projectNameById={projectNameById}
                   />
-                )}
+                }
               />
               <Legend
                 wrapperStyle={{
