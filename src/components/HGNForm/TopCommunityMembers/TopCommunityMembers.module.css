@@ -119,14 +119,29 @@
 /* ============================================
    SCORE & PRIVATE HELPERS
    ============================================ */
+.scoreCell {
+  white-space: nowrap;
+}
+
 .lowScore {
-  color: #e53e3e;
+  color: #d6353f;
   font-weight: 700;
 }
 
 .highScore {
-  color: #38a169;
+  color: #278049;
   font-weight: 700;
+}
+
+/* The global dark-mode rule (body.dark-mode * { color: #fff !important })
+   forces white text everywhere, so the score colors need to be reapplied
+   against the real body.dark-mode class to take precedence in dark mode. */
+:global(.dark-mode) .lowScore {
+  color: #fc8181 !important;
+}
+
+:global(.dark-mode) .highScore {
+  color: #68d391 !important;
 }
 
 .private {
@@ -300,29 +315,6 @@
   text-decoration: none;
 }
 
-.iconLink {
-  font-size: 18px;
-  margin: 0 5px;
-  color: #0073e6;
-  transition: color 0.2s;
-}
-
-.iconLink:hover {
-  color: #005bb5;
-}
-
-.iconSlack {
-  color: #611f69;
-  font-size: 18px;
-  transition: color 0.2s ease;
-}
-
-.iconSlack:hover {
-  color: #400d40; /* darker shade on hover */
-}
-
-
-
 .darkMode .componentBox {
   background-color: #2b3e59 !important;
   border: 1px solid #4a5a77 !important;
@@ -338,76 +330,30 @@
   color: #fff !important;
 }
 
-.selectDark {
-  padding: 8px 12px;
-  border: 1px solid #4a5a77;
-  border-radius: 4px;
-  background-color: #3a506b;
-  color: #fff;
-  font-size: 14px;
-}
-
-.selectDark:focus {
-  border-color: #e8a71c;
-  outline: none;
-}
-
-.tableDark {
-  border-collapse: collapse;
-  width: 100%;
-  color: #fff;
-}
-
-.tableDark th,
-.tableDark td {
-  padding: 12px 20px;
-  text-align: left;
-  border: 1px solid #4a5a77;
-}
-
 .tableDark thead {
   background-color: #2d4059;
-}
-
-.tableDark th {
-  color: #fff;
-  font-weight: 600;
 }
 
 .tableDark tr:nth-child(even) {
   background-color: #253342;
 }
 
-.tableDark tr:hover {
-  background-color: #2f4157;
+/* Global dark-mode rule forces link text to white; restore legible link
+   colors (both clear 4.5:1 on the dark table surface). */
+:global(.dark-mode) .iconLinkDark,
+:global(.dark-mode) .iconLinkDark span {
+  color: #63b3ed !important;
 }
 
-.tableDark td a,
-.tableDark td span {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
+:global(.dark-mode) .iconLinkDark:hover,
+:global(.dark-mode) .iconLinkDark:hover span {
+  color: #90cdf4 !important;
 }
 
-.iconLinkDark {
-  font-size: 18px;
-  margin: 0 5px;
-  color: #e8a71c;
-  transition: color 0.2s;
+:global(.dark-mode) .underlineLinkDark {
+  color: #63b3ed !important;
 }
 
-.iconLinkDark:hover {
-  color: #f5b13a;
-}
-
-.underlineLinkDark {
-  text-decoration: underline;
-  color: #e8a71c;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.underlineLinkDark:hover {
-  text-decoration: none;
-  color: #f5b13a;
+:global(.dark-mode) .underlineLinkDark:hover {
+  color: #90cdf4 !important;
 }
