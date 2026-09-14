@@ -1035,7 +1035,7 @@ function Timer({ authUser, darkMode, isPopout }) {
             <button
               type="button"
               disabled={isButtonDisabled}
-              onClick={handleStartButton}
+              onMouseDown={handleStartButton}
               aria-label="Start timer"
               style={{ background: 'none', border: 'none' }}
             >
@@ -1056,7 +1056,7 @@ function Timer({ authUser, darkMode, isPopout }) {
             <button
               type="button"
               disabled={isButtonDisabled}
-              onClick={sendPause}
+              onMouseDown={sendPause}
               aria-label="Pause timer"
               style={{ background: 'none', border: 'none' }}
             >
