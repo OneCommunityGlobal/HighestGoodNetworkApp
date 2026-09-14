@@ -45,6 +45,7 @@ import { ENDPOINTS } from '~/utils/URL';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 // import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch'; // Unused import removed
 import GoogleDocIcon from '../common/GoogleDocIcon';
+import TriStateToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch/TriStateToggleSwitch';
 import styles from './WeeklySummariesReport.module.scss';
 
 const TZ = 'America/Los_Angeles';
@@ -693,7 +694,6 @@ function Bio({ bioCanEdit, ...props }) {
 
 function BioSwitch({ userId, bioPosted, summary, getWeeklySummariesReport }) {
   const [bioStatus, setBioStatus] = useState(bioPosted);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useDispatch();
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
 
@@ -703,12 +703,11 @@ function BioSwitch({ userId, bioPosted, summary, getWeeklySummariesReport }) {
   }, [bioPosted]);
 
   // eslint-disable-next-line no-shadow
-  const handleChangeBioPosted = async (userId, newBioStatus) => {
+  const handleChangeBioPosted = async newBioStatus => {
     const res = await dispatch(toggleUserBio(userId, newBioStatus));
     if (res.status === 200) {
       setBioStatus(newBioStatus);
       toast.success('You have changed the bio announcement status of this user.');
-      setIsModalOpen(false);
 
       // Force refresh the weekly summaries data to get updated bio status
       try {
@@ -734,45 +733,12 @@ function BioSwitch({ userId, bioPosted, summary, getWeeklySummariesReport }) {
     }
   };
 
-  const getBioStatusLabel = () => {
-    if (bioStatus === 'default') return 'Not requested/posted';
-    if (bioStatus === 'posted') return 'Posted';
-    return 'Requested';
-  };
-
   return (
-    <div>
+    <div className={styles.bioToggleContainer}>
+      <b style={style}>Bio announcement:</b>
       <div className={styles.bioToggle}>
-        <b>Bio announcement:</b> {getBioStatusLabel()}
+        <TriStateToggleSwitch pos={bioStatus || 'default'} onChange={handleChangeBioPosted} />
       </div>
-      <div className={styles.bioToggle}>
-        <button
-          type="button"
-          onClick={() => setIsModalOpen(true)}
-          className="btn btn-sm btn-primary"
-        >
-          Set State
-        </button>
-      </div>
-
-      <Modal isOpen={isModalOpen} toggle={() => setIsModalOpen(false)}>
-        <ModalHeader toggle={() => setIsModalOpen(false)}>Set Bio Announcement Status</ModalHeader>
-        <ModalBody>
-          <div style={{ padding: '1rem 0' }}>
-            {['default', 'requested', 'posted'].map(option => (
-              <Button
-                key={option}
-                color={bioStatus === option ? 'success' : 'secondary'}
-                block
-                onClick={() => handleChangeBioPosted(userId, option)}
-                style={{ margin: '0.5rem 0', textTransform: 'capitalize' }}
-              >
-                {option === 'default' ? 'Not requested/posted' : option}
-              </Button>
-            ))}
-          </div>
-        </ModalBody>
-      </Modal>
     </div>
   );
 }

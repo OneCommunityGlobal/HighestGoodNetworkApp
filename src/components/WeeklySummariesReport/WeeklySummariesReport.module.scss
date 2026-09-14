@@ -3,12 +3,19 @@
   background-color: #f6f6f3;
 }
 
+.bioToggleContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .bioToggle {
-  display: block;
-  margin: 8px 0;
+  display: inline-flex;
+  margin: 0;
   
   button {
-    margin-top: 8px;
+    margin-top: 0;
   }
 }
 
