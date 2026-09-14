@@ -542,16 +542,14 @@ export default function SocialMediaComposer({ platform, darkMode }) {
       return false;
     };
 
-    let clipboardWrite;
     try {
-      clipboardWrite = navigator.clipboard.writeText(content);
+      return navigator.clipboard
+        .writeText(content)
+        .then(() => true)
+        .catch(handleClipboardFailure);
     } catch {
       return Promise.resolve(handleClipboardFailure());
     }
-
-    return Promise.resolve(clipboardWrite)
-      .then(() => true)
-      .catch(handleClipboardFailure);
   };
 
   const openX = (content, xWindow) => {

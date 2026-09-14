@@ -124,7 +124,7 @@ describe('SocialMediaComposer X clipboard handling', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
-    writeText = vi.fn();
+    writeText = vi.fn().mockResolvedValue();
     xWindow = { close: vi.fn(), location: { href: '' } };
     open = vi.fn(() => xWindow);
     vi.stubGlobal('navigator', { clipboard: { writeText } });
