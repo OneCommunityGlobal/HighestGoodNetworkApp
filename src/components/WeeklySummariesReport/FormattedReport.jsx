@@ -43,7 +43,7 @@ import RoleInfoModal from '~/components/UserProfile/EditableModal/RoleInfoModal'
 import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
 import { ENDPOINTS } from '~/utils/URL';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
-import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
+// import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch'; // Unused import removed
 import GoogleDocIcon from '../common/GoogleDocIcon';
 import styles from './WeeklySummariesReport.module.scss';
 

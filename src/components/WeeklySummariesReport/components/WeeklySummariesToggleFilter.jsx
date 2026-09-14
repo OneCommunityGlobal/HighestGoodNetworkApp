@@ -80,72 +80,70 @@ export default function WeeklySummariesToggleFilter({
                 - Posted: Shows users with posted bio status
                 Supports click-to-deselect behavior for flexible filtering */}
             <span className={styles.filterGroupLabel}>Filter by Bio Status:</span>
-            {bioStatusOptions.map(option => (
-              <div key={option.value} className={styles.specialColorsItem}>
-                <span className={styles.specialColorsToggleWrap}>
-                  <button
-                    type="button"
-                    className={styles.bioStatusButton}
-                    onClick={e => handleBioStatusChange(e, option.value)}
-                    onMouseDown={e => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                    style={{
-                      padding: '3px 8px',
-                      borderRadius: '4px',
-                      border: `1px solid ${darkMode ? '#555' : '#ccc'}`,
-                      backgroundColor:
-                        (pendingBioStatus ?? state.selectedBioStatus) === option.value
-                          ? '#007bff'
-                          : darkMode
-                          ? '#2a2a2a'
-                          : '#fff',
-                      color:
-                        (pendingBioStatus ?? state.selectedBioStatus) === option.value
-                          ? '#fff'
-                          : darkMode
-                          ? '#ddd'
-                          : '#000',
-                      cursor: 'pointer',
-                      fontSize: '12px',
-                      fontWeight: 500,
-                      transition: 'background-color 0.2s',
-                      outline: 'none',
-                      boxShadow: 'none !important',
-                      userSelect: 'none',
-                      WebkitUserSelect: 'none',
-                      MozUserSelect: 'none',
-                      msUserSelect: 'none',
-                      transform: 'translateZ(0)',
-                    }}
-                    onMouseOver={e => {
-                      if ((pendingBioStatus ?? state.selectedBioStatus) !== option.value) {
-                        e.target.style.backgroundColor = darkMode ? '#3a3a3a' : '#f0f0f0';
-                      }
-                    }}
-                    onFocus={e => {
-                      if ((pendingBioStatus ?? state.selectedBioStatus) !== option.value) {
-                        e.target.style.backgroundColor = darkMode ? '#3a3a3a' : '#f0f0f0';
-                      }
-                    }}
-                    onMouseOut={e => {
-                      if ((pendingBioStatus ?? state.selectedBioStatus) !== option.value) {
-                        e.target.style.backgroundColor = darkMode ? '#2a2a2a' : '#fff';
-                      }
-                    }}
-                    onBlur={e => {
-                      if ((pendingBioStatus ?? state.selectedBioStatus) !== option.value) {
-                        e.target.style.backgroundColor = darkMode ? '#2a2a2a' : '#fff';
-                      }
-                    }}
-                  >
-                    {(pendingBioStatus ?? state.selectedBioStatus) === option.value ? '✓' : ''}{' '}
-                    {option.label}
-                  </button>
-                </span>
-              </div>
-            ))}
+            {bioStatusOptions.map(option => {
+              const isActive = (pendingBioStatus ?? state.selectedBioStatus) === option.value;
+
+              const buttonBgColor = isActive ? '#007bff' : darkMode ? '#2a2a2a' : '#fff';
+
+              const buttonTextColor = isActive ? '#fff' : darkMode ? '#ddd' : '#000';
+
+              return (
+                <div key={option.value} className={styles.specialColorsItem}>
+                  <span className={styles.specialColorsToggleWrap}>
+                    <button
+                      type="button"
+                      className={styles.bioStatusButton}
+                      onClick={e => handleBioStatusChange(e, option.value)}
+                      onMouseDown={e => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                      style={{
+                        padding: '3px 8px',
+                        borderRadius: '4px',
+                        border: `1px solid ${darkMode ? '#555' : '#ccc'}`,
+                        backgroundColor: buttonBgColor,
+                        color: buttonTextColor,
+                        cursor: 'pointer',
+                        fontSize: '12px',
+                        fontWeight: 500,
+                        transition: 'background-color 0.2s',
+                        outline: 'none',
+                        boxShadow: 'none !important',
+                        userSelect: 'none',
+                        WebkitUserSelect: 'none',
+                        MozUserSelect: 'none',
+                        msUserSelect: 'none',
+                        transform: 'translateZ(0)',
+                      }}
+                      onMouseOver={e => {
+                        if (!isActive) {
+                          e.target.style.backgroundColor = darkMode ? '#3a3a3a' : '#f0f0f0';
+                        }
+                      }}
+                      onFocus={e => {
+                        if (!isActive) {
+                          e.target.style.backgroundColor = darkMode ? '#3a3a3a' : '#f0f0f0';
+                        }
+                      }}
+                      onMouseOut={e => {
+                        if (!isActive) {
+                          e.target.style.backgroundColor = darkMode ? '#2a2a2a' : '#fff';
+                        }
+                      }}
+                      onBlur={e => {
+                        if (!isActive) {
+                          e.target.style.backgroundColor = darkMode ? '#2a2a2a' : '#fff';
+                        }
+                      }}
+                    >
+                      {isActive ? '✓' : ''}
+                      {option.label}
+                    </button>
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
