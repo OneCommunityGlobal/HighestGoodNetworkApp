@@ -70,6 +70,46 @@ const buildChartData = data => {
   return Object.values(acc);
 };
 
+function InjuryTooltipContent({
+  active,
+  payload,
+  label,
+  darkMode,
+  projectColorById,
+  projectLabelById,
+  projectNameById,
+}) {
+  if (!active || !payload?.length) return null;
+
+  return (
+    <div
+      style={{
+        backgroundColor: darkMode ? '#2b3e59' : '#fff',
+        border: darkMode ? '1px solid #555' : '1px solid #ccc',
+        padding: 10,
+      }}
+    >
+      <div style={{ color: darkMode ? '#fff' : '#000', margin: 0 }}>{label}</div>
+      {payload.map(entry => {
+        const projectId = String(entry.dataKey);
+        const projectColor = projectColorById.get(projectId) || entry.color || '#000';
+        const projectLabel =
+          projectLabelById.get(projectId) || projectNameById.get(projectId) || 'Unknown Project';
+
+        return (
+          <div
+            key={projectId}
+            className={styles.tooltipSeriesRow}
+            style={{ '--tooltip-series-color': projectColor }}
+          >
+            {projectLabel} : {entry.value}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function InjuryCategoryBarChart() {
   const dispatch = useDispatch();
 
@@ -346,40 +386,15 @@ function InjuryCategoryBarChart() {
               <Tooltip
                 //tooltip only; no shaded hover overlay across the chart
                 cursor={false}
-                content={({ active, payload, label }) => {
-                  if (!active || !payload?.length) return null;
-
-                  return (
-                    <div
-                      style={{
-                        backgroundColor: darkMode ? '#2b3e59' : '#fff',
-                        border: darkMode ? '1px solid #555' : '1px solid #ccc',
-                        padding: 10,
-                      }}
-                    >
-                      <div style={{ color: darkMode ? '#fff' : '#000', margin: 0 }}>{label}</div>
-                      {payload.map(entry => {
-                        const projectId = String(entry.dataKey);
-                        const projectColor =
-                          projectColorById.get(projectId) || entry.color || '#000';
-                        const projectLabel =
-                          projectLabelById.get(projectId) ||
-                          projectNameById.get(projectId) ||
-                          'Unknown Project';
-
-                        return (
-                          <div
-                            key={projectId}
-                            className={styles.tooltipSeriesRow}
-                            style={{ '--tooltip-series-color': projectColor }}
-                          >
-                            {projectLabel} : {entry.value}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  );
-                }}
+                content={tooltipProps => (
+                  <InjuryTooltipContent
+                    {...tooltipProps}
+                    darkMode={darkMode}
+                    projectColorById={projectColorById}
+                    projectLabelById={projectLabelById}
+                    projectNameById={projectNameById}
+                  />
+                )}
               />
               <Legend
                 wrapperStyle={{
