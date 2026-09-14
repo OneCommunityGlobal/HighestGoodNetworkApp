@@ -542,14 +542,11 @@ export default function SocialMediaComposer({ platform, darkMode }) {
       return false;
     };
 
-    try {
-      return navigator.clipboard
-        .writeText(content)
-        .then(() => true)
-        .catch(handleClipboardFailure);
-    } catch {
-      return Promise.resolve(handleClipboardFailure());
-    }
+    return new Promise(resolve => {
+      resolve(navigator.clipboard.writeText(content));
+    })
+      .then(() => true)
+      .catch(handleClipboardFailure);
   };
 
   const openX = (content, xWindow) => {
