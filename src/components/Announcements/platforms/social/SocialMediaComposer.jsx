@@ -928,8 +928,8 @@ export default function SocialMediaComposer({ platform, darkMode }) {
   return (
     <div
       className={`${styles['social-media-composer']} ${darkMode ? styles.dark : ''} ${
-        platform === 'x' ? styles['x-scope'] : ''
-      }`}
+        darkMode === false ? styles.light : ''
+      } ${platform === 'x' ? styles['x-scope'] : ''}`}
     >
       <h3 className={styles['platform-title']}>{platform}</h3>
 

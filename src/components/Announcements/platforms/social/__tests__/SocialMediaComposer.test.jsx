@@ -583,6 +583,39 @@ describe('SocialMediaComposer scheduled-post theme styling', () => {
   });
 });
 
+describe('SocialMediaComposer scheduler theme styling', () => {
+  it.each(['x', 'mastodon'])(
+    'keeps the %s date and time controls in sync with live application theme changes',
+    platform => {
+      const { container, rerender } = render(
+        <SocialMediaComposer platform={platform} darkMode={false} />,
+      );
+      // These native input types are the stable DOM hooks used by the scheduler.
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+      const dateInput = container.querySelector('input[type="date"]');
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+      const timeInput = container.querySelector('input[type="time"]');
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+      const composer = container.querySelector(`.${styles['social-media-composer']}`);
+
+      expect(dateInput).toHaveClass(styles['datetime-input']);
+      expect(timeInput).toHaveClass(styles['datetime-input']);
+      expect(composer).toHaveClass(styles.light);
+      expect(composer).not.toHaveClass(styles.dark);
+
+      rerender(<SocialMediaComposer platform={platform} darkMode />);
+
+      expect(composer).toHaveClass(styles.dark);
+      expect(composer).not.toHaveClass(styles.light);
+
+      rerender(<SocialMediaComposer platform={platform} darkMode={false} />);
+
+      expect(composer).toHaveClass(styles.light);
+      expect(composer).not.toHaveClass(styles.dark);
+    },
+  );
+});
+
 describe('SocialMediaComposer configured Mastodon API requests', () => {
   beforeEach(() => {
     vi.clearAllMocks();

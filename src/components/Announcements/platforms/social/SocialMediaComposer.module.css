@@ -821,11 +821,18 @@
   color: #666;
 }
 
-.dark.x-scope .datetime-input {
+.social-media-composer.light .datetime-input {
+  background: #fff;
+  border-color: #ccc;
+  color: #000;
+  color-scheme: light;
+}
+
+.social-media-composer.dark .datetime-input {
   background: #2a2a2a;
   border-color: #444;
   color: #e0e0e0;
-  color-scheme: dark; /* inverts native picker icons */
+  color-scheme: dark;
 }
 
 /* Root card + schedule label: required once the card hosts light text above —
