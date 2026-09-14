@@ -912,10 +912,19 @@
   color: #e0e0e0;
 }
 
-/* Preview modal — matches only because <Modal modalClassName> carries .dark.x-scope
-   (modal is portaled to body). `color` added to preview-container (prefers set only
-   background) so header/char-count/alt+crosspost-box text inherit light — COUPLED with
-   darkening those inline box backgrounds in the JSX. */
+/* Keep X in the application-selected light theme when the OS prefers dark. */
+.x-scope .preview-container {
+  background: #fff;
+  color: #212529;
+}
+
+.x-scope .preview-content {
+  background: #f8f9fa;
+  border-color: #e0e0e0;
+  color: #333;
+}
+
+/* The portaled X modal carries .dark.x-scope when application dark mode is enabled. */
 .dark.x-scope .preview-container {
   background: #1e1e1e;
   color: #e0e0e0;

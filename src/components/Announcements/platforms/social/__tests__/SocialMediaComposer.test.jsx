@@ -683,6 +683,37 @@ describe('SocialMediaComposer configured Mastodon API requests', () => {
   });
 });
 
+describe('SocialMediaComposer preview modal theme scope', () => {
+  const openPreview = ({ platform, darkMode = false }) => {
+    render(<SocialMediaComposer platform={platform} darkMode={darkMode} />);
+    fireEvent.change(screen.getByPlaceholderText(new RegExp(`write your ${platform} post`, 'i')), {
+      target: { value: 'Preview theme content' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^preview$/i }));
+    return screen.getByRole('dialog');
+  };
+
+  it('scopes the X light preview without applying the dark theme', () => {
+    const dialog = openPreview({ platform: 'x' });
+
+    expect(dialog).toHaveClass(styles['x-scope']);
+    expect(dialog).not.toHaveClass(styles.dark);
+  });
+
+  it('applies the X scope and dark theme to the X dark preview', () => {
+    const dialog = openPreview({ platform: 'x', darkMode: true });
+
+    expect(dialog).toHaveClass(styles['x-scope'], styles.dark);
+  });
+
+  it('does not apply X-specific scope classes to the Mastodon preview', () => {
+    const dialog = openPreview({ platform: 'mastodon', darkMode: true });
+
+    expect(dialog).not.toHaveClass(styles['x-scope']);
+    expect(dialog).not.toHaveClass(styles.dark);
+  });
+});
+
 describe('SocialMediaComposer history response handling', () => {
   beforeEach(() => {
     vi.clearAllMocks();

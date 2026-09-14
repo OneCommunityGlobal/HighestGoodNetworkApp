@@ -189,7 +189,7 @@ function PostPreviewModal({
       size="lg"
       centered
       modalClassName={
-        platform === 'x' && darkMode ? `${styles.dark} ${styles['x-scope']}` : undefined
+        platform === 'x' ? `${styles['x-scope']} ${darkMode ? styles.dark : ''}`.trim() : undefined
       }
     >
       <ModalHeader toggle={toggle}>Post Preview</ModalHeader>
