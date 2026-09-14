@@ -83,9 +83,19 @@ export default function WeeklySummariesToggleFilter({
             {bioStatusOptions.map(option => {
               const isActive = (pendingBioStatus ?? state.selectedBioStatus) === option.value;
 
-              const buttonBgColor = isActive ? '#007bff' : darkMode ? '#2a2a2a' : '#fff';
+              let buttonBgColor = '#fff';
+              if (isActive) {
+                buttonBgColor = '#007bff';
+              } else if (darkMode) {
+                buttonBgColor = '#2a2a2a';
+              }
 
-              const buttonTextColor = isActive ? '#fff' : darkMode ? '#ddd' : '#000';
+              let buttonTextColor = '#000';
+              if (isActive) {
+                buttonTextColor = '#fff';
+              } else if (darkMode) {
+                buttonTextColor = '#ddd';
+              }
 
               return (
                 <div key={option.value} className={styles.specialColorsItem}>
