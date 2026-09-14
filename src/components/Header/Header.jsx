@@ -560,7 +560,6 @@ export function Header(props) {
     return () => window.removeEventListener('storage', handleStorageEvent);
   }, [user.userid, props.auth.firstName]);
 
-
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
