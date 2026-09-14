@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import styles from './TriStateToggleSwitch.module.css';
 
 const getBgColor = pos => {
   if (pos === 'posted') return 'blue';
@@ -25,16 +26,16 @@ function TriStateToggleSwitch({ pos, onChange }) {
     setBgColor(getBgColor(pos));
   }, [pos]);
 
-  const toggleClass = `toggle-switch bg-${bgColor}`;
+  const toggleClass = `${styles['toggle-switch']} ${styles[`bg-${bgColor}`]}`;
 
   return (
     <div className={toggleClass}>
-      <div className="knob-area">
+      <div className={styles['knob-area']}>
         <button type="button" onClick={() => handleClick('posted')} aria-label="posted" />
         <button type="button" onClick={() => handleClick('default')} aria-label="default" />
         <button type="button" onClick={() => handleClick('requested')} aria-label="requested" />
       </div>
-      <div className={`knob ${position}`} />
+      <div className={`${styles.knob} ${styles[position]}`} />
     </div>
   );
 }
