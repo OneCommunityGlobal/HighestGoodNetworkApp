@@ -128,7 +128,13 @@ describe('SocialMediaComposer X clipboard handling', () => {
   };
 
   it('reserves a popup synchronously, then navigates and completes the new-post flow', async () => {
-    writeText.mockResolvedValue();
+    let resolveClipboardWrite;
+    writeText.mockImplementation(
+      () =>
+        new Promise(resolve => {
+          resolveClipboardWrite = resolve;
+        }),
+    );
     localStorage.setItem('token', 'test-token');
     let resolveApiRequest;
     const fetchMock = vi.fn(
@@ -142,13 +148,24 @@ describe('SocialMediaComposer X clipboard handling', () => {
     const postInput = submitPost();
 
     expect(open).toHaveBeenCalledWith('', '_blank');
-    expect(writeText).not.toHaveBeenCalled();
+    expect(writeText).toHaveBeenCalledOnce();
+    expect(writeText).toHaveBeenCalledWith(content);
+    expect(fetchMock).not.toHaveBeenCalled();
     expect(xWindow.location.href).toBe('');
+    expect(postInput).toHaveValue(content);
+
+    resolveClipboardWrite();
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledOnce();
+    });
+    expect(writeText).toHaveBeenCalledOnce();
+    expect(xWindow.location.href).toBe('');
+    expect(postInput).toHaveValue(content);
 
     resolveApiRequest({ ok: true, json: () => Promise.resolve({}) });
 
     await waitFor(() => {
-      expect(writeText).toHaveBeenCalledWith(content);
       expect(toast.success).toHaveBeenCalledWith(
         'Content copied to clipboard! X is opening — paste and post.',
         {
@@ -157,14 +174,15 @@ describe('SocialMediaComposer X clipboard handling', () => {
       );
     });
     expect(open.mock.invocationCallOrder[0]).toBeLessThan(fetchMock.mock.invocationCallOrder[0]);
+    expect(writeText.mock.invocationCallOrder[0]).toBeLessThan(
+      fetchMock.mock.invocationCallOrder[0],
+    );
     expect(fetchMock).toHaveBeenCalledWith(`${EXPECTED_API_BASE}/x/post`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: 'test-token' },
       body: JSON.stringify({ content }),
     });
-    expect(fetchMock.mock.invocationCallOrder[0]).toBeLessThan(
-      writeText.mock.invocationCallOrder[0],
-    );
+    expect(writeText).toHaveBeenCalledOnce();
     expect(xWindow.location.href).toBe(
       `https://x.com/intent/tweet?text=${encodeURIComponent(content)}`,
     );
@@ -175,10 +193,8 @@ describe('SocialMediaComposer X clipboard handling', () => {
 
   it('shows an error and preserves the composer when the clipboard write fails', async () => {
     writeText.mockRejectedValue(new Error('Clipboard unavailable'));
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve({}) })),
-    );
+    const fetchMock = vi.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve({}) }));
+    vi.stubGlobal('fetch', fetchMock);
 
     const postInput = submitPost();
 
@@ -189,8 +205,10 @@ describe('SocialMediaComposer X clipboard handling', () => {
     });
     expect(toast.success).not.toHaveBeenCalled();
     expect(open).toHaveBeenCalledWith('', '_blank');
+    expect(writeText).toHaveBeenCalledOnce();
     expect(xWindow.close).toHaveBeenCalledOnce();
     expect(xWindow.location.href).toBe('');
+    expect(fetchMock).not.toHaveBeenCalled();
     expect(postInput).toHaveValue(content);
   });
 
@@ -211,7 +229,9 @@ describe('SocialMediaComposer X clipboard handling', () => {
     });
     expect(xWindow.close).toHaveBeenCalledOnce();
     expect(xWindow.location.href).toBe('');
-    expect(writeText).not.toHaveBeenCalled();
+    expect(writeText).toHaveBeenCalledOnce();
+    expect(writeText).toHaveBeenCalledWith(content);
+    expect(fetchMock).toHaveBeenCalledOnce();
     expect(toast.success).not.toHaveBeenCalled();
     expect(postInput).toHaveValue(content);
   });

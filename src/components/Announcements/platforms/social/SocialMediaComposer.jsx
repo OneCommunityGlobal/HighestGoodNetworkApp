@@ -533,18 +533,35 @@ export default function SocialMediaComposer({ platform, darkMode }) {
     return xWindow;
   };
 
-  const copyAndOpenX = async (content, xWindow) => {
+  const copyXContent = (content, xWindow) => {
     try {
-      await navigator.clipboard.writeText(content);
+      const clipboardWrite = navigator.clipboard.writeText(content);
+      return Promise.resolve(clipboardWrite).then(
+        () => true,
+        () => {
+          xWindow.close();
+          toast.error('Could not copy content to clipboard. Please try again.');
+          return false;
+        },
+      );
     } catch {
       xWindow.close();
       toast.error('Could not copy content to clipboard. Please try again.');
-      return false;
+      return Promise.resolve(false);
     }
+  };
+
+  const openX = (content, xWindow) => {
     xWindow.location.href = `https://x.com/intent/tweet?text=${encodeURIComponent(content)}`;
     toast.success('Content copied to clipboard! X is opening — paste and post.', {
       autoClose: 5000,
     });
+  };
+
+  const copyAndOpenX = async (content, xWindow) => {
+    const copied = await copyXContent(content, xWindow);
+    if (!copied) return false;
+    openX(content, xWindow);
     return true;
   };
 
@@ -561,15 +578,22 @@ export default function SocialMediaComposer({ platform, darkMode }) {
     }
 
     let xWindow = null;
+    let xClipboardPromise = null;
     if (platform === 'x') {
       xWindow = reserveXPopup();
       if (!xWindow) return;
+      xClipboardPromise = copyXContent(content, xWindow);
     }
 
     const selectedPlatforms = Object.keys(crossPostPlatforms).filter(p => crossPostPlatforms[p]);
 
     setIsPosting(true);
     try {
+      if (platform === 'x') {
+        const copied = await xClipboardPromise;
+        if (!copied) return;
+      }
+
       const { url, body } = api.postNow(content, uploadedImage, imageAltText, selectedPlatforms);
 
       const token = localStorage.getItem('token');
@@ -587,8 +611,7 @@ export default function SocialMediaComposer({ platform, darkMode }) {
       }
 
       if (platform === 'x') {
-        const copied = await copyAndOpenX(content, xWindow);
-        if (!copied) return;
+        openX(content, xWindow);
         xWindow = null;
       } else {
         const crossPostSuffix = selectedPlatforms.length
