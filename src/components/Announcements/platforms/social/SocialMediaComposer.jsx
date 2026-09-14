@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import RuntimePromise from '@babel/runtime-corejs3/core-js-stable/promise';
 import { ApiEndpoint } from '~/utils/URL';
 import CharacterCounter from '../../CharacterCounter';
 import ConfirmationModal from '../../ConfirmationModal';
@@ -542,9 +543,7 @@ export default function SocialMediaComposer({ platform, darkMode }) {
       return false;
     };
 
-    return new Promise(resolve => {
-      resolve(navigator.clipboard.writeText(content));
-    })
+    return RuntimePromise.try(() => navigator.clipboard.writeText(content))
       .then(() => true)
       .catch(handleClipboardFailure);
   };
