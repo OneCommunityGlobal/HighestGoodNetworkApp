@@ -22,6 +22,7 @@ import {
   normalizeQuestionForApi,
   prepareQuestionClone,
   normalizeLoadedQuestions,
+  isDuplicateQuestion,
 } from './jobFormQuestionUtils';
 
 import { permissions } from '../../utils/constants';
@@ -309,6 +310,11 @@ function JobFormBuilder() {
     }
 
     const fieldToAdd = normalizeQuestionForApi(newField);
+
+    if (isDuplicateQuestion(fieldToAdd, formFields)) {
+      const confirmAdd = window.confirm('You already have a similar question. Add Anyway?');
+      if (!confirmAdd) return;
+    }
     const updatedFields = [...formFields, fieldToAdd];
     setFormFields(updatedFields);
 
