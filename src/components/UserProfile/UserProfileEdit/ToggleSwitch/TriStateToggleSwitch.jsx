@@ -26,7 +26,8 @@ function TriStateToggleSwitch({ pos, onChange }) {
     setBgColor(getBgColor(pos));
   }, [pos]);
 
-  const toggleClass = `${styles['toggle-switch']} ${styles[`bg-${bgColor}`]}`;
+  const bgColorClass = styles[`bg-${bgColor}`];
+  const toggleClass = `${styles['toggle-switch']} ${bgColorClass}`;
 
   return (
     <div className={toggleClass}>

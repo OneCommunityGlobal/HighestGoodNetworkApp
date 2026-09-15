@@ -716,7 +716,11 @@ function BioSwitch({ userId, bioPosted, summary, onBioStatusChange }) {
         onBioStatusChange(userId, newBioStatus);
       }
     } catch (error) {
+      // toggleUserBio has already shown the user an error toast, so there is nothing more
+      // to report here — just undo the optimistic move and log for diagnostics.
       setBioStatus(previousStatus);
+      // eslint-disable-next-line no-console
+      console.warn('Failed to update bio status:', error);
     }
   };
 
