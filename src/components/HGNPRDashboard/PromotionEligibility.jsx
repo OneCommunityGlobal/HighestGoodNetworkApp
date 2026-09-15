@@ -22,7 +22,7 @@ function PromotionEligibility({ currentUser }) {
   // Kept for UI testing.
   // Remove the hard-coded ID when backend data is ready.
   const [selectedForPromotion, setSelectedForPromotion] = useState(
-    new Set(['63bcd4e94de851e04263a5b9']),
+    new Set(['5fc2d7172af8d005d0aba5f1']),
   );
 
   const [processing, setProcessing] = useState(false);
@@ -66,7 +66,83 @@ function PromotionEligibility({ currentUser }) {
   useEffect(() => {
     const loadPromotionEligibility = async () => {
       try {
-        const data = await getPromotionEligibility();
+        //const data = await getPromotionEligibility();
+        const data = [
+          {
+            reviewerId: '5fc2d7172af8d005d0aba5f1',
+            reviewerName: 'Chris',
+            pledgedHours: 10,
+            requiredPRs: 3,
+            prsNeeded: 3,
+            prsNeededSource: 'ownerOverride',
+            totalReviews: 10,
+            successfulWeeks: 2,
+            remainingWeeks: 0,
+            weeklyRequirementsMet: true,
+            isNewMember: false,
+            isPromoted: false,
+          },
+
+          {
+            reviewerId: '637af0c0fb9bbc1e308cff62',
+            reviewerName: 'Rajasri',
+            pledgedHours: 10,
+            requiredPRs: 3,
+            prsNeeded: 3,
+            prsNeededSource: 'ownerOverride',
+            totalReviews: 10,
+            successfulWeeks: 2,
+            remainingWeeks: 0,
+            weeklyRequirementsMet: true,
+            isNewMember: false,
+            isPromoted: false,
+          },
+
+          {
+            reviewerId: '637ffefe9a32d705f864c445',
+            reviewerName: 'Ran Ran',
+            pledgedHours: 20,
+            requiredPRs: 3,
+            prsNeeded: 3,
+            prsNeededSource: 'ownerOverride',
+            totalReviews: 10,
+            successfulWeeks: 2,
+            remainingWeeks: 0,
+            weeklyRequirementsMet: true,
+            isNewMember: false,
+            isPromoted: false,
+          },
+
+          {
+            reviewerId: '638e6c4dea69f32054d4c1c6',
+            reviewerName: 'Test User 4',
+            pledgedHours: 20,
+            requiredPRs: 3,
+            prsNeeded: 3,
+            prsNeededSource: 'ownerOverride',
+            totalReviews: 10,
+            successfulWeeks: 2,
+            remainingWeeks: 0,
+            weeklyRequirementsMet: true,
+            isNewMember: false,
+            isPromoted: false,
+          },
+
+          {
+            reviewerId: '63bcd4e94de851e04263a5b9',
+            reviewerName: 'Test User 5',
+            pledgedHours: 10,
+            requiredPRs: 3,
+            prsNeeded: 3,
+            prsNeededSource: 'ownerOverride',
+            totalReviews: 2,
+            successfulWeeks: 0,
+            remainingWeeks: 2,
+            weeklyRequirementsMet: false,
+            isNewMember: false,
+            isPromoted: false,
+          },
+        ];
 
         const mappedData = data.map(r => ({
           ...r,
