@@ -317,6 +317,8 @@ const EnhancedPopularityTimelineChart = lazy(() =>
 );
 // PR Analytics Dashboard
 import ReviewsInsight from './components/PRAnalyticsDashboard/ReviewsInsight/ReviewsInsight';
+import EducatorTrainingDashboard from './components/EductionPortal/ProjectManager/EducatorTrainingDashboard';
+
 import ProjectsGlobalDistribution from './components/ProjectsGlobalDistribution/ProjectsGlobalDistribution';
 const JobAnalyticsPage = lazy(() =>
   import('./components/Reports/HitsAndApplicationRatio/JobAnalyticsPage'),
@@ -1032,6 +1034,11 @@ export default (
           exact
           component={SubmissionReviewPage}
         />
+        <EPProtectedRoute
+          path="/educationportal/pm/dashboard/training"
+          exact
+          component={EducatorTrainingDashboard}
+        />
         <EPProtectedRoute path="/student/profile" exact component={StudentProfilePage} />
         <EPProtectedRoute
           path="/educationportal/evaluation-results"
@@ -1089,6 +1096,11 @@ export default (
           path="/communityportal/database/design"
           exact
           component={DatabaseDesign}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/event/personalization"
+          exact
+          component={EventStats}
         />
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
