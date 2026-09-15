@@ -40,17 +40,6 @@ function WishListItem(props) {
 
   const { wishlistItem, wishlists } = props;
 
-  // Hide global "back to top" control while this page is mounted (element may not exist).
-  useEffect(() => {
-    const backToTopButton = document.querySelector('.top');
-    if (!backToTopButton) return undefined;
-    const prevDisplay = backToTopButton.style.display;
-    backToTopButton.style.display = 'none';
-    return () => {
-      backToTopButton.style.display = prevDisplay || '';
-    };
-  }, []);
-
   useEffect(() => {
     if (wishlistItem) {
       setCurrWishlistItem(wishlistItem);
