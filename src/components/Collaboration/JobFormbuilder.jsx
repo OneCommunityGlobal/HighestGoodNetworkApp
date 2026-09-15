@@ -22,6 +22,8 @@ import {
   normalizeQuestionForApi,
   prepareQuestionClone,
   normalizeLoadedQuestions,
+  numberedQuestionLabel,
+  stripLeadingQuestionNumber,
 } from './jobFormQuestionUtils';
 
 import { permissions } from '../../utils/constants';
@@ -222,7 +224,7 @@ function JobFormBuilder() {
   const editField = (field, index) => {
     // Transform the field structure to match what QuestionEditModal expects
     const questionForEdit = {
-      label: field.questionText,
+      label: stripLeadingQuestionNumber(field.questionText),
       type: field.questionType,
       options: field.options,
       required: isFieldRequired(field),
@@ -484,7 +486,7 @@ function JobFormBuilder() {
                     />
                     <div className={styles.formField}>
                       <label className={`${styles.fieldLabel} ${styles.jbformLabel}`}>
-                        {field.questionText}
+                        {numberedQuestionLabel(field.questionText, index)}
                         {isFieldRequired(field) && (
                           <span className={styles.requiredMark} aria-hidden="true">
                             {' '}
