@@ -6,6 +6,7 @@ import { ApiEndpoint } from '~/utils/URL';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import OneCommunityImage from '../../assets/images/logo2.png';
+import FAQSection from './FAQSection';
 
 const ADS_PER_PAGE = 18;
 
@@ -326,6 +327,8 @@ function Collaboration() {
             </button>
           ))}
         </div>
+
+        <FAQSection />
       </div>
 
       {/* MODAL */}
