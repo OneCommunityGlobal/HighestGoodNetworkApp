@@ -550,7 +550,9 @@ function EDailyActivityLog(props) {
             )}
 
             {selectedProject && rows.length === 0 && (
-              <tr className={`${darkMode ? styles.darkMode : ''}`}>
+              // This row is non-interactive, so it gets a dedicated dark-mode hover class instead
+              // of relying on Bootstrap's default table hover color, which is too light here.
+              <tr className={`${darkMode ? `${styles.darkMode} ${styles.emptyEquipmentRow}` : ''}`}>
                 <td colSpan={5} className="text-center py-3">
                   No equipments found for this project.
                 </td>
