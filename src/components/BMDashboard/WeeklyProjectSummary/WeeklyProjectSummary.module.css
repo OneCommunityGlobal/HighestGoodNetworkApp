@@ -638,9 +638,9 @@
   color: #000 !important;
 }
 
-/* Match week-over-week text to the dark title/value color on pastel status cards. */
+/* Preserve semantic comparison colors against broad dark-mode inherited text rules. */
 .darkMode .statusCard :global(.weekly-status-change) {
-  color: #000 !important;
+  color: var(--project-status-change-color) !important;
 }
 
 /* Tooltip styles */
