@@ -1,5 +1,5 @@
-import { useEffect, useMemo } from 'react';
-import { Input, Button } from 'reactstrap';
+import { useEffect, useMemo, useState } from 'react';
+import { Input, Button, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment-timezone';
 import {
@@ -7,10 +7,12 @@ import {
   setDateRangeFilter,
   setComparisonPeriodFilter,
 } from '../../../actions/bmdashboard/weeklyProjectSummaryActions';
+import { COMPARISON_OPTIONS } from './comparisonDateUtils';
 import styles from './WeeklyProjectSummary.module.css';
 
 export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF, isGeneratingPDF = false }) {
   const dispatch = useDispatch();
+  const [comparisonDropdownOpen, setComparisonDropdownOpen] = useState(false);
   const projectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter);
   const dateRangeFilter = useSelector(state => state.weeklyProjectSummary?.dateRangeFilter);
   const comparisonPeriodFilter = useSelector(
@@ -46,14 +48,14 @@ export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF, isGenerati
   };
 
   useEffect(() => {
-    const { lastWeek, prevWeek } = getLastTwoCompletedWeeks();
+    const { lastWeek } = getLastTwoCompletedWeeks();
     dispatch(setDateRangeFilter(lastWeek));
-    dispatch(setComparisonPeriodFilter(prevWeek));
+    dispatch(setComparisonPeriodFilter('No Comparison'));
   }, [dispatch]);
 
   const projectOptions = useMemo(() => ['One Community'], []);
   const dateRangeOptions = useMemo(() => [getLastTwoCompletedWeeks().lastWeek], []);
-  const comparisonOptions = useMemo(() => [getLastTwoCompletedWeeks().prevWeek], []);
+  const comparisonOptions = useMemo(() => COMPARISON_OPTIONS, []);
 
   return (
     <div className={`${styles.weeklySummaryHeaderWrapper} ${darkMode ? styles.darkMode : ''}`}>
@@ -87,18 +89,23 @@ export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF, isGenerati
             ))}
           </Input>
 
-          <Input
-            type="select"
-            value={comparisonPeriodFilter}
-            onChange={e => dispatch(setComparisonPeriodFilter(e.target.value))}
-            aria-label="Comparison Period"
+          <Dropdown
+            className={styles.weeklySummaryComparisonDropdown}
+            isOpen={comparisonDropdownOpen}
+            toggle={() => setComparisonDropdownOpen(prev => !prev)}
           >
-            {comparisonOptions.map(option => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </Input>
+            <DropdownToggle caret>{comparisonPeriodFilter || 'No Comparison'}</DropdownToggle>
+            <DropdownMenu>
+              {comparisonOptions.map(option => (
+                <DropdownItem
+                  key={option}
+                  onClick={() => dispatch(setComparisonPeriodFilter(option))}
+                >
+                  {option}
+                </DropdownItem>
+              ))}
+            </DropdownMenu>
+          </Dropdown>
 
           <Button
             className={`${styles.weeklySummaryShareBtn}`}
