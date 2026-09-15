@@ -76,6 +76,7 @@ import WeeklySummariesToggleFilter from './components/WeeklySummariesToggleFilte
 // Keeping this block commented intentionally for future reference —
 import cn from 'classnames';
 import { getCustomStyles } from '~/utils/reactSelectStyles';
+import { isQualifiedForBio } from '~/utils/bioQualification';
 import {
   useDeleteWeeklySummariesFilterMutation,
   useGetWeeklySummariesFiltersQuery,
@@ -129,7 +130,8 @@ const initialState = {
   auth: [],
   selectedLoggedHoursRange: '',
   selectedOverTime: false,
-  selectedBioStatus: null, // null = no filter, 'default' | 'requested' | 'posted' = filter by that status
+  // Bio Status filter: false = show everyone, true = only bio-eligible users.
+  selectedBioStatus: false,
   selectedTrophies: false,
   chartShow: false,
   replaceCode: '',
@@ -519,13 +521,21 @@ const WeeklySummariesReport = props => {
       const badgeStatusCode = await fetchAllBadges();
       setPermissionState(prev => ({
         ...prev,
-        bioEditPermission: hasPermission('putUserProfileImportantInfo'),
+        // Owner/Administrator fall back to edit rights without an explicit grant.
+        bioEditPermission:
+          hasPermission('putUserProfileImportantInfo') ||
+          auth.user.role === 'Owner' ||
+          auth.user.role === 'Administrator',
         canEditSummaryCount: hasPermission('putUserProfileImportantInfo'),
         codeEditPermission:
           hasPermission('editTeamCode') ||
           auth.user.role === 'Owner' ||
           auth.user.role === 'Administrator',
-        canSeeBioHighlight: hasPermission('highlightEligibleBios'),
+        // Same fallback for the yellow highlight bar and the Bio Status filter.
+        canSeeBioHighlight:
+          hasPermission('highlightEligibleBios') ||
+          auth.user.role === 'Owner' ||
+          auth.user.role === 'Administrator',
         canManageFilter:
           hasPermission('manageSummariesFilters') ||
           auth.user.role === 'Owner' ||
@@ -739,9 +749,7 @@ const WeeklySummariesReport = props => {
         selectedLoggedHoursRange,
         summaries,
         selectedOverTime,
-        // Bio Status Filter: Changed from boolean to nullable enum for flexible filtering
-        // null = no filter, 'default'|'requested'|'posted' = filter by specific status
-        selectedBioStatus,
+        selectedBioStatus, // boolean: false = no filter, true = show only qualified users
         selectedTrophies,
         COLORS,
         selectedSpecialColors,
@@ -771,10 +779,10 @@ const WeeklySummariesReport = props => {
             return false;
           }
 
-          // Bio Status Filter: Simplified logic using flexible enum matching
-          // Replaces previous strict criteria (>80 work hours AND >=8 summaries AND bio not posted)
-          // Now supports flexible selection: null (show all) or specific status ('default'|'requested'|'posted')
-          const isBio = !selectedBioStatus || summary.bioPosted === selectedBioStatus;
+          // Qualification only — no canSeeBioHighlight gate here, matching the pre-2026-05
+          // behaviour. That permission decides who sees the yellow bar, not who the filter
+          // is allowed to return; gating here would hand a filter-manager an empty list.
+          const isBio = !selectedBioStatus || isQualifiedForBio(summary);
 
           const isOverHours =
             !selectedOverTime ||
@@ -1162,6 +1170,27 @@ const WeeklySummariesReport = props => {
         tableData: updatedTableData,
         teamCodes,
         selectedCodes: updatedSelectedCodes,
+      };
+    });
+  };
+
+  // `state.summaries` is local component state, so the Redux update dispatched by
+  // toggleUserBio never reaches this list. Patch the row here instead: `state.summaries`
+  // is a dependency of the filtering effect, so the yellow bar hides and the user drops
+  // out of the Bio Status filter in the same render, with no refetch round-trip.
+  const handleBioStatusChange = (userId, newBioStatus) => {
+    setState(prevState => {
+      const summaries = prevState.summaries.map(summary =>
+        summary._id === userId ? { ...summary, bioPosted: newBioStatus } : summary,
+      );
+
+      return {
+        ...prevState,
+        summaries,
+        summariesByTab: {
+          ...prevState.summariesByTab,
+          [prevState.activeTab]: summaries,
+        },
       };
     });
   };
@@ -1693,13 +1722,21 @@ const WeeklySummariesReport = props => {
         await props.fetchAllBadges();
         setPermissionState(prev => ({
           ...prev,
-          bioEditPermission: props.hasPermission('putUserProfileImportantInfo'),
+          // Keep the Owner/Administrator fallbacks identical to the other place that
+          // writes permissionState — both effects run on mount and either may land last.
+          bioEditPermission:
+            props.hasPermission('putUserProfileImportantInfo') ||
+            props.auth?.user?.role === 'Owner' ||
+            props.auth?.user?.role === 'Administrator',
           codeEditPermission:
             props.hasPermission('editTeamCode') ||
             props.auth?.user?.role === 'Owner' ||
             props.auth?.user?.role === 'Administrator',
           canEditSummaryCount: props.hasPermission('editSummaryHoursCount'),
-          canSeeBioHighlight: props.hasPermission('highlightEligibleBios'),
+          canSeeBioHighlight:
+            props.hasPermission('highlightEligibleBios') ||
+            props.auth?.user?.role === 'Owner' ||
+            props.auth?.user?.role === 'Administrator',
           hasSeeBadgePermission: props.hasPermission('seeBadges'),
           canManageFilter:
             props.hasPermission('manageSummariesFilters') ||
@@ -2335,8 +2372,8 @@ const WeeklySummariesReport = props => {
                               canSeeBioHighlight={permissionState.canSeeBioHighlight}
                               darkMode={darkMode}
                               handleTeamCodeChange={handleTeamCodeChange}
+                              handleBioStatusChange={handleBioStatusChange}
                               loadTrophies={state.loadTrophies}
-                              getWeeklySummariesReport={getWeeklySummariesReport}
                               handleSpecialColorDotClick={handleSpecialColorDotClick}
                             />
                           </Col>
