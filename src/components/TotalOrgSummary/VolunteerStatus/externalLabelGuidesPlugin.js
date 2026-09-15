@@ -13,7 +13,7 @@ const drawRoundedRect = (ctx, x, y, width, height, radius) => {
   ctx.closePath();
 };
 
-const defaultFormatter = ({ value, percentage }) => [String(value), `(${percentage}%)`];
+const defaultFormatter = ({ value, percentage }) => [String(value), `(${percentage.toFixed(1)}%)`];
 
 const getMappedOption = (map, index, fallback) => {
   if (map == null) {
