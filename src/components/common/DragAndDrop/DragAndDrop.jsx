@@ -86,7 +86,7 @@ const DragAndDrop = ({ updateUploadedFiles }) => {
         type="file"
         name="file-upload-input"
         multiple={true}
-        accept="image/jpeg, image/jpg, image/png, image/gif, image/webp"
+        accept="image/png, image/jpeg, image/jpg"
         onChange={handleChange}
         aria-label="Upload image files"
       />
@@ -173,7 +173,7 @@ const DragAndDrop = ({ updateUploadedFiles }) => {
               id="file-upload-description"
               style={{ margin: '4px 0' }}
             >
-              Accepted: PNG, JPG, JPEG, GIF, WEBP
+              Accepted: PNG, JPG, JPEG (max 5MB)
             </p>
             <div
               className={styles.uploadIndicator}
