@@ -53,12 +53,37 @@ function TotalMaterialCostPerProject() {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    layout: { padding: { top: 24 } },
     plugins: {
       legend: {
         position: 'top',
         labels: { color: textColor },
       },
       title: { display: false },
+      datalabels: {
+        color: darkMode ? '#fff' : '#1a1a1a',
+        anchor: 'end',
+        align: 'end',
+        offset: 4,
+        clamp: true,
+        font: { weight: '600' },
+        textStrokeColor: darkMode ? '#1a1f26' : '#fff',
+        textStrokeWidth: 3,
+        formatter: value => Number(value ?? 0).toFixed(3),
+      },
+      tooltip: {
+        backgroundColor: darkMode ? '#22272e' : '#fff',
+        titleColor: textColor,
+        bodyColor: textColor,
+        borderColor: darkMode ? '#375071' : '#ccc',
+        borderWidth: 1,
+        callbacks: {
+          label(context) {
+            const value = Number(context.parsed.y ?? 0);
+            return `${context.dataset.label}: ${value.toFixed(3)}`;
+          },
+        },
+      },
     },
     scales: {
       x: {
@@ -73,8 +98,13 @@ function TotalMaterialCostPerProject() {
         },
       },
       y: {
-        grid: { color: '#ccc' },
-        ticks: { color: textColor },
+        grid: { color: darkMode ? '#4a5a77' : '#ccc' },
+        ticks: {
+          color: textColor,
+          callback(val) {
+            return Number(val).toFixed(3);
+          },
+        },
       },
     },
   };

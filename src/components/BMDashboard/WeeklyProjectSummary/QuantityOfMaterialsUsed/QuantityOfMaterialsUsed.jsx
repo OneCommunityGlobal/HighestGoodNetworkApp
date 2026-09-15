@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { Info, Repeat } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
+import PropTypes from 'prop-types';
 import { fetchBMProjects } from '../../../../actions/bmdashboard/projectActions';
 import styles from './QuantityOfMaterialsUsed.module.css';
 
@@ -793,7 +794,9 @@ function QuantityOfMaterialsUsed({ data }) {
             maxDate={new Date()}
             dateFormat="MM/dd/yy - MM/dd/yy"
             placeholderText="Select Date Range one"
-            className={`${styles.quantityOfMaterialUsedCustomDatePicker}`}
+            className={`${styles.quantityOfMaterialUsedCustomDatePicker}${
+              darkMode ? ` ${styles.quantityOfMaterialUsedCustomDatePickerDark}` : ''
+            }`}
             disabledKeyboardNavigation
             calendarStartDay={1}
             shouldCloseOnSelect={false}
@@ -838,7 +841,9 @@ function QuantityOfMaterialsUsed({ data }) {
             maxDate={new Date()}
             dateFormat="MM/dd/yy - MM/dd/yy"
             placeholderText="Select Date Range two"
-            className={`${styles.quantityOfMaterialUsedCustomDatePicker}`}
+            className={`${styles.quantityOfMaterialUsedCustomDatePicker}${
+              darkMode ? ` ${styles.quantityOfMaterialUsedCustomDatePickerDark}` : ''
+            }`}
             disabledKeyboardNavigation
             calendarStartDay={1}
             shouldCloseOnSelect={false}
@@ -1052,5 +1057,9 @@ function QuantityOfMaterialsUsed({ data }) {
     </div>
   );
 }
+
+QuantityOfMaterialsUsed.propTypes = {
+  data: PropTypes.array.isRequired,
+};
 
 export default QuantityOfMaterialsUsed;

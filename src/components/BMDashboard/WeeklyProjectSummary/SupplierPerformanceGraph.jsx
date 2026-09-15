@@ -11,9 +11,10 @@ import {
   Label,
 } from 'recharts';
 import { useDispatch, useSelector } from 'react-redux';
-import { Input } from 'reactstrap';
+import Select from 'react-select';
 import { fetchSupplierProjects, fetchSupplierPerformance } from '../../../actions/summaryDashboard';
 import styles from './SupplierPerformanceGraph.module.css';
+import { buildChartSelectStyles } from './sharedSelectStyles';
 
 const getDateRangeOptions = () => {
   const today = new Date();
@@ -72,11 +73,12 @@ const SupplierPerformanceDashboard = function({ height = 420, onDataLoaded }) {
   const chartTheme = {
     textColor: darkMode ? '#e0e0e0' : '#333',
     axisColor: darkMode ? '#a0a0a0' : '#666',
-    // UPDATE: Set a lighter grey for dark mode so grid lines are clearly visible
     gridColor: darkMode ? '#9CA3AF' : '#E2E8F0',
     barColor: '#4CAF50',
     labelFill: darkMode ? '#ffffff' : '#333',
   };
+
+  const selectStyles = buildChartSelectStyles(darkMode);
 
   useEffect(() => {
     const loadProjects = async () => {
@@ -124,6 +126,18 @@ const SupplierPerformanceDashboard = function({ height = 420, onDataLoaded }) {
     fetchData();
   }, [dispatch, selectedDateRange, selectedProject, onDataLoaded]);
 
+  // Build react-select options
+  const dateOptions = getDateRangeOptions().map(opt => ({ value: opt.value, label: opt.label }));
+  const selectedDateOption =
+    dateOptions.find(opt => opt.value === selectedDateRange) || dateOptions[0];
+
+  const projectOptions = [
+    { value: 'all', label: 'ALL Projects' },
+    ...projects.map(p => ({ value: p._id, label: p._id })),
+  ];
+  const selectedProjectOption =
+    projectOptions.find(opt => opt.value === selectedProject) || projectOptions[0];
+
   return (
     <div
       className={`${styles['supplier-performance-card']} ${
@@ -137,38 +151,37 @@ const SupplierPerformanceDashboard = function({ height = 420, onDataLoaded }) {
       {/* Filters Row */}
       <div className={styles['supplier-performance-filters']}>
         <div className={styles['supplier-performance-filter-group']}>
-          <label htmlFor="supplier-date-select">Dates</label>
-          <Input
-            id="supplier-date-select"
-            type="select"
-            value={selectedDateRange}
-            onChange={e => setSelectedDateRange(e.target.value)}
-            className={styles['supplier-performance-select']}
-          >
-            {getDateRangeOptions().map(option => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </Input>
+          <span className={styles['supplier-performance-label']} id="supplier-date-label">
+            Dates
+          </span>
+          <Select
+            inputId="supplier-date-select"
+            aria-labelledby="supplier-date-label"
+            options={dateOptions}
+            value={selectedDateOption}
+            onChange={opt => setSelectedDateRange(opt.value)}
+            styles={selectStyles}
+            isSearchable={false}
+            menuPortalTarget={typeof document === 'undefined' ? null : document.body}
+            menuPosition="fixed"
+          />
         </div>
 
         <div className={styles['supplier-performance-filter-group']}>
-          <label htmlFor="supplier-project-select">Project</label>
-          <Input
-            id="supplier-project-select"
-            type="select"
-            value={selectedProject}
-            onChange={e => setSelectedProject(e.target.value)}
-            className={styles['supplier-performance-select']}
-          >
-            <option value="all">ALL Projects</option>
-            {projects.map(project => (
-              <option key={project._id} value={project._id}>
-                {project._id}
-              </option>
-            ))}
-          </Input>
+          <span className={styles['supplier-performance-label']} id="supplier-project-label">
+            Project
+          </span>
+          <Select
+            inputId="supplier-project-select"
+            aria-labelledby="supplier-project-label"
+            options={projectOptions}
+            value={selectedProjectOption}
+            onChange={opt => setSelectedProject(opt.value)}
+            styles={selectStyles}
+            isSearchable={false}
+            menuPortalTarget={typeof document === 'undefined' ? null : document.body}
+            menuPosition="fixed"
+          />
         </div>
       </div>
 
@@ -178,16 +191,15 @@ const SupplierPerformanceDashboard = function({ height = 420, onDataLoaded }) {
 
         {error && <div className={styles['supplier-performance-error']}>{error}</div>}
 
-        {!loading && !error && supplierData.length === 0 && (
+        {loading === false && error === null && supplierData.length === 0 && (
           <div className={styles['supplier-performance-empty']}>
             No supplier performance data available.
           </div>
         )}
 
-        {!loading && !error && supplierData.length > 0 && (
+        {loading === false && error === null && supplierData.length > 0 && (
           <ResponsiveContainer width="100%" height={height}>
             <BarChart data={supplierData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-              {/* Added grid lines: Dotted (3 3) and custom theme color */}
               <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.gridColor} opacity={0.5} />
 
               <XAxis
