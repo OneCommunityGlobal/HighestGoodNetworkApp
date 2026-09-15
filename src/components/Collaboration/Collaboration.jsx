@@ -25,6 +25,9 @@ function Collaboration() {
 
   const dropdownRef = useRef(null);
   const [selectedJob, setSelectedJob] = useState(null);
+  const [bothFiltersTooltipDismissed, setBothFiltersTooltipDismissed] = useState(
+    () => localStorage.getItem('collabUseBothFiltersTooltipDismissed') === 'true',
+  );
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -127,6 +130,15 @@ function Collaboration() {
     setCategoriesSelected(prev =>
       prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat],
     );
+
+  // Only one of search/category filters is active - nudge the user to combine them.
+  const showBothFiltersTooltip =
+    !bothFiltersTooltipDismissed && Boolean(searchTerm) !== Boolean(categoriesSelected.length);
+
+  const dismissBothFiltersTooltip = () => {
+    setBothFiltersTooltipDismissed(true);
+    localStorage.setItem('collabUseBothFiltersTooltipDismissed', 'true');
+  };
 
   const getListingText = () => {
     if (searchTerm) return `Listing results for '${searchTerm}'`;
@@ -252,6 +264,19 @@ function Collaboration() {
             )}
           </div>
         </nav>
+
+        {showBothFiltersTooltip && (
+          <div className={styles.jobTooltip}>
+            <p>Use both filters to refine your search further.</p>
+            <button
+              type="button"
+              onClick={dismissBothFiltersTooltip}
+              className={styles.jobTooltipDismiss}
+            >
+              Got it
+            </button>
+          </div>
+        )}
 
         {/* HEADINGS */}
         <div className={styles.headings}>
