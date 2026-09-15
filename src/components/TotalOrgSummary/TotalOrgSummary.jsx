@@ -471,8 +471,18 @@ function TotalOrgSummary(props) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [currentFromDate, setCurrentFromDate] = useState(fromDate);
-  const [currentToDate, setCurrentToDate] = useState(toDate);
+  // Default selectedDateRange is 'Previous Week', so the initial fetched
+  // date range must match it -- previously this initialized directly to
+  // fromDate/toDate (the Current Week range), causing the page to load
+  // showing "Previous Week" selected while actually displaying Current
+  // Week's data (and producing inconsistent results when toggling between
+  // the two, since the wrong range got cached under the initial state).
+  const [currentFromDate, setCurrentFromDate] = useState(
+    () => getPreviousWeekDates(fromDate, toDate).start,
+  );
+  const [currentToDate, setCurrentToDate] = useState(
+    () => getPreviousWeekDates(fromDate, toDate).end,
+  );
   const rootRef = useRef(null);
   const cacheRef = useRef({});
 
