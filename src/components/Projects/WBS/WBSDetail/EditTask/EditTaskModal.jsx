@@ -24,6 +24,7 @@ import styles from '../wbs.module.css';
 import TagsSearch from '../components/TagsSearch';
 
 
+import { permissions } from '../../../../../utils/constants';
 /** tiny reusable v8 DateInput - manual control without useInput **/
 function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled, darkMode }) {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -109,8 +110,8 @@ function EditTaskModal(props) {
   const { /* allMembers, */ error, darkMode } = props;
 
   // permissions
-  const canUpdateTask = props.hasPermission('updateTask');
-  const canSuggestTask = props.hasPermission('suggestTask');
+  const canUpdateTask = props.hasPermission(permissions.updateTask);
+  const canSuggestTask = props.hasPermission(permissions.suggestTask);
   const editable = canSuggestTask || canUpdateTask;
 
   // states from hooks
@@ -206,11 +207,11 @@ function EditTaskModal(props) {
   // Recompute the derived estimate (and the best <= most <= worst warning) from the
   // current field values only. Editing one hours field must NOT overwrite the others.
   const calHoursEstimate = () => {
-    const currHoursBest = parseInt(hoursBest, 10);
-    const currHoursMost = parseInt(hoursMost, 10);
-    const currHoursWorst = parseInt(hoursWorst, 10);
+    const currHoursBest = Number.parseInt(hoursBest, 10);
+    const currHoursMost = Number.parseInt(hoursMost, 10);
+    const currHoursWorst = Number.parseInt(hoursWorst, 10);
 
-    setHoursEstimate(parseInt((currHoursMost + currHoursBest + currHoursWorst) / 3, 10));
+    setHoursEstimate(Number.parseInt((currHoursMost + currHoursBest + currHoursWorst) / 3, 10));
 
     if (!(currHoursBest <= currHoursMost && currHoursMost <= currHoursWorst)) {
       setHoursWarning(true);

@@ -24,6 +24,7 @@ import TeamMemberTask from './TeamMemberTask';
 
 import { FaCalendarAlt, FaClock } from 'react-icons/fa';
 import { ENDPOINTS } from '~/utils/URL';
+import { permissions } from '../../utils/constants';
 
 const TeamMemberTasks = React.memo(props => {
   const {
@@ -801,10 +802,10 @@ const TeamMemberTasks = React.memo(props => {
                 .map(user => {
                   const taskNode = (
                     <TeamMemberTask
-                      key={!isTimeFilterActive ? user.personId : undefined}
+                      key={isTimeFilterActive ? undefined : user.personId}
                       user={user}
                       userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes(
-                        'putReviewStatus',
+                        permissions.putReviewStatus,
                       )}
                       teamRoles={
                         user.teams !== undefined && user.teams.length > 0

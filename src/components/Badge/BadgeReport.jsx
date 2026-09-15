@@ -30,6 +30,7 @@ import { changeBadgesByUserID } from '../../actions/badgeManagement';
 import { getUserProfile } from '../../actions/userProfile';
 import hasPermission from '../../utils/permissions';
 import BadgeImage from './BadgeImage';
+import { permissions } from '../../utils/constants';
 import './BadgeReport.module.css';
 
 function BadgeReport(props) {
@@ -39,11 +40,11 @@ function BadgeReport(props) {
   const [badgeToDelete, setBadgeToDelete] = useState([]);
   const [savingChanges, setSavingChanges] = useState(false);
 
-  const canDeleteBadges = props.hasPermission('deleteBadges');
-  const canUpdateBadges = props.hasPermission('updateBadges');
+  const canDeleteBadges = props.hasPermission(permissions.deleteBadges);
+  const canUpdateBadges = props.hasPermission(permissions.updateBadges);
   const darkMode = props.darkMode;
-  const canAssignBadges = props.hasPermission('assignBadges');
-  const canModifyBadgeAmount = props.hasPermission('modifyBadgeAmount');
+  const canAssignBadges = props.hasPermission(permissions.assignBadges);
+  const canModifyBadgeAmount = props.hasPermission(permissions.modifyBadgeAmount);
 
   async function imageToUri(url, callback) {
     const canvas = document.createElement('canvas');
