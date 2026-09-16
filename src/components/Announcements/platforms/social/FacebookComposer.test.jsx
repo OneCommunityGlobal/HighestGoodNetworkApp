@@ -63,11 +63,13 @@ describe('FacebookComposer', () => {
     });
   });
 
-  it('shows the historical connection warning and disables posting when disconnected', () => {
+  it('guides a disconnected user to the Facebook connection settings', () => {
     setConnected(false);
     render(<FacebookComposer />);
     expect(screen.getByText('⚠️ Facebook Not Connected')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Post to facebook' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Settings tab' }));
+    expect(screen.getByText('Facebook Page Connection')).toBeInTheDocument();
   });
 
   it('posts through the recovered Facebook action', async () => {

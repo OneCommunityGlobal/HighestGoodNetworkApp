@@ -55,15 +55,13 @@ export const getFacebookConnectionStatus = () => async dispatch => {
     dispatch({ type: SET_FB_CONNECTION_STATUS, payload: data });
     return data;
   } catch (error) {
-    const fallback = { connected: false, error: error.message };
+    const fallback = { error: error.message };
     dispatch({ type: SET_FB_CONNECTION_STATUS, payload: fallback });
     return fallback;
   }
 };
 
-export const initiateFacebookLogin =
-  ({ requestor }) =>
-  async () => {
+export const initiateFacebookLogin = () => async () => {
     try {
       const FB = await loadFacebookSDK();
 
@@ -82,7 +80,6 @@ export const initiateFacebookLogin =
                 accessToken,
                 userID,
                 grantedScopes,
-                requestor,
               })
               .then(({ data }) => {
                 if (data.success && data.pages?.length > 0) {
@@ -106,7 +103,7 @@ export const initiateFacebookLogin =
               });
           },
           {
-            scope: 'pages_manage_posts,pages_read_user_content',
+            scope: 'pages_show_list,pages_read_engagement,pages_manage_posts',
             return_scopes: true,
           },
         );
@@ -115,21 +112,20 @@ export const initiateFacebookLogin =
       toast.error(`Failed to initialize Facebook login: ${error.message}`);
       throw error;
     }
-  };
+};
 
 export const connectFacebookPage =
-  ({ pageId, pageName, selectionNonce, requestor }) =>
+  ({ pageId, pageName, selectionNonce }) =>
   async dispatch => {
     try {
       const { data } = await axios.post(ENDPOINTS.FACEBOOK_AUTH_CONNECT, {
         pageId,
         pageName,
         selectionNonce,
-        requestor,
       });
       if (!data.success) throw new Error(data.error || 'Failed to connect page');
       toast.success(`Connected to ${pageName || 'Facebook Page'}`);
-      dispatch(getFacebookConnectionStatus());
+      await dispatch(getFacebookConnectionStatus());
       return data;
     } catch (error) {
       const detail = error.response?.data?.details || error.response?.data?.error || error.message;
@@ -138,18 +134,16 @@ export const connectFacebookPage =
     }
   };
 
-export const disconnectFacebookPage =
-  ({ requestor }) =>
-  async dispatch => {
+export const disconnectFacebookPage = () => async dispatch => {
     try {
-      const { data } = await axios.post(ENDPOINTS.FACEBOOK_AUTH_DISCONNECT, { requestor });
+      const { data } = await axios.post(ENDPOINTS.FACEBOOK_AUTH_DISCONNECT, {});
       if (!data.success) throw new Error(data.error || 'Failed to disconnect');
       toast.success('Facebook Page disconnected');
-      dispatch(getFacebookConnectionStatus());
+      await dispatch(getFacebookConnectionStatus());
       return data;
     } catch (error) {
       const detail = error.response?.data?.details || error.response?.data?.error || error.message;
       toast.error(`Failed to disconnect Facebook: ${detail}`);
       throw error;
     }
-  };
+};
