@@ -89,6 +89,7 @@ import { jobApplicationReducer } from './jobApplication/jobApplicationReducer';
 
 import emailOutboxReducer from './emailOutboxReducer';
 import emailTemplateReducer from './emailTemplateReducer';
+import facebookReducer from './facebookReducer';
 import wishListReducer from './listBidDashboard/wishListItemReducer';
 import villageDetailsReducer from './listBidDashboard/villageDetailsReducer';
 
@@ -204,6 +205,7 @@ const localReducers = {
   lbuserpreferences: userPreferencesReducer,
   emailTemplates: emailTemplateReducer,
   emailOutbox: emailOutboxReducer,
+  facebook: facebookReducer,
 
   optStatusBreakdown: optStatusBreakdownReducer,
 

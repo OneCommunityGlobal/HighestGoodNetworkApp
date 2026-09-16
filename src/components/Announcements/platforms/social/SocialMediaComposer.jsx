@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import CharacterCounter from '../../CharacterCounter';
 import ConfirmationModal from '../../ConfirmationModal';
+import FacebookComposer from './FacebookComposer';
 import styles from './SocialMediaComposer.module.css';
 const PREFS_KEY = 'mastodon_composer_prefs';
 
@@ -111,7 +112,7 @@ const getXCardStyle = status => X_CARD_STYLES[status] || {};
 const getXStatusBadge = status => X_STATUS_BADGES[status] || null;
 
 // Component
-export default function SocialMediaComposer({ platform }) {
+function SocialMediaComposerImplementation({ platform }) {
   const charLimit = PLATFORM_CHAR_LIMITS[platform] || 500;
   const api = getAPI(platform);
 
@@ -1205,6 +1206,17 @@ export default function SocialMediaComposer({ platform }) {
         </ModalFooter>
       </Modal>
     </div>
+  );
+}
+SocialMediaComposerImplementation.propTypes = {
+  platform: PropTypes.string,
+};
+
+export default function SocialMediaComposer({ platform }) {
+  return platform === 'facebook' ? (
+    <FacebookComposer />
+  ) : (
+    <SocialMediaComposerImplementation platform={platform} />
   );
 }
 SocialMediaComposer.propTypes = {
