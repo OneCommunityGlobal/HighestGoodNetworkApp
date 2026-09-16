@@ -12,6 +12,9 @@ const PREFS_KEY = 'mastodon_composer_prefs';
 // Keeps every handler free of platform conditionals.
 // Add new platforms here; the rest of the component stays unchanged.
 const platformAPI = {
+  facebook: {
+    component: FacebookComposer,
+  },
   mastodon: {
     postNow: (content, image, altText, crossPostTo) => ({
       url: '/api/mastodon/createPin',
@@ -76,8 +79,11 @@ const platformAPI = {
   },
 };
 
-// Fallback to mastodon shape for any platform not yet wired
-const getAPI = platform => platformAPI[platform] || platformAPI.mastodon;
+const getAPI = platform => {
+  const api = platformAPI[platform];
+  if (!api) throw new Error(`Unsupported social platform: ${platform}`);
+  return api;
+};
 
 const PLATFORM_CHAR_LIMITS = {
   mastodon: 500,
@@ -1213,8 +1219,12 @@ SocialMediaComposerImplementation.propTypes = {
 };
 
 export default function SocialMediaComposer({ platform }) {
-  return platform === 'facebook' ? (
-    <FacebookComposer />
+  const api = platformAPI[platform];
+  if (!api) return <div role="alert">Unsupported social platform: {platform}</div>;
+
+  const PlatformComposer = api.component;
+  return PlatformComposer ? (
+    <PlatformComposer />
   ) : (
     <SocialMediaComposerImplementation platform={platform} />
   );
