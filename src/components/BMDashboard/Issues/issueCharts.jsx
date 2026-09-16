@@ -6,6 +6,30 @@ import { fetchIssues } from '../../../actions/bmdashboard/issueChartActions';
 import 'chart.js/auto';
 import styles from './issueChart.module.css';
 
+const NARROW_CARD_CHART_WIDTH = 440; // make card-mode IssueChart X-axis labels rotate at 45° when chart width is below this value, below 1296px
+
+const issueChartCardTickRotationPlugin = {
+  id: 'issueChartCardTickRotation',
+  beforeUpdate(chart, _args, pluginOptions = {}) {
+    if (!pluginOptions.enabled) return;
+
+    const xTicks = chart.options?.scales?.x?.ticks;
+    if (!xTicks) return;
+
+    const measuredChartWidth = chart.width || chart.canvas?.clientWidth || 0;
+    // Card-mode IssueChart can be narrow while the viewport is still desktop/tablet sized.
+    chart.$issueChartUseRotatedTicks =
+      !pluginOptions.isMobile &&
+      measuredChartWidth > 0 &&
+      measuredChartWidth < pluginOptions.narrowChartWidth;
+
+    const labelRotation = pluginOptions.isMobile ? 90 : chart.$issueChartUseRotatedTicks ? 45 : 0;
+
+    xTicks.minRotation = labelRotation;
+    xTicks.maxRotation = labelRotation;
+  },
+};
+
 function IssueChart({ variant = 'standalone', showTitle = true }) {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -367,6 +391,11 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
         datalabels: {
           display: false,
         },
+        issueChartCardTickRotation: {
+          enabled: isCardVariant,
+          isMobile,
+          narrowChartWidth: NARROW_CARD_CHART_WIDTH,
+        },
         xAxisBackground: true,
       },
       datasets: {
@@ -413,9 +442,9 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
             // Card-mode desktop labels have less width, so only those X-axis ticks use smaller text.
             // Use 8px only for desktop card-mode X-axis ticks so crowded labels fit the narrow card.
             font: { size: isCardVariant && !isMobile ? 8 : 12, weight: '500' },
-            callback: (value, index, ticks) => {
+            callback(value, index, ticks) {
               const label = chartData?.labels?.[index] ?? ticks?.[index]?.label ?? String(value);
-              if (isMobile) return label;
+              if (isMobile || this.chart.$issueChartUseRotatedTicks) return label;
 
               const maxCharsPerLine = 10;
               if (label.length <= maxCharsPerLine) return label;
@@ -444,7 +473,10 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
     [darkMode, isMobile, chartAnalysis, chartData, isCardVariant],
   );
 
-  const chartPlugins = useMemo(() => [xAxisBackgroundPlugin(darkMode)], [darkMode]);
+  const chartPlugins = useMemo(
+    () => [xAxisBackgroundPlugin(darkMode), issueChartCardTickRotationPlugin],
+    [darkMode],
+  );
 
   const selectStyles = useMemo(
     () => ({
