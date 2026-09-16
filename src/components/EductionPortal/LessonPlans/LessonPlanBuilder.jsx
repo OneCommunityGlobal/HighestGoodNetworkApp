@@ -1221,7 +1221,7 @@ export default function LessonPlanBuilder() {
   const assignTasks = async (isAutoAssigned, onAssignmentSuccess) => {
     const payload = {
       lessonPlanId: LESSON_PLAN_ID, // Use the actual lesson plan ID
-      assignmenDate: new Date().toISOString().split('T')[0],
+      assignmentDate: new Date().toISOString().split('T')[0],
       isAutoAssigned: isAutoAssigned,
     };
 
