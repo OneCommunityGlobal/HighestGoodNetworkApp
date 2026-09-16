@@ -6,46 +6,20 @@ import { toast } from 'react-toastify';
 
 import styles from './Slashdot.module.css';
 
+import {
+  STOP_WORDS,
+  formatLocalDate,
+  formatLocalTime,
+  formatDisplayDateTime,
+  createScheduleId,
+  topCardActions,
+  fieldActionRow,
+  makeButtonStyle,
+} from '../../shared/postComposerUtility';
+
 const HEADLINE_MIN = 12;
 const HEADLINE_MAX = 95;
 const SUMMARY_MIN = 80;
-const STOP_WORDS = new Set([
-  'about',
-  'after',
-  'also',
-  'another',
-  'because',
-  'been',
-  'being',
-  'between',
-  'can',
-  'could',
-  'during',
-  'each',
-  'from',
-  'have',
-  'into',
-  'more',
-  'other',
-  'over',
-  'since',
-  'some',
-  'than',
-  'that',
-  'their',
-  'there',
-  'these',
-  'they',
-  'this',
-  'through',
-  'under',
-  'until',
-  'where',
-  'which',
-  'while',
-  'with',
-  'within',
-]);
 
 const sanitizeTags = text =>
   text
@@ -118,101 +92,18 @@ const buildPreview = ({ headline, sourceUrl, dept, tags, intro }) =>
     tags.length ? tags.join(', ') : '—'
   }\n\nIntro / Summary\n${intro?.trim() || '—'}\n`;
 
-const padTimeUnit = value => String(value).padStart(2, '0');
-
-const formatLocalDate = date =>
-  `${date.getFullYear()}-${padTimeUnit(date.getMonth() + 1)}-${padTimeUnit(date.getDate())}`;
-
-const formatLocalTime = date => `${padTimeUnit(date.getHours())}:${padTimeUnit(date.getMinutes())}`;
-const getSecureBase36 = length => {
-  const chars = [];
-  const max = 36 * 7;
-  while (chars.length < length) {
-    const bytes = new Uint8Array(length);
-    globalThis.crypto.getRandomValues(bytes);
-    for (const byte of bytes) {
-      if (byte >= max) continue;
-      chars.push((byte % 36).toString(36));
-      if (chars.length === length) break;
-    }
-  }
-  return chars.join('');
-};
-const createScheduleId = () => `schedule-${Date.now().toString(36)}-${getSecureBase36(6)}`;
-// const createScheduleId = () =>
-//   `schedule-${Date.now().toString(36)}-${Math.random()
-//     .toString(36)
-//     .slice(2, 8)}`;
-
-const formatDisplayDateTime = (dateString, timeString) => {
-  if (!dateString) return '—';
-  try {
-    const composed = `${dateString}T${timeString || '00:00'}`;
-    const parsed = new Date(composed);
-    if (Number.isNaN(parsed.getTime())) {
-      return `${dateString}${timeString ? `, ${timeString}` : ''}`;
-    }
-    const formattedDate = parsed.toLocaleDateString(undefined, {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-    const formattedTime = timeString
-      ? parsed.toLocaleTimeString(undefined, {
-          hour: '2-digit',
-          minute: '2-digit',
-        })
-      : '';
-    return formattedTime ? `${formattedDate} • ${formattedTime}` : formattedDate;
-  } catch (error) {
-    return `${dateString}${timeString ? `, ${timeString}` : ''}`;
-  }
-};
-
-const topCardActions = () => ({
-  display: 'flex',
-  flexWrap: 'wrap',
-  gap: '12px',
-  marginTop: '16px',
-});
-
-const buttonStyle = (variant, darkMode) => {
-  const base = {
-    borderRadius: '999px',
-    border: 'none',
-    cursor: 'pointer',
-    fontWeight: 600,
-    padding: '10px 18px',
-    transition: 'filter 0.2s ease',
-  };
-  if (variant === 'primary') {
-    return {
-      ...base,
-      backgroundColor: '#0d6efd',
-      color: '#fff',
-    };
-  }
-  if (variant === 'outline') {
-    return {
-      ...base,
-      backgroundColor: 'transparent',
-      color: darkMode ? '#9bb5ff' : '#0d6efd',
-      border: `1px solid ${darkMode ? '#3d4d6d' : '#0d6efd'}`,
-    };
-  }
-  return {
-    ...base,
+const buttonStyle = makeButtonStyle({
+  primary: () => ({ backgroundColor: '#0d6efd', color: '#fff' }),
+  outline: darkMode => ({
+    backgroundColor: 'transparent',
+    color: darkMode ? '#9bb5ff' : '#0d6efd',
+    border: `1px solid ${darkMode ? '#3d4d6d' : '#0d6efd'}`,
+  }),
+  ghost: darkMode => ({
     backgroundColor: darkMode ? '#1c2b44' : '#e9efff',
     color: darkMode ? '#cfd9f8' : '#1c3f82',
-  };
-};
-
-const fieldActionRow = {
-  display: 'flex',
-  flexWrap: 'wrap',
-  gap: '10px',
-  marginTop: '12px',
-};
+  }),
+});
 
 function SlashdotAutoPoster({ platform }) {
   const darkMode = useSelector(state => state.theme.darkMode);

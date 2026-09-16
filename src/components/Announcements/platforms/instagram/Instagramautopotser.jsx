@@ -24,10 +24,19 @@ import {
 // API Base for backend
 const API_BASE = 'https://freebase-sugar-duplicate.ngrok-free.dev';
 
-// ─── ScheduleField sub-component ─────────────────────────────────────────────
+// ─── InstagramScheduleField sub-component ────────────────────────────────────
 
-function ScheduleField({ id, type, label, value, min, onChange, attemptedSave, errorText }) {
-  const isInvalid = attemptedSave && !value;
+function InstagramScheduleField({
+  id,
+  type,
+  label,
+  value,
+  min,
+  onChange,
+  attemptedSave,
+  errorText,
+}) {
+  const isFieldInvalid = attemptedSave && !value;
   return (
     <div className={styles['instagram-scheduler__field']}>
       <label htmlFor={id}>
@@ -40,16 +49,16 @@ function ScheduleField({ id, type, label, value, min, onChange, attemptedSave, e
         min={min}
         onChange={onChange}
         className={classNames(styles['instagram-field__input'], {
-          [styles['instagram-field__input--invalid']]: isInvalid,
+          [styles['instagram-field__input--invalid']]: isFieldInvalid,
         })}
-        aria-invalid={isInvalid}
+        aria-invalid={isFieldInvalid}
       />
-      {isInvalid && <p className={styles['instagram-field__error']}>{errorText}</p>}
+      {isFieldInvalid && <p className={styles['instagram-field__error']}>{errorText}</p>}
     </div>
   );
 }
 
-ScheduleField.propTypes = {
+InstagramScheduleField.propTypes = {
   id: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
@@ -747,7 +756,7 @@ function InstagramAutoPoster({ platform }) {
               </p>
             )}
             <div className={styles['instagram-scheduler__controls']}>
-              <ScheduleField
+              <InstagramScheduleField
                 id="instagram-schedule-date"
                 type="date"
                 label="Scheduled date"
@@ -757,7 +766,7 @@ function InstagramAutoPoster({ platform }) {
                 attemptedSave={scheduleAttemptedSave}
                 errorText="Select a schedule date."
               />
-              <ScheduleField
+              <InstagramScheduleField
                 id="instagram-schedule-time"
                 type="time"
                 label="Scheduled time"
