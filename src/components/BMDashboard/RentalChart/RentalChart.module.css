@@ -1,7 +1,9 @@
-/* =========================================
-   Base Container & Layout
-   ========================================= */
-.rental-container {
+/* stylelint-disable no-descending-specificity */
+
+/* ======================
+   Light Mode Base
+   ====================== */
+.rentalContainer {
   position: relative;
   width: 100%;
   margin: 0 auto;
@@ -22,6 +24,18 @@
 
 .text-light {
   color: #e0e0e0;
+}
+
+/* Chart wrapper (applies in dark + light mode) */
+.chartWrapper {
+  height: 600px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 40px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 5%);
 }
 
 /* =========================================
@@ -137,6 +151,7 @@
   border-color: #333;
 }
 
+/* States */
 .loading,
 .error,
 .no-data {
@@ -189,6 +204,13 @@
 :global(.react-datepicker__day--in-range) {
   background-color: #0078d7;
   color: white;
+}
+
+/* Chart wrapper */
+.darkMode .chartWrapper {
+  background-color: #1b2a41;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgb(255 255 255 / 5%);
 }
 
 :global(body.dark-mode .react-datepicker__month-select),

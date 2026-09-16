@@ -40,7 +40,6 @@ function DonutChart(props) {
   const labelTextColor = darkMode ? '#e2e8f0' : '#334155';
   const labelBoxBackground = darkMode ? 'rgba(15, 23, 42, 0.96)' : 'rgba(255, 255, 255, 0.96)';
   const labelBoxBorder = darkMode ? 'rgba(148, 163, 184, 0.35)' : '#d0d0d0';
-  const chartSliceBorder = darkMode ? '#1c2541' : '#ffffff';
   const titleLines = title === 'TOTAL BLUE SQUARES' ? ['TOTAL', 'BLUE SQUARES'] : [title];
 
   const chartData = {
@@ -49,8 +48,12 @@ function DonutChart(props) {
       {
         data: data.map(item => item.value),
         backgroundColor: colors,
-        borderColor: chartSliceBorder,
-        borderWidth: 1,
+        borderWidth: 0,
+        // Explicit gap between every slice via canvas clipping, rather than
+        // relying on adjacent fill paths to butt up against each other
+        // cleanly — thin adjacent wedges were leaving an anti-aliasing seam
+        // at their shared edge without this.
+        spacing: 2,
       },
     ],
   };
@@ -58,7 +61,10 @@ function DonutChart(props) {
   const options = {
     plugins: {
       datalabels: {
-        display: false,
+        display: false, // chartjs-plugin-datalabels is registered globally by other
+        // components (RatingDistribution, PRQualityGraph); explicitly disabling it
+        // here prevents their global registration from drawing default labels on
+        // this chart, since values/percentages are already shown in the legend below.
       },
       legend: {
         display: false,

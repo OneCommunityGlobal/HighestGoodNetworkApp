@@ -1,0 +1,15 @@
+.darkContent {
+  background-color: #1C2541 !important;
+  color: #E8ECF1 !important;
+  border: 1px solid #3A506B !important;
+}
+
+.darkBody,
+.darkBody * {
+  color: #E8ECF1 !important;
+}
+
+.darkFooter {
+  background-color: #3A506B !important;
+  border-top: 1px solid #1C2541 !important;
+}

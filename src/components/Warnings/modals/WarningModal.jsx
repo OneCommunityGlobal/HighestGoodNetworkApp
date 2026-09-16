@@ -16,6 +16,7 @@ import WarningIcons from '../WarningIcons';
 import getOrdinal from '../../../utils/getOrdinal';
 import styles from '../Warnings.module.css';
 
+import { permissions } from '../../../utils/constants';
 function WarningModal({
   setToggleModal,
   visible,
@@ -35,9 +36,9 @@ function WarningModal({
 
   const dispatch = useDispatch();
 
-  const canIssueTrackingWarnings = dispatch(hasPermission('issueTrackingWarnings'));
-  const canIssueBlueSquare = dispatch(hasPermission('issueBlueSquare'));
-  const canDeleteWarning = dispatch(hasPermission('deleteWarning'));
+  const canIssueTrackingWarnings = dispatch(hasPermission(permissions.issueTrackingWarnings));
+  const canIssueBlueSquare = dispatch(hasPermission(permissions.issueBlueSquare));
+  const canDeleteWarning = dispatch(hasPermission(permissions.deleteWarning));
 
   const isFormComplete = () => {
     return warning.specialWarnings.every(warn => warningSelections[warn.title]);

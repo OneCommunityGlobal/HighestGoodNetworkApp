@@ -159,6 +159,24 @@
 
 @media (width <= 615px) {
   .donutContainer {
+    overflow-x: visible;
     justify-content: start;
+  }
+
+  .donutScrollable {
+    grid-template-columns: 1fr;
+  }
+
+  .donutChart {
+    margin-left: 0;
+    max-width: 100%;
+  }
+
+  .donutLabels {
+    margin-top: 1rem;
+  }
+
+  .donutLabel {
+    margin-left: 0;
   }
 }
