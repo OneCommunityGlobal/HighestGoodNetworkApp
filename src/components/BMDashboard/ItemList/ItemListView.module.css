@@ -6,11 +6,9 @@ table td {
 
 .itemsListContainer {
   width: 100%;
+  max-width: 1536px;
   margin: 0 auto;
   padding: 0 1rem;
-  min-height: 100vh;
-  background-color: #fff;
-  color: #1f2937;
 }
 
 .itemsTableContainer {
@@ -19,22 +17,35 @@ table td {
   max-height: 600px;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
-  background-color: #fff;
 }
 
-.itemsTableContainer table {
-  background-color: #fff;
-  color: #1f2937;
-  margin-bottom: 0;
+.materialsTableScroll {
+  scrollbar-width: thin;
+  scrollbar-color: #7b8794 #edf2f7;
 }
 
-.itemsTableContainer table tbody tr {
-  background-color: #fff;
+.materialsTableScroll::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
 }
 
-.itemsTableContainer table th,
-.itemsTableContainer table td {
-  white-space: nowrap;
+.materialsTableScroll::-webkit-scrollbar-track {
+  background: #edf2f7;
+  border-radius: 6px;
+}
+
+.materialsTableScroll::-webkit-scrollbar-thumb {
+  background: #7b8794;
+  border: 2px solid #edf2f7;
+  border-radius: 6px;
+}
+
+.materialsTableScroll::-webkit-scrollbar-thumb:hover {
+  background: #4b5563;
+}
+
+.materialsTableScroll::-webkit-scrollbar-corner {
+  background: #edf2f7;
 }
 
 .items_list_container section {
@@ -74,6 +85,19 @@ table td {
 
 .itemsCell svg:hover {
   color: black;
+}
+
+.materialsActionGroup {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.itemsCell .materialsActionGroup svg {
+  margin-right: 0;
 }
 
 .darkTable .itemsCell svg {
@@ -358,6 +382,15 @@ table td {
   background-color: #3b82f6;
 }
 
+.selectableRow {
+  cursor: pointer;
+}
+
+.selectedRow td {
+  background-color: #d8e9fb !important;
+  color: #102033 !important;
+}
+
 .paginationBar {
   display: flex;
   align-items: center;
@@ -429,6 +462,9 @@ table td {
 .darkMode {
   color: #e8edf4;
   background-color: #0f1b2b !important;
+  min-height: 100vh;
+  padding-top: 1rem;
+  padding-bottom: 2rem;
 }
 
 .darkMode table {
@@ -458,6 +494,11 @@ table td {
   color: #fff !important;
 }
 
+.darkMode table tbody tr.selectedRow td {
+  background-color: #315983 !important;
+  color: #fff !important;
+}
+
 .darkTable tbody td,
 .darkTable tbody th {
   border-color: #2f4157 !important;
@@ -478,23 +519,29 @@ table td {
   color: #e8edf4 !important;
 }
 
-/* Dark mode container/table base (overrides the light defaults above) */
 .darkTableWrapper {
   background-color: #1f2e45;
 }
 
-.darkTableWrapper table,
-.itemsTableContainer .darkTable {
-  background-color: #1f2e45;
-  color: #e8edf4;
+.materialsTableScroll.darkTableWrapper {
+  scrollbar-color: #8fb3d9 #142235;
 }
 
-.itemsTableContainer .darkTable tbody tr:nth-child(odd) {
-  background-color: #1f2e45;
+.materialsTableScroll.darkTableWrapper::-webkit-scrollbar-track {
+  background: #142235;
 }
 
-.itemsTableContainer .darkTable tbody tr:nth-child(even) {
-  background-color: #23375b;
+.materialsTableScroll.darkTableWrapper::-webkit-scrollbar-thumb {
+  background: #8fb3d9;
+  border-color: #142235;
+}
+
+.materialsTableScroll.darkTableWrapper::-webkit-scrollbar-thumb:hover {
+  background: #b7d7f6;
+}
+
+.materialsTableScroll.darkTableWrapper::-webkit-scrollbar-corner {
+  background: #142235;
 }
 
 :global(.dark-mode) .items_table_container {
@@ -591,7 +638,7 @@ table td {
   border: 1px solid #3f5269 !important;
 }
 
-.darkDatePicker :global(input)::placeholder {
+.darkDatePickerInput::placeholder {
   color: #c8d2e0 !important;
 }
 
@@ -812,9 +859,9 @@ table td {
 
 @media (width <= 900px) {
   .selectInput {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: flex-start;
     max-width: 100%;
-    flex-wrap: wrap;
   }
 
   .selectInput label {
@@ -939,6 +986,106 @@ table td {
 @media (width <= 768px) {
   .itemsListContainer {
     padding: 0 0.5rem;
+  }
+
+  .itemsTableContainer {
+    max-height: 70vh;
+  }
+
+  .itemsTableContainer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 24px;
+    background: linear-gradient(to right, transparent, rgb(0 0 0 / 8%));
+    pointer-events: none;
+  }
+
+  .darkMode .itemsTableContainer::after {
+    background: linear-gradient(to right, transparent, rgb(255 255 255 / 8%));
+  }
+
+  .inventoryNav {
+    gap: 10px;
+  }
+
+  .returnBtn {
+    flex: 1 1 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .categoryIcons {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .pageTitle {
+    font-size: 1.4rem;
+  }
+
+  .searchRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .searchBox {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .searchBox input {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .foundCount {
+    text-align: left;
+  }
+
+  .buttonsRow {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .btnPrimary {
+    width: 100%;
+  }
+
+  .paginationBar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .pageButtons {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .rowsPerPage {
+    justify-content: space-between;
+  }
+}
+
+@media (width <= 480px) {
+  .pageButtons button {
+    min-width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+    padding: 0 5px;
+  }
+
+  .categoryIconLink {
+    padding: 5px 8px;
+    font-size: 0.7rem;
+  }
+
+  .iconWrapper {
+    font-size: 1rem;
   }
 }
 

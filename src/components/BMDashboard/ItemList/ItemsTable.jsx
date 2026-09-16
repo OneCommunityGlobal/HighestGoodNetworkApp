@@ -78,6 +78,8 @@ export default function ItemsTable({
   endRow,
   onPageChange,
   onRowsPerPageChange,
+  selectedRowId,
+  onRowSelect,
 }) {
   const dispatch = useDispatch();
   const [modal, setModal] = useState(false);
@@ -191,7 +193,7 @@ export default function ItemsTable({
 
   const getNestedValue = (obj, path) => {
     if (!path) return null;
-    if (path === 'product id') return obj.productId ?? 'N/A';
+    if (path === 'product id') return obj['product id'] ?? obj.productId ?? 'N/A';
     return path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
   };
 
@@ -199,7 +201,9 @@ export default function ItemsTable({
     col => col.label !== 'Project' && col.label !== 'Name',
   );
 
-  const emptyStateColSpan = 5 + filteredDynamicColumns.length + (isMaterialsView ? 4 : 0);
+  // Base columns (Project, Name, Updates, Purchases) plus dynamic columns, plus the
+  // five materials-only columns (checkbox, Bulk Status, Usage %, Stock Health, Usage Record).
+  const emptyStateColSpan = 4 + filteredDynamicColumns.length + (isMaterialsView ? 5 : 0);
 
   const escapeCsv = value => {
     const str = String(value ?? '');
@@ -380,6 +384,7 @@ export default function ItemsTable({
   };
 
   const numericKeys = new Set(['stockBought', 'stockUsed', 'stockAvailable', 'stockWasted']);
+  const isMaterials = itemType === 'Materials';
 
   const getColumnStyle = (key, isAction = false) => {
     const base = { verticalAlign: 'middle' };
@@ -487,7 +492,15 @@ export default function ItemsTable({
         </div>
       )}
 
-      <div className={`${styles.itemsTableContainer} ${darkMode ? styles.darkTableWrapper : ''}`}>
+      <div
+        className={[
+          styles.itemsTableContainer,
+          darkMode ? styles.darkTableWrapper : '',
+          isMaterialsView ? styles.materialsTableScroll : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
         <Table className={darkMode ? styles.darkTable : ''}>
           <thead className={styles.stickyThead}>
             <tr>
@@ -504,7 +517,7 @@ export default function ItemsTable({
               <th
                 onClick={() => onSort?.('project')}
                 className={styles.sortableTh}
-                style={{ verticalAlign: 'middle', textAlign: 'center' }}
+                style={{ verticalAlign: 'middle' }}
               >
                 <span className={styles.thContent}>
                   Project <FontAwesomeIcon icon={getIconFor('project')} />
@@ -513,13 +526,13 @@ export default function ItemsTable({
               <th
                 onClick={() => onSort?.('name')}
                 className={styles.sortableTh}
-                style={{ verticalAlign: 'middle', textAlign: 'center' }}
+                style={{ verticalAlign: 'middle' }}
               >
                 <span className={styles.thContent}>
                   Name <FontAwesomeIcon icon={getIconFor('name')} />
                 </span>
               </th>
-              {(filteredDynamicColumns || []).map(({ label, key }) => {
+              {filteredDynamicColumns.map(({ label, key }) => {
                 const sortKey = dynamicSortKeyByLabel[label];
                 const clickable = Boolean(sortKey);
                 return (
@@ -538,9 +551,11 @@ export default function ItemsTable({
               {isMaterialsView && <th style={{ verticalAlign: 'middle' }}>Bulk Status</th>}
               {isMaterialsView && <th style={getColumnStyle(null)}>Usage %</th>}
               {isMaterialsView && <th style={getColumnStyle(null)}>Stock Health</th>}
-              <th style={getColumnStyle(null, true)} title="View usage history and charts">
-                Usage Record
-              </th>
+              {isMaterialsView && (
+                <th style={getColumnStyle(null, true)} title="View usage history and charts">
+                  Usage Record
+                </th>
+              )}
               <th
                 style={{ verticalAlign: 'middle', textAlign: 'center' }}
                 title="View history of manual updates"
@@ -562,9 +577,20 @@ export default function ItemsTable({
                 const { hasHold, hasReview, hasNote } = getRowStatus(el);
 
                 return (
-                  <tr key={el._id} className={isSelected ? styles.selectedRow : ''}>
+                  <tr
+                    key={el._id}
+                    className={[
+                      isMaterials ? styles.selectableRow : '',
+                      isSelected || (isMaterials && el._id === selectedRowId)
+                        ? styles.selectedRow
+                        : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    onClick={isMaterials ? () => onRowSelect?.(el) : undefined}
+                  >
                     {isMaterialsView && (
-                      <td style={{ verticalAlign: 'middle' }}>
+                      <td style={{ verticalAlign: 'middle' }} onClick={e => e.stopPropagation()}>
                         <input
                           type="checkbox"
                           checked={isSelected}
@@ -625,58 +651,66 @@ export default function ItemsTable({
                         <StockHealthIndicator material={el} darkMode={darkMode} />
                       </td>
                     )}
-                    <td
-                      className={`${styles.itemsCell} ${styles.actionCell}`}
-                      style={getColumnStyle(null, true)}
-                    >
-                      <button
-                        type="button"
-                        onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
-                        aria-label="Edit Record"
+                    {isMaterialsView && (
+                      <td
+                        className={`${styles.itemsCell} ${styles.actionCell}`}
+                        style={getColumnStyle(null, true)}
                       >
-                        <BiPencil />
-                      </button>
-                      <Button
-                        color="primary"
-                        outline
-                        size="sm"
-                        onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
-                      >
-                        View
-                      </Button>
-                    </td>
+                        <span className={isMaterials ? styles.materialsActionGroup : undefined}>
+                          <button
+                            type="button"
+                            onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
+                            aria-label="Edit Record"
+                          >
+                            <BiPencil />
+                          </button>
+                          <Button
+                            color="primary"
+                            outline
+                            size="sm"
+                            onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
+                          >
+                            View
+                          </Button>
+                        </span>
+                      </td>
+                    )}
                     <td
                       className={`${styles.itemsCell} ${styles.actionCell}`}
                       style={{ verticalAlign: 'middle', textAlign: 'center' }}
                     >
-                      <button
-                        type="button"
-                        onClick={() => handleEditRecordsClick(el, 'Update')}
-                        aria-label="Edit Record"
-                      >
-                        <BiPencil />
-                      </button>
-                      <Button
-                        color="primary"
-                        outline
-                        size="sm"
-                        onClick={() => handleViewRecordsClick(el, 'Update')}
-                      >
-                        View
-                      </Button>
+                      <span className={isMaterials ? styles.materialsActionGroup : undefined}>
+                        <button
+                          type="button"
+                          onClick={() => handleEditRecordsClick(el, 'Update')}
+                          aria-label="Edit Record"
+                        >
+                          <BiPencil />
+                        </button>
+                        <Button
+                          color="primary"
+                          outline
+                          size="sm"
+                          onClick={() => handleViewRecordsClick(el, 'Update')}
+                        >
+                          View
+                        </Button>
+                      </span>
                     </td>
                     <td
                       className={styles.actionCell}
                       style={{ verticalAlign: 'middle', textAlign: 'center' }}
                     >
-                      <Button
-                        color="primary"
-                        outline
-                        size="sm"
-                        onClick={() => handleViewRecordsClick(el, 'Purchase')}
-                      >
-                        View
-                      </Button>
+                      <span className={isMaterials ? styles.materialsActionGroup : undefined}>
+                        <Button
+                          color="primary"
+                          outline
+                          size="sm"
+                          onClick={() => handleViewRecordsClick(el, 'Purchase')}
+                        >
+                          View
+                        </Button>
+                      </span>
                     </td>
                   </tr>
                 );
@@ -760,19 +794,31 @@ export default function ItemsTable({
 ItemsTable.propTypes = {
   selectedProject: PropTypes.string,
   selectedItem: PropTypes.string,
-  filteredItems: PropTypes.arrayOf(PropTypes.object),
+  filteredItems: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      itemType: PropTypes.shape({
+        name: PropTypes.string,
+        unit: PropTypes.string,
+      }),
+      project: PropTypes.shape({
+        _id: PropTypes.string,
+        name: PropTypes.string,
+      }),
+    }),
+  ),
   UpdateItemModal: PropTypes.elementType,
   dynamicColumns: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string,
       key: PropTypes.string,
     }),
-  ).isRequired,
+  ),
   darkMode: PropTypes.bool,
   itemType: PropTypes.string,
   sortConfig: PropTypes.shape({
     key: PropTypes.string,
-    direction: PropTypes.string,
+    direction: PropTypes.oneOf(['asc', 'desc']),
   }),
   onSort: PropTypes.func,
   totalItems: PropTypes.number,
@@ -783,4 +829,25 @@ ItemsTable.propTypes = {
   endRow: PropTypes.number,
   onPageChange: PropTypes.func,
   onRowsPerPageChange: PropTypes.func,
+  selectedRowId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  onRowSelect: PropTypes.func,
+};
+
+ItemsTable.defaultProps = {
+  selectedProject: '',
+  selectedItem: '',
+  filteredItems: [],
+  UpdateItemModal: null,
+  dynamicColumns: [],
+  darkMode: false,
+  itemType: '',
+  sortConfig: { key: null, direction: 'asc' },
+  totalItems: 0,
+  currentPage: 1,
+  totalPages: 1,
+  rowsPerPage: 25,
+  startRow: 0,
+  endRow: 0,
+  selectedRowId: null,
+  onRowSelect: null,
 };
