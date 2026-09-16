@@ -7,6 +7,77 @@ import 'chart.js/auto';
 import styles from './issueChart.module.css';
 
 const NARROW_CARD_CHART_WIDTH = 440; // make card-mode IssueChart X-axis labels rotate at 45° when chart width is below this value, below 1296px
+const X_AXIS_MAX_CHARS_PER_LINE = 10;
+
+const stripNumericSuffix = value => {
+  const str = String(value);
+  let end = str.length;
+  while (end > 0) {
+    const code = str.charCodeAt(end - 1);
+    if (code < 48 || code > 57) break;
+    end -= 1;
+  }
+  const base = str.slice(0, end).trim();
+  return base || str;
+};
+
+const isValidIssueType = value => {
+  if (value == null) return false;
+
+  const normalized = String(value)
+    .trim()
+    .toLowerCase();
+  return normalized !== '' && normalized !== 'null' && normalized !== 'undefined';
+};
+
+const getValidIssueTypes = sourceIssues => Object.keys(sourceIssues || {}).filter(isValidIssueType);
+
+// Wrap long desktop X-axis labels without inserting blank rows above single long words.
+const wrapXAxisLabel = (label, maxCharsPerLine) => {
+  const words = String(label)
+    .split(/\s+/)
+    .filter(Boolean);
+  const lines = [];
+  let currentLine = '';
+
+  words.forEach(word => {
+    const nextLine = currentLine ? `${currentLine} ${word}` : word;
+
+    if (nextLine.length <= maxCharsPerLine) {
+      currentLine = nextLine;
+      return;
+    }
+
+    // Avoid blank first lines for long single-word labels like "Maintenance".
+    if (currentLine) lines.push(currentLine);
+    currentLine = word;
+  });
+
+  if (currentLine) lines.push(currentLine);
+  return lines;
+};
+
+const getXAxisLabel = (labels, value, index, ticks) =>
+  labels?.[index] ?? ticks?.[index]?.label ?? String(value);
+
+const createXAxisTickCallback = ({ labels, isMobile, useRotatedTicks = false }) => (
+  value,
+  index,
+  ticks,
+) => {
+  const label = getXAxisLabel(labels, value, index, ticks);
+  if (isMobile || useRotatedTicks || label.length <= X_AXIS_MAX_CHARS_PER_LINE) return label;
+  return wrapXAxisLabel(label, X_AXIS_MAX_CHARS_PER_LINE);
+};
+
+const getCardTickRotation = (isMobile, useRotatedTicks) => {
+  if (isMobile) return 90;
+  if (useRotatedTicks) return 45;
+  return 0;
+};
+
+const shouldRotateCardTicks = (chartWidth, pluginOptions) =>
+  !pluginOptions.isMobile && chartWidth > 0 && chartWidth < pluginOptions.narrowChartWidth;
 
 const issueChartCardTickRotationPlugin = {
   id: 'issueChartCardTickRotation',
@@ -18,17 +89,57 @@ const issueChartCardTickRotationPlugin = {
 
     const measuredChartWidth = chart.width || chart.canvas?.clientWidth || 0;
     // Card-mode IssueChart can be narrow while the viewport is still desktop/tablet sized.
-    chart.$issueChartUseRotatedTicks =
-      !pluginOptions.isMobile &&
-      measuredChartWidth > 0 &&
-      measuredChartWidth < pluginOptions.narrowChartWidth;
+    const useRotatedTicks = shouldRotateCardTicks(measuredChartWidth, pluginOptions);
 
-    const labelRotation = pluginOptions.isMobile ? 90 : chart.$issueChartUseRotatedTicks ? 45 : 0;
+    const labelRotation = getCardTickRotation(pluginOptions.isMobile, useRotatedTicks);
 
     xTicks.minRotation = labelRotation;
     xTicks.maxRotation = labelRotation;
+    xTicks.callback = createXAxisTickCallback({
+      labels: chart.data?.labels,
+      isMobile: pluginOptions.isMobile,
+      useRotatedTicks,
+    });
   },
 };
+
+const generateColor = idx => `hsl(${(idx * 60) % 360}, 70%, 50%)`;
+
+const handleLegendClick = (e, legendItem, legend) => {
+  const index = legendItem.datasetIndex;
+  const chart = legend.chart;
+  const visible = chart.isDatasetVisible(index);
+  chart.setDatasetVisibility(index, !visible);
+  chart.update();
+};
+
+const getTooltipLabel = (ctx, chartAnalysis) => {
+  const year = ctx.dataset.label;
+  const value = Number(ctx.raw) || 0;
+  const total = chartAnalysis.totalByYear?.[year] ?? 0;
+  const pct = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
+  return `${year}: ${value} (${pct}%)`;
+};
+
+const getBarBackgroundColor = (ctx, chartAnalysis) => {
+  const idx = ctx.dataIndex;
+  const ds = ctx.dataset;
+  const base = ds.backgroundColor;
+
+  if (chartAnalysis.topIssueTypeIndex < 0) return base;
+
+  const isTop = idx === chartAnalysis.topIssueTypeIndex;
+
+  if (typeof base === 'string' && base.startsWith('hsl(')) {
+    const alpha = isTop ? 0.9 : 0.55;
+    return base.replace('hsl(', 'hsla(').replace(')', `, ${alpha})`);
+  }
+
+  return base;
+};
+
+const getBarBorderWidth = (ctx, chartAnalysis) =>
+  ctx.dataIndex === chartAnalysis.topIssueTypeIndex ? 2 : 1.5;
 
 function IssueChart({ variant = 'standalone', showTitle = true }) {
   const dispatch = useDispatch();
@@ -41,58 +152,6 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
   );
 
   const isCardVariant = variant === 'card';
-
-  const stripNumericSuffix = value => {
-    const str = String(value);
-    let end = str.length;
-    while (end > 0) {
-      const code = str.charCodeAt(end - 1);
-      if (code >= 48 && code <= 57) {
-        end -= 1;
-      } else {
-        break;
-      }
-    }
-    const base = str.slice(0, end).trim();
-    return base || str;
-  };
-
-  const isValidIssueType = value => {
-    if (value == null) return false;
-
-    const normalized = String(value)
-      .trim()
-      .toLowerCase();
-    return normalized !== '' && normalized !== 'null' && normalized !== 'undefined';
-  };
-
-  const getValidIssueTypes = sourceIssues =>
-    Object.keys(sourceIssues || {}).filter(isValidIssueType);
-
-  // Wrap long desktop X-axis labels without inserting blank rows above single long words.
-  const wrapXAxisLabel = (label, maxCharsPerLine) => {
-    const words = String(label)
-      .split(/\s+/)
-      .filter(Boolean);
-    const lines = [];
-    let currentLine = '';
-
-    words.forEach(word => {
-      const nextLine = currentLine ? `${currentLine} ${word}` : word;
-
-      if (nextLine.length <= maxCharsPerLine) {
-        currentLine = nextLine;
-        return;
-      }
-
-      // Avoid blank first lines for long single-word labels like "Maintenance".
-      if (currentLine) lines.push(currentLine);
-      currentLine = word;
-    });
-
-    if (currentLine) lines.push(currentLine);
-    return lines;
-  };
 
   useEffect(() => {
     dispatch(fetchIssues());
@@ -170,8 +229,6 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
 
   const flatIssueTypeOptions = flattenOptions(issueTypes);
   const uniqueYears = years.map(y => y.value);
-
-  const generateColor = idx => `hsl(${(idx * 60) % 360}, 70%, 50%)`;
 
   const yearColorMap = useMemo(
     () =>
@@ -351,13 +408,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
         legend: {
           display: true,
           position: 'top',
-          onClick: (e, legendItem, legend) => {
-            const index = legendItem.datasetIndex;
-            const chart = legend.chart;
-            const visible = chart.isDatasetVisible(index);
-            chart.setDatasetVisibility(index, !visible);
-            chart.update();
-          },
+          onClick: handleLegendClick,
           labels: {
             font: { size: 13 },
             usePointStyle: true,
@@ -379,13 +430,7 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
           bodyColor: darkMode ? '#fff' : '#232323',
           callbacks: {
             title: items => items?.[0]?.label ?? '',
-            label: ctx => {
-              const year = ctx.dataset.label;
-              const value = Number(ctx.raw) || 0;
-              const total = chartAnalysis.totalByYear?.[year] ?? 0;
-              const pct = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
-              return `${year}: ${value} (${pct}%)`;
-            },
+            label: ctx => getTooltipLabel(ctx, chartAnalysis),
           },
         },
         datalabels: {
@@ -400,23 +445,8 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
       },
       datasets: {
         bar: {
-          backgroundColor: ctx => {
-            const idx = ctx.dataIndex;
-            const ds = ctx.dataset;
-            const base = ds.backgroundColor;
-
-            if (chartAnalysis.topIssueTypeIndex < 0) return base;
-
-            const isTop = idx === chartAnalysis.topIssueTypeIndex;
-
-            if (typeof base === 'string' && base.startsWith('hsl(')) {
-              const alpha = isTop ? 0.9 : 0.55;
-              return base.replace('hsl(', 'hsla(').replace(')', `, ${alpha})`);
-            }
-
-            return base;
-          },
-          borderWidth: ctx => (ctx.dataIndex === chartAnalysis.topIssueTypeIndex ? 2 : 1.5),
+          backgroundColor: ctx => getBarBackgroundColor(ctx, chartAnalysis),
+          borderWidth: ctx => getBarBorderWidth(ctx, chartAnalysis),
         },
       },
       scales: {
@@ -442,15 +472,10 @@ function IssueChart({ variant = 'standalone', showTitle = true }) {
             // Card-mode desktop labels have less width, so only those X-axis ticks use smaller text.
             // Use 8px only for desktop card-mode X-axis ticks so crowded labels fit the narrow card.
             font: { size: isCardVariant && !isMobile ? 8 : 12, weight: '500' },
-            callback(value, index, ticks) {
-              const label = chartData?.labels?.[index] ?? ticks?.[index]?.label ?? String(value);
-              if (isMobile || this.chart.$issueChartUseRotatedTicks) return label;
-
-              const maxCharsPerLine = 10;
-              if (label.length <= maxCharsPerLine) return label;
-
-              return wrapXAxisLabel(label, maxCharsPerLine);
-            },
+            callback: createXAxisTickCallback({
+              labels: chartData?.labels,
+              isMobile,
+            }),
           },
           border: {
             color: darkMode ? '#4a5568' : '#e2e8f0',
