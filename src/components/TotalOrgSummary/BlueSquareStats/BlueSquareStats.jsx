@@ -15,6 +15,16 @@ function BlueSquareStats({ isLoading, blueSquareStats, comparisonType, darkMode 
     );
   }
 
+  if (!blueSquareStats) {
+    return (
+      <section className={styles.blueSquareStats}>
+        <div className={donutStyles.donutNoData}>
+          <p className={donutStyles.noDataText}>No Blue Square data available for this period.</p>
+        </div>
+      </section>
+    );
+  }
+
   const {
     totalBlueSquares,
     missingHours,

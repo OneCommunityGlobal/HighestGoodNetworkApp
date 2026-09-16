@@ -1,144 +1,143 @@
-/* stylelint-disable  */
+/* stylelint-disable */
+
+/* ── Outer wrapper ─────────────────────────────────────────────────────── */
 .donutContainer {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  margin: 15px 10px 10px;
+}
+
+.donutContainerDark { color: #f8fafc; }
+
+/* ── Chart area (matches Role Distribution: 500 × 430) ─────────────────── */
+.donutScroller {
   width: 100%;
   overflow-x: auto;
-  padding: 0.6rem;
-  margin-top: 20px;
-  margin-bottom: -35px;
+  overflow-y: visible;
 }
 
-.donutContainerDark {
-  color: #f8fafc;
-}
-
-.donutScrollable {
-  display: grid;
-  grid-template-columns: minmax(21.25rem, 3fr) minmax(10rem, 2fr);
-  column-gap: 0.75rem;
-  align-items: center;
+.donutChartArea {
+  min-width: 500px;
   width: 100%;
-  min-width: 32rem;
-}
-
-.donutChart {
-  position: relative;
-  width: 100%;
-  min-width: 21.25rem;
-  max-width: 22rem;
-  height: 22rem;
-  margin-left: 0;
+  height: 430px;
   overflow: visible;
 }
 
-.donutChart canvas {
+/* ── Canvas wrapper ─────────────────────────────────────────────────────── */
+.donutChart {
   position: relative;
-  z-index: 2;
+  width: 100%;
+  height: 100%;
 }
 
+.donutChart canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* ── Center label
+     Width / height fixed in px so the circle ALWAYS fits inside the hole.
+     With 500×430 canvas and 60 px padding: outer radius ≈ 155 px,
+     hole radius ≈ 77.5 px (cutout 50 %) → hole diameter ≈ 155 px.
+     120 px < 155 px  ✓
+  ────────────────────────────────────────────────────────────────────────── */
 .donutCenter {
   position: absolute;
-  z-index: 1;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  text-align: center;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px rgb(15 23 42 / 8%);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.28rem;
-  width: 52%;
-  max-width: 7rem;
+  gap: 0.1rem;
+  text-align: center;
   pointer-events: none;
+  z-index: 2;
 }
 
-.donutCenter > * {
-  margin: 0;
+.donutContainerDark .donutCenter {
+  background: #1c2541;
+  box-shadow: 0 0 0 1px rgb(148 163 184 / 25%);
 }
 
+/* ── Center text ─────────────────────────────────────────────────────────── */
 .donutHeading {
-  color: var(--text-secondary);
-  font-size: .8rem;
-  letter-spacing: 0.03em;
-  line-height: 1.15;
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.6rem;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
   text-transform: uppercase;
-  white-space: normal;
-  overflow-wrap: anywhere;
-  color: #828282;
 }
 
-.donutHeadingLine {
-  display: block;
-}
+.donutHeadingLine { display: block; }
 
-.donutHeadingDark {
-  color: #f8fafc;
-}
+.donutHeadingDark { color: #cbd5e1; }
 
 .donutCount {
-  color: #828282;
-  font-size: .8rem;
-  line-height: 1;
+  margin: 0;
+  color: #111827;
+  font-size: 1.45rem;
   font-weight: 800;
+  line-height: 1;
 }
 
-.donutCountDark {
-  color: #f8fafc;
-}
+.donutCountDark { color: #f8fafc; }
 
 .donutComparisonPercent {
-  font-size: 0.62rem;
+  margin: 0;
+  font-size: 0.55rem;
+  font-weight: 600;
   line-height: 1.1;
 }
 
+/* ── Legend ──────────────────────────────────────────────────────────────── */
 .donutLabels {
+  list-style: none;
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   justify-content: center;
-  margin-top: 1.8rem;
+  gap: 0.45rem 1.2rem;
   width: 100%;
-  color: var(--text-primary);
+  margin: 0.75rem 0 0;
+  padding: 0 0.5rem;
 }
 
-.donutContainerDark .donutLabels,
-.donutContainerDark .donutLabel {
-  color: #f8fafc;
-}
+.donutContainerDark .donutLabel,
+.donutContainerDark .donutLabelText { color: #f8fafc; }
 
 .donutLabel {
   display: flex;
   align-items: center;
-  margin-left: 0;
-  margin-bottom: 0.3rem;
-  gap: 0.5rem;
-  color: #828282;
+  gap: 0.4rem;
+  color: #374151;
   font-size: 0.75rem;
-  line-height: 1.25;
+  line-height: 1.3;
 }
 
-.donutLabel:last-child {
-  margin-bottom: 0;
-}
+.donutLabelMuted { opacity: 0.5; }
 
-.donutLabel span:last-child {
-  overflow-wrap: anywhere;
-}
-
-.donutLabelValue {
-  color: var(--text-secondary);
-  font-weight: 600;
-  white-space: nowrap;
-}
+.donutLabelText { overflow-wrap: anywhere; }
 
 .donutColor {
   display: inline-block;
-  min-width: 1rem;
-  min-height: 1rem;
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
 }
 
+/* ── Empty state ────────────────────────────────────────────────────────── */
 .donutNoData {
   display: flex;
   flex-direction: column;
@@ -155,28 +154,4 @@
   font-weight: 600;
   margin-top: 1.5rem;
   line-height: 1.2;
-}
-
-@media (width <= 615px) {
-  .donutContainer {
-    overflow-x: visible;
-    justify-content: start;
-  }
-
-  .donutScrollable {
-    grid-template-columns: 1fr;
-  }
-
-  .donutChart {
-    margin-left: 0;
-    max-width: 100%;
-  }
-
-  .donutLabels {
-    margin-top: 1rem;
-  }
-
-  .donutLabel {
-    margin-left: 0;
-  }
 }
