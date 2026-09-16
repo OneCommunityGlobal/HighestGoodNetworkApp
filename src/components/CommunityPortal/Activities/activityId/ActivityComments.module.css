@@ -279,6 +279,11 @@
   background: #ddd;
 }
 
+.voteCount {
+  margin-left: 4px;
+  font-size: 0.9rem;
+}
+
 /* ============================================
    DARK MODE STYLES - Comment Cards, Backgrounds, and Borders
    ============================================ */
@@ -704,7 +709,6 @@
   border-radius: 4px;
   padding: 4px 8px;
   cursor: pointer;
-  font-size: 1rem;
 }
 
 .calendarMonth {
