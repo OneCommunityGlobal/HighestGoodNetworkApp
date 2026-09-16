@@ -1,46 +1,32 @@
+import {
+  STOP_WORDS,
+  formatLocalDate,
+  formatLocalTime,
+  formatDisplayDateTime,
+  clampScheduleDateTime,
+  createScheduleId,
+  topCardActions,
+  fieldActionRow,
+  makeButtonStyle,
+} from '../../shared/postComposerUtility';
+
+// Re-exported for backward compatibility with existing imports of this file.
+export {
+  STOP_WORDS,
+  formatLocalDate,
+  formatLocalTime,
+  formatDisplayDateTime,
+  clampScheduleDateTime,
+  createScheduleId,
+  topCardActions,
+  fieldActionRow,
+};
+
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 export const CAPTION_MAX = 2200;
 export const ALT_TEXT_MAX = 300;
 export const HASHTAG_MAX_COUNT = 30;
-
-export const STOP_WORDS = new Set([
-  'about',
-  'after',
-  'also',
-  'another',
-  'because',
-  'been',
-  'being',
-  'between',
-  'can',
-  'could',
-  'during',
-  'each',
-  'from',
-  'have',
-  'into',
-  'more',
-  'other',
-  'over',
-  'since',
-  'some',
-  'than',
-  'that',
-  'their',
-  'there',
-  'these',
-  'they',
-  'this',
-  'through',
-  'under',
-  'until',
-  'where',
-  'which',
-  'while',
-  'with',
-  'within',
-]);
 
 // Keyword → curated hashtag set, checked before falling back to generic
 // word extraction. Keep this list small and obviously non-exhaustive —
@@ -89,78 +75,6 @@ export const buildCaptionForClipboard = ({ caption, hashtags }) => {
   return `${caption?.trim() || ''}${tagBlock}`;
 };
 
-// ─── Date / time utilities ────────────────────────────────────────────────────
-
-const padTimeUnit = value => String(value).padStart(2, '0');
-
-export const formatLocalDate = date =>
-  `${date.getFullYear()}-${padTimeUnit(date.getMonth() + 1)}-${padTimeUnit(date.getDate())}`;
-
-export const formatLocalTime = date =>
-  `${padTimeUnit(date.getHours())}:${padTimeUnit(date.getMinutes())}`;
-
-const fallbackDateTime = (dateString, timeString) => {
-  const formattedTime = timeString ? `, ${timeString}` : '';
-  return `${dateString}${formattedTime}`;
-};
-
-const formatParsedDateTime = (parsed, timeString) => {
-  const formattedDate = parsed.toLocaleDateString(undefined, {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-  const formattedTime = timeString
-    ? parsed.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
-    : '';
-  return formattedTime ? `${formattedDate} • ${formattedTime}` : formattedDate;
-};
-
-export const formatDisplayDateTime = (dateString, timeString) => {
-  if (!dateString) return '—';
-  try {
-    const parsed = new Date(`${dateString}T${timeString || '00:00'}`);
-    if (Number.isNaN(parsed.getTime())) return fallbackDateTime(dateString, timeString);
-    return formatParsedDateTime(parsed, timeString);
-  } catch {
-    return fallbackDateTime(dateString, timeString);
-  }
-};
-
-/**
- * Clamps a (date, time) pair so neither is in the past relative to right now.
- * Used when loading a saved schedule for editing and when picker values change.
- */
-export const clampScheduleDateTime = (targetDate, targetTime) => {
-  const today = formatLocalDate(new Date());
-  const date = !targetDate || targetDate < today ? today : targetDate;
-  let time = targetTime || '00:00';
-  if (date === today) {
-    const nowTime = formatLocalTime(new Date());
-    if (time < nowTime) time = nowTime;
-  }
-  return { date, time };
-};
-
-// ─── Schedule ID ──────────────────────────────────────────────────────────────
-
-const getSecureBase36 = length => {
-  const chars = [];
-  const max = 36 * 7;
-  while (chars.length < length) {
-    const bytes = new Uint8Array(length);
-    globalThis.crypto.getRandomValues(bytes);
-    for (const byte of bytes) {
-      if (byte >= max) continue;
-      chars.push((byte % 36).toString(36));
-      if (chars.length === length) break;
-    }
-  }
-  return chars.join('');
-};
-
-export const createScheduleId = () => `schedule-${Date.now().toString(36)}-${getSecureBase36(6)}`;
-
 // ─── Hashtag suggestion ────────────────────────────────────────────────────────
 
 export const extractHashtagSuggestions = (caption, altText) => {
@@ -188,45 +102,18 @@ export const extractHashtagSuggestions = (caption, altText) => {
 
 // ─── Style utilities ──────────────────────────────────────────────────────────
 
-export const topCardActions = () => ({
-  display: 'flex',
-  flexWrap: 'wrap',
-  gap: '12px',
-  marginTop: '16px',
-});
-
-export const buttonStyle = (variant, darkMode) => {
-  const base = {
-    borderRadius: '999px',
-    border: 'none',
-    cursor: 'pointer',
-    fontWeight: 600,
-    padding: '10px 18px',
-    transition: 'filter 0.2s ease',
-  };
-  if (variant === 'primary')
-    return {
-      ...base,
-      backgroundImage: 'linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)',
-      color: '#fff',
-    };
-  if (variant === 'outline')
-    return {
-      ...base,
-      backgroundColor: 'transparent',
-      color: darkMode ? '#e07bb0' : '#bc1888',
-      border: `1px solid ${darkMode ? '#5c2a49' : '#dc2743'}`,
-    };
-  return {
-    ...base,
+export const buttonStyle = makeButtonStyle({
+  primary: () => ({
+    backgroundImage: 'linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)',
+    color: '#fff',
+  }),
+  outline: darkMode => ({
+    backgroundColor: 'transparent',
+    color: darkMode ? '#e07bb0' : '#bc1888',
+    border: `1px solid ${darkMode ? '#5c2a49' : '#dc2743'}`,
+  }),
+  ghost: darkMode => ({
     backgroundColor: darkMode ? '#3a2436' : '#fce9f3',
     color: darkMode ? '#f0a8cf' : '#9c1361',
-  };
-};
-
-export const fieldActionRow = {
-  display: 'flex',
-  flexWrap: 'wrap',
-  gap: '10px',
-  marginTop: '12px',
-};
+  }),
+});
