@@ -56,11 +56,18 @@ function membersLink() {
 
 describe('Projects to Members navigation', () => {
   let resolveMembers;
+  let countsError;
 
   beforeEach(() => {
+    countsError = null;
     axios.get.mockReset();
     axios.get.mockImplementation(url => {
       if (url === ENDPOINTS.PROJECTS_WITH_ACTIVE_USERS) {
+        if (countsError) {
+          const error = countsError;
+          countsError = null;
+          return Promise.reject(error);
+        }
         return Promise.resolve({ data: { project1: 1 } });
       }
       if (url === ENDPOINTS.PROJECT_MEMBER(project._id)) {
@@ -73,7 +80,10 @@ describe('Projects to Members navigation', () => {
   });
 
   it.each(['success', 'failure'])('opens Members after a count request %s', async outcome => {
-    if (outcome === 'failure') axios.get.mockRejectedValueOnce(new Error('Count request failed'));
+    if (outcome === 'failure') {
+      countsError = new Error('Count request failed');
+      await expect(axios.get(ENDPOINTS.USER_PROFILES)).resolves.toEqual({ data: [] });
+    }
     const { store } = renderNavigation();
     await waitFor(() => {
       if (outcome === 'success') {
