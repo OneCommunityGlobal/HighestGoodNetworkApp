@@ -88,10 +88,6 @@
   background-color: transparent;
 }
 
-.legend-scroll-area tbody {
-  max-height: calc(70vh);
-}
-
 .more-rows-footer {
   display: flex;
   justify-content: center;
@@ -99,6 +95,9 @@
 }
 
 .show-more-btn {
+  display: inline-flex;
+  align-items: center;
+  column-gap: 0.35rem;
   border: 1px solid #b58cdb;
   background: #f4ecff;
   color: #5b2a86;
@@ -107,6 +106,10 @@
   font-size: 0.85rem;
   cursor: pointer;
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.show-more-icon {
+  flex-shrink: 0;
 }
 
 .show-more-btn:hover {
@@ -131,11 +134,14 @@
   border-radius: 50%;
 }
 
+/* Pinned to the bottom of the legend column so the card's bottom edge lines up
+   with the pie chart whether the list is collapsed or expanded. */
 .data-total-hours {
   display: flex;
   justify-content: center;
   align-items: center;
   column-gap: 0.5rem;
+  margin-top: auto;
 }
 
 @media(width >= 768px) {
@@ -165,12 +171,6 @@
 
   .colorColumn {
     width: 100px;
-  }
-}
-
-@media (width >= 2000px) {
-  .legend-scroll-area tbody {
-    max-height: 65vh;
   }
 }
 
