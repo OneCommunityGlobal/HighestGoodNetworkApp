@@ -25,6 +25,7 @@ function VolunteerStatusPieChart({
 
   const options = {
     plugins: {
+      centerText: false,
       datalabels: {
         // Hide in-slice labels because values are already shown with external guides.
         display: false,
@@ -46,7 +47,7 @@ function VolunteerStatusPieChart({
       },
     },
     maintainAspectRatio: false,
-    cutout: '55%',
+    cutout: '62%',
     layout: {
       padding: 24,
     },
@@ -64,7 +65,10 @@ function VolunteerStatusPieChart({
       >
         <Doughnut data={chartData} options={options} plugins={[externalLabelGuidesPlugin]} />
         <div className={styles.volunteerStatusCenter}>
-          <h2 className={styles.volunteerStatusHeading}>TOTAL VOLUNTEERS*</h2>
+          <h2 className={styles.volunteerStatusHeading}>
+            <span className={styles.volunteerStatusHeadingLine}>TOTAL</span>
+            <span className={styles.volunteerStatusHeadingLine}>VOLUNTEERS*</span>
+          </h2>
           <p className={styles.volunteerCount}>{totalVolunteers}</p>
           {comparisonType !== 'No Comparison' && (
             <p

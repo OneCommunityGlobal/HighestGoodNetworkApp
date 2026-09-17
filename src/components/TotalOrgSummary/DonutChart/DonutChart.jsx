@@ -60,6 +60,7 @@ function DonutChart(props) {
 
   const options = {
     plugins: {
+      centerText: false,
       datalabels: {
         display: false, // chartjs-plugin-datalabels is registered globally by other
         // components (RatingDistribution, PRQualityGraph); explicitly disabling it

@@ -3,102 +3,105 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   width: 100%;
 }
 
-.volunteer-status-chart {
+.volunteerStatusChart {
   position: relative;
-  width: min(320px, 100%);
-  max-width: 320px;
+  width: var(--status-chart-size, 220px);
+  height: var(--status-chart-size, 220px);
+  max-width: 100%;
   aspect-ratio: 1 / 1;
-  overflow: visible;
-
-  /* Enable container queries to scale font-size based on chart container width */
+  flex-shrink: 0;
   container-type: inline-size;
 }
 
-.volunteer-status-center {
+.volunteerStatusChart canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.volunteerStatusCenter {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  font-size: 14px;
-}
-
-.volunteer-status-center .volunteer-status-heading {
-  color: #828282;
-  text-align: center;
-  line-height: 1.2;
-  max-width: 90%;
-  margin: 0 auto;
-
-  /* Scale font-size based on chart container width (not viewport width) */
-
-  /* At 280px container: 0.95rem, At 320px container: 1.2rem */
-
-  /* Uses container query width units (cqw): 1cqw = 1% of container width */
-
-  /* Percentage-based scaling: ~5.43-6% of container width */
-  font-size: clamp(0.95rem, 5.71cqw, 1.2rem);
-}
-
-.volunteer-status-center .volunteer-count {
-  color: #6c6c6c;
-  font-weight: bolder;
-
-  /* Scale font-size based on chart container width (not viewport width) */
-
-  /* At 280px container: 1.35rem, At 320px container: 1.8rem */
-
-  /* Uses container query width units (cqw): 1cqw = 1% of container width */
-
-  /* Percentage-based scaling: ~7.71-9% of container width */
-  font-size: clamp(1.35rem, 8.36cqw, 1.8rem);
-}
-
-.volunteer-status-center > p {
-  font-weight: bold;
-}
-
-.volunteer-status-center div {
-  margin: 2px 0;
-}
-
-.volunteer-status-labels {
+  z-index: 2;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  gap: 16px;
-  margin-top: 32px;
-  flex-wrap: wrap;
-  margin-bottom: 24px;
-  overflow-x: visible;
-  padding: 0 8px;
-  width: 100%;
-  max-width: 100%;
+  justify-content: center;
+  gap: 0.15rem;
+  transform: translate(-50%, -50%);
+  width: 50%;
+  max-width: 50cqw;
+  max-height: 50cqw;
+  text-align: center;
+  pointer-events: none;
+  overflow: hidden;
   box-sizing: border-box;
 }
 
-.volunteer-status-label {
+.volunteerStatusCenter > * {
+  margin: 0;
+}
+
+.volunteerStatusHeading {
+  color: #828282;
+  font-size: clamp(0.68rem, 4.4cqw, 0.92rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.volunteerStatusHeadingLine {
+  display: block;
+}
+
+.volunteerCount {
+  color: #6c6c6c;
+  font-size: clamp(1rem, 7.8cqw, 1.5rem);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.volunteerStatusCenter > p {
+  font-size: clamp(0.6rem, 3.2cqw, 0.82rem);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.volunteerStatusLabels {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 0 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.volunteerStatusLabel {
   display: flex;
   align-items: center;
   gap: 6px;
   margin: 0;
-
-  /* Responsive font-size: scales from 0.875rem at 1200px to 0.95rem at 1920px - INCREASES with screen size */
-  font-size: clamp(0.875rem, calc(0.75rem + 0.01042vw), 0.95rem);
+  font-size: clamp(0.85rem, calc(0.8rem + 0.2vw), 0.95rem);
   white-space: nowrap;
   flex-shrink: 0;
 }
 
-.volunteer-status-color {
+.volunteerStatusColor {
   display: inline-block;
   width: 12px;
   height: 12px;
-  margin-right: 0;
   border-radius: 2px;
+  flex-shrink: 0;
 }
 
 :global(.bg-oxford-blue) .volunteerStatusHeading {
@@ -110,11 +113,7 @@
 }
 
 @media (width <= 768px) {
-  .volunteerStatusChart {
-    width: min(280px, 100%);
-  }
-
   .volunteerStatusLabels {
-    gap: 12px;
+    gap: 10px;
   }
 }

@@ -23,6 +23,7 @@ function MentorStatusPieChart({
 
   const options = {
     plugins: {
+      centerText: false,
       datalabels: {
         display: false,
       },
@@ -34,18 +35,18 @@ function MentorStatusPieChart({
       },
       externalLabelGuides: {
         offset: 20,
-        horizontalSpread: 32,
-        horizontalSpreadMap: { 0: 32, 1: 46, 2: 5 },
-        verticalOffsetMap: { 0: 34, 1: -20, 2: -46 },
+        horizontalSpread: 34,
+        horizontalSpreadMap: { 0: 34, 1: 48, 2: 5 },
+        verticalOffsetMap: { 0: 38, 1: -22, 2: -50 },
         sideMap: { 0: 1, 1: -1, 2: 1 },
         total: totalMentors,
         formatter: ({ value, percentage }) => [`${value}`, `(${percentage}%)`],
       },
     },
     maintainAspectRatio: false,
-    cutout: '60%',
+    cutout: '62%',
     layout: {
-      padding: 20,
+      padding: 24,
     },
   };
 
@@ -61,11 +62,13 @@ function MentorStatusPieChart({
       >
         <Doughnut data={chartData} options={options} plugins={[externalLabelGuidesPlugin]} />
         <div className={styles.mentorStatusCenter}>
-          <h2 className={styles.mentorStatusHeading}>TOTAL MENTORS</h2>
+          <h2 className={styles.mentorStatusHeading}>
+            <span className={styles.mentorStatusHeadingLine}>TOTAL</span>
+            <span className={styles.mentorStatusHeadingLine}>MENTORS</span>
+          </h2>
           <p className={styles.mentorCount}>{totalMentors}</p>
           {comparisonType !== 'No Comparison' && (
             <p
-              className={styles.mentorPercentageChange}
               style={{ color: percentageChangeColor }}
               aria-label={`Mentor percentage change: ${percentageChange}% ${comparisonType.toLowerCase()}`}
             >

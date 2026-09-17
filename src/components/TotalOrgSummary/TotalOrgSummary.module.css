@@ -72,6 +72,12 @@
   height: auto !important;
 }
 
+/* Chart.js doughnuts need explicit canvas height inside chart wrappers */
+.containerTotalOrgWrapper :global([data-chart='volunteer-status']) canvas,
+.containerTotalOrgWrapper :global([data-chart='mentor-status']) canvas {
+  height: 100% !important;
+}
+
 /* Ensure hr doesn't cause overflow */
 .containerTotalOrgWrapper hr {
   margin-left: 0 !important;
@@ -435,6 +441,70 @@
 
 .componentBorderLoose {
   overflow: visible;
+}
+
+/* Global Distribution row: equal-height cards, responsive stacking */
+.globalDistributionRow {
+  align-items: stretch !important;
+}
+
+.globalDistributionRow > :global([class*='col']) {
+  display: flex;
+  flex-direction: column;
+}
+
+.globalDistributionPanel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  min-height: 0;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.globalDistributionPanel .totalOrgChartTitle {
+  flex-shrink: 0;
+  margin-bottom: 16px;
+}
+
+.globalDistributionPanel .totalOrgChartTitle p {
+  font-size: 1.8rem !important;
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.globalDistributionPanel :global(.map-container) {
+  flex: 0 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+}
+
+.globalDistributionPanel :global(.leaflet-container) {
+  height: 380px;
+  min-height: 320px;
+  max-height: 420px;
+}
+
+@media (width <= 991px) {
+  .globalDistributionPanel .totalOrgChartTitle p {
+    font-size: 1.4rem !important;
+  }
+
+  .globalDistributionPanel :global(.leaflet-container) {
+    height: 320px;
+    min-height: 280px;
+  }
+}
+
+@media (width <= 480px) {
+  .globalDistributionPanel .totalOrgChartTitle p {
+    font-size: 1.2rem !important;
+  }
 }
 
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentBorder {

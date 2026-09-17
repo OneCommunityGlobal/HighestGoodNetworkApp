@@ -96,18 +96,18 @@ function VolunteerStatusChart({
         <>
           <div className={styles.volunteerMentorChartsWrapper}>
             <div className={styles.volunteerChartSection}>
-              {volunteerChartData && (
+              {volunteerChartData ? (
                 <VolunteerStatusPieChart
                   data={volunteerChartData}
                   comparisonType={comparisonType}
                 />
+              ) : null}
+            </div>
+            <div className={styles.mentorChartSection}>
+              {mentorChartData && (
+                <MentorStatusPieChart data={mentorChartData} comparisonType={comparisonType} />
               )}
             </div>
-            {mentorChartData && (
-              <div className={styles.mentorChartSection}>
-                <MentorStatusPieChart data={mentorChartData} comparisonType={comparisonType} />
-              </div>
-            )}
           </div>
           {(volunteerChartData || mentorChartData) && (
             <p className={styles.volunteerMentorFootnote}>
