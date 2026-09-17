@@ -71,6 +71,7 @@ import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permission
 import PermissionWatcher from '../Auth/PermissionWatcher';
 import Logout from '../Logout/Logout';
 import NotificationCard from '../Notification/notificationCard';
+import OwnerMessage from '../OwnerMessage/OwnerMessage';
 import DisplayBox from '../PRPromotions/DisplayBox';
 import Timer from '../Timer/Timer';
 import BellNotification from './BellNotification';
@@ -772,14 +773,17 @@ export function Header(props) {
               <Timer darkMode={darkMode} />
             )}
             </div>
+          {/* Logo and the owner message (the dev-environment warning) share this cell.
+              On narrow screens Header.module.css dissolves this wrapper with
+              `display: contents` so the two can be placed in separate grid areas —
+              keep them as siblings here, the layout is driven entirely from CSS. */}
           <div className={styles.centerSection}>
-             {isAuthenticated && (
-                <img 
-                  src="/header-test.png" 
-                  alt="Header Logo" 
-                  className={styles.headerLogo} 
-                />
-             )}
+            {isAuthenticated && (
+              <>
+                <img src="/header-test.png" alt="Header Logo" className={styles.headerLogo} />
+                <OwnerMessage />
+              </>
+            )}
           </div>
           <div className={styles.rightSection}>
             <NavbarToggler
