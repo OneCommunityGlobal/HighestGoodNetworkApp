@@ -1,0 +1,200 @@
+/* EmailTemplateList Styles */
+
+.email-template-list {
+  width: 100%;
+  margin: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.email-template-list .search-container .form-control {
+  padding-left: 2.25rem !important;
+}
+
+.email-template-list .sort-container {
+  min-width: 140px !important;
+  width: 160px !important;
+  flex-shrink: 0 !important;
+}
+
+.email-template-list .create-button-container {
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
+}
+
+.email-template-list .action-buttons {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+}
+
+.email-template-list .action-buttons .btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+  margin: 0 !important;
+}
+
+/* ===================== DARK MODE ===================== */
+
+.dark-mode .email-template-list .list-header h2,
+.email-template-management.light-mode .email-template-list .list-header h2,
+.email-template-management.dark-mode .email-template-list .list-header h2 {
+  color: #e9ecef;
+}
+
+.email-template-management.light-mode .email-template-list .list-header h2 {
+  color: #495057;
+}
+
+.dark-mode .email-template-list .templates-count,
+.email-template-management.dark-mode .email-template-list .templates-count {
+  color: #e9ecef;
+}
+
+.email-template-management.light-mode .email-template-list .templates-count {
+  color: #495057;
+}
+
+.dark-mode .email-template-list .search-container .search-icon,
+.email-template-management.dark-mode .email-template-list .search-container .search-icon {
+  color: #9ca3af;
+}
+
+.dark-mode select.form-control,
+.dark-mode .email-template-list select,
+.dark-mode .email-template-list .search-container .form-control,
+.dark-mode .email-template-list .sort-container .form-control,
+.email-template-management.dark-mode .email-template-list select,
+.email-template-management.dark-mode .email-template-list .search-container .form-control,
+.email-template-management.dark-mode .email-template-list .sort-container .form-control {
+  background-color: #374151 !important;
+  border-color: #4a5568 !important;
+  color: #e9ecef !important;
+}
+
+.dark-mode .email-template-list .search-container .form-control:focus,
+.email-template-management.dark-mode .email-template-list .search-container .form-control:focus {
+  background-color: #374151;
+  border-color: #60a5fa;
+  color: #e9ecef;
+  box-shadow: 0 0 0 0.25rem rgb(96 165 250 / 25%);
+}
+
+.dark-mode .email-template-list .table thead,
+.dark-mode .email-template-list .table thead th,
+.email-template-management.dark-mode .email-template-list .table thead th {
+  background-color: #374151 !important;
+  border-bottom-color: #4a5568 !important;
+  color: #e9ecef !important;
+}
+
+.dark-mode .email-template-list .table tbody tr {
+  border-bottom-color: #4a5568;
+}
+
+.dark-mode .email-template-list .table tbody tr:hover {
+  background-color: #374151;
+}
+
+.dark-mode .email-template-list .table td div {
+  color: inherit !important;
+}
+
+.dark-mode .email-template-list .table td,
+.dark-mode .email-template-list .table tbody td,
+.email-template-management.dark-mode .email-template-list .table td,
+.email-template-management.dark-mode .email-template-list .table tbody td {
+  color: #e9ecef !important;
+  border-bottom-color: #4a5568 !important;
+}
+
+.dark-mode .email-template-list .template-name,
+.dark-mode .email-template-list .created-by,
+.dark-mode .email-template-list .updated-by,
+.email-template-management.dark-mode .email-template-list .template-name,
+.email-template-management.dark-mode .email-template-list .created-by,
+.email-template-management.dark-mode .email-template-list .updated-by {
+  color: #e9ecef !important;
+}
+
+.dark-mode .email-template-list .date-text,
+.email-template-management.dark-mode .email-template-list .date-text {
+  color: #9ca3af !important;
+}
+
+.dark-mode .email-template-list * {
+  border-color: #4a5568;
+}
+
+.dark-mode .email-template-list .variables-count,
+.email-template-management.dark-mode .email-template-list .variables-count {
+  background-color: #4a5568 !important;
+  color: #e9ecef !important;
+}
+
+.dark-mode .email-template-list .status-badge.active,
+.email-template-management.dark-mode .email-template-list .status-badge.active {
+  background-color: #065f46;
+  color: #d1fae5;
+}
+
+.dark-mode .email-template-list .status-badge.inactive,
+.email-template-management.dark-mode .email-template-list .status-badge.inactive {
+  background-color: #7f1d1d;
+  color: #fecaca;
+}
+
+.dark-mode .email-template-list .empty-state,
+.email-template-management.dark-mode .email-template-list .empty-state {
+  color: #9ca3af;
+}
+
+.dark-mode .email-template-list .empty-state h5,
+.email-template-management.dark-mode .email-template-list .empty-state h5 {
+  color: #e9ecef;
+}
+
+.dark-mode .email-template-list .loading-state,
+.email-template-management.dark-mode .email-template-list .loading-state {
+  color: #9ca3af;
+}
+
+.dark-mode .email-template-list .alert-danger,
+.email-template-management.dark-mode .email-template-list .alert-danger {
+  background-color: #7f1d1d;
+  color: #fecaca;
+  border: 1px solid #991b1b;
+}
+
+.dark-mode .email-template-list .alert-success,
+.email-template-management.dark-mode .email-template-list .alert-success {
+  background-color: #065f46;
+  color: #d1fae5;
+  border: 1px solid #047857;
+}
+
+.dark-mode .email-template-list .alert-info,
+.email-template-management.dark-mode .email-template-list .alert-info {
+  background-color: #1e3a8a;
+  color: #dbeafe;
+  border: 1px solid #1d4ed8;
+}
+
+.dark-mode .skeleton-loader,
+.email-template-management.dark-mode .skeleton-loader {
+  background: linear-gradient(90deg, #4a5568 25%, #374151 50%, #4a5568 75%);
+  background-size: 200% 100%;
+}
+
+.dark-mode .email-template-list .pagination-controls,
+.email-template-management.dark-mode .email-template-list .pagination-controls {
+  border-top-color: #495057;
+}
+
+.dark-mode .email-template-list .pagination-info,
+.email-template-management.dark-mode .email-template-list .pagination-info {
+  color: #adb5bd;
+}

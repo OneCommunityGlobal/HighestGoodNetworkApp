@@ -47,7 +47,7 @@ class UserTeamProjectContainer extends React.PureComponent {
               <UserProjectsTable
                 userProjectsById={this.props.userProjects}
                 onButtonClick={this.onAddProjectPopupShow}
-                onDeleteClicK={this.onSelectDeleteProject}
+                onDeleteClick={this.onSelectDeleteProject}
                 renderedOn={this.state.renderedOn}
               />
             </div>

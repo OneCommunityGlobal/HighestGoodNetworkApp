@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { connect } from 'react-redux';
-import './UserRoleTab.css';
+import styles from './UserRoleTab.module.css';
 import { getUserProfile } from '~/actions/userProfile';
 import { useHistory } from 'react-router-dom';
 import { boxStyle, boxStyleDark } from '~/styles';
@@ -22,7 +22,7 @@ function UserRoleTab(props) {
 
   if (roleIndex === -1) {
     return (
-      <div className="userRoleTab__container">
+      <div className={styles.userRoleTabContainer}>
         <h1>Error</h1>
         <div>User Role not existent</div>
         <a href="/permissionsmanagement">Back to permissions management</a>
@@ -37,11 +37,11 @@ function UserRoleTab(props) {
 
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
-      <div className="userRoleTab__container pb-5">
+      <div className={`${styles.userRoleTabContainer} pb-5`}>
         <button
           type="button"
           onClick={() => history.push('/permissionsmanagement')}
-          className="userRoleTab__backBtn"
+          className={styles.userRoleTabBackBtn}
           style={darkMode ? boxStyleDark : boxStyle}
         >
           Back

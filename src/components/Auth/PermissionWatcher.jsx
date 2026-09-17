@@ -9,16 +9,24 @@ import { getUserProfile } from '../../actions/userProfile';
 
 function PermissionWatcher() {
   const dispatch = useDispatch();
-  const { isAuthenticated, forceLogoutAt } = useSelector(state => state.auth || {});
+  const { isAuthenticated, forceLogoutAt, user } = useSelector(state => state.auth || {});
   const userProfile = useSelector(state => state.userProfile);
   const isAcknowledged = userProfile?.permissions?.isAcknowledged !== false;
-  const [isAckLoading, setIsAckLoading] = useState(false);
+  const [isPermAckLoading, setIsPermAckLoading] = useState(false);
+  const currentUser = user?.userid === userProfile?._id;
   // Get seconds remaining until force logout
   const secondsRemaining = useCountdown(forceLogoutAt);
+  const [justLoggedIn, setJustLoggedIn] = useState(!!localStorage.getItem('justLoggedIn'));
+
+  useEffect(() => {
+    if (justLoggedIn) {
+      handleAcknowledge();
+    }
+  }, [currentUser]);
 
   // Start the force logout countdown when conditions are met
   useEffect(() => {
-    if (isAuthenticated && !isAcknowledged && !forceLogoutAt) {
+    if (isAuthenticated && !isAcknowledged && !forceLogoutAt && currentUser && !justLoggedIn) {
       // eslint-disable-next-line no-console
       console.log('Starting force logout countdown due to unacknowledged permission changes');
       dispatch(startForceLogout(20000)); // 20 seconds countdown
@@ -27,12 +35,12 @@ function PermissionWatcher() {
   // Handle acknowledgment of permission changes
   const handleAcknowledge = async () => {
     try {
-      setIsAckLoading(true);
+      setIsPermAckLoading(true);
 
       if (!userProfile || !userProfile._id) {
         // eslint-disable-next-line no-console
-        console.error('User profile not available');
-        setIsAckLoading(false);
+        //console.error('User profile not available');
+        setIsPermAckLoading(false);
         return;
       }
 
@@ -48,18 +56,22 @@ function PermissionWatcher() {
           isAcknowledged: true,
         })
         .then(() => {
-          setIsAckLoading(false);
+          setIsPermAckLoading(false);
           dispatch(getUserProfile(_id));
+          if (justLoggedIn) {
+            localStorage.removeItem('justLoggedIn');
+            setJustLoggedIn(false);
+          }
         })
         .catch(error => {
           // eslint-disable-next-line no-console
-          console.error('Error updating user profile:', error);
-          setIsAckLoading(false);
+          // console.error('Error updating user profile:', error);
+          setIsPermAckLoading(false);
         });
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.error('Error acknowledging permission changes:', error);
-      setIsAckLoading(false);
+      // console.error('Error acknowledging permission changes:', error);
+      setIsPermAckLoading(false);
     }
   };
 
@@ -68,13 +80,16 @@ function PermissionWatcher() {
     return null;
   }
   return (
-    !isAcknowledged && (
+    !isAcknowledged &&
+    currentUser &&
+    !justLoggedIn && (
       <PopUpBar
-        message={`Permissions changed—logging out in ${secondsRemaining}s. Timer will be stopped; please restart after login.`}
+        message={`Heads up, there have been permission changes made to your account. You will be logged out in ${secondsRemaining}s to automatically apply these new permissions. \n
+          Your timer will be stopped as part of this logout, please restart after logging back in.`}
         onClickClose={handleAcknowledge}
         textColor="red"
-        isLoading={isAckLoading}
-        button={false}
+        isLoading={isPermAckLoading}
+        permissionsChanged={!isAcknowledged}
       />
     )
   );

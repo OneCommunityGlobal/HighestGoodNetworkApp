@@ -1,0 +1,130 @@
+/* stylelint-disable  */
+.people-pie-charts-wrapper {
+  display: grid;
+  grid-auto-flow: row;
+  row-gap: 8px;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 0 12px #eae1f6;
+}
+
+.people-pie-charts-wrapper.full-height {
+  height: 100%;
+}
+
+.pie-no-scroll,
+.pie-no-scroll .report-block-body,
+.pie-no-scroll .report-block-content {
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+/* Ensure Recharts containers don't create scrollbars */
+.pie-no-scroll .recharts-responsive-container,
+.pie-no-scroll .recharts-wrapper,
+.pie-no-scroll .recharts-legend-wrapper {
+  overflow: visible !important;
+  max-height: none !important;
+}
+
+.pie-no-scroll .report-block-content > *:last-child,
+.pie-no-scroll .report-block-body > *:last-child {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+@media (width >= 1280px) {
+  .people-pie-charts-wrapper {
+    display: block;
+  }
+}
+
+@media (width >= 1440px) {
+  .people-pie-charts-wrapper {
+    padding: 2rem;
+  }
+}
+
+.people-pie-charts-header {
+  text-align: start;
+  margin-bottom: 0.5rem;
+}
+
+.show-all-tasks-button {
+  margin-left: auto;
+  margin-right: 0;
+  width: 100px;
+  cursor: pointer;
+}
+
+.show-all-tasks-button:hover {
+  color: #ca50db;
+}
+
+.people-pie-charts-wrapper .pie-no-scroll {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  width: 100%;
+}
+
+.pie-chart-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  width: 100%;
+}
+
+.tasks-block-wrapper {
+  width: 100%;
+}
+
+/* Empty state*/
+.pie-empty-state-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 32px 24px;
+  text-align: center;
+  height: 100%;
+}
+
+.pie-empty-state-icon {
+  color: #000;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+  padding: 0.5rem;
+  background-color: #f5f5f5;
+  border-radius: 999px;
+}
+
+.pie-empty-state-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1c1c1c;
+}
+
+.pie-empty-state-body {
+  margin: 0;
+  max-width: 24rem;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: #555;
+}
+
+:global(.dark-mode) {
+  .people-pie-charts-wrapper {
+    background-color: #1a2639;
+    box-shadow: 0 0 12px black;
+  }
+
+  .pie-empty-state-icon {
+    background-color: #1f2a44;
+    color: #b8c4e0;
+  }
+}

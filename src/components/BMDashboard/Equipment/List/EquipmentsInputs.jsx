@@ -1,77 +1,110 @@
 import { Label, Form, Row, Col } from 'reactstrap';
+import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
 import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
+import { getReactSelectStyles } from '../../ItemList/selectStyles.js';
 import styles from './Equipments.module.css';
 
-function EquipmentsInputs({ equipment, setEquipment, project, setProject }) {
+const PROJECT_KEY = 'Equipment_selected_projects';
+const ITEM_KEY = 'Equipment_selected_items';
+
+function EquipmentsInputs({
+  equipment,
+  setEquipment,
+  project,
+  setProject,
+  localProjectValues,
+  setLocalProjectValues,
+  localEquipmentValues,
+  setLocalEquipmentValues,
+}) {
   const dispatch = useDispatch();
   const projects = useSelector(state => state.bmProjects);
-  const [formattedProjects, setFormattedProjects] = useState([]); // For React-Select
-  const [formattedEquipments, setFormattedEquipments] = useState([]); // For React-Select
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const [projectOptions, setProjectOptions] = useState([]);
+  const [equipmentOptions, setEquipmentOptions] = useState([]);
   const equipments = useSelector(state => state.bmEquipments.equipmentslist);
 
   useEffect(() => {
     dispatch(fetchBMProjects());
   }, []);
 
+  // Load persisted values from localStorage on mount
   useEffect(() => {
-    let _formattedProjects = [{ label: 'All Projects', value: '0' }];
-    const tempProjs = projects.map(proj => {
-      return { label: proj.name, value: proj._id };
-    });
-    _formattedProjects = _formattedProjects.concat(tempProjs);
-    setFormattedProjects(_formattedProjects);
+    try {
+      const savedProjects = JSON.parse(localStorage.getItem(PROJECT_KEY));
+      if (Array.isArray(savedProjects) && savedProjects.length > 0) {
+        setLocalProjectValues(savedProjects);
+        setProject(savedProjects.map(p => p.value));
+      }
+      const savedEquipments = JSON.parse(localStorage.getItem(ITEM_KEY));
+      if (Array.isArray(savedEquipments) && savedEquipments.length > 0) {
+        setLocalEquipmentValues(savedEquipments);
+        setEquipment(savedEquipments.map(e => e.value));
+      }
+    } catch (error) {
+      console.error('Failed to parse cached equipment filters:', error);
+    }
+  }, []);
+
+  // Build project options from Redux
+  useEffect(() => {
+    const options = projects.map(proj => ({ label: proj.name, value: proj._id }));
+    setProjectOptions(options);
   }, [projects]);
 
+  // Build equipment options filtered by selected projects
   useEffect(() => {
-    let equipmentsSet = [];
-    let _formattedEquipments = [{ label: 'All Equipments', value: '0' }];
-
-    if (equipments.length) {
-      if (project.value === '0')
-        equipmentsSet = [...new Set(equipments.map(rec => rec.itemType?.name))];
-      else
-        equipmentsSet = [
-          ...new Set(
-            equipments
-              .filter(rec => rec.project?.name === project.label)
-              .map(rec => rec.itemType?.name),
-          ),
-        ];
+    if (!equipments.length) return;
+    let list = equipments;
+    if (project.length > 0) {
+      list = equipments.filter(rec => project.includes(rec.project?._id));
     }
-    const temp = equipmentsSet.map(con => {
-      return { label: con, value: con };
-    });
-    _formattedEquipments = _formattedEquipments.concat(temp);
-    setFormattedEquipments(_formattedEquipments);
+    const names = [...new Set(list.map(rec => rec.itemType?.name).filter(Boolean))];
+    setEquipmentOptions(names.map(name => ({ label: name, value: name })));
   }, [equipments, project]);
 
-  const projectHandler = selected => {
-    setProject(selected);
-    setEquipment({ label: 'All Equipments', value: '0' });
+  const handleProjectChange = selected => {
+    const values = selected || [];
+    setLocalProjectValues(values);
+    setProject(values.map(v => v.value));
+    setLocalEquipmentValues([]);
+    setEquipment([]);
+    localStorage.setItem(PROJECT_KEY, JSON.stringify(values));
+    localStorage.removeItem(ITEM_KEY);
   };
 
-  const equipmentHandler = selected => {
-    setEquipment(selected);
+  const handleEquipmentChange = selected => {
+    const values = selected || [];
+    setLocalEquipmentValues(values);
+    setEquipment(values.map(v => v.value));
+    localStorage.setItem(ITEM_KEY, JSON.stringify(values));
   };
 
   return (
-    <div className="container">
+    <div className={styles.container}>
       <Form>
         <Row className={`align-items-center ${styles.InputsMargin}`}>
           <Col className={`${styles.InputsMargin}`}>
             <Row className="justify-content-start align-items-center">
-              <Label for="selectequipment" lg={2} md={3}>
+              <Label for="select-equipment-project" lg={2} md={3}>
                 Project:
               </Label>
               <Col lg={10} md={9}>
                 <Select
-                  onChange={projectHandler}
-                  options={formattedProjects}
-                  value={project}
-                  defaultValue={{ label: 'All Projects', value: '0' }}
+                  inputId="select-equipment-project"
+                  isMulti
+                  isSearchable
+                  isClearable
+                  options={projectOptions}
+                  value={localProjectValues}
+                  onChange={handleProjectChange}
+                  isDisabled={!projects?.length}
+                  placeholder="Search or select projects..."
+                  classNamePrefix="react-select"
+                  styles={getReactSelectStyles(darkMode)}
                 />
               </Col>
             </Row>
@@ -79,23 +112,62 @@ function EquipmentsInputs({ equipment, setEquipment, project, setProject }) {
 
           <Col className={`${styles.InputsMargin}`}>
             <Row className="justify-content-start align-items-center">
-              <Label lg={3} md={3} for="selectproject">
+              <Label lg={3} md={3} for="select-equipment-type">
                 Equipment:
               </Label>
               <Col lg={9} md={9}>
                 <Select
-                  onChange={equipmentHandler}
-                  options={formattedEquipments}
-                  value={equipment}
-                  defaultValue={{ label: 'All Equipments', value: '0' }}
+                  inputId="select-equipment-type"
+                  isMulti
+                  isSearchable
+                  isClearable
+                  options={equipmentOptions}
+                  value={localEquipmentValues}
+                  onChange={handleEquipmentChange}
+                  isDisabled={!equipments?.length}
+                  placeholder="Search or select equipment..."
+                  classNamePrefix="react-select"
+                  styles={getReactSelectStyles(darkMode)}
                 />
               </Col>
             </Row>
+          </Col>
+
+          <Col xs="auto" className={`${styles.InputsMargin} ${styles.resetCol}`}>
+            <button
+              type="button"
+              className={styles.btnReset}
+              onClick={() => {
+                setLocalProjectValues([]);
+                setLocalEquipmentValues([]);
+                setProject([]);
+                setEquipment([]);
+                localStorage.removeItem(PROJECT_KEY);
+                localStorage.removeItem(ITEM_KEY);
+              }}
+              disabled={
+                localStorage.getItem(PROJECT_KEY) === null &&
+                localStorage.getItem(ITEM_KEY) === null
+              }
+            >
+              Reset
+            </button>
           </Col>
         </Row>
       </Form>
     </div>
   );
 }
+
+EquipmentsInputs.propTypes = {
+  equipment: PropTypes.array.isRequired,
+  setEquipment: PropTypes.func.isRequired,
+  project: PropTypes.array.isRequired,
+  setProject: PropTypes.func.isRequired,
+  localProjectValues: PropTypes.array.isRequired,
+  setLocalProjectValues: PropTypes.func.isRequired,
+  localEquipmentValues: PropTypes.array.isRequired,
+  setLocalEquipmentValues: PropTypes.func.isRequired,
+};
 
 export default EquipmentsInputs;

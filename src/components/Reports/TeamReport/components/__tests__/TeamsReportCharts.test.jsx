@@ -8,19 +8,19 @@ vi.mock('../TeamsReportCharts', () => ({
     // Calculate the chart values
     const chart = {
       team1:
-        title === 'Weekly Commited Hours'
+        title === 'Weekly Committed Hours'
           ? selectedTeamsData[0]?.totalCommitedHours
           : selectedTeamsWeeklyEffort[0],
       team2:
-        title === 'Weekly Commited Hours'
+        title === 'Weekly Committed Hours'
           ? selectedTeamsData[1]?.totalCommitedHours
           : selectedTeamsWeeklyEffort[1],
       team3:
-        title === 'Weekly Commited Hours'
+        title === 'Weekly Committed Hours'
           ? selectedTeamsData[2]?.totalCommitedHours
           : selectedTeamsWeeklyEffort[2],
       team4:
-        title === 'Weekly Commited Hours'
+        title === 'Weekly Committed Hours'
           ? selectedTeamsData[3]?.totalCommitedHours
           : selectedTeamsWeeklyEffort[3],
     };
@@ -121,7 +121,7 @@ describe('TeamsReportCharts Component', () => {
   it('renders without crashing', () => {
     render(
       <TeamsReportCharts
-        title="Weekly Commited Hours"
+        title="Weekly Committed Hours"
         pieChartId={1}
         selectedTeamsData={selectedTeamsData}
         selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}
@@ -133,7 +133,7 @@ describe('TeamsReportCharts Component', () => {
   it('renders the correct number of team info components', () => {
     render(
       <TeamsReportCharts
-        title="Weekly Commited Hours"
+        title="Weekly Committed Hours"
         pieChartId={1}
         selectedTeamsData={selectedTeamsData}
         selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}
@@ -149,7 +149,7 @@ describe('TeamsReportCharts Component', () => {
   it('renders a message when no team is selected', () => {
     render(
       <TeamsReportCharts
-        title="Weekly Commited Hours"
+        title="Weekly Committed Hours"
         pieChartId={1}
         selectedTeamsData={[]}
         selectedTeamsWeeklyEffort={[]}
@@ -176,7 +176,7 @@ describe('TeamsReportCharts Component', () => {
   it('does not render team info when selectedTeamsData is empty', () => {
     render(
       <TeamsReportCharts
-        title="Weekly Commited Hours"
+        title="Weekly Committed Hours"
         pieChartId={1}
         selectedTeamsData={[]}
         selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}
@@ -190,7 +190,7 @@ describe('TeamsReportCharts Component', () => {
   it('renders team names correctly', () => {
     render(
       <TeamsReportCharts
-        title="Weekly Commited Hours"
+        title="Weekly Committed Hours"
         pieChartId={1}
         selectedTeamsData={selectedTeamsData}
         selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}
@@ -206,7 +206,7 @@ describe('TeamsReportCharts Component', () => {
   it('applies dark mode styling when darkMode prop is true', () => {
     render(
       <TeamsReportCharts
-        title="Weekly Commited Hours"
+        title="Weekly Committed Hours"
         pieChartId={1}
         selectedTeamsData={selectedTeamsData}
         selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}

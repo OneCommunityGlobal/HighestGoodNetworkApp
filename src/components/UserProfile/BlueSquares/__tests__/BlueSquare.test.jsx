@@ -4,13 +4,15 @@ import '@testing-library/jest-dom/extend-expect';
 import BlueSquare from '../BlueSquare';
 import thunk from 'redux-thunk';
 import mockAdminState from '__tests__/mockAdminState';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import hasPermission from '~/utils/permissions';
+import styles from '../BlueSquare.module.css';
 
+import { permissions } from '../../../../utils/constants';
 const handleBlueSquare = vi.fn();
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 const initialState = {
   auth: {
     user: {
@@ -80,10 +82,10 @@ describe('BlueSquare component', () => {
         />
       </Provider>,
     );
-    expect(screen.queryByText('Dec-03-23')).toBeInTheDocument();
-    expect(screen.queryByText('Dec-10-23')).toBeInTheDocument();
-    expect(screen.queryByText('some reason')).toBeInTheDocument();
-    expect(screen.queryByText('test reason')).toBeInTheDocument();
+    expect(screen.getByText('Dec-03-23')).toBeInTheDocument();
+    expect(screen.getByText('Dec-10-23')).toBeInTheDocument();
+    expect(screen.getByText('some reason')).toBeInTheDocument();
+    expect(screen.getByText('test reason')).toBeInTheDocument();
   });
   it('check if + sign is visible when addInfringements permission is not added', () => {
     const mockInitialState = JSON.parse(JSON.stringify(initialState));
@@ -109,7 +111,7 @@ describe('BlueSquare component', () => {
         />
       </Provider>,
     );
-    expect(screen.queryByText('+')).toBeInTheDocument();
+    expect(screen.getByText('+')).toBeInTheDocument();
   });
   it('check if handleBlueSquare is called when user clicks on the button', async () => {
     const { container } = render(
@@ -123,12 +125,15 @@ describe('BlueSquare component', () => {
 
     // Wait for the component to render completely
     await waitFor(() => {
-      const blueSquareButtonElement = container.querySelector('.blueSquareButton');
+      // eslint-disable-next-line testing-library/no-node-access, testing-library/no-container
+      const blueSquareButtonElement = container.querySelector(`.${styles.blueSquareButton}`);
       expect(blueSquareButtonElement).toBeInTheDocument();
     });
-    const blueSquareButtonElement = container.querySelector('.blueSquareButton');
+    // eslint-disable-next-line testing-library/no-node-access, testing-library/no-container
+    const blueSquareButtonElement = container.querySelector(`.${styles.blueSquareButton}`);
   
     // Use act to wrap the click event
+    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       fireEvent.click(blueSquareButtonElement);
     });
@@ -156,13 +161,13 @@ describe('BlueSquare component', () => {
     mockInitialState.auth.user.permissions.frontPermissions = [];
     const testStore = mockStore(mockInitialState);
 
-    const permissionValue = testStore.dispatch(hasPermission('infringementAuthorizer'));
+    const permissionValue = testStore.dispatch(hasPermission(permissions.infringementAuthorizer));
     expect(permissionValue).toBe(false);
     testStore.clearActions();
   });
 
   it('check hasPermission function returns true if permission is present', () => {
-    const permissionValue = store.dispatch(hasPermission('infringementAuthorizer'));
+    const permissionValue = store.dispatch(hasPermission(permissions.infringementAuthorizer));
     expect(permissionValue).toBe(true);
   });
 });

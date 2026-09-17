@@ -1,0 +1,116 @@
+/* Responsive: desktop / tablet switch */
+.desktop {
+  display: block;
+}
+
+.tablet {
+  display: none;
+}
+
+@media (width <= 1024px) {
+  .desktop {
+    display: none;
+  }
+
+  .tablet {
+    display: block;
+  }
+}
+
+/* Dark mode is driven by <body class="dark-mode">, so :global() is required */
+:global(.dark-mode) .modalHeader {
+  background-color: #1c2541 !important;
+  color: #f1f1f1 !important;
+}
+
+:global(.dark-mode) .modalBody,
+:global(.dark-mode) .modalFooter {
+  background-color: #3a506b !important;
+  color: #f1f1f1 !important;
+}
+
+/* Empty-state row text */
+.emptyState {
+  text-align: center;
+  padding: 12px;
+}
+
+/* Badge image wrappers — sized wrappers; the inner <img> is sized by BadgeImage's own module */
+.badgeImageMd {
+  margin: 5px;
+}
+
+.badgeImageSm {
+  margin: 5px;
+}
+
+/* Trigger icon sizing */
+.previewIcon {
+  font-size: 23px;
+}
+
+/* Footer + close button */
+.badgeSummaryPreviewFooter {
+  width: fit-content;
+  float: right;
+}
+
+.badgeSummaryPreviewButton {
+  margin: 5px;
+}
+
+@media screen and (width <= 1024px) {
+  .badgeSummaryPreviewFooter {
+    width: 100%;
+  }
+
+  .badgeSummaryPreviewButton {
+    width: 100%;
+    float: none;
+    margin: 5px 0;
+  }
+}
+
+/* Badge count bubbles */
+.badgeCountPreview {
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  background: #0056b3;
+  color: #fff;
+  text-align: center;
+  font: 15px Arial, sans-serif;
+  position: absolute;
+  right: 20px;
+  bottom: 2px;
+  z-index: 10;
+}
+
+.badgeCountPersonalmaxPreview {
+  padding-top: 4px;
+  border-radius: 45%;
+  width: 19px;
+  height: 19px;
+  background: #6a006a;
+  color: #fff;
+  text-align: center;
+  font: 11px Arial, sans-serif;
+  position: absolute;
+  right: 20px;
+  bottom: 3px;
+  z-index: 10;
+}
+
+.badgeCount3DigitPreview {
+  border-radius: 50%;
+  width: 20px;
+  height: 15px;
+  background: #0056b3;
+  color: #fff;
+  text-align: center;
+  font: 11px Arial, sans-serif;
+  position: absolute;
+  right: 20px;
+  bottom: 2px;
+  z-index: 10;
+}

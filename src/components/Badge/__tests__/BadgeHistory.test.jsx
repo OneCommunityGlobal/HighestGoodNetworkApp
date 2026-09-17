@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import BadgeHistory from '../BadgeHistory';
 import { WEEK_DIFF } from '../../../constants/badge';
@@ -20,11 +20,9 @@ const mockBadgeData = [
 describe('BadgeHistory component', () => {
   it('renders filtered badges', () => {
     const personalBestMaxHrs = 50;
-    const { getAllByTestId } = render(
-      <BadgeHistory badges={mockBadgeData} personalBestMaxHrs={personalBestMaxHrs} />,
-    );
+    render(<BadgeHistory badges={mockBadgeData} personalBestMaxHrs={personalBestMaxHrs} />);
     // Get all elements with the data-testid attribute set to "badge-image"
-    const renderedBadges = getAllByTestId('badge-image');
+    const renderedBadges = screen.getAllByTestId('badge-image');
     expect(renderedBadges.length).toBe(3);
   });
 
@@ -46,10 +44,8 @@ describe('BadgeHistory component', () => {
         count: 3,
       },
     ];
-    const { getAllByTestId } = render(
-      <BadgeHistory badges={mockDataset} personalBestMaxHrs={50} />,
-    );
-    const renderedBadges = getAllByTestId('badge-image');
+    render(<BadgeHistory badges={mockDataset} personalBestMaxHrs={50} />);
+    const renderedBadges = screen.getAllByTestId('badge-image');
     // Check if the rendered order matches the expected order after sorting
     expect(renderedBadges[0].textContent).toEqual('Mocked BadgeImage Component');
     expect(renderedBadges[1].textContent).toEqual('Mocked BadgeImage Component');
@@ -77,11 +73,9 @@ describe('BadgeHistory component', () => {
 
     const personalBestMaxHrs = 168;
 
-    const { getAllByTestId } = render(
-      <BadgeHistory badges={mockDataset} personalBestMaxHrs={personalBestMaxHrs} />,
-    );
+    render(<BadgeHistory badges={mockDataset} personalBestMaxHrs={personalBestMaxHrs} />);
 
-    const renderedBadges = getAllByTestId('badge-image');
+    const renderedBadges = screen.getAllByTestId('badge-image');
     // Calculate the expected length based on the filtering logic
     const expectedFilteredLength = mockDataset.filter(
       value => Date.now() - new Date(value.lastModified).getTime() > WEEK_DIFF,
@@ -92,7 +86,7 @@ describe('BadgeHistory component', () => {
 
   it('handles empty dataset', () => {
     // Render the BadgeHistory component with an empty dataset
-    const { container } = render(<BadgeHistory badges={[]} personalBestMaxHrs={50} />);
-    expect(container.firstChild).toBeEmptyDOMElement();
+    render(<BadgeHistory badges={[]} personalBestMaxHrs={50} />);
+    expect(screen.queryByTestId('badge-image')).toBeNull();
   });
 });

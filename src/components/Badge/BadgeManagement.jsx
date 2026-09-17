@@ -20,6 +20,8 @@ import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableIn
 import AssignBadge from './AssignBadge';
 import BadgeDevelopment from './BadgeDevelopment';
 import { fetchAllBadges, setActiveTab } from '../../actions/badgeManagement';
+import { permissions as permissionKeys } from '../../utils/constants';
+import hasPermission from '../../utils/permissions';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { debounce } from 'lodash';
@@ -37,6 +39,7 @@ const CHART_COLORS = [
 
 function BadgeManagement(props) {
   const { darkMode, activeTab, setActiveTab, role, allBadgeData, loading } = props;
+  const canAssignBadges = props.hasPermission(permissionKeys.assignBadges);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedBadges, setSelectedBadges] = useState([]);
   const [badgeUserCounts, setBadgeUserCounts] = useState({});
@@ -114,6 +117,16 @@ function BadgeManagement(props) {
   }, [allBadgeData]);
 
   useEffect(() => {
+    if (!activeTab) {
+      setActiveTab(canAssignBadges ? '1' : '2');
+      return;
+    }
+    if (!canAssignBadges && activeTab === '1') {
+      setActiveTab('2');
+    }
+  }, [activeTab, canAssignBadges, setActiveTab]);
+
+  useEffect(() => {
     if (selectedBadges.length > 0) {
       const labels = selectedBadges.map(badgeId => {
         const badge = allBadgeData.find(b => b._id === badgeId);
@@ -179,7 +192,7 @@ function BadgeManagement(props) {
       style={{ padding: '5px 20px', minHeight: '100%' }}
     >
       <div className="d-flex justify-content-start align-items-center">
-        <h2 className="mr-2">Badge Management</h2>
+        <h2 className={`${darkMode ? 'text-light' : 'text-dark'} mr-2`}>Badge Management</h2>
         <EditableInfoModal
           areaName="BadgeManagement"
           areaTitle="Badge Management"
@@ -190,14 +203,23 @@ function BadgeManagement(props) {
         />
       </div>
       <Nav pills className="mb-2">
-        <NavItem>
-          <NavLink
-            className={`mr-2 ${classnames({ active: activeTab === '1' })}`}
-            onClick={() => setActiveTab('1')}
-          >
-            Badge Assignment
-          </NavLink>
-        </NavItem>
+        {canAssignBadges && (
+          <NavItem>
+            <NavLink
+              className={`mr-2 ${classnames({ active: activeTab === '1' })} ${
+                darkMode && activeTab !== '1' ? 'bg-light' : ''
+              }`}
+              onClick={() => handleTabChange('1')}
+              style={
+                darkMode
+                  ? { ...boxStyleDark, cursor: 'pointer' }
+                  : { ...boxStyle, cursor: 'pointer' }
+              }
+            >
+              Badge Assignment
+            </NavLink>
+          </NavItem>
+        )}
         <NavItem>
           <NavLink
             className={`${classnames({ active: activeTab === '2' })}`}
@@ -413,11 +435,12 @@ function BadgeManagement(props) {
       </div>
 
       <TabContent activeTab={activeTab}>
-        <TabPane tabId="1">
-          <AssignBadge allBadgeData={props.allBadgeData} />
-        </TabPane>
-
-        <TabPane tabId="2">
+        {canAssignBadges && (
+          <TabPane tabId="1">
+            <AssignBadge allBadgeData={props.allBadgeData} />
+          </TabPane>
+        )}
+        <TabPane tabId="2" className="h-100">
           <BadgeDevelopment allBadgeData={props.allBadgeData} darkMode={darkMode} />
         </TabPane>
       </TabContent>
@@ -433,9 +456,10 @@ const mapStateToProps = state => ({
   loading: state.badge.loading,
 });
 
-const mapDispatchToProps = {
-  fetchAllBadges,
-  setActiveTab,
-};
+const mapDispatchToProps = dispatch => ({
+  fetchAllBadges: () => dispatch(fetchAllBadges()),
+  setActiveTab: tab => dispatch(setActiveTab(tab)),
+  hasPermission: permission => dispatch(hasPermission(permission)),
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(BadgeManagement);

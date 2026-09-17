@@ -1,11 +1,20 @@
 import {
+  FETCH_INJURIES_REQUEST,
+  FETCH_INJURIES_SUCCESS,
+  FETCH_INJURIES_FAILURE,
+} from '../../actions/bmdashboard/types';
+
+import {
   FETCH_BM_INJURY_DATA_REQUEST,
   FETCH_BM_INJURY_DATA_SUCCESS,
   FETCH_BM_INJURY_DATA_FAILURE,
   FETCH_BM_INJURY_SEVERITIES,
   FETCH_BM_INJURY_TYPES,
   FETCH_BM_INJURY_PROJECTS,
+  FETCH_BM_INJURY_TREND_SUCCESS,
   RESET_BM_INJURY_DATA,
+  FETCH_BM_INJURY_OVER_TIME,
+  GET_INJURY_SEVERITY,
 } from '../../actions/bmdashboard/injuryActions';
 
 const byName = (a, b) => String(a?.name || a).localeCompare(String(b?.name || b));
@@ -14,14 +23,39 @@ const byValue = (a, b) => String(a).localeCompare(String(b));
 const initialState = {
   loading: false,
   data: [],
+  trend: { months: [], serious: [], medium: [], low: [] },
   error: null,
   severities: [],
   injuryTypes: [],
-  projects: [], // [{ _id, name }]
+  projects: [], // [{ _id, name, projectIds }]
+  injuryOverTimeData: [],
+  severityData: [], // Legacy field for backward compatibility
 };
 
 function bmInjuryReducer(state = initialState, action) {
   switch (action.type) {
+    case FETCH_INJURIES_REQUEST:
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
+
+    case FETCH_INJURIES_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        data: action.payload,
+        error: null,
+      };
+
+    case FETCH_INJURIES_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+
     case FETCH_BM_INJURY_DATA_REQUEST:
       return { ...state, loading: true, error: null };
 
@@ -49,18 +83,85 @@ function bmInjuryReducer(state = initialState, action) {
       const raw = Array.isArray(action.payload) ? action.payload : [];
       const arr = raw
         .filter(p => p && (p._id || p.id) && (p.name || p.title))
-        .map(p => ({ _id: p._id || p.id, name: p.name || p.title }));
-      const map = new Map(arr.map(p => [String(p._id), p]));
+        .map(p => {
+          const fallbackId = p._id || p.id;
+          const projectIds =
+            Array.isArray(p.projectIds) && p.projectIds.length
+              ? p.projectIds.map(String)
+              : [String(fallbackId)];
+          return {
+            // Prefer a real ObjectId when the API returns projectIds; otherwise keep _id.
+            _id: projectIds[0],
+            name: p.name || p.title,
+            projectIds,
+          };
+        });
+
+      // Collapse duplicate display names so one dropdown option covers shared legacy IDs.
+      const map = new Map();
+      arr.forEach(project => {
+        const key = String(project.name)
+          .trim()
+          .toLowerCase();
+        const existing = map.get(key);
+        map.set(key, {
+          ...project,
+          projectIds: existing
+            ? Array.from(new Set([...existing.projectIds, ...project.projectIds]))
+            : project.projectIds,
+          _id: existing ? existing._id : project._id,
+        });
+      });
+
       const projects = Array.from(map.values()).sort(byName);
       return { ...state, projects };
     }
 
+    case FETCH_BM_INJURY_OVER_TIME: {
+      const injuryOverTimeData = Array.isArray(action.payload) ? action.payload : [];
+      return { ...state, injuryOverTimeData };
+    }
+
     case RESET_BM_INJURY_DATA:
-      return { ...state, data: [], error: null, loading: false };
+      return {
+        ...state,
+        data: [],
+        trend: { months: [], serious: [], medium: [], low: [] },
+        error: null,
+        loading: false,
+      };
+
+    case FETCH_BM_INJURY_TREND_SUCCESS: {
+      const t = action.payload || {};
+      const coerceArr = v => (Array.isArray(v) ? v : []);
+      return {
+        ...state,
+        loading: false,
+        error: null,
+        trend: {
+          months: coerceArr(t.months),
+          serious: coerceArr(t.serious),
+          medium: coerceArr(t.medium),
+          low: coerceArr(t.low),
+        },
+      };
+    }
+
+    // Legacy action for backward compatibility
+    case GET_INJURY_SEVERITY:
+      return { ...state, severityData: action.payload };
 
     default:
       return state;
   }
 }
 
+// Legacy reducer function for backward compatibility
+// eslint-disable-next-line default-param-last
+export const bmInjurySeverityReducer = (severityData = [], action) => {
+  if (action.type === GET_INJURY_SEVERITY) {
+    return action.payload;
+  }
+  return severityData;
+};
 export default bmInjuryReducer;

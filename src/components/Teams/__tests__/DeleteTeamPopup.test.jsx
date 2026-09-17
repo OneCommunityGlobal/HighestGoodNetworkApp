@@ -1,13 +1,13 @@
 import React from 'react';
 import { screen, fireEvent } from '@testing-library/react';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import DeleteTeamPopup from '~/components/Teams/DeleteTeamPopup';
 import { renderWithProvider } from '../../../__tests__/utils';
 import { authMock, userProfileMock, rolesMock, themeMock } from '../../../__tests__/mockStates';
 
 const mock = vi.fn();
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 let store;
 beforeEach(() => {
   mock.mockClear();

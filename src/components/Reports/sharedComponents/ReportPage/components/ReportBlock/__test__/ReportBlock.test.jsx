@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { ReportBlock } from '../ReportBlock';
+import styles from '../ReportBlock.module.css';
 
 describe('ReportBlock component', () => {
   it('renders without crashing', () => {
@@ -12,7 +13,7 @@ describe('ReportBlock component', () => {
   it('applies custom class names correctly', () => {
     render(<ReportBlock className="custom-class" />);
     const wrapper = screen.getByTestId('report-block-wrapper');
-    expect(wrapper).toHaveClass('report-block-wrapper custom-class');
+    expect(wrapper).toHaveClass(`${styles['report-block-wrapper']} custom-class`);
   });
 
   it('renders with linear gradient when secondColor prop is provided', () => {

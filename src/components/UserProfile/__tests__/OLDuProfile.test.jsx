@@ -2,6 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { toast } from 'react-toastify';
 import UserProfile from '..';
+// eslint-disable-next-line import/named
 import { getUserProfile } from '../../../services/userProfileService';
 
 test.skip('it skips tests because redux', () => {

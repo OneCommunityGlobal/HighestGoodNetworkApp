@@ -4,15 +4,19 @@ import { render, fireEvent, screen } from '@testing-library/react';
 import BadgeDevelopment from '../BadgeDevelopment';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { themeMock } from '__tests__/mockStates';
 
 // Mock the BadgeDevelopmentTable and CreateNewBadgePopup components
-vi.mock('components/Badge/BadgeDevelopmentTable', () => () => <div>BadgeDevelopmentTable</div>);
-vi.mock('components/Badge/CreateNewBadgePopup', () => () => <div>CreateNewBadgePopup</div>);
+vi.mock('components/Badge/BadgeDevelopmentTable', () => ({
+  default: () => <div>BadgeDevelopmentTable</div>,
+}));
+vi.mock('components/Badge/CreateNewBadgePopup', () => ({
+  default: () => <div>CreateNewBadgePopup</div>,
+}));
 
 describe('BadgeDevelopment Component', () => {
-  const mockStore = configureStore([thunk]);
+  const mockStore = configureMockStore([thunk]);
 
   const renderComponent = () => {
     const store = mockStore({
@@ -67,8 +71,8 @@ describe('BadgeDevelopment Component', () => {
 
   it('should render the BadgeDevelopmentTable component', () => {
     renderComponent();
-    const table = document.querySelector('.table');
-    expect(table);
+    // When no badges match filters, the component shows "No badges match the current filters"
+    expect(screen.getByText(/No badges match the current filters/)).toBeInTheDocument();
   });
 
   it('should close the New Badge popup when the button is clicked', () => {
@@ -77,5 +81,35 @@ describe('BadgeDevelopment Component', () => {
     expect(screen.getByText('New Badge')).toBeInTheDocument();
     fireEvent.click(screen.getByText('New Badge'));
     expect(screen.getByText('Create New Badge'));
+  });
+
+  it('disables Create New Badge when user lacks createBadges permission', () => {
+    const store = mockStore({
+      allProjects: { projects: [] },
+      auth: {
+        isAuthenticated: true,
+        user: {
+          userid: '123',
+          role: 'Volunteer',
+          permissions: {
+            frontPermissions: ['seeBadges', 'updateBadges'],
+            backPermissions: [],
+          },
+        },
+      },
+      userProfile: { email: 'test@example.com' },
+      taskEditSuggestionCount: 0,
+      role: { roles: [{ roleName: 'Volunteer', permissions: ['seeBadges', 'updateBadges'] }] },
+      theme: themeMock,
+      badge: { message: '', alertVisible: false, color: '' },
+    });
+
+    render(
+      <Provider store={store}>
+        <BadgeDevelopment />
+      </Provider>,
+    );
+
+    expect(screen.getByText('Create New Badge')).toBeDisabled();
   });
 });

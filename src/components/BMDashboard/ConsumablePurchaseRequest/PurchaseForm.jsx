@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
-import Joi from 'joi-browser';
+import Joi from 'joi';
 
 import { boxStyle } from '~/styles';
 import { purchaseConsumable } from '~/actions/bmdashboard/consumableActions';

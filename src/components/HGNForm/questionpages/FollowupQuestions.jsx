@@ -14,6 +14,7 @@ function FollowupQuestions() {
   const navigate = useHistory();
   const [questions, setQuestions] = useState([]);
   const formData = useSelector(state => state.hgnForm);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const user = useSelector(state => state.auth.user);
   const [newVolunteer, setNewVolunteer] = useState(formData);
   const dispatch = useDispatch();
@@ -255,8 +256,10 @@ function FollowupQuestions() {
   }
 
   return (
-    <div className={`${styles.followupQuestions}`}>
-      <h3 className={`${styles.blueStrip}`}>Follow-up Questions</h3>
+    <div className={`${styles.followupQuestions} ${darkMode ? styles.darkContainer : ''}`}>
+      <h3 className={`${styles.blueStrip} ${darkMode ? styles.darkStrip : ''}`}>
+        Follow-up Questions
+      </h3>
       <form onSubmit={handleFormSubmission}>
         {questions.map((question, index) => {
           // Dynamically map formData field names to questions

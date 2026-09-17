@@ -1,0 +1,711 @@
+/* stylelint-disable no-descending-specificity, selector-type-no-unknown */
+
+:global(body) {
+  display: block;
+  width: 100%;
+}
+
+:global(#root) {
+  width: 100%;
+}
+
+/* General Styling */
+.headerWrapper {
+  height: fit-content;
+  width: 100%;
+}
+
+.notificationOverlay {
+  position: fixed;
+  top: 72px;
+  left: 0;
+  right: 0;
+  z-index: 1200;
+  pointer-events: none;
+}
+
+.notificationOverlay :global(.container-fluid) {
+  padding-left: 0;
+  padding-right: 0;
+  pointer-events: auto;
+}
+
+.headerRow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto; 
+  align-items: center;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+.leftSection {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.centerSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.rightSection {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: auto;
+  position: relative;
+}
+
+@media (width <= 768px) {
+  .headerRow {
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto;
+  }
+
+  .logoSection {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: center;
+    margin-top: 6px;
+  }
+
+  .rightSection {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+/* Timer Message Section */
+.timer-message-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 1rem;
+}
+
+.cardContent {
+  padding: 15px 40px;
+  white-space: pre-line;
+  color: white;
+  font-size: medium;
+  line-height: 1.4;
+  overflow-wrap: break-word;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+}
+
+.headerCard {
+  margin-left: 0; /* Remove left margin */
+  margin-right: 0; /* Remove right margin */
+
+  /* Keep the card inside the page width */
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+}
+
+.headerCard.dashboardHeader {
+  flex-direction: row-reverse;
+}
+
+.cardWrapper {
+  padding: 1rem 0;
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.navbar {
+  z-index: 100;
+  position: relative;
+}
+
+@media (width <= 906px) {
+  .navbar {
+    white-space: normal;
+  }
+
+  .headerRow {
+    grid-template-columns: 1fr;
+    row-gap: 0.5rem;
+  }
+
+  .leftSection,
+  .centerSection,
+  .rightSection {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .rightSection {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .menuContainer {
+    padding-left: 0;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .navbarOwnerMessage {
+    padding-left: 0;
+    padding-right: 0;
+    width: 100%;
+  }
+}
+
+@media (width <= 906px) {
+  .rightSection {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .navCollapse {
+  flex-basis: 100%;
+  width: 100%;
+ }
+}
+
+.redBackGroupHeader {
+  z-index: 10;
+  bottom: 0;
+  right: 0;
+  position: relative;
+  height: 30px;
+  text-align: center;
+  vertical-align: middle;
+  background: #ff4d4f;
+  border-radius: 40px;
+  color: #fff;
+  padding: 3px 6px;
+  max-width: 39px;
+  font-size: 1rem;
+  min-width: 29px;
+}
+
+.navbarOwnerMessage {
+  flex: 1;
+  text-align: center;
+  justify-content: center;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.menuContainer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.dashboardTextLink {
+  font-size: 16px;
+  flex-wrap: nowrap;
+  gap: 1rem;
+}
+
+.darkMenuDropdown {
+  background-color: #3a506b !important;
+}
+
+.darkDropdownText {
+  color: white !important;
+}
+
+.darkDropdownItem:hover {
+  background-color: #2f4157 !important;
+}
+
+.darkDropdownItem:active,
+.darkDropdownItem:focus {
+  color: white !important;
+  background-color: #2f4157 !important;
+}
+
+/* ── Desktop dropdown text styles ── */
+.mobileDropdownText {
+  color: #212529 !important;
+}
+
+.mobileDropdownItem:hover {
+  background-color: #f8f9fa !important;
+  color: #16181b !important;
+}
+
+.noMaxHeight {
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.showInMobile {
+  display: none;
+}
+
+.hideInTablet {
+  display: block;
+}
+
+.showInTablet {
+  display: none;
+}
+
+/* Hamburger toggle — hidden on wide screens */
+.navbarToggler {
+  display: none;
+  margin-left: 1rem;
+  flex-shrink: 0;
+}
+
+/* Collapsed nav — hidden on wide screens */
+.navCollapse {
+  display: flex;
+  align-items: center;
+}
+
+/* max-width: 1700px */
+@media (width <= 1700px) {
+  .hideInTablet {
+    display: none;
+  }
+
+  .showInTablet {
+    display: block;
+  }
+}
+
+/* max-width: 1151px and min-width: 992px */
+@media (992px <= width <= 1151px) {
+  .dropdownMenu {
+    width: auto !important;
+  }
+}
+
+@media (907px <= width <= 1599px) {
+  .headerRow {
+    /* Preserve the compact desktop layout from 907px until the full header fits in one row. */
+    grid-template-columns: auto minmax(0, 1fr);
+    row-gap: 0.5rem;
+  }
+
+  .centerSection {
+    /* Keep the announcement readable instead of clipping it between timer and nav. */
+    overflow: visible;
+  }
+
+  .rightSection {
+    /* Keep desktop nav in normal flow and horizontally aligned above the mobile breakpoint. */
+    grid-column: 1 / -1;
+    justify-content: center;
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .menuContainer {
+    /* Override Bootstrap's below-xl column nav so desktop links do not stack vertically. */
+    align-items: center;
+    flex-direction: row !important;
+    flex-wrap: nowrap;
+    justify-content: center;
+    margin-right: 0 !important;
+    padding-left: 0;
+    width: 100%;
+  }
+}
+
+/* max-width: 906px */
+@media (width <= 906px) {
+  .navbarToggler {
+    /* 906px and below uses the mobile hamburger layout. */
+    display: flex !important;
+    align-items: center;
+    margin-left: auto;
+  }
+
+  .navCollapse {
+    display: block;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    padding-left: 10px;
+    min-width: 220px;
+    background-color: #343a40;
+    border-radius: 0 0 6px 6px;
+    box-shadow: 0 6px 16px rgb(0 0 0 / 40%);
+    z-index: 999;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease-out;
+  }
+
+  .navCollapseHidden {
+    display: none !important;
+  }
+
+  .navCollapseOpen {
+    max-height: 600px;
+    overflow-y: auto;
+    transition: max-height 0.25s ease-in;
+  }
+
+  .menuContainer {
+    align-items: start;
+    flex-direction: column !important;
+    padding-left: 50px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .mobileMenuDropdown {
+    background-color: #343a40 !important;
+    border: none !important;
+  }
+
+  .mobileDropdownText {
+    color: rgb(255 255 255 / 50%) !important;
+  }
+
+  .mobileDropdownItem:hover {
+    background-color: #343a40 !important;
+    color: rgb(255 255 255 / 75%) !important;
+  }
+
+  .darkMenuDropdown {
+    background-color: #343a40 !important;
+    border: none !important;
+  }
+
+  .darkDropdownText {
+    color: rgb(255 255 255 / 50%) !important;
+  }
+
+  .darkDropdownItem:hover {
+    background-color: #343a40 !important;
+    color: rgb(255 255 255 / 75%) !important;
+  }
+
+  .hideInMobile {
+    display: none;
+  }
+
+  .showInMobile {
+    display: block;
+  }
+}
+
+.headerMargin {
+  height: 20px;
+  background-color: #0f1b2b;
+}
+
+.headerMarginLight {
+  height: 20px;
+  background-color: #fff;
+}
+
+@media print {
+  * {
+    box-sizing: border-box !important;
+  }
+
+  @page {
+    size: auto;
+    margin: 0;
+  }
+
+  .navbar {
+    padding: 0.5rem 1rem !important;
+    min-height: auto !important;
+    height: auto !important;
+    width: 100% !important;
+    position: relative !important;
+    font-size: 16px !important;
+    margin: 0 !important;
+  }
+
+  .navbar img,
+  .navbar svg {
+    width: auto !important;
+    height: 24px !important;
+    transform: scale(1) !important;
+    vertical-align: middle !important;
+  }
+}
+
+.left-section {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 0 0 auto;
+  min-width: fit-content;
+}
+
+.center-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  text-align: center;
+  min-width: 200px;
+  overflow: hidden;
+}
+
+.right-section {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+  min-width: fit-content;
+}
+
+/* max-width: 1200px */
+@media (width <= 1200px) {
+  .left-section,
+  .center-section,
+  .right-section {
+    flex-wrap: nowrap;
+  }
+
+  .right-section {
+    margin-left: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .center-section {
+    flex-shrink: 0.5;
+    min-width: 150px;
+    margin: 0 0.5rem;
+  }
+
+  .left-section {
+    flex-shrink: 0.5;
+    margin-right: 0.5rem;
+  }
+}
+
+/* max-width: 900px */
+@media (width <= 900px) {
+  .center-section {
+    min-width: 120px;
+    font-size: 0.9rem;
+  }
+}
+
+/* max-width: 906px */
+@media (width <= 906px) {
+  .navbar .d-flex {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+  }
+
+  .left-section,
+  .center-section,
+  .right-section {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .rightSection {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  .navCollapse {
+    /* Keep the mobile menu in normal flow so it pushes page content down. */
+    position: static;
+    flex-basis: 100%;
+    width: 100%;
+    margin-top: 0.5rem;
+    padding-left: 0;
+  }
+
+  .navCollapseOpen {
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .menuContainer {
+    /* Full-width stacking prevents mobile nav links from compressing horizontally. */
+    align-items: stretch;
+    flex-direction: column !important;
+    justify-content: flex-start;
+    width: 100%;
+    margin-right: 0 !important;
+    padding-left: 0;
+  }
+
+  .centerSection {
+    /* Keep the announcement readable once the mobile header stacks. */
+    overflow: visible;
+    max-width: 100%;
+  }
+}
+
+@media (687px <= width <= 905px) {
+  .menuContainer {
+    /* Spacing prevents compact navigation labels from running together between 687px and 905px. */
+    flex-direction: row !important;
+    gap: 0.35rem 1rem;
+  }
+
+  .menuContainer :global(.nav-link) {
+    /* Bootstrap removes nav-link side padding below xl, so restore compact spacing here. */
+    padding-left: 0.55rem !important;
+    padding-right: 0.55rem !important;
+    white-space: nowrap;
+  }
+}
+
+/* Meeting notification modal (dark mode) */
+.meetingNotificationCustomHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background-color: #1c2541;
+  border-bottom: 1px solid #3a506b;
+  color: #fff;
+}
+
+.meetingNotificationCustomHeaderTitle {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #fff;
+}
+
+.meetingNotificationCustomHeaderClose {
+  padding: 0.25rem 0.5rem;
+  margin: -0.25rem -0.5rem -0.25rem auto;
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  opacity: 0.85;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.meetingNotificationCustomHeaderClose:hover {
+  opacity: 1;
+}
+
+:global(body.dark-mode) :global(.modal-content.meeting-notification-modal-panel--dark) :global(.modal-body),
+:global(body.dark-mode) :global(.modal-content.meeting-notification-modal-panel--dark) :global(.modal-footer),
+:global(body.dark-mode) :global(.modal-dialog.hgn-themed-modal--dark) :global(.modal-body),
+:global(body.dark-mode) :global(.modal-dialog.hgn-themed-modal--dark) :global(.modal-footer),
+:global(body.dark-mode) :global(.modal-dialog.meeting-notification-modal--dark) :global(.modal-body),
+:global(body.dark-mode) :global(.modal-dialog.meeting-notification-modal--dark) :global(.modal-footer) {
+  background-color: #3a506b !important;
+  border-color: #3a506b !important;
+  color: #f8f9fa !important;
+}
+
+.meetingNotificationModalBody {
+  line-height: 1.75;
+}
+
+.meetingNotificationModalActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgb(0 0 0 / 12%);
+}
+
+:global(.text-light) .meetingNotificationModalActions {
+  border-top-color: rgb(255 255 255 / 20%);
+}
+
+.meetingCalendarLink {
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.meetingNotificationModalFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.meetingNotificationNav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-right: auto;
+}
+
+.meetingNotificationNavCount {
+  min-width: 3.5rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.meetingNotificationCloseBtn {
+  margin-left: auto;
+}
+
+
+/* ── BM Dashboard Accordion Styles ── */
+.accordionToggle {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  cursor: pointer !important;
+}
+
+.accordionToggle:focus,
+.accordionToggle:active {
+  outline: none !important;
+}
+
+.accordionArrow {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 6px solid currentcolor;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.accordionArrowOpen {
+  transform: rotate(90deg);
+}
+
+.bmSubItem {
+  padding-left: 1.8rem !important;
+}
+
+.bmSubSubItem {
+  padding-left: 3rem !important;
+}
+
+.bmIconLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.bmIcon {
+  font-size: 0.85rem;
+  opacity: 0.75;
+  flex-shrink: 0;
+}

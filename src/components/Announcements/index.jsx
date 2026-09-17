@@ -1,19 +1,92 @@
 /* Announcements/Announcements.jsx */
-import { useState } from 'react';
-import './Announcements.css';
-import { useSelector } from 'react-redux';
-import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
-import classnames from 'classnames';
-import SocialMediaComposer from './SocialMediaComposer';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { faFacebook, faLinkedin, faMedium } from '@fortawesome/free-brands-svg-icons';
+import {
+  faChartLine,
+  faEnvelope,
+  faImage,
+  faNewspaper,
+  faVideo,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import classnames from 'classnames';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useHistory, useLocation } from 'react-router-dom';
 import ReactTooltip from 'react-tooltip';
-import EmailPanel from './platforms/email/index.jsx'; // ← new
+import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
+import styles from './Announcements.module.css';
+import EmailPanel from './platforms/email';
+import RedditAutoPoster from './platforms/reddit';
+import SlashdotAutoPoster from './platforms/slashdot';
+import SocialMediaComposer from './platforms/social/SocialMediaComposer';
 
 function Announcements({ title, email: initialEmail }) {
   const [activeTab, setActiveTab] = useState('email');
   const darkMode = useSelector(state => state.theme.darkMode);
+  const history = useHistory();
+  const location = useLocation();
+
+  // Get active tab from URL path
+  const getActiveTabFromURL = () => {
+    const path = location.pathname;
+
+    // Check for each platform
+    const platforms = [
+      'x',
+      'facebook',
+      'linkedin',
+      'pinterest',
+      'instagram',
+      'threads',
+      'mastodon',
+      'bluesky',
+      'youtube',
+      'reddit',
+      'tumblr',
+      'imgur',
+      'diigo',
+      'myspace',
+      'medium',
+      'plurk',
+      'bitily',
+      'livejournal',
+      'slashdot',
+      'blogger',
+      'truthsocial',
+    ];
+
+    for (const platform of platforms) {
+      if (path.includes(`/${platform}`)) {
+        return platform;
+      }
+    }
+
+    // Check for email platform
+    if (path.includes('/email')) {
+      return 'email';
+    }
+
+    // Default to email for main announcements page
+    return 'email';
+  };
+
+  // Update URL when activeTab changes
+  const updateURL = tab => {
+    if (tab === 'email') {
+      history.push('/announcements/email');
+    } else {
+      // For all social media platforms
+      history.push(`/announcements/${tab}`);
+    }
+  };
+
+  // Update activeTab when URL changes (e.g., browser back/forward)
+  useEffect(() => {
+    const newTab = getActiveTabFromURL();
+    if (newTab !== activeTab) {
+      setActiveTab(newTab);
+    }
+  }, [location.pathname]);
 
   const getIconColor = id => {
     switch (id) {
@@ -23,13 +96,24 @@ function Announcements({ title, email: initialEmail }) {
         return '#0077B5';
       case 'medium':
         return '#00ab6c';
+      case 'video':
+        return '#FF0000';
+      case 'article':
+        return '#4285f4';
+      case 'photo':
+        return '#E91E63';
+      case 'weeklyreport':
+        return '#00C853';
       default:
         return undefined;
     }
   };
 
   const tabs = [
-    { id: 'email', icon: faEnvelope, label: 'Email' },
+    { id: 'weeklyreport', icon: faChartLine, label: 'Weekly Report' },
+    { id: 'photo', icon: faImage, label: 'Photo' },
+    { id: 'video', icon: faVideo, label: 'Video' },
+    { id: 'article', icon: faNewspaper, label: 'Article' },
     { id: 'x', label: 'X', customIconSrc: 'social-media-logos/x_icon.png' },
     { id: 'facebook', icon: faFacebook, label: 'Facebook' },
     { id: 'linkedin', icon: faLinkedin, label: 'LinkedIn' },
@@ -42,23 +126,22 @@ function Announcements({ title, email: initialEmail }) {
     { id: 'reddit', label: 'Reddit', customIconSrc: 'social-media-logos/reddit_icon.png' },
     { id: 'tumblr', label: 'Tumblr', customIconSrc: 'social-media-logos/tumblr_icon.png' },
     { id: 'imgur', label: 'Imgur', customIconSrc: 'social-media-logos/imgur_icon.png' },
-    { id: 'diigo', label: 'Diigo', customIconSrc: 'social-media-logos/diigo_icon.png' },
     { id: 'myspace', label: 'Myspace', customIconSrc: 'social-media-logos/myspace_icon.png' },
     { id: 'medium', icon: faMedium, label: 'Medium' },
     { id: 'plurk', label: 'Plurk', customIconSrc: 'social-media-logos/plurk_icon.png' },
-    { id: 'bitily', label: 'Bitily', customIconSrc: 'social-media-logos/bitily_icon.png' },
     {
       id: 'livejournal',
       label: 'LiveJournal',
-      customIconSrc: 'social-media-logos/liveJournal_icon.png',
+      customIconSrc: '/social-media-logos/liveJournal_icon.png',
     },
-    { id: 'slashdot', label: 'Slashdot', customIconSrc: 'social-media-logos/slashdot_icon.png' },
-    { id: 'blogger', label: 'Blogger', customIconSrc: 'social-media-logos/blogger_icon.png' },
+    { id: 'slashdot', label: 'Slashdot', customIconSrc: '/social-media-logos/slashdot_icon.png' },
+    { id: 'blogger', label: 'Blogger', customIconSrc: '/social-media-logos/blogger_icon.png' },
     {
       id: 'truthsocial',
       label: 'Truth Social',
-      customIconSrc: 'social-media-logos/truthsocial_icon.png',
+      customIconSrc: '/social-media-logos/truthsocial_icon.png',
     },
+    { id: 'email', icon: faEnvelope, label: 'Email' },
   ];
 
   const columns = Math.ceil(tabs.length / 2);
@@ -71,20 +154,29 @@ function Announcements({ title, email: initialEmail }) {
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
       <Nav
-        className={classnames('tab-grid', { 'two-rows': columns, dark: darkMode })}
+        className={classnames(styles.tabGrid, {
+          [styles.twoRows]: columns === 2,
+          [styles.dark]: darkMode,
+        })}
         style={gridStyle}
       >
         {tabs.map(({ id, icon, label, customIconSrc }) => (
-          <NavItem key={id}>
+          <NavItem key={id} className={styles.navItem}>
             <NavLink
               data-tip={label}
-              className={classnames('tab-nav-item', { active: activeTab === id, dark: darkMode })}
-              onClick={() => setActiveTab(id)}
+              className={classnames(styles.navLink, styles.tabNavItem, {
+                [styles.active]: activeTab === id,
+                [styles.dark]: darkMode,
+              })}
+              onClick={() => {
+                setActiveTab(id);
+                updateURL(id);
+              }}
               aria-selected={activeTab === id}
             >
-              <div className="tab-icon">
+              <div className={styles.tabIcon}>
                 {customIconSrc ? (
-                  <img src={customIconSrc} alt={`${label} icon`} className="tab-icon" />
+                  <img src={customIconSrc} alt={`${label} icon`} className={styles.tabIcon} />
                 ) : (
                   <FontAwesomeIcon
                     icon={icon}
@@ -92,7 +184,7 @@ function Announcements({ title, email: initialEmail }) {
                   />
                 )}
               </div>
-              <div className="tab-label">{label}</div>
+              <div className={styles.tabLabel}>{label}</div>
             </NavLink>
           </NavItem>
         ))}
@@ -101,16 +193,29 @@ function Announcements({ title, email: initialEmail }) {
 
       <div style={{ backgroundColor: darkMode ? '#14233a' : '#fff', padding: '1rem' }}>
         <TabContent activeTab={activeTab}>
-          {/* Email tab now uses the extracted component */}
           <TabPane tabId="email">
             <EmailPanel title={title} initialEmail={initialEmail} />
           </TabPane>
 
-          {/* Platforms stay the same */}
+          <TabPane tabId="video">
+            <SocialMediaComposer platform="video" />
+          </TabPane>
+
+          <TabPane tabId="article">
+            <SocialMediaComposer platform="article" />
+          </TabPane>
+
+          <TabPane tabId="photo">
+            <SocialMediaComposer platform="photo" />
+          </TabPane>
+
+          <TabPane tabId="weeklyreport">
+            <SocialMediaComposer platform="weeklyreport" />
+          </TabPane>
+
           {[
             'x',
             'facebook',
-            'linkedin',
             'pinterest',
             'instagram',
             'threads',
@@ -128,12 +233,24 @@ function Announcements({ title, email: initialEmail }) {
             'livejournal',
             'slashdot',
             'blogger',
-            'truthsocial',
-          ].map(platform => (
-            <TabPane tabId={platform} key={platform}>
-              <SocialMediaComposer platform={platform} />
-            </TabPane>
-          ))}
+          ].map(platform => {
+            let PlatformComposer;
+            switch (platform) {
+              case 'slashdot':
+                PlatformComposer = SlashdotAutoPoster;
+                break;
+              case 'reddit':
+                PlatformComposer = RedditAutoPoster;
+                break;
+              default:
+                PlatformComposer = SocialMediaComposer;
+            }
+            return (
+              <TabPane tabId={platform} key={platform}>
+                <PlatformComposer platform={platform} darkMode={darkMode} />
+              </TabPane>
+            );
+          })}
         </TabContent>
       </div>
     </div>

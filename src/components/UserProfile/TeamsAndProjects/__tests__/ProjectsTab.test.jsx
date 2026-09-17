@@ -95,7 +95,9 @@ describe('ProjectsTab', () => {
 
   it('should render AddProjectPopup and UserProjectsTable components', () => {
     const { getByTestId } = renderWithRedux(<ProjectsTab />);
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(getByTestId('add-project-popup')).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(getByTestId('user-projects-table')).toBeInTheDocument();
   });
 
@@ -115,12 +117,13 @@ describe('ProjectsTab', () => {
         disabled={disabled}
       />,
     );
-
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     const popupInfo = getByTestId('popup-info');
     expect(popupInfo.getAttribute('data-projects')).toBe(JSON.stringify(projectsData));
     expect(popupInfo.getAttribute('data-userprojectsbyid')).toBe(JSON.stringify(userProjects || []));
     expect(popupInfo).not.toHaveAttribute('data-handlesubmit');
 
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     const tableInfo = getByTestId('table-info');
     expect(tableInfo.getAttribute('data-usertasks')).toBe(JSON.stringify(userTasks));
     expect(tableInfo.getAttribute('data-userprojectsbyid')).toBe(JSON.stringify(userProjects || []));
@@ -132,41 +135,49 @@ describe('ProjectsTab', () => {
 
   it('should call onAssignProject when project is selected in AddProjectPopup', () => {
     const { getByTestId } = renderWithRedux(<ProjectsTab onAssignProject={onAssignProject} />);
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     fireEvent.click(getByTestId('assign-btn'));
     expect(onAssignProject).toHaveBeenCalledWith({ _id: '123' });
   });
 
   it('should call onDeleteProject when project is deleted in UserProjectsTable', () => {
     const { getByTestId } = renderWithRedux(<ProjectsTab onDeleteProject={onDeleteProject} />);
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     fireEvent.click(getByTestId('delete-btn'));
     expect(onDeleteProject).toHaveBeenCalledWith('123');
   });
 
   it('should have undefined handleSubmit prop', () => {
     const { queryByTestId } = renderWithRedux(<ProjectsTab />);
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     const popupInfo = queryByTestId('popup-info');
     expect(popupInfo).not.toHaveAttribute('data-handlesubmit');
   });
 
   it('should render UserProjectsTable and AddProjectPopup', () => {
     const { getByTestId } = renderWithRedux(<ProjectsTab />);
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(getByTestId('add-project-popup')).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(getByTestId('user-projects-table')).toBeInTheDocument();
   });
 
   it('should render AddProjectPopup with empty userProjectsById', () => {
     const { getByTestId } = renderWithRedux(<ProjectsTab />);
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     const popupInfo = getByTestId('popup-info');
     expect(popupInfo.getAttribute('data-userprojectsbyid')).toBe(JSON.stringify([])); 
   });
 
   it('should render AddProjectPopup with no projects', () => {
     const { getByTestId } = renderWithRedux(<ProjectsTab projectsData={[]} />);
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(getByTestId('popup-info')).toHaveAttribute('data-projects', JSON.stringify([]));
   });
 
   it('should call onAssignProject with an undefined project', () => {
     const { getByTestId } = renderWithRedux(<ProjectsTab onAssignProject={onAssignProject} />);
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     fireEvent.click(getByTestId('assign-undefined-btn'));
     expect(onAssignProject).toHaveBeenCalledWith(undefined);
   });
@@ -188,7 +199,9 @@ describe('ProjectsTab', () => {
         disabled={disabled}
       />,
     );
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     fireEvent.click(getByTestId('assign-btn'));
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     const popupInfo = getByTestId('popup-info');
     expect(popupInfo.getAttribute('data-userprojectsbyid')).toBe(JSON.stringify(userProjectsTest));
     expect(onAssignProject).toHaveBeenCalledWith({ _id: '123' });

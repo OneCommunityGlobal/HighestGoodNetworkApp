@@ -21,17 +21,19 @@ import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from './../../../../../constants/popupId';
 import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
+import styles from '../wbs.module.css';
 
+import { permissions } from '../../../../../utils/constants';
 function ControllerRow(props) {
   /*
   * -------------------------------- variable declarations --------------------------------
   */
   // permissions
-  const canDeleteTask = props.hasPermission('deleteTask');
-  const canPostTask = props.hasPermission('postTask');
+  const canDeleteTask = props.hasPermission(permissions.deleteTask);
+  const canPostTask = props.hasPermission(permissions.postTask);
 
   // props from store
-  const { role, userPermissions, roles, popupContent, darkMode } = props;
+  const { role, userPermissions, roles, popupContent, darkMode, tasks } = props;
 
   // states from hooks
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -69,9 +71,9 @@ function ControllerRow(props) {
   * -------------------------------- JSX rendering --------------------------------
   */
   return (
-    <tr className="wbsTaskController" id={`controller_${props.taskId}`}>
-      <td colSpan={props.tableColNum} className={`controlTd ${darkMode ? 'bg-space-cadet' : ''}`}>
-        <div className="task-action-buttons">
+    <tr className={styles["wbsTaskController"]} id={`controller_${props.taskId}`}>
+      <td colSpan={props.tableColNum} className={`${styles['controlTd']} ${darkMode ? 'bg-space-cadet' : ''}`}>
+        <div className={styles["task-action-buttons"]}>
           {props.level < 4 && canPostTask ? (
             <AddTaskModal
               label={"Add Subtask"}
@@ -90,6 +92,7 @@ function ControllerRow(props) {
               pageLoadTime={props.pageLoadTime}
               isOpen={props.isOpen}
               setIsOpen={props.setIsOpen}
+              tasks={tasks}
             />
           ) : null}
           <EditTaskModal
@@ -110,7 +113,7 @@ function ControllerRow(props) {
             <Button
               color="danger"
               size="sm"
-              className="controlBtn"
+              className={styles["controlBtn"]}
               onClick={showUpDeleteModal}
               style={darkMode ? boxStyleDark : boxStyle}
             >
@@ -119,10 +122,10 @@ function ControllerRow(props) {
           )}
 
           <Dropdown direction="up" isOpen={dropdownOpen} toggle={toggle}>
-            <DropdownToggle caret color="primary" className="controlBtn" size="sm" style={darkMode ? boxStyleDark : boxStyle}>
+            <DropdownToggle caret color="primary" className={styles["controlBtn"]} size="sm" style={darkMode ? boxStyleDark : boxStyle}>
               Move
             </DropdownToggle>
-            <DropdownMenu>
+            <DropdownMenu className={darkMode ? styles.moveDropdownMenuDark : ''}>
               {props.siblings.map((item, i) => {
                 if (item.num !== props.num) {
                   return (
@@ -138,8 +141,8 @@ function ControllerRow(props) {
           <Button
             color="secondary"
             size="sm"
-            className="controlBtn"
-            onClick={() => onCopy(props.taskId)}
+            className={styles["controlBtn"]}
+            onClick={onCopy}
             style={darkMode ? boxStyleDark : boxStyle}
           >
             {isCopied ? 'Copied' : 'Copy'}

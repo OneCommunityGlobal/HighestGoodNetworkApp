@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { permissions } from '../../../utils/constants';
 // import { getUserProfile } from '../../actions/userProfile'
 import { Link } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
@@ -27,10 +28,12 @@ import {
   ADD_MATERIAL,
   LOG_MATERIAL,
   MATERIAL_LIST,
-  ADD_EQUIPMENT_TOOL,
+  ADD_EQUIPMENT,
+  ADD_TOOL,
   LOG_EQUIPMENT_TOOL,
   UPDATE_EQUIPMENT_TOOL,
   EQUIPMENT_TOOL_LIST,
+  CONSUMABLE_LIST,
   ISSUE,
   LESSON,
   TIMELOG,
@@ -58,28 +61,30 @@ export function Header(props) {
   const { isAuthenticated, user, firstName, profilePic } = props.auth;
 
   // Reports
-  const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
+  const canGetWeeklySummaries = props.hasPermission(permissions.getWeeklySummaries);
   // Users
 
-  const canPostUserProfile = props.hasPermission('postUserProfile');
-  const canDeleteUserProfile = props.hasPermission('deleteUserProfile');
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const canPostUserProfile = props.hasPermission(permissions.postUserProfile);
+  const canDeleteUserProfile = props.hasPermission(permissions.deleteUserProfile);
+  const canPutUserProfileImportantInfo = props.hasPermission(
+    permissions.putUserProfileImportantInfo,
+  );
   // Badges
-  const canCreateBadges = props.hasPermission('createBadges');
+  const canCreateBadges = props.hasPermission(permissions.createBadges);
   // Projects
-  const canPostProject = props.hasPermission('postProject');
+  const canPostProject = props.hasPermission(permissions.postProject);
   // Tasks
-  const canUpdateTask = props.hasPermission('updateTask');
+  const canUpdateTask = props.hasPermission(permissions.updateTask);
   // Teams
-  const canDeleteTeam = props.hasPermission('deleteTeam');
-  const canPutTeam = props.hasPermission('putTeam');
+  const canDeleteTeam = props.hasPermission(permissions.deleteTeam);
+  const canPutTeam = props.hasPermission(permissions.putTeam);
   // Popups
-  const canCreatePopup = props.hasPermission('createPopup');
-  const canUpdatePopup = props.hasPermission('updatePopup');
+  const canCreatePopup = props.hasPermission(permissions.createPopup);
+  const canUpdatePopup = props.hasPermission(permissions.updatePopup);
   // Roles
-  const canPutRole = props.hasPermission('putRole');
+  const canPutRole = props.hasPermission(permissions.putRole);
   // Permissions
-  const canManageUser = props.hasPermission('putUserProfilePermissions');
+  const canManageUser = props.hasPermission(permissions.putUserProfilePermissions);
 
   const dispatch = useDispatch();
 
@@ -166,8 +171,11 @@ export function Header(props) {
                     <DropdownItem tag={Link} to="/bmdashboard/materials-list">
                       {MATERIAL_LIST}
                     </DropdownItem>
-                    <DropdownItem tag={Link} to="/bmdashboard/add-equipment-tool">
-                      {ADD_EQUIPMENT_TOOL}
+                    <DropdownItem tag={Link} to="/bmdashboard/equipment/add">
+                      {ADD_EQUIPMENT}
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/bmdashboard/tools/add">
+                      {ADD_TOOL}
                     </DropdownItem>
                     <DropdownItem tag={Link} to="/bmdashboard/log-equipment-tool">
                       {LOG_EQUIPMENT_TOOL}
@@ -177,6 +185,9 @@ export function Header(props) {
                     </DropdownItem>
                     <DropdownItem tag={Link} to="/bmdashboard/equipment-tool-list">
                       {EQUIPMENT_TOOL_LIST}
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/bmdashboard/consumables">
+                      {CONSUMABLE_LIST}
                     </DropdownItem>
                     <DropdownItem tag={Link} to="/bmdashboard/issue">
                       {ISSUE}

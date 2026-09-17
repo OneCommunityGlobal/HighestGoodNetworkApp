@@ -50,6 +50,7 @@ describe('ToggleSwitch Component', () => {
       );
       
       // your component wraps the checkbox in a div.blueSqare
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
       const wrapper = container.querySelector('div[class*="blueSqare"]');
       expect(wrapper).toHaveClass('custom-toggle');
     });
@@ -174,9 +175,12 @@ describe('ToggleSwitch Component', () => {
       );
       
       // match the CSS‐module class name for the outer section
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
       const section = container.querySelector('div[class*="switchSection"]');
       expect(section).not.toBeNull();
-      expect(section).toHaveStyle({ fontSize: '14px', color: 'rgb(255, 0, 0)' });
+      const sectionColor = window.getComputedStyle(section).color;
+      expect(section).toHaveStyle({ fontSize: '14px' });
+      expect(['rgb(255, 0, 0)', 'red']).toContain(sectionColor);
     });
   });
 

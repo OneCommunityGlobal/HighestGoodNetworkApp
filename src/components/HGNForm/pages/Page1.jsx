@@ -5,15 +5,16 @@ import Banner from '../questionpages/Banner';
 import QuestionnaireInfo from '../questionpages/QuestionnaireInfo';
 import InfoForm from '../questionpages/InfoForm';
 import Progress from '../questionpages/Progress';
-import '../styles/hgnform.module.css';
+import styles from '../styles/hgnform.module.css';
 
 function Page1() {
-  const user = useSelector(state => state.auth.user);
   const dispatch = useDispatch();
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const user = useSelector(state => state.auth.user);
 
   useEffect(() => {
     if (user?.userid) {
-      dispatch(getUserProfileBasicInfo(user.userid));
+      dispatch(getUserProfileBasicInfo({ userId: user.userid }));
     }
   }, [dispatch, user?.userid]);
 
@@ -22,7 +23,7 @@ function Page1() {
   }, []);
 
   return (
-    <div className="hgnform">
+    <div className={`${styles['container-hgnform-wrapper']} ${darkMode ? 'bg-oxford-blue' : ''}`}>
       <Banner />
       <QuestionnaireInfo />
       <InfoForm />

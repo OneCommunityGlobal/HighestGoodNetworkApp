@@ -1,13 +1,13 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 
 import AssignBadgePopup from '~/components/Badge/AssignBadgePopup';
 import { Provider } from 'react-redux';
 import { themeMock } from '../../../__tests__/mockStates';
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 const mockallBadgeData = [
   { _id: '1', badgeName: '30 HOURS 3-WEEK STREAK' },
@@ -61,20 +61,18 @@ describe('AssignBadgePopup component', () => {
   });
 
   it('Check if tool tip renders the text when hovered', async () => {
-    const { container } = renderComponent();
-    const iconElement = container.querySelector('.fa.fa-info-circle');
+    renderComponent();
+    const iconElement = screen.getByTestId('select-info-icon');
 
     fireEvent.mouseEnter(iconElement);
 
-    await waitFor(() => {
-      const updatedText = screen.getByRole('tooltip');
-      expect(updatedText.textContent).toContain(
-        'Check those boxes to select the badges you wish to assign a person. Click the "Confirm" button at the bottom when you\'ve selected all you wish to add.',
-      );
-      expect(updatedText.textContent).toContain(
-        'Want to assign multiple of the same badge to a person? Repeat the process!',
-      );
-    });
+    const updatedText = await screen.findByRole('tooltip');
+    expect(updatedText.textContent).toContain(
+      'Check those boxes to select the badges you wish to assign a person. Click the "Confirm" button at the bottom when you\'ve selected all you wish to add.',
+    );
+    expect(updatedText.textContent).toContain(
+      'Want to assign multiple of the same badge to a person? Repeat the process!',
+    );
 
     fireEvent.mouseLeave(iconElement);
     await waitFor(() => {

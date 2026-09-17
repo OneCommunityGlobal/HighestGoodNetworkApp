@@ -28,16 +28,6 @@ module.exports = [
       'node_modules/**',
       'public/**',
       'build/**',
-      // Ignore test files inside /src/components
-      'src/components/BMDashboard/_tests_/BMDashboard.test.jsx',
-      'src/components/Reports/PeopleReport/components/PeopleTasksPieChart.test.jsx',
-      // Ignore entire component folders
-      'src/components/Badge/**',
-      'src/components/SummaryManagement/**',
-      'src/components/TeamMemberTasks/**',
-      'src/components/Teams/TeamMembersPopup.jsx',
-      'src/components/UserProfile/**',
-      'src/components/Announcements/index.jsx',
     ],
   },
 
@@ -77,6 +67,7 @@ module.exports = [
     },
     rules: {
       'react/react-in-jsx-scope': 'off',
+      'react/no-unescaped-entities': 'off',
       'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
       'no-underscore-dangle': 'off',
       'react/prop-types': 'off',

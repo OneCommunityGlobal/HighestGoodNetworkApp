@@ -1,7 +1,15 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import styles from '../Projects/projects.module.css';
 
-export default function SearchProjectByPerson({ onSearch, suggestions, onSelectSuggestion }) {
+export default function SearchProjectByPerson({
+  onSearch,
+  suggestions,
+  onSelectSuggestion,
+  searchMode,
+  handleFetchArchivedProjects,
+  showArchived,
+}) {
   const [inputValue, setInputValue] = useState(''); // Keep track of input value
   const [showSuggestions, setShowSuggestions] = useState(false); // Control whether suggestions are shown
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -12,7 +20,7 @@ export default function SearchProjectByPerson({ onSearch, suggestions, onSelectS
     onSearch(value); // Trigger search in the parent component
     if (value.trim() === '') {
       // When input is cleared, notify the parent to reset the project list
-      onSelectSuggestion(null); // Pass null or reset value to parent to fetch all projects
+      // onSelectSuggestion(null); // Pass null or reset value to parent to fetch all projects
       setShowSuggestions(false); // Hide suggestions if input is empty
     } else {
       setShowSuggestions(true); // Show suggestions when the user types
@@ -31,15 +39,19 @@ export default function SearchProjectByPerson({ onSearch, suggestions, onSelectS
       <form className="input-group mb-2" onSubmit={e => e.preventDefault()}>
         <div className="input-group-prepend">
           <span
-            className={`input-group-text search-field-container ${darkMode ? 'bg-light-grey' : ''}`}
+            className={`input-group-text search-field-container ${
+              darkMode ? `${styles.searchLabelDark} text-light` : ''
+            }`}
           >
             Search
           </span>
         </div>
         <input
           type="text"
-          className={`form-control ${darkMode ? 'bg-white' : ''}`}
-          placeholder="Person's Name"
+          className={`form-control ${styles.searchInput} ${
+            darkMode ? 'bg-darkmode-liblack text-light' : ''
+          }`}
+          placeholder={searchMode === 'person' ? 'Search by Person Name' : 'Search by Project Name'}
           value={inputValue}
           onChange={handleInputChange} // Trigger input change
         />

@@ -1,148 +1,263 @@
 /* eslint-disable react/jsx-one-expression-per-line */
-
 'use client';
 
-import { useState } from 'react';
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useMemo, useState } from 'react';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { useSelector } from 'react-redux';
+import { events, getAttendanceByEvent, getAttendanceInsights } from './mockData';
+import styles from './AttendanceNoShowCharts.module.css';
 
-const events = [
-  {
-    id: '1',
-    name: 'Conference A',
-    registrations: 100,
-    attendees: 78,
-    completed: 75,
-    walkouts: 5,
-    date: '2023-06-15',
-    time: '09:00 AM - 05:00 PM',
-    link: 'https://conferencea.com',
-    organizer: 'Tech Events Inc.',
-    capacity: 150,
-    overallRating: 4.5,
-    status: 'Completed',
-  },
-  {
-    id: '2',
-    name: 'Workshop B',
-    registrations: 50,
-    attendees: 44,
-    completed: 38,
-    walkouts: 2,
-    date: '2023-07-22',
-    time: '10:00 AM - 02:00 PM',
-    link: 'https://workshopb.com',
-    organizer: 'Skill Builders LLC',
-    capacity: 50,
-    overallRating: 4.8,
-    status: 'Upcoming',
-  },
-  {
-    id: '3',
-    name: 'Seminar C',
-    registrations: 75,
-    attendees: 63,
-    completed: 55,
-    walkouts: 5,
-    date: '2023-08-05',
-    time: '02:00 PM - 06:00 PM',
-    link: 'https://seminarc.com',
-    organizer: 'Knowledge Share Co.',
-    capacity: 100,
-    overallRating: 4.2,
-    status: 'In Progress',
-  },
-];
+const attendanceColors = ['#0b84c6', '#d6ecf8'];
+const participationColors = ['#3f8c12', '#cbe7a5'];
+const popularityColors = ['#c97a0a', '#ead0a7'];
 
-const attendanceColors = ['#0088FE', '#FF8042'];
-const noShowColors = ['#00C49F', '#FF0000'];
-
-const RADIAN = Math.PI / 180;
-const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-  const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-  return (
-    <text
-      x={x}
-      y={y}
-      fill="black"
-      textAnchor={x > cx ? 'start' : 'end'}
-      dominantBaseline="central"
-      fontSize="12"
-    >
-      {`${(percent * 100).toFixed(1)}%`}
-    </text>
-  );
+const statusColors = {
+  Upcoming: '#9ca3af',
+  'In Progress': '#3b82f6',
+  Completed: '#22c55e',
 };
 
 function AttendanceNoShowCharts() {
-  const [selectedEvent, setSelectedEvent] = useState(events[0]);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
-  const handleEventChange = e => {
-    const selectedEventId = e.target.value;
-    const newSelectedEvent = events.find(event => event.id === selectedEventId);
-    setSelectedEvent(newSelectedEvent);
+  const [selectedId, setSelectedId] = useState(events[0]?.id || '');
+  const [activeTab, setActiveTab] = useState('Analysis');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const selectedEvent = useMemo(() => events.find(event => event.id === selectedId), [selectedId]);
+
+  const attendanceLogs = useMemo(() => {
+    if (!selectedId) return [];
+    return getAttendanceByEvent(selectedId);
+  }, [selectedId]);
+
+  const insights = useMemo(() => {
+    if (!selectedId) {
+      return {
+        totalRegistered: 0,
+        totalAttended: 0,
+        totalNoShow: 0,
+        noShowRate: 0,
+      };
+    }
+    return getAttendanceInsights(selectedId);
+  }, [selectedId]);
+
+  const filteredLogs = useMemo(() => {
+    return attendanceLogs.filter(log => {
+      const matchesStatus = statusFilter ? log.status === statusFilter : true;
+      const q = searchTerm.trim().toLowerCase();
+
+      const matchesSearch = q
+        ? log.name.toLowerCase().includes(q) ||
+          log.email.toLowerCase().includes(q) ||
+          log.participantId.toLowerCase().includes(q)
+        : true;
+
+      return matchesStatus && matchesSearch;
+    });
+  }, [attendanceLogs, statusFilter, searchTerm]);
+
+  const calculatePercentageValue = (value, total) => {
+    if (!total || total === 0) return 0;
+    return Number(((value / total) * 100).toFixed(1));
   };
 
-  const calculatePercentage = (value, total) => {
-    return `${((value / total) * 100).toFixed(1)}%`;
+  const formatDateTime = value => {
+    if (!value) return '--';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '--';
+    return date.toLocaleString();
   };
 
-  const attendanceData = [
-    { name: 'Completed', value: selectedEvent.completed },
-    { name: 'Walkouts', value: selectedEvent.walkouts },
+  const formatDisplayDate = value => {
+    if (!value) return '--';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return value;
+    return date.toLocaleDateString(undefined, {
+      weekday: 'long',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
+  const getCalendarData = value => {
+    const baseDate = value ? new Date(value) : new Date();
+    if (Number.isNaN(baseDate.getTime())) {
+      const fallback = new Date();
+      return {
+        monthLabel: fallback.toLocaleString('default', {
+          month: 'long',
+          year: 'numeric',
+        }),
+        activeDay: fallback.getDate(),
+        daysInMonth: new Date(fallback.getFullYear(), fallback.getMonth() + 1, 0).getDate(),
+        firstDayOfMonth: new Date(fallback.getFullYear(), fallback.getMonth(), 1).getDay(),
+      };
+    }
+
+    return {
+      monthLabel: baseDate.toLocaleString('default', {
+        month: 'long',
+        year: 'numeric',
+      }),
+      activeDay: baseDate.getDate(),
+      daysInMonth: new Date(baseDate.getFullYear(), baseDate.getMonth() + 1, 0).getDate(),
+      firstDayOfMonth: new Date(baseDate.getFullYear(), baseDate.getMonth(), 1).getDay(),
+    };
+  };
+
+  const handleShareAvailability = async () => {
+    if (!selectedEvent) return;
+
+    const shareText = `${selectedEvent.name} | ${formatDisplayDate(selectedEvent.date)} | ${
+      selectedEvent.time
+    } | ${selectedEvent.link}`;
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: selectedEvent.name,
+          text: `${selectedEvent.name} - ${formatDisplayDate(selectedEvent.date)} - ${
+            selectedEvent.time
+          }`,
+          url: selectedEvent.link,
+        });
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(shareText);
+        alert('Event details copied to clipboard');
+      } else {
+        window.open(selectedEvent.link, '_blank', 'noopener,noreferrer');
+      }
+    } catch (error) {
+      // user cancelled or share failed
+    }
+  };
+
+  if (!selectedEvent) {
+    return (
+      <div className={`${styles.pageContainer} ${darkMode ? styles.darkMode : ''}`}>
+        <div className={styles.emptyState}>No event data available</div>
+      </div>
+    );
+  }
+
+  const attendanceRate = calculatePercentageValue(insights.totalAttended, insights.totalRegistered);
+
+  const participationRate = calculatePercentageValue(
+    selectedEvent.completed,
+    selectedEvent.registrations,
+  );
+
+  const popularityRate = calculatePercentageValue(
+    selectedEvent.registrations,
+    selectedEvent.capacity,
+  );
+
+  const attendanceRateData = [
+    { name: 'showUp', value: attendanceRate },
+    { name: 'remaining', value: 100 - attendanceRate },
   ];
 
-  const noShowData = [
-    { name: 'Attendees', value: selectedEvent.attendees },
-    { name: 'No-Shows', value: selectedEvent.registrations - selectedEvent.attendees },
+  const participationRateData = [
+    { name: 'participated', value: participationRate },
+    { name: 'remaining', value: 100 - participationRate },
   ];
+
+  const popularityRateData = [
+    { name: 'popular', value: popularityRate },
+    { name: 'remaining', value: 100 - popularityRate },
+  ];
+
+  const stayBreakdown = [
+    { label: '2.5-3 h', value: 87, color: '#6ad3b2' },
+    { label: '1-2 h', value: 3, color: '#f3b63f' },
+    { label: '< 1 h', value: 13, color: '#ff4d4f' },
+    { label: 'Walkouts', value: 5, color: '#7a74b8' },
+  ];
+
+  const currentStatus = selectedEvent.status || 'Unknown';
+  const statusColor = statusColors[currentStatus] || '#9ca3af';
+
+  const { monthLabel, activeDay, daysInMonth, firstDayOfMonth } = getCalendarData(
+    selectedEvent.date,
+  );
+
+  const calendarLeadingBlanks = Array.from({ length: firstDayOfMonth }, (_, i) => (
+    <span key={`blank-${i}`} className={styles.calendarBlank} />
+  ));
+
+  const calendarDays = Array.from({ length: daysInMonth }, (_, i) => (
+    <span
+      key={i + 1}
+      className={`${styles.calendarDay} ${i + 1 === activeDay ? styles.calendarActiveDay : ''}`}
+    >
+      {i + 1}
+    </span>
+  ));
+
+  const renderDonutCard = (title, subtitle, data, colors, footerLeft, footerRight) => (
+    <div className={styles.metricCard}>
+      <div className={styles.metricDots}>•••</div>
+      <div className={styles.metricChart}>
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={data}
+              innerRadius={72}
+              outerRadius={94}
+              startAngle={90}
+              endAngle={-270}
+              paddingAngle={0}
+              dataKey="value"
+              stroke="none"
+            >
+              {data.map((entry, index) => (
+                <Cell key={`${title}-${entry.name}`} fill={colors[index]} />
+              ))}
+            </Pie>
+            <Tooltip
+              offset={200}
+              contentStyle={{
+                backgroundColor: darkMode ? '#1f2937' : '#ffffff',
+                border: darkMode ? '1px solid #4b5563' : '1px solid #e5e7eb',
+                borderRadius: '6px',
+                color: darkMode ? '#f9fafb' : '#111827',
+              }}
+              itemStyle={{
+                color: darkMode ? '#f9fafb' : '#111827',
+              }}
+              labelStyle={{
+                color: darkMode ? '#f9fafb' : '#111827',
+              }}
+            />
+          </PieChart>
+        </ResponsiveContainer>
+        <div className={styles.metricCenterLabel}>{title}</div>
+      </div>
+      <div className={styles.metricSubtitle}>{subtitle}</div>
+      <div className={styles.metricLegendRow}>
+        <span className={styles.legendItem}>
+          <span className={styles.legendDot} style={{ backgroundColor: colors[0] }} />
+          {footerLeft}
+        </span>
+        <span className={styles.legendItem}>
+          <span className={styles.legendDot} style={{ backgroundColor: colors[1] }} />
+          {footerRight}
+        </span>
+      </div>
+    </div>
+  );
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        backgroundColor: '#f9fafb',
-        padding: '16px',
-        fontFamily: 'Arial, sans-serif',
-        lineHeight: 1.6,
-        color: '#333',
-      }}
-    >
-      <div
-        style={{
-          maxWidth: '1200px',
-          margin: '0 auto',
-        }}
-      >
-        <h1
-          style={{
-            fontSize: '24px',
-            fontWeight: 'bold',
-            textAlign: 'center',
-            color: '#111827',
-            marginBottom: '24px',
-          }}
-        >
-          Event-wise Attendance Statistics
-        </h1>
-
-        {/* Event Selector */}
-        <div style={{ marginBottom: '24px' }}>
+    <div className={`${styles.pageContainer} ${darkMode ? styles.darkMode : ''}`}>
+      <div className={styles.contentWrapper}>
+        <div className={styles.selectorRow}>
           <select
-            onChange={handleEventChange}
-            value={selectedEvent.id}
-            style={{
-              width: '100%',
-              padding: '12px',
-              fontSize: '16px',
-              border: '1px solid #d1d5db',
-              borderRadius: '6px',
-              backgroundColor: 'white',
-              boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-              outline: 'none',
-            }}
+            className={styles.eventSelect}
+            onChange={e => setSelectedId(e.target.value)}
+            value={selectedId}
           >
             {events.map(event => (
               <option key={event.id} value={event.id}>
@@ -152,459 +267,278 @@ function AttendanceNoShowCharts() {
           </select>
         </div>
 
-        {/* Event Details Card */}
-        <div
-          style={{
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-            padding: '24px',
-            marginBottom: '24px',
-          }}
-        >
-          <h2
-            style={{
-              fontSize: '24px',
-              fontWeight: '600',
-              color: '#111827',
-              marginBottom: '24px',
-            }}
-          >
-            {selectedEvent.name}
-          </h2>
-
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-              gap: '20px',
-            }}
-          >
-            <div style={{ marginBottom: '8px' }}>
-              <p
-                style={{
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  color: '#6b7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '4px',
-                }}
-              >
-                Date
-              </p>
-              <p
-                style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: '#111827',
-                }}
-              >
-                {selectedEvent.date}
-              </p>
-            </div>
-
-            <div style={{ marginBottom: '8px' }}>
-              <p
-                style={{
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  color: '#6b7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '4px',
-                }}
-              >
-                Time
-              </p>
-              <p
-                style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: '#111827',
-                }}
-              >
-                {selectedEvent.time}
-              </p>
-            </div>
-
-            <div style={{ marginBottom: '8px' }}>
-              <p
-                style={{
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  color: '#6b7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '4px',
-                }}
-              >
-                Event Link
-              </p>
-              <a
-                href={selectedEvent.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: '#2563eb',
-                  textDecoration: 'none',
-                  wordBreak: 'break-all',
-                }}
-                onMouseOver={e => {
-                  e.target.style.textDecoration = 'underline';
-                }}
-                onMouseOut={e => {
-                  e.target.style.textDecoration = 'none';
-                }}
-                onFocus={e => {
-                  e.target.style.textDecoration = 'underline';
-                }}
-                onBlur={e => {
-                  e.target.style.textDecoration = 'none';
-                }}
-              >
-                {selectedEvent.link}
-              </a>
-            </div>
-
-            <div style={{ marginBottom: '8px' }}>
-              <p
-                style={{
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  color: '#6b7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '4px',
-                }}
-              >
-                Organizer
-              </p>
-              <p
-                style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: '#111827',
-                }}
-              >
-                {selectedEvent.organizer}
-              </p>
-            </div>
-
-            <div style={{ marginBottom: '8px' }}>
-              <p
-                style={{
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  color: '#6b7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '4px',
-                }}
-              >
-                Capacity
-              </p>
-              <p
-                style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: '#111827',
-                }}
-              >
-                {selectedEvent.capacity}
-              </p>
-            </div>
-
-            <div style={{ marginBottom: '8px' }}>
-              <p
-                style={{
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  color: '#6b7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '4px',
-                }}
-              >
-                Overall Rating
-              </p>
-              <p
-                style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: '#111827',
-                }}
-              >
-                <p>
-                  {selectedEvent.overallRating}
-                  {' / 5'}
-                </p>
-              </p>
-            </div>
-
-            <div style={{ marginBottom: '8px' }}>
-              <p
-                style={{
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  color: '#6b7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '4px',
-                }}
-              >
-                Status
-              </p>
-              <p
-                style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: '#111827',
-                }}
-              >
-                {selectedEvent.status}
-              </p>
-            </div>
-
-            <div style={{ marginBottom: '8px' }}>
-              <p
-                style={{
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  color: '#6b7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '4px',
-                }}
-              >
-                Total Registrations
-              </p>
-              <p
-                style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: '#111827',
-                }}
-              >
-                {selectedEvent.registrations}
-              </p>
-            </div>
-
-            <div style={{ marginBottom: '8px' }}>
-              <p
-                style={{
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  color: '#6b7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '4px',
-                }}
-              >
-                Total Attendees
-              </p>
-              <p
-                style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: '#111827',
-                }}
-              >
-                {selectedEvent.attendees} (
-                {calculatePercentage(selectedEvent.attendees, selectedEvent.registrations)})
-              </p>
-            </div>
-
-            <div style={{ marginBottom: '8px' }}>
-              <p
-                style={{
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  color: '#6b7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '4px',
-                }}
-              >
-                Completed
-              </p>
-              <p
-                style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: '#111827',
-                }}
-              >
-                {selectedEvent.completed} (
-                {calculatePercentage(selectedEvent.completed, selectedEvent.attendees)})
-              </p>
-            </div>
-
-            <div style={{ marginBottom: '8px' }}>
-              <p
-                style={{
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  color: '#6b7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '4px',
-                }}
-              >
-                Walkouts
-              </p>
-              <p
-                style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: '#111827',
-                }}
-              >
-                {selectedEvent.walkouts} (
-                {calculatePercentage(selectedEvent.walkouts, selectedEvent.attendees)})
-              </p>
+        <div className={styles.heroCard}>
+          <div className={styles.heroLeft}>
+            <div className={styles.heroPoster} />
+            <div className={styles.heroBadge}>
+              {currentStatus === 'Completed' ? 'Finished' : currentStatus}
             </div>
           </div>
-        </div>
 
-        {/* Charts Section */}
-        <div
-          style={{
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-            padding: '24px',
-          }}
-        >
-          <h2
-            style={{
-              fontSize: '24px',
-              fontWeight: '600',
-              color: '#111827',
-              marginBottom: '24px',
-            }}
-          >
-            Attendance and No-Show Breakdown
-          </h2>
+          <div className={styles.heroCenter}>
+            <p className={styles.heroEyebrow}>Event or Course / In-person or Remote</p>
+            <h1 className={styles.heroTitle}>{selectedEvent.name}</h1>
+            <p className={styles.heroLink}>{selectedEvent.link}</p>
 
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '32px',
-            }}
-            className="charts-container"
-          >
-            {/* Attendance Chart */}
-            <div style={{ width: '100%' }}>
-              <h3
-                style={{
-                  fontSize: '18px',
-                  fontWeight: '500',
-                  color: '#111827',
-                  marginBottom: '12px',
-                  textAlign: 'center',
-                }}
-              >
-                Attendance Breakdown
-              </h3>
-              <div style={{ height: '300px', width: '100%' }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={attendanceData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={renderCustomizedLabel}
-                      outerRadius="70%"
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {attendanceData.map((entry, index) => (
-                        <Cell
-                          key={`cell-${entry.name}`}
-                          fill={attendanceColors[index % attendanceColors.length]}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
+            <div className={styles.heroMetaGrid}>
+              <div className={styles.metaItem}>
+                <span className={styles.metaLabel}>Date</span>
+                <span className={styles.metaValue}>{formatDisplayDate(selectedEvent.date)}</span>
+              </div>
+              <div className={styles.metaItem}>
+                <span className={styles.metaLabel}>Time</span>
+                <span className={styles.metaValue}>{selectedEvent.time}</span>
+              </div>
+              <div className={styles.metaItem}>
+                <span className={styles.metaLabel}>Organizer</span>
+                <span className={styles.metaValue}>{selectedEvent.organizer}</span>
+              </div>
+              <div className={styles.metaItem}>
+                <span className={styles.metaLabel}>Capacity</span>
+                <span className={styles.metaValue}>
+                  {selectedEvent.registrations}/{selectedEvent.capacity}
+                </span>
+              </div>
+              <div className={styles.metaItem}>
+                <span className={styles.metaLabel}>Overall Rating</span>
+                <span className={styles.metaValue}>
+                  {'★'.repeat(Math.max(1, Math.round(selectedEvent.overallRating || 0)))}
+                </span>
+              </div>
+              <div className={styles.metaItem}>
+                <span className={styles.metaLabel}>Status</span>
+                <span
+                  className={styles.statusPill}
+                  style={{ backgroundColor: `${statusColor}22`, color: statusColor }}
+                >
+                  {currentStatus}
+                </span>
               </div>
             </div>
 
-            {/* No-Show Chart */}
-            <div style={{ width: '100%' }}>
-              <h3
-                style={{
-                  fontSize: '18px',
-                  fontWeight: '500',
-                  color: '#111827',
-                  marginBottom: '12px',
-                  textAlign: 'center',
-                }}
+            <div className={styles.heroFooter}>
+              <div className={styles.avatarRow}>
+                <span className={styles.avatar}>A</span>
+                <span className={styles.avatar}>B</span>
+                <span className={styles.avatar}>C</span>
+                <span className={styles.avatar}>D</span>
+                <span className={styles.avatarCount}>
+                  +{Math.max(0, insights.totalAttended - 4)}
+                </span>
+              </div>
+              <button
+                type="button"
+                className={styles.shareButton}
+                onClick={handleShareAvailability}
               >
-                Registration vs Attendance
-              </h3>
-              <div style={{ height: '300px', width: '100%' }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={noShowData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={renderCustomizedLabel}
-                      outerRadius="70%"
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {noShowData.map((entry, index) => (
-                        <Cell
-                          key={`cell-${entry.name}`}
-                          fill={noShowColors[index % noShowColors.length]}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
+                Share Availability
+              </button>
+            </div>
+          </div>
+
+          <div className={styles.heroRight}>
+            <div className={styles.calendarCard}>
+              <div className={styles.calendarHeader}>{monthLabel}</div>
+              <div className={styles.calendarGrid}>
+                {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
+                  <span key={day} className={styles.calendarDayName}>
+                    {day}
+                  </span>
+                ))}
+                {calendarLeadingBlanks}
+                {calendarDays}
               </div>
             </div>
           </div>
         </div>
+
+        <div className={styles.tabsRow}>
+          {['Description', 'Analysis', 'Participates', 'Comments'].map(tab => (
+            <button
+              key={tab}
+              type="button"
+              className={`${styles.tabButton} ${activeTab === tab ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        {activeTab === 'Description' && (
+          <div className={styles.sectionCard}>
+            <h2 className={styles.sectionTitle}>Description</h2>
+            <p className={styles.sectionText}>
+              This event dashboard tracks attendance, participation, and no-show insights for
+              improved event management. It summarizes registrations, attendees, completion, and
+              engagement quality in one place.
+            </p>
+          </div>
+        )}
+
+        {activeTab === 'Analysis' && (
+          <>
+            <div className={styles.metricGrid}>
+              {renderDonutCard(
+                'Attendance\nRate',
+                `${attendanceRate}% registered showed up`,
+                attendanceRateData,
+                attendanceColors,
+                'show up',
+                'all',
+              )}
+
+              {renderDonutCard(
+                'Participation',
+                `${participationRate}% residents attended the event`,
+                participationRateData,
+                participationColors,
+                'attended',
+                'all',
+              )}
+
+              {renderDonutCard(
+                'Popularity',
+                'among all workshops',
+                popularityRateData,
+                popularityColors,
+                'more',
+                'less',
+              )}
+            </div>
+
+            <div className={styles.sectionCard}>
+              <div className={styles.barHeader}>
+                <span className={styles.sectionTitle}>
+                  Participants stay length record analysis
+                </span>
+                <span className={styles.barTag}>stay for 2.5-3 h</span>
+              </div>
+
+              <div className={styles.stackedBar}>
+                {stayBreakdown.map(item => (
+                  <div
+                    key={item.label}
+                    className={styles.stackedSegment}
+                    style={{
+                      width: `${item.value}%`,
+                      backgroundColor: item.color,
+                    }}
+                    title={`${item.label}: ${item.value}%`}
+                  >
+                    {item.value}%
+                  </div>
+                ))}
+              </div>
+
+              <div className={styles.legendWrap}>
+                {stayBreakdown.map(item => (
+                  <div key={item.label} className={styles.legendItem}>
+                    <span className={styles.legendDot} style={{ backgroundColor: item.color }} />
+                    {item.label}
+                  </div>
+                ))}
+              </div>
+
+              <div className={styles.statGrid}>
+                <div className={styles.statBox}>
+                  <span className={styles.statLabel}>Total Leads</span>
+                  <span className={styles.statValue}>{selectedEvent.registrations}</span>
+                </div>
+                <div className={styles.statBox}>
+                  <span className={styles.statLabel}>Converted Leads</span>
+                  <span className={styles.statValue}>{insights.totalAttended}</span>
+                </div>
+                <div className={styles.statBox}>
+                  <span className={styles.statLabel}>Assigned Leads</span>
+                  <span className={styles.statValue}>{selectedEvent.completed}</span>
+                </div>
+                <div className={styles.statBox}>
+                  <span className={styles.statLabel}>Dropped Leads</span>
+                  <span className={styles.statValue}>{insights.totalNoShow}</span>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {activeTab === 'Participates' && (
+          <div className={styles.sectionCard}>
+            <div className={styles.filterRow}>
+              <input
+                type="text"
+                placeholder="Search by name, email, or participant ID"
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                className={styles.filterInput}
+              />
+              <select
+                value={statusFilter}
+                onChange={e => setStatusFilter(e.target.value)}
+                className={styles.filterSelect}
+              >
+                <option value="">All</option>
+                <option value="Attended">Attended</option>
+                <option value="No-Show">No-Show</option>
+              </select>
+            </div>
+
+            <div className={styles.tableWrap}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Attendance ID</th>
+                    <th>Participant ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Check-In Time</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredLogs.length > 0 ? (
+                    filteredLogs.map(log => (
+                      <tr key={log.attendanceId}>
+                        <td>{log.attendanceId}</td>
+                        <td>{log.participantId}</td>
+                        <td>{log.name}</td>
+                        <td>{log.email}</td>
+                        <td>{formatDateTime(log.checkInTime)}</td>
+                        <td>
+                          <span
+                            className={`${styles.tableStatus} ${
+                              log.status === 'Attended'
+                                ? styles.attendedStatus
+                                : styles.noShowStatus
+                            }`}
+                          >
+                            {log.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6" className={styles.noRows}>
+                        No attendance records found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'Comments' && (
+          <div className={styles.sectionCard}>
+            <h2 className={styles.sectionTitle}>Comments</h2>
+            <p className={styles.sectionText}>
+              Comments and feedback can be shown here for future enhancement.
+            </p>
+          </div>
+        )}
       </div>
-
-      <style>
-        {`
-        @media (min-width: 768px) {
-          .charts-container {
-            flex-direction: row !important;
-            justify-content: space-between;
-          }
-          .charts-container > div {
-            width: 48% !important;
-          }
-        }
-
-        @media (max-width: 480px) {
-          h1 {
-            font-size: 20px !important;
-          }
-          h2 {
-            font-size: 20px !important;
-          }
-          h3 {
-            font-size: 16px !important;
-          }
-        }
-      `}
-      </style>
     </div>
   );
 }

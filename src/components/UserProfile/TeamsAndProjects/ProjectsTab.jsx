@@ -27,6 +27,7 @@ const ProjectsTab = props => {
   };
 
 const onSelectAssignProject = project => {
+  // eslint-disable-next-line no-console
   console.log('Assigned Project in ProjectsTab:', project); // Debugging log
   onAssignProject(project);       // parent adds to the list
   setRenderedOn(Date.now());      // refresh the table

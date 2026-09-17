@@ -21,13 +21,15 @@ import BadgeTableFilter from './BadgeTableFilter';
 import EditBadgePopup from './EditBadgePopup';
 import DeleteBadgePopup from './DeleteBadgePopup';
 import hasPermission from '../../utils/permissions';
-import './Badge.css';
+import { permissions } from '../../utils/constants';
+import './Badge.module.css';
+import styles from './BadgeDevelopmentTable.module.css';
 
 function BadgeDevelopmentTable(props) {
   const { darkMode } = props;
 
-  const canUpdateBadges = hasPermission('update:badges');
-  const canDeleteBadges = hasPermission('delete:badges');
+  const canUpdateBadges = props.hasPermission(permissions.updateBadges);
+  const canDeleteBadges = props.hasPermission(permissions.deleteBadges);
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -37,7 +39,7 @@ function BadgeDevelopmentTable(props) {
   const [deleteName, setDeleteName] = useState('');
   const [deletePopup, setDeletePopup] = useState(false);
 
-  const [editBadgeValues, setEditBadgeValues] = useState('');
+  const [editBadgeValues, setEditBadgeValues] = useState(null);
   const [editPopup, setEditPopup] = useState(false);
 
   const [sortedBadges, setSortedBadges] = useState([]);
@@ -163,7 +165,6 @@ function BadgeDevelopmentTable(props) {
   };
 
   const handleSortName = () => {
-    console.log('here sort name');
     setSortRankState('default');
     setSortNameState(prevState => {
       // change the icon
@@ -187,7 +188,6 @@ function BadgeDevelopmentTable(props) {
 
   const handleSortRank = () => {
     setSortNameState('default');
-    console.log('sort rank');
     setSortRankState(prevState => {
       // Change the icon state
       let newState = 'ascending';
@@ -206,7 +206,7 @@ function BadgeDevelopmentTable(props) {
     });
   };
 
-  const filteredBadges = sortedBadges;
+  const filteredBadges = filterBadges(sortedBadges);
 
   const toggleCheckbox = id => {
     // prettier-ignore
@@ -228,15 +228,10 @@ function BadgeDevelopmentTable(props) {
             toggleCheckbox(badgeValue._id);
             props.updateBadge(badgeValue._id, updatedValue);
           }}
-          style={{
-            display: 'inline-block',
-            width: '20px',
-            height: '20px',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            backgroundColor: checkValue ? '#007bff' : 'transparent',
-            cursor: 'pointer',
-          }}
+          data-testid={`report-checkbox-${badgeValue._id}`}
+          className={`${styles.reportCheckbox} ${
+            checkValue ? styles.reportCheckboxChecked : styles.reportCheckboxUnchecked
+          }`}
         />
       </div>
     );
@@ -272,7 +267,9 @@ function BadgeDevelopmentTable(props) {
   return (
     <Container fluid>
       <table
-        className={`table table-bordered ${darkMode ? 'bg-yinmn-blue text-light dark-mode' : ''}`}
+        className={`table table-bordered ${
+          darkMode ? `bg-yinmn-blue text-light ${styles.tableDark}` : ''
+        }`}
       >
         <thead>
           <BadgeTableHeader
@@ -288,21 +285,17 @@ function BadgeDevelopmentTable(props) {
             <tr key={value._id}>
               <td className="badge_image_sm">
                 {' '}
-                <img src={value.imageUrl} id={`popover_${value._id}`} alt="" />
+                <img
+                  src={value.imageUrl ?? ''}
+                  id={`popover_${value._id}`}
+                  alt={value.imageUrl ? '' : 'No image'}
+                  data-testid={`badge-image-${value._id}`}
+                />
                 <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
                   <Card className={`text-center ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
                     <CardImg className="badge_image_lg" src={value?.imageUrl} />
                     <CardBody>
-                      <CardTitle
-                        style={{
-                          fontWeight: 'bold',
-                          fontSize: 18,
-                          color: '#285739',
-                          marginBottom: 15,
-                        }}
-                      >
-                        {value?.badgeName}
-                      </CardTitle>
+                      <CardTitle className={styles.badgeCardTitle}>{value?.badgeName}</CardTitle>
                       <CardText>{value?.description}</CardText>
                     </CardBody>
                   </Card>
@@ -337,7 +330,7 @@ function BadgeDevelopmentTable(props) {
                   </Button>
                 </span>
               </td>
-              <td style={{ textAlign: 'center' }}>{reportBadge(value)}</td>
+              <td className={styles.reportCell}>{reportBadge(value)}</td>
             </tr>
           ))}
         </tbody>

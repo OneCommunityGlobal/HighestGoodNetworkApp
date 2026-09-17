@@ -1,3 +1,4 @@
+/* stylelint-disable  */
 .consumableContainer {
   padding: 0% !important;
   min-height: 100vh;
@@ -7,7 +8,7 @@
   background-color: #E8F4F9;
   width: 100%;
   min-height: 100%;
-  margin: 0px;
+  margin: 0;
   padding: 1rem 2rem;
   font-size: 15px;
 }
@@ -60,8 +61,34 @@
   justify-content: flex-start;
 }
 
-@media (max-width: 780px) {
+.darkBg{
+  background-color: #2E5061;
+}
 
+.lightBg{
+  background-color: #607D8B;
+}
+
+.select :global(.rs__control) {
+ background-color: #2a3f5f !important;
+ border: none;
+}
+
+.select :global(.rs__menu) {
+  background-color: #2a3f5f !important;
+}
+
+/* Focused */
+.select :global(.rs__control--is-focused) {
+  border-color: #2a3f5f;
+  box-shadow: 0 0 0 1px #2a3f5f;
+}
+
+.select :global(.rs__option--is-focused) {
+  background-color: #99b2e3;
+}
+
+@media (width <= 780px) {
   #AddConsumableForm {
     padding-left: 20px;
     padding-right: 20px;

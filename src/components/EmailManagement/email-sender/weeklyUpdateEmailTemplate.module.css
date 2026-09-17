@@ -1,0 +1,161 @@
+/* ==========================================================================
+   WEEKLY UPDATE EMAIL TEMPLATE STYLES
+   ========================================================================== */
+
+/* Email Container */
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.6;
+  color: #333333;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+}
+
+.email-wrapper {
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Header Section */
+.email-header {
+  background-color: #2c5aa0;
+  padding: 30px 20px;
+  text-align: center;
+}
+
+.email-header h1 {
+  color: #ffffff;
+  margin: 0;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.email-header .date {
+  color: #e0e7ff;
+  margin: 8px 0 0 0;
+  font-size: 16px;
+}
+
+/* Header Image Section */
+.header-image-section {
+  padding: 30px 20px;
+  background-color: #f8f9fa;
+}
+
+.header-image {
+  width: 100%;
+  max-width: 560px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Content Section */
+.content {
+  padding: 30px;
+}
+
+.content p {
+  margin: 0 0 15px 0;
+  line-height: 1.6;
+}
+
+/* Video Section */
+.video-section {
+  margin: 25px 0;
+  text-align: center;
+}
+
+.video-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #2c5aa0;
+  margin-bottom: 15px;
+}
+
+.video-thumbnail {
+  width: 100%;
+  max-width: 560px;
+  height: auto;
+  border: 2px solid #e0e0e0;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.video-thumbnail:hover {
+  transform: scale(1.02);
+}
+
+.video-link {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 12px 30px;
+  background-color: #2c5aa0;
+  color: #ffffff !important;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+/* Love Section */
+.love-section {
+  margin: 30px 0;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-left: 4px solid #2c5aa0;
+}
+
+.love-section p {
+  margin: 0 0 10px 0;
+}
+
+.love-section a {
+  color: #2c5aa0;
+  text-decoration: none;
+}
+
+.love-section a:hover {
+  text-decoration: underline;
+}
+
+/* Social Links Section */
+.social-links {
+  text-align: center;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-top: 1px solid #e0e0e0;
+}
+
+.social-links a {
+  display: inline-block;
+  margin: 0 10px;
+  color: #2c5aa0;
+  text-decoration: none;
+}
+
+.social-links a:hover {
+  text-decoration: underline;
+}
+
+/* Footer Section */
+.footer {
+  text-align: center;
+  padding: 20px;
+  background-color: #2c5aa0;
+  color: #ffffff;
+  font-size: 12px;
+}
+
+.footer a {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.footer p {
+  margin: 5px 0;
+}
