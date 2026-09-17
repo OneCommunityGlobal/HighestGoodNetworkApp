@@ -8,6 +8,7 @@ import {
   getReviewerGroups,
   createReviewerGroup,
   updateReviewerGroup,
+  updatePrsNeeded,
 } from '../../actions/promotionActions';
 import ReviewForThisWeekModal from './ReviewForThisWeekModal';
 import styles from './PromotionEligibility.module.css';
@@ -29,6 +30,9 @@ function PromotionEligibility({ currentUser: currentUserProp }) {
   const [editingGroupKey, setEditingGroupKey] = useState(null);
   const [groupForm, setGroupForm] = useState({ label: '', rangeStart: '', rangeEnd: '' });
   const [addingGroup, setAddingGroup] = useState(false);
+
+  const [editingPrsNeededId, setEditingPrsNeededId] = useState(null);
+  const [prsNeededDraft, setPrsNeededDraft] = useState('');
 
   const darkMode = useSelector(state => state.theme.darkMode);
   // `routes.jsx` never passes a `currentUser` prop to this route, so this falls back
@@ -140,6 +144,71 @@ function PromotionEligibility({ currentUser: currentUserProp }) {
     }
   };
 
+  const startEditPrsNeeded = (id, currentValue) => {
+    setEditingPrsNeededId(id);
+    setPrsNeededDraft(String(currentValue));
+  };
+
+  const cancelEditPrsNeeded = () => {
+    setEditingPrsNeededId(null);
+    setPrsNeededDraft('');
+  };
+
+  const prsNeededErrorMessage = (err, fallback) => {
+    const message = err && err.response && err.response.data;
+    return typeof message === 'string' ? message : fallback;
+  };
+
+  const handleSavePrsNeeded = async id => {
+    const value = Number(prsNeededDraft);
+    if (!Number.isInteger(value) || value < 0) {
+      toast.error('PRs Needed must be a non-negative whole number.');
+      return;
+    }
+
+    try {
+      const updated = await updatePrsNeeded(currentUser, id, value);
+      setReviewers(prev =>
+        prev.map(r =>
+          r.id === id
+            ? {
+                ...r,
+                requiredPRs: updated.requiredPRs ?? value,
+                prsNeeded: updated.prsNeeded ?? value,
+                prsNeededSource: updated.prsNeededSource,
+                committedHoursChanged: updated.committedHoursChanged,
+              }
+            : r,
+        ),
+      );
+      cancelEditPrsNeeded();
+      toast.success('Updated PRs Needed.');
+    } catch (err) {
+      toast.error(prsNeededErrorMessage(err, 'Failed to update PRs Needed.'));
+    }
+  };
+
+  // Per the spec, an override replaces the committed-hours check entirely. Clearing it
+  // hands the reviewer back to the bands, but the backend deliberately leaves the stored
+  // figure alone ("leaves prsNeeded alone so the next load recalculates it from committed
+  // hours") rather than recomputing it here, so the displayed number only updates on the
+  // next full reload — reflected honestly rather than guessed at.
+  const handleResetPrsNeeded = async id => {
+    try {
+      const updated = await updatePrsNeeded(currentUser, id, null);
+      setReviewers(prev =>
+        prev.map(r =>
+          r.id === id
+            ? { ...r, prsNeededSource: updated.prsNeededSource, committedHoursChanged: false }
+            : r,
+        ),
+      );
+      toast.success('Reset to automatic. Reload the page to see the recalculated figure.');
+    } catch (err) {
+      toast.error(prsNeededErrorMessage(err, 'Failed to reset PRs Needed.'));
+    }
+  };
+
   const toggleSelectPromotion = id => {
     setSelectedForPromotion(prev => {
       const newSet = new Set(prev);
@@ -197,6 +266,8 @@ function PromotionEligibility({ currentUser: currentUserProp }) {
     reviewerName,
     weeklyRequirementsMet,
     requiredPRs,
+    prsNeededSource,
+    committedHoursChanged,
     totalReviews,
     remainingWeeks,
     promoteEligible,
@@ -209,7 +280,62 @@ function PromotionEligibility({ currentUser: currentUserProp }) {
       >
         {weeklyRequirementsMet ? '✓ Has Met' : '✗ Has not Met'}
       </td>
-      <td data-label="Required PRs">{requiredPRs}</td>
+      <td data-label="Required PRs">
+        {isOwner && editingPrsNeededId === id ? (
+          <span className={styles.prsNeededEditRow}>
+            <input
+              type="number"
+              min="0"
+              value={prsNeededDraft}
+              onChange={e => setPrsNeededDraft(e.target.value)}
+              className={styles.prsNeededInput}
+            />
+            <button
+              type="button"
+              onClick={() => handleSavePrsNeeded(id)}
+              className={styles.prsNeededSave}
+            >
+              Save
+            </button>
+            <button type="button" onClick={cancelEditPrsNeeded} className={styles.prsNeededCancel}>
+              Cancel
+            </button>
+          </span>
+        ) : (
+          <span className={styles.prsNeededDisplay}>
+            {isOwner ? (
+              <button
+                type="button"
+                className={styles.prsNeededEditTrigger}
+                onClick={() => startEditPrsNeeded(id, requiredPRs)}
+                title="Edit PRs Needed"
+              >
+                {requiredPRs}
+              </button>
+            ) : (
+              requiredPRs
+            )}
+            {isOwner && prsNeededSource === 'ownerOverride' && (
+              <button
+                type="button"
+                className={styles.prsNeededReset}
+                onClick={() => handleResetPrsNeeded(id)}
+                title="Reset to automatic (based on committed hours)"
+              >
+                ↺
+              </button>
+            )}
+            {committedHoursChanged && (
+              <span
+                className={styles.committedHoursIndicator}
+                title="Committed hours changed since this was last calculated"
+              >
+                ●
+              </span>
+            )}
+          </span>
+        )}
+      </td>
       <td data-label="Total Reviews Done">{totalReviews}</td>
       <td data-label="Remaining Weeks">{remainingWeeks}</td>
       <td data-label="Promote?">
