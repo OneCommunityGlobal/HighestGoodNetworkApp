@@ -578,6 +578,7 @@ endDate: moment()
               </div>
             </h2>
             <div>
+
               <p className={darkMode ? styles['text-light'] : undefined}>Select a Category</p>
             </div>
             <div className="report-container-data">
