@@ -7,7 +7,11 @@ import { useSelector } from 'react-redux';
 import { ENDPOINTS } from '../../utils/URL';
 import QuestionEditModal from './QuestionEditModal';
 import styles from './QuestionSetManager.module.css';
-import { buildJobFormRequestor, isFieldRequired } from './jobFormQuestionUtils';
+import {
+  buildJobFormRequestor,
+  isFieldRequired,
+  findDuplicateQuestions,
+} from './jobFormQuestionUtils';
 
 function QuestionSetManager({ formFields, setFormFields, onImportQuestions, darkMode = false }) {
   const { auth } = useSelector(state => state);
@@ -247,14 +251,29 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
 
       if (template) {
         // Check if template has _id (server template) or not (local template)
+        let newQuestions;
         if (template._id) {
           // Get template fields for appending from the server
           const templateData = await api.getTemplateById(template._id);
-          onImportQuestions([...formFields, ...templateData.fields]);
+          newQuestions = templateData.fields;
         } else {
           // Use the local template directly
-          onImportQuestions([...formFields, ...template.fields]);
+          newQuestions = template.fields;
         }
+
+        const duplicates = findDuplicateQuestions(newQuestions, formFields);
+        let questionsToAppend = newQuestions;
+
+        if (duplicates.length > 0) {
+          const confirmAdd = window.confirm(
+            `${duplicates.length} question(s) in this template appear similar to questions you already have. Add Anyway?`,
+          );
+          if (!confirmAdd) {
+            questionsToAppend = newQuestions.filter(q => !duplicates.includes(q));
+          }
+        }
+
+        onImportQuestions([...formFields, ...questionsToAppend]);
 
         alert(`Template "${selectedTemplate}" appended successfully!`);
       }
