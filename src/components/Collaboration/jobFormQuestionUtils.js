@@ -68,3 +68,21 @@ export function normalizeLoadedQuestions(questions = []) {
     };
   });
 }
+
+/**
+ * Strip a leading manually-typed number prefix (e.g. "13.)", "2.", "7)")
+ * from question text so the live position-based number (rendered
+ * separately) doesn't end up duplicated or stale after reordering.
+ */
+export function stripLeadingQuestionNumber(text) {
+  return String(text || '').replace(/^\s*\d+\s*[.):-]+\s*/, '');
+}
+
+/**
+ * Build the display label for a question at a given position: strips
+ * any old manually-typed number and prepends the current, correct
+ * position-based number so it always stays in sync after moves.
+ */
+export function numberedQuestionLabel(text, index) {
+  return `${index + 1}.) ${stripLeadingQuestionNumber(text)}`;
+}
