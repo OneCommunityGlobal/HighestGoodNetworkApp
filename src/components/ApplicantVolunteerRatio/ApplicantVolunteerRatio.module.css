@@ -1,5 +1,7 @@
-/* stylelint-disable  */
-/* Container */
+/* =========================
+   Page Container
+========================= */
+
 .page {
   max-width: 1200px;
   margin: 0 auto;
@@ -11,7 +13,10 @@
   color: #e0e0e0;
 }
 
-/* Heading */
+/* =========================
+   Heading
+========================= */
+
 .heading {
   font-size: 2rem;
   font-weight: 400;
@@ -19,77 +24,243 @@
   color: inherit;
 }
 
-/* Filters */
+/* =========================
+   Filters
+========================= */
+
 .filters {
   display: flex;
-  gap: 16px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 18px;
 }
 
-.filterGroup {
+.filterGroup,
+.filterGroupInline {
   display: flex;
   flex-direction: column;
 }
 
 .filterGroupInline {
-  display: flex;
-  flex-direction: column;
-  min-width: 220px;
+  width: 100%;
+  max-width: 680px;
 }
 
 .label {
-  font-weight: 500;
-  margin-bottom: 0;
+  font-weight: 600;
+  margin-bottom: 6px;
   color: inherit;
 }
 
 .dateInputWrapper {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 0;
+  gap: 10px;
 }
 
-.dateInputWrapper span {
-  margin: 0 4px;
+.dateSeparator {
+  font-weight: 500;
+  color: inherit;
 }
 
-/* Validation Error */
+/* =========================
+   Date Picker
+========================= */
+
+.dateInputWrapper :global(.react-datepicker-wrapper) {
+  width: 190px;
+}
+
+.dateInputWrapper :global(.react-datepicker__input-container) {
+  width: 100%;
+}
+
+.dateInputWrapper :global(.react-datepicker__input-container input) {
+  width: 100%;
+  height: 38px;
+  padding: 8px 10px;
+  border: 1px solid #b8b8b8;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+.dateInputWrapper :global(.react-datepicker__input-container input:focus) {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 0 0 1px #1976d2;
+}
+
+/* =========================
+   Validation
+========================= */
+
 .validationError {
   color: #fc0;
   margin-top: 8px;
-  font-weight: bold;
+  font-weight: 600;
 }
 
-/* Status Messages */
+/* =========================
+   Status Messages
+========================= */
+
 .statusMessage {
   font-size: 1rem;
   padding: 12px 0;
 }
 
 .errorMessage {
-  color: red;
+  color: #d32f2f;
 }
 
-/* Chart Container */
+/* =========================
+   View Controls
+========================= */
+
+.chartControls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.viewToggle {
+  display: inline-flex;
+  border: 1px solid #1976d2;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.toggleButton {
+  min-width: 110px;
+  padding: 7px 14px;
+  border: none;
+  background-color: transparent;
+  color: #1976d2;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.toggleButton + .toggleButton {
+  border-left: 1px solid #1976d2;
+}
+
+.toggleButton:hover {
+  background-color: rgb(25 118 210 / 8%);
+}
+
+.toggleButtonActive {
+  background-color: #1976d2;
+  color: #fff;
+}
+
+.toggleButtonActive:hover {
+  background-color: #1565c0;
+}
+
+/* =========================
+   Legend
+========================= */
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legendMarker {
+  width: 11px;
+  height: 11px;
+  display: inline-block;
+  border-radius: 2px;
+}
+
+.applicationMarker {
+  background-color: #1976d2;
+}
+
+.hiredMarker {
+  background-color: #43a047;
+}
+
+/* =========================
+   Chart Container
+========================= */
+
 .chartContainer {
   width: 100%;
   height: auto;
 }
 
-/* No Data */
-.noData {
+.chartWrapper {
+  width: 100%;
+  padding: 8px 0 0;
+}
+
+.axisTitle {
   text-align: center;
-  padding: 40px 0;
+  margin-top: 4px;
+  font-weight: 500;
   color: inherit;
 }
 
-/* Dark Mode Global Overrides */
+/* =========================
+   No Data
+========================= */
+
+.noData {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 260px;
+  padding: 40px 20px;
+  text-align: center;
+  color: inherit;
+}
+
+.noDataTitle {
+  margin: 0 0 8px;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.noDataText {
+  margin: 0;
+  opacity: 0.8;
+}
+
+/* =========================
+   React DatePicker Dark Mode
+========================= */
+
 .dark :global(.react-datepicker__input-container input) {
   background-color: #0b2434;
   border-color: #2b4a6b;
   color: #fff;
+}
+
+.dark :global(.react-datepicker__input-container input::placeholder) {
+  color: rgb(224 224 224 / 72%);
+}
+
+.dark :global(.react-datepicker__input-container input:focus) {
+  border-color: #64b5f6;
+  box-shadow: 0 0 0 1px #64b5f6;
 }
 
 .dark :global(.react-datepicker) {
@@ -113,14 +284,18 @@
 }
 
 .dark :global(.react-datepicker__day--selected) {
-  background-color: rgb(67 160 71 / 22%);
+  background-color: rgb(67 160 71 / 32%);
 }
 
-/* React Select Dark Mode Overrides */
+/* =========================
+   React Select Dark Mode
+========================= */
+
 .dark :global(.custom-select__control) {
   background-color: #0b2434 !important;
   border-color: #2b4a6b !important;
   color: #fff !important;
+  min-height: 38px;
 }
 
 .dark :global(.custom-select__menu) {
@@ -128,40 +303,29 @@
   color: #fff !important;
 }
 
-/* Target menu when it's portaled to body in dark mode */
 :global(.dark-mode-body) :global(.custom-select__menu) {
   background-color: #0b2434 !important;
   color: #fff !important;
 }
 
-.dark :global(.custom-select__option) {
-  background-color: transparent !important;
-  color: #fff !important;
-}
-
+.dark :global(.custom-select__option),
 :global(.dark-mode-body) :global(.custom-select__option) {
   background-color: transparent !important;
   color: #fff !important;
 }
 
-.dark :global(.custom-select__option--is-focused) {
-  background-color: rgb(255 255 255 / 6%) !important;
-}
-
+.dark :global(.custom-select__option--is-focused),
 :global(.dark-mode-body) :global(.custom-select__option--is-focused) {
-  background-color: rgb(255 255 255 / 6%) !important;
+  background-color: rgb(255 255 255 / 8%) !important;
 }
 
-.dark :global(.custom-select__option--is-selected) {
-  background-color: rgb(67 160 71 / 22%) !important;
-}
-
+.dark :global(.custom-select__option--is-selected),
 :global(.dark-mode-body) :global(.custom-select__option--is-selected) {
-  background-color: rgb(67 160 71 / 22%) !important;
+  background-color: rgb(67 160 71 / 28%) !important;
 }
 
 .dark :global(.custom-select__multi-value) {
-  background-color: rgb(255 255 255 / 6%) !important;
+  background-color: rgb(255 255 255 / 8%) !important;
 }
 
 .dark :global(.custom-select__multi-value__label) {
@@ -173,7 +337,7 @@
 }
 
 .dark :global(.custom-select__multi-value__remove:hover) {
-  background-color: rgb(255 255 255 / 10%) !important;
+  background-color: rgb(255 255 255 / 12%) !important;
   color: #fff !important;
 }
 
@@ -181,27 +345,52 @@
   color: rgb(224 224 224 / 90%) !important;
 }
 
-.dark :global(.custom-select__single-value) {
-  color: #fff !important;
-}
-
-.dark :global(.custom-select__input-container) {
-  color: #fff !important;
-}
-
-.dark :global(.custom-select__dropdown-indicator) {
-  color: #fff !important;
-}
-
+.dark :global(.custom-select__single-value),
+.dark :global(.custom-select__input-container),
+.dark :global(.custom-select__dropdown-indicator),
 .dark :global(.custom-select__clear-indicator) {
   color: #fff !important;
 }
 
 .dark :global(.custom-select__indicator-separator) {
-  background-color: rgb(255 255 255 / 6%) !important;
+  background-color: rgb(255 255 255 / 10%) !important;
 }
 
-/* Body Dark Mode */
+/* Make clear-all button more obvious */
+
+.dark :global(.custom-select__clear-indicator:hover) {
+  color: #ffb4ab !important;
+}
+
+/* =========================
+   Toggle Dark Mode
+========================= */
+
+.dark .viewToggle {
+  border-color: #64b5f6;
+}
+
+.dark .toggleButton {
+  color: #90caf9;
+}
+
+.dark .toggleButton + .toggleButton {
+  border-left-color: #64b5f6;
+}
+
+.dark .toggleButton:hover {
+  background-color: rgb(100 181 246 / 12%);
+}
+
+.dark .toggleButtonActive {
+  background-color: #1976d2;
+  color: #fff;
+}
+
+/* =========================
+   Body Dark Mode
+========================= */
+
 :global(.dark-mode-body),
 :global(.dark-mode-body) body,
 :global(.dark-mode-body) #root,
@@ -224,7 +413,10 @@
   background-color: #1b2a41 !important;
 }
 
-/* Recharts Tooltip Dark Mode */
+/* =========================
+   Recharts Dark Mode
+========================= */
+
 .dark :global(.recharts-tooltip-wrapper) {
   z-index: 100;
 }
@@ -242,12 +434,45 @@
   margin-bottom: 4px;
 }
 
-.dark :global(.recharts-tooltip-item) {
-  color: #e2e8f0 !important;
-}
-
+.dark :global(.recharts-tooltip-item),
 .dark :global(.recharts-tooltip-item-name),
 .dark :global(.recharts-tooltip-item-separator),
 .dark :global(.recharts-tooltip-item-value) {
   color: #e2e8f0 !important;
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (width <= 768px) {
+  .page {
+    padding: 16px;
+  }
+
+  .heading {
+    font-size: 1.6rem;
+  }
+
+  .dateInputWrapper {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .dateInputWrapper :global(.react-datepicker-wrapper) {
+    width: 100%;
+  }
+
+  .dateSeparator {
+    text-align: center;
+  }
+
+  .chartControls {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .legend {
+    gap: 12px;
+  }
 }
