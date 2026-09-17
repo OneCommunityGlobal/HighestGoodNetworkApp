@@ -37,7 +37,7 @@
   gap: 32px;
   align-items: start;
   width: 100%;
-  max-width: 1280px;
+  max-width: 1536px;
   margin: 0 auto;
 }
 
@@ -169,9 +169,11 @@
   white-space: nowrap;
 }
 
+/* Keep the positive Usage Trend badge clearly green in light mode. */
 .trendBadgeIncrease {
   background: #dcfce7;
   color: #166534;
+  border: 1px solid #000;
 }
 
 .trendBadgeDecrease {
@@ -323,9 +325,11 @@
   --accent-card: #3a506b;
 }
 
-/* dark mode , usage trend contrast */
+/* Keep the positive Usage Trend badge visibly green against dark cards. added borders */
 .dashboardWrapper.darkMode .trendBadgeIncrease {
-  background: #052d46;
+  background: #14532d;
+  color: #dcfce7;
+  border: 0.5px solid #fff;
 }
 
 @media (width <= 1024px) {
