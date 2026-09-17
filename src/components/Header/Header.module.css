@@ -51,6 +51,11 @@
   justify-content: center;
   min-width: 140px;
   overflow: visible !important;
+
+  /* Logo and the owner message share this cell — keep them apart, and let the
+     message drop below the logo rather than overflow once the header narrows. */
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 /* Fluid and centered adaptation styles for the logo image */
@@ -76,6 +81,7 @@
   gap: 0.5rem;
   flex-shrink: 0;
   margin-left: auto;
+
   /* position: relative; */
 }
 
@@ -494,9 +500,66 @@
     gap: 0.5rem !important;
   }
 
+  /* Named grid so the warning message and the hamburger share a row, with the
+     message in the column immediately to the left of the menu. The wrappers that
+     stand between them and this grid (.centerSection, .rightSection) are dissolved
+     with `display: contents` below, so their children become grid items directly —
+     no markup change, and nothing leaks past this media query.
+
+     The collapsed nav panel gets its own full-width row rather than living in the
+     narrow menu column: its min-width of 220px would otherwise reserve that width
+     permanently and eat into the message. */
   .headerRow {
-    grid-template-columns: 1fr;
-    row-gap: 0.5rem;
+    /* Containing block for the expanded menu, which floats out of flow below. */
+    position: relative;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'timer timer'
+      'logo logo'
+      'message menu'
+      'nav nav';
+    align-items: center;
+    gap: 0 0.5rem;
+  }
+
+  /* Same reasoning as the 768–1280 block: `py-3` is a Bootstrap utility with the
+     same specificity as this module's .navbar, so !important is needed to win. */
+  .navbar {
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
+  }
+
+  /* The timer sets the height of the first line; no outer spacing of its own. */
+  .leftSection {
+    grid-area: timer;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* The logo keeps its own row, centred across both columns — unaffected by the
+     message moving beside the menu below it. */
+  .centerSection > img {
+    grid-area: logo;
+    justify-self: center;
+    margin: 0.5rem 0 0.75rem;
+  }
+
+  /* The Dev Admin warning message — the OwnerMessage root, the only <div> child of
+     .centerSection (the other child is the logo <img>). It now occupies the column
+     directly left of the hamburger, so it fills that track rather than being capped
+     and nudged rightwards: the menu itself is what it sits against. */
+  .centerSection > div {
+    grid-area: message;
+    width: auto;
+    max-width: none;
+    margin: 0;
+  }
+
+  /* Spacer band between the header and the page content. 20px reads as a gap
+     under the logo on a narrow screen; wide screens keep the full height. */
+  .headerMargin,
+  .headerMarginLight {
+    height: 8px;
   }
 
   .leftSection,
@@ -513,12 +576,11 @@
     justify-content: center !important;
   }
 
+  /* Dissolved so the hamburger and the nav panel become grid items in their own
+     right — the hamburger beside the message, the panel on its own full-width row.
+     No !important needed: the base .rightSection sets `display: flex` without one. */
   .rightSection {
-    grid-column: 1;
-    grid-row: auto;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    flex-direction: column;
+    display: contents;
   }
 
   .userInfoRow {
@@ -531,12 +593,12 @@
     gap: 0.5rem;
   }
 
+  /* Dissolved so the logo and the message can be placed in separate grid areas —
+     the logo centred on its own row, the message down beside the hamburger. The
+     base rule declares `display: flex !important`, so !important is required to
+     override it. */
   .centerSection {
-    overflow: visible;
-    max-width: 100%;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+    display: contents !important;
   }
 
   .headerLogo {
@@ -550,27 +612,59 @@
     width: 100%;
   }
 
-  /* Hamburger Toggle Button */
+  /* Hamburger toggle — sits in the narrow right-hand column, on the same row as
+     the warning message. */
   .navbarToggler {
+    grid-area: menu;
     display: flex !important;
     align-items: center;
-    margin-left: auto;
+    align-self: center;
+
+    /* margin-left: auto was what pushed it right inside the old flex wrapper; the
+       grid column places it now, so the auto margin would only add slack. */
+    margin: 0;
+    padding-top: 0;
   }
 
   .navCollapse {
-    display: block;
-    position: static;
-    flex-basis: 100%;
-    width: 100%;
-    top: 100%;
+    /* Floating dropdown rather than a row in the flow: expanding it used to grow the
+       header and shove the page content underneath it down. Out of flow it overlays
+       that content instead, and the header's height never changes.
+
+       `grid-area: nav` is still declared — for an absolutely positioned grid child
+       the grid area becomes the containing block, which anchors the panel directly
+       under the message/menu row and across the full header width, with no manual
+       offsets to keep in sync. */
+    grid-area: nav;
+    position: absolute;
+    top: 0;
     right: 0;
+    display: block;
+    width: 100%;
     padding-left: 0;
     min-width: 220px;
-    margin-top: 0.5rem;
-    background-color: #343a40;
-    border-radius: 0 0 6px 6px;
-    box-shadow: 0 6px 16px rgb(0 0 0 / 40%);
-    z-index: 999;
+
+    /* No margin while collapsed — max-height:0 hides the panel but the margin would
+       still reserve space. Restored when open. */
+    margin-top: 0;
+
+    /* A step lighter than the bar itself. The previous #343a40 was the exact colour
+       Bootstrap's `color="dark"` paints the Navbar, so the panel dissolved into the
+       header it was hanging from. Lighter reads as the nearer surface. */
+    background-color: #3d444c;
+    border-radius: 0 0 8px 8px;
+
+    /* Layered: a wide soft drop for lift off the page content, a tight one to keep
+       the edge defined, and an inset hairline along the top where the panel meets
+       the bar — `border` is forced to none further down, so it goes in the shadow. */
+    box-shadow:
+      0 10px 24px rgb(0 0 0 / 45%),
+      0 2px 6px rgb(0 0 0 / 30%),
+      inset 0 1px 0 rgb(255 255 255 / 8%);
+
+    /* Above the page content below the header. .navbar creates the stacking context
+       (position: relative + z-index: 100), so this only has to beat its siblings. */
+    z-index: 1100;
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.25s ease-out;
@@ -586,6 +680,9 @@
     max-height: 80vh;
     overflow-y: auto;
     transition: max-height 0.25s ease-in;
+
+    /* Only separate the panel from the hamburger once it is actually showing. */
+    margin-top: 0.5rem;
   }
 
   .menuContainer {
@@ -594,11 +691,22 @@
     justify-content: flex-start;
     width: 100%;
     margin-right: 0 !important;
-    padding-left: 1rem;
+
+    /* The indent lives on the rows below, not here — see the note there. */
+    padding-left: 0;
     max-height: 80vh;
     gap: 0.5rem;
     overflow-y: auto;
-  } 
+  }
+
+  /* Indent every row of the menu so the labels are not flush against the panel's
+     left edge. Applied to the rows rather than to .menuContainer because Bootstrap's
+     .navbar-nav declares `padding-left: 0` at the same specificity, which left the
+     container's own padding depending on stylesheet order. The rows carry no
+     competing rule, so this always lands. */
+  .menuContainer > * {
+    padding-left: 1rem;
+  }
 
   .mobileMenuDropdown {
     background-color: #343a40 !important;
@@ -659,7 +767,9 @@
   .rightSection {
     flex-direction: column !important;
     align-items: flex-end !important;
-    gap: 0.5rem;
+
+    /* User info and nav stack on separate lines here, so this gap is vertical. */
+    gap: 0.25rem;
   }
 
   .userInfoRow {
@@ -670,13 +780,63 @@
   .menuContainer {
     width: 100%;
     order: 2 !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
+    flex-flow: row nowrap !important;
     gap: 1rem;
   }
 
+  /* Three stacked rows: timer, logo + message, user/nav. `position: relative` is
+     the positioning context used by the >850px rule below, which lifts the logo
+     out of flow; at or under 850px the logo stays in flow and simply sits on its
+     own row beneath the timer, so it can never collide with the timer controls. */
   .headerRow {
-    grid-template-columns: 1fr;
+    position: relative;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.25rem;
+  }
+
+  /* min-height reserves the logo's height for the wider case, where the logo is
+     absolutely positioned and contributes none of its own. */
+  .leftSection {
+    grid-row: 1;
+    min-height: 40px;
+  }
+
+  .centerSection {
+    grid-row: 2;
+  }
+
+  .rightSection {
+    grid-row: 3;
+  }
+
+  /* The logo and the warning text wrap onto separate lines at this width, so the
+     1rem gap meant for their side-by-side spacing becomes vertical dead space.
+     Tighten only the row gap and leave the column gap intact. */
+  .centerSection {
+    row-gap: 0.25rem;
+  }
+
+  /* `py-3` on the Navbar is a Bootstrap utility with the same specificity as this
+     module's .navbar, so !important is needed to win the tie reliably. Scoped to
+     this breakpoint — wide screens keep the full 1rem padding. */
+  .navbar {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+}
+
+/* Only once there is room either side of the timer: lift the logo out of flow and
+   centre it on the full header width, so the timer's width cannot push it off
+   centre. 850px is measured — below roughly 800px the timer's right edge reaches
+   the middle of the header — so under this width the rule above is left to stack
+   the logo on its own row instead of overlapping. */
+@media (width > 850px) and (width <= 1280px) {
+  .headerLogo {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
   }
 }
 
@@ -712,8 +872,7 @@
   .menuContainer {
     width: 100%;
     order: 2 !important;
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
+    flex-flow: row wrap !important;
     gap: 1rem;
   }
 
