@@ -561,21 +561,6 @@ export function Header(props) {
   }, [user.userid, props.auth.firstName]);
 
   useEffect(() => {
-    let timeoutId = null;
-    const handleResize = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-      const currentWidth = window.innerWidth;
-      }, 150);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => {
-      clearTimeout(timeoutId);
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
-  useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
       if (props.auth.user.role === 'Owner' || props.auth.user.role === 'Administrator') {

@@ -38,17 +38,9 @@
 }
 
 .centerSection {
-  display: flex;
-  align-items: center;      /* Vertically center */
-  justify-content: center;  /* Horizontally center */
-  min-width: 120px;
-  overflow: visible;
-}
-
-.centerSection {
   display: flex !important;
-  align-items: center;
-  justify-content: center;
+  align-items: center; /* Vertically center */
+  justify-content: center; /* Horizontally center */
   min-width: 140px;
   overflow: visible !important;
 
@@ -72,35 +64,6 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
-}
-
-.rightSection {
-  display: flex;
-  align-items: flex-end;
-  flex-direction: column;
-  gap: 0.5rem;
-  flex-shrink: 0;
-  margin-left: auto;
-
-  /* position: relative; */
-}
-
-.userInfoRow {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  width: 100%;
-}
-
-.menuContainer {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  flex-wrap: wrap;
-  flex-direction: row !important;
-  width: 100%;
-  gap: 1rem;
 }
 
 /* Right section container: horizontal layout */
@@ -490,9 +453,13 @@
 
 /* Mobile devices: ≤ 768px (phones + tablets portrait - hamburger menu + vertical layout) */
 @media (width <= 768px) {
+  /* `py-3` is a Bootstrap utility with the same specificity as this module's
+     .navbar, so !important is needed to win the tie for the padding. */
   .navbar {
     white-space: normal;
-  } 
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
+  }
 
   .navbar .d-flex {
     flex-direction: column !important;
@@ -520,13 +487,6 @@
       'nav nav';
     align-items: center;
     gap: 0 0.5rem;
-  }
-
-  /* Same reasoning as the 768–1280 block: `py-3` is a Bootstrap utility with the
-     same specificity as this module's .navbar, so !important is needed to win. */
-  .navbar {
-    padding-top: 0.25rem !important;
-    padding-bottom: 0.25rem !important;
   }
 
   /* The timer sets the height of the first line; no outer spacing of its own. */
@@ -563,8 +523,7 @@
   }
 
   .leftSection,
-  .centerSection,
-  .rightSection {
+  .centerSection {
     width: 100% !important;
     justify-content: center !important;
   }
@@ -578,19 +537,14 @@
 
   /* Dissolved so the hamburger and the nav panel become grid items in their own
      right — the hamburger beside the message, the panel on its own full-width row.
-     No !important needed: the base .rightSection sets `display: flex` without one. */
+     `display: contents` removes the box, so the width/justify-content the other
+     sections get here would have no effect and are left off deliberately. */
   .rightSection {
     display: contents;
   }
 
   .userInfoRow {
     order: 1 !important;
-  }
-
-  .menuContainer {
-    order: 2 !important;
-    flex-direction: column !important;
-    gap: 0.5rem;
   }
 
   /* Dissolved so the logo and the message can be placed in separate grid areas —
@@ -686,6 +640,7 @@
   }
 
   .menuContainer {
+    order: 2 !important;
     align-items: stretch;
     flex-direction: column !important;
     justify-content: flex-start;
@@ -764,12 +719,13 @@
     overflow: visible;
   }
 
+  /* User info and nav stack on separate lines here, so the gap is vertical, and
+     the section takes the third grid row of the layout defined below. */
   .rightSection {
     flex-direction: column !important;
     align-items: flex-end !important;
-
-    /* User info and nav stack on separate lines here, so this gap is vertical. */
     gap: 0.25rem;
+    grid-row: 3;
   }
 
   .userInfoRow {
@@ -801,18 +757,11 @@
     min-height: 40px;
   }
 
-  .centerSection {
-    grid-row: 2;
-  }
-
-  .rightSection {
-    grid-row: 3;
-  }
-
   /* The logo and the warning text wrap onto separate lines at this width, so the
      1rem gap meant for their side-by-side spacing becomes vertical dead space.
      Tighten only the row gap and leave the column gap intact. */
   .centerSection {
+    grid-row: 2;
     row-gap: 0.25rem;
   }
 

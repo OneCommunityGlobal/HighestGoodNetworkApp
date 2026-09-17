@@ -7,7 +7,6 @@ import {
   Row,
   Col,
   Card,
-  CardText,
   CardBody,
   CardHeader,
   Modal,
