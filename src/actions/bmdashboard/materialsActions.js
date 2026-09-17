@@ -158,6 +158,23 @@ export const postMaterialUpdateBulk = payload => {
   };
 };
 
+export const postMaterialsBulkAction = async payload => {
+  try {
+    const res = await axios.post(ENDPOINTS.BM_MATERIALS_BULK_ACTIONS, payload);
+    return res.data;
+  } catch (err) {
+    // The backend sends error bodies as plain strings (e.g. 'Invalid bulk action.')
+    // as well as { message } objects, so normalise both into a single Error.
+    const resData = err.response?.data;
+    const message =
+      (typeof resData === 'string' && resData) ||
+      resData?.message ||
+      err.message ||
+      'Bulk action request failed.';
+    throw new Error(message);
+  }
+};
+
 export const purchaseMaterial = async body => {
   return axios
     .post(ENDPOINTS.BM_MATERIALS, body)
