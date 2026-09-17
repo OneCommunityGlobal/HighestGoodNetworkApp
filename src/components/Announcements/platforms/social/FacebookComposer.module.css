@@ -1,0 +1,293 @@
+.composer {
+  padding: 1rem;
+  color: #333;
+  background: #fff;
+}
+
+.title {
+  text-transform: capitalize;
+}
+
+.tabs {
+  display: flex;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+  border-bottom: 1px solid #ddd;
+}
+
+.tab {
+  flex: 1;
+  min-width: 120px;
+  padding: 10px 16px;
+  color: #333;
+  font-size: 14px;
+  text-align: center;
+  cursor: pointer;
+  background: #dedede;
+  border: 0;
+  border-bottom: 3px solid transparent;
+}
+
+.activeTab {
+  color: #007bff;
+  font-weight: 700;
+  background: #dbeeff;
+  border-bottom-color: #007bff;
+}
+
+.warning {
+  padding: 12px;
+  margin-bottom: 16px;
+  color: #856404;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 6px;
+}
+
+.linkButton {
+  padding: 0;
+  color: #007bff;
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+.field,
+.textarea,
+.select {
+  width: 100%;
+  padding: 8px;
+  color: #333;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.field[type='datetime-local'] {
+  color-scheme: light;
+}
+
+.textarea {
+  min-height: 120px;
+  margin-bottom: 1rem;
+  resize: vertical;
+}
+
+.section,
+.card,
+.connection,
+.details {
+  padding: 16px;
+  margin-bottom: 16px;
+  background: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.row,
+.actions,
+.filters,
+.connectionHeader,
+.connectionTitle {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.connectionHeader {
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.actions {
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.button,
+.primaryButton,
+.dangerButton,
+.secondaryButton {
+  padding: 8px 16px;
+  color: #fff;
+  cursor: pointer;
+  background: #007bff;
+  border: 0;
+  border-radius: 6px;
+}
+
+.primaryButton {
+  background: #1877f2;
+}
+
+.dangerButton {
+  background: #dc3545;
+}
+
+.secondaryButton {
+  background: #6c757d;
+}
+
+.button:disabled,
+.primaryButton:disabled,
+.dangerButton:disabled,
+.secondaryButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.muted,
+.meta {
+  color: #666;
+  font-size: 13px;
+}
+
+.error {
+  color: #dc3545;
+}
+
+.badge {
+  padding: 4px 12px;
+  color: #155724;
+  font-size: 12px;
+  font-weight: 700;
+  background: #d4edda;
+  border-radius: 12px;
+}
+
+.badgeDisconnected,
+.badgeExpired {
+  color: #dc3545;
+  background: #f8d7da;
+}
+
+.preview {
+  max-width: 200px;
+  max-height: 150px;
+  margin-top: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.fileName {
+  margin-left: 12px;
+  font-size: 14px;
+}
+
+.removeButton {
+  margin-left: 8px;
+  color: #dc3545;
+  font-weight: 700;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(0 0 0 / 50%);
+}
+
+.modal {
+  width: 90%;
+  max-width: 450px;
+  max-height: 80vh;
+  padding: 24px;
+  overflow: auto;
+  color: #333;
+  background: #fff;
+  border-radius: 8px;
+}
+
+.pageOption {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 8px;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: inherit;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.pageOption:hover {
+  background: #f0f0f0;
+}
+
+.dark {
+  color: #e5e7eb;
+  background: #0f172a;
+}
+
+.dark .tab {
+  color: #e5e7eb;
+  background: #111a2c;
+}
+
+.dark .activeTab {
+  color: #bfdbfe;
+  background: #1d2b44;
+  border-bottom-color: #60a5fa;
+}
+
+.dark .warning {
+  color: #fef3c7;
+  background: #3b3000;
+}
+
+.dark .field,
+.dark .textarea,
+.dark .select {
+  color: #e5e7eb;
+  background: #0b1220;
+  border-color: #1f2937;
+}
+
+.dark .field[type='datetime-local'] {
+  color-scheme: dark;
+}
+
+.dark .section,
+.dark .card,
+.dark .connection,
+.dark .details,
+.dark .modal {
+  color: #e5e7eb;
+  background: #111827;
+  border-color: #1f2937;
+}
+
+.dark .muted,
+.dark .meta {
+  color: #cbd5e1;
+}
+
+.dark .pageOption {
+  border-color: #1f2937;
+}
+
+.dark .pageOption:hover {
+  background: #1f2937;
+}
+
+@media (width <= 700px) {
+  .row,
+  .filters {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

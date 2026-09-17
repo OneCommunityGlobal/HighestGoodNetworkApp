@@ -59,7 +59,10 @@ const RoutePermissions = {
     permissions.putReviewStatus,
     permissions.suggestTask,
   ],
-  announcements: [permissions.sendEmails],
+  announcements: [
+    permissions.sendEmails,
+    permissions.postFacebookContent,
+  ],
   faq: [''],
 
   faqManagement: [permissions.manageFAQs],
