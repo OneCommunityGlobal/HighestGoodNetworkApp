@@ -1,11 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { FaCheck } from 'react-icons/fa';
-import { getPromotionEligibility, postPromotionEligibility } from '../../actions/promotionActions';
+import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import {
+  getPromotionEligibility,
+  postPromotionEligibility,
+  getReviewerGroups,
+  createReviewerGroup,
+  updateReviewerGroup,
+} from '../../actions/promotionActions';
+import ReviewForThisWeekModal from './ReviewForThisWeekModal';
 import styles from './PromotionEligibility.module.css';
 import { useSelector } from 'react-redux';
 
-function PromotionEligibility({ currentUser }) {
+function PromotionEligibility({ currentUser: currentUserProp }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reviewers, setReviewers] = useState([]);
@@ -15,7 +23,33 @@ function PromotionEligibility({ currentUser }) {
 
   const [selectGroup, setSelectedGroup] = useState('new');
 
+  const [reviewDropdownOpen, setReviewDropdownOpen] = useState(false);
+  const [reviewerGroups, setReviewerGroups] = useState([]);
+  const [activeReviewGroup, setActiveReviewGroup] = useState(null);
+  const [editingGroupKey, setEditingGroupKey] = useState(null);
+  const [groupForm, setGroupForm] = useState({ label: '', rangeStart: '', rangeEnd: '' });
+  const [addingGroup, setAddingGroup] = useState(false);
+
   const darkMode = useSelector(state => state.theme.darkMode);
+  // `routes.jsx` never passes a `currentUser` prop to this route, so this falls back
+  // to the logged-in user from Redux. The backend derives the real requestor from the
+  // auth token regardless of what is sent, but the frontend still needs the real role
+  // to decide whether to show Owner-only controls (group edit/add, PRs Needed edit).
+  const authUser = useSelector(state => state.auth?.user);
+  // Memoized on the primitive fields, not the whole authUser object, so this stays
+  // referentially stable across renders — an inline object literal here would change
+  // identity every render and re-trigger every effect keyed on `currentUser`.
+  const derivedUser = useMemo(
+    () => ({
+      requestorId: authUser?.userid,
+      role: authUser?.role,
+      email: authUser?.email,
+    }),
+    [authUser?.userid, authUser?.role, authUser?.email],
+  );
+  const currentUser = currentUserProp || derivedUser;
+
+  const isOwner = currentUser && currentUser.role === 'Owner';
 
   useEffect(() => {
     (async () => {
@@ -42,9 +76,69 @@ function PromotionEligibility({ currentUser }) {
     })();
   }, []);
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await getReviewerGroups(currentUser);
+        setReviewerGroups(res.groups || []);
+      } catch (e) {
+        toast.error('Failed to load reviewer groups.');
+      }
+    })();
+  }, [currentUser]);
+
   const newMembers = reviewers.filter(r => r.isNewMember);
   const existingMembers = reviewers.filter(r => !r.isNewMember);
   const filteredMemebers = selectGroup === 'new' ? newMembers : existingMembers;
+
+  const handleSelectReviewGroup = group => {
+    setActiveReviewGroup(group);
+    setReviewDropdownOpen(false);
+  };
+
+  const startEditGroup = group => {
+    setEditingGroupKey(group.key);
+    setAddingGroup(false);
+    setGroupForm({
+      label: group.label,
+      rangeStart: group.rangeStart || '',
+      rangeEnd: group.rangeEnd || '',
+    });
+  };
+
+  const startAddGroup = () => {
+    setAddingGroup(true);
+    setEditingGroupKey(null);
+    setGroupForm({ label: '', rangeStart: '', rangeEnd: '' });
+  };
+
+  const cancelGroupForm = () => {
+    setEditingGroupKey(null);
+    setAddingGroup(false);
+  };
+
+  const submitGroupForm = async e => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    try {
+      if (addingGroup) {
+        const res = await createReviewerGroup(currentUser, groupForm);
+        setReviewerGroups(prev => [...prev, res.group]);
+        toast.success(`Added group ${res.group.label}.`);
+      } else if (editingGroupKey) {
+        const res = await updateReviewerGroup(currentUser, editingGroupKey, groupForm);
+        setReviewerGroups(prev =>
+          prev.map(group => (group.key === editingGroupKey ? res.group : group)),
+        );
+        toast.success(`Updated group ${res.group.label}.`);
+      }
+      cancelGroupForm();
+    } catch (err) {
+      const message = err && err.response && err.response.data;
+      toast.error(typeof message === 'string' ? message : 'Failed to save reviewer group.');
+    }
+  };
 
   const toggleSelectPromotion = id => {
     setSelectedForPromotion(prev => {
@@ -161,14 +255,86 @@ function PromotionEligibility({ currentUser }) {
               <option value="new">New Member</option>
               <option value="existing">Existing Member</option>
             </select>
-            <button
-              type="button"
-              onClick={() => toast.info('Review Weekly clicked. Logic not implemented yet.')}
-              disabled={processing}
-              className={styles.review_btn}
+            <Dropdown
+              isOpen={reviewDropdownOpen}
+              toggle={() => setReviewDropdownOpen(prev => !prev)}
+              className={styles.reviewDropdown}
             >
-              Review for this week
-            </button>
+              <DropdownToggle disabled={processing} className={styles.review_btn} caret>
+                Review for This Week
+              </DropdownToggle>
+              <DropdownMenu className={darkMode ? styles.darkDropdownMenu : ''}>
+                {reviewerGroups.map(group => (
+                  <div key={group.key} className={styles.groupMenuRow}>
+                    <DropdownItem onClick={() => handleSelectReviewGroup(group)}>
+                      {group.label}
+                    </DropdownItem>
+                    {isOwner && group.editable !== false && (
+                      <button
+                        type="button"
+                        className={styles.editGroupButton}
+                        onClick={e => {
+                          e.stopPropagation();
+                          startEditGroup(group);
+                        }}
+                      >
+                        Edit
+                      </button>
+                    )}
+                  </div>
+                ))}
+
+                {isOwner && (editingGroupKey || addingGroup) && (
+                  <form className={styles.groupForm} onSubmit={submitGroupForm}>
+                    <input
+                      type="text"
+                      placeholder="Group label"
+                      value={groupForm.label}
+                      onChange={e => setGroupForm(prev => ({ ...prev, label: e.target.value }))}
+                      className={styles.groupFormInput}
+                    />
+                    <input
+                      type="text"
+                      placeholder="A"
+                      maxLength={1}
+                      value={groupForm.rangeStart}
+                      onChange={e =>
+                        setGroupForm(prev => ({ ...prev, rangeStart: e.target.value }))
+                      }
+                      className={styles.groupFormLetterInput}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Z"
+                      maxLength={1}
+                      value={groupForm.rangeEnd}
+                      onChange={e => setGroupForm(prev => ({ ...prev, rangeEnd: e.target.value }))}
+                      className={styles.groupFormLetterInput}
+                    />
+                    <button type="submit" className={styles.groupFormSave}>
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.groupFormCancel}
+                      onClick={cancelGroupForm}
+                    >
+                      Cancel
+                    </button>
+                  </form>
+                )}
+
+                {isOwner && !editingGroupKey && !addingGroup && (
+                  // Plain button, not DropdownItem: reactstrap's DropdownItem always closes
+                  // the menu on click via its own internal context, regardless of
+                  // stopPropagation on this handler, which was closing the menu before the
+                  // add-group form ever got a chance to render.
+                  <button type="button" className={styles.addGroupButton} onClick={startAddGroup}>
+                    + Add Group
+                  </button>
+                )}
+              </DropdownMenu>
+            </Dropdown>
             <button
               type="button"
               onClick={handleProcessPromotions}
@@ -223,6 +389,16 @@ function PromotionEligibility({ currentUser }) {
           </table>
         </div>
       </div>
+
+      {activeReviewGroup && (
+        <ReviewForThisWeekModal
+          groupKey={activeReviewGroup.key}
+          groupLabel={activeReviewGroup.label}
+          currentUser={currentUser}
+          darkMode={darkMode}
+          onClose={() => setActiveReviewGroup(null)}
+        />
+      )}
     </div>
   );
 }
