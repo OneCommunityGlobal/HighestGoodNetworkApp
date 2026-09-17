@@ -689,6 +689,21 @@ export const ENDPOINTS = {
   // pr dashboard endpoints
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
   PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
+  PROMOTE_MEMBERS_PREVIEW: `${APIEndpoint}/promote-members/preview`,
+  REVIEWER_GROUPS: `${APIEndpoint}/reviewer-groups`,
+  REVIEWER_GROUPS_NEW: `${APIEndpoint}/reviewer-groups/new`,
+  REVIEWER_GROUP_UPDATE: groupKey => `${APIEndpoint}/reviewer-groups/${groupKey}`,
+  PRS_NEEDED_UPDATE: reviewerId =>
+    `${APIEndpoint}/promotion-eligibility/${reviewerId}/prs-needed`,
+  PR_RATINGS: `${APIEndpoint}/promotion-eligibility/pr-ratings`,
+  PR_ENTRIES_BULK: `${APIEndpoint}/promotion-eligibility/pr-entries`,
+  PR_ENTRIES: reviewerId => `${APIEndpoint}/promotion-eligibility/${reviewerId}/pr-entries`,
+  PR_ENTRY_NEW: reviewerId =>
+    `${APIEndpoint}/promotion-eligibility/${reviewerId}/pr-entries/new`,
+  PR_ENTRY_IMPORT: reviewerId =>
+    `${APIEndpoint}/promotion-eligibility/${reviewerId}/pr-entries/import`,
+  PR_ENTRY_RATING: entryId =>
+    `${APIEndpoint}/promotion-eligibility/pr-entries/${entryId}/rating`,
 
   // LinkedIn autoposter endpoints
   LINKEDIN_POST: `${APIEndpoint}/postToLinkedIn`,
