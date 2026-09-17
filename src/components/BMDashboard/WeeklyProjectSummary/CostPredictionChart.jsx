@@ -58,6 +58,46 @@ const PROJECTS = [
 const DEFAULT_WINDOW_MONTHS = 6;
 const TODAY_STR = new Date().toISOString().slice(0, 10);
 
+const MONTH_NAMES = [
+  'january',
+  'february',
+  'march',
+  'april',
+  'may',
+  'june',
+  'july',
+  'august',
+  'september',
+  'october',
+  'november',
+  'december',
+];
+
+// Parses a "Month YYYY" label (e.g. "March 2026") into a local Date set to
+// the 1st of that month. Avoids relying on the native Date constructor's
+// implementation-defined parsing of non-ISO strings, which behaves
+// inconsistently across browsers/engines.
+export function parseMonthLabel(label) {
+  const parts = String(label || '')
+    .trim()
+    .split(/\s+/);
+  if (parts.length !== 2) return new Date(NaN);
+  const monthIndex = MONTH_NAMES.indexOf(parts[0].toLowerCase());
+  const year = Number(parts[1]);
+  if (monthIndex === -1 || Number.isNaN(year)) return new Date(NaN);
+  return new Date(year, monthIndex, 1);
+}
+
+// Parses a "YYYY-MM-DD" date-input value into a local Date, avoiding the
+// UTC-midnight interpretation the Date constructor applies to bare ISO
+// date strings (which can shift the date by a day in non-UTC timezones).
+export function parseIsoDateOnly(value) {
+  if (!value) return null;
+  const [y, m, d] = value.split('-').map(Number);
+  if (!y || !m || !d) return null;
+  return new Date(y, m - 1, d);
+}
+
 const SAMPLE_DATA_BASE = {
   'building-1': { plannedStart: 400, plannedGrowth: 5.6, actualStart: 380, actualGrowth: 5.4 },
   'building-2': { plannedStart: 700, plannedGrowth: 9.2, actualStart: 660, actualGrowth: 9.0 },
@@ -337,17 +377,17 @@ function CostPredictionChart({ projectId }) {
       return chartData.slice(-DEFAULT_WINDOW_MONTHS);
     }
     return chartData.filter(d => {
-      const pointDate = new Date(d.month);
+      const pointDate = parseMonthLabel(d.month);
 
       if (dateRange.start) {
-        const s = new Date(dateRange.start);
-        const startMonth = new Date(s.getFullYear(), s.getMonth(), 1);
-        if (pointDate < startMonth) return false;
+        const s = parseIsoDateOnly(dateRange.start);
+        const startMonth = s && new Date(s.getFullYear(), s.getMonth(), 1);
+        if (startMonth && pointDate < startMonth) return false;
       }
       if (dateRange.end) {
-        const e = new Date(dateRange.end);
-        const endMonth = new Date(e.getFullYear(), e.getMonth(), 1);
-        if (pointDate > endMonth) return false;
+        const e = parseIsoDateOnly(dateRange.end);
+        const endMonth = e && new Date(e.getFullYear(), e.getMonth(), 1);
+        if (endMonth && pointDate > endMonth) return false;
       }
       return true;
     });
@@ -469,7 +509,10 @@ function CostPredictionChart({ projectId }) {
             value={dateRange.end}
             min={dateRange.start || undefined}
             max={TODAY_STR}
-            onChange={e => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+            onChange={e => {
+              const clamped = e.target.value > TODAY_STR ? TODAY_STR : e.target.value;
+              setDateRange(prev => ({ ...prev, end: clamped }));
+            }}
           />
         </div>
 
