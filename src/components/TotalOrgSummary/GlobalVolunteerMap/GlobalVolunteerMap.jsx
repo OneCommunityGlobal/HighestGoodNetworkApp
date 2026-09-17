@@ -123,7 +123,13 @@ function GlobalVolunteerMap({ locations = [], isLoading, darkMode = false, error
   return (
     <div
       className={`map-container ${darkMode ? 'dark-mode' : ''}`}
-      style={{ marginTop: 0, flex: '0 1 auto', display: 'flex', flexDirection: 'column', width: '100%' }}
+      style={{
+        marginTop: 0,
+        flex: '0 1 auto',
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+      }}
     >
       {/* Dark theme styles for Leaflet attribution badge & controls */}
       {darkMode && (
