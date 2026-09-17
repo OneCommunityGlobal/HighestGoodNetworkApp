@@ -24,6 +24,7 @@ import TeamMemberTask from './TeamMemberTask';
 
 import { FaCalendarAlt, FaClock } from 'react-icons/fa';
 import { ENDPOINTS } from '~/utils/URL';
+import { permissions } from '../../utils/constants';
 
 const TeamMemberTasks = React.memo(props => {
   const {
@@ -795,21 +796,16 @@ const TeamMemberTasks = React.memo(props => {
           </thead>
 
           <tbody className={darkMode ? styles.darkTbody : ''}>
-            {teamList.length === 0 || !selectionsLoaded ? (
-              <SkeletonLoading
-                template="TeamMemberTasks"
-                data-testid="skeleton-loading-team-member-tasks-row"
-              />
-            ) : (
+            {selectionsLoaded && teamList.length > 0 ? (
               teamList
                 .filter(user => filterByUserFeatures(user))
                 .map(user => {
                   const taskNode = (
                     <TeamMemberTask
-                      key={!isTimeFilterActive ? user.personId : undefined}
+                      key={isTimeFilterActive ? undefined : user.personId}
                       user={user}
                       userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes(
-                        'putReviewStatus',
+                        permissions.putReviewStatus,
                       )}
                       teamRoles={
                         user.teams !== undefined && user.teams.length > 0
@@ -868,6 +864,11 @@ const TeamMemberTasks = React.memo(props => {
                     </Fragment>
                   );
                 })
+            ) : (
+              <SkeletonLoading
+                template="TeamMemberTasks"
+                data-testid="skeleton-loading-team-member-tasks-row"
+              />
             )}
           </tbody>
         </Table>
@@ -876,20 +877,29 @@ const TeamMemberTasks = React.memo(props => {
   );
 });
 
+const userShape = PropTypes.shape({
+  _id: PropTypes.string,
+  role: PropTypes.string,
+  userid: PropTypes.string,
+  permissions: PropTypes.shape({
+    frontPermissions: PropTypes.arrayOf(PropTypes.string),
+  }),
+});
+
 TeamMemberTasks.propTypes = {
-  authUser: PropTypes.shape({
-    userid: PropTypes.string,
-    role: PropTypes.string,
-  }),
-  displayUser: PropTypes.shape({
-    _id: PropTypes.string,
-    role: PropTypes.string,
-    email: PropTypes.string,
-  }),
+  authUser: userShape,
+  displayUser: userShape,
   usersWithTasks: PropTypes.arrayOf(PropTypes.object),
   usersWithTimeEntries: PropTypes.arrayOf(PropTypes.object),
   darkMode: PropTypes.bool,
   filteredUserTeamIds: PropTypes.arrayOf(PropTypes.string),
+  auth: PropTypes.shape({
+    user: PropTypes.shape({
+      permissions: PropTypes.shape({
+        frontPermissions: PropTypes.arrayOf(PropTypes.string),
+      }),
+    }),
+  }),
 };
 
 const mapStateToProps = state => ({

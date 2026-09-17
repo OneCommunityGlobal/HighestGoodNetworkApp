@@ -82,7 +82,7 @@
 
 .button__container {
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
   margin-bottom: 10px;
   gap: 0.5em; /* Adds spacing between the buttons */
