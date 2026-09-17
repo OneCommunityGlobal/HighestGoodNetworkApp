@@ -3,7 +3,7 @@
 /* ======================
    Light Mode Base
    ====================== */
-.rentalContainer {
+.rental-container {
   position: relative;
   width: 100%;
   margin: 0 auto;
@@ -12,13 +12,13 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 8px;
   min-height: 15vh;
 }
 
 .rental-container.dark-mode {
-  background-color: #1b2a41;
+  background-color: #1b2a41 !important;
   color: #e0e0e0;
 }
 
@@ -125,10 +125,10 @@
   border: 1px solid #555;
 }
 
-.dark-date-picker {
+:global(.date-picker.dark-date-picker) {
   background-color: #1b2a41 !important;
   color: #e0e0e0 !important;
-  border: 1px solid #555;
+  border: 1px solid #555 !important;
 }
 
 /* =========================================
@@ -142,7 +142,7 @@
   box-sizing: border-box;
   border-radius: 8px;
   background-color: #fff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 50%);
   border: 1px solid #ddd;
 }
 
@@ -216,7 +216,7 @@
 :global(body.dark-mode .react-datepicker__month-select),
 :global(body.dark-mode .react-datepicker__year-select) {
   background-color: #2c3e50 !important;
-  color: #ffffff !important;
+  color: #fff !important;
   border: 1px solid #7f8c8d !important;
   border-radius: 4px;
   padding: 2px;
@@ -225,6 +225,6 @@
 
 :global(body.dark-mode .react-datepicker__month-select option),
 :global(body.dark-mode .react-datepicker__year-select option) {
-  background-color: #2c3e50;
-  color: #ffffff;
+  background-color: #2c3e50 !important;
+  color: #fff;
 }

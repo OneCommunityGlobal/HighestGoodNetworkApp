@@ -336,7 +336,7 @@ export default function ReturnedLateChart() {
 
   const options = useMemo(() => {
     const textColor = darkMode ? '#fff' : '#333';
-    const datalabelCOlor = darkMode ? '#fff' : '#111';
+    const datalabelColor = darkMode ? '#fff' : '#111';
     return {
       responsive: true,
       maintainAspectRatio: false,
@@ -357,7 +357,7 @@ export default function ReturnedLateChart() {
           align: 'top',
           offset: 4,
           formatter: value => `${Number(value).toFixed(0)}%`,
-          color: datalabelCOlor,
+          color: datalabelColor,
           font: { weight: 'bold' },
         },
         tooltip: {
@@ -454,7 +454,11 @@ export default function ReturnedLateChart() {
                   key={item.projectId}
                   type="button"
                   className={`${styles['returned-late-legend-item']} ${
-                    item.hidden ? styles['returned-late-legend-item-hidden'] : ''
+                    item.hidden
+                      ? styles['returned-late-legend-item-hidden']
+                      : darkMode
+                      ? 'dark-mode-legend'
+                      : ''
                   }`}
                   onClick={() => toggleProjectVisibility(item.projectId)}
                   aria-pressed={!item.hidden}
