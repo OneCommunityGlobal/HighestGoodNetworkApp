@@ -88,6 +88,18 @@ describe('Announcements routes', () => {
     expect(screen.queryByText('Announcements route')).not.toBeInTheDocument();
   });
 
+  it('allows an individual posting permission even when the role default was removed', () => {
+    renderRoutesAt('/announcements', {
+      role: 'Administrator',
+      frontPermissions: ['postFacebookContent'],
+      removedDefaultPermissions: ['postFacebookContent'],
+      roles: [{ roleName: 'Administrator', permissions: ['postFacebookContent'] }],
+    });
+
+    expect(screen.getByText('Announcements route')).toBeInTheDocument();
+    expect(screen.queryByText('Dashboard route')).not.toBeInTheDocument();
+  });
+
   it('redirects a user without posting or email permissions to Dashboard', () => {
     renderRoutesAt('/announcements', {
       role: 'Volunteer',

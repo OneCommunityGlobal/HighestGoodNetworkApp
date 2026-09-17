@@ -170,6 +170,36 @@ describe('ProtectedRoute Component', () => {
     expect(history.location.pathname).toBe('/dashboard');
   });
 
+  test('individual permissions still grant access when the matching role default was removed', () => {
+    store = mockStore({
+      auth: {
+        isAuthenticated: true,
+        user: {
+          role: 'admin',
+          permissions: {
+            frontPermissions: ['SPECIAL_ACCESS'],
+            removedDefaultPermissions: ['SPECIAL_ACCESS'],
+          },
+        },
+      },
+      role: { roles: [{ roleName: 'admin', permissions: ['SPECIAL_ACCESS'] }] },
+    });
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/protected']}>
+          <ProtectedRoute
+            path="/protected"
+            component={TargetComponent}
+            routePermissions={['SPECIAL_ACCESS']}
+          />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    expect(screen.getByText(/Target Page/i)).toBeInTheDocument();
+  });
+
   test('proper rendering of the component when conditions are met', () => {
     store = mockStore({
       auth: {
