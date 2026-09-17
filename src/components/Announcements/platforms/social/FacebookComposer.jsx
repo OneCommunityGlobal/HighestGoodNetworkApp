@@ -21,6 +21,13 @@ import styles from './FacebookComposer.module.css';
 
 const PACIFIC_TIMEZONE = 'America/Los_Angeles';
 const FACEBOOK_CHARACTER_LIMIT = 63206;
+const FACEBOOK_CONNECTION_STATES = {
+  CONNECTED: 'connected',
+  DISCONNECTED: 'disconnected',
+  LOADING: 'loading',
+  ERROR: 'error',
+  EXPIRED: 'expired',
+};
 const TABS = [
   { id: 'composer', label: '📝 Make Post' },
   { id: 'scheduled', label: '⏰ Scheduled' },
@@ -50,17 +57,53 @@ const validateImage = file => {
   return null;
 };
 
-function ConnectionWarning({ onSettings }) {
+const getFacebookConnectionState = (connectionStatus, loading) => {
+  if (loading || connectionStatus === null) return FACEBOOK_CONNECTION_STATES.LOADING;
+  if (connectionStatus?.error) return FACEBOOK_CONNECTION_STATES.ERROR;
+  if (connectionStatus?.connected === false) return FACEBOOK_CONNECTION_STATES.DISCONNECTED;
+  if (connectionStatus?.connected !== true) return FACEBOOK_CONNECTION_STATES.ERROR;
+  if (connectionStatus.tokenStatus === 'expired') return FACEBOOK_CONNECTION_STATES.EXPIRED;
+  return FACEBOOK_CONNECTION_STATES.CONNECTED;
+};
+
+function ConnectionWarning({ connectionState, onSettings }) {
+  const content = {
+    [FACEBOOK_CONNECTION_STATES.DISCONNECTED]: {
+      title: '⚠️ Facebook Not Connected',
+      message: 'Connect a Facebook Page before posting.',
+      settingsSuffix: ' to connect.',
+    },
+    [FACEBOOK_CONNECTION_STATES.LOADING]: {
+      title: 'Checking Facebook Connection',
+      message: 'Facebook connection status is still loading. Please try again.',
+    },
+    [FACEBOOK_CONNECTION_STATES.ERROR]: {
+      title: 'Unable to Verify Facebook Connection',
+      message: 'Facebook connection status could not be verified.',
+      settingsSuffix: ' to retry the status check.',
+    },
+    [FACEBOOK_CONNECTION_STATES.EXPIRED]: {
+      title: 'Facebook Connection Expired',
+      message: 'Reconnect your Facebook Page before posting.',
+      settingsSuffix: ' to reconnect.',
+    },
+  }[connectionState];
+
+  if (!content) return null;
+
   return (
     <div className={styles.warning}>
-      <strong>⚠️ Facebook Not Connected</strong>
-      <p>
-        Posts and scheduled posts will fail until a Facebook Page is connected. Go to the{' '}
-        <button className={styles.linkButton} type="button" onClick={onSettings}>
-          Settings tab
-        </button>{' '}
-        to connect.
-      </p>
+      <strong>{content.title}</strong>
+      <p>{content.message}</p>
+      {content.settingsSuffix && (
+        <p>
+          Go to the{' '}
+          <button className={styles.linkButton} type="button" onClick={onSettings}>
+            Settings tab
+          </button>
+          {content.settingsSuffix}
+        </p>
+      )}
     </div>
   );
 }
@@ -70,8 +113,10 @@ export default function FacebookComposer() {
   const authUser = useSelector(state => state.auth?.user);
   const darkMode = useSelector(state => state.theme.darkMode);
   const connectionStatus = useSelector(state => state.facebook?.connectionStatus);
+  const connectionLoading = useSelector(state => state.facebook?.loading);
   const requestor = useMemo(() => buildRequestor(authUser), [authUser]);
-  const connected = connectionStatus?.connected ?? null;
+  const connectionState = getFacebookConnectionState(connectionStatus, connectionLoading);
+  const facebookPostingAllowed = connectionState === FACEBOOK_CONNECTION_STATES.CONNECTED;
 
   const [activeTab, setActiveTab] = useState('composer');
   const [postContent, setPostContent] = useState('');
@@ -188,11 +233,23 @@ export default function FacebookComposer() {
     }
   };
 
+  const validateFacebookConnection = () => {
+    if (facebookPostingAllowed) return true;
+
+    const messages = {
+      [FACEBOOK_CONNECTION_STATES.DISCONNECTED]: 'Connect a Facebook Page before posting.',
+      [FACEBOOK_CONNECTION_STATES.LOADING]:
+        'Facebook connection status is still loading. Please try again.',
+      [FACEBOOK_CONNECTION_STATES.ERROR]:
+        'Facebook connection status could not be verified. Please retry the status check.',
+      [FACEBOOK_CONNECTION_STATES.EXPIRED]: 'Reconnect your Facebook Page before posting.',
+    };
+    toast.error(messages[connectionState]);
+    return false;
+  };
+
   const handlePost = async () => {
-    if (!connected) {
-      toast.error('Please connect a Facebook Page in Settings before posting.');
-      return;
-    }
+    if (!validateFacebookConnection()) return;
     if (!postContent.trim() && !imageFile && !imageUrl.trim()) {
       toast.error('Please enter content or add an image for your post.');
       return;
@@ -233,10 +290,7 @@ export default function FacebookComposer() {
   };
 
   const handleSchedule = async () => {
-    if (!connected) {
-      toast.error('Please connect a Facebook Page in Settings before scheduling.');
-      return;
-    }
+    if (!validateFacebookConnection()) return;
     if (!scheduledContent.trim() && !scheduledImageFile && !scheduledImageUrl.trim()) {
       toast.error('Please enter content or add an image for your scheduled post.');
       return;
@@ -340,8 +394,11 @@ export default function FacebookComposer() {
     }
   };
 
-  const warning = connected === false && (
-    <ConnectionWarning onSettings={() => setActiveTab('settings')} />
+  const warning = !facebookPostingAllowed && (
+    <ConnectionWarning
+      connectionState={connectionState}
+      onSettings={() => setActiveTab('settings')}
+    />
   );
 
   return (
@@ -418,7 +475,7 @@ export default function FacebookComposer() {
           <button
             className={styles.primaryButton}
             type="button"
-            disabled={posting || !connected}
+            disabled={posting || !facebookPostingAllowed}
             onClick={handlePost}
           >
             {posting ? 'Posting...' : 'Post to facebook'}
@@ -497,7 +554,7 @@ export default function FacebookComposer() {
             <button
               className={styles.primaryButton}
               type="button"
-              disabled={scheduling || !connected}
+              disabled={scheduling || !facebookPostingAllowed}
               onClick={handleSchedule}
             >
               {scheduling ? 'Scheduling...' : 'Schedule Post'}

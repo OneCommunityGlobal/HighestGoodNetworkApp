@@ -4,7 +4,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   fetchScheduledPosts,
   postFacebookContent,
+  postFacebookContentWithImage,
   scheduleFacebookPost,
+  scheduleFacebookPostWithImage,
 } from '~/actions/facebookActions';
 import FacebookComposer from './FacebookComposer';
 
@@ -40,14 +42,34 @@ const user = {
   permissions: {},
 };
 
-const setConnected = connected => {
+const connectedStatus = {
+  connected: true,
+  pageId: '123',
+  pageName: 'One Community',
+  tokenStatus: 'valid',
+};
+
+const setFacebookState = facebook => {
   useSelector.mockImplementation(selector =>
     selector({
       auth: { user },
       theme: { darkMode: false },
-      facebook: { connectionStatus: { connected }, loading: false },
+      facebook,
     }),
   );
+};
+
+const setConnected = connected =>
+  setFacebookState({
+    connectionStatus: connected ? connectedStatus : { connected: false },
+    loading: false,
+  });
+
+const expectNoFacebookSubmission = () => {
+  expect(postFacebookContent).not.toHaveBeenCalled();
+  expect(postFacebookContentWithImage).not.toHaveBeenCalled();
+  expect(scheduleFacebookPost).not.toHaveBeenCalled();
+  expect(scheduleFacebookPostWithImage).not.toHaveBeenCalled();
 };
 
 describe('FacebookComposer', () => {
@@ -63,13 +85,77 @@ describe('FacebookComposer', () => {
     });
   });
 
-  it('guides a disconnected user to the Facebook connection settings', () => {
+  it('blocks posting and scheduling when Facebook is confirmed disconnected', async () => {
     setConnected(false);
     render(<FacebookComposer />);
     expect(screen.getByText('⚠️ Facebook Not Connected')).toBeInTheDocument();
+    expect(screen.getByText('Connect a Facebook Page before posting.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Post to facebook' })).toBeDisabled();
+
+    fireEvent.click(screen.getByRole('button', { name: '⏰ Scheduled' }));
+    await waitFor(() => expect(fetchScheduledPosts).toHaveBeenCalled());
+    expect(screen.getByRole('button', { name: 'Schedule Post' })).toBeDisabled();
+    expectNoFacebookSubmission();
+
     fireEvent.click(screen.getByRole('button', { name: 'Settings tab' }));
     expect(screen.getByText('Facebook Page Connection')).toBeInTheDocument();
+  });
+
+  it('blocks stale connected status while the connection status is loading', async () => {
+    setFacebookState({ connectionStatus: connectedStatus, loading: true });
+    render(<FacebookComposer />);
+
+    expect(screen.getByText('Checking Facebook Connection')).toBeInTheDocument();
+    expect(screen.queryByText('⚠️ Facebook Not Connected')).not.toBeInTheDocument();
+    const postButton = screen.getByRole('button', { name: 'Post to facebook' });
+    expect(postButton).toBeDisabled();
+    postButton.disabled = false;
+    fireEvent.click(postButton);
+
+    fireEvent.click(screen.getByRole('button', { name: '⏰ Scheduled' }));
+    await waitFor(() => expect(fetchScheduledPosts).toHaveBeenCalled());
+    const scheduleButton = screen.getByRole('button', { name: 'Schedule Post' });
+    expect(scheduleButton).toBeDisabled();
+    scheduleButton.disabled = false;
+    fireEvent.click(scheduleButton);
+    expectNoFacebookSubmission();
+  });
+
+  it('blocks an unknown status without exposing the raw backend error', async () => {
+    const rawError = 'database host facebook-internal.example failed';
+    setFacebookState({ connectionStatus: { error: rawError }, loading: false });
+    const view = render(<FacebookComposer />);
+
+    expect(screen.getByText('Unable to Verify Facebook Connection')).toBeInTheDocument();
+    expect(screen.queryByText('⚠️ Facebook Not Connected')).not.toBeInTheDocument();
+    expect(view.container).not.toHaveTextContent(rawError);
+    expect(screen.getByRole('button', { name: 'Post to facebook' })).toBeDisabled();
+
+    fireEvent.click(screen.getByRole('button', { name: '⏰ Scheduled' }));
+    await waitFor(() => expect(fetchScheduledPosts).toHaveBeenCalled());
+    expect(screen.getByRole('button', { name: 'Schedule Post' })).toBeDisabled();
+    expect(view.container).not.toHaveTextContent(rawError);
+    expectNoFacebookSubmission();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Settings tab' }));
+    expect(screen.getByText('Facebook Page Connection')).toBeInTheDocument();
+  });
+
+  it('blocks posting and scheduling for an expired Facebook connection', async () => {
+    setFacebookState({
+      connectionStatus: { ...connectedStatus, tokenStatus: 'expired' },
+      loading: false,
+    });
+    render(<FacebookComposer />);
+
+    expect(screen.getByText('Facebook Connection Expired')).toBeInTheDocument();
+    expect(screen.getByText('Reconnect your Facebook Page before posting.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Post to facebook' })).toBeDisabled();
+
+    fireEvent.click(screen.getByRole('button', { name: '⏰ Scheduled' }));
+    await waitFor(() => expect(fetchScheduledPosts).toHaveBeenCalled());
+    expect(screen.getByRole('button', { name: 'Schedule Post' })).toBeDisabled();
+    expectNoFacebookSubmission();
   });
 
   it('posts through the recovered Facebook action', async () => {
