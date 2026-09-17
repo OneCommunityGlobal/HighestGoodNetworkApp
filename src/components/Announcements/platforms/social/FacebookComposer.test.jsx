@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
@@ -9,6 +9,7 @@ import {
   scheduleFacebookPostWithImage,
 } from '~/actions/facebookActions';
 import FacebookComposer from './FacebookComposer';
+import styles from './FacebookComposer.module.css';
 
 vi.mock('react-redux', () => ({
   useDispatch: vi.fn(),
@@ -49,21 +50,24 @@ const connectedStatus = {
   tokenStatus: 'valid',
 };
 
-const setFacebookState = facebook => {
+const setFacebookState = (facebook, darkMode = false) => {
   useSelector.mockImplementation(selector =>
     selector({
       auth: { user },
-      theme: { darkMode: false },
+      theme: { darkMode },
       facebook,
     }),
   );
 };
 
-const setConnected = connected =>
-  setFacebookState({
-    connectionStatus: connected ? connectedStatus : { connected: false },
-    loading: false,
-  });
+const setConnected = (connected, darkMode = false) =>
+  setFacebookState(
+    {
+      connectionStatus: connected ? connectedStatus : { connected: false },
+      loading: false,
+    },
+    darkMode,
+  );
 
 const expectNoFacebookSubmission = () => {
   expect(postFacebookContent).not.toHaveBeenCalled();
@@ -83,6 +87,61 @@ describe('FacebookComposer', () => {
       if (action.type === 'HISTORY') return Promise.resolve({ posts: [] });
       return Promise.resolve({ success: true });
     });
+  });
+
+  it('keeps the new-post datetime field inside the light Facebook theme scope', async () => {
+    setConnected(true);
+    render(<FacebookComposer />);
+
+    // eslint-disable-next-line testing-library/no-node-access -- The heading is a direct child of the themed composer scope.
+    const composer = screen.getByRole('heading', { name: 'Facebook' }).parentElement;
+    expect(composer).toHaveClass(styles.composer);
+    expect(composer).not.toHaveClass(styles.dark);
+
+    fireEvent.click(screen.getByRole('button', { name: '⏰ Scheduled' }));
+    await waitFor(() => expect(fetchScheduledPosts).toHaveBeenCalled());
+    const scheduleDateTime = screen.getByLabelText('Date & Time (PST)');
+    expect(scheduleDateTime).toHaveAttribute('type', 'datetime-local');
+    expect(scheduleDateTime).toHaveClass(styles.field);
+    expect(composer).toContainElement(scheduleDateTime);
+  });
+
+  it('keeps new-post and edit datetime fields inside the dark Facebook theme scope', async () => {
+    setConnected(true, true);
+    dispatch.mockImplementation(action => {
+      if (action.type === 'SCHEDULED') {
+        return Promise.resolve({
+          scheduledPosts: [
+            {
+              _id: 'scheduled-1',
+              message: 'Post to edit',
+              scheduledFor: '2099-01-01T20:00:00.000Z',
+              status: 'pending',
+            },
+          ],
+        });
+      }
+      return Promise.resolve({ success: true });
+    });
+    render(<FacebookComposer />);
+
+    // eslint-disable-next-line testing-library/no-node-access -- The heading is a direct child of the themed composer scope.
+    const composer = screen.getByRole('heading', { name: 'Facebook' }).parentElement;
+    expect(composer).toHaveClass(styles.composer, styles.dark);
+
+    fireEvent.click(screen.getByRole('button', { name: '⏰ Scheduled' }));
+    await screen.findByText('Post to edit');
+    const scheduleDateTime = screen.getByLabelText('Date & Time (PST)');
+    expect(scheduleDateTime).toHaveAttribute('type', 'datetime-local');
+    expect(scheduleDateTime).toHaveClass(styles.field);
+    expect(composer).toContainElement(scheduleDateTime);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    const editDialog = screen.getByRole('dialog');
+    const editDateTime = within(editDialog).getByDisplayValue('2099-01-01T12:00');
+    expect(editDateTime).toHaveAttribute('type', 'datetime-local');
+    expect(editDateTime).toHaveClass(styles.field);
+    expect(composer).toContainElement(editDateTime);
   });
 
   it('blocks posting and scheduling when Facebook is confirmed disconnected', async () => {

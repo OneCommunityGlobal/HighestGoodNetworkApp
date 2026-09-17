@@ -64,6 +64,10 @@
   border-radius: 6px;
 }
 
+.field[type='datetime-local'] {
+  color-scheme: light;
+}
+
 .textarea {
   min-height: 120px;
   margin-bottom: 1rem;
@@ -251,6 +255,10 @@
   color: #e5e7eb;
   background: #0b1220;
   border-color: #1f2937;
+}
+
+.dark .field[type='datetime-local'] {
+  color-scheme: dark;
 }
 
 .dark .section,
