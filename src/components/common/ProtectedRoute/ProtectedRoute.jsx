@@ -17,11 +17,15 @@ const ProtectedRoute = ({
   const rolePermissions =
     roles?.find(({ roleName }) => roleName === auth.user.role)?.permissions || [];
   const userPermissions = auth.user?.permissions?.frontPermissions || [];
-  const permissionsAllowed = new Set([...rolePermissions, ...userPermissions]);
+  const removedDefaultPermissions = auth.user?.permissions?.removedDefaultPermissions || [];
+  const effectiveRolePermissions = rolePermissions.filter(
+    permission => !removedDefaultPermissions.includes(permission),
+  );
+  const permissionsAllowed = new Set([...effectiveRolePermissions, ...userPermissions]);
   let hasPermissionToAccess = routePermissions?.some(perm => permissionsAllowed.has(perm));
 
   if (Array.isArray(routePermissions)) {
-    if (rolePermissions?.some(perm => routePermissions.includes(perm))) {
+    if (effectiveRolePermissions?.some(perm => routePermissions.includes(perm))) {
       hasPermissionToAccess = true;
     }
 

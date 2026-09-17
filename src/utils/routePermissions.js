@@ -41,7 +41,7 @@ const RoutePermissions = {
     'putReviewStatus',
     'suggestTask',
   ],
-  announcements: ['sendEmails'],
+  announcements: ['sendEmails', 'postFacebookContent'],
   faq: [''],
   faqManagement: ['manageFAQs'],
   meetings: ['scheduleMeetings'],
