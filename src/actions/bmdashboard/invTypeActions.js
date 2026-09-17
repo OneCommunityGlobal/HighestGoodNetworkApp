@@ -413,8 +413,9 @@ export const setUpdateNamwAndUnitError = payload => {
 }
 export const updateNameAndUnit = (id,payload) => {
   return async dispatch => {
+    const updateType = payload.type === 'Material' ? 'Materials' : 'Consumables';
     axios
-      .put(ENDPOINTS.BM_UPDATE_NAME_AND_UNIT(id), payload)
+      .put(`${ENDPOINTS.BM_INVTYPE_TYPE(updateType)}/${id}`, payload)
       .then(res => {
         dispatch(updateNameAndUnitResult(res.data));
       })
