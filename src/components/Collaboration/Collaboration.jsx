@@ -160,6 +160,7 @@ function Collaboration() {
         jobDescription: ad.description || '',
         requirements: ad.requirements || [],
         category: ad.category || 'General',
+        jobDetailsLink: ad.jobDetailsLink || '',
       },
     });
   };
