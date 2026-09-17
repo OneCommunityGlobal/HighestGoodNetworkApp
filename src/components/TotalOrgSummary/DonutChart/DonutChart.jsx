@@ -33,7 +33,13 @@ export const formatCalloutLines = (value, total) => [
 
 export const resolveDisplayTotalCount = (totalCount, data) => {
   const sum = data.reduce((acc, item) => acc + (item.value ?? 0), 0);
-  return sum > 0 ? sum : Number.isFinite(totalCount) ? totalCount : 0;
+  if (sum > 0) {
+    return sum;
+  }
+  if (Number.isFinite(totalCount)) {
+    return totalCount;
+  }
+  return 0;
 };
 
 export const buildChartItems = (data, colors) =>
