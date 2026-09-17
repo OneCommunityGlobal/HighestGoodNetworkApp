@@ -116,7 +116,7 @@ function AddNewTitleModal({
     setIsValidTeamCode(
       codeValue === '' ||
         (Array.isArray(QSTTeamCodes) &&
-          QSTTeamCodes.some(code => code?.value === codeValue))
+          QSTTeamCodes.some(code => (code?.value || '').trim() === codeValue))
     );
   }, [titleData.teamCode, QSTTeamCodes]);
   
@@ -130,7 +130,7 @@ function AddNewTitleModal({
 
   const existTeamCodes = new Set(
     (Array.isArray(QSTTeamCodes) ? QSTTeamCodes : [])
-      .map(code => code?.value)
+      .map(code => (code?.value || '').trim())
       .filter(Boolean)
   );
 
