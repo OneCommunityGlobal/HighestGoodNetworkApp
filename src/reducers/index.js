@@ -65,6 +65,7 @@ import { reusablesReducer } from './bmdashboard/reusablesReducer';
 import { bmTimeLoggerReducer } from './bmdashboard/timeLoggerReducer';
 import toolAvailabilityReducer from './bmdashboard/toolAvailabilityReducer';
 import { toolReducer } from './bmdashboard/toolReducer';
+import materialCostCorrelationReducer from './bmdashboard/materialCostCorrelationReducer';
 
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import issueReducer from './bmdashboard/issueReducer';
@@ -193,6 +194,7 @@ const localReducers = {
   villageDetails: villageDetailsReducer,
 
   bmissuechart: issueReducer,
+  materialCostCorrelation: materialCostCorrelationReducer,
   noShowViz: noShowVizReducer,
   eventFeedback: eventFeedbackReducer,
 
