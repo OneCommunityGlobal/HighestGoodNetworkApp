@@ -661,10 +661,14 @@ function TotalOrgSummary(props) {
           </Row>
         </AccordianWrapper>
         <AccordianWrapper title="Global Distribution and Volunteer Status Overview">
-          <Row>
+          <Row className={styles.globalDistributionRow}>
             <Col lg={{ size: 6 }}>
               <div
-                className={clsx(styles.componentContainer, styles.componentBorder)}
+                className={clsx(
+                  styles.componentContainer,
+                  styles.componentBorder,
+                  styles.globalDistributionPanel,
+                )}
                 data-pdf-block
               >
                 <div
@@ -689,6 +693,7 @@ function TotalOrgSummary(props) {
                   styles.componentContainer,
                   styles.componentBorder,
                   styles.componentBorderLoose,
+                  styles.globalDistributionPanel,
                 )}
                 data-pdf-block
               >

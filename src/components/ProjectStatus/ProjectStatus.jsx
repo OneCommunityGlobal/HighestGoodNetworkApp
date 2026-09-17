@@ -14,9 +14,16 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 const centerTextPlugin = {
   id: 'centerText',
   afterDraw(chart) {
+    const centerTextOptions = chart.options.plugins?.centerText;
+    // Only render on charts that explicitly configure this plugin.
+    // Without this guard, globally registered plugin text leaks onto every doughnut chart.
+    if (!centerTextOptions || centerTextOptions === false) {
+      return;
+    }
+
     const { ctx } = chart;
     const { width, height } = chart;
-    const isDarkMode = chart.options.plugins.centerText?.darkMode || false;
+    const isDarkMode = centerTextOptions.darkMode || false;
 
     ctx.save();
     ctx.font = '600 14px Inter, system-ui';
@@ -24,7 +31,7 @@ const centerTextPlugin = {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    const total = chart.options.plugins.centerText?.total ?? 0;
+    const total = centerTextOptions.total ?? 0;
     ctx.fillText('Total Projects', width / 2, height / 2 - 10);
     ctx.font = '700 18px Inter, system-ui';
     ctx.fillText(`${total}`, width / 2, height / 2 + 14);

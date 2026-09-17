@@ -1,71 +1,88 @@
 /* stylelint-disable  */
 .chartRoot {
-  margin-top: 1.5rem;
-  height: 100%;
   display: flex;
+  flex: 1;
   flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  min-height: 0;
 }
 
 .volunteerMentorChartsWrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
+  --status-chart-size: 240px;
+
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
   width: 100%;
-  flex: 1 1 auto;
+  align-items: start;
+  justify-items: center;
 }
 
 .volunteerChartSection,
 .mentorChartSection {
-  width: 100%;
   display: flex;
-  justify-content: center;
-  align-items: stretch;
-  flex: 1 1 100%;
-  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: var(--status-chart-size);
+}
+
+/* Force identical chart box dimensions for volunteer and mentor donuts */
+.volunteerChartSection :global([data-chart='volunteer-status']),
+.mentorChartSection :global([data-chart='mentor-status']) {
+  width: var(--status-chart-size) !important;
+  height: var(--status-chart-size) !important;
+  max-width: 100%;
 }
 
 @media (width >= 768px) {
   .volunteerMentorChartsWrapper {
-    flex-flow: row wrap;
-    align-items: stretch;
-    justify-content: center;
+    --status-chart-size: 230px;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 16px;
+    row-gap: 20px;
+    align-items: start;
+    justify-items: center;
   }
 
   .volunteerChartSection,
   .mentorChartSection {
-    flex: 1 1 280px;
-    max-width: 360px;
+    max-width: var(--status-chart-size);
   }
+}
 
-  .chartRoot {
-    min-height: 520px;
+@media (width >= 992px) {
+  .volunteerMentorChartsWrapper {
+    --status-chart-size: 245px;
   }
 }
 
 @media (width >= 1200px) {
   .volunteerMentorChartsWrapper {
-    flex-wrap: nowrap;
-    justify-content: space-evenly;
+    --status-chart-size: 260px;
+    column-gap: 20px;
   }
+}
 
-  .volunteerChartSection {
-    flex: 1 1 340px;
-    max-width: 400px;
-  }
-
-  .mentorChartSection {
-    flex: 1 1 320px;
-    max-width: 400px;
+@media (width <= 767px) {
+  .volunteerMentorChartsWrapper {
+    --status-chart-size: min(240px, calc(100vw - 88px));
   }
 }
 
 .volunteerMentorFootnote {
-  margin-top: 105px;
+  margin-top: 12px;
+  padding: 0 8px;
   text-align: center;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: #4f4f4f;
-  max-width: 560px;
-  align-self: center;
+  max-width: 100%;
+  line-height: 1.4;
+}
+
+:global(.bg-oxford-blue) .volunteerMentorFootnote {
+  color: #cbd5e1;
 }
