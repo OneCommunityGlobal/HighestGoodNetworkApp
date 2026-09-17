@@ -44,7 +44,7 @@ const MONTHS = [
 ];
 
 const CHART_COLORS = {
-  darkBg: '#1b2a41',
+  darkBg: 'transparent',
   lightBg: '#ffffff',
   darkText: '#e0e0e0',
   lightText: '#333333',
@@ -339,7 +339,7 @@ export default function RentalChart() {
           font: {
             size: 14,
           },
-          color: darkMode ? CHART_COLORS.lightBg : CHART_COLORS.darkBg,
+          color: darkMode ? CHART_COLORS.darkText : CHART_COLORS.lightText,
           padding: {
             bottom: 20,
           },

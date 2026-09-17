@@ -120,12 +120,12 @@
 }
 
 .dark-select {
-  background-color: #1b2a41;
+  background-color: #1b2a41 !important;
   color: #e0e0e0;
-  border: 1px solid #555;
+  border: 1px solid #555 !important;
 }
 
-:global(.date-picker.dark-date-picker) {
+.date-picker.dark-date-picker {
   background-color: #1b2a41 !important;
   color: #e0e0e0 !important;
   border: 1px solid #555 !important;
