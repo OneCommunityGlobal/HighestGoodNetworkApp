@@ -37,7 +37,14 @@ describe('CompletedTasksPieChart task list cap', () => {
     mockUseSelector.mockReset();
   });
 
-  it('caps the collapsed list at 20 tasks', () => {
+  // Pinned to the literal on purpose: the other tests reference MAX_VISIBLE_TASKS
+  // symbolically, so they stay green if the cap is lowered for local debugging.
+  // This one fails if a temporary value gets committed.
+  it('caps the collapsed list at 20, the agreed product limit', () => {
+    expect(MAX_VISIBLE_TASKS).toBe(20);
+  });
+
+  it('caps the collapsed list at the limit', () => {
     renderChart(MAX_VISIBLE_TASKS + 13);
 
     expect(countTaskRows()).toBe(MAX_VISIBLE_TASKS);

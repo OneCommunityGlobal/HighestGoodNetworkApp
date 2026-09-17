@@ -11,7 +11,7 @@ import styles from './CompletedTasksPieChart.module.css';
 // Hard cap on the rows rendered in the collapsed legend. Fixed rather than derived
 // from the viewport so the card is the same height on every screen — these reports
 // get screenshotted into work confirmation letters and the bottom edge has to line up.
-export const MAX_VISIBLE_TASKS = 3;
+export const MAX_VISIBLE_TASKS = 20;
 
 export function ColorSwatchCell({ value, column }) {
   return (
@@ -86,6 +86,9 @@ function CompletedTasksPieChart({ darkMode }) {
 
   const hiddenCount = Math.max(0, tasks.length - MAX_VISIBLE_TASKS);
   const tasksView = expanded ? tasks : tasks.slice(0, MAX_VISIBLE_TASKS);
+  const moreTasksLabel = `+ ${hiddenCount} more task${hiddenCount === 1 ? '' : 's'}`;
+  const toggleLabel = expanded ? 'Show less' : moreTasksLabel;
+  const ToggleIcon = expanded ? FiChevronUp : FiChevronDown;
 
   const colorScale = useMemo(() => {
     const domain = tasks.map(t => t.projectId);
@@ -247,14 +250,8 @@ function CompletedTasksPieChart({ darkMode }) {
                   aria-expanded={expanded}
                   onClick={() => setExpanded(prev => !prev)}
                 >
-                  {expanded
-                    ? 'Show less'
-                    : `+ ${hiddenCount} more task${hiddenCount === 1 ? '' : 's'}`}
-                  {expanded ? (
-                    <FiChevronUp className={styles['show-more-icon']} aria-hidden="true" />
-                  ) : (
-                    <FiChevronDown className={styles['show-more-icon']} aria-hidden="true" />
-                  )}
+                  {toggleLabel}
+                  <ToggleIcon className={styles['show-more-icon']} aria-hidden="true" />
                 </button>
               </div>
             )}
