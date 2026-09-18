@@ -5,6 +5,7 @@ import { Button, Modal } from 'react-bootstrap';
 import { connect, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { ENDPOINTS } from '~/utils/URL';
+import { UserRole } from '~/utils/enums';
 import styles from './HelpModal.module.css';
 
 function HelpModal({ show, onHide, auth }) {
@@ -100,7 +101,14 @@ function HelpModal({ show, onHide, auth }) {
   /* ---------------- Access Logic ---------------- */
   const role = auth?.user?.role?.trim().toLowerCase() || '';
 
-  const allowedRoles = useMemo(() => new Set(['owner', 'administrator']), []);
+  // Admins, Owners, and Core Team can submit help requests regardless of team membership
+  const allowedRoles = useMemo(
+    () =>
+      new Set(
+        [UserRole.Owner, UserRole.Administrator, UserRole.CoreTeam].map(r => r.toLowerCase()),
+      ),
+    [],
+  );
 
   const isSoftwareDevMember = useMemo(() => {
     return (
@@ -183,7 +191,8 @@ function HelpModal({ show, onHide, auth }) {
 
         {!isSoftwareDevMember && (
           <div className="alert alert-warning mt-3">
-            Only members of the Software Development Team can submit requests.
+            Only members of the Software Development Team, Admins, Core Team, and Owners can submit
+            requests.
           </div>
         )}
 
