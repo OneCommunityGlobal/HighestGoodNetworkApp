@@ -2,6 +2,7 @@
 /* eslint-disable no-console */
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { UncontrolledTooltip } from 'reactstrap';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { ENDPOINTS } from '../../utils/URL';
@@ -392,17 +393,21 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
             </select>
             <div className={styles.loadTemplateButtons}>
               <button
+                id="clone-template-button"
                 type="button"
                 onClick={loadTemplate}
                 className={`${styles.loadTemplateButton}`}
                 disabled={isLoading || !selectedTemplate}
-                style={{ position: 'relative' }}
               >
                 {isLoading ? 'Loading...' : 'Clone with Template'}
-                <span className={styles.tooltip}>
-                  Create a copy of this template to modify without changing the original.
-                </span>
               </button>
+              <UncontrolledTooltip
+                placement="top"
+                target="clone-template-button"
+                trigger="hover focus"
+              >
+                Create a copy of this template to modify without changing the original.
+              </UncontrolledTooltip>
               <button
                 type="button"
                 onClick={() => {
@@ -422,27 +427,37 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
                 Clear Template
               </button>
               <button
+                id="append-template-button"
                 type="button"
                 onClick={appendTemplate}
                 className={`${styles.appendTemplateButton}`}
                 disabled={isLoading || !selectedTemplate}
-                style={{ position: 'relative' }}
               >
                 {isLoading ? 'Appending...' : 'Append Template'}
-                <span className={styles.tooltip}>
-                  Add additional fields to this existing template.
-                </span>
               </button>
+              <UncontrolledTooltip
+                placement="top"
+                target="append-template-button"
+                trigger="hover focus"
+              >
+                Add additional fields to this existing template.
+              </UncontrolledTooltip>
               <button
+                id="delete-template-button"
                 type="button"
                 onClick={deleteTemplate}
                 className={`${styles.deleteTemplateButton}`}
                 disabled={isLoading || !selectedTemplate}
-                style={{ position: 'relative' }}
               >
                 {isLoading ? 'Deleting...' : 'Delete Template'}
-                <span className={styles.tooltip}>Permanently remove this template.</span>
               </button>
+              <UncontrolledTooltip
+                placement="top"
+                target="delete-template-button"
+                trigger="hover focus"
+              >
+                Permanently remove this template.
+              </UncontrolledTooltip>
             </div>
           </div>
         </div>
