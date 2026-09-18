@@ -68,49 +68,6 @@
   color: #999;
 }
 
-:global(.react-datepicker__navigation) {
-  transition: opacity 0.15s ease, transform 0.15s ease;
-}
-
-:global(.react-datepicker__navigation:hover) {
-  opacity: 0.6;
-  transform: scale(1.15);
-}
-
-:global(body:not(.dark-mode)) :global(.react-datepicker) {
-  background-color: #fff;
-  color: #333;
-  border: 1px solid #ccc;
-}
-
-:global(body:not(.dark-mode)) :global(.react-datepicker__header) {
-  background-color: #f0f0f0;
-  border-bottom: 1px solid #ccc;
-}
-
-:global(body:not(.dark-mode)) :global(.react-datepicker__current-month),
-:global(body:not(.dark-mode)) :global(.react-datepicker__day-name),
-:global(body:not(.dark-mode)) :global(.react-datepicker__day) {
-  color: #333;
-}
-
-:global(body:not(.dark-mode)) :global(.react-datepicker__day:hover) {
-  background-color: #f0f0f0;
-}
-
-:global(body:not(.dark-mode)) :global(.react-datepicker__day--selected),
-:global(body:not(.dark-mode)) :global(.react-datepicker__day--in-selecting-range),
-:global(body:not(.dark-mode)) :global(.react-datepicker__day--in-range) {
-  background-color: #3b82f6;
-  color: #1a1a1a !important;
-}
-
-:global(body:not(.dark-mode)) :global(.react-datepicker__day--disabled) {
-  color: #ccc !important;
-  cursor: not-allowed !important;
-  background-color: transparent !important;
-}
-
 .button {
   background-color: #2563eb;
   color: var(--button-text, #fff);

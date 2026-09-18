@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
+import { useHistory } from 'react-router-dom';
 import 'react-datepicker/dist/react-datepicker.css';
 import {
   FaCubes,
@@ -15,9 +16,11 @@ import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
+import EditNameUnitModal from './EditNameUnitModal';
+import ViewUpdateHistoryModal from './ViewUpdateHistoryModal';
 import InventoryNavBar from '../InventoryTypesList/InventoryNavBar';
+import MaterialSummaryPanel from '../MaterialList/MaterialSummaryPanel';
 import styles from './ItemListView.module.css';
-import { Form, FormGroup, Label } from 'reactstrap';
 
 const allCategories = [
   { label: 'Materials', route: '/bmdashboard/materials', icon: <FaCubes /> },
@@ -44,6 +47,7 @@ export function ItemListView({
   dynamicColumns,
   children,
 }) {
+  const history = useHistory();
   const darkMode = useSelector(state => state.theme.darkMode);
   const [filteredItems, setFilteredItems] = useState([]);
   const [selectedProject, setSelectedProject] = useState([]); // Array of strings
@@ -51,6 +55,9 @@ export function ItemListView({
   const [localValues, setLocalValues] = useState([]);
   const [isError, setIsError] = useState(false);
   const [selectedTime, setSelectedTime] = useState(new Date());
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   const projectKey = `${itemType}_selected_projects`;
   const itemKey = `${itemType}_selected_items`;
@@ -63,6 +70,7 @@ export function ItemListView({
     localStorage.removeItem(itemKey);
   };
 
+  const isMaterialsView = itemType === 'Materials';
   const [searchQuery, setSearchQuery] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
@@ -170,11 +178,43 @@ export function ItemListView({
     return arr.map(x => x.item);
   }, [searchFilteredItems, sortConfig]);
 
+  const selectedModalItem = useMemo(() => {
+    if (!selectedRow || itemType !== 'Materials') return selectedRow;
+
+    const selectedItemType =
+      selectedRow.itemType && typeof selectedRow.itemType === 'object'
+        ? selectedRow.itemType
+        : {
+            _id: selectedRow.itemType,
+            name: selectedRow.name,
+            unit: selectedRow.unit,
+          };
+
+    // These modals edit inventory-type data, so they need the selected material's type shape.
+    return {
+      ...selectedRow,
+      __t: 'material_item',
+      itemType: selectedItemType,
+    };
+  }, [selectedRow, itemType]);
+
   const handleSort = key => {
     setSortConfig(prev => {
       if (prev.key !== key) return { key, direction: 'asc' };
       return { key, direction: prev.direction === 'asc' ? 'desc' : 'asc' };
     });
+  };
+
+  const handleAddMaterial = () => {
+    if (itemType === 'Materials') history.push('/bmdashboard/materials/add');
+  };
+
+  const handleEditNameMeasurement = () => {
+    if (itemType === 'Materials') setIsEditOpen(true);
+  };
+
+  const handleViewUpdateHistory = () => {
+    if (itemType === 'Materials') setIsHistoryOpen(true);
   };
 
   const totalItems = sortedItems.length;
@@ -218,22 +258,24 @@ export function ItemListView({
         <span>
           {items && (
             <div className={`${styles.selectInput}`}>
-              <label htmlFor="itemListTime">Time:</label>
-              <DatePicker
-                selected={selectedTime}
-                onChange={date => setSelectedTime(date)}
-                showTimeSelect
-                timeFormat="HH:mm"
-                timeIntervals={15}
-                dateFormat="yyyy-MM-dd HH:mm:ss"
-                placeholderText="Select date and time"
-                inputId="itemListTime"
-                className={darkMode ? styles.darkDatePickerInput : styles.lightDatePickerInput}
-                calendarClassName={darkMode ? styles.darkDatePicker : styles.lightDatePicker}
-                popperClassName={
-                  darkMode ? styles.darkDatePickerPopper : styles.lightDatePickerPopper
-                }
-              />
+              <div className={styles.filterGroup}>
+                <label htmlFor="itemListTime">Time:</label>
+                <DatePicker
+                  selected={selectedTime}
+                  onChange={date => setSelectedTime(date)}
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  dateFormat="yyyy-MM-dd HH:mm:ss"
+                  placeholderText="Select date and time"
+                  inputId="itemListTime"
+                  className={darkMode ? styles.darkDatePickerInput : styles.lightDatePickerInput}
+                  calendarClassName={darkMode ? styles.darkDatePicker : styles.lightDatePicker}
+                  popperClassName={
+                    darkMode ? styles.darkDatePickerPopper : styles.lightDatePickerPopper
+                  }
+                />
+              </div>
 
               <SelectForm
                 items={items}
@@ -253,45 +295,36 @@ export function ItemListView({
               />
 
               <div className={styles.resetContainer}>
-                <Form onSubmit={e => e.preventDefault()}>
-                  <FormGroup>
-                    <Label>&nbsp;</Label>
-                    <button
-                      type="button"
-                      className={styles.btnReset}
-                      onClick={handleReset}
-                      disabled={
-                        localStorage.getItem(projectKey) === null &&
-                        localStorage.getItem(itemKey) === null
-                      }
-                    >
-                      Reset
-                    </button>
-                  </FormGroup>
-                </Form>
+                <button
+                  type="button"
+                  className={styles.btnReset}
+                  onClick={handleReset}
+                  disabled={
+                    localStorage.getItem(projectKey) === null &&
+                    localStorage.getItem(itemKey) === null
+                  }
+                >
+                  Reset
+                </button>
               </div>
             </div>
           )}
 
           <div className={`${styles.buttonsRow}`}>
-            <button
-              type="button"
-              className={`${styles.btnPrimary}`}
-              onClick={() => console.log('Add Material clicked')}
-            >
+            <button type="button" className={`${styles.btnPrimary}`} onClick={handleAddMaterial}>
               Add Material
             </button>
             <button
               type="button"
               className={`${styles.btnPrimary}`}
-              onClick={() => console.log('Edit Name/Measurement clicked')}
+              onClick={handleEditNameMeasurement}
             >
               Edit Name/Measurement
             </button>
             <button
               type="button"
               className={`${styles.btnPrimary}`}
-              onClick={() => console.log('View Update History clicked')}
+              onClick={handleViewUpdateHistory}
             >
               View Update History
             </button>
@@ -327,6 +360,8 @@ export function ItemListView({
 
         {children}
 
+        {isMaterialsView && <MaterialSummaryPanel materials={filteredItems} darkMode={darkMode} />}
+
         {filteredItems && (
           <ItemsTable
             selectedProject={selectedProject}
@@ -346,9 +381,21 @@ export function ItemListView({
             endRow={endRow}
             onPageChange={setCurrentPage}
             onRowsPerPageChange={setRowsPerPage}
+            selectedRowId={selectedRow?._id}
+            onRowSelect={setSelectedRow}
           />
         )}
       </section>
+      <EditNameUnitModal
+        item={selectedModalItem}
+        isOpen={isEditOpen}
+        toggle={() => setIsEditOpen(false)}
+      />
+      <ViewUpdateHistoryModal
+        item={selectedModalItem}
+        isOpen={isHistoryOpen}
+        toggle={() => setIsHistoryOpen(false)}
+      />
     </main>
   );
 }
