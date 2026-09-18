@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import styles from './Sidebar.module.css';
+import DarkModeButton from '../../../Header/DarkModeButton';
 
 const Sidebar = () => {
   const location = useLocation();
@@ -37,6 +38,9 @@ const Sidebar = () => {
         <div className={styles.welcomeText}>
           <span className={styles.welcomeLabel}>Welcome,</span>
           <span className={styles.userName}>{authUser?.firstName || 'Educator'}</span>
+        </div>
+        <div className={styles.darkModeToggle}>
+          <DarkModeButton />
         </div>
       </div>
 
