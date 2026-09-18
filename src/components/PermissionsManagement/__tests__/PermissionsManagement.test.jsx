@@ -12,9 +12,55 @@ import axios from 'axios';
 import { ModalContext } from '~/context/ModalContext';
 import PermissionsManagement from '../PermissionsManagement';
 import { ENDPOINTS } from '~/utils/URL';
+import { permissions } from '~/utils/constants';
 
 vi.mock('axios');
 const mockStore = configureMockStore([thunk]);
+
+const ownerAuthState = {
+  role: {
+    roles: [
+      {
+        roleName: 'Owner',
+        permissions: [
+          permissions.postRole,
+          permissions.putRole,
+          permissions.putUserProfilePermissions,
+        ],
+      },
+      { roleName: 'Admin', permissions: [permissions.putRole] },
+      { roleName: 'User', permissions: [] },
+    ],
+  },
+  auth: {
+    user: {
+      userid: '123',
+      role: 'Owner',
+      permissions: {
+        frontPermissions: [
+          permissions.postRole,
+          permissions.putRole,
+          permissions.putUserProfilePermissions,
+        ],
+        removedDefaultPermissions: [],
+      },
+    },
+    permissions: [],
+  },
+  userProfile: {
+    role: 'Owner',
+    loading: false,
+  },
+  theme: {
+    darkMode: true,
+  },
+  allUserProfiles: {
+    userProfiles: [],
+  },
+  editableInfo: {
+    loading: false,
+  },
+};
 
 describe('PermissionsManagement', () => {
   const history = createMemoryHistory();
@@ -36,31 +82,10 @@ describe('PermissionsManagement', () => {
   };
 
   beforeEach(() => {
-    store = mockStore({
-      role: {
-        roles: [{ roleName: 'Admin' }, { roleName: 'User' }],
-      },
-      auth: {
-        user: { userid: '123' },
-        permissions: [],
-      },
-      userProfile: {
-        role: 'Admin',
-        loading: false,
-      },
-      theme: {
-        darkMode: true,
-      },
-      allUserProfiles: {
-        userProfiles: [],
-      },
-      editableInfo: {
-        // Add this section
-        loading: false,
-      },
-    });
+    store = mockStore(ownerAuthState);
 
     vi.clearAllMocks();
+    mockFunctions.hasPermission.mockImplementation(() => true);
     axios.get.mockImplementation(url => {
       if (url.includes('/permission-change-logs')) {
         return Promise.resolve({ data: [] });
@@ -91,7 +116,6 @@ describe('PermissionsManagement', () => {
               getAllUsers={mockFunctions.getAllUsers}
               addNewRole={mockFunctions.addNewRole}
               getUserRole={mockFunctions.getUserRole}
-              hasPermission={mockFunctions.hasPermission}
             />
           </ModalContext.Provider>
         </Router>
@@ -163,9 +187,24 @@ describe('PermissionsManagement', () => {
 
   describe('Permission-based Rendering', () => {
     it('hides role management UI without putRole permission', async () => {
-      mockFunctions.hasPermission.mockImplementation(action => action !== 'putRole');
+      store = mockStore({
+        ...ownerAuthState,
+        auth: {
+          ...ownerAuthState.auth,
+          user: {
+            ...ownerAuthState.auth.user,
+            role: 'Volunteer',
+            permissions: { frontPermissions: [], removedDefaultPermissions: [] },
+          },
+        },
+        role: {
+          roles: [{ roleName: 'Volunteer', permissions: [] }],
+        },
+      });
+
       await renderComponent();
-      expect(screen.queryByTestId('role-name-container')).not.toBeInTheDocument();
+      expect(screen.queryByText('Admin')).not.toBeInTheDocument();
+      expect(screen.queryByText('User')).not.toBeInTheDocument();
     });
   });
 
