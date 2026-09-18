@@ -186,6 +186,7 @@ import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import BrowseLessonPlan from './components/EductionPortal/BrowseLessonPlan/BrowseLP';
 import EPDashboard from './components/EductionPortal';
+import EducatorAnalyticsDashboard from './components/EductionPortal/Analytics/AnalyticsDashboard';
 import TaskSubmissions from './components/EductionPortal/Educators/TaskSubmissions';
 import SubmissionReviewPage from './components/EductionPortal/Educators/TaskSubmissions/SubmissionReviewPage';
 import AnnouncementsPage from './components/EductionPortal/Announcements/AnnouncementsPage';
@@ -1018,6 +1019,12 @@ export default (
           path="/educationportal/student/:studentId"
           exact
           component={StudentProfile}
+        />
+        <EPProtectedRoute
+          path="/educator/analytics"
+          exact
+          component={EducatorAnalyticsDashboard}
+          fallback
         />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
         <EPProtectedRoute
