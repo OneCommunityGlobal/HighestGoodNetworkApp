@@ -35,7 +35,7 @@ const centerTextPlugin = {
     ctx.restore();
   },
 };
-ChartJS.register(centerTextPlugin);
+//ChartJS.register(centerTextPlugin);
 
 const COLORS = {
   active: '#A78BFA',
