@@ -2,6 +2,7 @@
 /* eslint-disable no-console */
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { UncontrolledTooltip } from 'reactstrap';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { ENDPOINTS } from '../../utils/URL';
@@ -400,6 +401,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
                 {isLoading ? 'Loading...' : 'Clone with Template'}
               </button>
               <button
+                id="clear-template-button"
                 type="button"
                 onClick={() => {
                   if (formFields.length > 0) {
@@ -413,10 +415,16 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
                 }}
                 className={styles.clearTemplateButton}
                 disabled={formFields.length === 0}
-                title="Remove all fields and reset the template to a clean state"
               >
                 Clear Template
               </button>
+              <UncontrolledTooltip
+                placement="top"
+                target="clear-template-button"
+                trigger="hover focus"
+              >
+                Remove all fields and reset the template to a clean state
+              </UncontrolledTooltip>
               <button
                 type="button"
                 onClick={appendTemplate}
