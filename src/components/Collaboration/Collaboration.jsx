@@ -592,7 +592,6 @@ function Collaboration() {
 
         {/* QUERY TEXT */}
         <div className="job-queries">
-          {/* <p>{getListingText()}</p> */}
           <button type="button" className="btn btn-secondary" onClick={handleShowSummaries}>
             Show Summaries
           </button>
