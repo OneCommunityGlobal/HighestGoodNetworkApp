@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import styles from './PRGradingScreen.module.css';
 import InlinePRSummary from './InlinePRSummary';
+import GRADE_OPTIONS from './gradeOptions';
 
 const PRGradingScreen = ({ teamData, reviewers }) => {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -305,10 +306,9 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                 <thead>
                   <tr>
                     <th>PR Number</th>
-                    <th>Exceptional</th>
-                    <th>Okay</th>
-                    <th>Unsatisfactory</th>
-                    <th>Cannot find image</th>
+                    {GRADE_OPTIONS.map(opt => (
+                      <th key={opt.value}>{opt.label}</th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
@@ -317,44 +317,17 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                     ?.gradedPrs.map(pr => (
                       <tr key={pr.id}>
                         <td>{pr.prNumbers}</td>
-                        <td>
-                          <input
-                            type="checkbox"
-                            disabled={isFinalized}
-                            checked={pr.grade === 'Exceptional'}
-                            onChange={() =>
-                              handleGradeChange(showGradingModal, pr.id, 'Exceptional')
-                            }
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="checkbox"
-                            disabled={isFinalized}
-                            checked={pr.grade === 'Okay'}
-                            onChange={() => handleGradeChange(showGradingModal, pr.id, 'Okay')}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="checkbox"
-                            disabled={isFinalized}
-                            checked={pr.grade === 'Unsatisfactory'}
-                            onChange={() =>
-                              handleGradeChange(showGradingModal, pr.id, 'Unsatisfactory')
-                            }
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="checkbox"
-                            disabled={isFinalized}
-                            checked={pr.grade === 'Cannot find image'}
-                            onChange={() =>
-                              handleGradeChange(showGradingModal, pr.id, 'Cannot find image')
-                            }
-                          />
-                        </td>
+                        {GRADE_OPTIONS.map(opt => (
+                          <td key={opt.value}>
+                            <input
+                              type="checkbox"
+                              disabled={isFinalized}
+                              checked={pr.grade === opt.value}
+                              onChange={() => handleGradeChange(showGradingModal, pr.id, opt.value)}
+                              aria-label={`${pr.prNumbers} ${opt.label}`}
+                            />
+                          </td>
+                        ))}
                       </tr>
                     ))}
                 </tbody>

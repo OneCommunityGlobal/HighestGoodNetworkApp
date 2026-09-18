@@ -456,13 +456,17 @@
 
 .pr-grading-screen-modal-body {
   padding: 24px;
-  overflow-y: auto;
+  overflow: auto;
   max-height: calc(80vh - 120px);
 }
 
 /* Grading Table Styles */
 .pr-grading-screen-grading-table {
   width: 100%;
+
+  /* Same four grade columns as the inline summary, so it clips the same way on
+     narrow screens. Keep a usable minimum and let the modal body scroll. */
+  min-width: 380px;
   border-collapse: collapse;
   margin-bottom: 20px;
 }
@@ -1035,8 +1039,69 @@
   box-shadow: none;
 }
 
+/* Horizontal scroll rail. Without this the four grade columns are squeezed until
+   the rightmost ones ("Unsatisfactory" / "Cannot find image") clip off the edge
+   on narrow screens. The table keeps a usable minimum width and scrolls instead. */
+.pr-grading-inline-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+
+  /* Firefox. Webkit equivalents below — without this Firefox keeps the default
+     near-invisible overlay bar that prompted this change. */
+  scrollbar-width: thin;
+  scrollbar-color: #b9b9b9 #ededed;
+}
+
+/* 10px tall so the bar is an easy pointer target on touch and trackpad. */
+.pr-grading-inline-table-scroll::-webkit-scrollbar {
+  height: 10px;
+}
+
+.pr-grading-inline-table-scroll::-webkit-scrollbar-track {
+  background-color: #ededed;
+  border-radius: 999px;
+}
+
+/* The transparent border + padding-box clip insets the thumb so it reads as a
+   separate object instead of fusing with the track at the ends. */
+.pr-grading-inline-table-scroll::-webkit-scrollbar-thumb {
+  background-color: #b9b9b9;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  border-radius: 999px;
+}
+
+.pr-grading-inline-table-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: #9a9a9a;
+}
+
+/* Dark mode: the light thumb above all but disappears on the #2b2b2b card, so
+   go high-contrast. Scoped through the container, which already carries the
+   dark-mode class, so the scroll wrapper itself needs no extra class. */
+.pr-grading-inline-summary-container.dark-mode .pr-grading-inline-table-scroll {
+  scrollbar-color: #666 #2b2b2b;
+}
+
+.pr-grading-inline-summary-container.dark-mode
+  .pr-grading-inline-table-scroll::-webkit-scrollbar-track {
+  background-color: #1f1f1f;
+}
+
+.pr-grading-inline-summary-container.dark-mode
+  .pr-grading-inline-table-scroll::-webkit-scrollbar-thumb {
+  background-color: #666;
+}
+
+.pr-grading-inline-summary-container.dark-mode
+  .pr-grading-inline-table-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: #888;
+}
+
 .pr-grading-inline-summary-table {
   width: 100%;
+  min-width: 380px;
   margin-bottom: 0;
   border-collapse: collapse;
 }
@@ -1111,4 +1176,39 @@
   height: 17px;
   cursor: pointer;
   accent-color: #59359a;
+}
+
+/* Narrow phones (~420px and below). Reclaim horizontal space so the four grade
+   columns fit without scrolling where possible; the scroll rail above is the
+   fallback when they still don't. */
+@media (width <= 480px) {
+  .pr-grading-inline-summary-cell {
+    padding: 6px 8px 12px !important;
+  }
+
+  .pr-grading-inline-summary-container {
+    padding: 12px 10px;
+  }
+
+  .pr-grading-inline-header-cell,
+  .pr-grading-inline-data-cell {
+    padding: 8px 4px;
+  }
+
+  .pr-grading-inline-header-cell {
+    font-size: 11px;
+    line-height: 1.25;
+  }
+
+  /* The PR column is fixed-width on desktop; let the grade columns take the
+     remaining space instead of it hogging a quarter of a 420px viewport. */
+  .pr-grading-inline-pr-cell {
+    width: auto;
+    white-space: nowrap;
+  }
+
+  .pr-grading-inline-pr-tag {
+    padding: 2px 6px;
+    font-size: 12px;
+  }
 }
