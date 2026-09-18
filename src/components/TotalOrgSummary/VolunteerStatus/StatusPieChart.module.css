@@ -1,5 +1,5 @@
 /* stylelint-disable  */
-.mentorStatusContainer {
+.container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -7,7 +7,7 @@
   width: 100%;
 }
 
-.mentorStatusChart {
+.chart {
   position: relative;
   width: var(--status-chart-size, 280px);
   height: var(--status-chart-size, 280px);
@@ -18,13 +18,13 @@
   container-type: inline-size;
 }
 
-.mentorStatusChart canvas {
+.chart canvas {
   display: block;
   width: 100% !important;
   height: 100% !important;
 }
 
-.mentorStatusCenter {
+.center {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -44,11 +44,11 @@
   box-sizing: border-box;
 }
 
-.mentorStatusCenter > * {
+.center > * {
   margin: 0;
 }
 
-.mentorStatusHeading {
+.heading {
   color: #828282;
   font-size: clamp(0.68rem, 4.4cqw, 0.92rem);
   font-weight: 600;
@@ -58,24 +58,24 @@
   overflow-wrap: anywhere;
 }
 
-.mentorStatusHeadingLine {
+.headingLine {
   display: block;
 }
 
-.mentorCount {
+.count {
   color: #6c6c6c;
   font-size: clamp(1rem, 7.8cqw, 1.5rem);
   font-weight: 800;
   line-height: 1;
 }
 
-.mentorStatusCenter > p {
+.center > p {
   font-size: clamp(0.6rem, 3.2cqw, 0.82rem);
   font-weight: 700;
   line-height: 1.1;
 }
 
-.mentorStatusLabels {
+.labels {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -87,16 +87,17 @@
   box-sizing: border-box;
 }
 
-.mentorStatusLabel {
+.label {
   display: flex;
   align-items: center;
   gap: 6px;
+  margin: 0;
   font-size: clamp(0.85rem, calc(0.8rem + 0.2vw), 0.95rem);
   white-space: nowrap;
   flex-shrink: 0;
 }
 
-.mentorStatusColor {
+.colorSwatch {
   display: inline-block;
   width: 12px;
   height: 12px;
@@ -104,16 +105,16 @@
   flex-shrink: 0;
 }
 
-:global(.bg-oxford-blue) .mentorStatusHeading {
+:global(.bg-oxford-blue) .heading {
   color: #f1f5ff;
 }
 
-:global(.bg-oxford-blue) .mentorCount {
+:global(.bg-oxford-blue) .count {
   color: #fff;
 }
 
 @media (width <= 768px) {
-  .mentorStatusLabels {
+  .labels {
     gap: 10px;
   }
 }
