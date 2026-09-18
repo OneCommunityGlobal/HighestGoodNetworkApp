@@ -4,10 +4,7 @@ import { Button, Modal } from 'react-bootstrap';
 import { connect, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import {
-  availableSkills,
-  formatSkillName,
-} from '../HGNHelpSkillsDashboard/FilerData';
+import { availableSkills, formatSkillName } from '../HGNHelpSkillsDashboard/FilerData';
 import httpService from '../../services/httpService';
 import { ENDPOINTS } from '~/utils/URL';
 import styles from './HelpModal.module.css';
@@ -154,7 +151,6 @@ function HelpModal({ show, onHide, auth }) {
         },
       });
     } catch (err) {
-      console.error('Help request submission error:', err);
       if (err.code === 'ERR_NETWORK' || !err.response) {
         toast.error('Cannot connect to server. Please ensure the backend is running.');
       } else {

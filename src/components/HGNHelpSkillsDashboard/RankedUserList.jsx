@@ -35,6 +35,7 @@ const filterToSoftwareDevTeam = async users => {
       return (email && memberEmails.has(email)) || (name && memberNames.has(name));
     });
   } catch {
+    // Team membership lookup is best-effort; keep unfiltered ranked users if it fails.
     return users;
   }
 };
@@ -141,7 +142,8 @@ function RankedUserList({
         }
 
         setAllUsers(users);
-      } catch (err) {
+      } catch {
+        // Ranked/community fetch failed — show empty state instead of leaving a spinner.
         setAllUsers([]);
       } finally {
         setLoading(false);
