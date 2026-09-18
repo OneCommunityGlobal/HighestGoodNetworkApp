@@ -1,9 +1,43 @@
-import axios from 'axios';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import httpService from '../../services/httpService';
+import { ENDPOINTS } from '~/utils/URL';
 import styles from './style/RankedUserList.module.css';
 import UserCard from './UserCard';
+
+const SOFTWARE_DEV_TEAM_NAME = 'software development team';
+
+const getMemberFullName = member =>
+  `${member?.firstName || ''} ${member?.lastName || ''}`.trim().toLowerCase();
+
+const filterToSoftwareDevTeam = async users => {
+  try {
+    const teamsResponse = await httpService.get(ENDPOINTS.TEAM);
+    const teams = Array.isArray(teamsResponse.data) ? teamsResponse.data : [];
+    const softwareDevTeam = teams.find(
+      team => team.teamName?.trim().toLowerCase() === SOFTWARE_DEV_TEAM_NAME,
+    );
+
+    if (!softwareDevTeam?._id) return users;
+
+    const membersResponse = await httpService.get(ENDPOINTS.TEAM_MEMBERS(softwareDevTeam._id));
+    const members = Array.isArray(membersResponse.data) ? membersResponse.data : [];
+
+    const memberEmails = new Set(
+      members.map(member => (member.email || '').trim().toLowerCase()).filter(Boolean),
+    );
+    const memberNames = new Set(members.map(getMemberFullName).filter(Boolean));
+
+    return users.filter(user => {
+      const email = (user.email || '').trim().toLowerCase();
+      const name = (user.name || '').trim().toLowerCase();
+      return (email && memberEmails.has(email)) || (name && memberNames.has(name));
+    });
+  } catch {
+    return users;
+  }
+};
 
 const extractSkillEntries = skillData => {
   if (!skillData || typeof skillData !== 'object') return [];
@@ -62,7 +96,14 @@ const normalizeUser = user => {
   };
 };
 
-function RankedUserList({ selectedSkills, selectedPreferences, searchQuery, sortBy, sortOrder }) {
+function RankedUserList({
+  selectedSkills,
+  selectedPreferences,
+  searchQuery,
+  sortBy,
+  sortOrder,
+  softwareDevTeamOnly,
+}) {
   const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -82,27 +123,33 @@ function RankedUserList({ selectedSkills, selectedPreferences, searchQuery, sort
           params.preferences = selectedPreferences.join(',');
         if (searchQuery && searchQuery.trim().length > 0) params.search = searchQuery.trim();
 
-        const endpoint = hasFilters
-          ? `${process.env.REACT_APP_APIENDPOINT}/hgnform/ranked`
-          : `${process.env.REACT_APP_APIENDPOINT}/hgnHelp/community`;
+        // Help-request flow always uses ranked questionnaire data (Software Dev skills survey).
+        const endpoint =
+          hasFilters || softwareDevTeamOnly
+            ? ENDPOINTS.HGN_FORM_RANKED
+            : `${process.env.REACT_APP_APIENDPOINT}/hgnHelp/community`;
 
-        if (!hasFilters && sortBy === 'name' && sortOrder) {
+        if (!hasFilters && !softwareDevTeamOnly && sortBy === 'name' && sortOrder) {
           params.sortOrder = sortOrder;
         }
 
-        const response = await axios.get(endpoint, {
-          params,
-        });
-        setAllUsers(response.data.map(normalizeUser));
+        const response = await httpService.get(endpoint, { params });
+        let users = Array.isArray(response.data) ? response.data.map(normalizeUser) : [];
+
+        if (softwareDevTeamOnly) {
+          users = await filterToSoftwareDevTeam(users);
+        }
+
+        setAllUsers(users);
       } catch (err) {
-        // error handled silently
+        setAllUsers([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchUsers();
-  }, [selectedSkills, selectedPreferences, searchQuery, sortOrder]);
+  }, [selectedSkills, selectedPreferences, searchQuery, sortOrder, softwareDevTeamOnly]);
 
   // Client-side filter by searchQuery on top of API results
   const filteredUsers = searchQuery
@@ -157,6 +204,16 @@ RankedUserList.propTypes = {
   searchQuery: PropTypes.string,
   sortBy: PropTypes.string,
   sortOrder: PropTypes.string,
+  softwareDevTeamOnly: PropTypes.bool,
+};
+
+RankedUserList.defaultProps = {
+  selectedSkills: [],
+  selectedPreferences: [],
+  searchQuery: '',
+  sortBy: 'name',
+  sortOrder: 'asc',
+  softwareDevTeamOnly: false,
 };
 
 export default RankedUserList;

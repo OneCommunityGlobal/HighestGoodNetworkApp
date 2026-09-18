@@ -14,6 +14,7 @@ function CommunityMembersPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState('asc');
+  const softwareDevTeamOnly = Boolean(location.state?.softwareDevTeamOnly);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const handleSortByChange = event => setSortBy(event.target.value);
@@ -76,6 +77,7 @@ function CommunityMembersPage() {
           searchQuery={searchQuery.trim()}
           sortBy={sortBy}
           sortOrder={sortOrder}
+          softwareDevTeamOnly={softwareDevTeamOnly}
         />
       </div>
     </div>
