@@ -36,7 +36,6 @@ import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarC
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import RentalChart from '../RentalChart/RentalChart';
 import ReturnedLateChart from '../RentalChart/ReturnedLateChart';
-import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import InjurySeverityChart from '../Injuries/InjurySeverityChart';
 import CostPredictionChart from './CostPredictionChart';
 
