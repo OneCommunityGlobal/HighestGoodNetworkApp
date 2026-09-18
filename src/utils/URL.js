@@ -787,6 +787,7 @@ export const ENDPOINTS = {
   PR_GRADING_UPDATE_NEEDED: reviewerId =>
     `${APIEndpoint}/promotion-eligibility/${reviewerId}/prs-needed`,
   PROMOTE_MEMBERS_PREVIEW: `${APIEndpoint}/promote-members/preview`,
+  PROMOTION_PR_ENTRIES_BULK: `${APIEndpoint}/promotion-eligibility/pr-entries`,
 };
 
 export const ApiEndpoint = APIEndpoint;

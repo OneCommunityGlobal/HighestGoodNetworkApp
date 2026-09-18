@@ -1,66 +1,16 @@
-import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { toast } from 'react-toastify';
 import PRGradingScreen from './../PRGradingScreen/PRGradingScreen';
-import { fetchPREntries } from '../../actions/promotionActions';
 import styles from './PRGradingModal.module.css';
 
-const PRGradingModal = ({ isOpen, reviewGroup, reviewers, teamData, darkMode, onClose }) => {
-  const [reviewersWithEntries, setReviewersWithEntries] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    if (!reviewers || reviewers.length === 0) {
-      setReviewersWithEntries([]);
-      return;
-    }
-
-    const loadPREntries = async () => {
-      setLoading(true);
-
-      try {
-        const enrichedReviewers = await Promise.all(
-          reviewers.map(async reviewer => {
-            try {
-              const response = await fetchPREntries(reviewer.id);
-
-              /*
-               * Depending on your backend response, entries may be
-               * returned directly or inside an `entries` property.
-               */
-              const entries = Array.isArray(response) ? response : response?.entries || [];
-
-              return {
-                ...reviewer,
-                gradedPrs: entries,
-              };
-            } catch (error) {
-              console.error(`Failed to load PR entries for reviewer ${reviewer.id}:`, error);
-
-              return {
-                ...reviewer,
-                gradedPrs: [],
-              };
-            }
-          }),
-        );
-
-        setReviewersWithEntries(enrichedReviewers);
-      } catch (error) {
-        console.error('Failed to load PR entries:', error);
-        toast.error('Unable to load PR grading data.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadPREntries();
-  }, [isOpen, reviewers]);
-
+const PRGradingModal = ({
+  isOpen,
+  reviewGroup,
+  currentUser,
+  reviewers,
+  teamData,
+  darkMode,
+  onClose,
+}) => {
   if (!isOpen) {
     return null;
   }
@@ -87,15 +37,12 @@ const PRGradingModal = ({ isOpen, reviewGroup, reviewers, teamData, darkMode, on
         </div>
 
         <div className={styles.modalContent}>
-          {loading ? (
-            <div className={styles.loading}>Loading PR grading data...</div>
-          ) : (
-            <PRGradingScreen
-              teamData={teamData}
-              reviewers={reviewersWithEntries}
-              darkMode={darkMode}
-            />
-          )}
+          <PRGradingScreen
+            teamData={teamData}
+            reviewers={reviewers}
+            currentUser={currentUser}
+            darkMode={darkMode}
+          />
         </div>
       </div>
     </div>
@@ -123,6 +70,11 @@ PRGradingModal.propTypes = {
     }),
   ),
 
+  currentUser: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    _id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    token: PropTypes.string,
+  }),
   teamData: PropTypes.shape({
     teamName: PropTypes.string,
     dateRange: PropTypes.shape({

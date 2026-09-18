@@ -14,22 +14,16 @@ import styles from './PromotionEligibility.module.css';
 import PRGradingModal from './PRGradingModal';
 import { useSelector } from 'react-redux';
 
-function PromotionEligibility({ currentUser }) {
+function PromotionEligibility() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reviewers, setReviewers] = useState([]);
 
-  // Kept for UI testing.
-  // Remove the hard-coded ID when backend data is ready.
-  const [selectedForPromotion, setSelectedForPromotion] = useState(
-    new Set(['5fc2d7172af8d005d0aba5f1']),
-  );
+  const [selectedForPromotion, setSelectedForPromotion] = useState(new Set());
 
   const [processing, setProcessing] = useState(false);
 
   const [selectGroup, setSelectedGroup] = useState('new');
-
-  const isOwner = true;
 
   const [showReviewDropdown, setShowReviewDropdown] = useState(false);
   const [showManageOptions, setShowManageOptions] = useState(false);
@@ -59,6 +53,8 @@ function PromotionEligibility({ currentUser }) {
   const [promotionPreview, setPromotionPreview] = useState([]);
 
   const darkMode = useSelector(state => state.theme.darkMode);
+  const currentUser = useSelector(state => state.auth?.user);
+  const isOwner = currentUser?.role === 'Owner';
 
   /*
    * Load promotion eligibility data
@@ -66,87 +62,11 @@ function PromotionEligibility({ currentUser }) {
   useEffect(() => {
     const loadPromotionEligibility = async () => {
       try {
-        //const data = await getPromotionEligibility();
-        const data = [
-          {
-            reviewerId: '5fc2d7172af8d005d0aba5f1',
-            reviewerName: 'Chris',
-            pledgedHours: 10,
-            requiredPRs: 3,
-            prsNeeded: 3,
-            prsNeededSource: 'ownerOverride',
-            totalReviews: 10,
-            successfulWeeks: 2,
-            remainingWeeks: 0,
-            weeklyRequirementsMet: true,
-            isNewMember: false,
-            isPromoted: false,
-          },
-
-          {
-            reviewerId: '637af0c0fb9bbc1e308cff62',
-            reviewerName: 'Rajasri',
-            pledgedHours: 10,
-            requiredPRs: 3,
-            prsNeeded: 3,
-            prsNeededSource: 'ownerOverride',
-            totalReviews: 10,
-            successfulWeeks: 2,
-            remainingWeeks: 0,
-            weeklyRequirementsMet: true,
-            isNewMember: false,
-            isPromoted: false,
-          },
-
-          {
-            reviewerId: '637ffefe9a32d705f864c445',
-            reviewerName: 'Ran Ran',
-            pledgedHours: 20,
-            requiredPRs: 3,
-            prsNeeded: 3,
-            prsNeededSource: 'ownerOverride',
-            totalReviews: 10,
-            successfulWeeks: 2,
-            remainingWeeks: 0,
-            weeklyRequirementsMet: true,
-            isNewMember: false,
-            isPromoted: false,
-          },
-
-          {
-            reviewerId: '638e6c4dea69f32054d4c1c6',
-            reviewerName: 'Test User 4',
-            pledgedHours: 20,
-            requiredPRs: 3,
-            prsNeeded: 3,
-            prsNeededSource: 'ownerOverride',
-            totalReviews: 10,
-            successfulWeeks: 2,
-            remainingWeeks: 0,
-            weeklyRequirementsMet: true,
-            isNewMember: false,
-            isPromoted: false,
-          },
-
-          {
-            reviewerId: '63bcd4e94de851e04263a5b9',
-            reviewerName: 'Test User 5',
-            pledgedHours: 10,
-            requiredPRs: 3,
-            prsNeeded: 3,
-            prsNeededSource: 'ownerOverride',
-            totalReviews: 2,
-            successfulWeeks: 0,
-            remainingWeeks: 2,
-            weeklyRequirementsMet: false,
-            isNewMember: false,
-            isPromoted: false,
-          },
-        ];
+        const data = await getPromotionEligibility(currentUser);
 
         const mappedData = data.map(r => ({
           ...r,
-          requiredPRs: r.requiredPRs ?? r.pledgedHours / 2,
+          requiredPRs: r.requiredPRs ?? r.prsNeeded ?? 0,
           promoteEligible: r.remainingWeeks <= 0,
           id: r.reviewerId,
           reviewerName: r.reviewerName,
@@ -164,7 +84,7 @@ function PromotionEligibility({ currentUser }) {
     };
 
     loadPromotionEligibility();
-  }, []);
+  }, [currentUser]);
 
   /*
    * Load reviewer groups
@@ -174,7 +94,7 @@ function PromotionEligibility({ currentUser }) {
       try {
         setLoadingReviewOptions(true);
 
-        const data = await fetchReviewerGroups();
+        const data = await fetchReviewerGroups(currentUser);
 
         const groups = [...(data.groups || [])].sort((a, b) => a.sortOrder - b.sortOrder);
 
@@ -188,7 +108,7 @@ function PromotionEligibility({ currentUser }) {
     };
 
     loadReviewerGroups();
-  }, []);
+  }, [currentUser]);
 
   const newMembers = reviewers.filter(r => r.isNewMember);
   const existingMembers = reviewers.filter(r => !r.isNewMember);
@@ -216,6 +136,11 @@ function PromotionEligibility({ currentUser }) {
    * Process promotions
    */
   const handleProcessPromotions = async () => {
+    if (!isOwner) {
+      toast.error('Only an Owner can process promotions.');
+      return;
+    }
+
     if (selectedForPromotion.size === 0) {
       toast.info('No reviewers selected for promotion.');
       return;
@@ -247,13 +172,10 @@ function PromotionEligibility({ currentUser }) {
 
       const eligibleIds = eligible.map(reviewer => reviewer.id);
 
-      /*
-       * Ask backend where each reviewer should be placed.
-       * This does NOT promote anyone.
-       */
+      // Preview only. No promotion happens here.
       const response = await previewPromotionEligibility(eligibleIds, currentUser);
-      console.log(response);
-      const placements = response.placements || [];
+
+      const placements = response?.placements || [];
 
       setPromotionPreview(placements);
       setShowPromotionModal(true);
@@ -266,6 +188,11 @@ function PromotionEligibility({ currentUser }) {
   };
 
   const handleConfirmPromotions = async () => {
+    if (!isOwner) {
+      toast.error('Only an Owner can process promotions.');
+      return;
+    }
+
     if (promotionPreview.length === 0) {
       toast.error('No promotion information available.');
       return;
@@ -285,9 +212,7 @@ function PromotionEligibility({ currentUser }) {
 
       toast.success(`Successfully promoted ${memberIds.length} reviewer(s).`);
 
-      /*
-       * Do NOT remove promoted users from reviewers.
-       */
+      // Keep promoted users in All Members/current table.
       setReviewers(prev =>
         prev.map(reviewer =>
           memberIds.includes(reviewer.id)
@@ -309,7 +234,6 @@ function PromotionEligibility({ currentUser }) {
       setProcessing(false);
     }
   };
-
   /*
    * Render reviewer table row
    */
@@ -351,10 +275,10 @@ function PromotionEligibility({ currentUser }) {
                 ? `${isSelected ? 'Deselect' : 'Select'} ${reviewerName} for promotion`
                 : `${reviewerName} is not eligible for promotion`
             }
-            disabled={!promoteEligible || processing}
+            disabled={!isOwner || !promoteEligible || processing}
             onClick={() => toggleSelectPromotion(id)}
             className={`${styles.custom_circular_checkbox_wrapper} ${
-              !promoteEligible || processing ? styles.disabled : ''
+              !isOwner || !promoteEligible || processing ? styles.disabled : ''
             }`}
           >
             <span
@@ -900,6 +824,7 @@ function PromotionEligibility({ currentUser }) {
         isOpen={showReviewModal}
         reviewGroup={selectedReviewGroup}
         reviewers={reviewersForModal}
+        currentUser={currentUser}
         darkMode={darkMode}
         teamData={{
           teamName: selectedReviewGroup?.label || 'Reviewers',

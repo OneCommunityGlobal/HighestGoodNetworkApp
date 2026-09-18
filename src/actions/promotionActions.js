@@ -2,7 +2,9 @@ import axios from 'axios';
 import { ENDPOINTS } from '../utils/URL';
 
 export const getPromotionEligibility = async requestor => {
-  const res = await axios.post(ENDPOINTS.PROMOTION_ELIGIBILITY, { requestor });
+  const res = await axios.post(ENDPOINTS.PROMOTION_ELIGIBILITY, {
+    requestor,
+  });
   return res.data;
 };
 
@@ -34,36 +36,66 @@ export const updateReviewerGroup = async (groupKey, groupData) => {
    ========================================================= */
 
 /**
- * Get the five available PR rating options.
+ * Get PR entries for multiple reviewers.
  *
  * Backend:
- * POST /api/promotion-eligibility/pr-ratings
+ * POST /api/promotion-eligibility/pr-entries
  */
-export const fetchPRRatings = async () => {
-  const res = await axios.post(ENDPOINTS.PR_RATINGS, {});
+export const fetchPREntriesBulk = async (reviewerIds, currentUser) => {
+  const res = await axios.post(ENDPOINTS.PROMOTION_PR_ENTRIES_BULK, {
+    reviewerIds,
+    requestor: {
+      requestorId: currentUser?.userid,
+    },
+  });
+
   return res.data;
 };
 
 /**
- * Get PR entries for a reviewer.
+ * Get the available PR rating options.
+ *
+ * Backend:
+ * POST /api/promotion-eligibility/pr-ratings
+ */
+export const fetchPRRatings = async currentUser => {
+  const res = await axios.post(ENDPOINTS.PR_RATINGS, {
+    requestor: {
+      requestorId: currentUser?.userid,
+    },
+  });
+
+  return res.data;
+};
+
+/**
+ * Get PR entries for a single reviewer.
  *
  * Backend:
  * POST /api/promotion-eligibility/:reviewerId/pr-entries
  */
-export const fetchPREntries = async reviewerId => {
-  const res = await axios.post(ENDPOINTS.PROMOTION_PR_ENTRIES(reviewerId), {});
+export const fetchPREntries = async (reviewerId, currentUser) => {
+  const res = await axios.post(ENDPOINTS.PROMOTION_PR_ENTRIES(reviewerId), {
+    requestor: {
+      requestorId: currentUser?.userid,
+    },
+  });
 
   return res.data;
 };
+
 /**
  * Manually add a PR entry.
  *
  * Backend:
  * POST /api/promotion-eligibility/:reviewerId/pr-entries/new
  */
-export const addPREntry = async (reviewerId, prNumber) => {
+export const addPREntry = async (reviewerId, prNumber, currentUser) => {
   const res = await axios.post(ENDPOINTS.PR_GRADING_ADD_ENTRY(reviewerId), {
     prNumber,
+    requestor: {
+      requestorId: currentUser?.userid,
+    },
   });
 
   return res.data;
@@ -75,11 +107,12 @@ export const addPREntry = async (reviewerId, prNumber) => {
  * Backend:
  * POST /api/promotion-eligibility/:reviewerId/pr-entries/import
  */
-export const importPREntries = async reviewerId => {
-  const res = await axios.post(
-    `${ENDPOINTS.PROMOTION_PR_ENTRIES}/${reviewerId}/pr-entries/import`,
-    {},
-  );
+export const importPREntries = async (reviewerId, currentUser) => {
+  const res = await axios.post(`${ENDPOINTS.PROMOTION_PR_ENTRIES(reviewerId)}/import`, {
+    requestor: {
+      requestorId: currentUser?.userid,
+    },
+  });
 
   return res.data;
 };
@@ -90,8 +123,13 @@ export const importPREntries = async reviewerId => {
  * Backend:
  * PATCH /api/promotion-eligibility/pr-entries/:entryId/rating
  */
-export const updatePRRating = async (entryId, rating) => {
-  const res = await axios.patch(ENDPOINTS.PR_GRADING_UPDATE_RATING(entryId), { rating });
+export const updatePRRating = async (entryId, rating, currentUser) => {
+  const res = await axios.patch(ENDPOINTS.PR_GRADING_UPDATE_RATING(entryId), {
+    rating,
+    requestor: {
+      requestorId: currentUser?.userid,
+    },
+  });
 
   return res.data;
 };
@@ -106,9 +144,12 @@ export const updatePRRating = async (entryId, rating) => {
  * Backend:
  * PATCH /api/promotion-eligibility/:reviewerId/prs-needed
  */
-export const updatePRsNeeded = async (reviewerId, prsNeeded) => {
+export const updatePRsNeeded = async (reviewerId, prsNeeded, currentUser) => {
   const res = await axios.patch(`${ENDPOINTS.PROMOTION_ELIGIBILITY}/${reviewerId}/prs-needed`, {
     prsNeeded,
+    requestor: {
+      requestorId: currentUser?.userid,
+    },
   });
 
   return res.data;

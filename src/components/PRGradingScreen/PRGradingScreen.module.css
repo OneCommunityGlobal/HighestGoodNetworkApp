@@ -907,7 +907,7 @@
 }
 
 .pr-grading-screen-history-below.dark-mode {
-  background-color: #642b32;
+  background-color: #642b32 !important;
   color: #fecaca;
 }
 

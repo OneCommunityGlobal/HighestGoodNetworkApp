@@ -1,24 +1,18 @@
 import PropTypes from 'prop-types';
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'react-toastify';
+
 import {
   addPREntry,
   updatePRRating,
   importPREntries,
-  fetchPREntries,
+  fetchPREntriesBulk,
   updatePRsNeeded,
 } from '../../actions/promotionActions';
-import styles from './PRGradingScreen.module.css';
 
-const PRS_NEEDED_BANDS = [
-  { min: 10, max: 14.99, prs: 7 },
-  { min: 15, max: 25.99, prs: 10 },
-  { min: 26, max: 35.99, prs: 20 },
-  { min: 36, max: 40, prs: 30 },
-];
+import styles from './PRGradingScreen.module.css';
 
 const PR_RATINGS = [
   {
@@ -43,18 +37,6 @@ const PR_RATINGS = [
   },
 ];
 
-const getPrsNeededFromHours = committedHours => {
-  const hours = Number(committedHours);
-
-  if (Number.isNaN(hours) || hours < 10) {
-    return 0;
-  }
-
-  const band = PRS_NEEDED_BANDS.find(({ min, max }) => hours >= min && hours <= max);
-
-  return band?.prs ?? 0;
-};
-
 const getRatingClass = (grade, styles) => {
   switch (grade) {
     case 'Did not review':
@@ -77,82 +59,229 @@ const getRatingClass = (grade, styles) => {
   }
 };
 
-const PRGradingScreen = ({ teamData, reviewers }) => {
+/*
+ * The bulk endpoint may return the reviewers in slightly different
+ * structures depending on the backend implementation.
+ *
+ * This helper normalizes the response into:
+ *
+ * [
+ *   {
+ *     reviewerId,
+ *     entries,
+ *     history
+ *   }
+ * ]
+ */
+const normalizeBulkResponse = response => {
+  if (!response) {
+    return [];
+  }
+
+  // Example:
+  // {
+  //   reviewers: [...]
+  // }
+  if (Array.isArray(response.reviewers)) {
+    return response.reviewers.map(item => ({
+      reviewerId: item.reviewerId || item.id,
+      entries:
+        item.entries ||
+        item.prEntries ||
+        item.gradedPrs ||
+        item.weeks?.flatMap(week => week.prs || []) ||
+        [],
+      history: item.history || [],
+    }));
+  }
+
+  // Example:
+  // {
+  //   data: [...]
+  // }
+  if (Array.isArray(response.data)) {
+    return response.data.map(item => ({
+      reviewerId: item.reviewerId || item.id,
+      entries:
+        item.entries ||
+        item.prEntries ||
+        item.gradedPrs ||
+        item.weeks?.flatMap(week => week.prs || []) ||
+        [],
+      history: item.history || [],
+    }));
+  }
+
+  // Example:
+  // [
+  //   {
+  //     reviewerId: '123',
+  //     entries: [],
+  //     history: []
+  //   }
+  // ]
+  if (Array.isArray(response)) {
+    return response.map(item => ({
+      reviewerId: item.reviewerId || item.id,
+      entries:
+        item.entries ||
+        item.prEntries ||
+        item.gradedPrs ||
+        item.weeks?.flatMap(week => week.prs || []) ||
+        [],
+      history: item.history || [],
+    }));
+  }
+
+  /*
+   * Fallback if the API returns:
+   *
+   * {
+   *   reviewerId: {
+   *     weeks: [],
+   *     history: []
+   *   }
+   * }
+   */
+  if (typeof response === 'object') {
+    return Object.entries(response)
+      .filter(([key]) => key !== 'history' && key !== 'weeks')
+      .map(([reviewerId, item]) => ({
+        reviewerId,
+        entries:
+          item?.entries ||
+          item?.prEntries ||
+          item?.gradedPrs ||
+          item?.weeks?.flatMap(week => week.prs || []) ||
+          [],
+        history: item?.history || [],
+      }));
+  }
+
+  return [];
+};
+
+const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const [reviewerData, setReviewerData] = useState(reviewers || []);
+
   const [activeInput, setActiveInput] = useState(null);
   const [inputValue, setInputValue] = useState('');
   const [inputError, setInputError] = useState('');
+
   const [showGradingModal, setShowGradingModal] = useState(null);
+
   const [isFinalized, setIsFinalized] = useState(false);
 
-  // Keeps Owner-edited PRs Needed values.
+  /*
+   * Keeps Owner-edited PRs Needed values locally until
+   * the bulk API returns the updated backend data.
+   */
   const [prsNeededOverrides, setPrsNeededOverrides] = useState({});
 
-  // Search state
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
 
-  useEffect(() => {
-    const loadPREntries = async () => {
-      if (!reviewers || reviewers.length === 0) {
-        return;
-      }
+  const [isLoadingEntries, setIsLoadingEntries] = useState(false);
 
-      try {
-        const results = await Promise.all(
-          reviewers.map(async reviewer => {
-            const response = await fetchPREntries(reviewer.id);
+  /*
+   * ---------------------------------------------------------
+   * BULK LOAD
+   * ---------------------------------------------------------
+   *
+   * This is now the single source of truth for:
+   *
+   * - PRs
+   * - PR count
+   * - History
+   * - Ratings
+   *
+   * It is called:
+   *
+   * 1. When the page opens
+   * 2. When reviewers change
+   * 3. After Add PR
+   * 4. After rating change
+   * 5. After Import
+   * 6. After PRs Needed change
+   */
+  const loadAllPREntries = useCallback(async () => {
+    if (!reviewers || reviewers.length === 0) {
+      setReviewerData([]);
+      return;
+    }
 
-            const entries = response.weeks?.flatMap(week => week.prs || []) || [];
-            console.log('FULL PR GRADING RESPONSE:', response);
-            console.log('HISTORY:', response.history);
-            return {
-              reviewerId: reviewer.id,
-              entries,
-              history: response.history || [],
-            };
-          }),
-        );
+    try {
+      setIsLoadingEntries(true);
 
-        setReviewerData(prev =>
-          prev.map(reviewer => {
-            const result = results.find(item => item.reviewerId === reviewer.id);
+      const reviewerIds = reviewers.map(reviewer => reviewer.id);
 
-            if (!result) {
-              return reviewer;
-            }
+      const response = await fetchPREntriesBulk(reviewerIds, currentUser);
 
+      const results = normalizeBulkResponse(response);
+
+      setReviewerData(prev => {
+        return reviewers.map(reviewer => {
+          const result = results.find(item => item.reviewerId === reviewer.id);
+
+          if (!result) {
             return {
               ...reviewer,
-              gradedPrs: result.entries,
-              prsReviewed: result.entries.length,
+              gradedPrs: [],
+              prsReviewed: 0,
             };
-          }),
-        );
-      } catch (error) {
-        console.error('Failed to load PR entries:', error);
-      }
-    };
+          }
 
-    loadPREntries();
-  }, [reviewers]);
+          return {
+            ...reviewer,
 
-  /* ---------------- SEARCH FILTER ---------------- */
+            /*
+             * Backend remains source of truth.
+             */
+            gradedPrs: result.entries || [],
+
+            prsReviewed: (result.entries || []).length,
+
+            history: result.history || reviewer.history || [],
+          };
+        });
+      });
+    } catch (error) {
+      console.error('Failed to load PR entries:', error);
+
+      toast.error('Failed to load PR grading data.');
+    } finally {
+      setIsLoadingEntries(false);
+    }
+  }, [reviewers, currentUser]);
+
+  /*
+   * Initial load + reload when reviewer list changes.
+   */
+  useEffect(() => {
+    loadAllPREntries();
+  }, [loadAllPREntries]);
+
+  /*
+   * ---------------------------------------------------------
+   * SEARCH
+   * ---------------------------------------------------------
+   */
 
   const availableRoles = useMemo(() => {
-    const roles = reviewerData.map(r => r.role).filter(Boolean);
+    const roles = reviewerData.map(reviewer => reviewer.role).filter(Boolean);
+
     return [...new Set(roles)];
   }, [reviewerData]);
 
   const filteredReviewers = useMemo(() => {
-    return reviewerData.filter(r => {
-      const reviewerName = r.reviewerName || '';
+    return reviewerData.filter(reviewer => {
+      const reviewerName = reviewer.reviewerName || '';
 
       const nameMatch = reviewerName.toLowerCase().includes(searchTerm.toLowerCase());
 
-      const roleMatch = roleFilter ? r.role === roleFilter : true;
+      const roleMatch = roleFilter ? reviewer.role === roleFilter : true;
 
       return nameMatch && roleMatch;
     });
@@ -167,25 +296,27 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
     return <div>Error: Missing required props</div>;
   }
 
-  /* ---------------- PRS NEEDED ---------------- */
-
+  /*
+   * ---------------------------------------------------------
+   * PRS NEEDED
+   * ---------------------------------------------------------
+   *
+   * Backend is the source of truth.
+   *
+   * We DO NOT calculate PRs Needed from committed hours here.
+   */
   const getReviewerPrsNeeded = reviewer => {
-    // Owner override takes priority.
     if (Object.prototype.hasOwnProperty.call(prsNeededOverrides, reviewer.id)) {
       return prsNeededOverrides[reviewer.id];
     }
 
-    // If backend already supplied prsNeeded, use it.
-    if (typeof reviewer.prsNeeded === 'number') {
-      return reviewer.prsNeeded;
-    }
-
-    // Otherwise calculate from committed hours.
-    return getPrsNeededFromHours(reviewer.committedHours);
+    return reviewer.prsNeeded ?? reviewer.requiredPRs ?? 0;
   };
 
   const handlePrsNeededChange = async (reviewerId, value) => {
-    if (isFinalized) return;
+    if (isFinalized) {
+      return;
+    }
 
     const numericValue = Number(value);
 
@@ -198,36 +329,38 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
     }
 
     try {
-      await updatePRsNeeded(reviewerId, numericValue);
+      /*
+       * Single mutation API.
+       */
+      await updatePRsNeeded(reviewerId, numericValue, currentUser);
+
+      /*
+       * Refresh EVERYTHING from backend.
+       */
+      await loadAllPREntries();
 
       setPrsNeededOverrides(prev => ({
         ...prev,
         [reviewerId]: numericValue,
       }));
 
-      setReviewerData(prev =>
-        prev.map(reviewer =>
-          reviewer.id === reviewerId
-            ? {
-                ...reviewer,
-                prsNeeded: numericValue,
-                prsNeededOverride: numericValue,
-              }
-            : reviewer,
-        ),
-      );
-
       toast.success('PRs Needed updated.');
     } catch (error) {
       console.error('Failed to update PRs Needed:', error);
+
       toast.error('Failed to update PRs Needed.');
     }
   };
 
-  /* ---------------- VALIDATION ---------------- */
+  /*
+   * ---------------------------------------------------------
+   * VALIDATION
+   * ---------------------------------------------------------
+   */
 
   const validatePRNumber = value => {
     const trimmed = value.trim();
+
     const pattern = /^\d+(\s*\+\s*\d+)?$/;
 
     if (!trimmed) {
@@ -250,18 +383,38 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
     };
   };
 
-  /* ---------------- ADD PR ---------------- */
+  /*
+   * ---------------------------------------------------------
+   * ADD PR
+   * ---------------------------------------------------------
+   */
 
-  const handleAddNewClick = reviewerId => {
+  const handleAddNewClick = async reviewerId => {
     if (isFinalized) return;
 
-    setActiveInput(reviewerId);
-    setInputValue('');
-    setInputError('');
+    try {
+      setInputError('');
+
+      // First populate missing PRs from the reviewer's weekly summary
+      await importPREntries(reviewerId, currentUser);
+
+      // Refresh the PR list so imported PRs are visible immediately
+      await loadAllPREntries();
+
+      // Then open the manual input for adding another PR
+      setActiveInput(reviewerId);
+      setInputValue('');
+      setInputError('');
+    } catch (error) {
+      console.error('Failed to import PR entries:', error);
+      setInputError('Unable to load PRs from the weekly summary.');
+    }
   };
 
   const handleInputSubmit = async reviewerId => {
-    if (isFinalized) return;
+    if (isFinalized) {
+      return;
+    }
 
     const validation = validatePRNumber(inputValue);
 
@@ -271,21 +424,14 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
     }
 
     try {
-      const response = await addPREntry(reviewerId, inputValue.trim());
-
-      const savedEntry = response.entry || response.prEntry || response;
-
-      setReviewerData(prev =>
-        prev.map(reviewer =>
-          reviewer.id === reviewerId
-            ? {
-                ...reviewer,
-                gradedPrs: [...(reviewer.gradedPrs || []), savedEntry],
-                prsReviewed: (reviewer.gradedPrs || []).length + 1,
-              }
-            : reviewer,
-        ),
-      );
+      /*
+       * Single mutation API.
+       */
+      await addPREntry(reviewerId, inputValue.trim(), currentUser);
+      /*
+       * Refresh the entire table from backend.
+       */
+      await loadAllPREntries();
 
       setActiveInput(null);
       setInputValue('');
@@ -294,57 +440,56 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
       toast.success('PR added successfully.');
     } catch (error) {
       console.error('Failed to add PR:', error);
+
       setInputError('Failed to save PR. Please try again.');
     }
   };
 
   const handleCancel = () => {
-    if (isFinalized) return;
+    if (isFinalized) {
+      return;
+    }
 
     setActiveInput(null);
     setInputValue('');
     setInputError('');
   };
 
-  /* ---------------- PR GRADING ---------------- */
+  /*
+   * ---------------------------------------------------------
+   * PR GRADING
+   * ---------------------------------------------------------
+   */
 
   const handlePRNumberClick = reviewerId => {
-    if (isFinalized) return;
+    if (isFinalized) {
+      return;
+    }
 
     setShowGradingModal(reviewerId);
   };
 
   const handleGradeChange = async (reviewerId, prId, newGrade) => {
-    if (isFinalized) return;
+    if (isFinalized) {
+      return;
+    }
 
     try {
-      await updatePRRating(prId, newGrade);
+      /*
+       * Single mutation API.
+       */
+      await updatePRRating(prId, newGrade, currentUser);
 
-      setReviewerData(prev =>
-        prev.map(reviewer =>
-          reviewer.id === reviewerId
-            ? {
-                ...reviewer,
-                gradedPrs: (reviewer.gradedPrs || []).map(pr =>
-                  pr._id === prId
-                    ? {
-                        ...pr,
-                        rating: newGrade,
-                      }
-                    : pr,
-                ),
-              }
-            : reviewer,
-        ),
-      );
+      /*
+       * Refresh all reviewers.
+       */
+      await loadAllPREntries();
 
       toast.success('PR rating saved.');
     } catch (error) {
       console.error('Failed to save PR rating:', error);
 
       toast.error('Failed to save PR rating.');
-
-      // Don't update the UI if backend save failed.
     }
   };
 
@@ -352,75 +497,77 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
     setShowGradingModal(null);
   };
 
+  /*
+   * ---------------------------------------------------------
+   * FINALIZE
+   * ---------------------------------------------------------
+   */
+
   const handleFinalize = () => {
     setIsFinalized(true);
   };
 
-  /* ---------------- HISTORY ---------------- */
+  /*
+   * ---------------------------------------------------------
+   * HISTORY
+   * ---------------------------------------------------------
+   */
 
   const getHistory = reviewer => {
-    /*
-     * Supports:
-     *
-     * history: [10, 11, 7, 12, 15]
-     *
-     * OR:
-     *
-     * history: [
-     *   { week: '2026-08-17', prsReviewed: 10 },
-     *   { week: '2026-08-10', prsReviewed: 11 }
-     * ]
-     */
-
     if (!Array.isArray(reviewer.history)) {
       return [];
     }
 
     return reviewer.history.map((entry, index) => {
+      /*
+       * Backward compatibility with old:
+       *
+       * history: [10, 11, 7]
+       */
       if (typeof entry === 'number') {
         return {
           id: index,
           week: '',
           count: entry,
+
+          /*
+           * Old history doesn't contain this information.
+           * Don't invent it.
+           */
+          belowRequirement: undefined,
         };
       }
 
       return {
         id: entry.id || entry.week || index,
+
         week: entry.week || '',
+
         count: Number(entry.prsReviewed ?? entry.count ?? 0),
+
+        /*
+         * IMPORTANT:
+         *
+         * Use backend's belowRequirement value.
+         * Do not calculate this using the frontend's
+         * PRs Needed value.
+         */
+        belowRequirement: entry.belowRequirement,
       };
     });
   };
 
-  const handleImportPREntries = async reviewerId => {
-    if (isFinalized) return;
+  /*
+   * ---------------------------------------------------------
+   * IMPORT PR ENTRIES
+   * ---------------------------------------------------------
+   */
 
-    try {
-      const response = await importPREntries(reviewerId);
-
-      const importedEntries = response.entries || response.prEntries || [];
-
-      setReviewerData(prev =>
-        prev.map(reviewer =>
-          reviewer.id === reviewerId
-            ? {
-                ...reviewer,
-                gradedPrs: importedEntries,
-                prsReviewed: importedEntries.length,
-              }
-            : reviewer,
-        ),
-      );
-
-      toast.success('Weekly summary PRs imported.');
-    } catch (error) {
-      console.error('Failed to import PRs:', error);
-      toast.error('Failed to import weekly summary PRs.');
-    }
-  };
-
-  /* ---------------- RENDER ---------------- */
+  /*
+   * ---------------------------------------------------------
+   * RENDER
+   * ---------------------------------------------------------
+   */
 
   const dm = darkMode ? styles['dark-mode'] : '';
 
@@ -429,7 +576,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
       <Row>
         <Col md={12}>
           <Card className={`${styles['pr-grading-screen-card']} ${dm}`}>
-            <Card.Header className={`${styles['pr-grading-screen-header']} ${dm}`}>
+            {/* <Card.Header className={`${styles['pr-grading-screen-header']} ${dm}`}>
               <div className={styles['pr-grading-screen-header-content']}>
                 <div>
                   <h1 className={`${styles['pr-grading-screen-title']} ${dm}`}>
@@ -450,7 +597,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                   {isFinalized ? 'Finalized' : 'Done'}
                 </Button>
               </div>
-            </Card.Header>
+            </Card.Header> */}
 
             <Card.Body className={dm}>
               {/* ---------------- SEARCH ---------------- */}
@@ -491,6 +638,14 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                 )}
               </div>
 
+              {/* ---------------- LOADING ---------------- */}
+
+              {isLoadingEntries && (
+                <div className={styles['pr-grading-screen-loading']}>
+                  Loading PR grading data...
+                </div>
+              )}
+
               {/* ---------------- TABLE ---------------- */}
 
               <table className={`${styles['pr-grading-screen-table']} ${dm}`}>
@@ -514,15 +669,19 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                   ) : (
                     filteredReviewers.map(reviewer => {
                       const prsNeeded = getReviewerPrsNeeded(reviewer);
+
                       const history = getHistory(reviewer);
+
                       const gradedPrs = reviewer.gradedPrs || [];
 
                       return (
                         <tr key={reviewer.id}>
                           {/* Reviewer */}
+
                           <td>{reviewer.reviewerName}</td>
 
                           {/* PRs Needed */}
+
                           <td>
                             <input
                               type="number"
@@ -532,7 +691,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                               onChange={e => handlePrsNeededChange(reviewer.id, e.target.value)}
                               className={`${styles['pr-grading-screen-pr-needed-input']} ${dm}`}
                               title="Owner can manually edit PRs Needed. A manual value overrides the committed-hours calculation."
-                              aria-label={`PRs needed for ${reviewer.reviewer}`}
+                              aria-label={`PRs needed for ${reviewer.reviewerName}`}
                             />
 
                             {reviewer.committedHours !== undefined && (
@@ -543,13 +702,20 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                           </td>
 
                           {/* History */}
+
                           <td className={styles['pr-grading-screen-history-cell']}>
                             {history.length === 0 ? (
                               <span className={styles['pr-grading-screen-no-history']}>—</span>
                             ) : (
                               <div className={styles['pr-grading-screen-history']}>
                                 {history.map(historyItem => {
-                                  const belowRequirement = historyItem.count < prsNeeded;
+                                  /*
+                                   * Backend is responsible
+                                   * for determining whether
+                                   * the historical week was
+                                   * below requirement.
+                                   */
+                                  const belowRequirement = historyItem.belowRequirement === true;
 
                                   return (
                                     <span
@@ -574,6 +740,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                           </td>
 
                           {/* PRs Reviewed */}
+
                           <td>
                             <input
                               type="number"
@@ -581,38 +748,36 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                               readOnly
                               disabled={isFinalized}
                               className={`${styles['pr-grading-screen-pr-input']} ${dm}`}
-                              aria-label={`PRs reviewed by ${reviewer.reviewer}`}
+                              aria-label={`PRs reviewed by ${reviewer.reviewerName}`}
                             />
                           </td>
 
-                          {/* PR Numbers / Add New */}
+                          {/* PR Numbers */}
+
                           <td className={styles['pr-grading-screen-td-numbers']}>
-                            {gradedPrs.map(pr => {
-                              console.log('RENDERING PR:', pr);
-                              console.log('FULL PR OBJECT:', JSON.stringify(pr, null, 2));
-                              return (
-                                <span
-                                  key={pr._id || pr.id || pr.prNumber}
-                                  role="button"
-                                  tabIndex={0}
-                                  aria-label={`Grade PR ${pr.prNumber || pr.prNumbers || 'number'}`}
-                                  className={`${styles['pr-grading-screen-pr-number']} ${
-                                    (pr.prNumber || '').includes('+')
-                                      ? styles['pr-grading-screen-pair']
-                                      : ''
-                                  } ${getRatingClass(pr.rating, styles)} ${dm}`}
-                                  onClick={() => handlePRNumberClick(reviewer.id)}
-                                  onKeyDown={e => {
-                                    if (e.key === 'Enter' || e.key === ' ') {
-                                      e.preventDefault();
-                                      handlePRNumberClick(reviewer.id);
-                                    }
-                                  }}
-                                >
-                                  {pr.prNumber}
-                                </span>
-                              );
-                            })}
+                            {gradedPrs.map(pr => (
+                              <span
+                                key={pr._id || pr.id || pr.prNumber}
+                                role="button"
+                                tabIndex={0}
+                                aria-label={`Grade PR ${pr.prNumber || pr.prNumbers || 'number'}`}
+                                className={`${styles['pr-grading-screen-pr-number']} ${
+                                  (pr.prNumber || '').includes('+')
+                                    ? styles['pr-grading-screen-pair']
+                                    : ''
+                                } ${getRatingClass(pr.rating, styles)} ${dm}`}
+                                onClick={() => handlePRNumberClick(reviewer.id)}
+                                onKeyDown={e => {
+                                  if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+
+                                    handlePRNumberClick(reviewer.id);
+                                  }
+                                }}
+                              >
+                                {pr.prNumber}
+                              </span>
+                            ))}
 
                             {!isFinalized && activeInput !== reviewer.id && (
                               <Button
@@ -736,11 +901,11 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
 
                 <tbody>
                   {reviewerData
-                    .find(r => r.id === showGradingModal)
+                    .find(reviewer => reviewer.id === showGradingModal)
                     ?.gradedPrs?.map(pr => (
                       <tr key={pr._id || pr.id || pr.prNumber}>
                         <td>
-                          <span className={`${getRatingClass(pr.rating, styles)}`}>
+                          <span className={getRatingClass(pr.rating, styles)}>
                             {pr.prNumber || pr.prNumbers}
                           </span>
                         </td>
@@ -750,7 +915,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                             value={pr.rating || ''}
                             disabled={isFinalized}
                             onChange={e =>
-                              handleGradeChange(showGradingModal, pr._id, e.target.value)
+                              handleGradeChange(showGradingModal, pr._id || pr.id, e.target.value)
                             }
                             className={`${
                               styles['pr-grading-screen-rating-select']
@@ -788,6 +953,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
 PRGradingScreen.propTypes = {
   teamData: PropTypes.shape({
     teamName: PropTypes.string.isRequired,
+
     dateRange: PropTypes.shape({
       start: PropTypes.string.isRequired,
       end: PropTypes.string.isRequired,
@@ -797,10 +963,14 @@ PRGradingScreen.propTypes = {
   reviewers: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
-      reviewer: PropTypes.string.isRequired,
+
+      reviewerName: PropTypes.string,
+
       role: PropTypes.string,
 
       prsNeeded: PropTypes.number,
+
+      requiredPRs: PropTypes.number,
 
       committedHours: PropTypes.number,
 
@@ -809,23 +979,36 @@ PRGradingScreen.propTypes = {
       history: PropTypes.arrayOf(
         PropTypes.oneOfType([
           PropTypes.number,
+
           PropTypes.shape({
-            id: PropTypes.string,
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+
             week: PropTypes.string,
+
             prsReviewed: PropTypes.number,
+
             count: PropTypes.number,
+
+            belowRequirement: PropTypes.bool,
           }),
         ]),
       ),
 
       gradedPrs: PropTypes.arrayOf(
         PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          prNumbers: PropTypes.string.isRequired,
-          grade: PropTypes.string,
+          _id: PropTypes.string,
+
+          id: PropTypes.string,
+
+          prNumber: PropTypes.string,
+
+          prNumbers: PropTypes.string,
+
+          rating: PropTypes.string,
+
           source: PropTypes.string,
         }),
-      ).isRequired,
+      ),
     }),
   ).isRequired,
 };
