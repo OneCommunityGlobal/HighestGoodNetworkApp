@@ -20,7 +20,7 @@ export {
   createScheduleId,
   topCardActions,
   fieldActionRow,
-};
+} from '../../shared/postComposerUtility';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 

@@ -117,6 +117,140 @@ const STATUS_LABEL = {
   published: 'Published',
 };
 
+// ─── ScheduledPostItem sub-component ──────────────────────────────────────────
+
+function getScheduledCaptionPreview(post) {
+  let captionPreview = post.caption || 'No content captured.';
+  try {
+    const data = JSON.parse(post.postData);
+    const text = data.status || '';
+    captionPreview = text.length > 140 ? `${text.slice(0, 140).trim()}...` : text || captionPreview;
+  } catch {
+    // keep default
+  }
+  return captionPreview;
+}
+
+function ScheduledPostItem({ post, darkMode, isEditing, onEdit, onRetry, onDelete }) {
+  const captionPreview = getScheduledCaptionPreview(post);
+
+  return (
+    <article
+      className={classNames(styles['instagram-saved__item'], {
+        [styles['instagram-saved__item--active']]: isEditing,
+      })}
+    >
+      <div className={styles['instagram-saved__header']}>
+        <h4 className={styles['instagram-saved__title']}>
+          {STATUS_LABEL[post.status] || post.status}
+        </h4>
+        <span className={styles['instagram-saved__meta']}>
+          {formatDisplayDateTime(
+            formatLocalDate(new Date(post.scheduledTime)),
+            formatLocalTime(new Date(post.scheduledTime)),
+          )}
+        </span>
+      </div>
+      <InstagramPostMedia
+        mediaUrl={post.mediaUrl}
+        mediaType={post.mediaType}
+        captionPreview={captionPreview}
+      />
+      {post.status === 'failed' && post.lastError && (
+        <p className={styles['instagram-field__error']}>{post.lastError}</p>
+      )}
+      <div className={styles['instagram-saved__actions']}>
+        {post.status !== 'publishing' && (
+          <button type="button" style={buttonStyle('ghost', darkMode)} onClick={onEdit}>
+            Edit
+          </button>
+        )}
+        {post.status === 'failed' && (
+          <button type="button" style={buttonStyle('outline', darkMode)} onClick={onRetry}>
+            Retry
+          </button>
+        )}
+        {post.status !== 'publishing' && (
+          <button type="button" style={buttonStyle('ghost', darkMode)} onClick={onDelete}>
+            Delete
+          </button>
+        )}
+      </div>
+    </article>
+  );
+}
+
+ScheduledPostItem.propTypes = {
+  post: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    status: PropTypes.string,
+    scheduledTime: PropTypes.string,
+    caption: PropTypes.string,
+    postData: PropTypes.string,
+    mediaUrl: PropTypes.string,
+    mediaType: PropTypes.string,
+    lastError: PropTypes.string,
+  }).isRequired,
+  darkMode: PropTypes.bool,
+  isEditing: PropTypes.bool,
+  onEdit: PropTypes.func.isRequired,
+  onRetry: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+};
+
+ScheduledPostItem.defaultProps = {
+  darkMode: false,
+  isEditing: false,
+};
+
+// ─── HistoryPostItem sub-component ────────────────────────────────────────────
+
+function HistoryPostItem({ post }) {
+  const captionPreview = post.caption || 'No content captured.';
+
+  return (
+    <article className={styles['instagram-saved__item']}>
+      <div className={styles['instagram-saved__header']}>
+        <h4 className={styles['instagram-saved__title']}>
+          {post.status === 'published' ? 'Published' : post.status}
+        </h4>
+        <span className={styles['instagram-saved__meta']}>
+          {post.postedAt
+            ? formatDisplayDateTime(
+                formatLocalDate(new Date(post.postedAt)),
+                formatLocalTime(new Date(post.postedAt)),
+              )
+            : '—'}
+        </span>
+      </div>
+      <InstagramPostMedia
+        mediaUrl={post.mediaUrl}
+        mediaType={post.mediaType}
+        captionPreview={captionPreview}
+      />
+      {post.error && <p className={styles['instagram-saved__error']}>{post.error}</p>}
+      {post.permalink && (
+        <a href={post.permalink} target="_blank" rel="noopener noreferrer">
+          View on Instagram →
+        </a>
+      )}
+    </article>
+  );
+}
+
+HistoryPostItem.propTypes = {
+  post: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    status: PropTypes.string,
+    postedAt: PropTypes.string,
+    caption: PropTypes.string,
+    mediaUrl: PropTypes.string,
+    mediaType: PropTypes.string,
+    error: PropTypes.string,
+    permalink: PropTypes.string,
+  }).isRequired,
+};
+
 // ─── InstagramAutoPoster ───────────────────────────────────────────────────────
 
 function InstagramAutoPoster({ platform }) {
@@ -871,78 +1005,17 @@ function InstagramAutoPoster({ platform }) {
                 <p className={styles['instagram-scheduler__empty']}>Nothing queued yet.</p>
               )}
               {!isLoadingScheduled &&
-                scheduledPosts.map(post => {
-                  let captionPreview = post.caption || 'No content captured.';
-                  try {
-                    const data = JSON.parse(post.postData);
-                    const text = data.status || '';
-                    captionPreview =
-                      text.length > 140
-                        ? `${text.slice(0, 140).trim()}...`
-                        : text || captionPreview;
-                  } catch {
-                    // keep default
-                  }
-                  const isEditing = post._id === editingScheduleId;
-
-                  return (
-                    <article
-                      key={post._id}
-                      className={classNames(styles['instagram-saved__item'], {
-                        [styles['instagram-saved__item--active']]: isEditing,
-                      })}
-                    >
-                      <div className={styles['instagram-saved__header']}>
-                        <h4 className={styles['instagram-saved__title']}>
-                          {STATUS_LABEL[post.status] || post.status}
-                        </h4>
-                        <span className={styles['instagram-saved__meta']}>
-                          {formatDisplayDateTime(
-                            formatLocalDate(new Date(post.scheduledTime)),
-                            formatLocalTime(new Date(post.scheduledTime)),
-                          )}
-                        </span>
-                      </div>
-                      <InstagramPostMedia
-                        mediaUrl={post.mediaUrl}
-                        mediaType={post.mediaType}
-                        captionPreview={captionPreview}
-                      />
-                      {post.status === 'failed' && post.lastError && (
-                        <p className={styles['instagram-field__error']}>{post.lastError}</p>
-                      )}
-                      <div className={styles['instagram-saved__actions']}>
-                        {post.status !== 'publishing' && (
-                          <button
-                            type="button"
-                            style={buttonStyle('ghost', darkMode)}
-                            onClick={() => handleEditSchedule(post)}
-                          >
-                            Edit
-                          </button>
-                        )}
-                        {post.status === 'failed' && (
-                          <button
-                            type="button"
-                            style={buttonStyle('outline', darkMode)}
-                            onClick={() => handleRetryScheduled(post._id)}
-                          >
-                            Retry
-                          </button>
-                        )}
-                        {post.status !== 'publishing' && (
-                          <button
-                            type="button"
-                            style={buttonStyle('ghost', darkMode)}
-                            onClick={() => handleDeleteScheduled(post._id)}
-                          >
-                            Delete
-                          </button>
-                        )}
-                      </div>
-                    </article>
-                  );
-                })}
+                scheduledPosts.map(post => (
+                  <ScheduledPostItem
+                    key={post._id}
+                    post={post}
+                    darkMode={darkMode}
+                    isEditing={post._id === editingScheduleId}
+                    onEdit={() => handleEditSchedule(post)}
+                    onRetry={() => handleRetryScheduled(post._id)}
+                    onDelete={() => handleDeleteScheduled(post._id)}
+                  />
+                ))}
             </div>
           </section>
         </div>
@@ -957,38 +1030,9 @@ function InstagramAutoPoster({ platform }) {
           )}
           {!isLoadingHistory && history.length > 0 && (
             <div className={styles['instagram-saved__list']}>
-              {history.map(post => {
-                let captionPreview = post.caption || 'No content captured.';
-
-                return (
-                  <article key={post._id} className={styles['instagram-saved__item']}>
-                    <div className={styles['instagram-saved__header']}>
-                      <h4 className={styles['instagram-saved__title']}>
-                        {post.status === 'published' ? 'Published' : post.status}
-                      </h4>
-                      <span className={styles['instagram-saved__meta']}>
-                        {post.postedAt
-                          ? formatDisplayDateTime(
-                              formatLocalDate(new Date(post.postedAt)),
-                              formatLocalTime(new Date(post.postedAt)),
-                            )
-                          : '—'}
-                      </span>
-                    </div>
-                    <InstagramPostMedia
-                      mediaUrl={post.mediaUrl}
-                      mediaType={post.mediaType}
-                      captionPreview={captionPreview}
-                    />
-                    {post.error && <p className={styles['instagram-saved__error']}>{post.error}</p>}
-                    {post.permalink && (
-                      <a href={post.permalink} target="_blank" rel="noopener noreferrer">
-                        View on Instagram →
-                      </a>
-                    )}
-                  </article>
-                );
-              })}
+              {history.map(post => (
+                <HistoryPostItem key={post._id} post={post} />
+              ))}
             </div>
           )}
         </section>
