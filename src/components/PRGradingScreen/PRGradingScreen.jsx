@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import styles from './PRGradingScreen.module.css';
 import InlinePRSummary from './InlinePRSummary';
+// Shared with InlinePRSummary so both tables stay in sync. See gradeOptions.js.
 import GRADE_OPTIONS from './gradeOptions';
 
 const PRGradingScreen = ({ teamData, reviewers }) => {
@@ -304,6 +305,8 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
             <div className={`${styles['pr-grading-screen-modal-body']} ${dm}`}>
               <table className={`${styles['pr-grading-screen-grading-table']} ${dm}`}>
                 <thead>
+                  {/* Rendered from GRADE_OPTIONS rather than hardcoded, so these
+                      columns always match the inline summary's. */}
                   <tr>
                     <th>PR Number</th>
                     {GRADE_OPTIONS.map(opt => (
@@ -317,6 +320,10 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                     ?.gradedPrs.map(pr => (
                       <tr key={pr.id}>
                         <td>{pr.prNumbers}</td>
+                        {/* One cell per grade, driven by the shared list. The
+                            value written here and the one compared for `checked`
+                            are the same opt.value, which is what keeps this modal
+                            in sync with the inline summary in both directions. */}
                         {GRADE_OPTIONS.map(opt => (
                           <td key={opt.value}>
                             <input

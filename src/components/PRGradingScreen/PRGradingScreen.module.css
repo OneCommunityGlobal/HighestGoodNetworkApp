@@ -1084,6 +1084,8 @@
   scrollbar-color: #666 #2b2b2b;
 }
 
+/* Darker than the #2b2b2b card, so the track and thumb separate from each other
+   as well as from the card behind them. */
 .pr-grading-inline-summary-container.dark-mode
   .pr-grading-inline-table-scroll::-webkit-scrollbar-track {
   background-color: #1f1f1f;
@@ -1101,6 +1103,9 @@
 
 .pr-grading-inline-summary-table {
   width: 100%;
+
+  /* Floor for the five columns. Below this the table stops shrinking and the
+     scroll rail above takes over rather than crushing the grade columns. */
   min-width: 380px;
   margin-bottom: 0;
   border-collapse: collapse;

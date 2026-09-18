@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types';
 import styles from './PRGradingScreen.module.css';
+// Shared with the grading modal in PRGradingScreen. Do not re-declare a local
+// copy: the two tables must write and compare the exact same grade strings.
 import GRADE_OPTIONS from './gradeOptions';
 
 const InlinePRSummary = ({ reviewer, onGradeChange, isFinalized, darkMode }) => {
@@ -13,6 +15,8 @@ const InlinePRSummary = ({ reviewer, onGradeChange, isFinalized, darkMode }) => 
     <tr className={styles['pr-grading-inline-summary-row']}>
       <td colSpan={4} className={styles['pr-grading-inline-summary-cell']}>
         <div className={`${styles['pr-grading-inline-summary-container']} ${dm}`}>
+          {/* Scroll rail. The five columns cannot fit a ~420px viewport, and
+              without this the rightmost grades clip off the edge unreachable. */}
           <div className={styles['pr-grading-inline-table-scroll']}>
             <table className={`${styles['pr-grading-inline-summary-table']} ${dm}`}>
               <thead>
@@ -51,6 +55,10 @@ const InlinePRSummary = ({ reviewer, onGradeChange, isFinalized, darkMode }) => 
                         </span>
                       </td>
                       {GRADE_OPTIONS.map(opt => {
+                        // Plain equality is enough because onChange below writes
+                        // this same opt.value. It previously needed a special case
+                        // for 'Cannot find image', whose stored value did not match
+                        // the one this list wrote.
                         const isChecked = pr.grade === opt.value;
                         return (
                           <td
