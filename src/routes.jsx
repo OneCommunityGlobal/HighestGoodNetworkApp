@@ -40,7 +40,6 @@ import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
 import AddEquipmentType from './components/BMDashboard/Equipment/Add/AddEquipmentType';
 import EDailyActivityLog from './components/BMDashboard/Equipment/DailyActivityLog/EDailyActivityLog';
 import Issue from './components/BMDashboard/Issue/Issue';
-import IssueChart from './components/BMDashboard/Issues/issueCharts';
 import AnalyticsDashboard from './components/JobCCDashboard/JobAnalytics/JobAnalytics.jsx';
 import IssueGraph from './components/BMDashboard/Issues/IssueGraph';
 import FaqSearch from './components/Faq/FaqSearch';
@@ -57,6 +56,7 @@ import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
 import WeeklyProjectSummary from './components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
+import MaterialConsumption from './components/BMDashboard/WeeklyProjectSummary/MaterialConsumption/MaterialConsumption';
 import KnowledgeEvolution from './components/BMDashboard/KnowledgeEvolution/KnowledgeEvolution';
 import { ExperienceDonutChart } from './components/ExperienceDonutChart';
 import ToolsAvailabilityPage from './components/BMDashboard/WeeklyProjectSummary/Tools/ToolsAvailabilityPage';
@@ -849,7 +849,8 @@ export default (
           component={InjurySeverityDashboard}
         />
         <BMProtectedRoute path="/bmdashboard/issues/add/:projectId" component={Issue} />
-        <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
+        {/* PR #4812 expects this URL to show the full three-card Material Consumption group. */}
+        <BMProtectedRoute path="/bmdashboard/issuechart" component={MaterialConsumption} />
         <BMProtectedRoute path="/bmdashboard/issueGraph" component={IssueGraph} />
         <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
         <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
