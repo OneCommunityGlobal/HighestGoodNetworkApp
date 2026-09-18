@@ -383,3 +383,121 @@ describe('Header Component Authentication Checks', () => {
     expect(screen.getByTestId('header')).toBeInTheDocument();
   });
 });
+
+/**
+ * The header's centre cell shows the owner message or the logo, never both.
+ * Renders the unconnected Header so the message props can be set directly.
+ */
+function renderCenterCell({ ownerMessage = '', ownerStandardMessage = '', role = 'Volunteer', canEdit = false } = {}) {
+  const auth = {
+    isAuthenticated: true,
+    firstName: 'Jane',
+    profilePic: '/me.png',
+    user: { userid: 'u1', role },
+  };
+  const store = mockStore({
+    auth,
+    userProfile: { email: 'jane@example.com' },
+    taskEditSuggestions: { count: 0 },
+    role: { roles: [] },
+    notification: { unreadNotifications: [] },
+    meetingNotification: { unreadMeetingNotifications: [], loading: false, error: null },
+    allUserProfiles: { userProfiles: [] },
+    theme: { darkMode: false },
+    ownerMessage: { message: ownerMessage, standardMessage: ownerStandardMessage },
+  });
+
+  return render(
+    <Provider store={store}>
+      <Router>
+        <Header
+          auth={auth}
+          userProfile={{ email: 'jane@example.com' }}
+          taskEditSuggestionCount={0}
+          hasPermission={permission => canEdit && permission === 'editHeaderMessage'}
+          getHeaderData={vi.fn()}
+          getAllRoles={vi.fn()}
+          getWeeklySummaries={vi.fn()}
+          role={{ roles: [] }}
+          ownerMessage={ownerMessage}
+          // Header deliberately does not read this prop. It is passed anyway so
+          // that reintroducing it into the logo/message condition fails a test
+          // instead of silently hiding the logo from every volunteer again.
+          ownerStandardMessage={ownerStandardMessage}
+        />
+      </Router>
+    </Provider>,
+  );
+}
+
+const logo = () => screen.queryByAltText('Header Logo');
+const message = () => screen.queryByTestId('mock-owner-message');
+
+describe('Header centre cell: logo or owner message, never both', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it.each([
+    ['no message at all', {}],
+    ['a custom owner message', { ownerMessage: 'Dev environment' }],
+    ['only a standard message', { ownerStandardMessage: 'Standard notice' }],
+    ['both a custom and a standard message', {
+      ownerMessage: 'Dev environment',
+      ownerStandardMessage: 'Standard notice',
+    }],
+    ['an owner with no message', { role: 'Owner' }],
+    ['an editor with no message', { canEdit: true }],
+  ])('renders exactly one of the two for %s', (unused, options) => {
+    renderCenterCell(options);
+
+    expect([logo(), message()].filter(Boolean)).toHaveLength(1);
+  });
+
+  it('shows the logo when there is no message and the user cannot edit it', () => {
+    renderCenterCell();
+
+    expect(logo()).toBeInTheDocument();
+    expect(message()).not.toBeInTheDocument();
+  });
+
+  it('shows the message and hides the logo when a custom message exists', () => {
+    renderCenterCell({ ownerMessage: 'Dev environment' });
+
+    expect(message()).toBeInTheDocument();
+    expect(logo()).not.toBeInTheDocument();
+  });
+
+  // The org-wide standard message is non-empty in most environments. Counting it
+  // as "a message" hid the logo from every volunteer, so only a custom message
+  // displaces it.
+  it('keeps the logo when only a standard message exists', () => {
+    renderCenterCell({ ownerStandardMessage: 'Standard notice' });
+
+    expect(logo()).toBeInTheDocument();
+    expect(message()).not.toBeInTheDocument();
+  });
+
+  it('shows the message when a custom message exists alongside a standard one', () => {
+    renderCenterCell({ ownerMessage: 'Dev environment', ownerStandardMessage: 'Standard notice' });
+
+    expect(message()).toBeInTheDocument();
+    expect(logo()).not.toBeInTheDocument();
+  });
+
+  // The edit controls live inside OwnerMessage, so swapping in the logo would
+  // leave an owner no way to create the first message.
+  it('keeps the message slot for an owner even when there is no message', () => {
+    renderCenterCell({ role: 'Owner' });
+
+    expect(message()).toBeInTheDocument();
+    expect(logo()).not.toBeInTheDocument();
+  });
+
+  it('keeps the message slot for a user with editHeaderMessage permission', () => {
+    renderCenterCell({ canEdit: true });
+
+    expect(message()).toBeInTheDocument();
+    expect(logo()).not.toBeInTheDocument();
+  });
+});

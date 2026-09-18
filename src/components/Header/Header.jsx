@@ -72,6 +72,7 @@ import PermissionWatcher from '../Auth/PermissionWatcher';
 import Logout from '../Logout/Logout';
 import NotificationCard from '../Notification/notificationCard';
 import OwnerMessage from '../OwnerMessage/OwnerMessage';
+import { getOwnerMessage } from '../../actions/ownerMessageAction';
 import DisplayBox from '../PRPromotions/DisplayBox';
 import Timer from '../Timer/Timer';
 import BellNotification from './BellNotification';
@@ -173,6 +174,20 @@ export function Header(props) {
     [ALLOWED_ROLES_TO_INTERACT, props.auth.user.role],
   );
   const headerDisabled = isAuthUser ? false : !canInteractWithViewingUser;
+
+  // The header shows the owner message or the logo, never both.
+  //
+  // Only a *custom* owner message displaces the logo. The org-wide standard
+  // message deliberately does not: it is non-empty in most environments, so
+  // counting it here hid the logo from every volunteer.
+  //
+  // Users who can edit the header keep the message slot even with no custom
+  // message: the edit controls live inside OwnerMessage, so swapping in the logo
+  // would leave them no way to create the first one.
+  const canEditHeaderMessage = props.hasPermission('editHeaderMessage');
+  const hasHeaderMessage = Boolean(props.ownerMessage);
+  const showOwnerMessage =
+    hasHeaderMessage || canEditHeaderMessage || props.auth.user.role === 'Owner';
 
   const canGetReports = props.hasPermission('getReports', !isAuthUser);
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries', !isAuthUser);
@@ -569,6 +584,17 @@ export function Header(props) {
     }
   }, [props.auth.isAuthenticated]);
 
+  // The header shows either the logo or the owner message, never both, so the
+  // message has to be fetched from here rather than from inside OwnerMessage:
+  // that component is only mounted once a message is known to exist, and if it
+  // owned the only fetch the message would never load and the logo would never
+  // give way to it.
+  useEffect(() => {
+    if (props.auth.isAuthenticated) {
+      dispatch(getOwnerMessage());
+    }
+  }, [props.auth.isAuthenticated]);
+
   const roles = props.role?.roles;
 
   useEffect(() => {
@@ -758,17 +784,17 @@ export function Header(props) {
               <Timer darkMode={darkMode} />
             )}
             </div>
-          {/* Logo and the owner message (the dev-environment warning) share this cell.
+          {/* Either the owner message or the logo occupies this cell — never both.
               On narrow screens Header.module.css dissolves this wrapper with
-              `display: contents` so the two can be placed in separate grid areas —
-              keep them as siblings here, the layout is driven entirely from CSS. */}
+              `display: contents` so whichever one renders lands in its own grid
+              area; the layout is driven entirely from CSS. */}
           <div className={styles.centerSection}>
-            {isAuthenticated && (
-              <>
-                <img src="/header-test.png" alt="Header Logo" className={styles.headerLogo} />
+            {isAuthenticated &&
+              (showOwnerMessage ? (
                 <OwnerMessage />
-              </>
-            )}
+              ) : (
+                <img src="/header-test.png" alt="Header Logo" className={styles.headerLogo} />
+              ))}
           </div>
           <div className={styles.rightSection}>
             <NavbarToggler
@@ -1152,6 +1178,10 @@ const mapStateToProps = state => ({
   meetingNotification: state.meetingNotification,
   allUserProfiles: state.allUserProfiles.userProfiles,
   darkMode: state.theme.darkMode,
+  // Drives the logo-or-message choice in the header's centre cell. Only the
+  // custom message is read here — see showOwnerMessage for why the standard
+  // message is deliberately not part of that decision.
+  ownerMessage: state.ownerMessage.message,
 });
 
 Header.propTypes = {
@@ -1180,6 +1210,7 @@ Header.propTypes = {
   userProfile: PropTypes.object,
   darkMode: PropTypes.bool,
   taskEditSuggestionCount: PropTypes.number,
+  ownerMessage: PropTypes.string,
 };
 
 export default connect(mapStateToProps, {

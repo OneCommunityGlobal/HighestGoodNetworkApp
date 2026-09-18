@@ -37,17 +37,15 @@
   gap: 0.5rem;
 }
 
+/* Holds exactly one child: the owner message when there is one, otherwise the
+   logo. Centring works for either because the cell centres its single child
+   rather than distributing two. */
 .centerSection {
   display: flex !important;
   align-items: center; /* Vertically center */
   justify-content: center; /* Horizontally center */
   min-width: 140px;
   overflow: visible !important;
-
-  /* Logo and the owner message share this cell — keep them apart, and let the
-     message drop below the logo rather than overflow once the header narrows. */
-  gap: 1rem;
-  flex-wrap: wrap;
 }
 
 /* Fluid and centered adaptation styles for the logo image */
@@ -496,18 +494,21 @@
     padding: 0;
   }
 
-  /* The logo keeps its own row, centred across both columns — unaffected by the
-     message moving beside the menu below it. */
+  /* Only one of the next two rules ever matches — the centre cell holds either
+     the logo or the message, not both. The unused grid area collapses to zero
+     height because nothing is placed into it. */
+
+  /* Logo: its own row, centred across both columns. */
   .centerSection > img {
     grid-area: logo;
     justify-self: center;
     margin: 0.5rem 0 0.75rem;
   }
 
-  /* The Dev Admin warning message — the OwnerMessage root, the only <div> child of
-     .centerSection (the other child is the logo <img>). It now occupies the column
-     directly left of the hamburger, so it fills that track rather than being capped
-     and nudged rightwards: the menu itself is what it sits against. */
+  /* The Dev Admin warning message — the OwnerMessage root, the only <div> child
+     of .centerSection. It occupies the column directly left of the hamburger, so
+     it fills that track rather than being capped and nudged rightwards: the menu
+     itself is what it sits against. */
   .centerSection > div {
     grid-area: message;
     width: auto;
@@ -757,12 +758,10 @@
     min-height: 40px;
   }
 
-  /* The logo and the warning text wrap onto separate lines at this width, so the
-     1rem gap meant for their side-by-side spacing becomes vertical dead space.
-     Tighten only the row gap and leave the column gap intact. */
+  /* Centre cell sits on its own row here, holding whichever of the logo or the
+     message is showing. */
   .centerSection {
     grid-row: 2;
-    row-gap: 0.25rem;
   }
 
   /* `py-3` on the Navbar is a Bootstrap utility with the same specificity as this
