@@ -25,6 +25,13 @@ import {
 } from './jobFormQuestionUtils';
 
 import { permissions } from '../../utils/constants';
+
+/** Strip a numbering prefix (e.g. "2.) ") baked into saved question text so the
+ * displayed number can be recomputed from the question's current position. */
+function stripLeadingQuestionNumbering(raw) {
+  return String(raw || '').replace(/^\d+\.?\)\s*/, '');
+}
+
 function JobFormBuilder() {
   const dispatch = useDispatch();
   const { auth } = useSelector(state => state);
@@ -484,7 +491,7 @@ function JobFormBuilder() {
                     />
                     <div className={styles.formField}>
                       <label className={`${styles.fieldLabel} ${styles.jbformLabel}`}>
-                        {field.questionText}
+                        {`${index + 1}.) ${stripLeadingQuestionNumbering(field.questionText)}`}
                         {isFieldRequired(field) && (
                           <span className={styles.requiredMark} aria-hidden="true">
                             {' '}
