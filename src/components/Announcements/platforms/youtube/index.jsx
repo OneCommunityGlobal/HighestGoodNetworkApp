@@ -5,17 +5,6 @@ import styles from './YoutubeAutoPoster.module.css';
 import { ENDPOINTS } from '~/utils/URL';
 import { clsx } from 'clsx';
 
-const readError = async response => {
-  const body = await response.json().catch(() => null);
-  return body?.error ?? `Request failed with status ${response.status}`;
-};
-
-const minimumScheduleTime = () => {
-  const date = new Date(Date.now() + 5 * 60 * 1000);
-  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
-  return localDate.toISOString().slice(0, 16);
-};
-
 const MAX_TAGS = 500;
 const MAX_VIDEO_TITLE_LENGTH = 100;
 const MAX_VIDEO_DESCRIPTION_LENGTH = 5000;
@@ -59,6 +48,105 @@ const AUDIENCE_SETTINGS = [
 const initialAudienceSettings = Object.fromEntries(
   AUDIENCE_SETTINGS.map(setting => [setting.key, setting.defaultValue]),
 );
+
+async function connectYouTube() {
+  const token = localStorage.getItem('token');
+
+  const response = await fetch(ENDPOINTS.YOUTUBE_AUTOPOSTER_AUTH_URL, {
+    method: 'GET',
+    headers: {
+      Authorization: token,
+    },
+    credentials: 'include',
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || 'Unable to connect YouTube');
+  }
+
+  sessionStorage.setItem(YOUTUBE_CONNECTION_ATTEMPT_KEY, 'true');
+  window.location.assign(result.authUrl);
+}
+
+async function getYouTubeConnectionStatus() {
+  const token = localStorage.getItem('token');
+
+  const response = await fetch(ENDPOINTS.YOUTUBE_AUTOPOSTER_STATUS_URL, {
+    method: 'GET',
+    headers: {
+      Authorization: token,
+    },
+    credentials: 'include',
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || 'Unable to check YouTube connection');
+  }
+
+  return result;
+}
+
+async function disconnectYouTube() {
+  const token = localStorage.getItem('token');
+  const response = await fetch(ENDPOINTS.YOUTUBE_AUTOPOSTER_DISCONNECT_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: token,
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  });
+
+  const result = await response.json().catch(() => null);
+  if (!response.ok || !result?.success) {
+    throw new Error(result?.message || 'Failed to disconnect YouTube');
+  }
+
+  return result;
+}
+
+async function uploadYouTubeVideo(videoFile, values) {
+  const token = localStorage.getItem('token');
+  const formData = new FormData();
+
+  formData.append('video', videoFile);
+  formData.append(
+    'metadata',
+    JSON.stringify({
+      title: values.title,
+      description: values.description || '',
+      categoryId: values.categoryId,
+      tags: values.tags || [],
+      privacyStatus: values.privacyStatus || 'private',
+      madeForKids: values.madeForKids,
+      notifySubscribers: values.notifySubscribers ?? false,
+      embeddable: values.embeddable ?? true,
+      publicStatsViewable: values.publicStatsViewable ?? true,
+      containsSyntheticMedia: values.containsSyntheticMedia ?? false,
+    }),
+  );
+
+  const response = await fetch(ENDPOINTS.YOUTUBE_AUTOPOSTER_UPLOAD_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: token,
+    },
+    credentials: 'include',
+    body: formData,
+  });
+
+  const uploadResult = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(uploadResult?.message || 'YouTube upload failed');
+  }
+
+  return uploadResult;
+}
 
 function YoutubeAutoPoster({ platform }) {
   const [account, setAccount] = useState(null);
@@ -140,66 +228,6 @@ function YoutubeAutoPoster({ platform }) {
     setTagDraft('');
   };
 
-  async function connectYouTube() {
-    const token = localStorage.getItem('token');
-
-    const response = await fetch(ENDPOINTS.YOUTUBE_AUTOPOSTER_AUTH_URL, {
-      method: 'GET',
-      headers: {
-        Authorization: token,
-      },
-      credentials: 'include',
-    });
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.message || 'Unable to connect YouTube');
-    }
-
-    sessionStorage.setItem(YOUTUBE_CONNECTION_ATTEMPT_KEY, 'true');
-    window.location.assign(result.authUrl);
-  }
-
-  async function getYouTubeConnectionStatus() {
-    const token = localStorage.getItem('token');
-
-    const response = await fetch(ENDPOINTS.YOUTUBE_AUTOPOSTER_STATUS_URL, {
-      method: 'GET',
-      headers: {
-        Authorization: token,
-      },
-      credentials: 'include',
-    });
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.message || 'Unable to check YouTube connection');
-    }
-
-    return result;
-  }
-
-  async function disconnectYouTube() {
-    const token = localStorage.getItem('token');
-    const response = await fetch(ENDPOINTS.YOUTUBE_AUTOPOSTER_DISCONNECT_URL, {
-      method: 'POST',
-      headers: {
-        Authorization: token,
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-    });
-
-    const result = await response.json().catch(() => null);
-    if (!response.ok || !result?.success) {
-      throw new Error(result?.message || 'Failed to disconnect YouTube');
-    }
-
-    return result;
-  }
-
   const handleDisconnect = async () => {
     setDisconnecting(true);
     try {
@@ -219,45 +247,6 @@ function YoutubeAutoPoster({ platform }) {
       setDisconnecting(false);
     }
   };
-
-  async function uploadYouTubeVideo(videoFile, values) {
-    const token = localStorage.getItem('token');
-    const formData = new FormData();
-
-    formData.append('video', videoFile);
-    formData.append(
-      'metadata',
-      JSON.stringify({
-        title: values.title,
-        description: values.description || '',
-        categoryId: values.categoryId,
-        tags: values.tags || [],
-        privacyStatus: values.privacyStatus || 'private',
-        madeForKids: values.madeForKids,
-        notifySubscribers: values.notifySubscribers ?? false,
-        embeddable: values.embeddable ?? true,
-        publicStatsViewable: values.publicStatsViewable ?? true,
-        containsSyntheticMedia: values.containsSyntheticMedia ?? false,
-      }),
-    );
-
-    const response = await fetch(ENDPOINTS.YOUTUBE_AUTOPOSTER_UPLOAD_URL, {
-      method: 'POST',
-      headers: {
-        Authorization: token,
-      },
-      credentials: 'include',
-      body: formData,
-    });
-
-    const uploadResult = await response.json().catch(() => null);
-
-    if (!response.ok) {
-      throw new Error(uploadResult?.message || 'YouTube upload failed');
-    }
-
-    return uploadResult;
-  }
 
   useEffect(() => {
     const connectionWasJustRequested =
@@ -301,7 +290,8 @@ function YoutubeAutoPoster({ platform }) {
             { toastId: 'youtube-channel-not-found' },
           );
         }
-      } catch (error) {
+      } catch {
+        // Connection checks are best effort during initialization; failures leave the UI disconnected.
         setConnected(false);
         setAccount(null);
         setCategoriesLoading(false);
@@ -312,18 +302,6 @@ function YoutubeAutoPoster({ platform }) {
 
     checkConnection();
   }, []);
-
-  // const disconnect = async () => {
-  //   setError('');
-  //   const response = await fetch('/api/auth/disconnect', { method: 'POST' });
-
-  //   if (!response.ok) {
-  //     setError(await readError(response));
-  //     return;
-  //   }
-
-  //   setAuth(current => (current ? { ...current, connected: false } : current));
-  // };
 
   const submitVideo = async event => {
     event.preventDefault();
@@ -369,6 +347,7 @@ function YoutubeAutoPoster({ platform }) {
   };
 
   const hasConnectedChannel = connected && account;
+  const visibilityStatusClassName = styles[`${privacyStatus}Status`];
 
   return (
     <main
@@ -383,10 +362,10 @@ function YoutubeAutoPoster({ platform }) {
             alt={`${account.channelName} channel thumbnail`}
           />
           <div className={styles.channelDetails}>
-            <span className={styles.connectedBadge}>
+            <div className={styles.connectedBadge}>
               <span className={styles.connectedDot} aria-hidden="true" />
               Connected
-            </span>
+            </div>
             <h2 className={styles.channelName}>{account.channelName}</h2>
             <a
               className={styles.channelUrl}
@@ -636,7 +615,7 @@ function YoutubeAutoPoster({ platform }) {
                       </button>
                     </span>
                   ))}
-                  <span className={styles.addTagChip}>
+                  <div className={styles.addTagChip}>
                     +
                     <input
                       type="text"
@@ -665,7 +644,7 @@ function YoutubeAutoPoster({ platform }) {
                       onBlur={() => splitAndAddDraft()}
                       disabled={tags.length >= MAX_TAGS}
                     />
-                  </span>
+                  </div>
                 </div>
                 <p className={styles.tagHint}>
                   Use commas or Enter to separate. Tags help YouTube recommend your video.
@@ -679,7 +658,7 @@ function YoutubeAutoPoster({ platform }) {
                     Visibility
                   </h4>
                   <span
-                    className={`${styles.visibilityStatus} ${styles[`${privacyStatus}Status`]}`}
+                    className={clsx(styles.visibilityStatus, visibilityStatusClassName)}
                     aria-live="polite"
                   >
                     {privacyStatus.toUpperCase()}

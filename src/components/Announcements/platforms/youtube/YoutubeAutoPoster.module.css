@@ -222,8 +222,8 @@
   margin-top: 1.75rem;
   padding: 0.8rem 1.25rem;
   color: #fff !important;
-  background-color: #f03;
-  border: 1px solid #f03;
+  background-color: #d9002b;
+  border: 1px solid #d9002b;
   border-radius: 8px;
   font-size: 0.8125rem;
   font-weight: 600;
@@ -231,8 +231,8 @@
 }
 
 .youtubeAutoPoster .connectButton:hover {
-  background-color: #d9002b;
-  border-color: #d9002b;
+  background-color: #b00020;
+  border-color: #b00020;
 }
 
 .youtubeAutoPoster .connectButton:focus-visible {
@@ -960,7 +960,7 @@
 }
 
 .youtubeAutoPoster .uploadButton:disabled {
-  color: #9aa0a6 !important;
+  color: #4b5563 !important;
   background-color: #e5e7eb;
   border-color: #e5e7eb;
   box-shadow: none;
@@ -1163,7 +1163,7 @@
 
 :global(.dark-mode) .youtubeAutoPoster .tagChip {
   color: #ff6680 !important;
-  background-color: rgb(255 0 51 / 18%);
+  background-color: #4a2630;
 }
 
 :global(.dark-mode) .youtubeAutoPoster .visibilityTitle,
@@ -1179,6 +1179,10 @@
 :global(.dark-mode) .youtubeAutoPoster .uploadButton:disabled {
   background-color: #4b5563;
   border-color: #4b5563;
+}
+
+:global(.dark-mode) .youtubeAutoPoster .uploadButton:disabled {
+  color: #d1d5db !important;
 }
 
 :global(.dark-mode) .youtubeAutoPoster .form .visibilityOption {
