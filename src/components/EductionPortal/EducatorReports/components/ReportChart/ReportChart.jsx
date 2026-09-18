@@ -113,6 +113,13 @@ const ReportChart = ({
                 font: {
                   size: 11,
                 },
+                maxRotation: 45,
+                minRotation: 0,
+                autoSkip: false,
+                callback(value) {
+                  const label = this.getLabelForValue(value);
+                  return label.length > 20 ? `${label.substring(0, 20)}...` : label;
+                },
               },
               grid: {
                 color: darkMode ? '#374151' : '#f3f4f6',

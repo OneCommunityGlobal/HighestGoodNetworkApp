@@ -524,3 +524,47 @@
     font-size: 13px;
   }
 }
+/* Report Type Tabs */
+.reportTabs {
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.reportTab {
+  cursor: pointer;
+  padding: 10px 20px;
+  font-weight: 500;
+  color: #6b7280;
+  border: none;
+  background: none;
+}
+
+.reportTab:hover {
+  color: #374151;
+}
+
+.activeTab {
+  cursor: pointer;
+  padding: 10px 20px;
+  font-weight: 600;
+  color: #4f46e5;
+  border-bottom: 3px solid #4f46e5;
+  background: none;
+}
+
+.dashboardContainer.darkMode .reportTabs {
+  border-bottom-color: #374151;
+}
+
+.dashboardContainer.darkMode .reportTab {
+  color: #9ca3af;
+}
+
+.dashboardContainer.darkMode .reportTab:hover {
+  color: #e5e7eb;
+}
+
+.dashboardContainer.darkMode .activeTab {
+  color: #818cf8;
+  border-bottom-color: #818cf8;
+}
