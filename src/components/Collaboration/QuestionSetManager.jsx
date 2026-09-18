@@ -409,6 +409,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
                 Create a copy of this template to modify without changing the original.
               </UncontrolledTooltip>
               <button
+                id="clear-template-button"
                 type="button"
                 onClick={() => {
                   if (formFields.length > 0) {
@@ -422,10 +423,16 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
                 }}
                 className={styles.clearTemplateButton}
                 disabled={formFields.length === 0}
-                title="Remove all fields and reset the template to a clean state"
               >
                 Clear Template
               </button>
+              <UncontrolledTooltip
+                placement="top"
+                target="clear-template-button"
+                trigger="hover focus"
+              >
+                Remove all fields and reset the template to a clean state
+              </UncontrolledTooltip>
               <button
                 id="append-template-button"
                 type="button"
