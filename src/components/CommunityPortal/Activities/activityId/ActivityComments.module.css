@@ -674,6 +674,11 @@
   color: #b8c5d1 !important;
 }
 
+:global(body.dark-mode) .eventStatus,
+:global(body.bm-dashboard-dark) .eventStatus {
+  color: #9be7b0 !important;
+}
+
 :global(body.dark-mode) .eventMetaItem a,
 :global(body.bm-dashboard-dark) .eventMetaItem a {
   color: #66b3ff !important;
@@ -947,4 +952,101 @@
 :global(body.dark-mode) .feedbackEmpty p,
 :global(body.bm-dashboard-dark) .feedbackEmpty p {
   color: #b8c5d1 !important;
+}
+
+.membersListContainer {
+  width: 100%;
+  max-width: 1100px;
+  margin: 24px auto;
+  font-family: Arial, sans-serif;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  min-width: 120px;
+  border: 1px solid #ccc;
+  background: white;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.table thead {
+  background: #fafafa;
+}
+
+.table th {
+  text-align: left;
+  font-weight: 600;
+  padding: 10px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.table td {
+  padding: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* Members List - Dark Mode */
+
+.membersListDarkMode {
+  color: #fff;
+}
+
+.membersListDarkMode .title {
+  color: #fff;
+}
+
+.membersListDarkMode .select {
+  background-color: #1b2a41;
+  color: #fff;
+  border: 1px solid #50657d;
+}
+
+.membersListDarkMode .table {
+  background-color: #1b2a41;
+  color: #fff;
+}
+
+.membersListDarkMode .table thead {
+  background-color: #24364f;
+}
+
+.membersListDarkMode .table th {
+  color: #fff;
+  border-bottom: 1px solid #50657d;
+}
+
+.membersListDarkMode .table td {
+  color: #e6edf5;
+  border-bottom: 1px solid #3a506b;
+}
+
+.membersListDarkMode .table tbody tr:hover {
+  background-color: #2b405b;
+}
+
+.membersListDarkMode .table thead tr {
+    background-color: #24364f;
+}
+
+.membersListDarkMode .table th {
+    background-color: #24364f;
+    color: #ffffff;
 }
