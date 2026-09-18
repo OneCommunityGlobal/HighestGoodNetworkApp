@@ -11,14 +11,16 @@ const ProtectedRoute = ({
   roles,
   allowedRoles,
   routePermissions,
+  permissionDeniedRedirectState,
   fallback,
   ...rest
 }) => {
-  const rolePermissions = roles?.find(({ roleName }) => roleName === auth.user.role)?.permissions || [];
+  const rolePermissions =
+    roles?.find(({ roleName }) => roleName === auth.user.role)?.permissions || [];
   const userPermissions = auth.user?.permissions?.frontPermissions || [];
   const permissionsAllowed = new Set([...rolePermissions, ...userPermissions]);
   let hasPermissionToAccess = routePermissions?.some(perm => permissionsAllowed.has(perm));
-  
+
   if (Array.isArray(routePermissions)) {
     if (rolePermissions?.some(perm => routePermissions.includes(perm))) {
       hasPermissionToAccess = true;
@@ -42,7 +44,14 @@ const ProtectedRoute = ({
           return <Redirect to={{ pathname: '/login', state: { from: props.location } }} />;
         }
         if (routePermissions && !hasPermissionToAccess) {
-          return <Redirect to={{ pathname: '/dashboard', state: { from: props.location } }} />;
+          return (
+            <Redirect
+              to={{
+                pathname: '/dashboard',
+                state: { from: props.location, ...permissionDeniedRedirectState },
+              }}
+            />
+          );
         }
         // eslint-disable-next-line react/jsx-props-no-spreading, no-nested-ternary
         return Component && fallback ? (

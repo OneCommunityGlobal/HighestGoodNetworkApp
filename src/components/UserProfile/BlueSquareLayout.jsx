@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Modal } from 'react-bootstrap';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import ScheduleExplanationModal from './ScheduleExplanationModal/ScheduleExplanationModal';
 import ScheduleReasonModal from './ScheduleReasonModal/ScheduleReasonModal';
 import TimeOffRequestsTable from './TimeOffRequestsTable/TimeOffRequestsTable';
@@ -13,6 +13,7 @@ import './UserProfileEdit/UserProfileEdit.scss';
 import {useHistory } from 'react-router-dom';
 
 
+import { permissions } from '../../utils/constants';
 const BlueSquareLayout = ({
   userProfile,
   handleUserProfile,
@@ -24,20 +25,23 @@ const BlueSquareLayout = ({
     const history = useHistory();
   const dispatch = useDispatch();
   const allRequests = useSelector(state => state.timeOffRequests.requests);
-  const canManageTimeOffRequests = dispatch(hasPermission('manageTimeOffRequests'));
+  const canManageTimeOffRequests = dispatch(hasPermission(permissions.manageTimeOffRequests));
 
   const { privacySettings } = userProfile;
   const [show, setShow] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
   const [showEmailBCCModal, setShowEmailBCCModal] = useState(false);
   const hasBlueSquareEmailBCCRolePermission = user.role === 'Owner';
+  const [selectedRequest, setSelectedRequest] = useState(null);
 
-  const handleOpen = () => {
+  const handleOpen = (request = null) => {
+    setSelectedRequest(request);
     setShow(true);
   };
 
   const handleClose = () => {
     setShow(false);
+    setSelectedRequest(null);
   };
 
   // This handler is used for Explanation Modal, that open when <a>Click to learn why </a> is clicked
@@ -102,7 +106,7 @@ const BlueSquareLayout = ({
               {allRequests[userProfile._id]?.length > 0 && (
                 <Button
                   variant="primary"
-                  onClick={handleOpen}
+                  onClick={() => handleOpen(null)}
                   className="w-100 mt-3"
                   size="md"
                   style={darkMode ? boxStyleDark : boxStyle}
@@ -115,7 +119,7 @@ const BlueSquareLayout = ({
             <>
               <Button
                 variant="primary"
-                onClick={handleOpen}
+                onClick={() => handleOpen(null)}
                 className="w-100"
                 size="md"
                 style={darkMode ? boxStyleDark : boxStyle}
@@ -185,6 +189,7 @@ const BlueSquareLayout = ({
               canManageTimeOffRequests={canManageTimeOffRequests}
               checkIfUserCanScheduleTimeOff={checkIfUserCanScheduleTimeOff}
               darkMode={darkMode}
+              selectedRequest={selectedRequest}
             />
           </Modal>
         )}

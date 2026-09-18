@@ -12,26 +12,32 @@ import {
   updateTeamMembersTimeEntrySuccess,
   deleteTaskNotificationSuccess,
 } from '../../components/TeamMemberTasks/actions';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
-jest.mock('axios');
+vi.mock('axios');
 
-jest.mock('moment', () => {
-  const actualMoment = jest.requireActual('moment');
+let actualMoment;
+
+beforeAll(async () => {
+actualMoment = await vi.importActual('moment');
+});
+
+vi.mock('moment', async () => {
+  const moment = await vi.importActual('moment');
   return {
-    ...actualMoment,
-    tz: jest.fn(() => ({
-      subtract: jest.fn().mockReturnValue({
-        format: jest.fn().mockReturnValue('2023-01-01'),
+    ...moment,
+    tz: vi.fn(() => ({
+      subtract: vi.fn().mockReturnValue({
+        format: vi.fn().mockReturnValue('2023-01-01'),
       }),
-      format: jest.fn().mockReturnValue('2023-01-07'),
+      format: vi.fn().mockReturnValue('2023-01-07'),
     })),
   };
 });
 
 describe('Task Actions', () => {
-  const mockDispatch = jest.fn();
-  const mockGetState = jest.fn(() => ({
+  const mockDispatch = vi.fn();
+  const mockGetState = vi.fn(() => ({
     teamMemberTasks: {
       usersWithTasks: [{ personId: '123' }, { personId: '456' }],
     },
@@ -40,7 +46,7 @@ describe('Task Actions', () => {
   }));
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     axios.get.mockReset();
     axios.post.mockReset();
     axios.put.mockReset();

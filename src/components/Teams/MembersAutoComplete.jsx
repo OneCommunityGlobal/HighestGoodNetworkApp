@@ -1,6 +1,8 @@
+/* eslint-disable react/destructuring-assignment */
 import { useState } from 'react';
 import { Dropdown, Input } from 'reactstrap';
 import { useSelector } from 'react-redux';
+import appStyles from '~/App.module.css';
 
 export function MemberAutoComplete(props) {
   const [isOpen, toggle] = useState(false);
@@ -59,10 +61,19 @@ export function MemberAutoComplete(props) {
               <div
                 key={item._id}
                 className="user-auto-cpmplete"
+                role="button"
+                tabIndex={0}
                 onClick={() => {
                   props.setSearchText(`${item.firstName} ${item.lastName}`);
                   toggle(false);
                   props.onAddUser(item);
+                }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    props.setSearchText(`${item.firstName} ${item.lastName}`);
+                    toggle(false);
+                    props.onAddUser(item);
+                  }
                 }}
               >
                 {`${item.firstName} ${item.lastName}`}
@@ -82,7 +93,7 @@ export function MemberAutoComplete(props) {
           role="menu"
           aria-hidden="false"
           className={`dropdown-menu${isOpen ? ' show' : ''} ${
-            darkMode ? 'bg-darkmode-liblack text-light' : ''
+            darkMode ? `${appStyles['bg-darkmode-liblack']} text-light` : ''
           }`}
           style={{ marginTop: '0px', width: '100%' }}
         >
@@ -93,10 +104,19 @@ export function MemberAutoComplete(props) {
               <div
                 key={item._id}
                 className="user-auto-cpmplete"
+                role="button"
+                tabIndex={0}
                 onClick={() => {
                   props.setSearchText(`${item.firstName} ${item.lastName}`);
                   toggle(false);
                   props.onAddUser(item);
+                }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    props.setSearchText(`${item.firstName} ${item.lastName}`);
+                    toggle(false);
+                    props.onAddUser(item);
+                  }
                 }}
               >
                 {`${item.firstName} ${item.lastName}`}
@@ -118,7 +138,6 @@ export function MemberAutoComplete(props) {
       style={{ width: '100%', marginRight: '5px' }}
     >
       <Input
-        autoFocus
         type="text"
         value={props.searchText}
         data-testid="input-search"
@@ -127,7 +146,7 @@ export function MemberAutoComplete(props) {
           toggle(true);
           props.onAddUser(undefined);
         }}
-        className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
+        className={`${darkMode ? `${appStyles['bg-darkmode-liblack']} border-0 text-light` : ''}`}
       />
 
       {/* {props.searchText !== '' &&

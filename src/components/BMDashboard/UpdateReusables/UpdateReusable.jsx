@@ -1,14 +1,14 @@
-import './UpdateReusable.css';
-import { Container } from 'reactstrap';
-import * as moment from 'moment';
-import { FormGroup, Input, Label, Form, Col, Button } from 'reactstrap';
-import { useState } from 'react';
+import moment from 'moment';
+import { FormGroup, Input, Label, Form, Col, Button, Container } from 'reactstrap';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect } from 'react';
-import { postReusableUpdate } from 'actions/bmdashboard/reusableActions';
+import {
+  postReusableUpdate,
+  resetReusableUpdate,
+  fetchAllReusables,
+} from '~/actions/bmdashboard/reusableActions';
 import { toast } from 'react-toastify';
-import { resetReusableUpdate } from 'actions/bmdashboard/reusableActions';
-import { fetchAllReusables } from 'actions/bmdashboard/reusableActions';
+import './UpdateReusable.module.css';
 
 function UpdateReusable({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
   const dispatch = useDispatch();
@@ -234,7 +234,7 @@ function UpdateReusable({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
       <div className="updateReusablePage">
         <div className="updateReusable">
           <Form>
-            {/* <img className='reusableImage' alt='reusableImage' src={riversand} /> */}
+            {/* <img className="reusableImage" alt='reusableImage' src={riversand} /> */}
             <FormGroup row className="align-items-center justify-content-start">
               <Label for="updateReusableName" sm={4} className="reusableFormLabel">
                 Reusable

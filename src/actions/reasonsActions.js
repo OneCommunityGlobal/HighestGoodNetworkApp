@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 export async function addReason(userId, reasonData) {
   try {

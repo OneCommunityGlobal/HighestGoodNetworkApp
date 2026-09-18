@@ -1,4 +1,6 @@
 import { toast } from 'react-toastify';
+
+
 import { incrementDashboardTaskCount, INCREMENT_DASHBOARD_TASK_COUNT } from '../dashboardActions';
 
 describe('incrementDashboardTaskCount action creator', () => {
@@ -10,7 +12,7 @@ describe('incrementDashboardTaskCount action creator', () => {
     };
 
     // Spy on console.log
-    toast.info = jest.fn();
+    toast.info = vi.fn();
 
     const action = incrementDashboardTaskCount(taskId);
 

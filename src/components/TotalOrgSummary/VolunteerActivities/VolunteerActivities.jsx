@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import { normalizeVolunteerActivities } from 'utils/totalOrgSummary';
-import Loading from 'components/common/Loading';
+import { normalizeVolunteerActivities } from '~/utils/totalOrgSummary';
+import Loading from '~/components/common/Loading';
 import StatisticsTab from '../StatisticsTab/StatisticsTab';
-
+import styles from '../TotalOrgSummary.module.css';
 function VolunteerActivities({
   isLoading,
   totalSummariesSubmitted,
@@ -10,6 +10,7 @@ function VolunteerActivities({
   totalBadgesAwarded,
   tasksStats,
   totalActiveTeams,
+  comparisonType,
 }) {
   const volunteerActivitiesTabs = useMemo(
     () =>
@@ -41,7 +42,7 @@ function VolunteerActivities({
 
   return (
     <div
-      className="volunteer-status-grid"
+      className={styles.volunteerStatusGrid} // ⬅️ use module class
       role="region"
       aria-label="Volunteer Activities Statistics"
     >
@@ -54,6 +55,7 @@ function VolunteerActivities({
           isIncreased={tab.isIncreased}
           type={tab.type}
           tabBackgroundColor={tab.tabBackgroundColor}
+          comparisonType={comparisonType}
         />
       ))}
     </div>

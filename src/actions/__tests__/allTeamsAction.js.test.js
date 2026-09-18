@@ -9,6 +9,7 @@ import {
   ADD_NEW_TEAM,
   TEAMS_DELETE,
   UPDATE_TEAM,
+  FETCH_USER_TEAMS_START,
   FETCH_TEAM_USERS_START,
   RECEIVE_TEAM_USERS,
   FETCH_TEAM_USERS_ERROR,
@@ -34,11 +35,14 @@ import {
   postNewTeam,
   deleteTeam,
 } from '../allTeamsAction';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
+
+
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 const mock = new MockAdapter(axios);
+vi.mock('axios');
 
 // Describe block for the teamMembersFectchACtion tests
 describe('teamMembersFectchACtion', () => {
@@ -233,6 +237,11 @@ describe('fetchAllTeamCodeSucess', () => {
   });
 });
 
+// Add this before your describe blocks
+beforeEach(() => {
+  vi.clearAllMocks();
+});
+
 // Describe block for the getAllUserTeams tests
 describe('getAllUserTeams', () => {
   // Test case for fetching all user teams
@@ -242,12 +251,20 @@ describe('getAllUserTeams', () => {
       { id: 1, name: 'Team 1' },
       { id: 2, name: 'Team 2' },
     ];
-    mock.onGet(ENDPOINTS.TEAM).reply(200, responseData);
 
-    const expectedActions = [{ type: RECEIVE_ALL_USER_TEAMS, payload: responseData }];
+    // Mock axios.get
+    axios.get.mockResolvedValue({ data: responseData });
+
+    const expectedActions = [
+      { type: FETCH_USER_TEAMS_START },
+      { type: RECEIVE_ALL_USER_TEAMS, payload: responseData }
+    ];
 
     const store = mockStore({});
+
     await store.dispatch(getAllUserTeams());
+
+    expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.TEAM);
     expect(store.getActions()).toEqual(expectedActions);
   });
 });
@@ -258,12 +275,19 @@ describe('postNewTeam', () => {
   it('should post a new team and dispatch ADD_NEW_TEAM action', async () => {
     // Mock the API response
     const responseData = { id: 3, name: 'New Team' };
-    mock.onPost(ENDPOINTS.TEAM).reply(200, responseData);
+    const teamName = 'New Team';
+    const status = true;
+
+    // Mock axios.post
+    axios.post.mockResolvedValue({ data: responseData });
 
     const expectedActions = [{ type: ADD_NEW_TEAM, payload: responseData, status: true }];
 
     const store = mockStore({});
-    await store.dispatch(postNewTeam('New Team', true));
+
+    await store.dispatch(postNewTeam(teamName, status));
+
+    expect(axios.post).toHaveBeenCalledWith(ENDPOINTS.TEAM, { teamName, isActive: status }, {});
     expect(store.getActions()).toEqual(expectedActions);
   });
 });

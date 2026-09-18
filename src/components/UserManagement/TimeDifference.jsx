@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 
 function TimeDifference(props) {
-    const { isUserSelf, userProfile } = props;
+//    const { isUserSelf, userProfile } = props;
+    const { isUserSelf } = props;
     const [signedOffset, setSignedOffset] = useState('N/A');
     const [hoverText, setHoverText] = useState('');
 
@@ -28,7 +29,8 @@ function TimeDifference(props) {
             const tz1Date = convertDateToAnotherTimeZone(date, tz1);
             const tz2Date = convertDateToAnotherTimeZone(date, tz2);
 
-            if (!isNaN(tz1Date) && !isNaN(tz2Date)) {
+            // if (!isNaN(tz1Date) && !isNaN(tz2Date)) {
+            if (!Number.isNaN(tz1Date) && !Number.isNaN(tz2Date)) {
                 const offset = (tz1Date.getTime() - tz2Date.getTime()) / 3600000;
                 return offset;
             }

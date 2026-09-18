@@ -1,5 +1,5 @@
 # Define a imagem base
-FROM node:14-alpine
+FROM node:20-alpine
 # Set the working directory to /app
 WORKDIR /app
 # Copy the package.json and yarn.lock files to the container

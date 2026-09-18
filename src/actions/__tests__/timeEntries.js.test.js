@@ -14,17 +14,17 @@ import {
 // Import the constants
 import { GET_TIME_ENTRIES_PERIOD, GET_TIME_ENTRIES_WEEK } from '../../constants/timeEntries';
 // Import ENDPOINTS
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 // Import moment for date manipulation
 // Mock axios for HTTP requests
 
 // Mock axios module
-jest.mock('axios');
+vi.mock('axios');
 
 describe('timeEntries action creators', () => {
   // Mock console.error to suppress error output during tests
   beforeAll(() => {
-    jest.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => { });
   });
 
   afterAll(() => {
@@ -67,7 +67,7 @@ describe('timeEntries action creators', () => {
   // Test suite for deleteTimeEntry
   describe('deleteTimeEntry', () => {
     it('should dispatch updateTimeEntries if entryType is default', async () => {
-      const dispatchMock = jest.fn(); // Mock dispatch function
+      const dispatchMock = vi.fn(); // Mock dispatch function
       const timeEntry = { _id: '123', entryType: 'default' }; // Sample time entry
       axios.delete.mockResolvedValue({ status: 200 }); // Mock axios delete response
 
@@ -81,7 +81,7 @@ describe('timeEntries action creators', () => {
 
     // Test case to ensure the response status is returned
     it('should return the response status', async () => {
-      const dispatchMock = jest.fn(); // Mock dispatch function
+      const dispatchMock = vi.fn(); // Mock dispatch function
       const timeEntry = { _id: '123', entryType: 'default' }; // Sample time entry
       axios.delete.mockResolvedValue({ status: 200 }); // Mock axios delete response
 
@@ -92,7 +92,7 @@ describe('timeEntries action creators', () => {
 
     // Test case to handle errors and return the error response status
     it('should handle errors and return the error response status', async () => {
-      const dispatchMock = jest.fn(); // Mock dispatch function
+      const dispatchMock = vi.fn(); // Mock dispatch function
       const timeEntry = { _id: '123', entryType: 'default' }; // Sample time entry
       axios.delete.mockRejectedValue({ response: { status: 500 } }); // Mock axios delete error response
 
@@ -105,7 +105,7 @@ describe('timeEntries action creators', () => {
   // Test suite for editTimeEntry
   describe('editTimeEntry', () => {
     it('should dispatch updateTimeEntries if entryType is default', async () => {
-      const dispatchMock = jest.fn(); // Mock dispatch function
+      const dispatchMock = vi.fn(); // Mock dispatch function
       const timeEntryId = '123'; // Sample time entry ID
       const timeEntry = { entryType: 'default', dateOfWork: moment().toISOString() }; // Sample time entry
       const oldDateOfWork = moment()
@@ -123,7 +123,7 @@ describe('timeEntries action creators', () => {
 
     // Test case to ensure the response status is returned
     it('should return the response status', async () => {
-      const dispatchMock = jest.fn(); // Mock dispatch function
+      const dispatchMock = vi.fn(); // Mock dispatch function
       const timeEntryId = '123'; // Sample time entry ID
       const timeEntry = { entryType: 'default', dateOfWork: moment().toISOString() }; // Sample time entry
       axios.put.mockResolvedValue({ status: 200 }); // Mock axios put response
@@ -135,7 +135,7 @@ describe('timeEntries action creators', () => {
 
     // Test case to handle errors and return the error response status
     it('should handle errors and return the error response status', async () => {
-      const dispatchMock = jest.fn(); // Mock dispatch function
+      const dispatchMock = vi.fn(); // Mock dispatch function
       const timeEntryId = '123'; // Sample time entry ID
       const timeEntry = { entryType: 'default', dateOfWork: moment().toISOString() }; // Sample time entry
       axios.put.mockRejectedValue({ response: { status: 500 } }); // Mock axios put error response
@@ -149,7 +149,7 @@ describe('timeEntries action creators', () => {
   // Test suite for postTimeEntry
   describe('postTimeEntry', () => {
     it('should dispatch updateTimeEntries if entryType is default', async () => {
-      const dispatchMock = jest.fn(); // Mock dispatch function
+      const dispatchMock = vi.fn(); // Mock dispatch function
       const timeEntry = { entryType: 'default', dateOfWork: moment().toISOString() }; // Sample time entry
       axios.post.mockResolvedValue({ status: 200 }); // Mock axios post response
 
@@ -163,7 +163,7 @@ describe('timeEntries action creators', () => {
 
     // Test case to ensure the response status is returned
     it('should return the response status', async () => {
-      const dispatchMock = jest.fn(); // Mock dispatch function
+      const dispatchMock = vi.fn(); // Mock dispatch function
       const timeEntry = { entryType: 'default', dateOfWork: moment().toISOString() }; // Sample time entry
       axios.post.mockResolvedValue({ status: 200 }); // Mock axios post response
 
@@ -174,7 +174,7 @@ describe('timeEntries action creators', () => {
 
     // Test case to handle errors and return the error response status
     it('should handle errors and return the error response status', async () => {
-      const dispatchMock = jest.fn(); // Mock dispatch function
+      const dispatchMock = vi.fn(); // Mock dispatch function
       const timeEntry = { entryType: 'default', dateOfWork: moment().toISOString() }; // Sample time entry
       axios.post.mockRejectedValue({ response: { status: 500 } }); // Mock axios post error response
 
@@ -187,7 +187,7 @@ describe('timeEntries action creators', () => {
   // Test suite for getTimeEndDateEntriesByPeriod
   describe('getTimeEndDateEntriesByPeriod', () => {
     it('should return the last entry date', async () => {
-      const dispatchMock = jest.fn(); // Mock dispatch function
+      const dispatchMock = vi.fn(); // Mock dispatch function
       const userId = '123'; // Sample user ID
       const fromDate = moment()
         .subtract(2, 'weeks')
@@ -227,7 +227,7 @@ describe('timeEntries action creators', () => {
     });
 
     it('should return "N/A" if no entries are found', async () => {
-      const dispatchMock = jest.fn(); // Mock dispatch function
+      const dispatchMock = vi.fn(); // Mock dispatch function
       const userId = '123'; // Sample user ID
       const fromDate = moment()
         .subtract(2, 'weeks')
@@ -249,7 +249,7 @@ describe('timeEntries action creators', () => {
     });
 
     it('should handle errors and return "N/A"', async () => {
-      const dispatchMock = jest.fn(); // Mock dispatch function
+      const dispatchMock = vi.fn(); // Mock dispatch function
       const userId = '123'; // Sample user ID
       const fromDate = moment()
         .subtract(2, 'weeks')
@@ -274,7 +274,7 @@ describe('timeEntries action creators', () => {
   // Test suite for getTimeEntriesForPeriod
   describe('getTimeEntriesForPeriod', () => {
     it('should dispatch setTimeEntriesForPeriod with filtered and sorted entries', async () => {
-      const dispatchMock = jest.fn(); // Mock dispatch function
+      const dispatchMock = vi.fn(); // Mock dispatch function
       const userId = '123'; // Sample user ID
       const fromDate = moment()
         .subtract(2, 'weeks')
@@ -316,7 +316,7 @@ describe('timeEntries action creators', () => {
   // Test suite for getTimeEntriesForWeek
   describe('getTimeEntriesForWeek', () => {
     it('should dispatch setTimeEntriesForWeek with filtered entries', async () => {
-      const dispatchMock = jest.fn(); // Mock dispatch function
+      const dispatchMock = vi.fn(); // Mock dispatch function
       const userId = '123'; // Sample user ID
       const offset = 1; // Sample offset
       const fromDate = moment()

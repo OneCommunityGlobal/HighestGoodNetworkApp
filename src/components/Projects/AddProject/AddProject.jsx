@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
-import '../../Header/DarkMode.css';
+import '../../Header/index.module.css';
 import { addNewWBS } from './../../../actions/wbs';
 import { postNewProject } from './../../../actions/projects';
 import { findUserProfiles, assignProject } from './../../../actions/projectMembers';
 
+import { permissions } from '../../../utils/constants';
 const AddProject = (props) => {
   const [modal, setModal] = useState(false);
   const [newName, setNewName] = useState('');
@@ -21,8 +22,8 @@ const AddProject = (props) => {
   const [lastTimeoutId, setLastTimeoutId] = useState(null);
 
   const { darkMode } = props.state.theme;
-  const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
-  const canPostWBS = props.hasPermission('postWbs');
+  const canAssignProjectToUsers = props.hasPermission(permissions.assignProjectToUsers);
+  const canPostWBS = props.hasPermission(permissions.postWbs);
 
   const resetForm = () => {
     setNewName('');
@@ -65,6 +66,7 @@ const AddProject = (props) => {
       setWbsList([...wbsList, wbsName]);
       setWbsName('');
     } else if (wbsList.includes(wbsName)) {
+      // eslint-disable-next-line no-console
       console.log('This WBS already exists');
     }
   };
@@ -85,6 +87,7 @@ const AddProject = (props) => {
     if (!isDuplicate) {
       setMembersList([...membersList, newMember]);
     } else {
+      // eslint-disable-next-line no-console
       console.log('This member is already in the list');
     }
     setMemberName('');
@@ -135,6 +138,7 @@ const AddProject = (props) => {
         
         closeModalAndShowNotification('Project added successfully!');
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error("Error adding project:", error);
         setLoading(false);
         closeModalAndShowNotification('Error adding project. Please try again.');
@@ -148,12 +152,13 @@ const AddProject = (props) => {
     <div>
       <button
         type="button"
-        className="btn btn-outline-success"
+        className="btn btn-outline-success m-2"
         onClick={toggleModal}
         style={{
-          borderColor: 'green',
-          color: 'green',
+          borderColor: '#8ec233',
+          color: '#8ec233',
           borderWidth: '1px',
+          marginBottom: '10px'
         }}
       >
         <i className="fa fa-plus" aria-hidden="true"></i> Add New Project
@@ -244,7 +249,7 @@ const AddProject = (props) => {
               {wbsList.length > 0 && (
                 <ul className="list-group mt-2" style={{ maxHeight: '15vh', overflowY: 'auto' }}>
                   {wbsList.map((wbs, index) => (
-                    <li key={index} className={`list-group-item d-flex justify-content-between align-items-center ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`} style={{color:"#403e3e"}}>
+                    <li key={index} className={`list-group-item d-flex justify-content-between align-items-center ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`} style={{ color: darkMode ? '#fff' : '#403e3e' }}>
                       {wbs}
                       <Button color="danger" size="sm" onClick={() => removeWBS(index)} disabled={loading}>
                         Delete
@@ -271,12 +276,12 @@ const AddProject = (props) => {
                 />
               </div>
 
-              {showFoundUserList && props.state.projectMembers.foundUsers.length > 0 && (
+              {showFoundUserList && props.state.projectMembers?.foundUsers?.length > 0 && (
                 <ul className="list-group mt-2" style={{ maxHeight: '15vh', overflowY: 'auto' }}>
                   {props.state.projectMembers.foundUsers.map((member) => (
                     <li key={member._id} className="list-group-item d-flex justify-content-between align-items-center" style={{color: darkMode ? '#fff' : '#403e3e'}}>
-                      {props.hasPermission('getProjectMembers') ? (
-                        <a href={`/userprofile/${member._id}`} className={darkMode ? 'text-azure' : ''} target='_blank'>
+                      {props.hasPermission(permissions.getProjectMembers) ? (
+                        <a href={`/userprofile/${member._id}`} className={darkMode ? 'text-azure' : ''} target='_blank' rel="noreferrer">
                           {member.firstName} {member.lastName}
                         </a>
                       ) : (
@@ -294,8 +299,8 @@ const AddProject = (props) => {
                 <ul className="list-group mt-2" style={{ maxHeight: '15vh', overflowY: 'auto' }}>
                   {membersList.map((member, index) => (
                     <li key={index} className="list-group-item d-flex justify-content-between align-items-center" style={{color: darkMode ? '#fff' : '#403e3e'}}>
-                      {props.hasPermission('getProjectMembers') ? (
-                        <a href={`/userprofile/${member._id}`} className={darkMode ? 'text-azure' : ''} target="_blank">
+                      {props.hasPermission(permissions.getProjectMembers) ? (
+                        <a href={`/userprofile/${member._id}`} className={darkMode ? 'text-azure' : ''} target="_blank" rel="noreferrer">
                           {member.firstName} {member.lastName}
                         </a>
                       ) : (

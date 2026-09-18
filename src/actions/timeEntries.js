@@ -9,7 +9,7 @@ import {
   GET_TIME_ENTRIES_PERIOD,
   GET_TIME_ENTRIES_PERIOD_BULK,
 } from '../constants/timeEntries';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 export const setTimeEntriesForWeek = (data, offset) => ({
   type: GET_TIME_ENTRIES_WEEK,
@@ -63,6 +63,7 @@ export const getTimeEntriesForWeek = (userId, offset) => {
       await dispatch(setTimeEntriesForWeek(filteredEntries, offset));
       // await dispatch(setTimeEntriesForWeek(res.data, offset));
     }
+    return res;
   };
 };
 
@@ -196,13 +197,13 @@ export const getTimeStartDateEntriesByPeriod = (userId, fromDate, toDate) => {
     }
   };
 };
-export const postTimeEntry = timeEntry => {
+export const postTimeEntry = (timeEntry, { displayedUserId } = {}) => {
   const url = ENDPOINTS.TIME_ENTRY();
   return async dispatch => {
     try {
       const res = await axios.post(url, timeEntry);
-      if (timeEntry.entryType === 'default') {
-        dispatch(updateTimeEntries(timeEntry));
+      if (timeEntry.entryType === 'default' || timeEntry.entryType === 'person') {
+        dispatch(updateTimeEntries(timeEntry, undefined, displayedUserId));
       }
       return res.status;
     } catch (e) {
@@ -211,13 +212,13 @@ export const postTimeEntry = timeEntry => {
   };
 };
 
-export const editTimeEntry = (timeEntryId, timeEntry, oldDateOfWork) => {
+export const editTimeEntry = (timeEntryId, timeEntry, oldDateOfWork, { displayedUserId } = {}) => {
   const url = ENDPOINTS.TIME_ENTRY_CHANGE(timeEntryId);
   return async dispatch => {
     try {
       const res = await axios.put(url, timeEntry);
-      if (timeEntry.entryType === 'default') {
-        dispatch(updateTimeEntries(timeEntry, oldDateOfWork));
+      if (timeEntry.entryType === 'default' || timeEntry.entryType === 'person') {
+        dispatch(updateTimeEntries(timeEntry, oldDateOfWork, displayedUserId));
       }
       return res.status;
     } catch (e) {
@@ -226,13 +227,13 @@ export const editTimeEntry = (timeEntryId, timeEntry, oldDateOfWork) => {
   };
 };
 
-export const deleteTimeEntry = timeEntry => {
+export const deleteTimeEntry = (timeEntry, { displayedUserId } = {}) => {
   const url = ENDPOINTS.TIME_ENTRY_CHANGE(timeEntry._id);
   return async dispatch => {
     try {
       const res = await axios.delete(url);
-      if (timeEntry.entryType === 'default') {
-        dispatch(updateTimeEntries(timeEntry));
+      if (timeEntry.entryType === 'default' || timeEntry.entryType === 'person') {
+        dispatch(updateTimeEntries(timeEntry, undefined, displayedUserId));
       }
       return res.status;
     } catch (e) {
@@ -241,10 +242,12 @@ export const deleteTimeEntry = timeEntry => {
   };
 };
 
-const updateTimeEntries = (timeEntry, oldDateOfWork) => {
+const updateTimeEntries = (timeEntry, oldDateOfWork, displayedUserId) => {
   const startOfWeek = moment().startOf('week');
 
   return async dispatch => {
+    if (displayedUserId && timeEntry.personId !== displayedUserId) return;
+
     if (oldDateOfWork) {
       const oldOffset = Math.ceil(startOfWeek.diff(oldDateOfWork, 'week', true));
       dispatch(getTimeEntriesForWeek(timeEntry.personId, oldOffset));

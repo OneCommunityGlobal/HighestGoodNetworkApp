@@ -1,4 +1,4 @@
-import "./Switch.css"
+import './Switch.module.css'
 const Switch = ({ isOn, handleToggle}) => {
   return (
     <div className='switch-container'>
@@ -10,6 +10,7 @@ const Switch = ({ isOn, handleToggle}) => {
         id="switch"
         type="checkbox"
       />
+      {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
       <label
         style={{ background: isOn ? "#0062cc" : " " }}
         className="switch-label"

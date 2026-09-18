@@ -1,0 +1,56 @@
+.editButton {
+  width: auto;
+  height: auto;
+  display: flex;
+}
+
+.linkAddButton {
+  display: flex;
+  text-decoration: none;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(to bottom, #005fa3 5%, #004a8f 100%);
+  background-color: #0056b3;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  margin: 5px;
+  width: 20px;
+  height: 20px;
+}
+
+.link {
+  display: flex;
+  width: auto;
+  overflow: hidden;
+  height: 25px;
+  margin: 2px;
+  text-overflow: ellipsis;
+  background-color: mediumseagreen;
+}
+
+.linksSectionDark,
+.linksSectionDark .linksLabelDark,
+.linksSectionDark .userLinkDark,
+.linksSectionDark .editLinkDark {
+  /* White text keeps the Links section readable in dark mode. */
+  color: #fff;
+}
+
+.linksSectionDark .userLinkDark:hover,
+.linksSectionDark .editLinkDark:hover {
+  /* Use the project's blue link color for interactive dark-mode hover states. */
+  color: #007bff;
+  text-decoration: underline;
+}
+
+.editLink {
+  color: grey;
+}
+
+.editLink:hover {
+  /* Match profile link hover affordance so Edit feels consistently interactive. */
+  color: #007bff;
+  text-decoration: underline;
+}

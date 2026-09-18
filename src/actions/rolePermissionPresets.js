@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import * as types from '../constants/rolePermissionPresets';
 
 export const fetchPresets = presets => {
@@ -46,7 +46,7 @@ export const createNewPreset = newPreset => {
       }
       return 0;
     } catch (error) {
-      toast.error(error);
+      toast.error(error?.message || String(error));
       return 1;
     }
   };
@@ -60,7 +60,7 @@ export const updatePresetById = updatedPreset => {
         dispatch(updatePreset(updatedPreset));
       }
     } catch (err) {
-      toast.info(err);
+      toast.info(err?.message || String(err));
     }
   };
 };
@@ -75,7 +75,7 @@ export const deletePresetById = presetId => {
       }
       return 1;
     } catch (error) {
-      toast.info(error);
+      toast.info(error?.message || String(error));
       return 1;
     }
   };

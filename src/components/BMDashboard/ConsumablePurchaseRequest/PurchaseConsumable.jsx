@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
-import { fetchConsumableTypes } from 'actions/bmdashboard/invTypeActions';
+import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
+import { fetchConsumableTypes } from '~/actions/bmdashboard/invTypeActions';
 import { BsInfoCircle } from 'react-icons/bs';
 import BMError from '../shared/BMError';
 import PurchaseForm from './PurchaseForm';
-import './PurchaseConsumable.css';
+import styles from './PurchaseConsumable.module.css';
 
 export default function PurchaseConsumable() {
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [isError, setIsError] = useState(false);
 
   useEffect(() => {
@@ -35,10 +36,10 @@ export default function PurchaseConsumable() {
   }
 
   return (
-    <main className="purchase-consumable-container">
-      <header className="purchase-consumable-header">
+    <main className={`${styles.purchaseConsumableContainer}`}>
+      <header className={`${styles.purchaseConsumableHeader}`}>
         <h2>Purchase Request: Consumables</h2>
-        <div className="inv-form-info">
+        <div className={`${styles.infoText} ${darkMode ? styles.infoTextDark : ''}`}>
           <BsInfoCircle />
           Initiate a purchase request for approval/action by project admins.
         </div>
