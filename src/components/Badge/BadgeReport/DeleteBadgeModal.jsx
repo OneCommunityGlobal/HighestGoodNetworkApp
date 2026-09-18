@@ -2,7 +2,15 @@ import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Modal, ModalBody, ModalFooter, Button } from 'reactstrap';
 
-const DeleteBadgeModal = ({ isOpen, onCancel, onDelete, darkMode, boxStyle, boxStyleDark }) => {
+const DeleteBadgeModal = ({
+  isOpen,
+  onCancel,
+  onDelete,
+  darkMode,
+  boxStyle,
+  boxStyleDark,
+  pending,
+}) => {
   const [isTablet, setIsTablet] = useState(false);
 
   useEffect(() => {
@@ -34,10 +42,10 @@ const DeleteBadgeModal = ({ isOpen, onCancel, onDelete, darkMode, boxStyle, boxS
           gap: isTablet ? '10px' : '0',
         }}
       >
-        <Button onClick={onCancel} style={buttonStyle}>
+        <Button disabled={pending} onClick={onCancel} style={buttonStyle}>
           Cancel
         </Button>
-        <Button color="danger" onClick={onDelete} style={buttonStyle}>
+        <Button disabled={pending} color="danger" onClick={onDelete} style={buttonStyle}>
           Yes, Delete
         </Button>
       </ModalFooter>
@@ -46,6 +54,7 @@ const DeleteBadgeModal = ({ isOpen, onCancel, onDelete, darkMode, boxStyle, boxS
 };
 
 DeleteBadgeModal.propTypes = {
+  pending: PropTypes.bool,
   isOpen: PropTypes.bool.isRequired,
   onCancel: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
@@ -55,6 +64,7 @@ DeleteBadgeModal.propTypes = {
 };
 
 DeleteBadgeModal.defaultProps = {
+  pending: false,
   darkMode: false,
   boxStyle: {},
   boxStyleDark: {},

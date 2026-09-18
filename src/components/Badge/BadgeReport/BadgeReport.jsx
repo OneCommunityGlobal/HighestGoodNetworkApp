@@ -5,7 +5,7 @@ import 'moment-timezone';
 import pdfMake from 'pdfmake/build/pdfmake';
 import 'pdfmake/build/vfs_fonts';
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import {
@@ -29,13 +29,14 @@ import {
 import { changeBadgesByUserID } from '~/actions/badgeManagement';
 import { getUserProfile } from '~/actions/userProfile';
 import { boxStyle, boxStyleDark } from '~/styles';
-import { permissions, PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
+import { permissions } from '~/utils/constants';
 import { formatDate } from '~/utils/formatDate';
 import hasPermission from '~/utils/permissions';
 import BadgeImage from '../BadgeImage';
 import '../Badge.module.css';
 import '../BadgeReport.module.css';
 import DeleteBadgeModal from './DeleteBadgeModal';
+import { inspectBadgeCollection, isValidBadgeCount } from '../badgeListUtils';
 
 export async function imageToUri(url, callback) {
   const canvas = document.createElement('canvas');
@@ -108,18 +109,39 @@ async function FormatReportForPdf(badges, callback) {
 
 function BadgeReport(props) {
   const [sortBadges, setSortBadges] = useState([]);
-  const [numFeatured, setNumFeatured] = useState(0);
+  const numFeatured = sortBadges.filter(badge => badge.featured).length;
+  const [countInputs, setCountInputs] = useState({});
+  const inFlight = useRef(false);
+  const originalBadges = useRef([]);
+  const collection = useMemo(() => inspectBadgeCollection(props.badges), [props.badges]);
+  const hasInvalidCounts = Object.values(countInputs).some(value => !isValidBadgeCount(value));
   const [showModal, setShowModal] = useState(false);
   const [badgeToDelete, setBadgeToDelete] = useState([]);
   const [savingChanges, setSavingChanges] = useState(false);
 
-  const canDeleteBadges = props.hasPermission(permissions.deleteBadges);
+  const editable = !props.isRecordBelongsToJaeAndUneditable;
+  const canDeleteBadges = editable && props.hasPermission(permissions.deleteBadges);
   const canUpdateBadges = props.hasPermission(permissions.updateBadges);
 
   const darkMode = props.darkMode;
 
   const canAssignBadges = props.hasPermission(permissions.assignBadges);
   const canModifyBadgeAmount = props.hasPermission(permissions.modifyBadgeAmount);
+  const canEditCount = editable && (canUpdateBadges || canModifyBadgeAmount || canAssignBadges);
+  const canFeature = editable && (props.canEdit || canUpdateBadges || canAssignBadges);
+  const canSave = editable && (canEditCount || canFeature || canDeleteBadges);
+  const writesBlocked =
+    savingChanges || collection.hasInvalidRecords || hasInvalidCounts || !canSave;
+  const clearCountInput = id =>
+    setCountInputs(inputs => {
+      const next = { ...inputs };
+      delete next[id];
+      return next;
+    });
+  const displayModified = value => {
+    if (!value || Number.isNaN(new Date(value).getTime())) return '—';
+    return formatDate(value);
+  };
 
   const pdfDocGenerator = async () => {
     const currentDate = moment().format('MM-DD-YYYY-HH-mm-ss');
@@ -160,124 +182,79 @@ function BadgeReport(props) {
   };
 
   useEffect(() => {
-    let isMounted = true; // flag to track if component is mounted
+    if (inFlight.current) return;
+    originalBadges.current = structuredClone(collection.records);
+    setSortBadges(structuredClone(collection.records));
+    setCountInputs({});
+  }, [collection]);
 
-    const initializeBadges = () => {
-      const badges = structuredClone(props.badges) || [];
-      const newBadges = badges.slice();
+  const handleDeleteBadge = badge => {
+    if (inFlight.current || !canDeleteBadges || collection.hasInvalidRecords || hasInvalidCounts)
+      return;
+    setShowModal(true);
+    setBadgeToDelete(badge);
+  };
 
-      if (isMounted) {
-        newBadges.sort((a, b) => {
-          if (a.badge.ranking === 0) return 1;
-          if (b.badge.ranking === 0) return -1;
-          if (a.badge.ranking > b.badge.ranking) return 1;
-          if (a.badge.ranking < b.badge.ranking) return -1;
-          if (a.badge.badgeName > b.badge.badgeName) return 1;
-          if (a.badge.badgeName < b.badge.badgeName) return -1;
-          return 0;
-        });
-
-        setNumFeatured(0);
-        for (const badge of newBadges) {
-          if (badge.featured) {
-            setNumFeatured(prev => prev + 1);
-          }
-          if (typeof badge === 'string') {
-            badge.lastModified = new Date(badge.lastModified);
-          }
-        }
-        setSortBadges(newBadges);
-      }
-    };
-
-    initializeBadges();
-
-    return () => {
-      isMounted = false; // cleanup function
-    };
-  }, [props.badges]);
-
-  const countChange = (badge, index, newValue) => {
-    let copyOfExisitingBadges = [...sortBadges];
-    newValue = newValue === null || newValue === undefined ? -1 : Number.parseInt(newValue);
-    if (newValue < 0 || !copyOfExisitingBadges || copyOfExisitingBadges.length === 0) {
-      toast.error(
-        'Error: Invalid badge count or the badge does not exist in the badge records. Please refresh the page. If the problem persists, please contact the administrator.',
-      );
+  const countChange = (badge, index, rawValue) => {
+    if (inFlight.current || !canEditCount) return;
+    if (!isValidBadgeCount(rawValue)) {
+      setCountInputs(inputs => ({ ...inputs, [badge._id]: rawValue }));
       return;
     }
-
-    const recordBeforeUpdate = props.badges.filter(item => item.badge._id === badge.badge._id);
-    if (recordBeforeUpdate.length) {
-      const badgePrevState = badge;
-      if (newValue === 0) {
-        handleDeleteBadge(badgePrevState);
+    clearCountInput(badge._id);
+    const newValue = Number(rawValue);
+    if (newValue === 0) {
+      if (!canDeleteBadges) {
+        toast.error('Deleting a badge requires Delete Badge permission.');
         return;
-      } else {
-        const badgeCountFromExistingRecord = Number.parseInt(recordBeforeUpdate[0].count);
-        const currentDate = new Date(Date.now());
-        const formattedDate = formatDate(currentDate);
-
-        copyOfExisitingBadges = copyOfExisitingBadges.map(item => {
-          if (item._id === badge._id) {
-            if (newValue > badgePrevState.count && newValue >= badgeCountFromExistingRecord) {
-              if (recordBeforeUpdate[0].hasBadgeDeletionImpact === false) {
-                item.hasBadgeDeletionImpact = false;
-              }
-              if (newValue > badgeCountFromExistingRecord) {
-                item.earnedDate = [...item.earnedDate, formattedDate];
-              }
-            } else if (newValue < badgePrevState.count && newValue < badgeCountFromExistingRecord) {
-              item.hasBadgeDeletionImpact = true;
-            } else if (
-              newValue < badgePrevState.count &&
-              newValue >= badgeCountFromExistingRecord
-            ) {
-              item.earnedDate = item.earnedDate.slice(0, -1);
-            }
-            item.count = newValue;
-            return item;
-          }
-          return item;
-        });
       }
-      setSortBadges(copyOfExisitingBadges);
-    } else {
-      toast.error(
-        'Error: The badge may not exist in the badge records. Please refresh the page. If the problem persists, please contact the administrator.',
-      );
+      if (
+        !collection.hasInvalidRecords &&
+        !Object.entries(countInputs).some(
+          ([id, value]) => id !== badge._id && !isValidBadgeCount(value),
+        )
+      ) {
+        setShowModal(true);
+        setBadgeToDelete(badge);
+      }
+      return;
     }
+    const original = originalBadges.current.find(item => item._id === badge._id);
+    if (!original) return;
+    setSortBadges(current =>
+      current.map(item => {
+        if (item._id !== badge._id) return item;
+        const updated = { ...item, count: newValue };
+        const dates = Array.isArray(item.earnedDate) ? item.earnedDate : [];
+        const originalCount = Number(original.count);
+        if (newValue > item.count && newValue >= originalCount) {
+          if (original.hasBadgeDeletionImpact === false) updated.hasBadgeDeletionImpact = false;
+          if (newValue > originalCount) updated.earnedDate = [...dates, formatDate(new Date())];
+        } else if (newValue < item.count && newValue < originalCount) {
+          updated.hasBadgeDeletionImpact = true;
+        } else if (newValue < item.count && newValue >= originalCount) {
+          updated.earnedDate = dates.slice(0, -1);
+        }
+        return updated;
+      }),
+    );
   };
 
-  const featuredChange = (badge, index, e) => {
-    const newBadges = sortBadges.slice();
-
-    if ((e.target.checked && numFeatured < 5) || !e.target.checked) {
-      newBadges[index].featured = e.target.checked;
-
-      let count = 0;
-      for (const badge of newBadges) {
-        if (badge.featured) count++;
-      }
-      setNumFeatured(count);
-    } else {
-      e.target.checked = false;
+  const featuredChange = (badge, index, event) => {
+    if (inFlight.current || !canFeature) return;
+    const checked = event.target.checked;
+    if (checked && numFeatured >= 5) {
       toast.error('Unfortunately, you may only select five badges to be featured.');
+      return;
     }
-    setSortBadges(newBadges);
-  };
-
-  const handleDeleteBadge = oldBadge => {
-    setShowModal(true);
-    setBadgeToDelete(oldBadge);
+    setSortBadges(current =>
+      current.map(item => (item._id === badge._id ? { ...item, featured: checked } : item)),
+    );
   };
 
   const handleCancel = () => {
+    if (inFlight.current) return;
     setShowModal(false);
-    if (badgeToDelete) {
-      const index = sortBadges.findIndex(badge => badge.badge._id === badgeToDelete.badge._id);
-      countChange(badgeToDelete, index, badgeToDelete.count);
-    }
     setBadgeToDelete([]);
   };
 
@@ -285,61 +262,61 @@ function BadgeReport(props) {
     badgesToSave = sortBadges,
     { closeEditor = true, successMessage = 'Badges successfully saved.' } = {},
   ) => {
-    if (props.isRecordBelongsToJaeAndUneditable) {
-      alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
-      return false;
-    }
+    if (inFlight.current || writesBlocked) return false;
+    inFlight.current = true;
     setSavingChanges(true);
-
+    props.onSavingChange?.(true);
+    let saved = false;
     try {
-      const newBadgeCollection = structuredClone(badgesToSave);
-
-      for (const badge of newBadgeCollection) {
-        badge.badge = badge.badge._id;
-      }
-
-      const saved = await props.changeBadgesByUserID(props.userId, newBadgeCollection);
+      const snapshot = structuredClone(badgesToSave);
+      const payload = snapshot.map(record => ({ ...record, badge: record.badge._id }));
+      saved = await props.changeBadgesByUserID(props.userId, payload);
       if (!saved) {
         toast.error('Failed to save badges. Please try again.');
         return false;
       }
-
-      await props.getUserProfile(props.userId);
-
-      props.setUserProfile(prevProfile => ({
-        ...prevProfile,
-        badgeCollection: badgesToSave,
-      }));
-
-      props.setOriginalUserProfile(prevProfile => ({
-        ...prevProfile,
-        badgeCollection: badgesToSave,
-      }));
-
-      setSortBadges(badgesToSave);
-      setNumFeatured(badgesToSave.filter(badge => badge.featured).length);
-      toast.success(successMessage);
-
-      props.handleSubmit();
-      if (closeEditor) props.close();
-      return true;
+      let refreshFailed = false;
+      try {
+        const refreshed = await props.getUserProfile(props.userId);
+        refreshFailed = refreshed === null;
+      } catch {
+        refreshFailed = true;
+      }
+      props.setUserProfile(profile => ({ ...profile, badgeCollection: snapshot }));
+      props.setOriginalUserProfile(profile => ({ ...profile, badgeCollection: snapshot }));
+      originalBadges.current = structuredClone(snapshot);
+      setSortBadges(snapshot);
+      setCountInputs({});
+      await props.handleSubmit();
+      if (refreshFailed)
+        toast.warn(
+          'Badges were saved, but the profile could not be refreshed. Reload the profile to verify.',
+        );
+      else toast.success(successMessage);
     } catch (error) {
-      console.error('Error saving badges:', error);
-      toast.error('Failed to save badges. Please try again.');
-      return false;
+      if (saved)
+        toast.warn(
+          'Badges were saved, but the profile could not be refreshed. Reload the profile to verify.',
+        );
+      else toast.error('Failed to save badges. Please try again.');
     } finally {
+      inFlight.current = false;
       setSavingChanges(false);
+      props.onSavingChange?.(false);
     }
+    if (saved && closeEditor) props.close();
+    return saved;
   };
 
   const deleteBadge = async () => {
+    if (!canDeleteBadges || inFlight.current) return;
     const newBadges = sortBadges.filter(badge => badge._id !== badgeToDelete._id);
-    const wasSaved = await saveChanges(newBadges, {
-      closeEditor: false,
-      successMessage: 'Badges deleted successfully.',
-    });
-
-    if (wasSaved) {
+    if (
+      await saveChanges(newBadges, {
+        closeEditor: false,
+        successMessage: 'Badges deleted successfully.',
+      })
+    ) {
       setShowModal(false);
       setBadgeToDelete([]);
     }
@@ -347,6 +324,18 @@ function BadgeReport(props) {
 
   return (
     <div>
+      {collection.hasInvalidRecords && (
+        <p role="alert">
+          Some badge records are invalid. Refresh the profile or ask an administrator to repair them
+          before saving. No records have been removed.
+        </p>
+      )}
+      {hasInvalidCounts && (
+        <p role="alert">
+          Badge counts must be nonnegative whole numbers. Correct the input before saving.
+        </p>
+      )}
+      {savingChanges && <p role="status">Saving badges…</p>}
       <div className="desktop">
         <div style={{ overflowY: 'auto', height: '75vh' }}>
           <Table className={darkMode ? 'text-light' : ''}>
@@ -398,13 +387,7 @@ function BadgeReport(props) {
                     </UncontrolledPopover>
 
                     <td>{value.badge.badgeName}</td>
-                    <td>
-                      {typeof value.lastModified === 'string'
-                        ? formatDate(value.lastModified)
-                        : value.lastModified.toLocaleString('en-US', {
-                            timeZone: 'America/Los_Angeles',
-                          })}
-                    </td>
+                    <td>{displayModified(value.lastModified)}</td>
 
                     <td style={{ display: 'flex', alignItems: 'center' }}>
                       <UncontrolledDropdown className="me-2" direction="down">
@@ -416,9 +399,11 @@ function BadgeReport(props) {
                           Dates
                         </DropdownToggle>
                         <DropdownMenu className="badge_dropdown">
-                          {value.earnedDate.map((date, i) => (
-                            <DropdownItem key={`${date}-${i}`}>{date}</DropdownItem>
-                          ))}
+                          {(Array.isArray(value.earnedDate) ? value.earnedDate : []).map(
+                            (date, i) => (
+                              <DropdownItem key={`${date}-${i}`}>{date}</DropdownItem>
+                            ),
+                          )}
                         </DropdownMenu>
                       </UncontrolledDropdown>
 
@@ -442,10 +427,14 @@ function BadgeReport(props) {
                     </td>
 
                     <td>
-                      {canUpdateBadges ? (
+                      {canEditCount ? (
                         <Input
                           type="number"
-                          value={Math.round(value.count)}
+                          value={countInputs[value._id] ?? Number(value.count)}
+                          disabled={savingChanges}
+                          onBlur={() => {
+                            if (!inFlight.current) clearCountInput(value._id);
+                          }}
                           min={0}
                           step={1}
                           onChange={e => countChange(value, index, e.target.value)}
@@ -460,6 +449,7 @@ function BadgeReport(props) {
                         <button
                           type="button"
                           className="btn btn-outline-danger"
+                          disabled={writesBlocked}
                           onClick={() => handleDeleteBadge(value)}
                           style={darkMode ? boxStyleDark : boxStyle}
                         >
@@ -475,7 +465,7 @@ function BadgeReport(props) {
                           id={value.badge._id}
                           checked={value.featured}
                           onChange={e => featuredChange(value, index, e)}
-                          disabled={canModifyBadgeAmount && !(canUpdateBadges || canAssignBadges)}
+                          disabled={savingChanges || !canFeature}
                         />
                       </FormGroup>
                     </td>
@@ -494,7 +484,7 @@ function BadgeReport(props) {
         <Button
           className="btn--dark-sea-green float-right"
           style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
-          disabled={savingChanges}
+          disabled={writesBlocked}
           onClick={() => saveChanges()}
         >
           Save Changes
@@ -516,6 +506,7 @@ function BadgeReport(props) {
         </Button>
 
         <DeleteBadgeModal
+          pending={savingChanges}
           isOpen={showModal}
           onCancel={handleCancel}
           onDelete={deleteBadge}
@@ -555,13 +546,7 @@ function BadgeReport(props) {
                       />
                     </td>
                     <td>{value.badge.badgeName}</td>
-                    <td>
-                      {typeof value.lastModified == 'string'
-                        ? formatDate(value.lastModified)
-                        : value.lastModified.toLocaleString('en-US', {
-                            timeZone: 'America/Los_Angeles',
-                          })}
-                    </td>
+                    <td>{displayModified(value.lastModified)}</td>
                     <td>
                       {' '}
                       {/* Add Dates */}
@@ -579,9 +564,11 @@ function BadgeReport(props) {
                           Dates
                         </DropdownToggle>
                         <DropdownMenu className="badge_dropdown">
-                          {value.earnedDate.map((date, i) => (
-                            <DropdownItem key={`${date}-${i}`}>{date}</DropdownItem>
-                          ))}
+                          {(Array.isArray(value.earnedDate) ? value.earnedDate : []).map(
+                            (date, i) => (
+                              <DropdownItem key={`${date}-${i}`}>{date}</DropdownItem>
+                            ),
+                          )}
                         </DropdownMenu>
                       </UncontrolledDropdown>
                     </td>{' '}
@@ -613,10 +600,14 @@ function BadgeReport(props) {
                               toggle={false}
                             >
                               <span style={{ fontWeight: 'bold' }}>Count:</span>
-                              {canUpdateBadges ? (
+                              {canEditCount ? (
                                 <Input
                                   type="number"
-                                  value={Math.round(value.count)}
+                                  value={countInputs[value._id] ?? Number(value.count)}
+                                  disabled={savingChanges}
+                                  onBlur={() => {
+                                    if (!inFlight.current) clearCountInput(value._id);
+                                  }}
                                   min={0}
                                   step={1}
                                   onChange={e => {
@@ -645,6 +636,7 @@ function BadgeReport(props) {
                                   /* alternative to using the formgroup
                                   style={{ position: 'static' }}
                                   */
+                                  disabled={savingChanges || !canFeature}
                                   type="checkbox"
                                   id={value.badge._id}
                                   checked={value.featured}
@@ -666,6 +658,7 @@ function BadgeReport(props) {
                               {canDeleteBadges ? (
                                 <button
                                   className="btn btn-danger"
+                                  disabled={writesBlocked}
                                   onClick={() => handleDeleteBadge(sortBadges[index])}
                                 >
                                   Delete
@@ -692,7 +685,7 @@ function BadgeReport(props) {
           <Button
             className="btn--dark-sea-green float-right"
             style={{ margin: 5 }}
-            disabled={savingChanges}
+            disabled={writesBlocked}
             onClick={() => saveChanges()}
           >
             <span>Save Changes</span>
@@ -729,6 +722,8 @@ const mapDispatchToProps = dispatch => ({
 });
 
 BadgeReport.propTypes = {
+  canEdit: PropTypes.bool,
+  onSavingChange: PropTypes.func,
   hasPermission: PropTypes.func.isRequired,
   changeBadgesByUserID: PropTypes.func.isRequired,
   getUserProfile: PropTypes.func.isRequired,

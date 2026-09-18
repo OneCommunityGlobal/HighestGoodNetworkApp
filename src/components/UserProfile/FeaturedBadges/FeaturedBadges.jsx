@@ -1,26 +1,12 @@
 import { useMemo } from 'react';
 import styles from '../Badge.module.css';
 import BadgeImage from '../BadgeImage';
+import { sortBadgeRecords } from '../../Badge/badgeListUtils';
 
-const filterBadges = allBadges => {
-  if (!Array.isArray(allBadges)) return [];
-
-  const featuredBadges = allBadges.filter(
-    badge => badge && badge.badge && badge.featured
-  );
-
-  featuredBadges.sort((a, b) => {
-    const rankingA = a.badge?.ranking ?? 0;
-    const rankingB = b.badge?.ranking ?? 0;
-    const nameA = a.badge?.badgeName ?? '';
-    const nameB = b.badge?.badgeName ?? '';
-
-    if (rankingA > rankingB) return 1;
-    if (rankingA < rankingB) return -1;
-    return nameA.localeCompare(nameB);
-  });
-  return featuredBadges.slice(0, 5);
-};
+const filterBadges = allBadges =>
+  sortBadgeRecords(allBadges)
+    .filter(badge => badge.featured)
+    .slice(0, 5);
 
 const FeaturedBadges = props => {
   const filteredBadges = useMemo(() => filterBadges(props.badges), [props.badges]);

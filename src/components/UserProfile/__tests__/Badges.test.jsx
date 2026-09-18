@@ -97,7 +97,7 @@ describe('Badges Component', () => {
     [false, [], 'Volunteer', false],
     [false, [], 'Administrator', false],
     [false, [], 'Owner', false],
-    [false, ['assignBadges'], 'Volunteer', false],
+    [false, ['assignBadges'], 'Volunteer', true],
   ])(
     'editor visibility for canEdit=%s, permissions=%s, role=%s is %s',
     (canEdit, permissions, role, visible) => {

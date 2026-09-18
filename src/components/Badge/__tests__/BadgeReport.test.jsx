@@ -1,10 +1,11 @@
 import React from 'react';
-import { render, fireEvent, waitFor, screen } from '@testing-library/react';
+import { render, fireEvent, waitFor, screen, act } from '@testing-library/react';
 import BadgeReport from '../BadgeReport/BadgeReport';
 import FeaturedBadges from '../../UserProfile/FeaturedBadges';
 import pdfMake from 'pdfmake/build/pdfmake';
 import htmlToPdfmake from 'html-to-pdfmake';
 import { formatDate } from '~/utils/formatDate';
+import { toast } from 'react-toastify';
 
 vi.mock('pdfmake/build/pdfmake', () => ({ default: { createPdf: vi.fn() } }));
 vi.mock('html-to-pdfmake', () => ({ default: vi.fn(() => []) }));
@@ -36,6 +37,7 @@ const mockRole = 'Owner';
 const mockHasPermission = vi.fn();
 
 const getBadgeReportProps = overrides => ({
+  canEdit: true,
   badges: mockBadges,
   hasPermission: mockHasPermission,
   role: mockRole,
@@ -241,14 +243,12 @@ describe('BadgeReport Component', () => {
   });
 
   test.each([0, 1])('blocks protected-account saving from save button %s', index => {
-    const alert = vi.spyOn(window, 'alert').mockImplementation(() => {});
     const props = getBadgeReportProps({ isRecordBelongsToJaeAndUneditable: true });
     render(<BadgeReport {...props} />);
     fireEvent.click(screen.getAllByRole('button', { name: 'Save Changes' })[index]);
-    expect(alert).toHaveBeenCalledOnce();
+    expect(screen.getAllByRole('button', { name: 'Save Changes' })[index]).toBeDisabled();
     expect(props.changeBadgesByUserID).not.toHaveBeenCalled();
     expect(props.setUserProfile).not.toHaveBeenCalled();
-    alert.mockRestore();
   });
 
   test('exports all or only featured badges through the retained PDF helpers', async () => {
@@ -304,6 +304,229 @@ describe('BadgeReport Component', () => {
       dataUrl.mockRestore();
       vi.unstubAllGlobals();
     }
+  });
+
+  test.each(['updateBadges', 'modifyBadgeAmount', 'assignBadges'])(
+    'allows counts on both layouts with %s',
+    permission => {
+      renderBadgeReport({
+        badges: [mockBadges[0]],
+        canEdit: false,
+        hasPermission: key => key === permission,
+      });
+      fireEvent.click(screen.getAllByText('Options')[0]);
+      expect(screen.getAllByRole('spinbutton')).toHaveLength(2);
+      screen.getAllByRole('spinbutton').forEach(input => expect(input).toBeEnabled());
+      screen.getAllByRole('checkbox').forEach(input => {
+        if (permission === 'modifyBadgeAmount') expect(input).toBeDisabled();
+        else expect(input).toBeEnabled();
+      });
+      expect(screen.queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument();
+    },
+  );
+
+  test.each([false, true])(
+    'read-only/protected=%s cannot change counts or featured flags',
+    protectedAccount => {
+      renderBadgeReport({
+        canEdit: protectedAccount,
+        hasPermission: () => protectedAccount,
+        isRecordBelongsToJaeAndUneditable: protectedAccount,
+      });
+      fireEvent.click(screen.getAllByText('Options')[0]);
+      expect(screen.queryAllByRole('spinbutton')).toHaveLength(0);
+      screen.getAllByRole('checkbox').forEach(input => expect(input).toBeDisabled());
+      screen
+        .getAllByRole('button', { name: 'Save Changes' })
+        .forEach(button => expect(button).toBeDisabled());
+    },
+  );
+
+  test.each(['', '-1', '1.5', '9007199254740992'])(
+    'blocks invalid count %s and restores it on blur',
+    rawValue => {
+      renderBadgeReport({ badges: [mockBadges[0]], hasPermission: () => true });
+      const input = screen.getByRole('spinbutton');
+      fireEvent.change(input, { target: { value: rawValue } });
+      expect(screen.getByRole('alert')).toHaveTextContent('whole numbers');
+      screen
+        .getAllByRole('button', { name: 'Save Changes' })
+        .forEach(button => expect(button).toBeDisabled());
+      fireEvent.blur(input);
+      expect(input).toHaveValue(mockBadges[0].count);
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    },
+  );
+
+  test('requires delete permission for zero and cancels deletion without changing the count', () => {
+    const props = getBadgeReportProps({
+      badges: [mockBadges[0]],
+      hasPermission: key => key === 'modifyBadgeAmount',
+    });
+    const { rerender } = render(<BadgeReport {...props} />);
+    fireEvent.change(screen.getByRole('spinbutton'), { target: { value: '0' } });
+    expect(screen.queryByRole('button', { name: 'Yes, Delete' })).not.toBeInTheDocument();
+    expect(screen.getByRole('spinbutton')).toHaveValue(mockBadges[0].count);
+    rerender(<BadgeReport {...props} hasPermission={() => true} />);
+    fireEvent.change(screen.getByRole('spinbutton'), { target: { value: '0' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(screen.getByRole('spinbutton')).toHaveValue(mockBadges[0].count);
+    expect(props.changeBadgesByUserID).not.toHaveBeenCalled();
+  });
+
+  test.each([null, { badge: 'id-only' }, { badge: {} }, { ...mockBadges[0], count: NaN }])(
+    'renders valid rows but blocks writes alongside broken records',
+    invalid => {
+      const props = getBadgeReportProps({ badges: [mockBadges[0], invalid] });
+      render(<BadgeReport {...props} />);
+      expect(screen.getByRole('alert')).toHaveTextContent('No records have been removed');
+      expect(screen.getAllByText(mockBadges[0].badge.badgeName).length).toBeGreaterThan(0);
+      screen.getAllByRole('button', { name: 'Save Changes' }).forEach(button => {
+        expect(button).toBeDisabled();
+        fireEvent.click(button);
+      });
+      expect(props.changeBadgesByUserID).not.toHaveBeenCalled();
+    },
+  );
+
+  test('handles missing dates and missing or non-array collections', () => {
+    const props = getBadgeReportProps({
+      badges: [{ ...mockBadges[0], earnedDate: undefined, lastModified: undefined }],
+    });
+    const { rerender } = render(<BadgeReport {...props} />);
+    expect(screen.getAllByText('—')).toHaveLength(2);
+    rerender(<BadgeReport {...props} badges={undefined} />);
+    expect(screen.getAllByText('This person has no badges.')).toHaveLength(2);
+    rerender(<BadgeReport {...props} badges={{ invalid: true }} />);
+    expect(screen.getByRole('alert')).toHaveTextContent('records are invalid');
+  });
+
+  test('orders the editor by rank and then name with zero and missing ranks last', () => {
+    const badges = [
+      {
+        ...mockBadges[0],
+        _id: 'zero',
+        badge: { ...mockBadges[0].badge, _id: 'zero', badgeName: 'Zero', ranking: 0 },
+      },
+      {
+        ...mockBadges[0],
+        _id: 'two',
+        badge: { ...mockBadges[0].badge, _id: 'two', badgeName: 'Two', ranking: 2 },
+      },
+      {
+        ...mockBadges[0],
+        _id: 'one',
+        badge: { ...mockBadges[0].badge, _id: 'one', badgeName: 'One', ranking: 1 },
+      },
+      {
+        ...mockBadges[0],
+        _id: 'missing',
+        badge: { ...mockBadges[0].badge, _id: 'missing', badgeName: 'Missing', ranking: undefined },
+      },
+    ];
+    renderBadgeReport({ badges });
+    expect(screen.getAllByRole('checkbox').map(input => input.id)).toEqual([
+      'one',
+      'two',
+      'missing',
+      'zero',
+    ]);
+  });
+
+  test('updates count history immutably and can correct an empty draft before saving', async () => {
+    const badges = structuredClone([mockBadges[0]]);
+    const original = structuredClone(badges);
+    const props = getBadgeReportProps({
+      badges,
+      hasPermission: key => key === 'modifyBadgeAmount',
+    });
+    render(<BadgeReport {...props} />);
+    const input = screen.getByRole('spinbutton');
+    fireEvent.change(input, { target: { value: '' } });
+    fireEvent.change(input, { target: { value: String(badges[0].count + 1) } });
+    fireEvent.click(screen.getAllByRole('button', { name: 'Save Changes' })[0]);
+    await waitFor(() => expect(props.close).toHaveBeenCalledOnce());
+    expect(badges).toEqual(original);
+    const saved = props.changeBadgesByUserID.mock.calls[0][1][0];
+    expect(saved.count).toBe(original[0].count + 1);
+    expect(saved.earnedDate).toEqual([...original[0].earnedDate, formatDate(new Date())]);
+  });
+
+  test('locks a pending save, ignores refreshed props, and preserves its immutable snapshot', async () => {
+    let finish;
+    const badges = structuredClone([mockBadges[0]]);
+    const original = structuredClone(badges);
+    const props = getBadgeReportProps({
+      badges,
+      hasPermission: () => true,
+      onSavingChange: vi.fn(),
+      changeBadgesByUserID: vi.fn(
+        () =>
+          new Promise(resolve => {
+            finish = resolve;
+          }),
+      ),
+    });
+    const { rerender } = render(<BadgeReport {...props} />);
+    fireEvent.click(screen.getAllByRole('checkbox')[0]);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Save Changes' })[0]);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Save Changes' })[1]);
+    fireEvent.change(screen.getByRole('spinbutton'), { target: { value: '20' } });
+    fireEvent.click(screen.getAllByRole('checkbox')[0]);
+    expect(props.changeBadgesByUserID).toHaveBeenCalledOnce();
+    expect(screen.getByRole('spinbutton')).toBeDisabled();
+    expect(screen.getAllByRole('checkbox')[0]).toBeChecked();
+    rerender(<BadgeReport {...props} badges={[]} />);
+    expect(screen.getByRole('spinbutton')).toHaveValue(original[0].count);
+    await act(async () => finish(true));
+    expect(props.close).toHaveBeenCalledOnce();
+    expect(props.onSavingChange.mock.calls).toEqual([[true], [false]]);
+    expect(props.changeBadgesByUserID.mock.calls[0][1][0]).toEqual({
+      ...original[0],
+      badge: original[0].badge._id,
+      featured: true,
+    });
+    expect(props.setUserProfile.mock.calls[0][0]({}).badgeCollection[0]).toEqual({
+      ...original[0],
+      featured: true,
+    });
+    expect(badges).toEqual(original);
+  });
+
+  test('locks repeated deletion confirmations and cancel while pending', async () => {
+    let finish;
+    const props = getBadgeReportProps({
+      badges: [mockBadges[0]],
+      hasPermission: () => true,
+      changeBadgesByUserID: vi.fn(
+        () =>
+          new Promise(resolve => {
+            finish = resolve;
+          }),
+      ),
+    });
+    render(<BadgeReport {...props} />);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Delete' })[0]);
+    const confirm = screen.getByRole('button', { name: 'Yes, Delete' });
+    fireEvent.click(confirm);
+    fireEvent.click(confirm);
+    expect(confirm).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeDisabled();
+    expect(props.changeBadgesByUserID).toHaveBeenCalledOnce();
+    await act(async () => finish(false));
+    expect(confirm).toBeEnabled();
+    expect(props.setUserProfile).not.toHaveBeenCalled();
+  });
+
+  test('reports a successful write separately from a failed profile refresh', async () => {
+    const props = getBadgeReportProps({
+      getUserProfile: vi.fn().mockRejectedValue(new Error('offline')),
+    });
+    render(<BadgeReport {...props} />);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Save Changes' })[0]);
+    await waitFor(() => expect(props.close).toHaveBeenCalledOnce());
+    expect(props.setUserProfile).toHaveBeenCalledOnce();
+    expect(toast.warn).toHaveBeenCalledWith(expect.stringContaining('Badges were saved'));
   });
 
   test('persists a confirmed deletion and keeps the badge editor open', async () => {

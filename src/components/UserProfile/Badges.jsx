@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import {
   Button,
@@ -32,6 +32,7 @@ import AssignBadgePopup from './AssignBadgePopup';
 import '../Badge/Badge.css';
 import styles from './Badge.module.css';
 import FeaturedBadges from './FeaturedBadges';
+import { sortBadgeRecords } from '../Badge/badgeListUtils';
 
 export const Badges = props => {
   const { auth, darkMode, displayUserId, authUser } = props;
@@ -40,10 +41,19 @@ export const Badges = props => {
   const [isAssignOpen, setAssignOpen] = useState(false);
 
   const canAssignBadges =
-    props.hasPermission(permissions.assignBadges) || props.hasPermission(permissions.assignBadgeOthers);
+    props.hasPermission(permissions.assignBadges) ||
+    props.hasPermission(permissions.assignBadgeOthers);
 
   const canUpdateBadges = props.hasPermission(permissions.updateBadges);
-  const [sortedBadges, setSortedBadges] = useState([]);
+  const sortedBadges = useMemo(() => sortBadgeRecords(props.userProfile.badgeCollection), [
+    props.userProfile.badgeCollection,
+  ]);
+  const [isSavingBadges, setIsSavingBadges] = useState(false);
+  const savingBadgesRef = useRef(false);
+  const onSavingChange = saving => {
+    savingBadgesRef.current = saving;
+    setIsSavingBadges(saving);
+  };
   const [isBadgeOpen, setIsBadgeOpen] = useState(false);
 
   // Added restriction: Jae's badges only editable by Jae or Owner
@@ -52,7 +62,9 @@ export const Badges = props => {
   // const canAssignBadges = props.hasPermission(permissions.assignBadges);
   const canModifyBadgeAmount = props.hasPermission(permissions.modifyBadgeAmount);
 
-  const toggle = () => setOpen(!isOpen);
+  const toggle = () => {
+    if (!savingBadgesRef.current) setOpen(open => !open);
+  };
 
   const toggleBadge = () => {
     setIsBadgeOpen(!isBadgeOpen);
@@ -69,36 +81,8 @@ export const Badges = props => {
     }
   }, [isOpen, isAssignOpen]);
 
-  useEffect(() => {
-    try {
-      if (props.userProfile.badgeCollection && props.userProfile.badgeCollection.length) {
-        const sortBadges = [...props.userProfile.badgeCollection]
-          .filter(badge => badge && badge.badge) // Filter out any null or undefined badges
-          .sort((a, b) => {
-            const rankingA = a.badge?.ranking ?? Infinity;
-            const rankingB = b.badge?.ranking ?? Infinity;
-            const nameA = a.badge?.badgeName ?? '';
-            const nameB = b.badge?.badgeName ?? '';
-
-            if (rankingA === 0) return 1;
-            if (rankingB === 0) return -1;
-            if (rankingA > rankingB) return 1;
-            if (rankingA < rankingB) return -1;
-            return nameA.localeCompare(nameB);
-          });
-        setSortedBadges(sortBadges);
-      } else {
-        setSortedBadges([]);
-      }
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Error sorting badges:', error);
-      setSortedBadges([]);
-    }
-  }, [props.userProfile.badgeCollection]);
-
   // Determines what congratulatory text should displayed.
-  const badgesEarned = props.userProfile.badgeCollection.reduce((acc, badge) => {
+  const badgesEarned = sortedBadges.reduce((acc, badge) => {
     if (!badge || !badge.badge) return acc;
     if (badge.badge.badgeName === 'Personal Max' || badge.badge.type === 'Personal Max') {
       return acc + 1;
@@ -141,7 +125,10 @@ export const Badges = props => {
             </span>
 
             <div className="d-flex">
-              {(props.canEdit || canUpdateBadges || canModifyBadgeAmount) && (
+              {(props.canEdit ||
+                canUpdateBadges ||
+                canModifyBadgeAmount ||
+                props.hasPermission(permissions.assignBadges)) && (
                 <>
                   <Button
                     className={styles['btn--dark-sea-green']}
@@ -153,14 +140,21 @@ export const Badges = props => {
                   <Modal
                     size="lg"
                     isOpen={isOpen}
+                    keyboard={!isSavingBadges}
+                    backdrop={isSavingBadges ? 'static' : true}
                     toggle={toggle}
                     className={darkMode ? 'text-light dark-mode' : ''}
                   >
-                    <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>
+                    <ModalHeader
+                      toggle={isSavingBadges ? undefined : toggle}
+                      className={darkMode ? 'bg-space-cadet' : ''}
+                    >
                       Full View of Badge History
                     </ModalHeader>
                     <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                       <BadgeReport
+                        canEdit={props.canEdit}
+                        onSavingChange={onSavingChange}
                         badges={props.userProfile.badgeCollection}
                         userId={props.userProfile._id}
                         role={props.role}
@@ -278,8 +272,7 @@ export const Badges = props => {
                     </tr>
                   </thead>
                   <tbody>
-                    {props.userProfile.badgeCollection &&
-                    props.userProfile.badgeCollection.length > 0 ? (
+                    {sortedBadges.length > 0 ? (
                       sortedBadges &&
                       sortedBadges.map(
                         value =>
@@ -320,7 +313,10 @@ export const Badges = props => {
                               </UncontrolledPopover>
                               <td>{value.badge.badgeName}</td>
                               <td>
-                                {typeof value.lastModified === 'string'
+                                {!value.lastModified ||
+                                Number.isNaN(new Date(value.lastModified).getTime())
+                                  ? '—'
+                                  : typeof value.lastModified === 'string'
                                   ? value.lastModified.substring(0, 10)
                                   : value.lastModified.toLocaleString().substring(0, 10)}
                               </td>
@@ -336,7 +332,10 @@ export const Badges = props => {
                                       Dates
                                     </DropdownToggle>
                                     <DropdownMenu>
-                                      {value.earnedDate.map((date, index) => (
+                                      {(Array.isArray(value.earnedDate)
+                                        ? value.earnedDate
+                                        : []
+                                      ).map((date, index) => (
                                         // eslint-disable-next-line react/no-array-index-key
                                         <DropdownItem key={`date-${value._id}-${index}`}>
                                           {date}
@@ -395,8 +394,7 @@ export const Badges = props => {
                     </tr>
                   </thead>
                   <tbody>
-                    {props.userProfile.badgeCollection &&
-                    props.userProfile.badgeCollection.length ? (
+                    {sortedBadges.length ? (
                       sortedBadges &&
                       sortedBadges.map(
                         value =>
@@ -433,7 +431,10 @@ export const Badges = props => {
                               </UncontrolledPopover>
                               <td>{value?.badge?.badgeName}</td>
                               <td>
-                                {typeof value.lastModified === 'string'
+                                {!value.lastModified ||
+                                Number.isNaN(new Date(value.lastModified).getTime())
+                                  ? '—'
+                                  : typeof value.lastModified === 'string'
                                   ? value.lastModified.substring(0, 10)
                                   : value.lastModified.toLocaleString().substring(0, 10)}
                               </td>
