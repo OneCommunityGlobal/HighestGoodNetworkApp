@@ -3,6 +3,25 @@ import { toast } from 'react-toastify';
 import { getTeamsForPlacement } from '../../actions/promotionActions';
 import styles from './PromotionConfirmationModal.module.css';
 
+// Maps the backend's team-placement reason codes (teamPlacementHelper.js) to
+// human-readable text for the Notes column.
+const REASON_LABELS = {
+  reviewerNotFound: 'Reviewer profile not found',
+  committedHoursOutOfBands: 'Committed hours are outside any defined band',
+  noTeamConfiguredForBand: 'No team is configured for this hours band',
+  noAvailabilityOnFile: 'No availability on file, so placed on the smallest team as a guess',
+  smallestInBand: 'No team matched their availability, so placed on the smallest team as a guess',
+  availabilityMatch: "Matches this team's standup time",
+  availabilityMatchSmallest: 'Matches multiple teams, so the smallest one was chosen',
+  withinTwoHours: 'Placed on a team within 2 hours of their availability',
+};
+
+function describeReason(reason, needsReview) {
+  if (reason && REASON_LABELS[reason]) return REASON_LABELS[reason];
+  if (needsReview) return 'Please review';
+  return '—';
+}
+
 function PromotionConfirmationModal({
   placements,
   warnings,
@@ -123,7 +142,7 @@ function PromotionConfirmationModal({
                       )}
                     </td>
                     <td className={p.needsReview ? styles.needsReview : ''}>
-                      {p.reason || (p.needsReview ? 'Please review' : '—')}
+                      {describeReason(p.reason, p.needsReview)}
                     </td>
                   </tr>
                 ))}
