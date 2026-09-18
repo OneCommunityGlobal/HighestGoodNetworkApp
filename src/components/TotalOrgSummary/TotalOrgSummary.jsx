@@ -456,22 +456,8 @@ function TotalOrgSummary(props) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  /*
-    BUG FIX: fromDate/toDate now correctly represent the CURRENT week (see
-    calculateStartDate/calculateEndDate above). Since the default label here
-    is 'Previous Week', the initial currentFromDate/currentToDate must be
-    computed via getPreviousWeekDates(fromDate, toDate) - matching what the
-    "Previous Week" dropdown option itself computes - rather than reusing
-    fromDate/toDate directly, which would (after the fix above) describe the
-    CURRENT week instead and mismatch the 'Previous Week' label on first
-    render.
-  */
-  const [currentFromDate, setCurrentFromDate] = useState(
-    () => getPreviousWeekDates(fromDate, toDate).start,
-  );
-  const [currentToDate, setCurrentToDate] = useState(
-    () => getPreviousWeekDates(fromDate, toDate).end,
-  );
+  const [currentFromDate, setCurrentFromDate] = useState(fromDate);
+  const [currentToDate, setCurrentToDate] = useState(toDate);
   const rootRef = useRef(null);
   const cacheRef = useRef({});
 
