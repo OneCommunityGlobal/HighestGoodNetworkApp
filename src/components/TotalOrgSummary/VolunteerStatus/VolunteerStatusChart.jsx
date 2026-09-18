@@ -10,6 +10,7 @@ function VolunteerStatusChart({
   volunteerNumberStats,
   mentorNumberStats,
   comparisonType,
+  darkMode = false,
 }) {
   const volunteerChartData = useMemo(() => {
     if (!volunteerNumberStats) {
@@ -100,12 +101,17 @@ function VolunteerStatusChart({
                 <VolunteerStatusPieChart
                   data={volunteerChartData}
                   comparisonType={comparisonType}
+                  darkMode={darkMode}
                 />
               ) : null}
             </div>
             <div className={styles.mentorChartSection}>
               {mentorChartData && (
-                <MentorStatusPieChart data={mentorChartData} comparisonType={comparisonType} />
+                <MentorStatusPieChart
+                  data={mentorChartData}
+                  comparisonType={comparisonType}
+                  darkMode={darkMode}
+                />
               )}
             </div>
           </div>
@@ -123,6 +129,7 @@ function VolunteerStatusChart({
 VolunteerStatusChart.propTypes = {
   isLoading: PropTypes.bool,
   comparisonType: PropTypes.string,
+  darkMode: PropTypes.bool,
   volunteerNumberStats: PropTypes.shape({
     donutChartData: PropTypes.shape({
       existingActive: PropTypes.shape({

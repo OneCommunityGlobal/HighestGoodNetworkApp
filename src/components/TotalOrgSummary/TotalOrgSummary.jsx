@@ -711,6 +711,7 @@ function TotalOrgSummary(props) {
                   volunteerNumberStats={volunteerStats?.volunteerNumberStats}
                   mentorNumberStats={volunteerStats?.mentorNumberStats}
                   comparisonType={selectedComparison}
+                  darkMode={darkMode}
                 />
               </div>
             </Col>

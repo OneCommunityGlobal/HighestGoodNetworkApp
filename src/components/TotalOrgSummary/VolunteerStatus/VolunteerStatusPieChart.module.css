@@ -9,11 +9,12 @@
 
 .volunteerStatusChart {
   position: relative;
-  width: var(--status-chart-size, 220px);
-  height: var(--status-chart-size, 220px);
+  width: var(--status-chart-size, 280px);
+  height: var(--status-chart-size, 280px);
   max-width: 100%;
   aspect-ratio: 1 / 1;
   flex-shrink: 0;
+  overflow: visible;
   container-type: inline-size;
 }
 

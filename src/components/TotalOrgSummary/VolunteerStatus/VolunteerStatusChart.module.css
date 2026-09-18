@@ -9,7 +9,7 @@
 }
 
 .volunteerMentorChartsWrapper {
-  --status-chart-size: 240px;
+  --status-chart-size: 280px;
 
   display: grid;
   grid-template-columns: 1fr;
@@ -39,10 +39,10 @@
 
 @media (width >= 768px) {
   .volunteerMentorChartsWrapper {
-    --status-chart-size: 230px;
+    --status-chart-size: 270px;
 
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 16px;
+    column-gap: 12px;
     row-gap: 20px;
     align-items: start;
     justify-items: center;
@@ -56,20 +56,20 @@
 
 @media (width >= 992px) {
   .volunteerMentorChartsWrapper {
-    --status-chart-size: 245px;
+    --status-chart-size: 290px;
   }
 }
 
 @media (width >= 1200px) {
   .volunteerMentorChartsWrapper {
-    --status-chart-size: 260px;
-    column-gap: 20px;
+    --status-chart-size: 310px;
+    column-gap: 16px;
   }
 }
 
 @media (width <= 767px) {
   .volunteerMentorChartsWrapper {
-    --status-chart-size: min(240px, calc(100vw - 88px));
+    --status-chart-size: min(280px, calc(100vw - 72px));
   }
 }
 

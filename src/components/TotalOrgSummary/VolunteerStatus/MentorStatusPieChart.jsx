@@ -9,7 +9,12 @@ Chart.register(ArcElement);
 function MentorStatusPieChart({
   data: { totalMentors, percentageChange, data: mentorData },
   comparisonType,
+  darkMode = false,
 }) {
+  const labelTextColor = darkMode ? '#ffffff' : '#4f4f4f';
+  const labelBoxBackground = darkMode ? 'rgba(15, 23, 42, 0.96)' : 'rgba(255, 255, 255, 0.95)';
+  const labelBoxBorder = darkMode ? 'rgba(255, 255, 255, 0.45)' : '#d0d0d0';
+
   const chartData = {
     labels: mentorData.map(item => item.label),
     datasets: [
@@ -34,11 +39,17 @@ function MentorStatusPieChart({
         enabled: true,
       },
       externalLabelGuides: {
-        offset: 20,
-        horizontalSpread: 34,
-        horizontalSpreadMap: { 0: 34, 1: 48, 2: 5 },
-        verticalOffsetMap: { 0: 38, 1: -22, 2: -50 },
-        sideMap: { 0: 1, 1: -1, 2: 1 },
+        placement: 'outside',
+        outsideGap: 10,
+        minimumLabelSpacing: 6,
+        connectorRadialOffset: 6,
+        containmentPadding: 4,
+        fontSize: 12,
+        lineHeight: 14,
+        padding: { x: 6, y: 4 },
+        lineColor: labelTextColor,
+        backgroundColor: labelBoxBackground,
+        borderColor: labelBoxBorder,
         total: totalMentors,
         formatter: ({ value, percentage }) => [`${value}`, `(${percentage}%)`],
       },
@@ -46,7 +57,12 @@ function MentorStatusPieChart({
     maintainAspectRatio: false,
     cutout: '62%',
     layout: {
-      padding: 24,
+      padding: {
+        top: 22,
+        right: 58,
+        bottom: 22,
+        left: 58,
+      },
     },
   };
 
@@ -107,6 +123,7 @@ MentorStatusPieChart.propTypes = {
     ).isRequired,
   }).isRequired,
   comparisonType: PropTypes.string.isRequired,
+  darkMode: PropTypes.bool,
 };
 
 export default MentorStatusPieChart;
