@@ -91,3 +91,11 @@ export const importPrEntriesFromSummary = async (requestor, reviewerId) => {
   const res = await axios.post(ENDPOINTS.PR_ENTRY_IMPORT(reviewerId), { requestor });
   return res.data;
 };
+
+// For the promotion confirmation modal's manual team-override dropdown. Reuses the same
+// endpoint as getAllUserTeams (src/actions/allTeamsAction.js) via a plain GET, consistent
+// with this file's non-Redux style rather than wiring a thunk for one read.
+export const getTeamsForPlacement = async () => {
+  const res = await axios.get(ENDPOINTS.TEAM);
+  return res.data;
+};

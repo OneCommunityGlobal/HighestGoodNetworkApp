@@ -9,8 +9,10 @@ import {
   createReviewerGroup,
   updateReviewerGroup,
   updatePrsNeeded,
+  previewPromotions,
 } from '../../actions/promotionActions';
 import ReviewForThisWeekModal from './ReviewForThisWeekModal';
+import PromotionConfirmationModal from './PromotionConfirmationModal';
 import styles from './PromotionEligibility.module.css';
 import { useSelector } from 'react-redux';
 
@@ -33,6 +35,11 @@ function PromotionEligibility({ currentUser: currentUserProp }) {
 
   const [editingPrsNeededId, setEditingPrsNeededId] = useState(null);
   const [prsNeededDraft, setPrsNeededDraft] = useState('');
+
+  // { memberIds, placements, warnings } once a preview has loaded, so the confirmation
+  // modal can render; null closes it.
+  const [pendingPromotion, setPendingPromotion] = useState(null);
+  const [confirmingPromotion, setConfirmingPromotion] = useState(false);
 
   const darkMode = useSelector(state => state.theme.darkMode);
   // `routes.jsx` never passes a `currentUser` prop to this route, so this falls back
@@ -246,18 +253,35 @@ function PromotionEligibility({ currentUser: currentUserProp }) {
         return;
       }
 
-      await postPromotionEligibility(
-        eligible.map(r => r.id),
-        currentUser,
-      );
-      toast.success(`Successfully promoted ${eligible.length} reviewer(s).`);
+      const memberIds = eligible.map(r => r.id);
+      const { placements, warnings } = await previewPromotions(memberIds, currentUser);
+      setPendingPromotion({ memberIds, placements, warnings });
+    } catch (err) {
+      toast.error('Failed to preview promotions.');
+    } finally {
+      setProcessing(false);
+    }
+  };
 
-      setReviewers(prev => prev.filter(r => !eligible.map(e => e.id).includes(r.id)));
+  const cancelPromotionConfirmation = () => {
+    setPendingPromotion(null);
+  };
+
+  const confirmPromotion = async finalPlacements => {
+    if (!pendingPromotion) return;
+
+    setConfirmingPromotion(true);
+    try {
+      await postPromotionEligibility(pendingPromotion.memberIds, currentUser, finalPlacements);
+      toast.success(`Successfully promoted ${pendingPromotion.memberIds.length} reviewer(s).`);
+
+      setReviewers(prev => prev.filter(r => !pendingPromotion.memberIds.includes(r.id)));
       setSelectedForPromotion(new Set());
+      setPendingPromotion(null);
     } catch (err) {
       toast.error('Failed to process promotions.');
     } finally {
-      setProcessing(false);
+      setConfirmingPromotion(false);
     }
   };
 
@@ -357,7 +381,7 @@ function PromotionEligibility({ currentUser: currentUserProp }) {
         >
           <div
             className={`${styles.custom_circular_checkbox} ${
-              selectedForPromotion.has(id) ? 'checked' : ''
+              selectedForPromotion.has(id) ? styles.checked : ''
             }`}
           >
             {selectedForPromotion.has(id) && <FaCheck className={styles.check_icon} />}
@@ -467,7 +491,7 @@ function PromotionEligibility({ currentUser: currentUserProp }) {
               disabled={processing}
               className={styles.process_promo_btn}
             >
-              {processing ? 'Processing...' : 'Process Promotions'}
+              {processing ? 'Loading preview...' : 'Process Promotions'}
             </button>
           </div>
         </div>
@@ -523,6 +547,17 @@ function PromotionEligibility({ currentUser: currentUserProp }) {
           currentUser={currentUser}
           darkMode={darkMode}
           onClose={() => setActiveReviewGroup(null)}
+        />
+      )}
+
+      {pendingPromotion && (
+        <PromotionConfirmationModal
+          placements={pendingPromotion.placements}
+          warnings={pendingPromotion.warnings}
+          darkMode={darkMode}
+          confirming={confirmingPromotion}
+          onCancel={cancelPromotionConfirmation}
+          onConfirm={confirmPromotion}
         />
       )}
     </div>

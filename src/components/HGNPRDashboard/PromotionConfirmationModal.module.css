@@ -1,0 +1,213 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgb(0 0 0 / 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1060;
+}
+
+.modal {
+  background-color: #fff;
+  border-radius: 12px;
+  width: min(95vw, 900px);
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 30%);
+}
+
+.modal.dark {
+  background-color: #1f1f1f;
+  color: #f5f5f5;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.modal.dark .modalHeader {
+  border-bottom: 1px solid #3b3b3b;
+}
+
+.modalTitle {
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: inherit;
+}
+
+.modalBody {
+  padding: 1rem 1.25rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.warningsList {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  background-color: #fff3cd;
+  border: 1px solid #ffe69c;
+  border-radius: 6px;
+  color: #664d03;
+}
+
+.modal.dark .warningsList {
+  background-color: #3b2f0f !important;
+  border-color: #7a5c0f !important;
+  color: #ffe08a !important;
+}
+
+.warningItem {
+  margin-bottom: 0.25rem;
+}
+
+.warningItem:last-child {
+  margin-bottom: 0;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.placementTable {
+  width: 100%;
+  min-width: 560px;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.colReviewer {
+  width: 20%;
+}
+
+.colHours {
+  width: 13%;
+}
+
+.colBand {
+  width: 15%;
+}
+
+.colTeam {
+  width: 27%;
+}
+
+.colNotes {
+  width: 25%;
+}
+
+.placementTable th,
+.placementTable td {
+  padding: 0.5rem;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: break-word;
+}
+
+.placementTable th {
+  background-color: #e0edfa;
+  font-weight: 500;
+}
+
+.placementTable tr:hover {
+  background-color: #e8f0fe;
+}
+
+.modal.dark .placementTable th,
+.modal.dark .placementTable td {
+  border-bottom: 1px solid #3b3b3b;
+}
+
+.modal.dark .placementTable th {
+  background-color: #3b3b3b;
+  color: #ddd;
+}
+
+.modal.dark .placementTable tr:hover {
+  background-color: #3b3b3b;
+}
+
+.teamSelect {
+  width: 100%;
+  max-width: 100%;
+  padding: 0.2rem 0.4rem;
+  box-sizing: border-box;
+}
+
+.teamSelect:disabled {
+  background-color: #eee;
+  color: #888;
+  cursor: wait;
+}
+
+.modal.dark .teamSelect:disabled {
+  background-color: #3b3b3b !important;
+  color: #999 !important;
+}
+
+.needsReview {
+  color: #b45309;
+  font-weight: 600;
+}
+
+.modal.dark .needsReview {
+  color: #fbbf24 !important;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid #ddd;
+}
+
+.modal.dark .modalFooter {
+  border-top: 1px solid #3b3b3b;
+}
+
+.cancelButton {
+  background-color: #6b7280;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.cancelButton:hover {
+  background-color: #4b5563;
+}
+
+.confirmButton {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.confirmButton:hover {
+  background-color: #1d4ed8;
+}
+
+.confirmButton:disabled,
+.cancelButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
