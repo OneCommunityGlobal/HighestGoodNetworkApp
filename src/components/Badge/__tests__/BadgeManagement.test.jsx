@@ -23,6 +23,7 @@ import {
   returnUpdatedBadgesCollection,
   validateBadges,
   assignBadges,
+  assignBadgesToMultipleUserID,
 } from '../../../actions/badgeManagement';
 
 const middlewares = [thunk];
@@ -92,7 +93,8 @@ describe('BadgeManagement validateBadges action', () => {
 
     expect(actions).toContainEqual({
       type: GET_MESSAGE,
-      message: 'The Name Find function does not work without entering a name. Nice try though.',
+      message:
+        'The Name Find function does not work without entering first and last name. Nice try though.',
       color: 'danger',
     });
     // since setTimeout → immediate, CLOSE_ALERT is already dispatched
@@ -110,16 +112,19 @@ describe('BadgeManagement assignBadges action', () => {
 
   beforeEach(() => {
     store = mockStore({});
+    vi.useFakeTimers();
   });
   afterEach(() => {
+    vi.runOnlyPendingTimers();
+    vi.useRealTimers();
     vi.clearAllMocks();
     store.clearActions();
   });
 
   it('dispatches error + CLOSE_ALERT when no badges selected', async () => {
     await store.dispatch(assignBadges('John', 'Doe', []));
+    vi.runAllTimers();
     const actions = store.getActions();
-
     expect(actions).toContainEqual({
       type: GET_MESSAGE,
       message:
@@ -132,6 +137,7 @@ describe('BadgeManagement assignBadges action', () => {
   it('dispatches error + CLOSE_ALERT when user not found', async () => {
     axios.get.mockResolvedValue({ data: [] });
     await store.dispatch(assignBadges('John', 'Doe', ['badge1']));
+    vi.runAllTimers();
     const actions = store.getActions();
 
     expect(actions).toContainEqual({
@@ -144,9 +150,12 @@ describe('BadgeManagement assignBadges action', () => {
   });
 
   it('dispatches success + CLOSE_ALERT on successful assign', async () => {
-    axios.get.mockResolvedValue({ data: [{ badgeCollection: [], _id: 'user1' }] });
-    axios.put.mockResolvedValue({});
+    axios.get
+      .mockResolvedValueOnce({ data: [{ badgeCollection: [], _id: 'user1' }] })
+      .mockResolvedValueOnce({ data: { badgeCollection: [], _id: 'user1' } });
+    axios.put.mockResolvedValue({}); // Mock successful PUT request
     await store.dispatch(assignBadges('John', 'Doe', ['badge1']));
+    vi.runAllTimers();
     const actions = store.getActions();
 
     expect(actions).toContainEqual({
@@ -159,16 +168,89 @@ describe('BadgeManagement assignBadges action', () => {
   });
 
   it('dispatches error + CLOSE_ALERT on API failure', async () => {
-    axios.get.mockResolvedValue({ data: [{ badgeCollection: [], _id: 'user1' }] });
+    axios.get
+      .mockResolvedValueOnce({ data: [{ badgeCollection: [], _id: 'user1' }] })
+      .mockResolvedValueOnce({ data: { badgeCollection: [], _id: 'user1' } });
     axios.put.mockRejectedValue(new Error('API Error'));
     await store.dispatch(assignBadges('John', 'Doe', ['badge1']));
+    vi.runAllTimers();
     const actions = store.getActions();
 
-    expect(actions).toContainEqual({
+    const messageAction = actions.find(action => action.type === GET_MESSAGE);
+    expect(messageAction.color).toBe('danger');
+    expect(actions).toContainEqual({ type: CLOSE_ALERT });
+  });
+});
+
+describe('BadgeManagement assignBadgesToMultipleUserID action', () => {
+  let store;
+
+  beforeEach(() => {
+    store = mockStore({});
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.runOnlyPendingTimers();
+    vi.useRealTimers();
+    vi.clearAllMocks();
+    store.clearActions();
+  });
+
+  it('shows a permission message when the API returns 403', async () => {
+    axios.get.mockResolvedValue({ data: { _id: 'user1', badgeCollection: [] } });
+    axios.put.mockRejectedValue({
+      response: { status: 403, data: { error: 'Forbidden: assignBadges required' } },
+    });
+
+    await store.dispatch(assignBadgesToMultipleUserID(['user1'], ['badge1']));
+    vi.runAllTimers();
+
+    expect(store.getActions()).toContainEqual({
       type: GET_MESSAGE,
-      message: 'Oops, something is wrong!',
+      message: 'Forbidden: assignBadges required',
       color: 'danger',
     });
-    expect(actions).toContainEqual({ type: CLOSE_ALERT });
+  });
+
+  it('shows a default permission message when 403 has no error body', async () => {
+    axios.get.mockResolvedValue({ data: { _id: 'user1', badgeCollection: [] } });
+    axios.put.mockRejectedValue({ response: { status: 403, data: {} } });
+
+    await store.dispatch(assignBadgesToMultipleUserID(['user1'], ['badge1']));
+    vi.runAllTimers();
+
+    const actions = store.getActions();
+    const messageAction = actions.find(action => action.type === GET_MESSAGE);
+    expect(messageAction.message).toMatch(/do not have permission to assign badges/i);
+  });
+
+  it('returns false and surfaces server error text for other failures', async () => {
+    axios.get.mockResolvedValue({ data: { _id: 'user1', badgeCollection: [] } });
+    axios.put.mockRejectedValue({
+      response: { status: 500, data: { error: 'Badge assign endpoint failed' } },
+    });
+
+    const result = await store.dispatch(assignBadgesToMultipleUserID(['user1'], ['badge1']));
+    vi.runAllTimers();
+
+    expect(result).toBe(false);
+    expect(store.getActions()).toContainEqual({
+      type: GET_MESSAGE,
+      message: 'Badge assign endpoint failed',
+      color: 'danger',
+    });
+  });
+
+  it('assigns badges using PUT per user instead of bulk POST', async () => {
+    axios.get.mockResolvedValue({ data: { _id: 'user1', badgeCollection: [] } });
+    axios.put.mockResolvedValue({ status: 200 });
+
+    const result = await store.dispatch(assignBadgesToMultipleUserID(['user1'], ['badge1']));
+    vi.runAllTimers();
+
+    expect(result).toBe(true);
+    expect(axios.post).not.toHaveBeenCalled();
+    expect(axios.put).toHaveBeenCalled();
   });
 });

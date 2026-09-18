@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
+import { Form, FormGroup, Label, Input, Button, Table } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { fetchAllEquipments } from '../../../actions/bmdashboard/equipmentActions';
 import { fetchTools } from '../../../actions/bmdashboard/toolActions';
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
+import styles from './EquipmentUpdateForm.module.css';
 
 const initialFormState = {
   project: '',
@@ -17,9 +18,9 @@ const initialFormState = {
 export default function EquipmentUpdateForm() {
   const [formData, setFormData] = useState(initialFormState);
   const [isFormValid, setIsFormValid] = useState(false);
+
   const dispatch = useDispatch();
 
-  // Fetch dropdown data
   const projects = useSelector(state => state.bmProjects || []);
   const tools = useSelector(state => state.bmTools.toolslist || []);
   const equipments = useSelector(state => state.bmEquipments.equipmentslist || []);
@@ -30,52 +31,88 @@ export default function EquipmentUpdateForm() {
     dispatch(fetchAllEquipments());
   }, [dispatch]);
 
-  // Extract list of valid tools and equipment (only where name is present)
   const toolList = useMemo(
     () =>
       tools
-        .filter(tool => tool.itemType && tool.itemType.name)
-        .map(tool => ({ id: tool.itemType._id, name: tool.itemType.name })),
-    [tools],
+        .filter(
+          tool => tool.project._id === formData.project && tool.itemType && tool.itemType.name,
+        )
+        .map(tool => ({
+          id: tool.itemType._id,
+          name: tool.itemType.name,
+          projectId: tool.project?._id || tool.project,
+          count: tool.count ?? tool.quantity ?? tool.number ?? 0,
+        })),
+    [tools, formData.project],
   );
 
   const equipmentList = useMemo(
     () =>
       equipments
-        .filter(equip => equip.itemType && equip.itemType.name)
-        .map(equip => ({ id: equip.itemType._id, name: equip.itemType.name })),
-    [equipments],
+        .filter(
+          equip => equip.project._id === formData.project && equip.itemType && equip.itemType.name,
+        )
+        .map(equip => ({
+          id: equip.itemType._id,
+          name: equip.itemType.name,
+          projectId: equip.project?._id || equip.project,
+          count: equip.count ?? equip.quantity ?? equip.number ?? 0,
+        })),
+    [equipments, formData.project],
   );
 
-  // Update form validity
+  const uniqueToolList = useMemo(
+    () => [...new Map(toolList.map(item => [item.id, item])).values()],
+    [toolList],
+  );
+
+  const uniqueEquipmentList = useMemo(
+    () => [...new Map(equipmentList.map(item => [item.id, item])).values()],
+    [equipmentList],
+  );
+
   useEffect(() => {
     const { project, toolOrEquipment, name, number } = formData;
     setIsFormValid(!!(project && toolOrEquipment && name && number));
   }, [formData]);
 
-  // Handle input change
-  // Handle input change
   const handleChange = e => {
     const { name, value } = e.target;
 
-    // Allow only numbers in the "number" field
     if (name === 'number' && value !== '' && !/^\d+$/.test(value)) {
-      return; // Ignore invalid input (non-numeric values)
+      return;
     }
 
     setFormData(prev => ({
       ...prev,
       [name]: value,
-      ...(name === 'toolOrEquipment' ? { name: '', number: '' } : {}), // Reset name and number on change
+      ...(name === 'toolOrEquipment' ? { name: '', number: '' } : {}),
+      ...(name === 'project' ? { name: '', number: '' } : {}),
+      ...(name === 'name' ? { number: '' } : {}),
     }));
   };
 
-  // Reset form
   const handleCancel = () => {
     setFormData(initialFormState);
   };
 
-  // Submit form
+  const selectedItem = useMemo(() => {
+    if (!formData.toolOrEquipment || !formData.name) return null;
+
+    const sourceList = formData.toolOrEquipment === 'Tool' ? toolList : equipmentList;
+
+    return (
+      sourceList.find(
+        item =>
+          item.name === formData.name &&
+          (!formData.project || String(item.projectId) === String(formData.project)),
+      ) || null
+    );
+  }, [formData.toolOrEquipment, formData.name, formData.project, toolList, equipmentList]);
+
+  const currentCount = selectedItem?.count ?? 0;
+  const newCount = formData.number === '' ? null : Number(formData.number);
+
   const handleSubmit = e => {
     e.preventDefault();
 
@@ -83,16 +120,24 @@ export default function EquipmentUpdateForm() {
       toast.error('Please complete all fields before updating.');
       return;
     }
+
     setFormData(initialFormState);
     toast.success('Tool/Equipment updated successfully!');
   };
 
+  let filteredNames = [];
+  if (formData.toolOrEquipment === 'Tool') {
+    filteredNames = uniqueToolList;
+  } else if (formData.toolOrEquipment === 'Equipment') {
+    filteredNames = uniqueEquipmentList;
+  }
+
   return (
-    <div className="add-tool-form">
+    <div className={styles.addToolForm}>
       <Form onSubmit={handleSubmit}>
         <FormGroup>
           <Label for="project">
-            Project <span className="field-required">*</span>
+            Project <span className={styles.fieldRequired}>*</span>
           </Label>
           <Input
             type="select"
@@ -103,17 +148,17 @@ export default function EquipmentUpdateForm() {
           >
             <option value="">Select Project</option>
             {projects.map(proj => (
-              <option key={proj.id} value={proj.id}>
+              <option key={proj._id} value={proj._id}>
                 {proj.name}
               </option>
             ))}
           </Input>
-          {!formData.project && <div className="toolFormError">Project is required</div>}
+          {!formData.project && <div className={styles.toolFormError}>Project is required</div>}
         </FormGroup>
 
         <FormGroup>
           <Label for="toolOrEquipment">
-            Tool or Equipment <span className="field-required">*</span>
+            Tool or Equipment <span className={styles.fieldRequired}>*</span>
           </Label>
           <Input
             type="select"
@@ -122,16 +167,20 @@ export default function EquipmentUpdateForm() {
             value={formData.toolOrEquipment}
             onChange={handleChange}
           >
-            <option value="">Select Tool/Equipment</option>
+            <option value="" disabled>
+              Select Tool/Equipment
+            </option>
             <option value="Tool">Tool</option>
             <option value="Equipment">Equipment</option>
           </Input>
-          {!formData.toolOrEquipment && <div className="toolFormError">This field is required</div>}
+          {!formData.toolOrEquipment && (
+            <div className={styles.toolFormError}>This field is required</div>
+          )}
         </FormGroup>
 
         <FormGroup>
           <Label for="name">
-            Name <span className="field-required">*</span>
+            Name <span className={styles.fieldRequired}>*</span>
           </Label>
           <Input
             type="select"
@@ -142,25 +191,53 @@ export default function EquipmentUpdateForm() {
             disabled={!formData.toolOrEquipment}
           >
             <option value="">Select Name</option>
-            {formData.toolOrEquipment === 'Tool' &&
-              toolList.map(item => (
-                <option key={item.id} value={item.name}>
-                  {item.name}
-                </option>
-              ))}
-            {formData.toolOrEquipment === 'Equipment' &&
-              equipmentList.map(item => (
-                <option key={item.id} value={item.name}>
-                  {item.name}
-                </option>
-              ))}
+            {filteredNames.map(item => (
+              <option key={item.id} value={item.name}>
+                {item.name}
+              </option>
+            ))}
           </Input>
-          {!formData.name && <div className="toolFormError">Please select a name</div>}
+          {!formData.name &&
+            (!formData.toolOrEquipment || !formData.project ? (
+              <div className="toolFormError">Please select Project and Tool/Equipment first</div>
+            ) : (
+              <div className="toolFormError">Please select a name</div>
+            ))}
         </FormGroup>
+
+        {formData.project && formData.toolOrEquipment && formData.name && (
+          <div className={styles.currentCountBox}>
+            <p className={styles.currentCountText}>
+              Current number of selected {formData.toolOrEquipment.toLowerCase()}s:{' '}
+              <strong>{currentCount}</strong>
+            </p>
+
+            <Table bordered responsive className={styles.currentCountTable}>
+              <thead>
+                <tr>
+                  <th>Project</th>
+                  <th>Type</th>
+                  <th>Name</th>
+                  <th>Current Count</th>
+                  <th>New Count</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{projects.find(proj => proj._id === formData.project)?.name || '-'}</td>
+                  <td>{formData.toolOrEquipment}</td>
+                  <td>{formData.name}</td>
+                  <td>{currentCount}</td>
+                  <td>{newCount === null ? '-' : newCount}</td>
+                </tr>
+              </tbody>
+            </Table>
+          </div>
+        )}
 
         <FormGroup>
           <Label for="number">
-            Number <span className="field-required">*</span>
+            New Total Number <span className={styles.fieldRequired}>*</span>
           </Label>
           <Input
             type="text"
@@ -168,11 +245,15 @@ export default function EquipmentUpdateForm() {
             id="number"
             value={formData.number}
             onChange={handleChange}
-            placeholder="Enter number"
+            placeholder="Enter the new total number"
           />
-          {!formData.number && <div className="toolFormError">Number is required</div>}
+          <div className={styles.fieldHint}>
+            This will replace the current count with the new total number entered.
+          </div>
+          {!formData.number && <div className={styles.toolFormError}>Number is required</div>}
         </FormGroup>
-        <div className="add-tool-buttons">
+
+        <div className={styles.addToolButtons}>
           <Button color="primary" type="submit" disabled={!isFormValid}>
             Update
           </Button>

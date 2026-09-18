@@ -11,17 +11,16 @@ import { boxStyle } from '~/styles';
 import PropTypes from 'prop-types';
 
 
-const Member = props => {
+import { permissions } from '../../../../utils/constants';
+const Member = ({ index = 0, ...props }) => {
   const { darkMode } = props;
-  const canGetProjectMembers = hasPermission('getProjectMembers');
-  const canUnassignUserInProject = hasPermission('unassignUserInProject');
-
+  const canGetProjectMembers = hasPermission(permissions.getProjectMembers);
 
   return (
     <React.Fragment>
       <tr className={`members__tr ${darkMode ? 'bg-space-cadet' : ''}`}>
         <th scope="row">
-          <div>{typeof props.index === 'number' ? props.index + 1 : null}</div>
+          <div>{typeof index === 'number' ? index + 1 : null}</div>
         </th>
         <td className="members__name">
           {canGetProjectMembers ? (
@@ -53,10 +52,7 @@ const Member = props => {
   );
 };
 
-// Define default props
-Member.defaultProps = {
-  index: 0
-};
+// ...existing code...
 
 // Define prop types
 Member.propTypes = {

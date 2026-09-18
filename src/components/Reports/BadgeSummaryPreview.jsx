@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import { MdPreview } from 'react-icons/md';
 import {
-  Button as ReactStrapButton,
   Modal,
   ModalBody,
   ModalHeader,
@@ -10,8 +9,7 @@ import {
 } from 'reactstrap';
 import BadgeImage from '~/components/Badge/BadgeImage';
 import { boxStyle, boxStyleDark } from '../../styles';
-import '../Badge/BadgeReport.css';
-import './BadgeSummaryPreview.css';
+import styles from './BadgeSummaryPreview.module.css';
 
 function BadgeSummaryPreview({ badges, darkMode, personalBestMaxHrs }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -41,21 +39,21 @@ function BadgeSummaryPreview({ badges, darkMode, personalBestMaxHrs }) {
   return (
     <div>
       <Button onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
-        <MdPreview style={{ fontSize: '23px' }} />
+        <MdPreview className={styles.previewIcon} />
       </Button>
       <Modal size="lg" isOpen={isOpen} toggle={toggle}>
-        <ModalHeader>Badge Summary Preview</ModalHeader>
-        <ModalBody>
+        <ModalHeader className={styles.modalHeader}>Badge Summary Preview</ModalHeader>
+        <ModalBody className={styles.modalBody}>
           <div>
             {/* --- DESKTOP VERSION OF MODAL --- */}
-            <div className="desktop">
+            <div className={styles.desktop}>
               <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                {sortedBadges?.length === 0 && <div>No badges to show</div>}
+                {sortedBadges?.length === 0 && <div className={styles.emptyState}>No badges to show</div>}
                 {sortedBadges &&
                   sortedBadges.map(
                     (value, index) =>
                       value && (
-                        <div key={value._id} className="badge_image_md">
+                        <div key={value._id} className={styles.badgeImageMd}>
                           <BadgeImage
                             personalBestMaxHrs={personalBestMaxHrs}
                             count={value.count}
@@ -70,13 +68,13 @@ function BadgeSummaryPreview({ badges, darkMode, personalBestMaxHrs }) {
               </div>
             </div>
             {/* --- TABLET VERSION OF MODAL --- */}
-            <div className="tablet">
+            <div className={styles.tablet}>
               <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                 {sortedBadges &&
                   sortedBadges.map(
                     (value, index) =>
                       value && (
-                        <div key={value._id} className="badge_image_sm">
+                        <div key={value._id} className={styles.badgeImageSm}>
                           <BadgeImage
                             personalBestMaxHrs={personalBestMaxHrs}
                             count={value.count}
@@ -92,14 +90,14 @@ function BadgeSummaryPreview({ badges, darkMode, personalBestMaxHrs }) {
             </div>
           </div>
         </ModalBody>
-        <ModalFooter>
-          <div className="badge_summary_preview_footer">
-            <ReactStrapButton
-              className="btn--dark-sea-green badge_summary_preview_button"
+        <ModalFooter className={styles.modalFooter}>
+          <div className={styles.badgeSummaryPreviewFooter}>
+            <Button
               onClick={toggle}
+              className={styles.badgeSummaryPreviewButton}
             >
               Close
-            </ReactStrapButton>
+            </Button>
           </div>
         </ModalFooter>
       </Modal>

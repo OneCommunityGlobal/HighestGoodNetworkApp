@@ -80,7 +80,9 @@ describe('Member Component', () => {
     const { getByText } = renderMemberRow(sampleMember);
 
     // Verify that member data is displayed
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(getByText('1')).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(getByText('Jane Doe')).toBeInTheDocument();
     // Other assertions can be added here based on what else the component renders
   });
@@ -90,6 +92,7 @@ describe('Member Component', () => {
     sampleMember.hasPermission = hasPermission;
     const { getByRole } = renderMemberRow(sampleMember);
     // Fetch the anchor element with the name 'Jane Doe'
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     const profileLinkElement = getByRole('link', { name: /Jane Doe/i });
     expect(profileLinkElement).toHaveAttribute('href', `/userprofile/${sampleMember.uid}`);
   });
@@ -99,6 +102,7 @@ describe('Member Component', () => {
     sampleMember.hasPermission = hasPermission;
     const { container } = renderMemberRow(sampleMember);
     // Verify that the unassign button is there
+    // eslint-disable-next-line testing-library/no-node-access, testing-library/no-container
     const buttonIcon = container.querySelector('i.fa.fa-minus');
     expect(buttonIcon).toBeInTheDocument();
   });
@@ -109,6 +113,7 @@ describe('Member Component', () => {
     const { getByRole } = renderMemberRow(sampleMember);
 
     // Simulate a button click on the actual button instead of the icon
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     const unassignButton = getByRole('button');
 
     expect(unassignButton).toBeInTheDocument();
@@ -145,6 +150,7 @@ describe('Member Component', () => {
       hasPermission,
     };
     const { container } = renderMemberRow(nonOwnerProps);
+    // eslint-disable-next-line testing-library/no-node-access, testing-library/no-container
     const buttonIcon = container.querySelector('i.fa.fa-minus');
     expect(buttonIcon).toBeInTheDocument();
   });

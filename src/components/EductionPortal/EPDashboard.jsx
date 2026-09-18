@@ -1,7 +1,9 @@
+import React from 'react';
+import StudentDashboard from './StudentDashboard/StudentDashboard';
 import './EPDashboard.module.css';
 
 export function EPDashboard() {
-  return <h1>Welcome to Education Portal</h1>;
+  return <StudentDashboard />;
 }
 
 export default EPDashboard;

@@ -7,6 +7,7 @@ import readXlsxFile from 'read-excel-file';
 import * as taskActions from '../../../../../../actions/task';
 import ImportTask from '../ImportTask';
 import { Provider } from 'react-redux';
+import * as popupActions from '../../../../../../actions/popupEditorAction';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 
@@ -14,6 +15,8 @@ vi.mock('read-excel-file');
 
 // Stub importTask so it never errors
 vi.spyOn(taskActions, 'importTask').mockImplementation(() => () => Promise.resolve());
+// Stub getPopupById to resolve immediately so the async toggle can proceed
+vi.spyOn(popupActions, 'getPopupById').mockImplementation(() => () => Promise.resolve());
 
 // Minimal reducers to satisfy mapStateToProps
 const initialState = {
@@ -44,9 +47,26 @@ const renderComponent = () =>
     </Provider>
   );
 
+  async function openModalAndGetFileInput() {
+    fireEvent.click(screen.getByRole('button', { name: /import tasks/i }));
+    const dialog = await screen.findByRole('dialog');
+    await waitFor(() => {
+      // file <input id="file" /> lives in the portal
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+      if (!dialog.querySelector('input#file')) throw new Error('file input not ready');
+    });
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    const fileInput = dialog.querySelector('input#file');
+    return { dialog, fileInput };
+  }
+  
+
 describe('ImportTask', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Re-apply stubs after clearAllMocks()
+    vi.spyOn(taskActions, 'importTask').mockImplementation(() => () => Promise.resolve());
+    vi.spyOn(popupActions, 'getPopupById').mockImplementation(() => () => Promise.resolve());
   });
 
   it('renders the Import Tasks button and modal is closed initially', () => {
@@ -54,23 +74,21 @@ describe('ImportTask', () => {
     expect(
       screen.getByRole('button', { name: /import tasks/i })
     ).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     expect(container.querySelector('.modal')).toBeNull();
   });
 
-  it('opens the modal when the button is clicked', () => {
+  it('opens the modal when the button is clicked', async () => {
     renderComponent();
     fireEvent.click(screen.getByRole('button', { name: /import tasks/i }));
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(await screen.findByRole('dialog')).toBeInTheDocument();
   });
 
   it('uploads a valid file and shows success', async () => {
     readXlsxFile.mockResolvedValue([['H'], [], ['row']]);
 
     renderComponent();
-    fireEvent.click(screen.getByRole('button', { name: /import tasks/i }));
-
-    // file <input id="file" /> lives in the portal
-    const fileInput = document.querySelector('input#file');
+    const { dialog, fileInput } = await openModalAndGetFileInput();
     fireEvent.change(fileInput, {
       target: { files: [ new File([], 'tasks.xlsx') ] }
     });
@@ -80,25 +98,22 @@ describe('ImportTask', () => {
     fireEvent.click(uploadBtn);
 
     // finally, "File Uploaded!" should be visible
-    await waitFor(() =>
-      expect(screen.getByText(/file uploaded!/i)).toBeInTheDocument()
-    );
+    await screen.findByText(/file uploaded!/i);
   });
 
   it('resets back to file chooser when Reset is clicked', async () => {
     readXlsxFile.mockResolvedValue([['H'], [], ['row']]);
 
     renderComponent();
-    fireEvent.click(screen.getByRole('button', { name: /import tasks/i }));
-
-    const fileInput = document.querySelector('input#file');
+    const { dialog, fileInput } = await openModalAndGetFileInput();
     fireEvent.change(fileInput, { target: { files: [ new File([], 'a.xlsx') ] } });
 
     // wait for Reset button, then click it
     const resetBtn = await screen.findByRole('button', { name: /reset/i });
     fireEvent.click(resetBtn);
 
-    expect(document.querySelector('input#file')).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    expect(dialog.querySelector('input#file')).toBeInTheDocument();
     expect(
       screen.queryByText(/are you sure you want to upload it\?/i)
     ).toBeNull();
@@ -109,15 +124,14 @@ describe('ImportTask', () => {
     taskActions.importTask.mockImplementation(() => () => new Promise(() => {}));
 
     renderComponent();
-    fireEvent.click(screen.getByRole('button', { name: /import tasks/i }));
-
-    const fileInput = document.querySelector('input#file');
+    const { dialog, fileInput } = await openModalAndGetFileInput();
     fireEvent.change(fileInput, { target: { files: [ new File([], 'b.xlsx') ] } });
 
     // click Upload once it appears
     const uploadBtn = await screen.findByRole('button', { name: /upload/i });
     fireEvent.click(uploadBtn);
 
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     expect(document.querySelector('.spinner-grow')).toBeInTheDocument();
   });
 
@@ -129,9 +143,7 @@ describe('ImportTask', () => {
     readXlsxFile.mockResolvedValue(badRows);
 
     renderComponent();
-    fireEvent.click(screen.getByRole('button', { name: /import tasks/i }));
-
-    const fileInput = document.querySelector('input#file');
+    const { dialog, fileInput } = await openModalAndGetFileInput();
     fireEvent.change(fileInput, { target: { files: [ new File([], 'bad.xlsx') ] } });
 
     expect(

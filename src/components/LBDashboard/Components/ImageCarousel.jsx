@@ -1,10 +1,21 @@
-import { useState } from 'react';
-import './ImageCarousel.css';
+import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import styles from './ImageCarousel.module.css';
 
-export default function ImageCarousel({ images }) {
+const getClassNames = (baseClass, darkClass, darkMode) =>
+  `${baseClass} ${darkMode ? darkClass : ''}`;
+
+export default function ImageCarousel({ images, darkMode = false }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  if (!images || images.length === 0) return <p>No images available</p>;
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [images]);
+
+  if (!images || images.length === 0)
+    return (
+      <p className={getClassNames('', styles['no-images--dark'], darkMode)}>No images available</p>
+    );
 
   const handleNext = () => {
     setCurrentIndex(prev => (prev + 1) % images.length);
@@ -19,39 +30,67 @@ export default function ImageCarousel({ images }) {
   };
 
   return (
-    <div className="carousel-container">
-      <div className="carousel-wrapper">
+    <div
+      className={getClassNames(
+        styles.carouselContainer,
+        styles['carouselContainer--dark'],
+        darkMode,
+      )}
+    >
+      <div className={styles.carouselWrapper}>
         <div
-          className="carousel-track"
+          className={styles.carouselTrack}
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
           {images.map((image, index) => (
-            <img key={image} className="carousel-image" src={image} alt={`Slide ${index + 1}`} />
+            <img
+              key={`slide-${index}-${image}`}
+              className={styles.carouselImage}
+              src={image}
+              alt={`Slide ${index + 1}`}
+            />
           ))}
         </div>
       </div>
-      <button type="button" className="img-arrow left" onClick={handlePrev}>
+      <button
+        type="button"
+        className={`${getClassNames(styles.imgArrow, styles['imgArrow--dark'], darkMode)} ${
+          styles.left
+        }`}
+        onClick={handlePrev}
+      >
         ❮
       </button>
-      <button type="button" className="img-arrow right" onClick={handleNext}>
+      <button
+        type="button"
+        className={`${getClassNames(styles.imgArrow, styles['imgArrow--dark'], darkMode)} ${
+          styles.right
+        }`}
+        onClick={handleNext}
+      >
         ❯
       </button>
-      <div className="carousel-indicators">
+      <div className={styles.carouselIndicators}>
         {images.map((image, index) => (
-          <span
-            key={image}
-            role="button"
-            tabIndex={0}
-            className={`indicator ${index === currentIndex ? 'active' : ''}`}
+          <button
+            key={`dot-${index}-${image}`}
+            type="button"
+            className={`${getClassNames(styles.indicator, styles['indicator--dark'], darkMode)} ${
+              index === currentIndex
+                ? getClassNames(styles.active, styles['active--dark'], darkMode)
+                : ''
+            }`}
             onClick={() => handleIndicatorClick(index)}
-            onKeyDown={e => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                handleIndicatorClick(index);
-              }
-            }}
+            aria-label={`Go to slide ${index + 1}`}
+            aria-current={index === currentIndex ? 'true' : undefined}
           />
         ))}
       </div>
     </div>
   );
 }
+
+ImageCarousel.propTypes = {
+  images: PropTypes.arrayOf(PropTypes.string),
+  darkMode: PropTypes.bool,
+};

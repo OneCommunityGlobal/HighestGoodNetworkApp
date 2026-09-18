@@ -47,7 +47,7 @@ describe('<SaveButton />', () => {
       render(<SaveButton {...props} />);
       const button = screen.getByRole('button', { name: /save changes/i });
       expect(button).not.toBeDisabled(); 
-      userEvent.click(button);
+      await userEvent.click(button);
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
   });

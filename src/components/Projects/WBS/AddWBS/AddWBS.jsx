@@ -8,18 +8,19 @@ import { connect } from 'react-redux';
 import { addNewWBS } from './../../../../actions/wbs';
 import hasPermission from '~/utils/permissions';
 
+import { permissions } from '../../../../utils/constants';
 const AddWBS = (props) => {
   const darkMode = props.state.theme.darkMode;
   const [taskTitle, setTaskTitle] = useState('');
-  const canPostWBS = hasPermission('postWbs');
+  const canPostWBS = hasPermission(permissions.postWbs);
 
   const handleSubmit = () => {
     if (!taskTitle.trim()) return;
-
+    // eslint-disable-next-line no-alert
     const confirmed = window.confirm(`Add task "${taskTitle}" to the database?`);
     if (confirmed) {
       props.addNewWBS(taskTitle, props.projectId);
-      setTaskTitle('');
+      setTaskTitle(''); 
     }
   };
 
@@ -32,6 +33,7 @@ const AddWBS = (props) => {
           </div>
 
           <input
+            // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
             type="text"
             className={`form-control ${darkMode ? 'bg-white border-0' : ''}`}

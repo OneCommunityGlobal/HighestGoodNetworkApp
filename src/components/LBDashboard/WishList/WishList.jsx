@@ -1,106 +1,182 @@
-import './WishList.css';
-import { connect, useDispatch } from 'react-redux';
+import PropTypes from 'prop-types';
+import { useMemo, useState } from 'react';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import { FaMapMarkerAlt } from 'react-icons/fa';
-import { NavItem } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import { setCurrentWishListItem } from '~/reducers/lbdashboard/wishListItemReducer';
+import { setCurrentWishListItem } from '~/reducers/listBidDashboard/wishListItemReducer';
 import Header from '../Header';
+import styles from './WishList.module.css';
 
-function WishList(props) {
-  // const [wishlistId, setWishlistId] = useState('');
+function WishList({ wishlists }) {
   const dispatch = useDispatch();
-  const { wishlists } = props;
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const [selectedVillage, setSelectedVillage] = useState('');
+
+  const villages = useMemo(() => [...new Set(wishlists.map(item => item.title).filter(Boolean))], [
+    wishlists,
+  ]);
+
+  const filteredWishlists = selectedVillage
+    ? wishlists.filter(item => item.title === selectedVillage)
+    : wishlists;
+
+  const handleSelectWishlistItem = item => {
+    dispatch(setCurrentWishListItem(item));
+  };
 
   return (
-    <div className="item">
-      <div className="item__container">
-        <Header />
-        <div className="item__location list__location">
-          <FaMapMarkerAlt className="item__icon" />
-          <a href="/">View on Property Map</a>
-        </div>
-        <h1 className="list__title">Wish List</h1>
-        {wishlists?.map(item => (
-          <div className="item__body" key={item.id}>
-            <div className="item__details-wrapper">
-              <div className="list__details-left">
-                <div className="item-title_wrapper--mobile">
-                  <h1 className="list__item-title--mobile">{item.title}</h1>
-                  <h2 className="list__item-title--mobile">{item.unit}</h2>
-                </div>
-                <img
-                  key={item.images[0]}
-                  className="carousel-image"
-                  src={item.images[0]}
-                  alt="House"
-                />
-              </div>
-              <div className="list__details-right">
-                <div className="item-title_wrapper item-title_wrapper--desktop">
-                  <span className="list__item-title item-title-right">{item.title}</span>
-                </div>
-                <div className="item__details">
-                  <span className="list__item-title item-title_wrapper--desktop">{item.unit}</span>
-                  <div className="list_item__amenities">
-                    <div>
-                      <span className="font600">Available amenities in this unit:</span>
-                      <ol>
-                        {item.unitAmenities?.map(amenity => (
-                          <li key={amenity}>{amenity}</li>
-                        ))}
-                      </ol>
+    <div className={`${styles.pageRoot} ${darkMode ? styles.pageRootDark : ''}`}>
+      <div className={styles.item}>
+        <div className={styles.itemContainer}>
+          <Header villages={villages} onVillageChange={setSelectedVillage} />
+
+          <div className={`${styles.itemLocation} ${styles.listLocation}`}>
+            <FaMapMarkerAlt className={styles.itemIcon} />
+            <Link
+              to="/lbdashboard/property-map"
+              className={darkMode ? styles.wishlistLinkDark : styles.mapLinkLight}
+            >
+              View on Property Map
+            </Link>
+          </div>
+
+          <h1 className={`${styles.listTitle} ${darkMode ? styles.listTitleDark : ''}`}>
+            Wish List
+          </h1>
+
+          {filteredWishlists.length ? (
+            filteredWishlists.map(item => {
+              const firstImg = item.images?.[0];
+
+              return (
+                <div
+                  className={`${styles.itemBody} ${darkMode ? styles.itemBodyDark : ''}`}
+                  key={item.id}
+                >
+                  <div className={styles.itemMainRow}>
+                    <div className={styles.listDetailsLeft}>
+                      <div className={styles.itemTitleWrapperMobile}>
+                        <h1 className={`${styles.listItemTitle} ${styles.listItemTitleMobile}`}>
+                          {item.title}
+                        </h1>
+                        <h2 className={`${styles.listItemTitle} ${styles.listItemTitleMobile}`}>
+                          {item.unit}
+                        </h2>
+                      </div>
+
+                      {firstImg ? (
+                        <img
+                          src={firstImg}
+                          alt={`${item.title}, ${item.unit}`}
+                          className={styles.itemImage}
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className={styles.imagePlaceholder}>No image</div>
+                      )}
+                    </div>
+
+                    <div className={styles.listDetailsRight}>
+                      <div
+                        className={`${styles.itemTitleWrapper} ${styles.itemTitleWrapperDesktop}`}
+                      >
+                        <span className={`${styles.listItemTitle} ${styles.itemTitleRight}`}>
+                          {item.title}
+                        </span>
+                      </div>
+
+                      <div className={styles.itemDetails}>
+                        <span
+                          className={`${styles.listItemTitle} ${styles.itemTitleWrapperDesktop}`}
+                        >
+                          {item.unit}
+                        </span>
+
+                        <div className={styles.listItemAmenities}>
+                          <span className={styles.font600}>Available amenities in this unit:</span>
+                          <ol>
+                            {item.unitAmenities?.map(amenity => (
+                              <li key={amenity}>{amenity}</li>
+                            ))}
+                          </ol>
+                        </div>
+
+                        <div className={styles.itemPrice}>
+                          <span className={styles.font600}>Basic per night price:</span>{' '}
+                          {item.price}
+                        </div>
+
+                        <Link
+                          to={`/lbdashboard/wishlist/${item.id}/availability`}
+                          onClick={() => handleSelectWishlistItem(item)}
+                          className={`${styles.listDetails} ${
+                            darkMode ? styles.wishlistLinkDark : ''
+                          }`}
+                        >
+                          Click here to view availabilities
+                        </Link>
+                      </div>
                     </div>
                   </div>
+
+                  <div className={styles.itemCardFooter}>
+                    <div className={styles.footerLinks}>
+                      <Link
+                        to={`/lbdashboard/wishlist/${item.id}`}
+                        onClick={() => handleSelectWishlistItem(item)}
+                        className={`${styles.footerLink} ${
+                          darkMode ? styles.wishlistLinkDark : ''
+                        }`}
+                      >
+                        Click for list overview
+                      </Link>
+                    </div>
+
+                    <Link
+                      to="/lbdashboard/messaging"
+                      onClick={() => handleSelectWishlistItem(item)}
+                      className={`${styles.chatButton} ${darkMode ? styles.chatButtonDark : ''}`}
+                    >
+                      <img
+                        width="24"
+                        height="24"
+                        src="https://img.icons8.com/material-outlined/24/chat.png"
+                        alt=""
+                        aria-hidden="true"
+                      />
+                      Chat with the Host
+                    </Link>
+                  </div>
                 </div>
-                <div className="item__price">
-                  <span className="font600">Basic per night price:</span> {item.price}
-                </div>
-                <div>
-                  <NavItem
-                    tag={Link}
-                    to={`/lbdashboard/wishlist/${item.id}`}
-                    onClick={() => {
-                      dispatch(setCurrentWishListItem(item));
-                    }}
-                    className="list__details"
-                  >
-                    Click here to view availabilities
-                  </NavItem>
-                </div>
-              </div>
-            </div>
-            <div className="item__footer">
-              <NavItem
-                tag={Link}
-                to={`/lbdashboard/wishlist/${item.id}`}
-                onClick={() => {
-                  dispatch(setCurrentWishListItem(item));
-                }}
-                className="list__link"
-              >
-                Click for list overview
-              </NavItem>
-              <div className="wishlist__start__chat">
-                <button type="button">
-                  <img
-                    width="24"
-                    height="24"
-                    src="https://img.icons8.com/material-outlined/24/chat.png"
-                    alt="chat"
-                  />
-                  Chat with the Host
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
+              );
+            })
+          ) : (
+            <p className={styles.noResults}>No properties found</p>
+          )}
+        </div>
       </div>
     </div>
   );
 }
 
+const wishlistEntryShape = PropTypes.shape({
+  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  title: PropTypes.string,
+  unit: PropTypes.string,
+  images: PropTypes.arrayOf(PropTypes.string),
+  unitAmenities: PropTypes.arrayOf(PropTypes.string),
+  price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+});
+
+WishList.propTypes = {
+  wishlists: PropTypes.arrayOf(wishlistEntryShape),
+};
+
+WishList.defaultProps = {
+  wishlists: [],
+};
+
 const mapStateToProps = state => ({
-  authUser: state.auth.user,
   wishlists: state.wishlistItem.wishlists,
 });
 

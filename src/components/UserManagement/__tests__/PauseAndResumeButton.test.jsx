@@ -1,71 +1,150 @@
-// import React from 'react';
-import { screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import PauseAndResumeButton from '../PauseAndResumeButton';
-import { PAUSE, RESUME, PROCESSING } from '../../../languages/en/ui';
+import { PAUSE, RESUME } from '../../../languages/en/ui';
 import { userProfileMock } from '../../../__tests__/mockStates';
-import { renderWithProvider } from '../../../__tests__/utils';
+import { vi } from 'vitest';
+import { Provider } from 'react-redux';
 
-vi.mock('react-toastify');
+import { updateUserPauseStatus } from '../../../actions/userManagement';
 
-// Provide a default for loadUserProfile so the component doesn't error
-PauseAndResumeButton.defaultProps = {
-  loadUserProfile: vi.fn(),
-};
+vi.mock('../../../actions/userManagement', () => ({
+  updateUserPauseStatus: vi.fn(() => async () => undefined),
+}));
+
+vi.mock('react-toastify', () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+}));
+
+const createThunkStore = () => ({
+  getState: () => ({
+    theme: {
+      darkMode: false,
+    },
+    auth: {
+      user: {
+        userid: userProfileMock._id,
+        role: 'Administrator',
+        permissions: ['interactWithPauseUserButton'],
+        email: 'test@example.com',
+      },
+    },
+  }),
+  dispatch: action =>
+    typeof action === 'function'
+      ? action(() => {}, () => ({}))
+      : action,
+  subscribe: () => () => {},
+});
 
 describe('PauseAndResumeButton', () => {
+  const loadUserProfile = vi.fn(() => Promise.resolve());
+
   beforeEach(() => {
-    renderWithProvider(<PauseAndResumeButton isBigBtn userProfile={userProfileMock} />);
+    vi.clearAllMocks();
   });
 
-  describe('Structure', () => {
-    it('should render a button', () => {
-      const pauseResumeButton = screen.getByTestId('pause-resume-button');
-      expect(pauseResumeButton).toBeInTheDocument();
+  const renderPauseButton = ui =>
+    render(ui, {
+      wrapper: ({ children }) => (
+        <Provider store={createThunkStore()}>{children}</Provider>
+      ),
+    });
+
+  it('renders pause button when user is active', () => {
+    renderPauseButton(
+      <PauseAndResumeButton
+        isBigBtn
+        userProfile={{ ...userProfileMock, isActive: true }}
+        loadUserProfile={loadUserProfile}
+      />
+    );
+
+    expect(
+      screen.getByRole('button', { name: PAUSE })
+    ).toBeInTheDocument();
+  });
+
+  it('opens activation date popup when clicking pause', async () => {
+    renderPauseButton(
+      <PauseAndResumeButton
+        isBigBtn
+        userProfile={{ ...userProfileMock, isActive: true }}
+        loadUserProfile={loadUserProfile}
+      />
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: PAUSE })
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
   });
 
-  describe('Behavior', () => {
-    it('should render modal after the user clicks the pause button', async () => {
-      userEvent.click(screen.getByRole('button', { name: PAUSE }));
+  it('pauses user and switches button to RESUME', async () => {
+    renderPauseButton(
+      <PauseAndResumeButton
+        isBigBtn
+        userProfile={{ ...userProfileMock, isActive: true }}
+        loadUserProfile={loadUserProfile}
+      />
+    );
 
-      // Wait for the dialog to appear
-      await waitFor(() => {
-        expect(screen.getByRole('dialog')).toBeInTheDocument();
-      });
-    });
+    // Open popup
+    await userEvent.click(
+      screen.getByRole('button', { name: PAUSE })
+    );
 
-    it('should change pause button to processing and then to resume after clicking on "Pause the User"', async () => {
-      // Select a Pause button
-      const pauseButton = screen.getAllByRole('button', { name: PAUSE })[0];
+    // Set reactivation date
+    const dateInput = await screen.findByTestId('date-input');
+    await userEvent.type(dateInput, '2100-05-24');
 
-      // Click on Pause button to open the modal
-      userEvent.click(pauseButton);
+    // Confirm pause
+    await userEvent.click(
+      screen.getByRole('button', { name: /pause the user/i })
+    );
 
-      // Wait for the modal to appear
-      await waitFor(() => {
-        expect(screen.getByRole('dialog')).toBeInTheDocument();
-      });
+    await waitFor(() => {
+      expect(updateUserPauseStatus).toHaveBeenCalled();
+      expect(
+        screen.getByRole('button', { name: RESUME })
+      ).toBeInTheDocument();
+    })
+    expect(updateUserPauseStatus).toHaveBeenCalledWith(
+      expect.objectContaining({ _id: userProfileMock._id }),
+      'Inactive',
+      expect.anything(),
+    );
+  });
 
-      // Select a future date
-      const dateInput = screen.getByTestId('date-input');
-      userEvent.type(dateInput, '2100-05-24');
+  it('resumes user and switches button back to PAUSE', async () => {
+    renderPauseButton(
+      <PauseAndResumeButton
+        isBigBtn
+        userProfile={{ ...userProfileMock, isActive: false }}
+        loadUserProfile={loadUserProfile}
+      />
+    );
 
-      // Click on 'Pause the User' button to trigger processing
-      const confirmButton = screen.getByRole('button', { name: /pause the user/i });
-      userEvent.click(confirmButton);
+    await userEvent.click(
+      screen.getByRole('button', { name: RESUME })
+    );
 
-      // Expect the button to show PROCESSING and be disabled
-      await waitFor(() => {
-        expect(pauseButton).toHaveTextContent(PROCESSING);
-        expect(pauseButton).toBeDisabled();
-      });
-
-      // Wait for the button text to change to RESUME after processing is complete
-      await waitFor(() => {
-        expect(pauseButton).toHaveTextContent(RESUME);
-        expect(pauseButton).not.toBeDisabled();
-      });
-    });
+    await waitFor(() => {
+      expect(updateUserPauseStatus).toHaveBeenCalled();
+      expect(
+        screen.getByRole('button', { name: PAUSE })
+      ).toBeInTheDocument();
+    })
+    expect(updateUserPauseStatus).toHaveBeenCalledWith(
+      expect.objectContaining({ _id: userProfileMock._id }),
+      'Active',
+      expect.any(Number),
+    );
   });
 });

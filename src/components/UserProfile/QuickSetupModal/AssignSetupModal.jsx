@@ -3,9 +3,10 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Input } from
 import hasPermission from '../../../utils/permissions';
 import { deleteTitleById } from '~/actions/title';
 import { useSelector } from 'react-redux';
-import '../../Header/DarkMode.css';
+import '../../Header/index.module.css';
 import { toast } from "react-toastify";
 
+import { permissions } from '../../../utils/constants';
 function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfile, setTitleOnSet, refreshModalTitles, updateUserProfile, handleSubmit}) {
   const darkMode = useSelector(state => state.theme.darkMode)
   const [validation, setValid] = useState({
@@ -37,7 +38,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
 
     if (validation.volunteerAgree && googleDoc.length !== 0) {
       const originalTeamId = userProfile.teams.map(team => team._id);
-      const originalProjectId = userProfile.projects.map(project => project._id);
+      const originalProjectId = userProfile.projects.map(project => project.projectId);
       // If the title has team assigned, add the team to the user profile. Remove duplicate teams
       const teamsAssigned = title.teamAssiged
         ? originalTeamId.includes(title?.teamAssiged._id)
@@ -46,7 +47,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
         : userProfile.teams;
       // If the title has project assigned, add the project to the user profile. Remove duplicate projects
       const projectAssigned = title.projectAssigned
-        ? originalProjectId.includes(title?.projectAssigned._id)
+        ? originalProjectId.includes(title?.projectAssigned.projectId)
           ? userProfile.projects
           : [...userProfile.projects, title.projectAssigned]
         : userProfile.projects;
@@ -77,7 +78,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
       if (userProfile.teams.includes(title?.teamAssiged)) data.teams.pop();
       if (userProfile.projects.includes(title.projectAssigned)) data.projects.pop();
 
-      if (hasPermission("manageAdminLinks")) {
+      if (hasPermission(permissions.manageAdminLinks)) {
         setUserProfile(prev => ({ ...prev, ...data }));
       }
       const result = await handleSubmit(Object.assign({},userProfile,data));
@@ -107,6 +108,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
         setIsOpen(false);
       })
       .catch(e => {
+        // eslint-disable-next-line no-console
         console.log(e);
       });
   };

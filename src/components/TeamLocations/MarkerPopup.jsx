@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { CircleMarker, Popup } from 'react-leaflet';
 import { Button } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
-import './TeamLocations.css';
+import './TeamLocations.module.css';
 
 function MarkerPopup({
   profile,

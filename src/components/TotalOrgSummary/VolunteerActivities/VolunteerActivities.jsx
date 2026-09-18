@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { normalizeVolunteerActivities } from '~/utils/totalOrgSummary';
 import Loading from '~/components/common/Loading';
 import StatisticsTab from '../StatisticsTab/StatisticsTab';
-
+import styles from '../TotalOrgSummary.module.css';
 function VolunteerActivities({
   isLoading,
   totalSummariesSubmitted,
@@ -42,7 +42,7 @@ function VolunteerActivities({
 
   return (
     <div
-      className="volunteer-status-grid"
+      className={styles.volunteerStatusGrid} // ⬅️ use module class
       role="region"
       aria-label="Volunteer Activities Statistics"
     >

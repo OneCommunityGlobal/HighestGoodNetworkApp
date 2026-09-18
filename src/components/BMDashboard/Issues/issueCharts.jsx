@@ -1,15 +1,157 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import Select from 'react-select';
+import { Bar } from 'react-chartjs-2';
+import Select, { components } from 'react-select';
 import { fetchIssues } from '../../../actions/bmdashboard/issueChartActions';
-import './issueChart.css';
+import 'chart.js/auto';
+import styles from './issueChart.module.css';
 
-function IssueChart() {
+const NARROW_CARD_CHART_WIDTH = 440; // make card-mode IssueChart X-axis labels rotate at 45° when chart width is below this value, below 1296px
+const X_AXIS_MAX_CHARS_PER_LINE = 10;
+
+const stripNumericSuffix = value => {
+  const str = String(value);
+  let end = str.length;
+  while (end > 0) {
+    const code = str.charCodeAt(end - 1);
+    if (code < 48 || code > 57) break;
+    end -= 1;
+  }
+  const base = str.slice(0, end).trim();
+  return base || str;
+};
+
+const isValidIssueType = value => {
+  if (value == null) return false;
+
+  const normalized = String(value)
+    .trim()
+    .toLowerCase();
+  return normalized !== '' && normalized !== 'null' && normalized !== 'undefined';
+};
+
+const getValidIssueTypes = sourceIssues => Object.keys(sourceIssues || {}).filter(isValidIssueType);
+
+// Wrap long desktop X-axis labels without inserting blank rows above single long words.
+const wrapXAxisLabel = (label, maxCharsPerLine) => {
+  const words = String(label)
+    .split(/\s+/)
+    .filter(Boolean);
+  const lines = [];
+  let currentLine = '';
+
+  words.forEach(word => {
+    const nextLine = currentLine ? `${currentLine} ${word}` : word;
+
+    if (nextLine.length <= maxCharsPerLine) {
+      currentLine = nextLine;
+      return;
+    }
+
+    // Avoid blank first lines for long single-word labels like "Maintenance".
+    if (currentLine) lines.push(currentLine);
+    currentLine = word;
+  });
+
+  if (currentLine) lines.push(currentLine);
+  return lines;
+};
+
+const getXAxisLabel = (labels, value, index, ticks) =>
+  labels?.[index] ?? ticks?.[index]?.label ?? String(value);
+
+const createXAxisTickCallback = ({ labels, isMobile, useRotatedTicks = false }) => (
+  value,
+  index,
+  ticks,
+) => {
+  const label = getXAxisLabel(labels, value, index, ticks);
+  if (isMobile || useRotatedTicks || label.length <= X_AXIS_MAX_CHARS_PER_LINE) return label;
+  return wrapXAxisLabel(label, X_AXIS_MAX_CHARS_PER_LINE);
+};
+
+const getCardTickRotation = (isMobile, useRotatedTicks) => {
+  if (isMobile) return 90;
+  if (useRotatedTicks) return 45;
+  return 0;
+};
+
+const shouldRotateCardTicks = (chartWidth, pluginOptions) =>
+  !pluginOptions.isMobile && chartWidth > 0 && chartWidth < pluginOptions.narrowChartWidth;
+
+const issueChartCardTickRotationPlugin = {
+  id: 'issueChartCardTickRotation',
+  beforeUpdate(chart, _args, pluginOptions = {}) {
+    if (!pluginOptions.enabled) return;
+
+    const xTicks = chart.options?.scales?.x?.ticks;
+    if (!xTicks) return;
+
+    const measuredChartWidth = chart.width || chart.canvas?.clientWidth || 0;
+    // Card-mode IssueChart can be narrow while the viewport is still desktop/tablet sized.
+    const useRotatedTicks = shouldRotateCardTicks(measuredChartWidth, pluginOptions);
+
+    const labelRotation = getCardTickRotation(pluginOptions.isMobile, useRotatedTicks);
+
+    xTicks.minRotation = labelRotation;
+    xTicks.maxRotation = labelRotation;
+    xTicks.callback = createXAxisTickCallback({
+      labels: chart.data?.labels,
+      isMobile: pluginOptions.isMobile,
+      useRotatedTicks,
+    });
+  },
+};
+
+const generateColor = idx => `hsl(${(idx * 60) % 360}, 70%, 50%)`;
+
+const handleLegendClick = (e, legendItem, legend) => {
+  const index = legendItem.datasetIndex;
+  const chart = legend.chart;
+  const visible = chart.isDatasetVisible(index);
+  chart.setDatasetVisibility(index, !visible);
+  chart.update();
+};
+
+const getTooltipLabel = (ctx, chartAnalysis) => {
+  const year = ctx.dataset.label;
+  const value = Number(ctx.raw) || 0;
+  const total = chartAnalysis.totalByYear?.[year] ?? 0;
+  const pct = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
+  return `${year}: ${value} (${pct}%)`;
+};
+
+const getBarBackgroundColor = (ctx, chartAnalysis) => {
+  const idx = ctx.dataIndex;
+  const ds = ctx.dataset;
+  const base = ds.backgroundColor;
+
+  if (chartAnalysis.topIssueTypeIndex < 0) return base;
+
+  const isTop = idx === chartAnalysis.topIssueTypeIndex;
+
+  if (typeof base === 'string' && base.startsWith('hsl(')) {
+    const alpha = isTop ? 0.9 : 0.55;
+    return base.replace('hsl(', 'hsla(').replace(')', `, ${alpha})`);
+  }
+
+  return base;
+};
+
+const getBarBorderWidth = (ctx, chartAnalysis) =>
+  ctx.dataIndex === chartAnalysis.topIssueTypeIndex ? 2 : 1.5;
+
+function IssueChart({ variant = 'standalone', showTitle = true }) {
   const dispatch = useDispatch();
+  const darkMode = useSelector(state => state.theme.darkMode);
   const { loading, issues, error } = useSelector(state => state.bmissuechart);
 
   const [filters, setFilters] = useState({ issueTypes: [], years: [] });
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' ? window.innerWidth <= 640 : false,
+  );
+
+  const isCardVariant = variant === 'card';
 
   useEffect(() => {
     dispatch(fetchIssues());
@@ -17,7 +159,8 @@ function IssueChart() {
 
   useEffect(() => {
     if (issues && Object.keys(issues).length > 0) {
-      const allIssueTypes = Object.keys(issues);
+      // Sanitize backend issue-type keys once before they enter filters or chart labels.
+      const allIssueTypes = getValidIssueTypes(issues);
       const allYears = [
         ...new Set(
           Object.values(issues)
@@ -30,152 +173,656 @@ function IssueChart() {
     }
   }, [issues]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 640);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const extractDropdownOptions = () => {
-    const issueTypes = [...new Set(Object.keys(issues))].map(issue => ({
-      label: issue,
-      value: issue,
-    }));
+    const rawIssueTypes = [...new Set(getValidIssueTypes(issues))];
+    const issueTypeGroups = rawIssueTypes.reduce((acc, name) => {
+      const base = stripNumericSuffix(name);
+      if (!acc[base]) acc[base] = [];
+      acc[base].push(name);
+      return acc;
+    }, {});
+
+    const groupedIssueTypes = Object.entries(issueTypeGroups).map(([base, names]) => {
+      const options = names
+        .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+        .map(issue => ({ label: issue, value: issue }));
+
+      return names.length > 1
+        ? {
+            label: `${base} (e.g., ${names.slice(0, 3).join(', ')}${
+              names.length > 3 ? ', …' : ''
+            })`,
+            options,
+          }
+        : options[0];
+    });
 
     const years = [
       ...new Set(
-        Object.values(issues)
+        Object.values(issues || {})
           .flatMap(issueData => Object.keys(issueData))
-          .map(year => parseInt(year, 10)),
+          .map(y => parseInt(y, 10)),
       ),
     ]
       .sort((a, b) => a - b)
       .map(year => ({ label: year.toString(), value: year }));
 
-    const addAll = options => [{ label: 'All', value: 'All' }, ...options];
     return {
-      issueTypes: addAll(issueTypes),
-      years: addAll(years),
+      issueTypes: groupedIssueTypes,
+      years,
     };
   };
 
   const { issueTypes, years } = extractDropdownOptions();
 
-  const generateColor = index => {
-    const hue = (index * 60) % 360;
-    return `hsl(${hue}, 70%, 50%)`;
+  const flattenOptions = options =>
+    options.flatMap(option => (option.options ? option.options : option));
+
+  const flatIssueTypeOptions = flattenOptions(issueTypes);
+  const uniqueYears = years.map(y => y.value);
+
+  const yearColorMap = useMemo(
+    () =>
+      uniqueYears.reduce((acc, year, idx) => {
+        acc[year] = generateColor(idx);
+        return acc;
+      }, {}),
+    [uniqueYears],
+  );
+
+  const handleFilterChange = (selected, field) => {
+    const cleaned = (selected || [])
+      .filter(option => option?.value != null)
+      .map(option => option.value)
+      .filter(value => {
+        const lower = String(value).toLowerCase();
+        return lower !== '__all__' && lower !== 'select all' && lower !== 'all';
+      });
+
+    setFilters(prev => ({
+      ...prev,
+      [field]: cleaned,
+    }));
   };
 
-  const uniqueYears = years.filter(year => year.value !== 'All').map(year => year.value);
-  const yearColorMap = uniqueYears.reduce((acc, year, index) => {
-    acc[year] = generateColor(year, index);
-    return acc;
-  }, {});
-
-  const handleFilterChange = (selectedOptions, field) => {
-    if (selectedOptions.some(option => option.value === 'All')) {
-      const allValues = field === 'issueTypes' ? Object.keys(issues) : uniqueYears;
-      setFilters({
-        ...filters,
-        [field]: allValues,
-      });
-    } else {
-      setFilters({
-        ...filters,
-        [field]: selectedOptions.map(option => option.value),
-      });
-    }
+  const handleSelectAll = field => {
+    setFilters(prev => ({
+      ...prev,
+      [field]: field === 'issueTypes' ? getValidIssueTypes(issues) : uniqueYears,
+    }));
   };
 
-  const processData = () => {
-    if (!issues || Object.keys(issues).length === 0) return [{ issueType: 'No Data' }];
+  const handleClearFilters = () => {
+    setFilters({
+      issueTypes: [],
+      years: [],
+    });
+  };
 
-    if (filters.issueTypes.length === 0 && filters.years.length >= 0) {
-      return [{ issueType: 'No Issues Selected' }];
-    }
+  const chartData = useMemo(() => {
+    if (!issues || Object.keys(issues).length === 0) return { labels: [], datasets: [] };
 
-    const groupedData = {};
-    const allYears = [...filters.years].sort((a, b) => a - b);
+    const getBase = name => stripNumericSuffix(name);
 
-    const filteredIssueTypes = filters.issueTypes.length ? filters.issueTypes : Object.keys(issues);
+    const issueTypeKeys = getValidIssueTypes(issues).sort((a, b) => {
+      const aLower = String(a).toLowerCase();
+      const bLower = String(b).toLowerCase();
+      const aIsNull = aLower === 'null';
+      const bIsNull = bLower === 'null';
 
-    filteredIssueTypes.forEach(issueType => {
-      if (!issues[issueType]) return;
+      if (aIsNull && !bIsNull) return 1;
+      if (!aIsNull && bIsNull) return -1;
 
-      const issueData = issues[issueType];
-      groupedData[issueType] = { issueType };
+      return aLower.localeCompare(bLower, undefined, { numeric: true });
+    });
 
-      allYears.forEach(year => {
-        groupedData[issueType][year] = 0;
-      });
+    const groupMap = issueTypeKeys.reduce((acc, type) => {
+      const base = getBase(type);
+      if (!acc[base]) acc[base] = [];
+      acc[base].push(type);
+      return acc;
+    }, {});
 
-      Object.keys(issueData).forEach(year => {
-        const yearNum = parseInt(year, 10);
-        if (filters.years.includes(yearNum)) {
-          groupedData[issueType][yearNum] = issueData[year] || 0;
+    const selectedTypes = filters.issueTypes.length ? filters.issueTypes : issueTypeKeys;
+    const selectedTypeSet = new Set(selectedTypes.map(t => String(t).toLowerCase()));
+
+    const selectedBases = [...new Set(selectedTypes.map(getBase))].sort((a, b) => {
+      const aLower = String(a).toLowerCase();
+      const bLower = String(b).toLowerCase();
+      const aIsNull = aLower === 'null';
+      const bIsNull = bLower === 'null';
+
+      if (aIsNull && !bIsNull) return 1;
+      if (!aIsNull && bIsNull) return -1;
+
+      return aLower.localeCompare(bLower, undefined, { numeric: true });
+    });
+
+    const filteredYears = filters.years.length ? filters.years : uniqueYears;
+    const labels = selectedBases;
+
+    const datasets = filteredYears.map(year => ({
+      label: year.toString(),
+      data: labels.map(base =>
+        (groupMap[base] || [])
+          .filter(type => selectedTypeSet.has(String(type).toLowerCase()))
+          .reduce((sum, type) => sum + (issues[type]?.[year] || 0), 0),
+      ),
+      backgroundColor: yearColorMap[year],
+      borderColor: darkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)',
+      borderWidth: 1.5,
+      borderRadius: 6,
+    }));
+
+    return { labels, datasets };
+  }, [issues, filters, uniqueYears, yearColorMap, darkMode]);
+
+  const chartAnalysis = useMemo(() => {
+    const labels = chartData?.labels ?? [];
+    const datasets = chartData?.datasets ?? [];
+
+    const totalByYear = {};
+    datasets.forEach(ds => {
+      const year = ds.label;
+      const total = (ds.data || []).reduce((sum, v) => sum + (Number(v) || 0), 0);
+      totalByYear[year] = total;
+    });
+
+    const totalsByIssueType = labels.map((_, idx) =>
+      datasets.reduce((sum, ds) => sum + (Number(ds.data?.[idx]) || 0), 0),
+    );
+
+    const topIssueTypeIndex =
+      totalsByIssueType.length > 0
+        ? totalsByIssueType.reduce(
+            (bestIdx, val, idx, arr) => (val > arr[bestIdx] ? idx : bestIdx),
+            0,
+          )
+        : -1;
+
+    let peak = { value: -Infinity, year: null, issueType: null };
+    datasets.forEach(ds => {
+      (ds.data || []).forEach((v, idx) => {
+        const value = Number(v) || 0;
+        if (value > peak.value) {
+          peak = { value, year: ds.label, issueType: labels[idx] ?? null };
         }
       });
     });
 
-    return Object.values(groupedData);
-  };
+    let insightText = '';
+    if (peak.value > 0 && peak.year && peak.issueType) {
+      insightText = `${peak.issueType} issues peak in ${peak.year} (${peak.value}).`;
+    } else {
+      insightText = 'No issues found for the selected filters.';
+    }
 
-  const processedData = processData();
+    return { totalByYear, topIssueTypeIndex, insightText };
+  }, [chartData]);
 
-  const allYValues = processedData.flatMap(data =>
-    Object.values(data).filter(val => typeof val === 'number'),
-  );
+  const xAxisBackgroundPlugin = dm => ({
+    id: 'xAxisBackground',
+    beforeDraw: chart => {
+      const { ctx, chartArea, scales } = chart;
+      const xScale = scales.x;
+      if (!xScale) return;
 
-  const yTicks = [...new Set(allYValues.map(val => Math.floor(val)))].sort((a, b) => a - b);
+      ctx.save();
+      const ticks = xScale.ticks.length;
 
-  const sortedProcessedData = processedData.sort((a, b) => {
-    const issueTypeA = a.issueType;
-    const issueTypeB = b.issueType;
-    return (
-      issueTypes.findIndex(option => option.value === issueTypeA) -
-      issueTypes.findIndex(option => option.value === issueTypeB)
-    );
+      xScale.ticks.forEach((_, index) => {
+        if (index % 2 !== 0) return;
+
+        const center = xScale.getPixelForTick(index);
+        const left = index === 0 ? xScale.left : (xScale.getPixelForTick(index - 1) + center) / 2;
+        const right =
+          index === ticks - 1 ? xScale.right : (center + xScale.getPixelForTick(index + 1)) / 2;
+
+        ctx.fillStyle = dm ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.08)';
+        ctx.fillRect(left, chartArea.top, right - left, chartArea.bottom - chartArea.top);
+      });
+
+      ctx.restore();
+    },
   });
 
-  return (
-    <div className="issue-chart-event-container">
-      <h2 className="issue-chart-event-title">Issues Chart</h2>
+  const chartOptions = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        padding: {
+          bottom: isCardVariant ? 8 : 56,
+        },
+      },
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+          onClick: handleLegendClick,
+          labels: {
+            font: { size: 13 },
+            usePointStyle: true,
+            color: darkMode ? '#cfd7e3' : '#232323',
+          },
+        },
+        title: {
+          display: !isCardVariant,
+          text: 'Number of Issues Reported by Type',
+          font: { size: 17 },
+          color: darkMode ? '#cfd7e3' : '#232323',
+        },
+        tooltip: {
+          enabled: true,
+          mode: 'nearest',
+          intersect: true,
+          backgroundColor: darkMode ? '#232323' : '#fff',
+          titleColor: darkMode ? '#fff' : '#232323',
+          bodyColor: darkMode ? '#fff' : '#232323',
+          callbacks: {
+            title: items => items?.[0]?.label ?? '',
+            label: ctx => getTooltipLabel(ctx, chartAnalysis),
+          },
+        },
+        datalabels: {
+          display: false,
+        },
+        issueChartCardTickRotation: {
+          enabled: isCardVariant,
+          isMobile,
+          narrowChartWidth: NARROW_CARD_CHART_WIDTH,
+        },
+        xAxisBackground: true,
+      },
+      datasets: {
+        bar: {
+          backgroundColor: ctx => getBarBackgroundColor(ctx, chartAnalysis),
+          borderWidth: ctx => getBarBorderWidth(ctx, chartAnalysis),
+        },
+      },
+      scales: {
+        x: {
+          offset: true,
+          title: {
+            display: true,
+            text: 'Issue Type',
+            font: { size: 14 },
+            color: darkMode ? '#cfd7e3' : '#232323',
+          },
+          grid: { display: false },
+          barPercentage: 0.9,
+          categoryPercentage: 0.8,
+          ticks: {
+            color: darkMode ? '#e8f0fe' : '#1a1a1a',
+            stepSize: 1,
+            padding: 10,
+            align: 'center',
+            autoSkip: false,
+            maxRotation: isMobile ? 90 : 0,
+            minRotation: isMobile ? 90 : 0,
+            // Card-mode desktop labels have less width, so only those X-axis ticks use smaller text.
+            // Use 8px only for desktop card-mode X-axis ticks so crowded labels fit the narrow card.
+            font: { size: isCardVariant && !isMobile ? 8 : 12, weight: '500' },
+            callback: createXAxisTickCallback({
+              labels: chartData?.labels,
+              isMobile,
+            }),
+          },
+          border: {
+            color: darkMode ? '#4a5568' : '#e2e8f0',
+            width: 1,
+          },
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'No. of Issues',
+            font: { size: 14 },
+            color: darkMode ? '#cfd7e3' : '#232323',
+          },
+          beginAtZero: true,
+          ticks: { stepSize: 1, color: darkMode ? '#cfd7e3' : '#232323' },
+          grid: { color: darkMode ? '#353535' : '#efefef' },
+        },
+      },
+    }),
+    [darkMode, isMobile, chartAnalysis, chartData, isCardVariant],
+  );
 
-      <div>
-        <label className="issue-chart-label" htmlFor="issue-type-select">
-          Issue Type:
-        </label>
-        <Select
-          inputId="issue-type-select"
-          className="issue-chart-select"
-          isMulti
-          options={issueTypes}
-          onChange={selectedOptions => handleFilterChange(selectedOptions, 'issueTypes')}
-          value={issueTypes.filter(option => filters.issueTypes.includes(option.value))}
-        />
+  const chartPlugins = useMemo(
+    () => [xAxisBackgroundPlugin(darkMode), issueChartCardTickRotationPlugin],
+    [darkMode],
+  );
 
-        <label className="issue-chart-label" htmlFor="year-select">
-          Year:
-        </label>
-        <Select
-          inputId="year-select"
-          className="issue-chart-select"
-          isMulti
-          // other props...
-        />
+  const selectStyles = useMemo(
+    () => ({
+      control: provided => ({
+        ...provided,
+        backgroundColor: darkMode ? '#22272e' : '#ffffff',
+        borderColor: darkMode ? '#3d444d' : '#ccc',
+        color: darkMode ? '#cfd7e3' : '#333',
+        // Keep the select itself compact; extra selected chips scroll inside the value area.
+        minHeight: 42,
+        height: 42,
+        maxHeight: 42,
+        alignItems: 'center',
+        paddingTop: 0,
+        paddingBottom: 0,
+        boxShadow: 'none',
+        '&:hover': {
+          borderColor: darkMode ? '#3d444d' : '#bbb',
+        },
+      }),
+      valueContainer: provided => ({
+        ...provided,
+        display: 'flex',
+        // Show roughly one chip row so filters do not push the chart far down the card.
+        height: 34,
+        maxHeight: 34,
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        paddingTop: 2,
+        paddingBottom: 2,
+        paddingLeft: 10,
+        paddingRight: 10,
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: 4,
+      }),
+      input: provided => ({
+        ...provided,
+        margin: 0,
+        padding: 0,
+        lineHeight: 'normal',
+        color: darkMode ? '#cfd7e3' : '#333',
+      }),
+      menu: provided => ({
+        ...provided,
+        backgroundColor: darkMode ? '#1e1e1e' : '#ffffff',
+        color: darkMode ? '#cfd7e3' : '#333',
+      }),
+      menuList: provided => ({
+        ...provided,
+        maxHeight: 220,
+        paddingTop: 6,
+        paddingBottom: 6,
+        overflowY: 'auto',
+      }),
+      groupHeading: provided => ({
+        ...provided,
+        fontSize: 12,
+        fontWeight: 600,
+        color: darkMode ? '#cfd7e3' : '#4a5568',
+      }),
+      indicatorsContainer: provided => ({
+        ...provided,
+        alignItems: 'center',
+        alignSelf: 'stretch',
+        flexShrink: 0,
+        paddingRight: 6,
+      }),
+      singleValue: provided => ({
+        ...provided,
+        color: darkMode ? '#cfd7e3' : '#333',
+      }),
+      multiValue: provided => ({
+        ...provided,
+        margin: '1px 4px 1px 0',
+        backgroundColor: darkMode ? '#3d444d' : '#e2e8f0',
+        maxWidth: '100%',
+      }),
+      multiValueLabel: provided => ({
+        ...provided,
+        color: darkMode ? '#cfd7e3' : '#333',
+        fontSize: 13,
+        lineHeight: 1.2,
+        whiteSpace: 'normal',
+      }),
+      multiValueRemove: provided => ({
+        ...provided,
+        alignItems: 'center',
+        display: 'flex',
+        paddingLeft: 4,
+        paddingRight: 4,
+      }),
+      option: (provided, state) => ({
+        ...provided,
+        backgroundColor: state.isFocused ? (darkMode ? '#4caf50' : '#e2e8f0') : 'transparent',
+        color: state.isFocused ? (darkMode ? '#fff' : '#1a202c') : darkMode ? '#cfd7e3' : '#333',
+        paddingTop: 8,
+        paddingBottom: 8,
+      }),
+      placeholder: provided => ({
+        ...provided,
+        color: darkMode ? '#aab1bf' : '#6b7280',
+        fontWeight: 500,
+        lineHeight: 1.4,
+        margin: 0,
+        alignSelf: 'center',
+        paddingTop: 2,
+        paddingBottom: 2,
+      }),
+      indicatorsSeparator: provided => ({
+        ...provided,
+        backgroundColor: darkMode ? '#3d444d' : '#e5e7eb',
+        marginTop: 6,
+        marginBottom: 6,
+      }),
+    }),
+    [darkMode],
+  );
+
+  const FilterMenuList = props => {
+    const field = props.selectProps ? props.selectProps.filterField : undefined;
+    const onMenuClose =
+      props.selectProps && typeof props.selectProps.onMenuClose === 'function'
+        ? props.selectProps.onMenuClose
+        : undefined;
+
+    return (
+      <components.MenuList {...props}>
+        <div className={styles.filterMenuActions}>
+          <button
+            type="button"
+            className={styles.filterMenuButton}
+            onClick={() => {
+              if (field) handleSelectAll(field);
+              if (onMenuClose) onMenuClose();
+            }}
+          >
+            Select All
+          </button>
+        </div>
+        {props.children}
+      </components.MenuList>
+    );
+  };
+
+  FilterMenuList.displayName = 'IssueChartFilterMenuList';
+
+  const activeFilterSummary = useMemo(() => {
+    const issueTypeCount = filters.issueTypes.length || getValidIssueTypes(issues).length;
+    const yearList = filters.years.length ? filters.years : uniqueYears;
+    const range =
+      yearList.length > 0 ? `${Math.min(...yearList)}–${Math.max(...yearList)}` : 'No years';
+
+    return `${issueTypeCount} Issue Types | ${range}`;
+  }, [filters.issueTypes, filters.years, issues, uniqueYears]);
+
+  const chartContent = (
+    <div
+      className={`${styles.issueChartEventContainer} ${
+        darkMode ? styles.issueChartEventContainerDark : ''
+      }`}
+      role="region"
+      aria-label="Issues bar chart"
+      style={
+        isCardVariant ? { padding: 0, margin: 0, boxShadow: 'none', background: 'transparent' } : {}
+      }
+    >
+      {showTitle && (
+        <h2
+          className={`${styles.issueChartEventTitle} ${
+            darkMode ? styles.issueChartEventTitleDark : ''
+          }`}
+          style={isCardVariant ? { marginTop: 0, marginBottom: 8 } : {}}
+        >
+          Issue Chart
+        </h2>
+      )}
+
+      <div
+        className={styles.selectContainer}
+        style={{ justifyContent: 'center', gap: '12px', rowGap: '12px', flexWrap: 'wrap' }}
+      >
+        <div style={{ minWidth: 200 }}>
+          <label
+            htmlFor={`issue-type-select-${variant}`}
+            className={`${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`}
+            title="Issue types with similar names are grouped (e.g., Technical, Technical1, Technical2)"
+          >
+            Issue Type:
+          </label>
+          <Select
+            inputId={`issue-type-select-${variant}`}
+            className={`${styles.issueChartSelect} ${darkMode ? styles.issueChartSelectDark : ''}`}
+            isMulti
+            options={issueTypes}
+            onChange={selected => handleFilterChange(selected, 'issueTypes')}
+            value={flatIssueTypeOptions.filter(option => filters.issueTypes.includes(option.value))}
+            styles={selectStyles}
+            aria-label="Filter issues by type"
+            placeholder="Select issue types"
+            components={{ MenuList: FilterMenuList }}
+            filterField="issueTypes"
+          />
+        </div>
+
+        <div style={{ minWidth: 200 }}>
+          <label
+            htmlFor={`year-select-${variant}`}
+            className={`${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`}
+          >
+            Year:
+          </label>
+          <Select
+            inputId={`year-select-${variant}`}
+            className={`${styles.issueChartSelect} ${darkMode ? styles.issueChartSelectDark : ''}`}
+            isMulti
+            options={years}
+            onChange={selected => handleFilterChange(selected, 'years')}
+            value={years.filter(option => filters.years.includes(option.value))}
+            styles={selectStyles}
+            aria-label="Filter issues by year"
+            placeholder="Select years"
+            components={{ MenuList: FilterMenuList }}
+            filterField="years"
+          />
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+          <button
+            type="button"
+            onClick={handleClearFilters}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#007FFF',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontWeight: 500,
+              height: '38px',
+            }}
+            aria-label="Clear all issue chart filters"
+          >
+            Clear Filters
+          </button>
+        </div>
       </div>
 
       {loading && <p>Loading...</p>}
       {error && <p>Error: {error}</p>}
+
       {!loading && !error && (
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={sortedProcessedData} margin={{ top: 60, right: 30, left: 20, bottom: 5 }}>
-            <XAxis dataKey="issueType" />
-            <YAxis ticks={yTicks} tickFormatter={tick => tick} />
-            <Tooltip />
-            <Legend />
-            {(filters.years.length ? filters.years : uniqueYears)
-              .sort((a, b) => a - b)
-              .map(year => (
-                <Bar key={year} dataKey={year} fill={yearColorMap[year]} />
-              ))}
-          </BarChart>
-        </ResponsiveContainer>
+        <div
+          className={`${styles.issueChartYearGroup} ${styles.issueTypeGroup} ${
+            darkMode ? styles.issueChartYearGroupDark : ''
+          }`}
+          style={
+            isCardVariant
+              ? {
+                  display: 'flex',
+                  flex: '1 1 auto',
+                  flexDirection: 'column',
+                  marginTop: 10,
+                  minHeight: 0,
+                }
+              : { marginTop: 10 }
+          }
+        >
+          <div className={styles.activeFilterSummary}>{activeFilterSummary}</div>
+
+          <div
+            className={`${styles.chartWrapper} ${darkMode ? styles.chartWrapperDark : ''}`}
+            style={{
+              // Card mode has compact filters, so give the Chart.js canvas more vertical room.
+              height: isCardVariant ? 'clamp(560px, 58vh, 720px)' : '520px',
+              maxHeight: isCardVariant ? 'none' : '520px',
+              display: 'flex',
+              flex: isCardVariant ? '1 1 auto' : undefined,
+              flexDirection: 'column',
+              minHeight: isCardVariant ? 0 : undefined,
+              position: 'relative',
+              overflow: 'hidden',
+              paddingTop: 12,
+              paddingBottom: 2,
+            }}
+          >
+            <div style={{ flex: '1 1 auto', minHeight: 0, position: 'relative' }}>
+              <Bar
+                data={chartData}
+                options={chartOptions}
+                plugins={chartPlugins}
+                aria-labelledby="chart-title"
+              />
+            </div>
+            <p
+              style={{
+                marginBottom: 0,
+                marginTop: 0,
+                fontSize: 13,
+                opacity: 0.85,
+                textAlign: 'center',
+              }}
+            >
+              {chartAnalysis.insightText}
+            </p>
+          </div>
+        </div>
       )}
+    </div>
+  );
+
+  if (isCardVariant) {
+    return chartContent;
+  }
+
+  return (
+    <div
+      className={darkMode ? 'bg-oxford-blue text-light dark' : ''}
+      style={{ minHeight: '100vh' }}
+    >
+      {chartContent}
     </div>
   );
 }

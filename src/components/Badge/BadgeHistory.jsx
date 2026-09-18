@@ -1,13 +1,16 @@
 import BadgeImage from './BadgeImage';
 import { WEEK_DIFF } from '../../constants/badge';
+import styles from './Badge.module.css';
 
 function BadgeHistory({ badges, personalBestMaxHrs }) {
   const filterBadges = allBadges => {
     if (!Array.isArray(allBadges)) return [];
 
-    const filteredList = allBadges.filter(value => 
-      value && value.lastModified && 
-      (Date.now() - new Date(value.lastModified).getTime() > WEEK_DIFF)
+    const filteredList = allBadges.filter(
+      value =>
+        value &&
+        value.lastModified &&
+        Date.now() - new Date(value.lastModified).getTime() > WEEK_DIFF,
     );
 
     filteredList.sort((a, b) => {
@@ -29,8 +32,8 @@ function BadgeHistory({ badges, personalBestMaxHrs }) {
   const filteredBadges = filterBadges(badges);
 
   return (
-    <div className="badge_history_container">
-      {filteredBadges.map((value, index) => (
+    <div className={styles.badge_history_container}>
+      {filteredBadges.map((value, index) =>
         value && value.badge ? (
           <BadgeImage
             personalBestMaxHrs={personalBestMaxHrs}
@@ -40,8 +43,8 @@ function BadgeHistory({ badges, personalBestMaxHrs }) {
             index={index}
             key={value.badge._id || index}
           />
-        ) : null
-      ))}
+        ) : null,
+      )}
     </div>
   );
 }

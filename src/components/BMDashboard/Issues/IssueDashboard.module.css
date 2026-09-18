@@ -1,0 +1,269 @@
+/* stylelint-disable */
+
+/* ==========================================================================
+   TABLE & CONTAINER STRUCTURAL LAYOUT
+   ========================================================================== */
+
+.issuesTableResponsive {
+  overflow: visible !important; /* Ensure action dropdowns aren't clipped */
+  position: relative;
+  width: 100%;
+}
+
+.issuesTableResponsive :global(td),
+.issuesTableResponsive :global(th) {
+  text-align: left !important;
+}
+
+.textEnd {
+  text-align: right;
+}
+
+.issuesTableResponsive :global(.text-end) {
+  font-weight: 500;
+  color: #6c757d;
+  border-bottom-width: 1px;
+}
+
+/* Global wrappers layout guard rails */
+:global(.card) {
+  overflow: hidden;
+}
+
+:global(.container-fluid) {
+  max-width: 100%;
+}
+
+/* ==========================================================================
+   DROPDOWNS & ACTIONS MENUS
+   ========================================================================== */
+
+.issueDashboardDropdown {
+  position: static; /* Let cell control alignment context */
+}
+
+:global(td.text-end) {
+  position: relative; /* Anchor point for custom inline menu mapping */
+  white-space: nowrap;
+  width: 1%;
+}
+
+/* Legacy positioning override helper for specific row dropdown structures */
+:global(td.text-end) .issueDashboardDropdown :global(.issue-dashboard-dropdown-menu) {
+  position: absolute;
+  right: 3rem !important;
+  top: 65px !important;
+  left: auto !important;
+}
+
+/* The custom inline action floating menu container */
+.actionMenu {
+  position: absolute;
+  top: 0;
+  right: 100%; /* Spawns neatly to the left of your ellipsis button */
+  transform: translateY(-25%);
+  min-width: 10rem;
+  z-index: 1050;
+  padding: 0.5rem 0;
+  border: 1px solid rgb(0 0 0 / 15%);
+  border-radius: 0.25rem;
+  box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 15%);
+  white-space: nowrap;
+  background-color: #ffffff;
+}
+
+.actionMenuDark {
+  background-color: #1c2541;
+  border-color: #3a506b;
+  box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 50%);
+}
+
+/* Action items inside menu container */
+.issueDashboardDropdownItem {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  color: #1c1e1c;
+  background-color: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.issueDashboardDropdownItem:hover {
+  background-color: #f0f0f0;
+}
+
+.issueDashboardDropdownItemDark {
+  color: #ffffff !important;
+}
+
+.issueDashboardDropdownItemDark:hover {
+  background-color: #2f4157 !important;
+}
+
+/* Specific text color targets for danger items across variants */
+:global(.text-danger).issueDashboardDropdownItemDark {
+  color: #ff6b6b !important;
+}
+
+:global(.text-danger).issueDashboardDropdownItemDark:hover {
+  background-color: #2f4157 !important;
+  color: #ff8787 !important;
+}
+
+/* Header Export Feature Dropdowns (Dark mode overrides) */
+.exportDropdownMenuDark {
+  background-color: #1c2541 !important;
+  border: 1px solid #3a506b !important;
+}
+
+.exportDropdownItemDark {
+  color: #ffffff !important;
+}
+
+.exportDropdownItemDark:hover,
+.exportDropdownItemDark:focus {
+  background-color: #2d3b66 !important;
+  color: #ffffff !important;
+}
+
+/* Icon button styles linking the anchor items */
+.issueDashboardDropdown :global(.btn-link) {
+  color: #6c757d;
+  text-decoration: none;
+}
+
+.issueDashboardDropdownDark :global(.btn-link) {
+  color: #ffffff;
+}
+
+.issueDashboardDropdownDark :global(.btn-link:hover) {
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   UI UTILITY BADGES & PAGINATION ELEMENTS
+   ========================================================================== */
+
+.badge :global(.bg-info) {
+  background-color: #cfe2ff !important;
+  color: #084298 !important;
+  font-weight: 500;
+}
+
+.badge :global(.bg-info-dark) {
+  background-color: #3a506b !important;
+  color: #ffffff !important;
+  font-weight: 500;
+}
+
+.pagination :global(.page-link) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.5rem;
+}
+
+.btnLight {
+  color: #6c757d;
+  border-color: #e9ecef;
+}
+
+/* ==========================================================================
+   MODAL WINDOW DIALOG ARCHITECTURE
+   ========================================================================== */
+
+/* Shared base layout variables for light and dark layouts */
+.issuesModalBackdrop,
+.issuesModalBackdropDark {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1050 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Conditional backdrop color treatment overlays */
+.issuesModalBackdrop {
+  background-color: rgb(0 0 0 / 30%) !important;
+}
+
+.issuesModalBackdropDark {
+  background-color: rgb(0 0 0 / 60%) !important;
+}
+
+/* Target structural settings across layout components */
+.issuesModalBackdrop :global(.modal-dialog),
+.issuesModalBackdropDark :global(.modal-dialog) {
+  border-radius: 8px;
+  max-width: 400px;
+  width: 90%;
+  margin: 0 auto;
+}
+
+.issuesModalBackdrop :global(.modal-content) {
+  background-color: #ffffff;
+}
+
+/* Dark mode variations for interactive element layouts inside modals */
+.issuesModalBackdropDark :global(.modal-content) {
+  background-color: #1c2541 !important;
+  color: #ffffff !important;
+  border: 1px solid #3a506b;
+}
+
+.issuesModalBackdropDark :global(.modal-content input) {
+  background-color: #1b2a41 !important;
+  border-color: #3a506b !important;
+  color: #ffffff !important;
+}
+
+.issuesModalBackdropDark :global(.modal-content input::placeholder) {
+  color: #b5bac5;
+}
+
+.issuesModalBackdropDark :global(.modal-content input:focus) {
+  background-color: #1b2a41 !important;
+  border-color: #4a5f7a !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 0.25rem rgb(58 80 107 / 50%) !important;
+}
+
+.issuesModalBackdropDark :global(.modal-content h5),
+.issuesModalBackdropDark :global(.modal-content p),
+.issuesModalBackdropDark :global(.modal-content strong) {
+  color: #ffffff !important;
+}
+
+/* ==========================================================================
+   GLOBAL BOOTSTRAP DATATABLE THEME TARGET OVERRIDES
+   ========================================================================== */
+
+:global(.table-dark thead tr:hover) {
+  background-color: #1b2a41;
+}
+
+:global(.table-dark thead tr th) {
+  color: #ffffff;
+}
+
+:global(.table-dark tbody tr) {
+  color: #ffffff;
+}
+
+:global(.table-dark tbody tr:hover) {
+  background-color: #2f4157;
+}
+
+/* Global utility classes handling explicit canvas colors for header mapping selectors */
+.issuesTableResponsive:global(.bg-oxford-blue) :global(.text-end),
+.issuesTableResponsive:global(.bg-oxford-blue) :global(th) {
+  color: #ffffff !important;
+}

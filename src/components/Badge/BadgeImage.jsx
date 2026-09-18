@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Card, CardTitle, CardBody, CardImg, CardText, Popover } from 'reactstrap';
+import styles from './Badge.module.css';
 
 function BadgeImage({ badgeData, time, index, personalBestMaxHrs, count, cssSuffix }) {
   const [isOpen, setOpen] = useState(false);
@@ -8,8 +9,8 @@ function BadgeImage({ badgeData, time, index, personalBestMaxHrs, count, cssSuff
 
   return (
     <>
-      <div className="badge_image_container">
-        <div className="badge_image_sm">
+      <div className={styles.badge_image_container}>
+        <div className={styles.badge_image_sm}>
           <img
             src={badgeData?.imageUrl}
             id={`popover_${time}${index.toString()}`}
@@ -31,7 +32,7 @@ function BadgeImage({ badgeData, time, index, personalBestMaxHrs, count, cssSuff
         target={`popover_${time}${index.toString()}`}
       >
         <Card className="text-center">
-          <CardImg className="badge_image_lg" src={badgeData?.imageUrl} />
+          <CardImg className={styles.badge_image_lg} src={badgeData?.imageUrl} />
           <CardBody>
             <CardTitle
               style={{
@@ -54,15 +55,15 @@ function BadgeImage({ badgeData, time, index, personalBestMaxHrs, count, cssSuff
 function BadgeSpan({ badgeType, personalBestMaxHrs, count, cssSuffix }) {
   if (badgeType === 'Personal Max') {
     return (
-      <span className={'badge_count_personalmax' + cssSuffix}>
+      <span className={styles.badge_count_personalmax + cssSuffix}>
         {Math.floor(personalBestMaxHrs)}
       </span>
     );
   } else {
     if (count < 100) {
-      return <span className={'badge_count' + cssSuffix}>{Math.round(count)}</span>;
+      return <span className={styles.badge_count + cssSuffix}>{Math.round(count)}</span>;
     } else {
-      return <span className={'badge_count_3_digit' + cssSuffix}>{Math.round(count)}</span>;
+      return <span className={styles.badge_count_3_digit + cssSuffix}>{Math.round(count)}</span>;
     }
   }
 }
