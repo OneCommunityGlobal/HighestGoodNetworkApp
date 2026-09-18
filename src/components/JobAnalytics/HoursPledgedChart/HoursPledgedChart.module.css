@@ -282,7 +282,7 @@
 }
 
 .hpDateInputs :global(.react-datepicker__day--in-range.react-datepicker__day--in-selecting-range) {
-  background-color: #3b82f6 !important;
+  background-color: #1d4ed8 !important;
   color: #fff !important;
 }
 
@@ -325,7 +325,7 @@
 }
 
 :global(.dark-mode) .hpDateInputs :global(.react-datepicker__day--disabled) {
-  color: #9ca3af !important;
+  color: #94a3b8 !important;
 }
 
 :global(.dark-mode) .hpDateInputs :global(.react-datepicker__day--keyboard-selected) {
@@ -335,16 +335,12 @@
 
 :global(.dark-mode) .hpDateInputs :global(.react-datepicker__day--in-selecting-range:not(.react-datepicker__day--in-range)) {
   color: #fff !important;
-  background-color: #ffffff1b;
+  background-color: #334155;
 }
 
-:global(.dark-mode) .hpDateInputs :global(.react-datepicker__day--in-range) {
-  color: #fff !important;
-  background-color: #3b82f6;
-}
-
+:global(.dark-mode) .hpDateInputs :global(.react-datepicker__day--in-range),
 :global(.dark-mode) .hpDateInputs :global(.react-datepicker__day--in-range.react-datepicker__day--in-selecting-range) {
-  background-color: #3b82f6 !important;
+  background-color: #1d4ed8 !important;
   color: #fff !important;
 }
 
@@ -354,11 +350,7 @@
 
 :global(.dark-mode) .hpDateInputs :global(.react-datepicker__month--selecting-range .react-datepicker__day--in-range:not(.react-datepicker__day--in-selecting-range)) {
   color: #fff !important;
-  background-color: #ffffff1b;
-}
-
-:global(.dark-mode) .hpDateInputs :global(.react-datepicker__day--disabled) {
-  color: #6b7280;
+  background-color: #334155 !important;
 }
 
 :global(.dark-mode) .hpDateInputs :global(.react-datepicker__triangle) {

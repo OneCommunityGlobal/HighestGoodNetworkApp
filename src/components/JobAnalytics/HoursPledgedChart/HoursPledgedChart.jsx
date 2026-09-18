@@ -14,6 +14,26 @@ const formatAvgHours = value => {
   return Number.isFinite(numericValue) ? Number(numericValue.toFixed(2)) : value;
 };
 
+const getRoleOptionBackground = (darkMode, state) => {
+  if (state.isSelected) {
+    return darkMode ? '#2563eb' : '#3b82f6';
+  }
+
+  if (state.isFocused) {
+    return darkMode ? '#334155' : '#e2e8f0';
+  }
+
+  return darkMode ? '#1e293b' : '#fff';
+};
+
+const getRoleOptionTextColor = (darkMode, state) => {
+  if (state.isSelected) {
+    return '#fff';
+  }
+
+  return darkMode ? '#f8fafc' : '#111827';
+};
+
 const RoleMultiValue = props => {
   const { index, getValue } = props;
   const selectedRoles = getValue();
@@ -206,18 +226,8 @@ function HoursPledgedChart() {
               }),
               option: (base, state) => ({
                 ...base,
-                backgroundColor: state.isSelected
-                  ? darkMode
-                    ? '#2563eb'
-                    : '#3b82f6'
-                  : state.isFocused
-                  ? darkMode
-                    ? '#334155'
-                    : '#e2e8f0'
-                  : darkMode
-                  ? '#1e293b'
-                  : '#fff',
-                color: state.isSelected ? '#fff' : darkMode ? '#f8fafc' : '#111827',
+                backgroundColor: getRoleOptionBackground(darkMode, state),
+                color: getRoleOptionTextColor(darkMode, state),
                 cursor: 'pointer',
               }),
               multiValue: base => ({
