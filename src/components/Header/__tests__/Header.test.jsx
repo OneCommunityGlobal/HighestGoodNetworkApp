@@ -447,6 +447,7 @@ describe('Header centre cell: logo or owner message, never both', () => {
       ownerStandardMessage: 'Standard notice',
     }],
     ['an owner with no message', { role: 'Owner' }],
+    ['an administrator with no message', { role: 'Administrator' }],
     ['an editor with no message', { canEdit: true }],
   ])('renders exactly one of the two for %s', (unused, options) => {
     renderCenterCell(options);
@@ -486,13 +487,29 @@ describe('Header centre cell: logo or owner message, never both', () => {
   });
 
   // The edit controls live inside OwnerMessage, so swapping in the logo would
-  // leave an owner no way to create the first message.
-  it('keeps the message slot for an owner even when there is no message', () => {
-    renderCenterCell({ role: 'Owner' });
+  // leave an admin no way to create the first message, and no sight of the
+  // standard one.
+  it.each(['Owner', 'Administrator'])(
+    'keeps the message slot for a %s even when there is no message',
+    role => {
+      renderCenterCell({ role });
 
-    expect(message()).toBeInTheDocument();
-    expect(logo()).not.toBeInTheDocument();
-  });
+      expect(message()).toBeInTheDocument();
+      expect(logo()).not.toBeInTheDocument();
+    },
+  );
+
+  // Manager grants team visibility, not the right to edit the header, so it gets
+  // the volunteer treatment rather than a message it could not act on.
+  it.each(['Volunteer', 'Manager', 'Mentor', 'Core Team'])(
+    'shows the logo to a %s when there is no custom message',
+    role => {
+      renderCenterCell({ role, ownerStandardMessage: 'Standard notice' });
+
+      expect(logo()).toBeInTheDocument();
+      expect(message()).not.toBeInTheDocument();
+    },
+  );
 
   it('keeps the message slot for a user with editHeaderMessage permission', () => {
     renderCenterCell({ canEdit: true });

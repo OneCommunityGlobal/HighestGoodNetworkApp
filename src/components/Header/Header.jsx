@@ -138,6 +138,14 @@ MeetingNotificationModalHeader.propTypes = {
   onClose: PropTypes.func.isRequired,
 };
 
+// Roles that keep the owner-message slot when there is no custom message, so they
+// can still see the standard message and reach the edit controls inside it.
+// Matches the elevated-role pairing used elsewhere in this file and across the
+// app; Manager is deliberately excluded — it grants team visibility, not the
+// ability to edit the header, so a manager would get the message with no controls
+// and lose the logo for nothing.
+const HEADER_MESSAGE_ROLES = ['Owner', 'Administrator'];
+
 export function Header(props) {
   const location = useLocation();
   const { darkMode } = props;
@@ -181,13 +189,20 @@ export function Header(props) {
   // message deliberately does not: it is non-empty in most environments, so
   // counting it here hid the logo from every volunteer.
   //
-  // Users who can edit the header keep the message slot even with no custom
-  // message: the edit controls live inside OwnerMessage, so swapping in the logo
-  // would leave them no way to create the first one.
+  // Admins keep the message slot even with no custom message: the edit controls
+  // live inside OwnerMessage, so swapping in the logo would leave them no way to
+  // create the first one, and it is also how they see the standard message.
+  //
+  // The role check carries this on its own because the editHeaderMessage
+  // permission is commented out of PermissionsConst, so hasPermission can only
+  // return true for it if a backend role default still carries it. It is kept in
+  // the condition so the permission starts working again the day it is restored.
   const canEditHeaderMessage = props.hasPermission('editHeaderMessage');
   const hasHeaderMessage = Boolean(props.ownerMessage);
   const showOwnerMessage =
-    hasHeaderMessage || canEditHeaderMessage || props.auth.user.role === 'Owner';
+    hasHeaderMessage ||
+    canEditHeaderMessage ||
+    HEADER_MESSAGE_ROLES.includes(props.auth.user.role);
 
   const canGetReports = props.hasPermission('getReports', !isAuthUser);
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries', !isAuthUser);
