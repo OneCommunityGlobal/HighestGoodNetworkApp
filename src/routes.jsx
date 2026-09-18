@@ -48,7 +48,7 @@ import AddTool from './components/BMDashboard/Tools/AddTool';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
 import Issue from './components/BMDashboard/Issue/Issue';
 import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
-import IssueChart from './components/BMDashboard/Issues/issueCharts';
+import MaterialConsumption from './components/BMDashboard/WeeklyProjectSummary/MaterialConsumption/MaterialConsumption';
 import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
 import AnalyticsDashboard from './components/JobCCDashboard/JobAnalytics/JobAnalytics';
@@ -238,6 +238,7 @@ import StudentBadgeGallery from './components/StudentBadgeGallery/StudentBadgeGa
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
+const PMResourceDashboard = lazy(() => import('./components/PMDashboard/PMResourceDashboard'));
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
 const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
 const MaterialListView = lazy(() => import('./components/BMDashboard/MaterialList'));
@@ -317,9 +318,6 @@ import ReviewsInsight from './components/PRAnalyticsDashboard/ReviewsInsight/Rev
 import ProjectsGlobalDistribution from './components/ProjectsGlobalDistribution/ProjectsGlobalDistribution';
 const JobAnalyticsPage = lazy(() =>
   import('./components/Reports/HitsAndApplicationRatio/JobAnalyticsPage'),
-);
-const ResourceManagementDashboard = lazy(() =>
-  import('./components/ResourceRequest/ResourceManagementDashboard/ResourceManagementDashboard'),
 );
 const ResourceRequestList = lazy(() =>
   import('./components/ResourceRequest/ResourceRequestList/ResourceRequestList'),
@@ -599,9 +597,11 @@ export default (
           component={CountryOfApplicationMapChart}
           fallback
         />
+        {/* Not exact: Announcements drives its own tabs off the URL and pushes
+            sub-paths such as /announcements/email/templates. With exact, those
+            fall through to the catch-all NotFoundPage at the end of this Switch. */}
         <ProtectedRoute
           path="/announcements"
-          exact
           component={Announcements}
           routePermissions={RoutePermissions.announcements}
         />
@@ -847,7 +847,8 @@ export default (
           component={InjurySeverityDashboard}
         />
         <BMProtectedRoute path="/bmdashboard/issues/add/:projectId" component={Issue} />
-        <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
+        {/* PR #4812 expects this URL to show the full three-card Material Consumption group. */}
+        <BMProtectedRoute path="/bmdashboard/issuechart" component={MaterialConsumption} />
         <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
         <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
         <BMProtectedRoute path="/bmdashboard/InteractiveMap" component={InteractiveMap} />
@@ -983,12 +984,6 @@ export default (
           component={ResourcesUsage}
         />
         <ProtectedRoute path="/educator/requests" exact component={ResourceRequestList} fallback />
-        <ProtectedRoute
-          path="/pm/dashboard/resources"
-          exact
-          component={ResourceManagementDashboard}
-          fallback
-        />
         <CPProtectedRoute
           path="/communityportal/activity/:activityId/ResourceManagement"
           exact
@@ -1058,6 +1053,18 @@ export default (
           path="/educationportal/tasks/intermediate"
           exact
           component={IntermediateTaskList}
+        />
+        {/* PM Resource Dashboard Route */}
+        <ProtectedRoute
+          path="/pm/dashboard/resources"
+          exact
+          component={PMResourceDashboard}
+          fallback
+          allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
+          routePermissions={RoutePermissions.accessPMResourceDashboard}
+          permissionDeniedRedirectState={{
+            permissionDeniedMessage: 'You do not have access to the Resource Dashboard.',
+          }}
         />
         <EPProtectedRoute path="/educationportal/dashboard" exact component={StudentDashboard} />
         <EPProtectedRoute path="/educationportal/student/tasks" exact component={StudentTasks} />
@@ -1240,11 +1247,11 @@ export default (
         <ProtectedRoute path="/pr-grading-screen" exact component={PRGradingScreen} fallback />
         <ProtectedRoute path="/pr-dashboard/overview" exact component={PRDashboardOverview} />
         <ProtectedRoute path="/pr-dashboard/analytics" exact component={PRReviewTeamAnalytics} />
-        <ProtectedRoute
+        {/* <ProtectedRoute
           path="/pr-dashboard/promotion-eligibility"
           exact
           component={PRDashboardPromotionEligibility}
-        />
+        /> */}
         <ProtectedRoute
           path="/pr-dashboard/top-reviewed-prs"
           exact
