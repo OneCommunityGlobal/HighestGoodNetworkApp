@@ -295,7 +295,7 @@
   width: 1.75rem;
   height: 1.75rem;
   color: #fff;
-  background-color: #059669;
+  background-color: #047857;
   border-radius: 50%;
   font-size: 1rem;
   font-weight: 700;
@@ -653,7 +653,7 @@
   padding: 0.375rem 0.625rem;
   border-radius: 9999px;
   background-color: #ffe5eb;
-  color: #f03 !important;
+  color: #b00020 !important;
   font-size: 0.75rem;
   font-weight: 500;
   line-height: 1;
@@ -817,8 +817,8 @@
 
 .youtubeAutoPoster .visibilityInput:checked + .visibilityOption {
   color: #fff !important;
-  background-color: #f03 !important;
-  border-color: #f03 !important;
+  background-color: #d9002b !important;
+  border-color: #d9002b !important;
 }
 
 .youtubeAutoPoster .visibilityInput:focus-visible + .visibilityOption {
@@ -948,8 +948,8 @@
   min-height: 2.75rem;
   padding: 0.75rem 1.5rem;
   color: #fff !important;
-  background-color: #f03;
-  border: 1px solid #f03;
+  background-color: #d9002b;
+  border: 1px solid #d9002b;
   border-radius: 8px;
   box-shadow: 0 6px 14px rgb(255 0 51 / 18%);
   font-size: 0.875rem;
@@ -973,8 +973,8 @@
 }
 
 .youtubeAutoPoster .uploadButton:hover:not(:disabled) {
-  background-color: #d9002b;
-  border-color: #d9002b;
+  background-color: #b00020;
+  border-color: #b00020;
   box-shadow: 0 8px 18px rgb(255 0 51 / 24%);
   transform: translateY(-1px);
 }

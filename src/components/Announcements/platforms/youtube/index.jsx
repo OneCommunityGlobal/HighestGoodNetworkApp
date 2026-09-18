@@ -364,6 +364,7 @@ function YoutubeAutoPoster({ platform }) {
           <div className={styles.channelDetails}>
             <div className={styles.connectedBadge}>
               <span className={styles.connectedDot} aria-hidden="true" />
+              {' ' /* explicit separator */}
               Connected
             </div>
             <h2 className={styles.channelName}>{account.channelName}</h2>
@@ -616,7 +617,7 @@ function YoutubeAutoPoster({ platform }) {
                     </span>
                   ))}
                   <div className={styles.addTagChip}>
-                    +
+                    +{' '}
                     <input
                       type="text"
                       className={styles.addTagInput}
