@@ -431,7 +431,15 @@ const externalLabelGuidesPlugin = {
         return;
       }
 
-      const percentage = options.total ? Math.round((value / options.total) * 100) : 0;
+      // Keep sub-1% slices visible in labels (e.g. 4/2578 ≈ 0.15% must not become "0%").
+      let percentage = 0;
+      if (options.total) {
+        const rawPercentage = (value / options.total) * 100;
+        percentage =
+          rawPercentage > 0 && rawPercentage < 1
+            ? Math.round(rawPercentage * 10) / 10
+            : Math.round(rawPercentage);
+      }
       const lines = options.formatter({ value, percentage, index });
       const labelLines = Array.isArray(lines) ? lines : [String(lines)];
 
