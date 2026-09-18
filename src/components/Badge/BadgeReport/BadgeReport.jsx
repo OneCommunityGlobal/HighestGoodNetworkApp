@@ -29,7 +29,7 @@ import {
 import { changeBadgesByUserID } from '~/actions/badgeManagement';
 import { getUserProfile } from '~/actions/userProfile';
 import { boxStyle, boxStyleDark } from '~/styles';
-import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
+import { permissions, PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
 import { formatDate } from '~/utils/formatDate';
 import hasPermission from '~/utils/permissions';
 import BadgeImage from '../BadgeImage';
@@ -113,13 +113,13 @@ function BadgeReport(props) {
   const [badgeToDelete, setBadgeToDelete] = useState([]);
   const [savingChanges, setSavingChanges] = useState(false);
 
-  const canDeleteBadges = props.hasPermission('deleteBadges');
-  const canUpdateBadges = props.hasPermission('updateBadges');
+  const canDeleteBadges = props.hasPermission(permissions.deleteBadges);
+  const canUpdateBadges = props.hasPermission(permissions.updateBadges);
 
   const darkMode = props.darkMode;
 
-  const canAssignBadges = props.hasPermission('assignBadges');
-  const canModifyBadgeAmount = props.hasPermission('modifyBadgeAmount');
+  const canAssignBadges = props.hasPermission(permissions.assignBadges);
+  const canModifyBadgeAmount = props.hasPermission(permissions.modifyBadgeAmount);
 
   const pdfDocGenerator = async () => {
     const currentDate = moment().format('MM-DD-YYYY-HH-mm-ss');
@@ -285,6 +285,10 @@ function BadgeReport(props) {
     badgesToSave = sortBadges,
     { closeEditor = true, successMessage = 'Badges successfully saved.' } = {},
   ) => {
+    if (props.isRecordBelongsToJaeAndUneditable) {
+      alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      return false;
+    }
     setSavingChanges(true);
 
     try {
@@ -688,12 +692,8 @@ function BadgeReport(props) {
           <Button
             className="btn--dark-sea-green float-right"
             style={{ margin: 5 }}
-            onClick={e => {
-              if (props.isRecordBelongsToJaeAndUneditable) {
-                alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
-              }
-              saveChanges();
-            }}
+            disabled={savingChanges}
+            onClick={() => saveChanges()}
           >
             <span>Save Changes</span>
           </Button>

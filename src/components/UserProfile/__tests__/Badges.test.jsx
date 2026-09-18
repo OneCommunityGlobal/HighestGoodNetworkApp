@@ -11,7 +11,7 @@ import { render, screen, within } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import Badges from '../Badges';
+import Badges, { Badges as UnconnectedBadges } from '../Badges';
 import { authMock, userProfileMock, rolesMock } from '../../../__tests__/mockStates';
 
 // Mock the axios request that's failing
@@ -89,6 +89,35 @@ describe('Badges Component', () => {
     earnedDate: ['2023-01-01'], // Add earned dates array
     hasBadgeDeletionImpact: false, // Add this property for conditional rendering
   });
+
+  test.each([
+    [true, [], 'Volunteer', true],
+    [false, ['updateBadges'], 'Volunteer', true],
+    [false, ['modifyBadgeAmount'], 'Volunteer', true],
+    [false, [], 'Volunteer', false],
+    [false, [], 'Administrator', false],
+    [false, [], 'Owner', false],
+    [false, ['assignBadges'], 'Volunteer', false],
+  ])(
+    'editor visibility for canEdit=%s, permissions=%s, role=%s is %s',
+    (canEdit, permissions, role, visible) => {
+      renderWithReduxProvider(
+        <UnconnectedBadges
+          {...badgeProps}
+          auth={authMock}
+          authUser={authMock.user}
+          clearSelected={vi.fn()}
+          hasPermission={permission => permissions.includes(permission)}
+          canEdit={canEdit}
+          role={role}
+        />,
+        { store },
+      );
+      expect(screen.queryAllByRole('button', { name: 'Select Featured' })).toHaveLength(
+        visible ? 1 : 0,
+      );
+    },
+  );
 
   describe('Card Footer Text', () => {
     describe('When viewing your own profile', () => {

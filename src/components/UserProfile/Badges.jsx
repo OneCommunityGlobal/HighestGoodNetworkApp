@@ -25,6 +25,7 @@ import {
 import { clearSelected } from '~/actions/badgeManagement';
 import { boxStyle, boxStyleDark } from '~/styles';
 import hasPermission from '../../utils/permissions';
+import { permissions } from '../../utils/constants';
 import BadgeReport from '../Badge/BadgeReport/BadgeReport';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 import AssignBadgePopup from './AssignBadgePopup';
@@ -39,16 +40,17 @@ export const Badges = props => {
   const [isAssignOpen, setAssignOpen] = useState(false);
 
   const canAssignBadges =
-    props.hasPermission('assignBadges') || props.hasPermission('assignBadgeOthers');
+    props.hasPermission(permissions.assignBadges) || props.hasPermission(permissions.assignBadgeOthers);
 
+  const canUpdateBadges = props.hasPermission(permissions.updateBadges);
   const [sortedBadges, setSortedBadges] = useState([]);
   const [isBadgeOpen, setIsBadgeOpen] = useState(false);
 
   // Added restriction: Jae's badges only editable by Jae or Owner
   const isRecordBelongsToJaeAndUneditable =
     props.isRecordBelongsToJaeAndUneditable && props.role !== 'Owner';
-  // const canAssignBadges = props.hasPermission('assignBadges');
-  const canModifyBadgeAmount = props.hasPermission('modifyBadgeAmount');
+  // const canAssignBadges = props.hasPermission(permissions.assignBadges);
+  const canModifyBadgeAmount = props.hasPermission(permissions.modifyBadgeAmount);
 
   const toggle = () => setOpen(!isOpen);
 
@@ -139,10 +141,7 @@ export const Badges = props => {
             </span>
 
             <div className="d-flex">
-              {(props.canEdit ||
-                props.role == 'Owner' ||
-                props.role == 'Administrator' ||
-                canModifyBadgeAmount) && (
+              {(props.canEdit || canUpdateBadges || canModifyBadgeAmount) && (
                 <>
                   <Button
                     className={styles['btn--dark-sea-green']}

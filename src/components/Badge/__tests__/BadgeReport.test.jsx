@@ -1,8 +1,13 @@
 import React from 'react';
 import { render, fireEvent, waitFor, screen } from '@testing-library/react';
 import BadgeReport from '../BadgeReport/BadgeReport';
-import { UncontrolledTooltip } from 'reactstrap';
+import FeaturedBadges from '../../UserProfile/FeaturedBadges';
+import pdfMake from 'pdfmake/build/pdfmake';
+import htmlToPdfmake from 'html-to-pdfmake';
 import { formatDate } from '~/utils/formatDate';
+
+vi.mock('pdfmake/build/pdfmake', () => ({ default: { createPdf: vi.fn() } }));
+vi.mock('html-to-pdfmake', () => ({ default: vi.fn(() => []) }));
 
 vi.mock('react-redux', () => ({
   connect: () => component => component,
@@ -174,6 +179,131 @@ describe('BadgeReport Component', () => {
     fireEvent.click(checkboxes[0]);
     fireEvent.click(checkboxes[5]);
     expect(checkboxes[5]).toBeChecked();
+  });
+
+  test.each([false, true])(
+    'saves featured=%s without replacing UI badge objects with IDs',
+    async initialFeatured => {
+      const badges = [{ ...mockBadges[0], featured: initialFeatured }];
+      const original = structuredClone(badges);
+      const props = getBadgeReportProps({ badges });
+      const { rerender } = render(<BadgeReport {...props} />);
+
+      fireEvent.click(screen.getAllByRole('checkbox')[0]);
+      fireEvent.click(screen.getAllByRole('button', { name: 'Save Changes' })[0]);
+
+      await waitFor(() => expect(props.close).toHaveBeenCalledOnce());
+      expect(props.changeBadgesByUserID).toHaveBeenCalledWith('user-id', [
+        { ...original[0], badge: original[0].badge._id, featured: !initialFeatured },
+      ]);
+      expect(props.getUserProfile).toHaveBeenCalledWith('user-id');
+      expect(props.handleSubmit).toHaveBeenCalledOnce();
+      expect(badges).toEqual(original);
+      const profile = { badgeCollection: original, firstName: 'Volunteer' };
+      const updated = props.setUserProfile.mock.calls[0][0](profile);
+      expect(updated).toEqual({
+        ...profile,
+        badgeCollection: [{ ...original[0], featured: !initialFeatured }],
+      });
+      expect(props.setOriginalUserProfile.mock.calls[0][0](profile)).toEqual(updated);
+
+      rerender(<FeaturedBadges badges={updated.badgeCollection} personalBestMaxHrs={40} />);
+      expect(screen.queryAllByTestId('badge_featured_count')).toHaveLength(initialFeatured ? 0 : 1);
+      rerender(<BadgeReport {...props} badges={updated.badgeCollection} />);
+      expect(screen.getAllByRole('checkbox')[0].checked).toBe(!initialFeatured);
+    },
+  );
+
+  test('keeps failed featured changes editable and permits retry', async () => {
+    const props = getBadgeReportProps({
+      badges: [{ ...mockBadges[0], featured: false }],
+      changeBadgesByUserID: vi
+        .fn()
+        .mockResolvedValueOnce(false)
+        .mockResolvedValueOnce(true),
+    });
+    render(<BadgeReport {...props} />);
+    fireEvent.click(screen.getAllByRole('checkbox')[0]);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Save Changes' })[0]);
+    await waitFor(() => expect(props.changeBadgesByUserID).toHaveBeenCalledOnce());
+    await waitFor(() =>
+      expect(screen.getAllByRole('button', { name: 'Save Changes' })[0]).toBeEnabled(),
+    );
+    expect(props.close).not.toHaveBeenCalled();
+    expect(props.getUserProfile).not.toHaveBeenCalled();
+    expect(props.setUserProfile).not.toHaveBeenCalled();
+    expect(props.setOriginalUserProfile).not.toHaveBeenCalled();
+    expect(screen.getAllByRole('checkbox')[0]).toBeChecked();
+    fireEvent.click(screen.getAllByRole('checkbox')[0]);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Save Changes' })[0]);
+    await waitFor(() => expect(props.close).toHaveBeenCalledOnce());
+    expect(props.changeBadgesByUserID.mock.calls[1][1][0].featured).toBe(false);
+  });
+
+  test.each([0, 1])('blocks protected-account saving from save button %s', index => {
+    const alert = vi.spyOn(window, 'alert').mockImplementation(() => {});
+    const props = getBadgeReportProps({ isRecordBelongsToJaeAndUneditable: true });
+    render(<BadgeReport {...props} />);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Save Changes' })[index]);
+    expect(alert).toHaveBeenCalledOnce();
+    expect(props.changeBadgesByUserID).not.toHaveBeenCalled();
+    expect(props.setUserProfile).not.toHaveBeenCalled();
+    alert.mockRestore();
+  });
+
+  test('exports all or only featured badges through the retained PDF helpers', async () => {
+    const download = vi.fn();
+    pdfMake.createPdf.mockReturnValue({ download });
+    const context = vi
+      .spyOn(HTMLCanvasElement.prototype, 'getContext')
+      .mockReturnValue({ drawImage: vi.fn() });
+    const dataUrl = vi
+      .spyOn(HTMLCanvasElement.prototype, 'toDataURL')
+      .mockReturnValue('data:image/png;base64,test');
+    vi.stubGlobal(
+      'Image',
+      class {
+        set src(value) {
+          this.url = value;
+          queueMicrotask(() => this.onload());
+        }
+        get src() {
+          return this.url;
+        }
+      },
+    );
+    try {
+      renderBadgeReport({
+        badges: [
+          {
+            ...mockBadges[0],
+            featured: true,
+            badge: { ...mockBadges[0].badge, badgeName: 'Featured export' },
+          },
+          {
+            ...mockBadges[0],
+            _id: 'other-record',
+            featured: false,
+            badge: { ...mockBadges[0].badge, _id: 'other-badge', badgeName: 'Other export' },
+          },
+        ],
+      });
+      fireEvent.click(screen.getAllByRole('button', { name: 'Export All Badges to PDF' })[0]);
+      await waitFor(() => expect(download).toHaveBeenCalledOnce());
+      expect(htmlToPdfmake.mock.calls.at(-1)[0]).toContain('Featured export');
+      expect(htmlToPdfmake.mock.calls.at(-1)[0]).toContain('Other export');
+      fireEvent.click(
+        screen.getAllByRole('button', { name: 'Export Selected/Featured Badges to PDF' })[0],
+      );
+      await waitFor(() => expect(download).toHaveBeenCalledTimes(2));
+      expect(htmlToPdfmake.mock.calls.at(-1)[0]).toContain('Featured export');
+      expect(htmlToPdfmake.mock.calls.at(-1)[0]).not.toContain('Other export');
+      expect(download).toHaveBeenLastCalledWith(expect.stringMatching(/^Featured-Badge-Report-/));
+    } finally {
+      context.mockRestore();
+      dataUrl.mockRestore();
+      vi.unstubAllGlobals();
+    }
   });
 
   test('persists a confirmed deletion and keeps the badge editor open', async () => {
