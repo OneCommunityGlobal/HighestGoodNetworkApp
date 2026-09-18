@@ -225,7 +225,7 @@ function SlashdotAutoPoster({ platform }) {
   const currentTime = formatLocalTime(now);
   const scheduleTimeMin = scheduledDate === today ? currentTime : '00:00';
 
-  const handleScheduleDateChange = event => {
+  const handleScheduleDateChangeEvent = event => {
     const nextDateRaw = event.target.value;
     if (!nextDateRaw) return;
     const nextDate = nextDateRaw < today ? today : nextDateRaw;
@@ -238,7 +238,7 @@ function SlashdotAutoPoster({ platform }) {
     }
   };
 
-  const handleScheduleTimeChange = event => {
+  const handleScheduleTimeChangeEvent = event => {
     const nextTimeRaw = event.target.value;
     if (!nextTimeRaw) return;
     if (scheduledDate === today) {
@@ -670,7 +670,7 @@ function SlashdotAutoPoster({ platform }) {
                   type="date"
                   value={scheduledDate}
                   min={today}
-                  onChange={handleScheduleDateChange}
+                  onChange={handleScheduleDateChangeEvent}
                   className={classNames(styles['slashdot-field__input'], {
                     [styles['slashdot-field__input--invalid']]:
                       scheduleAttemptedSave && !scheduledDate,
@@ -690,7 +690,7 @@ function SlashdotAutoPoster({ platform }) {
                   type="time"
                   value={scheduledTime}
                   min={scheduleTimeMin}
-                  onChange={handleScheduleTimeChange}
+                  onChange={handleScheduleTimeChangeEvent}
                   className={classNames(styles['slashdot-field__input'], {
                     [styles['slashdot-field__input--invalid']]:
                       scheduleAttemptedSave && !scheduledTime,

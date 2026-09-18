@@ -69,6 +69,47 @@ InstagramScheduleField.propTypes = {
   errorText: PropTypes.string.isRequired,
 };
 
+// ─── InstagramPostMedia sub-component ─────────────────────────────────────────
+// Renders a post's media thumbnail (if any) plus its caption excerpt. Used by
+// both the scheduled-posts queue and the post-history list below.
+
+function InstagramPostMedia({ mediaUrl, mediaType, captionPreview }) {
+  return (
+    <>
+      {mediaUrl && (
+        <div className={styles['instagram-saved__media']}>
+          {mediaType === 'VIDEO' ? (
+            <video
+              src={mediaUrl}
+              className={styles['instagram-saved__thumbnail']}
+              muted
+              playsInline
+            />
+          ) : (
+            <img
+              src={mediaUrl}
+              alt={captionPreview}
+              className={styles['instagram-saved__thumbnail']}
+            />
+          )}
+        </div>
+      )}
+      <p className={styles['instagram-saved__excerpt']}>{captionPreview}</p>
+    </>
+  );
+}
+
+InstagramPostMedia.propTypes = {
+  mediaUrl: PropTypes.string,
+  mediaType: PropTypes.string,
+  captionPreview: PropTypes.string.isRequired,
+};
+
+InstagramPostMedia.defaultProps = {
+  mediaUrl: null,
+  mediaType: null,
+};
+
 const STATUS_LABEL = {
   scheduled: 'Scheduled',
   publishing: 'Publishing…',
@@ -862,25 +903,11 @@ function InstagramAutoPoster({ platform }) {
                           )}
                         </span>
                       </div>
-                      {post.mediaUrl && (
-                        <div className={styles['instagram-saved__media']}>
-                          {post.mediaType === 'VIDEO' ? (
-                            <video
-                              src={post.mediaUrl}
-                              className={styles['instagram-saved__thumbnail']}
-                              muted
-                              playsInline
-                            />
-                          ) : (
-                            <img
-                              src={post.mediaUrl}
-                              alt={captionPreview}
-                              className={styles['instagram-saved__thumbnail']}
-                            />
-                          )}
-                        </div>
-                      )}
-                      <p className={styles['instagram-saved__excerpt']}>{captionPreview}</p>
+                      <InstagramPostMedia
+                        mediaUrl={post.mediaUrl}
+                        mediaType={post.mediaType}
+                        captionPreview={captionPreview}
+                      />
                       {post.status === 'failed' && post.lastError && (
                         <p className={styles['instagram-field__error']}>{post.lastError}</p>
                       )}
@@ -948,25 +975,11 @@ function InstagramAutoPoster({ platform }) {
                           : '—'}
                       </span>
                     </div>
-                    {post.mediaUrl && (
-                      <div className={styles['instagram-saved__media']}>
-                        {post.mediaType === 'VIDEO' ? (
-                          <video
-                            src={post.mediaUrl}
-                            className={styles['instagram-saved__thumbnail']}
-                            muted
-                            playsInline
-                          />
-                        ) : (
-                          <img
-                            src={post.mediaUrl}
-                            alt={captionPreview}
-                            className={styles['instagram-saved__thumbnail']}
-                          />
-                        )}
-                      </div>
-                    )}
-                    <p className={styles['instagram-saved__excerpt']}>{captionPreview}</p>
+                    <InstagramPostMedia
+                      mediaUrl={post.mediaUrl}
+                      mediaType={post.mediaType}
+                      captionPreview={captionPreview}
+                    />
                     {post.error && <p className={styles['instagram-saved__error']}>{post.error}</p>}
                     {post.permalink && (
                       <a href={post.permalink} target="_blank" rel="noopener noreferrer">
