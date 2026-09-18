@@ -393,6 +393,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
             </select>
             <div className={styles.loadTemplateButtons}>
               <button
+                id="clone-template-button"
                 type="button"
                 onClick={loadTemplate}
                 className={`${styles.loadTemplateButton}`}
@@ -400,6 +401,13 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
               >
                 {isLoading ? 'Loading...' : 'Clone with Template'}
               </button>
+              <UncontrolledTooltip
+                placement="top"
+                target="clone-template-button"
+                trigger="hover focus"
+              >
+                Create a copy of this template to modify without changing the original.
+              </UncontrolledTooltip>
               <button
                 id="clear-template-button"
                 type="button"
@@ -426,6 +434,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
                 Remove all fields and reset the template to a clean state
               </UncontrolledTooltip>
               <button
+                id="append-template-button"
                 type="button"
                 onClick={appendTemplate}
                 className={`${styles.appendTemplateButton}`}
@@ -433,7 +442,15 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
               >
                 {isLoading ? 'Appending...' : 'Append Template'}
               </button>
+              <UncontrolledTooltip
+                placement="top"
+                target="append-template-button"
+                trigger="hover focus"
+              >
+                Add additional fields to this existing template.
+              </UncontrolledTooltip>
               <button
+                id="delete-template-button"
                 type="button"
                 onClick={deleteTemplate}
                 className={`${styles.deleteTemplateButton}`}
@@ -441,6 +458,13 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
               >
                 {isLoading ? 'Deleting...' : 'Delete Template'}
               </button>
+              <UncontrolledTooltip
+                placement="top"
+                target="delete-template-button"
+                trigger="hover focus"
+              >
+                Permanently remove this template.
+              </UncontrolledTooltip>
             </div>
           </div>
         </div>
