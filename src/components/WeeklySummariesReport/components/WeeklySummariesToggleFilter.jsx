@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import ReactTooltip from 'react-tooltip';
 import styles from '../WeeklySummariesReport.module.css';
 import { toggleField } from '~/utils/stateHelper';
+import { permissions } from '~/utils/constants';
+import { BIO_MIN_DAYS_IN_TEAM, BIO_MIN_TANGIBLE_HOURS } from '~/utils/bioQualification';
 import { SlideToggle } from '../components';
 
 export default function WeeklySummariesToggleFilter({
@@ -21,16 +23,23 @@ export default function WeeklySummariesToggleFilter({
   };
 
   // Bio Status is a plain on/off filter: off shows everyone, on narrows the list to
-  // users still eligible to post a bio (>80 tangible hours, >=8 summaries, not posted).
+  // users still eligible to post a bio. The rule lives in isQualifiedForBio and is
+  // tenure-based, not summary-count based — see the note there on the 2026-05-12
+  // regression. The thresholds below are read from that module so this label cannot
+  // drift away from the filter it describes.
   const handleBioStatusToggle = () => toggle('selectedBioStatus');
   const handleTrophyToggleChange = () => toggle('selectedTrophies');
   const handleOverHoursToggleChange = () => toggle('selectedOverTime');
 
   const textColorClass = darkMode ? `${styles.filterLabel} text-light` : styles.filterLabel;
 
+  // The whole filter row is permission-gated, and the Bio Status item lives inside
+  // it with its tooltip and controlled `checked`. An earlier shape declared a
+  // second, uncontrolled Bio Status block above this gate; keeping both would have
+  // rendered Bio Status twice, so only this one remains.
   return (
     <>
-      {(hasPermissionToFilter || hasPermission?.('highlightEligibleBios')) && (
+      {(hasPermissionToFilter || hasPermission?.(permissions.highlightEligibleBios)) && (
         <div className={styles.filterRow}>
           <div className={styles.specialColorsRow}>
             <span className={styles.filterGroupLabel}>Filter by:</span>
@@ -48,8 +57,8 @@ export default function WeeklySummariesToggleFilter({
               </div>
               <ReactTooltip id={`${formId}-bioFilterTooltip`} place="top" effect="solid">
                 <span style={{ whiteSpace: 'normal', wordWrap: 'break-word', maxWidth: '200px' }}>
-                  Show users eligible for bio posting (total hours &gt; 80, total summaries &gt; 8,
-                  not yet posted)
+                  Show users eligible for bio posting (tangible hours &gt; {BIO_MIN_TANGIBLE_HOURS},
+                  days in team &gt; {BIO_MIN_DAYS_IN_TEAM}, bio not yet posted)
                 </span>
               </ReactTooltip>
             </div>

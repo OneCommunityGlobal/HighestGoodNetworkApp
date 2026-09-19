@@ -69,6 +69,7 @@ import PasswordInputModal from './PasswordInputModal';
 import SelectTeamPieChart from './SelectTeamPieChart';
 import styles from './WeeklySummariesReport.module.css';
 import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
+import { permissions } from '../../utils/constants';
 // Keeping this block commented intentionally for future reference
 // import { setField, toggleField, removeItemFromField, setChildField } from '~/utils/stateHelper';
 import { setField } from '~/utils/stateHelper';
@@ -521,26 +522,36 @@ const WeeklySummariesReport = props => {
       const badgeStatusCode = await fetchAllBadges();
       setPermissionState(prev => ({
         ...prev,
-        // Owner/Administrator fall back to edit rights without an explicit grant.
+        // One of two places that write permissionState; fetchInitialPermissions below
+        // is the other, and both run on mount. Keep the two in step — whichever
+        // resolves last wins.
+        //
+        // Permission keys come from the `permissions` constant rather than string
+        // literals. The Owner/Administrator fallbacks grant the right without an
+        // explicit permission record, matching codeEditPermission and canManageFilter
+        // below.
         bioEditPermission:
-          hasPermission('putUserProfileImportantInfo') ||
+          hasPermission(permissions.putUserProfileImportantInfo) ||
           auth.user.role === 'Owner' ||
           auth.user.role === 'Administrator',
-        canEditSummaryCount: hasPermission('putUserProfileImportantInfo'),
+        // NOTE: the other effect gates this on `editSummaryHoursCount` instead. Both
+        // spellings predate this merge, so the winner depends on effect ordering.
+        // Left as-is rather than silently picking one — needs a product decision.
+        canEditSummaryCount: hasPermission(permissions.putUserProfileImportantInfo),
         codeEditPermission:
-          hasPermission('editTeamCode') ||
+          hasPermission(permissions.editTeamCode) ||
           auth.user.role === 'Owner' ||
           auth.user.role === 'Administrator',
         // Same fallback for the yellow highlight bar and the Bio Status filter.
         canSeeBioHighlight:
-          hasPermission('highlightEligibleBios') ||
+          hasPermission(permissions.highlightEligibleBios) ||
           auth.user.role === 'Owner' ||
           auth.user.role === 'Administrator',
         canManageFilter:
-          hasPermission('manageSummariesFilters') ||
+          hasPermission(permissions.manageSummariesFilters) ||
           auth.user.role === 'Owner' ||
           auth.user.role === 'Administrator',
-        hasSeeBadgePermission: hasPermission('seeBadges') && badgeStatusCode === 200,
+        hasSeeBadgePermission: hasPermission(permissions.seeBadges) && badgeStatusCode === 200,
       }));
 
       const response = await axios.get(ENDPOINTS.WEEKLY_SUMMARIES_REPORT(), {
@@ -1723,23 +1734,26 @@ const WeeklySummariesReport = props => {
         setPermissionState(prev => ({
           ...prev,
           // Keep the Owner/Administrator fallbacks identical to the other place that
-          // writes permissionState — both effects run on mount and either may land last.
+          // writes permissionState — both effects run on mount and either may land
+          // last. Keys come from the `permissions` constant, not string literals.
           bioEditPermission:
-            props.hasPermission('putUserProfileImportantInfo') ||
+            props.hasPermission(permissions.putUserProfileImportantInfo) ||
             props.auth?.user?.role === 'Owner' ||
             props.auth?.user?.role === 'Administrator',
           codeEditPermission:
-            props.hasPermission('editTeamCode') ||
+            props.hasPermission(permissions.editTeamCode) ||
             props.auth?.user?.role === 'Owner' ||
             props.auth?.user?.role === 'Administrator',
-          canEditSummaryCount: props.hasPermission('editSummaryHoursCount'),
+          // NOTE: the effect above gates this on `putUserProfileImportantInfo`. See
+          // the note there — the divergence predates this merge and is unresolved.
+          canEditSummaryCount: props.hasPermission(permissions.editSummaryHoursCount),
           canSeeBioHighlight:
-            props.hasPermission('highlightEligibleBios') ||
+            props.hasPermission(permissions.highlightEligibleBios) ||
             props.auth?.user?.role === 'Owner' ||
             props.auth?.user?.role === 'Administrator',
-          hasSeeBadgePermission: props.hasPermission('seeBadges'),
+          hasSeeBadgePermission: props.hasPermission(permissions.seeBadges),
           canManageFilter:
-            props.hasPermission('manageSummariesFilters') ||
+            props.hasPermission(permissions.manageSummariesFilters) ||
             props.auth?.user?.role === 'Owner' ||
             props.auth?.user?.role === 'Administrator',
         }));
