@@ -402,6 +402,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
                 {isLoading ? 'Loading...' : 'Clone with Template'}
               </button>
               <UncontrolledTooltip
+                autohide={false}
                 placement="top"
                 target="clone-template-button"
                 trigger="hover focus"
@@ -427,6 +428,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
                 Clear Template
               </button>
               <UncontrolledTooltip
+                autohide={false}
                 placement="top"
                 target="clear-template-button"
                 trigger="hover focus"
@@ -443,6 +445,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
                 {isLoading ? 'Appending...' : 'Append Template'}
               </button>
               <UncontrolledTooltip
+                autohide={false}
                 placement="top"
                 target="append-template-button"
                 trigger="hover focus"
@@ -459,6 +462,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
                 {isLoading ? 'Deleting...' : 'Delete Template'}
               </button>
               <UncontrolledTooltip
+                autohide={false}
                 placement="top"
                 target="delete-template-button"
                 trigger="hover focus"
