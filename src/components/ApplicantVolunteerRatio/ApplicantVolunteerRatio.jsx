@@ -167,35 +167,49 @@ function ApplicantVolunteerRatio() {
   const legendTextColor = darkMode ? '#e0e0e0' : '#333';
   const roleSelectStyles = useMemo(
     () => ({
-      control: (base, state) => ({
-        ...base,
-        backgroundColor: darkMode ? '#243b55' : base.backgroundColor,
-        borderColor: state.isFocused ? '#60a5fa' : darkMode ? '#52677d' : base.borderColor,
-        boxShadow: state.isFocused ? '0 0 0 1px #60a5fa' : base.boxShadow,
-        ':hover': {
-          borderColor: darkMode ? '#60a5fa' : '#2684ff',
-        },
-      }),
+      control: (base, state) => {
+        // Sonar fix: extracted nested ternary from original line 173
+        let borderColor = base.borderColor;
+        if (state.isFocused) {
+          borderColor = '#60a5fa';
+        } else if (darkMode) {
+          borderColor = '#52677d';
+        }
+
+        return {
+          ...base,
+          backgroundColor: darkMode ? '#243b55' : base.backgroundColor,
+          borderColor,
+          boxShadow: state.isFocused ? '0 0 0 1px #60a5fa' : base.boxShadow,
+          ':hover': {
+            borderColor: darkMode ? '#60a5fa' : '#2684ff',
+          },
+        };
+      },
       menu: base => ({
         ...base,
         backgroundColor: darkMode ? '#243b55' : base.backgroundColor,
         border: darkMode ? '1px solid #52677d' : base.border,
       }),
       menuPortal: base => ({ ...base, zIndex: 10000 }),
-      option: (base, state) => ({
-        ...base,
-        backgroundColor: state.isSelected
-          ? darkMode
-            ? '#2563eb'
-            : base.backgroundColor
-          : state.isFocused && darkMode
-          ? '#3a506b'
-          : base.backgroundColor,
-        color: darkMode ? '#f9fafb' : base.color,
-        ':active': {
-          backgroundColor: darkMode ? '#1d4ed8' : base[':active']?.backgroundColor,
-        },
-      }),
+      option: (base, state) => {
+        // Sonar fix: extracted nested ternaries from original lines 188 and 191
+        let optionBackgroundColor = base.backgroundColor;
+        if (state.isSelected && darkMode) {
+          optionBackgroundColor = '#2563eb';
+        } else if (state.isFocused && darkMode) {
+          optionBackgroundColor = '#3a506b';
+        }
+
+        return {
+          ...base,
+          backgroundColor: optionBackgroundColor,
+          color: darkMode ? '#f9fafb' : base.color,
+          ':active': {
+            backgroundColor: darkMode ? '#1d4ed8' : base[':active']?.backgroundColor,
+          },
+        };
+      },
       multiValue: base => ({
         ...base,
         backgroundColor: darkMode ? '#3a506b' : base.backgroundColor,
@@ -318,166 +332,178 @@ function ApplicantVolunteerRatio() {
         </button>
       </div>
 
-      {loading ? (
-        <div className={styles.loadingContainer} role="status" aria-label="Loading chart data">
-          <div className={styles.loadingSpinner} aria-hidden="true" />
-          <span>Loading chart data...</span>
-        </div>
-      ) : chartData.length > 0 ? (
-        <div className={styles.chartContainer}>
-          <ResponsiveContainer width="100%" height={350}>
-            <BarChart
-              data={chartData}
-              layout="vertical"
-              margin={{ top: 20, right: 40, left: 80, bottom: 20 }}
-              barCategoryGap={24}
-              barSize={16}
-            >
-              <XAxis
-                type="number"
-                domain={viewMode === 'percentage' ? [0, 100] : ['auto', 'auto']}
-                allowDecimals={viewMode === 'percentage'}
-              />
+      {(() => {
+        // Sonar fix: extracted nested ternary from original line 326
+        if (loading) {
+          return (
+            // Sonar fix: accessibility fix for original line 322
+            <output className={styles.loadingContainer} aria-label="Loading chart data">
+              <div className={styles.loadingSpinner} aria-hidden="true" />
+              <span>Loading chart data...</span>
+            </output>
+          );
+        }
 
-              <YAxis
-                dataKey="role"
-                type="category"
-                width={180}
-                label={{ value: 'Role', angle: -90, position: 'insideLeft' }}
-              />
-
-              <Tooltip
-                content={<ChartTooltip darkMode={darkMode} />}
-                cursor={{ fill: darkMode ? '#52677d' : '#f0f0f0', opacity: 0.35 }}
-              />
-
-              {viewMode === 'count' ? (
-                <>
-                  <Bar
-                    dataKey="applicants"
-                    fill="#1976d2"
-                    activeBar={{ fill: darkMode ? '#60a5fa' : '#1565c0' }}
-                  >
-                    <LabelList dataKey="applicants" position="right" />
-                  </Bar>
-
-                  <Bar
-                    dataKey="hired"
-                    fill="#43a047"
-                    activeBar={{ fill: darkMode ? '#86efac' : '#2e7d32' }}
-                  >
-                    <LabelList dataKey="hired" position="right" />
-                  </Bar>
-                </>
-              ) : (
-                <Bar
-                  dataKey="hiredPercentage"
-                  fill="#43a047"
-                  activeBar={{ fill: darkMode ? '#86efac' : '#2e7d32' }}
+        if (chartData.length > 0) {
+          return (
+            <div className={styles.chartContainer}>
+              <ResponsiveContainer width="100%" height={350}>
+                <BarChart
+                  data={chartData}
+                  layout="vertical"
+                  margin={{ top: 20, right: 40, left: 80, bottom: 20 }}
+                  barCategoryGap={24}
+                  barSize={16}
                 >
-                  <LabelList
-                    dataKey="hiredPercentage"
-                    position="right"
-                    formatter={value => `${value}%`}
+                  <XAxis
+                    type="number"
+                    domain={viewMode === 'percentage' ? [0, 100] : ['auto', 'auto']}
+                    allowDecimals={viewMode === 'percentage'}
                   />
-                </Bar>
-              )}
-            </BarChart>
-          </ResponsiveContainer>
 
-          {/* Manual Legend */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              gap: '16px',
-              marginTop: '12px',
-              fontWeight: 500,
-            }}
-          >
-            {viewMode === 'count' ? (
-              <>
-                <span
-                  style={{
-                    color: legendTextColor,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                  }}
-                >
-                  <span
-                    style={{
-                      width: '12px',
-                      height: '12px',
-                      backgroundColor: '#1976d2',
-                      display: 'inline-block',
-                      borderRadius: '2px',
-                    }}
+                  <YAxis
+                    dataKey="role"
+                    type="category"
+                    width={180}
+                    label={{ value: 'Role', angle: -90, position: 'insideLeft' }}
                   />
-                  Total Applications
-                </span>
 
-                <span
-                  style={{
-                    color: legendTextColor,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                  }}
-                >
-                  <span
-                    style={{
-                      width: '12px',
-                      height: '12px',
-                      backgroundColor: '#43a047',
-                      display: 'inline-block',
-                      borderRadius: '2px',
-                    }}
+                  <Tooltip
+                    content={<ChartTooltip darkMode={darkMode} />}
+                    cursor={{ fill: darkMode ? '#52677d' : '#f0f0f0', opacity: 0.35 }}
                   />
-                  People Hired
-                </span>
-              </>
-            ) : (
-              <span
+
+                  {viewMode === 'count' ? (
+                    <>
+                      <Bar
+                        dataKey="applicants"
+                        fill="#1976d2"
+                        activeBar={{ fill: darkMode ? '#60a5fa' : '#1565c0' }}
+                      >
+                        <LabelList dataKey="applicants" position="right" />
+                      </Bar>
+
+                      <Bar
+                        dataKey="hired"
+                        fill="#43a047"
+                        activeBar={{ fill: darkMode ? '#86efac' : '#2e7d32' }}
+                      >
+                        <LabelList dataKey="hired" position="right" />
+                      </Bar>
+                    </>
+                  ) : (
+                    <Bar
+                      dataKey="hiredPercentage"
+                      fill="#43a047"
+                      activeBar={{ fill: darkMode ? '#86efac' : '#2e7d32' }}
+                    >
+                      <LabelList
+                        dataKey="hiredPercentage"
+                        position="right"
+                        formatter={value => `${value}%`}
+                      />
+                    </Bar>
+                  )}
+                </BarChart>
+              </ResponsiveContainer>
+
+              {/* Manual Legend */}
+              <div
                 style={{
-                  color: legendTextColor,
                   display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
+                  justifyContent: 'center',
+                  gap: '16px',
+                  marginTop: '12px',
+                  fontWeight: 500,
                 }}
               >
-                <span
-                  style={{
-                    width: '12px',
-                    height: '12px',
-                    backgroundColor: '#43a047',
-                    display: 'inline-block',
-                    borderRadius: '2px',
-                  }}
-                />
-                People Hired (%)
-              </span>
-            )}
-          </div>
+                {viewMode === 'count' ? (
+                  <>
+                    <span
+                      style={{
+                        color: legendTextColor,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                      }}
+                    >
+                      <span
+                        style={{
+                          width: '12px',
+                          height: '12px',
+                          backgroundColor: '#1976d2',
+                          display: 'inline-block',
+                          borderRadius: '2px',
+                        }}
+                      />
+                      Total Applications
+                    </span>
 
-          {/* Axis Title */}
-          <div
-            style={{
-              textAlign: 'center',
-              marginTop: '10px',
-              fontWeight: 500,
-            }}
-          >
-            {viewMode === 'percentage'
-              ? 'Percentage of People Hired (%)'
-              : 'Number of Applications / Hires'}
+                    <span
+                      style={{
+                        color: legendTextColor,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                      }}
+                    >
+                      <span
+                        style={{
+                          width: '12px',
+                          height: '12px',
+                          backgroundColor: '#43a047',
+                          display: 'inline-block',
+                          borderRadius: '2px',
+                        }}
+                      />
+                      People Hired
+                    </span>
+                  </>
+                ) : (
+                  <span
+                    style={{
+                      color: legendTextColor,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: '12px',
+                        height: '12px',
+                        backgroundColor: '#43a047',
+                        display: 'inline-block',
+                        borderRadius: '2px',
+                      }}
+                    />
+                    People Hired (%)
+                  </span>
+                )}
+              </div>
+
+              {/* Axis Title */}
+              <div
+                style={{
+                  textAlign: 'center',
+                  marginTop: '10px',
+                  fontWeight: 500,
+                }}
+              >
+                {viewMode === 'percentage'
+                  ? 'Percentage of People Hired (%)'
+                  : 'Number of Applications / Hires'}
+              </div>
+            </div>
+          );
+        }
+
+        return (
+          <div className={styles.noData}>
+            No data available. Please add some applicant volunteer ratio data.
           </div>
-        </div>
-      ) : (
-        <div className={styles.noData}>
-          No data available. Please add some applicant volunteer ratio data.
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
