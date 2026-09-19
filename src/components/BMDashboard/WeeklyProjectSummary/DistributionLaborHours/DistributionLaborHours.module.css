@@ -1,26 +1,56 @@
 /* stylelint-disable */
 
 .container {
-  border-radius: 8px;
-  padding: 12px;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 15%);
   width: 100%;
   height: 100%;
+  min-height: 650px;
+  box-sizing: border-box;
+
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 8px;
+  padding: 24px 20px;
+
+  box-shadow: 0 1px 3px rgb(0 0 0 / 15%);
+
   transition:
     background-color 0.3s ease,
     color 0.3s ease;
 }
 
-.title {
-  font-size: large;
-  font-weight: bold;
-  margin-bottom: 18px;
-  color: #111827;
+/*
+ * This is the important change.
+ *
+ * Title + filters + Submit + chart are one compact block.
+ * The entire block is centered inside the tall dashboard card.
+ */
+.content {
+  width: 100%;
+  max-width: 760px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* Keep title blue in dark mode */
+/* =========================
+   TITLE
+   ========================= */
+
+.title {
+  width: 100%;
+
+  margin: 0 0 20px;
+
+  color: #111827;
+
+  font-size: large;
+  font-weight: bold;
+  text-align: center;
+}
+
 :global(.dark) .title,
 :global(.dark-mode) .title,
 :global(.bm-dashboard-dark) .title,
@@ -32,30 +62,44 @@
    FILTERS
    ========================= */
 
-.filters {
+.filtersSection {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.filterRow {
+  width: 100%;
+
   display: flex;
   flex-wrap: wrap;
+
   justify-content: center;
   align-items: flex-end;
-  gap: 12px;
-  margin-bottom: 16px;
+
+  column-gap: 18px;
+  row-gap: 12px;
 }
 
 .filterGroup {
+  min-width: 115px;
+
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  min-width: 110px;
+
+  gap: 6px;
 }
 
 .filterGroup label {
-  display: block;
+  margin: 0;
+
   font-size: 0.9rem;
   font-weight: 600;
-  margin: 0;
+  text-align: center;
 }
 
-/* Dark mode filter labels */
 :global(.dark) .filterGroup label,
 :global(.dark-mode) .filterGroup label,
 :global(.bm-dashboard-dark) .filterGroup label,
@@ -63,25 +107,32 @@
   color: #fff;
 }
 
-/* Date inputs */
+/* =========================
+   DATE INPUTS
+   ========================= */
+
 .filterGroup input[type='date'] {
   min-height: 38px;
-  border-radius: 6px;
+
   box-sizing: border-box;
+
+  padding: 7px 9px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+
   font-size: 0.95rem;
   line-height: 1.2;
-  padding: 7px 9px;
-  border: 1px solid #d1d5db;
 }
 
-/* Dark mode date input */
 :global(.dark) .filterGroup input[type='date'],
 :global(.dark-mode) .filterGroup input[type='date'],
 :global(.bm-dashboard-dark) .filterGroup input[type='date'],
 :global([data-theme='dark']) .filterGroup input[type='date'] {
   background-color: #1f2937 !important;
   color: #f9fafb !important;
-  border: 1px solid #374151 !important;
+  border-color: #374151 !important;
+
   color-scheme: dark;
 }
 
@@ -89,137 +140,137 @@
    REACT SELECT
    ========================= */
 
-:global(.react-select-container) {
-  min-width: 110px;
+.selectContainer {
+  min-width: 115px;
 }
 
-:global(.react-select__control) {
+:global(.labor-hours-select__control) {
   min-height: 38px !important;
   cursor: pointer !important;
 }
 
-:global(.react-select__option),
-:global(.react-select__single-value) {
+:global(.labor-hours-select__option),
+:global(.labor-hours-select__single-value) {
   white-space: nowrap;
   font-weight: normal !important;
 }
 
-:global(.react-select__menu) {
+:global(.labor-hours-select__menu),
+:global(.labor-hours-select__menu-portal) {
   z-index: 9999 !important;
 }
 
-:global(.react-select__menu-portal) {
-  z-index: 9999 !important;
+:global(.labor-hours-select__indicator-separator) {
+  background-color: #ccc !important;
 }
 
-/* Dark mode select control */
-:global(.dark) :global(.react-select__control),
-:global(.dark-mode) :global(.react-select__control),
-:global(.bm-dashboard-dark) :global(.react-select__control),
-:global([data-theme='dark']) :global(.react-select__control) {
+:global(.labor-hours-select__dropdown-indicator) {
+  color: #ccc !important;
+}
+
+/* =========================
+   SELECT DARK MODE
+   ========================= */
+
+:global(.dark) :global(.labor-hours-select__control),
+:global(.dark-mode) :global(.labor-hours-select__control),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__control),
+:global([data-theme='dark']) :global(.labor-hours-select__control) {
   background-color: #1f2937 !important;
   border-color: #374151 !important;
 }
 
-/* Selected text */
-:global(.dark) :global(.react-select__single-value),
-:global(.dark-mode) :global(.react-select__single-value),
-:global(.bm-dashboard-dark) :global(.react-select__single-value),
-:global([data-theme='dark']) :global(.react-select__single-value) {
+:global(.dark) :global(.labor-hours-select__single-value),
+:global(.dark-mode) :global(.labor-hours-select__single-value),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__single-value),
+:global([data-theme='dark']) :global(.labor-hours-select__single-value) {
   color: #f9fafb !important;
 }
 
-/* React Select internal input */
-:global(.dark) :global(.react-select__input),
-:global(.dark-mode) :global(.react-select__input),
-:global(.bm-dashboard-dark) :global(.react-select__input),
-:global([data-theme='dark']) :global(.react-select__input) {
+:global(.dark) :global(.labor-hours-select__input),
+:global(.dark-mode) :global(.labor-hours-select__input),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__input),
+:global([data-theme='dark']) :global(.labor-hours-select__input) {
   color: #f9fafb !important;
 }
 
-/* Placeholder */
-:global(.dark) :global(.react-select__placeholder),
-:global(.dark-mode) :global(.react-select__placeholder),
-:global(.bm-dashboard-dark) :global(.react-select__placeholder),
-:global([data-theme='dark']) :global(.react-select__placeholder) {
+:global(.dark) :global(.labor-hours-select__placeholder),
+:global(.dark-mode) :global(.labor-hours-select__placeholder),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__placeholder),
+:global([data-theme='dark']) :global(.labor-hours-select__placeholder) {
   color: #9ca3af !important;
 }
 
-/* Separator */
-:global(.react-select__indicator-separator) {
-  background-color: #ccc !important;
-}
-
-:global(.dark) :global(.react-select__indicator-separator),
-:global(.dark-mode) :global(.react-select__indicator-separator),
-:global(.bm-dashboard-dark) :global(.react-select__indicator-separator),
-:global([data-theme='dark']) :global(.react-select__indicator-separator) {
+:global(.dark) :global(.labor-hours-select__indicator-separator),
+:global(.dark-mode) :global(.labor-hours-select__indicator-separator),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__indicator-separator),
+:global([data-theme='dark']) :global(.labor-hours-select__indicator-separator) {
   background-color: #4b5563 !important;
 }
 
-/* Arrow */
-:global(.react-select__dropdown-indicator) {
-  color: #ccc !important;
-}
-
-/* Dark dropdown menu */
-:global(.dark) :global(.react-select__menu),
-:global(.dark-mode) :global(.react-select__menu),
-:global(.bm-dashboard-dark) :global(.react-select__menu),
-:global([data-theme='dark']) :global(.react-select__menu) {
+:global(.dark) :global(.labor-hours-select__menu),
+:global(.dark-mode) :global(.labor-hours-select__menu),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__menu),
+:global([data-theme='dark']) :global(.labor-hours-select__menu) {
   background-color: #1f2937 !important;
   border: 1px solid #374151 !important;
 }
 
-/* Dark dropdown options */
-:global(.dark) :global(.react-select__option),
-:global(.dark-mode) :global(.react-select__option),
-:global(.bm-dashboard-dark) :global(.react-select__option),
-:global([data-theme='dark']) :global(.react-select__option) {
+:global(.dark) :global(.labor-hours-select__option),
+:global(.dark-mode) :global(.labor-hours-select__option),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__option),
+:global([data-theme='dark']) :global(.labor-hours-select__option) {
   background-color: #1f2937 !important;
   color: #f9fafb !important;
   cursor: pointer;
 }
 
-/* Focused option */
-:global(.dark) :global(.react-select__option--is-focused),
-:global(.dark-mode) :global(.react-select__option--is-focused),
-:global(.bm-dashboard-dark) :global(.react-select__option--is-focused),
-:global([data-theme='dark']) :global(.react-select__option--is-focused) {
+:global(.dark) :global(.labor-hours-select__option--is-focused),
+:global(.dark-mode) :global(.labor-hours-select__option--is-focused),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__option--is-focused),
+:global([data-theme='dark']) :global(.labor-hours-select__option--is-focused) {
   background-color: #374151 !important;
   color: #fff !important;
 }
 
-/* Selected option */
-:global(.dark) :global(.react-select__option--is-selected),
-:global(.dark-mode) :global(.react-select__option--is-selected),
-:global(.bm-dashboard-dark) :global(.react-select__option--is-selected),
-:global([data-theme='dark']) :global(.react-select__option--is-selected) {
+:global(.dark) :global(.labor-hours-select__option--is-selected),
+:global(.dark-mode) :global(.labor-hours-select__option--is-selected),
+:global(.bm-dashboard-dark) :global(.labor-hours-select__option--is-selected),
+:global([data-theme='dark']) :global(.labor-hours-select__option--is-selected) {
   background-color: #2563eb !important;
   color: #fff !important;
 }
 
 /* =========================
-   SUBMIT BUTTON
+   SUBMIT
    ========================= */
 
-.buttonContainer {
+.submitSection {
+  position: relative;
+
   width: 100%;
+  height: 42px;
+
+  margin-top: 12px;
+
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
-  margin-top: 5px;
-  min-height: 38px;
 }
 
 .button {
-  background-color: #2563eb;
-  color: #fff;
+  min-height: 38px;
+
+  padding: 8px 18px;
+
   border: none;
   border-radius: 6px;
-  padding: 8px 16px;
+
+  background-color: #2563eb;
+  color: #fff;
+
   cursor: pointer;
+
   transition: background-color 0.3s ease;
 }
 
@@ -241,9 +292,19 @@
 }
 
 .appliedMessage {
+  position: absolute;
+
+  left: calc(50% + 58px);
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  white-space: nowrap;
+
+  color: #166534;
+
   font-size: 0.8rem;
   font-weight: 500;
-  color: #166534;
 }
 
 :global(.dark) .appliedMessage,
@@ -254,47 +315,96 @@
 }
 
 /* =========================
-   CHART
+   VISUALIZATION
    ========================= */
 
-.chartWrapper {
+/*
+ * Important:
+ * No flex-grow.
+ * No min-height.
+ * No huge padding.
+ *
+ * The chart simply follows the filters with a controlled gap.
+ */
+.visualizationSection {
+  width: 100%;
+
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
+  justify-content: center;
+
+  margin-top: 34px;
 }
 
+.visualizationContent {
+  width: min(100%, 700px);
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(220px, 270px)
+    340px;
+
+  justify-content: center;
+  align-items: center;
+
+  column-gap: 34px;
+}
+
+/* =========================
+   LEGEND
+   ========================= */
+
 .legend {
+  width: 100%;
+
   display: flex;
   flex-direction: column;
-  min-width: 150px;
+
+  justify-content: center;
 }
 
 .legendItem {
   display: flex;
   align-items: center;
-  margin-bottom: 8px;
+
+  margin-bottom: 9px;
+
   font-size: 0.85rem;
 }
 
+.legendItem:last-child {
+  margin-bottom: 0;
+}
+
 .legendText {
-  line-height: 1.25;
+  line-height: 1.3;
 }
 
 .colorBox {
   width: 12px;
   height: 12px;
+
   margin-right: 8px;
+
   border-radius: 2px;
+
   flex-shrink: 0;
 }
 
+/* =========================
+   PIE
+   ========================= */
+
 .pieChartContainer {
+  width: 340px;
+  height: 300px;
+
+  min-width: 0;
+
   display: flex;
-  justify-content: center;
   align-items: center;
-  width: 100%;
+  justify-content: center;
 }
 
 /* =========================
@@ -302,10 +412,14 @@
    ========================= */
 
 .tooltip {
+  padding: 8px 10px;
+
+  border-radius: 6px;
+
   background-color: #f3f4f6;
   color: #111827;
-  padding: 8px;
-  border-radius: 6px;
+
+  box-shadow: 0 2px 6px rgb(0 0 0 / 15%);
 }
 
 .tooltip p {
@@ -333,12 +447,15 @@
 .noData {
   width: 100%;
   min-height: 250px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
+  color: #4b5563;
+
   text-align: center;
   font-size: 0.95rem;
-  color: #4b5563;
 }
 
 :global(.dark) .noData,
@@ -349,23 +466,61 @@
 }
 
 /* =========================
-   RESPONSIVE
+   TABLET
    ========================= */
 
-@media (width <= 768px) {
-  .chartWrapper {
-    flex-direction: column;
-    align-items: center;
+@media (width <= 900px) {
+  .container {
+    height: auto;
+    min-height: auto;
+
+    align-items: stretch;
+
+    padding: 24px 18px;
+  }
+
+  .content {
+    max-width: none;
+  }
+
+  .visualizationSection {
+    margin-top: 28px;
+  }
+
+  .visualizationContent {
+    width: 100%;
+
+    grid-template-columns: 1fr;
+
+    justify-items: center;
+
+    row-gap: 18px;
   }
 
   .legend {
-    margin-bottom: 16px;
-    align-items: flex-start;
+    width: auto;
+    max-width: 320px;
   }
 
-  .filters {
+  .pieChartContainer {
+    width: min(340px, 100%);
+    height: 300px;
+  }
+}
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (width <= 768px) {
+  .container {
+    padding: 20px 14px;
+  }
+
+  .filterRow {
     flex-direction: column;
     align-items: center;
+
     gap: 10px;
   }
 
@@ -374,11 +529,41 @@
     max-width: 280px;
   }
 
-  :global(.react-select-container) {
+  .selectContainer {
     width: 100%;
   }
 
-  .buttonContainer {
+  .submitSection {
+    height: auto;
+
+    margin-top: 12px;
+
+    flex-direction: column;
+
+    gap: 6px;
+  }
+
+  .appliedMessage {
+    position: static;
+    transform: none;
+  }
+
+  .visualizationSection {
+    margin-top: 26px;
+  }
+
+  .visualizationContent {
+    row-gap: 16px;
+  }
+
+  .legend {
+    width: 100%;
     max-width: 280px;
+  }
+
+  .pieChartContainer {
+    width: 300px;
+    max-width: 100%;
+    height: 290px;
   }
 }
