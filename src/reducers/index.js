@@ -115,6 +115,9 @@ import { toolReplacementReducer } from './toolReplacementReducer';
 import { weeklySummariesFiltersApi } from '../actions/weeklySummariesFilterAction';
 import { atomReducer } from './educationPortal/atomReducer';
 import browseLessonPlanReducer from './educationPortal/broweLPReducer';
+
+// Members list in community portal
+import { MembersListReducer } from './communityPortal/activities/activityId/MembersListReducer';
 import formReducer from './formReducer';
 import KIInventoryReducer from './KIInventoryReducer';
 import { studentReducer } from './studentProfileReducer';
@@ -184,6 +187,7 @@ const localReducers = {
   dashboard: dashboardReducer,
   injuries: injuriesReducer,
   weeklyProjectSummary: weeklyProjectSummaryReducer,
+  issue: issueReducer,
   knowledgeEvolution: knowledgeEvolutionReducer,
   costBreakdown: costBreakdownReducer,
 
@@ -227,6 +231,9 @@ const localReducers = {
 
   // education portal
   browseLessonPlan: browseLessonPlanReducer,
+
+  // Members list in community portal
+  membersList: MembersListReducer,
   kiInventory: KIInventoryReducer,
 
   // enchanced popularity analytics
