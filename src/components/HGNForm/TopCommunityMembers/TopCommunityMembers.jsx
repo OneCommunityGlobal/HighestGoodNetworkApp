@@ -25,6 +25,7 @@ const skillOptions = [
 function TopCommunityMembers() {
   const [selectedSkill, setSelectedSkill] = useState('HTML');
   const [members, setMembers] = useState([]);
+  const [fetchError, setFetchError] = useState(null);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const normalizeMember = member => ({
@@ -43,10 +44,10 @@ function TopCommunityMembers() {
           params: { skills: selectedSkill },
         });
         setMembers(Array.isArray(response?.data) ? response.data : []);
+        setFetchError(null);
       } catch (error) {
-        // Network/API errors fall back to an empty list; the table already renders
-        // a "No members found" state, so no separate error UI is needed here.
         setMembers([]);
+        setFetchError(error.message || 'Unable to load community members.');
       }
     };
 
@@ -98,7 +99,7 @@ function TopCommunityMembers() {
             {sortedMembers.length === 0 && (
               <tr>
                 <td colSpan={5} className={styles.emptyState}>
-                  No members found for this skill.
+                  {fetchError || 'No members found for this skill.'}
                 </td>
               </tr>
             )}
