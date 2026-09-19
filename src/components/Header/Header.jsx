@@ -144,7 +144,7 @@ MeetingNotificationModalHeader.propTypes = {
 // app; Manager is deliberately excluded — it grants team visibility, not the
 // ability to edit the header, so a manager would get the message with no controls
 // and lose the logo for nothing.
-const HEADER_MESSAGE_ROLES = ['Owner', 'Administrator'];
+const HEADER_MESSAGE_ROLES = new Set(['Owner', 'Administrator']);
 
 export function Header(props) {
   const location = useLocation();
@@ -200,9 +200,7 @@ export function Header(props) {
   const canEditHeaderMessage = props.hasPermission('editHeaderMessage');
   const hasHeaderMessage = Boolean(props.ownerMessage);
   const showOwnerMessage =
-    hasHeaderMessage ||
-    canEditHeaderMessage ||
-    HEADER_MESSAGE_ROLES.includes(props.auth.user.role);
+    hasHeaderMessage || canEditHeaderMessage || HEADER_MESSAGE_ROLES.has(props.auth.user.role);
 
   const canGetReports = props.hasPermission('getReports', !isAuthUser);
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries', !isAuthUser);
