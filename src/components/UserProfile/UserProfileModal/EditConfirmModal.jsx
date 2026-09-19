@@ -14,31 +14,39 @@ const EditConfirmModal = props => {
     preserveScroll,
     finishScrollRestoration,
   } = props;
-  const toggle = () => {
-    closeModal();
+  const handleToggle = () => {
+    if (!disabled) closeModal();
   };
+
   return (
-    <React.Fragment>
-      <Modal
-        isOpen={isOpen}
-        toggle={closeModal}
-        // Prevent nested profile modals from moving the parent scroll position.
-        // eslint-disable-next-line jsx-a11y/no-autofocus
-        autoFocus={false}
-        returnFocusAfterClose={false}
-        onOpened={preserveScroll}
-        onClosed={finishScrollRestoration}
-        className={darkMode ? 'text-light dark-mode' : ''}
-      >
-        <ModalHeader toggle={disabled ? () => false : closeModal} className={darkMode ? 'bg-space-cadet' : ''}>{modalTitle}</ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{modalMessage}</ModalBody>
-        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <Button color="primary" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle} disabled={disabled}>
-            Close
-          </Button>
-        </ModalFooter>
-      </Modal>
-    </React.Fragment>
+    <Modal
+      isOpen={isOpen}
+      toggle={handleToggle}
+      keyboard={!disabled}
+      backdrop={disabled ? 'static' : true}
+      // Prevent nested profile modals from moving the parent scroll position.
+      // eslint-disable-next-line jsx-a11y/no-autofocus
+      autoFocus={false}
+      returnFocusAfterClose={false}
+      onOpened={preserveScroll}
+      onClosed={finishScrollRestoration}
+      className={darkMode ? 'text-light dark-mode' : ''}
+    >
+      <ModalHeader toggle={handleToggle} className={darkMode ? 'bg-space-cadet' : ''}>
+        {modalTitle}
+      </ModalHeader>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{modalMessage}</ModalBody>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button
+          color="primary"
+          onClick={handleToggle}
+          style={darkMode ? boxStyleDark : boxStyle}
+          disabled={disabled}
+        >
+          Close
+        </Button>
+      </ModalFooter>
+    </Modal>
   );
 };
 

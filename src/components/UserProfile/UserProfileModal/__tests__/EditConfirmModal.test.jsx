@@ -10,17 +10,28 @@ describe('UserProfileModal', () => {
     isOpen: true,
     disabled: false,
   };
-  beforeEach(() => {
-    // eslint-disable-next-line testing-library/no-render-in-lifecycle
-    render(<EditConfirmModal {...props} closeModal={closeModalMock} />);
-  });
+  beforeEach(() => closeModalMock.mockClear());
 
   it('should render edit confirm modal', () => {
+    render(<EditConfirmModal {...props} closeModal={closeModalMock} />);
+
     expect(screen.getByText(/success!/i)).toBeInTheDocument();
   });
 
-  it('should call closeModal function once the user clicks the close buttons', async () => {
+  it('should call closeModal when the user clicks the close buttons', () => {
+    render(<EditConfirmModal {...props} closeModal={closeModalMock} />);
+
     screen.getAllByRole('button', { name: /close/i }).forEach(button => fireEvent.click(button));
     expect(closeModalMock).toHaveBeenCalled();
+  });
+
+  it('should remain open while a save is in progress', () => {
+    render(<EditConfirmModal {...props} disabled closeModal={closeModalMock} />);
+
+    screen.getAllByRole('button', { name: /close/i }).forEach(button => fireEvent.click(button));
+    fireEvent.keyDown(document, { key: 'Escape', keyCode: 27 });
+
+    expect(closeModalMock).not.toHaveBeenCalled();
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
 });
