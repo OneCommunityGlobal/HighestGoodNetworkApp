@@ -23,174 +23,6 @@
   margin: 0;
 }
 
-.summaryTitle a {
-  color: #1d4ed8 !important;
-  text-decoration: none;
-  transition: color 150ms ease, text-decoration-color 150ms ease;
-}
-
-.summariesItem h3,
-.summariesItem h3 a {
-  position: static !important;
-  transform: none !important;
-  margin: 0 0 8px !important;
-  display: block;
-  text-align: left;
-  font-weight: 700;
-  color: #2b6ee8;
-  text-decoration: none;
-  line-height: 1.3;
-  font-size: 1.85rem;
-  overflow-wrap: anywhere;
-}
-
-:where(.jobLandingDark) .summariesItem h3 a {
-  color: #f8fafc;
-}
-
-.summaryTitle a:hover,
-.summaryTitle a:focus-visible {
-  color: #1e3a8a;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.dark .summaryTitle a {
-  color: #bef264;
-}
-
-.summariesItem h3 a:hover {
-  text-decoration: underline;
-}
-
-:where(.jobLandingDark) .summariesItem h3 a:hover {
-  color: #fff;
-}
-
-.dark .summaryTitle a:hover,
-.dark .summaryTitle a:focus-visible {
-  color: #ecfccb;
-}
-
-.emptyState p {
-  margin: 0.5rem 0;
-  font-size: 1rem;
-}
-
-.headings h1,
-.headings p {
-  color: #111827;
-}
-
-.jobAd h3 {
-  margin: 10px 0 0;
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: #183a9b;
-  padding: 12px;
-  transition: color 0.3s;
-  text-align: center;
-}
-
-.summariesItem p {
-  margin: 0 0 10px;
-  color: #1f2937;
-  font-size: 1rem;
-  line-height: 1.6;
-  text-align: left;
-}
-
-/* ================= DARK MODE VARIABLES ================= */
-
-.dark {
-  --bg-main: #020617;
-  --bg-surface: #0f172a;
-  --bg-card: #111827;
-  --border: #334155;
-  --text-primary: #e5e7eb;
-  --text-secondary: #94a3b8;
-  --accent: #65a30d;
-
-  background-color: var(--bg-main);
-  color: var(--text-primary);
-}
-
-.dark .userCollaborationContainer {
-  background-color: var(--bg-surface);
-  color: var(--text-primary);
-}
-
-.dark .userCollaborationContainer p,
-.dark .userCollaborationContainer h2,
-.dark .userCollaborationContainer h3,
-.dark .userCollaborationContainer h4 {
-  color: var(--text-primary);
-}
-
-.summaryItem {
-  padding: 18px 0;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.summaryItem:last-of-type {
-  border-bottom: none;
-}
-
-.summaryTitle {
-  margin: 0 0 8px;
-  font-size: 1.15rem;
-  line-height: 1.35;
-}
-
-.summaryDescription {
-  margin: 0;
-  color: #475569;
-  line-height: 1.65;
-}
-
-.dark .summaryItem {
-  border-bottom-color: var(--border);
-}
-
-.dark .summaryDescription {
-  color: var(--text-secondary);
-}
-
-/* ======================================================
-   HEADER
-   ====================================================== */
-
-.jobHeader {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 16px 0;
-}
-
-.jobHeader img {
-  width: clamp(160px, 30vw, 600px);
-  height: auto;
-}
-
-/* ======================================================
-   MODAL – ACTIONS
-   ====================================================== */
-
-.modalActions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 16px;
-  margin-top: 28px;
-}
-
-.modalActions button {
-  min-width: 120px;
-}
-
-/* ======================================================
-   NAVBAR
-   ====================================================== */
-
 .navbar {
   width: 100%;
   display: flex;
@@ -199,9 +31,12 @@
   margin: 0;
   margin-bottom: 0;
   background-color: #9c0;
-  padding: 14px 16px;
-  gap: 16px;
-  overflow: visible;
+  padding: 20px;
+  flex-flow: row nowrap;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+  z-index: 0;
+  border-radius: 0;
 }
 
 .navbarLeft input,
@@ -216,99 +51,52 @@
 .navbarRight,
 .searchForm {
   display: flex;
-  flex: 1;
-  max-width: 560px;
-  gap: 8px;
+  align-items: center;
+  padding: 4px;
+  gap: 12px;
 }
 
-.searchInput {
-  flex: 1;
-  min-width: 0;
-  height: 42px;
-  padding: 0 14px;
-  border: 1px solid rgb(15 23 42 / 22%);
-  border-radius: 8px;
-  background-color: #fff;
-  color: #172033;
-  font-size: 0.95rem;
-  box-shadow: 0 1px 2px rgb(15 23 42 / 10%);
-  transition: border-color 150ms ease, box-shadow 150ms ease;
+.searchForm input {
+  margin-right: 10px;
+  height: 38px;
+  padding: 0 12px;
+  line-height: 38px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  min-width: 240px;
 }
 
-.searchInput::placeholder {
-  color: #64748b;
-}
-
-.searchInput:focus {
-  border-color: #166534;
-  outline: none;
-  box-shadow: 0 0 0 3px rgb(22 101 52 / 20%);
+@media (width <= 380px) {
+  .searchForm input {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    box-sizing: border-box;
+    flex: 1 1 auto;
+  }
 }
 
 .searchButton,
-.categoryButton {
-  height: 42px;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
-}
-
-.searchButton {
-  min-width: 64px;
-  padding: 0 18px;
-  border: 1px solid #14532d;
-  background-color: #166534;
-  color: #fff;
-}
-
-.searchButton:hover {
-  background-color: #14532d;
-  box-shadow: 0 3px 8px rgb(20 83 45 / 25%);
-}
-
-.categoryDropdown {
-  position: relative;
-  flex-shrink: 0;
-}
-
-.categoryButton {
-  min-width: 190px;
-  padding: 0 16px;
-  border: 1px solid rgb(15 23 42 / 22%);
-  background-color: #fff;
-  color: #172033;
-  box-shadow: 0 1px 2px rgb(15 23 42 / 10%);
-}
-
-.categoryButton:hover,
-.categoryButton[aria-expanded='true'] {
-  border-color: #166534;
-  background-color: #f0fdf4;
-  box-shadow: 0 3px 8px rgb(15 23 42 / 14%);
-}
-
-.emptyState {
-  grid-column: 1 / -1;
-  display: flex;
-  flex-direction: column;
+.resetButton,
+.showSummaries {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 3rem;
-  text-align: center;
-  color: #666; 
-  min-height: 250px;
-  border-radius: 12px;
-  background: transparent;
-}
-
-.emptyState.dark {
-  color: #ccc; /* Dark mode text color */
-}
-
-.emptyState button {
-  margin-top: 1rem;
+  height: 38px;
+  padding: 0 16px;
+  background-color: #0958a8;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+  line-height: normal;
+  vertical-align: middle;
+  transition: filter 0.15s ease, transform 0.02s ease;
 }
 
 .showSummaries {
@@ -327,112 +115,6 @@
   transform: translateY(1px);
 }
 
-/* Buttons FIRST to avoid specificity issues */
-.dropdownWrapper button {
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  background-color: #fff;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.pagination button {
-  margin: 0 5px;
-  padding: 6px 10px;
-  cursor: pointer;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  background: #fff;
-}
-
-.pagination button:hover {
-  background-color: #084a8c;
-  color: #fff;
-}
-
-.pagination button:disabled {
-  background-color: #b0b0b0;
-  color: #1a1a1a;
-  cursor: default;
-}
-
-.dropdownWrapper button:hover {
-  background-color: #f5f5f5;
-}
-
-.dropdownWrapper button:disabled {
-  background-color: #e5e7eb;
-  color: #4b5563;
-  border: 1px solid #d1d5db;
-  cursor: not-allowed;
-  opacity: 0.9;
-}
-
-/* ================= DARK MODE – NAVBAR ================= */
-
-.dark .navbar {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border);
-}
-
-.dropdownItem input {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-}
-
-.dark .searchInput {
-  background-color: #020617;
-  color: var(--text-primary);
-  border: 1px solid var(--border);
-  box-shadow: none;
-}
-
-.dark .searchInput::placeholder {
-  color: var(--text-secondary);
-}
-
-.dark .searchInput:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgb(101 163 13 / 25%);
-}
-
-.dark .categoryButton {
-  background-color: #1e293b;
-  color: var(--text-primary);
-  border: 1px solid var(--border);
-  box-shadow: none;
-}
-
-.dark .categoryButton:hover,
-.dark .categoryButton[aria-expanded='true'] {
-  background-color: var(--bg-surface);
-  border-color: var(--accent);
-}
-
-/* ======================================================
-   DROPDOWN
-   ====================================================== */
-
-.jobSelect {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  width: 240px;
-  max-height: 280px;
-  overflow-y: auto;
-  background-color: #fff;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 600;
-  white-space: nowrap;
-  line-height: normal;
-  vertical-align: middle;
-  transition: filter 0.15s ease, transform 0.02s ease;
-}
-
 .navbarRight select {
   padding: 10px 14px;
   border: 1px solid #ccc;
@@ -444,6 +126,11 @@
 .headings {
   margin-bottom: 10px;
   text-align: center;
+}
+
+.headings h1,
+.headings p {
+  color: #111827;
 }
 
 .mainHeading {
@@ -464,20 +151,12 @@
 /* --- Jobs grid --- */
 .jobList {
   display: grid;
-  gap: 20px;
-  padding: 20px 0;
-}
-
-@media(width >= 768px) {
-  .jobList {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media(width >= 1024px) {
-  .jobList {
-    grid-template-columns: repeat(4, 1fr);
-  }
+  grid-template-columns: 1fr;
+  gap: 1em;
+  width: 100%;
+  justify-content: center;
+  align-items: stretch;
+  padding: 1em;
 }
 
 @media (width >= 480px) {
@@ -543,6 +222,16 @@
   margin: 0;
 }
 
+.jobAd h3 {
+  margin: 10px 0 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #333;
+  padding: 12px;
+  transition: color 0.3s;
+  text-align: center;
+}
+
 .categoryTitle {
   font-size: 1.2rem;
   font-weight: 700;
@@ -566,249 +255,10 @@
   background-color: #f9f9f9;
 }
 
-/* ================= DARK MODE – JOB GRID ================= */
-
-.dark .jobAd {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border);
-  color: var(--text-primary);
-}
-
-.dark .jobAd h3 {
-  color: #93c5fd;
-}
-
-/* ======================================================
-   PAGINATION
-   ====================================================== */
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin: 20px 0;
-  flex-wrap: wrap;
-}
-
-.paginationButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 36px;
-  height: 36px;
-  padding: 0 10px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  background-color: #fff;
-  color: #374151;
+.requirementsTitle {
+  font-size: 0.9rem;
   font-weight: 600;
-  cursor: pointer;
-  transition:
-    background-color 150ms ease,
-    border-color 150ms ease,
-    color 150ms ease,
-    box-shadow 150ms ease;
-}
-
-.paginationButton:hover {
-  background-color: #f3f4f6;
-  border-color: #9ca3af;
-}
-
-.paginationButton.active {
-  background-color: #4d7c0f;
-  border-color: #4d7c0f;
-  color: #fff;
-  cursor: default;
-  box-shadow: 0 2px 6px rgb(101 163 13 / 35%);
-}
-
-.paginationButton.active:hover {
-  background-color: #4d7c0f;
-  border-color: #4d7c0f;
-}
-
-.paginationButton:focus-visible,
-.paginationButton.active:focus-visible {
-  outline: 3px solid rgb(101 163 13 / 35%);
-  outline-offset: 2px;
-}
-
-/* ================= DARK MODE – PAGINATION ================= */
-
-.dark .paginationButton {
-  background-color: var(--bg-card);
-  color: var(--text-primary);
-  border: 1px solid var(--border);
-}
-
-.dark .paginationButton:hover {
-  background-color: #1e293b;
-  border-color: #64748b;
-}
-
-.dark .paginationButton.active {
-  background-color: var(--accent);
-  border-color: var(--accent);
-  color: #020617;
-}
-
-.dark .paginationButton.active:hover {
-  background-color: var(--accent);
-  border-color: var(--accent);
-}
-
-/* ======================================================
-   FILTER CHIPS
-   ====================================================== */
-
-.jobQueries {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 7px 5px 12px;
-  border: 1px solid #65a30d;
-  border-radius: 999px;
-  background-color: #ecfccb;
-  color: #365314;
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.chipRemove {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  padding: 0;
-  border: 1px solid transparent;
-  border-radius: 50%;
-  background-color: transparent;
-  color: #3f6212;
-  font-size: 1.05rem;
-  font-weight: 700;
-  line-height: 1;
-  cursor: pointer;
-  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
-}
-
-.chipRemove:hover,
-.chipRemove:focus-visible {
-  border-color: #65a30d;
-  background-color: #d9f99d;
-  color: #1a2e05;
-  outline: none;
-}
-
-.clearAllButton {
-  padding: 5px 13px;
-  border: 1px solid #64748b;
-  border-radius: 999px;
-  background-color: #f8fafc;
-  color: #334155;
-  font-size: 0.85rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
-}
-
-.clearAllButton:hover,
-.clearAllButton:focus-visible {
-  border-color: #334155;
-  background-color: #e2e8f0;
-  color: #0f172a;
-  outline: none;
-}
-
-/* ================= DARK MODE – CHIPS ================= */
-
-.dark .chip {
-  background-color: var(--accent);
-  color: #020617;
-  border-color: #a3e635;
-}
-
-.dark .chipRemove {
-  color: #1a2e05;
-}
-
-.dark .chipRemove:hover,
-.dark .chipRemove:focus-visible {
-  border-color: #f8fafc;
-  background-color: #0f172a;
-  color: #f8fafc;
-}
-
-.dark .clearAllButton {
-  border: 1px solid var(--border);
-  background-color: #1e293b;
-  color: #e2e8f0;
-}
-
-.dark .clearAllButton:hover,
-.dark .clearAllButton:focus-visible {
-  border-color: #cbd5e1;
-  background-color: #334155;
-  color: #fff;
-  outline: none;
-}
-
-/* ======================================================
-   MODAL
-   ====================================================== */
-
-.modalOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgb(0 0 0 / 55%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-}
-
-.modal {
-  position: relative;
-  background-color: #fff;
-  border-radius: 10px;
-  padding: 28px;
-  max-width: 520px;
-  width: 90%;
-  box-shadow: 0 10px 30px rgb(0 0 0 / 35%);
-}
-
-/* ================= DARK MODE – MODAL ================= */
-
-.dark .modalOverlay {
-  background: rgb(0 0 0 / 70%);
-}
-
-.dark .modal {
-  background-color: var(--bg-card);
-  color: var(--text-primary);
-}
-
-/* ======================================================
-   MODAL – CLOSE BUTTON
-   ====================================================== */
-
-.closeButton {
-  position: absolute;
-  top: 14px;
-  right: 16px;
-  background: transparent;
-  border: none;
-  font-size: 22px;
-  cursor: pointer;
-  line-height: 1;
+  margin: 0 0 12px;
   color: #333;
 }
 
@@ -821,28 +271,6 @@
 .requirementItem {
   display: flex;
   align-items: flex-start;
-}
-
-@media (width <= 640px) {
-  .navbar {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .searchForm {
-    max-width: none;
-  }
-
-  .categoryDropdown,
-  .categoryButton {
-    width: 100%;
-  }
-
-  .jobSelect {
-    right: 0;
-    left: auto;
-    width: min(240px, 100%);
-  }
 }
 
 .requirementCheckbox {
@@ -924,6 +352,33 @@
   border-bottom: 0;
 }
 
+.summariesItem h3,
+.summariesItem h3 a {
+  position: static !important;
+  transform: none !important;
+  margin: 0 0 8px !important;
+  display: block;
+  text-align: left;
+  font-weight: 700;
+  color: #2b6ee8;
+  text-decoration: none;
+  line-height: 1.3;
+  font-size: 1.85rem;
+  overflow-wrap: anywhere;
+}
+
+.summariesItem h3 a:hover {
+  text-decoration: underline;
+}
+
+.summariesItem p {
+  margin: 0 0 10px;
+  color: #1f2937;
+  font-size: 1rem;
+  line-height: 1.6;
+  text-align: left;
+}
+
 .date {
   margin-top: 6px;
   color: #6b7280;
@@ -949,6 +404,34 @@
     font-size: 0.98rem;
     line-height: 1.5;
   }
+}
+
+.pagination {
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pagination button {
+  margin: 0 5px;
+  padding: 6px 10px;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #fff;
+}
+
+.pagination button:hover {
+  background-color: #084a8c;
+  color: #fff;
+}
+
+.pagination button:disabled {
+  background-color: #b0b0b0;
+  color: #1a1a1a;
+  cursor: default;
 }
 
 .noJobads {
@@ -1121,6 +604,14 @@
   border-bottom: 1px solid #ffffff1f;
 }
 
+.jobLandingDark .summariesItem h3 a {
+  color: #f8fafc;
+}
+
+.jobLandingDark .summariesItem h3 a:hover {
+  color: #fff;
+}
+
 .jobLandingDark .summariesItem p {
   color: #e5e7eb;
 }
@@ -1162,22 +653,6 @@
   box-shadow: 0 0 0 2px #0e5ed759 inset;
   cursor: default;
   opacity: 1;
-}
-
-.dark .searchButton {
-  background-color: #a3e635;
-  border-color: #bef264;
-  color: #172033;
-}
-
-.dark .searchButton:hover {
-  background-color: #bef264;
-}
-
-.dark .dropdownWrapper button:disabled {
-  background-color: #1e293b;
-  color: #94a3b8;
-  border: 1px solid #334155;
 }
 
 .activeTab {

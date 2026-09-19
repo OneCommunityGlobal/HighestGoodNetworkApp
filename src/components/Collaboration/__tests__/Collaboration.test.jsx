@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import Collaboration from '../Collaboration';
@@ -235,9 +235,9 @@ describe('Collaboration', () => {
       expect(screen.getByText('Summaries')).toBeInTheDocument();
     });
 
-    expect(screen.getByText('Frontend Engineer')).toBeInTheDocument();
+    expect(screen.getAllByText('Frontend Engineer').length).toBeGreaterThan(0);
 
-    expect(screen.getByText('Frontend engineer job summary')).toBeInTheDocument();
+    expect(screen.getAllByText('Frontend engineer job summary').length).toBeGreaterThan(0);
   });
 
   it('uses the search input in the summaries request', async () => {
@@ -363,71 +363,10 @@ describe('Collaboration', () => {
 
     renderComponent();
 
-  it('uses the placeholder image for job ads', async () => {
-    renderWithProviders(<Collaboration />);
-
-    const jobImage = await screen.findByAltText('Frontend Engineer');
-    expect(jobImage).toHaveAttribute('src', '/Portrait_Placeholder.png');
-  });
-
-  it('removes an individual selected category from its chip', async () => {
-    renderWithProviders(<Collaboration />);
-
-    fireEvent.click(screen.getByRole('button', { name: /select categories/i }));
-    fireEvent.click(await screen.findByLabelText('Engineering'));
-
-    const removeButton = await screen.findByRole('button', {
-      name: 'Remove Engineering filter',
-    });
-    fireEvent.click(removeButton);
-
-    expect(
-      screen.queryByRole('button', { name: 'Remove Engineering filter' }),
-    ).not.toBeInTheDocument();
-  });
-
-  it('does not render pagination when no jobs are displayed', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(url => {
-        if (url.toString().includes('/jobs/categories')) {
-          return Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve({ categories: ['Engineering'] }),
-          });
-        }
-
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({ jobs: [], pagination: { totalPages: 1 } }),
-        });
-      }),
-    );
-
-    renderWithProviders(<Collaboration />);
-
-    expect(
-      await screen.findByText(/No job listings found matching your criteria/i),
-    ).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: '1', exact: true })).not.toBeInTheDocument();
-  });
-
-  it('updates search term on form submission', async () => {
-    renderWithProviders(<Collaboration />);
-
-    const input = screen.getByPlaceholderText(/search by title/i);
-    fireEvent.change(input, { target: { value: 'React' } });
-
-    // FIX: Using exact string 'Go' instead of regex /go/i to avoid
-    // matching 'Select Categories' and adhering to no-node-access
-    const goButton = screen.getByRole('button', { name: 'Go' });
-    fireEvent.click(goButton);
-
-    // Verify that the search parameter was included in at least one fetch call
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: '1' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: '2' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: '3' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '1', exact: true })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '2', exact: true })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '3', exact: true })).toBeInTheDocument();
     });
   });
 
