@@ -43,6 +43,147 @@ function SelectOption(props) {
 
 const roleSelectComponents = { MultiValue: LimitedMultiValue, Option: SelectOption };
 
+function ChartLegend({ viewMode, legendTextColor }) {
+  const legendItem = (color, label) => (
+    <span
+      style={{
+        color: legendTextColor,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
+      }}
+    >
+      <span
+        style={{
+          width: '12px',
+          height: '12px',
+          backgroundColor: color,
+          display: 'inline-block',
+          borderRadius: '2px',
+        }}
+      />
+      {label}
+    </span>
+  );
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        gap: '16px',
+        marginTop: '12px',
+        fontWeight: 500,
+      }}
+    >
+      {viewMode === 'count' ? (
+        <>
+          {legendItem('#1976d2', 'Total Applications')}
+          {legendItem('#43a047', 'People Hired')}
+        </>
+      ) : (
+        legendItem('#43a047', 'People Hired (%)')
+      )}
+    </div>
+  );
+}
+
+function ChartVisualization({ chartData, viewMode, darkMode, legendTextColor }) {
+  const isPercentageView = viewMode === 'percentage';
+
+  return (
+    <div className={styles.chartContainer}>
+      <ResponsiveContainer width="100%" height={350}>
+        <BarChart
+          data={chartData}
+          layout="vertical"
+          margin={{ top: 20, right: 40, left: 80, bottom: 20 }}
+          barCategoryGap={24}
+          barSize={16}
+        >
+          <XAxis
+            type="number"
+            domain={isPercentageView ? [0, 100] : ['auto', 'auto']}
+            allowDecimals={isPercentageView}
+          />
+          <YAxis
+            dataKey="role"
+            type="category"
+            width={180}
+            label={{ value: 'Role', angle: -90, position: 'insideLeft' }}
+          />
+          <Tooltip
+            content={<ChartTooltip darkMode={darkMode} />}
+            cursor={{ fill: darkMode ? '#52677d' : '#f0f0f0', opacity: 0.35 }}
+          />
+          {isPercentageView ? (
+            <Bar
+              dataKey="hiredPercentage"
+              fill="#43a047"
+              activeBar={{ fill: darkMode ? '#86efac' : '#2e7d32' }}
+            >
+              <LabelList
+                dataKey="hiredPercentage"
+                position="right"
+                formatter={value => `${value}%`}
+              />
+            </Bar>
+          ) : (
+            <>
+              <Bar
+                dataKey="applicants"
+                fill="#1976d2"
+                activeBar={{ fill: darkMode ? '#60a5fa' : '#1565c0' }}
+              >
+                <LabelList dataKey="applicants" position="right" />
+              </Bar>
+              <Bar
+                dataKey="hired"
+                fill="#43a047"
+                activeBar={{ fill: darkMode ? '#86efac' : '#2e7d32' }}
+              >
+                <LabelList dataKey="hired" position="right" />
+              </Bar>
+            </>
+          )}
+        </BarChart>
+      </ResponsiveContainer>
+      <ChartLegend viewMode={viewMode} legendTextColor={legendTextColor} />
+      <div style={{ textAlign: 'center', marginTop: '10px', fontWeight: 500 }}>
+        {isPercentageView ? 'Percentage of People Hired (%)' : 'Number of Applications / Hires'}
+      </div>
+    </div>
+  );
+}
+
+function ChartSection({ loading, chartData, viewMode, darkMode, legendTextColor }) {
+  if (loading) {
+    return (
+      <output className={styles.loadingContainer} aria-label="Loading chart data">
+        <div className={styles.loadingSpinner} aria-hidden="true" />
+        <span>Loading chart data...</span>
+      </output>
+    );
+  }
+
+  if (!chartData.length) {
+    return (
+      <div className={styles.noData}>
+        No data available. Please add some applicant volunteer ratio data.
+      </div>
+    );
+  }
+
+  return (
+    <ChartVisualization
+      chartData={chartData}
+      viewMode={viewMode}
+      darkMode={darkMode}
+      legendTextColor={legendTextColor}
+    />
+  );
+}
+
 function ChartTooltip({ active, payload, label, darkMode }) {
   if (!active || !payload?.length) return null;
 
@@ -84,7 +225,7 @@ function ApplicantVolunteerRatio() {
         const roleOptions = uniqueRoles.map(role => ({ label: role, value: role }));
         setAllRoles(roleOptions);
         setSelectedRoles(roleOptions);
-      } catch (err) {
+      } catch {
         setError('Failed to load roles. Please try again.');
       }
     };
@@ -123,7 +264,7 @@ function ApplicantVolunteerRatio() {
         }));
 
         setData(transformedData);
-      } catch (err) {
+      } catch {
         setError('Failed to load data. Please try again.');
       } finally {
         setLoading(false);
@@ -332,178 +473,13 @@ function ApplicantVolunteerRatio() {
         </button>
       </div>
 
-      {(() => {
-        // Sonar fix: extracted nested ternary from original line 326
-        if (loading) {
-          return (
-            // Sonar fix: accessibility fix for original line 322
-            <output className={styles.loadingContainer} aria-label="Loading chart data">
-              <div className={styles.loadingSpinner} aria-hidden="true" />
-              <span>Loading chart data...</span>
-            </output>
-          );
-        }
-
-        if (chartData.length > 0) {
-          return (
-            <div className={styles.chartContainer}>
-              <ResponsiveContainer width="100%" height={350}>
-                <BarChart
-                  data={chartData}
-                  layout="vertical"
-                  margin={{ top: 20, right: 40, left: 80, bottom: 20 }}
-                  barCategoryGap={24}
-                  barSize={16}
-                >
-                  <XAxis
-                    type="number"
-                    domain={viewMode === 'percentage' ? [0, 100] : ['auto', 'auto']}
-                    allowDecimals={viewMode === 'percentage'}
-                  />
-
-                  <YAxis
-                    dataKey="role"
-                    type="category"
-                    width={180}
-                    label={{ value: 'Role', angle: -90, position: 'insideLeft' }}
-                  />
-
-                  <Tooltip
-                    content={<ChartTooltip darkMode={darkMode} />}
-                    cursor={{ fill: darkMode ? '#52677d' : '#f0f0f0', opacity: 0.35 }}
-                  />
-
-                  {viewMode === 'count' ? (
-                    <>
-                      <Bar
-                        dataKey="applicants"
-                        fill="#1976d2"
-                        activeBar={{ fill: darkMode ? '#60a5fa' : '#1565c0' }}
-                      >
-                        <LabelList dataKey="applicants" position="right" />
-                      </Bar>
-
-                      <Bar
-                        dataKey="hired"
-                        fill="#43a047"
-                        activeBar={{ fill: darkMode ? '#86efac' : '#2e7d32' }}
-                      >
-                        <LabelList dataKey="hired" position="right" />
-                      </Bar>
-                    </>
-                  ) : (
-                    <Bar
-                      dataKey="hiredPercentage"
-                      fill="#43a047"
-                      activeBar={{ fill: darkMode ? '#86efac' : '#2e7d32' }}
-                    >
-                      <LabelList
-                        dataKey="hiredPercentage"
-                        position="right"
-                        formatter={value => `${value}%`}
-                      />
-                    </Bar>
-                  )}
-                </BarChart>
-              </ResponsiveContainer>
-
-              {/* Manual Legend */}
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  gap: '16px',
-                  marginTop: '12px',
-                  fontWeight: 500,
-                }}
-              >
-                {viewMode === 'count' ? (
-                  <>
-                    <span
-                      style={{
-                        color: legendTextColor,
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                      }}
-                    >
-                      <span
-                        style={{
-                          width: '12px',
-                          height: '12px',
-                          backgroundColor: '#1976d2',
-                          display: 'inline-block',
-                          borderRadius: '2px',
-                        }}
-                      />
-                      Total Applications
-                    </span>
-
-                    <span
-                      style={{
-                        color: legendTextColor,
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                      }}
-                    >
-                      <span
-                        style={{
-                          width: '12px',
-                          height: '12px',
-                          backgroundColor: '#43a047',
-                          display: 'inline-block',
-                          borderRadius: '2px',
-                        }}
-                      />
-                      People Hired
-                    </span>
-                  </>
-                ) : (
-                  <span
-                    style={{
-                      color: legendTextColor,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                    }}
-                  >
-                    <span
-                      style={{
-                        width: '12px',
-                        height: '12px',
-                        backgroundColor: '#43a047',
-                        display: 'inline-block',
-                        borderRadius: '2px',
-                      }}
-                    />
-                    People Hired (%)
-                  </span>
-                )}
-              </div>
-
-              {/* Axis Title */}
-              <div
-                style={{
-                  textAlign: 'center',
-                  marginTop: '10px',
-                  fontWeight: 500,
-                }}
-              >
-                {viewMode === 'percentage'
-                  ? 'Percentage of People Hired (%)'
-                  : 'Number of Applications / Hires'}
-              </div>
-            </div>
-          );
-        }
-
-        return (
-          <div className={styles.noData}>
-            No data available. Please add some applicant volunteer ratio data.
-          </div>
-        );
-      })()}
+      <ChartSection
+        loading={loading}
+        chartData={chartData}
+        viewMode={viewMode}
+        darkMode={darkMode}
+        legendTextColor={legendTextColor}
+      />
     </div>
   );
 }
