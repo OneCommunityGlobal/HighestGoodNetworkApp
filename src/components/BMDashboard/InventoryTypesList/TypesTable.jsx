@@ -1,5 +1,5 @@
 import { Table, Button, Modal, Form } from 'react-bootstrap';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import React, { useState } from 'react';
 import { addInvType } from '../../../actions/bmdashboard/invTypeActions';
 import TypeRow from './TypeRow';
@@ -16,6 +16,12 @@ export function TypesTable(props) {
     name: '',
     description: '',
   });
+
+  const units = useSelector(state => state.bmInvUnits.list) || [];
+  const [isAdding, setIsAdding] = useState(false);
+  const [newType, setNewType] = useState({ name: '', description: '', unit: '', fuel: '' });
+
+  const requiresUnit = category === 'Materials' || category === 'Consumables';
 
   const handleOpenDelete = item => {
     setModalState({
@@ -76,10 +82,6 @@ export function TypesTable(props) {
       handleCloseModal();
     }
   };
-  const [isAdding, setIsAdding] = useState(false);
-  const [newType, setNewType] = useState({ name: '', description: '', unit: '', fuel: '' });
-
-  const requiresUnit = category === 'Materials' || category === 'Consumables';
 
   const handleAdd = () => {
     setIsAdding(true);
@@ -169,13 +171,19 @@ export function TypesTable(props) {
               {requiresUnit && (
                 <td>
                   <Form.Control
-                    type="text"
+                    as="select"
                     name="unit"
                     value={newType.unit}
                     onChange={handleInputChange}
-                    placeholder="Enter unit"
                     size="sm"
-                  />
+                  >
+                    <option value="">Select unit</option>
+                    {units.map(u => (
+                      <option key={u._id || u.unit} value={u.unit}>
+                        {u.unit}
+                      </option>
+                    ))}
+                  </Form.Control>
                 </td>
               )}
               {category === 'Equipments' && (
