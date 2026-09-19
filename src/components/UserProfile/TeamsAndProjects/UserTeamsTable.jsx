@@ -21,6 +21,7 @@ import { ENDPOINTS } from '~/utils/URL.js';
 import './../../Teams/Team.module.css';
 import { TeamMember } from './TeamMember';
 
+import { permissions } from '../../../utils/constants';
 const UserTeamsTable = props => {
   const { darkMode } = props;
 
@@ -52,7 +53,7 @@ const UserTeamsTable = props => {
 
   const refInput = useRef(null);
 
-  const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
+  const canAssignTeamToUsers = props.hasPermission(permissions.assignTeamToUsers);
   const fullCodeRegex = /^(|([a-zA-Z0-9]-[a-zA-Z0-9]{3,5}|[a-zA-Z0-9]{5,7}|.-[a-zA-Z0-9]{3}))$/;
 
   useEffect(() => {
