@@ -6,15 +6,27 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 2px 2px 12px rgb(0 0 0 / 10%);
+  background-color: #fff;
+}
+
+.Feedback-form-container-dark {
+  background-color: #161b28;
+  border: 1px solid #2e3548;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 45%);
+  color: #e2e8f0;
 }
 
 .Feedback-form-container h2 {
   text-align: center;
 }
 
+.Feedback-form-container-dark h2 {
+  color: #ffffff;
+}
+
 .eventContext {
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   font-size: 0.95em;
 }
 
@@ -23,42 +35,118 @@
   font-size: 0.85em;
 }
 
+.Feedback-form-container-dark .eventContext,
+.Feedback-form-container-dark .eventDate {
+  color: rgba(255, 255, 255, 0.7);
+}
+
 .helperText {
   text-align: center;
   font-size: 0.95em;
   color: #555;
-  margin-bottom: 15px;
+  margin-bottom: 18px;
+}
+
+.Feedback-form-container-dark .helperText {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .fieldHelper {
   font-size: 0.85em;
   color: #666;
-  margin: 4px 0 6px;
+  margin: 4px 0 8px;
+}
+
+.Feedback-form-container-dark .fieldHelper {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .ratingLabel {
   display: block;
-  margin-top: 12px;
+  margin-top: 16px;
 }
 
 .Feedback-form-container label {
   display: block;
-  margin-top: 10px;
+  margin-top: 16px;
+  font-weight: 600;
+}
+
+.Feedback-form-container-dark label,
+.Feedback-form-container-dark .ratingLabel {
+  color: #ffffff;
 }
 
 .Feedback-form-container input,
 .Feedback-form-container textarea {
   width: 100%;
-  padding: 8px;
-  margin-top: 5px;
+  padding: 10px;
+  margin-top: 6px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  background-color: #fff;
+  color: #1a1a1a;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.Feedback-form-container-dark input,
+.Feedback-form-container-dark textarea {
+  background-color: #1e293b;
+  color: #e2e8f0;
+  border: 1px solid #3a4863;
+}
+
+.Feedback-form-container input::placeholder,
+.Feedback-form-container textarea::placeholder {
+  color: #999;
+}
+
+.Feedback-form-container-dark input::placeholder,
+.Feedback-form-container-dark textarea::placeholder {
+  color: rgba(226, 232, 240, 0.5);
+}
+
+.Feedback-form-container input:focus,
+.Feedback-form-container textarea:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.Feedback-form-container-dark input:focus,
+.Feedback-form-container-dark textarea:focus {
+  border-color: #5b9bff;
+  background-color: #232c42;
+}
+
+.Feedback-form-container input:-webkit-autofill,
+.Feedback-form-container input:-webkit-autofill:hover,
+.Feedback-form-container input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #1a1a1a;
+  -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+  box-shadow: 0 0 0px 1000px #fff inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.Feedback-form-container-dark input:-webkit-autofill,
+.Feedback-form-container-dark input:-webkit-autofill:hover,
+.Feedback-form-container-dark input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #f8fafc;
+  -webkit-box-shadow: 0 0 0px 1000px #1e293b inset;
+  box-shadow: 0 0 0px 1000px #1e293b inset;
+  transition: background-color 5000s ease-in-out 0s;
+  caret-color: #f8fafc;
+}
+
+.Feedback-form-container-dark input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px #232c42 inset;
+  box-shadow: 0 0 0px 1000px #232c42 inset;
 }
 
 .button-group {
   display: flex;
   justify-content: space-between;
-  margin-top: 15px;
+  gap: 10px;
+  margin-top: 20px;
 }
 
 .modal-button-group {
@@ -76,13 +164,21 @@
 
 .submit-button {
   flex: 1;
-  margin-right: 10px;
   background-color: #007bff;
   color: white;
   padding: 10px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.submit-button:hover {
+  background-color: #0062cc;
+}
+
+.submit-button:active {
+  background-color: #004a99;
 }
 
 .cancel-button {
@@ -93,23 +189,52 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.cancel-button:hover {
+  background-color: #bbb;
+}
+
+.Feedback-form-container-dark .cancel-button {
+  background-color: #3a4863;
+  color: #e2e8f0;
+}
+
+.Feedback-form-container-dark .cancel-button:hover {
+  background-color: #4a5a7d;
 }
 
 .star-rating {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 10px;
-  font-size: 24px;
-  margin-top: 10px;
+  font-size: 28px;
+  margin-top: 12px;
+  padding: 8px 0;
 }
 
 .star {
   cursor: pointer;
   color: lightgray;
+  transition: color 0.15s ease, transform 0.1s ease;
+}
+
+.Feedback-form-container-dark .star {
+  color: #4a5568;
+}
+
+.star:hover {
+  transform: scale(1.1);
 }
 
 .selected {
   color: gold;
+}
+
+.Feedback-form-container-dark .selected {
+  color: #f59e0b;
 }
 
 .star:focus {
@@ -132,4 +257,8 @@
   color: red;
   font-size: 0.85em;
   margin-top: 4px;
+}
+
+.Feedback-form-container-dark .error-text {
+  color: #ff6b6b;
 }

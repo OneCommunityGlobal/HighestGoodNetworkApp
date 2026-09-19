@@ -102,7 +102,7 @@ export default function ExperienceDonutChart() {
 
       if (!data || data.length === 0) {
         setChartData(null);
-        setLoading(false);
+        setTotal(0);
         return;
       }
 
@@ -147,6 +147,7 @@ export default function ExperienceDonutChart() {
       end: null,
     });
     setSelectedRoles([]);
+    setError(null);
     setAppliedFilters({ startDate: '', endDate: '', roles: [] });
   };
 
@@ -389,7 +390,6 @@ export default function ExperienceDonutChart() {
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
-
                 <DetailsPanel />
               </>
             )}

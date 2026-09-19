@@ -232,15 +232,29 @@
 }
 
 .formProfileDetailGroup {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+}
+
+.formProfileDetailGroup input,
+.formProfileDetailGroup select {
   width: 100%;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  height: 40px;
+  box-sizing: border-box;
 }
 
 .formProfileDetailGroup .profileField {
   flex: 1 1 200px;
   min-width: 200px;
+}
+
+.resumeWrapper {
+  grid-column: 1 / -1;
 }
 
 .formGroup h2 {
@@ -323,8 +337,8 @@
 }
 
 .popupOverlay {
-  position: fixed;
   inset: 0;
+  position: fixed;
   background: rgb(30 41 65 / 70%);
   display: flex;
   align-items: center;
@@ -841,6 +855,56 @@
   min-height: 50px;
 }
 
+.darkMode .removeResumeBtn:hover {
+  color: #fff;
+  background: #c62828;
+}
+
+.formProfileDetailGroup select {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px 16px;
+  padding-right: 35px;
+  cursor: pointer;
+}
+
+.formProfileDetailGroup select:focus {
+  outline: none;
+  border-color: #98cb03;
+  box-shadow: 0 0 3px rgb(152 203 3 / 50%);
+}
+
+.darkMode .formProfileDetailGroup select {
+  background-color: #181a1b;
+  color: #f1f1f1;
+  border: 1px solid #444;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='lightgray' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+}
+
+.darkMode .formProfileDetailGroup select:focus {
+  border-color: #9c0;
+  box-shadow: 0 0 3px rgb(156 255 0 / 50%);
+}
+
+@media (width <= 768px) {
+  .formProfileDetailGroup {
+    grid-template-columns: 1fr;
+  }
+
+  .resumeWrapper {
+    grid-column: auto;
+  }
+}
 /* User Requirements Section */
 .userRequirementsSection {
   margin: 20px 0;

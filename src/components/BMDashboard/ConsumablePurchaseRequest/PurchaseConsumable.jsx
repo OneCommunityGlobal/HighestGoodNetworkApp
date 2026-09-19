@@ -10,6 +10,7 @@ import styles from './PurchaseConsumable.module.css';
 export default function PurchaseConsumable() {
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [isError, setIsError] = useState(false);
 
   useEffect(() => {
@@ -38,7 +39,7 @@ export default function PurchaseConsumable() {
     <main className={`${styles.purchaseConsumableContainer}`}>
       <header className={`${styles.purchaseConsumableHeader}`}>
         <h2>Purchase Request: Consumables</h2>
-        <div className="inv-form-info">
+        <div className={`${styles.infoText} ${darkMode ? styles.infoTextDark : ''}`}>
           <BsInfoCircle />
           Initiate a purchase request for approval/action by project admins.
         </div>

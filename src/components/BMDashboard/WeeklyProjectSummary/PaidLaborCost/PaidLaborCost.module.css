@@ -1,10 +1,13 @@
-.paidLaborCostContainer {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+/* Container for the Paid Labor Cost card */
+.paid-labor-cost-container {
+  font-family: inherit;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 5%);
+
 }
 
+/* Title */
 .paidLaborCostTitle {
   text-align: center;
   margin-bottom: 24px;
@@ -12,31 +15,61 @@
   color: #1e293b;
 }
 
-.darkMode .paidLaborCostTitle {
-  color: #f8fafc;
+/* Each filter group (Tasks, Project, Date Range) */
+.paidLaborCostFilterGroup {
+  display: flex;
+  flex-direction: row;
+
+  /* side by side */
+  align-items: center;
+
+  /* align vertically */
+  gap: 8px;
+
+  /* space between label and select */
+  width: fit-content;
+
+  /* shrink-wrap to contents instead of 100% */
+  padding: 4px 8px;
+
+  /* optional padding */
 }
 
-.paidLaborCostLoading {
-  text-align: center;
-  padding: 40px;
-  font-weight: 500;
-  color: #64748b;
+.paidLaborCostFilterLabel {
+  margin: 0;
+
+  /* reset margin so it doesn't push things apart */
+  font-size: 15px;
+  color: var(--text-color);
+  white-space: nowrap;
+
+  /* keep label text on one line */
 }
 
-.darkMode .paidLaborCostLoading {
-  color: #94a3b8;
+.paidLaborCostFilterSelect {
+  font-size: 14px;
+  padding: 4px 8px;
+  height: 28px;
+  box-sizing: border-box;
+  width: auto;
+
+  /* let it size naturally */
+  min-width: 80px;
+
+  /* optional minimum width */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: white;
 }
 
-.filtersGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 2fr; 
-  gap: 16px;
-  margin-bottom: 24px;
+
+/* Chart container */
+.paid-labor-cost-chart-container {
   width: 100%;
   align-items: flex-start;
 }
 
-@media (max-width: 900px) {
+@media (width <= 900px) {
   .filtersGrid {
     grid-template-columns: 1fr; 
   }
@@ -44,28 +77,51 @@
 
 .filterGroup {
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  height: 100%;
-  gap: 6px;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #666;
+  font-size: 12px;
 }
 
-.filterLabel {
-  font-size: 13px;
-  font-weight: 600;
-  color: #334155;
+/* Date picker container styles */
+.paidLaborCostDaterangeRow {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-.darkMode .filterLabel {
-  color: #cbd5e1;
+/* Date Picker */
+
+.paid-labor-cost-custom-date-range-picker {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+  max-width: 300px;
+  transition: all 0.3s ease-in-out;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-.dateRangeFlex {
+.paid-labor-cost-date-range-input {
+  /* display: flex; */
+
+  /* justify-content: space-between; */
+  margin-top: 3px;
+
+  /* padding: 2px 4px; */
+
+  /* border: 1px solid #ddd; */
+  transition: border-color 0.2s;
+  flex: 1;
+  padding: 0.2rem 2.5rem 0.2rem 0.2rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  width: 100%;
+  cursor: pointer;
+  font-size: 0.9rem;
 }
 
 .datePickerWrapper {
@@ -78,12 +134,18 @@
   width: 100%;
 }
 
-.dateInput {
-  width: 100%;
-  padding: 8px 30px 8px 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 13px;
+.paid-labor-cost-date-range-calendar {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: auto;
+  width: max-content;
+  min-width: 250px;
+  max-width: 95vw;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  z-index: 999;
+  overflow: hidden;
   box-sizing: border-box;
   height: 38px;
   outline: none;
@@ -175,19 +237,11 @@
 
 .summaryLabel {
   font-size: 13px;
-  font-weight: 600;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
+  transition: background-color 0.2s;
+  aspect-ratio: 1 / 1;
 
-.darkMode .summaryLabel {
-  color: #94a3b8;
-}
-
-.summaryValue {
-  font-size: 22px;
-  font-weight: 700;
+  /* Makes each day cell square */
+  min-height: 30px;
 }
 
 .varianceOver { color: #e74c3c !important; }
@@ -196,8 +250,8 @@
 .varianceUnder { color: #2ecc71 !important; }
 .darkSummaryContainer .varianceUnder { color: #4ade80 !important; }
 
-.varianceNeutral { color: #666666 !important; }
-.darkSummaryContainer .varianceNeutral { color: #ffffff !important; }
+.varianceNeutral { color: #666 !important; }
+.darkSummaryContainer .varianceNeutral { color: #fff !important; }
 
 :global(.paid-labor-cost-calendar.react-datepicker) {
   background-color: #fff !important;
@@ -205,9 +259,12 @@
   color: #000 !important;
 }
 
-:global(.paid-labor-cost-calendar .react-datepicker__header) {
-  background-color: #f0f0f0 !important;
-  border-bottom-color: #aeaeae !important;
+.dark-mode .paid-labor-cost-day {
+  color: var(--text-color);
+}
+
+.paid-labor-cost-day:hover:not(.disabled) {
+  background-color: #f0f0f0;
 }
 
 :global(.paid-labor-cost-calendar .react-datepicker__current-month),
@@ -260,27 +317,25 @@
   color: #fff !important;
 }
 
-:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__week .react-datepicker__day),
-:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day) {
-  color: #fff !important;
+@media screen and (width <=1130px) {
+  .paid-labor-cost-custom-date-range-picker {
+    max-width: 100%;
+    min-width: auto;
+    flex: 1 1 100%;
+  }
+
+  .paid-labor-cost-date-range-calendar {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 95vw;
+  }
 }
 
-:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--current-month) {
-  color: #fff !important;
-}
-
-:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--today) {
-  color: #fff !important;
-  font-weight: 600;
-}
-
-:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--weekend) {
-  color: #fff !important;
-}
-
-:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day:hover) {
-  background-color: #3a506b !important;
-  color: #fff !important;
+/* Dark Mode Support for Paid Labor Cost Component */
+.dark-mode .paid-labor-cost-container {
+  background-color: var(--card-bg);
+  box-shadow: 0 1px 3px var(--card-shadow);
 }
 
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--selected),
@@ -315,11 +370,9 @@
   border-top-color: #fff !important;
 }
 
-:global(.paid-labor-cost-dark-calendar .react-datepicker__month-dropdown),
-:global(.paid-labor-cost-dark-calendar .react-datepicker__year-dropdown) {
-  background-color: #253342 !important;
-  border: 1px solid #2d4059 !important;
-  color: #fff !important;
+.dark-mode .paid-labor-cost-date-range-calendar {
+  background-color: var(--card-bg);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
 }
 
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month-option),
@@ -363,11 +416,6 @@
   cursor: pointer;
 }
 
-:global(.paid-labor-cost-dark-calendar .react-datepicker__month-select:hover),
-:global(.paid-labor-cost-dark-calendar .react-datepicker__year-select:hover) {
-  border-color: #3a506b !important;
-}
-
 :global(.paid-labor-cost-dark-calendar .react-datepicker__month-select:focus),
 :global(.paid-labor-cost-dark-calendar .react-datepicker__year-select:focus) {
   outline: none;
@@ -394,29 +442,38 @@
   color: #fff !important;
 }
 
-:global(.paid-labor-cost-dark-calendar .react-datepicker__time-list-item:hover) {
-  background-color: #3a506b !important;
+.dark-mode .paid-labor-cost-day.in-range {
+  /* var(--button-bg) with opacity */
+  background-color: rgb(232 167 28 / 20%);
 }
 
-.darkMode .paidLaborCostFilterLabel {
+.dark-mode .paid-labor-cost-day.disabled {
+  color: var(--text-color);
+  opacity: 0.3;
+}
+
+.dark-mode .paid-labor-cost-calendar-footer {
+  border-top-color: var(--section-title-hover);
+}
+
+.dark-mode .paid-labor-cost-reset-button {
+  color: var(--button-bg);
+}
+
+.dark-mode .paid-labor-cost-selection-text {
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+:global(.dark-mode) .paidLaborCostFilterSelect {
+  background-color: #1f2d44;
+  border-color: #3b4d6b;
   color: #fff;
-  opacity: 1;
 }
 
-.darkMode .paidLaborCostFilterSelect {
-  background-color: #2b3a55 !important;
-  border: 1px solid #8fa1c7 !important;
-  color: #fff !important;
-}
-
-.darkMode .paidLaborCostFilterSelect:hover {
-  border-color: var(--button-bg) !important;
-}
-
-.darkMode .paidLaborCostFilterSelect:focus,
-.darkMode .paidLaborCostFilterSelect:focus-visible {
-  outline: 2px solid var(--button-bg) !important;
-  outline-offset: 2px;
+:global(.dark-mode) .paidLaborCostFilterSelect option {
+  background-color: #1f2d44;
+  color: #fff;
 }
 
 .paid-labor-cost-input-wrapper {
@@ -432,13 +489,120 @@
   background-color: transparent !important;
 }
 
-:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--disabled) {
-  color: #475569 !important;
-  background-color: transparent !important;
-  cursor: not-allowed !important;
+.paid-labor-cost-info-button:hover,
+.paid-labor-cost-info-button:focus {
+  background-color: #0056b3;
 }
 
-:global(.paid-labor-cost-dark-calendar .react-datepicker__month .react-datepicker__day.react-datepicker__day--disabled:hover) {
-  color: #475569 !important;
-  background-color: transparent !important;
+.paid-labor-cost-info-button:focus {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
 }
+
+.paid-labor-cost-info-tooltip {
+  display: none;
+  position: absolute;
+  top: calc(100% + 2px);
+  right: 0;
+  width: 180px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0.25rem;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 10%);
+  font-size: 0.75rem;
+  color: #333;
+  z-index: 100;
+}
+
+.paid-labor-cost-info-wrapper:hover .paid-labor-cost-info-tooltip {
+  display: block;
+}
+
+.paid-labor-cost-info-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  right: 10px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #fff;
+}
+
+@media (width <=768px) {
+  /* Stack filters & inputs vertically when screen narrows */
+  .paid-labor-cost-input-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+    margin-bottom: 0.75rem;
+  }
+
+  .paid-labor-cost-date-range-input {
+    padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .paid-labor-cost-info-wrapper {
+    right: 6px;
+    top: 8px;
+    transform: none;
+  }
+}
+
+@media (width <=480px) {
+  .paid-labor-cost-input-wrapper {
+    margin-bottom: 0.5rem;
+  }
+
+  /* Make the input fill full width */
+  .paid-labor-cost-date-range-input {
+    width: 100%;
+    padding: 0.4rem 2rem 0.4rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  /* Shrink the info icon */
+  .paid-labor-cost-info-button {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Narrow the tooltip and adjust text */
+  .paid-labor-cost-info-tooltip {
+    width: 160px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.7rem;
+  }
+
+  .paid-labor-cost-info-tooltip::before {
+    right: 8px;
+    border-width: 4px;
+  }
+}
+
+.paidLaborCostChartScrollWrapper {
+  width: 100%;
+  overflow-x: auto;
+  background-color: var(--bg-color);
+  scrollbar-width: thin;
+  scrollbar-color: var(--button-bg) var(--card-shadow);
+
+}
+
+.paidLaborCostChartScrollWrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.paidLaborCostChartScrollWrapper::-webkit-scrollbar-track {
+  background: var(--bg-color);
+}
+
+.paidLaborCostChartScrollWrapper::-webkit-scrollbar-thumb {
+  background: var(--button-bg);
+  border-radius: 3px;
+}
+
+/* .paidLaborCostChartScrollWrapper {
+  scrollbar-width: thin;
+  scrollbar-color: var(--button-bg) var(--card-shadow);
+} */
