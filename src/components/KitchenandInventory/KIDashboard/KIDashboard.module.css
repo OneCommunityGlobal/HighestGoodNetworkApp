@@ -1,385 +1,1141 @@
 .container {
-  min-height: 100vh;
-  padding: 28px 24px;
-  box-sizing: border-box;
-  background-color: #f8f9fa;
-  color: #111827;
+min-height: 100vh;
+padding: 28px 24px 40px;
+box-sizing: border-box;
+background-color: #f8f9fa;
+color: #111827;
 }
 
 /* =========================
-   Header
-   ========================= */
+Header
+========================= */
 
 .header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 38px;
+display: flex;
+align-items: flex-start;
+justify-content: space-between;
+gap: 24px;
+margin-bottom: 32px;
 }
 
 .title {
-  margin: 0;
-  color: #111827;
-  font-size: 34px;
-  font-weight: 400;
-  line-height: 1.2;
+margin: 0;
+color: #111827;
+font-size: 34px;
+font-weight: 400;
+line-height: 1.2;
 }
 
 .subtitle {
-  margin: 8px 0 0;
-  color: #536987;
-  font-size: 17px;
-  line-height: 1.4;
+margin: 8px 0 0;
+color: #536987;
+font-size: 17px;
+line-height: 1.4;
 }
 
 .priorityButton {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  min-height: 40px;
-  padding: 0 12px 0 15px;
-  margin-top: 0;
-  background-color: #fff;
-  border: 1px solid #e0e3e8;
-  border-radius: 10px;
-  color: #111827;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 3%);
+display: flex;
+align-items: center;
+gap: 12px;
+min-height: 42px;
+padding: 0 10px 0 14px;
+background-color: #fff;
+border: 1px solid #e0e3e8;
+border-radius: 10px;
+color: #111827;
+font-size: 14px;
+font-weight: 600;
+cursor: pointer;
+box-shadow: 0 1px 2px rgb(0 0 0 / 3%);
 }
 
 .priorityButton:hover {
-  background-color: #fafafa;
+background-color: #fafafa;
 }
 
 .bellIcon {
-  color: #202020;
-  font-size: 18px;
-  line-height: 1;
+color: #222;
+font-size: 18px;
+line-height: 1;
 }
 
 .priorityBadge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 28px;
-  height: 28px;
-  padding: 0 7px;
-  border-radius: 9px;
-  background-color: #8b2be2;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
+display: flex;
+align-items: center;
+justify-content: center;
+min-width: 28px;
+height: 28px;
+padding: 0 7px;
+box-sizing: border-box;
+border-radius: 9px;
+background-color: #8b2be2;
+color: #fff;
+font-size: 14px;
+font-weight: 600;
 }
 
 /* =========================
-   Alerts
-   ========================= */
+Alerts
+========================= */
 
 .alerts {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  margin-bottom: 34px;
+display: flex;
+flex-direction: column;
+gap: 12px;
+margin-bottom: 24px;
 }
 
 .alertBanner {
-  display: flex;
-  align-items: center;
-  min-height: 74px;
-  padding: 15px 18px;
-  box-sizing: border-box;
-  border: 1px solid;
-  border-radius: 11px;
+display: flex;
+align-items: center;
+gap: 14px;
+min-height: 64px;
+padding: 12px 18px;
+box-sizing: border-box;
+border: 1px solid transparent;
+border-radius: 10px;
 }
 
 .alertBannerIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  flex-shrink: 0;
-  margin-right: 16px;
-  font-size: 20px;
-  line-height: 1;
+display: flex;
+align-items: center;
+justify-content: center;
+width: 32px;
+height: 32px;
+flex-shrink: 0;
+border-radius: 50%;
+font-size: 17px;
+font-weight: 700;
+line-height: 1;
 }
 
 .alertBannerContent {
-  min-width: 0;
+min-width: 0;
 }
 
 .alertBannerContent h2 {
-  margin: 0 0 5px;
-  font-size: 15px;
-  font-weight: 500;
-  line-height: 1.3;
+margin: 0;
+font-size: 15px;
+font-weight: 600;
+line-height: 1.3;
 }
 
 .alertBannerContent p {
-  margin: 0;
-  font-size: 16px;
-  line-height: 1.4;
+margin: 4px 0 0;
+font-size: 13px;
+line-height: 1.4;
 }
 
-/* =========================
-   Metrics
-   ========================= */
-
-.metricsGrid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 26px;
-}
-
-.metricCard {
-  min-height: 174px;
-  padding: 27px 26px 22px;
-  box-sizing: border-box;
-  background-color: #fff;
-  border: 1px solid #e1e4e8;
-  border-radius: 16px;
-}
-
-.metricHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-/*
- * Keep this selector before the more-specific
- * alert heading selectors to satisfy Stylelint
- * no-descending-specificity.
- */
-.metricHeader > h2 {
-  margin: 0;
-  color: #536987;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 1.3;
-}
-
-.metricIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 25px;
-  height: 25px;
-  flex-shrink: 0;
-  font-size: 23px;
-  line-height: 1;
-}
-
-.blue {
-  color: #5870ff;
-}
-
-.green {
-  color: #51ad5a;
-}
-
-.purple {
-  color: #9227f3;
-}
-
-.orange {
-  color: #f06b16;
-}
-
-.metricValue {
-  margin-top: 34px;
-  color: #111;
-  font-size: 34px;
-  font-weight: 400;
-  line-height: 1;
-}
-
-.metricInfo {
-  margin: 7px 0 0;
-  color: #718096;
-  font-size: 14px;
-  line-height: 1.4;
-}
-
-/* =========================
-   Low Stock
-   ========================= */
+/* Low stock */
 
 .lowStockAlert {
-  border-color: #e5e5e5;
-  background-color: #fff;
+background-color: #fff5f5;
+border-color: #f3caca;
+color: #8f3030;
 }
 
 .lowStockAlert .alertBannerIcon {
-  border: 2px solid #df4050;
-  border-radius: 50%;
-  color: #df4050;
-  font-size: 15px;
-  font-weight: 700;
+background-color: #f8d8d8;
+color: #d63f3f;
 }
 
-.lowStockAlert .alertBannerContent h2,
-.lowStockAlert .alertBannerContent p {
-  color: #d83d4c;
-}
-
-/* =========================
-   Harvest
-   ========================= */
+/* Harvest */
 
 .harvestAlert {
-  border-color: #e6c735;
-  background-color: #fffef0;
+background-color: #fffaf0;
+border-color: #f1dfb7;
+color: #8a651d;
 }
 
 .harvestAlert .alertBannerIcon {
-  color: #222;
+background-color: #ffedc5;
+color: #d89420;
 }
 
-.harvestAlert .alertBannerContent h2 {
-  color: #111827;
-}
-
-.harvestAlert .alertBannerContent p {
-  color: #718096;
-}
-
-/* =========================
-   Seasonal
-   ========================= */
+/* Seasonal */
 
 .seasonalAlert {
-  border-color: #7695ff;
-  background-color: #f1f5ff;
+background-color: #f4f3ff;
+border-color: #dcd8fa;
+color: #51469a;
 }
 
 .seasonalAlert .alertBannerIcon {
-  color: #222;
-}
-
-.seasonalAlert .alertBannerContent h2 {
-  color: #111827;
-}
-
-.seasonalAlert .alertBannerContent p {
-  color: #718096;
+background-color: #e5e1ff;
+color: #6559c7;
 }
 
 /* =========================
-   Dark Mode
-   ========================= */
+Metrics
+========================= */
+
+.metricsGrid {
+display: grid;
+grid-template-columns: repeat(4, minmax(0, 1fr));
+gap: 20px;
+margin-bottom: 24px;
+}
+
+.metricCard {
+min-width: 0;
+padding: 20px 20px 18px;
+box-sizing: border-box;
+background-color: #fff;
+border: 1px solid #e1e4e8;
+border-radius: 14px;
+box-shadow: 0 1px 3px rgb(0 0 0 / 2%);
+}
+
+.metricHeader {
+display: flex;
+align-items: flex-start;
+justify-content: space-between;
+gap: 12px;
+}
+
+.metricHeader h2 {
+margin: 0;
+color: #536987;
+font-size: 14px;
+font-weight: 500;
+line-height: 1.4;
+}
+
+.metricIcon {
+display: flex;
+align-items: center;
+justify-content: center;
+width: 34px;
+height: 34px;
+flex-shrink: 0;
+border-radius: 9px;
+font-size: 18px;
+font-weight: 600;
+line-height: 1;
+}
+
+.metricIcon.blue {
+background-color: #e8edff;
+color: #5a70ff;
+}
+
+.metricIcon.green {
+background-color: #e1f6e5;
+color: #55a958;
+}
+
+.metricIcon.purple {
+background-color: #eee5ff;
+color: #9236f0;
+}
+
+.metricIcon.orange {
+background-color: #fff0d7;
+color: #e68b1a;
+}
+
+.metricValue {
+margin-top: 15px;
+color: #111827;
+font-size: 32px;
+font-weight: 500;
+line-height: 1;
+}
+
+.metricInfo {
+margin: 9px 0 0;
+color: #718096;
+font-size: 13px;
+line-height: 1.3;
+}
+
+/* =========================
+Overview Grid
+========================= */
+
+.overviewGrid {
+display: grid;
+grid-template-columns: repeat(2, minmax(0, 1fr));
+gap: 24px;
+margin-bottom: 24px;
+}
+
+.overviewCard {
+min-width: 0;
+min-height: 520px;
+padding: 25px 24px 20px;
+box-sizing: border-box;
+background-color: #fff;
+border: 1px solid #e1e4e8;
+border-radius: 15px;
+box-shadow: 0 1px 3px rgb(0 0 0 / 2%);
+}
+
+/* =========================
+Card Header
+========================= */
+
+.cardHeader {
+display: flex;
+align-items: flex-start;
+justify-content: space-between;
+}
+
+.cardTitle {
+display: flex;
+align-items: center;
+gap: 9px;
+margin: 0;
+color: #111827;
+font-size: 17px;
+font-weight: 500;
+line-height: 1.35;
+}
+
+.cardSubtitle {
+margin: 7px 0 0;
+color: #718096;
+font-size: 16px;
+line-height: 1.4;
+}
+
+.greenIcon {
+color: #55aa59;
+font-size: 20px;
+line-height: 1;
+}
+
+.blueIcon {
+color: #5a70ff;
+font-size: 20px;
+font-weight: 600;
+line-height: 1;
+}
+
+.harvestIcon {
+color: #9236f0;
+font-size: 19px;
+line-height: 1;
+}
+
+/* =========================
+Sustainability Score
+========================= */
+
+.sustainabilityTopRow {
+display: flex;
+align-items: center;
+justify-content: space-between;
+margin-top: 28px;
+}
+
+.sustainabilityScore {
+color: #55a958;
+font-size: 38px;
+font-weight: 400;
+line-height: 1;
+}
+
+.excellentBadge {
+padding: 4px 10px;
+border: 1px solid #ccefd4;
+border-radius: 9px;
+background-color: #f1fff3;
+color: #4e9954;
+font-size: 12px;
+font-weight: 500;
+}
+
+.chartSection {
+position: relative;
+display: flex;
+flex-direction: column;
+align-items: center;
+min-height: 300px;
+padding-top: 12px;
+}
+
+.pieChart {
+position: relative;
+width: 188px;
+height: 188px;
+margin-top: 5px;
+border-radius: 50%;
+background: conic-gradient(
+#55a958 0deg 129.6deg,
+#9da9bd 129.6deg 360deg
+);
+}
+
+.pieCenter {
+position: absolute;
+top: 50%;
+left: 50%;
+width: 0;
+height: 0;
+transform: translate(-50%, -50%);
+}
+
+.chartLabels {
+position: absolute;
+top: 1px;
+right: 0;
+left: 0;
+height: 245px;
+pointer-events: none;
+}
+
+.onsiteLabel {
+position: absolute;
+top: 0;
+right: 12%;
+color: #55a958;
+font-size: 15px;
+font-weight: 500;
+}
+
+.purchasedLabel {
+position: absolute;
+bottom: 27px;
+left: 20%;
+color: #9da9bd;
+font-size: 15px;
+font-weight: 500;
+}
+
+.legend {
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 18px;
+margin-top: 8px;
+}
+
+.legendItem {
+display: flex;
+align-items: center;
+gap: 6px;
+color: #6b7280;
+font-size: 14px;
+}
+
+.legendSquare {
+width: 15px;
+height: 12px;
+flex-shrink: 0;
+}
+
+.onsiteLegend {
+background-color: #55a958;
+}
+
+.purchasedLegend {
+background-color: #9da9bd;
+}
+
+.sustainabilityStats {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 20px;
+margin-top: 8px;
+padding-top: 17px;
+border-top: 1px solid #e5e7eb;
+}
+
+.sustainabilityStats > div {
+display: flex;
+flex-direction: column;
+gap: 5px;
+}
+
+.statLabel {
+color: #718096;
+font-size: 13px;
+line-height: 1.3;
+}
+
+.statValue {
+color: #111827;
+font-size: 18px;
+font-weight: 400;
+line-height: 1.3;
+}
+
+/* =========================
+Stock Health
+========================= */
+
+.stockList {
+display: flex;
+flex-direction: column;
+gap: 22px;
+margin-top: 31px;
+}
+
+.stockItem {
+width: 100%;
+}
+
+.stockItemHeader {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 15px;
+margin-bottom: 8px;
+}
+
+.stockName {
+min-width: 0;
+color: #263238;
+font-size: 14px;
+line-height: 1.3;
+}
+
+.stockPercentage {
+display: flex;
+align-items: center;
+gap: 8px;
+flex-shrink: 0;
+color: #4b5563;
+font-size: 13px;
+}
+
+.stockStatusIcon {
+display: flex;
+align-items: center;
+justify-content: center;
+width: 15px;
+height: 15px;
+font-size: 11px;
+font-weight: 700;
+line-height: 1;
+}
+
+.stockStatusIcon.healthy {
+border: 1.5px solid #62b66a;
+border-radius: 50%;
+color: #55a958;
+}
+
+.stockStatusIcon.warning {
+color: #d99a19;
+}
+
+.stockStatusIcon.critical {
+border: 1.5px solid #e25353;
+border-radius: 50%;
+color: #e25353;
+}
+
+.stockBar {
+width: 100%;
+height: 8px;
+overflow: hidden;
+border-radius: 6px;
+background-color: #d9dadd;
+}
+
+.stockBarFill {
+height: 100%;
+border-radius: 6px;
+}
+
+.stockBarFill.healthy {
+background-color: #55a958;
+}
+
+.stockBarFill.warning {
+background-color: #d39a18;
+}
+
+.stockBarFill.critical {
+background-color: #dc4141;
+}
+
+/* =========================
+Upcoming Harvests
+========================= */
+
+.harvestSection {
+width: 100%;
+padding: 25px 24px 24px;
+box-sizing: border-box;
+background-color: #fff;
+border: 1px solid #e1e4e8;
+border-radius: 15px;
+box-shadow: 0 1px 3px rgb(0 0 0 / 2%);
+}
+
+.harvestHeader {
+display: flex;
+align-items: flex-start;
+}
+
+.harvestList {
+display: flex;
+flex-direction: column;
+gap: 16px;
+margin-top: 28px;
+}
+
+.harvestItem {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 24px;
+min-height: 82px;
+padding: 12px 16px;
+box-sizing: border-box;
+border: 1px solid transparent;
+border-radius: 11px;
+background-color: #f8f9fa;
+}
+
+.harvestItem.overdue {
+border-color: #f5caca;
+background-color: #fff7f7;
+}
+
+.harvestItem.today {
+border-color: #f5d9a6;
+background-color: #fffaf0;
+}
+
+.harvestLeft {
+display: flex;
+align-items: center;
+min-width: 0;
+gap: 16px;
+}
+
+.harvestProduceIcon {
+display: flex;
+align-items: center;
+justify-content: center;
+width: 49px;
+height: 49px;
+flex-shrink: 0;
+border-radius: 10px;
+background-color: #dcf9e2;
+color: #4eae58;
+font-size: 24px;
+line-height: 1;
+}
+
+.harvestItem.overdue .harvestProduceIcon {
+background-color: #fae5e5;
+color: #dd4b4b;
+}
+
+.harvestItem.today .harvestProduceIcon {
+background-color: #fff0d4;
+color: #e68b1a;
+}
+
+.harvestInfo {
+display: flex;
+flex-direction: column;
+min-width: 0;
+gap: 4px;
+}
+
+.harvestInfo strong {
+overflow: hidden;
+color: #111827;
+font-size: 15px;
+font-weight: 600;
+line-height: 1.3;
+text-overflow: ellipsis;
+white-space: nowrap;
+}
+
+.harvestInfo span {
+color: #718096;
+font-size: 13px;
+line-height: 1.3;
+}
+
+.harvestRight {
+display: flex;
+align-items: center;
+justify-content: flex-end;
+gap: 16px;
+flex-shrink: 0;
+}
+
+.harvestDateInfo {
+display: flex;
+flex-direction: column;
+align-items: flex-end;
+gap: 5px;
+}
+
+.harvestDate {
+color: #374151;
+font-size: 13px;
+line-height: 1.3;
+}
+
+.harvestStatus {
+padding: 3px 8px;
+border: 1px solid #dfe3e7;
+border-radius: 8px;
+background-color: #fff;
+color: #4b5563;
+font-size: 11px;
+line-height: 1.2;
+}
+
+.harvestStatus.overdue {
+border-color: #f2cccc;
+background-color: #fff8f8;
+color: #df5555;
+}
+
+.harvestStatus.today {
+border-color: #f0d7a9;
+background-color: #fffaf0;
+color: #db8c18;
+}
+
+.harvestButton {
+min-width: 98px;
+height: 34px;
+padding: 0 12px;
+border: 0;
+border-radius: 8px;
+background-color: #51a957;
+color: #fff;
+font-size: 13px;
+font-weight: 600;
+cursor: pointer;
+}
+
+.harvestButton:hover {
+background-color: #46984d;
+}
+
+/* =========================
+Dark Mode
+========================= */
 
 :global(body.dark-mode) .container {
-  background-color: #1a1d23;
-  color: #fff;
+background-color: #1a1d23;
+color: #fff;
 }
 
 :global(body.dark-mode) .title {
-  color: #fff;
+color: #fff;
 }
 
 :global(body.dark-mode) .subtitle {
-  color: #aeb9ca;
+color: #aeb9ca;
 }
 
 :global(body.dark-mode) .priorityButton {
-  background-color: #242830;
-  border-color: #3b414c;
-  color: #fff;
+background-color: #242830;
+border-color: #3b414c;
+color: #fff;
+}
+
+:global(body.dark-mode) .priorityButton:hover {
+background-color: #2b3039;
 }
 
 :global(body.dark-mode) .bellIcon {
-  color: #fff;
+color: #fff;
 }
 
-/*
- * Keep the metric heading selector before the more-specific
- * dark-mode alert heading selectors to satisfy Stylelint
- * no-descending-specificity.
- */
-:global(body.dark-mode) .metricHeader > h2 {
-  color: #aeb9ca;
-}
+/* Dark alerts */
 
 :global(body.dark-mode) .lowStockAlert {
-  background-color: #242830;
-  border-color: #3b414c;
+background-color: #302326;
+border-color: #59383d;
+color: #f2a1a1;
+}
+
+:global(body.dark-mode) .lowStockAlert .alertBannerIcon {
+background-color: #4a2c30;
+color: #f28b8b;
 }
 
 :global(body.dark-mode) .harvestAlert {
-  background-color: #302f20;
+background-color: #332f25;
+border-color: #5b4a2d;
+color: #e8b55f;
+}
+
+:global(body.dark-mode) .harvestAlert .alertBannerIcon {
+background-color: #473b26;
+color: #e8a747;
 }
 
 :global(body.dark-mode) .seasonalAlert {
-  background-color: #20283d;
+background-color: #2d2a3d;
+border-color: #494264;
+color: #b6adf3;
 }
 
-:global(body.dark-mode) .harvestAlert .alertBannerContent h2,
-:global(body.dark-mode) .seasonalAlert .alertBannerContent h2 {
-  color: #fff;
+:global(body.dark-mode) .seasonalAlert .alertBannerIcon {
+background-color: #3b3554;
+color: #aaa0ee;
 }
 
-:global(body.dark-mode) .harvestAlert .alertBannerContent p,
-:global(body.dark-mode) .seasonalAlert .alertBannerContent p {
-  color: #aeb9ca;
-}
+/* Dark metrics */
 
 :global(body.dark-mode) .metricCard {
-  background-color: #242830;
-  border-color: #3b414c;
+background-color: #242830;
+border-color: #3b414c;
+}
+
+:global(body.dark-mode) .metricHeader h2 {
+color: #aeb9ca;
 }
 
 :global(body.dark-mode) .metricValue {
-  color: #fff;
+color: #fff;
 }
 
 :global(body.dark-mode) .metricInfo {
-  color: #9da8b8;
+color: #9da8b8;
+}
+
+:global(body.dark-mode) .metricIcon.blue {
+background-color: #293149;
+color: #8b9aff;
+}
+
+:global(body.dark-mode) .metricIcon.green {
+background-color: #26392a;
+color: #7bd183;
+}
+
+:global(body.dark-mode) .metricIcon.purple {
+background-color: #342b46;
+color: #b58af3;
+}
+
+:global(body.dark-mode) .metricIcon.orange {
+background-color: #403323;
+color: #e8a747;
+}
+
+/* Dark overview */
+
+:global(body.dark-mode) .overviewCard,
+:global(body.dark-mode) .harvestSection {
+background-color: #242830;
+border-color: #3b414c;
+}
+
+:global(body.dark-mode) .cardTitle {
+color: #fff;
+}
+
+:global(body.dark-mode) .cardSubtitle {
+color: #aeb9ca;
+}
+
+:global(body.dark-mode) .excellentBadge {
+background-color: #213525;
+border-color: #345c3b;
+color: #7bd183;
+}
+
+:global(body.dark-mode) .stockName {
+color: #e5e7eb;
+}
+
+:global(body.dark-mode) .stockPercentage {
+color: #c1c8d3;
+}
+
+:global(body.dark-mode) .stockBar {
+background-color: #454a53;
+}
+
+:global(body.dark-mode) .sustainabilityStats {
+border-color: #3b414c;
+}
+
+:global(body.dark-mode) .statLabel {
+color: #9da8b8;
+}
+
+:global(body.dark-mode) .statValue {
+color: #fff;
+}
+
+:global(body.dark-mode) .legendItem {
+color: #aeb9ca;
+}
+
+:global(body.dark-mode) .harvestItem {
+background-color: #2a2f37;
+}
+
+:global(body.dark-mode) .harvestItem.overdue {
+background-color: #302628;
+border-color: #59373a;
+}
+
+:global(body.dark-mode) .harvestItem.today {
+background-color: #332f25;
+border-color: #5b4a2d;
+}
+
+:global(body.dark-mode) .harvestInfo strong {
+color: #fff;
+}
+
+:global(body.dark-mode) .harvestInfo span {
+color: #aeb9ca;
+}
+
+:global(body.dark-mode) .harvestDate {
+color: #d1d5db;
+}
+
+:global(body.dark-mode) .harvestStatus {
+background-color: #242830;
+border-color: #454b55;
+color: #c1c8d3;
+}
+
+:global(body.dark-mode) .harvestStatus.overdue {
+background-color: #35282a;
+border-color: #63393d;
+color: #f28b8b;
+}
+
+:global(body.dark-mode) .harvestStatus.today {
+background-color: #373025;
+border-color: #66502d;
+color: #e8a747;
 }
 
 /* =========================
-   Responsive
-   ========================= */
+Responsive
+========================= */
 
 @media (width <= 1100px) {
-  .metricsGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.metricsGrid {
+grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+}
+
+@media (width <= 1000px) {
+.overviewGrid {
+grid-template-columns: 1fr;
+}
+
+.overviewCard {
+min-height: auto;
+}
+
+.chartSection {
+min-height: 310px;
+}
 }
 
 @media (width <= 700px) {
-  .container {
-    padding: 20px 16px;
-  }
+.container {
+padding: 20px 16px 32px;
+}
 
-  .header {
-    flex-direction: column;
-    margin-bottom: 28px;
-  }
+.header {
+flex-direction: column;
+gap: 18px;
+margin-bottom: 26px;
+}
 
-  .priorityButton {
-    align-self: flex-start;
-  }
+.title {
+font-size: 28px;
+}
 
-  .title {
-    font-size: 28px;
-  }
+.subtitle {
+font-size: 15px;
+}
 
-  .subtitle {
-    font-size: 15px;
-  }
+.priorityButton {
+align-self: flex-start;
+}
 
-  .metricsGrid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
+.alerts {
+gap: 10px;
+margin-bottom: 16px;
+}
 
-  .alertBanner {
-    min-height: auto;
-    padding: 16px;
-  }
+.alertBanner {
+align-items: flex-start;
+padding: 12px 14px;
+}
+
+.alertBannerContent h2 {
+font-size: 14px;
+}
+
+.alertBannerContent p {
+font-size: 12px;
+}
+
+.metricsGrid {
+grid-template-columns: 1fr 1fr;
+gap: 12px;
+margin-bottom: 16px;
+}
+
+.metricCard {
+padding: 16px;
+border-radius: 12px;
+}
+
+.metricHeader h2 {
+font-size: 13px;
+}
+
+.metricIcon {
+width: 30px;
+height: 30px;
+font-size: 16px;
+}
+
+.metricValue {
+margin-top: 13px;
+font-size: 27px;
+}
+
+.metricInfo {
+font-size: 12px;
+}
+
+.overviewGrid {
+gap: 16px;
+margin-bottom: 16px;
+}
+
+.overviewCard {
+padding: 20px 18px;
+border-radius: 12px;
+}
+
+.cardTitle {
+font-size: 16px;
+}
+
+.cardSubtitle {
+font-size: 14px;
+}
+
+.sustainabilityScore {
+font-size: 34px;
+}
+
+.pieChart {
+width: 165px;
+height: 165px;
+}
+
+.onsiteLabel {
+right: 4%;
+font-size: 13px;
+}
+
+.purchasedLabel {
+left: 8%;
+font-size: 13px;
+}
+
+.legend {
+gap: 12px;
+}
+
+.legendItem {
+font-size: 13px;
+}
+
+.sustainabilityStats {
+gap: 12px;
+}
+
+.stockList {
+gap: 19px;
+margin-top: 25px;
+}
+
+.harvestSection {
+padding: 20px 18px;
+border-radius: 12px;
+}
+
+.harvestList {
+gap: 12px;
+margin-top: 22px;
+}
+
+.harvestItem {
+align-items: flex-start;
+flex-direction: column;
+gap: 14px;
+padding: 14px;
+}
+
+.harvestLeft {
+width: 100%;
+}
+
+.harvestRight {
+justify-content: space-between;
+width: 100%;
+}
+
+.harvestDateInfo {
+align-items: flex-start;
+}
+}
+
+@media (width <= 450px) {
+.metricsGrid {
+grid-template-columns: 1fr;
+}
+
+.sustainabilityTopRow {
+margin-top: 22px;
+}
+
+.chartSection {
+min-height: 285px;
+}
+
+.pieChart {
+width: 145px;
+height: 145px;
+}
+
+.onsiteLabel {
+top: 2px;
+right: 0;
+}
+
+.purchasedLabel {
+bottom: 31px;
+left: 0;
+}
+
+.legend {
+flex-wrap: wrap;
+}
+
+.harvestRight {
+align-items: flex-end;
+flex-direction: column;
+}
+
+.harvestDateInfo {
+align-items: flex-end;
+}
+
+.harvestButton {
+width: 100%;
+}
 }
