@@ -6,6 +6,7 @@ import TypeRow from './TypeRow';
 import styles from './TypesList.module.css';
 import { deleteInvTypeById, updateInvTypeById } from '~/actions/bmdashboard/invTypeActions';
 import { toast } from 'react-toastify';
+import logService from '../../../services/logService';
 
 export function TypesTable(props) {
   const { itemTypes, category, dispatch } = props;
@@ -52,6 +53,7 @@ export function TypesTable(props) {
       await dispatch(deleteInvTypeById(modalState.item._id, category));
       toast.success('Item deleted successfully');
     } catch (err) {
+      logService.logError(err);
       toast.error('Failed to delete item');
     } finally {
       handleCloseModal();
@@ -77,6 +79,7 @@ export function TypesTable(props) {
       );
       toast.success('Item updated successfully');
     } catch (err) {
+      logService.logError(err);
       toast.error('Failed to update item');
     } finally {
       handleCloseModal();
