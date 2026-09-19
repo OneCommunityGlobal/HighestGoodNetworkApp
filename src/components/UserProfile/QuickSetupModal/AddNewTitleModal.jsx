@@ -128,15 +128,23 @@ function AddNewTitleModal({
     ? teamsData
     : (teamsData && Array.isArray(teamsData.allTeams) ? teamsData.allTeams : []);
 
+
   const existTeamCodes = new Set(
     (Array.isArray(QSTTeamCodes) ? QSTTeamCodes : [])
       .map(code => code?.value)
       .filter(Boolean)
   );
 
-  const existTeamName = new Set(
-    allTeamsArray.map(t => t?.teamName).filter(Boolean)
+  const activeTeams = allTeamsArray.filter(
+    team => team?.isActive === true
   );
+
+  const existTeamName = new Set(
+    activeTeams
+      .map(team => team?.teamName?.trim().toLowerCase())
+      .filter(Boolean)
+  );
+
 
   // ------------------- local UI state (selectors) --------------------------
 
@@ -221,24 +229,30 @@ function AddNewTitleModal({
   };
 
   // Treat empty selection as OK (make it required here if your business rule requires it)
-  const onTeamNameValidation = teamObj => {
-    const name = teamObj && typeof teamObj === 'object'
+const onTeamNameValidation = teamObj => {
+  const name =
+    teamObj && typeof teamObj === 'object'
       ? (teamObj.teamName || '').trim()
       : '';
 
-    if (name === '') {
-      setShowMessage(false);
-      return true; // optional
-    }
-
-    if (!existTeamName.has(name)) {
-      setWarningMessage({ title: 'Error', content: 'Team Name Not Exists' });
-      setShowMessage(true);
-      return false;
-    }
+  if (name === '') {
     setShowMessage(false);
     return true;
-  };
+  }
+
+  if (!existTeamName.has(name.toLowerCase())) {
+    setWarningMessage({
+      title: 'Error',
+      content: 'Team Name Not Exists',
+    });
+    setShowMessage(true);
+    return false;
+  }
+
+  setShowMessage(false);
+  return true;
+};
+
 
   // ------------------- submit ----------------------------------------------
 
@@ -253,9 +267,11 @@ function AddNewTitleModal({
       return;
     }
 
-    const safeTeams = allTeamsArray;
-    const team = normalizeTeam(titleData.teamAssiged, safeTeams);
+    const safeTeams = allTeamsArray.filter(
+      team => team?.isActive === true
+    );
 
+    const team = normalizeTeam(titleData.teamAssiged, safeTeams);
     const payload = {
       id: titleData.id,
       titleName: titleData.titleName?.trim() || '',
@@ -386,6 +402,7 @@ function AddNewTitleModal({
   value={titleData?.teamAssiged || { _id: '', teamName: '' }}
   onChange={(team) => setTitleData((p) => ({ ...p, teamAssiged: team }))}
   placeholder=""
+  darkMode={darkMode}
 />
 
           </FormGroup>
