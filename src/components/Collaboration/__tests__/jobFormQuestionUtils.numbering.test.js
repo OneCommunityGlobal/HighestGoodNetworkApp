@@ -20,4 +20,11 @@ describe('job form question numbering', () => {
       '3.) What is your availability?',
     );
   });
+
+  it.each(['1-2 years of experience', '2.5 years of experience'])(
+    'preserves a non-numbering leading value: %s',
+    questionText => {
+      expect(stripLeadingQuestionNumber(questionText)).toBe(questionText);
+    },
+  );
 });

@@ -28,7 +28,6 @@ import {
 } from './jobFormQuestionUtils';
 
 import { permissions } from '../../utils/constants';
-
 function JobFormBuilder() {
   const dispatch = useDispatch();
   const { auth } = useSelector(state => state);

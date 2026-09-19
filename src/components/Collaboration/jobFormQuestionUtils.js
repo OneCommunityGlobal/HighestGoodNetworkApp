@@ -124,7 +124,7 @@ export function findDuplicateQuestions(candidates = [], existingFields = []) {
  * so it stays correct after Move Up or Move Down.
  */
 export function stripLeadingQuestionNumber(questionText) {
-  return String(questionText || '').replace(/^\s*\d+(?:\s*(?:\.\)|\.|\)|-))+(?:\s*\.\))*\s*/, '');
+  return String(questionText || '').replace(/^\s*\d+(?:\.\)|\.|\)|-)(?:\s+\.\))*(?:\s+|$)/, '');
 }
 
 /** Returns a label whose number always follows the question's array position. */
