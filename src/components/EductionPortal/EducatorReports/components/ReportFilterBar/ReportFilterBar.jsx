@@ -2,16 +2,53 @@ import React from 'react';
 import { Row, Col, Form, FormGroup, Label, Input } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import styles from './ReportFilterBar.module.css';
-import { students, classes, filterSubjects, dateRanges } from '../../mockdata';
 
 const ReportFilterBar = ({ filters, onFilterChange, activeTab }) => {
   const darkMode = useSelector(state => state.theme?.darkMode || false);
+
+  // Mock data - in a real app, these would come from API calls
+  const students = [
+    { id: '1', name: 'Alex Johnson' },
+    { id: '2', name: 'Sarah Williams' },
+    { id: '3', name: 'Michael Brown' },
+    { id: '4', name: 'Emily Davis' },
+  ];
+
+  const classes = [
+    { id: '1', name: 'Grade 5A - Mathematics' },
+    { id: '2', name: 'Grade 6B - Science' },
+    { id: '3', name: 'Grade 4C - English' },
+  ];
+
+  const subjects = [
+    { value: 'all', label: 'All Subjects' },
+    { value: 'mathematics', label: 'Mathematics' },
+    { value: 'science', label: 'Science' },
+    { value: 'english', label: 'English' },
+    { value: 'history', label: 'History' },
+    { value: 'art', label: 'Art' },
+    { value: 'health', label: 'Health' },
+    { value: 'social-studies', label: 'Social Studies' },
+    { value: 'tech-innovation', label: 'Tech & Innovation' },
+    { value: 'values', label: 'Values' },
+  ];
+
+  const dateRanges = [
+    { value: 'lastWeek', label: 'Last Week' },
+    { value: 'lastMonth', label: 'Last Month' },
+    { value: 'lastQuarter', label: 'Last Quarter' },
+    { value: 'lastSemester', label: 'Last Semester' },
+    { value: 'lastYear', label: 'Last Year' },
+    { value: 'custom', label: 'Custom Range' },
+  ];
 
   const handleInputChange = (field, value) => {
     onFilterChange({ [field]: value });
   };
 
   const handleExport = () => {
+    // TODO: Implement export functionality
+    // eslint-disable-next-line no-alert
     alert('Export functionality coming soon!');
   };
 
@@ -62,7 +99,7 @@ const ReportFilterBar = ({ filters, onFilterChange, activeTab }) => {
                 onChange={e => handleInputChange('subject', e.target.value)}
                 className={styles.filterSelect}
               >
-                {filterSubjects.map(subject => (
+                {subjects.map(subject => (
                   <option key={subject.value} value={subject.value}>
                     {subject.label}
                   </option>
@@ -102,7 +139,8 @@ const ReportFilterBar = ({ filters, onFilterChange, activeTab }) => {
                 onClick={() => window.location.reload()}
                 title="Refresh Data"
               >
-                <i className="fa fa-refresh" aria-hidden="true" /> Refresh
+                <i className="fa fa-refresh" aria-hidden="true" />
+                Refresh
               </button>
               <button
                 type="button"
@@ -110,7 +148,8 @@ const ReportFilterBar = ({ filters, onFilterChange, activeTab }) => {
                 onClick={handleExport}
                 title="Export Report"
               >
-                <i className="fa fa-download" aria-hidden="true" /> Export
+                <i className="fa fa-download" aria-hidden="true" />
+                Export
               </button>
             </div>
           </Col>
