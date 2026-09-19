@@ -1420,7 +1420,7 @@ setUpdatedTasks(prev => {
             setUserProfile={setUserProfile}
             userProfile={userProfile}
             userTeams={teams || []}
-            teamsData={props?.allTeams?.allTeamsData || []}
+            teamsData={props?.allTeams?.allTeams || []}
             projectsData={props?.allProjects?.projects || []}
             titleOnSet={titleOnSet}
             setTitleOnSet={setTitleOnSet}
@@ -2441,7 +2441,7 @@ UserProfile.propTypes = {
 
  const mapStateToProps = state => ({
    allProjects: state.allProjects || state.projects || {},   // <- gives you .projects array
-   allTeams: state.allTeams || {},
+   allTeams: state.allTeamsData || {},
    auth: state.auth,
    role: state.role || {},
  });

@@ -15,6 +15,7 @@ import {
 import { getAllUserTeams, postNewTeam } from '../../../actions/allTeamsAction';
 import darkModeStyles from '../../Header/DarkMode.module.css';
 import AddTeamsAutoComplete from './AddTeamsAutoComplete';
+import axios, {CancelToken} from 'axios';
 
 function generateValidTeamCode(name) {
   if (!name?.trim()) return 'TEAM-1';
@@ -189,18 +190,19 @@ const AddTeamPopup = React.memo((props) => {
 
 
 
-  const refreshTeams = async () => {
-    try {
-      setTeamsLoading(true);
-      const resp = await dispatch(getAllUserTeams());
-      const list = extractTeams(resp);
-      if (list.length) setTeams(list);
-    } finally {
-      setTeamsLoading(false);
-    }
-  };
+const refreshTeams = async () => {
+  try {
+    setTeamsLoading(true);
+    const resp = await dispatch(getAllUserTeams());
+    const list = extractTeams(resp);
+    setTeams(list);
+    return list;
+  } finally {
+    setTeamsLoading(false);
+  }
+};  
 
-  const handleCreateTeamError = (response) => {
+const handleCreateTeamError = (response) => {
     const messageToastError =
       response?.status === 500
         ? 'No response received from the server'
@@ -213,41 +215,55 @@ const AddTeamPopup = React.memo((props) => {
   };
 
   const onCreateTeam = async () => {
-    if (!searchText?.trim()) {
-      onNewTeamValidation(false);
-      return;
-    }
 
-    const source = CancelToken.source();
-    const timeout = setTimeout(() => axiosResponseExceededTimeout(source), 20000);
-    try {
-      setIsLoading(true);
-      const newTeamName = searchText.trim();
-      const response = await dispatch(postNewTeam(newTeamName, true, source));
-      clearTimeout(timeout);
 
-      if (response?.status === 200) {
-        setDuplicateTeam(false);
-        if (!isNotDisplayAlert) setIsNotDisplayAlert(true);
-        await refreshTeams();
-        toast.success('Team created successfully');
-        const list = extractTeams(response);
-        const created =
-          list?.find((t) => normalize(t.teamName) === normalize(newTeamName)) ||
-          allTeams.find((t) => normalize(t.teamName) === normalize(newTeamName)) ||
-          response?.data;
-        setIsLoading(false);
-        onAssignTeam(created);
-      } else {
-        setIsLoading(false);
-        handleCreateTeamError(response);
-      }
-    } catch (error) {
-      clearTimeout(timeout);
+  if (!searchText?.trim()) {
+
+    onNewTeamValidation(false);
+    return;
+  }
+
+  const source = CancelToken.source();
+  const timeout = setTimeout(() => axiosResponseExceededTimeout(source), 20000);
+
+  try {
+    setIsLoading(true);
+
+    const newTeamName = searchText.trim();
+
+    const response = await dispatch(postNewTeam(newTeamName, true, source));
+
+
+    clearTimeout(timeout);
+
+    if (response?.status === 200) {
+
+      setDuplicateTeam(false);
+      if (!isNotDisplayAlert) setIsNotDisplayAlert(true);
+
+      const refreshedTeams = await refreshTeams();
+
+
+      toast.success('Team created successfully');
+
+      const created =
+        refreshedTeams.find(
+          team => normalize(team.teamName) === normalize(newTeamName)
+        ) || response?.data;
+
+
       setIsLoading(false);
-      toast.error(error?.message || 'Error occurred while creating team');
+      onAssignTeam(created);
+    } else {
+      setIsLoading(false);
+      handleCreateTeamError(response);
     }
-  };
+  } catch (error) {
+    clearTimeout(timeout);
+    setIsLoading(false);
+    toast.error(error?.message || 'Error occurred while creating team');
+  }
+};
 
   const onConfirm = () => {
     runConfirmStrategy({
