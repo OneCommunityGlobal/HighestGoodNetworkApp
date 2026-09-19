@@ -53,7 +53,9 @@ function UserCard({ user }) {
 
         <div className={`${styles.skillsSection}`}>
           <div className={`${styles.skillsLabel}`}>Top Skills:</div>
-          <div className={`${styles.skillsText}`}>{normalizedSkills.join(', ')}</div>
+          <div className={`${styles.skillsText}`}>
+            {normalizedSkills.length > 0 ? normalizedSkills.join(', ') : 'No skills listed'}
+          </div>
         </div>
       </div>
     </div>
