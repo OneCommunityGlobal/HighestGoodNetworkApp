@@ -602,7 +602,7 @@ export const ENDPOINTS = {
   LB_UPDATE_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
   LB_MARK_MESSAGES_AS_READ: `${APIEndpoint}/lb/messages/mark-as-read`,
   LB_BID_OVERVIEW: listingId => `${APIEndpoint}/lb/listOverview/${listingId}`,
-  LB_SUBMIT_BID: listingId => `${APIEndpoint}/lb/bid/${listingId}`,
+  LB_SUBMIT_BID: listingId => `${APIEndpoint}/lb/bidoverview/placeBid/${listingId}`,
   LB_VILLAGES: `${APIEndpoint}/villages`,
   LB_VILLAGE_BY_ID: id => `${APIEndpoint}/villages/${id}`,
 
