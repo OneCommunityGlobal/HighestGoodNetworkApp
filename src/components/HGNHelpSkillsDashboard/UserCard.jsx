@@ -7,6 +7,9 @@ import { useSelector } from 'react-redux';
 function UserCard({ user }) {
   const { name, email, slack, score, topSkills, skills } = user;
   const darkMode = useSelector(state => state.theme.darkMode);
+  const normalizedEmail = typeof email === 'string' ? email.trim() : '';
+  const hasValidEmail = normalizedEmail.length > 0 && normalizedEmail.toUpperCase() !== 'N/A';
+  const displayEmail = hasValidEmail ? normalizedEmail : 'N/A';
 
   const normalizedSkills = Array.isArray(topSkills)
     ? topSkills
@@ -24,18 +27,20 @@ function UserCard({ user }) {
       <img src={avatar} alt="Avatar" className={`${styles.avatar}`} />
       <div className={`${styles.info}`}>
         <div className={`${styles.userName}`}>{name}</div>
-        {email && (
-          <div className={`${styles.contactLine}`}>
-            <img src={emailIcon} alt="Email" className={`${styles.contactIcon}`} />
+        <div className={`${styles.contactLine}`}>
+          <img src={emailIcon} alt="Email" className={`${styles.contactIcon}`} />
+          {hasValidEmail ? (
             <a
-              href={`mailto:${email}`}
+              href={`mailto:${normalizedEmail}`}
               aria-label={`Email ${name}`}
               className={`${styles.contactLink}`}
             >
-              {email}
+              {displayEmail}
             </a>
-          </div>
-        )}
+          ) : (
+            <span>{displayEmail}</span>
+          )}
+        </div>
         {slack && (
           <div className={`${styles.contactLine}`}>
             <img src={slackIcon} alt="Slack" className={`${styles.contactIcon}`} />

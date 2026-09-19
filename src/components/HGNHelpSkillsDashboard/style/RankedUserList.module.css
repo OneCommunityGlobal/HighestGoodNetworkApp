@@ -14,7 +14,7 @@
   max-width: 400px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   padding: 15px;
   transition: transform 0.2s, background 0.3s, border-color 0.3s, box-shadow 0.3s;
 }
