@@ -60,7 +60,7 @@ function PromotionEligibility({ currentUser: currentUserProp }) {
   );
   const currentUser = currentUserProp || derivedUser;
 
-  const isOwner = currentUser && currentUser.role === 'Owner';
+  const isOwner = currentUser?.role === 'Owner';
 
   useEffect(() => {
     (async () => {
@@ -93,6 +93,7 @@ function PromotionEligibility({ currentUser: currentUserProp }) {
         const res = await getReviewerGroups(currentUser);
         setReviewerGroups(res.groups || []);
       } catch (e) {
+        // The failure reason isn't shown to the user; a generic toast is enough here.
         toast.error('Failed to load reviewer groups.');
       }
     })();
@@ -146,7 +147,7 @@ function PromotionEligibility({ currentUser: currentUserProp }) {
       }
       cancelGroupForm();
     } catch (err) {
-      const message = err && err.response && err.response.data;
+      const message = err?.response?.data;
       toast.error(typeof message === 'string' ? message : 'Failed to save reviewer group.');
     }
   };
@@ -162,7 +163,7 @@ function PromotionEligibility({ currentUser: currentUserProp }) {
   };
 
   const prsNeededErrorMessage = (err, fallback) => {
-    const message = err && err.response && err.response.data;
+    const message = err?.response?.data;
     return typeof message === 'string' ? message : fallback;
   };
 
@@ -257,6 +258,7 @@ function PromotionEligibility({ currentUser: currentUserProp }) {
       const { placements, warnings } = await previewPromotions(memberIds, currentUser);
       setPendingPromotion({ memberIds, placements, warnings });
     } catch (err) {
+      // The failure reason isn't shown to the user; a generic toast is enough here.
       toast.error('Failed to preview promotions.');
     } finally {
       setProcessing(false);

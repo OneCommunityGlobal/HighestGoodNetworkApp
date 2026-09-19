@@ -40,6 +40,7 @@ function PromotionConfirmationModal({
         const data = await getTeamsForPlacement();
         setTeams(Array.isArray(data) ? data : []);
       } catch (e) {
+        // The failure reason isn't shown to the user; a generic toast is enough here.
         toast.error('Failed to load teams for manual placement.');
       } finally {
         setTeamsLoading(false);
@@ -66,10 +67,9 @@ function PromotionConfirmationModal({
 
   return (
     <div className={styles.overlay}>
-      <div
+      <dialog
+        open
         className={`${styles.modal} ${darkMode ? styles.dark : ''}`}
-        role="dialog"
-        aria-modal="true"
         aria-labelledby="promotion-confirm-title"
       >
         <div className={styles.modalHeader}>
@@ -169,7 +169,7 @@ function PromotionConfirmationModal({
             {confirming ? 'Promoting...' : 'Confirm Promotions'}
           </button>
         </div>
-      </div>
+      </dialog>
     </div>
   );
 }

@@ -66,6 +66,7 @@ function ReviewForThisWeekModal({ groupKey, groupLabel, currentUser, darkMode, o
         }
         setLoading(false);
       } catch (e) {
+        // The failure reason isn't shown to the user; a generic error message is enough here.
         if (!isMounted) return;
         setError('Failed to load weekly review data.');
         setLoading(false);
@@ -84,14 +85,14 @@ function ReviewForThisWeekModal({ groupKey, groupLabel, currentUser, darkMode, o
   };
 
   const currentWeekEntries = reviewerId => {
-    const weeks = (entriesByReviewer[reviewerId] || {}).weeks || [];
+    const weeks = entriesByReviewer[reviewerId]?.weeks || [];
     const { year, week } = mongoWeekOf(new Date());
     const match = weeks.find(w => w.year === year && w.week === week);
     return match ? match.prs : [];
   };
 
   const errorMessageFrom = (e, fallback) => {
-    const message = e && e.response && e.response.data;
+    const message = e?.response?.data;
     return typeof message === 'string' ? message : fallback;
   };
 
@@ -154,10 +155,9 @@ function ReviewForThisWeekModal({ groupKey, groupLabel, currentUser, darkMode, o
 
   return (
     <div className={styles.overlay}>
-      <div
+      <dialog
+        open
         className={`${styles.modal} ${darkMode ? styles.dark : ''}`}
-        role="dialog"
-        aria-modal="true"
         aria-labelledby="review-week-modal-title"
       >
         <div className={styles.modalHeader}>
@@ -287,7 +287,7 @@ function ReviewForThisWeekModal({ groupKey, groupLabel, currentUser, darkMode, o
             Close
           </button>
         </div>
-      </div>
+      </dialog>
     </div>
   );
 }

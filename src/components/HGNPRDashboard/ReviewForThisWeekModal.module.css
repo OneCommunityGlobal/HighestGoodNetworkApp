@@ -9,6 +9,13 @@
 }
 
 .modal {
+  /* Resets the browser's default <dialog> chrome (position/border/margin/padding)
+     so it renders identically to the plain div this replaced, staying in normal
+     flow so .overlay's flex centering still applies. */
+  position: static;
+  margin: 0;
+  border: none;
+  padding: 0;
   background-color: #fff;
   border-radius: 12px;
   width: min(95vw, 1100px);
