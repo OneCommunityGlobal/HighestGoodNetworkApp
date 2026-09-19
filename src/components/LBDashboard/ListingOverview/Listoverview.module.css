@@ -504,7 +504,7 @@ p {
   color: #aeb9c4;
 }
 
-.availabilityError--dark {
+.availabilityModal--dark .availabilityError--dark {
   color: #f4a3a3;
 }
 
