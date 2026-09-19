@@ -45,3 +45,33 @@
 .teamConfigButtonDark:hover small {
   color: #e5e7eb;
 }
+
+.deleteButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 4px;
+  color: #dc3545;
+}
+
+.deleteButtonDark {
+  color: #f87171;
+}
+
+.container {
+  padding: 40px 20px;
+}
+
+.subtitle {
+  color: #4b5563;
+}
+
+.subtitleDark {
+  color: #9ca3af;
+}
