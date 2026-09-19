@@ -129,10 +129,9 @@ function Timer({ authUser, darkMode, isPopout }) {
   const logMinutes = timeToLog.minutes();
 
   // Handle visual race conditions for the timer start and pause buttons
-  const [userIntent, setUserIntent] = useState(null); // Tracks 'START' or 'PAUSE' locally
-  const isCurrentlyPaused = userIntent ? userIntent === 'PAUSE' : !started || paused;
+  const isCurrentlyPaused = !started || paused;
 
-  const sendJsonMessageNoQueue = useCallback(msg => sendJsonMessage(msg, false), [sendMessage]);
+  const sendJsonMessageNoQueue = useCallback(msg => sendJsonMessage(msg, false), [sendJsonMessage]);
 
   // Enhanced function to clear submitted time with better logging
   const clearSubmittedTime = useCallback(() => {
@@ -358,11 +357,9 @@ function Timer({ authUser, darkMode, isPopout }) {
     }
     return {
       sendStart: () => {
-        setUserIntent('START');
         sendJsonMessageNoQueue({ action: action.START_TIMER, userId: viewingUserId });
       },
       sendPause: () => {
-        setUserIntent('PAUSE');
         sendJsonMessageNoQueue({ action: action.PAUSE_TIMER, userId: viewingUserId });
       },
       sendClear: () =>
@@ -456,10 +453,27 @@ function Timer({ authUser, darkMode, isPopout }) {
   const handleStartButton = useCallback(() => {
     if (remaining === 0) {
       toast.error('There is no more Remaining time, please add more or log your passed time');
-    } else {
-      sendStart();
+      return;
     }
-  }, [remaining]);
+    setMessage(prev => ({
+      ...prev,
+      started: true,
+      paused: false,
+    }));
+    setRunning(true);
+    sendStart();
+  }, [remaining, sendStart]);
+
+  const handlePauseButton = useCallback(() => {
+    setMessage(prev => ({
+      ...prev,
+      started: true,
+      paused: true,
+    }));
+    setRunning(false);
+
+    sendPause();
+  }, [sendPause]);
 
   const handleAddButton = useCallback(
     duration => {
@@ -579,19 +593,17 @@ function Timer({ authUser, darkMode, isPopout }) {
       weekEndPause: weekEndPauseLJM,
     } = lastJsonMessage || defaultMessage;
 
-    setMessage(lastJsonMessage || defaultMessage);
-    // Clear our visual intent lock the exact moment the server catches up
-    if (userIntent === 'START' && startedLJM && !pausedLJM) {
-      setUserIntent(null);
-    } else if (userIntent === 'PAUSE' && pausedLJM) {
-      setUserIntent(null);
-    }
+    // console.log('DEBUG WS TIMER RECEIVED', {
+    //   time: lastJsonMessage?.time,
+    //   started: lastJsonMessage?.started,
+    //   paused: lastJsonMessage?.paused,
+    //   receivedAt: Date.now(),
+    // });
 
-    // Keep the running flag synced, favoring local user clicks over in-flight frames
-    if (userIntent !== null) {
-      setRunning(userIntent === 'START');
-    } else {
-      setRunning(startedLJM && !pausedLJM);
+    setMessage(lastJsonMessage || defaultMessage);
+    setRunning(startedLJM && !pausedLJM);
+    if (!startedLJM || pausedLJM) {
+      setRemaining(lastJsonMessage?.time ?? defaultMessage.time);
     }
 
     // Show inactivity or time-over modals based on message state
@@ -622,7 +634,6 @@ function Timer({ authUser, darkMode, isPopout }) {
 
   useEffect(() => {
     if (!running) {
-      setRemaining(time);
       return undefined;
     }
     updateRemaining();
@@ -1035,7 +1046,7 @@ function Timer({ authUser, darkMode, isPopout }) {
             <button
               type="button"
               disabled={isButtonDisabled}
-              onMouseDown={handleStartButton}
+              onClick={handleStartButton}
               aria-label="Start timer"
               style={{ background: 'none', border: 'none' }}
             >
@@ -1056,7 +1067,7 @@ function Timer({ authUser, darkMode, isPopout }) {
             <button
               type="button"
               disabled={isButtonDisabled}
-              onMouseDown={sendPause}
+              onClick={handlePauseButton}
               aria-label="Pause timer"
               style={{ background: 'none', border: 'none' }}
             >
