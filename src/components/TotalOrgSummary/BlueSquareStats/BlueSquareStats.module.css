@@ -1,8 +1,8 @@
 /* stylelint-disable  */
 .blueSquareStats {
   width: 100%;
-
-  /* padding: 1rem; */
+  max-width: 100%;
+  min-width: 0;
   box-sizing: border-box;
 }
 
@@ -15,11 +15,14 @@
 
 .blueSquareStatsPieChart {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   display: flex;
   justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-  margin-bottom: 50px;
+  align-items: flex-start;
+  margin-top: 8px;
+  margin-bottom: 12px;
+  overflow: visible;
 }
 
 .blueSquareStatsPieChart :global(.legend rect) {

@@ -1,4 +1,7 @@
-import externalLabelGuidesPlugin, { layoutOutsideLabelBoxes } from '../externalLabelGuidesPlugin';
+import externalLabelGuidesPlugin, {
+  layoutOutsideLabelBoxes,
+  selectFittableLabelBoxes,
+} from '../externalLabelGuidesPlugin';
 
 const CHART_CENTER = 176;
 const OUTER_RADIUS = 90;
@@ -138,5 +141,129 @@ describe('externalLabelGuidesPlugin', () => {
 
     expect(context.fillText).toHaveBeenCalledTimes(8);
     expect(context.fillText).not.toHaveBeenCalledWith('0', expect.any(Number), expect.any(Number));
+  });
+
+  it('skips labels below the configured minimum percentage', () => {
+    const context = {
+      save: vi.fn(),
+      restore: vi.fn(),
+      beginPath: vi.fn(),
+      moveTo: vi.fn(),
+      lineTo: vi.fn(),
+      quadraticCurveTo: vi.fn(),
+      closePath: vi.fn(),
+      stroke: vi.fn(),
+      fill: vi.fn(),
+      arc: vi.fn(),
+      fillText: vi.fn(),
+      measureText: vi.fn(text => ({ width: text.length * 8 })),
+    };
+    const values = [90, 10];
+    const arcs = values.map((value, index) => {
+      const startAngle = -Math.PI / 2 + index * 1.2;
+      return {
+        startAngle,
+        endAngle: startAngle + 1,
+        x: CHART_CENTER,
+        y: CHART_CENTER,
+        outerRadius: OUTER_RADIUS,
+      };
+    });
+    const chart = {
+      ctx: context,
+      width: 352,
+      height: 352,
+      chartArea: { top: 28, right: 272, bottom: 324, left: 80 },
+      data: { datasets: [{ data: values }] },
+      options: {
+        plugins: {
+          externalLabelGuides: {
+            placement: 'outside',
+            total: 100,
+            minPercentageForLabel: 15,
+          },
+        },
+      },
+      getDatasetMeta: vi.fn(() => ({ index: 0, data: arcs })),
+    };
+
+    externalLabelGuidesPlugin.afterDatasetsDraw(chart);
+
+    expect(context.fillText).toHaveBeenCalledTimes(2);
+    expect(context.fillText).toHaveBeenCalledWith('90', expect.any(Number), expect.any(Number));
+    expect(context.fillText).not.toHaveBeenCalledWith('10', expect.any(Number), expect.any(Number));
+  });
+
+  it('does not draw labels when display is false', () => {
+    const context = {
+      save: vi.fn(),
+      restore: vi.fn(),
+      fillText: vi.fn(),
+    };
+    const chart = {
+      ctx: context,
+      width: 352,
+      height: 352,
+      data: { datasets: [{ data: [12, 21] }] },
+      options: {
+        plugins: {
+          externalLabelGuides: {
+            display: false,
+          },
+        },
+      },
+      getDatasetMeta: vi.fn(() => ({
+        index: 0,
+        data: [
+          {
+            startAngle: 0,
+            endAngle: 1,
+            x: CHART_CENTER,
+            y: CHART_CENTER,
+            outerRadius: OUTER_RADIUS,
+          },
+        ],
+      })),
+    };
+
+    externalLabelGuidesPlugin.afterDatasetsDraw(chart);
+
+    expect(context.save).not.toHaveBeenCalled();
+    expect(context.fillText).not.toHaveBeenCalled();
+  });
+});
+
+describe('selectFittableLabelBoxes', () => {
+  it('drops labels that overflow the canvas', () => {
+    const boxes = [
+      { index: 0, boxX: 8, boxY: 8, boxWidth: 40, boxHeight: 20 },
+      { index: 1, boxX: 340, boxY: 8, boxWidth: 40, boxHeight: 20 },
+    ];
+
+    const kept = selectFittableLabelBoxes(boxes, {
+      chartWidth: 352,
+      chartHeight: 200,
+      values: [24, 6],
+    });
+
+    expect(kept).toHaveLength(1);
+    expect(kept[0].index).toBe(0);
+  });
+
+  it('keeps the larger slice when two labels still overlap', () => {
+    const boxes = [
+      { index: 0, boxX: 10, boxY: 10, boxWidth: 40, boxHeight: 24 },
+      { index: 1, boxX: 20, boxY: 18, boxWidth: 40, boxHeight: 24 },
+    ];
+
+    const kept = selectFittableLabelBoxes(boxes, {
+      chartWidth: 352,
+      chartHeight: 200,
+      minimumSpacing: 8,
+      values: [3, 24],
+    });
+
+    expect(kept).toHaveLength(1);
+    expect(kept[0].index).toBe(1);
   });
 });
