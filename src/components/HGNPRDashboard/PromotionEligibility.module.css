@@ -648,18 +648,55 @@
 
 .promo_table_container.dark .modal {
   background-color: #242424;
+
   color: #f5f5f5;
+
   border-color: #555555;
 }
 
+/*
+ * Keep light-mode modal styles explicit.
+ * The dark-mode rule below overrides these when
+ * the modal is inside the dark promotion container.
+ */
 .modal_overlay .modal {
   background-color: #ffffff;
+
   color: #171717;
 }
 
 .modal_overlay .modal input {
   background-color: #ffffff;
+
   color: #171717;
+}
+
+/* =========================================================
+   DARK MODE - MODAL INPUT OVERRIDE
+   ========================================================= */
+
+.promo_table_container.dark .modal_overlay .modal {
+  background-color: #242424;
+
+  color: #f5f5f5;
+
+  border-color: #555555;
+}
+
+.promo_table_container.dark .modal_overlay .modal input {
+  background-color: #2a2a2a;
+
+  color: #f5f5f5;
+
+  border-color: #6b7280;
+}
+
+.promo_table_container.dark .modal_overlay .modal input::placeholder {
+  color: #9ca3af;
+}
+
+.promo_table_container.dark .modal_overlay .modal input:focus-visible {
+  border-color: #60a5fa;
 }
 
 /* =========================================================
@@ -808,4 +845,186 @@
   .custom_circular_checkbox {
     transition: none;
   }
+}
+/* =========================================================
+   DARK MODE - PROMOTION CONFIRMATION MODAL
+   ========================================================= */
+
+.modal_overlay.darkModal {
+  background-color: rgb(0 0 0 / 70%);
+}
+
+.modal_overlay.darkModal .modal {
+  background-color: #242424;
+  color: #f5f5f5;
+  border-color: #555555;
+}
+
+.modal_overlay.darkModal .option_range {
+  color: #bdbdbd;
+}
+
+.modal_overlay.darkModal .promotion_preview_row {
+  border-color: #444444;
+}
+
+.modal_overlay.darkModal .promotion_warning {
+  background-color: #422006;
+  border-color: #b45309;
+  color: #fed7aa;
+}
+
+.modal_overlay.darkModal .needs_review {
+  background-color: #451a03;
+  color: #fcd34d;
+}
+
+.modal_overlay.darkModal .modal input {
+  background-color: #2a2a2a;
+  color: #f5f5f5;
+  border-color: #6b7280;
+}
+.modal_overlay.darkModal .modal_actions button:not(.cancel):not(.delete_btn) {
+  background-color: #3b82f6;
+  border-color: #60a5fa;
+  color: #ffffff;
+}
+
+.modal_overlay.darkModal .modal_actions button:not(.cancel):not(.delete_btn):hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.modal_overlay.darkModal .modal_actions .cancel {
+  background-color: #4b5563;
+  border-color: #6b7280;
+  color: #ffffff;
+}
+
+.modal_overlay.darkModal .modal_actions .cancel:hover:not(:disabled) {
+  background-color: #374151;
+}
+
+/* =========================================================
+   PROMOTION TEAM EDIT
+   ========================================================= */
+
+.promotion_team_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.promotion_team_edit_btn {
+  min-height: 36px !important;
+  padding: 6px 10px !important;
+  background-color: #6b7280;
+  color: #ffffff;
+  border: 1px solid #4b5563 !important;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem !important;
+}
+
+.promotion_team_edit_btn:hover:not(:disabled) {
+  background-color: #4b5563;
+}
+
+.promotion_team_edit_btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.promotion_team_edit {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.promotion_team_select {
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 10px;
+  border: 1px solid #9ca3af;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #171717;
+  font-size: 0.95rem;
+}
+
+.promotion_team_select:focus-visible {
+  outline: 3px solid #60a5fa;
+  outline-offset: 2px;
+  border-color: #2563eb;
+}
+
+.promotion_team_edit_actions {
+  display: flex;
+  gap: 8px;
+}
+
+.promotion_team_save,
+.promotion_team_cancel {
+  min-height: 36px !important;
+  padding: 6px 12px !important;
+}
+
+.promotion_team_save {
+  background-color: #16a34a;
+  color: #ffffff;
+  border-color: #15803d !important;
+}
+
+.promotion_team_save:hover:not(:disabled) {
+  background-color: #15803d;
+}
+
+.promotion_team_cancel {
+  background-color: #6b7280;
+  color: #ffffff;
+  border-color: #4b5563 !important;
+}
+
+.promotion_team_cancel:hover:not(:disabled) {
+  background-color: #4b5563;
+}
+
+/* Dark mode */
+
+.modal_overlay.darkModal .promotion_team_select {
+  background-color: #2a2a2a;
+  color: #f5f5f5;
+  border-color: #6b7280;
+}
+
+.modal_overlay.darkModal .promotion_team_select:focus-visible {
+  border-color: #60a5fa;
+}
+
+.modal_overlay.darkModal .promotion_team_edit_btn {
+  background-color: #4b5563;
+  border-color: #6b7280 !important;
+}
+
+.modal_overlay.darkModal .promotion_team_edit_btn:hover:not(:disabled) {
+  background-color: #374151;
+}
+
+.modal_overlay.darkModal .promotion_team_save {
+  background-color: #22c55e;
+  border-color: #16a34a !important;
+}
+
+.modal_overlay.darkModal .promotion_team_save:hover:not(:disabled) {
+  background-color: #16a34a;
+}
+
+.modal_overlay.darkModal .promotion_team_cancel {
+  background-color: #4b5563;
+  border-color: #6b7280 !important;
+}
+
+.modal_overlay.darkModal .promotion_team_cancel:hover:not(:disabled) {
+  background-color: #374151;
 }

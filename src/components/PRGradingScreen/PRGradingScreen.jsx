@@ -59,108 +59,6 @@ const getRatingClass = (grade, styles) => {
   }
 };
 
-/*
- * The bulk endpoint may return the reviewers in slightly different
- * structures depending on the backend implementation.
- *
- * This helper normalizes the response into:
- *
- * [
- *   {
- *     reviewerId,
- *     entries,
- *     history
- *   }
- * ]
- */
-const normalizeBulkResponse = response => {
-  if (!response) {
-    return [];
-  }
-
-  // Example:
-  // {
-  //   reviewers: [...]
-  // }
-  if (Array.isArray(response.reviewers)) {
-    return response.reviewers.map(item => ({
-      reviewerId: item.reviewerId || item.id,
-      entries:
-        item.entries ||
-        item.prEntries ||
-        item.gradedPrs ||
-        item.weeks?.flatMap(week => week.prs || []) ||
-        [],
-      history: item.history || [],
-    }));
-  }
-
-  // Example:
-  // {
-  //   data: [...]
-  // }
-  if (Array.isArray(response.data)) {
-    return response.data.map(item => ({
-      reviewerId: item.reviewerId || item.id,
-      entries:
-        item.entries ||
-        item.prEntries ||
-        item.gradedPrs ||
-        item.weeks?.flatMap(week => week.prs || []) ||
-        [],
-      history: item.history || [],
-    }));
-  }
-
-  // Example:
-  // [
-  //   {
-  //     reviewerId: '123',
-  //     entries: [],
-  //     history: []
-  //   }
-  // ]
-  if (Array.isArray(response)) {
-    return response.map(item => ({
-      reviewerId: item.reviewerId || item.id,
-      entries:
-        item.entries ||
-        item.prEntries ||
-        item.gradedPrs ||
-        item.weeks?.flatMap(week => week.prs || []) ||
-        [],
-      history: item.history || [],
-    }));
-  }
-
-  /*
-   * Fallback if the API returns:
-   *
-   * {
-   *   reviewerId: {
-   *     weeks: [],
-   *     history: []
-   *   }
-   * }
-   */
-  if (typeof response === 'object') {
-    return Object.entries(response)
-      .filter(([key]) => key !== 'history' && key !== 'weeks')
-      .map(([reviewerId, item]) => ({
-        reviewerId,
-        entries:
-          item?.entries ||
-          item?.prEntries ||
-          item?.gradedPrs ||
-          item?.weeks?.flatMap(week => week.prs || []) ||
-          [],
-        history: item?.history || [],
-      }));
-  }
-
-  return [];
-};
-
 const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -207,7 +105,7 @@ const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
    * 6. After PRs Needed change
    */
   const loadAllPREntries = useCallback(async () => {
-    if (!reviewers || reviewers.length === 0) {
+    if (!reviewers?.length) {
       setReviewerData([]);
       return;
     }
@@ -219,37 +117,27 @@ const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
 
       const response = await fetchPREntriesBulk(reviewerIds, currentUser);
 
-      const results = normalizeBulkResponse(response);
+      const reviewerResults = response?.reviewers || {};
 
-      setReviewerData(prev => {
-        return reviewers.map(reviewer => {
-          const result = results.find(item => item.reviewerId === reviewer.id);
+      setReviewerData(
+        reviewers.map(reviewer => {
+          const reviewerResult = reviewerResults[reviewer.id];
 
-          if (!result) {
-            return {
-              ...reviewer,
-              gradedPrs: [],
-              prsReviewed: 0,
-            };
-          }
+          const weeks = reviewerResult?.weeks || [];
+
+          const gradedPrs = weeks.flatMap(week => week.prs || []);
 
           return {
             ...reviewer,
-
-            /*
-             * Backend remains source of truth.
-             */
-            gradedPrs: result.entries || [],
-
-            prsReviewed: (result.entries || []).length,
-
-            history: result.history || reviewer.history || [],
+            weeks,
+            gradedPrs,
+            prsReviewed: gradedPrs.length,
+            history: reviewer.history || [],
           };
-        });
-      });
+        }),
+      );
     } catch (error) {
       console.error('Failed to load PR entries:', error);
-
       toast.error('Failed to load PR grading data.');
     } finally {
       setIsLoadingEntries(false);

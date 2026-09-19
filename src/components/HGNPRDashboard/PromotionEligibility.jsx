@@ -51,6 +51,8 @@ function PromotionEligibility() {
   const [selectedOption, setSelectedOption] = useState(null);
   const [showPromotionModal, setShowPromotionModal] = useState(false);
   const [promotionPreview, setPromotionPreview] = useState([]);
+  const [editingPromotionTeam, setEditingPromotionTeam] = useState(null);
+  const [editingTeamId, setEditingTeamId] = useState('');
 
   const darkMode = useSelector(state => state.theme.darkMode);
   const currentUser = useSelector(state => state.auth?.user);
@@ -62,7 +64,83 @@ function PromotionEligibility() {
   useEffect(() => {
     const loadPromotionEligibility = async () => {
       try {
-        const data = await getPromotionEligibility(currentUser);
+        // const data = await getPromotionEligibility(currentUser);
+        const data = [
+          {
+            reviewerId: '5fc2d7172af8d005d0aba5f1',
+            reviewerName: 'Chris',
+            pledgedHours: 10,
+            requiredPRs: 3,
+            prsNeeded: 3,
+            prsNeededSource: 'ownerOverride',
+            totalReviews: 10,
+            successfulWeeks: 2,
+            remainingWeeks: 0,
+            weeklyRequirementsMet: true,
+            isNewMember: false,
+            isPromoted: false,
+          },
+
+          {
+            reviewerId: '637af0c0fb9bbc1e308cff62',
+            reviewerName: 'Rajasri',
+            pledgedHours: 10,
+            requiredPRs: 3,
+            prsNeeded: 3,
+            prsNeededSource: 'ownerOverride',
+            totalReviews: 10,
+            successfulWeeks: 2,
+            remainingWeeks: 0,
+            weeklyRequirementsMet: true,
+            isNewMember: false,
+            isPromoted: false,
+          },
+
+          {
+            reviewerId: '637ffefe9a32d705f864c445',
+            reviewerName: 'Ran Ran',
+            pledgedHours: 20,
+            requiredPRs: 3,
+            prsNeeded: 3,
+            prsNeededSource: 'ownerOverride',
+            totalReviews: 10,
+            successfulWeeks: 2,
+            remainingWeeks: 0,
+            weeklyRequirementsMet: true,
+            isNewMember: false,
+            isPromoted: false,
+          },
+
+          {
+            reviewerId: '638e6c4dea69f32054d4c1c6',
+            reviewerName: 'Test User 4',
+            pledgedHours: 20,
+            requiredPRs: 3,
+            prsNeeded: 3,
+            prsNeededSource: 'ownerOverride',
+            totalReviews: 10,
+            successfulWeeks: 2,
+            remainingWeeks: 0,
+            weeklyRequirementsMet: true,
+            isNewMember: false,
+            isPromoted: false,
+          },
+
+          {
+            reviewerId: '63bcd4e94de851e04263a5b9',
+            reviewerName: 'Test User 5',
+            pledgedHours: 10,
+            requiredPRs: 3,
+            prsNeeded: 3,
+            prsNeededSource: 'ownerOverride',
+            totalReviews: 2,
+            successfulWeeks: 0,
+            remainingWeeks: 2,
+            weeklyRequirementsMet: false,
+            isNewMember: false,
+            isPromoted: false,
+          },
+        ];
 
         const mappedData = data.map(r => ({
           ...r,
@@ -185,6 +263,37 @@ function PromotionEligibility() {
     } finally {
       setProcessing(false);
     }
+  };
+
+  const handleEditPromotionTeam = item => {
+    setEditingPromotionTeam(item.reviewerId);
+    setEditingTeamId(item.teamId || '');
+  };
+
+  const handleCancelPromotionTeamEdit = () => {
+    setEditingPromotionTeam(null);
+    setEditingTeamId('');
+  };
+
+  const handleSavePromotionTeam = reviewerId => {
+    const selectedTeam = promotionPreview.find(
+      item => item.teamId === editingTeamId && item.teamName,
+    );
+
+    setPromotionPreview(prev =>
+      prev.map(item =>
+        item.reviewerId === reviewerId
+          ? {
+              ...item,
+              teamId: editingTeamId || null,
+              teamName: selectedTeam?.teamName || 'No team assigned',
+            }
+          : item,
+      ),
+    );
+
+    setEditingPromotionTeam(null);
+    setEditingTeamId('');
   };
 
   const handleConfirmPromotions = async () => {
@@ -347,6 +456,10 @@ function PromotionEligibility() {
   const handleReviewOptionSelect = option => {
     const filteredReviewers = getReviewersForGroup(option);
 
+    console.log('Review option:', option);
+    console.log('Reviewers from API/state:', reviewers);
+    console.log('Filtered reviewers:', filteredReviewers);
+
     setSelectedReviewGroup(option);
     setReviewersForModal(filteredReviewers);
     setShowReviewDropdown(false);
@@ -476,7 +589,16 @@ function PromotionEligibility() {
       rangeEnd: '',
     });
   };
-
+  const promotionTeamOptions = Array.from(
+    new Map(
+      promotionPreview
+        .filter(item => item.teamId && item.teamName)
+        .map(item => [item.teamId, item.teamName]),
+    ).entries(),
+  ).map(([teamId, teamName]) => ({
+    teamId,
+    teamName,
+  }));
   return (
     <>
       <div className={`${styles.pageWrapper} ${darkMode ? styles.dark : ''}`}>
@@ -842,7 +964,7 @@ function PromotionEligibility() {
 
       {/* Promotion Confirmation Modal */}
       {showPromotionModal && (
-        <div className={styles.modal_overlay}>
+        <div className={`${styles.modal_overlay} ${darkMode ? styles.darkModal : ''}`}>
           <div
             className={styles.modal}
             role="dialog"
@@ -872,17 +994,79 @@ function PromotionEligibility() {
                   </div>
 
                   <div className={styles.promotion_team}>
-                    <strong>{item.teamName || 'No team assigned'}</strong>
+                    {editingPromotionTeam === item.reviewerId ? (
+                      <div className={styles.promotion_team_edit}>
+                        <label
+                          htmlFor={`promotion-team-${item.reviewerId}`}
+                          className={styles.srOnly}
+                        >
+                          Select team for {item.reviewerName}
+                        </label>
 
-                    {item.standupDay && item.standupTime && (
-                      <span>
-                        Standup: {item.standupDay} at {item.standupTime}
-                      </span>
+                        <select
+                          id={`promotion-team-${item.reviewerId}`}
+                          className={styles.promotion_team_select}
+                          value={editingTeamId}
+                          onChange={e => setEditingTeamId(e.target.value)}
+                        >
+                          <option value="">No team assigned</option>
+
+                          {promotionTeamOptions.map(team => (
+                            <option key={team.teamId} value={team.teamId}>
+                              {team.teamName}
+                            </option>
+                          ))}
+                        </select>
+
+                        <div className={styles.promotion_team_edit_actions}>
+                          <button
+                            type="button"
+                            className={styles.promotion_team_save}
+                            onClick={() => handleSavePromotionTeam(item.reviewerId)}
+                          >
+                            Save
+                          </button>
+
+                          <button
+                            type="button"
+                            className={styles.promotion_team_cancel}
+                            onClick={handleCancelPromotionTeamEdit}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className={styles.promotion_team_header}>
+                          <strong>{item.teamName || 'No team assigned'}</strong>
+
+                          {isOwner && (
+                            <button
+                              type="button"
+                              className={styles.promotion_team_edit_btn}
+                              onClick={() => handleEditPromotionTeam(item)}
+                              disabled={processing}
+                              aria-label={`Edit team assignment for ${item.reviewerName}`}
+                            >
+                              Edit
+                            </button>
+                          )}
+                        </div>
+
+                        {item.standupDay && item.standupTime && (
+                          <span>
+                            Standup: {item.standupDay} at {item.standupTime}
+                          </span>
+                        )}
+
+                        <span>Reason: {item.reason || 'No reason provided'}</span>
+
+                        {item.needsReview && (
+                          <span className={styles.needs_review}>Needs Review</span>
+                        )}
+                      </>
                     )}
-
-                    <span>Reason: {item.reason || 'No reason provided'}</span>
-
-                    {item.needsReview && <span className={styles.needs_review}>Needs Review</span>}
                   </div>
                 </div>
               ))}
