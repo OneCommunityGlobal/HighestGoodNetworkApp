@@ -35,7 +35,137 @@
 .filterGroupInline {
   display: flex;
   flex-direction: column;
+  width: 100%;
   min-width: 220px;
+  max-width: 420px;
+}
+
+.selectedCount {
+  align-self: center;
+  flex: 0 0 auto;
+  padding: 3px 7px;
+  border-radius: 3px;
+  background-color: #e5e7eb;
+  color: #374151;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.dark .selectedCount {
+  background-color: #3a506b;
+  color: #f9fafb;
+}
+
+/* View toggle buttons */
+.toggleButton {
+  padding: 6px 12px;
+  cursor: pointer;
+  background-color: #e0e0e0;
+  color: #000;
+  border: none;
+  border-radius: 4px;
+}
+
+.toggleButtonActive {
+  background-color: #1976d2;
+  color: #fff;
+}
+
+.dark .toggleButton {
+  background-color: #3a506b;
+  color: #f9fafb;
+  border: 1px solid #52677d;
+}
+
+.dark .toggleButtonActive {
+  background-color: #2563eb;
+}
+
+/* Chart hover tooltip */
+.chartTooltip :global(.recharts-default-tooltip) {
+  background-color: #fff !important;
+  border: 1px solid #ccc !important;
+  color: #333 !important;
+}
+
+.chartTooltip :global(.recharts-tooltip-label),
+.chartTooltip :global(.recharts-tooltip-item) {
+  color: #333 !important;
+}
+
+.dark .chartTooltip :global(.recharts-default-tooltip) {
+  background-color: #243b55 !important;
+  border-color: #52677d !important;
+  color: #f9fafb !important;
+}
+
+.dark .chartTooltip :global(.recharts-tooltip-label),
+.dark .chartTooltip :global(.recharts-tooltip-item) {
+  color: #f9fafb !important;
+}
+
+.chartTooltipContent {
+  padding: 10px 12px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  color: #333;
+}
+
+.chartTooltipContent p {
+  margin: 0;
+}
+
+.chartTooltipRole {
+  margin-bottom: 6px !important;
+  color: #333;
+  font-weight: 700;
+}
+
+.chartTooltipContentDark {
+  background-color: #243b55;
+  border-color: #52677d;
+  color: #f9fafb;
+}
+
+.chartTooltipContentDark .chartTooltipRole {
+  color: #dbeafe;
+}
+
+/* The tooltip can be rendered outside the component's dark wrapper. */
+:global(.dark-mode) .chartTooltipContent {
+  background-color: #243b55;
+  border-color: #52677d;
+  color: #f9fafb;
+}
+
+:global(.dark-mode) .chartTooltipContent .chartTooltipRole {
+  color: #dbeafe;
+}
+
+.chartTooltipContent .chartTooltipapplicants {
+  color: #1976d2 !important;
+}
+
+.chartTooltipContent .chartTooltiphired,
+.chartTooltipContent .chartTooltiphiredPercentage {
+  color: #43a047 !important;
+}
+
+.optionContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.optionCheck {
+  flex: 0 0 auto;
+  font-size: 1rem;
+  font-weight: 700;
 }
 
 .label {
@@ -55,6 +185,125 @@
   margin: 0 4px;
 }
 
+.page :global(.react-datepicker__navigation-icon::before) {
+  border-color: #08060d !important;
+}
+
+.page :global(.react-datepicker__navigation-icon) {
+  font-size: initial !important;
+}
+
+.page :global(.react-datepicker__day--disabled:hover) {
+  background-color: transparent !important;
+  cursor:not-allowed;
+}
+
+.page :global(.react-datepicker__day--disabled) {
+  color: #9ca3af !important;
+}
+
+.page :global(.react-datepicker__day--keyboard-selected) {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.page :global(.react-datepicker__day--in-selecting-range:not(.react-datepicker__day--in-range)) {
+  color: #000000 !important;
+  background-color: #f0f0f0;
+}
+
+.page :global(.react-datepicker__day--in-range) {
+  color: #000000 !important;
+}
+
+.page :global(.react-datepicker__day--in-range.react-datepicker__day--in-selecting-range) {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+.page :global(.react-datepicker__day--in-range.react-datepicker__day--outside-month) {
+  color: #ffffff !important;
+}
+
+.page :global(.react-datepicker__month--selecting-range .react-datepicker__day--in-range:not(.react-datepicker__day--in-selecting-range)) {
+  color: #000000 !important;
+}
+
+/* Date picker dark mode. */
+:global(.dark-mode) .page :global(.react-datepicker__input-container input) {
+  background-color: #243b55 !important;
+  color: #f9fafb !important;
+  border: 1px solid #52677d !important;
+  color-scheme: dark;
+}
+
+:global(.dark-mode) .page :global(.react-datepicker) {
+  background-color: #1b2a41;
+  color: #f9fafb;
+  border-color: #374151;
+}
+
+:global(.dark-mode) .page :global(.react-datepicker__header) {
+  background-color: #111827;
+  border-bottom: 1px solid #374151;
+}
+
+:global(.dark-mode) .page :global(.react-datepicker__current-month),
+:global(.dark-mode) .page :global(.react-datepicker__day-name),
+:global(.dark-mode) .page :global(.react-datepicker__day),
+:global(.dark-mode) .page :global(.react-datepicker__time-name) {
+  color: #f9fafb;
+}
+
+:global(.dark-mode) .page :global(.react-datepicker__day:hover) {
+  background-color: #374151;
+}
+
+:global(.dark-mode) .page :global(.react-datepicker__day--disabled) {
+  color: #9ca3af !important;
+}
+
+:global(.dark-mode) .page :global(.react-datepicker__day--keyboard-selected) {
+  background-color: #1b2a41;
+  color: #ffffff;
+}
+
+:global(.dark-mode) .page :global(.react-datepicker__day--in-selecting-range:not(.react-datepicker__day--in-range)) {
+  color: #ffffff !important;
+  background-color: #ffffff1b;
+}
+
+:global(.dark-mode) .page :global(.react-datepicker__day--in-range) {
+  color: #ffffff !important;
+  background-color: #3b82f6;
+}
+
+:global(.dark-mode) .page :global(.react-datepicker__day--in-range.react-datepicker__day--in-selecting-range) {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+:global(.dark-mode) .page :global(.react-datepicker__day--in-range.react-datepicker__day--outside-month) {
+  color: #ffffff !important;
+}
+
+:global(.dark-mode) .page :global(.react-datepicker__month--selecting-range .react-datepicker__day--in-range:not(.react-datepicker__day--in-selecting-range)) {
+  color: #ffffff !important;
+  background-color: #ffffff1b;
+}
+
+:global(.dark-mode) .page :global(.react-datepicker__day--disabled) {
+  color: #6b7280;
+}
+
+:global(.dark-mode) .page :global(.react-datepicker__triangle) {
+  display: none;
+}
+
+:global(.dark-mode) .page :global(.react-datepicker__navigation-icon::before) {
+  border-color: #fff !important;
+}
+
 /* Validation Error */
 .validationError {
   color: #fc0;
@@ -72,6 +321,42 @@
   color: red;
 }
 
+/* Loading indicator */
+.loadingContainer {
+  min-height: 350px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.loadingSpinner {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #e5e7eb;
+  border-top-color: #1976d2;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.dark .loadingSpinner {
+  border-color: #52677d;
+  border-top-color: #60a5fa;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loadingSpinner {
+    animation-duration: 1.6s;
+  }
+}
+
 /* Chart Container */
 .chartContainer {
   width: 100%;
@@ -83,171 +368,4 @@
   text-align: center;
   padding: 40px 0;
   color: inherit;
-}
-
-/* Dark Mode Global Overrides */
-.dark :global(.react-datepicker__input-container input) {
-  background-color: #0b2434;
-  border-color: #2b4a6b;
-  color: #fff;
-}
-
-.dark :global(.react-datepicker) {
-  background-color: #0b2434;
-  border-color: #2b4a6b;
-}
-
-.dark :global(.react-datepicker__header) {
-  background-color: #0b2434;
-  border-bottom-color: #2b4a6b;
-}
-
-.dark :global(.react-datepicker__current-month),
-.dark :global(.react-datepicker__day-name),
-.dark :global(.react-datepicker__day) {
-  color: #fff;
-}
-
-.dark :global(.react-datepicker__day:hover) {
-  background-color: rgb(255 255 255 / 10%);
-}
-
-.dark :global(.react-datepicker__day--selected) {
-  background-color: rgb(67 160 71 / 22%);
-}
-
-/* React Select Dark Mode Overrides */
-.dark :global(.custom-select__control) {
-  background-color: #0b2434 !important;
-  border-color: #2b4a6b !important;
-  color: #fff !important;
-}
-
-.dark :global(.custom-select__menu) {
-  background-color: #0b2434 !important;
-  color: #fff !important;
-}
-
-/* Target menu when it's portaled to body in dark mode */
-:global(.dark-mode-body) :global(.custom-select__menu) {
-  background-color: #0b2434 !important;
-  color: #fff !important;
-}
-
-.dark :global(.custom-select__option) {
-  background-color: transparent !important;
-  color: #fff !important;
-}
-
-:global(.dark-mode-body) :global(.custom-select__option) {
-  background-color: transparent !important;
-  color: #fff !important;
-}
-
-.dark :global(.custom-select__option--is-focused) {
-  background-color: rgb(255 255 255 / 6%) !important;
-}
-
-:global(.dark-mode-body) :global(.custom-select__option--is-focused) {
-  background-color: rgb(255 255 255 / 6%) !important;
-}
-
-.dark :global(.custom-select__option--is-selected) {
-  background-color: rgb(67 160 71 / 22%) !important;
-}
-
-:global(.dark-mode-body) :global(.custom-select__option--is-selected) {
-  background-color: rgb(67 160 71 / 22%) !important;
-}
-
-.dark :global(.custom-select__multi-value) {
-  background-color: rgb(255 255 255 / 6%) !important;
-}
-
-.dark :global(.custom-select__multi-value__label) {
-  color: #fff !important;
-}
-
-.dark :global(.custom-select__multi-value__remove) {
-  color: #fff !important;
-}
-
-.dark :global(.custom-select__multi-value__remove:hover) {
-  background-color: rgb(255 255 255 / 10%) !important;
-  color: #fff !important;
-}
-
-.dark :global(.custom-select__placeholder) {
-  color: rgb(224 224 224 / 90%) !important;
-}
-
-.dark :global(.custom-select__single-value) {
-  color: #fff !important;
-}
-
-.dark :global(.custom-select__input-container) {
-  color: #fff !important;
-}
-
-.dark :global(.custom-select__dropdown-indicator) {
-  color: #fff !important;
-}
-
-.dark :global(.custom-select__clear-indicator) {
-  color: #fff !important;
-}
-
-.dark :global(.custom-select__indicator-separator) {
-  background-color: rgb(255 255 255 / 6%) !important;
-}
-
-/* Body Dark Mode */
-:global(.dark-mode-body),
-:global(.dark-mode-body) body,
-:global(.dark-mode-body) #root,
-:global(.dark-mode-body) .App {
-  background-color: #1b2a41 !important;
-  color: #e0e0e0 !important;
-}
-
-:global(.dark-mode-body) .header-wrapper,
-:global(.dark-mode-body) .content-wrapper,
-:global(.dark-mode-body) .page,
-:global(.dark-mode-body) .container,
-:global(.dark-mode-body) .container-fluid {
-  background-color: #1b2a41 !important;
-  color: #e0e0e0 !important;
-}
-
-:global(.dark-mode-body) .recharts-wrapper,
-:global(.dark-mode-body) .recharts-surface {
-  background-color: #1b2a41 !important;
-}
-
-/* Recharts Tooltip Dark Mode */
-.dark :global(.recharts-tooltip-wrapper) {
-  z-index: 100;
-}
-
-.dark :global(.recharts-default-tooltip) {
-  background-color: #1e293b !important;
-  border: 1px solid #475569 !important;
-  border-radius: 4px;
-  padding: 8px;
-}
-
-.dark :global(.recharts-tooltip-label) {
-  color: #f1f5f9 !important;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.dark :global(.recharts-tooltip-item) {
-  color: #e2e8f0 !important;
-}
-
-.dark :global(.recharts-tooltip-item-name),
-.dark :global(.recharts-tooltip-item-separator),
-.dark :global(.recharts-tooltip-item-value) {
-  color: #e2e8f0 !important;
 }
