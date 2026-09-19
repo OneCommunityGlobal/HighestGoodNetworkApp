@@ -32,6 +32,8 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
     const [editFlag, setEditFlag] = useState(editUser);
     const updatedUserData = useSelector(state => state.userProfileEdit.newUserData);
     const saveUserInformation = async updatedData => {
+      if (!Array.isArray(updatedData) || updatedData.length === 0) return;
+
       try {
         const response = await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE, updatedData);
         if (response.status === 200) {
@@ -82,6 +84,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                     <FontAwesomeIcon
                       icon={faEdit}
                       className={styles.editbutton}
+                      aria-label="Edit first name"
                       onClick={() => enableEdit({ ...editFlag, first: 0 })}
                     />
                   );
@@ -90,6 +93,7 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
                   <FontAwesomeIcon
                     icon={faSave}
                     className={styles.editbutton}
+                    aria-label="Save first name"
                     onClick={() => disableEdit({ ...editFlag, first: 1 })}
                   />
                 );
