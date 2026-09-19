@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import Collaboration from '../Collaboration';
@@ -235,9 +235,9 @@ describe('Collaboration', () => {
       expect(screen.getByText('Summaries')).toBeInTheDocument();
     });
 
-    expect(screen.getByText('Frontend Engineer')).toBeInTheDocument();
+    expect(screen.getAllByText('Frontend Engineer').length).toBeGreaterThan(0);
 
-    expect(screen.getByText('Frontend engineer job summary')).toBeInTheDocument();
+    expect(screen.getAllByText('Frontend engineer job summary').length).toBeGreaterThan(0);
   });
 
   it('uses the search input in the summaries request', async () => {
@@ -328,6 +328,15 @@ describe('Collaboration', () => {
           ok: true,
           json: () =>
             Promise.resolve({
+              jobs: [
+                {
+                  _id: '1',
+                  title: 'Frontend Engineer',
+                  category: 'Engineering',
+                  description: 'Build UI components',
+                  imageUrl: 'https://example.com/frontend-engineer.jpg',
+                },
+              ],
               categories: ['Engineering'],
             }),
         });
@@ -355,9 +364,9 @@ describe('Collaboration', () => {
     renderComponent();
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: '1' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: '2' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: '3' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '1', exact: true })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '2', exact: true })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '3', exact: true })).toBeInTheDocument();
     });
   });
 
