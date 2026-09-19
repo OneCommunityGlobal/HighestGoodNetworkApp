@@ -44,6 +44,8 @@ function TopCommunityMembers() {
         });
         setMembers(Array.isArray(response?.data) ? response.data : []);
       } catch (error) {
+        // Network/API errors fall back to an empty list; the table already renders
+        // a "No members found" state, so no separate error UI is needed here.
         setMembers([]);
       }
     };
