@@ -23,15 +23,11 @@ import {
   prepareQuestionClone,
   normalizeLoadedQuestions,
   isDuplicateQuestion,
+  numberedQuestionLabel,
+  stripLeadingQuestionNumber,
 } from './jobFormQuestionUtils';
 
 import { permissions } from '../../utils/constants';
-
-/** Strip a numbering prefix (e.g. "2.) ") baked into saved question text so the
- * displayed number can be recomputed from the question's current position. */
-function stripLeadingQuestionNumbering(raw) {
-  return String(raw || '').replace(/^\d+\.?\)\s*/, '');
-}
 
 function JobFormBuilder() {
   const dispatch = useDispatch();
@@ -230,7 +226,7 @@ function JobFormBuilder() {
   const editField = (field, index) => {
     // Transform the field structure to match what QuestionEditModal expects
     const questionForEdit = {
-      label: field.questionText,
+      label: stripLeadingQuestionNumber(field.questionText),
       type: field.questionType,
       options: field.options,
       required: isFieldRequired(field),
@@ -497,7 +493,7 @@ function JobFormBuilder() {
                     />
                     <div className={styles.formField}>
                       <label className={`${styles.fieldLabel} ${styles.jbformLabel}`}>
-                        {`${index + 1}.) ${stripLeadingQuestionNumbering(field.questionText)}`}
+                        {numberedQuestionLabel(field.questionText, index)}
                         {isFieldRequired(field) && (
                           <span className={styles.requiredMark} aria-hidden="true">
                             {' '}
