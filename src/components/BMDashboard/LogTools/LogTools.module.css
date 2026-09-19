@@ -185,7 +185,7 @@
 /* Dark Mode */
 :global(.dark-mode) .logFormContainer {
   background-color: #2b2b2b;
-  color: #ffffff !important;
+  color: #fff !important;
   border-color: #444 !important;
 }
 
@@ -200,7 +200,7 @@
 
 :global(body.dark-mode) .logFormContainer {
   background-color: #1b2a41;
-  color: #ffffff;
+  color: #fff;
   border-color: #444;
 }
 

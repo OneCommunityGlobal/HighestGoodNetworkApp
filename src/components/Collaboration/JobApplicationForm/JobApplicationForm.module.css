@@ -71,8 +71,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
   appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
+  appearance: none;
+  appearance: none;
   background-image: url("data:image/svg+xml;utf8,<svg fill='%23666' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
   background-repeat: no-repeat;
   background-position: right 10px center;
@@ -905,6 +905,7 @@
     grid-column: auto;
   }
 }
+
 /* User Requirements Section */
 .userRequirementsSection {
   margin: 20px 0;

@@ -15,7 +15,7 @@
   gap: 0.75rem;
   padding: 1rem;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
   background-color: white;
   border: 1px solid #e5e7eb;
   animation: slideIn 0.3s ease-out;
@@ -27,6 +27,7 @@
     transform: translateX(100%);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;
@@ -36,7 +37,7 @@
 .toastDark {
   background-color: #1f2937;
   border-color: #374151;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
 }
 
 .toastIcon {
@@ -109,7 +110,7 @@
   color: #f3f4f6;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .toastContainer {
     left: 1rem;
     right: 1rem;
