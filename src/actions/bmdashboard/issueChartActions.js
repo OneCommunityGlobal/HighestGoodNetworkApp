@@ -51,13 +51,10 @@ const formatFilters = ({ projectIds, startDate, endDate } = {}) => {
     (typeof projectIds === 'string' && projectIds.trim() !== '') ||
     (Array.isArray(projectIds) && projectIds.length > 0)
   ) {
-    formatted.projectIds = Array.isArray(projectIds) ? projectIds.join(',') : projectIds.trim();
+    formatted.projects = Array.isArray(projectIds) ? projectIds.join(',') : projectIds.trim();
   }
-  if (startDate !== undefined && startDate !== '') {
-    formatted.startDate = startDate;
-  }
-  if (endDate !== undefined && endDate !== '') {
-    formatted.endDate = endDate;
+  if (startDate !== undefined && startDate !== '' && endDate !== undefined && endDate !== '') {
+    formatted.dates = `${startDate},${endDate}`;
   }
   return formatted;
 };

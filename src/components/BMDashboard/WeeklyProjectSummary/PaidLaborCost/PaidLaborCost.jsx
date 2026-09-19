@@ -40,11 +40,18 @@ const barValueLabelPlugin = {
       const meta = chart.getDatasetMeta(datasetIndex);
       if (meta.hidden) return;
 
+      const barCount = meta.data.filter((_, i) => dataset.data[i]).length;
+      // Skip per-bar labels when bars are too dense to render them legibly;
+      // the tooltip still shows exact values on hover.
+      if (barCount > 4) return;
+
       meta.data.forEach((bar, index) => {
         const value = dataset.data[index];
         if (!value) return;
 
-        const label = `$${(value * 1000).toLocaleString()}`;
+        const dollars = value * 1000;
+        const label =
+          dollars >= 1000 ? `$${(dollars / 1000).toFixed(1).replace('.0', '')}k` : `$${dollars}`;
         const { x, y, base } = bar.getProps(['x', 'y', 'base'], true);
 
         const barHeight = Math.abs(base - y);
@@ -361,26 +368,23 @@ const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode) => {
 const buildChartOptions = (textColor, darkMode) => ({
   responsive: true,
   maintainAspectRatio: false,
-  layout: { padding: { top: 35, left: 15, right: 15, bottom: 10 } },
+  layout: { padding: { top: 20, left: 15, right: 15, bottom: 10 } },
   plugins: {
     barValueLabelPlugin: { darkMode },
     legend: {
       position: 'top',
-      labels: { font: { size: 12 }, color: textColor, padding: 20, usePointStyle: true },
-    },
-    datalabels: {
-      anchor: 'end',
-      align: 'top',
-      offset: 2,
-      color: darkMode ? '#ffffff' : '#333333',
-      font: { weight: '600', size: 11 },
-      textStrokeColor: darkMode ? '#1e293b' : '#ffffff',
-      textStrokeWidth: 3,
-      formatter: value => {
-        if (!value) return '';
-        return value >= 1000 ? `$${(value / 1000).toFixed(1).replace('.0', '')}k` : `$${value}`;
+      align: 'start',
+      labels: {
+        font: { size: 12 },
+        color: textColor,
+        padding: 12,
+        boxWidth: 12,
+        usePointStyle: true,
       },
     },
+    // chartjs-plugin-datalabels is registered globally by a sibling chart; disable it
+    // here so the custom barValueLabelPlugin is the only source of bar labels.
+    datalabels: { display: false },
     tooltip: {
       backgroundColor: darkMode ? '#1e293b' : '#ffffff',
       titleColor: darkMode ? '#f8fafc' : '#0f172a',
@@ -399,7 +403,13 @@ const buildChartOptions = (textColor, darkMode) => ({
   scales: {
     x: {
       grid: { display: false },
-      ticks: { font: { size: 12 }, color: textColor },
+      ticks: {
+        font: { size: 12 },
+        color: textColor,
+        autoSkip: false,
+        maxRotation: 45,
+        minRotation: 0,
+      },
       offset: true,
     },
     y: {
@@ -495,6 +505,7 @@ export default function PaidLaborCost() {
 
   const chartData = { labels, datasets: taskDatasets };
   const options = useMemo(() => buildChartOptions(textColor, darkMode), [textColor, darkMode]);
+  const chartMinWidth = Math.max(400, taskDatasets.length * 90);
 
   if (initialLoading) {
     return (
@@ -599,13 +610,18 @@ export default function PaidLaborCost() {
       </div>
 
       <div className={styles.paidLaborCostChartWrapper}>
-        <div className={styles.paidLaborCostChartContainer}>
-          {labels.length === 0 ? (
-            <div className={styles.emptyState}>No data available for the selected filters.</div>
-          ) : (
-            <Bar data={chartData} options={options} plugins={[barValueLabelPlugin]} />
-          )}
-        </div>
+        {labels.length === 0 ? (
+          <div className={styles.emptyState}>No data available for the selected filters.</div>
+        ) : (
+          <div className={styles.paidLaborCostChartScrollWrapper}>
+            <div
+              className={styles.paidLaborCostChartContainer}
+              style={{ minWidth: `${chartMinWidth}px` }}
+            >
+              <Bar data={chartData} options={options} plugins={[barValueLabelPlugin]} />
+            </div>
+          </div>
+        )}
       </div>
 
       <div className={`${styles.summaryContainer} ${darkMode ? styles.darkSummaryContainer : ''}`}>

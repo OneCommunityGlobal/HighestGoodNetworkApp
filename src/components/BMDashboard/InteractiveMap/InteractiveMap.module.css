@@ -490,6 +490,48 @@
 }
 
 /* ----------------------------------
+   POPUP STATUS TEXT
+---------------------------------- */
+.statusActive,
+.statusDelayed,
+.statusCompleted,
+.statusDefault {
+  font-weight: 700;
+}
+
+.statusActive {
+  color: #b84040;
+}
+
+.statusDelayed {
+  color: #8a6d00;
+}
+
+.statusCompleted {
+  color: #1a8fa0;
+}
+
+.statusDefault {
+  color: #666;
+}
+
+.darkPage .statusActive {
+  color: #ff8a80;
+}
+
+.darkPage .statusDelayed {
+  color: #ffd166;
+}
+
+.darkPage .statusCompleted {
+  color: #5ee2f0;
+}
+
+.darkPage .statusDefault {
+  color: #ccc;
+}
+
+/* ----------------------------------
    POPUP BUTTON
 ---------------------------------- */
 .detailsButton {
