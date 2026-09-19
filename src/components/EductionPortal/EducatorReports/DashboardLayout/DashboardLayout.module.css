@@ -23,7 +23,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .dashboardLayout {
     flex-direction: column;
     margin-top: 0; /* Remove header spacing on mobile */
