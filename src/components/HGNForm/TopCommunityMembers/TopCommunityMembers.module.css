@@ -157,7 +157,8 @@
 .iconLink {
   color: #3182ce;
   transition: color 0.2s;
-  font-size: 0.875rem;
+  font-size: 18px;
+  margin: 0 5px;
 }
 
 .iconLink:hover {
@@ -291,7 +292,8 @@
 .iconLinkDark {
   color: #60a5fa;
   transition: color 0.2s;
-  font-size: 0.875rem;
+  font-size: 18px;
+  margin: 0 5px;
 }
 
 .iconLinkDark:hover {
