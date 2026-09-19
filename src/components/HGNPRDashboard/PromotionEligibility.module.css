@@ -101,7 +101,7 @@
   background-color: #121212;
 }
 
-.promo_table-container.dark .promo_table tr:hover {
+.promo_table_container.dark .promo_table tr:hover {
   background-color: #555;
 }
 
@@ -130,7 +130,7 @@
 }
 
 .promo_table_container.dark .review_btn,
-.promo-table_container.dark .process_promo_btn {
+.promo_table_container.dark .process_promo_btn {
   background-color: #3b82f6;
   color: white;
 }
@@ -184,4 +184,188 @@
   border-radius: 8px;
   cursor: pointer;
   font-size: 1.25rem;
+}
+
+.reviewDropdown {
+  display: inline-block;
+  margin-left: 0.5rem;
+}
+
+.darkDropdownMenu {
+  background-color: #2a2a2a;
+  color: #eaeaea;
+}
+
+/* Bootstrap's default .dropdown-item hover/focus background is light grey (#f8f9fa),
+   which is unreadable against the dark menu's near-white text. */
+.darkDropdownMenu :global(.dropdown-item):hover,
+.darkDropdownMenu :global(.dropdown-item):focus,
+.darkDropdownMenu :global(.dropdown-item):active {
+  background-color: #3b3b3b;
+  color: #fff;
+}
+
+.darkDropdownMenu .addGroupButton {
+  color: #eaeaea;
+}
+
+.darkDropdownMenu .addGroupButton:hover {
+  background-color: #3b3b3b;
+}
+
+.groupMenuRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.5rem;
+}
+
+.editGroupButton {
+  background: none;
+  border: none;
+  color: #2563eb;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+/* A global app-wide rule (`body.dark-mode * { color: white !important; }`) forces every
+   element's text white in dark mode. Since it's `!important`, no amount of selector
+   specificity beats it — this needs `!important` too, not just the two-class scoping. */
+.darkDropdownMenu .editGroupButton {
+  color: #60a5fa !important;
+}
+
+.addGroupButton {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0.5rem 1.25rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.addGroupButton:hover {
+  background-color: #f0f0f0;
+}
+
+.groupForm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.5rem;
+  align-items: center;
+}
+
+.groupFormInput {
+  flex: 1;
+  min-width: 100px;
+  padding: 0.25rem 0.4rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.groupFormLetterInput {
+  width: 2.5rem;
+  padding: 0.25rem 0.4rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.groupFormSave {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+}
+
+.groupFormCancel {
+  background-color: #6b7280;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+}
+
+.prsNeededDisplay {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.prsNeededEditTrigger {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: #2563eb;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Same global `body.dark-mode * { color: white !important; }` rule as the rest of this
+   file's dark-mode fixes — needs `!important` to actually show as blue, not just a
+   higher-specificity selector. */
+.promo_table_container.dark .prsNeededEditTrigger {
+  color: #60a5fa !important;
+}
+
+.prsNeededReset {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.promo_table_container.dark .prsNeededReset {
+  color: #cbd5e1 !important;
+}
+
+.committedHoursIndicator {
+  color: #f59e0b;
+  cursor: help;
+}
+
+.promo_table_container.dark .committedHoursIndicator {
+  color: #fbbf24 !important;
+}
+
+.prsNeededEditRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.prsNeededInput {
+  width: 3.5rem;
+  padding: 0.15rem 0.3rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.prsNeededSave {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.2rem 0.4rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.prsNeededCancel {
+  background-color: #6b7280;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.2rem 0.4rem;
+  cursor: pointer;
+  font-size: 0.8rem;
 }

@@ -1,11 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { FaCheck } from 'react-icons/fa';
-import { getPromotionEligibility, postPromotionEligibility } from '../../actions/promotionActions';
+import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import {
+  getPromotionEligibility,
+  postPromotionEligibility,
+  getReviewerGroups,
+  createReviewerGroup,
+  updateReviewerGroup,
+  updatePrsNeeded,
+  previewPromotions,
+} from '../../actions/promotionActions';
+import ReviewForThisWeekModal from './ReviewForThisWeekModal';
+import PromotionConfirmationModal from './PromotionConfirmationModal';
 import styles from './PromotionEligibility.module.css';
 import { useSelector } from 'react-redux';
 
-function PromotionEligibility({ currentUser }) {
+function PromotionEligibility({ currentUser: currentUserProp }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reviewers, setReviewers] = useState([]);
@@ -15,7 +26,41 @@ function PromotionEligibility({ currentUser }) {
 
   const [selectGroup, setSelectedGroup] = useState('new');
 
+  const [reviewDropdownOpen, setReviewDropdownOpen] = useState(false);
+  const [reviewerGroups, setReviewerGroups] = useState([]);
+  const [activeReviewGroup, setActiveReviewGroup] = useState(null);
+  const [editingGroupKey, setEditingGroupKey] = useState(null);
+  const [groupForm, setGroupForm] = useState({ label: '', rangeStart: '', rangeEnd: '' });
+  const [addingGroup, setAddingGroup] = useState(false);
+
+  const [editingPrsNeededId, setEditingPrsNeededId] = useState(null);
+  const [prsNeededDraft, setPrsNeededDraft] = useState('');
+
+  // { memberIds, placements, warnings } once a preview has loaded, so the confirmation
+  // modal can render; null closes it.
+  const [pendingPromotion, setPendingPromotion] = useState(null);
+  const [confirmingPromotion, setConfirmingPromotion] = useState(false);
+
   const darkMode = useSelector(state => state.theme.darkMode);
+  // `routes.jsx` never passes a `currentUser` prop to this route, so this falls back
+  // to the logged-in user from Redux. The backend derives the real requestor from the
+  // auth token regardless of what is sent, but the frontend still needs the real role
+  // to decide whether to show Owner-only controls (group edit/add, PRs Needed edit).
+  const authUser = useSelector(state => state.auth?.user);
+  // Memoized on the primitive fields, not the whole authUser object, so this stays
+  // referentially stable across renders — an inline object literal here would change
+  // identity every render and re-trigger every effect keyed on `currentUser`.
+  const derivedUser = useMemo(
+    () => ({
+      requestorId: authUser?.userid,
+      role: authUser?.role,
+      email: authUser?.email,
+    }),
+    [authUser?.userid, authUser?.role, authUser?.email],
+  );
+  const currentUser = currentUserProp || derivedUser;
+
+  const isOwner = currentUser?.role === 'Owner';
 
   useEffect(() => {
     (async () => {
@@ -42,9 +87,135 @@ function PromotionEligibility({ currentUser }) {
     })();
   }, []);
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await getReviewerGroups(currentUser);
+        setReviewerGroups(res.groups || []);
+      } catch (e) {
+        const message = e?.response?.data;
+        toast.error(typeof message === 'string' ? message : 'Failed to load reviewer groups.');
+      }
+    })();
+  }, [currentUser]);
+
   const newMembers = reviewers.filter(r => r.isNewMember);
   const existingMembers = reviewers.filter(r => !r.isNewMember);
   const filteredMemebers = selectGroup === 'new' ? newMembers : existingMembers;
+
+  const handleSelectReviewGroup = group => {
+    setActiveReviewGroup(group);
+    setReviewDropdownOpen(false);
+  };
+
+  const startEditGroup = group => {
+    setEditingGroupKey(group.key);
+    setAddingGroup(false);
+    setGroupForm({
+      label: group.label,
+      rangeStart: group.rangeStart || '',
+      rangeEnd: group.rangeEnd || '',
+    });
+  };
+
+  const startAddGroup = () => {
+    setAddingGroup(true);
+    setEditingGroupKey(null);
+    setGroupForm({ label: '', rangeStart: '', rangeEnd: '' });
+  };
+
+  const cancelGroupForm = () => {
+    setEditingGroupKey(null);
+    setAddingGroup(false);
+  };
+
+  const submitGroupForm = async e => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    try {
+      if (addingGroup) {
+        const res = await createReviewerGroup(currentUser, groupForm);
+        setReviewerGroups(prev => [...prev, res.group]);
+        toast.success(`Added group ${res.group.label}.`);
+      } else if (editingGroupKey) {
+        const res = await updateReviewerGroup(currentUser, editingGroupKey, groupForm);
+        setReviewerGroups(prev =>
+          prev.map(group => (group.key === editingGroupKey ? res.group : group)),
+        );
+        toast.success(`Updated group ${res.group.label}.`);
+      }
+      cancelGroupForm();
+    } catch (err) {
+      const message = err?.response?.data;
+      toast.error(typeof message === 'string' ? message : 'Failed to save reviewer group.');
+    }
+  };
+
+  const startEditPrsNeeded = (id, currentValue) => {
+    setEditingPrsNeededId(id);
+    setPrsNeededDraft(String(currentValue));
+  };
+
+  const cancelEditPrsNeeded = () => {
+    setEditingPrsNeededId(null);
+    setPrsNeededDraft('');
+  };
+
+  const prsNeededErrorMessage = (err, fallback) => {
+    const message = err?.response?.data;
+    return typeof message === 'string' ? message : fallback;
+  };
+
+  const handleSavePrsNeeded = async id => {
+    const value = Number(prsNeededDraft);
+    if (!Number.isInteger(value) || value < 0) {
+      toast.error('PRs Needed must be a non-negative whole number.');
+      return;
+    }
+
+    try {
+      const updated = await updatePrsNeeded(currentUser, id, value);
+      setReviewers(prev =>
+        prev.map(r =>
+          r.id === id
+            ? {
+                ...r,
+                requiredPRs: updated.requiredPRs ?? value,
+                prsNeeded: updated.prsNeeded ?? value,
+                prsNeededSource: updated.prsNeededSource,
+                committedHoursChanged: updated.committedHoursChanged,
+              }
+            : r,
+        ),
+      );
+      cancelEditPrsNeeded();
+      toast.success('Updated PRs Needed.');
+    } catch (err) {
+      toast.error(prsNeededErrorMessage(err, 'Failed to update PRs Needed.'));
+    }
+  };
+
+  // Per the spec, an override replaces the committed-hours check entirely. Clearing it
+  // hands the reviewer back to the bands, but the backend deliberately leaves the stored
+  // figure alone ("leaves prsNeeded alone so the next load recalculates it from committed
+  // hours") rather than recomputing it here, so the displayed number only updates on the
+  // next full reload — reflected honestly rather than guessed at.
+  const handleResetPrsNeeded = async id => {
+    try {
+      const updated = await updatePrsNeeded(currentUser, id, null);
+      setReviewers(prev =>
+        prev.map(r =>
+          r.id === id
+            ? { ...r, prsNeededSource: updated.prsNeededSource, committedHoursChanged: false }
+            : r,
+        ),
+      );
+      toast.success('Reset to automatic. Reload the page to see the recalculated figure.');
+    } catch (err) {
+      toast.error(prsNeededErrorMessage(err, 'Failed to reset PRs Needed.'));
+    }
+  };
 
   const toggleSelectPromotion = id => {
     setSelectedForPromotion(prev => {
@@ -83,18 +254,36 @@ function PromotionEligibility({ currentUser }) {
         return;
       }
 
-      await postPromotionEligibility(
-        eligible.map(r => r.id),
-        currentUser,
-      );
-      toast.success(`Successfully promoted ${eligible.length} reviewer(s).`);
+      const memberIds = eligible.map(r => r.id);
+      const { placements, warnings } = await previewPromotions(memberIds, currentUser);
+      setPendingPromotion({ memberIds, placements, warnings });
+    } catch (err) {
+      const message = err?.response?.data;
+      toast.error(typeof message === 'string' ? message : 'Failed to preview promotions.');
+    } finally {
+      setProcessing(false);
+    }
+  };
 
-      setReviewers(prev => prev.filter(r => !eligible.map(e => e.id).includes(r.id)));
+  const cancelPromotionConfirmation = () => {
+    setPendingPromotion(null);
+  };
+
+  const confirmPromotion = async finalPlacements => {
+    if (!pendingPromotion) return;
+
+    setConfirmingPromotion(true);
+    try {
+      await postPromotionEligibility(pendingPromotion.memberIds, currentUser, finalPlacements);
+      toast.success(`Successfully promoted ${pendingPromotion.memberIds.length} reviewer(s).`);
+
+      setReviewers(prev => prev.filter(r => !pendingPromotion.memberIds.includes(r.id)));
       setSelectedForPromotion(new Set());
+      setPendingPromotion(null);
     } catch (err) {
       toast.error('Failed to process promotions.');
     } finally {
-      setProcessing(false);
+      setConfirmingPromotion(false);
     }
   };
 
@@ -103,6 +292,8 @@ function PromotionEligibility({ currentUser }) {
     reviewerName,
     weeklyRequirementsMet,
     requiredPRs,
+    prsNeededSource,
+    committedHoursChanged,
     totalReviews,
     remainingWeeks,
     promoteEligible,
@@ -115,7 +306,62 @@ function PromotionEligibility({ currentUser }) {
       >
         {weeklyRequirementsMet ? '✓ Has Met' : '✗ Has not Met'}
       </td>
-      <td data-label="Required PRs">{requiredPRs}</td>
+      <td data-label="Required PRs">
+        {isOwner && editingPrsNeededId === id ? (
+          <span className={styles.prsNeededEditRow}>
+            <input
+              type="number"
+              min="0"
+              value={prsNeededDraft}
+              onChange={e => setPrsNeededDraft(e.target.value)}
+              className={styles.prsNeededInput}
+            />
+            <button
+              type="button"
+              onClick={() => handleSavePrsNeeded(id)}
+              className={styles.prsNeededSave}
+            >
+              Save
+            </button>
+            <button type="button" onClick={cancelEditPrsNeeded} className={styles.prsNeededCancel}>
+              Cancel
+            </button>
+          </span>
+        ) : (
+          <span className={styles.prsNeededDisplay}>
+            {isOwner ? (
+              <button
+                type="button"
+                className={styles.prsNeededEditTrigger}
+                onClick={() => startEditPrsNeeded(id, requiredPRs)}
+                title="Edit PRs Needed"
+              >
+                {requiredPRs}
+              </button>
+            ) : (
+              requiredPRs
+            )}
+            {isOwner && prsNeededSource === 'ownerOverride' && (
+              <button
+                type="button"
+                className={styles.prsNeededReset}
+                onClick={() => handleResetPrsNeeded(id)}
+                title="Reset to automatic (based on committed hours)"
+              >
+                ↺
+              </button>
+            )}
+            {committedHoursChanged && (
+              <span
+                className={styles.committedHoursIndicator}
+                title="Committed hours changed since this was last calculated"
+              >
+                ●
+              </span>
+            )}
+          </span>
+        )}
+      </td>
       <td data-label="Total Reviews Done">{totalReviews}</td>
       <td data-label="Remaining Weeks">{remainingWeeks}</td>
       <td data-label="Promote?">
@@ -137,7 +383,7 @@ function PromotionEligibility({ currentUser }) {
         >
           <div
             className={`${styles.custom_circular_checkbox} ${
-              selectedForPromotion.has(id) ? 'checked' : ''
+              selectedForPromotion.has(id) ? styles.checked : ''
             }`}
           >
             {selectedForPromotion.has(id) && <FaCheck className={styles.check_icon} />}
@@ -161,21 +407,93 @@ function PromotionEligibility({ currentUser }) {
               <option value="new">New Member</option>
               <option value="existing">Existing Member</option>
             </select>
-            <button
-              type="button"
-              onClick={() => toast.info('Review Weekly clicked. Logic not implemented yet.')}
-              disabled={processing}
-              className={styles.review_btn}
+            <Dropdown
+              isOpen={reviewDropdownOpen}
+              toggle={() => setReviewDropdownOpen(prev => !prev)}
+              className={styles.reviewDropdown}
             >
-              Review for this week
-            </button>
+              <DropdownToggle disabled={processing} className={styles.review_btn} caret>
+                Review for This Week
+              </DropdownToggle>
+              <DropdownMenu className={darkMode ? styles.darkDropdownMenu : ''}>
+                {reviewerGroups.map(group => (
+                  <div key={group.key} className={styles.groupMenuRow}>
+                    <DropdownItem onClick={() => handleSelectReviewGroup(group)}>
+                      {group.label}
+                    </DropdownItem>
+                    {isOwner && group.editable !== false && (
+                      <button
+                        type="button"
+                        className={styles.editGroupButton}
+                        onClick={e => {
+                          e.stopPropagation();
+                          startEditGroup(group);
+                        }}
+                      >
+                        Edit
+                      </button>
+                    )}
+                  </div>
+                ))}
+
+                {isOwner && (editingGroupKey || addingGroup) && (
+                  <form className={styles.groupForm} onSubmit={submitGroupForm}>
+                    <input
+                      type="text"
+                      placeholder="Group label"
+                      value={groupForm.label}
+                      onChange={e => setGroupForm(prev => ({ ...prev, label: e.target.value }))}
+                      className={styles.groupFormInput}
+                    />
+                    <input
+                      type="text"
+                      placeholder="A"
+                      maxLength={1}
+                      value={groupForm.rangeStart}
+                      onChange={e =>
+                        setGroupForm(prev => ({ ...prev, rangeStart: e.target.value }))
+                      }
+                      className={styles.groupFormLetterInput}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Z"
+                      maxLength={1}
+                      value={groupForm.rangeEnd}
+                      onChange={e => setGroupForm(prev => ({ ...prev, rangeEnd: e.target.value }))}
+                      className={styles.groupFormLetterInput}
+                    />
+                    <button type="submit" className={styles.groupFormSave}>
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.groupFormCancel}
+                      onClick={cancelGroupForm}
+                    >
+                      Cancel
+                    </button>
+                  </form>
+                )}
+
+                {isOwner && !editingGroupKey && !addingGroup && (
+                  // Plain button, not DropdownItem: reactstrap's DropdownItem always closes
+                  // the menu on click via its own internal context, regardless of
+                  // stopPropagation on this handler, which was closing the menu before the
+                  // add-group form ever got a chance to render.
+                  <button type="button" className={styles.addGroupButton} onClick={startAddGroup}>
+                    + Add Group
+                  </button>
+                )}
+              </DropdownMenu>
+            </Dropdown>
             <button
               type="button"
               onClick={handleProcessPromotions}
               disabled={processing}
               className={styles.process_promo_btn}
             >
-              {processing ? 'Processing...' : 'Process Promotions'}
+              {processing ? 'Loading preview...' : 'Process Promotions'}
             </button>
           </div>
         </div>
@@ -223,6 +541,27 @@ function PromotionEligibility({ currentUser }) {
           </table>
         </div>
       </div>
+
+      {activeReviewGroup && (
+        <ReviewForThisWeekModal
+          groupKey={activeReviewGroup.key}
+          groupLabel={activeReviewGroup.label}
+          currentUser={currentUser}
+          darkMode={darkMode}
+          onClose={() => setActiveReviewGroup(null)}
+        />
+      )}
+
+      {pendingPromotion && (
+        <PromotionConfirmationModal
+          placements={pendingPromotion.placements}
+          warnings={pendingPromotion.warnings}
+          darkMode={darkMode}
+          confirming={confirmingPromotion}
+          onCancel={cancelPromotionConfirmation}
+          onConfirm={confirmPromotion}
+        />
+      )}
     </div>
   );
 }
