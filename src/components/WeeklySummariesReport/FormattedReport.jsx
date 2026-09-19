@@ -43,9 +43,11 @@ import { assignStarDotColors, showStar } from '~/utils/leaderboardPermissions';
 import RoleInfoModal from '~/components/UserProfile/EditableModal/RoleInfoModal';
 import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
 import { ENDPOINTS } from '~/utils/URL';
+import { isQualifiedForBio } from '~/utils/bioQualification';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
-import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
+// import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch'; // Unused import removed
 import GoogleDocIcon from '../common/GoogleDocIcon';
+import TriStateToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch/TriStateToggleSwitch';
 import styles from './WeeklySummariesReport.module.scss';
 
 const TZ = 'America/Los_Angeles';
@@ -102,8 +104,8 @@ function FormattedReport({
   canSeeBioHighlight,
   darkMode,
   handleTeamCodeChange,
+  handleBioStatusChange,
   handleSpecialColorDotClick,
-  getWeeklySummariesReport,
 }) {
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission(permissions.totalValidWeeklySummaries));
@@ -169,10 +171,10 @@ function FormattedReport({
               canSeeBioHighlight={canSeeBioHighlight}
               darkMode={darkMode}
               handleTeamCodeChange={handleTeamCodeChange}
+              handleBioStatusChange={handleBioStatusChange}
               auth={auth}
               handleSpecialColorDotClick={handleSpecialColorDotClick}
               isFinalWeek={isFinalWeek}
-              getWeeklySummariesReport={getWeeklySummariesReport}
             />
           );
         })}
@@ -288,9 +290,9 @@ function ReportDetails({
   loggedInUserEmail,
   darkMode,
   handleTeamCodeChange,
+  handleBioStatusChange,
   auth,
   handleSpecialColorDotClick,
-  getWeeklySummariesReport,
   isFinalWeek,
 }) {
   // eslint-disable-next-line no-console
@@ -309,11 +311,9 @@ function ReportDetails({
   const hoursLogged = ((totalSecondsArray[weekIndex] || 0) / 3600).toFixed(2);
   const promisedHours = promisedHoursArray[weekIndex] ?? 0;
 
-  const isMeetCriteria =
-    canSeeBioHighlight &&
-    summary.totalTangibleHrs > 80 &&
-    summary.weeklySummariesCount >= 8 &&
-    summary.bioPosted !== 'posted';
+  // No bar for anyone unqualified, whatever the toggle says. 'default' and 'requested'
+  // both count as "still to do"; only 'posted' ends the workflow and clears the bar.
+  const isMeetCriteria = canSeeBioHighlight && isQualifiedForBio(summary);
 
   return (
     <li
@@ -343,13 +343,15 @@ function ReportDetails({
               padding: '6px 12px 6px 0px',
             }}
           >
+            {/* Dev-admin protected records stay read-only here, same as team code and
+                summary count below — they fall through to BioLabel instead of the toggle. */}
             <Bio
               bioCanEdit={bioCanEdit && !cantEditJaeRelatedRecord}
               userId={summary._id}
               bioPosted={summary.bioPosted}
               summary={summary}
-              getWeeklySummariesReport={getWeeklySummariesReport}
               isMeetCriteria={isMeetCriteria}
+              onBioStatusChange={handleBioStatusChange}
             />
           </div>
         </ListGroupItem>
@@ -368,7 +370,6 @@ function ReportDetails({
                 summary={summary}
                 handleTeamCodeChange={handleTeamCodeChange}
                 darkMode={darkMode}
-                getWeeklySummariesReport={getWeeklySummariesReport}
               />
             </ListGroupItem>
 
@@ -507,13 +508,7 @@ function WeeklySummaryMessage({ summary, weekIndex, darkMode }) {
   );
 }
 
-function TeamCodeRow({
-  canEditTeamCode,
-  summary,
-  handleTeamCodeChange,
-  darkMode,
-  getWeeklySummariesReport,
-}) {
+function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode }) {
   const [teamCode, setTeamCode] = useState(summary.teamCode);
   const [savedTeamCode, setSavedTeamCode] = useState(summary.teamCode);
   const [hasError, setHasError] = useState(false);
@@ -692,7 +687,7 @@ function Bio({ bioCanEdit, ...props }) {
   return bioCanEdit ? <BioSwitch {...props} /> : <BioLabel {...props} />;
 }
 
-function BioSwitch({ userId, bioPosted, summary, getWeeklySummariesReport }) {
+function BioSwitch({ userId, bioPosted, summary, onBioStatusChange }) {
   const [bioStatus, setBioStatus] = useState(bioPosted);
   const dispatch = useDispatch();
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
@@ -703,49 +698,40 @@ function BioSwitch({ userId, bioPosted, summary, getWeeklySummariesReport }) {
   }, [bioPosted]);
 
   // eslint-disable-next-line no-shadow
-  const handleChangeBioPosted = async (userId, bioStatus) => {
-    const res = await dispatch(toggleUserBio(userId, bioStatus));
-    if (res.status === 200) {
-      toast.success('You have changed the bio announcement status of this user.');
+  const handleChangeBioPosted = async newBioStatus => {
+    // The knob has already moved by the time this runs, so on any failure put it back —
+    // otherwise it sits on a status the server never accepted.
+    const previousStatus = bioStatus;
+    setBioStatus(newBioStatus);
 
-      // Force refresh the weekly summaries data to get updated bio status
-      try {
-        const currentTab = sessionStorage.getItem('tabSelection') || 'Last Week';
-        const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
-        const weekIndex = navItems.indexOf(currentTab);
-
-        // Force refresh with the current week index using direct API call with forceRefresh
-        if (weekIndex >= 0) {
-          const { ENDPOINTS } = await import('~/utils/URL');
-          const url = `${ENDPOINTS.WEEKLY_SUMMARIES_REPORT()}?week=${weekIndex}&forceRefresh=true`;
-
-          const response = await axios.get(url);
-          if (response.status === 200 && getWeeklySummariesReport) {
-            // Use the existing function to process and update the data
-            await getWeeklySummariesReport(weekIndex);
-          }
-        }
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.warn('Failed to refresh weekly summaries after bio update:', error);
+    try {
+      const res = await dispatch(toggleUserBio(userId, newBioStatus));
+      if (res.status !== 200) {
+        setBioStatus(previousStatus);
+        return;
       }
+      // toggleUserBio already toasts and updates the Redux store. The report list is local
+      // component state, so tell the parent separately — that is what hides the yellow bar
+      // and drops the user out of the Bio Status filter, with no refetch needed.
+      if (onBioStatusChange) {
+        onBioStatusChange(userId, newBioStatus);
+      }
+    } catch (error) {
+      // toggleUserBio has already shown the user an error toast, so there is nothing more
+      // to report here — just undo the optimistic move and log for diagnostics.
+      setBioStatus(previousStatus);
+      // eslint-disable-next-line no-console
+      console.warn('Failed to update bio status:', error);
     }
   };
 
   return (
-    <div>
-      <div className={styles.bioToggle}>
-        <b>Bio announcement:</b>
-      </div>
-      <div className={styles.bioToggle}>
-        <ToggleSwitch
-          switchType="bio"
-          state={bioStatus}
-          handleUserProfile={bio => {
-            setBioStatus(bio);
-            handleChangeBioPosted(userId, bio);
-          }}
-        />
+    <div className={styles.bioToggleContainer}>
+      <b style={style}>Bio announcement:</b>
+      <div className={styles.bioToggleWrapper}>
+        <span className={styles.toggleLabel}>posted</span>
+        <TriStateToggleSwitch pos={bioStatus || 'default'} onChange={handleChangeBioPosted} />
+        <span className={styles.toggleLabel}>requested</span>
       </div>
     </div>
   );

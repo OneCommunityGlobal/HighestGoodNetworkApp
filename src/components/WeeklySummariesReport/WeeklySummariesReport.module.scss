@@ -3,8 +3,34 @@
   background-color: #f6f6f3;
 }
 
+.bioToggleContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.bioToggleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  justify-content: center;
+}
+
 .bioToggle {
-  display: inline-block;
+  display: inline-flex;
+  margin: 0;
+  
+  button {
+    margin-top: 0;
+  }
+}
+
+.toggleLabel {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+  white-space: nowrap;
 }
 
 .nameInfo {
