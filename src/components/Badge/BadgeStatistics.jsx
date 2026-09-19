@@ -10,6 +10,7 @@ import {
   Label,
   Button,
 } from 'reactstrap';
+import styles from './BadgeStatistics.module.css';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -68,14 +69,44 @@ function BadgeStatistics({ allBadgeData = [], darkMode }) {
   const chartOptions = {
     maintainAspectRatio: false,
     responsive: true,
+    layout: {
+      padding: 20,
+    },
     plugins: {
+      datalabels: {
+        color: '#ffffff',
+        font: {
+          weight: 'bold',
+          size: 14,
+        },
+        display: function(context) {
+          return context.dataset.data[context.dataIndex] > 0;
+        },
+      },
+
       legend: {
         position: 'right',
         labels: {
-          color: darkMode ? '#fff' : '#374151',
-          font: { size: 14, family: 'Inter, sans-serif' },
-          padding: 20,
+          font: { size: 13, family: 'Inter, sans-serif' },
+          padding: 15,
           usePointStyle: true,
+          generateLabels: chart => {
+            const datasets = chart.data.datasets;
+            return chart.data.labels.map((label, i) => {
+              const maxLength = 24;
+              const truncatedLabel =
+                label.length > maxLength ? label.slice(0, maxLength) + '...' : label;
+
+              return {
+                text: truncatedLabel,
+                fontColor: darkMode ? '#ffffff' : '#374151',
+                fillStyle: datasets[0].backgroundColor[i],
+                strokeStyle: datasets[0].backgroundColor[i],
+                hidden: !chart.getDataVisibility(i),
+                index: i,
+              };
+            });
+          },
         },
       },
       tooltip: {
@@ -116,22 +147,32 @@ function BadgeStatistics({ allBadgeData = [], darkMode }) {
               ? `${selectedBadges.length} Badge${selectedBadges.length > 1 ? 's' : ''} Selected`
               : 'Select Badges'}
           </DropdownToggle>
-          <DropdownMenu style={{ maxHeight: '300px', overflowY: 'auto' }}>
+          <DropdownMenu
+            className={darkMode ? 'bg-dark border-secondary' : ''}
+            style={{ maxHeight: '300px', overflowY: 'auto' }}
+          >
             {allBadgeData.map(badge => {
               const isChecked = selectedBadges.includes(badge._id);
               const isDisabled = !isChecked && selectedBadges.length >= 10;
 
               return (
-                <DropdownItem key={badge._id} toggle={false} tag="div" className="p-">
+                <DropdownItem
+                  key={badge._id}
+                  toggle={false}
+                  tag="div"
+                  className={`pl-2 ${styles.badgeDropdownItem} ${darkMode ? styles.dark : ''}`}
+                >
                   <label
                     className="d-flex align-items-center w-100 px-3 py-2 m-0"
-                    style={{ cursor: isDisabled ? 'not-allowed' : 'pointer' }}
+                    style={{
+                      cursor: isDisabled ? 'not-allowed' : 'pointer',
+                      color: darkMode ? '#E5E7EB' : '#1F2937',
+                    }}
                   >
                     <Input
                       type="checkbox"
                       checked={isChecked}
                       onChange={() => handleBadgeSelect(badge._id)}
-                      className="mr-2 my-0"
                       disabled={isDisabled}
                     />
                     {badge.badgeName}
@@ -183,7 +224,7 @@ function BadgeStatistics({ allBadgeData = [], darkMode }) {
             >
               Badge Assignment Distribution
             </h4>
-            <div style={{ height: '400px', position: 'relative', overflowY: 'auto' }}>
+            <div style={{ height: '400px', position: 'relative', overflowY: 'visible' }}>
               <Pie ref={chartRef} data={chartData} options={chartOptions} />
             </div>
           </div>

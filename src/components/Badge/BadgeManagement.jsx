@@ -6,7 +6,6 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import AssignBadge from './AssignBadge';
 import BadgeDevelopment from './BadgeDevelopment';
-import BadgeStatistics from './BadgeStatistics';
 import { fetchAllBadges, setActiveTab } from '../../actions/badgeManagement';
 import { permissions as permissionKeys } from '../../utils/constants';
 import hasPermission from '../../utils/permissions';
