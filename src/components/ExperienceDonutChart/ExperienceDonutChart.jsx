@@ -44,6 +44,86 @@ function Spinner() {
   );
 }
 
+function DetailsPanel({ chartData, total, activeIndex }) {
+  if (!chartData || total === 0) return null;
+
+  return (
+    <div className={styles['chart-details']}>
+      {chartData.map((d, idx) => {
+        const pct = total > 0 ? ((d.value / total) * 100).toFixed(1) : 0;
+        return (
+          <div
+            key={d.name}
+            className={`${styles['detail-item']} ${activeIndex === idx ? styles.active : ''}`}
+          >
+            <div className={styles['detail-header']}>
+              <span className={styles['detail-dot']} style={{ backgroundColor: d.color }} />
+              <span className={styles['detail-name']}>{d.name}</span>
+            </div>
+            <div className={styles['detail-stats']}>
+              <div className={styles['detail-stats-count']}>
+                <span className={styles['detail-count']}>{d.value.toLocaleString()}</span>
+                <span className={styles['detail-applicant-label']}>
+                  {' '}
+                  applicant{d.value > 0 && 's'}
+                </span>
+              </div>
+              <span className={styles['detail-pct']}>{pct}%</span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function CustomTooltip({ active, payload, total }) {
+  if (!active || !payload?.length) return null;
+  const d = payload[0]?.payload;
+  const pct = total > 0 ? ((d.value / total) * 100).toFixed(1) : 0;
+
+  return (
+    <div className={styles['custom-tooltip']}>
+      <div className={styles['custom-tooltip-name']}>{d.name}</div>
+      <div className={styles['custom-tooltip-stats']}>
+        <div className={styles['custom-tooltip-applicant']}>
+          <span>Applicants:</span> <strong>{d.value}</strong>
+        </div>
+        <div className={styles['custom-tooltip-percentage']}>
+          <span>% of applicants:</span> <strong>{pct}%</strong>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SelectedRoleValue(props) {
+  const { index, getValue, children, ...rest } = props;
+  const allSelected = getValue();
+  const isOverflowPill = index === 1 && allSelected.length > 1;
+  if (!isOverflowPill && index > 0) return null;
+  const pillClasses = `${styles.selectedPill}`;
+  if (isOverflowPill) {
+    const overflowCount = allSelected.length - 1;
+    return (
+      <div className={pillClasses}>
+        + {overflowCount} role{overflowCount === 1 ? '' : 's'} selected
+      </div>
+    );
+  }
+  return (
+    <div className={pillClasses} {...rest}>
+      {children}
+    </div>
+  );
+}
+
+function SelectedRoleRemove(props) {
+  const { index, getValue } = props;
+  if (index === 0 && getValue().length > 1) return null;
+  return <components.MultiValueRemove {...props} />;
+}
+
 export default function ExperienceDonutChart() {
   const [dateRange, setDateRange] = useState({
     start: null,
@@ -151,59 +231,6 @@ export default function ExperienceDonutChart() {
     setAppliedFilters({ startDate: '', endDate: '', roles: [] });
   };
 
-  const DetailsPanel = () => {
-    if (!chartData || total === 0) return null;
-
-    return (
-      <div className={styles['chart-details']}>
-        {chartData.map((d, idx) => {
-          const pct = total > 0 ? ((d.value / total) * 100).toFixed(1) : 0;
-          return (
-            <div
-              key={d.name}
-              className={`${styles['detail-item']} ${activeIndex === idx ? styles.active : ''}`}
-            >
-              <div className={styles['detail-header']}>
-                <span className={styles['detail-dot']} style={{ backgroundColor: d.color }} />
-                <span className={styles['detail-name']}>{d.name}</span>
-              </div>
-              <div className={styles['detail-stats']}>
-                <div className={styles['detail-stats-count']}>
-                  <span className={styles['detail-count']}>{d.value.toLocaleString()}</span>
-                  <span className={styles['detail-applicant-label']}>
-                    {' '}
-                    applicant{d.value > 0 && 's'}
-                  </span>
-                </div>
-                <span className={styles['detail-pct']}>{pct}%</span>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
-
-  const CustomTooltip = ({ active, payload }) => {
-    if (!active || !payload?.length) return null;
-    const d = payload[0]?.payload;
-    const pct = total > 0 ? ((d.value / total) * 100).toFixed(1) : 0;
-
-    return (
-      <div className={styles['custom-tooltip']}>
-        <div className={styles['custom-tooltip-name']}>{d.name}</div>
-        <div className={styles['custom-tooltip-stats']}>
-          <div className={styles['custom-tooltip-applicant']}>
-            <span>Applicants:</span> <strong>{d.value}</strong>
-          </div>
-          <div className={styles['custom-tooltip-percentage']}>
-            <span>% of applicants:</span> <strong>{pct}%</strong>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -296,31 +323,8 @@ export default function ExperienceDonutChart() {
                 hideSelectedOptions={false}
                 menuPlacement="auto"
                 components={{
-                  MultiValue: props => {
-                    const { index, getValue, children, ...rest } = props;
-                    const allSelected = getValue();
-                    const isOverflowPill = index === 1 && allSelected.length > 1;
-                    if (!isOverflowPill && index > 0) return null;
-                    const pillClasses = `${styles.selectedPill}`;
-                    if (isOverflowPill) {
-                      const overflowCount = allSelected.length - 1;
-                      return (
-                        <div className={pillClasses}>
-                          + {overflowCount} role{overflowCount === 1 ? '' : 's'} selected
-                        </div>
-                      );
-                    }
-                    return (
-                      <div className={pillClasses} {...rest}>
-                        {children}
-                      </div>
-                    );
-                  },
-                  MultiValueRemove: props => {
-                    const { index, getValue } = props;
-                    if (index === 0 && getValue().length > 1) return null;
-                    return <components.MultiValueRemove {...props} />;
-                  },
+                  MultiValue: SelectedRoleValue,
+                  MultiValueRemove: SelectedRoleRemove,
                 }}
               />
             </div>
@@ -373,7 +377,7 @@ export default function ExperienceDonutChart() {
                           />
                         ))}
                       </Pie>
-                      <Tooltip content={<CustomTooltip />} />
+                      <Tooltip content={<CustomTooltip total={total} />} />
                       <text
                         x="50%"
                         y="50%"
@@ -390,7 +394,7 @@ export default function ExperienceDonutChart() {
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
-                <DetailsPanel />
+                <DetailsPanel chartData={chartData} total={total} activeIndex={activeIndex} />
               </>
             )}
 
