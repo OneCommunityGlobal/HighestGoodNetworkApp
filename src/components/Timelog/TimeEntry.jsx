@@ -3,7 +3,6 @@ import { Card, Row, Col } from 'reactstrap';
 import { useDispatch, connect } from 'react-redux';
 import parse from 'html-react-parser';
 import moment from 'moment-timezone';
-import styles from './Timelog.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import hasPermission, { cantUpdateDevAdminDetails } from '~/utils/permissions';
@@ -11,10 +10,12 @@ import { hrsFilterBtnColorMap } from '~/constants/colors';
 import { toast } from 'react-toastify';
 import TimeEntryForm from './TimeEntryForm';
 import DeleteModal from './DeleteModal';
-
 import { editTimeEntry, getTimeEntriesForWeek } from '../../actions/timeEntries';
 import { editTeamMemberTimeEntry } from '../../actions/task';
+import { updateIndividualTaskTime } from '../TeamMemberTasks/actions';
+import styles from './Timelog.module.css';
 
+import { permissions } from '../../utils/constants';
 /**
  * This component can be imported in TimeLog component's week tabs and Tasks tab
  *  1. In TimeLog - current week time log, last week, week before ... tabs:
@@ -43,9 +44,9 @@ function TimeEntry(props) {
   const dispatch = useDispatch();
 
   const hasATimeEntryEditPermission =
-    props.hasPermission('editTimeEntryTime') ||
-    props.hasPermission('editTimeEntryDescription') ||
-    props.hasPermission('editTimeEntryDate');
+    props.hasPermission(permissions.editTimeEntryTime) ||
+    props.hasPermission(permissions.editTimeEntryDescription) ||
+    props.hasPermission(permissions.editTimeEntryDate);
 
   const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(
     timeEntryUserProfile?.email ? timeEntryUserProfile.email : '',
@@ -64,17 +65,17 @@ function TimeEntry(props) {
   const isAuthUserAndSameDayEntry = isAuthUser && isSameDay;
 
   // permission to edit any time log entry (from other user's Dashboard
-  // For Administrator/Owner role, hasPermission('editTimelogInfo') should be true by default
+  // For Administrator/Owner role, hasPermission(permissions.editTimelogInfo) should be true by default
   const canEditTangibility =
     (isAuthUser
-      ? dispatch(hasPermission('toggleTangibleTime'))
-      : dispatch(hasPermission('editTimeEntryToggleTangible'))) && !cantEditJaeRelatedRecord;
+      ? dispatch(hasPermission(permissions.toggleTangibleTime))
+      : dispatch(hasPermission(permissions.editTimeEntryToggleTangible))) && !cantEditJaeRelatedRecord;
 
   // permission to Delete any time entry from other user's Dashboard
-  const canDeleteOther = dispatch(hasPermission('deleteTimeEntryOthers'));
+  const canDeleteOther = dispatch(hasPermission(permissions.deleteTimeEntryOthers));
 
   // permission to delete any time entry on their own time logs tab
-  const canDeleteOwn = dispatch(hasPermission('deleteTimeEntryOwn'));
+  const canDeleteOwn = dispatch(hasPermission(permissions.deleteTimeEntryOwn));
 
   // condition for allowing delete in delete model
   // default permission: delete own sameday tangible entry = isAuthUserAndSameDayEntry
@@ -92,6 +93,13 @@ function TimeEntry(props) {
       } else if (from === 'WeeklyTab') {
         await dispatch(editTimeEntry(timeEntryId, newData));
         await dispatch(getTimeEntriesForWeek(timeEntryUserId, tab));
+        dispatch(
+            updateIndividualTaskTime({
+              newTime: { hours: newData.isTangible ? newData.hours : -newData.hours, minutes: newData.isTangible ? newData.minutes : -newData.minutes },
+              taskId: newData.taskId,
+              personId: newData.personId,
+            }),
+          );
       }
     } catch (error) {
       toast.error(`Error: ${error.message}`);
@@ -136,7 +144,7 @@ function TimeEntry(props) {
         }}
       >
         <Row className="mx-0">
-          <Col md={3} className={`${styles['date-block']} px-0`}>
+          <Col md={3} className={`${styles.dateBlock} px-0`}>
             <div className="date-div">
               <div>
                 <h4 className={darkMode ? `${styles['text-light']} text-light` : ''}>{moment(dateOfWork).format('MMM D')}</h4>
@@ -178,22 +186,29 @@ function TimeEntry(props) {
             </div>
           </Col>
           <Col md={5} className="pl-2 pr-0">
-            <div className={`${styles['time-entry-container']}`}>
-              <div className={`${styles['notes-section']} ${darkMode ? styles['notes-text-light'] : ''}`}>
-                <div className={darkMode ? `${styles['dark-text-muted']}` : `${styles['text-muted']}`}>Notes:</div>
-                {hasHtmlTags
-                  ? parse(notes) 
-                  : <span>{notes != null ? String(notes) : ''}</span>} 
+            <div className={`${styles.timeEntryContainer}`}>
+              <div className={`${styles.notesSection} ${darkMode ? styles.notesTextLight : ''}`}>
+                <div className={darkMode ? "dark-text-muted" : "text-muted"}>Notes:</div>
+                {parse(notes)}
               </div>
               <div className="d-flex justify-content-end">
                 {(hasATimeEntryEditPermission || isAuthUserAndSameDayEntry) &&
                   !cantEditJaeRelatedRecord && (
-                    <button type="button" aria-label="FAEdit" className="mr-3 text-primary">
-                      <FontAwesomeIcon icon={faEdit} size="lg" onClick={toggle} />
+                    <button
+                      type="button"
+                      aria-label="FAEdit"
+                      className={`${styles.iconBtn} mr-3 text-primary`}
+                      onClick={toggle}
+                    >
+                      <FontAwesomeIcon icon={faEdit} size="lg" />
                     </button>
                   )}
                 {canDelete && (
-                  <button type="button" aria-label="DeleteModal" className="text-primary">
+                  <button
+                    type="button"
+                    aria-label="DeleteModal"
+                    className={`${styles.iconBtn} text-primary`}
+                  >
                     <DeleteModal timeEntry={data} />
                   </button>
                 )}

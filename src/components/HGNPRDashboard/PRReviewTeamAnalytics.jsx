@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { connect } from 'react-redux';
 import {
   ResponsiveContainer,
@@ -11,16 +12,16 @@ import {
   CartesianGrid,
 } from 'recharts';
 import { boxStyle, boxStyleDark } from '~/styles';
+import { ENDPOINTS } from '~/utils/URL';
 import DurationFilter from './DurationFilter';
 import styles from './PRReviewTeamAnalytics.module.css';
-import PRData from './PRData';
-import '../Header/index.css';
+import '../Header/index.module.css';
 
 const DURATION_OPTIONS = [
-  { label: 'Last Week', value: 'last_week' },
-  { label: 'Last 2 weeks', value: 'last_2_weeks' },
-  { label: 'Last Month', value: 'last_month' },
-  { label: 'All Time', value: 'all_time' },
+  { label: 'Last Week', value: 'lastWeek' },
+  { label: 'Last 2 weeks', value: 'last2weeks' },
+  { label: 'Last Month', value: 'lastMonth' },
+  { label: 'All Time', value: 'allTime' },
 ];
 
 function getXTicksAndDomain(data) {
@@ -46,7 +47,7 @@ function CustomTooltip({ active, payload, tooltipBg, tooltipText }) {
           <h4 style={{ color: tooltipText }}>{tooltipData.prNumber}</h4>
         </div>
         <p className={styles['tooltip-title']} style={{ color: tooltipText }}>
-          {tooltipData.title}
+          {tooltipData.prTitle}
         </p>
         <div className={styles['tooltip-details']}>
           <p style={{ color: tooltipText }}>
@@ -70,18 +71,24 @@ function PRReviewTeamAnalytics({ state }) {
   const { darkMode } = state.theme;
 
   useEffect(() => {
-    setLoading(true);
-    setError(null);
-    setTimeout(() => {
+    const fetchPopularPRs = async () => {
+      setLoading(true);
+      setError(null);
+
       try {
-        const sorted = [...PRData].sort((a, b) => b.reviewCount - a.reviewCount);
-        setData(sorted.slice(0, 20)); // Get Top 20 PRs based on review count
-        setLoading(false);
+        const response = await axios.get(ENDPOINTS.POPULAR_PRS(duration), {
+          headers: { Authorization: window.localStorage.getItem('token') },
+        });
+        setData(Array.isArray(response.data) ? response.data : []);
       } catch (err) {
         setError('Failed to load PR data');
+        setData([]);
+      } finally {
         setLoading(false);
       }
-    }, 800);
+    };
+
+    fetchPopularPRs();
   }, [duration]);
 
   const selectedDurationLabel =
@@ -89,15 +96,21 @@ function PRReviewTeamAnalytics({ state }) {
 
   const { domain, ticks } = getXTicksAndDomain(data);
 
+  // Calculate insights metrics
+  const totalPRs = data.length;
+  const totalReviews = data.reduce((sum, pr) => sum + pr.reviewCount, 0);
+  const avgReviews = totalPRs > 0 ? (totalReviews / totalPRs).toFixed(1) : 0;
+  const mostReviewedPR = data.length > 0 ? data[0] : null;
+
   // Theme-based color scheme using global dark mode
-  const chartBg = darkMode ? '#1b2a42' : '#f8fafc';
+  const chartBg = darkMode ? '#1e2936' : '#f8fafc';
   const labelColor = darkMode ? '#f8fafc' : '#052C65';
   const barColor = darkMode ? '#4a9eff' : '#052C65';
   const axisLineColor = darkMode ? '#4a5568' : '#bfc7d1';
   const tickColor = darkMode ? '#f8fafc' : '#052C65';
   const tooltipBg = darkMode ? '#2d3748' : 'rgba(255,255,255,0.95)';
   const tooltipText = darkMode ? '#f8fafc' : '#052C65';
-  const containerBg = darkMode ? '#1b2a42' : '#e0e3ea';
+  const containerBg = darkMode ? '#2d3e55' : '#e0e3ea';
   const boxStyling = darkMode ? boxStyleDark : boxStyle;
 
   let content;
@@ -248,6 +261,49 @@ function PRReviewTeamAnalytics({ state }) {
           />
         </div>
       </div>
+      {!loading && !error && data.length > 0 && (
+        <div
+          className={styles['pr-insights-panel']}
+          style={{
+            background: darkMode ? '#2d3748' : '#ffffff',
+            borderColor: darkMode ? '#4a5568' : '#cbd5e0',
+          }}
+        >
+          <div className={styles['pr-insights-item']}>
+            <div className={styles['pr-insights-label']} style={{ color: labelColor }}>
+              Total PRs
+            </div>
+            <div className={styles['pr-insights-value']} style={{ color: barColor }}>
+              {totalPRs}
+            </div>
+          </div>
+          <div className={styles['pr-insights-item']}>
+            <div className={styles['pr-insights-label']} style={{ color: labelColor }}>
+              Avg Reviews/PR
+            </div>
+            <div className={styles['pr-insights-value']} style={{ color: barColor }}>
+              {avgReviews}
+            </div>
+          </div>
+          <div
+            className={`${styles['pr-insights-item']} ${styles['pr-insights-item-highlight']}`}
+            style={{
+              background: darkMode ? '#1a365d' : '#e6f2ff',
+              borderColor: barColor,
+            }}
+          >
+            <div className={styles['pr-insights-label']} style={{ color: labelColor }}>
+              Most Reviewed PR
+            </div>
+            <div className={styles['pr-insights-value-highlight']} style={{ color: barColor }}>
+              {mostReviewedPR?.prNumber}
+            </div>
+            <div className={styles['pr-insights-subtext']} style={{ color: labelColor }}>
+              {mostReviewedPR?.reviewCount} reviews
+            </div>
+          </div>
+        </div>
+      )}
       <div className={styles['pr-review-analytics-chart-wrapper']}>{content}</div>
     </div>
   );

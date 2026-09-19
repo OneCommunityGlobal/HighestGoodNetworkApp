@@ -1,5 +1,6 @@
+/* stylelint-disable  */
 /* BiddingHomepage.css */
-body, .biddingBg {
+.biddingBg {
   background: var(--bg-color, #e5e5e5) !important;
   min-height: 100vh;
   overflow-x: hidden;
@@ -23,8 +24,8 @@ body, .biddingBg {
 
 .bidding-homepage-container .row {
   width: 100%;
-  margin-right: 0px !important;
-  margin-left: 0px !important;
+  margin-right: 0 !important;
+  margin-left: 0 !important;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -86,11 +87,33 @@ body, .biddingBg {
   border-color: var(--border-focus-color, #999) !important;
 }
 
+.dateFilter .dropdownMenu {
+  background: var(--dropdown-bg, #fff) !important;
+  border: 1px solid var(--border-color, #bbb) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 10%) !important;
+  min-width: 280px !important;
+  padding: 15px !important;
+}
+
+.sortFilter .dropdownMenu {
+  border: 1px solid var(--border-color, #bbb) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 10%) !important;
+  min-width: 160px;
+}
+
+.sortFilter .dropdownItem:hover {
+  background-color: var(--dropdown-hover-bg, #f8f9fa);
+  color: var(--accent-color, #a2d729);
+}
+
+
 .biddingHeader .villageFilter .dropdownMenu {
   background: var(--dropdown-bg, #fff) !important;
   border: 1px solid var(--border-color, #bbb) !important;
   border-radius: 4px !important;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 10%) !important;
   min-width: 180px !important;
   width: 180px !important;
 }
@@ -98,7 +121,6 @@ body, .biddingBg {
 .biddingHeader .villageFilter .dropdownItem {
   color: var(--text-color, #222) !important;
   white-space: normal !important;
-  word-wrap: break-word !important;
   overflow-wrap: break-word !important;
   padding: 10px 12px !important;
   line-height: 1.4 !important;
@@ -157,7 +179,9 @@ body, .biddingBg {
   gap: 18px;
 }
 
-.messages, .notifications, .userProfile {
+.messages,
+.notifications,
+.userProfile {
   font-size: 1.3rem;
   cursor: pointer;
   position: relative;
@@ -187,7 +211,7 @@ body, .biddingBg {
 }
 
 .navigationTabs::after {
-  content: "";
+  content: '';
   position: absolute;
   bottom: 0;
   left: 0;
@@ -285,7 +309,7 @@ body, .biddingBg {
 
 /* Property listings */
 .propertyListings {
-  padding: 20px 20px 0 20px;
+  padding: 20px 20px 0;
   gap: 16px;
 }
 
@@ -300,7 +324,7 @@ body, .biddingBg {
   border-radius: 6px;
   border: 1px solid var(--border-color, #d3d3d3);
   box-shadow: none;
-  padding: 18px 18px 12px 18px;
+  padding: 18px 18px 12px;
   min-width: 320px;
   max-width: 350px;
   margin: 0 auto;
@@ -385,15 +409,6 @@ body, .biddingBg {
   border-color: var(--accent-color, #a2d729) !important;
 }
 
-.dateFilter .dropdownMenu {
-  background: var(--dropdown-bg, #fff) !important;
-  border: 1px solid var(--border-color, #bbb) !important;
-  border-radius: 4px !important;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
-  min-width: 280px !important;
-  padding: 15px !important;
-}
-
 .dateInputsContainer {
   padding: 0;
 }
@@ -406,7 +421,7 @@ body, .biddingBg {
   margin-bottom: 15px;
 }
 
-.dateLabel  {
+.dateLabel {
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-color, #222) !important;
@@ -425,7 +440,7 @@ body, .biddingBg {
 
 .dateInput:focus {
   border-color: var(--accent-color, #a2d729) !important;
-  box-shadow: 0 0 0 0.2rem rgba(162, 215, 41, 0.25) !important;
+  box-shadow: 0 0 0 0.2rem rgb(162 215 41 / 25%) !important;
 }
 
 .resetBtnContainer {
@@ -485,18 +500,6 @@ body, .biddingBg {
   border-color: var(--accent-color, #a2d729) !important;
 }
 
-.sortFilter .dropdownMenu {
-  border: 1px solid var(--border-color, #bbb) !important;
-  border-radius: 4px !important;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
-  min-width: 160px;
-}
-
-.sortFilter .dropdownItem:hover {
-  background-color: var(--dropdown-hover-bg, #f8f9fa);
-  color: var(--accent-color, #a2d729);
-}
-
 .filterIconInline {
   color: var(--accent-color, #a2d729);
   font-size: 0.9rem;
@@ -536,59 +539,63 @@ body, .biddingBg {
 }
 
 /* Responsive adjustments */
-@media (max-width: 992px) {
+@media (width <= 992px) {
   .biddingHeader {
     flex-direction: column;
     gap: 10px;
   }
-  .tabsContainer, .mapLink {
+
+  .tabsContainer,
+  .mapLink {
     margin: 0;
   }
-  
+
   /* Tablet responsive adjustments for village filter */
   .biddingHeader .villageFilter .dropdownToggle {
     min-width: 200px !important;
     width: auto !important;
   }
-  
+
   .biddingHeader .villageFilter .dropdownMenu {
     min-width: 200px !important;
     width: 200px !important;
     left: 0 !important;
     right: auto !important;
   }
-  
+
   .biddingHeader .villageFilter .dropdownItem {
     white-space: normal !important;
-    word-wrap: break-word !important;
     overflow-wrap: break-word !important;
     padding: 10px 12px !important;
     line-height: 1.4 !important;
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .tabsContainer {
     margin-left: 0;
     gap: 20px;
   }
+
   .mapLink {
     margin-right: 0;
   }
+
   .propertyCardCol {
     max-width: 100%;
     min-width: 100%;
   }
+
   .propertyCardGray {
     min-width: 90%;
     max-width: 95%;
   }
-  
+
   /* Mobile responsive adjustments for village filter */
   .biddingHeader .villageFilter {
     width: 100% !important;
   }
-  
+
   .biddingHeader .villageFilter .dropdownToggle {
     min-width: 100% !important;
     width: 100% !important;
@@ -596,7 +603,7 @@ body, .biddingBg {
     overflow: hidden !important;
     text-overflow: ellipsis !important;
   }
-  
+
   .biddingHeader .villageFilter .dropdownMenu {
     width: 100% !important;
     min-width: 100% !important;
@@ -605,15 +612,14 @@ body, .biddingBg {
     right: auto !important;
     overflow-x: hidden !important;
   }
-  
+
   .biddingHeader .villageFilter .dropdownItem {
     white-space: normal !important;
-    word-wrap: break-word !important;
     overflow-wrap: break-word !important;
     padding: 12px 15px !important;
     line-height: 1.4 !important;
   }
-} 
+}
 
 /* Light mode variables (default) */
 :root {
@@ -651,9 +657,9 @@ body, .biddingBg {
 .dark-mode {
   --bg-color: #1b2a41;
   --card-bg: #2b3e59;
-  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --card-shadow: 0 2px 8px rgb(0 0 0 / 30%);
   --header-bg: #2d4059;
-  --text-color: #ffffff;
+  --text-color: #fff;
   --text-secondary: #d1d5db;
   --text-disabled: #6c757d;
   --input-bg: #3a506b;
@@ -668,13 +674,13 @@ body, .biddingBg {
   --button-primary-hover: #388e3c;
   --button-secondary-bg: #4a5a77;
   --button-secondary-hover: #5a6b88;
-  --button-secondary-text: #ffffff;
+  --button-secondary-text: #fff;
   --accent-color: #e8a71c;
-  --tab-active-color: #ffffff;
+  --tab-active-color: #fff;
   --tab-active-border: #e8a71c;
   --tab-inactive-color: #9ca3af;
   --tab-hover-color: #d1d5db;
   --link-color: #60a5fa;
   --property-card-bg: #3a506b;
-  --pagination-active-text: #000000;
+  --pagination-active-text: #000;
 }

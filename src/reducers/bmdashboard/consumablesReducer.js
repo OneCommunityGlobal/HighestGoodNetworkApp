@@ -3,6 +3,9 @@ import {
   POST_UPDATE_CONSUMABLE_START,
   POST_UPDATE_CONSUMABLE_END,
   POST_UPDATE_CONSUMABLE_ERROR,
+  UPDATE_CONSUMABLE_STATUS_START,
+  UPDATE_CONSUMABLE_STATUS_END,
+  UPDATE_CONSUMABLE_STATUS_ERROR,
 } from '../../constants/bmdashboard/consumableConstants';
 
 const defaultState = {
@@ -13,6 +16,11 @@ const defaultState = {
     error: undefined,
   },
   updateConsumablesBulk: {
+    loading: false,
+    result: null,
+    error: undefined,
+  },
+  updateConsumableStatus: {
     loading: false,
     result: null,
     error: undefined,
@@ -56,6 +64,29 @@ export const consumablesReducer = (consumables = defaultState, action) => {
       };
       // eslint-disable-next-line no-param-reassign
       consumables.updateConsumables = obj;
+      return { ...consumables };
+    }
+    case UPDATE_CONSUMABLE_STATUS_START: {
+      // eslint-disable-next-line no-param-reassign
+      consumables.updateConsumableStatus = { loading: true, result: null, error: undefined };
+      return { ...consumables };
+    }
+    case UPDATE_CONSUMABLE_STATUS_END: {
+      // eslint-disable-next-line no-param-reassign
+      consumables.updateConsumableStatus = {
+        loading: false,
+        result: action.payload,
+        error: false,
+      };
+      return { ...consumables };
+    }
+    case UPDATE_CONSUMABLE_STATUS_ERROR: {
+      // eslint-disable-next-line no-param-reassign
+      consumables.updateConsumableStatus = {
+        loading: false,
+        result: action.payload,
+        error: true,
+      };
       return { ...consumables };
     }
     default:

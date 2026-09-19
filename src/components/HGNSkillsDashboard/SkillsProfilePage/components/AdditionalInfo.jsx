@@ -1,17 +1,20 @@
 import axios from 'axios';
 import { useState, useEffect, useRef } from 'react';
-import '../styles/AdditionalInfo.css';
+import styles from '../styles/AdditionalInfo.module.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { ENDPOINTS } from '../../../../utils/URL';
 import { toast } from 'react-toastify';
 import getWordCount from '../../../../utils/getWordCount';
 import { updateFollowUpFields } from '../../../../actions/userSkillsActions';
+import { permissions as permissionKeys } from '../../../../utils/constants';
 
 function checkIfupdateUserSkillsProfileFollowUp(permissions, role, requestorId, userid) {
   if (role === 'Administrator' || role === 'Owner' || requestorId === userid) return true;
   // eslint-disable-next-line no-console
-  console.log(permissions?.frontPermissions.includes('updateUserSkillsProfileFollowUp'));
-  return permissions?.frontPermissions.includes('updateUserSkillsProfileFollowUp');
+  console.log(
+    permissions?.frontPermissions.includes(permissionKeys.updateUserSkillsProfileFollowUp),
+  );
+  return permissions?.frontPermissions.includes(permissionKeys.updateUserSkillsProfileFollowUp);
 }
 
 function AdditionalInfo() {
@@ -32,6 +35,8 @@ function AdditionalInfo() {
   const permissions = useSelector(state => state.auth.user.permissions);
 
   const requestorId = useSelector(state => state.auth.user.userid);
+
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   // Fetch data from database
   useEffect(() => {
@@ -115,10 +120,10 @@ function AdditionalInfo() {
 
   if (loading) return <div>Loading...</div>;
   return (
-    <div className="AdditionalInfoBox">
-      <div className="workExpInfoBox">
+    <div className={`${styles.AdditionalInfoBox} ${darkMode ? 'dark-mode' : ''}`}>
+      <div className={styles.workExpInfoBox}>
         <h3> Work Experience and Additional Info: </h3>
-        <button type="button" className="edit-button" onClick={handleEditSave}>
+        <button type="button" className={styles.editButton} onClick={handleEditSave}>
           {isEditing ? 'Save' : 'Edit'}
         </button>
       </div>
@@ -130,8 +135,8 @@ function AdditionalInfo() {
           .map((question, index) => {
             const field = fields[index];
             return (
-              <div className="question-and-response-box" key={field.key}>
-                <div className="question-box">
+              <div className={styles['question-and-response-box']} key={field.key}>
+                <div className={styles['question-box']}>
                   <p>{question.text}</p>
                 </div>
                 {field.type === 'textarea' ? (

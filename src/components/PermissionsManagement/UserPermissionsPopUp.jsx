@@ -12,11 +12,12 @@ import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+  permissions,
 } from '../../utils/constants';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import PermissionList from './PermissionList';
 import { addNewRole, getAllRoles } from '../../actions/role';
-
+import CircularProgress from '@mui/material/CircularProgress';
 import ReminderModal from './ReminderModal';
 
 function UserPermissionsPopUp({
@@ -41,6 +42,7 @@ function UserPermissionsPopUp({
   const [actualUserRolePermission, setActualUserRolePermission] = useState();
   const [selectedAccount, setSelectedAccount] = useState('');
   const [toastShown, setToastShown] = useState(false);
+  const [isLoading, setisLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const setToDefault = () => {
@@ -74,6 +76,7 @@ function UserPermissionsPopUp({
 
   const updateProfileOnSubmit = async e => {
     e.preventDefault();
+    setisLoading(true);
     const shouldPreventEdit = cantUpdateDevAdminDetails(actualUserProfile?.email, authUser.email);
     if (shouldPreventEdit) {
       setIsSubmitting(false);
@@ -86,8 +89,12 @@ function UserPermissionsPopUp({
       }
       return;
     }
-    const userId = actualUserProfile?._id;
 
+    if (searchText === '') {
+      toast.error('Please type the name of a user.');
+      return;
+    }
+    const userId = actualUserProfile?._id;
     const url = `${ENDPOINTS.PERMISSION_MANAGEMENT_UPDATE()}/user/${userId}`;
     const permissionData = {
       permissions: {
@@ -112,6 +119,7 @@ function UserPermissionsPopUp({
         toggle();
         getAllUsers();
         getChangeLogs();
+        setisLoading(false);
       })
       .catch(err => {
         const ERROR_MESSAGE = `
@@ -133,6 +141,26 @@ function UserPermissionsPopUp({
       setToastShown(false);
     }
   }, [modalStatus]);
+
+  //prettier-ignore
+  const normalizeSearchInput = text => text.toLowerCase().split('').filter(char => char !== ' ').join('');
+
+  const filteredUsers = allUserProfiles
+    // eslint-disable-next-line array-callback-return, consistent-return
+    .filter(user => {
+      if (
+        //prettier-ignore
+        normalizeSearchInput(user.firstName).includes(normalizeSearchInput(searchText)) ||
+        //prettier-ignore
+        normalizeSearchInput(user.lastName).includes(normalizeSearchInput(searchText)) ||
+        //prettier-ignore
+        normalizeSearchInput(`${user.firstName} ${user.lastName}`).includes(normalizeSearchInput(searchText))
+      ) {
+        if (user.isActive) {
+          return user;
+        }
+      }
+    });
 
   return (
     <>
@@ -207,22 +235,8 @@ function UserPermissionsPopUp({
               }`}
               style={{ marginTop: '0px', width: '100%' }}
             >
-              {allUserProfiles
-                // eslint-disable-next-line array-callback-return, consistent-return
-                .filter(user => {
-                  if (
-                    user.firstName.toLowerCase().includes(searchText.toLowerCase()) ||
-                    user.lastName.toLowerCase().includes(searchText.toLowerCase()) ||
-                    `${user.firstName} ${user.lastName}`
-                      .toLowerCase()
-                      .includes(searchText.toLowerCase())
-                  ) {
-                    if (user.isActive) {
-                      return user;
-                    }
-                  }
-                })
-                .map(user => (
+              {filteredUsers.length > 0 ? (
+                filteredUsers.map(user => (
                   <div
                     className={styles['user__auto-complete']}
                     key={user._id}
@@ -245,7 +259,10 @@ function UserPermissionsPopUp({
                   >
                     {user.firstName} {user.lastName}
                   </div>
-                ))}
+                ))
+              ) : (
+                <div className="user__auto-complete text-center">No users found</div>
+              )}
             </div>
           ) : (
             // eslint-disable-next-line react/jsx-no-useless-fragment
@@ -265,6 +282,7 @@ function UserPermissionsPopUp({
               rolePermissions={userPermissions}
               immutablePermissions={actualUserRolePermission}
               editable={!!actualUserProfile}
+              editPermission={permissions.putUserProfilePermissions}
               setPermissions={setUserPermissions}
               removedDefaultPermissions={userRemovedDefaultPermissions}
               setRemovedDefaultPermissions={setUserRemovedDefaultPermissions}
@@ -279,7 +297,7 @@ function UserPermissionsPopUp({
           block
           style={{ ...boxStyle, marginTop: '1rem' }}
         >
-          Submit
+          {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Submit'}
         </Button>
       </Form>
     </>

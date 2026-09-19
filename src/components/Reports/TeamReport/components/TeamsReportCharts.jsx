@@ -1,7 +1,7 @@
 /* eslint-disable testing-library/no-node-access */
 // eslint-disable-next-line no-unused-vars
 import { React, useEffect, useState } from 'react';
-import './ReportCharts.css';
+import './ReportCharts.module.css';
 import * as d3 from 'd3';
 
 import { CHART_RADIUS, CHART_SIZE } from '../../../common/PieChart/constants';
@@ -17,19 +17,19 @@ function TeamsReportCharts({
 }) {
   const chart = {
     team1:
-      title === 'Weekly Commited Hours'
+      title === 'Weekly Committed Hours'
         ? selectedTeamsData[0]?.totalCommitedHours
         : selectedTeamsWeeklyEffort[0],
     team2:
-      title === 'Weekly Commited Hours'
+      title === 'Weekly Committed Hours'
         ? selectedTeamsData[1]?.totalCommitedHours
         : selectedTeamsWeeklyEffort[1],
     team3:
-      title === 'Weekly Commited Hours'
+      title === 'Weekly Committed Hours'
         ? selectedTeamsData[2]?.totalCommitedHours
         : selectedTeamsWeeklyEffort[2],
     team4:
-      title === 'Weekly Commited Hours'
+      title === 'Weekly Committed Hours'
         ? selectedTeamsData[3]?.totalCommitedHours
         : selectedTeamsWeeklyEffort[3],
   };

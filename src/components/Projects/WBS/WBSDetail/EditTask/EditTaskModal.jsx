@@ -19,11 +19,12 @@ import { toast } from 'react-toastify';
 import UserSearch from './UserSearch';
 import UserTag from './UserTag';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
-import '../../../../Header/index.css';
+import '../../../../Header/index.module.css';
 import styles from '../wbs.module.css';
 import TagsSearch from '../components/TagsSearch';
 
 
+import { permissions } from '../../../../../utils/constants';
 /** tiny reusable v8 DateInput - manual control without useInput **/
 function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled, darkMode }) {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -66,15 +67,15 @@ function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled, dark
         onFocus={() => !disabled && setIsOpen(true)}
         readOnly
         disabled={disabled}
-        className={disabled && darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+        className={darkMode ? styles.darkDateInput : ''}
         style={{ 
           cursor: disabled ? 'default' : 'pointer',
-          backgroundColor: disabled ? (darkMode ? '' : '#e9ecef') : 'white',
+          backgroundColor: disabled ? (darkMode ? '#1c1c1c' : '#e9ecef') : undefined,
           opacity: 1
         }}
       />
       {isOpen && !disabled && (
-        <div style={{ position: 'absolute', right: 0, overflow: 'auto', zIndex: 10, backgroundColor: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', borderRadius: '4px' }}>
+        <div style={{ position: 'absolute', right: 0, overflow: 'auto', zIndex: 10, backgroundColor: darkMode ? '#1e293b' : 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', borderRadius: '4px' }}>
           <DayPicker 
             mode="single"
             selected={selectedDate}
@@ -84,14 +85,7 @@ function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled, dark
           <button
             type="button"
             onClick={() => setIsOpen(false)}
-            style={{ 
-              width: '100%', 
-              padding: '8px', 
-              border: 'none', 
-              borderTop: '1px solid #ddd',
-              background: '#f5f5f5',
-              cursor: 'pointer'
-            }}
+            className={`${styles.datePickerClose} ${darkMode ? styles.datePickerCloseDark : ''}`}
           >
             Close
           </button>
@@ -109,8 +103,8 @@ function EditTaskModal(props) {
   const { /* allMembers, */ error, darkMode } = props;
 
   // permissions
-  const canUpdateTask = props.hasPermission('updateTask');
-  const canSuggestTask = props.hasPermission('suggestTask');
+  const canUpdateTask = props.hasPermission(permissions.updateTask);
+  const canSuggestTask = props.hasPermission(permissions.suggestTask);
   const editable = canSuggestTask || canUpdateTask;
 
   // states from hooks
@@ -170,6 +164,8 @@ function EditTaskModal(props) {
     autoresize_bottom_margin: 1,
     skin: darkMode ? 'oxide-dark' : 'oxide',
     content_css: darkMode ? 'dark' : 'default',
+    fixed_toolbar_container: '.modal-body',
+    ui_container: '.modal-content',
   };
   /*
    * -------------------------------- functions --------------------------------
@@ -201,22 +197,14 @@ function EditTaskModal(props) {
     setAssigned(true);
   };
 
-  const calHoursEstimate = (isOn = null) => {
-    let currHoursMost = parseInt(hoursMost);
-    let currHoursWorst = parseInt(hoursWorst);
-    const currHoursBest = parseInt(hoursBest);
-    if (isOn !== 'hoursMost') {
-      currHoursMost = Math.round((currHoursWorst - currHoursBest) / 2 + currHoursBest);
-      setHoursMost(currHoursMost);
-      if (isOn !== 'hoursWorst') {
-        currHoursWorst = Math.round(currHoursBest * 2);
-        setHoursWorst(currHoursWorst);
-        currHoursMost = Math.round((currHoursWorst - currHoursBest) / 2 + currHoursBest);
-        setHoursMost(currHoursMost);
-      }
-    }
+  // Recompute the derived estimate (and the best <= most <= worst warning) from the
+  // current field values only. Editing one hours field must NOT overwrite the others.
+  const calHoursEstimate = () => {
+    const currHoursBest = Number.parseInt(hoursBest, 10);
+    const currHoursMost = Number.parseInt(hoursMost, 10);
+    const currHoursWorst = Number.parseInt(hoursWorst, 10);
 
-    setHoursEstimate(parseInt((currHoursMost + currHoursBest + currHoursWorst) / 3));
+    setHoursEstimate(Number.parseInt((currHoursMost + currHoursBest + currHoursWorst) / 3, 10));
 
     if (!(currHoursBest <= currHoursMost && currHoursMost <= currHoursWorst)) {
       setHoursWarning(true);
@@ -497,7 +485,7 @@ function EditTaskModal(props) {
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue dark-mode no-hover' : ''}>
           <table
-            className={`table table-bordered responsive
+            className={`table table-bordered responsive ${darkMode ? styles.editTaskTableDark : ''}
             ${canUpdateTask || canSuggestTask ? null : 'disable-div'} 
             ${darkMode ? 'text-light' : ''}`}
           >
@@ -523,7 +511,7 @@ function EditTaskModal(props) {
                       rows="2"
                       type="text"
                       className={`task-name border border-dark rounded ${
-                        darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                        darkMode ? `${styles.editTaskTextareaDark} text-light` : ''
                       }`}
                       onChange={e => setTaskName(e.target.value)}
                       onKeyPress={e => setTaskName(e.target.value)}
@@ -762,7 +750,7 @@ function EditTaskModal(props) {
                       { componentOnly: true },
                     )}
                   </div>
-                    <div className="warning">
+                    <div className={styles.warning}>
                       {hoursWarning ? 'The number of hours must be less than other cases' : ''}
                     </div>
                   
@@ -781,7 +769,7 @@ function EditTaskModal(props) {
                         max="500"
                         value={hoursWorst}
                         onChange={e => setHoursWorst(Math.abs(e.target.value))}
-                        onBlur={() => calHoursEstimate('hoursWorst')}
+                        onBlur={() => calHoursEstimate()}
                         className={`m-auto ${
                           darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
                         }`}
@@ -791,7 +779,7 @@ function EditTaskModal(props) {
                       { componentOnly: true },
                     )}
                   </div>
-                    <div className="warning">
+                    <div className={styles.warning}>
                       {hoursWarning ? 'The number of hours must be higher than other cases' : ''}
                     </div>
                   
@@ -810,7 +798,7 @@ function EditTaskModal(props) {
                         max="500"
                         value={hoursMost}
                         onChange={e => setHoursMost(Math.abs(e.target.value))}
-                        onBlur={() => calHoursEstimate('hoursMost')}
+                        onBlur={() => calHoursEstimate()}
                         className={`m-auto ${
                           darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
                         }`}
@@ -820,7 +808,7 @@ function EditTaskModal(props) {
                       { componentOnly: true },
                     )}
                   </div>
-                    <div className="warning">
+                    <div className={styles.warning}>
                       {hoursWarning
                         ? 'The number of hours must range between best and worst cases'
                         : ''}
@@ -852,7 +840,7 @@ function EditTaskModal(props) {
                   </div>
                 </td>
               </tr>
-              <tr className='text-break'>
+              <tr className={styles['text-break']}>
                 {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   Links
@@ -874,7 +862,7 @@ function EditTaskModal(props) {
                         disabled={!editable}
                       />
                       <button
-                        className="task-resouces-btn"
+                        className={styles['task-resouces-btn']}
                         type="button"
                         data-tip="Add Link"
                         onClick={addLink}
@@ -1083,39 +1071,43 @@ function EditTaskModal(props) {
         ) : null}
       </Modal>
       <div className="task-action-buttons d-flex" />
-      {canUpdateTask && (
-        <Button
-          className="mx-2 controlBtn"
-          color="primary"
-          size="sm"
-          onClick={e => handleModalShow('Edit')}
-          style={darkMode ? boxStyleDark : boxStyle}
-        >
-          Edit
-        </Button>
-      )}
-      {canSuggestTask && (
-        <Button
-          className="mr-2 controlBtn"
-          color="primary"
-          size="sm"
-          onClick={e => handleModalShow('Suggest')}
-          style={darkMode ? boxStyleDark : boxStyle}
-        >
-          Suggest
-        </Button>
-      )}
-      {!canUpdateTask && !canSuggestTask && (
-        <Button
-          className="mr-2 controlBtn"
-          color="primary"
-          size="sm"
-          onClick={e => handleModalShow('View')}
-          style={darkMode ? boxStyleDark : boxStyle}
-        >
-          View
-        </Button>
-      )}
+        <div className={styles.taskTopActionButtons}>
+          {canUpdateTask && (
+            <Button
+              className={styles.taskActionButton}
+              color="primary"
+              size="sm"
+              onClick={() => handleModalShow('Edit')}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Edit
+            </Button>
+          )}
+
+          {canSuggestTask && (
+            <Button
+              className={styles.taskActionButton}
+              color="primary"
+              size="sm"
+              onClick={() => handleModalShow('Suggest')}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Suggest
+            </Button>
+          )}
+
+          {!canUpdateTask && !canSuggestTask && (
+            <Button
+              className={styles.taskActionButton}
+              color="primary"
+              size="sm"
+              onClick={() => handleModalShow('View')}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              View
+            </Button>
+          )}
+        </div>
     </div>
   );
 }

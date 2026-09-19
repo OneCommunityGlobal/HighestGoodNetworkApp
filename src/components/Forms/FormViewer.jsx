@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getFormState } from '~/actions/formActions';
 import QuestionViewer from './Components/QuestionViewer';
+import styles from './formsPage.module.css';
 
 export default function FormViewer() {
   const formQuestions = useSelector(state => state.form.questions);
@@ -41,7 +42,7 @@ export default function FormViewer() {
   return (
     // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
-      <div className="container">
+      <div className={`container ${styles.pageShell}`}>
         <h1>Answer this form</h1>
         <form onSubmit={handleSubmit}>
           {formQuestions.map(question => {

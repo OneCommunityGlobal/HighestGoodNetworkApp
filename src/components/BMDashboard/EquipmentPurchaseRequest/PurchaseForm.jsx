@@ -3,12 +3,15 @@ import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Form, FormGroup, FormText, Label, Input, Button } from 'reactstrap';
-import Joi from 'joi-browser';
+import Joi from 'joi';
 
 import { boxStyle } from '~/styles';
 import { purchaseEquipment } from '~/actions/bmdashboard/equipmentActions';
+import BMCharacterLimitHint from '../shared/BMCharacterLimitHint';
 
 import stylesPurchaseForm from './PurchaseForm.module.css';
+
+const DESC_CHAR_LIMIT = 150;
 
 export default function PurchaseForm() {
   const bmProjects = useSelector(state => state.bmProjects);
@@ -38,7 +41,7 @@ export default function PurchaseForm() {
     estTime: Joi.string().required(),
     desc: Joi.string()
       .required()
-      .max(150),
+      .max(DESC_CHAR_LIMIT),
     makeModel: Joi.string().allow(''),
   });
 
@@ -204,13 +207,14 @@ export default function PurchaseForm() {
         <Input
           id="input-usage-description"
           type="textarea"
+          maxLength={DESC_CHAR_LIMIT}
           value={desc}
           onChange={({ currentTarget }) => {
             setValidationError('');
-            setDesc(currentTarget.value);
+            setDesc(currentTarget.value.slice(0, DESC_CHAR_LIMIT));
           }}
         />
-        <FormText>Max 150 characters</FormText>
+        <BMCharacterLimitHint limit={DESC_CHAR_LIMIT} length={desc.length} />
       </FormGroup>
       <FormGroup>
         <Label for="input-brand">Preferred Make &amp; Model (optional)</Label>

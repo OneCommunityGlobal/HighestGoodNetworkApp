@@ -1,3 +1,5 @@
+/* stylelint-disable no-descending-specificity */
+
 /* Popularity Timeline Chart Styles */
 .light-screen {
   background-color: #f7fafc; /* light gray background */
@@ -13,13 +15,11 @@
   transition: background-color 0.3s, color 0.3s;
 }
 
-
-
 .pt-container {
   padding: 20px;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 12px rgb(0 0 0 / 8%);
   margin: 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   transition: background-color 0.3s, color 0.3s, border-color 0.3s;
@@ -28,7 +28,7 @@
 .dark-theme {
   background-color: #1a202c;
   border: 1px solid #2d3748;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 12px rgb(0 0 0 / 40%);
   color: #e2e8f0;
 }
 
@@ -93,7 +93,7 @@
   padding: 10px 12px;
   border: 1px solid #dcdfe6;
   border-radius: 4px;
-  background-color: #ffffff;
+  background-color: #fff;
   font-size: 0.9rem;
   color: #2c3e50;
   transition: border-color 0.2s, background-color 0.2s;
@@ -108,12 +108,12 @@
 .pt-select:focus {
   border-color: #3498db;
   outline: none;
-  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+  box-shadow: 0 0 0 2px rgb(52 152 219 / 20%);
 }
 
 .dark-theme .pt-select:focus {
   border-color: #63b3ed;
-  box-shadow: 0 0 0 2px rgba(99, 179, 237, 0.2);
+  box-shadow: 0 0 0 2px rgb(99 179 237 / 20%);
 }
 
 /* ---------------- DATE PICKERS ---------------- */
@@ -203,17 +203,17 @@
 
 /* ---------------- CHART WRAPPER ---------------- */
 .pt-chart-wrapper {
-  background-color: #ffffff;
+  background-color: #fff;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 5px rgb(0 0 0 / 5%);
   border: 1px solid #eee;
 }
 
 .dark-theme .pt-chart-wrapper {
   background-color: #1a202c;
   border-color: #2d3748;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 1px 5px rgb(0 0 0 / 25%);
 }
 
 /* ---------------- STATUS TEXTS ---------------- */
@@ -222,7 +222,7 @@
 .pt-no-data {
   padding: 25px;
   text-align: center;
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 8px;
   margin: 20px 0;
   border: 1px solid #eee;
@@ -255,38 +255,45 @@
 }
 
 /* ---------------- RESPONSIVE ---------------- */
-@media (max-width: 992px) {
+@media (width <= 992px) {
   .pt-filters {
     gap: 12px;
   }
+
   .pt-filter-group {
     min-width: 180px;
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .pt-filters {
     flex-direction: column;
     align-items: stretch;
     gap: 15px;
   }
+
   .pt-filter-group {
     min-width: 100%;
   }
+
   .pt-date-pickers {
     flex-direction: column;
     gap: 8px;
   }
+
   .pt-reset-btn {
     width: 100%;
     margin-top: 5px;
   }
+
   .pt-chart-wrapper {
     padding: 15px;
   }
+
   .pt-title {
     font-size: 1.25rem;
   }
+
   .pt-header {
     flex-direction: column;
     gap: 15px;
@@ -294,20 +301,23 @@
   }
 }
 
-@media (max-width: 576px) {
+@media (width <= 576px) {
   .pt-container {
     margin: 10px;
     padding: 15px;
   }
+
   .pt-title {
     font-size: 1.15rem;
   }
+
   .pt-select,
   .pt-date-picker,
   .pt-reset-btn {
     font-size: 0.85rem;
     padding: 8px 10px;
   }
+
   .pt-chart-wrapper {
     padding: 10px;
   }

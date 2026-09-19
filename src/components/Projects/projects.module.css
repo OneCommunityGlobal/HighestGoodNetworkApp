@@ -1,4 +1,5 @@
-:global(thead) {
+/* stylelint-disable  */
+.projectsTableHead {
   background: aliceblue;
 }
 
@@ -6,35 +7,83 @@
   margin-bottom: 10px;
 }
 
+/* Projects table sizing.
+   The table uses `table-layout: fixed` (see .projectsTable) so column widths
+   come from these header cells instead of from cell content. Values are
+   percentages of the table width; the Project Name column has no id and takes
+   whatever is left (~25%). Keeping them as percentages lets the table shrink to
+   its wrapper instead of overflowing it. */
 :global(#projects__order) {
-  width: 5px;
+  width: 5%;
 }
 
 :global(#projects__active) {
-  width: 10px;
+  width: 8%;
 }
 
 :global(#projects__category) {
-  width: 15px;
+  width: 15%;
 }
 
 :global(#projects__members) {
-  width: 15px;
+  width: 12%;
 }
 
 :global(#projects__inv) {
-  width: 15px;
+  width: 12%;
 }
 
 :global(#projects__wbs) {
-  width: 15px;
+  width: 12%;
 }
 
 :global(#projects__delete) {
-  width: 20px;
+  width: 11%;
+}
+
+/* Fixed layout ties column widths to the header row, so long values in a cell
+   wrap or clip instead of stretching the whole table past its container. The
+   min-width gives the .table-responsive-sm wrapper something to scroll on very
+   narrow screens rather than squashing every column to nothing; it stays below
+   the smallest Bootstrap .container content box (~510px) so the table never
+   overflows on wider screens. */
+.projectsTable {
+  table-layout: fixed;
+  width: 100%;
+  min-width: 480px;
+}
+
+.projectsTable th,
+.projectsTable td {
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+}
+
+/* Inputs/selects must shrink with their (now fixed-width) column instead of
+   holding their default intrinsic width and forcing the column wider. Not
+   using overflow:hidden here on purpose: the members cell has a count badge
+   that is positioned to overhang the cell. */
+.projectsTable td :global(.form-control) {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* The action-icon buttons carry an inline box-shadow (boxStyle / boxStyleDark
+   from ~/styles). On the dark table that shadow bleeds across the thin cell
+   borders and reads as a smudge beside the Active column. Drop it for every
+   button in the table; the inline style needs !important to override. */
+.projectsTable :global(.btn) {
+  box-shadow: none !important;
+}
+
+/* The Category / Status filter toggles supply their own chevron glyph, so hide
+   react-bootstrap's built-in ::after caret to avoid two stacked arrows. */
+.projectsTable :global(.dropdown-toggle)::after {
+  display: none;
 }
 
 /* Keep overview layout global for now (likely used in Overview.jsx) */
+
 /* .projects__overview--top {
   background: gray;
 } */
@@ -62,7 +111,8 @@
 
 :global(.search-project-person) {
   position: relative;
-  width: 100%;
+  flex: 1 1 280px;
+  min-width: 0;
 }
 
 :global(.suggestions-list) {
@@ -103,7 +153,7 @@
   background: #e9f6ff;
 }
 
-@media (max-width: 375px) {
+@media (width <= 375px) {
   :global(#new_project .form-control) {
     flex: 1 1 auto;
     width: 50%;
@@ -121,6 +171,7 @@
 .projects__active--input i {
   margin-top: 10px;
   cursor: pointer;
+  box-shadow: none !important;
 }
 
 .projects__name--input input {
@@ -133,14 +184,109 @@
 
 .isActive i {
   color: lawngreen;
+  box-shadow: none !important;
 }
 
 .isNotActive {
   color: #dee2e6;
 }
 
+.isNotActive i {
+  box-shadow: none !important;
+}
+
 .isDisabled {
   opacity: 0;
   transition: opacity 10ms;
   display: none;
+}
+
+.project-member-badge {
+  position: absolute;
+  top: -10px;
+  right: -32px;
+  min-width: 22px;
+  height: 22px;
+  background: lawngreen;
+  color: #111;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 0 0 2px #888;
+  z-index: 2;
+}
+
+.project-member-btn .fa-users {
+  font-size: 1.5rem;
+  line-height: 1;
+  margin-top: 0;
+}
+
+.suggestion-item {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.suggestion-item:hover {
+  background-color: #f0f0f0;
+}
+
+.suggestion-button {
+  display: block;
+  width: 100%; 
+  padding: 10px; 
+  text-align: left; 
+  background: none; 
+  border: none; 
+  cursor: pointer; 
+}
+
+.suggestion-button:hover {
+  background-color: #f0f0f0;
+}
+
+tr:hover {
+  background: #e9f6ff;
+}
+
+/* In dark mode the page wrapper carries .bg-oxford-blue. Keep the row-hover
+   highlight on-theme (yinmn-blue) instead of the light default, so the dark
+   inputs/buttons in the hovered row stay legible instead of washing out. */
+:global(.bg-oxford-blue) tr:hover {
+  background: #3a506b;
+}
+
+.archived-button {
+  background-color: #007bff;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-left: 10px;
+}
+
+.archived-button:hover {
+  background-color: #0056b3;
+}
+
+@media (width <= 375px) {
+  #new_project .form-control {
+    flex: 1 1 auto;
+    width: 50%;
+  }
+}
+.searchLabelDark {
+  background-color: #1f3b63 !important;
+}
+
+.searchInput {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

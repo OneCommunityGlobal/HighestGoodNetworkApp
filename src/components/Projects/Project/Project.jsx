@@ -1,18 +1,17 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { ARCHIVE } from './../../../languages/en/ui';
-// old CSS removed
-// import './../projects.css';
+import { UNARCHIVE, ARCHIVE } from './../../../languages/en/ui';
 import styles from './../projects.module.css';
 import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
 import { connect } from 'react-redux';
 import hasPermission from '~/utils/permissions';
-import { boxStyle } from '~/styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { toast } from 'react-toastify';
 import { modifyProject } from '../../../actions/projects';
-// import { CONFIRM_ARCHIVE } from './../../../languages/en/messages'; // unused, removed
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
+import { permissions } from '../../../utils/constants';
 const Project = props => {
   const { darkMode, index } = props;
   const [projectData, setProjectData] = useState(props.projectData);
@@ -22,11 +21,11 @@ const Project = props => {
     props.projectData?.category || props.category || 'Unspecified',
   );
 
-  const canPutProject = props.hasPermission('putProject');
-  const canDeleteProject = props.hasPermission('deleteProject');
+  const canPutProject = props.hasPermission(permissions.putProject);
+  const canDeleteProject = props.hasPermission(permissions.deleteProject);
 
-  const canSeeProjectManagementFullFunctionality = props.hasPermission('seeProjectManagement');
-  const canEditCategoryAndStatus = props.hasPermission('editProject');
+  const canSeeProjectManagementFullFunctionality = props.hasPermission(permissions.seeProjectManagement);
+  const canEditCategoryAndStatus = props.hasPermission(permissions.editProject);
 
   const persistProjectUpdate = async (field, value) => {
     if (!projectData) return;
@@ -96,18 +95,17 @@ const Project = props => {
   }, [props.projectData, props.category]);
 
   return (
-    <>
-      <tr
-        className={styles['projects__tr']}
-        id={`tr_${props.projectId}`}
-      >
+    <tr
+      className={styles['projects__tr']}
+      id={`tr_${props.projectId}`}
+    >
         <th className={styles['projects__order--input']} scope="row">
           <div className={darkMode ? 'text-light' : ''}>{index + 1}</div>
         </th>
 
         <td
           data-testid="projects__name--input"
-          className={styles['projects__name--input']}
+          className={`${styles['projects__name--input']} text-break`}
         >
           {canPutProject || canSeeProjectManagementFullFunctionality ? (
             <input
@@ -120,17 +118,17 @@ const Project = props => {
               onBlur={onUpdateProjectName}
             />
           ) : (
-            projectName
+            <span className="d-block text-break">{projectName}</span>
           )}
         </td>
 
-        <td className="projects__category--input">
+        <td className="projects__category--input text-break">
           {canEditCategoryAndStatus || canPutProject ? (
             <select
               data-testid="projects__category--input" // added for unit test
               value={category}
               onChange={onUpdateProjectCategory}
-              className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
+              className={`form-control ${darkMode ? 'bg-yinmn-blue border-0 text-light' : ''}`}
             >
               <option value="Unspecified">Unspecified</option>
               <option value="Food">Food</option>
@@ -143,7 +141,7 @@ const Project = props => {
               <option value="Other">Other</option>
             </select>
           ) : (
-            category
+            <span className="d-block text-break">{category}</span>
           )}
         </td>
 
@@ -170,7 +168,7 @@ const Project = props => {
             <button
               type="button"
               className="btn btn-outline-info"
-              style={darkMode ? {} : boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               <i className="fa fa-archive" aria-hidden="true" />
             </button>
@@ -178,23 +176,38 @@ const Project = props => {
         </td>
 
         <td>
-          <NavItem tag={Link} to={`/project/members/${projectId}`}>
-            <button
-              type="button"
-              className="btn btn-outline-info"
-              style={darkMode ? {} : boxStyle}
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <NavItem tag={Link} to={`/project/members/${projectId}`} className="d-flex align-items-center">
+              <button
+                type="button"
+                className="btn btn-outline-info d-flex align-items-center project-member-btn"
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                <i className="fa fa-users" aria-hidden="true" />
+              </button>
+            </NavItem>
+            <OverlayTrigger
+              placement="top"
+              overlay={<Tooltip>Active members</Tooltip>}
             >
-              <i className="fa fa-users" aria-hidden="true" />
-            </button>
-          </NavItem>
+              <span className={styles['project-member-badge']}>
+                {props.activeMemberCounts}
+              </span>
+            </OverlayTrigger>
+          </div>
         </td>
 
         <td>
-          <NavItem tag={Link} to={`/project/wbs/${projectId}`}>
+          <NavItem tag={Link} to={{
+            pathname: `/project/wbs/${projectId}`,
+            state: props.taskSelectionMode
+              ? { taskSelectionMode: true, returnPath: props.taskSelectionReturnPath }
+              : undefined,
+          }}>
             <button
               type="button"
               className="btn btn-outline-info"
-              style={darkMode ? {} : boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               <i className="fa fa-tasks" aria-hidden="true" />
             </button>
@@ -204,18 +217,17 @@ const Project = props => {
         {canDeleteProject ? (
           <td>
             <button
-              data-testid="delete-button"
-              type="button"
-              className="btn btn-outline-danger"
-              style={darkMode ? { borderColor: '#D2042D' } : boxStyle}
-              onClick={onArchiveProject}
-            >
-              {ARCHIVE}
-            </button>
+            data-testid="delete-button"
+            type="button"
+            className="btn btn-outline-danger"
+            style={darkMode ? boxStyleDark : boxStyle}
+            onClick={onArchiveProject}
+          >
+            {projectData?.isArchived ? UNARCHIVE : ARCHIVE}
+          </button>
           </td>
         ) : null}
-      </tr>
-    </>
+    </tr>
   );
 };
 
@@ -237,6 +249,9 @@ Project.propTypes = {
   onClickProjectStatusBtn: PropTypes.func,
   onClickArchiveBtn: PropTypes.func,
   projectId: PropTypes.string,
+  activeMemberCounts: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  taskSelectionMode: PropTypes.bool,
+  taskSelectionReturnPath: PropTypes.string,
 };
 
 // Default props
@@ -249,6 +264,9 @@ Project.defaultProps = {
   onClickProjectStatusBtn: () => {},
   onClickArchiveBtn: () => {},
   projectId: '',
+  activeMemberCounts: '',
+  taskSelectionMode: false,
+  taskSelectionReturnPath: '',
 };
 
 const mapStateToProps = state => state;
