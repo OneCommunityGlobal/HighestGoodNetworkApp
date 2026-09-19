@@ -388,6 +388,10 @@ describe('Header Component Authentication Checks', () => {
  * The header's centre cell shows the owner message or the logo, never both.
  * Renders the unconnected Header so the message props can be set directly.
  */
+// `role` defaults to Volunteer — the baseline non-elevated account, and the one
+// the logo regressed for. `canEdit` stubs the editHeaderMessage permission, which
+// is commented out of PermissionsConst and so can never be true in the real app;
+// it is exercised here to keep that branch honest for when it is restored.
 function renderCenterCell({ ownerMessage = '', ownerStandardMessage = '', role = 'Volunteer', canEdit = false } = {}) {
   const auth = {
     isAuthenticated: true,
@@ -430,6 +434,7 @@ function renderCenterCell({ ownerMessage = '', ownerStandardMessage = '', role =
   );
 }
 
+// Query, don't get: every assertion below turns on one of these being absent.
 const logo = () => screen.queryByAltText('Header Logo');
 const message = () => screen.queryByTestId('mock-owner-message');
 
@@ -438,6 +443,8 @@ describe('Header centre cell: logo or owner message, never both', () => {
     vi.clearAllMocks();
   });
 
+  // The invariant the reviewer asked for, checked across every combination that
+  // can reach this cell. The cases below then pin *which* of the two shows.
   it.each([
     ['no message at all', {}],
     ['a custom owner message', { ownerMessage: 'Dev environment' }],
