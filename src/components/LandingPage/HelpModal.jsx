@@ -37,7 +37,11 @@ function HelpModal({ show, onHide, auth }) {
   }, []);
 
   useEffect(() => {
-    if (!userId) return;
+    // HelpPage keeps this modal mounted and only toggles `show`, so refetch on
+    // every open - otherwise a team membership change made elsewhere in the
+    // app (e.g. joining the Software Development Team) never reaches this
+    // already-mounted modal and the Submit button stays stuck disabled.
+    if (!userId || !show) return;
 
     const fetchUserProfile = async () => {
       try {
@@ -49,7 +53,7 @@ function HelpModal({ show, onHide, auth }) {
     };
 
     fetchUserProfile();
-  }, [userId]);
+  }, [userId, show]);
 
   const handleSelect = option => {
     setSelectedOption(option);
