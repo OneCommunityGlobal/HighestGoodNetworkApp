@@ -211,6 +211,7 @@ import BookingPage from './components/Booking/BookingPage';
 import BookingConfirmPage from './components/Booking/BookingConfirmPage';
 import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
 import ReviewersStackedBarChart from './components/HGNPRDashboard/ReviewersStackedBarChart/ReviewersStackedBarChart';
+import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
 import PRReviewTeamAnalyticsDashboard from './components/Analytics/AnalyticsDashboard';
 import PopularPRChart from './components/Analytics/PopularPRChart';
 import ReviewersRequirementChart from './components/Analytics/ReviewersRequirementChart';
