@@ -6,12 +6,15 @@ import { ENDPOINTS } from '../../../../utils/URL';
 import { toast } from 'react-toastify';
 import getWordCount from '../../../../utils/getWordCount';
 import { updateFollowUpFields } from '../../../../actions/userSkillsActions';
+import { permissions as permissionKeys } from '../../../../utils/constants';
 
 function checkIfupdateUserSkillsProfileFollowUp(permissions, role, requestorId, userid) {
   if (role === 'Administrator' || role === 'Owner' || requestorId === userid) return true;
   // eslint-disable-next-line no-console
-  console.log(permissions?.frontPermissions.includes('updateUserSkillsProfileFollowUp'));
-  return permissions?.frontPermissions.includes('updateUserSkillsProfileFollowUp');
+  console.log(
+    permissions?.frontPermissions.includes(permissionKeys.updateUserSkillsProfileFollowUp),
+  );
+  return permissions?.frontPermissions.includes(permissionKeys.updateUserSkillsProfileFollowUp);
 }
 
 function AdditionalInfo() {
