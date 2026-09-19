@@ -43,7 +43,7 @@ const barValueLabelPlugin = {
       const barCount = meta.data.filter((_, i) => dataset.data[i]).length;
       // Skip per-bar labels when bars are too dense to render them legibly;
       // the tooltip still shows exact values on hover.
-      if (barCount > 8) return;
+      if (barCount > 4) return;
 
       meta.data.forEach((bar, index) => {
         const value = dataset.data[index];
@@ -368,12 +368,19 @@ const buildChartDatasets = (tasksToInclude, labels, aggregation, darkMode) => {
 const buildChartOptions = (textColor, darkMode) => ({
   responsive: true,
   maintainAspectRatio: false,
-  layout: { padding: { top: 35, left: 15, right: 15, bottom: 10 } },
+  layout: { padding: { top: 20, left: 15, right: 15, bottom: 10 } },
   plugins: {
     barValueLabelPlugin: { darkMode },
     legend: {
       position: 'top',
-      labels: { font: { size: 12 }, color: textColor, padding: 20, usePointStyle: true },
+      align: 'start',
+      labels: {
+        font: { size: 12 },
+        color: textColor,
+        padding: 12,
+        boxWidth: 12,
+        usePointStyle: true,
+      },
     },
     // chartjs-plugin-datalabels is registered globally by a sibling chart; disable it
     // here so the custom barValueLabelPlugin is the only source of bar labels.
@@ -498,6 +505,7 @@ export default function PaidLaborCost() {
 
   const chartData = { labels, datasets: taskDatasets };
   const options = useMemo(() => buildChartOptions(textColor, darkMode), [textColor, darkMode]);
+  const chartMinWidth = Math.max(400, taskDatasets.length * 90);
 
   if (initialLoading) {
     return (
@@ -602,13 +610,18 @@ export default function PaidLaborCost() {
       </div>
 
       <div className={styles.paidLaborCostChartWrapper}>
-        <div className={styles.paidLaborCostChartContainer}>
-          {labels.length === 0 ? (
-            <div className={styles.emptyState}>No data available for the selected filters.</div>
-          ) : (
-            <Bar data={chartData} options={options} plugins={[barValueLabelPlugin]} />
-          )}
-        </div>
+        {labels.length === 0 ? (
+          <div className={styles.emptyState}>No data available for the selected filters.</div>
+        ) : (
+          <div className={styles.paidLaborCostChartScrollWrapper}>
+            <div
+              className={styles.paidLaborCostChartContainer}
+              style={{ minWidth: `${chartMinWidth}px` }}
+            >
+              <Bar data={chartData} options={options} plugins={[barValueLabelPlugin]} />
+            </div>
+          </div>
+        )}
       </div>
 
       <div className={`${styles.summaryContainer} ${darkMode ? styles.darkSummaryContainer : ''}`}>
