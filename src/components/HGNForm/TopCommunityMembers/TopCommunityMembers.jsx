@@ -25,6 +25,7 @@ const skillOptions = [
 function TopCommunityMembers() {
   const [selectedSkill, setSelectedSkill] = useState('HTML');
   const [members, setMembers] = useState([]);
+  const [fetchError, setFetchError] = useState(null);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const normalizeMember = member => ({
@@ -43,10 +44,10 @@ function TopCommunityMembers() {
           params: { skills: selectedSkill },
         });
         setMembers(Array.isArray(response?.data) ? response.data : []);
+        setFetchError(null);
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Error fetching members:', error);
         setMembers([]);
+        setFetchError(error.message || 'Unable to load community members.');
       }
     };
 
@@ -83,7 +84,7 @@ function TopCommunityMembers() {
         </select>
       </div>
 
-      <div style={{ overflowX: 'auto', width: '100%' }}>
+      <div className={styles.tableScroll}>
         <table className={darkMode ? styles.tableDark : styles.table}>
           <thead>
             <tr>
@@ -98,7 +99,7 @@ function TopCommunityMembers() {
             {sortedMembers.length === 0 && (
               <tr>
                 <td colSpan={5} className={styles.emptyState}>
-                  No members found for this skill.
+                  {fetchError || 'No members found for this skill.'}
                 </td>
               </tr>
             )}
@@ -109,12 +110,8 @@ function TopCommunityMembers() {
                   <td>{member.name || 'Unavailable'}</td>
                   <td>
                     {!member.email ? (
-                      <span
-                        className={styles.private}
-                        title="Email is private or unavailable"
-                        style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
-                      >
-                        <FaEnvelope style={{ color: '#ccc', cursor: 'not-allowed' }} />
+                      <span className={styles.private} title="Email is private or unavailable">
+                        <FaEnvelope className={styles.privateIcon} />
                         <span>Private</span>
                       </span>
                     ) : (
@@ -123,7 +120,6 @@ function TopCommunityMembers() {
                         title={member.email}
                         aria-label={`Email ${member.name}`}
                         className={darkMode ? styles.iconLinkDark : styles.iconLink}
-                        style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
                       >
                         <FaEnvelope />
                         <span>{member.email}</span>
@@ -138,31 +134,13 @@ function TopCommunityMembers() {
                         rel="noreferrer"
                         title={member.slack}
                         className={darkMode ? styles.iconLinkDark : styles.iconLink}
-                        style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
                       >
-                        <img
-                          src={slackLogo}
-                          alt="Slack"
-                          style={{ width: '20px', height: '20px' }}
-                        />
+                        <img src={slackLogo} alt="Slack" className={styles.slackLogo} />
                         <span>{member.slack}</span>
                       </a>
                     ) : (
-                      <span
-                        className={styles.private}
-                        title="Slack is private or unavailable"
-                        style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
-                      >
-                        <img
-                          src={slackLogo}
-                          alt="Slack"
-                          style={{
-                            width: '20px',
-                            height: '20px',
-                            opacity: 0.4,
-                            cursor: 'not-allowed',
-                          }}
-                        />
+                      <span className={styles.private} title="Slack is private or unavailable">
+                        <img src={slackLogo} alt="Slack" className={styles.slackLogoPrivate} />
                         <span>Private</span>
                       </span>
                     )}
@@ -172,9 +150,8 @@ function TopCommunityMembers() {
                       <span
                         className={styles.private}
                         title="Phone number is private or unavailable"
-                        style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
                       >
-                        <FaPhone style={{ color: '#ccc', cursor: 'not-allowed' }} />
+                        <FaPhone className={styles.privateIcon} />
                         <span>Private</span>
                       </span>
                     ) : (
@@ -183,7 +160,6 @@ function TopCommunityMembers() {
                         title={member.phoneNumber}
                         aria-label={`Call ${member.name}`}
                         className={darkMode ? styles.iconLinkDark : styles.iconLink}
-                        style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
                       >
                         <FaPhone />
                         <span>{member.phoneNumber}</span>
