@@ -40,8 +40,10 @@ function PromotionConfirmationModal({
         const data = await getTeamsForPlacement();
         setTeams(Array.isArray(data) ? data : []);
       } catch (e) {
-        // The failure reason isn't shown to the user; a generic toast is enough here.
-        toast.error('Failed to load teams for manual placement.');
+        const message = e?.response?.data;
+        toast.error(
+          typeof message === 'string' ? message : 'Failed to load teams for manual placement.',
+        );
       } finally {
         setTeamsLoading(false);
       }

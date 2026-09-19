@@ -93,8 +93,8 @@ function PromotionEligibility({ currentUser: currentUserProp }) {
         const res = await getReviewerGroups(currentUser);
         setReviewerGroups(res.groups || []);
       } catch (e) {
-        // The failure reason isn't shown to the user; a generic toast is enough here.
-        toast.error('Failed to load reviewer groups.');
+        const message = e?.response?.data;
+        toast.error(typeof message === 'string' ? message : 'Failed to load reviewer groups.');
       }
     })();
   }, [currentUser]);
@@ -258,8 +258,8 @@ function PromotionEligibility({ currentUser: currentUserProp }) {
       const { placements, warnings } = await previewPromotions(memberIds, currentUser);
       setPendingPromotion({ memberIds, placements, warnings });
     } catch (err) {
-      // The failure reason isn't shown to the user; a generic toast is enough here.
-      toast.error('Failed to preview promotions.');
+      const message = err?.response?.data;
+      toast.error(typeof message === 'string' ? message : 'Failed to preview promotions.');
     } finally {
       setProcessing(false);
     }

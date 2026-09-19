@@ -66,9 +66,9 @@ function ReviewForThisWeekModal({ groupKey, groupLabel, currentUser, darkMode, o
         }
         setLoading(false);
       } catch (e) {
-        // The failure reason isn't shown to the user; a generic error message is enough here.
         if (!isMounted) return;
-        setError('Failed to load weekly review data.');
+        const message = e?.response?.data;
+        setError(typeof message === 'string' ? message : 'Failed to load weekly review data.');
         setLoading(false);
       }
     })();
