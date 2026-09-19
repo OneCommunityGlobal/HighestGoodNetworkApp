@@ -98,7 +98,9 @@ function EventPage() {
             type="file"
             accept="image/*"
             onChange={handleMediaUpload}
-            className={styles.eventCardMediaUpload}
+            className={`${styles.eventCardMediaUpload} ${
+              darkMode ? styles.eventCardMediaUploadDark : ''
+            }`}
           />
         </div>
 

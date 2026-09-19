@@ -32,7 +32,9 @@ function EventDescriptionPanel({
           type="file"
           accept="image/*"
           onChange={onMediaUpload}
-          className={styles.descriptionMediaUpload}
+          className={`${styles.descriptionMediaUpload} ${
+            darkMode ? styles.descriptionMediaUploadDark : ''
+          }`}
         />
         <button
           type="button"

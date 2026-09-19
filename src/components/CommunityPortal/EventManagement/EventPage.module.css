@@ -338,3 +338,36 @@
   border: 1px solid #7a90b3;
   border-radius: 4px;
 }
+
+.eventPageDark :global(.react-datepicker__day--selected),
+.eventPageDark :global(.react-datepicker__day--keyboard-selected),
+.eventPageDark :global(.react-datepicker__day--in-range),
+.eventPageDark :global(.react-datepicker__day--in-selecting-range) {
+  background-color: #0057b8;
+  color: #fff;
+}
+
+.eventPageDark :global(.react-datepicker__day--in-range:hover),
+.eventPageDark :global(.react-datepicker__day--in-selecting-range:hover) {
+  background-color: #3a7fd6;
+}
+
+.eventCardMediaUploadDark,
+.descriptionMediaUploadDark {
+  color: #fff;
+}
+
+.eventCardMediaUploadDark::file-selector-button,
+.descriptionMediaUploadDark::file-selector-button {
+  background-color: #22304d;
+  color: #fff;
+  border: 1px solid #7a90b3;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.eventCardMediaUploadDark::file-selector-button:hover,
+.descriptionMediaUploadDark::file-selector-button:hover {
+  background-color: #3a506b;
+}
