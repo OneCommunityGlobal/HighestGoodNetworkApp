@@ -19,18 +19,23 @@ import { fetchBMProjects } from '../../../../actions/bmdashboard/projectActions'
 import { ENDPOINTS } from '../../../../utils/URL';
 import styles from './ActualVsPlannedCost.module.css';
 
+const PLANNED_BAR_COLOR = '#3b82f6';
+const OVER_BUDGET_COLOR = '#ef4444';
+const UNDER_BUDGET_COLOR = '#22c55e';
+
+function formatCurrency(value) {
+  const numericValue = Number(value) || 0;
+  return `$${numericValue.toLocaleString()}`;
+}
+
 function getBudgetStatus(variance) {
   if (variance > 0) return 'Over Budget';
   if (variance < 0) return 'Under Budget';
   return 'On Budget';
 }
 
-// Dynamic bar color: flash red when actual exceeds planned
-function getActualBarColor(entry, darkMode) {
-  if (entry.plannedCost > 0 && entry.actualCost > entry.plannedCost) {
-    return '#dc2626'; // bright red for over-budget
-  }
-  return darkMode ? '#c0392b' : '#e74a3b';
+function getActualBarColor(entry) {
+  return entry.actualCost > entry.plannedCost ? OVER_BUDGET_COLOR : UNDER_BUDGET_COLOR;
 }
 
 function getVarianceCardClass(variance, cardStyles) {
@@ -41,31 +46,48 @@ function getVarianceCardClass(variance, cardStyles) {
 
 function VarianceCard({ item, cardStyles }) {
   const isOverrun = item.variance > 0;
-  const cardClass = getVarianceCardClass(item.variance, cardStyles);
+  const variancePrefix = item.variance > 0 ? '+' : item.variance < 0 ? '-' : '';
+  const absoluteVariance = Math.abs(item.variance);
+
   return (
-    <div className={`${cardStyles.varianceCard} ${cardClass}`}>
+    <div
+      className={`${cardStyles.varianceCard} ${getVarianceCardClass(item.variance, cardStyles)}`}
+    >
       <div className={cardStyles.varianceCardCategory}>{item.category}</div>
+
       <div className={cardStyles.varianceCardRow}>
         <span>Planned:</span>
-        <span>{item.plannedCost.toLocaleString()}</span>
+        <span>{formatCurrency(item.plannedCost)}</span>
       </div>
+
       <div className={cardStyles.varianceCardRow}>
         <span>Actual:</span>
-        <span>{item.actualCost.toLocaleString()}</span>
+        <span>{formatCurrency(item.actualCost)}</span>
       </div>
-      <div className={cardStyles.varianceCardRow}>
-        <span>Variance:</span>
-        <span>
-          {isOverrun ? '+' : ''}
-          {item.variance.toLocaleString()}
+
+      <div className={cardStyles.varianceCardHighlight}>
+        <span className={cardStyles.varianceCardHighlightLabel}>Variance</span>
+        <span
+          className={
+            isOverrun
+              ? cardStyles.varianceValueOverrun
+              : item.variance < 0
+              ? cardStyles.varianceValueUnder
+              : cardStyles.varianceValueNeutral
+          }
+        >
+          {variancePrefix}
+          {formatCurrency(absoluteVariance)}
         </span>
       </div>
+
       {item.variancePct !== null && (
         <div className={cardStyles.varianceCardPct}>
-          {isOverrun ? '+' : ''}
+          {item.variancePct > 0 ? '+' : ''}
           {item.variancePct.toFixed(1)}%
         </div>
       )}
+
       <div className={cardStyles.varianceCardStatus}>{item.budgetStatus}</div>
     </div>
   );
@@ -87,105 +109,230 @@ VarianceCard.propTypes = {
     varianceNeutral: PropTypes.string,
     varianceCardCategory: PropTypes.string,
     varianceCardRow: PropTypes.string,
+    varianceCardHighlight: PropTypes.string,
+    varianceCardHighlightLabel: PropTypes.string,
+    varianceValueOverrun: PropTypes.string,
+    varianceValueUnder: PropTypes.string,
+    varianceValueNeutral: PropTypes.string,
     varianceCardPct: PropTypes.string,
     varianceCardStatus: PropTypes.string,
   }).isRequired,
 };
 
+function VarianceTooltip({ active, payload, darkMode }) {
+  if (!active || !payload?.length) return null;
+
+  const item = payload[0]?.payload;
+  if (!item) return null;
+
+  const variancePrefix = item.variance > 0 ? '+' : item.variance < 0 ? '-' : '';
+  const absoluteVariance = Math.abs(item.variance);
+  const variancePctPrefix = item.variancePct > 0 ? '+' : '';
+
+  return (
+    <div className={`${styles.customTooltip} ${darkMode ? styles.customTooltipDark : ''}`}>
+      <div className={styles.tooltipTitle}>{item.category}</div>
+
+      <div className={styles.tooltipRow}>
+        <span>Planned:</span>
+        <strong>{formatCurrency(item.plannedCost)}</strong>
+      </div>
+
+      <div className={styles.tooltipRow}>
+        <span>Actual:</span>
+        <strong>{formatCurrency(item.actualCost)}</strong>
+      </div>
+
+      <div className={styles.tooltipDivider} />
+
+      <div className={styles.tooltipRow}>
+        <span>Variance:</span>
+        <strong>
+          {variancePrefix}
+          {formatCurrency(absoluteVariance)}
+        </strong>
+      </div>
+
+      {item.variancePct !== null && (
+        <div className={styles.tooltipRow}>
+          <span>Variance %:</span>
+          <strong>
+            {variancePctPrefix}
+            {item.variancePct.toFixed(1)}%
+          </strong>
+        </div>
+      )}
+
+      <div className={styles.tooltipStatus}>{item.budgetStatus}</div>
+    </div>
+  );
+}
+
+VarianceTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.arrayOf(PropTypes.shape({})),
+  darkMode: PropTypes.bool.isRequired,
+};
+
+VarianceTooltip.defaultProps = {
+  active: false,
+  payload: [],
+};
+
+function PlannedValueLabel({ x, y, width, value }) {
+  if (value === undefined || value === null) return null;
+
+  return (
+    <text
+      x={x + width / 2}
+      y={y - 8}
+      textAnchor="middle"
+      fill="var(--text-color)"
+      fontSize="11"
+      fontWeight="600"
+    >
+      {formatCurrency(value)}
+    </text>
+  );
+}
+
+PlannedValueLabel.propTypes = {
+  x: PropTypes.number,
+  y: PropTypes.number,
+  width: PropTypes.number,
+  value: PropTypes.number,
+};
+
+PlannedValueLabel.defaultProps = {
+  x: 0,
+  y: 0,
+  width: 0,
+  value: null,
+};
+
+function ActualVarianceLabel({ x, y, width, payload }) {
+  if (!payload) return null;
+
+  const variance = Number(payload.variance) || 0;
+  const variancePct = payload.variancePct;
+  const prefix = variance > 0 ? '+' : variance < 0 ? '-' : '';
+  const pctPrefix = variancePct > 0 ? '+' : '';
+  const labelColor =
+    variance > 0 ? OVER_BUDGET_COLOR : variance < 0 ? UNDER_BUDGET_COLOR : 'var(--text-color)';
+
+  return (
+    <g>
+      <text
+        x={x + width / 2}
+        y={y - 20}
+        textAnchor="middle"
+        fill={labelColor}
+        fontSize="11"
+        fontWeight="700"
+      >
+        {prefix}
+        {formatCurrency(Math.abs(variance))}
+      </text>
+
+      {variancePct !== null && (
+        <text
+          x={x + width / 2}
+          y={y - 7}
+          textAnchor="middle"
+          fill={labelColor}
+          fontSize="10"
+          fontWeight="600"
+        >
+          {pctPrefix}
+          {variancePct.toFixed(1)}%
+        </text>
+      )}
+    </g>
+  );
+}
+
+ActualVarianceLabel.propTypes = {
+  x: PropTypes.number,
+  y: PropTypes.number,
+  width: PropTypes.number,
+  payload: PropTypes.shape({
+    variance: PropTypes.number,
+    variancePct: PropTypes.number,
+  }),
+};
+
+ActualVarianceLabel.defaultProps = {
+  x: 0,
+  y: 0,
+  width: 0,
+  payload: null,
+};
+
 function buildChartContent({ loading, isFiltering, hasData, chartDataWithVariance, darkMode }) {
   if (loading || isFiltering) {
     return (
-      <div
-        style={{
-          display: 'flex',
-          height: 200,
-          justifyContent: 'center',
-          alignItems: 'center',
-          color: 'var(--text-color)',
-        }}
-      >
+      <div className={styles.chartState}>
         <Spinner color="primary" size="sm" />
-        <span style={{ marginLeft: '10px' }}>Updating chart...</span>
+        <span>Updating chart...</span>
       </div>
     );
   }
+
   if (hasData) {
     return (
-      <div style={{ width: '100%', height: 200 }}>
+      <div className={styles.chartContainer}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={chartDataWithVariance}
-            margin={{ top: 20, right: 5, left: 5, bottom: 0 }}
-            barGap={20}
+            margin={{ top: 42, right: 12, left: 12, bottom: 8 }}
+            barGap={16}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#e5e7eb' : '#e0e0e0'} />
+            <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#aab4c2' : '#e0e0e0'} />
+
             <XAxis
               dataKey="category"
               axisLine={false}
               tickLine={false}
-              tick={{ fill: 'var(--text-color)' }}
+              tick={{ fill: 'var(--text-color)', fontSize: 12 }}
             />
-            <YAxis tick={{ fill: 'var(--text-color)', fontSize: '12px' }} />
+
+            <YAxis
+              tick={{ fill: 'var(--text-color)', fontSize: 12 }}
+              tickFormatter={formatCurrency}
+              width={72}
+            />
+
             <Tooltip
               cursor={{ fill: 'transparent' }}
               allowEscapeViewBox={{ x: true, y: true }}
-              contentStyle={{
-                backgroundColor: darkMode ? '#1f242b' : 'var(--card-bg)',
-                borderColor: darkMode ? '#45505e' : 'var(--button-hover)',
-                borderRadius: '6px',
-                color: 'var(--text-color)',
-              }}
-              labelStyle={{ color: 'var(--text-color)', fontSize: '12px' }}
-              itemStyle={{ color: 'var(--text-color)', fontSize: '12px' }}
+              content={<VarianceTooltip darkMode={darkMode} />}
               wrapperStyle={{ pointerEvents: 'none', zIndex: 12 }}
             />
+
             <Legend
               verticalAlign="top"
               height={36}
               iconSize={8}
               wrapperStyle={{ color: 'var(--text-color)' }}
             />
-            <Bar
-              dataKey="actualCost"
-              name="Actual"
-              fill={darkMode ? '#c0392b' : '#e74a3b'}
-              barSize={40}
-            >
-              {chartDataWithVariance.map(entry => (
-                <Cell
-                  key={`actual-cell-${entry.category}`}
-                  fill={getActualBarColor(entry, darkMode)}
-                />
-              ))}
-              <LabelList dataKey="actualCost" position="top" fill="var(--text-color)" />
+
+            <Bar dataKey="plannedCost" name="Planned" fill={PLANNED_BAR_COLOR} maxBarSize={44}>
+              <LabelList dataKey="plannedCost" content={<PlannedValueLabel />} />
             </Bar>
-            <Bar
-              dataKey="plannedCost"
-              name="Planned"
-              fill={!darkMode ? '#17a272' : '#1cc88a'}
-              barSize={40}
-            >
-              <LabelList dataKey="plannedCost" position="top" fill="var(--text-color)" />
+
+            <Bar dataKey="actualCost" name="Actual" fill={UNDER_BUDGET_COLOR} maxBarSize={44}>
+              {chartDataWithVariance.map(entry => (
+                <Cell key={`actual-cell-${entry.category}`} fill={getActualBarColor(entry)} />
+              ))}
+              <LabelList dataKey="actualCost" content={<ActualVarianceLabel />} />
             </Bar>
           </BarChart>
         </ResponsiveContainer>
       </div>
     );
   }
-  return (
-    <div
-      style={{
-        display: 'flex',
-        height: 200,
-        justifyContent: 'center',
-        alignItems: 'center',
-        color: 'var(--text-color)',
-        fontStyle: 'italic',
-      }}
-    >
-      No data available for the selected filters.
-    </div>
-  );
+
+  return <div className={styles.chartState}>No data available for the selected filters.</div>;
 }
 
 function ActualVsPlannedCost() {
@@ -193,7 +340,6 @@ function ActualVsPlannedCost() {
   const projects = useSelector(state => state.bmProjects) || [];
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  // Persisted filters
   const [selectedProject, setSelectedProject] = useState(
     () => localStorage.getItem('bm_avsp_project') || '',
   );
@@ -201,7 +347,6 @@ function ActualVsPlannedCost() {
     () => localStorage.getItem('bm_avsp_category') || 'Overall',
   );
 
-  // Component state
   const [breakdown, setBreakdown] = useState([]);
   const [totals, setTotals] = useState({ actual: 0, planned: 0 });
   const [loading, setLoading] = useState(false);
@@ -212,7 +357,6 @@ function ActualVsPlannedCost() {
     [projects, selectedProject],
   );
 
-  // Sync filters to local storage
   useEffect(() => {
     if (selectedProject) {
       localStorage.setItem('bm_avsp_project', selectedProject);
@@ -224,26 +368,25 @@ function ActualVsPlannedCost() {
     dispatch(fetchBMProjects());
   }, [dispatch]);
 
-  // Default to first project if none selected
   useEffect(() => {
     if (!selectedProject && projects.length > 0) {
       setSelectedProject(projects[0]._id);
     }
   }, [projects, selectedProject]);
 
-  // Filter transition effect
   useEffect(() => {
     setIsFiltering(true);
     const timeout = setTimeout(() => {
       setIsFiltering(false);
     }, 400);
+
     return () => clearTimeout(timeout);
   }, [selectedProject, selectedCategory]);
 
-  // Fetch project expenses
   useEffect(() => {
     if (selectedProject) {
       setLoading(true);
+
       axios
         .get(ENDPOINTS.BM_PROJECT_EXPENSE_BY_ID(selectedProject))
         .then(({ data }) => {
@@ -251,6 +394,7 @@ function ActualVsPlannedCost() {
             actual: Math.round(data.totalActualCost),
             planned: Math.round(data.totalPlannedCost),
           });
+
           setBreakdown(
             data.breakdown.map(item => ({
               category: item.category,
@@ -267,8 +411,8 @@ function ActualVsPlannedCost() {
     }
   }, [selectedProject]);
 
-  // Derived chart data
   const categories = ['Overall', ...new Set(breakdown.map(d => d.category))];
+
   const chartData =
     selectedCategory === 'Overall'
       ? [{ category: 'Overall', actualCost: totals.actual, plannedCost: totals.planned }]
@@ -278,6 +422,7 @@ function ActualVsPlannedCost() {
 
   const chartDataWithVariance = chartData.map(item => {
     const variance = item.actualCost - item.plannedCost;
+
     return {
       ...item,
       variance,
@@ -294,13 +439,12 @@ function ActualVsPlannedCost() {
       chartDataWithVariance[0].plannedCost === 0
     );
 
-  // Badge reflects the currently selected view (Overall or a specific
-  // category), so it stays consistent with the breakdown cards below it.
   const displayedPlanned = chartDataWithVariance.reduce((sum, d) => sum + d.plannedCost, 0);
   const displayedActual = chartDataWithVariance.reduce((sum, d) => sum + d.actualCost, 0);
   const totalVariance = displayedActual - displayedPlanned;
   const totalVariancePct = displayedPlanned > 0 ? (totalVariance / displayedPlanned) * 100 : null;
   const isTotalOverrun = totalVariance > 0;
+  const totalVariancePrefix = totalVariance > 0 ? '+' : totalVariance < 0 ? '-' : '';
 
   const chartContent = buildChartContent({
     loading,
@@ -311,14 +455,13 @@ function ActualVsPlannedCost() {
   });
 
   return (
-    <div style={{ padding: 10 }} className={darkMode ? styles.darkMode : ''}>
-      <div style={{ textAlign: 'center', marginBottom: '15px' }}>
-        <h2 style={{ fontSize: 'large', margin: '0 0 5px 0' }} className={styles.title}>
-          Actual vs Planned Costs
-        </h2>
-        <div style={{ fontSize: '0.85rem', color: 'var(--text-color)', fontWeight: 'bold' }}>
-          Viewing: {filterSummary}
-        </div>
+    <div className={`${styles.componentContainer} ${darkMode ? styles.darkMode : ''}`}>
+      <div className={styles.header}>
+        <h2 className={styles.title}>Planned vs Actual Cost</h2>
+        <p className={styles.subtitle}>
+          Compare planned project expenditure with actual spending and identify cost variance.
+        </p>
+        <div className={styles.filterSummary}>Viewing: {filterSummary}</div>
       </div>
 
       <div className={styles.selectorsContainer}>
@@ -361,13 +504,14 @@ function ActualVsPlannedCost() {
       {!loading && !isFiltering && hasData && (
         <div className={styles.varianceSummaryContainer}>
           <div className={styles.varianceSummaryHeader}>
-            <h3 className={styles.varianceSummaryTitle}>Variance and Budget Indicators</h3>
+            <h3 className={styles.varianceSummaryTitle}>Cost Variance Summary</h3>
+
             <div className={isTotalOverrun ? styles.totalOverrunBadge : styles.totalOnTrackBadge}>
               {selectedCategory === 'Overall' ? 'Total Variance' : `${selectedCategory} Variance`}:{' '}
-              {isTotalOverrun ? '+' : ''}
-              {totalVariance.toLocaleString()}
+              {totalVariancePrefix}
+              {formatCurrency(Math.abs(totalVariance))}
               {totalVariancePct !== null &&
-                ` (${isTotalOverrun ? '+' : ''}${totalVariancePct.toFixed(1)}%)`}
+                ` (${totalVariancePct > 0 ? '+' : ''}${totalVariancePct.toFixed(1)}%)`}
             </div>
           </div>
 
