@@ -116,9 +116,9 @@ const ReportChart = ({
                 maxRotation: 45,
                 minRotation: 0,
                 autoSkip: false,
-                callback(value) {
-                  const label = this.getLabelForValue(value);
-                  return label.length > 20 ? `${label.substring(0, 20)}...` : label;
+                callback: value => {
+                  const label = data?.labels?.[value] ?? value;
+                  return String(label).length > 20 ? `${String(label).substring(0, 20)}...` : label;
                 },
               },
               grid: {

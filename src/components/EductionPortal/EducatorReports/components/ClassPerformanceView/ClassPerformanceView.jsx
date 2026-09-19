@@ -97,12 +97,6 @@ const ClassPerformanceView = ({ filters }) => {
     }
   }, [filters.classId, filters.subject, filters.dateRange]);
 
-  const getStrategyColor = (value, index) => {
-    if (value >= 85) return '#10b981'; // Green - Highly Effective
-    if (value >= 70) return '#3b82f6'; // Blue - Effective
-    return '#ef4444'; // Red - Needs Improvement
-  };
-
   const getStrategyLabel = value => {
     if (value >= 85) return 'Highly Effective (85%)';
     if (value >= 70) return 'Effective (70%)';
