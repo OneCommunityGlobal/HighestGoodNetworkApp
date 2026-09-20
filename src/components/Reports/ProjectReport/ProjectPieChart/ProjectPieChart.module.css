@@ -33,6 +33,13 @@
   gap: 2px;
 }
 
+.selectedContributors {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  text-align: center;
+  white-space: normal;
+}
+
 .centerToggleWrapper {
   display: flex;
   justify-content: center;

@@ -174,11 +174,17 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
   const availableWidth = measuredWidth || windowSize;
   const chartLayout = getChartLayout(availableWidth);
   const isCompact = availableWidth <= 576;
+  const aggregationThreshold = windowSize <= 640 ? 0.05 : 0.03;
 
   // Aggregate data to handle small values - recalculate when userData changes
-  const aggregatedResult = aggregateSmallValues(userData, windowSize <= 640 ? 0.05 : 0.03);
+  const aggregatedResult = aggregateSmallValues(userData, aggregationThreshold);
   const aggregatedData = aggregatedResult.aggregatedData;
   const hasOthers = aggregatedResult.hasOthers;
+
+  useEffect(() => {
+    setActiveIndices([]);
+    setAccumulatedValues(0);
+  }, [userData, aggregationThreshold]);
   
   useEffect(() => { 
     layoutRef.current = null;
@@ -229,11 +235,21 @@ export function ProjectPieChart({ userData, windowSize, darkMode }) {
 
   const displayedTotalHours =
     userData[0]?.totalHoursCalculated ?? userData.reduce((total, item) => total + item.value, 0);
+  const selectedContributorNames = activeIndices
+    .map(index => aggregatedData[index])
+    .filter(Boolean)
+    .map(item => `${item.name}${item.lastName ? ` ${item.lastName}` : ''}`)
+    .join(', ');
 
   const centerContent = (
     <div className={`${styles.centerContent} ${darkMode ? styles.centerContentDark : ''}`}>
-      <div className={styles.centerSummary} aria-live="polite">
+      <div className={styles.centerSummary} role="status" aria-live="polite">
         <span>{showAllValues ? 'All values' : 'Selected values'}</span>
+        {!showAllValues && isCompact && (
+          <span className={styles.selectedContributors}>
+            {selectedContributorNames || 'No contributor selected'}
+          </span>
+        )}
         {!showAllValues && <span>{accumulatedValues.toFixed(2)} hrs</span>}
         <span>Total hrs ({Number(displayedTotalHours || 0).toFixed(2)})</span>
       </div>
