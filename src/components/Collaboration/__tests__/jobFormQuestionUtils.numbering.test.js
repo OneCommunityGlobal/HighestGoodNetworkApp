@@ -27,4 +27,35 @@ describe('job form question numbering', () => {
       expect(stripLeadingQuestionNumber(questionText)).toBe(questionText);
     },
   );
+
+  it.each([null, undefined, ''])('returns an empty string for %s', questionText => {
+    expect(stripLeadingQuestionNumber(questionText)).toBe('');
+  });
+
+  it.each(['Question 5 details', 'What is your name?'])(
+    'leaves text without a leading number untouched: %s',
+    questionText => {
+      expect(stripLeadingQuestionNumber(questionText)).toBe(questionText);
+    },
+  );
+
+  it('replaces a stale embedded number with the 1-based position', () => {
+    expect(numberedQuestionLabel('3.) What is your name?', 0)).toBe('1.) What is your name?');
+  });
+
+  it('produces sequential labels after a simulated reorder', () => {
+    const saved = ['1.) Name?', '2.) Email?', '3.) Phone?'];
+    const swapped = [saved[2], saved[1], saved[0]];
+    expect(swapped.map((text, index) => numberedQuestionLabel(text, index))).toEqual([
+      '1.) Phone?',
+      '2.) Email?',
+      '3.) Name?',
+    ]);
+  });
+
+  it('documents current behavior for empty and whitespace-only labels', () => {
+    expect(numberedQuestionLabel('', 0)).toBe('1.) ');
+    expect(numberedQuestionLabel(null, 1)).toBe('2.) ');
+    expect(numberedQuestionLabel('   ', 0)).toBe('1.)    ');
+  });
 });
