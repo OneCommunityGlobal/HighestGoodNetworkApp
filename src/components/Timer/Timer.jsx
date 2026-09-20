@@ -329,11 +329,9 @@ function Timer({ authUser, darkMode, isPopout }) {
     if (viewingUserId == null) {
       return {
         sendStart: () => {
-          setUserIntent('START');
           sendJsonMessageNoQueue({ action: action.START_TIMER });
         },
         sendPause: () => {
-          setUserIntent('PAUSE');
           sendJsonMessageNoQueue({ action: action.PAUSE_TIMER });
         },
         sendClear: () => sendJsonMessageNoQueue({ action: action.CLEAR_TIMER }),
