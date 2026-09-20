@@ -111,15 +111,17 @@ function AddNewTitleModal({
 
   // live teamCode validity (using QSTTeamCodes list)
   useEffect(() => {
-    const codeValue = (titleData.teamCode || '').trim();
-  
-    setIsValidTeamCode(
-      codeValue === '' ||
-        (Array.isArray(QSTTeamCodes) &&
-          QSTTeamCodes.some(code => code?.value === codeValue))
-    );
-  }, [titleData.teamCode, QSTTeamCodes]);
-  
+  const codeValue = titleData.teamCode?.trim() || '';
+
+  setIsValidTeamCode(
+    codeValue === '' ||
+      (Array.isArray(QSTTeamCodes) &&
+        QSTTeamCodes.some(
+          code =>
+            code?.value?.trim().toLowerCase() === codeValue.toLowerCase()
+        ))
+  );
+}, [titleData.teamCode, QSTTeamCodes]);
 
   // ----------------- canonical lists for validation ------------------------
 
