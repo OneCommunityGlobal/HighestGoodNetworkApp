@@ -1,65 +1,35 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import JobAnalyticsBarChart from './JobAnalyticsBarChart';
-import {
-  aggregateJobsByTitle,
-  sortJobsByMetric,
-  getChartMaxValue,
-} from './jobAnalyticsUtils';
+import JobAnalyticsGraph from './JobAnalyticsGraph';
 
 function ConvertedApplicationGraph({
-  data = [],
+  data,
   usePercentage,
   isDark,
   dateRange,
 }) {
-  const metricKey = usePercentage
-    ? 'conversionRate'
-    : 'applications';
-
-  const rows = useMemo(() => {
-    const aggregated = aggregateJobsByTitle(data);
-
-    return sortJobsByMetric(
-      aggregated,
-      metricKey,
-      'descending',
-    ).slice(0, 10);
-  }, [data, metricKey]);
-
-  const xDomain = useMemo(() => {
-    if (usePercentage) {
-      return [0, 100];
-    }
-
-    return [0, getChartMaxValue(rows, metricKey)];
-  }, [rows, metricKey, usePercentage]);
-
   return (
-    <JobAnalyticsBarChart
-      rows={rows}
+    <JobAnalyticsGraph
+      data={data}
       usePercentage={usePercentage}
       isDark={isDark}
       dateRange={dateRange}
+      sortDirection="descending"
       barColor="#4CAF50"
       titlePrefix="Top 10 Job Postings by"
-      xDomain={xDomain}
     />
   );
 }
 
 ConvertedApplicationGraph.propTypes = {
-  data: PropTypes.arrayOf(
-    PropTypes.shape({
-      title: PropTypes.string,
-      hits: PropTypes.number,
-      applications: PropTypes.number,
-      conversionRate: PropTypes.number,
-    }),
-  ),
+  data: PropTypes.arrayOf(PropTypes.object),
   usePercentage: PropTypes.bool.isRequired,
   isDark: PropTypes.bool.isRequired,
   dateRange: PropTypes.string.isRequired,
+};
+
+ConvertedApplicationGraph.defaultProps = {
+  data: [],
 };
 
 export default ConvertedApplicationGraph;
