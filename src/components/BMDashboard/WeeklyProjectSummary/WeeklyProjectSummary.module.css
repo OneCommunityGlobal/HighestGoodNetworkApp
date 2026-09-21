@@ -621,6 +621,26 @@
   transition: color 0.3s ease;
 }
 
+.projectStatusUnavailableInfo {
+  align-items: center;
+  border: 1px solid currentcolor;
+  border-radius: 50%;
+  cursor: help;
+  display: inline-flex;
+  font-size: 10px;
+  font-weight: 700;
+  height: 16px;
+  justify-content: center;
+  line-height: 1;
+  margin-left: 6px;
+  vertical-align: middle;
+  width: 16px;
+}
+
+.projectStatusUnavailableTooltip {
+  z-index: 1060;
+}
+
 .weekly-status-change {
   transition: color 0.3s ease;
   font-size: 14px;
@@ -635,6 +655,10 @@
 /* Keep all Project Status text readable on the preserved pastel status cards in dark mode. */
 .darkMode .statusCard .weeklyCardTitle,
 .darkMode .statusCard .weeklyStatusValue {
+  color: #000 !important;
+}
+
+.darkMode .statusCard .projectStatusUnavailableInfo {
   color: #000 !important;
 }
 
