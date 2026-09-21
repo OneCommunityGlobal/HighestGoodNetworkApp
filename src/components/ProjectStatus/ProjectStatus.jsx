@@ -15,11 +15,12 @@ const centerTextPlugin = {
   id: 'centerText',
   afterDraw(chart) {
     const centerTextOptions = chart.options.plugins.centerText;
+    // Only charts that explicitly enable centerText should draw this label.
     if (!centerTextOptions?.display) return;
 
     const { ctx } = chart;
     const { width, height } = chart;
-    const isDarkMode = chart.options.plugins.centerText?.darkMode || false;
+    const isDarkMode = centerTextOptions.darkMode || false;
 
     ctx.save();
     ctx.font = '600 14px Inter, system-ui';
@@ -27,7 +28,7 @@ const centerTextPlugin = {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    const total = chart.options.plugins.centerText?.total ?? 0;
+    const total = centerTextOptions.total ?? 0;
     ctx.fillText('Total Projects', width / 2, height / 2 - 10);
     ctx.font = '700 18px Inter, system-ui';
     ctx.fillText(`${total}`, width / 2, height / 2 + 14);
