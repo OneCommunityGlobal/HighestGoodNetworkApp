@@ -25,6 +25,10 @@
   table-layout: fixed;
 }
 
+.team-table-dark tbody tr:hover {
+  background: #2f4157;
+}
+
 .order-column {
   width: 3.5rem;
 }
@@ -44,4 +48,10 @@
 .team-code-column {
   width: 30%;
   min-width: 8em;
+}
+
+@media screen and (width <= 700px) {
+  .team-table {
+    min-width: 36rem;
+  }
 }

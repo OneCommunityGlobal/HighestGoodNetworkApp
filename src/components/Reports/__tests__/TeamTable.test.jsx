@@ -42,4 +42,19 @@ describe('TeamTable', () => {
       styles['team-name-cell'],
     );
   });
+
+  it('applies the scoped dark table class in dark mode', () => {
+    render(
+      <MemoryRouter>
+        <TeamTable
+          allTeams={[]}
+          auth={{ user: { role: 'Volunteer' } }}
+          darkMode
+          refreshTeams={vi.fn()}
+        />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole('table')).toHaveClass(styles['team-table-dark']);
+  });
 });

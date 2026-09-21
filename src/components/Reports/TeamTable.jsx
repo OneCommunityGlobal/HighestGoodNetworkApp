@@ -132,7 +132,9 @@ export function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
   }
   return (
     <table
-      className={`table ${styles['team-table']} ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`}
+      className={`table ${styles['team-table']} ${
+        darkMode ? `bg-yinmn-blue ${styles['team-table-dark']}` : 'table-bordered'
+      }`}
       style={darkMode ? boxStyleDark : boxStyle}
     >
       <thead>
