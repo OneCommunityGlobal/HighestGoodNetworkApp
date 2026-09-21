@@ -302,10 +302,14 @@ export default function TaskTimer({ tasks }) {
   const isIdle = currentStatus === 'idle';
   const canStart = !submitting && (!isIdle || Boolean(selectedTaskId));
 
+  // Single source of truth for opening the timer modal, shared by the icon
+  // button and the time label so both trigger the exact same modal state.
+  const openTimer = useCallback(() => setOpen(true), []);
+
   return (
     <>
       <div className={`${styles.compactWrapper} ${darkMode ? styles.dark : ''}`}>
-        <button type="button" className={styles.compactIconBtn} onClick={() => setOpen(true)}>
+        <button type="button" className={styles.compactIconBtn} onClick={openTimer}>
           <AlarmIcon size={ICON_SIZE} />
         </button>
 
@@ -316,9 +320,14 @@ export default function TaskTimer({ tasks }) {
               style={{ width: `${progressPct}%` }}
             />
           </div>
-          <div className={styles.timeLabel}>
+          <button
+            type="button"
+            className={`${styles.timeLabel} ${styles.timeLabelButton}`}
+            onClick={openTimer}
+            aria-label="Open timer"
+          >
             {pad2(displayH)}:{pad2(displayM)}:{pad2(displayS)}
-          </div>
+          </button>
           {isOvertime && <div className={styles.compactOvertime}>Overtime {overtimeLabel}</div>}
           {error && (
             <div className={styles.compactError} role="alert">

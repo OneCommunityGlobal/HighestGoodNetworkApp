@@ -396,6 +396,19 @@ describe('TaskTimer', () => {
     expect(screen.queryByText('Timer')).not.toBeInTheDocument();
   });
 
+  it('opens the same timer modal from the clock icon or the displayed time value', () => {
+    renderTimer();
+
+    fireEvent.click(screen.getByLabelText('Open timer'));
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText('Close timer'));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getAllByRole('button')[0]);
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
   it('shows an overtime indicator once elapsed passes the countdown target, and keeps the clock at 00:00:00', async () => {
     // 1-minute target, 2m15s actually elapsed → Overtime +00:01:15
     httpService.post.mockResolvedValueOnce({

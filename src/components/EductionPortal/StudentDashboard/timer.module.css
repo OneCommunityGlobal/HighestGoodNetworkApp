@@ -59,6 +59,18 @@
   text-align: center;
 }
 
+/* Resets native button chrome so .timeLabel renders identically whether it's a div or a button. */
+.timeLabelButton {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
+}
+
 .compactOvertime {
   font-size: 0.7rem;
   font-weight: 600;
