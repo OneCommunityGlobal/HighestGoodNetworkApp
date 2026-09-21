@@ -48,7 +48,7 @@ import AddTool from './components/BMDashboard/Tools/AddTool';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
 import Issue from './components/BMDashboard/Issue/Issue';
 import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
-import IssueChart from './components/BMDashboard/Issues/issueCharts';
+import MaterialConsumption from './components/BMDashboard/WeeklyProjectSummary/MaterialConsumption/MaterialConsumption';
 import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
 import AnalyticsDashboard from './components/JobCCDashboard/JobAnalytics/JobAnalytics';
@@ -599,9 +599,11 @@ export default (
           component={CountryOfApplicationMapChart}
           fallback
         />
+        {/* Not exact: Announcements drives its own tabs off the URL and pushes
+            sub-paths such as /announcements/email/templates. With exact, those
+            fall through to the catch-all NotFoundPage at the end of this Switch. */}
         <ProtectedRoute
           path="/announcements"
-          exact
           component={Announcements}
           routePermissions={RoutePermissions.announcements}
         />
@@ -847,7 +849,8 @@ export default (
           component={InjurySeverityDashboard}
         />
         <BMProtectedRoute path="/bmdashboard/issues/add/:projectId" component={Issue} />
-        <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
+        {/* PR #4812 expects this URL to show the full three-card Material Consumption group. */}
+        <BMProtectedRoute path="/bmdashboard/issuechart" component={MaterialConsumption} />
         <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
         <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
         <BMProtectedRoute path="/bmdashboard/InteractiveMap" component={InteractiveMap} />
@@ -1252,11 +1255,11 @@ export default (
         <ProtectedRoute path="/pr-grading-screen" exact component={PRGradingScreen} fallback />
         <ProtectedRoute path="/pr-dashboard/overview" exact component={PRDashboardOverview} />
         <ProtectedRoute path="/pr-dashboard/analytics" exact component={PRReviewTeamAnalytics} />
-        <ProtectedRoute
+        {/* <ProtectedRoute
           path="/pr-dashboard/promotion-eligibility"
           exact
           component={PRDashboardPromotionEligibility}
-        />
+        /> */}
         <ProtectedRoute
           path="/pr-dashboard/top-reviewed-prs"
           exact
