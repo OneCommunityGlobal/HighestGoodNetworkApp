@@ -22,7 +22,7 @@ export function calculateComparisonDates(comparisonType, fromDate, toDate) {
 
   const start = new Date(fromDate);
   const end = new Date(toDate);
-  const diffDays = Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24));
+  const diffDays = Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24)) + 1;
   const shiftedStart = shiftComparisonDate(start, diffDays, comparisonType);
   const shiftedEnd = shiftComparisonDate(end, diffDays, comparisonType);
 

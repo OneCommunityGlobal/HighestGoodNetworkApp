@@ -178,20 +178,24 @@ function getProjectStatusUnavailableReason(metric) {
   return metric.unavailableReason || 'Data does not exist for the selected period.';
 }
 
+function getProjectStatusComparisonUnavailableText(comparisonPeriodFilter) {
+  return `No ${comparisonPeriodFilter.toLowerCase()} comparison available`;
+}
+
 function formatProjectStatusChange(metric, comparisonPeriodFilter) {
   const percentageChange = metric?.percentageChange;
 
-  if (
-    comparisonPeriodFilter === 'No Comparison' ||
-    metric?.comparisonType !== PERIOD_COMPARABLE ||
-    percentageChange === null ||
-    percentageChange === undefined
-  ) {
+  if (comparisonPeriodFilter === 'No Comparison') {
     return null;
   }
 
-  if (typeof percentageChange === 'string') {
-    return percentageChange;
+  if (
+    metric?.comparisonType !== PERIOD_COMPARABLE ||
+    percentageChange === null ||
+    percentageChange === undefined ||
+    typeof percentageChange === 'string'
+  ) {
+    return getProjectStatusComparisonUnavailableText(comparisonPeriodFilter);
   }
 
   const percent = Math.round(percentageChange * 100);
@@ -200,11 +204,15 @@ function formatProjectStatusChange(metric, comparisonPeriodFilter) {
 }
 
 function getProjectStatusChangeColor(metric) {
-  if (typeof metric?.percentageChange !== 'number' || metric.percentageChange === 0) {
+  if (typeof metric?.percentageChange !== 'number') {
+    return '#C82F2F';
+  }
+
+  if (metric.percentageChange === 0) {
     return '#000';
   }
 
-  return metric.percentageChange < 0 ? '#C82F2F' : '#328D1B';
+  return metric.percentageChange > 0 ? '#328D1B' : '#C82F2F';
 }
 
 function WeeklyProjectSummary() {
