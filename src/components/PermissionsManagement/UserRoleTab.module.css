@@ -248,7 +248,7 @@
 }
 
 .permissionTooltipText {
-  visibility: hidden; 
+  visibility: hidden;
   opacity: 0;
   background-color: rgba(211, 211, 211, 0.75) !important;
   position: absolute;
@@ -277,7 +277,7 @@
   word-break: break-word;
   white-space: normal;
   max-width: calc(100% - 60px);
-  margin-right: 10px; 
+  margin-right: 10px;
 }
 @media only screen and (width <= 683px) {
   .responsiveFontSize {

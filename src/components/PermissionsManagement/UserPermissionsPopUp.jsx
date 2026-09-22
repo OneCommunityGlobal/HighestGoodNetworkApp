@@ -22,6 +22,7 @@ import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+  permissions,
 } from '../../utils/constants';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import PermissionList from './PermissionList';
@@ -349,6 +350,7 @@ function UserPermissionsPopUp({
               rolePermissions={userPermissions}
               immutablePermissions={actualUserRolePermission}
               editable={!!actualUserProfile}
+              editPermission={permissions.putUserProfilePermissions}
               setPermissions={setUserPermissions}
               removedDefaultPermissions={userRemovedDefaultPermissions}
               setRemovedDefaultPermissions={setUserRemovedDefaultPermissions}

@@ -56,7 +56,7 @@ const UserTableHeaderComponent = ({ authUser, roleSearchText, darkMode, editUser
 
           await axios.patch(permissionURL, permissionData).catch(err => console.error(err))
         }
-        
+
         const response = await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE, updatedData);
         if (response.status === 200) {
           const toastId = toast.success(' Saving Data...', { autoClose: false });
