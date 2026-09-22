@@ -137,7 +137,7 @@ describe('FacebookComposer', () => {
     expect(composer).toContainElement(scheduleDateTime);
 
     fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
-    const editDialog = screen.getByRole('dialog');
+    const editDialog = screen.getByRole('dialog', { name: 'Edit Scheduled Post' });
     const editDateTime = within(editDialog).getByDisplayValue('2099-01-01T12:00');
     expect(editDateTime).toHaveAttribute('type', 'datetime-local');
     expect(editDateTime).toHaveClass(styles.field);

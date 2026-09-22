@@ -138,7 +138,9 @@ describe('FacebookConnection', () => {
     });
     render(<FacebookConnection />);
     fireEvent.click(screen.getByRole('button', { name: 'Connect Facebook Page' }));
-    expect(await screen.findByText('Select a Facebook Page')).toBeInTheDocument();
+    expect(
+      await screen.findByRole('dialog', { name: 'Select a Facebook Page' }),
+    ).toBeInTheDocument();
     expect(connectFacebookPage).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: /One Community/ }));
     await waitFor(() =>
@@ -150,6 +152,26 @@ describe('FacebookConnection', () => {
         }),
       ),
     );
+  });
+
+  it('closes the Page selector when selection is cancelled', async () => {
+    actionResults.LOGIN = Promise.resolve({
+      success: true,
+      pages: [{ pageId: '123', pageName: 'One Community', category: 'Community' }],
+      selectionNonce: 'cancelled-nonce',
+    });
+    render(<FacebookConnection />);
+    fireEvent.click(screen.getByRole('button', { name: 'Connect Facebook Page' }));
+    expect(
+      await screen.findByRole('dialog', { name: 'Select a Facebook Page' }),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+    expect(
+      screen.queryByRole('dialog', { name: 'Select a Facebook Page' }),
+    ).not.toBeInTheDocument();
+    expect(connectFacebookPage).not.toHaveBeenCalled();
   });
 
   it('connects a selected Page from multiple choices with the callback nonce', async () => {

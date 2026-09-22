@@ -21,6 +21,11 @@ const formatDate = date =>
         .format('MMM D, YYYY h:mm A')
     : 'Unknown';
 
+const getStatusText = (connected, expired) => {
+  if (!connected) return 'Not Connected';
+  return expired ? 'Token Expired' : 'Connected';
+};
+
 function FacebookLogo() {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="#1877F2" aria-hidden="true">
@@ -31,9 +36,13 @@ function FacebookLogo() {
 
 function PageSelector({ pages, darkMode, disabled, onSelect, onCancel }) {
   return (
-    <div className={styles.modalOverlay} role="presentation">
-      <div className={classnames(styles.modal, { [styles.dark]: darkMode })} role="dialog">
-        <h4>Select a Facebook Page</h4>
+    <div className={styles.modalOverlay}>
+      <dialog
+        aria-labelledby="facebook-page-selector-title"
+        className={classnames(styles.modal, { [styles.dark]: darkMode })}
+        open
+      >
+        <h4 id="facebook-page-selector-title">Select a Facebook Page</h4>
         <p className={styles.muted}>Choose the Page you want to connect for posting:</p>
         {pages.map(page => (
           <button
@@ -58,7 +67,90 @@ function PageSelector({ pages, darkMode, disabled, onSelect, onCancel }) {
         >
           Cancel
         </button>
+      </dialog>
+    </div>
+  );
+}
+
+function ConnectionDetails({
+  connected,
+  connectionStatus,
+  expired,
+  canManage,
+  managementPending,
+  connecting,
+  disconnecting,
+  onConnect,
+  onDisconnect,
+}) {
+  if (!connected) {
+    return (
+      <div>
+        <p className={styles.muted}>Connect a Facebook Page to enable posting and scheduling.</p>
+        {canManage ? (
+          <button
+            className={styles.primaryButton}
+            type="button"
+            disabled={managementPending}
+            onClick={onConnect}
+          >
+            {connecting ? 'Connecting...' : 'Connect Facebook Page'}
+          </button>
+        ) : (
+          <p className={styles.error}>Only authorized users can connect a Facebook Page.</p>
+        )}
       </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className={styles.meta}>
+        <p>
+          <strong>Page ID:</strong> {connectionStatus.pageId}
+        </p>
+        <p>
+          <strong>Connected:</strong> {formatDate(connectionStatus.connectedAt)} by{' '}
+          {connectionStatus.connectedBy}
+        </p>
+        {expired && (
+          <p className={styles.error}>
+            <strong>⚠️ Token Issue:</strong> Please reconnect to restore posting capability.
+          </p>
+        )}
+        {connectionStatus.lastVerifiedAt && (
+          <p>
+            <strong>Last Verified:</strong> {formatDate(connectionStatus.lastVerifiedAt)}
+          </p>
+        )}
+        {connectionStatus.lastError && (
+          <p className={styles.error}>
+            <strong>Last Error:</strong> {connectionStatus.lastError}
+          </p>
+        )}
+      </div>
+      {canManage ? (
+        <div className={styles.actions}>
+          <button
+            className={styles.secondaryButton}
+            type="button"
+            disabled={managementPending}
+            onClick={onConnect}
+          >
+            {connecting ? 'Reconnecting...' : 'Reconnect'}
+          </button>
+          <button
+            className={styles.dangerButton}
+            type="button"
+            disabled={managementPending}
+            onClick={onDisconnect}
+          >
+            {disconnecting ? 'Disconnecting...' : 'Disconnect'}
+          </button>
+        </div>
+      ) : (
+        <p className={styles.muted}>Only authorized users can manage the Facebook connection.</p>
+      )}
     </div>
   );
 }
@@ -165,7 +257,7 @@ export default function FacebookConnection() {
 
   const connected = connectionStatus?.connected;
   const expired = connectionStatus?.tokenStatus === 'expired';
-  const statusText = connected ? (expired ? 'Token Expired' : 'Connected') : 'Not Connected';
+  const statusText = getStatusText(connected, expired);
 
   if (loading) {
     return (
@@ -218,74 +310,17 @@ export default function FacebookConnection() {
         </span>
       </div>
 
-      {connected ? (
-        <div>
-          <div className={styles.meta}>
-            <p>
-              <strong>Page ID:</strong> {connectionStatus.pageId}
-            </p>
-            <p>
-              <strong>Connected:</strong> {formatDate(connectionStatus.connectedAt)} by{' '}
-              {connectionStatus.connectedBy}
-            </p>
-            {expired && (
-              <p className={styles.error}>
-                <strong>⚠️ Token Issue:</strong> Please reconnect to restore posting capability.
-              </p>
-            )}
-            {connectionStatus.lastVerifiedAt && (
-              <p>
-                <strong>Last Verified:</strong> {formatDate(connectionStatus.lastVerifiedAt)}
-              </p>
-            )}
-            {connectionStatus.lastError && (
-              <p className={styles.error}>
-                <strong>Last Error:</strong> {connectionStatus.lastError}
-              </p>
-            )}
-          </div>
-          {canManage ? (
-            <div className={styles.actions}>
-              <button
-                className={styles.secondaryButton}
-                type="button"
-                disabled={managementPending}
-                onClick={handleConnect}
-              >
-                {connecting ? 'Reconnecting...' : 'Reconnect'}
-              </button>
-              <button
-                className={styles.dangerButton}
-                type="button"
-                disabled={managementPending}
-                onClick={handleDisconnect}
-              >
-                {disconnecting ? 'Disconnecting...' : 'Disconnect'}
-              </button>
-            </div>
-          ) : (
-            <p className={styles.muted}>
-              Only authorized users can manage the Facebook connection.
-            </p>
-          )}
-        </div>
-      ) : (
-        <div>
-          <p className={styles.muted}>Connect a Facebook Page to enable posting and scheduling.</p>
-          {canManage ? (
-            <button
-              className={styles.primaryButton}
-              type="button"
-              disabled={managementPending}
-              onClick={handleConnect}
-            >
-              {connecting ? 'Connecting...' : 'Connect Facebook Page'}
-            </button>
-          ) : (
-            <p className={styles.error}>Only authorized users can connect a Facebook Page.</p>
-          )}
-        </div>
-      )}
+      <ConnectionDetails
+        connected={connected}
+        connectionStatus={connectionStatus}
+        expired={expired}
+        canManage={canManage}
+        managementPending={managementPending}
+        connecting={connecting}
+        disconnecting={disconnecting}
+        onConnect={handleConnect}
+        onDisconnect={handleDisconnect}
+      />
 
       {pages.length > 0 && (
         <PageSelector

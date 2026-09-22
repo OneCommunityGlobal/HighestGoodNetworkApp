@@ -440,7 +440,7 @@ export default function FacebookComposer() {
             <strong>📷 Add Image (optional)</strong>
             <div className={styles.actions}>
               <label className={styles.secondaryButton}>
-                📁 Upload from Device
+                📁 Upload from Device{' '}
                 <input
                   hidden
                   accept="image/jpeg,image/png,image/gif,image/webp"
@@ -503,7 +503,7 @@ export default function FacebookComposer() {
             <strong>📷 Add Image (optional)</strong>
             <div className={styles.actions}>
               <label className={styles.secondaryButton}>
-                📁 Upload from Device
+                📁 Upload from Device{' '}
                 <input
                   hidden
                   accept="image/jpeg,image/png,image/gif,image/webp"
@@ -543,7 +543,7 @@ export default function FacebookComposer() {
           </div>
           <div className={styles.row}>
             <label className={styles.fieldGroup}>
-              Date &amp; Time (PST)
+              Date &amp; Time (PST){' '}
               <input
                 className={styles.field}
                 type="datetime-local"
@@ -605,7 +605,7 @@ export default function FacebookComposer() {
         <div>
           <div className={styles.filters}>
             <label className={styles.fieldGroup}>
-              Status
+              Status{' '}
               <select
                 className={styles.select}
                 value={historyStatus}
@@ -617,7 +617,7 @@ export default function FacebookComposer() {
               </select>
             </label>
             <label className={styles.fieldGroup}>
-              Type
+              Type{' '}
               <select
                 className={styles.select}
                 value={historyPostMethod}
@@ -629,7 +629,7 @@ export default function FacebookComposer() {
               </select>
             </label>
             <label className={styles.fieldGroup}>
-              Source
+              Source{' '}
               <select
                 className={styles.select}
                 value={historySource}
@@ -707,9 +707,13 @@ export default function FacebookComposer() {
       />
 
       {editingPost && (
-        <div className={styles.modalOverlay} role="presentation">
-          <div className={styles.modal} role="dialog">
-            <h4>Edit Scheduled Post</h4>
+        <div className={styles.modalOverlay}>
+          <dialog
+            aria-labelledby="facebook-edit-scheduled-post-title"
+            className={styles.modal}
+            open
+          >
+            <h4 id="facebook-edit-scheduled-post-title">Edit Scheduled Post</h4>
             <textarea
               className={styles.textarea}
               value={editMessage}
@@ -733,7 +737,7 @@ export default function FacebookComposer() {
                 Cancel
               </button>
             </div>
-          </div>
+          </dialog>
         </div>
       )}
     </div>

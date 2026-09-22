@@ -29,7 +29,7 @@
 }
 
 .activeTab {
-  color: #007bff;
+  color: #0056b3;
   font-weight: 700;
   background: #dbeeff;
   border-bottom-color: #007bff;
@@ -119,13 +119,13 @@
   padding: 8px 16px;
   color: #fff;
   cursor: pointer;
-  background: #007bff;
+  background: #0069d9;
   border: 0;
   border-radius: 6px;
 }
 
 .primaryButton {
-  background: #1877f2;
+  background: #1664cc;
 }
 
 .dangerButton {
@@ -165,7 +165,7 @@
 
 .badgeDisconnected,
 .badgeExpired {
-  color: #dc3545;
+  color: #842029;
   background: #f8d7da;
 }
 
@@ -202,6 +202,7 @@
 }
 
 .modal {
+  position: static;
   width: 90%;
   max-width: 450px;
   max-height: 80vh;
@@ -209,7 +210,9 @@
   overflow: auto;
   color: #333;
   background: #fff;
+  border: 0;
   border-radius: 8px;
+  margin: 0;
 }
 
 .pageOption {
