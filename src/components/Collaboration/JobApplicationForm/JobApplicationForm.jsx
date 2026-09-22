@@ -157,11 +157,13 @@ function notifyInitialFormSelection(navTitle, formMatch, chosen) {
   if (chosen) {
     toast.warn(
       `Could not match "${navTitle}" to a form title. Showing "${chosen.title}" — pick another role from the dropdown if this is not the right application.`,
-      { autoClose: false, closeOnClick: false },
+      { autoClose: false, closeOnClick: false, toastId: 'job-title-mismatch-warning' },
     );
     return;
   }
-  toast.warn('No application form is available. Please contact support or try again later.');
+  toast.warn('No application form is available. Please contact support or try again later.', {
+    toastId: 'job-title-mismatch-no-form',
+  });
 }
 
 function getInitialFormState(chosen, navTitle) {
