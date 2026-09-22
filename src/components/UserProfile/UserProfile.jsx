@@ -212,32 +212,37 @@ function UserProfile(props) {
 
   /* useEffect functions */ // added by luis, the below useEffect
   useEffect(() => {
+    const controller = new AbortController();
+
     getCurretLoggedinUserEmail();
     dispatch(fetchAllProjects());
     dispatch(getAllUserTeams());
     dispatch(getAllTimeOffRequests());
     dispatch(getAllTeamCode());
-    fetchSpecialWarnings();
+    fetchSpecialWarnings(controller.signal);
+
+    return () => {
+      controller.abort();
+    };
   }, []);
 
-  const updateProjectTouserProfile = () => {
-    return new Promise(resolve => {
-      checkIsProjectsEqual();
+  const updateProjectToUserProfile = () => {
+    checkIsProjectsEqual();
 
-      setUserProfile(prevState => {
-        const updatedProfile = prevState;
-        if (updatedProfile) {
-          updatedProfile.projects = projects || updatedProfile.projects;
-        }
-        return updatedProfile;
-      });
-      setOriginalUserProfile(prevState => {
-        const updatedOriginalProfile = prevState;
-        if (updatedOriginalProfile) {
-          updatedOriginalProfile.projects = projects || updatedOriginalProfile.projects;
-        }
-        return updatedOriginalProfile;
-      });
+    setUserProfile(prevState => {
+      const updatedProfile = prevState;
+      if (updatedProfile) {
+        updatedProfile.projects = projects || updatedProfile.projects;
+      }
+      return updatedProfile;
+    });
+
+    setOriginalUserProfile(prevState => {
+      const updatedOriginalProfile = prevState;
+      if (updatedOriginalProfile) {
+        updatedOriginalProfile.projects = projects || updatedOriginalProfile.projects;
+      }
+      return updatedOriginalProfile;
     });
   };
 
@@ -857,10 +862,12 @@ setUpdatedTasks(prev => {
     }
   };
 
-  const fetchSpecialWarnings = async () => {
+  const fetchSpecialWarnings = async signal => {
     const userId = props?.match?.params?.userId;
     try {
-      dispatch(getSpecialWarnings(userId)).then(res => {
+      dispatch(getSpecialWarnings(userId, signal)).then(res => {
+        if (signal?.aborted) return;
+
         if (res.error) {
           // eslint-disable-next-line no-console
           console.error('Error fetching special warnings:', res.error);
@@ -1040,12 +1047,7 @@ setUpdatedTasks(prev => {
   });
 
   useEffect(() => {
-    const helper = async () => {
-      try {
-        await updateProjectTouserProfile();
-      } catch (error) {}
-    };
-    helper();
+    updateProjectToUserProfile();
   }, [projects]);
 
   useEffect(() => {
@@ -1069,9 +1071,23 @@ setUpdatedTasks(prev => {
   }, [userProfile]);
 
   useEffect(() => {
-    if (!shouldRefresh) return;
-    setShouldRefresh(false);
-    loadUserProfile();
+    if (!shouldRefresh) return undefined;
+
+    const controller = new AbortController();
+
+    const refreshProfile = async () => {
+      await loadUserProfile(controller.signal);
+
+      if (!controller.signal.aborted) {
+        setShouldRefresh(false);
+      }
+    };
+
+    refreshProfile();
+
+    return () => {
+      controller.abort();
+    };
   }, [shouldRefresh]);
 
   useEffect(() => {

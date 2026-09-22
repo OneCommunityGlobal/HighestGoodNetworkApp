@@ -19,6 +19,8 @@ describe('UserProfile async request cleanup', () => {
 
   it('aborts the in-flight profile request when the component unmounts', async () => {
     let profileRequestSignal;
+    let tasksRequestSignal;
+    let specialWarningsRequestSignal;
 
     // Keep requests pending so we can unmount while UserProfile is still loading.
     const pendingRequest = new Promise(() => {});
@@ -26,6 +28,14 @@ describe('UserProfile async request cleanup', () => {
     axios.get.mockImplementation((url, config = {}) => {
       if (url === ENDPOINTS.USER_PROFILE('target-user')) {
         profileRequestSignal = config.signal;
+      }
+
+      if (url === ENDPOINTS.TASKS_BY_USERID('target-user')) {
+        tasksRequestSignal = config.signal;
+      }
+
+      if (url === ENDPOINTS.GET_SPECIAL_WARNINGS('target-user')) {
+        specialWarningsRequestSignal = config.signal;
       }
 
       return pendingRequest;
@@ -77,16 +87,15 @@ describe('UserProfile async request cleanup', () => {
     );
 
     await waitFor(() => {
-      expect(
-        axios.get.mock.calls.some(
-          ([url]) => url === ENDPOINTS.USER_PROFILE('target-user'),
-        ),
-      ).toBe(true);
+      expect(profileRequestSignal).toBeDefined();
+      expect(tasksRequestSignal).toBeDefined();
+      expect(specialWarningsRequestSignal).toBeDefined();
     });
 
     unmount();
 
-    expect(profileRequestSignal).toBeDefined();
     expect(profileRequestSignal.aborted).toBe(true);
+    expect(tasksRequestSignal.aborted).toBe(true);
+    expect(specialWarningsRequestSignal.aborted).toBe(true);
   });
 });
