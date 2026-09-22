@@ -241,7 +241,7 @@ export default function LossTrackingLineChart() {
     });
 
     return Object.keys(merged)
-      .sort()
+      .sort((a, b) => a.localeCompare(b))
       .map(key => merged[key]);
   }, [filteredLines, startDate, endDate, year]);
 
