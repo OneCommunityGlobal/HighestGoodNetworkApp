@@ -194,7 +194,7 @@ const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
    * We DO NOT calculate PRs Needed from committed hours here.
    */
   const getReviewerPrsNeeded = reviewer => {
-    if (Object.prototype.hasOwnProperty.call(prsNeededOverrides, reviewer.id)) {
+    if (Object.hasOwn(prsNeededOverrides, reviewer.id)) {
       return prsNeededOverrides[reviewer.id];
     }
 
@@ -723,9 +723,8 @@ const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
 
       {showGradingModal && (
         <div className={`${styles['pr-grading-screen-modal-overlay']} ${dm}`}>
-          <div
+          <dialog
             className={`${styles['pr-grading-screen-modal']} ${dm}`}
-            role="dialog"
             aria-modal="true"
             aria-labelledby="pr-grading-modal-title"
           >
@@ -827,7 +826,7 @@ const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
                 </Button>
               </div>
             </div>
-          </div>
+          </dialog>
         </div>
       )}
     </Container>

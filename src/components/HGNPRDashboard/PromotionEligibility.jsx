@@ -3,7 +3,6 @@ import { toast } from 'react-toastify';
 import { FaCheck } from 'react-icons/fa';
 import {
   getPromotionEligibility,
-  postPromotionEligibility,
   previewPromotionEligibility,
   processPromotions,
   fetchReviewerGroups,
@@ -581,7 +580,7 @@ function PromotionEligibility() {
 
                     {isOwner && (
                       <>
-                        <div className={styles.dropdown_divider} role="separator" />
+                        <hr className={styles.dropdown_divider} />
 
                         <button
                           type="button"
@@ -602,9 +601,8 @@ function PromotionEligibility() {
               {/* Manage Review Options Modal */}
               {showManageOptions && (
                 <div className={styles.modal_overlay}>
-                  <div
+                  <dialog
                     className={styles.modal}
-                    role="dialog"
                     aria-modal="true"
                     aria-labelledby="manage-review-options-title"
                   >
@@ -661,16 +659,15 @@ function PromotionEligibility() {
                         Close
                       </button>
                     </div>
-                  </div>
+                  </dialog>
                 </div>
               )}
 
               {/* Edit Review Option Modal */}
               {showEditOption && selectedOption && (
                 <div className={styles.modal_overlay}>
-                  <div
+                  <dialog
                     className={styles.modal}
-                    role="dialog"
                     aria-modal="true"
                     aria-labelledby="edit-review-option-title"
                   >
@@ -733,16 +730,15 @@ function PromotionEligibility() {
                         Cancel
                       </button>
                     </div>
-                  </div>
+                  </dialog>
                 </div>
               )}
 
               {/* Add Review Option Modal */}
               {showAddOption && (
                 <div className={styles.modal_overlay}>
-                  <div
+                  <dialog
                     className={styles.modal}
-                    role="dialog"
                     aria-modal="true"
                     aria-labelledby="add-review-option-title"
                   >
@@ -801,7 +797,7 @@ function PromotionEligibility() {
                         Cancel
                       </button>
                     </div>
-                  </div>
+                  </dialog>
                 </div>
               )}
 
@@ -889,9 +885,8 @@ function PromotionEligibility() {
       {/* Promotion Confirmation Modal */}
       {showPromotionModal && (
         <div className={`${styles.modal_overlay} ${darkMode ? styles.darkModal : ''}`}>
-          <div
+          <dialog
             className={styles.modal}
-            role="dialog"
             aria-modal="true"
             aria-labelledby="promotion-confirmation-title"
           >
@@ -1012,7 +1007,7 @@ function PromotionEligibility() {
                 Cancel
               </button>
             </div>
-          </div>
+          </dialog>
         </div>
       )}
     </>
