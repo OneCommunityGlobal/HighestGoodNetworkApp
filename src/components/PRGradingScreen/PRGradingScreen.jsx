@@ -391,10 +391,6 @@ const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
    * ---------------------------------------------------------
    */
 
-  const handleFinalize = () => {
-    setIsFinalized(true);
-  };
-
   /*
    * ---------------------------------------------------------
    * HISTORY
