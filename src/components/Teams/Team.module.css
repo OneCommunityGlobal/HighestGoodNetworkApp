@@ -3,16 +3,31 @@
   background: aliceblue;
 }
 
+.teamsTable {
+  table-layout: fixed;
+  width: 100%;
+  min-width: 680px;
+}
+
+/* The un-sized name column receives the space left by these utility columns. */
+.orderColumn {
+  width: 64px;
+}
+
+.activeColumn {
+  width: 96px;
+}
+
+.membersColumn {
+  width: 104px;
+}
+
+.actionsColumn {
+  width: 160px;
+}
+
 #new_team {
   margin-bottom: 10px;
-}
-
-#teams__order {
-  width: 5px;
-}
-
-#teams__active {
-  width: 10px;
 }
 
 .centered-cell {
@@ -20,16 +35,8 @@
   vertical-align: middle;
 }
 
-#teams__members {
-  width: 15px;
-}
-
 #teams__wbs {
   width: 15px;
-}
-
-#teams__delete {
-  width: 20px;
 }
 
 .teams__tr {

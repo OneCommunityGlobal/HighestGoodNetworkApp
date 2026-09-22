@@ -9,6 +9,8 @@ import { Container } from 'reactstrap';
 import { toast } from 'react-toastify';
 import isEqual from 'lodash/isEqual';
 import { searchWithAccent } from '../../utils/search';
+import hasPermission from '~/utils/permissions';
+import { permissions } from '../../utils/constants';
 import {
   getAllUserTeams,
   deleteTeam,
@@ -192,7 +194,7 @@ class Teams extends React.PureComponent {
     const numberOfInActiveTeams = allTeams.filter(t => t.isActive === false).length;
 
     const containerClass = `teams-container ${darkMode ? 'bg-oxford-blue text-light' : ''}`;
-    const tableClass = `table teams-table table-bordered table-responsive-sm ${
+    const tableClass = `table teams-table table-bordered ${styles.teamsTable} ${
       darkMode ? 'dark-mode bg-yinmn-blue text-light' : ''
     }`;
 
@@ -227,6 +229,10 @@ class Teams extends React.PureComponent {
   }
 
   renderTable = (tableClass, darkMode) => {
+    const showActions =
+      this.props.hasPermission(permissions.deleteTeam) ||
+      this.props.hasPermission(permissions.putTeam);
+
     if (this.state.teams === null) {
       return (
         <div
@@ -275,6 +281,13 @@ class Teams extends React.PureComponent {
     return (
       <div className="table-responsive mt-3">
         <table className={tableClass}>
+          <colgroup>
+            <col className={styles.orderColumn} />
+            <col />
+            <col className={styles.activeColumn} />
+            <col className={styles.membersColumn} />
+            {showActions && <col className={styles.actionsColumn} />}
+          </colgroup>
           <thead className={styles.teamsTableHead}>
             <TeamTableHeader
               onTeamNameSort={this.toggleTeamNameSort}
@@ -561,6 +574,7 @@ class Teams extends React.PureComponent {
 }
 
 Teams.propTypes = {
+  hasPermission: PropTypes.func.isRequired,
   // connected redux state
   state: PropTypes.shape({
     allTeamsData: PropTypes.shape({
@@ -597,6 +611,7 @@ Teams.propTypes = {
 const mapStateToProps = state => ({ state });
 
 export default connect(mapStateToProps, {
+  hasPermission,
   getAllUserProfile,
   getAllUserTeams,
   deleteTeam,
