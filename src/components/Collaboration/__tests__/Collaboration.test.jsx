@@ -177,6 +177,7 @@ describe('Collaboration', () => {
     });
 
     expect(searchInput).toHaveValue('Frontend Engineer');
+    expect(screen.queryByText("Showing results for 'Frontend Engineer'")).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Go' }));
 
@@ -184,6 +185,7 @@ describe('Collaboration', () => {
       expect(
         globalThis.fetch.mock.calls.some(([url]) => url.includes('search=Frontend%20Engineer')),
       ).toBe(true);
+      expect(screen.getByText("Showing results for 'Frontend Engineer'")).toBeInTheDocument();
     });
   });
 

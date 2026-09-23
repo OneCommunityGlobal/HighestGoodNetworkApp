@@ -45,6 +45,7 @@ function dedupeJobsByTitle(jobs) {
 
 function Collaboration() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [submittedSearchTerm, setSubmittedSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [jobAds, setJobAds] = useState([]);
@@ -66,7 +67,7 @@ function Collaboration() {
 
   const darkMode = useSelector(state => state.theme?.darkMode);
   const history = useHistory();
-  console.log(jobAds);
+
   const handleTabChange = tab => {
     setActiveTab(tab);
 
@@ -222,6 +223,7 @@ function Collaboration() {
 
     const submittedSearch = e.currentTarget.elements.search?.value ?? searchTerm;
     setSearchTerm(submittedSearch);
+    setSubmittedSearchTerm(submittedSearch.trim());
 
     setSummaries(null);
     setActiveTab('jobPostings');
@@ -253,6 +255,7 @@ function Collaboration() {
       const data = await response.json();
       if (requestId !== requestIdRef.current) return;
       setSearchTerm('');
+      setSubmittedSearchTerm('');
       setSelectedCategory('');
       setCurrentPage(1);
       setJobAds(dedupeJobsByTitle(Array.isArray(data?.jobs) ? data.jobs : []));
@@ -609,6 +612,7 @@ function Collaboration() {
           <>
             <div className={styles.headings}>
               <h1 className={styles.mainHeading}>LIKE TO WORK WITH US? APPLY NOW!</h1>
+              {submittedSearchTerm && <p>{`Showing results for '${submittedSearchTerm}'`}</p>}
             </div>
 
             <div className={styles.jobList}>{renderJobContent()}</div>
