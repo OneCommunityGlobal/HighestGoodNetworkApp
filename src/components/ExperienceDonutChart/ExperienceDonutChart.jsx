@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios'; // Added axios import to fix network request errors
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Sector } from 'recharts';
 import styles from './ExperienceDonutChart.module.css';
 
 const SEGMENT_COLORS = [
@@ -16,11 +16,14 @@ const SEGMENT_COLORS = [
 
 const EXPERIENCE_LABELS = ['0-1 years', '1-3 years', '3-5 years', '5+ years'];
 
-// ✅ Crypto-based RNG (safer than Math.random)
-function secureRandomInt(min, max) {
-  const array = new Uint32Array(1);
-  crypto.getRandomValues(array);
-  return min + (array[0] % (max - min + 1));
+function getContrastColor(hexColor) {
+  const hex = hexColor.replace('#', '');
+  const bigint = parseInt(hex, 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  return brightness > 150 ? '#111827' : '#ffffff';
 }
 
 function Spinner() {
@@ -31,6 +34,13 @@ function Spinner() {
     </div>
   );
 }
+
+const TODAY = new Date().toISOString().split('T')[0];
+
+const PREFERS_REDUCED_MOTION =
+  typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    : false;
 
 export default function ExperienceDonutChart() {
   const [startDate, setStartDate] = useState('');
@@ -44,7 +54,6 @@ export default function ExperienceDonutChart() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [activeIndex, setActiveIndex] = useState(null);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const hasFilters = useMemo(
@@ -52,15 +61,17 @@ export default function ExperienceDonutChart() {
       Boolean(
         appliedFilters.startDate ||
           appliedFilters.endDate ||
-          (appliedFilters.roles?.length ?? 0) > 0,
+          (appliedFilters.roles?.length ?? 0) > 0 ||
+          startDate ||
+          endDate ||
+          selectedRoles.length > 0,
       ),
-    [appliedFilters],
+    [appliedFilters, startDate, endDate, selectedRoles],
   );
 
   const fetchData = async () => {
     setLoading(true);
     setError(null);
-    setActiveIndex(null);
 
     try {
       const token = localStorage.getItem('token');
@@ -88,7 +99,7 @@ export default function ExperienceDonutChart() {
 
       if (!data || data.length === 0) {
         setChartData(null);
-        setLoading(false);
+        setTotal(0);
         return;
       }
 
@@ -120,18 +131,139 @@ export default function ExperienceDonutChart() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appliedFilters]);
 
-  const onRolesChange = e => {
-    setSelectedRoles(Array.from(e.target.selectedOptions, o => o.value));
+  const visibleChartData = useMemo(() => chartData?.filter(d => d.value > 0) ?? [], [chartData]);
+
+  // Hide counts until the sweep animation finishes so they don't bleed through
+  const [animationDone, setAnimationDone] = useState(false);
+  useEffect(() => {
+    setAnimationDone(PREFERS_REDUCED_MOTION);
+  }, [chartData]);
+
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' && window.innerWidth < 450,
+  );
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 450);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  const pieMargin = isMobile
+    ? { top: 5, right: 5, bottom: 5, left: 5 }
+    : { top: 20, right: 115, bottom: 20, left: 115 };
+
+  // Renders the hovered segment with a slightly larger outer radius
+  const renderActiveShape = props => {
+    const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
+    return (
+      <Sector
+        cx={cx}
+        cy={cy}
+        innerRadius={innerRadius - 3}
+        outerRadius={outerRadius + 10}
+        startAngle={startAngle}
+        endAngle={endAngle}
+        fill={fill}
+      />
+    );
+  };
+
+  // Draws the count at the visual center of each segment — only after animation completes
+  const renderInsideCount = ({ cx, cy, midAngle, innerRadius, outerRadius, value, index }) => {
+    if (!value || !animationDone) return null;
+    const isHovered = index === hoveredIndex;
+    const RADIAN = Math.PI / 180;
+    // Push centroid outward slightly when hovered to stay centered in the expanded segment
+    const expandedOuter = isHovered ? outerRadius + 10 : outerRadius;
+    const radius = (innerRadius - (isHovered ? 3 : 0) + expandedOuter) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+    return (
+      <text
+        x={x}
+        y={y}
+        textAnchor="middle"
+        dominantBaseline="central"
+        fill={getContrastColor(visibleChartData[index]?.color ?? '#000')}
+        style={{
+          fontSize: isHovered ? '1.35rem' : '1.2rem',
+          fontWeight: 800,
+          pointerEvents: 'none',
+          transition: 'font-size 0.15s ease',
+        }}
+      >
+        {value.toLocaleString()}
+      </text>
+    );
+  };
+
+  // Draws name on top line, percentage below — outside the segment, only after animation completes
+  const renderOutsideLabel = ({ cx, cy, midAngle, outerRadius, name, percent, index }) => {
+    if (!animationDone) return null;
+    // On very small screens hide outside labels — inside counts are still visible
+    if (isMobile) return null;
+    const isHovered = index === hoveredIndex;
+    const RADIAN = Math.PI / 180;
+    const expandedOuter = isHovered ? outerRadius + 10 : outerRadius;
+    const lineStart = expandedOuter + 8;
+    const lineEnd = expandedOuter + (isMobile ? 30 : 50);
+    const sx = cx + lineStart * Math.cos(-midAngle * RADIAN);
+    const sy = cy + lineStart * Math.sin(-midAngle * RADIAN);
+    const ex = cx + lineEnd * Math.cos(-midAngle * RADIAN);
+    const ey = cy + lineEnd * Math.sin(-midAngle * RADIAN);
+    const isRight = ex > cx;
+    const elbowX = ex + (isRight ? 18 : -18);
+    const textX = elbowX + (isRight ? 4 : -4);
+    const textAnchor = isRight ? 'start' : 'end';
+    const pct = `${(percent * 100).toFixed(1)}%`;
+    const labelColor = darkMode ? '#f8fafc' : '#0f172a';
+    const lineColor = darkMode ? '#94a3b8' : '#64748b';
+    const nameFontSize = isHovered ? '1.2rem' : '1.05rem';
+    const pctFontSize = isHovered ? '1.05rem' : '0.95rem';
+    const strokeWidth = isHovered ? 2.5 : 1.5;
+
+    return (
+      <g style={{ transition: 'all 0.15s ease' }}>
+        <path
+          d={`M${sx},${sy} L${ex},${ey} L${elbowX},${ey}`}
+          fill="none"
+          stroke={lineColor}
+          strokeWidth={strokeWidth}
+        />
+        <text
+          x={textX}
+          y={ey}
+          textAnchor={textAnchor}
+          fill={labelColor}
+          style={{ fontWeight: 700 }}
+        >
+          <tspan x={textX} dy="-0.55em" style={{ fontSize: nameFontSize }}>
+            {name}
+          </tspan>
+          <tspan x={textX} dy="1.2em" style={{ fontSize: pctFontSize, opacity: 0.75 }}>
+            {pct}
+          </tspan>
+        </text>
+      </g>
+    );
   };
 
   const applyFilters = () => {
-    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-      setError(null);
-      setChartData(null);
-      setTotal(0);
-      setLoading(false);
+    if (startDate && startDate > TODAY) {
+      setError('Start date cannot be in the future.');
       return;
     }
+    if (endDate && endDate > TODAY) {
+      setError('End date cannot be in the future.');
+      return;
+    }
+    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+      setError('Start date must be before end date.');
+      return;
+    }
+    setError(null);
     setAppliedFilters({ startDate, endDate, roles: selectedRoles });
   };
 
@@ -139,49 +271,8 @@ export default function ExperienceDonutChart() {
     setStartDate('');
     setEndDate('');
     setSelectedRoles([]);
+    setError(null);
     setAppliedFilters({ startDate: '', endDate: '', roles: [] });
-  };
-
-  const DetailsPanel = () => {
-    if (!chartData || total === 0) return null;
-
-    return (
-      <div className={styles['chart-details']}>
-        {chartData.map((d, idx) => {
-          const pct = total > 0 ? ((d.value / total) * 100).toFixed(1) : 0;
-          return (
-            <div
-              key={d.name}
-              className={`${styles['detail-item']} ${activeIndex === idx ? styles.active : ''}`}
-              onMouseEnter={() => setActiveIndex(idx)}
-              onMouseLeave={() => setActiveIndex(null)}
-            >
-              <span className={styles['detail-dot']} style={{ backgroundColor: d.color }} />
-              <span className={styles['detail-name']}>{d.name}</span>
-              <span className={styles['detail-count']}>{d.value.toLocaleString()}</span>
-              <span className={styles['detail-pct']}>{pct}%</span>
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
-
-  const CustomTooltip = ({ active, payload }) => {
-    if (!active || !payload?.length) return null;
-    const d = payload[0]?.payload;
-    const pct = total > 0 ? ((d.value / total) * 100).toFixed(1) : 0;
-
-    return (
-      <div className={styles['custom-tooltip']}>
-        {/* Corrected tooltip to use name and value from payload for visibility */}
-        <strong>{d.name}</strong>
-        <br />
-        Count: {d.value}
-        <br />
-        {pct}% of applicants
-      </div>
-    );
   };
 
   return (
@@ -205,6 +296,7 @@ export default function ExperienceDonutChart() {
                 type="date"
                 className={styles['filter-input']}
                 value={startDate}
+                max={TODAY}
                 onChange={e => setStartDate(e.target.value)}
               />
             </div>
@@ -218,27 +310,38 @@ export default function ExperienceDonutChart() {
                 type="date"
                 className={styles['filter-input']}
                 value={endDate}
+                max={TODAY}
                 onChange={e => setEndDate(e.target.value)}
               />
             </div>
 
             <div className={styles['filter-group']}>
-              <label className={styles['filter-label']} htmlFor="roles">
-                Roles
-              </label>
-              <select
-                id="roles"
-                className={styles['filter-select']}
-                multiple
-                value={selectedRoles}
-                onChange={onRolesChange}
-              >
-                <option value="Frontend Developer">Frontend Developer</option>
-                <option value="DevOps Engineer">DevOps Engineer</option>
-                <option value="Project Manager">Project Manager</option>
-                <option value="Junior Developer">Junior Developer</option>
-                <option value="Full Stack Developer">Full Stack Developer</option>
-              </select>
+              <fieldset className={styles['checkbox-fieldset']}>
+                <legend className={styles['filter-label']}>Roles</legend>
+                <div className={styles['checkbox-list']}>
+                  {[
+                    'Frontend Developer',
+                    'DevOps Engineer',
+                    'Project Manager',
+                    'Junior Developer',
+                    'Full Stack Developer',
+                  ].map(role => (
+                    <label key={role} className={styles['checkbox-item']}>
+                      <input
+                        type="checkbox"
+                        value={role}
+                        checked={selectedRoles.includes(role)}
+                        onChange={e => {
+                          setSelectedRoles(prev =>
+                            e.target.checked ? [...prev, role] : prev.filter(r => r !== role),
+                          );
+                        }}
+                      />
+                      {role}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
             </div>
           </div>
 
@@ -247,7 +350,9 @@ export default function ExperienceDonutChart() {
               Apply
             </button>
             <button
-              className={`${styles.btn} ${styles.ghost}`}
+              className={`${styles.btn} ${styles.ghost} ${
+                hasFilters ? styles['ghost-active'] : ''
+              }`}
               onClick={resetFilters}
               disabled={!hasFilters}
             >
@@ -263,48 +368,84 @@ export default function ExperienceDonutChart() {
             {!loading && !error && chartData && total > 0 && (
               <>
                 <div className={styles['chart-canvas']}>
-                  <ResponsiveContainer width="100%" aspect={1}>
-                    <PieChart>
+                  <ResponsiveContainer width="100%" aspect={1.2}>
+                    <PieChart margin={pieMargin}>
                       <Pie
-                        data={chartData}
+                        data={visibleChartData}
                         cx="50%"
                         cy="50%"
                         dataKey="value"
-                        innerRadius="55%"
-                        outerRadius="82%"
+                        innerRadius="42%"
+                        outerRadius="78%"
                         stroke={darkMode ? '#1c2441' : '#fff'}
                         strokeWidth={3}
-                        onMouseEnter={(_, i) => setActiveIndex(i)}
-                        onMouseLeave={() => setActiveIndex(null)}
+                        labelLine={false}
+                        label={renderOutsideLabel}
+                        isAnimationActive={!PREFERS_REDUCED_MOTION}
+                        onAnimationEnd={() => setAnimationDone(true)}
+                        activeIndex={hoveredIndex}
+                        activeShape={renderActiveShape}
+                        onMouseEnter={(_, index) => setHoveredIndex(index)}
+                        onMouseLeave={() => setHoveredIndex(null)}
                       >
-                        {chartData.map((d, i) => (
-                          <Cell
-                            key={d.name}
-                            fill={d.color}
-                            className={styles['pie-cell']}
-                            opacity={activeIndex == null || activeIndex === i ? 1 : 0.45}
-                          />
+                        {visibleChartData.map(d => (
+                          <Cell key={d.name} fill={d.color} className={styles['pie-cell']} />
                         ))}
                       </Pie>
-                      <Tooltip content={<CustomTooltip />} />
-                      <text
-                        x="50%"
-                        y="50%"
-                        dominantBaseline="middle"
-                        textAnchor="middle"
-                        style={{
-                          fontWeight: 800,
-                          fontSize: '1rem',
-                          fill: darkMode ? '#f8fafc' : '#0f172a',
-                        }}
+                      {/* Inside counts rendered as a second label pass — animation disabled to prevent double-sweep */}
+                      <Pie
+                        data={visibleChartData}
+                        cx="50%"
+                        cy="50%"
+                        dataKey="value"
+                        innerRadius="42%"
+                        outerRadius="78%"
+                        stroke="none"
+                        strokeWidth={0}
+                        labelLine={false}
+                        label={renderInsideCount}
+                        isAnimationActive={false}
+                        style={{ pointerEvents: 'none' }}
                       >
-                        {total.toLocaleString()}
-                      </text>
+                        {visibleChartData.map(d => (
+                          <Cell key={d.name} fill="transparent" />
+                        ))}
+                      </Pie>
+                      {animationDone && (
+                        <text
+                          x="50%"
+                          y="50%"
+                          dominantBaseline="middle"
+                          textAnchor="middle"
+                          style={{
+                            fontWeight: 800,
+                            fontSize: '1.25rem',
+                            fill: darkMode ? '#f8fafc' : '#0f172a',
+                          }}
+                        >
+                          {total.toLocaleString()}
+                        </text>
+                      )}
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
-
-                <DetailsPanel />
+                {isMobile && (
+                  <div className={styles['mobile-legend']}>
+                    {visibleChartData.map(d => {
+                      const pct = total > 0 ? ((d.value / total) * 100).toFixed(1) : 0;
+                      return (
+                        <div key={d.name} className={styles['mobile-legend-item']}>
+                          <span
+                            className={styles['mobile-legend-dot']}
+                            style={{ backgroundColor: d.color }}
+                          />
+                          <span className={styles['mobile-legend-name']}>{d.name}</span>
+                          <span className={styles['mobile-legend-pct']}>{pct}%</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </>
             )}
 

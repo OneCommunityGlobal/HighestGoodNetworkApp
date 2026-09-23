@@ -234,6 +234,42 @@
   color:#839a4a;
 }
 
+.villageDetailsContent {
+  padding: 10px 0;
+}
+
+.villageDetailsContent h3 {
+  margin: 0 0 8px;
+  font-size: 1.5em;
+  font-weight: 600;
+  color: #839a4a;
+}
+
+.villageDetailsContent p {
+  margin: 0;
+  font-size: 1em;
+  color: #839a4a;
+}
+
+/* Dark mode */
+.mainContainer.dark {
+  background-color: #1a1c2e;
+}
+
+.contentContainer.dark {
+  background-color: #1e2235;
+  border-color: #2f3a5e;
+}
+
+.villageDetails.dark h3,
+.villageDetails.dark p {
+  color: #c8d8f0;
+}
+
+.villageDetailsContent.dark h3,
+.villageDetailsContent.dark p {
+  color: #c8d8f0;
+}
 
 @media (width <= 580px) {
   .containerMain {

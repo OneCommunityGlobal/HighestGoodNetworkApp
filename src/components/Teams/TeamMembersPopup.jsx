@@ -22,6 +22,7 @@ import MembersAutoComplete from './MembersAutoComplete';
 import ToggleSwitch from './ToggleSwitch/ToggleSwitch';
 import InfoModal from './InfoModal';
 
+import { permissions } from '../../utils/constants';
 /* ---------- small helpers to reduce cognitive complexity ---------- */
 
 function ValidationAlerts({ duplicateUserAlert, isValidUser }) {
@@ -67,8 +68,8 @@ function applyStatusFilter(list, mode) {
 
 export const TeamMembersPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon');
-  const canAssignTeamToUsers = hasPermission('assignTeamToUsers');
+  const hasVisibilityIconPermission = hasPermission(permissions.seeVisibilityIcon);
+  const canAssignTeamToUsers = hasPermission(permissions.assignTeamToUsers);
   const [filterMode, setFilterMode] = useState('active'); // 'active' | 'all' | 'inactive'
 
   const [selectedUser, setSelectedUser] = useState(undefined);
@@ -158,10 +159,27 @@ export const TeamMembersPopup = React.memo(props => {
     const map = {};
     if (Array.isArray(teamsData) && teamsData.length > 0) {
       for (const m of teamsData[0]?.members || []) {
-        map[m.userId] = m.visible;
+        // Backend's getAllTeams aggregation returns each member object
+        // keyed by `_id` (the user's id), not `userId`. Using the wrong
+        // key here meant every lookup below resolved to `undefined`,
+        // which made the "See All" toggle appear to reset itself.
+        map[m._id] = m.visible;
       }
     }
     return map;
+  }, [props.teamData]);
+
+  // Only render toggle rows once teamData AND its members are populated so that
+  // `choice` is never undefined on first mount — prevents the brief ON flash.
+  // props.teamData can exist with members: undefined on the first Redux update,
+  // so we must check members is a non-empty array too.
+  const isMemberVisibilityReady = useMemo(() => {
+    return (
+      Array.isArray(props.teamData) &&
+      props.teamData.length > 0 &&
+      Array.isArray(props.teamData[0]?.members) &&
+      props.teamData[0].members.length > 0
+    );
   }, [props.teamData]);
 
   useEffect(() => {
@@ -303,7 +321,7 @@ export const TeamMembersPopup = React.memo(props => {
   };
 
   const renderBody = () => {
-    if (showTableSpinner) {
+    if (showTableSpinner || !isMemberVisibilityReady) {
       return (
         <tr>
           <td align="center" colSpan={canAssignTeamToUsers ? 6 : 5}>
@@ -487,7 +505,7 @@ TeamMembersPopup.propTypes = {
     PropTypes.shape({
       members: PropTypes.arrayOf(
         PropTypes.shape({
-          userId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+          _id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
           visible: PropTypes.bool,
         }),
       ),

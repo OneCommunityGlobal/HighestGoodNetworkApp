@@ -6,6 +6,7 @@ import PhoneInput from 'react-phone-input-2';
 import { Button, Col, FormFeedback, FormGroup, Input, Label, Row } from 'reactstrap';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 
+import { permissions } from '../../../utils/constants';
 //// import 'react-phone-input-2/lib/style.css';
 import axios from 'axios';
 import { isString } from 'lodash';
@@ -20,6 +21,7 @@ import hasPermission from '~/utils/permissions';
 import { ENDPOINTS } from '~/utils/URL';
 import TimeZoneDropDown from '../TimeZoneDropDown';
 import styles from './BasicInformationTab.module.css';
+import RoleChangePermissionsModal from '~/components/UserProfile/RoleChangePermissionsModal';
 
 
 export const Name = props => {
@@ -494,12 +496,14 @@ const BasicInformationTab = props => {
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [desktopDisplay, setDesktopDisplay] = useState(window.innerWidth > 1024);
   const [errorOccurred, setErrorOccurred] = useState(false);
+  const [showRolePermsModal, setShowRolePermsModal] = useState(false);
+  const [newRole, setNewRole] = useState(userProfile.role);
   const dispatch = useDispatch();
   const rolesAllowedToEditStatusFinalDay = ['Administrator', 'Owner'];
-  const canEditStatus = dispatch(hasPermission('interactWithPauseUserButton'));
+  const canEditStatus = dispatch(hasPermission(permissions.interactWithPauseUserButton));
 
   const canEditEndDate =
-  rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission('setFinalDay'));
+  rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission(permissions.setFinalDay));
 
 
   let topMargin = '6px';
@@ -507,7 +511,7 @@ const BasicInformationTab = props => {
     topMargin = '0px';
   }
 
-  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
+  const canAddDeleteEditOwners = props.hasPermission(permissions.addDeleteEditOwners);
   const handleLocation = e => {
     setUserProfile({
       ...userProfile,
@@ -550,6 +554,22 @@ const BasicInformationTab = props => {
   const handleResize = () => {
     setDesktopDisplay(window.innerWidth > 1024);
   };
+
+  const updateSelectedRole = selectedRole => {
+    setNewRole(selectedRole);
+    const retrievedRole = roles.find(role => role.roleName === selectedRole);
+    const remainingAddedPermissions = userProfile.permissions.frontPermissions.some(permission => !retrievedRole.permissions.includes(permission));
+    const remainingRemovedPermissions = retrievedRole.permissions.some(permission => userProfile.permissions.removedDefaultPermissions.includes(permission));
+
+    if(remainingAddedPermissions || remainingRemovedPermissions) {
+      setShowRolePermsModal(true)
+    } else {
+      setUserProfile({ 
+        ...userProfile, 
+        role: selectedRole,
+      })
+    }
+  }
 
   useEffect(() => {
     window.addEventListener('resize', handleResize);
@@ -728,18 +748,19 @@ const BasicInformationTab = props => {
               id="role"
               name="role"
               className={`form-control ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
-              value={userProfile.role || ''}   // make sure this is a string
+              value={newRole || ''}   // make sure this is a string
               onChange={e => {
-                const newRole = e.target.value;
-                setUserProfile({
-                  ...userProfile,
-                  role: newRole,
-                  permissions: { ...userProfile.permissions, frontPermissions: [] },
-                });
+                updateSelectedRole(e.target.value)
               }}
             >
               {/* Optional placeholder when no role selected */}
               {!userProfile.role && <option value="">Select role</option>}
+
+              {canAddDeleteEditOwners && (
+                <option value="Owner" style={desktopDisplay ? { marginLeft: '5px' } : {}}>
+                  Owner
+                </option>
+              )}
   
               {(roles || [])
                 .map(r => (typeof r === 'string' ? r : r.roleName)) // normalize
@@ -752,14 +773,9 @@ const BasicInformationTab = props => {
                     </option>
                   );
                 })}
-  
-              {canAddDeleteEditOwners && (
-                <option value="Owner" style={desktopDisplay ? { marginLeft: '5px' } : {}}>
-                  Owner
-                </option>
-              )}
             </select>
           </FormGroup>
+          
         ) : (
           <p className={`text-right ${darkMode ? 'text-light' : ''}`}>{userProfile.role}</p>
         )}
@@ -1047,6 +1063,17 @@ const BasicInformationTab = props => {
           </>
         )}
       </div>
+      <RoleChangePermissionsModal
+        isOpen={showRolePermsModal}
+        onClose={() => setShowRolePermsModal(false)}
+        newRole={newRole}
+        roles={roles}
+        userProfile={userProfile}
+        setUserProfile={setUserProfile}
+        loadUserProfile={loadUserProfile}
+        desktopDisplay={desktopDisplay}
+        canAddDeleteEditOwners={canAddDeleteEditOwners}
+      />
     </div>
   );
 };

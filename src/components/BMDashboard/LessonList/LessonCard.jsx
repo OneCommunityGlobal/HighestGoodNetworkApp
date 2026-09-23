@@ -79,7 +79,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
     const { isLiked, totalLikes } = getLikeStatus(lesson._id);
 
     return (
-      <Card key={lesson._id} className={styles.lessonCard}>
+      <Card key={lesson._id} className={`${styles.lessonCard} ${darkMode ? styles.darkCard : ''}`}>
         <Card.Header
           onClick={() => toggleCardExpansion(lesson._id)}
           style={{ cursor: 'pointer' }}
@@ -224,7 +224,10 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
 
   if (!filteredLessons || filteredLessons.length === 0) {
     return (
-      <div style={{ padding: '20px', textAlign: 'center' }}>
+      <div
+        className={darkMode ? styles.darkNoLessonsFound : styles.noLessonsFound}
+        style={{ padding: '20px', textAlign: 'center' }}
+      >
         <p>No lessons found. Please add lessons to the database or adjust your filters.</p>
       </div>
     );

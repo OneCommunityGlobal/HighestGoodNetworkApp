@@ -439,7 +439,7 @@ const AddTeamPopup = React.memo((props) => {
                   teamsData={{ allTeams }}
                   onCreateNewTeam={onCreateTeam}
                   searchText={searchText}
-                  setInputs={onSelectTeam}
+                  onDropDownSelect={onSelectTeam}
                   setSearchText={handleSearchTextChange}
                 />
               )}

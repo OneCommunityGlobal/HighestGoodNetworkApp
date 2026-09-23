@@ -1,3 +1,9 @@
+/* ---------- CSS Variables for Dark Mode ---------- */
+:root {
+  --color-text-dark: #fff;
+  --color-border-dark: #4a5a77;
+}
+
 /* ---------- General Styles ---------- */
 .body {
   font-family: Arial, sans-serif;
@@ -15,9 +21,9 @@
 }
 
 .myCasesPageDark {
-  padding: 20px;
-  background-color: #1c2541;
-  border: 1px solid #ddd;
+  padding: 16px;
+  background-color: #1C2541;
+  border: 1px solid var(--color-border-dark);
   border-radius: 6px;
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
@@ -94,34 +100,23 @@
   border: 1px solid #ccc;
 }
 
-/* Dark mode */
-
-.viewSwitcherDarkMode {
-  display: flex;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.viewSwitcherDarkMode button,
-.createNewDarkMode {
-  background-color: #1e293b;
-  border-radius: 6px;
-  padding: 10px 20px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  color: #f1f5f9;
-  border: 1px solid #555;
+.myCasesPageDark .viewSwitcher button,
+.myCasesPageDark .createNew {
+  background-color: #3A506B;
+  color: var(--color-text-dark);
+  border: 1px solid var(--color-border-dark);
 }
 
 .viewSwitcher button.active {
-  background-color: #007bff;
+  background-color: #0056b3;
   color: #fff;
+  border-color: #0056b3;
 }
 
-.viewSwitcherDarkMode button.active {
-  background-color: #3b82f6;
-  color: #fff;
+.myCasesPageDark .viewSwitcher button.active {
+  background-color: #0056b3;
+  color: var(--color-text-dark);
+  border-color: #0056b3;
 }
 
 .filterWrapper {
@@ -135,15 +130,14 @@
   border: 1px solid #ccc;
   border-radius: 6px;
   cursor: pointer;
-  min-width: 130px;
-  box-sizing: border-box;
+  background-color: #fff;
+  color: #333;
 }
 
-.myCasesPageDark .viewSwitcher button,
-.myCasesPageDark .filterDropdown,
-.myCasesPageDark .createNew {
-  color: #fff !important;
-  border: 1px solid #555 !important;
+.myCasesPageDark .filterDropdown {
+  background-color: #3A506B;
+  color: var(--color-text-dark);
+  border: 1px solid var(--color-border-dark);
 }
 
 .myCasesPageDark .filterDropdown {
@@ -258,9 +252,9 @@
 
 
 .caseCardDark {
-  background-color: #3a506b;
-  color: #fff;
-  border: 1px solid #ddd;
+  background-color: #3A506B;
+  color: var(--color-text-dark);
+  border: 1px solid var(--color-border-dark);
   border-radius: 8px;
   padding: 15px;
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
@@ -304,30 +298,29 @@
   color: #9b59b6;
 }
 
-/* Dark Mode Badge Overrides - High Contrast for titles */
-.myCasesPageDark .eventBadge {
-  border: 1px solid rgb(255 255 255 / 10%);
-  -webkit-print-color-adjust: exact;
+/* Dark mode event badge styles */
+.caseCardDark .eventBadge[data-type='Yoga Class'] {
+  background-color: #1e4d2e;
+  color: #4ade80;
+  border: 1px solid #4ade80;
 }
 
-.myCasesPageDark .eventBadge[data-type='Yoga Class'] {
-  background-color: #1b4332 !important;
-  color: #fff !important;
+.caseCardDark .eventBadge[data-type='Cooking Workshop'] {
+  background-color: #4d1e1e;
+  color: #f87171;
+  border: 1px solid #f87171;
 }
 
-.myCasesPageDark .eventBadge[data-type='Cooking Workshop'] {
-  background-color: #641212 !important;
-  color: #fff !important;
+.caseCardDark .eventBadge[data-type='Dance Class'] {
+  background-color: #4d3d1e;
+  color: #fbbf24;
+  border: 1px solid #fbbf24;
 }
 
-.myCasesPageDark .eventBadge[data-type='Dance Class'] {
-  background-color: #784a06 !important;
-  color: #fff !important;
-}
-
-.myCasesPageDark .eventBadge[data-type='Fitness Bootcamp'] {
-  background-color: #4a1d5a !important;
-  color: #fff !important;
+.caseCardDark .eventBadge[data-type='Fitness Bootcamp'] {
+  background-color: #3d1e4d;
+  color: #c084fc;
+  border: 1px solid #c084fc;
 }
 
 .eventTime {
@@ -338,7 +331,7 @@
 
 .eventTimeDark {
   font-size: 14px;
-  color: #fff !important;
+  color: var(--color-text-dark);
   margin-bottom: 10px;
 }
 
@@ -353,17 +346,7 @@
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 15px;
-  color: #fff !important;
-}
-
-.emptyState {
-  text-align: center;
-  padding: 48px;
-  color: #64748b;
-}
-
-.emptyStateDark {
-  color: #94a3b8;
+  color: var(--color-text-dark);
 }
 
 .attendeesInfo {
@@ -408,11 +391,7 @@
 
 .attendeesCountDark {
   font-size: 14px;
-  color: #fff !important;
-  cursor: pointer;
-  padding: 6px 10px;
-  border-radius: 4px;
-  transition: all 0.3s ease;
+  color: var(--color-text-dark);
 }
 
 .rates {

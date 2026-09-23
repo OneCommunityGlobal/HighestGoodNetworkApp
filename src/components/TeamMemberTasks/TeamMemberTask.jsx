@@ -32,6 +32,7 @@ import FollowUpInfoModal from './FollowUpInfoModal';
 import ReviewButton from './ReviewButton';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 
+import { permissions } from '../../utils/constants';
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
 const TeamMemberTask = React.memo(
@@ -153,14 +154,16 @@ const TeamMemberTask = React.memo(
     const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
     const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
     const isAllowedToResolveTasks =
-      rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('resolveTask'));
+      rolesAllowedToResolveTasks.includes(userRole) ||
+      dispatch(hasPermission(permissions.resolveTask));
     const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
 
-    const canGetWeeklySummaries = dispatch(hasPermission('getWeeklySummaries'));
+    const canGetWeeklySummaries = dispatch(hasPermission(permissions.getWeeklySummaries));
     const canSeeReports =
-      rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('getReports'));
-    const canUpdateTask = dispatch(hasPermission('updateTask'));
-    const canUnassignTask = dispatch(hasPermission('removeUserFromTask'));
+      rolesAllowedToResolveTasks.includes(userRole) ||
+      dispatch(hasPermission(permissions.getReports));
+    const canUpdateTask = dispatch(hasPermission(permissions.updateTask));
+    const canUnassignTask = dispatch(hasPermission(permissions.removeUserFromTask));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
     const colorsObjs = {
@@ -412,7 +415,7 @@ const TeamMemberTask = React.memo(
                           <td
                             colSpan={2}
                             className={styles['team-member-tasks-user-name']}
-                            style={{ textAlign: 'center' }}
+                            style={{ textAlign: 'center', alignItems: 'center' }}
                           >
                             <Link
                               className={styles['team-member-tasks-user-name-link']}
