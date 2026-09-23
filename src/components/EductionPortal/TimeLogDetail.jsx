@@ -11,6 +11,14 @@ const formatDate = iso =>
     day: 'numeric',
   });
 
+const getBadgeStatusClass = badge => {
+  const normalizedBadge = badge.toLowerCase();
+
+  if (normalizedBadge.includes('graded')) return styles.badgeGraded;
+  if (normalizedBadge.includes('pending')) return styles.badgePending;
+  return styles.badgeReviewed;
+};
+
 export default function TimeLogDetail() {
   const { id } = useParams();
   const location = useLocation();
@@ -106,7 +114,11 @@ export default function TimeLogDetail() {
 
           <div className={styles.entryHeaderRight}>
             {md.duration && <span className={styles.pill}>{md.duration}</span>}
-            {md.badge && <span className={`${styles.pill} ${styles.grade}`}>{md.badge}</span>}
+            {md.badge && (
+              <span className={`${styles.pill} ${styles.grade} ${getBadgeStatusClass(md.badge)}`}>
+                {md.badge}
+              </span>
+            )}
           </div>
         </div>
 
@@ -179,7 +191,9 @@ export default function TimeLogDetail() {
           <div className={styles.feedbackBody}>
             {md.badge && (
               <div className={styles.feedbackBadgeRow}>
-                <span className={`${styles.pill} ${styles.grade}`}>{md.badge}</span>
+                <span className={`${styles.pill} ${styles.grade} ${getBadgeStatusClass(md.badge)}`}>
+                  {md.badge}
+                </span>
               </div>
             )}
             <p className={styles.feedbackText}>{teacherFeedback || 'No feedback yet.'}</p>

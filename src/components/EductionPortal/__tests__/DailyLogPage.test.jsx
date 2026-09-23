@@ -251,6 +251,37 @@ describe('Daily Log', () => {
     expect(noteField).toHaveValue('Saved note');
   });
 
+  it('renders status-specific classes on both detail-page badge locations', () => {
+    render(
+      <MemoryRouter initialEntries={['/educationportal/time-logs/103']}>
+        <Route path="/educationportal/time-logs/:id">
+          <DailyLogProvider>
+            <TimeLogDetail />
+          </DailyLogProvider>
+        </Route>
+      </MemoryRouter>,
+    );
+
+    const pendingBadges = screen.getAllByText('Pending Review');
+    expect(pendingBadges).toHaveLength(2);
+    pendingBadges.forEach(badge => expect(badge.className).toContain('badgePending'));
+
+    const { unmount } = render(
+      <MemoryRouter initialEntries={['/educationportal/time-logs/101']}>
+        <Route path="/educationportal/time-logs/:id">
+          <DailyLogProvider>
+            <TimeLogDetail />
+          </DailyLogProvider>
+        </Route>
+      </MemoryRouter>,
+    );
+
+    const gradedBadges = screen.getAllByText('Graded (A-)');
+    expect(gradedBadges).toHaveLength(2);
+    gradedBadges.forEach(badge => expect(badge.className).toContain('badgeGraded'));
+    unmount();
+  });
+
   it('falls back to the seeded logs when local storage contains malformed JSON', () => {
     window.localStorage.setItem('daily-log-logs', '{bad json');
 
