@@ -302,9 +302,24 @@ div.weeklyProjectSummaryCard.normalCard .dropdownItem {
 }
 
 .quantityOfMaterialsUsedChartTooltip {
-  font-size: 10px !important;
-  max-width: 220px;
+  /* Keep the long overview readable and scrollable without clipping behind the navbar. */
+  font-size: 11px !important;
+  width: min(520px, calc(100vw - 32px));
+  max-width: min(520px, calc(100vw - 32px));
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
   text-align: left;
+}
+
+@media (width <= 640px) {
+  .quantityOfMaterialsUsedChartTooltip {
+    /* Keep the tooltip readable and contained inside narrow mobile viewports. */
+    width: calc(100vw - 48px) !important;
+    max-width: calc(100vw - 48px) !important;
+    max-height: min(320px, calc(100vh - 220px));
+    overflow: auto;
+    white-space: normal;
+  }
 }
 
 .quantityOfMaterialsUsedSwapDatesButton {

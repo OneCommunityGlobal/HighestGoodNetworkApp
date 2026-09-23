@@ -4,7 +4,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { UncontrolledTooltip } from 'reactstrap';
-import { v4 as uuidv4 } from 'uuid';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { toast } from 'react-toastify';
@@ -14,7 +13,6 @@ import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions
 
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
 import { fetchWeeklyProjectSummaryProjectStatus } from '../../../actions/bmdashboard/weeklyProjectSummaryActions';
-import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
 import IssuesCharts from '../Issues/LongestOpenIssuesChart';
 import ProjectRiskProfileOverview from './ProjectRiskProfileOverview';
 import IssuesBreakdownChart from './IssuesBreakdownChart';
@@ -24,7 +22,6 @@ import ExpenseBarChart from './Financials/ExpenseBarChart';
 import CostVarianceTrendGraph from './Financials/CostVarianceTrendGraph';
 import CostBreakDown from './Financials/CostBreakDown/CostBreakDown';
 import FinancialsTrackingSection from './ExpenditureChart/FinancialsTrackingSection';
-import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
 import LossTrackingLineChart from './Financials/LossTrackingLineCharts/LossTrackingLineChart';
@@ -32,114 +29,39 @@ import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
-import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
-import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
+import { MaterialConsumptionCards } from './MaterialConsumption/MaterialConsumption';
+
+import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
+
+import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import InjurySeverityChart from '../Injuries/InjurySeverityChart';
 import CostPredictionChart from './CostPredictionChart';
 import { calculateComparisonDates, parseWeeklySummaryDateRange } from './comparisonDateUtils';
 
-const projectStatusButtons = [
-  {
-    title: 'Total Projects',
-    metricKey: 'totalProjects',
-    // value: 426,
-    // change: '+16% week over week',
-    bgColor: '#F0FFEE',
-    buttonColor: '#BAF0B6',
-    textColor: '#328D1B',
-  },
-  {
-    title: 'Completed Projects',
-    metricKey: 'completedProjects',
-    // value: 127,
-    // change: '+14% week over week',
-    bgColor: '#F3FCFF',
-    buttonColor: '#C1EFFB',
-    textColor: '#328D1B',
-  },
-  {
-    title: 'Delayed Projects',
-    metricKey: 'delayedProjects',
-    // value: 34,
-    // change: '-18% week over week',
-    bgColor: '#FFE9FA',
-    buttonColor: '#FECFF3',
-    textColor: '#C82F2F',
-  },
-  {
-    title: 'Active Projects',
-    metricKey: 'activeProjects',
-    // value: 265,
-    // change: '+3% week over week',
-    bgColor: '#E8E8FF',
-    buttonColor: '#CBCBFE',
-    textColor: '#328D1B',
-  },
-  {
-    title: 'Avg Project Duration',
-    metricKey: 'avgProjectDuration',
-    // value: '17 hrs',
-    // change: '+13% week over week',
-    bgColor: '#FFF6EE',
-    buttonColor: '#FFD8A5',
-    textColor: '#FFD8A5',
-  },
-  {
-    title: 'Total Material Cost',
-    metricKey: 'totalMaterialCost',
-    // value: '$27.6K',
-    // change: '+9% week over week',
-    bgColor: '#FFF3F3',
-    buttonColor: '#FBC1C2',
-    textColor: '#328D1B',
-  },
-  {
-    title: 'Total Material Used',
-    metricKey: 'totalMaterialUsed',
-    // value: '2714',
-    // change: '+11% week over week',
-    bgColor: '#DAC8FF',
-    buttonColor: '#B28ECC',
-    textColor: '#328D1B',
-  },
-  {
-    title: 'Total Labor Hours Invested',
-    metricKey: 'totalLaborHoursInvested',
-    // value: '12.8K',
-    // change: '+17% week over week',
-    bgColor: '#E5C1FC',
-    buttonColor: '#F6E1FB',
-    textColor: '#328D1B',
-  },
-  {
-    title: 'Total Labor Cost',
-    metricKey: 'totalLaborCost',
-    // value: '$18.4K',
-    // change: '+14% week over week',
-    bgColor: '#FFFDF3',
-    buttonColor: '#FBF9C1',
-    textColor: '#328D1B',
-  },
-  {
-    title: 'Material Available',
-    metricKey: 'materialAvailable',
-    // value: 693,
-    // change: '-8% week over week',
-    bgColor: '#B4D9C5',
-    buttonColor: '#31BD41',
-    textColor: '#C82F2F',
-  },
-  {
-    title: 'Material Wasted',
-    metricKey: 'materialWasted',
-    // value: 879,
-    // change: '+14% week over week',
-    bgColor: '#EFBABB',
-    buttonColor: '#F79395',
-    textColor: '#328D1B',
-  },
+const projectStatusButtonData = [
+  ['Total Projects', 'totalProjects', '#F0FFEE', '#BAF0B6', '#328D1B'],
+  ['Completed Projects', 'completedProjects', '#F3FCFF', '#C1EFFB', '#328D1B'],
+  ['Delayed Projects', 'delayedProjects', '#FFE9FA', '#FECFF3', '#C82F2F'],
+  ['Active Projects', 'activeProjects', '#E8E8FF', '#CBCBFE', '#328D1B'],
+  ['Avg Project Duration', 'avgProjectDuration', '#FFF6EE', '#FFD8A5', '#FFD8A5'],
+  ['Total Material Cost', 'totalMaterialCost', '#FFF3F3', '#FBC1C2', '#328D1B'],
+  ['Total Material Used', 'totalMaterialUsed', '#DAC8FF', '#B28ECC', '#328D1B'],
+  ['Total Labor Hours Invested', 'totalLaborHoursInvested', '#E5C1FC', '#F6E1FB', '#328D1B'],
+  ['Total Labor Cost', 'totalLaborCost', '#FFFDF3', '#FBF9C1', '#328D1B'],
+  ['Material Available', 'materialAvailable', '#B4D9C5', '#31BD41', '#C82F2F'],
+  ['Material Wasted', 'materialWasted', '#EFBABB', '#F79395', '#328D1B'],
 ];
+
+const projectStatusButtons = projectStatusButtonData.map(
+  ([title, metricKey, bgColor, buttonColor, textColor]) => ({
+    title,
+    metricKey,
+    bgColor,
+    buttonColor,
+    textColor,
+  }),
+);
 
 const PERIOD_COMPARABLE = 'PERIOD_COMPARABLE';
 const UNAVAILABLE = 'UNAVAILABLE';
@@ -426,33 +348,16 @@ function WeeklyProjectSummary() {
       {
         title: 'Material Consumption',
         key: 'Material Consumption',
-        className: 'full',
-        content: [1, 2, 3].map((_, index) => {
-          let content;
-          if (index === 1) {
-            content = (
-              <QuantityOfMaterialsUsed
-                data={quantityOfMaterialsUsedData}
-                comparisonMode={comparisonPeriodFilter}
-                currentDateRange={currentDateRange}
-                comparisonDateRange={comparisonDateRange}
-              />
-            );
-          } else if (index === 2) {
-            content = <TotalMaterialCostPerProject />;
-          } else {
-            content = <p>📊 Card</p>;
-          }
-          const uniqueId = uuidv4();
-          return (
-            <div
-              key={uniqueId}
-              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-            >
-              {content}
-            </div>
-          );
-        }),
+        className: 'large',
+        // Shared with /bmdashboard/issuechart so the PR-required three-card grouping stays in sync.
+        content: (
+          <MaterialConsumptionCards
+            quantityOfMaterialsUsedData={quantityOfMaterialsUsedData}
+            comparisonMode={comparisonPeriodFilter}
+            currentDateRange={currentDateRange}
+            comparisonDateRange={comparisonDateRange}
+          />
+        ),
       },
       {
         title: 'Issue Tracking',
