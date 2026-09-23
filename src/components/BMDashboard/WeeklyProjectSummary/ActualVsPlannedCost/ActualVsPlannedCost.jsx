@@ -13,6 +13,7 @@ import {
   CartesianGrid,
   LabelList,
   Cell,
+  Label,
 } from 'recharts';
 import { Spinner } from 'reactstrap';
 import { fetchBMProjects } from '../../../../actions/bmdashboard/projectActions';
@@ -179,7 +180,7 @@ VarianceTooltip.defaultProps = {
   payload: [],
 };
 
-function PlannedValueLabel({ x, y, width, value }) {
+function PlannedValueLabel({ x, y, width, value, darkMode }) {
   if (value === undefined || value === null) return null;
 
   return (
@@ -187,7 +188,7 @@ function PlannedValueLabel({ x, y, width, value }) {
       x={x + width / 2}
       y={y - 8}
       textAnchor="middle"
-      fill="var(--text-color)"
+      fill={darkMode ? '#e2e8f0' : '#334155'}
       fontSize="11"
       fontWeight="600"
     >
@@ -201,6 +202,7 @@ PlannedValueLabel.propTypes = {
   y: PropTypes.number,
   width: PropTypes.number,
   value: PropTypes.number,
+  darkMode: PropTypes.bool.isRequired,
 };
 
 PlannedValueLabel.defaultProps = {
@@ -210,15 +212,25 @@ PlannedValueLabel.defaultProps = {
   value: null,
 };
 
-function ActualVarianceLabel({ x, y, width, payload }) {
-  if (!payload) return null;
+function ActualVarianceLabel({ x, y, width, item, darkMode }) {
+  if (!item) return null;
 
-  const variance = Number(payload.variance) || 0;
-  const variancePct = payload.variancePct;
+  const variance = Number(item.variance) || 0;
+  const variancePct = item.variancePct;
   const prefix = variance > 0 ? '+' : variance < 0 ? '-' : '';
   const pctPrefix = variancePct > 0 ? '+' : '';
   const labelColor =
-    variance > 0 ? OVER_BUDGET_COLOR : variance < 0 ? UNDER_BUDGET_COLOR : 'var(--text-color)';
+    variance > 0
+      ? darkMode
+        ? '#fca5a5'
+        : OVER_BUDGET_COLOR
+      : variance < 0
+      ? darkMode
+        ? '#86efac'
+        : '#15803d'
+      : darkMode
+      ? '#e2e8f0'
+      : '#334155';
 
   return (
     <g>
@@ -255,17 +267,18 @@ ActualVarianceLabel.propTypes = {
   x: PropTypes.number,
   y: PropTypes.number,
   width: PropTypes.number,
-  payload: PropTypes.shape({
+  item: PropTypes.shape({
     variance: PropTypes.number,
     variancePct: PropTypes.number,
   }),
+  darkMode: PropTypes.bool.isRequired,
 };
 
 ActualVarianceLabel.defaultProps = {
   x: 0,
   y: 0,
   width: 0,
-  payload: null,
+  item: null,
 };
 
 function buildChartContent({ loading, isFiltering, hasData, chartDataWithVariance, darkMode }) {
@@ -284,8 +297,9 @@ function buildChartContent({ loading, isFiltering, hasData, chartDataWithVarianc
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={chartDataWithVariance}
-            margin={{ top: 42, right: 12, left: 12, bottom: 8 }}
-            barGap={16}
+            margin={{ top: 46, right: 16, left: 40, bottom: 8 }}
+            barGap={32}
+            barCategoryGap="32%"
           >
             <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#aab4c2' : '#e0e0e0'} />
 
@@ -293,14 +307,26 @@ function buildChartContent({ loading, isFiltering, hasData, chartDataWithVarianc
               dataKey="category"
               axisLine={false}
               tickLine={false}
-              tick={{ fill: 'var(--text-color)', fontSize: 12 }}
+              tick={{ fill: darkMode ? '#e2e8f0' : '#334155', fontSize: 12 }}
             />
 
             <YAxis
-              tick={{ fill: 'var(--text-color)', fontSize: 12 }}
+              tick={{ fill: darkMode ? '#e2e8f0' : '#334155', fontSize: 12 }}
               tickFormatter={formatCurrency}
-              width={72}
-            />
+              width={100}
+            >
+              <Label
+                value="Cost ($)"
+                angle={-90}
+                position="insideLeft"
+                offset={10}
+                style={{
+                  fill: darkMode ? '#f8fafc' : '#334155',
+                  fontSize: 12,
+                  fontWeight: 700,
+                }}
+              />
+            </YAxis>
 
             <Tooltip
               cursor={{ fill: 'transparent' }}
@@ -313,18 +339,34 @@ function buildChartContent({ loading, isFiltering, hasData, chartDataWithVarianc
               verticalAlign="top"
               height={36}
               iconSize={8}
-              wrapperStyle={{ color: 'var(--text-color)' }}
+              formatter={value => (
+                <span style={{ color: darkMode ? '#f8fafc' : '#334155', fontWeight: 600 }}>
+                  {value}
+                </span>
+              )}
             />
 
-            <Bar dataKey="plannedCost" name="Planned" fill={PLANNED_BAR_COLOR} maxBarSize={44}>
-              <LabelList dataKey="plannedCost" content={<PlannedValueLabel />} />
+            <Bar dataKey="plannedCost" name="Planned" fill={PLANNED_BAR_COLOR} maxBarSize={30}>
+              <LabelList
+                dataKey="plannedCost"
+                content={<PlannedValueLabel darkMode={darkMode} />}
+              />
             </Bar>
 
-            <Bar dataKey="actualCost" name="Actual" fill={UNDER_BUDGET_COLOR} maxBarSize={44}>
+            <Bar dataKey="actualCost" name="Actual" fill={UNDER_BUDGET_COLOR} maxBarSize={30}>
               {chartDataWithVariance.map(entry => (
                 <Cell key={`actual-cell-${entry.category}`} fill={getActualBarColor(entry)} />
               ))}
-              <LabelList dataKey="actualCost" content={<ActualVarianceLabel />} />
+              <LabelList
+                dataKey="actualCost"
+                content={labelProps => (
+                  <ActualVarianceLabel
+                    {...labelProps}
+                    item={chartDataWithVariance[labelProps.index]}
+                    darkMode={darkMode}
+                  />
+                )}
+              />
             </Bar>
           </BarChart>
         </ResponsiveContainer>
