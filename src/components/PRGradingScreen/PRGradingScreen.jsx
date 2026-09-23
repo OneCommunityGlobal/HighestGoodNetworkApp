@@ -298,6 +298,29 @@ const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
       setInputError('Unable to load PRs from the weekly summary.');
     }
   };
+  /*
+   * ---------------------------------------------------------
+   * IMPORT PR ENTRIES FROM WEEKLY SUMMARY
+   * ---------------------------------------------------------
+   */
+  const handleImportFromSummary = async reviewerId => {
+    if (isFinalized) return;
+
+    try {
+      setInputError('');
+
+      // Import PRs from the reviewer's weekly summary
+      await importPREntries(reviewerId, currentUser);
+
+      // Refresh all PR data so imported PRs appear immediately
+      await loadAllPREntries();
+
+      toast.success('PRs imported from weekly summary.');
+    } catch (error) {
+      console.error('Failed to import PR entries:', error);
+      toast.error('Unable to import PRs from the weekly summary.');
+    }
+  };
 
   const handleInputSubmit = async reviewerId => {
     if (isFinalized) {
@@ -664,14 +687,24 @@ const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
                             ))}
 
                             {!isFinalized && activeInput !== reviewer.id && (
-                              <Button
-                                variant="success"
-                                size="sm"
-                                className={styles['pr-grading-screen-add-btn']}
-                                onClick={() => handleAddNewClick(reviewer.id)}
-                              >
-                                + Add new
-                              </Button>
+                              <>
+                                <Button
+                                  variant="success"
+                                  size="sm"
+                                  className={styles['pr-grading-screen-add-btn']}
+                                  onClick={() => handleAddNewClick(reviewer.id)}
+                                >
+                                  + Add new
+                                </Button>
+                                <Button
+                                  variant="outline-primary"
+                                  size="sm"
+                                  className={styles['pr-grading-screen-add-btn']}
+                                  onClick={() => handleImportFromSummary(reviewer.id)}
+                                >
+                                  Import from summary
+                                </Button>
+                              </>
                             )}
 
                             {!isFinalized && activeInput === reviewer.id && (
