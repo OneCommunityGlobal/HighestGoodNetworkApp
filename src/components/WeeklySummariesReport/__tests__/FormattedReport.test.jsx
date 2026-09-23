@@ -230,3 +230,56 @@ describe('FormattedReport minimal test', () => {
     expect(screen.getByText('ABC123')).toBeInTheDocument();
   });
 });
+
+describe('FormattedReport final week banner', () => {
+  const FINAL_WEEK_TEXT = /FINAL WEEK REPORTING: This team member is no longer active/;
+
+  const renderOnTab = (summary, weekIndex) =>
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport {...defaultProps} summaries={[summary]} weekIndex={weekIndex} />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+  const fourWeeks = {
+    totalSeconds: [3600, 3600, 3600, 3600],
+    promisedHoursByWeek: [2, 2, 2, 2],
+  };
+
+  it('shows the banner for a user deactivated last week on the Last Week tab', () => {
+    renderOnTab(
+      {
+        ...dummySummary,
+        ...fourWeeks,
+        isActive: false,
+        endDate: '2026-09-17T06:59:59.999Z',
+        finalWeekIndex: 1,
+      },
+      1,
+    );
+    expect(screen.getByText(/John Doe/)).toBeInTheDocument();
+    expect(screen.getByText(FINAL_WEEK_TEXT)).toBeInTheDocument();
+  });
+
+  it('does not render a deactivated user on a tab other than their final week', () => {
+    renderOnTab({ ...dummySummary, ...fourWeeks, isActive: false, finalWeekIndex: 1 }, 0);
+    expect(screen.queryByText(/John Doe/)).toBeNull();
+  });
+
+  it('renders an active user with a scheduled end date without the banner', () => {
+    renderOnTab(
+      {
+        ...dummySummary,
+        ...fourWeeks,
+        isActive: true,
+        endDate: '2026-10-11T06:59:59.999Z',
+        finalWeekIndex: null,
+      },
+      0,
+    );
+    expect(screen.getByText(/John Doe/)).toBeInTheDocument();
+    expect(screen.queryByText(FINAL_WEEK_TEXT)).toBeNull();
+  });
+});
