@@ -7,6 +7,7 @@ import {
   ResponsiveContainer,
   Tooltip,
   Cell,
+  CartesianGrid,
 } from 'recharts';
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
@@ -199,13 +200,14 @@ const getTheme = darkMode => {
   return {
     inputBg: { dark: '#2d3748', light: '#fff' }[mode],
     inputText: { dark: '#f8fafc', light: '#0f172a' }[mode],
-    inputBorder: { dark: '1px solid #475569', light: '1px solid #cbd5e1' }[mode],
-    labelColor: { dark: '#e2e8f0', light: '#334155' }[mode],
+    inputBorder: { dark: '1px solid #94a3b8', light: '1px solid #cbd5e1' }[mode],
+    labelColor: { dark: '#f8fafc', light: '#334155' }[mode],
     titleColor: { dark: '#f8fafc', light: '#1e293b' }[mode],
-    legendColor: { dark: '#cbd5e1', light: '#334155' }[mode],
-    emptyTextColor: { dark: '#94a3b8', light: '#64748b' }[mode],
-    axisStroke: { dark: '#64748b', light: '#94a3b8' }[mode],
-    axisTick: { dark: '#cbd5e1', light: '#475569' }[mode],
+    legendColor: { dark: '#f8fafc', light: '#334155' }[mode],
+    emptyTextColor: { dark: '#cbd5e1', light: '#64748b' }[mode],
+    axisStroke: { dark: '#94a3b8', light: '#94a3b8' }[mode],
+    axisTick: { dark: '#e2e8f0', light: '#475569' }[mode],
+    gridStroke: { dark: '#64748b', light: '#e2e8f0' }[mode],
     cursorFill: { dark: 'rgba(255, 255, 255, 0.05)', light: 'rgba(0, 0, 0, 0.05)' }[mode],
     tooltipBg: { dark: '#1e293b', light: '#ffffff' }[mode],
     tooltipBorder: { dark: '1px solid #334155', light: '1px solid #e2e8f0' }[mode],
@@ -550,7 +552,13 @@ export default function ExpenseBarChart({ darkMode }) {
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 25, right: 10, left: 20, bottom: 0 }}>
+            <BarChart
+              data={data}
+              margin={{ top: 25, right: 10, left: 52, bottom: 0 }}
+              barGap={18}
+              barCategoryGap="28%"
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke={theme.gridStroke} vertical={false} />
               <XAxis
                 dataKey="project"
                 stroke={theme.axisStroke}
@@ -563,7 +571,18 @@ export default function ExpenseBarChart({ darkMode }) {
                 tick={{ fontSize: 12, fill: theme.axisTick }}
                 axisLine
                 tickLine
+                width={78}
                 tickFormatter={value => `$${value.toLocaleString()}`}
+                label={{
+                  value: 'Cost ($)',
+                  angle: -90,
+                  position: 'insideLeft',
+                  offset: -34,
+                  fill: theme.axisTick,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  style: { textAnchor: 'middle' },
+                }}
               />
               <Tooltip
                 content={<CustomTooltip darkMode={darkMode} />}
@@ -571,15 +590,25 @@ export default function ExpenseBarChart({ darkMode }) {
                 wrapperStyle={{ backgroundColor: 'transparent', outline: 'none' }}
                 contentStyle={{ backgroundColor: 'transparent', border: 'none' }}
               />
-              <Bar dataKey="planned" fill="#4285F4" name="Planned" radius={[3, 3, 0, 0]}>
+              <Bar
+                dataKey="planned"
+                fill="#4285F4"
+                name="Planned"
+                radius={[3, 3, 0, 0]}
+                maxBarSize={48}
+              >
                 <LabelList
                   dataKey="planned"
                   position="top"
-                  style={{ fontSize: 11, fill: '#8ab4f8', fontWeight: 'bold' }}
+                  style={{
+                    fontSize: 11,
+                    fill: darkMode ? '#bfdbfe' : '#2563eb',
+                    fontWeight: 'bold',
+                  }}
                   formatter={val => `$${val.toLocaleString()}`}
                 />
               </Bar>
-              <Bar dataKey="actual" name="Actual" radius={[3, 3, 0, 0]}>
+              <Bar dataKey="actual" name="Actual" radius={[3, 3, 0, 0]} maxBarSize={48}>
                 <LabelList
                   dataKey="varianceLabel"
                   content={<VarianceLabel darkMode={darkMode} />}

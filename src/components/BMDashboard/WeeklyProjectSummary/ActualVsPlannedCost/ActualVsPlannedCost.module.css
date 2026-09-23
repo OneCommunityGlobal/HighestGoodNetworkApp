@@ -264,6 +264,63 @@
 }
 
 /* Dark mode */
+.darkMode {
+  color: #f8fafc;
+}
+
+.darkMode .title,
+.darkMode .subtitle,
+.darkMode .filterSummary,
+.darkMode .selectorGroup label,
+.darkMode .varianceSummaryTitle,
+.darkMode .varianceCardCategory,
+.darkMode .varianceCardRow,
+.darkMode .varianceCardHighlightLabel,
+.darkMode .varianceCardPct,
+.darkMode .varianceCardStatus,
+.darkMode .chartState {
+  color: #f8fafc;
+}
+
+.darkMode .subtitle {
+  opacity: 0.9;
+}
+
+.darkMode .selectorGroup select,
+.darkMode .selectorGroup input {
+  border-color: #94a3b8;
+  background-color: #1e293b;
+  color: #f8fafc;
+}
+
+.darkMode .selectorGroup select:focus,
+.darkMode .selectorGroup input:focus {
+  border-color: #e2e8f0;
+  outline: 2px solid rgba(226, 232, 240, 0.3);
+  outline-offset: 1px;
+}
+
+.darkMode .selectorGroup select option {
+  background-color: #1e293b;
+  color: #f8fafc;
+}
+
+.darkMode .customTooltip {
+  border-color: #94a3b8;
+  color: #f8fafc;
+}
+
+.darkMode .tooltipDivider {
+  border-top-color: #64748b;
+}
+
+.darkMode :global(.recharts-cartesian-axis-tick-value),
+.darkMode :global(.recharts-legend-item-text),
+.darkMode :global(.recharts-label) {
+  fill: #e2e8f0;
+  color: #e2e8f0 !important;
+}
+
 .darkMode .totalOverrunBadge {
   border-color: rgba(255, 183, 175, 0.45);
   background: rgba(231, 74, 59, 0.2);
@@ -304,7 +361,7 @@
    from EventPopularity.module.css. */
 :global(.dark-mode) .darkMode :global(.recharts-cartesian-grid-horizontal) line,
 :global(.dark-mode) .darkMode :global(.recharts-cartesian-grid-vertical) line {
-  stroke: #aab4c2 !important;
+  stroke: #64748b !important;
 }
 
 .overBudgetWarning {
