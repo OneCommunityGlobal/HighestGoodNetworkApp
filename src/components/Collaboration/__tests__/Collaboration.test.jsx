@@ -153,14 +153,18 @@ describe('Collaboration', () => {
     expect(globalThis.fetch.mock.calls.some(([url]) => url.includes('/jobs?'))).toBe(true);
   });
 
-  it('shows job categories when there is no search or category filter', async () => {
+  it('shows individual jobs when there is no search or category filter', async () => {
     renderComponent();
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /ENGINEERING/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /Frontend Engineer - Engineering/i }),
+      ).toBeInTheDocument();
     });
 
-    expect(screen.getByRole('button', { name: /ENGINEERING/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /Backend Engineer - Engineering/i }),
+    ).toBeInTheDocument();
   });
 
   it('allows the user to search for a job title', async () => {
