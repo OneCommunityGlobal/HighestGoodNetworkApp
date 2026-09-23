@@ -626,6 +626,7 @@
   align-items: center;
   border: 1px solid currentcolor;
   border-radius: 50%;
+  color: inherit;
   cursor: help;
   display: inline-flex;
   font-size: 10px;
@@ -636,6 +637,22 @@
   margin-left: 6px;
   vertical-align: middle;
   width: 16px;
+}
+
+.projectStatusUnavailableButton {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: help;
+  display: inline-flex;
+  font: inherit;
+  height: 100%;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  width: 100%;
 }
 
 .projectStatusUnavailableTooltip {
@@ -663,6 +680,10 @@
 }
 
 .darkMode .statusCard .projectStatusUnavailableInfo {
+  color: #000 !important;
+}
+
+.darkMode .statusCard .projectStatusUnavailableButton {
   color: #000 !important;
 }
 

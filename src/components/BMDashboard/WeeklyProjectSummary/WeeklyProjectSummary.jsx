@@ -285,15 +285,19 @@ function WeeklyProjectSummary() {
                           <span
                             id={unavailableTooltipId}
                             className={styles.projectStatusUnavailableInfo}
-                            role="button"
-                            aria-label={button.unavailableReason}
-                            tabIndex={0}
                           >
-                            i
+                            <button
+                              type="button"
+                              className={styles.projectStatusUnavailableButton}
+                              aria-label={button.unavailableReason}
+                            >
+                              i
+                            </button>
                           </span>
                           <UncontrolledTooltip
                             placement="top"
                             target={unavailableTooltipId}
+                            trigger="hover focus"
                             className={styles.projectStatusUnavailableTooltip}
                             container="body"
                             autohide={false}
