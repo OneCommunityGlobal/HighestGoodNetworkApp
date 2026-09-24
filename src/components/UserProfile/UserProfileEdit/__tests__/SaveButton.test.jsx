@@ -138,4 +138,17 @@ describe('<SaveButton />', () => {
     expect(await screen.findByText('Saving...')).toBeInTheDocument();
     expect(screen.queryByText('Error occurred')).not.toBeInTheDocument();
   });
+
+  it('prevents duplicate submissions while a save is in progress', async () => {
+    const handleSubmit = vi.fn(() => new Promise(() => {}));
+    render(<SaveButton {...createProps({ handleSubmit })} />);
+
+    const saveButton = screen.getByRole('button', { name: /save changes/i });
+    fireEvent.click(saveButton);
+    fireEvent.click(saveButton);
+
+    expect(handleSubmit).toHaveBeenCalledOnce();
+    expect(saveButton).toBeDisabled();
+    expect(saveButton).toHaveAttribute('aria-busy', 'true');
+  });
 });

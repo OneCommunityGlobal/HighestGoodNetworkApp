@@ -38,6 +38,7 @@ const SaveButton = props => {
   const [isErr, setIsErr] = useState(false);
   const scrollSnapshot = useRef([]);
   const pendingRestoreFrame = useRef(null);
+  const saveInProgress = useRef(false);
 
   const captureScrollPosition = event => {
     const parentModalBody = event?.currentTarget
@@ -97,6 +98,9 @@ const SaveButton = props => {
   const handleSave = async event => {
     event.preventDefault();
     event.stopPropagation();
+    if (saveInProgress.current) return;
+
+    saveInProgress.current = true;
     captureScrollPosition(event);
     setModal(true);
     setIsLoading(true);
@@ -113,6 +117,7 @@ const SaveButton = props => {
       setIsErr(true);
       setIsLoading(false);
     } finally {
+      saveInProgress.current = false;
       restoreScrollPosition();
     }
   };
@@ -171,7 +176,8 @@ const SaveButton = props => {
         color="primary"
         onMouseDown={captureScrollPosition}
         onClick={handleSave}
-        disabled={disabled}
+        disabled={disabled || isLoading}
+        aria-busy={isLoading}
         className="mr-1"
         style={
           darkMode
