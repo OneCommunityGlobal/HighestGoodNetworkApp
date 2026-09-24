@@ -1,7 +1,0 @@
-[build]
-  command = "yarn run build && cp build/index.html build/200.html"
-  publish = "build"
-
-[build.environment]
-  NODE_VERSION = "20"
-  NODE_OPTIONS = "--max-old-space-size=4096"
