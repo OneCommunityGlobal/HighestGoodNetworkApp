@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './MyCases.module.css';
-import mockEvents from './mockData';
 import CreateEventModal from './CreateEventModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import { filterEventsByDate } from './FilterByDate';
 
-function MyCases() {
+function MyCases({ events = [] }) {
   const [view, setView] = useState('card');
   const [filter, setFilter] = useState('All Time');
   const [expanded, setExpanded] = useState(false);
@@ -20,7 +19,7 @@ function MyCases() {
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const filteredEvents = filterEventsByDate(mockEvents, filter).filter(
+  const filteredEvents = filterEventsByDate(events, filter).filter(
     event => new Date(event.eventDate).getTime() >= now.getTime(),
   );
 
