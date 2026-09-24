@@ -1,6 +1,6 @@
 /* ---------- CSS Variables for Dark Mode ---------- */
 :root {
-  --color-text-dark: #ffffff;
+  --color-text-dark: #fff;
   --color-border-dark: #4a5a77;
 }
 
@@ -133,7 +133,7 @@
   color: #fff;
   border-radius: 10px;
   border: 1px solid var(--color-border-dark);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
   padding: 20px;
   box-sizing: border-box;
 }
@@ -185,14 +185,8 @@
   font-size: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #333;
-}
-
-.trackingHeaderDark .trackingFilters select {
-  background-color: #3A506B;
-  color: var(--color-text-dark);
-  border: 1px solid var(--color-border-dark);
 }
 
 .trackingHeaderDark .trackingFilters select option {
@@ -244,10 +238,6 @@
   display: inline-block;
 }
 
-.trackingRateDark .trackingRateValue span {
-  color: #cbd5e1;
-}
-
 .trackingListContainer {
   max-height: 600px;
   overflow-y: auto;
@@ -283,13 +273,180 @@
   border-radius: 10px;
 }
 
+.trackingTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Table row hover states */
+.trackingTable tbody tr:hover {
+  background: #f5f7fa;
+}
+
+.trackingTableDark tbody tr:hover {
+  background: #2c3e50;
+}
+
+.insightsHeader h3 {
+  font-size: 1.3rem;
+  color: #333;
+  margin: 0;
+}
+
+.insightsHeaderDark h3 {
+  color: #fff;
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+.insightsFilters select {
+  margin-left: 10px;
+  padding: 8px;
+  font-size: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  color: #333;
+}
+
+.insightsHeaderDark .insightsFilters select option {
+  background-color: #3A506B;
+  color: var(--color-text-dark);
+}
+
+.insightsFilters select {
+  margin-left: 10px;
+  padding: 8px;
+  font-size: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.trackingHeaderDark .trackingFilters select {
+  background-color: #3A506B;
+  color: var(--color-text-dark);
+  border: 1px solid var(--color-border-dark);
+}
+
+.trackingRateDark .trackingRateValue span {
+  color: #cbd5e1;
+}
+
 .trackingListContainerDark::-webkit-scrollbar-thumb:hover {
   background: #8a9bc0;
 }
 
-.trackingTable {
+.insightsHeaderDark .insightsFilters select {
+  background-color: #3A506B;
+  color: var(--color-text-dark);
+  border: 1px solid var(--color-border-dark);
+}
+
+.timeframeSelector label,
+.metricSelector label,
+.periodSelector label,
+.filterSelector label {
+  font-weight: 600;
+  color: #333;
+}
+
+.analyticsPageDark .timeframeSelector label,
+.analyticsPageDark .metricSelector label,
+.analyticsPageDark .periodSelector label,
+.analyticsPageDark .filterSelector label {
+  color: #fff;
+}
+
+.cardHeader h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0;
+  color: #333;
+}
+
+.comparisonTable h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.comparisonTableDark h3 {
+  color: #fff;
+}
+
+.comparisonTable table {
   width: 100%;
   border-collapse: collapse;
+}
+
+.comparisonTable th,
+.comparisonTable td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.comparisonTableDark th,
+.comparisonTableDark td {
+  border-bottom-color: #5a6b7d;
+}
+
+.comparisonTable th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+}
+
+.comparisonTableDark th {
+  background: #5a6b7d;
+  color: #fff;
+}
+
+.eventTypeValues h3,
+.monthlyTrends h3,
+.eventTypeTrends h3,
+.eventsTable h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  margin-top: 0;
+  padding-bottom: 0.5rem;
+  color: #333;
+}
+
+.eventTypeValuesDark h3,
+.monthlyTrendsDark h3,
+.eventTypeTrendsDark h3,
+.eventsTableDark h3 {
+  color: #fff;
+}
+
+.valueTable table,
+.trendsTable table,
+.tableContainer table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.valueTable th,
+.valueTable td,
+.trendsTable th,
+.trendsTable td,
+.tableContainer th,
+.tableContainer td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.valueTable th,
+.trendsTable th,
+.tableContainer th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #333;
 }
 
 .trackingTable thead th {
@@ -328,11 +485,6 @@
   }
 }
 
-/* Table row hover states */
-.trackingTable tbody tr:hover {
-  background: #f5f7fa;
-}
-
 .trackingTableDark thead th {
   background: #1C2541;
   color: var(--color-text-dark);
@@ -341,14 +493,6 @@
 .trackingTableDark tbody td {
   color: var(--color-text-dark);
   border-bottom: 1px solid var(--color-border-dark);
-}
-
-.trackingTableDark tbody tr:hover {
-  background: #2c3e50;
-}
-
-.trackingTableDark tbody tr:hover td {
-  color: #fff;
 }
 
 .trackingRateGreen {
@@ -377,39 +521,6 @@
   justify-content: space-between;
 }
 
-.insightsHeader h3 {
-  font-size: 1.3rem;
-  color: #333;
-  margin: 0;
-}
-
-.insightsHeaderDark h3 {
-  color: #fff;
-  font-size: 1.3rem;
-  margin: 0;
-}
-
-.insightsFilters select {
-  margin-left: 10px;
-  padding: 8px;
-  font-size: 0.8rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #ffffff;
-  color: #333;
-}
-
-.insightsHeaderDark .insightsFilters select {
-  background-color: #3A506B;
-  color: var(--color-text-dark);
-  border: 1px solid var(--color-border-dark);
-}
-
-.insightsHeaderDark .insightsFilters select option {
-  background-color: #3A506B;
-  color: var(--color-text-dark);
-}
-
 .infoIcon {
   cursor: pointer;
   color: #6c757d;
@@ -427,14 +538,6 @@
 
 .insightsHeaderDark .infoIcon:hover {
   color: #66b3ff;
-}
-
-.insightsFilters select {
-  margin-left: 10px;
-  padding: 8px;
-  font-size: 0.8rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
 }
 
 .insightsTabs {
@@ -463,6 +566,14 @@
   border: 1px solid var(--color-border-dark);
 }
 
+.insightsTab:not(:last-child) {
+  border-right: 1px solid #ccc;
+}
+
+.insightsTab:hover {
+  background-color: #e0e0e0;
+}
+
 .insightsDark .insightsTab:not(:last-child) {
   border-right: 1px solid var(--color-border-dark);
 }
@@ -472,8 +583,10 @@
   color: var(--color-text-dark);
 }
 
-.insightsTab:not(:last-child) {
-  border-right: 1px solid #ccc;
+/* Dark mode hover states */
+.insightsDark .insightsTab:hover {
+  background-color: #3b5373;
+  color: #fff;
 }
 
 .insightsTabActive {
@@ -481,31 +594,6 @@
   background-color: #0056b3;
   color: #fff;
   font-weight: bold;
-}
-
-.insightsTab:hover {
-  background-color: #e0e0e0;
-}
-
-/* Dark mode hover states */
-.insightsDark .insightsTab:hover {
-  background-color: #3b5373;
-  color: #fff;
-}
-
-.navigationCardDark:hover {
-  background: #465d7b;
-}
-
-.case-list-item-dark:hover {
-  background-color: #2b3f59;
-}
-
-.eventsTableDark .tableContainer tr:hover,
-.monthlyTrendsDark .trendsTable tr:hover,
-.eventTypeValuesDark .valueTable tr:hover,
-.eventTypeTrendsDark .trendsTable tr:hover {
-  background: #304663;
 }
 
 .insightsContent {
@@ -625,7 +713,6 @@
 .pageBreakAfter  { break-after: always; }
 .avoidBreak       { break-inside: avoid; }
 
-
 .navLinks {
   display: flex;
   gap: 1rem;
@@ -639,35 +726,6 @@
   background: #5a4a8a;
   transition: background 0.3s ease;
   font-size: 0.9rem;
-}
-
-.navLink:hover {
-  background: #4a3a7a;
-  text-decoration: none;
-  color: white;
-}
-
-/* Analytics page backlink styles */
-.analyticsPage .navLink {
-  color: #333;
-  background: #f8f9fa;
-  border: 1px solid #dee2e6;
-}
-
-.analyticsPage .navLink:hover {
-  background: #e9ecef;
-  color: #333;
-}
-
-.analyticsPageDark .navLink {
-  color: #fff;
-  background: #2d3e54;
-  border: 1px solid #5a6b7d;
-}
-
-.analyticsPageDark .navLink:hover {
-  background: #3d4e64;
-  color: #fff;
 }
 
 .metricsSummary {
@@ -744,11 +802,6 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.engagementCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgb(0 0 0 / 15%);
-}
-
 .engagementCardDark {
   background: #3a506b;
   color: #fff;
@@ -777,10 +830,6 @@
   margin-bottom: 0.25rem;
 }
 
-.engagementCardDark .cardValue {
-  color: #fff;
-}
-
 .cardLabel {
   font-size: 0.9rem;
   font-weight: 600;
@@ -788,17 +837,9 @@
   margin-bottom: 0.25rem;
 }
 
-.engagementCardDark .cardLabel {
-  color: #fff;
-}
-
 .cardSubtext {
   font-size: 0.8rem;
   color: #4b5563;
-}
-
-.engagementCardDark .cardSubtext {
-  color: #e5e7eb;
 }
 
 /* Chart Section Styles */
@@ -869,17 +910,9 @@
   color: #333;
 }
 
-.pieChartSectionDark .legendLabel {
-  color: #e5e7eb;
-}
-
 .legendValue {
   font-size: 0.8rem;
   color: #666;
-}
-
-.pieChartSectionDark .legendValue {
-  color: #e0e2e6;
 }
 
 .chartSummary {
@@ -888,10 +921,6 @@
   margin-top: 1rem;
   padding-top: 1rem;
   border-top: 1px solid #eee;
-}
-
-.pieChartSectionDark .chartSummary {
-  border-top-color: #5a6b7d;
 }
 
 .summaryItem {
@@ -906,18 +935,10 @@
   font-weight: 600;
 }
 
-.pieChartSectionDark .summaryLabel {
-  color: #e5e7eb;
-}
-
 .summaryValue {
   font-size: 1rem;
   font-weight: bold;
   color: #333;
-}
-
-.pieChartSectionDark .summaryValue {
-  color: #fff;
 }
 
 /* Bar Chart Styles */
@@ -960,10 +981,6 @@
   line-height: 20px;
 }
 
-.barChartSectionDark .yAxisLabel {
-  color: #e5e7eb;
-}
-
 .yAxisValues {
   display: flex;
   flex-direction: column;
@@ -975,10 +992,6 @@
 .yAxisValue {
   font-size: 0.8rem;
   color: #666;
-}
-
-.barChartSectionDark .yAxisValue {
-  color: #e5e7eb;
 }
 
 .barsContainer {
@@ -1024,10 +1037,6 @@
   font-weight: 600;
 }
 
-.barChartSectionDark .barLabel {
-  color: #eef0f3;
-}
-
 .barValues {
   display: flex;
   flex-direction: column;
@@ -1040,10 +1049,6 @@
   color: #666;
 }
 
-.barChartSectionDark .barValue {
-  color: #e5e7eb;
-}
-
 .chartLegend {
   display: flex;
   gap: 2rem;
@@ -1051,10 +1056,6 @@
   margin-top: 1rem;
   padding-top: 1rem;
   border-top: 1px solid #eee;
-}
-
-.barChartSectionDark .chartLegend {
-  border-top-color: #5a6b7d;
 }
 
 .chartInsights {
@@ -1065,24 +1066,10 @@
   border-top: 1px solid #eee;
 }
 
-.barChartSectionDark .chartInsights {
-  border-top-color: #5a6b7d;
-}
-
-/* .insightItem and .insightLabel are defined earlier in the file */
-
-.barChartSectionDark .insightLabel {
-  color: #e5e7eb;
-}
-
 .insightValue {
   font-size: 0.9rem;
   font-weight: bold;
   color: #333;
-}
-
-.barChartSectionDark .insightValue {
-  color: #fff;
 }
 
 /* Analytics Navigation Styles */
@@ -1101,10 +1088,6 @@
   color: #666;
   margin-bottom: 1.5rem;
   font-size: 1rem;
-}
-
-.analyticsNavigationDark .sectionSubtitle {
-  color: #e5e7eb;
 }
 
 .navigationGrid {
@@ -1127,17 +1110,128 @@
   border: 1px solid #eee;
 }
 
+.navigationCardDark {
+  background: #3a506b;
+  color: #fff;
+  border-color: #5a6b7d;
+}
+
+.navigationCardDark:hover {
+  background: #465d7b;
+}
+
+.case-list-item-dark:hover {
+  background-color: #2b3f59;
+}
+
+.navLink:hover {
+  background: #4a3a7a;
+  text-decoration: none;
+  color: white;
+}
+
+/* Analytics page backlink styles */
+.analyticsPage .navLink {
+  color: #333;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+}
+
+.analyticsPageDark .navLink {
+  color: #fff;
+  background: #2d3e54;
+  border: 1px solid #5a6b7d;
+}
+
+.analyticsPage .navLink:hover {
+  background: #e9ecef;
+  color: #333;
+}
+
+.analyticsPageDark .navLink:hover {
+  background: #3d4e64;
+  color: #fff;
+}
+
+.engagementCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 15%);
+}
+
+.engagementCardDark .cardValue {
+  color: #fff;
+}
+
+.engagementCardDark .cardLabel {
+  color: #fff;
+}
+
+.engagementCardDark .cardSubtext {
+  color: #e5e7eb;
+}
+
+.pieChartSectionDark .legendLabel {
+  color: #e5e7eb;
+}
+
+.pieChartSectionDark .legendValue {
+  color: #e0e2e6;
+}
+
+.pieChartSectionDark .chartSummary {
+  border-top-color: #5a6b7d;
+}
+
+.pieChartSectionDark .summaryLabel {
+  color: #e5e7eb;
+}
+
+.pieChartSectionDark .summaryValue {
+  color: #fff;
+}
+
+.barChartSectionDark .yAxisLabel {
+  color: #e5e7eb;
+}
+
+.barChartSectionDark .yAxisValue {
+  color: #e5e7eb;
+}
+
+.barChartSectionDark .barLabel {
+  color: #eef0f3;
+}
+
+.barChartSectionDark .barValue {
+  color: #e5e7eb;
+}
+
+.barChartSectionDark .chartLegend {
+  border-top-color: #5a6b7d;
+}
+
+.barChartSectionDark .chartInsights {
+  border-top-color: #5a6b7d;
+}
+
+/* .insightItem and .insightLabel are defined earlier in the file */
+.barChartSectionDark .insightLabel {
+  color: #e5e7eb;
+}
+
+.barChartSectionDark .insightValue {
+  color: #fff;
+}
+
+.analyticsNavigationDark .sectionSubtitle {
+  color: #e5e7eb;
+}
+
 .navigationCard:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgb(0 0 0 / 15%);
   text-decoration: none;
   color: inherit;
-}
-
-.navigationCardDark {
-  background: #3a506b;
-  color: #fff;
-  border-color: #5a6b7d;
 }
 
 .navigationCard .cardIcon {
@@ -1179,26 +1273,6 @@
 }
 
 .navigationCardDark .cardDescription {
-  color: #e5e7eb;
-}
-
-.navigationCard .cardStats {
-  font-size: 0.8rem;
-  color: #888;
-  font-weight: 600;
-}
-
-.navigationCardDark .cardStats {
-  color: #d1d5db;
-}
-
-.navigationCard .cardArrow {
-  font-size: 1.2rem;
-  color: #666;
-  font-weight: bold;
-}
-
-.navigationCardDark .cardArrow {
   color: #e5e7eb;
 }
 
@@ -1267,34 +1341,6 @@
   margin-right: -50vw !important;
 }
 
-.analyticsPageDark .pageHeader {
-  text-align: center;
-  max-width: 1200px;
-  margin: 0 auto 2rem;
-}
-
-.analyticsPageDark .comparisonCards,
-.analyticsPageDark .valueSummaryCards,
-.analyticsPageDark .trendsSummaryCards,
-.analyticsPageDark .performanceSummaryCards {
-  max-width: 1200px;
-  margin: 0 auto 2rem;
-}
-
-.analyticsPageDark .comparisonTable,
-.analyticsPageDark .eventTypeValues,
-.analyticsPageDark .monthlyTrends,
-.analyticsPageDark .eventTypeTrends,
-.analyticsPageDark .eventsTable,
-.analyticsPageDark .valueTrends,
-.analyticsPageDark .insightsSection,
-.analyticsPageDark .valueInsights,
-.analyticsPageDark .trendInsights,
-.analyticsPageDark .performanceInsights {
-  max-width: 1200px;
-  margin: 0 auto 2rem;
-}
-
 .pageHeader {
   margin-bottom: 2rem;
   text-align: center;
@@ -1331,21 +1377,6 @@
   justify-content: center;
 }
 
-.timeframeSelector label,
-.metricSelector label,
-.periodSelector label,
-.filterSelector label {
-  font-weight: 600;
-  color: #333;
-}
-
-.analyticsPageDark .timeframeSelector label,
-.analyticsPageDark .metricSelector label,
-.analyticsPageDark .periodSelector label,
-.analyticsPageDark .filterSelector label {
-  color: #fff;
-}
-
 .timeframeSelect,
 .metricSelect,
 .periodSelect,
@@ -1355,15 +1386,6 @@
   border-radius: 6px;
   background: white;
   font-size: 0.9rem;
-}
-
-.analyticsPageDark .timeframeSelect,
-.analyticsPageDark .metricSelect,
-.analyticsPageDark .periodSelect,
-.analyticsPageDark .filterSelect {
-  background: #3a506b;
-  border-color: #5a6b7d;
-  color: #fff;
 }
 
 /* Comparison Cards */
@@ -1409,39 +1431,37 @@
   margin-bottom: 1.5rem;
 }
 
-.cardHeader .cardIcon {
-  font-size: 2rem;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f8f9fa;
-  border-radius: 10px;
-}
-
-.virtualCardDark .cardHeader .cardIcon,
-.inPersonCardDark .cardHeader .cardIcon {
-  background: #5a6b7d;
-}
-
-.cardHeader h3 {
-  font-size: 1.3rem;
-  font-weight: 600;
-  margin: 0;
-  color: #333;
-}
-
-.virtualCardDark .cardHeader h3,
-.inPersonCardDark .cardHeader h3 {
-  color: #fff;
-}
-
 .cardStats {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
   margin-bottom: 1rem;
+}
+
+.navigationCard .cardStats {
+  font-size: 0.8rem;
+  color: #888;
+  font-weight: 600;
+}
+
+.navigationCardDark .cardStats {
+  color: #d1d5db;
+}
+
+.navigationCard .cardArrow {
+  font-size: 1.2rem;
+  color: #666;
+  font-weight: bold;
+}
+
+.navigationCardDark .cardArrow {
+  color: #e5e7eb;
+}
+
+.analyticsPageDark .pageHeader {
+  text-align: center;
+  max-width: 1200px;
+  margin: 0 auto 2rem;
 }
 
 .statItem {
@@ -1458,20 +1478,10 @@
   margin-bottom: 0.25rem;
 }
 
-.virtualCardDark .statValue,
-.inPersonCardDark .statValue {
-  color: #fff;
-}
-
 .statLabel {
   font-size: 0.8rem;
   color: #666;
   font-weight: 600;
-}
-
-.virtualCardDark .statLabel,
-.inPersonCardDark .statLabel {
-  color: #e5e7eb;
 }
 
 .topEvent {
@@ -1480,18 +1490,6 @@
   text-align: center;
   padding-top: 1rem;
   border-top: 1px solid #eee;
-}
-
-.virtualCardDark .topEvent,
-.inPersonCardDark .topEvent {
-  color: #e5e7eb;
-  border-top-color: #5a6b7d;
-}
-
-/* Ensure Top Event label is readable in dark mode */
-.virtualCardDark .topEvent strong,
-.inPersonCardDark .topEvent strong {
-  color: #fff;
 }
 
 /* Comparison Table */
@@ -1509,66 +1507,9 @@
   border: 1px solid #5a6b7d;
 }
 
-/* Hover styles for comparison table */
-.comparisonTable table tbody tr:hover {
-  background: #f5f7fa;
-}
-
-.comparisonTableDark table tbody tr:hover {
-  background: #304663;
-  color: #fff;
-}
-
-.comparisonTableDark table tbody tr:hover td {
-  color: #fff;
-}
-
-.comparisonTable h3 {
-  font-size: 1.3rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: #333;
-}
-
-.comparisonTableDark h3 {
-  color: #fff;
-}
-
-.comparisonTable table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.comparisonTable th,
-.comparisonTable td {
-  padding: 1rem;
-  text-align: left;
-  border-bottom: 1px solid #eee;
-}
-
-.comparisonTableDark th,
-.comparisonTableDark td {
-  border-bottom-color: #5a6b7d;
-}
-
-.comparisonTable th {
-  background: #f8f9fa;
-  font-weight: 600;
-  color: #333;
-}
-
-.comparisonTableDark th {
-  background: #5a6b7d;
-  color: #fff;
-}
-
 .metricName {
   font-weight: 600;
   color: #333;
-}
-
-.comparisonTableDark .metricName {
-  color: #fff;
 }
 
 .virtualValue {
@@ -1595,6 +1536,14 @@
   margin-bottom: 2rem;
 }
 
+.analyticsPageDark .comparisonCards,
+.analyticsPageDark .valueSummaryCards,
+.analyticsPageDark .trendsSummaryCards,
+.analyticsPageDark .performanceSummaryCards {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+}
+
 .valueCard,
 .trendCard,
 .performanceCard {
@@ -1608,32 +1557,12 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.valueCard:hover,
-.trendCard:hover,
-.performanceCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgb(0 0 0 / 15%);
-}
-
 .valueCardDark,
 .trendCardDark,
 .performanceCardDark {
   background: #3a506b;
   color: #fff;
   border: 1px solid #5a6b7d;
-}
-
-/* Ensure strong contrast for summary numbers and labels in dark mode */
-.trendCardDark .cardValue,
-.trendCardDark .cardLabel,
-.trendCardDark .cardSubtext,
-.valueCardDark .cardValue,
-.valueCardDark .cardLabel,
-.valueCardDark .cardSubtext,
-.performanceCardDark .cardValue,
-.performanceCardDark .cardLabel,
-.performanceCardDark .cardSubtext {
-  color: #fff;
 }
 
 /* Event Type Values Table */
@@ -1657,97 +1586,15 @@
   border: 1px solid #5a6b7d;
 }
 
-/* Improve contrast for monthly trends chart in dark mode */
-.monthlyTrendsDark .yAxisLabel,
-.monthlyTrendsDark .yAxisValue,
-.monthlyTrendsDark .barLabel,
-.valueTrendsDark .yAxisLabel,
-.valueTrendsDark .yAxisValue,
-.valueTrendsDark .barLabel {
-  color: #e5e7eb;
-}
-
-.eventTypeValues h3,
-.monthlyTrends h3,
-.eventTypeTrends h3,
-.eventsTable h3 {
-  font-size: 1.3rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-  margin-top: 0;
-  padding-bottom: 0.5rem;
-  color: #333;
-}
-
-.eventTypeValuesDark h3,
-.monthlyTrendsDark h3,
-.eventTypeTrendsDark h3,
-.eventsTableDark h3 {
-  color: #fff;
-}
-
 .valueTable,
 .trendsTable,
 .tableContainer {
   overflow-x: auto;
 }
 
-.valueTable table,
-.trendsTable table,
-.tableContainer table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 600px;
-}
-
-.valueTable th,
-.valueTable td,
-.trendsTable th,
-.trendsTable td,
-.tableContainer th,
-.tableContainer td {
-  padding: 1rem;
-  text-align: left;
-  border-bottom: 1px solid #eee;
-}
-
-.eventTypeValuesDark .valueTable th,
-.eventTypeValuesDark .valueTable td,
-.monthlyTrendsDark .trendsTable th,
-.monthlyTrendsDark .trendsTable td,
-.eventTypeTrendsDark .trendsTable th,
-.eventTypeTrendsDark .trendsTable td,
-.eventsTableDark .tableContainer th,
-.eventsTableDark .tableContainer td {
-  border-bottom-color: #5a6b7d;
-}
-
-.valueTable th,
-.trendsTable th,
-.tableContainer th {
-  background: #f8f9fa;
-  font-weight: 600;
-  color: #333;
-}
-
-.eventTypeValuesDark .valueTable th,
-.monthlyTrendsDark .trendsTable th,
-.eventTypeTrendsDark .trendsTable th,
-.eventsTableDark .tableContainer th {
-  background: #5a6b7d;
-  color: #fff;
-}
-
 .eventType {
   font-weight: 600;
   color: #333;
-}
-
-.eventTypeValuesDark .eventType,
-.monthlyTrendsDark .eventType,
-.eventTypeTrendsDark .eventType,
-.eventsTableDark .eventType {
-  color: #fff;
 }
 
 .value {
@@ -1841,21 +1688,9 @@
   min-height: 4px;
 }
 
-/* .barValue is defined earlier in the file */
-
-.valueTrendsDark .barValue,
-.monthlyTrendsDark .barValue {
-  color: #e5e7eb;
-}
-
 .barEvents {
   font-size: 0.7rem;
   color: #888;
-}
-
-.valueTrendsDark .barEvents,
-.monthlyTrendsDark .barEvents {
-  color: #d1d5db;
 }
 
 .barGrowth {
@@ -1870,16 +1705,8 @@
   color: #333;
 }
 
-.eventsTableDark .eventName {
-  color: #fff;
-}
-
 .eventDate {
   color: #666;
-}
-
-.eventsTableDark .eventDate {
-  color: #e5e7eb;
 }
 
 .attendance {
@@ -1896,10 +1723,6 @@
   overflow: hidden;
 }
 
-.eventsTableDark .attendanceBarContainer {
-  background: #5a6b7d;
-}
-
 .attendanceFill {
   height: 100%;
   transition: width 0.3s ease;
@@ -1914,10 +1737,6 @@
 .ratingValue {
   font-weight: 600;
   color: #333;
-}
-
-.eventsTableDark .ratingValue {
-  color: #fff;
 }
 
 .ratingStars {
@@ -1937,10 +1756,6 @@
   background: #e0e0e0;
   border-radius: 2px;
   overflow: hidden;
-}
-
-.eventsTableDark .engagementBar {
-  background: #5a6b7d;
 }
 
 .engagementFill {
@@ -1978,6 +1793,133 @@
   margin-bottom: 2rem;
 }
 
+.analyticsPageDark .comparisonTable,
+.analyticsPageDark .eventTypeValues,
+.analyticsPageDark .monthlyTrends,
+.analyticsPageDark .eventTypeTrends,
+.analyticsPageDark .eventsTable,
+.analyticsPageDark .valueTrends,
+.analyticsPageDark .insightsSection,
+.analyticsPageDark .valueInsights,
+.analyticsPageDark .trendInsights,
+.analyticsPageDark .performanceInsights {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+}
+
+.analyticsPageDark .timeframeSelect,
+.analyticsPageDark .metricSelect,
+.analyticsPageDark .periodSelect,
+.analyticsPageDark .filterSelect {
+  background: #3a506b;
+  border-color: #5a6b7d;
+  color: #fff;
+}
+
+.cardHeader .cardIcon {
+  font-size: 2rem;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+  border-radius: 10px;
+}
+
+.virtualCardDark .cardHeader .cardIcon,
+.inPersonCardDark .cardHeader .cardIcon {
+  background: #5a6b7d;
+}
+
+.virtualCardDark .statValue,
+.inPersonCardDark .statValue {
+  color: #fff;
+}
+
+.virtualCardDark .statLabel,
+.inPersonCardDark .statLabel {
+  color: #e5e7eb;
+}
+
+.virtualCardDark .topEvent,
+.inPersonCardDark .topEvent {
+  color: #e5e7eb;
+  border-top-color: #5a6b7d;
+}
+
+.comparisonTableDark .metricName {
+  color: #fff;
+}
+
+.valueCard:hover,
+.trendCard:hover,
+.performanceCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 15%);
+}
+
+/* Ensure strong contrast for summary numbers and labels in dark mode */
+.trendCardDark .cardValue,
+.trendCardDark .cardLabel,
+.trendCardDark .cardSubtext,
+.valueCardDark .cardValue,
+.valueCardDark .cardLabel,
+.valueCardDark .cardSubtext,
+.performanceCardDark .cardValue,
+.performanceCardDark .cardLabel,
+.performanceCardDark .cardSubtext {
+  color: #fff;
+}
+
+/* Improve contrast for monthly trends chart in dark mode */
+.monthlyTrendsDark .yAxisLabel,
+.monthlyTrendsDark .yAxisValue,
+.monthlyTrendsDark .barLabel,
+.valueTrendsDark .yAxisLabel,
+.valueTrendsDark .yAxisValue,
+.valueTrendsDark .barLabel {
+  color: #e5e7eb;
+}
+
+.eventTypeValuesDark .eventType,
+.monthlyTrendsDark .eventType,
+.eventTypeTrendsDark .eventType,
+.eventsTableDark .eventType {
+  color: #fff;
+}
+
+/* .barValue is defined earlier in the file */
+.valueTrendsDark .barValue,
+.monthlyTrendsDark .barValue {
+  color: #e5e7eb;
+}
+
+.valueTrendsDark .barEvents,
+.monthlyTrendsDark .barEvents {
+  color: #d1d5db;
+}
+
+.eventsTableDark .eventName {
+  color: #fff;
+}
+
+.eventsTableDark .eventDate {
+  color: #e5e7eb;
+}
+
+.eventsTableDark .attendanceBarContainer {
+  background: #5a6b7d;
+}
+
+.eventsTableDark .ratingValue {
+  color: #fff;
+}
+
+.eventsTableDark .engagementBar {
+  background: #5a6b7d;
+}
+
 .insightsSectionDark,
 .valueInsightsDark,
 .trendInsightsDark,
@@ -2001,6 +1943,61 @@
 .valueInsightsDark h3,
 .trendInsightsDark h3,
 .performanceInsightsDark h3 {
+  color: #fff;
+}
+
+.virtualCardDark .cardHeader h3,
+.inPersonCardDark .cardHeader h3 {
+  color: #fff;
+}
+
+/* Ensure Top Event label is readable in dark mode */
+.virtualCardDark .topEvent strong,
+.inPersonCardDark .topEvent strong {
+  color: #fff;
+}
+
+.eventTypeValuesDark .valueTable th,
+.eventTypeValuesDark .valueTable td,
+.monthlyTrendsDark .trendsTable th,
+.monthlyTrendsDark .trendsTable td,
+.eventTypeTrendsDark .trendsTable th,
+.eventTypeTrendsDark .trendsTable td,
+.eventsTableDark .tableContainer th,
+.eventsTableDark .tableContainer td {
+  border-bottom-color: #5a6b7d;
+}
+
+.trackingTableDark tbody tr:hover td {
+  color: #fff;
+}
+
+.comparisonTableDark table tbody tr:hover td {
+  color: #fff;
+}
+
+/* Hover styles for comparison table */
+.comparisonTable table tbody tr:hover {
+  background: #f5f7fa;
+}
+
+.comparisonTableDark table tbody tr:hover {
+  background: #304663;
+  color: #fff;
+}
+
+.eventsTableDark .tableContainer tr:hover,
+.monthlyTrendsDark .trendsTable tr:hover,
+.eventTypeValuesDark .valueTable tr:hover,
+.eventTypeTrendsDark .trendsTable tr:hover {
+  background: #304663;
+}
+
+.eventTypeValuesDark .valueTable th,
+.monthlyTrendsDark .trendsTable th,
+.eventTypeTrendsDark .trendsTable th,
+.eventsTableDark .tableContainer th {
+  background: #5a6b7d;
   color: #fff;
 }
 
@@ -2131,5 +2128,120 @@
 
   .cardStats {
     grid-template-columns: 1fr;
+  }
+}
+
+.savePdfButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border: 1px solid white;
+  border-radius: 6px;
+  background: #fff;
+  color: #243458;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.savePdfButton:hover {
+  background: #edf2fa;
+}
+
+.savePdfButton:focus-visible {
+  outline: 3px solid #ffdf70;
+  outline-offset: 3px;
+}
+
+.savePdfButton:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.exportError {
+  padding: 0.75rem;
+  color: #8b1a1a;
+  background: #fff0f0;
+}
+
+@media print {
+  .participationLandingPage,
+  .participationLandingPage * {
+    color: #111 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    print-color-adjust: exact;
+  }
+
+  .participationLandingPage {
+    background: white !important;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+
+  .participationHeader {
+    background: white !important;
+    padding: 0;
+  }
+
+  .participationLandingPage button,
+  .participationLandingPage nav,
+  .participationLandingPage [role='dialog'],
+  .headerNavigation,
+  .exportError,
+  .analyticsNavigation,
+  .icons,
+  .infoIcon {
+    display: none !important;
+  }
+
+  .participationLandingPage [class*='Dark'],
+  .participationLandingPage section,
+  .participationLandingPage header,
+  .participationLandingPage :global(.my-cases-global),
+  .participationLandingPage :global(.case-card-global),
+  .participationLandingPage :global(.case-list-item-global),
+  .trackingListContainer,
+  .trackingListContainerDark {
+    background: white !important;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .chartsRow {
+    grid-template-columns: 1fr;
+  }
+
+  .participationLandingPage select {
+    appearance: none;
+    border: none;
+  }
+
+  .participationLandingPage .insightsTabs button.activeTab,
+  .participationLandingPage .insightsTabsDarkMode button.activeTabDarkMode {
+    display: inline-block !important;
+    border: none;
+    background: white;
+  }
+
+  .metricCard,
+  .participationLandingPage tr,
+  .participationLandingPage svg {
+    break-inside: avoid;
+  }
+}
+
+.pdfHeaderNavigation {
+  flex-shrink: 1;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+@media (width <= 768px) {
+  .pdfHeaderNavigation {
+    justify-content: flex-start;
   }
 }
