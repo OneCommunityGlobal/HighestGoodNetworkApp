@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Table, Button, Form } from 'react-bootstrap';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { addInvType } from '../../../actions/bmdashboard/invTypeActions';
 import TypeRow from './TypeRow';
 import styles from './TypesList.module.css';
 
 export function TypesTable(props) {
   const { itemTypes, category, dispatch } = props;
+  const units = useSelector(state => state.bmInvUnits.list) || [];
   const [isAdding, setIsAdding] = useState(false);
   const [newType, setNewType] = useState({ name: '', description: '', unit: '', fuel: '' });
 
@@ -98,13 +99,19 @@ export function TypesTable(props) {
               {requiresUnit && (
                 <td>
                   <Form.Control
-                    type="text"
+                    as="select"
                     name="unit"
                     value={newType.unit}
                     onChange={handleInputChange}
-                    placeholder="Enter unit"
                     size="sm"
-                  />
+                  >
+                    <option value="">Select unit</option>
+                    {units.map(u => (
+                      <option key={u._id || u.unit} value={u.unit}>
+                        {u.unit}
+                      </option>
+                    ))}
+                  </Form.Control>
                 </td>
               )}
               {category === 'Equipments' && (

@@ -1,7 +1,7 @@
 /* stylelint-disable no-descending-specificity */
 .typesListContainer {
   width: 100%;
-  max-width: 1080px;
+  max-width: 100%;
   margin: 1rem auto;
   padding: 0 1rem;
 
@@ -21,6 +21,12 @@
   --color-h500: #4a9bc2;
   --color-n0: #1e1e1e;
   --color-text: #5eb3e4;
+
+  background-color: #0f1b2b;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding-top: 1rem;
+  max-width: 100%;
 }
 
 .timestampContainer {
@@ -119,7 +125,7 @@
 
 :global(.dark-mode) .accordionCollapse,
 :global(.bm-dashboard-dark) .accordionCollapse {
-  background-color: #2a2a2a;
+  background-color: #14253d;
   color: #fff;
 }
 
@@ -259,6 +265,35 @@
   font-size: 10px;
 }
 
+/* ── Datepicker time input alignment fix ── */
+:global(.react-datepicker__input-time-container) {
+  display: flex !important;
+  align-items: center !important;
+  padding: 8px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+}
+
+:global(.react-datepicker-time__caption) {
+  flex-shrink: 0;
+}
+
+:global(.react-datepicker-time__input-container) {
+  flex: 1 !important;
+  width: calc(100% - 60px) !important;
+}
+
+:global(.react-datepicker-time__input) {
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+:global(.react-datepicker-time__input) input[type="time"] {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
 /* Dark mode table styling */
 :global(.dark-mode) .typesListContainer table,
 :global(.bm-dashboard-dark) .typesListContainer table {
@@ -267,13 +302,13 @@
 
 :global(.dark-mode) .typesListContainer table tbody tr,
 :global(.bm-dashboard-dark) .typesListContainer table tbody tr {
-  background-color: #2a2a2a;
+  background-color: #14253d;
   color: #fff;
 }
 
 :global(.dark-mode) .typesListContainer table tbody tr:hover,
 :global(.bm-dashboard-dark) .typesListContainer table tbody tr:hover {
-  background-color: #3a3a3a;
+  background-color: #1c3354;
 }
 
 :global(.dark-mode) .typesListContainer table td,
@@ -285,27 +320,27 @@
 /* Dark mode card styling */
 :global(.dark-mode) .typesListContainer :global(.card),
 :global(.bm-dashboard-dark) .typesListContainer :global(.card) {
-  background-color: #2a2a2a;
+  background-color: #14253d;
   border-color: rgb(255 255 255 / 20%);
 }
 
 :global(.dark-mode) .typesListContainer :global(.card-body),
 :global(.bm-dashboard-dark) .typesListContainer :global(.card-body) {
-  background-color: #2a2a2a;
+  background-color: #14253d;
   color: #fff;
 }
 
 /* Dark mode form controls */
 :global(.dark-mode) .typesListContainer :global(.form-control),
 :global(.bm-dashboard-dark) .typesListContainer :global(.form-control) {
-  background-color: #3a3a3a;
+  background-color: #1c3354;
   color: #fff;
   border-color: rgb(255 255 255 / 20%);
 }
 
 :global(.dark-mode) .typesListContainer :global(.form-control):focus,
 :global(.bm-dashboard-dark) .typesListContainer :global(.form-control):focus {
-  background-color: #3a3a3a;
+  background-color: #1c3354;
   color: #fff;
   border-color: var(--color-h500);
 }
@@ -313,7 +348,7 @@
 /* Dark mode timestamp styling */
 :global(.dark-mode) #timestamp,
 :global(.bm-dashboard-dark) #timestamp {
-  background-color: #3a3a3a !important;
+  background-color: #1c3354 !important;
   color: #fff !important;
   border-color: rgb(255 255 255 / 20%) !important;
 }
@@ -330,14 +365,14 @@
 /* Dark mode react-datepicker styling */
 :global(.dark-mode) .timestampContainer :global(.react-datepicker-wrapper) input,
 :global(.bm-dashboard-dark) .timestampContainer :global(.react-datepicker-wrapper) input {
-  background-color: #3a3a3a !important;
+  background-color: #1c3354 !important;
   color: #fff !important;
   border-color: rgb(255 255 255 / 20%) !important;
 }
 
 :global(.dark-mode) :global(.react-datepicker),
 :global(.bm-dashboard-dark) :global(.react-datepicker) {
-  background-color: #2a2a2a !important;
+  background-color: #14253d !important;
   border-color: rgb(255 255 255 / 20%) !important;
 }
 
@@ -388,12 +423,29 @@
 
 :global(.dark-mode) :global(.react-datepicker__time-list),
 :global(.bm-dashboard-dark) :global(.react-datepicker__time-list) {
-  background-color: #2a2a2a !important;
+  background-color: #14253d !important;
 }
 
+/* ── Dark mode time input container ── */
 :global(.dark-mode) :global(.react-datepicker__input-time-container),
 :global(.bm-dashboard-dark) :global(.react-datepicker__input-time-container) {
-  background-color: #3a3a3a !important;
+  background-color: #1c3354 !important;
+  color: #fff !important;
+}
+
+/* Native time input dark mode — color-scheme forces browser UI to dark */
+:global(.dark-mode) :global(.react-datepicker-time__input) input[type="time"],
+:global(.bm-dashboard-dark) :global(.react-datepicker-time__input) input[type="time"] {
+  background-color: #14253d !important;
+  color: #fff !important;
+  border: 1px solid rgb(255 255 255 / 20%) !important;
+  border-radius: 4px;
+  color-scheme: dark;
+}
+
+/* Light mode navigation arrow visibility fix */
+:global(.react-datepicker__navigation-icon::before) {
+  border-color: #333 !important;
 }
 
 :global(.dark-mode) :global(.react-datepicker__navigation-icon::before),
@@ -416,19 +468,19 @@
 :global(.bm-dashboard-dark) .cardHeader {
   background-color: #2e5061 !important;
   color: #fff !important;
-  border-color: #3a506b !important;
+  border-color: #1d3c52 !important;
 }
 
 :global(.bm-dashboard-dark) .cardHeader:hover {
-  background-color: #3a506b !important;
+  background-color: #1d3c52 !important;
 }
 
 /* Accordion collapse body dark mode */
 :global(.bm-dashboard-dark) .accordionCollapse {
-  background-color: #1c2541 !important;
+  background-color: #14253d !important;
   color: #fff !important;
   scrollbar-width: thin;
-  scrollbar-color: #3a506b #1c2541;
+  scrollbar-color: #1d3c52 #14253d;
 }
 
 /* Scrollbar dark mode - Webkit browsers */
@@ -438,12 +490,12 @@
 }
 
 :global(.bm-dashboard-dark) .accordionCollapse::-webkit-scrollbar-track {
-  background: #1c2541;
+  background: #14253d;
   border-radius: 4px;
 }
 
 :global(.bm-dashboard-dark) .accordionCollapse::-webkit-scrollbar-thumb {
-  background: #3a506b;
+  background: #1d3c52;
   border-radius: 4px;
 }
 
@@ -453,33 +505,33 @@
 
 /* Table header dark mode (bm-dashboard specific) */
 :global(.bm-dashboard-dark) .tableHeader {
-  border-color: #3a506b !important;
-  background-color: #1c2541 !important;
+  border-color: #1d3c52 !important;
+  background-color: #14253d !important;
 }
 
 :global(.bm-dashboard-dark) .tableHeader th {
   color: #fff !important;
-  background-color: #1c2541 !important;
+  background-color: #14253d !important;
 }
 
 /* Table dark mode (bm-dashboard specific) */
 :global(.bm-dashboard-dark) .typesListContainer :global(table) {
   color: #fff !important;
-  background-color: #1c2541 !important;
+  background-color: #14253d !important;
 }
 
 :global(.bm-dashboard-dark) .typesListContainer :global(table) :global(thead) {
-  background-color: #1c2541 !important;
+  background-color: #14253d !important;
 }
 
 :global(.bm-dashboard-dark) .typesListContainer :global(table) :global(thead) th {
   color: #fff !important;
-  background-color: #1c2541 !important;
-  border-color: #3a506b !important;
+  background-color: #14253d !important;
+  border-color: #1d3c52 !important;
 }
 
 :global(.bm-dashboard-dark) .typesListContainer :global(table) :global(tbody) {
-  background-color: #1c2541 !important;
+  background-color: #14253d !important;
 }
 
 :global(.bm-dashboard-dark) .typesListContainer :global(table) td {
@@ -488,29 +540,29 @@
 }
 
 :global(.bm-dashboard-dark) .typesListContainer :global(table) :global(tbody) tr {
-  background-color: #1c2541 !important;
+  background-color: #14253d !important;
 }
 
 :global(.bm-dashboard-dark) .typesListContainer :global(table) :global(tbody) tr:hover {
-  background-color: #3a506b !important;
+  background-color: #1d3c52 !important;
 }
 
 /* Card header - Bootstrap override (bm-dashboard specific) */
 :global(.bm-dashboard-dark) .typesListContainer :global(.card-header) {
   background-color: #2e5061 !important;
   color: #fff !important;
-  border-color: #3a506b !important;
+  border-color: #1d3c52 !important;
 }
 
 /* Card body - Bootstrap override (bm-dashboard specific) */
 :global(.bm-dashboard-dark) .typesListContainer :global(.card-body) {
-  background-color: #1c2541 !important;
+  background-color: #14253d !important;
   color: #fff !important;
 }
 
 /* Buttons dark mode (bm-dashboard specific) */
 :global(.bm-dashboard-dark) .btnTypes {
-  background-color: #3a506b !important;
+  background-color: #1d3c52 !important;
   color: #fff !important;
   border-color: #5a7a9b !important;
 }
@@ -527,14 +579,14 @@
 }
 
 :global(.bm-dashboard-dark) .buttonContainer a:hover {
-  background-color: #3a506b !important;
+  background-color: #1d3c52 !important;
 }
 
 /* Input measurement dark mode */
 :global(.bm-dashboard-dark) #input-measurement {
   background-color: #2e5061 !important;
   color: #fff !important;
-  border-color: #3a506b !important;
+  border-color: #1d3c52 !important;
 }
 
 :global(.bm-dashboard-dark) #input-measurement::placeholder {
@@ -545,7 +597,7 @@
 :global(.bm-dashboard-dark) .typesListContainer input {
   background-color: #2e5061 !important;
   color: #fff !important;
-  border-color: #3a506b !important;
+  border-color: #1d3c52 !important;
 }
 
 :global(.bm-dashboard-dark) .typesListContainer input::placeholder {
@@ -553,7 +605,7 @@
 }
 
 :global(.bm-dashboard-dark) .typesListContainer input:focus {
-  background-color: #3a506b !important;
+  background-color: #1d3c52 !important;
   border-color: #5a7a9b !important;
   box-shadow: 0 0 0 0.2rem rgb(106 241 234 / 25%) !important;
 }
@@ -568,19 +620,19 @@
 
 /* Bootstrap Card dark mode */
 :global(.bm-dashboard-dark) .typesListContainer :global(.card) {
-  background-color: #1c2541 !important;
-  border-color: #3a506b !important;
+  background-color: #14253d !important;
+  border-color: #1d3c52 !important;
 }
 
 /* DatePicker calendar dark mode (bm-dashboard specific) */
 :global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker) {
   background-color: #2e5061 !important;
-  border-color: #3a506b !important;
+  border-color: #1d3c52 !important;
 }
 
 :global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__header) {
-  background-color: #1c2541 !important;
-  border-color: #3a506b !important;
+  background-color: #14253d !important;
+  border-color: #1d3c52 !important;
 }
 
 :global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__current-month),
@@ -590,7 +642,7 @@
 }
 
 :global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__day:hover) {
-  background-color: #3a506b !important;
+  background-color: #1d3c52 !important;
 }
 
 :global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__day--selected) {
@@ -599,7 +651,7 @@
 
 :global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__time-container) {
   background-color: #2e5061 !important;
-  border-color: #3a506b !important;
+  border-color: #1d3c52 !important;
 }
 
 :global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__time) {
@@ -611,15 +663,137 @@
 }
 
 :global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__time-list-item:hover) {
-  background-color: #3a506b !important;
+  background-color: #1d3c52 !important;
 }
 
 :global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker__input-time-container) {
+  background-color: #14253d !important;
   color: #fff !important;
 }
 
 :global(.bm-dashboard-dark) .typesListContainer :global(.react-datepicker-time__input) input {
-  background-color: #1c2541 !important;
+  background-color: #14253d !important;
   color: #fff !important;
-  border-color: #3a506b !important;
+  border-color: #1d3c52 !important;
+  color-scheme: dark;
+}
+
+/* Category icons */
+.categoryIcon {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 8px;
+  font-size: 1rem;
+  vertical-align: middle;
+  color: var(--color-h500);
+}
+
+:global(.dark-mode) .categoryIcon,
+:global(.bm-dashboard-dark) .categoryIcon {
+  color: #5eb3e4;
+}
+
+/* Category hyperlinks */
+.categoryLink {
+  color: var(--color-text);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.categoryLink:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+:global(.dark-mode) .categoryLink,
+:global(.bm-dashboard-dark) .categoryLink {
+  color: #fff;
+}
+
+:global(.dark-mode) .categoryLink:hover,
+:global(.bm-dashboard-dark) .categoryLink:hover {
+  color: #5eb3e4;
+}
+
+/* ── Inventory Navigation Bar ── */
+.inventoryNav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.returnBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 16px;
+  background-color: var(--color-h500);
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.returnBtn:hover {
+  background-color: var(--color-h100);
+  color: #fff;
+}
+
+.categoryIcons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.categoryIconLink {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 10px;
+  border: 1px solid var(--color-h500);
+  border-radius: 8px;
+  color: var(--color-h500);
+  text-decoration: none;
+  font-size: 0.75rem;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.categoryIconLink:hover {
+  background-color: var(--color-h500);
+  color: #fff;
+  border-color: var(--color-h500);
+}
+
+.iconWrapper {
+  font-size: 1.2rem;
+}
+
+.iconLabel {
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+:global(.bm-dashboard-dark) .returnBtn {
+  background-color: #2e5061;
+  color: #fff;
+}
+
+:global(.bm-dashboard-dark) .returnBtn:hover {
+  background-color: #1d3c52;
+}
+
+:global(.bm-dashboard-dark) .categoryIconLink {
+  border-color: #4dabf7;
+  color: #4dabf7;
+}
+
+:global(.bm-dashboard-dark) .categoryIconLink:hover {
+  background-color: #4dabf7;
+  color: #0f172a;
+  border-color: #4dabf7;
 }

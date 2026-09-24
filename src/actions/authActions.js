@@ -46,6 +46,7 @@ export const loginUser = credentials => dispatch => {
         dispatch(setCurrentUser({ new: true, userId: res.data.userId }));
         return { success: true, new: true };
       }
+      localStorage.setItem('justLoggedIn', true);
       localStorage.setItem(tokenKey, res.data.token);
       httpService.setjwt(res.data.token);
       const decoded = jwtDecode(res.data.token);
