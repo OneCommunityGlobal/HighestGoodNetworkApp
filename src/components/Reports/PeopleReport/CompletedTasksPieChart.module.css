@@ -15,7 +15,12 @@
   border-radius: 12px;
   background-color: #fff;
   padding: 1rem;
-  margin: 2px;
+
+  /* No margin: this is the last card in PeopleReport's left column, so any margin here
+     lifts its visible bottom edge above the column's bottom and it no longer lines up
+     with the profile card on the right. It also keeps the card flush with the metric
+     cards and pie chart above it. */
+  margin: 0;
   display: flex;
   flex-direction: column;
   box-shadow: 0 0 12px #eae1f6;
@@ -71,10 +76,8 @@
 .completedTasksTable .taskNameRow {
   color: #888;
   overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
+  white-space: nowrap;        /* Prevent text from wrapping */
+  text-overflow: ellipsis;    /* Display ellipsis (...) for overflowing text */
   padding: 0;
   margin: 8px;
 }
