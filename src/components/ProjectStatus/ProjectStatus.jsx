@@ -8,30 +8,32 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import styles from './ProjectStatus.module.css';
 import { fetchProjectStatusSummary } from '../../services/projectStatusService';
 
+// Register only core elements globally
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-// custom center text plugin with dark mode support
+// Center text plugin scoped specifically to this chart
 const centerTextPlugin = {
   id: 'centerText',
   afterDraw(chart) {
-    const { ctx } = chart;
-    const { width, height } = chart;
-    const isDarkMode = chart.options.plugins.centerText?.darkMode || false;
+    if (chart.options.plugins?.centerText === false) return;
+
+    const pluginOpts = chart.options.plugins?.centerText;
+    const { ctx, width, height } = chart;
+    const isDarkMode = pluginOpts?.darkMode || false;
+    const total = pluginOpts?.total ?? 0;
 
     ctx.save();
     ctx.font = '600 14px Inter, system-ui';
     ctx.fillStyle = isDarkMode ? '#ffffff' : '#222';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-
-    const total = chart.options.plugins.centerText?.total ?? 0;
     ctx.fillText('Total Projects', width / 2, height / 2 - 10);
+
     ctx.font = '700 18px Inter, system-ui';
     ctx.fillText(`${total}`, width / 2, height / 2 + 14);
     ctx.restore();
   },
 };
-//ChartJS.register(centerTextPlugin);
 
 const COLORS = {
   active: '#A78BFA',
@@ -84,11 +86,6 @@ export default function ProjectStatus() {
     };
   }, [data]);
 
-  // Chart.js's built-in tooltip anchors to the arc's mid-radius point and then
-  // clamps itself to stay within the canvas, which on a doughnut keeps pulling
-  // it back in toward the cutout hole. Rendering our own HTML tooltip (via the
-  // `external` callback) instead lets us place it fully outside the ring, with
-  // no canvas clamping to fight.
   const externalTooltipHandler = context => {
     const { chart, tooltip: tooltipModel } = context;
 
@@ -104,44 +101,39 @@ export default function ProjectStatus() {
       return;
     }
 
-    // Chart-local point, then converted to viewport coordinates so the tooltip
-    // can be positioned with `fixed` and clamped against the real screen edges
-    // below - on narrow (mobile) viewports the chart sits close enough to the
-    // edge that an unclamped box routinely lands partly or fully off-screen.
     const angle = (el.startAngle + el.endAngle) / 2;
     const gap = 14;
     const canvasRect = chart.canvas.getBoundingClientRect();
     let x = canvasRect.left + el.x + Math.cos(angle) * (el.outerRadius + gap);
     let y = canvasRect.top + el.y + Math.sin(angle) * (el.outerRadius + gap);
 
-    // Anchor the box away from the point based on which side of the ring
-    // it's on, so the box itself never overlaps the slice.
     const deg = (angle * 180) / Math.PI;
     let transform;
-    let box; // box edges relative to (x, y), using a generous size estimate
-    // since the real rendered size isn't known until after this box is placed
     const EST_W = 180;
     const EST_H = 64;
+
     if (deg >= -45 && deg <= 45) {
-      transform = 'translate(10px, -50%)'; // right
-      box = { left: 10, right: 10 + EST_W, top: -EST_H / 2, bottom: EST_H / 2 };
+      transform = 'translate(10px, -50%)';
     } else if (deg > 45 && deg <= 135) {
-      transform = 'translate(-50%, 10px)'; // bottom
-      box = { left: -EST_W / 2, right: EST_W / 2, top: 10, bottom: 10 + EST_H };
+      transform = 'translate(-50%, 10px)';
     } else if (deg > 135 || deg < -135) {
-      transform = 'translate(calc(-100% - 10px), -50%)'; // left
-      box = { left: -10 - EST_W, right: -10, top: -EST_H / 2, bottom: EST_H / 2 };
+      transform = 'translate(calc(-100% - 10px), -50%)';
     } else {
-      transform = 'translate(-50%, calc(-100% - 10px))'; // top
-      box = { left: -EST_W / 2, right: EST_W / 2, top: -10 - EST_H, bottom: -10 };
+      transform = 'translate(-50%, calc(-100% - 10px))';
     }
 
-    // Nudge the anchor point back on-screen if the estimated box would spill
-    // past either edge in either axis.
     const margin = 8;
+    const box = {
+      left: deg > 135 || deg < -135 ? -10 - EST_W : deg >= -45 && deg <= 45 ? 10 : -EST_W / 2,
+      right: deg > 135 || deg < -135 ? -10 : deg >= -45 && deg <= 45 ? 10 + EST_W : EST_W / 2,
+      top: deg > 45 && deg <= 135 ? 10 : deg < -45 && deg > -135 ? -10 - EST_H : -EST_H / 2,
+      bottom: deg > 45 && deg <= 135 ? 10 + EST_H : deg < -45 && deg > -135 ? -10 : EST_H / 2,
+    };
+
     if (x + box.left < margin) x += margin - (x + box.left);
     else if (x + box.right > window.innerWidth - margin)
       x -= x + box.right - (window.innerWidth - margin);
+
     if (y + box.top < margin) y += margin - (y + box.top);
     else if (y + box.bottom > window.innerHeight - margin)
       y -= y + box.bottom - (window.innerHeight - margin);
@@ -165,10 +157,7 @@ export default function ProjectStatus() {
     () => ({
       responsive: true,
       cutout: '65%',
-      // The resting outer radius fills the canvas edge-to-edge with no margin, so
-      // without this the hoverOffset (8px) push on hover clips the arc against the
-      // canvas boundary on the left/right edges.
-      layout: { padding: 8 },
+      layout: { padding: 12 },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -180,16 +169,7 @@ export default function ProjectStatus() {
           total: data?.totalProjects ?? 0,
           darkMode,
         },
-        // Explicitly disabled: OptStatusPieChart registers chartjs-plugin-datalabels
-        // globally, which otherwise leaks into this chart and draws unwanted value
-        // labels on the donut segments.
         datalabels: { display: false },
-        // OptStatusPieChart also globally registers a custom 'leaderLines' plugin
-        // (ctx.stroke from every arc's outer edge) with no per-chart opt-out inside
-        // its own code, so it silently draws on every other chart too, including
-        // this one. Chart.js skips a plugin's hooks entirely when its options key is
-        // literally `false` (not `{ display: false }`), which is the only way to
-        // opt this chart out short of editing OptStatusPieChart itself.
         leaderLines: false,
       },
     }),
@@ -211,7 +191,6 @@ export default function ProjectStatus() {
       return;
     }
 
-    // Validate dates: end date cannot be before start date
     if (from && to && dayjs(to).isBefore(dayjs(from))) {
       setDateError('End date cannot be before start date. Please select a valid date range.');
       return;
@@ -301,7 +280,7 @@ export default function ProjectStatus() {
             {hasData ? (
               <>
                 <div className={styles.chartWrapper}>
-                  <Doughnut data={chartData} options={chartOptions} />
+                  <Doughnut data={chartData} options={chartOptions} plugins={[centerTextPlugin]} />
                   {hoverInfo && (
                     <div
                       className={styles.customTooltip}
@@ -355,7 +334,7 @@ export default function ProjectStatus() {
             <span className={styles.statValue}>{data?.activeProjects ?? 0}</span>
           </div>
           <div className={styles.stat}>
-            <span className={styles.statLabel}>COMPLETED PROJECTS </span>
+            <span className={styles.statLabel}>COMPLETED PROJECTS</span>
             <span className={styles.statValue}>{data?.completedProjects ?? 0}</span>
           </div>
           <div className={styles.stat}>
