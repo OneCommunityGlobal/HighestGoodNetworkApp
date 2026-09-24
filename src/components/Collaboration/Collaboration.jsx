@@ -642,7 +642,9 @@ function Collaboration() {
               </div>
             )}
 
-            <FAQSection />
+            <div className={styles.faqOuter}>
+              <FAQSection />
+            </div>
           </>
         )}
       </div>
