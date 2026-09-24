@@ -45,9 +45,26 @@ function getVarianceCardClass(variance, cardStyles) {
   return cardStyles.varianceNeutral;
 }
 
+function getVariancePrefix(variance) {
+  if (variance > 0) return '+';
+  if (variance < 0) return '-';
+  return '';
+}
+
+function getVarianceValueClass(variance, cardStyles) {
+  if (variance > 0) return cardStyles.varianceValueOverrun;
+  if (variance < 0) return cardStyles.varianceValueUnder;
+  return cardStyles.varianceValueNeutral;
+}
+
+function getVarianceLabelColor(variance, darkMode) {
+  if (variance > 0) return darkMode ? '#fca5a5' : OVER_BUDGET_COLOR;
+  if (variance < 0) return darkMode ? '#86efac' : '#15803d';
+  return darkMode ? '#e2e8f0' : '#334155';
+}
+
 function VarianceCard({ item, cardStyles }) {
-  const isOverrun = item.variance > 0;
-  const variancePrefix = item.variance > 0 ? '+' : item.variance < 0 ? '-' : '';
+  const variancePrefix = getVariancePrefix(item.variance);
   const absoluteVariance = Math.abs(item.variance);
 
   return (
@@ -68,15 +85,7 @@ function VarianceCard({ item, cardStyles }) {
 
       <div className={cardStyles.varianceCardHighlight}>
         <span className={cardStyles.varianceCardHighlightLabel}>Variance</span>
-        <span
-          className={
-            isOverrun
-              ? cardStyles.varianceValueOverrun
-              : item.variance < 0
-              ? cardStyles.varianceValueUnder
-              : cardStyles.varianceValueNeutral
-          }
-        >
+        <span className={getVarianceValueClass(item.variance, cardStyles)}>
           {variancePrefix}
           {formatCurrency(absoluteVariance)}
         </span>
@@ -126,7 +135,7 @@ function VarianceTooltip({ active, payload, darkMode }) {
   const item = payload[0]?.payload;
   if (!item) return null;
 
-  const variancePrefix = item.variance > 0 ? '+' : item.variance < 0 ? '-' : '';
+  const variancePrefix = getVariancePrefix(item.variance);
   const absoluteVariance = Math.abs(item.variance);
   const variancePctPrefix = item.variancePct > 0 ? '+' : '';
 
@@ -217,20 +226,9 @@ function ActualVarianceLabel({ x, y, width, item, darkMode }) {
 
   const variance = Number(item.variance) || 0;
   const variancePct = item.variancePct;
-  const prefix = variance > 0 ? '+' : variance < 0 ? '-' : '';
+  const prefix = getVariancePrefix(variance);
   const pctPrefix = variancePct > 0 ? '+' : '';
-  const labelColor =
-    variance > 0
-      ? darkMode
-        ? '#fca5a5'
-        : OVER_BUDGET_COLOR
-      : variance < 0
-      ? darkMode
-        ? '#86efac'
-        : '#15803d'
-      : darkMode
-      ? '#e2e8f0'
-      : '#334155';
+  const labelColor = getVarianceLabelColor(variance, darkMode);
 
   return (
     <g>
@@ -486,7 +484,7 @@ function ActualVsPlannedCost() {
   const totalVariance = displayedActual - displayedPlanned;
   const totalVariancePct = displayedPlanned > 0 ? (totalVariance / displayedPlanned) * 100 : null;
   const isTotalOverrun = totalVariance > 0;
-  const totalVariancePrefix = totalVariance > 0 ? '+' : totalVariance < 0 ? '-' : '';
+  const totalVariancePrefix = getVariancePrefix(totalVariance);
 
   const chartContent = buildChartContent({
     loading,
