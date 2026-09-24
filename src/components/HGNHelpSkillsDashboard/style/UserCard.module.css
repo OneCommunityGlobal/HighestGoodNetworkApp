@@ -48,6 +48,16 @@
   word-break: break-word;
 }
 
+.profileLink {
+  text-decoration: none;
+}
+
+.profileLink:hover,
+.profileLink:focus {
+  color: inherit;
+  text-decoration: underline;
+}
+
 .contactLine {
   display: flex;
   align-items: center;
