@@ -994,6 +994,7 @@ const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
               userTeams={teams || []}
               teamsData={props?.allTeams?.allTeamsData || []}
               projectsData={props?.allProjects?.projects || []}
+              fetchTeamCodeAllUsers={fetchTeamCodeAllUsers}
             />
 
           </div>
