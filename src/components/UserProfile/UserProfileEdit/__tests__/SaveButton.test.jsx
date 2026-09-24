@@ -1,5 +1,11 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { userProfileMock } from '../../../../__tests__/mockStates';
 import SaveButton from '../SaveButton';
@@ -111,5 +117,25 @@ describe('<SaveButton />', () => {
     expect(cancelFrame).toHaveBeenCalledWith(42);
     requestFrame.mockRestore();
     cancelFrame.mockRestore();
+  });
+
+  it('clears the previous error when a failed save is retried', async () => {
+    const handleSubmit = vi
+      .fn()
+      .mockRejectedValueOnce(new Error('Save failed'))
+      .mockImplementationOnce(() => new Promise(() => {}));
+    render(<SaveButton {...createProps({ handleSubmit })} />);
+
+    await userEvent.click(screen.getByRole('button', { name: /save changes/i }));
+    expect(await screen.findByText('Error occurred')).toBeInTheDocument();
+
+    const closeButtons = screen.getAllByRole('button', { name: /close/i });
+    await userEvent.click(closeButtons[closeButtons.length - 1]);
+    await waitForElementToBeRemoved(() => screen.queryByRole('dialog'));
+
+    await userEvent.click(screen.getByRole('button', { name: /save changes/i }));
+
+    expect(await screen.findByText('Saving...')).toBeInTheDocument();
+    expect(screen.queryByText('Error occurred')).not.toBeInTheDocument();
   });
 });

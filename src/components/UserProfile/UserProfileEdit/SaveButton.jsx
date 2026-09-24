@@ -100,6 +100,7 @@ const SaveButton = props => {
     captureScrollPosition(event);
     setModal(true);
     setIsLoading(true);
+    setIsErr(false);
 
     try {
       const getReturnVal = await handleSubmit();
