@@ -122,10 +122,8 @@ export default function AssignTeamField({
             left: 0,
             right: 0,
             zIndex: 1050,
-            backgroundColor: darkMode ? '#343a40' : 'white',
-            color: darkMode ? 'white' : '#212529',
-            border: '1px solid #ced4da',
-            borderRadius: '0 0 4px 4px',
+            backgroundColor: darkMode ? '#335b6c' : undefined,
+            color: darkMode ? '#fff' : undefined,
             maxHeight: '200px',
             overflowY: 'auto',
           }}
