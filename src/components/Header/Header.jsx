@@ -26,6 +26,7 @@ import {
 import { FaCubes, FaShoppingCart, FaTools, FaRecycle, FaWrench, FaRulerCombined } from 'react-icons/fa';
 import { getWeeklySummaries } from '~/actions/weeklySummaries';
 import PopUpBar from '~/components/PopUpBar';
+import AppUpdateNotice from '~/components/AppUpdateNotice/AppUpdateNotice';
 import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
 import { ENDPOINTS } from '~/utils/URL';
 import httpService from '../../services/httpService';
@@ -1078,6 +1079,7 @@ export function Header(props) {
         </div>
       </Navbar>
 
+      <AppUpdateNotice darkMode={darkMode} />
       {!isAuthUser && (
         <PopUpBar
           firstName={viewingUser.firstName}
