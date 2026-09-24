@@ -166,6 +166,7 @@ export default function ProjectStatus() {
         },
         title: { display: false },
         centerText: {
+          display: true,
           total: data?.totalProjects ?? 0,
           darkMode,
         },

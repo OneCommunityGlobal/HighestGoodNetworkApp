@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
 import { Stub } from '../../common/Stub';
-import './ProjectMemberTable.module.css';
+import styles from './ProjectMemberTable.module.css';
 
 export function ProjectMemberTable({ projectMembers, skip, take, handleMemberCount, darkMode, counts }) {
   const [allMemberList, setAllMemberList] = useState([]);
@@ -51,11 +51,11 @@ export function ProjectMemberTable({ projectMembers, skip, take, handleMemberCou
 }, [fetched, members, foundUsers]);
 
   const activeMemberTable = activeMemberList.slice(skip, skip + take).map((member, index) => (
-    <div className="project-member-table-row" id={`tr_${  member._id}`} key={`ac_${  member._id}`}>
+    <div className={styles['project-member-table-row']} id={`tr_${  member._id}`} key={`ac_${  member._id}`}>
       <div>
         <div>{skip + index + 1}</div>
       </div>
-      <Link to={`/userprofile/${member._id}`} title="View Profile"  className={`project-member-table-name-column ${darkMode ? "text-light" : ""}`}>
+      <Link to={`/userprofile/${member._id}`} title="View Profile"  className={`${styles['project-member-table-name-column']} ${darkMode ? "text-light" : ""}`}>
         <div>
         {window.innerWidth >= 1100 ? `${member.firstName} ${member.lastName}` : `${member.firstName.substring(0, 10)} ${member.lastName.substring(0, 1)}`}          
         </div>
@@ -71,7 +71,7 @@ export function ProjectMemberTable({ projectMembers, skip, take, handleMemberCou
           </div>
         )}
       </div>
-      <div className='project-member-table-id-column'>
+      <div className={styles['project-member-table-id-column']}>
         <CopyToClipboard writeText={member._id} message={`Copied "${member._id}".`} />
         {member._id}
       </div> 
@@ -79,11 +79,11 @@ export function ProjectMemberTable({ projectMembers, skip, take, handleMemberCou
   ));
 
   const allMemberTable = allMemberList.slice(skip, skip + take).map((member, index) => (
-    <div className="project-member-table-row" id={`tr_${  member._id}`} key={`al_${  member._id}`}>
+    <div className={styles['project-member-table-row']} id={`tr_${  member._id}`} key={`al_${  member._id}`}>
       <div>
         <div>{skip + index + 1}</div>
       </div>
-      <Link to={`/userprofile/${member._id}`} title="View Profile" className={`project-member-table-name-column ${darkMode ? 'text-light' : ''}`}>
+      <Link to={`/userprofile/${member._id}`} title="View Profile" className={`${styles['project-member-table-name-column']} ${darkMode ? 'text-light' : ''}`}>
         <div>
         {window.innerWidth >= 1100 ? `${member.firstName} ${member.lastName}` : `${member.firstName.substring(0, 10)} ${member.lastName.substring(0, 1)}`} 
         </div>
@@ -99,7 +99,7 @@ export function ProjectMemberTable({ projectMembers, skip, take, handleMemberCou
           </div>
         )}
       </div>
-      <div className='project-member-table-id-column'>
+      <div className={styles['project-member-table-id-column']}>
         <CopyToClipboard writeText={member._id} message={`Copied "${member._id}".`} />
         {member._id}
       </div>     
@@ -107,31 +107,31 @@ export function ProjectMemberTable({ projectMembers, skip, take, handleMemberCou
   ));
 
   return (
-    <div className={`project-member-table ${darkMode ? 'text-light' : ''}`}>
-      <h5 className="project-member-table-title">Members</h5>
-      <div className="project-member-count-head">
-      <div className="filter-members-mobile"
-        onChange={e => {
-          const val = e.target.value;
-          setMemberFilter(val);
-          handleMemberCount(val === 'all-time' ? allMemberList.length : activeMemberList.length);
-        }}
-      >
-        <input type="radio" name="memberFilter" value="active" id="active" defaultChecked />
-        <label htmlFor="active" id="project-active-member-count" className={`project-member-count ${darkMode ? 'text-light' : ''}`}>
-          ACTIVE: {counts.activeMemberCount}
-        </label>
-        <input type="radio" name="memberFilter" value="all-time" id="all-time" />
-        <label htmlFor="all-time" id="project-all-member-count" className={`project-member-count ${darkMode ? 'text-light' : ''}`}>
-          ALL-TIME: {counts.memberCount}
-        </label>
+    <div className={`${styles['project-member-table']} ${darkMode ? 'text-light' : ''}`}>
+      <h5 className={styles['project-member-table-title']}>Members</h5>
+      <div className={styles['project-member-count-head']}>
+        <div className={styles['filter-members-mobile']}
+          onChange={e => {
+            const val = e.target.value;
+            setMemberFilter(val);
+            handleMemberCount(val === 'all-time' ? allMemberList.length : activeMemberList.length);
+          }
+        }>
+          <input type="radio" name="memberFilter" value="active" id="active" defaultChecked />
+          <label htmlFor="active" id="project-active-member-count" className={`${styles['project-member-count']} ${darkMode ? 'text-light' : ''}`}>
+            ACTIVE: {counts.activeMemberCount}
+          </label>
+          <input type="radio" name="memberFilter" value="all-time" id="all-time" />
+          <label htmlFor="all-time" id="project-all-member-count" className={`${styles['project-member-count']} ${darkMode ? 'text-light' : ''}`}>
+            ALL-TIME: {counts.memberCount}
+          </label>
+        </div>
       </div>
-      </div>
-      <div className={`reports-table-head-members ${darkMode ? 'bg-space-cadet' : ''}`}>
-        <div className="reports-table-head-cell">#</div>
-        <div className="reports-table-head-cell">Name</div>
-        <div className="reports-table-head-cell project-member-table-active-column">Active</div>
-        <div className="reports-table-head-cell">ID</div>
+      <div className={`${styles['reports-table-head-members']} ${darkMode ? 'bg-space-cadet' : ''}`}>
+        <div className={styles['reports-table-head-cell']}>#</div>
+        <div className={styles['reports-table-head-cell']}>Name</div>
+        <div className={`${styles['reports-table-head-cell']} ${styles['project-member-table-active-column']}`}>Active</div>
+        <div className={styles['reports-table-head-cell']}>ID</div>
       </div>
       <div>
         {memberFilter === 'all-time' && allMemberTable.length > 0 && allMemberTable}
