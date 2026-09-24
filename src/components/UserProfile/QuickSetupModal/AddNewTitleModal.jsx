@@ -290,8 +290,6 @@ const onTeamNameValidation = teamObj => {
   
     const run = editMode ? editTitle : addTitle;
   
-    console.log('Title update payload:', payload); // <--- use this once to inspect
-  
     run(payload)
       .then(resp => {
         if (resp.status !== 200) {
