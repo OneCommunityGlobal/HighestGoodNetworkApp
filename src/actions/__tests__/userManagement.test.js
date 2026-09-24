@@ -203,6 +203,37 @@ describe('User Management Actions', () => {
       await store.dispatch(actions.getUserProfileBasicInfo({ source: mockSource }));
       expect(store.getActions()).toEqual(expectedActions);
     });
+
+    it('fetches a single user basic info by userId using the query-param contract', async () => {
+      const mockUserId = 'user-123';
+      const mockBasicInfo = { _id: mockUserId, firstName: 'John', lastName: 'Doe' };
+
+      axios.get.mockResolvedValueOnce({ data: mockBasicInfo });
+
+      const expectedActions = [
+        { type: 'FETCH_USER_PROFILE_BASIC_INFO' },
+        { type: 'RECEIVE_USER_PROFILE_BASIC_INFO', payload: mockBasicInfo }
+      ];
+
+      await store.dispatch(actions.getUserProfileBasicInfo({ userId: mockUserId }));
+      expect(store.getActions()).toEqual(expectedActions);
+      expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.USER_PROFILE_BASIC_INFO_BY_ID(mockUserId));
+    });
+
+    it('does not leave the fetch pending when the userId lookup is rejected (400)', async () => {
+      const mockUserId = 'user-123';
+      const badRequestError = { response: { status: 400, data: { error: 'Source parameter is required' } } };
+
+      axios.get.mockRejectedValueOnce(badRequestError);
+
+      const expectedActions = [
+        { type: 'FETCH_USER_PROFILE_BASIC_INFO' },
+        { type: 'FETCH_USER_PROFILE_BASIC_INFO_ERROR' }
+      ];
+
+      await store.dispatch(actions.getUserProfileBasicInfo({ userId: mockUserId }));
+      expect(store.getActions()).toEqual(expectedActions);
+    });
   });
 
   describe('UI State Actions', () => {
