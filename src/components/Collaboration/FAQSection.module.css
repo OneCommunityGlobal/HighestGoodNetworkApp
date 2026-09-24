@@ -1,13 +1,29 @@
 /* FAQSection.module.css */
 
 .faqContainer {
-  margin-top: 2rem;
+  width: 100%;
+  max-width: 2000px;
+  margin: 0 auto;
+  padding: 2.5rem clamp(1.5rem, 4vw, 3rem);
+  box-sizing: border-box;
+  background: #fff;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 16px rgb(0 0 0 / 12%);
+}
+
+.faqContainer h2 {
+  margin: 0 0 1.25rem;
+  color: #2b6ee8;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.3;
 }
 
 .faqTwoColumn {
   display: flex;
   gap: 2rem;
-  margin-top: 2rem;
+  margin-top: 0.5rem;
 }
 
 .faqLeft {
@@ -20,16 +36,25 @@
 }
 
 .faqItem {
-  margin-bottom: 1.5em;
+  margin-bottom: 1.75em;
+}
+
+.faqItem:last-child {
+  margin-bottom: 0;
 }
 
 .faqQuestion {
-  font-weight: bold;
-  margin-bottom: 0.5em;
+  font-weight: 700;
+  margin-bottom: 0.35em;
+  color: #1f2937;
+  line-height: 1.45;
 }
 
 .faqAnswer {
-  margin-top: 0.5em;
+  margin-top: 0;
+  color: #4b5563;
+  line-height: 1.6;
+  font-size: 1rem;
 }
 
 .faqNotice {
@@ -52,14 +77,26 @@
   width: 100%;
   height: 100%;
   border: none;
+  border-radius: 4px;
 }
 
 /* Dark mode. Scoped to .faqContainer so nothing here can reach the rest of the
    job listing page, which has its own dark mode rules. */
-.faqContainer.dark h2,
-.faqContainer.dark .faqQuestion,
+.faqContainer.dark {
+  background: #2e3b55;
+  box-shadow: 0 2px 16px rgb(0 0 0 / 35%);
+}
+
+.faqContainer.dark h2 {
+  color: #7dd3fc;
+}
+
+.faqContainer.dark .faqQuestion {
+  color: #f3f4f6;
+}
+
 .faqContainer.dark .faqAnswer {
-  color: #e5e7eb;
+  color: #d1d5db;
 }
 
 .faqContainer.dark .faqAnswer a {
@@ -72,9 +109,13 @@
 
 /* Mobile responsiveness */
 @media (width <= 768px) {
+  .faqContainer {
+    padding: 1.75rem 1.25rem;
+  }
+
   .faqTwoColumn {
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
   }
 
   .faqLeft {
