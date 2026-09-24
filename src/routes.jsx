@@ -177,6 +177,8 @@ import BrowseLessonPlan from './components/EductionPortal/BrowseLessonPlan/Brows
 import EPDashboard from './components/EductionPortal';
 
 import StudentProfilePage from './components/EductionPortal/StudentProfile/StudentProfilePage';
+import LessonPlanDraftBuilder from './components/EductionPortal/StudentTasks/LessonPlanDraft/LessonPlanBuilder';
+import DraftApproval from './components/EductionPortal/Educators/LessonPlanDrafts/DraftApproval';
 import AssignAtoms from './components/EductionPortal/AssignAtoms/AssignAtoms';
 import ReportDownloadButton from './components/EductionPortal/AnalyticsDashboard/ReportDownloadButton';
 import GroupList from './components/EductionPortal/GroupList/GroupList';
@@ -886,6 +888,16 @@ export default (
         <Route path="/educationportal/login" component={EPLogin} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
         <EPProtectedRoute path="/student/profile" exact component={StudentProfilePage} />
+        <EPProtectedRoute
+          path="/student/build-lesson-plan"
+          exact
+          component={LessonPlanDraftBuilder}
+        />
+        <EPProtectedRoute
+          path="/educationportal/educator/lesson-plan-drafts"
+          exact
+          component={DraftApproval}
+        />
         {/* PR Analytics Dashboard */}
         <Route path="/pull-request-analytics/reviews-insight" component={ReviewsInsight} />{' '}
         <EPProtectedRoute path="/educationportal/LessonPlans" exact component={LessonPlanBuilder} />
