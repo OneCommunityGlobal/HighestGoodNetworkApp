@@ -48,20 +48,23 @@
   border: #e6f0ff;
 }
 
-.faCircleIsActive {
-  color: lawngreen;
+/* Keep the Total card's light-mode text and icon despite global dark-mode rules. */
+.overviewTop .totalCard .cardText,
+.overviewTop .totalCard .cardTextIcon {
+  color: #212529 !important;
+  text-shadow: none;
 }
 
-.faCircleIsInActive {
-  color: #dee2e6;
+/* Preserve status colors against the global dark-mode !important text rule. */
+.overviewTop .faCircleIsActive {
+  color: lawngreen !important;
+}
+
+.overviewTop .faCircleIsInActive {
+  color: #dee2e6 !important;
 }
 
 /* Dark mode styles */
-.darkMode.totalCard {
-  background: linear-gradient(to bottom, #2c3e50, #34495e, #2c3e50);
-  color: #ecf0f1;
-}
-
 .darkMode.activeCard {
   background: linear-gradient(to bottom, #e67e22, #d35400, #e74c3c);
   color: #ecf0f1;
@@ -89,26 +92,17 @@
 }
 
 /* Media queries for responsive design */
-@media (width <= 768px) {
-  .card {
-    width: 250px;
-  }
-  
-  .cardText {
-    font-size: 12px;
-  }
-  
+
+@media (width <= 576px) {
   .overviewTop {
     flex-direction: column;
     gap: 8px;
   }
-}
 
-@media (width <= 575px) {
   .card {
-    width: 200px;
+    width: 100%;
   }
-  
+
   .cardText {
     font-size: 11px;
   }

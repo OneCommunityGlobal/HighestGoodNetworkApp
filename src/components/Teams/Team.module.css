@@ -9,6 +9,14 @@
   min-width: 680px;
 }
 
+/* Control table border in light mode */
+.teamsTable:not(:global(.dark-mode)),
+.teamsTable:not(:global(.dark-mode)) th,
+.teamsTable:not(:global(.dark-mode)) td {
+  border: 1.5px solid;
+  border-color: #8c87ca;
+}
+
 /* The un-sized name column receives the space left by these utility columns. */
 .orderColumn {
   width: 64px;
