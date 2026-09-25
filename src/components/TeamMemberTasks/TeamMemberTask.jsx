@@ -63,6 +63,10 @@ const TeamMemberTask = React.memo(
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     const dispatch = useDispatch();
     const canSeeFollowUpCheckButton = userRole !== 'Volunteer';
+    // Header table only renders a "Status" column for Administrators
+    // (see TeamMemberTasks.jsx). Body rows must match that column count
+    // exactly, or the Progress/Status headers drift out of alignment.
+    const canSeeStatusColumn = displayUser?.role === 'Administrator';
 
     const [isDashboardModalOpen, setIsDashboardModalOpen] = useState(false);
     const manager = 'Manager';
@@ -583,7 +587,7 @@ const TeamMemberTask = React.memo(
                                             style={{ color: darkMode ? '#339CFF' : undefined }}
                                           >
                                             <span className={styles.taskTitle}>
-                                              {`${task.num} ${task.taskName.slice(0,6)}`}
+                                              {`${task.num} ${task.taskName.slice(0, 6)}`}
                                             </span>
                                           </Link>
 
@@ -647,26 +651,24 @@ const TeamMemberTask = React.memo(
 
                                           <TeamMemberTaskIconsInfo />
                                         </div>
-
-                                        {/* Review Button */}
-                                        <div className={styles['team-member-task-review-button']}>
-                                          <ReviewButton
-                                            user={user}
-                                            userId={userId}
-                                            task={task}
-                                            updateTask={updateTaskStatus}
-                                            onTimeOff={onTimeOff}
-                                          />
-                                        </div>
                                       </div>
                                     </td>
-                                    {task.hoursLogged != null && task.estimatedHours != null && (
-                                      <td
-                                        data-label="Progress"
-                                        className={`${styles['team-task-progress']} ${
-                                          darkMode ? 'bg-yinmn-blue text-light' : ''
-                                        }`}
-                                      >
+
+                                    {/*
+                                      Always render the Progress cell (even when there's no
+                                      hours data) so the column count for every row matches the
+                                      "Tasks(s) / Progress / Status" header exactly. Previously
+                                      this <td> was entirely omitted for some tasks, which caused
+                                      the Progress/Status headers to drift out of alignment with
+                                      their data below.
+                                    */}
+                                    <td
+                                      data-label="Progress"
+                                      className={`${styles['team-task-progress']} ${
+                                        darkMode ? 'bg-yinmn-blue text-light' : ''
+                                      }`}
+                                    >
+                                      {task.hoursLogged != null && task.estimatedHours != null && (
                                         <div className={styles['progress-wrapper']}>
                                           <div className={styles['team-task-progress-container']}>
                                             <div
@@ -755,6 +757,33 @@ const TeamMemberTask = React.memo(
                                               );
                                             })()}
                                         </div>
+                                      )}
+                                    </td>
+
+                                    {/*
+                                      Status cell — only rendered for Administrators, mirroring
+                                      the header's conditional "Status" <th> in TeamMemberTasks.jsx.
+                                      Uses its own `status-align` class (instead of reusing
+                                      `task-align`) so it gets a fixed, compact width — the
+                                      ReviewButton previously had no width cap and pushed the row
+                                      past the visible edge of the table.
+                                    */}
+                                    {canSeeStatusColumn && (
+                                      <td
+                                        data-label="Status"
+                                        className={`${styles['status-align']} ${
+                                          darkMode ? 'bg-yinmn-blue text-light' : ''
+                                        }`}
+                                      >
+                                        <div className={styles['team-member-task-review-button']}>
+                                          <ReviewButton
+                                            user={user}
+                                            userId={userId}
+                                            task={task}
+                                            updateTask={updateTaskStatus}
+                                            onTimeOff={onTimeOff}
+                                          />
+                                        </div>
                                       </td>
                                     )}
                                   </tr>
@@ -762,7 +791,10 @@ const TeamMemberTask = React.memo(
                               })}
                             {canTruncate && (
                               <tr key="truncate-button-row" className={styles['task-break']}>
-                                <td className={styles['task-align']}>
+                                <td
+                                  className={styles['task-align']}
+                                  colSpan={canSeeStatusColumn ? 3 : 2}
+                                >
                                   <button
                                     type="button"
                                     onClick={handleTruncateTasksButtonClick}
