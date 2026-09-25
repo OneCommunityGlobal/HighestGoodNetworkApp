@@ -486,6 +486,12 @@ input[type='date'] {
   font-size: 1.1rem;
 }
 
+.submitError {
+  color: #d32f2f;
+  font-size: 0.9rem;
+  margin: -0.5rem 0 0.5rem;
+}
+
 /* ── Dark mode ── */
 .darkMode {
   background-color: #1b2a41;

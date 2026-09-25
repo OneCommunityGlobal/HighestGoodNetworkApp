@@ -21,7 +21,9 @@ function BiddingOverview() {
   const unitDetails = useSelector(state => state.bidOverview.unitDetails);
   const notifications = useSelector(state => state.bidOverview.notifications);
   const loading = useSelector(state => state.bidOverview.loading);
-  const error = useSelector(state => state.bidOverview.error);
+  const fetchError = useSelector(state => state.bidOverview.fetchError);
+  const submitting = useSelector(state => state.bidOverview.submitting);
+  const submitError = useSelector(state => state.bidOverview.submitError);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const [rentingFrom, setRentingFrom] = useState('');
@@ -63,7 +65,7 @@ function BiddingOverview() {
     }
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (!rentingFrom || !rentingTo || !name || !biddingPrice) {
       alert('Please fill in all fields.');
@@ -76,19 +78,21 @@ function BiddingOverview() {
       start_date: rentingFrom,
       end_date: rentingTo,
     };
-    dispatch(submitBid(listingId, bidData));
-    alert('Bid submitted successfully!');
-    setRentingFrom('');
-    setRentingTo('');
-    setName(firstName || '');
-    setBiddingPrice('');
+    const result = await dispatch(submitBid(listingId, bidData));
+    if (result) {
+      alert('Bid submitted successfully!');
+      setRentingFrom('');
+      setRentingTo('');
+      setName(firstName || '');
+      setBiddingPrice('');
+    }
   };
 
+  if (fetchError) {
+    return <div className={styles.error}>Error: {fetchError}</div>;
+  }
   if (loading || !unitDetails) {
     return <div className={styles.loading}>Loading...</div>;
-  }
-  if (error) {
-    return <div className={styles.error}>Error: {error}</div>;
   }
 
   return (
@@ -335,9 +339,15 @@ function BiddingOverview() {
                     />
                   </div>
 
+                  {submitError && (
+                    <div className={styles.submitError} role="alert">
+                      {submitError}
+                    </div>
+                  )}
+
                   <div className={styles.submitButtonContainer}>
-                    <button type="submit" className={styles.submitButton1}>
-                      Proceed to submit with details
+                    <button type="submit" className={styles.submitButton1} disabled={submitting}>
+                      {submitting ? 'Submitting...' : 'Proceed to submit with details'}
                     </button>
                   </div>
                 </form>
