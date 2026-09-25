@@ -205,6 +205,33 @@ describe('BadgeDevelopmentTable component', () => {
       ).toBeInTheDocument();
     });
   });
+  it('shows Edit button for a badge with no imageUrl', () => {
+    const noImageData = {
+      ...mockData,
+      allBadgeData: [
+        {
+          _id: 'abc3',
+          badgeName: 'NO IMAGE BADGE',
+          category: 'Stewardship',
+          imageUrl: null,
+          ranking: 1,
+          description: 'A badge without an image URL.',
+          months: null,
+          multiple: null,
+          people: null,
+          totalHrs: null,
+          type: 'Custom',
+          weeks: null,
+          showReport: false,
+        },
+      ],
+    };
+    renderComponent(noImageData);
+    const editButton = screen.getByRole('button', { name: 'Edit' });
+    fireEvent.click(editButton);
+    expect(screen.getByText('Update')).toBeInTheDocument();
+    expect(screen.getByText('Cancel')).toBeInTheDocument();
+  });
   it('check reports page notification checkmark', () => {
     const { container } = renderComponent(mockData);
     const checkElement = screen.getByTestId('report-checkbox-abc1');

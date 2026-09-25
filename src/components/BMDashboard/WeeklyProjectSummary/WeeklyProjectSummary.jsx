@@ -8,30 +8,30 @@ import { toast } from 'react-toastify';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
-import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
+import IssuesCharts from '../Issues/LongestOpenIssuesChart';
+import { MaterialConsumptionCards } from './MaterialConsumption/MaterialConsumption';
 import ProjectRiskProfileOverview from './ProjectRiskProfileOverview';
 import IssuesBreakdownChart from './IssuesBreakdownChart';
 import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
+import CostVarianceTrendGraph from './Financials/CostVarianceTrendGraph';
 import CostBreakDown from './Financials/CostBreakDown/CostBreakDown';
-import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
-import IssueCharts from '../Issues/openIssueCharts';
 import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import LossTrackingLineChart from './Financials/LossTrackingLineCharts/LossTrackingLineChart';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
-
-import styles from './WeeklyProjectSummary.module.css';
-import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
-import InjurySeverityChart from '../Injuries/InjurySeverityChart';
 import CostPredictionChart from './CostPredictionChart';
 import FinancialsTrackingSection from './ExpenditureChart/FinancialsTrackingSection';
 import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
-import CostVarianceTrendGraph from './Financials/CostVarianceTrendGraph';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph';
+import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
+import InjurySeverityChart from '../Injuries/InjurySeverityChart';
+
+import styles from './WeeklyProjectSummary.module.css';
 
 const projectStatusButtons = [
   {
@@ -137,6 +137,7 @@ function WeeklyProjectSummary() {
   const containerRef = useRef(null);
 
   const materials = useSelector(state => state.materials?.materialslist || []);
+  const bmProjects = useSelector(state => state.bmProjects || []);
   const darkMode = useSelector(state => state.theme.darkMode);
   const projectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter || '');
   const dateRangeFilter = useSelector(state => state.weeklyProjectSummary?.dateRangeFilter || '');
@@ -155,7 +156,8 @@ function WeeklyProjectSummary() {
 
   useEffect(() => {
     if (materials.length === 0) dispatch(fetchAllMaterials());
-  }, [dispatch, materials.length]);
+    if (bmProjects.length === 0) dispatch(fetchBMProjects());
+  }, [dispatch, materials.length, bmProjects.length]);
 
   useEffect(() => {
     setIsRefreshing(true);
@@ -212,7 +214,10 @@ function WeeklyProjectSummary() {
         title: 'Project Status',
         key: 'Project Status',
         className: 'full',
-        badgeLabel: `${projectStatusButtons.length}`,
+        // Static word badge, matching every other placeholder section below: these mock
+        // cards don't come from real per-week data yet, so a bare count of them would
+        // misrepresent itself as a data-driven figure (this is what reviewers flagged).
+        badgeLabel: 'Status',
         hasData: projectStatusButtons.length > 0,
         emptyMessage: 'No project status data for this week.',
         comparisonText: `Project status: comparison period is ${selectedComparisonRangeLabel}.`,
@@ -266,43 +271,27 @@ function WeeklyProjectSummary() {
       {
         title: 'Material Consumption',
         key: 'Material Consumption',
-        className: 'full',
+        className: 'large',
         badgeLabel: `${quantityOfMaterialsUsedData.length}`,
         hasData: quantityOfMaterialsUsedData.length > 0,
         emptyMessage: 'No material consumption data for this week.',
         comparisonText: `Material consumption: comparison period is ${selectedComparisonRangeLabel}.`,
-        content: [
-          <div
-            key="material-placeholder-card"
-            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-          >
-            <p>📊 Card</p>
-          </div>,
-          <div
-            key="quantity-of-materials-used"
-            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-          >
-            <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} {...filterProps} />
-          </div>,
-          <div
-            key="total-material-cost-per-project"
-            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-          >
-            <TotalMaterialCostPerProject {...filterProps} />
-          </div>,
-        ],
+        // Shared with /bmdashboard/issuechart so the PR-required three-card grouping stays in sync.
+        content: (
+          <MaterialConsumptionCards quantityOfMaterialsUsedData={quantityOfMaterialsUsedData} />
+        ),
       },
       {
         title: 'Issue Tracking',
         key: 'Issue Tracking',
-        className: 'full',
+        className: 'small',
         badgeLabel: 'Open',
         hasData: true,
         emptyMessage: 'No issue tracking data for this week.',
         comparisonText: `Issue tracking: comparison period is ${selectedComparisonRangeLabel}.`,
         content: (
           <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-            <IssueCharts {...filterProps} />
+            <IssuesCharts bmProjects={bmProjects} />
           </div>
         ),
       },
@@ -320,7 +309,7 @@ function WeeklyProjectSummary() {
               <ToolStatusDonutChart {...filterProps} />
             </div>
             <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-              <ToolsHorizontalBarChart darkMode={darkMode} {...filterProps} />
+              <ToolsHorizontalBarChart darkMode={darkMode} />
             </div>
             <div
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
@@ -380,7 +369,8 @@ function WeeklyProjectSummary() {
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: '10px',
+              gap: '15px',
+              width: '100%',
             }}
           >
             <div
@@ -495,11 +485,26 @@ function WeeklyProjectSummary() {
         content: (
           <div style={{ gridColumn: '1 / -1', width: '100%' }}>
             <FinancialsTrackingSection {...filterProps} />
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: '15px',
+                marginTop: '15px',
+              }}
+            >
+              <div className="weekly-project-summary-card financial-small financial-chart">
+                <CostPredictionChart projectId={1} />
+              </div>
+              <div className="weekly-project-summary-card financial-small financial-chart">
+                <ActualVsPlannedCost />
+              </div>
+            </div>
           </div>
         ),
       },
     ],
-    [darkMode, filterProps, quantityOfMaterialsUsedData, selectedComparisonRangeLabel],
+    [darkMode, filterProps, bmProjects, quantityOfMaterialsUsedData, selectedComparisonRangeLabel],
   );
 
   const expandAllSections = () => {
@@ -517,6 +522,7 @@ function WeeklyProjectSummary() {
   };
 
   const areAllSectionsOpen = sections.every(section => openSections[section.key]);
+  const areAllSectionsClosed = sections.every(section => !openSections[section.key]);
 
   const handleSaveAsPDF = async () => {
     if (isGeneratingPDF) {
@@ -702,7 +708,7 @@ function WeeklyProjectSummary() {
             <button type="button" onClick={expandAllSections} disabled={areAllSectionsOpen}>
               Expand All
             </button>
-            <button type="button" onClick={collapseAllSections}>
+            <button type="button" onClick={collapseAllSections} disabled={areAllSectionsClosed}>
               Collapse All
             </button>
           </div>
