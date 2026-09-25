@@ -761,13 +761,13 @@
     gap: 15px;
     padding: 12px;
   }
-}
 
   /* Cards span full width on tablet */
   .weeklyProjectSummaryDashboardCategoryContent .wideCard,
   .weeklyProjectSummaryDashboardCategoryContent .normalCard {
     grid-column: span 2;
   }
+}
 
 /* Small Screens */
 @media (width <= 768px) {
@@ -815,19 +815,6 @@
     min-height: 240px;
   }
 
-  .weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
-    grid-template-columns: 1fr;
-  }
-
-  
-  .weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
-    grid-template-columns: 1fr;
-  }
-  
-  .weeklyProjectSummaryCard :global(.chartContainer) {
-    min-height: 240px;
-  }
-  
   .normalCard {
     min-height: 280px;
   }
@@ -873,35 +860,8 @@
   }
 }
 
-  
-  .lessonsCard {
-    min-height: 500px;
-  }
-  
-  .toolsTrackingLayout {
-    grid-template-columns: 1fr;
-  }
-  
-  .toolsDonutWrap {
-    grid-column: span 1;
-  }
-  
-  .financialsGrid {
-    grid-template-columns: 1fr;
-  }
-  
-  .financialsGrid .financialBig {
-    grid-column: span 1;
-  }
-  
-  .laborTimeGrid {
-    grid-template-columns: 1fr;
-  }
-  
-  .financialsTrackingGrid {
-    grid-template-columns: 1fr;
-  }
-
+/* Extra small screens */
+@media (width <= 576px) {
   /* Ensure charts are fully visible on mobile - prevent clipping */
   .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-chart-container,
   .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-bar-chart-content,
@@ -911,9 +871,6 @@
     overflow: visible;
   }
 
-
-/* Extra small screens */
-@media (width <= 576px) {
   .weeklyProjectSummaryDashboardCategoryContent {
     padding: 8px;
     gap: 10px;
@@ -938,15 +895,6 @@
     min-height: 260px;
   }
 
-  
-  .weeklyProjectSummaryCard :global(.chartContainer) {
-    min-height: 220px;
-  }
-  
-  .normalCard {
-    min-height: 260px;
-  }
-  
   .weeklySummaryHeaderTitle {
     font-size: large;
     flex-direction: column;

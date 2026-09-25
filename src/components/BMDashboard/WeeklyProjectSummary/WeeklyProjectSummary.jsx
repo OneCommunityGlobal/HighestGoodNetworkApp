@@ -23,8 +23,6 @@ import LossTrackingLineChart from './Financials/LossTrackingLineCharts/LossTrack
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
-import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
-import CostPredictionChart from './CostPredictionChart';
 import FinancialsTrackingSection from './ExpenditureChart/FinancialsTrackingSection';
 import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph';
@@ -483,23 +481,11 @@ function WeeklyProjectSummary() {
         emptyMessage: 'No financial tracking data for this week.',
         comparisonText: `Financials tracking: comparison period is ${selectedComparisonRangeLabel}.`,
         content: (
+          // FinancialsTrackingSection already renders its own CostPredictionChart and
+          // ActualVsPlannedCost internally; rendering them again here duplicated both
+          // charts on the page.
           <div style={{ gridColumn: '1 / -1', width: '100%' }}>
             <FinancialsTrackingSection {...filterProps} />
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: '15px',
-                marginTop: '15px',
-              }}
-            >
-              <div className="weekly-project-summary-card financial-small financial-chart">
-                <CostPredictionChart projectId={1} />
-              </div>
-              <div className="weekly-project-summary-card financial-small financial-chart">
-                <ActualVsPlannedCost />
-              </div>
-            </div>
           </div>
         ),
       },
@@ -632,14 +618,14 @@ function WeeklyProjectSummary() {
 
       pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
 
-      const projectName = selectedProjectLabel.replace(/\s+/g, '-');
-      const dateRange = selectedDateRangeLabel.replace(/\s+/g, '-').replace(/,/g, '');
+      const projectName = selectedProjectLabel.replaceAll(/\s+/g, '-');
+      const dateRange = selectedDateRangeLabel.replaceAll(/\s+/g, '-').replaceAll(/,/g, '');
       const fileName = `weekly-project-summary-${projectName}-${dateRange}.pdf`;
 
       pdf.save(fileName);
 
       if (document.body.contains(pdfContainer)) {
-        document.body.removeChild(pdfContainer);
+        pdfContainer.remove();
       }
 
       toast.dismiss(loadingToastId);
@@ -665,7 +651,7 @@ function WeeklyProjectSummary() {
       const pdfContainer = document.getElementById('pdf-export-container');
 
       if (pdfContainer && document.body.contains(pdfContainer)) {
-        document.body.removeChild(pdfContainer);
+        pdfContainer.remove();
       }
     } finally {
       setOpenSections(currentOpenSections);
