@@ -119,6 +119,34 @@
   .ownerMessageImg {
     height: 36px;
   }
+
+  /* Stack the warning message vertically on narrow screens. The DOM order is the
+     text span followed by .iconWrapper, so column-reverse lifts the icons to the
+     top and leaves the text underneath — no markup change needed. The existing
+     8px gap becomes the row gap between them. Desktop keeps the single flex row. */
+  .messageContainer {
+    flex-direction: column-reverse;
+
+    /* In a column the 8px gap becomes vertical space between the icons and the
+       text. Tighten it so the block reads as one compact unit. */
+    gap: 2px;
+  }
+
+  /* Full width for the text so it wraps across the container instead of being
+     shrink-wrapped by the column's align-items: center. Line height trimmed so a
+     wrapped message does not stretch the header. */
+  .message {
+    align-self: stretch;
+    flex: 0 0 auto;
+    line-height: 1.25;
+  }
+
+  /* The icon row sits above the text; keep it to exactly its own height. */
+  .iconWrapper {
+    margin: 0;
+    padding: 0;
+    line-height: 0;
+  }
 }
 
 @media (max-width: 480px) {
@@ -132,6 +160,21 @@
     align-items: center;
     justify-content: center;
     text-align: center;
+  }
+}
+
+/* Deliberately after the 1400px block: that one also matches on mobile and sets
+   align-items / text-align on .messageContainer, so the mobile overrides have to
+   come later to win the cascade. Right-aligning the icons and the copy pulls the
+   whole block towards the hamburger menu below it. */
+@media (max-width: 768px) {
+  .messageContainer {
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .message {
+    text-align: right;
   }
 }
 

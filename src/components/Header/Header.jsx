@@ -71,6 +71,8 @@ import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permission
 import PermissionWatcher from '../Auth/PermissionWatcher';
 import Logout from '../Logout/Logout';
 import NotificationCard from '../Notification/notificationCard';
+import OwnerMessage from '../OwnerMessage/OwnerMessage';
+import { getOwnerMessage } from '../../actions/ownerMessageAction';
 import DisplayBox from '../PRPromotions/DisplayBox';
 import Timer from '../Timer/Timer';
 import BellNotification from './BellNotification';
@@ -172,6 +174,12 @@ export function Header(props) {
     [ALLOWED_ROLES_TO_INTERACT, props.auth.user.role],
   );
   const headerDisabled = isAuthUser ? false : !canInteractWithViewingUser;
+
+  // The header shows the owner message or the logo, never both, and the choice
+  // does not depend on the user's role. Any message (custom or standard) wins, so
+  // environments that set one — e.g. the dev warning — show the text; the logo
+  // appears only when both are empty, as in production.
+  const showOwnerMessage = Boolean(props.ownerMessage || props.ownerStandardMessage);
 
   const canGetReports = props.hasPermission('getReports', !isAuthUser);
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries', !isAuthUser);
@@ -560,26 +568,22 @@ export function Header(props) {
   }, [user.userid, props.auth.firstName]);
 
   useEffect(() => {
-    let timeoutId = null;
-    const handleResize = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-      const currentWidth = window.innerWidth;
-      }, 150);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => {
-      clearTimeout(timeoutId);
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
-  useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
       if (props.auth.user.role === 'Owner' || props.auth.user.role === 'Administrator') {
         dispatch(fetchTaskEditSuggestions());
       }
+    }
+  }, [props.auth.isAuthenticated]);
+
+  // The header shows either the logo or the owner message, never both, so the
+  // message has to be fetched from here rather than from inside OwnerMessage:
+  // that component is only mounted once a message is known to exist, and if it
+  // owned the only fetch the message would never load and the logo would never
+  // give way to it.
+  useEffect(() => {
+    if (props.auth.isAuthenticated) {
+      dispatch(getOwnerMessage());
     }
   }, [props.auth.isAuthenticated]);
 
@@ -772,16 +776,47 @@ export function Header(props) {
               <Timer darkMode={darkMode} />
             )}
             </div>
+          {/* Either the owner message or the logo occupies this cell — never both.
+              On narrow screens Header.module.css dissolves this wrapper with
+              `display: contents` so whichever one renders lands in its own grid
+              area; the layout is driven entirely from CSS. */}
           <div className={styles.centerSection}>
-             {isAuthenticated && (
-                <img 
-                  src="/header-test.png" 
-                  alt="Header Logo" 
-                  className={styles.headerLogo} 
-                />
-             )}
+            {isAuthenticated &&
+              (showOwnerMessage ? (
+                <OwnerMessage />
+              ) : (
+                <img src="/header-test.png" alt="Header Logo" className={styles.headerLogo} />
+              ))}
           </div>
           <div className={styles.rightSection}>
+            {/* User info row (bell, avatar, welcome menu). Kept outside the collapsible
+                panel so it stays visible on every screen size — the hamburger menu
+                holds navigation links only. */}
+            <div className={styles.userInfoRow}>
+              <BellNotification
+                userId={displayUserId}
+                hasMeetingNotification={userUnreadMeetings.length > 0}
+                meetingNotificationCount={userUnreadMeetings.length}
+                onMeetingNotificationClick={openMeetingNotification}
+              />
+              <NavLink tag={Link} to={`/userprofile/${displayUserId}`} className="p-0">
+                <div style={{ width: '40px', height: '40px', minWidth: '40px', minHeight: '40px', backgroundImage: `url(${profilePic || '/pfp-default-header.png'})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} className="dashboardimg rounded-circle" />
+              </NavLink>
+              <UncontrolledDropdown inNavbar>
+                <DropdownToggle nav caret className="text-light"><span>{WELCOME}, {firstName}</span></DropdownToggle>
+                <DropdownMenu right className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown}`}>
+                  <DropdownItem header className={darkMode ? 'text-custom-grey' : styles.mobileDropdownText}>Hello {firstName}</DropdownItem>
+                  <DropdownItem divider />
+                  <DropdownItem tag={Link} to={`/userprofile/${displayUserId}`} className={fontColor} disabled={headerDisabled}>{VIEW_PROFILE}</DropdownItem>
+                  {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
+                    <DropdownItem tag={Link} to={`/updatepassword/${displayUserId}`} className={fontColor}>{UPDATE_PASSWORD}</DropdownItem>
+                  )}
+                  <DropdownItem className={fontColor}><DarkModeButton /></DropdownItem>
+                  <DropdownItem divider />
+                  <DropdownItem onClick={openModal} className={fontColor} disabled={headerDisabled}>{LOGOUT}</DropdownItem>
+                </DropdownMenu>
+              </UncontrolledDropdown>
+            </div>
             <NavbarToggler
               onClick={toggle}
               ref={toggleRef}
@@ -795,34 +830,6 @@ export function Header(props) {
               tabIndex={-1}
               onKeyDown={e => { if (e.key === 'Escape') setIsOpen(false); }}
             >
-              {/* 1. Top user info row: displays avatar, welcome, and bell notification on medium/large screens */}
-              <div className={`${styles.userInfoRow} ${styles.hideInMobile}`}>
-                <BellNotification
-                  userId={displayUserId}
-                  hasMeetingNotification={userUnreadMeetings.length > 0}
-                  meetingNotificationCount={userUnreadMeetings.length}
-                  onMeetingNotificationClick={openMeetingNotification}
-                />
-                <NavLink tag={Link} to={`/userprofile/${displayUserId}`} className="p-0">
-                  <div style={{ width: '40px', height: '40px', minWidth: '40px', minHeight: '40px', backgroundImage: `url(${profilePic || '/pfp-default-header.png'})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} className="dashboardimg rounded-circle" />
-                </NavLink>
-                <UncontrolledDropdown inNavbar>
-                  <DropdownToggle nav caret className="text-light"><span>{WELCOME}, {firstName}</span></DropdownToggle>
-                  <DropdownMenu right className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown}`}>
-                    <DropdownItem header className={darkMode ? 'text-custom-grey' : styles.mobileDropdownText}>Hello {firstName}</DropdownItem>
-                    <DropdownItem divider />
-                    <DropdownItem tag={Link} to={`/userprofile/${displayUserId}`} className={fontColor} disabled={headerDisabled}>{VIEW_PROFILE}</DropdownItem>
-                    {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
-                      <DropdownItem tag={Link} to={`/updatepassword/${displayUserId}`} className={fontColor}>{UPDATE_PASSWORD}</DropdownItem>
-                    )}
-                    <DropdownItem className={fontColor}><DarkModeButton /></DropdownItem>
-                    <DropdownItem divider />
-                    <DropdownItem onClick={openModal} className={fontColor} disabled={headerDisabled}>{LOGOUT}</DropdownItem>
-                  </DropdownMenu>
-                </UncontrolledDropdown>
-              </div>
-                            
-              {/* 2. Bottom navigation menu row */}
               <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>
                 {canUpdateTask && (
                   <NavItem>
@@ -1163,6 +1170,9 @@ const mapStateToProps = state => ({
   meetingNotification: state.meetingNotification,
   allUserProfiles: state.allUserProfiles.userProfiles,
   darkMode: state.theme.darkMode,
+  // Drive the logo-or-message choice in the header's centre cell.
+  ownerMessage: state.ownerMessage.message,
+  ownerStandardMessage: state.ownerMessage.standardMessage,
 });
 
 Header.propTypes = {
@@ -1191,6 +1201,8 @@ Header.propTypes = {
   userProfile: PropTypes.object,
   darkMode: PropTypes.bool,
   taskEditSuggestionCount: PropTypes.number,
+  ownerMessage: PropTypes.string,
+  ownerStandardMessage: PropTypes.string,
 };
 
 export default connect(mapStateToProps, {
