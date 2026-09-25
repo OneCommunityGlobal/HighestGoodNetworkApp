@@ -15,7 +15,6 @@ import {
 import { getAllUserTeams, postNewTeam } from '../../../actions/allTeamsAction';
 import darkModeStyles from '../../Header/DarkMode.module.css';
 import AddTeamsAutoComplete from './AddTeamsAutoComplete';
-import axios from 'axios';
 
 function generateValidTeamCode(name) {
   if (!name?.trim()) return 'TEAM-1';
