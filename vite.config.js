@@ -8,6 +8,7 @@ export default defineConfig(({ mode }) => {
     base: '/',
     resolve: {
       alias: {
+        '@': resolve('src/'),
         '~': resolve('src/'),
       },
     },
