@@ -21,6 +21,7 @@ import {
   isFieldRequired,
   normalizeQuestionForApi,
   normalizeLoadedQuestions,
+  isDuplicateQuestion,
 } from './jobFormQuestionUtils';
 
 import { permissions } from '../../utils/constants';
@@ -281,6 +282,11 @@ function JobFormBuilder() {
     }
 
     const fieldToAdd = normalizeQuestionForApi(newField);
+
+    if (isDuplicateQuestion(fieldToAdd, formFields)) {
+      const confirmAdd = window.confirm('You already have a similar question. Add Anyway?');
+      if (!confirmAdd) return;
+    }
     const updatedFields = [...formFields, fieldToAdd];
     setFormFields(updatedFields);
 
@@ -550,10 +556,10 @@ function JobFormBuilder() {
                       }));
                     }}
                   >
-                    <option value="textbox">TextBox</option>
+                    <option value="textbox">Text Box</option>
                     <option value="email">Email</option>
-                    <option value="textarea">Textarea</option>
-                    <option value="checkbox">Checkbox</option>
+                    <option value="textarea">Text Area</option>
+                    <option value="checkbox">Check Box</option>
                     <option value="radio">Radio</option>
                     <option value="dropdown">Dropdown</option>
                     <option value="date">Date</option>
