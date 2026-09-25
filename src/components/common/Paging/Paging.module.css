@@ -62,7 +62,7 @@
 }
 
 .pageIndexButtonDark:not(.disabled):hover {
-  background-color: #007bff;
+  background-color: #3a4658;
 }
 
 .pageIndexButtonDark.disabled {
@@ -71,12 +71,12 @@
 }
 
 .activeButtonDark {
-  background-color: #1c2541;
+  background-color: #a780d9;
   color: white;
 }
 
 .pageIndexButtonDark.activeButtonDark:hover {
-  background-color: #007bff;
+  background-color: rgb(179 104 210);
 }
 
 .paginationButtonsDark {
