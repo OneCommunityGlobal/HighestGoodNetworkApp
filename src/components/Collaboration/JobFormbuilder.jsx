@@ -20,7 +20,6 @@ import {
   buildJobFormRequestor,
   isFieldRequired,
   normalizeQuestionForApi,
-  prepareQuestionClone,
   normalizeLoadedQuestions,
   isDuplicateQuestion,
 } from './jobFormQuestionUtils';
@@ -130,48 +129,7 @@ function JobFormBuilder() {
     setHasUnsavedChanges(changed);
   }, [formFields, newField, templateName, selectedTemplate, initialFormFields]);
 
-  const syncFieldAction = async (actionLabel, apiCall, rollback) => {
-    try {
-      await apiCall();
-    } catch (error) {
-      console.error(`Error ${actionLabel}:`, error);
-      rollback?.();
-      const message =
-        error.response?.data?.message ||
-        error.response?.data?.error?.message ||
-        `Failed to ${actionLabel}. Changes were reverted locally.`;
-      alert(message);
-    }
-  };
-
   // CRUD Functions with Dynamic Form ID
-  const cloneField = async (field, index) => {
-    const clonedField = prepareQuestionClone(field);
-    const previousFields = formFields;
-
-    const newFields = [
-      ...formFields.slice(0, index + 1),
-      clonedField,
-      ...formFields.slice(index + 1),
-    ];
-    setFormFields(newFields);
-
-    if (currentFormId) {
-      await syncFieldAction(
-        'clone question',
-        async () => {
-          await axios.post(ENDPOINTS.ADD_QUESTION(currentFormId), {
-            question: clonedField,
-            position: index + 1,
-            requestor: getRequestor(),
-          });
-          markAsSaved(newFields);
-        },
-        () => setFormFields(previousFields),
-      );
-    }
-  };
-
   const moveField = async (index, direction) => {
     const newIndex = direction === 'up' ? index - 1 : index + 1;
 
@@ -480,7 +438,6 @@ function JobFormBuilder() {
                       field={field}
                       index={index}
                       totalFields={formFields.length}
-                      onClone={cloneField}
                       onMove={moveField}
                       onDelete={deleteField}
                       onEdit={editField}
