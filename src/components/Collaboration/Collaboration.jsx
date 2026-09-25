@@ -8,6 +8,7 @@ import OneCommunityImage from '../../assets/images/logo2.png';
 import WhatWeDoSection from '../WhatWeDo/WhatWeDo';
 import hasPermission from '~/utils/permissions';
 import JobReorderModal from './JobReorderModal';
+import FAQSection from './FAQSection';
 
 function getColumnsFromMQ() {
   if (typeof globalThis.matchMedia !== 'function') return 1;
@@ -832,6 +833,10 @@ function Collaboration() {
                 ))}
               </div>
             )}
+
+            <div className={styles.faqOuter}>
+              <FAQSection />
+            </div>
           </>
         )}
       </div>
