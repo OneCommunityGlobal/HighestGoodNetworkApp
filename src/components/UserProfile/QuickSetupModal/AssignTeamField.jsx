@@ -2,73 +2,161 @@ import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Input } from 'reactstrap';
 
-/**
- * Team Assignment text input (no dropdown, no internal label).
- * - Looks like a standard text field (same as Project Assignment UI).
- * - As user types, we emit { _id, teamName }. _id is set only if there's an exact match.
- * - Parent should render the external <Label> ("Team Assignment:") just like other fields.
- */
 export default function AssignTeamField({
   teamsData = [],
-  value = null,                 // null | string(teamId) | { _id, teamName }
+  value = null,
   onChange,
   disabled = false,
   inputId = 'team-assignment',
   placeholder = '',
+  darkMode = false,
 }) {
-  const safeTeams = useMemo(
-    () => (Array.isArray(teamsData) ? teamsData.filter(Boolean) : []),
+  // Only active teams should be available for assignment.
+  const activeTeams = useMemo(
+    () =>
+      (Array.isArray(teamsData) ? teamsData : [])
+        .filter(Boolean)
+        .filter(team => team.isActive === true),
     [teamsData]
   );
 
-  // Resolve initial display text from incoming value
-  const nameFromValue = (v) => {
-    if (!v) return '';
-    if (typeof v === 'string') {
-      const found = safeTeams.find(t => t?._id === v);
-      return found ? (found.teamName || '') : '';
+  const nameFromValue = value => {
+    if (!value) return '';
+
+    if (typeof value === 'string') {
+      const found = activeTeams.find(team => team?._id === value);
+      return found ? found.teamName || '' : '';
     }
-    if (typeof v === 'object') {
-      return v.teamName || '';
+
+    if (typeof value === 'object') {
+      return value.teamName || '';
     }
+
     return '';
   };
 
   const [text, setText] = useState(nameFromValue(value));
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
-  // Keep local text in sync if parent updates value (e.g., when opening edit)
   useEffect(() => {
     setText(nameFromValue(value));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value, safeTeams]);
+  }, [value, activeTeams]);
 
-  // Emit normalized object whenever user types
-  const handleChange = (e) => {
+  const suggestions = useMemo(() => {
+    const search = text.trim().toLowerCase();
+
+    if (!search) {
+      return activeTeams;
+    }
+
+    return activeTeams.filter(team =>
+      (team.teamName || '').toLowerCase().includes(search)
+    );
+  }, [text, activeTeams]);
+
+  const handleChange = e => {
     const next = e.target.value;
-    setText(next);
 
-    // If the typed name exactly matches a known team (case-insensitive), attach its _id
-    const found = safeTeams.find(
-      (t) => (t.teamName || '').toLowerCase() === (next || '').trim().toLowerCase()
+    setText(next);
+    setShowSuggestions(true);
+
+    const found = activeTeams.find(
+      team =>
+        (team.teamName || '').trim().toLowerCase() ===
+        next.trim().toLowerCase()
     );
 
     const payload = found
-      ? { _id: found._id, teamName: found.teamName || '' }
-      : { _id: '', teamName: next };
+      ? {
+          _id: found._id,
+          teamName: found.teamName || '',
+        }
+      : {
+          _id: '',
+          teamName: next,
+        };
 
-    if (typeof onChange === 'function') onChange(payload);
+    if (typeof onChange === 'function') {
+      onChange(payload);
+    }
+  };
+
+  const handleSelect = team => {
+    const selectedTeam = {
+      _id: team._id,
+      teamName: team.teamName || '',
+    };
+
+    setText(selectedTeam.teamName);
+    setShowSuggestions(false);
+
+    if (typeof onChange === 'function') {
+      onChange(selectedTeam);
+    }
+  };
+
+  const handleFocus = () => {
+    if (!disabled) {
+      setShowSuggestions(true);
+    }
   };
 
   return (
-    <Input
-      id={inputId}
-      type="text"
-      value={text}
-      placeholder={placeholder}
-      disabled={disabled}
-      onChange={handleChange}
-      autoComplete="off"
-    />
+    <div style={{ position: 'relative' }}>
+      <Input
+        id={inputId}
+        type="text"
+        value={text}
+        placeholder={placeholder}
+        disabled={disabled}
+        onChange={handleChange}
+        onFocus={handleFocus}
+        autoComplete="off"
+      />
+
+      {showSuggestions && !disabled && suggestions.length > 0 && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            right: 0,
+            zIndex: 1050,
+            backgroundColor: darkMode ? '#335b6c' : undefined,
+            color: darkMode ? '#fff' : undefined,
+            maxHeight: '200px',
+            overflowY: 'auto',
+          }}
+        >
+        {suggestions.map(team => (
+         // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+         <div
+          key={team._id}
+          // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+          tabIndex={0}
+          onMouseDown={e => {
+            e.preventDefault();
+            handleSelect(team);
+          }}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleSelect(team);
+            }
+          }}
+          style={{
+                padding: '8px 12px',
+                cursor: 'pointer',
+                color: darkMode ? 'white' : '#212529',
+              }}
+         >
+       {team.teamName}
+       </div>
+
+      ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -77,15 +165,21 @@ AssignTeamField.propTypes = {
     PropTypes.shape({
       _id: PropTypes.string,
       teamName: PropTypes.string,
+      isActive: PropTypes.bool,
     })
   ),
   value: PropTypes.oneOfType([
     PropTypes.oneOf([null]),
-    PropTypes.string, // team id
-    PropTypes.shape({ _id: PropTypes.string, teamName: PropTypes.string }),
+    PropTypes.string,
+    PropTypes.shape({
+      _id: PropTypes.string,
+      teamName: PropTypes.string,
+    }),
   ]),
   onChange: PropTypes.func,
   disabled: PropTypes.bool,
   inputId: PropTypes.string,
   placeholder: PropTypes.string,
+  darkMode: PropTypes.bool,
 };
+
