@@ -70,6 +70,17 @@ describe('EditBadgePopup Component', () => {
     expect(rankingField).toHaveValue(1);
   });
 
+  test('enables Update when required fields including image URL are present', () => {
+    const store = mockStore({ theme: themeMock });
+    render(
+      <Provider store={store}>
+        <EditBadgePopup open={true} badgeValues={mockBadgeValues} />
+      </Provider>,
+    );
+
+    expect(screen.getByText('Update')).not.toBeDisabled();
+  });
+
   test('shows months feild and correct data in it in No Infringement Streak Badge Popup', () => {
     mockBadgeValues.type = 'No Infringement Streak';
     mockBadgeValues.months = 3;
@@ -178,5 +189,32 @@ describe('EditBadgePopup Component', () => {
     //test for options dropdown and dynamic hours field
     expect(options).toEqual(expectedCategories);
     expect(screen.getByLabelText('Hours'));
+  });
+  test('handles null required fields without crashing and shows warning', () => {
+    const badgeWithNullFields = {
+      ...mockBadgeValues,
+      type: 'Custom',
+      imageUrl: null,
+      description: null,
+    };
+
+    const store = mockStore({
+      theme: themeMock,
+    });
+
+    render(
+      <Provider store={store}>
+        <EditBadgePopup open={true} badgeValues={badgeWithNullFields} />
+      </Provider>,
+    );
+
+    expect(screen.getByLabelText('Image URL')).toHaveValue('');
+    expect(screen.getByLabelText('Description')).toHaveValue('');
+    expect(
+      screen.getByText(
+        'This badge is missing required information. Please complete all required fields before saving.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Update' })).toBeDisabled();
   });
 });

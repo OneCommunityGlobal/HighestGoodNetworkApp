@@ -10,6 +10,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import moment from 'moment-timezone';
+import { isJobApplicationFileUploadQuestion } from './jobApplicationQuestionUtils';
 
 function normalizeTitleKey(s) {
   return String(s || '')
@@ -209,17 +210,6 @@ function formRequiresResumeUpload(form) {
   );
 }
 
-function isFileUploadQuestion(q) {
-  if (isResumeQuestion(q)) return false;
-  const qt = getQuestionType(q);
-  if (['file', 'upload', 'document', 'attachment'].includes(qt)) return true;
-  const label = (q.label || q.questionText || '').toLowerCase();
-  return (
-    /\b(upload|attach|file)\b/.test(label) &&
-    !/\b(work\s*sample|portfolio|writing\s*sample)\b/.test(label)
-  );
-}
-
 function formatFileSize(bytes) {
   if (bytes == null || bytes === 0) return '';
   if (bytes < 1024) return `${bytes} B`;
@@ -377,7 +367,7 @@ function isAnswerEmpty(answer, q) {
 
 function missingRequiredQuestionLabel(q, idx, answers, questionFiles) {
   if (!isQuestionRequired(q)) return null;
-  if (isFileUploadQuestion(q)) {
+  if (isJobApplicationFileUploadQuestion(q)) {
     return questionFiles[idx] ? null : getQuestionLabel(q, idx);
   }
   return isAnswerEmpty(answers[idx], q) ? getQuestionLabel(q, idx) : null;
@@ -522,7 +512,7 @@ function collectMissingRequiredFields({
 }
 
 function serializeAnswerForSubmit(q, idx, answers, questionFiles) {
-  if (!isFileUploadQuestion(q)) return answers[idx];
+  if (!isJobApplicationFileUploadQuestion(q)) return answers[idx];
   const file = questionFiles[idx];
   if (!file) return '';
   return {
@@ -1170,7 +1160,7 @@ function JobApplicationForm() {
       }
 
       visibleQuestions.forEach((q, idx) => {
-        if (isFileUploadQuestion(q) && questionFiles[idx] && q._id) {
+        if (isJobApplicationFileUploadQuestion(q) && questionFiles[idx] && q._id) {
           formData.append(`questionFile_${q._id}`, questionFiles[idx]);
         }
       });
@@ -1573,7 +1563,7 @@ function JobApplicationForm() {
                       )}
                     </h2>
                     {['textbox', 'text'].includes(qt) &&
-                      !isFileUploadQuestion(q) &&
+                      !isJobApplicationFileUploadQuestion(q) &&
                       !isIndividualOrgQuestion && (
                         <>
                           <input
@@ -1698,7 +1688,7 @@ function JobApplicationForm() {
                         </select>
                       )
                     )}
-                    {isFileUploadQuestion(q) && (
+                    {isJobApplicationFileUploadQuestion(q) && (
                       <FileUploadField
                         id={`${formKey}-file`}
                         accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
@@ -1720,7 +1710,7 @@ function JobApplicationForm() {
                       'radio',
                       'dropdown',
                     ].includes(qt) &&
-                      !isFileUploadQuestion(q) && (
+                      !isJobApplicationFileUploadQuestion(q) && (
                         <input
                           type="text"
                           placeholder="Type your response here"
