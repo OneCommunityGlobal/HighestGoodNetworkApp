@@ -160,9 +160,9 @@ function ApplicantVolunteerRatio() {
      * Otherwise only display the individually selected roles.
      */
     if (!isAllRolesSelected) {
-      const selectedRoleValues = selectedRoles.map(role => role.value);
+      const selectedRoleValues = new Set(selectedRoles.map(role => role.value));
 
-      filteredData = data.filter(item => selectedRoleValues.includes(item.role));
+      filteredData = data.filter(item => selectedRoleValues.has(item.role));
     }
 
     /*
@@ -358,7 +358,8 @@ function ApplicantVolunteerRatio() {
       <div className={styles.chartControls}>
         {/* Count / Percentage Toggle */}
 
-        <div className={styles.viewToggle} role="group" aria-label="Chart display mode">
+        <fieldset className={styles.viewToggle}>
+          <legend className={styles.visuallyHidden}>Chart display mode</legend>
           <button
             type="button"
             onClick={() => setViewMode('count')}
@@ -380,7 +381,7 @@ function ApplicantVolunteerRatio() {
           >
             Percentage
           </button>
-        </div>
+        </fieldset>
 
         {/* Legend */}
 
@@ -392,7 +393,7 @@ function ApplicantVolunteerRatio() {
                   className={`${styles.legendMarker} ${styles.applicationMarker}`}
                   aria-hidden="true"
                 />
-                Total Applications
+                <span>Total Applications</span>
               </span>
 
               <span className={styles.legendItem}>
@@ -400,13 +401,13 @@ function ApplicantVolunteerRatio() {
                   className={`${styles.legendMarker} ${styles.hiredMarker}`}
                   aria-hidden="true"
                 />
-                People Hired
+                <span>People Hired</span>
               </span>
             </>
           ) : (
             <span className={styles.legendItem}>
               <span className={`${styles.legendMarker} ${styles.hiredMarker}`} aria-hidden="true" />
-              Hire Rate
+              <span>Hire Rate</span>
             </span>
           )}
         </div>
