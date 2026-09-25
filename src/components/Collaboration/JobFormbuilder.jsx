@@ -129,20 +129,6 @@ function JobFormBuilder() {
     setHasUnsavedChanges(changed);
   }, [formFields, newField, templateName, selectedTemplate, initialFormFields]);
 
-  const syncFieldAction = async (actionLabel, apiCall, rollback) => {
-    try {
-      await apiCall();
-    } catch (error) {
-      console.error(`Error ${actionLabel}:`, error);
-      rollback?.();
-      const message =
-        error.response?.data?.message ||
-        error.response?.data?.error?.message ||
-        `Failed to ${actionLabel}. Changes were reverted locally.`;
-      alert(message);
-    }
-  };
-
   // CRUD Functions with Dynamic Form ID
   const moveField = async (index, direction) => {
     const newIndex = direction === 'up' ? index - 1 : index + 1;
