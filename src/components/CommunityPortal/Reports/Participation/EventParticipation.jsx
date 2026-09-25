@@ -34,6 +34,13 @@ function EventParticipation() {
   const printReport = useReactToPrint({
     contentRef: exportRef,
     documentTitle: 'event_participation',
+    pageStyle: `
+      @page { margin: 0; }
+      @media print {
+        html, body { height: auto !important; min-height: 0 !important; max-height: none !important; overflow: visible !important; }
+        body { display: block !important; }
+      }
+    `,
     onAfterPrint: resetExport,
     onPrintError: handlePrintError,
     print: async iframe => {
