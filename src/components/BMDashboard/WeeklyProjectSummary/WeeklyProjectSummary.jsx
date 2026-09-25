@@ -619,7 +619,7 @@ function WeeklyProjectSummary() {
       pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
 
       const projectName = selectedProjectLabel.replaceAll(/\s+/g, '-');
-      const dateRange = selectedDateRangeLabel.replaceAll(/\s+/g, '-').replaceAll(/,/g, '');
+      const dateRange = selectedDateRangeLabel.replaceAll(/\s+/g, '-').replaceAll(',', '');
       const fileName = `weekly-project-summary-${projectName}-${dateRange}.pdf`;
 
       pdf.save(fileName);
