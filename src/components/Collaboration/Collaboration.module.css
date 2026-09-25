@@ -124,8 +124,8 @@
 
 /* --- Headings --- */
 .headings {
+  padding: 1rem 1rem 0;
   margin-bottom: 10px;
-  text-align: center;
 }
 
 .headings h1,
