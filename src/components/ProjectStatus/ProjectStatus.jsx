@@ -41,6 +41,63 @@ const COLORS = {
   delayed: '#FB923C',
 };
 
+const getTooltipTransform = deg => {
+  if (deg >= -45 && deg <= 45) {
+    return 'translate(10px, -50%)';
+  }
+  if (deg > 45 && deg <= 135) {
+    return 'translate(-50%, 10px)';
+  }
+  if (deg > 135 || deg < -135) {
+    return 'translate(calc(-100% - 10px), -50%)';
+  }
+  return 'translate(-50%, calc(-100% - 10px))';
+};
+
+const getTooltipBoxBounds = (deg, estW, estH) => {
+  let left = -estW / 2;
+  let right = estW / 2;
+  let top = -estH / 2;
+  let bottom = estH / 2;
+
+  if (deg > 135 || deg < -135) {
+    left = -10 - estW;
+    right = -10;
+  } else if (deg >= -45 && deg <= 45) {
+    left = 10;
+    right = 10 + estW;
+  }
+
+  if (deg > 45 && deg <= 135) {
+    top = 10;
+    bottom = 10 + estH;
+  } else if (deg < -45 && deg > -135) {
+    top = -10 - estH;
+    bottom = -10;
+  }
+
+  return { left, right, top, bottom };
+};
+
+const clampTooltipCoordinates = (initialX, initialY, box, margin = 8) => {
+  let x = initialX;
+  let y = initialY;
+
+  if (x + box.left < margin) {
+    x += margin - (x + box.left);
+  } else if (x + box.right > window.innerWidth - margin) {
+    x -= x + box.right - (window.innerWidth - margin);
+  }
+
+  if (y + box.top < margin) {
+    y += margin - (y + box.top);
+  } else if (y + box.bottom > window.innerHeight - margin) {
+    y -= y + box.bottom - (window.innerHeight - margin);
+  }
+
+  return { x, y };
+};
+
 export default function ProjectStatus() {
   const darkMode = useSelector(state => state.theme?.darkMode || false);
   const [from, setFrom] = useState(null);
@@ -104,39 +161,16 @@ export default function ProjectStatus() {
     const angle = (el.startAngle + el.endAngle) / 2;
     const gap = 14;
     const canvasRect = chart.canvas.getBoundingClientRect();
-    let x = canvasRect.left + el.x + Math.cos(angle) * (el.outerRadius + gap);
-    let y = canvasRect.top + el.y + Math.sin(angle) * (el.outerRadius + gap);
+    const rawX = canvasRect.left + el.x + Math.cos(angle) * (el.outerRadius + gap);
+    const rawY = canvasRect.top + el.y + Math.sin(angle) * (el.outerRadius + gap);
 
     const deg = (angle * 180) / Math.PI;
-    let transform;
     const EST_W = 180;
     const EST_H = 64;
 
-    if (deg >= -45 && deg <= 45) {
-      transform = 'translate(10px, -50%)';
-    } else if (deg > 45 && deg <= 135) {
-      transform = 'translate(-50%, 10px)';
-    } else if (deg > 135 || deg < -135) {
-      transform = 'translate(calc(-100% - 10px), -50%)';
-    } else {
-      transform = 'translate(-50%, calc(-100% - 10px))';
-    }
-
-    const margin = 8;
-    const box = {
-      left: deg > 135 || deg < -135 ? -10 - EST_W : deg >= -45 && deg <= 45 ? 10 : -EST_W / 2,
-      right: deg > 135 || deg < -135 ? -10 : deg >= -45 && deg <= 45 ? 10 + EST_W : EST_W / 2,
-      top: deg > 45 && deg <= 135 ? 10 : deg < -45 && deg > -135 ? -10 - EST_H : -EST_H / 2,
-      bottom: deg > 45 && deg <= 135 ? 10 + EST_H : deg < -45 && deg > -135 ? -10 : EST_H / 2,
-    };
-
-    if (x + box.left < margin) x += margin - (x + box.left);
-    else if (x + box.right > window.innerWidth - margin)
-      x -= x + box.right - (window.innerWidth - margin);
-
-    if (y + box.top < margin) y += margin - (y + box.top);
-    else if (y + box.bottom > window.innerHeight - margin)
-      y -= y + box.bottom - (window.innerHeight - margin);
+    const transform = getTooltipTransform(deg);
+    const box = getTooltipBoxBounds(deg, EST_W, EST_H);
+    const { x, y } = clampTooltipCoordinates(rawX, rawY, box);
 
     const pctMap = data?.percentages || {};
     const keys = ['active', 'completed', 'delayed'];
