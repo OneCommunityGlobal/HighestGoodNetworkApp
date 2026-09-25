@@ -15,7 +15,7 @@ import {
 import { getAllUserTeams, postNewTeam } from '../../../actions/allTeamsAction';
 import darkModeStyles from '../../Header/DarkMode.module.css';
 import AddTeamsAutoComplete from './AddTeamsAutoComplete';
-import axios, {CancelToken} from 'axios';
+import axios from 'axios';
 
 function generateValidTeamCode(name) {
   if (!name?.trim()) return 'TEAM-1';
@@ -183,10 +183,10 @@ const AddTeamPopup = React.memo((props) => {
     }
   };
 
-  const axiosResponseExceededTimeout = (source) => {
-    setIsLoading(false);
-    source.cancel();
-  };
+ const axiosResponseExceededTimeout = controller => {
+  controller.abort();
+  setIsLoading(false);
+};
 
 
 
@@ -223,15 +223,15 @@ const handleCreateTeamError = (response) => {
     return;
   }
 
-  const source = CancelToken.source();
-  const timeout = setTimeout(() => axiosResponseExceededTimeout(source), 20000);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => axiosResponseExceededTimeout(controller),20000);
 
   try {
     setIsLoading(true);
 
     const newTeamName = searchText.trim();
 
-    const response = await dispatch(postNewTeam(newTeamName, true, source));
+    const response = await dispatch(postNewTeam(newTeamName, true, controller.signal));
 
 
     clearTimeout(timeout);

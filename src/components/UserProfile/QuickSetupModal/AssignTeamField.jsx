@@ -128,25 +128,32 @@ export default function AssignTeamField({
             overflowY: 'auto',
           }}
         >
-          {suggestions.map(team => (
-            <div
-              key={team._id}
-              // eslint-disable-next-line jsx-a11y/role-has-required-aria-props
-              role="option"
-              tabIndex={0}
-              onMouseDown={e => {
-                e.preventDefault();
-                handleSelect(team);
-              }}
-              style={{
+        {suggestions.map(team => (
+         // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+         <div
+          key={team._id}
+          // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+          tabIndex={0}
+          onMouseDown={e => {
+            e.preventDefault();
+            handleSelect(team);
+          }}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleSelect(team);
+            }
+          }}
+          style={{
                 padding: '8px 12px',
                 cursor: 'pointer',
                 color: darkMode ? 'white' : '#212529',
               }}
-            >
-              {team.teamName}
-            </div>
-          ))}
+         >
+       {team.teamName}
+       </div>
+
+      ))}
         </div>
       )}
     </div>

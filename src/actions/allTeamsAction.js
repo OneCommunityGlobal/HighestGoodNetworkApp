@@ -137,30 +137,42 @@ export const getAllUserTeams = () => {
 /**
  * posting new team
  */
-export const postNewTeam = (name, status, source) => {
+export const postNewTeam = (name, status, signal) => {
   const data = { teamName: name, isActive: status };
 
-  const config = source ? { cancelToken: source.token } : {};
+  const config = signal ? { signal } : {};
 
-  const teamCreationPromise = axios.post(ENDPOINTS.TEAM, data, config);
+  const teamCreationPromise = axios.post(
+    ENDPOINTS.TEAM,
+    data,
+    config
+  );
+
   return dispatch => {
     return teamCreationPromise
       .then(res => {
         dispatch(addNewTeam(res.data, true));
-        return res; // return the server response
+        return res;
       })
       .catch(error => {
         if (error.response) {
-          return error.response; // return the server response
+          return error.response;
         }
+
         if (error.request) {
-          return { status: 500, message: 'No response received from the server' };
+          return {
+            status: 500,
+            message: 'No response received from the server',
+          };
         }
-        return { status: 500, message: error.message };
+
+        return {
+          status: 500,
+          message: error.message,
+        };
       });
   };
 };
-
 /**
  * delete an existing team
  * @param {*} teamId  - the team to be deleted
