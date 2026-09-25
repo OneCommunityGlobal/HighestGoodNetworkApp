@@ -793,25 +793,25 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
         0,
         Math.min(centerY - topPadding, height - bottomPadding - centerY),
       );
-      
+
       // IMPROVED: Adaptive orbit radius based on device size
       let orbitFactor = 0.26;
       if (sizes.deviceType === 'extra-small') orbitFactor = 0.22;
       else if (sizes.deviceType === 'small') orbitFactor = 0.26;
       else if (sizes.deviceType === 'tablet') orbitFactor = 0.28;
-      else if (sizes.deviceType === 'large') orbitFactor = 0.30;
+      else if (sizes.deviceType === 'large') orbitFactor = 0.3;
 
       const idealRadius = Math.min(
         Math.min(width, height) * orbitFactor,
         availableOrbitX,
         availableOrbitY,
       );
-      
+
       let minGap = 30;
       if (sizes.deviceType === 'extra-small') minGap = 12;
       else if (sizes.deviceType === 'small') minGap = 18;
       else if (sizes.deviceType === 'tablet') minGap = 25;
-      
+
       const minRequiredRadius = centerSize + maxBubbleRadius + minGap;
       const radius =
         idealRadius > 0
@@ -872,7 +872,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
             const dx = pos2.x - pos1.x;
             const dy = pos2.y - pos1.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            
+
             // Minimum distance = sum of radii + gap (adaptive gap based on device)
             let gap = 20;
             if (sizes.deviceType === 'extra-small') gap = 10;
@@ -882,7 +882,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
 
             if (dist < minDist) {
               hasCollision = true;
-              
+
               // Push bubbles apart from each other
               const angle = Math.atan2(dy, dx);
               const overlap = minDist - dist;
@@ -894,9 +894,15 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
               pos2.y += Math.sin(angle) * push;
 
               // Keep within bounds after push
-              pos1.x = Math.max(sizes.padding + pos1.r + 5, Math.min(width - sizes.padding - pos1.r - 5, pos1.x));
+              pos1.x = Math.max(
+                sizes.padding + pos1.r + 5,
+                Math.min(width - sizes.padding - pos1.r - 5, pos1.x),
+              );
               pos1.y = Math.max(topPadding + 5, Math.min(height - bottomPadding - 5, pos1.y));
-              pos2.x = Math.max(sizes.padding + pos2.r + 5, Math.min(width - sizes.padding - pos2.r - 5, pos2.x));
+              pos2.x = Math.max(
+                sizes.padding + pos2.r + 5,
+                Math.min(width - sizes.padding - pos2.r - 5, pos2.x),
+              );
               pos2.y = Math.max(topPadding + 5, Math.min(height - bottomPadding - 5, pos2.y));
             }
           }
