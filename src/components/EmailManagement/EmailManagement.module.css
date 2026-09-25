@@ -9,6 +9,7 @@
   position: relative;
   background: transparent;
 }
+
 /* Light Mode */
 .email-template-management.light-mode {
   background: transparent;
@@ -54,7 +55,7 @@
 
 .retry-button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
 }
 
 .retry-button:disabled {
