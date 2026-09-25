@@ -117,3 +117,17 @@ export function findDuplicateQuestions(candidates = [], existingFields = []) {
   });
   return duplicates;
 }
+
+/**
+ * Removes legacy, manually-entered numbering from a saved question label.
+ * The number shown to users is derived from the question's current position,
+ * so it stays correct after Move Up or Move Down.
+ */
+export function stripLeadingQuestionNumber(questionText) {
+  return String(questionText || '').replace(/^\s*\d+(?:\.\)|\.|\)|-)(?:\s+\.\))*(?:\s+|$)/, '');
+}
+
+/** Returns a label whose number always follows the question's array position. */
+export function numberedQuestionLabel(questionText, index) {
+  return `${index + 1}.) ${stripLeadingQuestionNumber(questionText)}`;
+}
