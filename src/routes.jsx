@@ -672,6 +672,7 @@ export default (
         />
         <ProtectedRoute path="/materials/utilization" component={MaterialUtilizationChart} />
         <ProtectedRoute path="/job-application" exact component={JobApplicationForm} />
+        <ProtectedRoute path="/job-application/:jobId" exact component={JobApplicationForm} />
         <ProtectedRoute path="/popularity" component={PopularityTimelineChart} fallback />
         <ProtectedRoute
           path="/popularity-enhanced"
