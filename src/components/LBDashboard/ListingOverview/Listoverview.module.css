@@ -504,8 +504,18 @@ p {
   color: #aeb9c4;
 }
 
-.availabilityModal--dark .availabilityError--dark {
-  color: #f4a3a3;
+.availabilityError--dark {
+  color: #f4a3a3 !important;
+}
+
+.sendInfoBtn--dark {
+  background-color: #2f7d3f;
+  color: #f5f5f5;
+}
+
+.cancelInfoBtn--dark {
+  background-color: #a83226;
+  color: #f5f5f5;
 }
 
 

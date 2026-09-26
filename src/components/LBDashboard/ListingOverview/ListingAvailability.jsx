@@ -181,12 +181,12 @@ export default function ListingAvailability({ listingId, availability, loading, 
               onChange={e => setContactForm({ ...contactForm, message: e.target.value })}
               required
             />
-            <button type="submit" className={`${styles.sendInfoBtn} ${cx('contactHostBtn')}`}>
+            <button type="submit" className={`${styles.contactHostBtn} ${cx('sendInfoBtn')}`}>
               Send
             </button>
             <button
               type="button"
-              className={`${styles.cancelInfoBtn} ${cx('contactHostBtn')}`}
+              className={`${styles.contactHostBtn} ${cx('cancelInfoBtn')}`}
               onClick={() => setContactOpen(false)}
             >
               Cancel
