@@ -72,6 +72,7 @@ import { permissions } from '../../utils/constants';
 // Keeping this block commented intentionally for future reference
 // import { setField, toggleField, removeItemFromField, setChildField } from '~/utils/stateHelper';
 import { setField } from '~/utils/stateHelper';
+import { shouldShowSummaryOnTab } from '~/utils/weeklySummariesFinalWeek';
 import WeeklySummariesToggleFilter from './components/WeeklySummariesToggleFilter';
 // Keeping this block commented intentionally for future reference —
 import cn from 'classnames';
@@ -353,7 +354,7 @@ const WeeklySummariesReport = props => {
           promisedHoursByWeek,
         };
       })
-      .filter(summary => shouldIncludeSummaryForWeek(summary, weekIndex))
+      .filter(summary => shouldShowSummaryOnTab(summary, weekIndex))
       .sort((a, b) => `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`));
 
     const teamCodeGroup = {};
@@ -405,40 +406,6 @@ const WeeklySummariesReport = props => {
       colorOptions: newColorOptions,
       tableData: teamCodeGroup,
     };
-  };
-
-  const shouldIncludeSummaryForWeek = (summary, weekIndex) => {
-    if (
-      summary?.isActive === false &&
-      !doesSummaryBelongToWeek(summary.startDate, summary.endDate, weekIndex)
-    ) {
-      return false;
-    }
-
-    if (summary.endDate && summary.finalWeekIndex !== weekIndex) {
-      return false;
-    }
-
-    return true;
-  };
-
-  const doesSummaryBelongToWeek = (startDateStr, endDateStr, weekIndex) => {
-    const weekStartLA = moment()
-      .tz('America/Los_Angeles')
-      .startOf('week')
-      .subtract(weekIndex, 'week')
-      .toDate();
-
-    const weekEndLA = moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(weekIndex, 'week')
-      .toDate();
-
-    const summaryStart = new Date(startDateStr);
-    const summaryEnd = new Date(endDateStr);
-
-    return summaryStart <= weekEndLA && summaryEnd >= weekStartLA;
   };
 
   const getAllRoles = summaries => {
@@ -765,7 +732,7 @@ const WeeklySummariesReport = props => {
           const { activeTab } = state;
           const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
 
-          if (!shouldIncludeSummaryForWeek(summary, weekIndex)) {
+          if (!shouldShowSummaryOnTab(summary, weekIndex)) {
             return false;
           }
 
@@ -1103,7 +1070,7 @@ const WeeklySummariesReport = props => {
       const weekIndex = navItems.indexOf(prevState.activeTab);
 
       const validSummariesForWeek = summaries.filter(summary =>
-        shouldIncludeSummaryForWeek(summary, weekIndex),
+        shouldShowSummaryOnTab(summary, weekIndex),
       );
 
       const teamCodeCounts = {};

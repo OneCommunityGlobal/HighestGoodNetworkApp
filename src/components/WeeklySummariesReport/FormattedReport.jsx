@@ -37,6 +37,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { postLeaderboardData } from '~/actions/leaderBoardData';
 import { toggleUserBio } from '~/actions/weeklySummariesReport';
+import { isFinalWeekOnTab, shouldShowSummaryOnTab } from '~/utils/weeklySummariesFinalWeek';
 import { calculateDurationBetweenDates, showTrophyIcon } from '~/utils/anniversaryPermissions';
 import { assignStarDotColors, showStar } from '~/utils/leaderboardPermissions';
 
@@ -63,18 +64,6 @@ const textColors = {
   'Team Amethyst': '#9400D3',
 };
 
-/**
- * Which tab (0..3) should this endDate appear on?
- *  0 = This Week, 1 = Last Week, 2 = Week Before Last, 3 = Three Weeks Ago
- * Returns null if endDate is outside the 4-week window or missing.
- */
-const weekIndexFromEndDate = endDate => {
-  if (!endDate) return null;
-  const end = moment.tz(endDate, TZ).startOf('week');
-  const nowStart = moment.tz(TZ).startOf('week');
-  const diff = nowStart.diff(end, 'weeks'); // 0=this week, 1=last week, etc.
-  return diff >= 0 && diff <= 3 ? diff : null;
-};
 const teamColorMap = {
   purple: 'Admin Team',
   green: '20 Hour Team',
@@ -146,12 +135,9 @@ function FormattedReport({
             return null;
           }
 
-          // Work out which tab their final week belongs to based on endDate
-          const displayIdx = weekIndexFromEndDate(summary.endDate);
-          const isFinalWeek = displayIdx !== null && displayIdx === weekIndex;
-
-          // If the user is inactive (has an endDate), only render them on that final-week tab
-          if (summary.endDate && !isFinalWeek) return null;
+          // Inactive users render only on the tab of the week they left
+          if (!shouldShowSummaryOnTab(summary, weekIndex)) return null;
+          const isFinalWeek = isFinalWeekOnTab(summary, weekIndex);
 
           return (
             <ReportDetails
@@ -1088,14 +1074,8 @@ function Index({
             </span>
           </i>
         )}
-      {/* This conditional message ONLY on last week tab */}
-      {/* {isFinalWeek && (
-        <p style={{ color: '#8B0000', fontWeight: 'bold', marginTop: '5px' }}>
-          FINAL WEEK REPORTING: This team member is no longer active
-        </p>
-      )} */}
       {isFinalWeek && (
-        <p style={{ color: darkMode ? '#ffdddd' : '#8B0000', fontWeight: 700, marginTop: 5 }}>
+        <p className={`${styles.finalWeekNotice} ${darkMode ? styles.finalWeekNoticeDark : ''}`}>
           FINAL WEEK REPORTING: This team member is no longer active
           <br />
           <small>
