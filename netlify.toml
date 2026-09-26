@@ -1,4 +1,9 @@
+[build]
+  command = "npm install && npm run build"
+  publish = "build"
+
 [build.environment]
+  NODE_VERSION = "20"
   # Netlify's build image installs Python with mise. GitHub's attestation
   # API is returning 503, which fails the install before the app build starts.
   MISE_PYTHON_GITHUB_ATTESTATIONS = "false"
