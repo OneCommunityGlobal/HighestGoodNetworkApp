@@ -39,6 +39,36 @@
   border-radius: 0;
 }
 
+.jobTooltip {
+  width: min(100% - 24px, 440px);
+  margin: 12px auto 0;
+  padding: 12px;
+  border: 1px solid #7c8f00;
+  border-radius: 8px;
+  background-color: #f6ffd9;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 12%);
+  color: #1d2b00;
+}
+
+.jobTooltip p {
+  margin: 0 0 8px;
+}
+
+.jobTooltipDismiss {
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 5px;
+  background-color: #526000;
+  color: #fff;
+  cursor: pointer;
+}
+
+.jobLandingDark .jobTooltip {
+  border-color: #b4cc42;
+  background-color: #2e3700;
+  color: #fff;
+}
+
 .navbarLeft input,
 .navbarLeft select {
   display: flex;

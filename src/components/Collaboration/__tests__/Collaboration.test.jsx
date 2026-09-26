@@ -83,6 +83,7 @@ const mockSummariesResponse = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  globalThis.localStorage.clear();
 
   globalThis.scrollTo = vi.fn();
 
@@ -197,6 +198,58 @@ describe('Collaboration', () => {
         globalThis.fetch.mock.calls.some(([url]) => url.includes('category=Engineering')),
       ).toBe(true);
     });
+  });
+
+  it('does not show the filter recommendation when no filters are active', () => {
+    renderComponent();
+
+    expect(screen.queryByLabelText('Filter recommendation')).not.toBeInTheDocument();
+  });
+
+  it('shows the filter recommendation when only a title is entered', () => {
+    renderComponent();
+
+    fireEvent.change(screen.getByPlaceholderText('Enter Job Title'), {
+      target: { value: 'Frontend Engineer' },
+    });
+
+    expect(screen.getByLabelText('Filter recommendation')).toBeInTheDocument();
+  });
+
+  it('shows the filter recommendation when only a category is selected', async () => {
+    renderComponent();
+
+    fireEvent.change(await screen.findByRole('combobox'), { target: { value: 'Engineering' } });
+
+    expect(screen.getByLabelText('Filter recommendation')).toBeInTheDocument();
+  });
+
+  it('hides the filter recommendation when both filters are active', async () => {
+    renderComponent();
+
+    fireEvent.change(screen.getByPlaceholderText('Enter Job Title'), {
+      target: { value: 'Frontend Engineer' },
+    });
+    fireEvent.change(await screen.findByRole('combobox'), { target: { value: 'Engineering' } });
+
+    expect(screen.queryByLabelText('Filter recommendation')).not.toBeInTheDocument();
+  });
+
+  it('keeps the filter recommendation dismissed after remounting', () => {
+    const { unmount } = renderComponent();
+
+    fireEvent.change(screen.getByPlaceholderText('Enter Job Title'), {
+      target: { value: 'Frontend Engineer' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Got it' }));
+    unmount();
+    renderComponent();
+
+    fireEvent.change(screen.getByPlaceholderText('Enter Job Title'), {
+      target: { value: 'Frontend Engineer' },
+    });
+
+    expect(screen.queryByLabelText('Filter recommendation')).not.toBeInTheDocument();
   });
 
   it('resets search and category filters', async () => {
