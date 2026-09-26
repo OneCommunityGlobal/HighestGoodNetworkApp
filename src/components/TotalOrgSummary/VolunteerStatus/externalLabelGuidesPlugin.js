@@ -223,6 +223,46 @@ const checkLabelOverlap = (box1, box2, padding = 4) => {
   );
 };
 
+const getBoxBounds = box => ({
+  left: box.boxX,
+  right: box.boxX + box.boxWidth,
+  top: box.boxY,
+  bottom: box.boxY + box.boxHeight,
+});
+
+const isBoxInsideCanvas = (box, chartWidth, chartHeight, padding = 0) =>
+  box.boxX >= padding &&
+  box.boxY >= padding &&
+  box.boxX + box.boxWidth <= chartWidth - padding &&
+  box.boxY + box.boxHeight <= chartHeight - padding;
+
+export const selectFittableLabelBoxes = (
+  labelBoxes,
+  { chartWidth, chartHeight, minimumSpacing = 8, values = [], containmentPadding = 0 } = {},
+) => {
+  const inside = labelBoxes.filter(box =>
+    isBoxInsideCanvas(box, chartWidth, chartHeight, containmentPadding),
+  );
+
+  const byValueDesc = [...inside].sort((boxA, boxB) => {
+    const valueA = values[boxA.index] ?? 0;
+    const valueB = values[boxB.index] ?? 0;
+    return valueB - valueA;
+  });
+
+  const kept = [];
+  byValueDesc.forEach(box => {
+    const overlapsKept = kept.some(other =>
+      checkLabelOverlap(getBoxBounds(box), getBoxBounds(other), minimumSpacing),
+    );
+    if (!overlapsKept) {
+      kept.push(box);
+    }
+  });
+
+  return kept;
+};
+
 /**
  * Resolve collision between two label boxes by adjusting horizontal positions
  * @param {Object} labelBox1 - First label box object (will be modified)
@@ -373,6 +413,9 @@ const externalLabelGuidesPlugin = {
     }
 
     const options = {
+      display: true,
+      hideOverlappingLabels: false,
+      minPercentageForLabel: 0,
       placement: 'radial',
       offset: 26,
       lineColor: '#4f4f4f',
@@ -405,6 +448,10 @@ const externalLabelGuidesPlugin = {
       ...pluginOpts,
     };
 
+    if (options.display === false) {
+      return;
+    }
+
     const padding =
       typeof options.padding === 'number'
         ? { x: options.padding, y: options.padding }
@@ -431,7 +478,12 @@ const externalLabelGuidesPlugin = {
         return;
       }
 
-      const percentage = options.total ? Math.round((value / options.total) * 100) : 0;
+      const rawPercentage = options.total ? (value / options.total) * 100 : 0;
+      if (options.minPercentageForLabel > 0 && rawPercentage < options.minPercentageForLabel) {
+        return;
+      }
+
+      const percentage = Math.round(rawPercentage);
       const lines = options.formatter({ value, percentage, index });
       const labelLines = Array.isArray(lines) ? lines : [String(lines)];
 
@@ -548,8 +600,18 @@ const externalLabelGuidesPlugin = {
       }
     }
 
+    const visibleLabelBoxes = options.hideOverlappingLabels
+      ? selectFittableLabelBoxes(labelBoxes, {
+          chartWidth: chart.width,
+          chartHeight: chart.height,
+          minimumSpacing: options.minimumLabelSpacing,
+          values: dataset.data,
+          containmentPadding: options.containmentPadding,
+        })
+      : labelBoxes;
+
     // Phase 3: Draw all labels with final positions
-    labelBoxes.forEach(labelBox => {
+    visibleLabelBoxes.forEach(labelBox => {
       const {
         baseX,
         baseY,
