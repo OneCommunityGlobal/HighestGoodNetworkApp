@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Form, FormGroup, Label } from 'reactstrap';
+
 import Select from 'react-select';
 import PropTypes from 'prop-types';
+import { Form, FormGroup, Label } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import styles from './ItemListView.module.css';
 import { getReactSelectStyles } from './selectStyles.js';
-
-const ITEM_KEY = 'tool_selected_items';
 
 export default function SelectItem({
   items,
@@ -14,9 +13,11 @@ export default function SelectItem({
   selectedItem,
   setSelectedItem,
   label,
+  itemType,
 }) {
   const darkMode = useSelector(state => state.theme?.darkMode || false);
   const [localValues, setLocalValues] = useState([]);
+  const itemKey = `${itemType}_selected_items`;
 
   const itemOptions = useMemo(() => {
     if (!items?.length) return [];
@@ -32,7 +33,7 @@ export default function SelectItem({
 
   useEffect(() => {
     try {
-      const saved = JSON.parse(localStorage.getItem(ITEM_KEY));
+      const saved = JSON.parse(localStorage.getItem(itemKey));
       if (Array.isArray(saved)) {
         setLocalValues(saved);
         setSelectedItem(saved.map(s => s.value));
@@ -56,7 +57,7 @@ export default function SelectItem({
       if (alignedValues.length !== localValues.length) {
         setLocalValues(alignedValues);
         setSelectedItem(alignedValues.map(v => v.value));
-        localStorage.setItem(ITEM_KEY, JSON.stringify(alignedValues));
+        localStorage.setItem(itemKey, JSON.stringify(alignedValues));
       }
     }
   }, [itemOptions, localValues, setSelectedItem]);
@@ -65,13 +66,13 @@ export default function SelectItem({
     const values = selected || [];
     setLocalValues(values);
     setSelectedItem(values.map(v => v.value));
-    localStorage.setItem(ITEM_KEY, JSON.stringify(values));
+    localStorage.setItem(itemKey, JSON.stringify(values));
   };
 
   return (
     <Form className={styles.filterItem} onSubmit={e => e.preventDefault()}>
-      <FormGroup className={styles.selectInput}>
-        <Label htmlFor="select-item">{label ? `${label}:` : 'Material:'}</Label>
+      <FormGroup className={styles.filterGroup}>
+        <Label htmlFor="select-item">{label ? `${label}:` : 'Item:'}</Label>
         <Select
           inputId="select-item"
           isMulti
@@ -81,7 +82,7 @@ export default function SelectItem({
           value={localValues}
           onChange={handleChange}
           isDisabled={!items?.length}
-          placeholder="Search or select Tools..."
+          placeholder={`Search or select ${label || 'items'}...`}
           classNamePrefix="react-select"
           styles={getReactSelectStyles(darkMode)}
         />
@@ -96,4 +97,9 @@ SelectItem.propTypes = {
   selectedItem: PropTypes.array.isRequired,
   setSelectedItem: PropTypes.func.isRequired,
   label: PropTypes.string,
+  itemType: PropTypes.string.isRequired,
+};
+
+SelectItem.defaultProps = {
+  label: 'Item',
 };

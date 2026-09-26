@@ -1,0 +1,180 @@
+.materialConsumptionPage {
+  --material-consumption-nav-offset: clamp(96px, 14vh, 170px);
+
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - var(--material-consumption-nav-offset));
+}
+
+.materialConsumptionDashboard {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  margin: 0 auto;
+  min-height: 0;
+}
+
+.materialConsumptionSection {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.materialConsumptionGrid {
+  align-items: stretch;
+  flex: 1 1 auto;
+  grid-auto-rows: minmax(0, 1fr);
+  min-height: 0;
+}
+
+.materialConsumptionCard {
+  --material-consumption-card-border: rgb(15 23 42 / 16%);
+
+  /* Local card boundary and stretching for the three-card Material Consumption row only. */
+  border: 1px solid var(--material-consumption-card-border);
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  height: 100%;
+  min-height: 0;
+}
+
+.materialConsumptionCardDark {
+  --material-consumption-card-border: rgb(226 232 240 / 24%);
+}
+
+/* Keep the Issue card's own bottom gutter nearly flush with the Material Consumption border. */
+.issueCard {
+  padding-bottom: 1px;
+}
+
+.materialConsumptionContent {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+}
+
+.materialConsumptionContent > * {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+/* QuantityOfMaterialsUsed brings its own card shell; flatten it inside this shared card. */
+.quantityContent :global(.weekly-project-summary-card.normal-card) {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0;
+}
+
+/* Add breathing room when the Quantity filters wrap or stack inside the narrower card. */
+.quantityContent
+  :global(div.weeklyProjectSummaryCard.normalCard .quantity-of-materials-used-dropdown) {
+  gap: 8px !important;
+  row-gap: 8px !important;
+}
+
+/* The source filter styles are highly specific, so item margins guarantee visible stacked gaps. */
+.quantityContent :global(.quantity-of-materials-used-dropdown-item:not(:last-child)) {
+  margin-bottom: 8px !important;
+}
+
+.quantityContent :global([class*='quantityOfMaterialsUsedChartContainer']) {
+  flex: 1 1 360px;
+  min-height: 360px;
+}
+
+.quantityContent :global([class*='quantityOfMaterialsUsedChartInnerScrollable']) {
+  height: 100%;
+  min-height: 360px;
+}
+
+/* Scoped override for IssueChart's card variant so only this grouped layout can stretch it. */
+.issueContent :global([class*='issueChartEventContainer']) {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+}
+
+.issueContent :global([class*='selectContainer']) {
+  flex: 0 0 auto;
+}
+
+.issueContent :global([class*='issueChartYearGroup']) {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* This scoped rule controls card-mode IssueChart here because it overrides the inline height. */
+.issueContent :global([class*='chartWrapper']) {
+  flex: 1 1 auto;
+  height: auto !important;
+  max-height: none !important;
+  min-height: 0;
+}
+
+/* TotalMaterialCostPerProject uses inline chart wrappers, so scope height growth from here. */
+.totalCostContent > div {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.totalCostContent :global([data-testid='select-projects-dropdown']) {
+  flex: 0 0 auto;
+}
+
+/* Keep long project selections inside the Total Cost filter instead of widening the card. */
+.totalCostContent :global([data-testid='select-projects-dropdown'] [class*='ValueContainer']) {
+  max-height: 72px;
+  overflow: auto;
+}
+
+.totalCostContent :global([style*='overflow-x: auto']) {
+  flex: 1 1 360px;
+  min-height: 0;
+}
+
+.totalCostContent :global([style*='min-height: 300px']) {
+  height: 100%;
+  min-height: 100% !important;
+}
+
+@media (width >= 1024px) {
+  .materialConsumptionGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (width <= 768px) {
+  .materialConsumptionPage {
+    min-height: auto;
+  }
+
+  .materialConsumptionCard {
+    min-height: auto;
+  }
+
+  /* Let existing responsive stacking breathe without carrying desktop chart heights to mobile. */
+  .quantityContent :global([class*='quantityOfMaterialsUsedChartContainer']),
+  .quantityContent :global([class*='quantityOfMaterialsUsedChartInnerScrollable']),
+  .issueContent :global([class*='chartWrapper']),
+  .totalCostContent :global([style*='overflow-x: auto']),
+  .totalCostContent :global([style*='min-height: 300px']) {
+    min-height: 300px;
+  }
+}
