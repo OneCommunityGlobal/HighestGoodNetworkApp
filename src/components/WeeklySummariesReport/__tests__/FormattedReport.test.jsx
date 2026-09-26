@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import axios from 'axios';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
@@ -228,5 +229,26 @@ describe('FormattedReport minimal test', () => {
     );
     expect(screen.queryByPlaceholderText('X-XXX')).toBeNull();
     expect(screen.getByText('ABC123')).toBeInTheDocument();
+  });
+
+  it('updates the correct report user and applies the warning returned by the API', async () => {
+    const handleTeamCodeChange = vi.fn();
+    axios.patch.mockResolvedValueOnce({
+      data: { updatedUsers: [{ userId: '1', teamCodeWarning: true }] },
+    });
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport {...defaultProps} handleTeamCodeChange={handleTeamCodeChange} />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    const codeInput = screen.getByPlaceholderText('X-XXX');
+    fireEvent.change(codeInput, { target: { value: 'HaHUS' } });
+    fireEvent.blur(codeInput);
+
+    await waitFor(() => expect(handleTeamCodeChange).toHaveBeenCalledWith('1', 'HaHUS', true));
   });
 });

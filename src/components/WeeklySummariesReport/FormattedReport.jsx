@@ -524,10 +524,14 @@ function TeamCodeRow({
     const url = ENDPOINTS.USERS_ALLTEAMCODE_CHANGE;
 
     try {
-      await axios.patch(url, { userIds: [userProfileSummary._id], replaceCode: newStatus });
-      handleTeamCodeChange(userProfileSummary.teamCode, newStatus, {
-        [userProfileSummary._id]: true,
-      }); // Update the team code dynamically
+      const response = await axios.patch(url, {
+        userIds: [userProfileSummary._id],
+        replaceCode: newStatus,
+      });
+      const updatedUser = response.data?.updatedUsers?.find(
+        user => user.userId === userProfileSummary._id,
+      );
+      handleTeamCodeChange(userProfileSummary._id, newStatus, updatedUser?.teamCodeWarning);
     } catch (err) {
       // eslint-disable-next-line no-alert
       alert(
