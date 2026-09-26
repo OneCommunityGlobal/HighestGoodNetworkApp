@@ -55,12 +55,44 @@
 }
 
 .team-member-task-review-button {
-  grid-column: 1;
-  grid-row: 2;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
   min-height: 40px;
+  width: 100%;
+}
+
+/*
+  The ReviewButton ("Submit for Review" etc.) had no width limit, so at
+  narrower viewports it kept its natural single-line width and pushed the
+  Status column past the edge of the table instead of wrapping. Give it a
+  cap and let it wrap onto a second line if needed.
+*/
+.team-member-task-review-button button {
+  white-space: normal;
+  word-break: break-word;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.2;
+  padding: 6px 8px;
+  max-width: 100%;
+}
+
+/*
+  Dedicated Status column width — kept separate from .task-align so sizing
+  the Status column can't also resize the Task(s) column. Paired with the
+  38%/62% split on the two header groups in TeamMemberTasks.jsx, this gives
+  the review button enough room to render without being clipped.
+*/
+.status-align {
+  width: 95px;
+  min-width: 85px;
+  max-width: 105px;
+  text-align: center;
+  vertical-align: middle !important;
+  height: auto !important;
+  overflow: visible !important;
+  z-index: 10;
 }
 
 .team-member-tasks h1 {
@@ -70,7 +102,7 @@
 
 .task_table-container {
   width: 100%;
-  overflow: hidden auto;
+  overflow: auto;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -139,7 +171,7 @@
   max-width: 160px;
   padding-right: 0 !important;
   padding-left: 0 !important;
-  text-align: left;
+  text-align: center;
 }
 
 /* .task-break {
@@ -203,10 +235,17 @@
   vertical-align: top !important;
 }
 
+/*
+  "User Status" is the first <th> here. It previously had display: flex,
+  which took it out of normal table-cell layout while its siblings ("Team
+  Member", the clock-icon header) stayed as regular cells sized to the row
+  height — that mismatch is what made "User Status" float up near the top
+  instead of sitting centered in the header row like the others. Centering
+  via vertical-align/text-align keeps it a proper table cell.
+*/
 .team-member-tasks-subtable th:first-child {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  vertical-align: middle;
+  text-align: center;
 }
 
 .team-member-tasks-user-report-link .team-member-tasks-user-report-link-image {
@@ -223,7 +262,12 @@
 .deadlineCount {
   position: absolute;
   top: -4px;
-  right: -17px;
+  /*
+    Was -17px, which pushed this badge out of the Progress cell and into
+    the neighboring Status button. Pulled in so it stays within its own
+    column.
+  */
+  right: -4px;
   background: #e74c3c;
   color: #fff;
   border-radius: 50%;
@@ -254,7 +298,6 @@
   padding-left: 10px !important;
 }
 
-
 .team-member-tasks-number {
   display: inline-block;
   text-align: center;
@@ -272,11 +315,44 @@
   color: #339cff !important;
 }
 
+/*
+  Previously this class put display: flex directly on the <th> itself,
+  same issue as the old "User Status" bug — it broke the cell's normal
+  table-cell layout and, combined with nowrap on the buttons, let the
+  icons/buttons get crushed together with no room to wrap, so the
+  "Show Trackers"/"Hide Tasks" buttons visually overlapped instead of
+  dropping to their own line. The flex layout now lives on the inner
+  wrapper divs (.team-clocks-header-inner etc.) so the <th> stays a
+  normal, properly-sized table cell.
+*/
 .team-clocks-header {
-  height: 73.5px;
-  align-items: center;
+  height: auto;
+  min-height: 73.5px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.team-clocks-header-inner {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.team-clocks-icons-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 4px;
+  flex-wrap: nowrap;
+}
+
+.team-clocks-buttons-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
 }
 
 .hours-btn-container {
@@ -525,6 +601,31 @@
   align-items: center;
   gap: 5px;
   min-width: 0;
+}
+
+/*
+  Task(s) cell layout, used by TeamMemberTask.jsx.
+  - taskColumnLayout: wraps the task title row and the icon row below it.
+  - taskIconsUnderName: the bell/checkmark/remove icons that sit under the
+    task title (per the JSX comment "Icons UNDER task name").
+  These were previously referenced in the JSX with no matching rules here,
+  so the icon row just fell into normal block flow instead of being
+  deliberately laid out.
+*/
+.taskColumnLayout {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto;
+  gap: 4px;
+  width: 100%;
+}
+
+.taskIconsUnderName {
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
 }
 
 .taskTitle {
