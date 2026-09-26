@@ -1,7 +1,9 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFilePdf } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
 import styles from './Participation.module.css';
 
-function EventParticipationHeader() {
+function EventParticipationHeader({ onSaveAsPDF, isExporting }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const eventMetrics = {
@@ -25,7 +27,17 @@ function EventParticipationHeader() {
           </p>
         </div>
 
-        <div className={styles.headerNavigation}>
+        <div className={`${styles.headerNavigation} ${styles.pdfHeaderNavigation}`}>
+          <button
+            type="button"
+            className={styles.savePdfButton}
+            onClick={onSaveAsPDF}
+            disabled={isExporting}
+            aria-busy={isExporting}
+          >
+            <FontAwesomeIcon icon={faFilePdf} aria-hidden="true" />
+            {isExporting ? 'Preparing…' : 'Save as PDF'}
+          </button>
           <nav className={styles.navLinks}>
             <a
               href="/communityportal/reports/participation/virtual-vs-inperson"
