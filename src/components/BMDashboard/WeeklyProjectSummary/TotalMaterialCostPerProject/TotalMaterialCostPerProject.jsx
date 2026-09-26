@@ -59,25 +59,20 @@ function TotalMaterialCostPerProject() {
         position: 'top',
         labels: { color: textColor },
       },
+      title: { display: false },
       // Keep bar value labels readable when the globally registered datalabels plugin runs.
       datalabels: {
         // Match label color to the active theme so values stay visible on light and dark charts.
-        color: darkMode ? '#ffffff' : '#000000',
-        // Emphasize the displayed values without changing label position or chart data.
-        font: { weight: 'bold' },
-        // Round only the displayed label text; keep the chart data unchanged.
-        formatter: value => Number(value).toFixed(3),
-      },
-      title: { display: false },
-      datalabels: {
         color: darkMode ? '#fff' : '#1a1a1a',
         anchor: 'end',
         align: 'end',
         offset: 4,
         clamp: true,
+        // Emphasize the displayed values without changing label position or chart data.
         font: { weight: '600' },
         textStrokeColor: darkMode ? '#1a1f26' : '#fff',
         textStrokeWidth: 3,
+        // Round only the displayed label text; keep the chart data unchanged.
         formatter: value => Number(value ?? 0).toFixed(3),
       },
       tooltip: {
