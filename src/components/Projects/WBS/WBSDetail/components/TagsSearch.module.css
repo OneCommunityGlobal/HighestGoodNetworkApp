@@ -13,3 +13,18 @@
   margin-bottom: 0 !important;
   padding-bottom: 0 !important;
 }
+
+
+:global(body.dark-mode:not(.no-global-theme)) .darkDropdown {
+  background-color: #1e293b;
+}
+
+.darkDropdownItem {
+  background-color: #1e293b;
+  color: #ffffff;
+}
+
+.darkDropdownItem:hover {
+  background-color: #111831;
+  color: #ffffff;
+}
