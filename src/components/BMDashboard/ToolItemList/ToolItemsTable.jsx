@@ -147,10 +147,9 @@ export default function ToolItemsTable({
         recordType={recordType}
       />
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
-
-      <div className={`${styles.itemsTableContainer} ${darkMode ? styles.darkModeTable : ''}`}>
-        <Table>
-          <thead className={styles.tableHeader}>
+      <div className={`${styles.itemsTableContainer}`}>
+        <Table className={`${styles.itemsTable}`}>
+          <thead>
             <tr>
               {noProjectFilter ? (
                 <th onClick={() => sortData('ProjectName')}>
