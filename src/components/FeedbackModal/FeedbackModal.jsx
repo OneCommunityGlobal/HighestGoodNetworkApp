@@ -108,11 +108,6 @@ function FeedbackModal() {
       toast.warn('Please select valid members from the dropdown only.');
       return;
     }
-    console.log('allUsers:', allUsers);
-    console.log('ratedMembers:', ratedMembers);
-    console.log('invalidActive:', invalidActive);
-    console.log('invalidInactive:', invalidInactive);
-
     setIsSubmitting(true);
 
     try {
