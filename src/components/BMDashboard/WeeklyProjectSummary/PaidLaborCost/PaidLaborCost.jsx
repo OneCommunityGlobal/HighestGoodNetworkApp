@@ -278,6 +278,78 @@ const generateSelectStyles = darkMode => ({
   }),
 });
 
+const LaborCostSummary = ({
+  hasData,
+  darkMode,
+  textColor,
+  displayTotalBudget,
+  displayTotalCost,
+  absoluteVariance,
+  variancePercentage,
+  varianceClass,
+  componentStyles,
+}) => {
+  if (!hasData) {
+    return (
+      <div className={componentStyles.emptyState}>No data available for the selected filters.</div>
+    );
+  }
+
+  return (
+    <div
+      className={`${componentStyles.summaryContainer} ${
+        darkMode ? componentStyles.darkSummaryContainer : ''
+      }`}
+    >
+      <div className={componentStyles.summaryItem}>
+        <span className={componentStyles.summaryLabel}>Total Budget</span>
+        <span className={componentStyles.summaryValue} style={{ color: textColor }}>
+          $
+          {displayTotalBudget.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </span>
+      </div>
+      <div className={componentStyles.summaryItem}>
+        <span className={componentStyles.summaryLabel}>Total Actual</span>
+        <span className={componentStyles.summaryValue} style={{ color: textColor }}>
+          $
+          {displayTotalCost.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </span>
+      </div>
+      <div className={componentStyles.summaryItem}>
+        <span className={componentStyles.summaryLabel}>Variance</span>
+        <span className={`${componentStyles.summaryValue} ${varianceClass}`}>
+          $
+          {absoluteVariance.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}{' '}
+          ({variancePercentage > 0 ? '+' : ''}
+          {variancePercentage.toFixed(1)}%)
+        </span>
+      </div>
+    </div>
+  );
+};
+
+LaborCostSummary.propTypes = {
+  hasData: PropTypes.bool.isRequired,
+  darkMode: PropTypes.bool.isRequired,
+  textColor: PropTypes.string.isRequired,
+  displayTotalBudget: PropTypes.number.isRequired,
+  displayTotalCost: PropTypes.number.isRequired,
+  absoluteVariance: PropTypes.number.isRequired,
+  variancePercentage: PropTypes.number.isRequired,
+  varianceClass: PropTypes.string.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  componentStyles: PropTypes.object.isRequired,
+};
+
 const MultiValue = () => null;
 
 const ValueContainer = ({ children, ...props }) => {
@@ -624,46 +696,17 @@ export default function PaidLaborCost() {
         )}
       </div>
 
-      {labels.length === 0 ? (
-        <div className={styles.emptyState}>No data available for the selected filters.</div>
-      ) : (
-        <div
-          className={`${styles.summaryContainer} ${darkMode ? styles.darkSummaryContainer : ''}`}
-        >
-          <div className={styles.summaryItem}>
-            <span className={styles.summaryLabel}>Total Budget</span>
-            <span className={styles.summaryValue} style={{ color: textColor }}>
-              $
-              {displayTotalBudget.toLocaleString('en-US', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-            </span>
-          </div>
-          <div className={styles.summaryItem}>
-            <span className={styles.summaryLabel}>Total Actual</span>
-            <span className={styles.summaryValue} style={{ color: textColor }}>
-              $
-              {displayTotalCost.toLocaleString('en-US', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-            </span>
-          </div>
-          <div className={styles.summaryItem}>
-            <span className={styles.summaryLabel}>Variance</span>
-            <span className={`${styles.summaryValue} ${varianceClass}`}>
-              $
-              {absoluteVariance.toLocaleString('en-US', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}{' '}
-              ({variancePercentage > 0 ? '+' : ''}
-              {variancePercentage.toFixed(1)}%)
-            </span>
-          </div>
-        </div>
-      )}
+      <LaborCostSummary
+        hasData={labels.length > 0}
+        darkMode={darkMode}
+        textColor={textColor}
+        displayTotalBudget={displayTotalBudget}
+        displayTotalCost={displayTotalCost}
+        absoluteVariance={absoluteVariance}
+        variancePercentage={variancePercentage}
+        varianceClass={varianceClass}
+        componentStyles={styles}
+      />
     </div>
   );
 }

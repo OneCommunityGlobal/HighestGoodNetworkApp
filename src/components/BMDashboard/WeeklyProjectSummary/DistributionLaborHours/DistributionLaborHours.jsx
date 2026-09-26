@@ -6,6 +6,7 @@ import moment from 'moment';
 import styles from './DistributionLaborHours.module.css';
 import config from '../../../../config.json';
 import { ENDPOINTS } from '../../../../utils/URL';
+import logger from '../../../../services/logService';
 
 const COLORS = ['#2a647c', '#2e8ea3', '#ffab91', '#ffccbb', '#bbbbbb', '#f9f3e3'];
 
@@ -104,6 +105,7 @@ export default function DistributionLaborHours() {
 
       setFilteredData(topFiveWithOthers(distribution.length > 0 ? distribution : MOCK_DATA));
     } catch (error) {
+      logger.logError(error);
       if (isDevelopmentEnvironment()) {
         setFilteredData(topFiveWithOthers(MOCK_DATA));
       } else {
