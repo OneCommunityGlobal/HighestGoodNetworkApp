@@ -319,8 +319,9 @@ function Collaboration() {
     try {
       if (history && typeof history.push === 'function') {
         const search = jobTitle ? `?jobTitle=${encodeURIComponent(jobTitle)}` : '';
+        const pathname = ad?._id ? `/job-application/${ad._id}` : '/job-application';
         history.push({
-          pathname: '/job-application',
+          pathname,
           search,
           state: {
             jobId: ad._id,
