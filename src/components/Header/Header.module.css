@@ -1,5 +1,4 @@
 /* stylelint-disable no-descending-specificity, selector-type-no-unknown */
-
 :global(body) {
   display: block;
   width: 100%;
@@ -38,46 +37,65 @@
   gap: 0.5rem;
 }
 
+/* Holds exactly one child: the owner message when there is one, otherwise the
+   logo. Centring works for either because the cell centres its single child
+   rather than distributing two. */
+.centerSection {
+  display: flex !important;
+  align-items: center; /* Vertically center */
+  justify-content: center; /* Horizontally center */
+  min-width: 140px;
+  overflow: visible !important;
+}
+
+/* Fluid and centered adaptation styles for the logo image */
+.headerLogo {
+  max-width: 100%;       /* Maintain fluidity to prevent overflow */
+  height: auto;          /* Scale proportionally to avoid distortion */
+  object-fit: contain;   /* Ensure the image is fully displayed */
+  max-height: 40px;      /* Limit maximum height to fit the header size */
+  margin: 0 auto;        /* Ensure block-level centering */
+  display: block;
+}
+
 .leftSection {
   display: flex;
   align-items: center;
   flex-shrink: 0;
 }
 
-.centerSection {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 0;
-  overflow: hidden;
-}
-
+/* Right section container: horizontal layout */
 .rightSection {
   display: flex;
-  align-items: center;
+  flex-direction: row !important;
+  align-items: center !important; /* Vertically center aligned */
+  justify-content: flex-end;
+  gap: 1rem; /* Gap between elements */
   flex-shrink: 0;
   margin-left: auto;
   position: relative;
 }
 
-@media (width <= 768px) {
-  .headerRow {
-    grid-template-columns: auto auto;
-    grid-template-rows: auto auto;
-  }
-
-  .logoSection {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    justify-self: center;
-    margin-top: 6px;
-  }
-
-  .rightSection {
-    grid-column: 2;
-    grid-row: 1;
-  }
+/* User info row (bell, avatar, welcome): flex row and align right */
+.userInfoRow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  width: auto;
 }
+
+/* Navigation menu row: flex row and align right */
+.menuContainer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  flex-direction: row !important;
+  width: auto;
+  gap: 1rem;
+}
+
 
 /* Timer Message Section */
 .timer-message-section {
@@ -126,54 +144,7 @@
 .navbar {
   z-index: 100;
   position: relative;
-}
-
-@media (width <= 906px) {
-  .navbar {
-    white-space: normal;
-  }
-
-  .headerRow {
-    grid-template-columns: 1fr;
-    row-gap: 0.5rem;
-  }
-
-  .leftSection,
-  .centerSection,
-  .rightSection {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .rightSection {
-    grid-column: 1;
-    grid-row: auto;
-  }
-
-  .menuContainer {
-    padding-left: 0;
-    justify-content: center;
-    width: 100%;
-  }
-
-  .navbarOwnerMessage {
-    padding-left: 0;
-    padding-right: 0;
-    width: 100%;
-  }
-}
-
-@media (width <= 906px) {
-  .rightSection {
-    flex-wrap: wrap;
-    justify-content: flex-end;
-  }
-
-  .navCollapse {
-  flex-basis: 100%;
-  width: 100%;
- }
-}
+} 
 
 .redBackGroupHeader {
   z-index: 10;
@@ -198,13 +169,6 @@
   justify-content: center;
   padding-left: 20px;
   padding-right: 20px;
-}
-
-.menuContainer {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  flex-wrap: wrap;
 }
 
 .dashboardTextLink {
@@ -269,136 +233,9 @@
 .navCollapse {
   display: flex;
   align-items: center;
-}
-
-/* max-width: 1700px */
-@media (width <= 1700px) {
-  .hideInTablet {
-    display: none;
-  }
-
-  .showInTablet {
-    display: block;
-  }
-}
-
-/* max-width: 1151px and min-width: 992px */
-@media (992px <= width <= 1151px) {
-  .dropdownMenu {
-    width: auto !important;
-  }
-}
-
-@media (907px <= width <= 1599px) {
-  .headerRow {
-    /* Preserve the compact desktop layout from 907px until the full header fits in one row. */
-    grid-template-columns: auto minmax(0, 1fr);
-    row-gap: 0.5rem;
-  }
-
-  .centerSection {
-    /* Keep the announcement readable instead of clipping it between timer and nav. */
-    overflow: visible;
-  }
-
-  .rightSection {
-    /* Keep desktop nav in normal flow and horizontally aligned above the mobile breakpoint. */
-    grid-column: 1 / -1;
-    justify-content: center;
-    margin-left: 0;
-    width: 100%;
-  }
-
-  .menuContainer {
-    /* Override Bootstrap's below-xl column nav so desktop links do not stack vertically. */
-    align-items: center;
-    flex-direction: row !important;
-    flex-wrap: nowrap;
-    justify-content: center;
-    margin-right: 0 !important;
-    padding-left: 0;
-    width: 100%;
-  }
-}
-
-/* max-width: 906px */
-@media (width <= 906px) {
-  .navbarToggler {
-    /* 906px and below uses the mobile hamburger layout. */
-    display: flex !important;
-    align-items: center;
-    margin-left: auto;
-  }
-
-  .navCollapse {
-    display: block;
-    position: absolute;
-    top: 100%;
-    right: 0;
-    padding-left: 10px;
-    min-width: 220px;
-    background-color: #343a40;
-    border-radius: 0 0 6px 6px;
-    box-shadow: 0 6px 16px rgb(0 0 0 / 40%);
-    z-index: 999;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.25s ease-out;
-  }
-
-  .navCollapseHidden {
-    display: none !important;
-  }
-
-  .navCollapseOpen {
-    max-height: 600px;
-    overflow-y: auto;
-    transition: max-height 0.25s ease-in;
-  }
-
-  .menuContainer {
-    align-items: start;
-    flex-direction: column !important;
-    padding-left: 50px;
-    max-height: 80vh;
-    overflow-y: auto;
-  }
-
-  .mobileMenuDropdown {
-    background-color: #343a40 !important;
-    border: none !important;
-  }
-
-  .mobileDropdownText {
-    color: rgb(255 255 255 / 50%) !important;
-  }
-
-  .mobileDropdownItem:hover {
-    background-color: #343a40 !important;
-    color: rgb(255 255 255 / 75%) !important;
-  }
-
-  .darkMenuDropdown {
-    background-color: #343a40 !important;
-    border: none !important;
-  }
-
-  .darkDropdownText {
-    color: rgb(255 255 255 / 50%) !important;
-  }
-
-  .darkDropdownItem:hover {
-    background-color: #343a40 !important;
-    color: rgb(255 255 255 / 75%) !important;
-  }
-
-  .hideInMobile {
-    display: none;
-  }
-
-  .showInMobile {
-    display: block;
-  }
+  border: none !important;
+  border-width: 0 !important;
+  outline: none !important;
 }
 
 .headerMargin {
@@ -409,35 +246,6 @@
 .headerMarginLight {
   height: 20px;
   background-color: #fff;
-}
-
-@media print {
-  * {
-    box-sizing: border-box !important;
-  }
-
-  @page {
-    size: auto;
-    margin: 0;
-  }
-
-  .navbar {
-    padding: 0.5rem 1rem !important;
-    min-height: auto !important;
-    height: auto !important;
-    width: 100% !important;
-    position: relative !important;
-    font-size: 16px !important;
-    margin: 0 !important;
-  }
-
-  .navbar img,
-  .navbar svg {
-    width: auto !important;
-    height: 24px !important;
-    transform: scale(1) !important;
-    vertical-align: middle !important;
-  }
 }
 
 .left-section {
@@ -464,106 +272,6 @@
   justify-content: flex-end;
   flex: 0 0 auto;
   min-width: fit-content;
-}
-
-/* max-width: 1200px */
-@media (width <= 1200px) {
-  .left-section,
-  .center-section,
-  .right-section {
-    flex-wrap: nowrap;
-  }
-
-  .right-section {
-    margin-left: 0.5rem;
-    flex-shrink: 0;
-  }
-
-  .center-section {
-    flex-shrink: 0.5;
-    min-width: 150px;
-    margin: 0 0.5rem;
-  }
-
-  .left-section {
-    flex-shrink: 0.5;
-    margin-right: 0.5rem;
-  }
-}
-
-/* max-width: 900px */
-@media (width <= 900px) {
-  .center-section {
-    min-width: 120px;
-    font-size: 0.9rem;
-  }
-}
-
-/* max-width: 906px */
-@media (width <= 906px) {
-  .navbar .d-flex {
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
-  }
-
-  .left-section,
-  .center-section,
-  .right-section {
-    width: 100% !important;
-    justify-content: center !important;
-  }
-
-  .rightSection {
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    width: 100%;
-  }
-
-  .navCollapse {
-    /* Keep the mobile menu in normal flow so it pushes page content down. */
-    position: static;
-    flex-basis: 100%;
-    width: 100%;
-    margin-top: 0.5rem;
-    padding-left: 0;
-  }
-
-  .navCollapseOpen {
-    max-height: 80vh;
-    overflow-y: auto;
-  }
-
-  .menuContainer {
-    /* Full-width stacking prevents mobile nav links from compressing horizontally. */
-    align-items: stretch;
-    flex-direction: column !important;
-    justify-content: flex-start;
-    width: 100%;
-    margin-right: 0 !important;
-    padding-left: 0;
-  }
-
-  .centerSection {
-    /* Keep the announcement readable once the mobile header stacks. */
-    overflow: visible;
-    max-width: 100%;
-  }
-}
-
-@media (687px <= width <= 905px) {
-  .menuContainer {
-    /* Spacing prevents compact navigation labels from running together between 687px and 905px. */
-    flex-direction: row !important;
-    gap: 0.35rem 1rem;
-  }
-
-  .menuContainer :global(.nav-link) {
-    /* Bootstrap removes nav-link side padding below xl, so restore compact spacing here. */
-    padding-left: 0.55rem !important;
-    padding-right: 0.55rem !important;
-    white-space: nowrap;
-  }
 }
 
 /* Meeting notification modal (dark mode) */
@@ -708,4 +416,452 @@
   font-size: 0.85rem;
   opacity: 0.75;
   flex-shrink: 0;
+}
+
+@media print {
+  * {
+    box-sizing: border-box !important;
+  }
+
+  @page {
+    size: auto;
+    margin: 0;
+  }
+
+  .navbar {
+    padding: 0.5rem 1rem !important;
+    min-height: auto !important;
+    height: auto !important;
+    width: 100% !important;
+    position: relative !important;
+    font-size: 16px !important;
+    margin: 0 !important;
+  }
+
+  .navbar img,
+  .navbar svg {
+    width: auto !important;
+    height: 24px !important;
+    transform: scale(1) !important;
+    vertical-align: middle !important;
+  }
+}
+
+/* ========== RESPONSIVE BREAKPOINTS (Optimal Configuration) ========== */
+
+/* Mobile devices: ≤ 768px (phones + tablets portrait - hamburger menu + vertical layout) */
+@media (width <= 768px) {
+  /* `py-3` is a Bootstrap utility with the same specificity as this module's
+     .navbar, so !important is needed to win the tie for the padding. */
+  .navbar {
+    white-space: normal;
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
+  }
+
+  .navbar .d-flex {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+  }
+
+  /* Named grid. The user info row (bell, avatar, welcome menu) stays visible and
+     shares a row with the hamburger, which now holds navigation links only. The
+     wrappers that stand between them and this grid (.centerSection, .rightSection)
+     are dissolved with `display: contents` below, so their children become grid
+     items directly — nothing leaks past this media query.
+
+     The collapsed nav panel gets its own full-width row rather than living in the
+     narrow menu column: its min-width of 220px would otherwise reserve that width
+     permanently and squeeze the user row. */
+  .headerRow {
+    /* Containing block for the expanded menu, which floats out of flow below. */
+    position: relative;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'timer timer'
+      'logo logo'
+      'message message'
+      'user menu'
+      'nav nav';
+    align-items: center;
+    gap: 0 0.5rem;
+  }
+
+  /* The timer sets the height of the first line; no outer spacing of its own. */
+  .leftSection {
+    grid-area: timer;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Only one of the next two rules ever matches — the centre cell holds either
+     the logo or the message, not both. The unused grid area collapses to zero
+     height because nothing is placed into it. */
+
+  /* Logo: its own row, centred across both columns. */
+  .centerSection > img {
+    grid-area: logo;
+    justify-self: center;
+    margin: 0.5rem 0 0.75rem;
+  }
+
+  /* The Dev Admin warning message — the OwnerMessage root, the only <div> child
+     of .centerSection. It spans the full width on its own row, above the user
+     row and the hamburger. */
+  .centerSection > div {
+    grid-area: message;
+    width: auto;
+    max-width: none;
+    margin: 0 0 0.25rem;
+  }
+
+  /* Spacer band between the header and the page content. 20px reads as a gap
+     under the logo on a narrow screen; wide screens keep the full height. */
+  .headerMargin,
+  .headerMarginLight {
+    height: 8px;
+  }
+
+  .leftSection,
+  .centerSection {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .left-section,
+  .center-section,
+  .right-section {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Dissolved so the hamburger and the nav panel become grid items in their own
+     right — the hamburger beside the message, the panel on its own full-width row.
+     `display: contents` removes the box, so the width/justify-content the other
+     sections get here would have no effect and are left off deliberately. */
+  .rightSection {
+    display: contents;
+  }
+
+  /* User info row: always visible on mobile so the bell, profile and the
+     welcome menu (profile, password, dark mode, logout) stay reachable. Compact
+     sizing keeps it on one line beside the hamburger. */
+  .userInfoRow {
+    grid-area: user;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  /* The avatar's size is set inline, so !important is needed to shrink it. */
+  .userInfoRow :global(.dashboardimg) {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+  }
+
+  /* The welcome dropdown may shrink; a long first name is truncated with an
+     ellipsis instead of pushing the hamburger off the row. */
+  .userInfoRow > :global(.dropdown) {
+    min-width: 0;
+  }
+
+  .userInfoRow :global(.dropdown-toggle) {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    padding: 0.25rem 0;
+  }
+
+  .userInfoRow :global(.dropdown-toggle) > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Dissolved so the logo and the message can be placed in separate grid areas —
+     the logo centred on its own row, the message down beside the hamburger. The
+     base rule declares `display: flex !important`, so !important is required to
+     override it. */
+  .centerSection {
+    display: contents !important;
+  }
+
+  .headerLogo {
+    max-height: 32px; 
+    width: auto;
+  }
+
+  .navbarOwnerMessage {
+    padding-left: 0;
+    padding-right: 0;
+    width: 100%;
+  }
+
+  /* Hamburger toggle — sits in the narrow right-hand column, on the same row as
+     the user info. */
+  .navbarToggler {
+    grid-area: menu;
+    display: flex !important;
+    align-items: center;
+    align-self: center;
+
+    /* margin-left: auto was what pushed it right inside the old flex wrapper; the
+       grid column places it now, so the auto margin would only add slack. */
+    margin: 0;
+    padding-top: 0;
+  }
+
+  .navCollapse {
+    /* Floating dropdown rather than a row in the flow: expanding it used to grow the
+       header and shove the page content underneath it down. Out of flow it overlays
+       that content instead, and the header's height never changes.
+
+       `grid-area: nav` is still declared — for an absolutely positioned grid child
+       the grid area becomes the containing block, which anchors the panel directly
+       under the message/menu row and across the full header width, with no manual
+       offsets to keep in sync. */
+    grid-area: nav;
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: block;
+    width: 100%;
+    padding-left: 0;
+    min-width: 220px;
+
+    /* No margin while collapsed — max-height:0 hides the panel but the margin would
+       still reserve space. Restored when open. */
+    margin-top: 0;
+
+    /* A step lighter than the bar itself. The previous #343a40 was the exact colour
+       Bootstrap's `color="dark"` paints the Navbar, so the panel dissolved into the
+       header it was hanging from. Lighter reads as the nearer surface. */
+    background-color: #3d444c;
+    border-radius: 0 0 8px 8px;
+
+    /* Layered: a wide soft drop for lift off the page content, a tight one to keep
+       the edge defined, and an inset hairline along the top where the panel meets
+       the bar — `border` is forced to none further down, so it goes in the shadow. */
+    box-shadow:
+      0 10px 24px rgb(0 0 0 / 45%),
+      0 2px 6px rgb(0 0 0 / 30%),
+      inset 0 1px 0 rgb(255 255 255 / 8%);
+
+    /* Above the page content below the header. .navbar creates the stacking context
+       (position: relative + z-index: 100), so this only has to beat its siblings. */
+    z-index: 1100;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease-out;
+    border: none !important;
+    border-width: 0 !important;
+  }
+
+  .navCollapseHidden {
+    display: none !important;
+  }
+
+  .navCollapseOpen {
+    max-height: 80vh;
+    overflow-y: auto;
+    transition: max-height 0.25s ease-in;
+
+    /* Only separate the panel from the hamburger once it is actually showing. */
+    margin-top: 0.5rem;
+  }
+
+  .menuContainer {
+    order: 2 !important;
+    align-items: stretch;
+    flex-direction: column !important;
+    justify-content: flex-start;
+    width: 100%;
+    margin-right: 0 !important;
+
+    /* The indent lives on the rows below, not here — see the note there. */
+    padding-left: 0;
+    max-height: 80vh;
+    gap: 0.5rem;
+    overflow-y: auto;
+  }
+
+  /* Indent every row of the menu so the labels are not flush against the panel's
+     left edge. Applied to the rows rather than to .menuContainer because Bootstrap's
+     .navbar-nav declares `padding-left: 0` at the same specificity, which left the
+     container's own padding depending on stylesheet order. The rows carry no
+     competing rule, so this always lands. */
+  .menuContainer > * {
+    padding-left: 1rem;
+  }
+
+  .mobileMenuDropdown {
+    background-color: #343a40 !important;
+    border: none !important;
+  }
+
+  .mobileDropdownText {
+    color: rgb(255 255 255 / 50%) !important;
+  }
+
+  .mobileDropdownItem:hover {
+    background-color: #343a40 !important;
+    color: rgb(255 255 255 / 75%) !important;
+  }
+
+  .darkMenuDropdown {
+    background-color: #343a40 !important;
+    border: none !important;
+  }
+
+  .darkDropdownText {
+    color: rgb(255 255 255 / 50%) !important;
+  }
+
+  .darkDropdownItem:hover {
+    background-color: #343a40 !important;
+    color: rgb(255 255 255 / 75%) !important;
+  }
+
+  .hideInMobile {
+    display: none;
+  }
+
+  .showInMobile {
+    display: block;
+  }
+}
+
+/* Tablets/Laptops: 769px - 1280px (iPad landscape, laptops - no hamburger menu + vertical layout) */
+@media (width > 768px) and (width <= 1280px) {
+  .navbarToggler {
+    display: none !important;
+  }
+
+  .navCollapse {
+    display: flex;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    flex-basis: auto;
+    width: auto;
+    margin-top: 0;
+    background-color: transparent;
+    border-radius: 0;
+    max-height: none;
+    overflow: visible;
+  }
+
+  /* User info and nav stack on separate lines here, so the gap is vertical, and
+     the section takes the third grid row of the layout defined below. */
+  .rightSection {
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    gap: 0.25rem;
+    grid-row: 3;
+  }
+
+  /* No `order` here: userInfoRow now sits before the nav panel in the DOM, so
+     source order already puts it on top. An order of 1 would drop it below the
+     panel, which has the default order of 0. */
+  .userInfoRow {
+    width: 100%;
+  }
+
+  .menuContainer {
+    width: 100%;
+    order: 2 !important;
+    flex-flow: row nowrap !important;
+    gap: 1rem;
+  }
+
+  /* Three stacked rows: timer, logo + message, user/nav. `position: relative` is
+     the positioning context used by the >850px rule below, which lifts the logo
+     out of flow; at or under 850px the logo stays in flow and simply sits on its
+     own row beneath the timer, so it can never collide with the timer controls. */
+  .headerRow {
+    position: relative;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.25rem;
+  }
+
+  /* min-height reserves the logo's height for the wider case, where the logo is
+     absolutely positioned and contributes none of its own. */
+  .leftSection {
+    grid-row: 1;
+    min-height: 40px;
+  }
+
+  /* Centre cell sits on its own row here, holding whichever of the logo or the
+     message is showing. */
+  .centerSection {
+    grid-row: 2;
+  }
+
+  /* `py-3` on the Navbar is a Bootstrap utility with the same specificity as this
+     module's .navbar, so !important is needed to win the tie reliably. Scoped to
+     this breakpoint — wide screens keep the full 1rem padding. */
+  .navbar {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+}
+
+/* Only once there is room either side of the timer: lift the logo out of flow and
+   centre it on the full header width, so the timer's width cannot push it off
+   centre. 850px is measured — below roughly 800px the timer's right edge reaches
+   the middle of the header — so under this width the rule above is left to stack
+   the logo on its own row instead of overlapping. */
+@media (width > 850px) and (width <= 1280px) {
+  .headerLogo {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+  }
+}
+
+/* Large screens: > 1280px (large laptops, desktop monitors - no hamburger menu + vertical layout) */
+@media (width > 1280px) {
+  .navbarToggler {
+    display: none !important;
+  }
+
+  .navCollapse {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    gap: 0.5rem;
+    flex-basis: auto;
+    max-height: none;
+    overflow: visible;
+    position: static;
+    background: none;
+  }
+
+  .rightSection {
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    gap: 0.5rem;
+  }
+
+  /* No `order` here: userInfoRow now sits before the nav panel in the DOM, so
+     source order already puts it on top. An order of 1 would drop it below the
+     panel, which has the default order of 0. */
+  .userInfoRow {
+    width: 100%;
+  }
+
+  .menuContainer {
+    width: 100%;
+    order: 2 !important;
+    flex-flow: row wrap !important;
+    gap: 1rem;
+  }
+
+  .hideInMobile {
+    display: flex !important;
+  }
 }

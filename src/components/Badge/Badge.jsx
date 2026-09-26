@@ -7,7 +7,6 @@ import {
   Row,
   Col,
   Card,
-  CardText,
   CardBody,
   CardHeader,
   Modal,
@@ -148,7 +147,7 @@ function Badge(props) {
                   badges={props.userProfile.badgeCollection || []}
                   darkMode={darkMode}
                 />
-                <CardText
+                <div
                   style={{
                     fontWeight: 'bold',
                     // fontSize: 18,
@@ -162,7 +161,7 @@ function Badge(props) {
                     props.userProfile.personalBestMaxHrs,
                   )}
                   <i className="fa fa-info-circle" id="CountInfo" data-testid="count-info-icon" />
-                </CardText>
+                </div>
                 <BadgeSummaryViz badges={props.userProfile.badgeCollection} dashboard />
               </CardBody>
             </Card>

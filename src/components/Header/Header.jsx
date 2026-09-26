@@ -75,6 +75,7 @@ import PermissionWatcher from '../Auth/PermissionWatcher';
 import Logout from '../Logout/Logout';
 import NotificationCard from '../Notification/notificationCard';
 import OwnerMessage from '../OwnerMessage/OwnerMessage';
+import { getOwnerMessage } from '../../actions/ownerMessageAction';
 import DisplayBox from '../PRPromotions/DisplayBox';
 import Timer from '../Timer/Timer';
 import BellNotification from './BellNotification';
@@ -177,7 +178,13 @@ export function Header(props) {
   );
   const headerDisabled = isAuthUser ? false : !canInteractWithViewingUser;
 
-// Reports / nav access — prefer RoutePermissions lists (OR any key)
+  // The header shows the owner message or the logo, never both, and the choice
+  // does not depend on the user's role. Any message (custom or standard) wins, so
+  // environments that set one — e.g. the dev warning — show the text; the logo
+  // appears only when both are empty, as in production.
+  const showOwnerMessage = Boolean(props.ownerMessage || props.ownerStandardMessage);
+
+  // Reports / nav access — prefer RoutePermissions lists (OR any key)
   const canGetReports = props.hasPermission(RoutePermissions.reports, !isAuthUser);
   const canGetWeeklySummaries = props.hasPermission(
     RoutePermissions.weeklySummariesReport,
@@ -567,38 +574,22 @@ export function Header(props) {
   }, [user.userid, props.auth.firstName]);
 
   useEffect(() => {
-    const handleResize = () => {
-      const currentWidth = window.innerWidth;
-      // eslint-disable-next-line no-console
-      console.log(`[Header Debug] Window resized to: ${currentWidth}px`);
-      if (currentWidth >= 1728) {
-        // eslint-disable-next-line no-console
-        console.log(`[Header Debug] Breakpoint: Large screen (90%+) - Owner message below timer`);
-      } else if (currentWidth >= 1400) {
-        // eslint-disable-next-line no-console
-        console.log(`[Header Debug] Breakpoint: Desktop - Centered layout`);
-      } else if (currentWidth >= 1200) {
-        // eslint-disable-next-line no-console
-        console.log(`[Header Debug] Breakpoint: Medium desktop - Centered layout`);
-      } else if (currentWidth >= 768) {
-        // eslint-disable-next-line no-console
-        console.log(`[Header Debug] Breakpoint: Tablet - Stacked layout`);
-      } else {
-        // eslint-disable-next-line no-console
-        console.log(`[Header Debug] Breakpoint: Mobile - Compact vertical layout`);
-      }
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
       if (props.auth.user.role === 'Owner' || props.auth.user.role === 'Administrator') {
         dispatch(fetchTaskEditSuggestions());
       }
+    }
+  }, [props.auth.isAuthenticated]);
+
+  // The header shows either the logo or the owner message, never both, so the
+  // message has to be fetched from here rather than from inside OwnerMessage:
+  // that component is only mounted once a message is known to exist, and if it
+  // owned the only fetch the message would never load and the logo would never
+  // give way to it.
+  useEffect(() => {
+    if (props.auth.isAuthenticated) {
+      dispatch(getOwnerMessage());
     }
   }, [props.auth.isAuthenticated]);
 
@@ -693,8 +684,8 @@ export function Header(props) {
   ]);
 
   const toggle = () => {
-  setIsOpen(prevIsOpen => !prevIsOpen);
-};
+    setIsOpen(prevIsOpen => !prevIsOpen);
+  };
 
   const openModal = () => {
     setLogoutPopup(true);
@@ -737,7 +728,6 @@ export function Header(props) {
       setUserDashboardProfile(response?.data);
       setHasProfileLoaded(true);
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.log('User Profile not loaded.', err);
     }
   };
@@ -780,18 +770,59 @@ export function Header(props) {
 
   return (
     <div className={`${styles.headerWrapper}`} data-testid="header">
-      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl">
+      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="lg">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         {showPromotionsPopup && (
-          // Header launches this modal outside the PR Promotions page, so pass the theme explicitly.
           <DisplayBox onClose={() => setShowPromotionsPopup(false)} darkMode={darkMode} />
         )}
 
         <div className={styles.headerRow}>
-          <div className={styles.leftSection}>{isAuthenticated && <Timer darkMode={darkMode} />}</div>
-          <div className={styles.centerSection}>{isAuthenticated && <OwnerMessage />}</div>
+          <div className={styles.leftSection}>
+            {isAuthenticated && (
+              <Timer darkMode={darkMode} />
+            )}
+            </div>
+          {/* Either the owner message or the logo occupies this cell — never both.
+              On narrow screens Header.module.css dissolves this wrapper with
+              `display: contents` so whichever one renders lands in its own grid
+              area; the layout is driven entirely from CSS. */}
+          <div className={styles.centerSection}>
+            {isAuthenticated &&
+              (showOwnerMessage ? (
+                <OwnerMessage />
+              ) : (
+                <img src="/header-test.png" alt="Header Logo" className={styles.headerLogo} />
+              ))}
+          </div>
           <div className={styles.rightSection}>
-               
+            {/* User info row (bell, avatar, welcome menu). Kept outside the collapsible
+                panel so it stays visible on every screen size — the hamburger menu
+                holds navigation links only. */}
+            <div className={styles.userInfoRow}>
+              <BellNotification
+                userId={displayUserId}
+                hasMeetingNotification={userUnreadMeetings.length > 0}
+                meetingNotificationCount={userUnreadMeetings.length}
+                onMeetingNotificationClick={openMeetingNotification}
+              />
+              <NavLink tag={Link} to={`/userprofile/${displayUserId}`} className="p-0">
+                <div style={{ width: '40px', height: '40px', minWidth: '40px', minHeight: '40px', backgroundImage: `url(${profilePic || '/pfp-default-header.png'})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} className="dashboardimg rounded-circle" />
+              </NavLink>
+              <UncontrolledDropdown inNavbar>
+                <DropdownToggle nav caret className="text-light"><span>{WELCOME}, {firstName}</span></DropdownToggle>
+                <DropdownMenu right className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown}`}>
+                  <DropdownItem header className={darkMode ? 'text-custom-grey' : styles.mobileDropdownText}>Hello {firstName}</DropdownItem>
+                  <DropdownItem divider />
+                  <DropdownItem tag={Link} to={`/userprofile/${displayUserId}`} className={fontColor} disabled={headerDisabled}>{VIEW_PROFILE}</DropdownItem>
+                  {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
+                    <DropdownItem tag={Link} to={`/updatepassword/${displayUserId}`} className={fontColor}>{UPDATE_PASSWORD}</DropdownItem>
+                  )}
+                  <DropdownItem className={fontColor}><DarkModeButton /></DropdownItem>
+                  <DropdownItem divider />
+                  <DropdownItem onClick={openModal} className={fontColor} disabled={headerDisabled}>{LOGOUT}</DropdownItem>
+                </DropdownMenu>
+              </UncontrolledDropdown>
+            </div>
             <NavbarToggler
               onClick={toggle}
               ref={toggleRef}
@@ -805,25 +836,7 @@ export function Header(props) {
               tabIndex={-1}
               onKeyDown={e => { if (e.key === 'Escape') setIsOpen(false); }}
             >
-                <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>                
-                <NavItem className={styles.showInMobile}>
-                  <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
-                    <img src={`${profilePic || '/pfp-default-header.png'}`} alt="" style={{ maxWidth: '60px', maxHeight: '60px' }} className="dashboardimg" />
-                  </NavLink>
-                </NavItem>
-
-                <UncontrolledDropdown nav inNavbar className={styles.showInMobile}>
-                  <DropdownToggle nav caret><span>{WELCOME}, {firstName}</span></DropdownToggle>
-                  <DropdownMenu className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown}`}>
-                    <DropdownItem tag={Link} to={`/userprofile/${displayUserId}`} className={fontColor}>{VIEW_PROFILE}</DropdownItem>
-                    {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
-                      <DropdownItem tag={Link} to={`/updatepassword/${displayUserId}`} className={fontColor}>{UPDATE_PASSWORD}</DropdownItem>
-                    )}
-                    <DropdownItem className={fontColor}><DarkModeButton /></DropdownItem>
-                    <DropdownItem onClick={openModal} className={fontColor}>{LOGOUT}</DropdownItem>
-                  </DropdownMenu>
-                </UncontrolledDropdown>
-
+              <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>
                 {canUpdateTask && (
                   <NavItem>
                     <NavLink tag={Link} to="/taskeditsuggestions" disabled={headerDisabled}>
@@ -836,7 +849,6 @@ export function Header(props) {
                 <NavItem>
                   <NavLink tag={Link} to="/dashboard" disabled={headerDisabled}><span>{DASHBOARD}</span></NavLink>
                 </NavItem>
-
                 <NavItem>
                   <NavLink tag={Link} to="/timelog#currentWeek" disabled={headerDisabled}><span>{TIMELOG}</span></NavLink>
                 </NavItem>
@@ -895,10 +907,8 @@ export function Header(props) {
                         <DropdownItem tag={Link} to="/bluesquare-email-management" className={fontColor} disabled={headerDisabled}>{BLUE_SQUARE_EMAIL_MANAGEMENT}</DropdownItem>
                       )}
 
-                      {/* ── BM Dashboard Section ── */}
                       <DropdownItem divider />
 
-                      {/* BM Dashboard main link */}
                       <DropdownItem tag={Link} to="/bmdashboard" className={fontColor}>
                         BM Dashboard
                       </DropdownItem>
@@ -917,7 +927,6 @@ export function Header(props) {
                       {/* BM Projects accordion — only shown when on a bmdashboard route */}
                       {showProjectDropdown && (
                         <>
-                          {/* BM Projects toggle */}
                           <DropdownItem
                             toggle={false}
                             className={`${fontColor} ${styles.accordionToggle}`}
@@ -929,12 +938,10 @@ export function Header(props) {
 
                           {bmProjectsOpen && (
                             <>
-                              {/* All Inventory Types */}
                               <DropdownItem tag={Link} to="/bmdashboard/inventorytypes" className={`${fontColor} ${styles.bmSubItem}`}>
                                 All Inventory Types
                               </DropdownItem>
 
-                              {/* Materials */}
                               <DropdownItem toggle={false} className={`${fontColor} ${styles.bmSubItem} ${styles.accordionToggle}`} onClick={() => toggleSection('materials')}>
                                 <span className={styles.bmIconLabel}><FaCubes className={styles.bmIcon} /> Materials</span>
                                 <span className={`${styles.accordionArrow} ${expandedSection === 'materials' ? styles.accordionArrowOpen : ''}`} />
@@ -949,7 +956,6 @@ export function Header(props) {
                                 </>
                               )}
 
-                              {/* Consumables */}
                               <DropdownItem toggle={false} className={`${fontColor} ${styles.bmSubItem} ${styles.accordionToggle}`} onClick={() => toggleSection('consumables')}>
                                 <span className={styles.bmIconLabel}><FaShoppingCart className={styles.bmIcon} /> Consumables</span>
                                 <span className={`${styles.accordionArrow} ${expandedSection === 'consumables' ? styles.accordionArrowOpen : ''}`} />
@@ -962,7 +968,6 @@ export function Header(props) {
                                 </>
                               )}
 
-                              {/* Equipment */}
                               <DropdownItem toggle={false} className={`${fontColor} ${styles.bmSubItem} ${styles.accordionToggle}`} onClick={() => toggleSection('equipment')}>
                                 <span className={styles.bmIconLabel}><FaTools className={styles.bmIcon} /> Equipment</span>
                                 <span className={`${styles.accordionArrow} ${expandedSection === 'equipment' ? styles.accordionArrowOpen : ''}`} />
@@ -975,7 +980,6 @@ export function Header(props) {
                                 </>
                               )}
 
-                              {/* Reusables */}
                               <DropdownItem toggle={false} className={`${fontColor} ${styles.bmSubItem} ${styles.accordionToggle}`} onClick={() => toggleSection('reusables')}>
                                 <span className={styles.bmIconLabel}><FaRecycle className={styles.bmIcon} /> Reusables</span>
                                 <span className={`${styles.accordionArrow} ${expandedSection === 'reusables' ? styles.accordionArrowOpen : ''}`} />
@@ -988,7 +992,6 @@ export function Header(props) {
                                 </>
                               )}
 
-                              {/* Tools */}
                               <DropdownItem toggle={false} className={`${fontColor} ${styles.bmSubItem} ${styles.accordionToggle}`} onClick={() => toggleSection('tools')}>
                                 <span className={styles.bmIconLabel}><FaWrench className={styles.bmIcon} /> Tools</span>
                                 <span className={`${styles.accordionArrow} ${expandedSection === 'tools' ? styles.accordionArrowOpen : ''}`} />
@@ -1002,13 +1005,10 @@ export function Header(props) {
                                 </>
                               )}
 
-                              {/* Unit of Measurement */}
                               <DropdownItem tag={Link} to="/bmdashboard/units" className={`${fontColor} ${styles.bmSubItem}`}>
                                 <span className={styles.bmIconLabel}><FaRulerCombined className={styles.bmIcon} /> Unit of Measurement</span>
                               </DropdownItem>
 
-
-                              {/* Other BM pages */}
                               <DropdownItem tag={Link} to="/bmdashboard/Issue" className={`${fontColor} ${styles.bmSubItem}`}>Issues</DropdownItem>
                               <DropdownItem tag={Link} to="/bmdashboard/lessonform" className={`${fontColor} ${styles.bmSubItem}`}>Lessons</DropdownItem>
                               <DropdownItem tag={Link} to="/teams" className={`${fontColor} ${styles.bmSubItem}`}>Teams</DropdownItem>
@@ -1042,36 +1042,6 @@ export function Header(props) {
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
-
-                <NavItem className={styles.hideInMobile}>
-                  <BellNotification
-                    userId={displayUserId}
-                    hasMeetingNotification={userUnreadMeetings.length > 0}
-                    meetingNotificationCount={userUnreadMeetings.length}
-                    onMeetingNotificationClick={openMeetingNotification}
-                  />
-                </NavItem>
-
-                <NavItem className={styles.hideInMobile}>
-                  <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
-                    <div style={{ width: '60px', height: '60px', minWidth: '60px', minHeight: '60px', backgroundImage: `url(${profilePic || '/pfp-default-header.png'})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} className="dashboardimg" />
-                  </NavLink>
-                </NavItem>
-
-                <UncontrolledDropdown nav className={styles.hideInMobile}>
-                  <DropdownToggle nav caret><span>{WELCOME}, {firstName}</span></DropdownToggle>
-                  <DropdownMenu className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown}`}>
-                    <DropdownItem header className={darkMode ? 'text-custom-grey' : styles.mobileDropdownText}>Hello {firstName}</DropdownItem>
-                    <DropdownItem divider />
-                    <DropdownItem tag={Link} to={`/userprofile/${displayUserId}`} className={fontColor} disabled={headerDisabled}>{VIEW_PROFILE}</DropdownItem>
-                    {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
-                      <DropdownItem tag={Link} to={`/updatepassword/${displayUserId}`} className={fontColor}>{UPDATE_PASSWORD}</DropdownItem>
-                    )}
-                    <DropdownItem className={fontColor}><DarkModeButton /></DropdownItem>
-                    <DropdownItem divider />
-                    <DropdownItem onClick={openModal} className={fontColor} disabled={headerDisabled}>{LOGOUT}</DropdownItem>
-                  </DropdownMenu>
-                </UncontrolledDropdown>
               </Nav>
             </div>
           </div>
@@ -1127,14 +1097,6 @@ export function Header(props) {
           {unreadNotifications?.length > 0 ? <NotificationCard notification={unreadNotifications[0]} /> : null}
         </div>
       )}
-      <audio
-        ref={MeetingNotificationAudioRef}
-        key="meetingNotificationAudio"
-        preload="auto"
-        src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3"
-      >
-        <track kind="captions" />
-      </audio>
       <Modal
         isOpen={meetingModalOpen}
         toggle={handleMeetingRead}
@@ -1236,6 +1198,9 @@ const mapStateToProps = state => ({
   meetingNotification: state.meetingNotification,
   allUserProfiles: state.allUserProfiles.userProfiles,
   darkMode: state.theme.darkMode,
+  // Drive the logo-or-message choice in the header's centre cell.
+  ownerMessage: state.ownerMessage.message,
+  ownerStandardMessage: state.ownerMessage.standardMessage,
 });
 
 Header.propTypes = {
@@ -1264,6 +1229,8 @@ Header.propTypes = {
   userProfile: PropTypes.object,
   darkMode: PropTypes.bool,
   taskEditSuggestionCount: PropTypes.number,
+  ownerMessage: PropTypes.string,
+  ownerStandardMessage: PropTypes.string,
 };
 
 export default connect(mapStateToProps, {

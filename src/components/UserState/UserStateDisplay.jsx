@@ -10,15 +10,16 @@ import UserStateModal from './UserStateModal';
 import ManageStatesModal from './ManageStatesModal';
 import styles from './UserState.module.css';
 
+// Replaced deprecated defaultProps with ES6 default parameters to prevent React deprecation warnings
 function UserStateDisplay({
   userId,
-  userName,
-  canEdit,
-  canManage,
-  catalog,
-  onCatalogChange,
-  initialSelected,
-  onSelectionChange,
+  userName = '',
+  canEdit = false,
+  canManage = false,
+  catalog = [],
+  onCatalogChange = () => {},
+  initialSelected = [],
+  onSelectionChange = () => {},
 }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [selected, setSelected] = useState(initialSelected || []);
@@ -140,14 +141,16 @@ UserStateDisplay.propTypes = {
   onSelectionChange: PropTypes.func,
 };
 
-UserStateDisplay.defaultProps = {
-  userName: '',
-  canEdit: false,
-  canManage: false,
-  catalog: [],
-  onCatalogChange: () => {},
-  initialSelected: [],
-  onSelectionChange: () => {},
-};
+// UserStateDisplay.defaultProps = {
+//   userName: '',
+//   canEdit: false,
+//   canManage: false,
+//   catalog: [],
+//   onCatalogChange: () => {},
+//   initialSelected: [],
+//   onSelectionChange: () => {},
+// };
+
+// UserStateDisplay.defaultProps has been removed in favor of function default parameters above.
 
 export default UserStateDisplay;
