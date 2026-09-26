@@ -734,6 +734,9 @@ export const ENDPOINTS = {
   EDUCATOR_ASSIGN_ATOMS: () => `${APIEndpoint}/educator/assign-atoms`,
 
   LESSON_PLANS: `${APIEndpoint}/education/lesson-plans`,
+  LESSON_PLAN_DRAFTS_STUDENT: () => `${APIEndpoint}/student/lesson-plan-drafts`,
+  LESSON_PLAN_DRAFTS_EDUCATOR: () => `${APIEndpoint}/educator/lesson-plan-drafts`,
+  LESSON_PLAN_DRAFT_UPDATE: (draftId) => `${APIEndpoint}/educator/lesson-plan-drafts/${draftId}`,
   SAVE_INTEREST: `${APIEndpoint}/education/student/saved-interests`,
   GET_SAVED: `${APIEndpoint}/education/student/saved-interests`,
   REMOVE_INTEREST: `${APIEndpoint}/education/student/saved-interests`,
