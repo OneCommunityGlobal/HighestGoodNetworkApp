@@ -58,102 +58,81 @@ function isValidImage(value, extractedValue) {
   return false;
 }
 
-export function validateTemplateVariables(template, variableValues) {
-  const errors = {};
+const TEXT_VALIDATION_RULE = {
+  isValid: ({ rawValue }) => isNonEmptyString(rawValue),
+  requiredMessage: name => `${name} is required`,
+  optionalMessage: 'Please enter a value',
+};
 
-  if (!template || !Array.isArray(template.variables) || template.variables.length === 0) {
-    return errors;
-  }
+const VARIABLE_VALIDATION_RULES = {
+  image: {
+    isValid: ({ rawValue, extracted }) => isValidImage(rawValue, extracted),
+    requiredMessage: name => `${name} is required (valid image URL or YouTube link)`,
+    optionalMessage: 'Please enter a valid image URL or YouTube link',
+  },
+  url: {
+    isValid: ({ rawValue }) => isValidUrl(rawValue),
+    requiredMessage: name => `${name} is required (valid URL)`,
+    optionalMessage: 'Please enter a valid URL',
+  },
+  number: {
+    isValid: ({ rawValue }) => isValidNumber(rawValue),
+    requiredMessage: name => `${name} is required (number)`,
+    optionalMessage: 'Please enter a valid number',
+  },
+  textarea: TEXT_VALIDATION_RULE,
+  text: TEXT_VALIDATION_RULE,
+};
 
-  template.variables.forEach(variable => {
-    if (!variable || !variable.name) return;
-
-    const name = variable.name;
-    const type = variable.type || 'text';
-    const required = variable.required !== undefined ? !!variable.required : true;
-
-    const rawValue = variableValues?.[name];
-    const extracted = variableValues?.[`${name}_extracted`];
-
-    // If not required and empty, skip validation
-    const hasAnyValue = isNonEmptyString(rawValue) || isNonEmptyString(extracted);
-    if (!required && !hasAnyValue) return;
-
-    switch (type) {
-      case 'image': {
-        if (!isValidImage(rawValue, extracted)) {
-          errors[name] = required
-            ? `${name} is required (valid image URL or YouTube link)`
-            : `Please enter a valid image URL or YouTube link`;
-        }
-        break;
-      }
-      case 'url': {
-        if (!isValidUrl(rawValue)) {
-          errors[name] = required ? `${name} is required (valid URL)` : `Please enter a valid URL`;
-        }
-        break;
-      }
-      case 'number': {
-        if (!isValidNumber(rawValue)) {
-          errors[name] = required ? `${name} is required (number)` : `Please enter a valid number`;
-        }
-        break;
-      }
-      case 'textarea':
-      case 'text':
-      default: {
-        if (!isNonEmptyString(rawValue)) {
-          errors[name] = required ? `${name} is required` : `Please enter a value`;
-        }
-        break;
-      }
-    }
-  });
-
-  return errors;
-}
-
-export function validateVariable(variable, variableValues) {
+function getVariableValidationContext(variable, variableValues) {
   if (!variable || !variable.name) return null;
-  const name = variable.name;
-  const type = variable.type || 'text';
-  const required = variable.required !== undefined ? !!variable.required : true;
 
+  const name = variable.name;
+  const required = variable.required !== undefined ? !!variable.required : true;
   const rawValue = variableValues?.[name];
   const extracted = variableValues?.[`${name}_extracted`];
   const hasAnyValue = isNonEmptyString(rawValue) || isNonEmptyString(extracted);
 
   if (!required && !hasAnyValue) return null;
 
-  switch (type) {
-    case 'image':
-      return isValidImage(rawValue, extracted)
-        ? null
-        : required
-        ? `${name} is required (valid image URL or YouTube link)`
-        : 'Please enter a valid image URL or YouTube link';
-    case 'url':
-      return isValidUrl(rawValue)
-        ? null
-        : required
-        ? `${name} is required (valid URL)`
-        : 'Please enter a valid URL';
-    case 'number':
-      return isValidNumber(rawValue)
-        ? null
-        : required
-        ? `${name} is required (number)`
-        : 'Please enter a valid number';
-    case 'textarea':
-    case 'text':
-    default:
-      return isNonEmptyString(rawValue)
-        ? null
-        : required
-        ? `${name} is required`
-        : 'Please enter a value';
+  return {
+    name,
+    type: variable.type || 'text',
+    required,
+    rawValue,
+    extracted,
+  };
+}
+
+function getVariableValidationError(context) {
+  const rule = VARIABLE_VALIDATION_RULES[context.type] || TEXT_VALIDATION_RULE;
+
+  if (rule.isValid(context)) return null;
+
+  return context.required ? rule.requiredMessage(context.name) : rule.optionalMessage;
+}
+
+export function validateTemplateVariables(template, variableValues) {
+  if (!template || !Array.isArray(template.variables) || template.variables.length === 0) {
+    return {};
   }
+
+  return template.variables.reduce((errors, variable) => {
+    const context = getVariableValidationContext(variable, variableValues);
+    if (!context) return errors;
+
+    const error = getVariableValidationError(context);
+    if (error) {
+      errors[context.name] = error;
+    }
+
+    return errors;
+  }, {});
+}
+
+export function validateVariable(variable, variableValues) {
+  const context = getVariableValidationContext(variable, variableValues);
+  return context ? getVariableValidationError(context) : null;
 }
 
 export function extractImageForVariableIfNeeded(variable, variableValues) {
