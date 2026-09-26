@@ -436,6 +436,14 @@
   }
 }
 
+.faqOuter {
+  width: 100%;
+  margin-top: 2rem;
+  padding: 2rem clamp(1rem, 4vw, 2.5rem);
+  box-sizing: border-box;
+  background-color: #f7f7f8;
+}
+
 .pagination {
   margin: 20px 0;
   display: flex;
@@ -565,6 +573,10 @@
   box-shadow: 0 0 8px #0000004d;
   border-radius: 6px;
   padding: 0;
+}
+
+.jobLandingDark .faqOuter {
+  background-color: #1c2541;
 }
 
 .jobLandingDark .navbar {
