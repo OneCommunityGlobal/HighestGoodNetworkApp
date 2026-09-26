@@ -40,6 +40,23 @@ describe('HelpModal', () => {
     });
   };
 
+  const mockEligibilitySequence = responses => {
+    const eligibilityResponses = [...responses];
+    axios.get.mockImplementation(url => {
+      if (url === ENDPOINTS.HELP_CATEGORIES) {
+        return Promise.resolve({ data: [{ name: 'HTML Semantics' }] });
+      }
+      return Promise.resolve({ data: eligibilityResponses.shift() });
+    });
+  };
+
+  const expectEligibilityRequestCount = expectedCount => {
+    const eligibilityRequests = axios.get.mock.calls.filter(
+      ([url]) => url === ENDPOINTS.HELP_REQUEST_ELIGIBILITY,
+    );
+    expect(eligibilityRequests).toHaveLength(expectedCount);
+  };
+
   it('loads help categories from the categories endpoint', async () => {
     mockGet({ eligibility: { eligible: true, questionnaireCompleted: true } });
     const store = makeStore();
@@ -98,16 +115,10 @@ describe('HelpModal', () => {
   });
 
   it('revalidates eligibility when the document becomes visible', async () => {
-    const eligibilityResponses = [
+    mockEligibilitySequence([
       { eligible: false, questionnaireCompleted: false },
       { eligible: true, questionnaireCompleted: true },
-    ];
-    axios.get.mockImplementation(url => {
-      if (url === ENDPOINTS.HELP_CATEGORIES) {
-        return Promise.resolve({ data: [{ name: 'HTML Semantics' }] });
-      }
-      return Promise.resolve({ data: eligibilityResponses.shift() });
-    });
+    ]);
     const store = makeStore();
     renderHelpModal(store);
 
@@ -115,6 +126,7 @@ describe('HelpModal', () => {
     Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'hidden' });
     fireEvent(document, new Event('visibilitychange'));
     expect(axios.get).toHaveBeenCalledTimes(2);
+    expectEligibilityRequestCount(1);
 
     Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'visible' });
     fireEvent(document, new Event('visibilitychange'));
@@ -124,26 +136,20 @@ describe('HelpModal', () => {
       expect(screen.queryByText(/must complete the HGN questionnaire/i)).not.toBeInTheDocument(),
     );
     expect(axios.get).toHaveBeenCalledTimes(3);
-    expect(axios.get).toHaveBeenNthCalledWith(2, ENDPOINTS.HELP_REQUEST_ELIGIBILITY);
-    expect(axios.get).toHaveBeenNthCalledWith(3, ENDPOINTS.HELP_REQUEST_ELIGIBILITY);
+    expectEligibilityRequestCount(2);
   });
 
   it('revalidates eligibility when the modal reopens', async () => {
-    const eligibilityResponses = [
+    mockEligibilitySequence([
       { eligible: false, questionnaireCompleted: false },
       { eligible: true, questionnaireCompleted: true },
-    ];
-    axios.get.mockImplementation(url => {
-      if (url === ENDPOINTS.HELP_CATEGORIES) {
-        return Promise.resolve({ data: [{ name: 'HTML Semantics' }] });
-      }
-      return Promise.resolve({ data: eligibilityResponses.shift() });
-    });
+    ]);
     const store = makeStore();
     const onHide = vi.fn();
     const { rerender } = renderHelpModal(store, { show: false, onHide });
 
     await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(2));
+    expectEligibilityRequestCount(1);
     rerender(
       <Provider store={store}>
         <HelpModal show onHide={onHide} />
@@ -151,8 +157,7 @@ describe('HelpModal', () => {
     );
 
     await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(3));
-    expect(axios.get).toHaveBeenNthCalledWith(2, ENDPOINTS.HELP_REQUEST_ELIGIBILITY);
-    expect(axios.get).toHaveBeenNthCalledWith(3, ENDPOINTS.HELP_REQUEST_ELIGIBILITY);
+    expectEligibilityRequestCount(2);
 
     await screen.findByText('Select an option');
     fireEvent.click(screen.getByText('Select an option'));
