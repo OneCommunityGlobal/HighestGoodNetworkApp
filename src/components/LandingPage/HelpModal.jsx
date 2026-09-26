@@ -1,6 +1,6 @@
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { connect, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -18,10 +18,12 @@ function HelpModal({ show, onHide, auth }) {
   const [eligible, setEligible] = useState(null);
   const [eligibilityLoading, setEligibilityLoading] = useState(true);
   const [eligibilityError, setEligibilityError] = useState(false);
+  const userId = auth?.user?.userid;
+  const previousShowRef = useRef(show);
+  const previousUserIdRef = useRef(userId);
+  const hasRunEligibilityEffectRef = useRef(false);
 
   const darkMode = useSelector(state => state.theme.darkMode);
-
-  const userId = auth?.user?.userid;
 
   useEffect(() => {
     const fetchHelpCategories = async () => {
@@ -39,9 +41,16 @@ function HelpModal({ show, onHide, auth }) {
   }, []);
 
   useEffect(() => {
+    const isInitialRun = !hasRunEligibilityEffectRef.current;
+    const isReopening = !previousShowRef.current && show;
+    const userChanged = previousUserIdRef.current !== userId;
+    hasRunEligibilityEffectRef.current = true;
+    previousShowRef.current = show;
+    previousUserIdRef.current = userId;
+
     if (!userId) {
       setEligibilityLoading(false);
-      return;
+      return undefined;
     }
 
     const fetchEligibility = async () => {
@@ -59,8 +68,19 @@ function HelpModal({ show, onHide, auth }) {
       }
     };
 
-    fetchEligibility();
-  }, [userId]);
+    if (isInitialRun || isReopening || userChanged) {
+      fetchEligibility();
+    }
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchEligibility();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [userId, show]);
 
   const handleSelect = option => {
     setSelectedOption(option);

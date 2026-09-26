@@ -97,6 +97,71 @@ describe('HelpModal', () => {
     expect(screen.getByRole('button', { name: /submit/i })).toBeDisabled();
   });
 
+  it('revalidates eligibility when the document becomes visible', async () => {
+    const eligibilityResponses = [
+      { eligible: false, questionnaireCompleted: false },
+      { eligible: true, questionnaireCompleted: true },
+    ];
+    axios.get.mockImplementation(url => {
+      if (url === ENDPOINTS.HELP_CATEGORIES) {
+        return Promise.resolve({ data: [{ name: 'HTML Semantics' }] });
+      }
+      return Promise.resolve({ data: eligibilityResponses.shift() });
+    });
+    const store = makeStore();
+    renderHelpModal(store);
+
+    await screen.findByText(/must complete the HGN questionnaire/i);
+    Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'hidden' });
+    fireEvent(document, new Event('visibilitychange'));
+    expect(axios.get).toHaveBeenCalledTimes(2);
+
+    Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'visible' });
+    fireEvent(document, new Event('visibilitychange'));
+
+    await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(3));
+    await waitFor(() =>
+      expect(screen.queryByText(/must complete the HGN questionnaire/i)).not.toBeInTheDocument(),
+    );
+    expect(axios.get).toHaveBeenCalledTimes(3);
+    expect(axios.get).toHaveBeenNthCalledWith(2, ENDPOINTS.HELP_REQUEST_ELIGIBILITY);
+    expect(axios.get).toHaveBeenNthCalledWith(3, ENDPOINTS.HELP_REQUEST_ELIGIBILITY);
+  });
+
+  it('revalidates eligibility when the modal reopens', async () => {
+    const eligibilityResponses = [
+      { eligible: false, questionnaireCompleted: false },
+      { eligible: true, questionnaireCompleted: true },
+    ];
+    axios.get.mockImplementation(url => {
+      if (url === ENDPOINTS.HELP_CATEGORIES) {
+        return Promise.resolve({ data: [{ name: 'HTML Semantics' }] });
+      }
+      return Promise.resolve({ data: eligibilityResponses.shift() });
+    });
+    const store = makeStore();
+    const onHide = vi.fn();
+    const { rerender } = renderHelpModal(store, { show: false, onHide });
+
+    await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(2));
+    rerender(
+      <Provider store={store}>
+        <HelpModal show onHide={onHide} />
+      </Provider>,
+    );
+
+    await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(3));
+    expect(axios.get).toHaveBeenNthCalledWith(2, ENDPOINTS.HELP_REQUEST_ELIGIBILITY);
+    expect(axios.get).toHaveBeenNthCalledWith(3, ENDPOINTS.HELP_REQUEST_ELIGIBILITY);
+
+    await screen.findByText('Select an option');
+    fireEvent.click(screen.getByText('Select an option'));
+    fireEvent.click(await screen.findByText('HTML Semantics'));
+    await waitFor(() => expect(screen.getByRole('button', { name: /submit/i })).not.toBeDisabled());
+    expect(screen.queryByText(/must complete the HGN questionnaire/i)).not.toBeInTheDocument();
+    expect(axios.get).toHaveBeenCalledTimes(3);
+  });
+
   it('shows a neutral error (not an ineligibility message) when the eligibility request fails', async () => {
     axios.get.mockImplementation(url => {
       if (url === ENDPOINTS.HELP_CATEGORIES) {
