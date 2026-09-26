@@ -624,40 +624,46 @@ export default function PaidLaborCost() {
         )}
       </div>
 
-      <div className={`${styles.summaryContainer} ${darkMode ? styles.darkSummaryContainer : ''}`}>
-        <div className={styles.summaryItem}>
-          <span className={styles.summaryLabel}>Total Budget</span>
-          <span className={styles.summaryValue} style={{ color: textColor }}>
-            $
-            {displayTotalBudget.toLocaleString('en-US', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
-          </span>
+      {labels.length === 0 ? (
+        <div className={styles.emptyState}>No data available for the selected filters.</div>
+      ) : (
+        <div
+          className={`${styles.summaryContainer} ${darkMode ? styles.darkSummaryContainer : ''}`}
+        >
+          <div className={styles.summaryItem}>
+            <span className={styles.summaryLabel}>Total Budget</span>
+            <span className={styles.summaryValue} style={{ color: textColor }}>
+              $
+              {displayTotalBudget.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </span>
+          </div>
+          <div className={styles.summaryItem}>
+            <span className={styles.summaryLabel}>Total Actual</span>
+            <span className={styles.summaryValue} style={{ color: textColor }}>
+              $
+              {displayTotalCost.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </span>
+          </div>
+          <div className={styles.summaryItem}>
+            <span className={styles.summaryLabel}>Variance</span>
+            <span className={`${styles.summaryValue} ${varianceClass}`}>
+              $
+              {absoluteVariance.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}{' '}
+              ({variancePercentage > 0 ? '+' : ''}
+              {variancePercentage.toFixed(1)}%)
+            </span>
+          </div>
         </div>
-        <div className={styles.summaryItem}>
-          <span className={styles.summaryLabel}>Total Actual</span>
-          <span className={styles.summaryValue} style={{ color: textColor }}>
-            $
-            {displayTotalCost.toLocaleString('en-US', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
-          </span>
-        </div>
-        <div className={styles.summaryItem}>
-          <span className={styles.summaryLabel}>Variance</span>
-          <span className={`${styles.summaryValue} ${varianceClass}`}>
-            $
-            {absoluteVariance.toLocaleString('en-US', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}{' '}
-            ({variancePercentage > 0 ? '+' : ''}
-            {variancePercentage.toFixed(1)}%)
-          </span>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

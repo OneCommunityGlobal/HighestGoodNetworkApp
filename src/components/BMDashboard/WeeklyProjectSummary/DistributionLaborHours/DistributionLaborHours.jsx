@@ -1,10 +1,47 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Select from 'react-select';
 import { useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import moment from 'moment';
 import styles from './DistributionLaborHours.module.css';
+import config from '../../../../config.json';
+import { ENDPOINTS } from '../../../../utils/URL';
 
 const COLORS = ['#2a647c', '#2e8ea3', '#ffab91', '#ffccbb', '#bbbbbb', '#f9f3e3'];
+
+const MOCK_DATA = [
+  { name: 'Stud Wall Construction', value: 25.9 },
+  { name: 'Foundation Concreting', value: 18.5 },
+  { name: 'Task A', value: 22.2 },
+  { name: 'Task B', value: 18.5 },
+  { name: 'Task C', value: 14.8 },
+  { name: 'Electrical', value: 12 },
+  { name: 'Plumbing', value: 8 },
+  { name: 'Welding', value: 6 },
+];
+
+const isDevelopmentEnvironment = () => {
+  if (globalThis.window === undefined) {
+    return process.env.NODE_ENV === 'development';
+  }
+  const { hostname } = globalThis.window.location;
+  return (
+    hostname.includes('dev') ||
+    hostname === 'localhost' ||
+    hostname === '127.0.0.1' ||
+    process.env.NODE_ENV === 'development'
+  );
+};
+
+const topFiveWithOthers = data => {
+  const sorted = [...data].sort((a, b) => b.value - a.value);
+  const top5 = sorted.slice(0, 5);
+  const othersTotal = sorted.slice(5).reduce((sum, item) => sum + item.value, 0);
+  if (othersTotal > 0) {
+    top5.push({ name: 'Others', value: othersTotal });
+  }
+  return top5;
+};
 
 const CustomTooltip = ({ active, payload, total, darkMode }) => {
   if (active && payload && payload.length) {
@@ -31,37 +68,59 @@ const CustomTooltip = ({ active, payload, total, darkMode }) => {
 export default function DistributionLaborHours() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const [originalData, setOriginalData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
+  const [filteredData, setFilteredData] = useState(topFiveWithOthers(MOCK_DATA));
   const [dateRange, setDateRange] = useState({ from: '', to: '' });
   const [projectFilter, setProjectFilter] = useState('');
   const [memberFilter, setMemberFilter] = useState('');
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const mockData = [
-        { name: 'Stud Wall Construction', value: 25.9 },
-        { name: 'Foundation Concreting', value: 18.5 },
-        { name: 'Task A', value: 22.2 },
-        { name: 'Task B', value: 18.5 },
-        { name: 'Task C', value: 14.8 },
-        { name: 'Electrical', value: 12 },
-        { name: 'Plumbing', value: 8 },
-        { name: 'Welding', value: 6 },
-      ];
-      setOriginalData(mockData);
-    };
-    fetchData();
+  const fetchDistribution = useCallback(async ({ from, to, category }) => {
+    try {
+      const token = localStorage.getItem(config.tokenKey);
+      const headers = {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: token }),
+      };
+
+      const startDate =
+        from ||
+        moment()
+          .subtract(30, 'days')
+          .format('YYYY-MM-DD');
+      const endDate = to || moment().format('YYYY-MM-DD');
+      const params = new URLSearchParams({ start_date: startDate, end_date: endDate });
+      if (category) params.set('category', category);
+
+      const response = await fetch(
+        `${ENDPOINTS.APIEndpoint()}/labor-hours/distribution?${params.toString()}`,
+        { method: 'GET', headers, cache: 'no-store' },
+      );
+
+      if (!response.ok) throw new Error(`Status ${response.status}`);
+      const body = await response.json();
+      const distribution = (body.distribution || []).map(item => ({
+        name: item.category,
+        value: item.hours,
+      }));
+
+      setFilteredData(topFiveWithOthers(distribution.length > 0 ? distribution : MOCK_DATA));
+    } catch (error) {
+      if (isDevelopmentEnvironment()) {
+        setFilteredData(topFiveWithOthers(MOCK_DATA));
+      } else {
+        setFilteredData([]);
+      }
+    }
   }, []);
 
   useEffect(() => {
-    const top5 = originalData.slice(0, 5);
-    const othersTotal = originalData.slice(5).reduce((sum, item) => sum + item.value, 0);
-    if (othersTotal > 0) {
-      top5.push({ name: 'Others', value: othersTotal });
-    }
-    setFilteredData(top5);
-  }, [originalData, dateRange, projectFilter, memberFilter]);
+    fetchDistribution({ from: dateRange.from, to: dateRange.to, category: projectFilter });
+    // Initial load only; subsequent updates happen on Submit.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleSubmit = () => {
+    fetchDistribution({ from: dateRange.from, to: dateRange.to, category: projectFilter });
+  };
 
   const totalHours = filteredData.reduce((sum, item) => sum + item.value, 0);
 
@@ -121,7 +180,7 @@ export default function DistributionLaborHours() {
         </label>
 
         <div className={styles.buttonContainer}>
-          <button className={styles.button} type="button">
+          <button className={styles.button} type="button" onClick={handleSubmit}>
             Submit
           </button>
         </div>
@@ -130,11 +189,11 @@ export default function DistributionLaborHours() {
       {/* Chart + Legend */}
       <div className={styles.chartWrapper}>
         <div className={styles.legend}>
-          {filteredData.map((entry, index) => (
-            <div key={index} className={styles.legendItem}>
+          {filteredData.map(entry => (
+            <div key={entry.name} className={styles.legendItem}>
               <span
                 className={styles.colorBox}
-                style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                style={{ backgroundColor: COLORS[filteredData.indexOf(entry) % COLORS.length] }}
               />
               <span style={{ color: darkMode ? '#f5f5f5' : '#000' }}>
                 {entry.name}: {entry.value} hrs
@@ -144,37 +203,41 @@ export default function DistributionLaborHours() {
         </div>
 
         <div className={styles.pieChartContainer}>
-          <ResponsiveContainer width={300} height={300}>
-            <PieChart>
-              <Pie
-                data={filteredData}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={100}
-                labelLine={false}
-                label={({ x, y, value }) => (
-                  <text
-                    x={x}
-                    y={y}
-                    fill={darkMode ? '#ffffff' : '#1f2937'}
-                    textAnchor="middle"
-                    dominantBaseline="central"
-                    fontSize={12}
-                    fontWeight="600"
-                  >
-                    {`${((value / totalHours) * 100).toFixed(1)}%`}
-                  </text>
-                )}
-              >
-                {filteredData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip content={<CustomTooltip total={totalHours} darkMode={darkMode} />} />
-            </PieChart>
-          </ResponsiveContainer>
+          {filteredData.length === 0 ? (
+            <div className={styles.tooltip}>No data available for the selected filters.</div>
+          ) : (
+            <ResponsiveContainer width={300} height={300}>
+              <PieChart>
+                <Pie
+                  data={filteredData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={100}
+                  labelLine={false}
+                  label={({ x, y, value }) => (
+                    <text
+                      x={x}
+                      y={y}
+                      fill={darkMode ? '#ffffff' : '#1f2937'}
+                      textAnchor="middle"
+                      dominantBaseline="central"
+                      fontSize={12}
+                      fontWeight="600"
+                    >
+                      {`${((value / totalHours) * 100).toFixed(1)}%`}
+                    </text>
+                  )}
+                >
+                  {filteredData.map((entry, index) => (
+                    <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip content={<CustomTooltip total={totalHours} darkMode={darkMode} />} />
+              </PieChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </div>
     </div>
