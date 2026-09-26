@@ -166,6 +166,8 @@ const reverseGeocode = async (latitude, longitude) => {
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=3&addressdetails=1`,
       {
         headers: {
+          // Nominatim's usage policy requires a custom User-Agent identifying the app;
+          // requests without one are liable to be blocked. Keep this header.
           'User-Agent': 'ProjectMapApp/1.0',
         },
       },
@@ -553,6 +555,13 @@ export default function InteractiveMap() {
               <MapThemeUpdater darkMode={darkMode} />
 
               <TileLayer
+                // CartoDB's old anonymous basemap CDN (basemaps.cartocdn.com/dark_all) is
+                // deprecated and now requires an API key; without one it serves a placeholder
+                // tile reading "API KEY REQUIRED" instead of the map. Esri's World Dark Gray
+                // Base is a free, no-key basemap that renders correctly in its place. The
+                // coordinate order and templating differ between providers, so this is keyed
+                // on darkMode to force a clean remount rather than reusing the same instance.
+                key={darkMode ? 'dark' : 'light'}
                 noWrap
                 bounds={[
                   [-85, -180],
@@ -560,12 +569,33 @@ export default function InteractiveMap() {
                 ]}
                 url={
                   darkMode
-                    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+                    ? 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}'
                     : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                }
+                attribution={
+                  darkMode
+                    ? 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, © OpenStreetMap contributors, and the GIS user community'
+                    : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 }
                 minZoom={2}
                 maxZoom={15}
               />
+
+              {darkMode && (
+                // Esri's World Dark Gray "Base" layer above is terrain/boundaries only; it
+                // ships no place labels of its own. City/state/country names live in this
+                // separate, transparent "Reference" layer, meant to be stacked on top of it.
+                <TileLayer
+                  noWrap
+                  bounds={[
+                    [-85, -180],
+                    [85, 180],
+                  ]}
+                  url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}"
+                  minZoom={2}
+                  maxZoom={15}
+                />
+              )}
 
               <MarkerClusterGroup maxClusterRadius={70} chunkedLoading>
                 {filteredOrgs.map(org => (
