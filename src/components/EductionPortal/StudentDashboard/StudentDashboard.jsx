@@ -6,6 +6,7 @@ import TaskCardView from './TaskCardView';
 import TaskListView from './TaskListView';
 import NavigationBar from './NavigationBar';
 import SummaryCards from './SummaryCards';
+import TaskTimer from './TaskTimer';
 import { fetchStudentTasks, markStudentTaskAsDone } from '~/actions/studentTasks';
 import { fetchIntermediateTasks, markIntermediateTaskAsDone } from '~/actions/intermediateTasks';
 import HoursLogPanel from '../StudentTasks/HoursLogPanel';
@@ -101,7 +102,6 @@ const StudentDashboard = () => {
     }
   }, [tasks]);
 
-  // Calculate summary data from tasks
   const calculateSummaryData = tasksData => {
     const formatTime = hrs => {
       const wholeHours = Math.floor(hrs);
@@ -171,7 +171,7 @@ const StudentDashboard = () => {
 
   if (error && error !== 'none') {
     return (
-      <div className={styles.errorContainer}>
+      <div className={`${styles.errorContainer} ${darkMode ? styles.dark : ''}`}>
         <p className={styles.errorMessage}>{error}</p>
         <Button color="primary" onClick={() => dispatch(fetchStudentTasks())}>
           Retry
@@ -211,21 +211,20 @@ const StudentDashboard = () => {
   }
 
   return (
-    <div className={styles.dashboard}>
+    <div className={`${styles.dashboard} ${darkMode ? styles.dark : ''}`}>
       <NavigationBar darkMode={darkMode} />
 
       <Container className={styles.mainContainer}>
-        {/* Header */}
         <div className={styles.header}>
-          <div className={styles.headerContent}>
-            <div className={styles.headerText}>
-              <h1 className={styles.title}>Student Dashboard</h1>
-              <p className={styles.subtitle}>Track your learning progress and manage your logs</p>
-            </div>
+          <div className={styles.headerLeft}>
+            <h1 className={styles.title}>Student Dashboard</h1>
+            <p className={styles.subtitle}>Track your learning progress and manage your logs</p>
+          </div>
+          <div className={styles.headerRight}>
+            <TaskTimer tasks={tasks} />
           </div>
         </div>
 
-        {/* Summary Cards */}
         <SummaryCards data={summaryData} darkMode={darkMode} />
 
         {/* Tasks Section */}
@@ -254,6 +253,7 @@ const StudentDashboard = () => {
             {/* View toggle */}
             <div className={styles.viewToggle}>
               <button
+                type="button"
                 className={`${styles.toggleButton} ${viewMode === 'card' ? styles.active : ''}`}
                 onClick={() => setViewMode('card')}
                 aria-label="Card view"
@@ -272,7 +272,9 @@ const StudentDashboard = () => {
                   <rect x="3" y="14" width="7" height="7" />
                 </svg>
               </button>
+
               <button
+                type="button"
                 className={`${styles.toggleButton} ${viewMode === 'list' ? styles.active : ''}`}
                 onClick={() => setViewMode('list')}
                 aria-label="List view"
