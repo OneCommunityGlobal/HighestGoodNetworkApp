@@ -14,11 +14,12 @@ import './QuickSetupModal.module.css';
 import '../../Header/index.module.css';
 import styles from '../../SummaryBar/SummaryBar.module.css'
 
+import { permissions } from '../../../utils/constants';
 function QuickSetupModal(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const canEditTitle = props.hasPermission('editTitle');
-  const canAddTitle = props.hasPermission('addNewTitle');
-  const canAssignTitle = props.hasPermission('assignTitle');
+  const canEditTitle = props.hasPermission(permissions.editTitle);
+  const canAddTitle = props.hasPermission(permissions.addNewTitle);
+  const canAssignTitle = props.hasPermission(permissions.assignTitle);
   const [showAddTitle, setShowAddTitle] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [titles, setTitles] = useState([]);
@@ -40,12 +41,12 @@ function QuickSetupModal(props) {
     })
     .map(code => {
       if (typeof code === 'string') {
-        return { value: code, label: code };
+        return { value: code.trim(), label: code.trim() };
       }
 
       return {
-        value: code.value || '',
-        label: code.label || code.value || '',
+        value: (code.value || '').trim(),
+        label: (code.label || code.value || '').trim(),
       };
     });
 
