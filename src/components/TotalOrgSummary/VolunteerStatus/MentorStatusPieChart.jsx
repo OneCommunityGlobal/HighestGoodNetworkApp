@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart, ArcElement } from 'chart.js';
+import { useSelector } from 'react-redux';
 import styles from './MentorStatusPieChart.module.css';
 import externalLabelGuidesPlugin from './externalLabelGuidesPlugin';
 
@@ -10,6 +11,7 @@ function MentorStatusPieChart({
   data: { totalMentors, percentageChange, data: mentorData },
   comparisonType,
 }) {
+  const darkMode = useSelector(state => state?.theme?.darkMode);
   const chartData = {
     labels: mentorData.map(item => item.label),
     datasets: [
@@ -29,8 +31,10 @@ function MentorStatusPieChart({
       legend: {
         display: false,
       },
+      // Value + percentage are already shown permanently via externalLabelGuides;
+      // the native hover tooltip only duplicates them and renders on top, overlapping.
       tooltip: {
-        enabled: true,
+        enabled: false,
       },
       externalLabelGuides: {
         offset: 20,
@@ -40,10 +44,19 @@ function MentorStatusPieChart({
         sideMap: { 0: 1, 1: -1, 2: 1 },
         total: totalMentors,
         formatter: ({ value, percentage }) => [`${value}`, `(${percentage}%)`],
+        // Callout boxes are canvas-drawn, so they don't pick up the page's dark-mode
+        // CSS automatically — the plugin's own white-box default was low-contrast/
+        // visually inconsistent against the dark theme.
+        backgroundColor: darkMode ? 'rgba(35,35,40,0.95)' : 'rgba(255, 255, 255, 0.95)',
+        lineColor: darkMode ? '#e6e6e6' : '#4f4f4f',
+        borderColor: darkMode ? '#5a5a5a' : '#d0d0d0',
       },
     },
     maintainAspectRatio: false,
-    cutout: '60%',
+    // The comparison line adds a 3rd row of center text; shrinking fonts alone
+    // couldn't reliably fit that inside a fixed-size hole, so widen the hole
+    // itself when it's showing instead.
+    cutout: comparisonType !== 'No Comparison' ? '70%' : '60%',
     layout: {
       padding: 20,
     },
@@ -60,7 +73,11 @@ function MentorStatusPieChart({
         aria-label="Mentor Status Pie Chart"
       >
         <Doughnut data={chartData} options={options} plugins={[externalLabelGuidesPlugin]} />
-        <div className={styles.mentorStatusCenter}>
+        <div
+          className={`${styles.mentorStatusCenter} ${
+            comparisonType !== 'No Comparison' ? styles.hasComparison : ''
+          }`}
+        >
           <h2 className={styles.mentorStatusHeading}>TOTAL MENTORS</h2>
           <p className={styles.mentorCount}>{totalMentors}</p>
           {comparisonType !== 'No Comparison' && (
