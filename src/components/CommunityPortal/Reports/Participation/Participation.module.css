@@ -15,11 +15,13 @@
 .participationLandingPage {
   max-width: 90%;
   margin: 0 auto;
+  padding: 24px;
 }
 
 .participationLandingPageDark {
   min-width: 100%;
   margin: 0 auto;
+  padding: 24px;
   background-color: #1b2a41;
   color: #fff;
 }
@@ -38,7 +40,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
-  padding: 12px 0;
+  padding: 16px 0;
   border-bottom: 2px solid #e0e0e0;
 }
 
@@ -75,6 +77,10 @@
 .myCasesHeader h2 {
   font-size: 20px;
   color: #333;
+}
+
+.participationLandingPageDark .myCasesHeader h2 {
+  color: #fff;
 }
 
 .myCasesHeader button {
@@ -179,12 +185,20 @@
   white-space: nowrap;
 }
 
+.trackingFilters {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 12px; /* spacing between dropdowns */
+}
+
 .trackingFilters select {
   margin-left: 10px;
   padding: 8px;
   font-size: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
+  cursor: pointer;
+  transition: border-color 0.2s;
   background-color: #ffffff;
   color: #333;
 }
@@ -435,6 +449,20 @@
   font-size: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
+  transition: border-color 0.2s;
+  background-color: #fff;
+  color: #333;
+}
+
+.insightsDark .insightsFilters select {
+  background-color: #1c2541;
+  color: #fff;
+  border-color: #555;
+}
+
+.insightsDark .insightsFilters select option {
+  background-color: #1c2541;
+  color: #fff;
 }
 
 .insightsTabs {
@@ -470,6 +498,7 @@
 .insightsDark .insightsTab.activeTab {
   background-color: #007bff;
   color: var(--color-text-dark);
+  font-weight: bold;
 }
 
 .insightsTab:not(:last-child) {
@@ -506,6 +535,15 @@
 .eventTypeValuesDark .valueTable tr:hover,
 .eventTypeTrendsDark .trendsTable tr:hover {
   background: #304663;
+}
+
+/* Dark mode tab styles */
+.insightsDark .insightsTabs {
+  border-color: #555;
+}
+
+.insightsDark .insightsTab:not(:last-child) {
+  border-right-color: #555;
 }
 
 .insightsContent {
@@ -546,6 +584,10 @@
   margin-left: 10px;
 }
 
+.insightsDark .insightBar {
+  background: #2c3e50;
+}
+
 .insightFill {
   height: 100%;
   background: #007bff;
@@ -572,6 +614,116 @@
 .participationHeaderDark {
   background: linear-gradient(135deg, #1c2541 0%, #3a506b 100%);
   color: #fff;
+}
+
+.modalTitle {
+  margin: 0;
+}
+
+.modalClose {
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.modalBody {
+  margin-top: 12px;
+}
+
+.modalMeta {
+  font-size: 16px;
+  opacity: 0.85;
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.modalError {
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: #b00020;
+}
+
+.modalActions {
+  display: flex;
+  gap: 10px;
+}
+
+.exportOptionsButtons {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid #ccc;
+  color: #555;
+}
+
+.exportOptionsButtons:hover {
+  color: #555;
+  background-color: #e0e0e0;
+}
+
+.exportOptionsButtons:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.pageBreakBefore {
+  break-before: page;
+}
+
+.pageBreakAfter {
+  break-after: always;
+}
+
+.avoidBreak {
+  break-inside: avoid;
+}
+
+/* Use :global for data attributes and print styles */
+:global(html[data-exporting='true']) .caseCards:global(.expanded),
+:global(html[data-exporting='true']) .caseList:global(.expanded),
+:global(html[data-exporting='true']) .trackingListContainer {
+  max-height: none !important;
+  overflow: visible !important;
+  -webkit-overflow-scrolling: auto !important;
+}
+
+:global(html[data-exporting='true']) * {
+  animation: none !important;
+  transition: none !important;
+}
+
+:global(html[data-exporting='true']) .participationLandingPageDark {
+  background-color: #1b2a41 !important;
+}
+
+.printOnly {
+  display: none;
+}
+
+/* ==========================================================================
+   DARK MODE (standalone classes)
+   ========================================================================== */
+
+.landingPageHeaderDark {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #fff !important;
+  letter-spacing: 0.5px;
+}
+
+.savePdfBtnDark {
+  background: #333;
+  color: #f5f5f5;
+  border: 1px solid #666;
+}
+
+.savePdfBtnDark:hover {
+  background: #444;
+  transform: translateY(-1px);
 }
 
 .headerContent {
@@ -2130,6 +2282,135 @@
   }
 
   .cardStats {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Analytics Navigation Styles */
+.analyticsNavigation {
+  margin-top: 2rem;
+}
+
+.analyticsNavigationDark {
+  background-color: #1c2541;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #3a506b;
+}
+
+.sectionSubtitle {
+  color: #666;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
+.analyticsNavigationDark .sectionSubtitle {
+  color: #ccc;
+}
+
+.navigationGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.navigationCard {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+  border: 1px solid #eee;
+}
+
+.navigationCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 15%);
+  text-decoration: none;
+  color: inherit;
+}
+
+.navigationCardDark {
+  background: #3a506b;
+  color: #fff;
+  border-color: #5a6b7d;
+}
+
+.navigationCardDark:hover {
+  background: #465d7b;
+}
+
+.navigationCard .cardIcon {
+  font-size: 2rem;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.navigationCardDark .cardIcon {
+  background: #5a6b7d;
+}
+
+.navigationCard .cardContent {
+  flex: 1;
+}
+
+.navigationCard .cardTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.navigationCardDark .cardTitle {
+  color: #fff;
+}
+
+.navigationCard .cardDescription {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.navigationCardDark .cardDescription {
+  color: #ccc;
+}
+
+.navigationCard .cardStats {
+  font-size: 0.8rem;
+  color: #888;
+  font-weight: 600;
+}
+
+.navigationCardDark .cardStats {
+  color: #aaa;
+}
+
+.navigationCard .cardArrow {
+  font-size: 1.2rem;
+  color: #666;
+  font-weight: bold;
+}
+
+.navigationCardDark .cardArrow {
+  color: #ccc;
+}
+
+@media (width <= 768px) {
+  .navigationGrid {
     grid-template-columns: 1fr;
   }
 }
