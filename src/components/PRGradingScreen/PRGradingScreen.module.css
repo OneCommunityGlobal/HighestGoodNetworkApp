@@ -81,8 +81,6 @@
   margin-bottom: 20px;
 }
 
-
-
 /* Table Styles */
 .pr-grading-screen-table-container {
   margin: 20px auto 0;
@@ -458,13 +456,17 @@
 
 .pr-grading-screen-modal-body {
   padding: 24px;
-  overflow-y: auto;
+  overflow: auto;
   max-height: calc(80vh - 120px);
 }
 
 /* Grading Table Styles */
 .pr-grading-screen-grading-table {
   width: 100%;
+
+  /* Same four grade columns as the inline summary, so it clips the same way on
+     narrow screens. Keep a usable minimum and let the modal body scroll. */
+  min-width: 380px;
   border-collapse: collapse;
   margin-bottom: 20px;
 }
@@ -518,49 +520,47 @@
   font-weight: 600;
 }
 
-
-
 /* Responsive adjustments */
 @media (width <= 768px) {
   .pr-grading-screen-title {
     font-size: 1.5rem;
   }
-  
+
   .pr-grading-screen-team-info {
     font-size: 1rem;
   }
-  
+
   .pr-grading-screen-container {
     padding: 10px;
   }
-  
+
   .pr-grading-screen-header-content {
     flex-direction: column;
     gap: 15px;
   }
-  
+
   .pr-grading-screen-header-right {
     margin-left: 0;
     align-self: flex-end;
   }
-  
+
   .pr-grading-screen-table {
     font-size: 0.9rem;
   }
-  
+
   .pr-grading-screen-table th,
   .pr-grading-screen-table td {
     padding: 10px 8px;
   }
-  
+
   .pr-grading-screen-td-name {
     width: 20%;
   }
-  
+
   .pr-grading-screen-td-numbers {
     width: 60%;
   }
-  
+
   .pr-grading-screen-pr-input {
     width: 50px;
     padding: 3px 6px;
@@ -1006,4 +1006,214 @@
 
 .pr-grading-screen-no-results.dark-mode {
   color: #9ab0cc;
+}
+
+/* ---------------- INLINE PR SUMMARY ---------------- */
+
+.pr-grading-inline-summary-row {
+  background-color: transparent;
+}
+
+.pr-grading-inline-summary-cell {
+  padding: 8px 16px 16px !important;
+  border-top: none !important;
+}
+
+/* ==========================================================
+   Inline PR Summary Styles (PR #5493)
+   Scoped strictly with pr-grading-inline-* to avoid global pollution
+   ========================================================== */
+
+.pr-grading-inline-summary-container {
+  padding: 16px 20px;
+  background-color: #fff;
+  border: 1px solid rgb(0 0 0 / 12%);
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 4%);
+}
+
+/* Dark mode support for inline summary container */
+.pr-grading-inline-summary-container.dark-mode {
+  background-color: #2b2b2b;
+  border-color: rgb(255 255 255 / 15%);
+  box-shadow: none;
+}
+
+/* Horizontal scroll rail. Without this the four grade columns are squeezed until
+   the rightmost ones ("Unsatisfactory" / "Cannot find image") clip off the edge
+   on narrow screens. The table keeps a usable minimum width and scrolls instead. */
+.pr-grading-inline-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+
+  /* Firefox. Webkit equivalents below — without this Firefox keeps the default
+     near-invisible overlay bar that prompted this change. */
+  scrollbar-width: thin;
+  scrollbar-color: #b9b9b9 #ededed;
+}
+
+/* 10px tall so the bar is an easy pointer target on touch and trackpad. */
+.pr-grading-inline-table-scroll::-webkit-scrollbar {
+  height: 10px;
+}
+
+.pr-grading-inline-table-scroll::-webkit-scrollbar-track {
+  background-color: #ededed;
+  border-radius: 999px;
+}
+
+/* The transparent border + padding-box clip insets the thumb so it reads as a
+   separate object instead of fusing with the track at the ends. */
+.pr-grading-inline-table-scroll::-webkit-scrollbar-thumb {
+  background-color: #b9b9b9;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  border-radius: 999px;
+}
+
+.pr-grading-inline-table-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: #9a9a9a;
+}
+
+/* Dark mode: the light thumb above all but disappears on the #2b2b2b card, so
+   go high-contrast. Scoped through the container, which already carries the
+   dark-mode class, so the scroll wrapper itself needs no extra class. */
+.pr-grading-inline-summary-container.dark-mode .pr-grading-inline-table-scroll {
+  scrollbar-color: #666 #2b2b2b;
+}
+
+/* Darker than the #2b2b2b card, so the track and thumb separate from each other
+   as well as from the card behind them. */
+.pr-grading-inline-summary-container.dark-mode
+  .pr-grading-inline-table-scroll::-webkit-scrollbar-track {
+  background-color: #1f1f1f;
+}
+
+.pr-grading-inline-summary-container.dark-mode
+  .pr-grading-inline-table-scroll::-webkit-scrollbar-thumb {
+  background-color: #666;
+}
+
+.pr-grading-inline-summary-container.dark-mode
+  .pr-grading-inline-table-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: #888;
+}
+
+.pr-grading-inline-summary-table {
+  width: 100%;
+
+  /* Floor for the five columns. Below this the table stops shrinking and the
+     scroll rail above takes over rather than crushing the grade columns. */
+  min-width: 380px;
+  margin-bottom: 0;
+  border-collapse: collapse;
+}
+
+.pr-grading-inline-header-cell {
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+  text-align: center;
+  border-bottom: 1px solid rgb(0 0 0 / 8%);
+}
+
+.pr-grading-inline-header-cell.dark-mode {
+  color: #bbb;
+  border-bottom-color: rgb(255 255 255 / 10%);
+}
+
+.pr-grading-inline-header-cell.pr-grading-inline-pr-col {
+  text-align: left;
+}
+
+.pr-grading-inline-data-cell {
+  padding: 10px 12px;
+  vertical-align: middle;
+  border-top: 1px solid rgb(0 0 0 / 5%);
+}
+
+.pr-grading-inline-data-cell.dark-mode {
+  border-top-color: rgb(255 255 255 / 5%);
+}
+
+.pr-grading-inline-pr-cell {
+  width: 25%;
+  text-align: left;
+}
+
+.pr-grading-inline-pr-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 4px;
+}
+
+.pr-grading-inline-single-tag {
+  color: #333;
+  background-color: #e5e5e5;
+}
+
+.pr-grading-inline-single-tag.dark-mode {
+  color: #eee;
+  background-color: #444;
+}
+
+.pr-grading-inline-pair-tag {
+  color: #155724;
+  background-color: #c3e6cb;
+}
+
+.pr-grading-inline-pair-tag.dark-mode {
+  color: #a3e9b7;
+  background-color: #1b4d29;
+}
+
+.pr-grading-inline-checkbox-cell {
+  text-align: center;
+}
+
+.pr-grading-inline-checkbox {
+  width: 17px;
+  height: 17px;
+  cursor: pointer;
+  accent-color: #59359a;
+}
+
+/* Narrow phones (~420px and below). Reclaim horizontal space so the four grade
+   columns fit without scrolling where possible; the scroll rail above is the
+   fallback when they still don't. */
+@media (width <= 480px) {
+  .pr-grading-inline-summary-cell {
+    padding: 6px 8px 12px !important;
+  }
+
+  .pr-grading-inline-summary-container {
+    padding: 12px 10px;
+  }
+
+  .pr-grading-inline-header-cell,
+  .pr-grading-inline-data-cell {
+    padding: 8px 4px;
+  }
+
+  .pr-grading-inline-header-cell {
+    font-size: 11px;
+    line-height: 1.25;
+  }
+
+  /* The PR column is fixed-width on desktop; let the grade columns take the
+     remaining space instead of it hogging a quarter of a 420px viewport. */
+  .pr-grading-inline-pr-cell {
+    width: auto;
+    white-space: nowrap;
+  }
+
+  .pr-grading-inline-pr-tag {
+    padding: 2px 6px;
+    font-size: 12px;
+  }
 }
