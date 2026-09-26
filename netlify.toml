@@ -1,0 +1,7 @@
+[build]
+  command = "npm install && npm run build"
+  publish = "build"
+
+[build.environment]
+  NODE_VERSION = "20"
+  MISE_PYTHON_GITHUB_ATTESTATIONS = "false"
