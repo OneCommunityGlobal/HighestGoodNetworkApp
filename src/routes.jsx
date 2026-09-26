@@ -203,6 +203,9 @@ import StudentDashboard from './components/EductionPortal/StudentTasks/StudentDa
 import StudentTasks from './components/EductionPortal/StudentTasks/StudentTasks';
 import TaskDetails from './components/EductionPortal/StudentTasks/TaskDetails';
 import EducatorReports from './components/EductionPortal/EducatorReports';
+import DailyLogPage from './components/EductionPortal/DailyLogPage';
+import TimeLogDetail from './components/EductionPortal/TimeLogDetail';
+import { DailyLogProvider } from './components/EductionPortal/DailyLogContext';
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
 import PRDashboardOverview from './components/HGNPRDashboard/PRDashboardOverview';
 import PRDashboardPromotionEligibility from './components/HGNPRDashboard/PRDashboardPromotionEligibility';
@@ -1046,6 +1049,21 @@ export default (
           path="/educationportal/evaluation-results"
           exact
           component={EvaluationResultsWrapper}
+        />
+        <Route
+          path={['/educationportal/dailylog', '/educationportal/time-logs/:id']}
+          render={() => (
+            <DailyLogProvider>
+              <Switch>
+                <EPProtectedRoute path="/educationportal/dailylog" exact component={DailyLogPage} />
+                <EPProtectedRoute
+                  path="/educationportal/time-logs/:id"
+                  exact
+                  component={TimeLogDetail}
+                />
+              </Switch>
+            </DailyLogProvider>
+          )}
         />
         <EPProtectedRoute path="/educationportal/InsightWidget" component={InsightWidget} />
         <EPProtectedRoute
