@@ -797,7 +797,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
       // IMPROVED: Adaptive orbit radius based on device size
       let orbitFactor = 0.26;
       if (sizes.deviceType === 'extra-small') orbitFactor = 0.22;
-      else if (sizes.deviceType === 'small') orbitFactor = 0.26;
       else if (sizes.deviceType === 'tablet') orbitFactor = 0.28;
       else if (sizes.deviceType === 'large') orbitFactor = 0.3;
 
@@ -831,7 +830,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
         let y = centerY + radius * Math.sin(angle);
 
         // Ensure minimum distance from center
-        const distFromCenter = calculateDistance(x, y, centerX, centerY);
+        const distFromCenter = Math.hypot(x - centerX, y - centerY);
         const minCenterDist = centerSize + r + (isMobile ? 15 : 20);
 
         if (distFromCenter < minCenterDist && distFromCenter > 0) {
@@ -871,7 +870,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
 
             const dx = pos2.x - pos1.x;
             const dy = pos2.y - pos1.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
+            const dist = Math.hypot(dx, dy);
 
             // Minimum distance = sum of radii + gap (adaptive gap based on device)
             let gap = 20;
@@ -1215,7 +1214,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
       );
 
     const centerFontSize = sizes.centerFontSize;
-    const lineHeight = centerFontSize * 1.3;
+    //const lineHeight = centerFontSize * 1.3;
 
     // Single text: "Top Words" - positioned at top of circle to avoid overlap
     centerGroup
