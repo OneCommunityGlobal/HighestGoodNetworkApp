@@ -229,7 +229,7 @@ function PromotionConfirmationBox({ reviewer, onConfirm, onCancel, darkMode }) {
           className={`${styles['pr-grading-screen-modal-footer']} ${
             darkMode ? styles['dark-mode'] : ''
           }`}
-          style={{ gap: '12px' }}
+          style={{ gap: '12px', padding: '16px 24px', marginTop: '8px' }}
         >
           <button
             type="button"
