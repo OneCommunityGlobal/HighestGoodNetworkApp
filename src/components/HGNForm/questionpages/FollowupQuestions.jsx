@@ -200,8 +200,7 @@ function FollowupQuestions() {
   };
   const groupedData = groupFormDataByPage(newVolunteer, user.userid);
 
-  // TODO: Add logic to send groupedData to backend
-  const handleFormSubmission = e => {
+  const handleFormSubmission = async e => {
     e.preventDefault();
     const mernWorkExp = newVolunteer.followup_mern_work_experience;
     const mernWorkExpWordCount = getWordCount(mernWorkExp);
@@ -214,15 +213,16 @@ function FollowupQuestions() {
     }
 
     dispatch(setformData(newVolunteer));
-    axios
-      .post(ENDPOINTS.HGN_FORM_SUBMIT, groupedData)
-      .then(res => {
-        if (res.status === 201) toast.success('Form submitted successfully!');
-      })
-      .catch(error => {
-        if (error.response.status === 500) toast.error('Error submitting form. Please try again.');
-      });
-    navigate.push('/hgnform/page6');
+    try {
+      const res = await axios.post(ENDPOINTS.HGN_FORM_SUBMIT, groupedData);
+      if (res.status === 201) {
+        toast.success('Form submitted successfully!');
+        // Only leave this page once the submission is confirmed saved.
+        navigate.push('/hgnform/page6');
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.error || 'Error submitting form. Please try again.');
+    }
   };
 
   const handleBack = () => {
