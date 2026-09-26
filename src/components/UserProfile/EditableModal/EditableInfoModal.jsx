@@ -77,7 +77,7 @@ export class EditableInfoModal extends Component {
 
   // ✅ Centralized: derive modal state from collections + props
   deriveFromCollections = infoCollections => {
-    const { role, areaName, fontSize, isPermissionPage } = this.props;
+    const { role, areaName, fontSize, isPermissionPage, initialInfo } = this.props;
 
     let content = '';
     let visible = '0';
@@ -100,13 +100,16 @@ export class EditableInfoModal extends Component {
       (visible === '2' && role !== 'Volunteer');
 
     const CanEdit = role === 'Owner';
-
+    const contentToDisplay = () => {
+      if (content) return content;
+      return initialInfo ? initialInfo : 'Please input information!';
+    };
     return {
       infoElements: Array.isArray(infoCollections) ? [...infoCollections] : [],
       fetchError: this.props.fetchError,
       loading: this.props.loading,
       infoName: areaName,
-      infoContent: content || 'Please input information!',
+      infoContent: contentToDisplay(),
       visibility: visible,
       CanRead,
       CanEdit,
@@ -365,6 +368,7 @@ EditableInfoModal.propTypes = {
   areaName: PropTypes.string,
   fontSize: PropTypes.number,
   isPermissionPage: PropTypes.bool,
+  initialInfo: PropTypes.string,
   darkMode: PropTypes.bool,
 };
 

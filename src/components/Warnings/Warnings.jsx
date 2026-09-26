@@ -3,7 +3,7 @@ import moment from 'moment';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { Alert, Button } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import hasPermission from '~/utils/permissions';
 import { ENDPOINTS } from '~/utils/URL';
@@ -18,6 +18,7 @@ import WarningTrackerModal from './modals/WarningTrackerModal';
 import WarningIcons from './WarningIcons';
 import styles from './Warnings.module.css';
 import { permissions } from '../../utils/constants';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 // Better Descriptions (“i” = ,ltd = Please be more specific in your time log descriptions.)
 // Log Time to Tasks (“i” = ,lttt = Please log all time working on specific tasks to those tasks rather than the general category. )
 // Log Time as You Go (“i” = ,ltayg = Reminder to please log your time as you go. At a minimum, please log daily any time you work.)
@@ -33,6 +34,7 @@ export default function Warning({
 }) {
   const dispatch = useDispatch();
   const [usersWarnings, setUsersWarnings] = useState([]);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const [toggleWarningTrackerModal, setToggleWarningTrackerModal] = useState(false);
   const [toggle, setToggle] = useState(false);
@@ -179,7 +181,17 @@ export default function Warning({
     ? usersWarnings.map(warning => (
         <div className={`${styles['warning-item-container']}`} key={warning.title}>
           <div className={`${styles['warning-wrapper']}`}>
-            <p className={`${styles['warning-text']}`}> {warning.title}</p>
+            <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+              <p className={`${styles['warning-text']}`}> {warning.title}</p>
+              <EditableInfoModal
+                role={userRole}
+                areaName={`${warning?.title}Info`}
+                areaTitle={`${warning?.title} Tracker`}
+                fontSize={20}
+                initialInfo={warning?.description}
+                darkMode={darkMode}
+              />
+            </div>
             <WarningIcons
               warnings={warning.warnings}
               warningText={warning.title}
