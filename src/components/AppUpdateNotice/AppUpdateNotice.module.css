@@ -1,0 +1,60 @@
+.appUpdateNotice {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.6rem 0.9rem;
+  background-color: #e8f1fd;
+  border-left: 4px solid #1a73e8;
+  color: #1b2a3a;
+}
+
+.appUpdateNoticeDark {
+  background-color: #1f3350;
+  border-left-color: #6ea8ff;
+  color: #e6eef8;
+}
+
+.appUpdateNoticeText {
+  flex: 1;
+  min-width: 0;
+}
+
+.appUpdateNoticeMessage {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.appUpdateNoticeMessage + .appUpdateNoticeMessage {
+  margin-top: 0.2rem;
+  font-weight: 600;
+}
+
+.appUpdateNoticeInfoButton {
+  padding: 0 0.15rem;
+  border: none;
+  background: none;
+  color: inherit;
+  cursor: help;
+  vertical-align: baseline;
+}
+
+.appUpdateNoticeClose {
+  padding: 0 0.25rem;
+  border: none;
+  background: none;
+  color: inherit;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.appUpdateNoticeInfoButton:focus-visible,
+.appUpdateNoticeClose:focus-visible {
+  outline: 2px solid currentcolor;
+  outline-offset: 2px;
+}
