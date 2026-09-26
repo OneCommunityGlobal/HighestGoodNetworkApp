@@ -43,6 +43,44 @@ import SetupNewUserPopup from './setupNewUserPopup';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { scheduleDeactivationAction, activateUserAction, deactivateImmediatelyAction } from '../../actions/userLifecycleActions';
 
+const matchesNameSearch = (name, searchText) => {
+  // Ignore leading spaces, but preserve trailing spaces because a trailing space changes the search behavior.
+  const trimmedSearch = searchText.trimStart();
+
+  // An empty search should match all names.
+  if (!trimmedSearch) {
+    return true;
+  }
+
+  const normalizedSearch = trimmedSearch.toLowerCase();
+  const normalizedName = name.toLowerCase();
+
+  // Without a trailing space, perform the normal substring search. 
+  // For example, "li" matches "Liam", "Olivia", and "Li"
+  if (!/\s$/.test(searchText)) {
+    return normalizedName.includes(normalizedSearch);
+  }
+
+  // A trailing space indicates that the search text should be treated as a complete word or phrase rather than a partial match.
+  // Remove the trailing space so it can be used to check word boundaries.
+  const searchWithoutTrailingSpace = normalizedSearch.trimEnd();
+
+  return (
+
+    // The entire name is an exact match.
+    normalizedName === searchWithoutTrailingSpace ||
+
+    // The search term appears at the beginning of a multi-word name.
+    normalizedName.startsWith(`${searchWithoutTrailingSpace} `) ||
+
+    // The search term appears as a complete word in the middle of the name.
+    normalizedName.includes(` ${searchWithoutTrailingSpace} `) ||
+
+    // The search term appears as a complete word at the end of the name.
+    normalizedName.endsWith(` ${searchWithoutTrailingSpace}`)
+  );
+};
+
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
 
@@ -368,26 +406,8 @@ class UserManagement extends React.PureComponent {
       const lastName = user.lastName.toLowerCase();
       const email = user.email ? user.email.toLowerCase() : '';
 
-      const trimmedFirstNameSearch = firstNameSearch.trim();
-      const trimmedLastNameSearch = lastNameSearch.trim();
-
-      // Remove whitespace from both stored names and search input so typed spaces do not change name matching.
-      const normalizedFirstName = firstName.replaceAll(/\s+/g, '');
-      const normalizedFirstNameSearch = trimmedFirstNameSearch.toLowerCase().replaceAll(/\s+/g, '');
-      const normalizedLastName = lastName.replaceAll(/\s+/g, '');
-      const normalizedLastNameSearch = trimmedLastNameSearch.toLowerCase().replaceAll(/\s+/g, '');
-
-      let firstNameMatches = true;
-      if (trimmedFirstNameSearch) {
-        // Name column filters intentionally use includes() so whitespace-normalized partial searches still work.
-        firstNameMatches = normalizedFirstName.includes(normalizedFirstNameSearch);
-      }
-
-      let lastNameMatches = true;
-      if (trimmedLastNameSearch) {
-        // Name column filters intentionally use includes() so whitespace-normalized partial searches still work.
-        lastNameMatches = normalizedLastName.includes(normalizedLastNameSearch);
-      }
+      const firstNameMatches = matchesNameSearch(user.firstName, firstNameSearch);
+      const lastNameMatches = matchesNameSearch(user.lastName, lastNameSearch);
 
       let wildcardMatches = true;
       if (wildCardSearch) {
