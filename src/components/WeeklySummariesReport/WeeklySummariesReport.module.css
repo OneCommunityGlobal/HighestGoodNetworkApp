@@ -176,6 +176,46 @@
   justify-content: space-between;
 }
 
+.teamCodeSelectRow {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.teamCodeSelect {
+  flex: 1;
+  min-width: 0;
+}
+
+.teamCodeWarningButton {
+  flex: none;
+  padding: 0;
+  margin-right: 8px;
+  border: 0;
+  background: transparent;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.teamCodeWarningButton:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+.teamCodeWarningButtonActive {
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px currentColor;
+}
+
+.mismatchFilterStatus {
+  margin: 8px 0;
+  padding: 8px 12px;
+  border-left: 4px solid #dc3545;
+  background-color: #fce9ec;
+  color: #842029;
+}
+
 .filterStyle {
   display: flex;
   align-items: center;
