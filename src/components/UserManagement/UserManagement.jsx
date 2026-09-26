@@ -13,9 +13,10 @@ import { Table } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { getAllRoles } from '../../actions/role';
 import {
-  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+  permissions,
 } from '../../utils/constants';
 import {
   getAllUserProfile,
@@ -370,26 +371,22 @@ class UserManagement extends React.PureComponent {
       const trimmedFirstNameSearch = firstNameSearch.trim();
       const trimmedLastNameSearch = lastNameSearch.trim();
 
-      const isFirstNameExactMatch =
-        firstNameSearch.endsWith(' ') && trimmedFirstNameSearch.length > 0;
-      const isLastNameExactMatch = lastNameSearch.endsWith(' ') && trimmedLastNameSearch.length > 0;
+      // Remove whitespace from both stored names and search input so typed spaces do not change name matching.
+      const normalizedFirstName = firstName.replaceAll(/\s+/g, '');
+      const normalizedFirstNameSearch = trimmedFirstNameSearch.toLowerCase().replaceAll(/\s+/g, '');
+      const normalizedLastName = lastName.replaceAll(/\s+/g, '');
+      const normalizedLastNameSearch = trimmedLastNameSearch.toLowerCase().replaceAll(/\s+/g, '');
 
       let firstNameMatches = true;
       if (trimmedFirstNameSearch) {
-        if (isFirstNameExactMatch) {
-          firstNameMatches = firstName === trimmedFirstNameSearch.toLowerCase();
-        } else {
-          firstNameMatches = firstName.includes(trimmedFirstNameSearch.toLowerCase());
-        }
+        // Name column filters intentionally use includes() so whitespace-normalized partial searches still work.
+        firstNameMatches = normalizedFirstName.includes(normalizedFirstNameSearch);
       }
 
       let lastNameMatches = true;
       if (trimmedLastNameSearch) {
-        if (isLastNameExactMatch) {
-          lastNameMatches = lastName === trimmedLastNameSearch.toLowerCase();
-        } else {
-          lastNameMatches = lastName.includes(trimmedLastNameSearch.toLowerCase());
-        }
+        // Name column filters intentionally use includes() so whitespace-normalized partial searches still work.
+        lastNameMatches = normalizedLastName.includes(normalizedLastNameSearch);
       }
 
       let wildcardMatches = true;
@@ -485,8 +482,7 @@ class UserManagement extends React.PureComponent {
       }
       return;
     }
-    const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests');
-
+const canManageTimeOffRequests = this.props.hasPermission(permissions.manageTimeOffRequests);
     const hasRolePermission =
       this.props.state.auth.user.role === 'Administrator' || this.props.state.auth.user.role === 'Owner';
     if (canManageTimeOffRequests || hasRolePermission) {

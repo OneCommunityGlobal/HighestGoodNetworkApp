@@ -18,6 +18,7 @@ function MaterialListView() {
   const materials = useSelector(state => state.materials.materialslist);
   const errors = useSelector(state => state.errors);
   const postMaterialUpdateResult = useSelector(state => state.materials.updateMaterials);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showOnlyLowStock, setShowOnlyLowStock] = useState(false);
@@ -82,7 +83,7 @@ function MaterialListView() {
   ];
 
   return (
-    <Container fluid className="p-0">
+    <Container fluid className="p-0" style={darkMode ? { backgroundColor: '#0f1b2b' } : undefined}>
       <ItemListView
         itemType="Materials"
         items={filteredMaterials}
