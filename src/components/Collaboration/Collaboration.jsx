@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import styles from './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
 import WhatWeDoSection from '../WhatWeDo/WhatWeDo';
+import hasPermission from '~/utils/permissions';
+import JobReorderModal from './JobReorderModal';
 import FAQSection from './FAQSection';
 
 function getColumnsFromMQ() {
@@ -38,15 +40,21 @@ function dedupeJobsByTitle(jobs) {
   const seen = new Set();
   return jobs.filter(job => {
     if (!job) return false;
+
     const title = String(job.title || '')
       .trim()
       .toLowerCase();
+
     const category = String(job.category || 'General')
       .trim()
       .toLowerCase();
+
     if (!title) return false;
+
     const key = `${title}|${category}`;
+
     if (seen.has(key)) return false;
+
     seen.add(key);
     return true;
   });
@@ -67,7 +75,16 @@ function Collaboration() {
   const [columns, setColumns] = useState(() => getColumnsFromMQ());
   const [loadingJobs, setLoadingJobs] = useState(true);
   const [jobsFetchError, setJobsFetchError] = useState(null);
-  // KEEP ACTIVE TAB (required)
+
+  // Job reorder
+  const [isReorderModalOpen, setIsReorderModalOpen] = useState(false);
+
+  const dispatch = useDispatch();
+
+  const userHasPermission = perm => dispatch(hasPermission(perm));
+  const canReorderJobs = userHasPermission('reorderJobs');
+
+  // KEEP ACTIVE TAB
   const [activeTab, setActiveTab] = useState('jobPostings');
 
   const darkMode = useSelector(state => state.theme?.darkMode);
@@ -77,12 +94,10 @@ function Collaboration() {
     setActiveTab(tab);
 
     if (tab === 'whatWeDo') {
-      // Leaving job/summaries view
       setSummaries(null);
     }
 
     if (tab === 'jobPostings') {
-      // Returning to job postings
       setSummaries(null);
     }
 
@@ -94,11 +109,10 @@ function Collaboration() {
     return columns * rows;
   };
 
-  // Get category-specific image - using high-quality relevant images
+  // Get category-specific image
   const getCategoryImage = category => {
     const categoryLower = (category || 'General').toLowerCase();
 
-    // Category to image URL mapping (grouped by image to reduce duplication)
     const categoryImageMap = [
       {
         keywords: ['software', 'it', 'programming'],
@@ -146,23 +160,25 @@ function Collaboration() {
       },
     ];
 
-    // Find matching category
     for (const { keywords, url } of categoryImageMap) {
       if (keywords.some(keyword => categoryLower.includes(keyword))) {
         return url;
       }
     }
 
-    // Default General category - Professional workspace
     return 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=640&h=480&fit=crop&q=80';
   };
 
-  // Group jobs by category
+  // Group jobs by category.
+  // The order of the first job for each category determines
+  // the order of the category cards on the landing page.
   const getUniqueCategories = () => {
     const categoryMap = new Map();
+
     jobAds.forEach(ad => {
       if (ad?.category) {
         const cat = ad.category;
+
         if (!categoryMap.has(cat)) {
           categoryMap.set(cat, {
             category: cat,
@@ -170,14 +186,17 @@ function Collaboration() {
             firstJob: ad,
           });
         }
+
         categoryMap.get(cat).count++;
       }
     });
+
     return Array.from(categoryMap.values());
   };
 
   const fetchJobAds = async (overrides = {}) => {
     const adsPerPage = calculateAdsPerPage();
+
     const page = overrides.page ?? currentPage;
     const search = overrides.search ?? searchTerm;
     const category = overrides.category ?? selectedCategory;
@@ -190,25 +209,36 @@ function Collaboration() {
         `${ApiEndpoint}/jobs?page=${page}&limit=${adsPerPage}` +
           `&search=${encodeURIComponent(search)}` +
           `&category=${encodeURIComponent(category)}`,
-        { method: 'GET', signal: AbortSignal.timeout(15000) },
+        {
+          method: 'GET',
+          signal: AbortSignal.timeout(15000),
+        },
       );
 
-      if (!response.ok) throw new Error(`Failed to fetch jobs: ${response.statusText}`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch jobs: ${response.statusText}`);
+      }
 
       const data = await response.json();
+
       const jobs = dedupeJobsByTitle(Array.isArray(data?.jobs) ? data.jobs : []);
+
       setJobAds(jobs);
       setTotalPages(data?.pagination?.totalPages || 0);
     } catch (error) {
       console.error('Error fetching jobs:', error);
+
       setJobAds([]);
       setTotalPages(0);
+
       const isTimeout = error?.name === 'TimeoutError' || error?.name === 'AbortError';
+
       setJobsFetchError(
         isTimeout
           ? 'Jobs API timed out. Ensure HGNRest is running on port 4500 and MongoDB is connected.'
           : 'Could not load jobs. Ensure the backend is running (npm start in HGNRest).',
       );
+
       toast.error('Error fetching jobs');
     } finally {
       setLoadingJobs(false);
@@ -217,13 +247,20 @@ function Collaboration() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`${ApiEndpoint}/jobs/categories`, { method: 'GET' });
-      if (!response.ok) throw new Error(`Failed to fetch categories: ${response.statusText}`);
+      const response = await fetch(`${ApiEndpoint}/jobs/categories`, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch categories: ${response.statusText}`);
+      }
 
       const data = await response.json();
+
       const sorted = Array.isArray(data?.categories)
         ? [...data.categories].sort((a, b) => a.localeCompare(b))
         : [];
+
       setCategories(sorted);
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -231,7 +268,9 @@ function Collaboration() {
     }
   };
 
-  const handleSearch = e => setSearchTerm(e.target.value);
+  const handleSearch = e => {
+    setSearchTerm(e.target.value);
+  };
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -240,39 +279,61 @@ function Collaboration() {
     setActiveTab('jobPostings');
     setCurrentPage(1);
 
-    fetchJobAds();
+    // Pass page/search explicitly because state updates are asynchronous.
+    fetchJobAds({
+      page: 1,
+      search: searchTerm,
+      category: selectedCategory,
+    });
   };
 
   const handleCategoryChange = e => {
     const selectedValue = e.target.value;
+
     setSelectedCategory(selectedValue || '');
     setCurrentPage(1);
     setSummaries(null);
     setActiveTab('jobPostings');
-    fetchJobAds({ category: selectedValue || '', page: 1 });
+
+    fetchJobAds({
+      category: selectedValue || '',
+      page: 1,
+      search: searchTerm,
+    });
   };
 
   const handleResetFilters = async () => {
     try {
       const adsPerPage = calculateAdsPerPage();
+
       const response = await fetch(`${ApiEndpoint}/jobs/reset-filters?page=1&limit=${adsPerPage}`, {
         method: 'GET',
       });
 
-      if (!response.ok) throw new Error(`Failed to reset filters: ${response.statusText}`);
+      if (!response.ok) {
+        throw new Error(`Failed to reset filters: ${response.statusText}`);
+      }
 
       const data = await response.json();
+
       setSearchTerm('');
       setSelectedCategory('');
       setCurrentPage(1);
+
       setJobAds(dedupeJobsByTitle(Array.isArray(data?.jobs) ? data.jobs : []));
+
       setTotalPages(data?.pagination?.totalPages || 0);
+
       setSummaries(null);
       setSummariesAll([]);
       setSummariesPage(1);
       setSummariesTotalPages(0);
       setActiveTab('jobPostings');
-      globalThis.scrollTo({ top: 0, behavior: 'smooth' });
+
+      globalThis.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      });
     } catch (error) {
       console.error('Error resetting filters:', error);
       toast.error('Error resetting filters');
@@ -281,29 +342,52 @@ function Collaboration() {
 
   const setPage = pageNumber => {
     setCurrentPage(pageNumber);
-    fetchJobAds();
-    globalThis.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Pass the requested page explicitly because setState is asynchronous.
+    fetchJobAds({
+      page: pageNumber,
+      search: searchTerm,
+      category: selectedCategory,
+    });
+
+    globalThis.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
   };
 
   const handleShowSummaries = async () => {
     try {
       setActiveTab('jobPostings');
+
       const response = await fetch(
         `${ApiEndpoint}/jobs/summaries?search=${encodeURIComponent(searchTerm)}` +
           `&category=${encodeURIComponent(selectedCategory)}`,
-        { method: 'GET' },
+        {
+          method: 'GET',
+        },
       );
 
-      if (!response.ok) throw new Error(`Failed to fetch summaries: ${response.statusText}`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch summaries: ${response.statusText}`);
+      }
 
       const data = await response.json();
+
       const summariesData = dedupeJobsByTitle(Array.isArray(data?.jobs) ? data.jobs : []);
 
-      setSummaries({ jobs: summariesData });
+      setSummaries({
+        jobs: summariesData,
+      });
+
       setSummariesAll(summariesData);
       setSummariesPage(1);
       setSummariesTotalPages(Math.max(1, Math.ceil(summariesData.length / summariesPageSize)));
-      globalThis.scrollTo({ top: 0, behavior: 'smooth' });
+
+      globalThis.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      });
     } catch (error) {
       console.error('Error fetching summaries:', error);
       toast.error('Error fetching summaries');
@@ -312,13 +396,18 @@ function Collaboration() {
 
   const handleSetSummariesPage = page => {
     setSummariesPage(clampPage(page, summariesTotalPages));
-    globalThis.scrollTo({ top: 0, behavior: 'smooth' });
+
+    globalThis.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
   };
 
   const navigateToJobApplication = (ad, jobTitle, jobCategory) => {
     try {
       if (history && typeof history.push === 'function') {
         const search = jobTitle ? `?jobTitle=${encodeURIComponent(jobTitle)}` : '';
+
         history.push({
           pathname: '/job-application',
           search,
@@ -341,20 +430,30 @@ function Collaboration() {
 
   const handleResize = debounce(() => {
     const newCols = getColumnsFromMQ();
+
     if (newCols === columns) return;
+
     setColumns(newCols);
     setCurrentPage(1);
-    fetchJobAds();
+
+    fetchJobAds({
+      page: 1,
+      search: searchTerm,
+      category: selectedCategory,
+    });
   }, 200);
 
   // Initial fetch and setup
   useEffect(() => {
     fetchJobAds();
     fetchCategories();
+
     globalThis.addEventListener('resize', handleResize);
+
     return () => {
       globalThis.removeEventListener('resize', handleResize);
     };
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -363,8 +462,56 @@ function Collaboration() {
     if (currentPage > 0) {
       fetchJobAds();
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
+
+  const toggleReorderModal = () => {
+    setIsReorderModalOpen(prevState => !prevState);
+  };
+
+  /*
+   * Build the exact items currently displayed on the landing page.
+   *
+   * No search + no category:
+   *   The landing page displays category cards.
+   *
+   * Search/category selected:
+   *   The landing page displays individual jobs.
+   */
+  const getReorderItems = () => {
+    const uniqueCategories = getUniqueCategories();
+
+    if (!searchTerm && !selectedCategory) {
+      return uniqueCategories.map(category => ({
+        type: 'category',
+        category: category.category,
+        count: category.count,
+        firstJob: category.firstJob,
+      }));
+    }
+
+    return jobAds
+      .filter(job => job?._id)
+      .map(job => ({
+        type: 'job',
+        id: job._id,
+        title: job.title || 'Untitled Position',
+        category: job.category || 'General',
+        job,
+      }));
+  };
+
+  /*
+   * After reordering, refresh the same view that the user was looking at.
+   */
+  const handleJobsReordered = () => {
+    fetchJobAds({
+      page: currentPage,
+      search: searchTerm,
+      category: selectedCategory,
+    });
+  };
 
   const renderSummaries = () => {
     const start = (summariesPage - 1) * summariesPageSize;
@@ -396,6 +543,7 @@ function Collaboration() {
             >
               What We Do
             </button>
+
             <div className={styles.navbarLeft}>
               <form className={styles.searchForm} onSubmit={handleSubmit}>
                 <input
@@ -404,12 +552,15 @@ function Collaboration() {
                   value={searchTerm}
                   onChange={handleSearch}
                 />
+
                 <button className={styles.searchButton} type="submit">
                   Go
                 </button>
+
                 <button className={styles.resetButton} type="button" onClick={handleResetFilters}>
                   Reset
                 </button>
+
                 <button
                   className={styles.showSummaries}
                   type="button"
@@ -417,12 +568,23 @@ function Collaboration() {
                 >
                   Show Summaries
                 </button>
+
+                {canReorderJobs && (
+                  <button
+                    className={`btn btn-secondary ${styles.reorderButton}`}
+                    type="button"
+                    onClick={toggleReorderModal}
+                  >
+                    Edit to Reorder
+                  </button>
+                )}
               </form>
             </div>
 
             <div className={styles.navbarRight}>
               <select value={selectedCategory} onChange={handleCategoryChange}>
                 <option value="">Select from Categories</option>
+
                 {categories.map(c => (
                   <option key={c} value={c}>
                     {c}
@@ -446,7 +608,9 @@ function Collaboration() {
                       {summary.title}
                     </a>
                   </h3>
+
                   <p>{summary.description}</p>
+
                   <p className={styles.date}>
                     Date Posted:{' '}
                     {summary.datePosted ? new Date(summary.datePosted).toLocaleDateString() : '—'}
@@ -501,6 +665,7 @@ function Collaboration() {
           >
             What We Do
           </button>
+
           <div className={styles.navbarLeft}>
             <form className={styles.searchForm} onSubmit={handleSubmit}>
               <input
@@ -509,21 +674,35 @@ function Collaboration() {
                 value={searchTerm}
                 onChange={handleSearch}
               />
+
               <button className={styles.searchButton} type="submit">
                 Go
               </button>
+
               <button className={styles.resetButton} type="button" onClick={handleResetFilters}>
                 Reset
               </button>
+
               <button className={styles.showSummaries} type="button" onClick={handleShowSummaries}>
                 Show Summaries
               </button>
+
+              {canReorderJobs && (
+                <button
+                  className={`btn btn-secondary ${styles.reorderButton}`}
+                  type="button"
+                  onClick={toggleReorderModal}
+                >
+                  Edit to Reorder
+                </button>
+              )}
             </form>
           </div>
 
           <div className={styles.navbarRight}>
             <select value={selectedCategory} onChange={handleCategoryChange}>
               <option value="">Select From Positions</option>
+
               {categories.map(c => (
                 <option key={c} value={c}>
                   {c}
@@ -532,6 +711,7 @@ function Collaboration() {
             </select>
           </div>
         </nav>
+
         {activeTab === 'whatWeDo' ? (
           <WhatWeDoSection />
         ) : (
@@ -555,9 +735,11 @@ function Collaboration() {
 
                 if (shouldShowCategories) {
                   const uniqueCategories = getUniqueCategories();
+
                   if (uniqueCategories.length > 0) {
                     return uniqueCategories.map(catInfo => {
                       const categoryName = catInfo.category || 'General';
+
                       const categoryImage = getCategoryImage(categoryName);
 
                       return (
@@ -570,7 +752,12 @@ function Collaboration() {
                             setCurrentPage(1);
                             setSummaries(null);
                             setActiveTab('jobPostings');
-                            fetchJobAds({ category: categoryName, page: 1 });
+
+                            fetchJobAds({
+                              category: categoryName,
+                              page: 1,
+                              search: searchTerm,
+                            });
                           }}
                         >
                           <img
@@ -583,6 +770,7 @@ function Collaboration() {
                                 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=640&h=480&fit=crop&q=80';
                             }}
                           />
+
                           <h3 className={styles.categoryTitle}>{categoryName.toUpperCase()}</h3>
                         </button>
                       );
@@ -593,8 +781,11 @@ function Collaboration() {
                 if (jobAds.length > 0) {
                   return jobAds.map(ad => {
                     if (!ad?._id) return null;
+
                     const jobTitle = ad.title || 'Untitled Position';
+
                     const jobCategory = ad.category || 'General';
+
                     const jobImageUrl = getCategoryImage(jobCategory);
 
                     return (
@@ -614,6 +805,7 @@ function Collaboration() {
                               'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=640&h=480&fit=crop&q=80';
                           }}
                         />
+
                         <h3>
                           {jobTitle} - {jobCategory}
                         </h3>
@@ -648,6 +840,16 @@ function Collaboration() {
           </>
         )}
       </div>
+
+      <JobReorderModal
+        isOpen={isReorderModalOpen}
+        toggle={toggleReorderModal}
+        onJobsReordered={handleJobsReordered}
+        darkMode={darkMode}
+        items={getReorderItems()}
+        selectedCategory={selectedCategory}
+        searchTerm={searchTerm}
+      />
     </div>
   );
 }
