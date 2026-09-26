@@ -149,7 +149,6 @@ import JobsHitsApplicationsChart from './components/JobAnalytics/JobsHitsApplica
 import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
 import ReturnedLateChart from './components/BMDashboard/RentalChart/ReturnedLateChart';
 import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
-// import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
 import HoursPledgedChart from './components/JobAnalytics/HoursPledgedChart/HoursPledgedChart';
 import InjurySeverityDashboard from './components/BMDashboard/Injuries/InjurySeverityChart';
 // Community Portal
@@ -163,7 +162,6 @@ import ReschedulePoll from './components/CommunityPortal/Activities/ReschedulePo
 import ActivityComments from './components/CommunityPortal/Activities/activityId/ActivityComments';
 import Feedbackform from './components/CommunityPortal/Activities/Feedbackform';
 import FollowUpEmailTemplate from './components/CommunityPortal/Activities/FollowUpEmailTemplate';
-// import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 import ActivityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
 import Register from './components/CommunityPortal/Activities/Register/Register';
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
@@ -234,8 +232,6 @@ import MaterialUtilizationChart from './components/MaterialUtilization/MaterialU
 
 // High Good Education
 import StudentBadgeGallery from './components/StudentBadgeGallery/StudentBadgeGallery';
-
-// Social Architecture
 
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
@@ -332,7 +328,6 @@ const SuggestedJobsListBuilder = lazy(() => import('./components/Collaboration/S
 export default (
   <Switch>
     {/* ----- LB Dashboard Routing Starts----- */}
-    {/* If it's possible incorporate this route with others without the header, please do */}
     <Route path="/lbdashboard/login" component={LBLogin} />
     <Route path="/lbdashboard/register" component={LBRegister} />
     {/* Protected Routes for lbdashboard */}
@@ -386,12 +381,6 @@ export default (
     <Route path="/hours-pledged-chart" component={HoursPledgedChart} />
     <Route path="/TestEventReg" component={TestEventRegistration} />
     <>
-      {/* Comment out the Header component and its import during phase 2 development. */}
-      {/* Uncomment BMHeader and its import during phase 2 development. */}
-
-      {/* <BMHeader /> */}
-
-      {/* This will render CPHeader to the page whose path starts with /communityportal i.e Phase III */}
       <HeaderRenderer />
 
       <AutoUpdate />
@@ -645,7 +634,6 @@ export default (
             UserRole.Owner,
             UserRole.Mentor,
           ]}
-          // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
           routePermissions={RoutePermissions.weeklySummariesReport}
         />
         <ProtectedRoute
@@ -660,7 +648,6 @@ export default (
             UserRole.Owner,
             UserRole.Mentor,
           ]}
-          // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
           routePermissions={RoutePermissions.weeklySummariesReport}
         />
         <ProtectedRoute
@@ -718,7 +705,6 @@ export default (
           exact
           component={AnalyticsDashboard}
           fallback
-          // allowedRoles={[UserRole.Administrator, UserRole.Owner]}
         />
         <ProtectedRoute
           path="/analytics/roles-hits-and-applications"
@@ -806,7 +792,6 @@ export default (
         <BMProtectedRoute path="/bmdashboard/consumables" fallback component={ConsumableListView} />
         <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialListView} />
         <BMProtectedRoute path="/bmdashboard/reusables" fallback component={ReusableListView} />
-        {/* Note: equipment detail route defined above; duplicates removed */}
         <BMProtectedRoute
           path="/bmdashboard/tools/:equipmentId/update"
           component={UpdateEquipment}
@@ -994,7 +979,6 @@ export default (
           routePermissions={RoutePermissions.resourceManagement}
         />
         {/* Listing and Bidding Routes - Additional routes with parameters */}
-        <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
         <LBProtectedRoute path="/lbdashboard/listOverview/:id" exact component={ListOveriew} />
         <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
         <Route path="/lbdashboard/login" component={LBLogin} />
@@ -1011,7 +995,7 @@ export default (
         />
         <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
         <LBProtectedRoute path="/lbdashboard/bidding" exact component={BiddingHomepage} />
-        {/* Good Education  Portal Routes */}
+        {/* Good Education Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
         <ProtectedRoute
@@ -1093,10 +1077,6 @@ export default (
           exact
           component={DatabaseDesign}
         />
-        {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
-        {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
-        {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
-        {/* ----- END BM Dashboard Routing ----- */}
         {/* ----- Kitchen and Inventory Portal Routes ----- */}
         <ProtectedRoute path="/kitchenandinventory" exact component={KIDashboard} />
         <ProtectedRoute path="/kitchenandinventory/inventory" exact component={KIINVENTORY} />
@@ -1143,8 +1123,7 @@ export default (
           exact
           component={StudentBadgeGallery}
           fallback
-        />{' '}
-        {/*Student Page Badge component*/}
+        />
         <ProtectedRoute path="/promotiontable" exact component={PromotionTable} />
         <ProtectedRoute path="/memberlist" exact component={MemberList} />
         <Route path="/Logout" component={Logout} />
@@ -1197,16 +1176,14 @@ export default (
         />
         <ProtectedRoute path="/actual-cost-breakdown" component={ActualCostBreakdown} fallback />
         <ProtectedRoute path="/prPromotionsPage" component={PRPromotionsPage} fallback />
-        <ProtectedRoute path="/pr-grading-screen" exact component={PRGradingScreen} />
         <ProtectedRoute path="/pr-grading-test" exact component={PRGradingTest} />
-        {/* //temporary route for testing - delete after testing */}
         <ProtectedRoute path="/" exact component={Dashboard} />
         <ProtectedRoute
           path="/collaboration/analytics"
           exact
           component={ApplicantSourceDonutChart}
         />
-        {/* ----- PR Dashboard  ----- */}
+        {/* ----- PR Dashboard ----- */}
         <ProtectedRoute
           path="/pr-dashboard/promotion-eligibility"
           exact
@@ -1237,7 +1214,7 @@ export default (
           component={ReviewersRequirementChart}
           fallback
         />
-        {/* /*  for support team*/}
+        {/* Support Team Routes */}
         <Route path="/support/login" component={SupportLogin} />
         <Route path="/support/dashboard" component={SupportDashboard} />
         <Route path="/support/log/:studentId" component={SupportLogViewer} />
@@ -1247,12 +1224,8 @@ export default (
           exact
           component={PRReviewTeamAnalytics}
         />
-        <ProtectedRoute
-          path="/pr-grading-dashboard"
-          exact
-          component={PRGradingDashboard}
-          fallback
-        />
+
+        <ProtectedRoute path="/pr-grading-screen" exact component={PRGradingScreen} fallback />
         <ProtectedRoute path="/pr-dashboard/overview" exact component={PRDashboardOverview} />
         <ProtectedRoute path="/pr-dashboard/analytics" exact component={PRReviewTeamAnalytics} />
         {/* <ProtectedRoute

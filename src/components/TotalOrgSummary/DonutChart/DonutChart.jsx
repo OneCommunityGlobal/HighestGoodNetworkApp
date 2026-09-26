@@ -83,7 +83,12 @@ function DonutChart(props) {
         lineColor: labelTextColor,
         backgroundColor: labelBoxBackground,
         borderColor: labelBoxBorder,
-        formatter: ({ value, percentage }) => [`${value}`, `(${percentage}%)`],
+        formatter: ({ value, percentage }) => {
+          const formattedPct = Number.isFinite(percentage)
+            ? percentage.toFixed(1)
+            : Number(percentage || 0).toFixed(1);
+          return [`${value}`, `(${formattedPct}%)`];
+        },
       },
     },
     interaction: {
