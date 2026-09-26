@@ -51,7 +51,11 @@
   justify-content: center;
   gap: 0.28rem;
   width: 52%;
-  max-width: 7rem;
+
+  /* The hole is ~110px across at the default cutout; 7rem (112px) let a one-line
+     comparison label ("+0% WEEK OVER WEEK") run past it, under the ring canvas
+     drawn above. 6rem forces wrapping so every line stays inside the hole. */
+  max-width: 6rem;
   pointer-events: none;
 }
 

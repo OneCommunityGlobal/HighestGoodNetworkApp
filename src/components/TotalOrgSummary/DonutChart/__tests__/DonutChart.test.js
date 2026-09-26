@@ -1,4 +1,39 @@
-import { buildDonutTooltipOptions, formatLegendLabel } from '../DonutChart';
+import { createElement } from 'react';
+import { render } from '@testing-library/react';
+import DonutChart, { buildDonutTooltipOptions, formatLegendLabel } from '../DonutChart';
+
+// Chart.js draws to a <canvas> jsdom doesn't implement; capture the options instead.
+let lastDoughnutProps;
+vi.mock('react-chartjs-2', () => ({
+  Doughnut: props => {
+    lastDoughnutProps = props;
+    return null;
+  },
+}));
+
+const renderDonut = comparisonType =>
+  render(
+    createElement(DonutChart, {
+      title: 'TOTAL BLUE SQUARES',
+      totalCount: 6385,
+      percentageChange: 0,
+      data: [{ label: 'Missing Hours', value: 464 }],
+      colors: ['#2ec5f5'],
+      comparisonType,
+    }),
+  );
+
+describe('DonutChart center hole', () => {
+  it('keeps the default hole when no comparison line is shown', () => {
+    renderDonut('No Comparison');
+    expect(lastDoughnutProps.options.cutout).toBe('62%');
+  });
+
+  it('widens the hole so the comparison line stays inside the ring', () => {
+    renderDonut('Week Over Week');
+    expect(lastDoughnutProps.options.cutout).toBe('70%');
+  });
+});
 
 describe('formatLegendLabel', () => {
   it('matches the Role Distribution key format', () => {

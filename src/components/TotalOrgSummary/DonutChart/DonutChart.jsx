@@ -91,7 +91,9 @@ function DonutChart(props) {
       intersect: true,
     },
     maintainAspectRatio: false,
-    cutout: '62%',
+    // The comparison line adds extra rows of center text that don't fit the default
+    // hole, so widen the hole while it's showing (same approach as Volunteer Status).
+    cutout: comparisonType !== 'No Comparison' ? '70%' : '62%',
     layout: {
       padding: {
         top: 28,
