@@ -44,8 +44,11 @@ const AssignTeamCodeField = React.memo(props => {
         value={searchText}
         onFocus={() => toggle(true)}
         onChange={e => {
-          onInputChange(e.target.value);
-          toggle(true);
+        const nextValue = e.target.value;
+
+        onInputChange(nextValue);
+        toggle(true);
+        onDropDownSelect(nextValue);
         }}
         style={{
           borderColor: isError ? 'red' : '',
