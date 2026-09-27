@@ -45,7 +45,7 @@ vi.mock(
 // Mock dependencies
 vi.mock('jwt-decode', () => ({
   __esModule: true,
-  default: vi.fn(() => ({
+  jwtDecode: vi.fn(() => ({
     userid: '5edf141c78f1380017b829a6',
     role: 'Administrator',
   })),
