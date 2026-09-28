@@ -74,48 +74,48 @@ function DonutChart(props) {
   };
 
   const options = {
-      plugins: {
-        datalabels: { display: false },
-        legend: { display: false },
-        tooltip: buildDonutTooltipOptions(totalCount, darkMode),
-        externalLabelGuides: {
-          placement: 'outside',
-          outsideGap: 12,
-          minimumLabelSpacing: 8,
-          connectorRadialOffset: 8,
-          containmentPadding: 4,
-          fontSize: 14,
-          lineHeight: 16,
-          padding: { x: 8, y: 5 },
-          total: totalCount,
-          lineColor: labelTextColor,
-          backgroundColor: labelBoxBackground,
-          borderColor: labelBoxBorder,
-          formatter: ({ value, percentage }) => [`${value}`, `(${percentage}%)`],
-        },
+    plugins: {
+      datalabels: { display: false },
+      legend: { display: false },
+      tooltip: buildDonutTooltipOptions(totalCount, darkMode),
+      externalLabelGuides: {
+        placement: 'outside',
+        outsideGap: 12,
+        minimumLabelSpacing: 8,
+        connectorRadialOffset: 8,
+        containmentPadding: 4,
+        fontSize: 14,
+        lineHeight: 16,
+        padding: { x: 8, y: 5 },
+        total: totalCount,
+        lineColor: labelTextColor,
+        backgroundColor: labelBoxBackground,
+        borderColor: labelBoxBorder,
+        formatter: ({ value, percentage }) => [`${value}`, `(${percentage}%)`],
       },
-      interaction: {
-        mode: 'nearest',
-        intersect: true,
+    },
+    interaction: {
+      mode: 'nearest',
+      intersect: true,
+    },
+    maintainAspectRatio: false,
+    cutout: comparisonType !== 'No Comparison' ? '70%' : '62%',
+    layout: {
+      padding: {
+        top: 28,
+        right: 80,
+        bottom: 28,
+        left: 80,
       },
-      maintainAspectRatio: false,
-      cutout: comparisonType !== 'No Comparison' ? '70%' : '62%',
-      layout: {
-        padding: {
-          top: 28,
-          right: 80,
-          bottom: 28,
-          left: 80,
-        },
-      },
-      onHover: (event, elements) => {
-        const target = event?.native?.target;
-        if (!target) return;
-        target.style.cursor = elements && elements.length ? 'pointer' : 'default';
-      },
-    };
+    },
+    onHover: (event, elements) => {
+      const target = event?.native?.target;
+      if (!target) return;
+      target.style.cursor = elements && elements.length ? 'pointer' : 'default';
+    },
+  };
 
-    const percentageChangeColor = percentageChange >= 0 ? 'var(--success)' : 'var(--danger)';
+  const percentageChangeColor = percentageChange >= 0 ? 'var(--success)' : 'var(--danger)';
 
   return (
     <div className={clsx(styles.donutContainer, darkMode && styles.donutContainerDark)}>
