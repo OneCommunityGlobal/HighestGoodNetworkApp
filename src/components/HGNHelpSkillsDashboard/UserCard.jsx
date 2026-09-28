@@ -1,6 +1,6 @@
+import { MdEmail } from 'react-icons/md';
 import styles from './style/UserCard.module.css';
 import avatar from './style/avatar.png';
-import emailIcon from './style/email_icon.png';
 import slackIcon from './style/slack_icon.png';
 import { useSelector } from 'react-redux';
 
@@ -26,7 +26,7 @@ function UserCard({ user }) {
         <div className={`${styles.userName}`}>{name}</div>
         {email && (
           <div className={`${styles.contactLine}`}>
-            <img src={emailIcon} alt="Email" className={`${styles.contactIcon}`} />
+            <MdEmail className={`${styles.contactIcon}`} aria-label="Email" />
             <span>{email}</span>
           </div>
         )}

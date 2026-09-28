@@ -10,10 +10,10 @@
 
 const isLocalhost = Boolean(
   globalThis.location.hostname === 'localhost' ||
-    // [::1] is the IPv6 localhost address.
-    globalThis.location.hostname === '[::1]' ||
-    // 127.0.0.1/8 is considered localhost for IPv4.
-    globalThis.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/),
+  // [::1] is the IPv6 localhost address.
+  globalThis.location.hostname === '[::1]' ||
+  // 127.0.0.1/8 is considered localhost for IPv4.
+  globalThis.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/),
 );
 
 function registerValidSW(swUrl) {
@@ -66,13 +66,14 @@ function checkValidServiceWorker(swUrl) {
 
 export default function register() {
   if (import.meta.env.PROD && 'serviceWorker' in navigator) {
-    const publicUrl = new URL(import.meta.env.BASE_URL, globalThis.location);
+    const baseUrl = import.meta.env.BASE_URL || '/';
+    const publicUrl = new URL(baseUrl, globalThis.location);
     if (publicUrl.origin !== globalThis.location.origin) {
       return;
     }
 
     globalThis.addEventListener('load', () => {
-      const swUrl = `${import.meta.env.BASE_URL}service-worker.js`;
+      const swUrl = `${baseUrl}service-worker.js`;
 
       if (isLocalhost) {
         checkValidServiceWorker(swUrl);
@@ -80,7 +81,7 @@ export default function register() {
           // eslint-disable-next-line no-console
           console.log(
             'This web app is being served cache-first by a service ' +
-              'worker. To learn more, visit https://goo.gl/SC7cgQ',
+            'worker. To learn more, visit https://goo.gl/SC7cgQ',
           );
         });
       } else {
