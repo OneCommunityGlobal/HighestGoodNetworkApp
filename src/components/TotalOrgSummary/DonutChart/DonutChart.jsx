@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import { Doughnut } from 'react-chartjs-2';
-import { Chart, ArcElement, Tooltip } from 'chart.js';
+import { Chart, ArcElement, Tooltip, Legend } from 'chart.js';
 import { clsx } from 'clsx';
 import externalLabelGuidesPlugin from '../VolunteerStatus/externalLabelGuidesPlugin';
 import styles from './DonutChart.module.css';
 
-Chart.register(ArcElement, Tooltip);
+Chart.register(ArcElement, Tooltip, Legend);
 
 const calculatePercentage = (value, totalCount) =>
   Number.isFinite(totalCount) && totalCount > 0 ? (value / totalCount) * 100 : 0;
@@ -42,17 +42,32 @@ function DonutChart(props) {
   const labelBoxBorder = darkMode ? 'rgba(148, 163, 184, 0.35)' : '#d0d0d0';
   const titleLines = title === 'TOTAL BLUE SQUARES' ? ['TOTAL', 'BLUE SQUARES'] : [title];
 
+  const filtered = data
+    .map((item, i) => ({ item, color: colors[i] }))
+    .filter(({ item }) => (item.value / totalCount) * 100 >= 0.05);
+  const filteredData = filtered.map(({ item }) => item);
+  const filteredColors = filtered.map(({ color }) => color);
+
+  if (!filteredData.length) {
+    return (
+      <div className={styles.donutContainer}>
+        <div className={styles.donutNoData}>
+          <h5 className="donut-heading" style={{ color: darkMode ? '#F7FAFC' : '#1A202C' }}>
+            {title}
+          </h5>
+          <div className={styles.noDataText}>No data available yet</div>
+        </div>
+      </div>
+    );
+  }
+
   const chartData = {
-    labels: data.map(item => item.label),
+    labels: filteredData.map(item => item.label),
     datasets: [
       {
-        data: data.map(item => item.value),
-        backgroundColor: colors,
+        data: filteredData.map(item => item.value),
+        backgroundColor: filteredColors,
         borderWidth: 0,
-        // Explicit gap between every slice via canvas clipping, rather than
-        // relying on adjacent fill paths to butt up against each other
-        // cleanly — thin adjacent wedges were leaving an anti-aliasing seam
-        // at their shared edge without this.
         spacing: 2,
       },
     ],
@@ -60,15 +75,8 @@ function DonutChart(props) {
 
   const options = {
     plugins: {
-      datalabels: {
-        display: false, // chartjs-plugin-datalabels is registered globally by other
-        // components (RatingDistribution, PRQualityGraph); explicitly disabling it
-        // here prevents their global registration from drawing default labels on
-        // this chart, since values/percentages are already shown in the legend below.
-      },
-      legend: {
-        display: false,
-      },
+      datalabels: { display: false },
+      legend: { display: false },
       tooltip: buildDonutTooltipOptions(totalCount, darkMode),
       externalLabelGuides: {
         placement: 'outside',
@@ -91,8 +99,6 @@ function DonutChart(props) {
       intersect: true,
     },
     maintainAspectRatio: false,
-    // The comparison line adds extra rows of center text that don't fit the default
-    // hole, so widen the hole while it's showing (same approach as Volunteer Status).
     cutout: comparisonType !== 'No Comparison' ? '70%' : '62%',
     layout: {
       padding: {
@@ -101,6 +107,11 @@ function DonutChart(props) {
         bottom: 28,
         left: 80,
       },
+    },
+    onHover: (event, elements) => {
+      const target = event?.native?.target;
+      if (!target) return;
+      target.style.cursor = elements && elements.length ? 'pointer' : 'default';
     },
   };
 
@@ -142,12 +153,13 @@ function DonutChart(props) {
             )}
           </div>
         </div>
+
         <div className={styles.donutLabels}>
-          {data.map((item, index) => (
+          {filteredData.map((item, index) => (
             <div key={item.label} className={styles.donutLabel}>
               <span
                 className={styles.donutColor}
-                style={{ backgroundColor: chartData.datasets[0].backgroundColor[index] }}
+                style={{ backgroundColor: filteredColors[index] }}
               />
               <span>{formatLegendLabel(item, totalCount)}</span>
             </div>
