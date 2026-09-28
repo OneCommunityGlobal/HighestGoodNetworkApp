@@ -1,26 +1,27 @@
-import React, { useState, useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
-import { Row, Label, Input, Col, FormFeedback, FormGroup, Button } from 'reactstrap';
-import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
-import moment from 'moment';
-import PhoneInput from 'react-phone-input-2';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PropTypes from 'prop-types';
+import { useEffect, useRef, useState } from 'react';
+import PhoneInput from 'react-phone-input-2';
+import { Button, Col, FormFeedback, FormGroup, Input, Label, Row } from 'reactstrap';
+import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 
+import { permissions } from '../../../utils/constants';
 //// import 'react-phone-input-2/lib/style.css';
-import PauseAndResumeButton from '~/components/UserManagement/PauseAndResumeButton';
-import TimeZoneDropDown from '../TimeZoneDropDown';
-import { connect , useDispatch } from 'react-redux';
-import hasPermission from '~/utils/permissions';
-import SetUpFinalDayButton from '~/components/UserManagement/SetUpFinalDayButton';
-import styles from './BasicInformationTab.module.css';
-import { boxStyle, boxStyleDark } from '~/styles';
-import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
-import { formatDateLocal, formatDateCompany } from '~/utils/formatDate';
-import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 import { isString } from 'lodash';
+import { connect, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
+import PauseAndResumeButton from '~/components/UserManagement/PauseAndResumeButton';
+import SetUpFinalDayButton from '~/components/UserManagement/SetUpFinalDayButton';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { formatDateCompany, formatDateLocal } from '~/utils/formatDate';
+import hasPermission from '~/utils/permissions';
+import { ENDPOINTS } from '~/utils/URL';
+import TimeZoneDropDown from '../TimeZoneDropDown';
+import styles from './BasicInformationTab.module.css';
+import RoleChangePermissionsModal from '~/components/UserProfile/RoleChangePermissionsModal';
 
 
 export const Name = props => {
@@ -495,12 +496,14 @@ const BasicInformationTab = props => {
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [desktopDisplay, setDesktopDisplay] = useState(window.innerWidth > 1024);
   const [errorOccurred, setErrorOccurred] = useState(false);
+  const [showRolePermsModal, setShowRolePermsModal] = useState(false);
+  const [newRole, setNewRole] = useState(userProfile.role);
   const dispatch = useDispatch();
   const rolesAllowedToEditStatusFinalDay = ['Administrator', 'Owner'];
-  const canEditStatus = dispatch(hasPermission('interactWithPauseUserButton'));
+  const canEditStatus = dispatch(hasPermission(permissions.interactWithPauseUserButton));
 
   const canEditEndDate =
-  rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission('setFinalDay'));
+  rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission(permissions.setFinalDay));
 
 
   let topMargin = '6px';
@@ -508,7 +511,7 @@ const BasicInformationTab = props => {
     topMargin = '0px';
   }
 
-  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
+  const canAddDeleteEditOwners = props.hasPermission(permissions.addDeleteEditOwners);
   const handleLocation = e => {
     setUserProfile({
       ...userProfile,
@@ -552,6 +555,22 @@ const BasicInformationTab = props => {
     setDesktopDisplay(window.innerWidth > 1024);
   };
 
+  const updateSelectedRole = selectedRole => {
+    setNewRole(selectedRole);
+    const retrievedRole = roles.find(role => role.roleName === selectedRole);
+    const remainingAddedPermissions = userProfile.permissions.frontPermissions.some(permission => !retrievedRole.permissions.includes(permission));
+    const remainingRemovedPermissions = retrievedRole.permissions.some(permission => userProfile.permissions.removedDefaultPermissions.includes(permission));
+
+    if(remainingAddedPermissions || remainingRemovedPermissions) {
+      setShowRolePermsModal(true)
+    } else {
+      setUserProfile({ 
+        ...userProfile, 
+        role: selectedRole,
+      })
+    }
+  }
+
   useEffect(() => {
     window.addEventListener('resize', handleResize);
     return () => {
@@ -561,7 +580,7 @@ const BasicInformationTab = props => {
 
   const nameComponent = (
     <>
-      <Col className={darkMode ? styles['dark-label-col'] : ''}>
+      <Col md="5" className={darkMode ? styles['dark-label-col'] : ''}>
         <span className={styles['label-icon-container']}>
           <Label className={darkMode ? 'text-light label-with-icon' : 'label-with-icon'}>
             Name
@@ -594,7 +613,7 @@ const BasicInformationTab = props => {
 
   const titleComponent = (
     <>
-      <Col className={darkMode ? styles['dark-label-col'] : ''}>
+      <Col md="5" className={darkMode ? styles['dark-label-col'] : ''}>
         <span className={styles['label-icon-container']}>
           <Label className={darkMode ? 'text-light label-with-icon' : 'label-with-icon'}>
             Title
@@ -626,7 +645,7 @@ const BasicInformationTab = props => {
 
   const emailComponent = (
     <>
-      <Col className={darkMode ? styles['dark-label-col'] : ''}>
+      <Col md="5" className={darkMode ? styles['dark-label-col'] : ''}>
         <span className={styles['label-icon-container']}>
           <Label className={darkMode ? 'text-light label-with-icon' : ' label-with-icon'}>
             Email
@@ -659,7 +678,7 @@ const BasicInformationTab = props => {
 
   const phoneComponent = (
     <>
-      <Col className={darkMode ? styles['dark-label-col'] : ''}>
+      <Col md="5" className={darkMode ? styles['dark-label-col'] : ''}>
         <span className={styles['label-icon-container']}>
           <Label className={darkMode ? 'text-light label-with-icon' : 'label-with-icon'}>
             Phone
@@ -691,7 +710,7 @@ const BasicInformationTab = props => {
 
   const videoCallPreferenceComponent = (
     <>
-      <Col className={darkMode ? styles['dark-label-col'] : ''}>
+      <Col md="5" className={darkMode ? styles['dark-label-col'] : ''}>
         <Label className={darkMode ? 'text-light' : ''}>Video Call Preference</Label>
       </Col>
       <Col md={desktopDisplay ? '6' : ''} className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -711,7 +730,7 @@ const BasicInformationTab = props => {
             />
           </FormGroup>
         ) : (
-          `${userProfile.collaborationPreference}`
+          <p className={`text-right ${darkMode ? 'text-light' : ''}`}>{userProfile.collaborationPreference}</p>
         )}
       </Col>
     </>
@@ -719,7 +738,7 @@ const BasicInformationTab = props => {
 
   const roleComponent = (
     <>
-      <Col className={darkMode ? styles['dark-label-col'] : ''}>
+      <Col md="5" className={darkMode ? styles['dark-label-col'] : ''}>
         <Label className={darkMode ? 'text-light' : ''}>Role</Label>
       </Col>
       <Col md={desktopDisplay ? '6' : ''} className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -729,18 +748,19 @@ const BasicInformationTab = props => {
               id="role"
               name="role"
               className={`form-control ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
-              value={userProfile.role || ''}   // make sure this is a string
+              value={newRole || ''}   // make sure this is a string
               onChange={e => {
-                const newRole = e.target.value;
-                setUserProfile({
-                  ...userProfile,
-                  role: newRole,
-                  permissions: { ...userProfile.permissions, frontPermissions: [] },
-                });
+                updateSelectedRole(e.target.value)
               }}
             >
               {/* Optional placeholder when no role selected */}
               {!userProfile.role && <option value="">Select role</option>}
+
+              {canAddDeleteEditOwners && (
+                <option value="Owner" style={desktopDisplay ? { marginLeft: '5px' } : {}}>
+                  Owner
+                </option>
+              )}
   
               {(roles || [])
                 .map(r => (typeof r === 'string' ? r : r.roleName)) // normalize
@@ -753,16 +773,11 @@ const BasicInformationTab = props => {
                     </option>
                   );
                 })}
-  
-              {canAddDeleteEditOwners && (
-                <option value="Owner" style={desktopDisplay ? { marginLeft: '5px' } : {}}>
-                  Owner
-                </option>
-              )}
             </select>
           </FormGroup>
+          
         ) : (
-          `${userProfile.role}`
+          <p className={`text-right ${darkMode ? 'text-light' : ''}`}>{userProfile.role}</p>
         )}
       </Col>
       {desktopDisplay ? (
@@ -838,11 +853,11 @@ const BasicInformationTab = props => {
 
   const timeZoneComponent = (
     <>
-      <Col className={darkMode ? styles['dark-label-col'] : ''}>
+      <Col md="5" className={darkMode ? styles['dark-label-col'] : ''}>
         <Label className={darkMode ? 'text-light' : ''}>Time Zone</Label>
       </Col>
       <Col md={desktopDisplay ? '6' : ''} className={darkMode ? 'bg-yinmn-blue' : ''}>
-        {!canEdit && <p className={darkMode ? 'text-light' : ''}>{userProfile.timeZone}</p>}
+        <p className={`text-right ${darkMode ? 'text-light' : ''}`}>{userProfile.timeZone}</p>
         {canEdit && (
           <TimeZoneDropDown
             filter={timeZoneFilter}
@@ -885,18 +900,15 @@ const BasicInformationTab = props => {
           Status
         </Label>
       </Col>
-      <Col md={desktopDisplay ? '7' : ''} className={darkMode ? 'bg-yinmn-blue' : ''}>
+      <Col md={desktopDisplay ? '6' : ''} className={darkMode ? 'bg-yinmn-blue' : ''}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Label
-            style={{ margin: '0' }}
-            className={darkMode ? 'text-light label-with-icon' : 'label-with-icon'}
-          >
-            {userProfile.isActive
-              ? 'Active'
-              : userProfile.reactivationDate
-              ? 'Paused until ' + formatDateCompany(userProfile.reactivationDate)
-              : 'Inactive'}
-          </Label>
+          <p className={`${darkMode ? 'text-light' : ''}`} style={{ margin: '0', flex: 1 }}>
+            {(() => {
+              if (userProfile.isActive) return 'Active';
+              if (userProfile.reactivationDate) return 'Paused until ' + formatDateCompany(userProfile.reactivationDate);
+              return 'Inactive';
+            })()}
+          </p>
           {canEdit && canEditStatus && (
             <PauseAndResumeButton
               setUserProfile={setUserProfile}
@@ -918,13 +930,11 @@ const BasicInformationTab = props => {
           End Date
         </Label>
       </Col>
-      <Col md={desktopDisplay ? '7' : ''} className={darkMode ? 'bg-yinmn-blue' : ''}>
+      <Col md={desktopDisplay ? '6' : ''} className={darkMode ? 'bg-yinmn-blue' : ''}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Label className={darkMode ? 'text-light' : ''} style={{ margin: '0' }}>
-            {userProfile.endDate
-              ? formatDateLocal(userProfile.endDate)
-              : 'N/A'}
-          </Label>
+          <p className={`${darkMode ? 'text-light' : ''}`} style={{ margin: '0', flex: 1 }}>
+            {userProfile.endDate ? formatDateLocal(userProfile.endDate) : 'N/A'}
+          </p>
           {canEdit && canEditEndDate && (
             <SetUpFinalDayButton
               loadUserProfile={loadUserProfile}
@@ -1016,7 +1026,10 @@ const BasicInformationTab = props => {
               {videoCallPreferenceComponent}
               <Col md="1" lg="1"></Col>
             </Row>
-            <Row style={{ marginBottom: '10px' }}>{roleComponent}</Row>
+            <Row style={{ marginBottom: '10px' }}>
+              {roleComponent}
+              <Col md="1" lg="1"></Col>
+            </Row>
             <Row style={{  marginBottom: '10px' }}>
               {locationComponent}
               <Col md="1"></Col>
@@ -1025,9 +1038,9 @@ const BasicInformationTab = props => {
               {timeZoneComponent}
               <Col md="1"></Col>
             </Row>
-            <Row style={{ marginBottom: '10px' }}>{timeZoneDifferenceComponent}</Row>
-            <Row style={{ marginBottom: '10px' }}>{statusComponent}</Row>
-            <Row style={{ marginBottom: '10px' }}>{endDateComponent}</Row>
+            <Row style={{ marginBottom: '10px' }}>{timeZoneDifferenceComponent}<Col md="1"></Col></Row>
+            <Row style={{ marginBottom: '10px' }}>{statusComponent}<Col md="1"></Col></Row>
+            <Row style={{ marginBottom: '10px' }}>{endDateComponent}<Col md="1"></Col></Row>
           </>
         ) : (
           <>
@@ -1050,6 +1063,17 @@ const BasicInformationTab = props => {
           </>
         )}
       </div>
+      <RoleChangePermissionsModal
+        isOpen={showRolePermsModal}
+        onClose={() => setShowRolePermsModal(false)}
+        newRole={newRole}
+        roles={roles}
+        userProfile={userProfile}
+        setUserProfile={setUserProfile}
+        loadUserProfile={loadUserProfile}
+        desktopDisplay={desktopDisplay}
+        canAddDeleteEditOwners={canAddDeleteEditOwners}
+      />
     </div>
   );
 };

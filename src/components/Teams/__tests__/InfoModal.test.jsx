@@ -1,12 +1,12 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { themeMock } from '__tests__/mockStates';
 import { Provider } from 'react-redux';
 import React from 'react';
 import InfoModal from '../InfoModal';
 
-const mockStore = configureStore();
+const mockStore = configureMockStore();
 
 describe('InfoModal', () => {
   const store = mockStore({

@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 
 import WBS from './wbs';
 import { fetchAllWBS } from '../../../actions/wbs';
@@ -40,7 +40,7 @@ vi.mock('./WBSItem/WBSItem', () => ({
 }));
 
 describe('WBS Component', () => {
-  const mockStore = configureStore([]);
+  const mockStore = configureMockStore([]);
   let store;
   const projectId = 'project123';
 

@@ -1,34 +1,34 @@
 /* eslint-disable jsx-a11y/media-has-caption */
+import { setUser } from '@sentry/browser';
+import cs from 'classnames';
 import moment from 'moment';
-import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Progress } from 'reactstrap';
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BsAlarmFill, BsArrowClockwise } from 'react-icons/bs';
 import {
-  FaPlusCircle,
   FaMinusCircle,
-  FaPlayCircle,
   FaPauseCircle,
+  FaPlayCircle,
+  FaPlusCircle,
   FaStopCircle,
   FaUndoAlt,
 } from 'react-icons/fa';
-import { toast } from 'react-toastify';
-import cs from 'classnames';
 import { connect, useDispatch } from 'react-redux';
-import css from './Timer.module.css';
-import '../Header/index.css';
+import { toast } from 'react-toastify';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Progress } from 'reactstrap';
 import { ENDPOINTS } from '~/utils/URL';
 import config from '../../config.json';
+import '../Header/index.module.css';
 import TimeEntryForm from '../Timelog/TimeEntryForm';
 import Countdown from './Countdown';
-import TimerStatus from './TimerStatus';
+import css from './Timer.module.css';
 import TimerPopout from './TimerPopout';
-import { postTimeEntry, editTimeEntry } from '../../actions/timeEntries';
+import TimerStatus from './TimerStatus';
 
 function Timer({ authUser, darkMode, isPopout }) {
   const dispatch = useDispatch();
-  const realIsPopout = typeof isPopout === 'boolean' ? isPopout : !!window.opener;
+  const realIsPopout = typeof isPopout === 'boolean' ? isPopout : !!globalThis.opener;
   /**
    *  Because the websocket can not be closed when internet is cut off (lost server connection),
    *  the readyState will be stuck at OPEN, so here we need to use a custom readyState to
@@ -36,6 +36,7 @@ function Timer({ authUser, darkMode, isPopout }) {
    *  to CLOSED, and the user will be notified to refresh the page to reconnect to the server.
    * */
   const [customReadyState, setCustomReadyState] = useState(ReadyState.CONNECTING);
+  const [wsKey, setWsKey] = useState(0);
   const WSoptions = {
     share: false,
     protocols: localStorage.getItem(config.tokenKey),
@@ -61,7 +62,10 @@ function Timer({ authUser, darkMode, isPopout }) {
 
   const { sendMessage, sendJsonMessage, lastJsonMessage, getWebSocket } = useWebSocket(
     ENDPOINTS.TIMER_SERVICE,
-    WSoptions,
+    {
+      ...WSoptions,
+      queryParams: { reconnect: wsKey },
+    },
   );
 
   // This is the contract between server and client
@@ -118,16 +122,19 @@ function Timer({ authUser, darkMode, isPopout }) {
   const isWSOpenRef = useRef(0);
   const timeIsOverAudioRef = useRef(null);
   const forcedPausedAudioRef = useRef(null);
+  const audioUnlockedRef = useRef(false);
 
   const timeToLog = moment.duration(goal - remaining);
   const logHours = timeToLog.hours();
   const logMinutes = timeToLog.minutes();
 
-  const sendJsonMessageNoQueue = useCallback(msg => sendJsonMessage(msg, false), [sendMessage]);
+  // Handle visual race conditions for the timer start and pause buttons
+  const isCurrentlyPaused = !started || paused;
+
+  const sendJsonMessageNoQueue = useCallback(msg => sendJsonMessage(msg, false), [sendJsonMessage]);
 
   // Enhanced function to clear submitted time with better logging
   const clearSubmittedTime = useCallback(() => {
-    console.log(' Clearing submitted time - Timer reset or user change detected');
     setLastSubmittedTime(null);
     setLogTimer({ hours: 0, minutes: 0 });
     setTimerState('idle');
@@ -147,8 +154,6 @@ function Timer({ authUser, darkMode, isPopout }) {
         remaining,
       };
 
-      console.log('✅ Time submitted successfully:', submissionRecord);
-
       setLastSubmittedTime(timeKey);
       setSubmissionHistory(prev => [...prev, submissionRecord]);
       setLogTimer({ hours: 0, minutes: 0 });
@@ -159,8 +164,9 @@ function Timer({ authUser, darkMode, isPopout }) {
         const existingHistory = JSON.parse(localStorage.getItem('timerSubmissionHistory') || '[]');
         const updatedHistory = [...existingHistory, submissionRecord].slice(-10); // Keep last 10 entries
         localStorage.setItem('timerSubmissionHistory', JSON.stringify(updatedHistory));
-      } catch (error) {
-        console.warn('Could not save submission history to localStorage:', error);
+      } catch (_error) {
+        // localStorage unavailable - non-critical, safe to ignore
+        void _error;
       }
     },
     [goal, remaining, sessionId, viewingUserId, authUser?.userid],
@@ -221,15 +227,17 @@ function Timer({ authUser, darkMode, isPopout }) {
   // Enhanced function to handle timer state changes
   const updateTimerState = useCallback(
     newState => {
-      console.log(`🔄 Timer state changed: ${timerState} → ${newState}`);
       setTimerState(newState);
     },
     [timerState],
   );
 
   const handleRefreshTimer = useCallback(() => {
-    window.location.reload();
-  }, []);
+    getWebSocket()?.close();
+    setCustomReadyState(ReadyState.CONNECTING);
+    setMessage(defaultMessage);
+    setWsKey(k => k + 1);
+  }, [getWebSocket]);
 
   // Initialize session ID on component mount
   useEffect(() => {
@@ -252,7 +260,6 @@ function Timer({ authUser, darkMode, isPopout }) {
     }
     const newSessionId = `session_${Date.now()}_${randomPart}`;
     setSessionId(newSessionId);
-    console.log('🚀 Timer session initialized:', newSessionId);
   }, []);
 
   // Enhanced useEffect for timer state management
@@ -266,9 +273,32 @@ function Timer({ authUser, darkMode, isPopout }) {
     }
   }, [running, paused, started, updateTimerState]);
 
+  const pauseAudioRef = ref => {
+    if (!ref.current) return;
+    ref.current.pause();
+    ref.current.currentTime = 0;
+  };
+
+  useEffect(() => {
+    const unlockAudio = () => {
+      if (audioUnlockedRef.current) return;
+      if (timeIsOverAudioRef.current) {
+        timeIsOverAudioRef.current.play().catch(() => {});
+        pauseAudioRef(timeIsOverAudioRef);
+      }
+      if (forcedPausedAudioRef.current) {
+        forcedPausedAudioRef.current.play().catch(() => {});
+        pauseAudioRef(forcedPausedAudioRef);
+      }
+      audioUnlockedRef.current = true;
+    };
+    document.addEventListener('click', unlockAudio, { once: true });
+    return () => document.removeEventListener('click', unlockAudio);
+  }, []);
+
   useEffect(() => {
     const handleStorageEvent = () => {
-      const sessionStorageData = JSON.parse(window.sessionStorage.getItem('viewingUser'));
+      const sessionStorageData = JSON.parse(globalThis.sessionStorage.getItem('viewingUser'));
       if (sessionStorageData) {
         setViewingUserId(sessionStorageData.userId);
       } else {
@@ -280,11 +310,11 @@ function Timer({ authUser, darkMode, isPopout }) {
     handleStorageEvent();
 
     // Add the event listener
-    window.addEventListener('storage', handleStorageEvent);
+    globalThis.addEventListener('storage', handleStorageEvent);
 
     // Clean up the event listener when the component unmounts
     return () => {
-      window.removeEventListener('storage', handleStorageEvent);
+      globalThis.removeEventListener('storage', handleStorageEvent);
     };
   }, []);
 
@@ -293,15 +323,17 @@ function Timer({ authUser, darkMode, isPopout }) {
     () => viewingUserId && !ALLOWED_ROLES_TO_INTERACT.includes(authUser?.role),
     [viewingUserId, authUser],
   );
-  // control whether to send GET_TIMER message to avoid message overriding
-  const isInitialJsonMessageReceived = useMemo(() => !!lastJsonMessage, [lastJsonMessage]);
 
   // Modify the sendStop function to track submitted time
   const wsJsonMessageHandler = useMemo(() => {
     if (viewingUserId == null) {
       return {
-        sendStart: () => sendJsonMessageNoQueue({ action: action.START_TIMER }),
-        sendPause: () => sendJsonMessageNoQueue({ action: action.PAUSE_TIMER }),
+        sendStart: () => {
+          sendJsonMessageNoQueue({ action: action.START_TIMER });
+        },
+        sendPause: () => {
+          sendJsonMessageNoQueue({ action: action.PAUSE_TIMER });
+        },
         sendClear: () => sendJsonMessageNoQueue({ action: action.CLEAR_TIMER }),
         sendStop: () => {
           sendJsonMessageNoQueue({ action: action.STOP_TIMER });
@@ -322,10 +354,12 @@ function Timer({ authUser, darkMode, isPopout }) {
       };
     }
     return {
-      sendStart: () =>
-        sendJsonMessageNoQueue({ action: action.START_TIMER, userId: viewingUserId }),
-      sendPause: () =>
-        sendJsonMessageNoQueue({ action: action.PAUSE_TIMER, userId: viewingUserId }),
+      sendStart: () => {
+        sendJsonMessageNoQueue({ action: action.START_TIMER, userId: viewingUserId });
+      },
+      sendPause: () => {
+        sendJsonMessageNoQueue({ action: action.PAUSE_TIMER, userId: viewingUserId });
+      },
       sendClear: () =>
         sendJsonMessageNoQueue({ action: action.CLEAR_TIMER, userId: viewingUserId }),
       sendStop: () => {
@@ -417,10 +451,27 @@ function Timer({ authUser, darkMode, isPopout }) {
   const handleStartButton = useCallback(() => {
     if (remaining === 0) {
       toast.error('There is no more Remaining time, please add more or log your passed time');
-    } else {
-      sendStart();
+      return;
     }
-  }, [remaining]);
+    setMessage(prev => ({
+      ...prev,
+      started: true,
+      paused: false,
+    }));
+    setRunning(true);
+    sendStart();
+  }, [remaining, sendStart]);
+
+  const handlePauseButton = useCallback(() => {
+    setMessage(prev => ({
+      ...prev,
+      started: true,
+      paused: true,
+    }));
+    setRunning(false);
+
+    sendPause();
+  }, [sendPause]);
 
   const handleAddButton = useCallback(
     duration => {
@@ -474,7 +525,6 @@ function Timer({ authUser, darkMode, isPopout }) {
       return;
     }
 
-    console.log('🛑 Stop button clicked - preparing to log time:', timeToSubmit);
     toggleLogTimeModal();
   }, [logHours, logMinutes, validateTimeForSubmission, toggleLogTimeModal]);
 
@@ -488,6 +538,10 @@ function Timer({ authUser, darkMode, isPopout }) {
   const checkRemainingTime = () => {
     if (remaining === 0) {
       sendPause();
+      if (!timeIsOverModalOpen && !weekEndModal) {
+        setTimeIsOverModalIsOpen(true);
+        sendStartChime(true);
+      }
     }
   };
 
@@ -537,8 +591,18 @@ function Timer({ authUser, darkMode, isPopout }) {
       weekEndPause: weekEndPauseLJM,
     } = lastJsonMessage || defaultMessage;
 
+    // console.log('DEBUG WS TIMER RECEIVED', {
+    //   time: lastJsonMessage?.time,
+    //   started: lastJsonMessage?.started,
+    //   paused: lastJsonMessage?.paused,
+    //   receivedAt: Date.now(),
+    // });
+
     setMessage(lastJsonMessage || defaultMessage);
     setRunning(startedLJM && !pausedLJM);
+    if (!startedLJM || pausedLJM) {
+      setRemaining(lastJsonMessage?.time ?? defaultMessage.time);
+    }
 
     // Show inactivity or time-over modals based on message state
     setInacModal(forcedPauseLJM);
@@ -567,22 +631,13 @@ function Timer({ authUser, darkMode, isPopout }) {
   }, [running]);
 
   useEffect(() => {
-    /**
-     * This useEffect will run upon message change,
-     * and message is a state as a copy of the lastJsonMessage,
-     * here message works as a buffer, for details see above
-     */
-    let interval;
-    if (running) {
-      updateRemaining();
-      interval = setInterval(() => {
-        updateRemaining();
-      }, 1000);
-    } else {
-      setRemaining(time);
-      clearInterval(interval);
+    if (!running) {
+      return undefined;
     }
-
+    updateRemaining();
+    const interval = setInterval(() => {
+      updateRemaining();
+    }, 1000);
     return () => clearInterval(interval);
   }, [running, message]);
 
@@ -597,7 +652,6 @@ function Timer({ authUser, darkMode, isPopout }) {
     if (lastSubmittedTime !== timeKey && (logHours > 0 || logMinutes > 0)) {
       if (validateTimeForSubmission(currentTimeToLog)) {
         setLogTimer(currentTimeToLog);
-        console.log('⏱️ Time to log updated:', currentTimeToLog);
       }
     }
   }, [remaining, logHours, logMinutes, goal, lastSubmittedTime, validateTimeForSubmission]);
@@ -606,16 +660,18 @@ function Timer({ authUser, darkMode, isPopout }) {
   useEffect(() => {
     if (!started || goal !== lastSubmittedTime?.goal) {
       clearSubmittedTime();
-      console.log('🔄 Timer reset detected - clearing submitted time');
     }
   }, [started, goal, clearSubmittedTime]);
 
   useEffect(() => {
     if (timeIsOverModalOpen) {
       window.focus();
-      timeIsOverAudioRef.current.play();
+      const playPromise = timeIsOverAudioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {});
+      }
     } else {
-      window.focus();
+      globalThis.focus();
       timeIsOverAudioRef.current.pause();
       timeIsOverAudioRef.current.currentTime = 0;
     }
@@ -631,9 +687,12 @@ function Timer({ authUser, darkMode, isPopout }) {
   useEffect(() => {
     if (inacModal) {
       window.focus();
-      forcedPausedAudioRef.current.play();
+      const playPromise = forcedPausedAudioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {});
+      }
     } else {
-      window.focus();
+      globalThis.focus();
       forcedPausedAudioRef.current.pause();
       forcedPausedAudioRef.current.currentTime = 0;
     }
@@ -642,31 +701,32 @@ function Timer({ authUser, darkMode, isPopout }) {
   useEffect(() => {
     if (weekEndModal) {
       window.focus();
-      timeIsOverAudioRef.current.play();
+      const playPromise = timeIsOverAudioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {});
+      }
     } else {
-      window.focus();
+      globalThis.focus();
       timeIsOverAudioRef.current.pause();
       timeIsOverAudioRef.current.currentTime = 0;
     }
   }, [weekEndModal]);
 
   useEffect(() => {
-    if (!isInitialJsonMessageReceived) return;
+    if (customReadyState !== ReadyState.OPEN) return; // only request when connected
 
     sendGetTimer();
-  }, [isInitialJsonMessageReceived, viewingUserId]);
+  }, [customReadyState, viewingUserId, wsKey]);
 
   // Enhanced cleanup when viewing user changes
   useEffect(() => {
     clearSubmittedTime();
-    console.log('👤 User changed - clearing timer state');
   }, [viewingUserId, clearSubmittedTime]);
 
   // Enhanced cleanup on component unmount
   useEffect(() => {
     return () => {
       clearSubmittedTime();
-      console.log('🔚 Timer component unmounting - cleanup complete');
     };
   }, [clearSubmittedTime]);
 
@@ -870,14 +930,14 @@ function Timer({ authUser, darkMode, isPopout }) {
               handleAddButton={handleAddButton}
               handleSubtractButton={handleSubtractButton}
               handleStopButton={handleStopButton}
-              toggleTimer={() => window.close()}
+              toggleTimer={() => globalThis.close()}
             />
           )}
           {customReadyState !== ReadyState.OPEN && (
             <TimerStatus
               readyState={customReadyState}
               message={message}
-              toggleTimer={() => window.close()}
+              toggleTimer={() => globalThis.close()}
               handleRefreshTimer={handleRefreshTimer}
             />
           )}
@@ -980,7 +1040,7 @@ function Timer({ authUser, darkMode, isPopout }) {
               />
             </div>
           </button>
-          {!started || paused ? (
+          {isCurrentlyPaused ? (
             <button
               type="button"
               disabled={isButtonDisabled}
@@ -1005,7 +1065,7 @@ function Timer({ authUser, darkMode, isPopout }) {
             <button
               type="button"
               disabled={isButtonDisabled}
-              onClick={sendPause}
+              onClick={handlePauseButton}
               aria-label="Pause timer"
               style={{ background: 'none', border: 'none' }}
             >

@@ -30,7 +30,7 @@ function MentorStatusPieChart({
         display: false,
       },
       tooltip: {
-        enabled: false,
+        enabled: true,
       },
       externalLabelGuides: {
         offset: 20,

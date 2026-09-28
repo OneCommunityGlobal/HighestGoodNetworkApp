@@ -33,7 +33,7 @@ function VolunteerStatusPieChart({
         display: false,
       },
       tooltip: {
-        enabled: false,
+        enabled: true,
       },
       externalLabelGuides: {
         offset: 20,
@@ -78,6 +78,7 @@ function VolunteerStatusPieChart({
           )}
         </div>
       </div>
+
       <div className={styles.volunteerStatusLabels}>
         {volunteerData.map((item, index) => (
           <div key={item.label} className={styles.volunteerStatusLabel}>

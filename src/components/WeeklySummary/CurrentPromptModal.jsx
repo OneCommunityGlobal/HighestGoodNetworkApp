@@ -4,8 +4,8 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'react
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../Header/index.css';
-import './WeeklySummary.css';
+import '../Header/index.module.css';
+import './WeeklySummary.module.css';
 import {
   updateDashboardData,
   updateCopiedPromptDate,

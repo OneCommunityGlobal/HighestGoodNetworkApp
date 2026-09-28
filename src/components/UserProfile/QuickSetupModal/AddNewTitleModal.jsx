@@ -16,7 +16,7 @@ import { addTitle, editTitle } from '../../../actions/title';
 import AssignProjectField from './AssignProjectField';
 import AssignTeamField from './AssignTeamField';
 import AssignTeamCodeField from './AssignTeamCodeField';
-import '../../Header/index.css';
+import '../../Header/index.module.css';
 
 // ---- helpers ---------------------------------------------------------------
 
@@ -111,15 +111,18 @@ function AddNewTitleModal({
 
   // live teamCode validity (using QSTTeamCodes list)
   useEffect(() => {
-    const codeValue = (titleData.teamCode || '').trim();
-  
-    setIsValidTeamCode(
-      codeValue === '' ||
-        (Array.isArray(QSTTeamCodes) &&
-          QSTTeamCodes.some(code => code?.value === codeValue))
-    );
-  }, [titleData.teamCode, QSTTeamCodes]);
-  
+    const codeValue = titleData.teamCode?.trim() || '';
+
+  setIsValidTeamCode(
+    codeValue === '' ||
+      (Array.isArray(QSTTeamCodes) &&
+        QSTTeamCodes.some(
+          code =>
+            code?.value?.trim().toLowerCase() === codeValue.toLowerCase()
+        ))
+  );
+}, [titleData.teamCode, QSTTeamCodes]);
+
 
   // ----------------- canonical lists for validation ------------------------
 

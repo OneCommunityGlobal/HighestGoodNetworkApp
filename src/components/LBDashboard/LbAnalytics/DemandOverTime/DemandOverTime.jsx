@@ -47,6 +47,16 @@ const DemandOverTime = ({
   }, [dateRange]);
 
   useEffect(() => {
+    const METRIC_RANGES = {
+      pageVisits: [500, 5000],
+      numberOfBids: [5, 80],
+      averageRating: [3, 5],
+      averageBid: [100, 800],
+      finalPrice: [500, 3000],
+      occupancyRate: [40, 95],
+      averageDuration: [2, 21],
+    };
+
     const getItems = () => {
       return compareType === 'villages'
         ? ['Village 1', 'Village 2', 'Village 3']
@@ -64,9 +74,10 @@ const DemandOverTime = ({
       return months;
     };
 
+    const [min, max] = METRIC_RANGES[metric] || [20, 119];
     const createDataPoint = month => ({
       month,
-      value: randomInt(20, 119),
+      value: randomInt(min, max),
     });
 
     const generateDummyData = () => {

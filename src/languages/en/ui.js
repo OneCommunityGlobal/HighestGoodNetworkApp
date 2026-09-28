@@ -6,13 +6,15 @@ export const ACTIVE = 'Active';
 export const TITLE = 'Title'
 export const INACTIVE = 'InActive';
 export const ACTIVE_PROJECTS = 'Active Projects';
+export const ARCHIVED_PROJECTS = 'Archived Projects';
 export const BM_DASHBOARD = 'BM Dashboard';
 export const CP_DASHBOARD = 'CP Dashboard';
 export const BM_PROJECT = 'Project';
 export const ADD_MATERIAL = 'Add Material';
 export const LOG_MATERIAL = 'Log Material';
 export const MATERIAL_LIST = 'Material List';
-export const ADD_EQUIPMENT_TOOL = 'Add Equipment/Tool';
+export const ADD_EQUIPMENT = 'Add Equipment';
+export const ADD_TOOL = 'Add Tool';
 export const LOG_EQUIPMENT_TOOL = 'Log Equipment/Tool';
 export const UPDATE_EQUIPMENT_TOOL = 'Update Equipment/Tool';
 export const EQUIPMENT_TOOL_LIST = 'Equipment/Tool List';
@@ -112,6 +114,7 @@ export const KI_REPORTS = 'Reports';
 export const FOOD_BARS = 'Food Bars';
 
 export const SEND_EMAILS = 'Send Emails';
+export const SCHEDULE_MEETINGS = 'Schedule Meeting';
 export const BLUE_SQUARE_EMAIL_MANAGEMENT = 'Blue Square Email Management';
 
  

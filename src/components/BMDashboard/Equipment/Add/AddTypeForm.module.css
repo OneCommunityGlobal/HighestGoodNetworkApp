@@ -1,0 +1,78 @@
+/* stylelint-disable no-descending-specificity */
+.form {
+  width: 100%;
+  max-width: 520px;
+  padding: 1.75rem 2rem 1.5rem;
+  background-color: #fff;
+  border: 1px solid #dce3ec;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 7%);
+  margin: 1.5rem auto 0;
+}
+
+.formGroup {
+  margin-bottom: 1.4rem;
+}
+
+.formGroup label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.45rem;
+  display: block;
+  letter-spacing: 0.01em;
+}
+
+.requiredLabel::after {
+  content: ' *';
+  color: #dc3545;
+}
+
+.btnGroup {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.btnGroup button {
+  min-width: 110px;
+  font-weight: 600;
+}
+
+/* Keep validation feedback red even when dark mode overrides color to white */
+.form :global(.invalid-feedback) {
+  color: #dc3545 !important;
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+
+/* Dark mode card */
+.formDark {
+  background-color: #1e2a3a;
+  border-color: #3a4a5c;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 30%);
+}
+
+.formDark .btnGroup {
+  border-top-color: #3a4a5c;
+}
+
+/* Dark mode input and select styling */
+.formDark :global(input),
+.formDark :global(textarea),
+.formDark :global(select) {
+  background-color: #2a3a4e !important;
+  color: #f1f5f9 !important;
+  border-color: #4b5e74 !important;
+}
+
+.formDark :global(input::placeholder),
+.formDark :global(textarea::placeholder) {
+  color: #9ca3af !important;
+}
+
+.formDark :global(select option) {
+  background-color: #2a3a4e;
+  color: #f1f5f9;
+}

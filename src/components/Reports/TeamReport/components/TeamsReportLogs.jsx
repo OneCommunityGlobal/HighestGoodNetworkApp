@@ -1,7 +1,7 @@
 import { ReportPage } from '~/components/Reports/sharedComponents/ReportPage';
 import React, { useState, useEffect } from 'react';
 
-import './ReportLogs.css';
+import './ReportLogs.module.css';
 
 function TeamsReportLogs({ title, selectedTeamsTotalValues, selectedTeamsWeeklyEffort, darkMode }) {
   const totalTeamsWorkedHours = selectedTeamsWeeklyEffort.reduce(

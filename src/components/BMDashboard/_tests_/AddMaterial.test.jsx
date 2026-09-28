@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { toast } from 'react-toastify';
 import AddMaterial from '../AddMaterial/AddMaterial';
 import * as invTypeActions from '../../../actions/bmdashboard/invTypeActions';
@@ -69,7 +69,7 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
-const mockStore = configureStore([]);
+const mockStore = configureMockStore([]);
 
 describe('AddMaterial', () => {
   let store;

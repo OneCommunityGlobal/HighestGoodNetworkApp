@@ -19,10 +19,10 @@
 }
 
 .fade {
-  animation: notificationFade 0.25s ease-out forwards;
+  animation: notification-fade 0.25s ease-out forwards;
 }
 
-@keyframes notificationFade {
+@keyframes notification-fade {
   from {
     opacity: 1;
     transform: translateY(0);

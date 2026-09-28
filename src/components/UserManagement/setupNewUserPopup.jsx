@@ -20,7 +20,7 @@ const SetupNewUserPopupComponent = (props) => {
     props.onClose();
   };
 
-  const handelSendLink = () => {
+  const handleSendLink = () => {
     setAlert({ visibility: 'hidden', message: '', state: 'success' });
     if (!email.match(patt)) {
       setAlert({ visibility: 'visible', message: 'Please enter a valid email.', state: 'error' });
@@ -138,7 +138,7 @@ const SetupNewUserPopupComponent = (props) => {
               type="button"
               className="btn btn-primary"
               id="setup-new-user-popup-btn"
-              onClick={handelSendLink}
+              onClick={handleSendLink}
             >
               Send Link
             </button>

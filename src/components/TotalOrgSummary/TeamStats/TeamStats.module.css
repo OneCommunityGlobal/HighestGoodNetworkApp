@@ -5,89 +5,77 @@
 .teamStatsBarChartSummary {
   display: flex;
   align-items: center;
-  font-weight: 600;
 }
 
 .teamStatsSummaryText {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
+  display: flex;
   flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  color: inherit;
+  font-size: 1rem;
 }
 
 .customDropdown {
   position: relative;
-  display: inline-block;
-  margin: 0 0.3rem;
+  display: inline-flex;
 }
 
 .dropdownButton {
-  min-width: 72px;
-  height: 32px;
-  padding: 0 0.7rem;
-  border-radius: 5px;
-  font-size: 1em;
-  font-family: inherit;
-  line-height: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.6rem;
+  gap: 0.5rem;
+  min-width: 3.5rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 5px;
   cursor: pointer;
-  box-sizing: border-box;
-  vertical-align: middle;
-  outline: none;
-  box-shadow: none;
-  appearance: none;
-  background-image: none;
-}
-
-.dropdownButton:focus {
-  outline: none;
-  box-shadow: none;
+  font-size: 1rem;
+  line-height: 1.4;
 }
 
 .dropdownArrow {
-  width: 8px;
-  height: 8px;
-  border-right: 2px solid currentcolor;
-  border-bottom: 2px solid currentcolor;
-  transform: rotate(45deg) translateY(-1px);
-  transition: transform 0.2s ease;
-  flex-shrink: 0;
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid currentcolor;
+  transition: transform 0.15s ease;
 }
 
 .dropdownArrowOpen {
-  transform: rotate(-135deg) translateY(-1px);
+  transform: rotate(180deg);
 }
 
 .dropdownMenu {
   position: absolute;
-  bottom: calc(100% + 6px);
+  bottom: 100%;
   left: 0;
-  min-width: 100%;
-  margin: 0;
-  padding: 0.3rem 0;
+  z-index: 10;
+  min-width: 5.5rem;
+  width: max-content;
+  margin: 0 0 0.25rem;
+  padding: 0.25rem 0.15rem 0.25rem 0;
   list-style: none;
-  border-radius: 6px;
-  z-index: 999;
-  max-height: 180px;
+  border-radius: 5px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  max-height: 9rem;
   overflow-y: auto;
-  box-sizing: border-box;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.dropdownMenu::-webkit-scrollbar {
-  display: none; 
 }
 
 .dropdownItem {
+  display: block;
   width: 100%;
-  padding: 0.45rem 0.7rem;
-  text-align: left;
+  padding: 0.4rem 1rem;
+  text-align: center;
+  background: none;
   border: none;
-  background: transparent;
-  font: inherit;
   cursor: pointer;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.dropdownItem:hover {
+  background-color: rgb(0 0 0 / 5%);
 }

@@ -1,7 +1,7 @@
 // import React from 'react';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { renderWithProvider } from '../../../__tests__/utils';
 import NewUserPopup from '../NewUserPopup';
@@ -20,7 +20,7 @@ vi.mock('../../UserProfile/AddNewUserProfile', () => ({
 // Mock axios simply so imports resolve
 vi.mock('axios');
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 describe('new user popup', () => {
   const onUserPopupClose = vi.fn();

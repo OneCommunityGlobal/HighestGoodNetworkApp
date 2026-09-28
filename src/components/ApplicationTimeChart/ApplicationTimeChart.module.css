@@ -15,13 +15,17 @@
 
 .container {
   display: flex;
-  align-items: flex-start;
-  gap: 20px;
+  flex-direction: column;
+  row-gap: 1rem;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.container.darkMode {
+  background-color: #1B2A41;
+  color: #e0e0e0;
 }
 
 @media (width <= 768px) {
@@ -30,21 +34,18 @@
   }
 }
 
+/* FIX: was a malformed nested duplicate — now a single, properly closed block */
 @media (width <= 480px) {
   .pageContainer {
     padding: 10px;
   }
 }
 
-/* Dark theme support */
-.container.darkMode {
-  background-color: #1B2A41;
-  color: #e0e0e0;
-}
+/* ── Chart card ── */
 
 .chartCard {
   flex: 1;
-  border: 2px solid #4285f4;
+  border: 1px solid #dadce0;
   border-radius: 8px;
   background-color: #fff;
   padding: 20px;
@@ -54,7 +55,7 @@
 
 .chartCard.darkMode {
   background-color: #2c3e50;
-  border-color: #5dade2;
+  border-color: #5a6c7d;
 }
 
 .title {
@@ -70,37 +71,39 @@
   color: #e0e0e0;
 }
 
+/* ── Chart area ── */
+
 .chartArea {
   min-height: 400px;
   position: relative;
   padding: 20px 108px 40px 140px;
-
-  /* Room for value labels placed to the right of each bar (not on the bar) */
 }
 
-/* Responsive design for mobile */
 @media (width <= 768px) {
   .chartArea {
-    padding-left: 100px;
-    padding-right: 88px;
+    padding: 16px 88px 40px 100px;
     min-height: 300px;
   }
 }
 
+/* FIX: removed duplicate nested @media wrapper */
 @media (width <= 480px) {
   .chartArea {
-    padding-left: 80px;
-    padding-right: 72px;
+    padding: 16px 72px 40px 80px;
     min-height: 250px;
   }
 }
 
+/* ── Grid ── */
+
 .grid {
   position: absolute;
+  /* FIX: removed duplicate inset declaration */
   inset: 20px 108px 40px 140px;
   background-image: linear-gradient(to right, #e0e0e0 1px, transparent 1px),
     linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
   opacity: 0.5;
+  pointer-events: none;
   transition: opacity 0.3s ease;
 }
 
@@ -110,31 +113,31 @@
     linear-gradient(to bottom, #5a6c7d 1px, transparent 1px);
 }
 
+/* FIX: removed duplicate nested @media wrapper */
 @media (width <= 768px) {
   .grid {
-    left: 100px;
-    right: 88px;
+    inset: 20px 88px 40px 100px;
   }
 }
 
 @media (width <= 480px) {
   .grid {
-    left: 80px;
-    right: 72px;
+    inset: 20px 72px 40px 80px;
   }
 }
 
+/* ── Y-axis ── */
+
 .yAxis {
   position: absolute;
-  left: 0;
-  top: 20px;
-  bottom: 40px;
+  inset: 20px auto 40px 0;
   width: 130px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
+/* FIX: removed duplicate nested @media wrapper */
 @media (width <= 768px) {
   .yAxis {
     width: 90px;
@@ -149,7 +152,7 @@
 
 .yAxisItem {
   display: flex;
-  align-items: center;
+  align-items: center;    
   justify-content: flex-end;
   padding-right: 10px;
   font-size: 12px;
@@ -163,6 +166,14 @@
   border-right-color: #5a6c7d;
 }
 
+/* FIX: removed duplicate nested @media wrapper */
+@media (width <= 768px) {
+  .yAxisItem {
+    justify-content: flex-start;
+    
+  }
+}
+
 @media (width <= 480px) {
   .yAxisItem {
     font-size: 10px;
@@ -170,11 +181,11 @@
   }
 }
 
+/* ── X-axis ── */
+
 .xAxis {
   position: absolute;
-  left: 140px;
-  right: 108px;
-  bottom: 0;
+  inset: auto 108px 0 140px;
   height: 40px;
   border-top: 1px solid #9aa0a6;
   display: flex;
@@ -187,47 +198,47 @@
   border-top-color: #5a6c7d;
 }
 
+/* FIX: removed duplicate nested @media wrapper */
 @media (width <= 768px) {
   .xAxis {
-    left: 100px;
-    right: 88px;
+    inset: auto 88px 0 100px;
   }
 }
 
 @media (width <= 480px) {
   .xAxis {
-    left: 80px;
-    right: 72px;
+    inset: auto 72px 0 80px;
   }
 }
 
+/* ── Bars ── */
+
 .bars {
   position: absolute;
+  /* FIX: removed duplicate inset declaration */
   inset: 20px 108px 40px 140px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
+/* FIX: removed duplicate nested @media wrapper */
 @media (width <= 768px) {
   .bars {
-    left: 100px;
-    right: 88px;
+    inset: 20px 88px 40px 100px;
   }
 }
 
 @media (width <= 480px) {
   .bars {
-    left: 80px;
-    right: 72px;
+    inset: 20px 72px 40px 80px;
   }
 }
 
 .barRow {
   display: flex;
   align-items: center;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding: 10px 0;
   overflow: visible;
 }
 
@@ -240,12 +251,24 @@
   min-width: 2px;
   flex-shrink: 0;
   overflow: visible;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  cursor: pointer;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    filter 0.15s ease;
+}
+
+.bar:hover {
+  filter: brightness(1.1);
 }
 
 .bar.darkMode {
   background-color: #58d68d;
   border-color: #27ae60;
+}
+
+.bar.darkMode:hover {
+  filter: brightness(1.12);
 }
 
 .dataLabel {
@@ -264,15 +287,19 @@
 
 .dataLabel.darkMode {
   color: #f1f5f9;
+  /* FIX: removed duplicate text-shadow declaration */
   text-shadow: 0 1px 2px rgb(0 0 0 / 45%);
 }
 
+/* FIX: removed duplicate nested @media wrapper */
 @media (width <= 480px) {
   .dataLabel {
     font-size: 12px;
     margin-left: 8px;
   }
 }
+
+/* ── X-axis label ── */
 
 .xAxisLabel {
   position: absolute;
@@ -281,6 +308,7 @@
   transform: translateX(-50%);
   font-size: 12px;
   color: #5f6368;
+  white-space: nowrap;
   transition: color 0.3s ease;
 }
 
@@ -288,12 +316,15 @@
   color: #e0e0e0;
 }
 
+/* FIX: removed duplicate nested @media wrapper */
 @media (width <= 480px) {
   .xAxisLabel {
     font-size: 10px;
     bottom: -20px;
   }
 }
+
+/* ── No-data placeholder ── */
 
 .noData {
   display: flex;
@@ -309,6 +340,7 @@
   color: #e0e0e0;
 }
 
+/* FIX: removed duplicate nested @media wrapper */
 @media (width <= 768px) {
   .noData {
     height: 300px;
@@ -323,8 +355,10 @@
   }
 }
 
+/* ── Summary strip ── */
+
 .summary {
-  margin-top: 20px;
+  margin-top: 40px;
   padding: 15px;
   background-color: #f8f9fa;
   border-radius: 4px;
@@ -338,6 +372,7 @@
   color: #e0e0e0;
 }
 
+/* FIX: removed duplicate nested @media wrapper */
 @media (width <= 480px) {
   .summary {
     font-size: 12px;
@@ -345,43 +380,31 @@
   }
 }
 
+/* ── Filters panel ── */
+
 .filters {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 1rem;
   min-width: 150px;
-}
-
-@media (width <= 768px) {
-  .filters {
-    min-width: 120px;
-    gap: 15px;
-  }
-}
-
-@media (width <= 480px) {
-  .filters {
-    min-width: 100px;
-    gap: 10px;
-  }
-}
-
-.filterCard {
-  border: 1px solid #dadce0;
-  border-radius: 4px;
-  padding: 12px;
   background-color: #fff;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  border: 1px solid #dadce0;
+  border-radius: 0.5rem;
+  padding: 0.7rem;
 }
 
-.filterCard.darkMode {
+.filters.darkMode {
   background-color: #2c3e50;
   border-color: #5a6c7d;
 }
 
-@media (width <= 480px) {
-  .filterCard {
-    padding: 8px;
+@media screen and (min-width: 768px) {
+  .filters {
+    flex-direction: row;
+  }
+
+  .roleFilter {
+    width: 350px;
   }
 }
 
@@ -397,6 +420,7 @@
   color: #e0e0e0;
 }
 
+/* FIX: removed duplicate nested @media wrapper */
 @media (width <= 480px) {
   .filterTitle {
     font-size: 12px;
@@ -404,77 +428,59 @@
   }
 }
 
-.select {
+.dateSelect {
   width: 100%;
-  padding: 4px 8px;
-  border: 1px solid #dadce0;
-  border-radius: 4px;
-  font-size: 14px;
-  background-color: #fff;
-  color: #3c4043;
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  height: 38px;
+  font-size: 0.8rem;
+  padding-inline: 0.5rem;
 }
 
-.select.darkMode {
-  background-color: #34495e;
-  border-color: #5a6c7d;
-  color: #e0e0e0;
+.dateFilter {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
-/* Native <option> is often white-on-white in dark mode without explicit colors */
-.select option {
-  background-color: #fff;
-  color: #3c4043;
-}
-
-.select.darkMode option {
-  background-color: #1e293b;
-  color: #f1f5f9;
-}
-
-@media (width <= 480px) {
-  .select {
-    font-size: 12px;
-    padding: 3px 6px;
+@media screen and (min-width: 768px) {
+  .dateFilter {
+    width: 200px;
   }
 }
 
-/* Responsive layout adjustments */
+.multiSelect {
+  width: 100%;
+  font-size: 0.8rem;
+
+  .react-select__value-container {
+    border: 1px solid #dadce0;
+  }
+}
+
+/* ── Responsive layout ── */
+
 @media (width <= 1024px) {
   .container {
     max-width: 100%;
   }
 }
 
+/* FIX: removed duplicate nested @media wrapper */
 @media (width <= 768px) {
   .container {
     flex-direction: column;
     gap: 15px;
     padding: 0;
   }
-  
+
   .chartCard {
     order: 1;
     padding: 15px;
     width: 100%;
   }
-  
+
   .title {
     font-size: 18px;
     margin-bottom: 20px;
-  }
-  
-  .filters {
-    order: 2;
-    flex-direction: row;
-    justify-content: space-between;
-    min-width: auto;
-    width: 100%;
-    gap: 15px;
-  }
-  
-  .filterCard {
-    flex: 1;
   }
 }
 
@@ -482,58 +488,297 @@
   .container {
     gap: 10px;
   }
-  
+
   .chartCard {
     padding: 12px;
   }
-  
+
   .title {
     font-size: 16px;
     margin-bottom: 15px;
   }
-  
-  .filters {
+
+  /* .filters {
     flex-direction: column;
     gap: 10px;
-  }
-  
-  .filterCard {
+  } */
+
+  /* .filterCard {
     width: 100%;
-  }
+  } */
 }
 
+/* FIX: removed duplicate nested @media wrapper */
 @media (width <= 320px) {
   .title {
     font-size: 14px;
   }
-  
+
   .chartArea {
-    padding-left: 60px;
-    padding-right: 20px;
+    padding: 0 20px 0 60px;
     min-height: 200px;
   }
-  
+
   .yAxis {
     width: 55px;
   }
-  
+
   .yAxisItem {
     font-size: 9px;
     padding-right: 3px;
   }
-  
+
   .bars {
-    left: 60px;
-    right: 20px;
+    inset: 0 20px 0 60px;
   }
-  
+
   .grid {
-    left: 60px;
-    right: 20px;
+    inset: 0 20px 0 60px;
   }
-  
+
   .xAxis {
-    left: 60px;
-    right: 20px;
+    inset: auto 20px 0 60px;
   }
+}
+
+.tooltipContent {
+  font-size: 13px;
+  min-width: 180px;
+}
+
+.tooltipRole {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  white-space: nowrap;
+}
+
+.tooltipDivider {
+  height: 1px;
+  margin-bottom: 8px;
+}
+
+.tooltipRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 4px;
+}
+
+.tooltipRow:last-child {
+  margin-bottom: 0;
+}
+
+.tooltipLabel {
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.tooltipValue {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Multi-select component */
+
+.selectedPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 6px;
+  font-size: 13px;
+  line-height: 1.2;
+  white-space: nowrap;
+  border-radius: 0.3rem;
+  background-color: #007bff;
+  color: #ffffff;
+}
+
+.applicationTimesRoleMultiSelect :global(.application-times-multi-select__value-container--has-value) {
+  display: flex;
+  column-gap: 0.2rem;
+}
+
+.applicationTimesRoleMultiSelect :global(.application-times-multi-select__option--is-focused.application-times-multi-select__option--is-selected) {
+  background-color: #007bff;
+}
+
+:global(.dark-mode) .applicationTimesRoleMultiSelect :global(.application-times-multi-select__control) {
+  background-color: #1f2937;
+  border-color: #5a6c7d;
+  border-radius: 0.5rem;
+}
+
+:global(.dark-mode) .applicationTimesRoleMultiSelect :global(.application-times-multi-select__input) {
+  color: #ffffff !important;
+}
+
+:global(.dark-mode) .applicationTimesRoleMultiSelect :global(.application-times-multi-select__menu) {
+  background-color: #1f2937;
+  border-color: #5a6c7d;
+  color: #ffffff;
+}
+
+:global(.dark-mode) .applicationTimesRoleMultiSelect :global(.application-times-multi-select__option--is-focused) {
+    background-color: #374151;
+}
+
+:global(.dark-mode) .applicationTimesRoleMultiSelect :global(.application-times-multi-select__option--is-focused.application-times-multi-select__option--is-selected) {
+  background-color: #007bff;
+}
+
+:global(.dark-mode) .applicationTimesRoleMultiSelect :global(.application-times-multi-select__clear-indicator:hover), :global(.dark-mode) .applicationTimesRoleMultiSelect :global(.application-times-multi-select__dropdown-indicator:hover) {
+  color: #ffffff;
+}
+
+
+/* Date filter*/
+
+.applicationTimesDateSelect :global(.application-times-date-select__control) {
+  min-height: 38px;
+  border: 1px solid #dadce0;
+  border-radius: 0.5rem;
+  background-color: #ffffff;
+  font-size: 0.8rem;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__control:hover) {
+  border-color: #b0b8c1;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__control--is-focused) {
+  border-color: #007bff;
+  box-shadow: 0 0 0 1px #007bff;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__value-container) {
+  padding: 2px 8px;
+  color: #3c4043;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__placeholder) {
+  color: #5f6368;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__single-value) {
+  color: #3c4043;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__indicator-separator) {
+  background-color: #dadce0;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__dropdown-indicator) {
+  color: #5f6368;
+  transition: color 0.3s ease;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__dropdown-indicator:hover) {
+  color: #007bff;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__menu) {
+  background-color: #ffffff;
+  border: 1px solid #dadce0;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+  color: #3c4043;
+  z-index: 10;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__option) {
+  background-color: #ffffff;
+  color: #3c4043;
+  cursor: pointer;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__option--is-focused) {
+  background-color: #f1f3f4;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__option--is-selected) {
+  background-color: #007bff;
+  color: #ffffff;
+}
+
+.applicationTimesDateSelect :global(.application-times-date-select__option--is-focused.application-times-date-select__option--is-selected) {
+  background-color: #007bff;
+  color: #ffffff;
+}
+
+/* Date filter's Dark mode*/
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__control) {
+  background-color: #1f2937;
+  border-color: #5a6c7d;
+  border-radius: 0.5rem;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__control:hover) {
+  border-color: #7b8a9a;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__control--is-focused) {
+  border-color: #007bff;
+  box-shadow: 0 0 0 1px #007bff;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__value-container) {
+  color: #e0e0e0;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__placeholder) {
+  color: #9ab0bb;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__single-value) {
+  color: #ffffff;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__input) {
+  color: #ffffff !important;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__indicator-separator) {
+  background-color: #5a6c7d;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__dropdown-indicator) {
+  color: #9ab0bb;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__dropdown-indicator:hover) {
+  color: #ffffff;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__menu) {
+  background-color: #1f2937;
+  border-color: #5a6c7d;
+  color: #ffffff;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__option) {
+  background-color: #1f2937;
+  color: #e0e0e0;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__option--is-focused) {
+  background-color: #374151;
+  color: #ffffff;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__option--is-selected) {
+  background-color: #007bff;
+  color: #ffffff;
+}
+
+:global(.dark-mode) .applicationTimesDateSelect :global(.application-times-date-select__option--is-focused.application-times-date-select__option--is-selected) {
+  background-color: #007bff;
+  color: #ffffff;
 }

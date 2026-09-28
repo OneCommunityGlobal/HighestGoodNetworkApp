@@ -15,7 +15,8 @@ import {
 import hasPermission from '../../utils/permissions';
 import { CLOSE } from '../../languages/en/ui';
 import { boxStyle, boxStyleDark } from '../../styles';
-import '../Header/index.css';
+import { permissions } from '../../utils/constants';
+import '../Header/index.module.css';
 
 /**
  * Modal popup to delete the user profile
@@ -26,7 +27,7 @@ const DeleteUserPopupComponent = (props) => {
   const closePopup = () => {
     props.onClose();
   };
-  const canDeleteUser = props.hasPermission('deleteUserProfile');
+  const canDeleteUser = props.hasPermission(permissions.deleteUserProfile);
 
   return (
     <Modal

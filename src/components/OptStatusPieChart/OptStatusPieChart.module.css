@@ -150,7 +150,7 @@
 }
 
 .errorMessage {
-  color: #d32f2f;
+  color: #8b0000;
   background: #fdecea;
   padding: 10px 12px;
   border-radius: 6px;
@@ -159,6 +159,6 @@
 }
 
 .optStatusContainerDarkMode .errorMessage {
-  color: #ffb4ab;
+  color: #ffdad6;
   background: #5a2120;
 }

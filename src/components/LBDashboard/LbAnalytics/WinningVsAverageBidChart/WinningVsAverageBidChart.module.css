@@ -8,8 +8,8 @@
 
 .card {
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+  background-color: #fff;
 }
 
 .darkCard {
@@ -25,18 +25,18 @@
 }
 
 .darkContainer .filtersSection {
-  border-bottom-color: #444444;
+  border-bottom-color: #444;
 }
 
 .filterTitle {
   margin-bottom: 12px;
   font-size: 16px;
   font-weight: 600;
-  color: #333333;
+  color: #333;
 }
 
 .darkText {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .applyBtn {
@@ -70,18 +70,18 @@
   align-items: center;
   justify-content: center;
   min-height: 400px;
-  color: #666666;
+  color: #666;
   font-size: 16px;
 }
 
 /* Responsive Design */
-@media (max-width: 992px) {
+@media (width <= 992px) {
   .chartContainer {
     height: 450px;
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .container {
     padding: 10px;
   }
@@ -99,7 +99,7 @@
   }
 }
 
-@media (max-width: 576px) {
+@media (width <= 576px) {
   .chartContainer {
     height: 350px;
   }

@@ -20,7 +20,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import WBSTasks from '../WBSTasks';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import mockAdminState from '__tests__/mockAdminState';
 import { Router } from 'react-router-dom';
 import { Provider } from 'react-redux';
@@ -28,7 +28,7 @@ import { createMemoryHistory } from 'history';
 import axios from 'axios';
 import { themeMock } from '__tests__/mockStates';
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 let store;
 beforeEach(() => {

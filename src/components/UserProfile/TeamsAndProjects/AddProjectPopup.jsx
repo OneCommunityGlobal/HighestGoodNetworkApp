@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert, Input } from 'reactstrap';
 import AddProjectsAutoComplete from './AddProjectsAutoComplete';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../../Header/index.css';
+import '../../Header/index.module.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';

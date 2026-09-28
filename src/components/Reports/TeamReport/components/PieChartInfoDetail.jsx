@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
-import './ReportCharts.css';
+import './ReportCharts.module.css';
 
 function PieChartInfoDetail({ keyName, value, color, darkMode }) {
   return (

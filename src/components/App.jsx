@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { Component, useEffect } from 'react';
+import { Component, useEffect, Suspense } from 'react';
 import { Provider, useSelector } from 'react-redux';
 import { BrowserRouter as Router, useLocation } from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
@@ -234,7 +234,7 @@ class App extends Component {
               <Router>
                 <ThemeManager />
                 <UpdateDocumentTitle />
-                {routes}
+                <Suspense fallback={<Loading />}>{routes}</Suspense>
               </Router>
             </ModalProvider>
           </QueryClientProvider>

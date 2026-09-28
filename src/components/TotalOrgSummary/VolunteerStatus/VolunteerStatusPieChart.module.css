@@ -3,10 +3,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   width: 100%;
-  height: 100%;
-  gap: 12px;
 }
 
 .volunteerStatusChart {
@@ -29,7 +27,7 @@
   font-size: 14px;
 }
 
-.volunteerStatusHeading {
+.volunteerStatusCenter .volunteerStatusHeading {
   color: #828282;
   text-align: center;
   line-height: 1.2;
@@ -46,7 +44,7 @@
   font-size: clamp(0.95rem, 5.71cqw, 1.2rem);
 }
 
-.volunteerCount {
+.volunteerStatusCenter .volunteerCount {
   color: #6c6c6c;
   font-weight: bolder;
 

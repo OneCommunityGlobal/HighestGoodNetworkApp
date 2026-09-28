@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import { ReportBlock } from '../ReportBlock';
-import './ReportCard.css';
+import './ReportCard.module.css';
 
 export function ReportCard() {
   return (

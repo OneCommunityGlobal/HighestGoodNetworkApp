@@ -2,12 +2,14 @@
 html {
   overflow-x: hidden;
   height: 100%;
+  background-color: #fff;
 }
 
 body {
   display: grid;
   grid-template-columns: auto 0;
   height: 100%;
+  background-color: #fff;
 }
 
 button {
@@ -22,6 +24,18 @@ button {
   /* background-color: var(--background-color); */
   overflow: auto;
   background-color: #fff;
+}
+
+/* Dark mode background for the page itself */
+body.dark-mode,
+body.bm-dashboard-dark {
+  background-color: #1a1d23 !important;
+}
+
+/* Dark mode override for #root */
+body.dark-mode #root,
+body.bm-dashboard-dark #root {
+  background-color: #1a1d23 !important;
 }
 
 .App {
@@ -271,4 +285,47 @@ input[type='checkbox']:not([disabled]):hover {
   justify-content: center;
   gap: 24px;
   padding: 20px;
+}
+
+/* Global dark mode background fix - NUCLEAR OPTION */
+body.dark-mode #root {
+  background-color: #1a1d23 !important;
+}
+
+body.dark-mode .bg-oxford-blue,
+body.dark-mode div[class*="bg-oxford-blue"],
+body.dark-mode .text-light {
+  background-color: #1a1d23 !important;
+}
+
+/* Override ANY inline styles */
+body.dark-mode [style*="background"] {
+  background-color: #1a1d23 !important;
+}
+
+tr.dark-leaderboard-row:hover,
+tr.dark-leaderboard-row:hover td,
+tr.dark-leaderboard-row:hover th,
+tr.dark-leaderboard-row:hover span,
+tr.dark-leaderboard-row:hover p,
+tr.dark-leaderboard-row:hover a {
+  background-color: #fff !important;
+  color: #000 !important;
+}
+
+/* Date Picker Mobile Single Month Override */
+@media (width <= 768px) {
+  /* Hide second month panel in Ant Design RangePickers and show navigation on first panel */
+  :global(.ant-picker-panels) {
+    flex-direction: column !important;
+  }
+
+  :global(.ant-picker-panel:last-child) {
+    display: none !important;
+  }
+
+  :global(.ant-picker-panel:first-child .ant-picker-header-next-btn),
+  :global(.ant-picker-panel:first-child .ant-picker-header-super-next-btn) {
+    visibility: visible !important;
+  }
 }

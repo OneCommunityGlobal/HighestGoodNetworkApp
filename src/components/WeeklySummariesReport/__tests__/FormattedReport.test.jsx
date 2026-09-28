@@ -59,7 +59,7 @@ const dummySummary = {
       uploadDate: moment().toISOString(),
     },
   ],
-  weeklySummariesCount: '5',
+  weeklySummariesCount: 10,
   teamCode: 'ABC123',
   mediaUrl: 'http://example.com/media',
   adminLinks: [{ Name: 'Media Folder', Link: 'http://example.com/folder' }],

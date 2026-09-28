@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useId } from 'react';
+import React, { useState, useMemo, useId, useEffect } from 'react';
 import {
   LineChart,
   Line,
@@ -10,34 +10,16 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import Select from 'react-select';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styles from './EnhancedPopularityTimelineChart.module.css';
-import { ENDPOINTS } from '../../utils/URL';
+import {
+  fetchEnhancedPopularityData,
+  fetchEnhancedRoles,
+} from '../../actions/EnhancedPopularityAnalytics/EnhancedPopularityActions';
 
 /**
  * Enhanced Popularity Timeline Chart Component
  */
-
-// --- Data Fetching Functions ---
-const fetchEnhancedPopularityData = async ({ range, roles = [], includeLowVolume }) => {
-  const url = ENDPOINTS.ENHANCED_POPULARITY(
-    range,
-    roles,
-    null, // start (optional)
-    null, // end (optional)
-    includeLowVolume,
-  );
-
-  const { data } = await axios.get(url);
-  return data;
-};
-
-const fetchEnhancedRoles = async () => {
-  const { data } = await axios.get(ENDPOINTS.ENHANCED_POPULARITY_ROLES);
-  return data;
-};
 
 // --- Helper Functions ---
 const getRoleColor = (role, index) => {
@@ -66,7 +48,15 @@ const getRoleColor = (role, index) => {
 
 const EnhancedPopularityTimelineChart = () => {
   const darkMode = useSelector(state => state.theme.darkMode);
+  const dispatch = useDispatch();
+  const token = localStorage.getItem('token');
 
+  const { data: popularityData, loading: dataLoading, error: queryError } = useSelector(
+    state => state.enhancedPopularityAnalytics,
+  );
+  const { data: rolesData, isLoading: rolesLoading, error: rolesError } = useSelector(
+    state => state.enhancedPopularityRoles,
+  );
   const timeRangeId = useId();
   const roleFilterId = useId();
 
@@ -77,22 +67,20 @@ const EnhancedPopularityTimelineChart = () => {
   const [, setError] = useState('');
   const [, setTooltipVisible] = useState(false);
 
-  // Fetch enhanced roles data
-  const { data: rolesData, isLoading: rolesLoading, error: rolesError } = useQuery({
-    queryKey: ['enhancedRoles'],
-    queryFn: fetchEnhancedRoles,
-  });
-
-  // Fetch enhanced popularity data
-  const { data: popularityData, isLoading: dataLoading, error: queryError } = useQuery({
-    queryKey: ['enhancedPopularityData', dateRangeOption, selectedRoles.join(','), showLowVolume],
-    queryFn: () =>
+  useEffect(() => {
+    dispatch(
       fetchEnhancedPopularityData({
-        range: dateRangeOption.replace('months', ''),
+        range: dateRangeOption,
         roles: selectedRoles,
         includeLowVolume: showLowVolume,
+        token,
       }),
-  });
+    );
+  }, [dateRangeOption, selectedRoles]);
+
+  useEffect(() => {
+    dispatch(fetchEnhancedRoles(token));
+  }, []);
 
   // Process chart data for Recharts
   const { chartData, roleMetrics } = useMemo(() => {
@@ -163,6 +151,7 @@ const EnhancedPopularityTimelineChart = () => {
         roleMetrics: metrics.sort((a, b) => (b.popularityScore || 0) - (a.popularityScore || 0)),
       };
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error processing chart data:', error);
       return { chartData: [], roleMetrics: [] };
     }
@@ -518,7 +507,7 @@ const EnhancedPopularityTimelineChart = () => {
               <option value="3months">Last 3 Months</option>
               <option value="6months">Last 6 Months</option>
               <option value="12months">Last 12 Months</option>
-              <option value="all">All Time</option>
+              <option value="">All Time</option>
             </select>
           </div>
 

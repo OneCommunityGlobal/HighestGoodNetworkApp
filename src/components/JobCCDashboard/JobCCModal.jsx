@@ -1,13 +1,30 @@
-import { useState } from 'react';
-import { Modal, Form, FormGroup, Label, Input, Button, Table } from 'reactstrap';
+import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  Button,
+  Table,
+} from 'reactstrap';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
 import { toast } from 'react-toastify';
+import styles from './JobCCDashboard.module.css';
 
-function JobCCModal({ job, onClose, darkMode, onRefresh }) {
+function JobCCModal({ job, onClose, onRefresh, darkMode }) {
   const [email, setEmail] = useState('');
   const [ccList, setCCList] = useState(job.ccList || []);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setCCList(job.ccList || []);
+  }, [job.ccList]);
 
   const handleAddEmail = async () => {
     if (!email) {
@@ -15,17 +32,27 @@ function JobCCModal({ job, onClose, darkMode, onRefresh }) {
       return;
     }
 
+    const atIndex = email.indexOf('@');
+    if (atIndex <= 0 || atIndex >= email.length - 1) {
+      toast.error('Please enter a valid email address.');
+      return;
+    }
+    const dotIndex = email.lastIndexOf('.');
+    if (dotIndex <= atIndex + 1 || dotIndex >= email.length - 1) {
+      toast.error('Please enter a valid email address.');
+      return;
+    }
+
     setLoading(true);
     try {
-      await axios.post(`${ENDPOINTS.JOB_NOTIFICATION_LIST}/job`, {
+      const response = await axios.post(`${ENDPOINTS.JOB_NOTIFICATION_LIST}/job`, {
         email,
         jobId: job._id,
       });
 
-      // Add to local list for immediate UI feedback
-      setCCList(prevList => [...prevList, { email }]);
+      setCCList(prev => [...prev, response.data]);
       setEmail('');
-      onRefresh(); // Refresh parent data
+      onRefresh();
     } catch (error) {
       toast.error('Failed to add email. Please try again.');
     } finally {
@@ -39,9 +66,8 @@ function JobCCModal({ job, onClose, darkMode, onRefresh }) {
     setLoading(true);
     try {
       await axios.delete(`${ENDPOINTS.JOB_NOTIFICATION_LIST}${ccEntry._id}`);
-      // Remove from local list for immediate UI feedback
       setCCList(prevList => prevList.filter(entry => entry.email !== emailToRemove));
-      onRefresh(); // Refresh parent data
+      onRefresh();
     } catch (error) {
       toast.error('Failed to remove email. Please try again.');
     } finally {
@@ -49,16 +75,24 @@ function JobCCModal({ job, onClose, darkMode, onRefresh }) {
     }
   };
 
+  const darkClass = darkMode ? styles.darkModeModel : '';
+
   return (
-    <Modal isOpen toggle={onClose} className={darkMode ? 'dark-mode' : ''}>
-      <div className="modal-header">
-        <h5 className="modal-title">{`Manage CCs for ${job.title}`}</h5>
-        <Button close onClick={onClose} />
-      </div>
-      <div className="modal-body">
-        <Form>
+    <Modal isOpen toggle={onClose}>
+      <ModalHeader className={darkClass} toggle={onClose}>
+        {`Manage CCs for ${job.title}`}
+      </ModalHeader>
+      <ModalBody className={darkClass}>
+        <Form
+          onSubmit={e => {
+            e.preventDefault();
+            handleAddEmail();
+          }}
+        >
           <FormGroup>
-            <Label for="email">Add Email Address</Label>
+            <Label for="email" className={styles.label}>
+              Add Email Address
+            </Label>
             <Input
               type="email"
               id="email"
@@ -66,14 +100,17 @@ function JobCCModal({ job, onClose, darkMode, onRefresh }) {
               value={email}
               onChange={e => setEmail(e.target.value)}
               disabled={loading}
+              className={styles.input}
             />
           </FormGroup>
-          <Button color="primary" onClick={handleAddEmail} disabled={loading}>
+          <Button color="primary" className="mb-2" onClick={handleAddEmail} disabled={loading}>
             {loading ? 'Adding...' : 'Add Email'}
           </Button>
         </Form>
-        <h6 className="mt-4">Current CC List</h6>
-        <Table striped bordered hover>
+
+        <h6 className={styles.listTitle}>Current CC List</h6>
+
+        <Table striped bordered hover className={styles.jobCcDashboardTable}>
           <thead>
             <tr>
               <th>Email</th>
@@ -98,14 +135,30 @@ function JobCCModal({ job, onClose, darkMode, onRefresh }) {
             ))}
           </tbody>
         </Table>
-      </div>
-      <div className="modal-footer">
-        <Button color="secondary" onClick={onClose} disabled={loading}>
+      </ModalBody>
+      <ModalFooter className={darkClass}>
+        <Button color="danger" onClick={onClose} disabled={loading}>
           Close
         </Button>
-      </div>
+      </ModalFooter>
     </Modal>
   );
 }
+
+JobCCModal.propTypes = {
+  job: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    ccList: PropTypes.arrayOf(
+      PropTypes.shape({
+        _id: PropTypes.string,
+        email: PropTypes.string.isRequired,
+      }),
+    ),
+  }).isRequired,
+  onClose: PropTypes.func.isRequired,
+  onRefresh: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool.isRequired,
+};
 
 export default JobCCModal;
