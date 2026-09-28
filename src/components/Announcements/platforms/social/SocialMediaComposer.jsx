@@ -1,11 +1,17 @@
+import axios from 'axios';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import CharacterCounter from '../../CharacterCounter';
 import ConfirmationModal from '../../ConfirmationModal';
+import { ENDPOINTS } from '~/utils/URL';
 import './SocialMediaComposer.module.css';
 const PREFS_KEY = 'mastodon_composer_prefs';
+
+// Prefer the backend's own message (for example a validation error) over a
+// generic one, so people can see why a request failed.
+const errorMessage = (err, fallback) => err?.response?.data?.error || fallback;
 
 export default function SocialMediaComposer({ platform }) {
   const PLATFORM_CHAR_LIMITS = {
@@ -88,11 +94,8 @@ export default function SocialMediaComposer({ platform }) {
   const loadScheduledPosts = async () => {
     setIsLoadingScheduled(true);
     try {
-      const response = await fetch('/api/mastodon/schedule');
-      if (response.ok) {
-        const data = await response.json();
-        setScheduledPosts(data || []);
-      }
+      const { data } = await axios.get(ENDPOINTS.MASTODON_SCHEDULED_POSTS);
+      setScheduledPosts(data || []);
     } catch (err) {
       if (process.env.NODE_ENV === 'development') {
         console.error('Error loading scheduled posts:', err);
@@ -105,18 +108,13 @@ export default function SocialMediaComposer({ platform }) {
   const loadPostHistory = async () => {
     setIsLoadingHistory(true);
     try {
-      const response = await fetch('/api/mastodon/history?limit=20');
-      if (response.ok) {
-        const data = await response.json();
-        setPostHistory(data || []);
-      } else {
-        toast.error('Failed to load post history');
-      }
+      const { data } = await axios.get(ENDPOINTS.MASTODON_POST_HISTORY(20));
+      setPostHistory(data || []);
     } catch (err) {
       if (process.env.NODE_ENV === 'development') {
         console.error('Error loading post history:', err);
       }
-      toast.error('Error loading post history');
+      toast.error(errorMessage(err, 'Failed to load post history'));
     } finally {
       setIsLoadingHistory(false);
     }
@@ -214,34 +212,26 @@ export default function SocialMediaComposer({ platform }) {
 
     setIsPosting(true);
     try {
-      const response = await fetch('/api/mastodon/createPin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: 'Mastodon Post',
-          description: postContent.trim(),
-          imgType: uploadedImage ? 'FILE' : 'URL',
-          mediaItems: uploadedImage ? `data:image/png;base64,${uploadedImage.base64}` : '',
-          mediaAltText: imageAltText || null,
-          crossPostTo: selectedPlatforms,
-        }),
+      await axios.post(ENDPOINTS.MASTODON_POST, {
+        title: 'Mastodon Post',
+        description: postContent.trim(),
+        imgType: uploadedImage ? 'FILE' : 'URL',
+        mediaItems: uploadedImage ? `data:image/png;base64,${uploadedImage.base64}` : '',
+        mediaAltText: imageAltText || null,
+        crossPostTo: selectedPlatforms,
       });
 
-      if (response.ok) {
-        let message = `Successfully posted to ${platform}!`;
-        if (selectedPlatforms.length > 0) {
-          message += ` (Selected for: ${selectedPlatforms.join(', ')})`;
-        }
-        toast.success(message, { autoClose: 5000 });
-        clearComposer();
-        if (activeSubTab === 'history') {
-          loadPostHistory();
-        }
-      } else {
-        toast.error(`Failed to post to ${platform}.`);
+      let message = `Successfully posted to ${platform}!`;
+      if (selectedPlatforms.length > 0) {
+        message += ` (Selected for: ${selectedPlatforms.join(', ')})`;
+      }
+      toast.success(message, { autoClose: 5000 });
+      clearComposer();
+      if (activeSubTab === 'history') {
+        loadPostHistory();
       }
     } catch (err) {
-      toast.error(`Error while posting to ${platform}.`);
+      toast.error(errorMessage(err, `Failed to post to ${platform}.`));
     } finally {
       setIsPosting(false);
     }
@@ -271,38 +261,29 @@ export default function SocialMediaComposer({ platform }) {
 
     setIsPosting(true);
     try {
-      // If editing, delete the old version first
-      if (editingPostId) {
-        await fetch(`/api/mastodon/schedule/${editingPostId}`, { method: 'DELETE' });
-      }
-
-      const response = await fetch('/api/mastodon/schedule', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: 'Mastodon Scheduled Post',
-          description: postContent.trim(),
-          imgType: uploadedImage ? 'FILE' : 'URL',
-          mediaItems: uploadedImage ? `data:image/png;base64,${uploadedImage.base64}` : '',
-          mediaAltText: imageAltText || null,
-          scheduledTime: scheduledDateTime.toISOString(),
-          crossPostTo: selectedPlatforms,
-        }),
+      await axios.post(ENDPOINTS.MASTODON_SCHEDULED_POSTS, {
+        title: 'Mastodon Scheduled Post',
+        description: postContent.trim(),
+        imgType: uploadedImage ? 'FILE' : 'URL',
+        mediaItems: uploadedImage ? `data:image/png;base64,${uploadedImage.base64}` : '',
+        mediaAltText: imageAltText || null,
+        scheduledTime: scheduledDateTime.toISOString(),
+        crossPostTo: selectedPlatforms,
       });
 
-      if (response.ok) {
-        toast.success(
-          editingPostId ? 'Post updated successfully!' : 'Post scheduled successfully!',
-        );
-        clearComposer();
-        if (activeSubTab === 'scheduled') {
-          loadScheduledPosts();
-        }
-      } else {
-        toast.error('Failed to schedule post.');
+      // When editing, remove the old version only after the new one is saved,
+      // so a failed save never loses the original post.
+      if (editingPostId) {
+        await axios.delete(ENDPOINTS.MASTODON_SCHEDULED_POST_BY_ID(editingPostId));
+      }
+
+      toast.success(editingPostId ? 'Post updated successfully!' : 'Post scheduled successfully!');
+      clearComposer();
+      if (activeSubTab === 'scheduled') {
+        loadScheduledPosts();
       }
     } catch (err) {
-      toast.error('Error while scheduling post.');
+      toast.error(errorMessage(err, 'Failed to schedule post.'));
     } finally {
       setIsPosting(false);
     }
@@ -355,17 +336,11 @@ export default function SocialMediaComposer({ platform }) {
   const handleDeleteScheduled = async (postId, skipConfirmation = false) => {
     const performDelete = async () => {
       try {
-        const response = await fetch(`/api/mastodon/schedule/${postId}`, {
-          method: 'DELETE',
-        });
-        if (response.ok) {
-          toast.success('Scheduled post deleted!');
-          loadScheduledPosts();
-        } else {
-          toast.error('Failed to delete post.');
-        }
+        await axios.delete(ENDPOINTS.MASTODON_SCHEDULED_POST_BY_ID(postId));
+        toast.success('Scheduled post deleted!');
+        loadScheduledPosts();
       } catch (err) {
-        toast.error('Error deleting post.');
+        toast.error(errorMessage(err, 'Failed to delete post.'));
       }
     };
 
@@ -388,26 +363,17 @@ export default function SocialMediaComposer({ platform }) {
     const performPost = async () => {
       try {
         const postData = JSON.parse(post.postData);
-        const response = await fetch('/api/mastodon/createPin', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            title: 'Mastodon Post',
-            description: postData.status,
-            imgType: postData.local_media_base64 ? 'FILE' : 'URL',
-            mediaItems: postData.local_media_base64 || '',
-            mediaAltText: postData.mediaAltText || null,
-          }),
+        await axios.post(ENDPOINTS.MASTODON_POST, {
+          title: 'Mastodon Post',
+          description: postData.status,
+          imgType: postData.local_media_base64 ? 'FILE' : 'URL',
+          mediaItems: postData.local_media_base64 || '',
+          mediaAltText: postData.mediaAltText || null,
         });
-
-        if (response.ok) {
-          toast.success('Posted successfully!');
-          await handleDeleteScheduled(post._id, true);
-        } else {
-          toast.error('Failed to post.');
-        }
+        toast.success('Posted successfully!');
+        await handleDeleteScheduled(post._id, true);
       } catch (err) {
-        toast.error('Error posting.');
+        toast.error(errorMessage(err, 'Failed to post.'));
       }
     };
 
@@ -550,6 +516,7 @@ export default function SocialMediaComposer({ platform }) {
               <input
                 id="schedule-date"
                 type="date"
+                aria-label="Schedule date"
                 value={scheduleDate}
                 onChange={e => setScheduleDate(e.target.value)}
                 className="datetime-input"
@@ -557,6 +524,7 @@ export default function SocialMediaComposer({ platform }) {
               <input
                 id="schedule-time"
                 type="time"
+                aria-label="Schedule time"
                 value={scheduleTime}
                 onChange={e => setScheduleTime(e.target.value)}
                 className="datetime-input"
