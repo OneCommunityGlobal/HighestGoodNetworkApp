@@ -8,6 +8,7 @@ import CharacterCounter from '../../CharacterCounter';
 import ConfirmationModal from '../../ConfirmationModal';
 import { ENDPOINTS } from '~/utils/URL';
 import styles from './SocialMediaComposer.module.css';
+import toScheduleInputValues from './scheduleTime';
 const PREFS_KEY = 'mastodon_composer_prefs';
 
 // Prefer the backend's own message (for example a validation error) over a
@@ -311,9 +312,7 @@ export default function SocialMediaComposer({ platform }) {
       setImageAltText(postData.mediaAltText || '');
 
       // Load scheduled time
-      const scheduledTime = new Date(post.scheduledTime);
-      const dateStr = scheduledTime.toISOString().split('T')[0];
-      const timeStr = scheduledTime.toTimeString().slice(0, 5);
+      const { date: dateStr, time: timeStr } = toScheduleInputValues(post.scheduledTime);
       setScheduleDate(dateStr);
       setScheduleTime(timeStr);
 
