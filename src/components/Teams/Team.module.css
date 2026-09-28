@@ -3,10 +3,18 @@
   background: aliceblue;
 }
 
+/* Keep readable columns inside the existing horizontal-scroll wrapper. */
 .teamsTable {
   table-layout: fixed;
   width: 100%;
   min-width: 680px;
+}
+
+/* Match every mobile header to Team Names without changing body text. */
+@media (width <= 575px) {
+  .teamsTable > thead > tr > th {
+    font-size: 12px;
+  }
 }
 
 /* Control table border in light mode */

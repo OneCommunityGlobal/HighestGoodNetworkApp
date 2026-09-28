@@ -281,6 +281,7 @@ class Teams extends React.PureComponent {
     return (
       <div className="table-responsive mt-3">
         <table className={tableClass}>
+          {/* Share column boundaries across header/body, including permission-dependent actions. */}
           <colgroup>
             <col className={styles.orderColumn} />
             <col />

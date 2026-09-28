@@ -5,6 +5,7 @@ import TeamsOverview from '~/components/Teams/TeamsOverview';
 import styles from '~/components/Teams/TeamsOverview.module.css';
 
 describe('TeamsOverview', () => {
+  // Theme changes must retain semantic status classes and the Total Teams users icon.
   it.each([false, true])('preserves status icon classes when darkMode is %s', darkMode => {
     renderWithProvider(
       <TeamsOverview

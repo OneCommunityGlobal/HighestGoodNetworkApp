@@ -91,7 +91,7 @@
   margin: 25px 0;
 }
 
-/* Media queries for responsive design */
+/* Fill the padded container with equal stacked cards only at mobile widths. */
 
 @media (width <= 576px) {
   .overviewTop {
