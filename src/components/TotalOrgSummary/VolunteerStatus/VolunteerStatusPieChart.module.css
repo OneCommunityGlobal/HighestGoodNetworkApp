@@ -1,72 +1,68 @@
-/* stylelint-disable  */
+/* stylelint-disable */
 .volunteerStatusContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100%;
+  min-height: 0;
 }
 
-.volunteer-status-chart {
+.volunteerStatusChart {
   position: relative;
   width: min(320px, 100%);
   max-width: 320px;
+  height: 320px;
   aspect-ratio: 1 / 1;
   overflow: visible;
-
-  /* Enable container queries to scale font-size based on chart container width */
   container-type: inline-size;
 }
 
-.volunteer-status-center {
+.volunteerStatusChart canvas {
+  max-width: 100% !important;
+  max-height: 100% !important;
+}
+
+.volunteerStatusCenter {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  font-size: 14px;
+  width: 55%;
+  pointer-events: none;
+  z-index: 2;
 }
 
-.volunteer-status-center .volunteer-status-heading {
+.volunteerStatusHeading {
   color: #828282;
   text-align: center;
-  line-height: 1.2;
+  line-height: 1.1;
   max-width: 90%;
-  margin: 0 auto;
-
-  /* Scale font-size based on chart container width (not viewport width) */
-
-  /* At 280px container: 0.95rem, At 320px container: 1.2rem */
-
-  /* Uses container query width units (cqw): 1cqw = 1% of container width */
-
-  /* Percentage-based scaling: ~5.43-6% of container width */
-  font-size: clamp(0.95rem, 5.71cqw, 1.2rem);
+  margin: 0;
+  font-weight: 600;
+  font-size: clamp(0.75rem, 4.5cqw, 0.95rem);
 }
 
-.volunteer-status-center .volunteer-count {
-  color: #6c6c6c;
-  font-weight: bolder;
-
-  /* Scale font-size based on chart container width (not viewport width) */
-
-  /* At 280px container: 1.35rem, At 320px container: 1.8rem */
-
-  /* Uses container query width units (cqw): 1cqw = 1% of container width */
-
-  /* Percentage-based scaling: ~7.71-9% of container width */
-  font-size: clamp(1.35rem, 8.36cqw, 1.8rem);
+.volunteerCount {
+  color: #4a4a4a;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 4px 0 0 0;
+  font-size: clamp(1.2rem, 7.5cqw, 1.6rem);
 }
 
-.volunteer-status-center > p {
+.comparisonText {
   font-weight: bold;
+  font-size: clamp(0.7rem, 4cqw, 0.85rem);
+  margin-top: 2px;
 }
 
-.volunteer-status-center div {
-  margin: 2px 0;
-}
-
-.volunteer-status-labels {
+.volunteerStatusLabels {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -81,19 +77,17 @@
   box-sizing: border-box;
 }
 
-.volunteer-status-label {
+.volunteerStatusLabel {
   display: flex;
   align-items: center;
   gap: 6px;
   margin: 0;
-
-  /* Responsive font-size: scales from 0.875rem at 1200px to 0.95rem at 1920px - INCREASES with screen size */
   font-size: clamp(0.875rem, calc(0.75rem + 0.01042vw), 0.95rem);
   white-space: nowrap;
   flex-shrink: 0;
 }
 
-.volunteer-status-color {
+.volunteerStatusColor {
   display: inline-block;
   width: 12px;
   height: 12px;
@@ -112,6 +106,7 @@
 @media (width <= 768px) {
   .volunteerStatusChart {
     width: min(280px, 100%);
+    height: 280px;
   }
 
   .volunteerStatusLabels {
