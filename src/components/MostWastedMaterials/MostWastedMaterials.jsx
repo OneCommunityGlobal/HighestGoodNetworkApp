@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import {
   Bar,
   BarChart,
@@ -11,7 +12,6 @@ import {
   Tooltip,
   LabelList,
 } from 'recharts';
-import { useSelector } from 'react-redux';
 import styles from './MostWastedMaterials.module.css';
 
 // ---------------- Mock data (unchanged) ----------------
@@ -171,6 +171,7 @@ function CustomTooltip({ active, payload, label }) {
 
 // ---------------- Main Component (mock-only) ----------------
 export default function MostWastedMaterials() {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [selectedProject, setSelectedProject] = useState(mockProjects[0]);
   const [dateRange, setDateRange] = useState({
     from: '2024-01-01',
@@ -180,7 +181,7 @@ export default function MostWastedMaterials() {
   // New controls
   const [topN, setTopN] = useState(8);
   const [sortDir, setSortDir] = useState('desc'); // 'desc' = most→least; 'asc' = least→most
-  const darkMode = useSelector(state => state.theme.darkMode);
+  // const darkMode = useSelector(state => state.theme.darkMode);
 
   // Compute chart data from mock (respect filters + topN + sort)
   const chartData = useMemo(() => {
