@@ -582,142 +582,147 @@
 /* ====================================
    DARK MODE - ONLY IN DARK MODE
    ==================================== */
-@media (prefers-color-scheme: dark) {
-  .social-media-composer {
-    background: #1e1e1e;
-  }
+/* Dark mode: follows the app's dark mode setting (state.theme.darkMode),
+   not the operating system, so it matches the rest of HGN. */
+.social-media-composer.composer-dark {
+  background: #1e1e1e;
+}
 
-  .platform-title {
-    color: #e0e0e0;
-  }
+.composer-dark .platform-title {
+  color: #e0e0e0;
+}
 
-  .tabs-container {
-    border-bottom-color: #444;
-  }
+.composer-dark .tabs-container {
+  border-bottom-color: #444;
+}
 
-  .tab-button {
-    color: #a0a0a0;
-  }
+.composer-dark .tab-button {
+  color: #a0a0a0;
+}
 
-  .tab-button:hover {
-    color: #4da6ff;
-    background: #2a2a2a;
-  }
+.composer-dark .tab-button:hover {
+  color: #4da6ff;
+  background: #2a2a2a;
+}
 
-  .tab-button.active {
-    color: #4da6ff;
-    border-bottom-color: #4da6ff;
-    background: #2a2a2a;
-  }
+.composer-dark .tab-button.active {
+  color: #4da6ff;
+  border-bottom-color: #4da6ff;
+  background: #2a2a2a;
+}
 
-  .post-textarea {
-    background: #2a2a2a;
-    border-color: #444;
-    color: #e0e0e0;
-  }
+.composer-dark .post-textarea {
+  background: #2a2a2a;
+  border-color: #444;
+  color: #e0e0e0;
+}
 
-  .post-textarea::placeholder {
-    color: #666;
-  }
+.composer-dark .post-textarea::placeholder {
+  color: #9a9a9a;
+}
 
-  .section-label {
-    color: #e0e0e0;
-  }
+.composer-dark .section-label {
+  color: #e0e0e0;
+}
 
-  .file-input {
-    background: #2a2a2a;
-    border-color: #444;
-    color: #e0e0e0;
-  }
+.composer-dark .file-input {
+  background: #2a2a2a;
+  border-color: #444;
+  color: #e0e0e0;
+}
 
-  .alt-text-input {
-    background: #2a2a2a;
-    border-color: #444;
-    color: #e0e0e0;
-  }
+.composer-dark .alt-text-input {
+  background: #2a2a2a;
+  border-color: #444;
+  color: #e0e0e0;
+}
 
-  .alt-text-input::placeholder {
-    color: #666;
-  }
+.composer-dark .alt-text-input::placeholder {
+  color: #9a9a9a;
+}
 
-  .datetime-input {
-    background: #2a2a2a;
-    border-color: #444;
-    color: #e0e0e0;
-  }
+.composer-dark .datetime-input {
+  background: #2a2a2a;
+  border-color: #444;
+  color: #e0e0e0;
+}
 
-  .crosspost-dropdown {
-    background: #2a2a2a;
-    border-color: #444;
-  }
+.composer-dark .crosspost-dropdown {
+  background: #2a2a2a;
+  border-color: #444;
+}
 
-  .crosspost-option {
-    color: #e0e0e0;
-  }
+.composer-dark .crosspost-option {
+  color: #e0e0e0;
+}
 
-  .crosspost-option:hover {
-    background: #333;
-  }
+.composer-dark .crosspost-option:hover {
+  background: #333;
+}
 
-  .crosspost-note {
-    color: #a0a0a0;
-    border-top-color: #444;
-  }
+.composer-dark .crosspost-note {
+  color: #a0a0a0;
+  border-top-color: #444;
+}
 
-  .edit-banner {
-    background: #664d03;
-    border-color: #856404;
-    color: #ffc107;
-  }
+.composer-dark .edit-banner {
+  background: #664d03;
+  border-color: #856404;
+  color: #ffc107;
+}
 
-  .scheduled-content,
-  .history-content,
-  .details-content {
-    background: #1e1e1e;
-    color: #e0e0e0;
-  }
+.composer-dark .scheduled-content,
+.composer-dark .history-content,
+.composer-dark .details-content {
+  background: #1e1e1e;
+  color: #e0e0e0;
+}
 
-  .scheduled-content h4,
-  .history-content h4 {
-    color: #e0e0e0;
-  }
+.composer-dark .scheduled-content h4,
+.composer-dark .history-content h4 {
+  color: #e0e0e0;
+}
 
-  .post-card {
-    background: #2a2a2a;
-    border-color: #444;
-  }
+.composer-dark .post-card {
+  background: #2a2a2a;
+  border-color: #444;
+}
 
-  .post-text {
-    color: #e0e0e0;
-  }
+.composer-dark .post-text {
+  color: #e0e0e0;
+}
 
-  .post-meta {
-    color: #a0a0a0;
-  }
+.composer-dark .post-meta {
+  color: #a0a0a0;
+}
 
-  .post-stats {
-    color: #a0a0a0;
-  }
+.composer-dark .post-stats {
+  color: #a0a0a0;
+}
 
-  .details-content {
-    color: #e0e0e0;
-  }
+.composer-dark .details-content {
+  color: #e0e0e0;
+}
 
-  .details-content ul {
-    color: #e0e0e0;
-  }
+.composer-dark .details-content ul {
+  color: #e0e0e0;
+}
 
-  .details-content strong {
-    color: #e0e0e0;
-  }
+.composer-dark .details-content strong {
+  color: #e0e0e0;
+}
 
-  .preview-container {
-    background: #1e1e1e;
-  }
+.composer-dark .preview-container {
+  background: #1e1e1e;
+}
 
-  .preview-content {
-    background: #2a2a2a;
-    border-color: #444;
-    color: #e0e0e0;
-  }
+.composer-dark .preview-content {
+  background: #2a2a2a;
+  border-color: #444;
+  color: #e0e0e0;
+}
+
+/* Let the browser draw the date and time pickers (and their icons) in dark colors. */
+.composer-dark .datetime-input {
+  color-scheme: dark;
 }

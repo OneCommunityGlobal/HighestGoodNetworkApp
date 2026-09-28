@@ -1,5 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import axios from 'axios';
+import { Provider } from 'react-redux';
+import configureMockStore from 'redux-mock-store';
 import { toast } from 'react-toastify';
 import { ENDPOINTS } from '~/utils/URL';
 import SocialMediaComposer from '../SocialMediaComposer';
@@ -8,6 +10,13 @@ vi.mock('axios');
 vi.mock('react-toastify', () => ({
   toast: { success: vi.fn(), error: vi.fn(), info: vi.fn(), warning: vi.fn() },
 }));
+
+const renderComposer = ({ darkMode = false } = {}) =>
+  render(
+    <Provider store={configureMockStore([])({ theme: { darkMode } })}>
+      <SocialMediaComposer platform="mastodon" />
+    </Provider>,
+  );
 
 const tomorrow = () => {
   const d = new Date();
@@ -36,7 +45,7 @@ describe('SocialMediaComposer API calls (Mastodon)', () => {
   });
 
   it('schedules a post through the backend API with the chosen time', async () => {
-    render(<SocialMediaComposer platform="mastodon" />);
+    renderComposer();
     typePost('Hello from HGN');
     setSchedule(tomorrow(), '10:30');
 
@@ -54,7 +63,7 @@ describe('SocialMediaComposer API calls (Mastodon)', () => {
     axios.post.mockRejectedValue({
       response: { data: { error: 'Scheduled time must be in the future' } },
     });
-    render(<SocialMediaComposer platform="mastodon" />);
+    renderComposer();
     typePost('Hello');
     setSchedule(tomorrow(), '10:30');
 
@@ -66,7 +75,7 @@ describe('SocialMediaComposer API calls (Mastodon)', () => {
   });
 
   it('does not call the API when the date or time is missing', () => {
-    render(<SocialMediaComposer platform="mastodon" />);
+    renderComposer();
     typePost('Hello');
 
     fireEvent.click(screen.getByRole('button', { name: 'Schedule Post' }));
@@ -76,7 +85,7 @@ describe('SocialMediaComposer API calls (Mastodon)', () => {
   });
 
   it('loads scheduled posts from the backend API', async () => {
-    render(<SocialMediaComposer platform="mastodon" />);
+    renderComposer();
 
     fireEvent.click(screen.getByRole('button', { name: 'Scheduled' }));
 
@@ -84,7 +93,7 @@ describe('SocialMediaComposer API calls (Mastodon)', () => {
   });
 
   it('loads post history from the backend API', async () => {
-    render(<SocialMediaComposer platform="mastodon" />);
+    renderComposer();
 
     fireEvent.click(screen.getByRole('button', { name: 'History' }));
 
