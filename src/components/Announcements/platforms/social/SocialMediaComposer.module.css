@@ -582,6 +582,29 @@
 /* ====================================
    DARK MODE - ONLY IN DARK MODE
    ==================================== */
+.preferences-box {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  color: #212529;
+}
+
+.preferences-title {
+  margin-bottom: 0.75rem;
+  color: inherit;
+}
+
+.preferences-option {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.preferences-option:last-child {
+  margin-bottom: 0;
+}
+
 /* Dark mode: follows the app's dark mode setting (state.theme.darkMode),
    not the operating system, so it matches the rest of HGN. */
 .social-media-composer.composer-dark {
@@ -725,4 +748,10 @@
 /* Let the browser draw the date and time pickers (and their icons) in dark colors. */
 .composer-dark .datetime-input {
   color-scheme: dark;
+}
+
+.composer-dark .preferences-box {
+  background: #2a2a2a;
+  border-color: #444;
+  color: #e0e0e0;
 }

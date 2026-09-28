@@ -752,16 +752,9 @@ export default function SocialMediaComposer({ platform }) {
             <li>Recommended dimensions: 1200x675 px</li>
             <li>Max image size: 5MB</li>
           </ul>
-          <div
-            style={{
-              marginTop: '1.5rem',
-              padding: '1rem',
-              background: 'var(--card-bg, #f8f9fa)',
-              borderRadius: '6px',
-            }}
-          >
-            <h5>Confirmation Preferences</h5>
-            <label style={{ display: 'block', marginBottom: '0.5rem' }}>
+          <div className={styles['preferences-box']}>
+            <h5 className={styles['preferences-title']}>Confirmation Preferences</h5>
+            <label className={styles['preferences-option']}>
               <input
                 type="checkbox"
                 checked={preferences.confirmDeleteScheduled}
@@ -770,7 +763,7 @@ export default function SocialMediaComposer({ platform }) {
               />
               Show confirmation when deleting scheduled posts
             </label>
-            <label style={{ display: 'block' }}>
+            <label className={styles['preferences-option']}>
               <input
                 type="checkbox"
                 checked={preferences.confirmPostNow}
