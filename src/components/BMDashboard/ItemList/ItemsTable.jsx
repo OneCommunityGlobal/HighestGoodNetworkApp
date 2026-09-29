@@ -371,7 +371,8 @@ export default function ItemsTable({
       return;
     }
 
-    applyServerBulkAction('notes', { notes: trimmedNotes });
+    // applyServerBulkAction handles its own errors, so the promise is intentionally not awaited.
+    void applyServerBulkAction('notes', { notes: trimmedNotes });
     setNotesModalOpen(false);
   };
 
