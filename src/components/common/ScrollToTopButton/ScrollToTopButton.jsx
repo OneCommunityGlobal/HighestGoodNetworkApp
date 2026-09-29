@@ -75,7 +75,6 @@ function ScrollToTopButton({ threshold = 100, scrollTarget }) {
       if (!eventTarget) {
         activeTargetRef.current = primaryTarget;
         setIsVisible(false);
-        return;
       }
     };
 

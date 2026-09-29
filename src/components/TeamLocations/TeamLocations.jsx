@@ -89,7 +89,7 @@ const TeamLocations = forwardRef(() => {
         setLoading(false); // Set loading to false if there's an error
       }
     }
-    getUserProfiles();
+    void getUserProfiles();
   }, []);
 
   useEffect(() => {
@@ -163,7 +163,7 @@ const TeamLocations = forwardRef(() => {
         setLoading(false); // Set loading to false if there's an error
       }
     }
-    getUserProfiles();
+    void getUserProfiles();
   }, []);
 
   const toggleTableVisibility = () => {

@@ -765,7 +765,7 @@ function JobApplicationForm() {
     const jobId = jobIdParam || (pathJobId && pathJobId !== 'job-application' ? pathJobId : null);
 
     if (referralId && isValidId(referralId)) {
-      fetchUserQuestionnaireData(referralId);
+      void fetchUserQuestionnaireData(referralId);
     }
 
     if (routerLocation.state) {
@@ -774,7 +774,7 @@ function JobApplicationForm() {
         setJobTitleInput(routerLocation.state.jobTitle);
       }
     } else if (jobId && isValidId(jobId)) {
-      fetchJobData(jobId);
+      void fetchJobData(jobId);
     }
   }, [routerLocation.state, routerLocation.search, routerLocation.pathname]);
 
@@ -814,7 +814,7 @@ function JobApplicationForm() {
       }
     }
 
-    fetchForms();
+    void fetchForms();
     return () => {
       cancelled = true;
     };
