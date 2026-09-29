@@ -221,3 +221,18 @@
   margin-right: 8px;
   color: #555; /* Or whatever color you prefer */
 }
+
+/* Dark mode */
+.container.dark {
+  background: #1e293b;
+  color: #f8fafc;
+}
+
+.container.dark .tabs {
+  background-color: #253342;
+}
+
+.container.dark .activeTab {
+  background: #334155;
+  color: #f8fafc;
+}
