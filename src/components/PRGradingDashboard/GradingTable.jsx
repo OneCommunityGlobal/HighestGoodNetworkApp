@@ -10,6 +10,8 @@ function GradingTable({
   onAddPRClick,
   openAddModal,
   onAddGradedPR,
+  onRemoveReviewer,
+  isCurrentWeek,
   darkMode,
 }) {
   return (
@@ -30,6 +32,8 @@ function GradingTable({
               grading={grading}
               onUpdatePRsReviewed={onUpdatePRsReviewed}
               onAddPRClick={onAddPRClick}
+              onRemoveReviewer={onRemoveReviewer}
+              isCurrentWeek={isCurrentWeek}
               darkMode={darkMode}
             />
             {openAddModal === grading.reviewer && (
@@ -62,11 +66,14 @@ GradingTable.propTypes = {
   onAddPRClick: PropTypes.func.isRequired,
   openAddModal: PropTypes.string,
   onAddGradedPR: PropTypes.func.isRequired,
+  onRemoveReviewer: PropTypes.func.isRequired,
+  isCurrentWeek: PropTypes.bool,
   darkMode: PropTypes.bool,
 };
 
 GradingTable.defaultProps = {
   openAddModal: null,
+  isCurrentWeek: true,
   darkMode: false,
 };
 
