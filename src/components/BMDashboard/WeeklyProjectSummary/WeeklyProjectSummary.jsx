@@ -34,6 +34,8 @@ import { MaterialConsumptionCards } from './MaterialConsumption/MaterialConsumpt
 import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
 
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
+import RentalChart from '../RentalChart/RentalChart';
+import ReturnedLateChart from '../RentalChart/ReturnedLateChart';
 import InjurySeverityChart from '../Injuries/InjurySeverityChart';
 import CostPredictionChart from './CostPredictionChart';
 
@@ -406,6 +408,28 @@ function WeeklyProjectSummary() {
               }}
             >
               <PaidLaborCost />
+            </div>
+          </div>
+        ),
+      },
+      {
+        title: 'Rental Tracking',
+        key: 'Rental Tracking',
+        className: 'full',
+        content: (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr',
+              gap: '12px',
+            }}
+          >
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <RentalChart />
+            </div>
+
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <ReturnedLateChart />
             </div>
           </div>
         ),
