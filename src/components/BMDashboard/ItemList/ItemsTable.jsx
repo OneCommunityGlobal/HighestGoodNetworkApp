@@ -310,6 +310,11 @@ export default function ItemsTable({
       // make the toast read "0" even though the action succeeded. Fall back
       // to the selection size if the backend response omits both.
       const count = result?.matchedCount ?? result?.modifiedCount ?? selectedIds.length;
+      if (count === 0) {
+        // Nothing matched on the server: don't claim success or fake the Bulk Status column.
+        toast.error('No materials were updated. Please refresh and try again.');
+        return;
+      }
       toast.success(buildBulkActionMessage(action, count));
 
       // Optimistically reflect the change in the Bulk Status column, then refetch
