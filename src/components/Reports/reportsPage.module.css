@@ -284,6 +284,10 @@
   margin-bottom: 1rem;
 }
 
+.card-spinner {
+  background-color: transparent !important;
+}
+
 :global(.bg-yinmn-blue .info-modal-content) {
   color: #fff !important;
 }
@@ -306,7 +310,6 @@
 
   .table-data-container {
     max-width: 720px;
-    margin: 0 auto;
   }
 }
 
