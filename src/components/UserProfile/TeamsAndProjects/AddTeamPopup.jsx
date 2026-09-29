@@ -215,20 +215,34 @@ const handleCreateTeamError = (response) => {
 
   const onCreateTeam = async () => {
 
+  if (isLoading) {
+    return;
+  }
 
   if (!searchText?.trim()) {
 
     onNewTeamValidation(false);
     return;
   }
+  const newTeamName = searchText.trim();
+   const normalizedNewTeamName = newTeamName.toLowerCase();
 
+  const duplicateTeam = allTeams.some(
+    team =>
+      team?.teamName?.trim().toLowerCase() === normalizedNewTeamName
+  );
+
+  if (duplicateTeam) {
+    setDuplicateTeam(true);
+    return;
+  }
   const controller = new AbortController();
   const timeout = setTimeout(() => axiosResponseExceededTimeout(controller),20000);
 
   try {
     setIsLoading(true);
 
-    const newTeamName = searchText.trim();
+    
 
     const response = await dispatch(postNewTeam(newTeamName, true, controller.signal));
 
@@ -516,7 +530,7 @@ const handleCreateTeamError = (response) => {
                   flexWrap: 'wrap',
                 }}
               >
-                <Button color="info" onClick={onCreateTeam}>
+                <Button color="info" onClick={onCreateTeam} disabled={isLoading}>
                   <b>Create Team</b>
                 </Button>
                 <Button color="danger" onClick={closePopup}>

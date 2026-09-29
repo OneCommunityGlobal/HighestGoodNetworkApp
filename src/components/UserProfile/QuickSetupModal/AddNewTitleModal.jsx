@@ -133,7 +133,7 @@ function AddNewTitleModal({
 
   const existTeamCodes = new Set(
     (Array.isArray(QSTTeamCodes) ? QSTTeamCodes : [])
-      .map(code => code?.value)
+      .map(code => code?.value?.trim().toLowerCase())
       .filter(Boolean)
   );
 
@@ -212,24 +212,45 @@ function AddNewTitleModal({
   // ------------------- validations -----------------------------------------
 
   const onTeamCodeValidation = teamCode => {
-    const format1 = /^[A-Za-z]-[A-Za-z]{3}$/;
-    const format2 = /^[A-Z]{5}$/;
-    const isValidFormat = format1.test(teamCode) || format2.test(teamCode);
-    if (!isValidFormat) {
-      setWarningMessage({ title: 'Error', content: 'Invalid Team Code Format' });
-      setShowMessage(true);
-      setTitleData(prev => ({ ...prev, teamCode: '' }));
-      return;
-    }
-    if (!existTeamCodes.has(teamCode)) {
-      setWarningMessage({ title: 'Error', content: 'Team Code Not Exists' });
-      setShowMessage(true);
-      setTitleData(prev => ({ ...prev, teamCode: '' }));
-      return;
-    }
-    setShowMessage(false);
-  };
+  const format1 = /^[A-Za-z]-[A-Za-z]{3}$/;
+  const format2 = /^[A-Z]{5}$/;
 
+  const normalizedTeamCode = teamCode?.trim() || '';
+
+  const isValidFormat =
+    format1.test(normalizedTeamCode) ||
+    format2.test(normalizedTeamCode);
+
+  if (!isValidFormat) {
+    setWarningMessage({
+      title: 'Error',
+      content: 'Invalid Team Code Format',
+    });
+
+    setShowMessage(true);
+
+    setTitleData(prev => ({
+      ...prev,
+      teamCode: '',
+    }));
+
+    return;
+  }
+  if (!existTeamCodes.has(normalizedTeamCode.toLowerCase())) {
+    setWarningMessage({
+      title: 'Error',
+      content: 'Team Code Not Exists',
+    });
+    setShowMessage(true);
+    setTitleData(prev => ({
+      ...prev,
+      teamCode: '',
+    }));
+
+    return;
+  }
+  setShowMessage(false);
+};
   // Treat empty selection as OK (make it required here if your business rule requires it)
 const onTeamNameValidation = teamObj => {
   const name =
