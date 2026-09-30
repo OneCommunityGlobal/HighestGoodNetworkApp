@@ -4,7 +4,9 @@ import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
 import { Line } from 'react-chartjs-2';
 import DatePicker from 'react-datepicker';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import styles from './RentalChart.module.css';
+import datePickerStyles from './RentalDatePicker.module.css';
 import { toast } from 'react-toastify';
 import {
   Chart as ChartJS,
@@ -51,6 +53,7 @@ const CHART_COLORS = {
 };
 
 const FILTER_ALL = 'All';
+const MIN_LABELED_CHART_WIDTH = 600;
 
 const filterRentalData = (data, selectedProject, selectedTool, dateRange) =>
   data.filter(item => {
@@ -85,18 +88,19 @@ const buildMonthsRange = dateRange => {
   return { labels, monthsInRange, totalMonths };
 };
 
-const aggregateDataByGroup = (
-  filteredData,
-  monthsInRange,
-  totalMonths,
-  groupBy,
-  chartType,
-  projMap,
-) => {
+// One decimal max, e.g. 16.342 -> "16.3%", 20 -> "20%"
+const formatPercent = value => `${Number(Number(value).toFixed(1))}%`;
+
+const getProjectName = (projMap, projectId) =>
+  projMap instanceof Map && projMap.has(projectId)
+    ? projMap.get(projectId)
+    : `Project ${projectId.substring(0, 8)}...`;
+
+const aggregateDataByProject = (filteredData, monthsInRange, totalMonths, chartType, projMap) => {
   const groupMap = new Map();
 
   for (const item of filteredData) {
-    const groupKey = groupBy === 'project' ? item.projectId : item.toolName;
+    const groupKey = item.projectId;
     const date = new Date(item.date);
     const year = date.getFullYear();
     const month = date.getMonth();
@@ -112,17 +116,9 @@ const aggregateDataByGroup = (
         : item.rentalCost;
 
     if (!groupMap.has(groupKey)) {
-      let projectName = item.toolName;
-      if (groupBy === 'project') {
-        projectName =
-          projMap instanceof Map && projMap.has(groupKey)
-            ? projMap.get(groupKey)
-            : `Project ${groupKey.substring(0, 8)}...`;
-      }
-
       groupMap.set(groupKey, {
         key: groupKey,
-        name: projectName,
+        name: getProjectName(projMap, groupKey),
         dataPoints: new Array(totalMonths).fill(undefined),
         monthsWithData: new Set(),
       });
@@ -139,7 +135,7 @@ const aggregateDataByGroup = (
   return groupMap;
 };
 
-const buildDatasetsFromGroupMap = (groupMap, groupBy) =>
+const buildDatasetsFromGroupMap = groupMap =>
   Array.from(groupMap.values()).map((group, index) => {
     const colorIndex = index % PROJECT_COLORS.length;
 
@@ -157,89 +153,103 @@ const buildDatasetsFromGroupMap = (groupMap, groupBy) =>
     };
   });
 
-const getDatalabelAnchor = ctx => {
-  if (ctx.datasetIndex === 0) return 'end';
-  if (ctx.datasetIndex === 1) return 'start';
-  return 'center';
-};
-
-const getDatalabelAlign = ctx => {
-  if (ctx.datasetIndex === 0) return 'bottom';
-  if (ctx.datasetIndex === 1) return 'top';
-  return 'top';
+// Label above the point when it's the month's highest visible value, below otherwise,
+// so labels for nearby points split apart instead of covering each other
+const isHighestInMonth = ({ chart, dataIndex, datasetIndex, dataset }) => {
+  const value = dataset.data[dataIndex];
+  return !chart.data.datasets.some(
+    (other, i) => i !== datasetIndex && chart.isDatasetVisible(i) && other.data[dataIndex] > value,
+  );
 };
 
 const getDatalabelFormatter = (value, chartType) => {
   if (value == null || Number.isNaN(value)) return '';
   if (chartType === 'percentage') {
-    return `${value.toFixed(0)}%`;
+    return formatPercent(value);
   }
   return `$${value.toFixed(2)}`;
 };
 
 const formatDate = date => `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
 
-const buildChartTitle = (groupBy, selectedProject, selectedTool, dateRange, availableProjects) => {
-  let title = 'Rental Costs';
+const buildChartTitle = (selectedProject, selectedTool, dateRange, availableProjects) => {
+  const toolPart = selectedTool === FILTER_ALL ? '' : ` for ${selectedTool}`;
+  const projectPart =
+    selectedProject === FILTER_ALL
+      ? ' by Project'
+      : ` in ${getProjectName(availableProjects, selectedProject)}`;
 
-  if (groupBy === 'project') {
-    title += ' by Project';
-    if (selectedProject !== 'All') {
-      const projectName =
-        availableProjects instanceof Map && availableProjects.has(selectedProject)
-          ? availableProjects.get(selectedProject)
-          : `Project ${selectedProject.substring(0, 8)}...`;
-      title = `Rental Costs for ${projectName}`;
-    }
-  } else {
-    title += ' by Tool Type';
-    if (selectedTool !== 'All') {
-      title = `Rental Costs for ${selectedTool}`;
-    }
-  }
-
-  title += ` (${formatDate(dateRange.startDate)} - ${formatDate(dateRange.endDate)})`;
-  return title;
+  return `Rental Costs${toolPart}${projectPart} (${formatDate(dateRange.startDate)} - ${formatDate(
+    dateRange.endDate,
+  )})`;
 };
 
 export default function RentalChart() {
   const chartRef = useRef(null);
-  const [chartData, setChartData] = useState({
-    labels: [],
-    datasets: [],
-  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [chartType, setChartType] = useState('cost');
   const [selectedProject, setSelectedProject] = useState(FILTER_ALL);
   const [selectedTool, setSelectedTool] = useState(FILTER_ALL);
-  const [groupBy] = useState('project');
   const darkMode = useSelector(state => state.theme.darkMode);
+  const bmProjects = useSelector(state => state.bmProjects);
 
   const [dateRange, setDateRange] = useState({
     startDate: new Date(2024, 0, 1),
     endDate: new Date(2024, 11, 31),
   });
 
-  const [availableProjects, setAvailableProjects] = useState(new Map());
-  const [availableTools, setAvailableTools] = useState([]);
+  const [fallbackProjectNames, setFallbackProjectNames] = useState(new Map());
   const [rawData, setRawData] = useState([]);
 
-  const processChartData = (data, projMap) => {
-    const filteredData = filterRentalData(data, selectedProject, selectedTool, dateRange);
+  // Only list projects that have rental data; prefer names from the BM projects list
+  const availableProjects = useMemo(() => {
+    const bmProjectNames = new Map(
+      (Array.isArray(bmProjects) ? bmProjects : []).map(p => [p._id, p.name]),
+    );
+    const projectMap = new Map();
+    rawData.forEach(item => {
+      if (item.projectId && !projectMap.has(item.projectId)) {
+        projectMap.set(
+          item.projectId,
+          bmProjectNames.get(item.projectId) ||
+            fallbackProjectNames.get(item.projectId) ||
+            getProjectName(null, item.projectId),
+        );
+      }
+    });
+    return projectMap;
+  }, [rawData, bmProjects, fallbackProjectNames]);
+
+  // Tool options follow the selected project so every choice has data behind it
+  const availableTools = useMemo(() => {
+    const projectData =
+      selectedProject === FILTER_ALL
+        ? rawData
+        : rawData.filter(item => item.projectId === selectedProject);
+    return [...new Set(projectData.map(item => item.toolName))].sort((a, b) =>
+      a.localeCompare(b, undefined, { sensitivity: 'base' }),
+    );
+  }, [rawData, selectedProject]);
+
+  useEffect(() => {
+    if (selectedTool !== FILTER_ALL && !availableTools.includes(selectedTool)) {
+      setSelectedTool(FILTER_ALL);
+    }
+  }, [availableTools, selectedTool]);
+
+  const chartData = useMemo(() => {
+    const filteredData = filterRentalData(rawData, selectedProject, selectedTool, dateRange);
     const { labels, monthsInRange, totalMonths } = buildMonthsRange(dateRange);
-    const groupMap = aggregateDataByGroup(
+    const groupMap = aggregateDataByProject(
       filteredData,
       monthsInRange,
       totalMonths,
-      groupBy,
       chartType,
-      projMap,
+      availableProjects,
     );
-    const datasets = buildDatasetsFromGroupMap(groupMap, groupBy);
-
-    setChartData({ labels, datasets });
-  };
+    return { labels, datasets: buildDatasetsFromGroupMap(groupMap) };
+  }, [rawData, selectedProject, selectedTool, dateRange, chartType, availableProjects]);
 
   useEffect(() => {
     const fetchRentalData = async () => {
@@ -254,7 +264,7 @@ export default function RentalChart() {
         if (rentalResponse.status === 'fulfilled' && rentalResponse.value.data.success) {
           const { data } = rentalResponse.value.data;
 
-          // Build a dictionary of Project IDs -> Names
+          // Fallback names for projects missing from the BM projects list
           const projectMap = new Map();
           if (projectsResponse.status === 'fulfilled') {
             let pData = projectsResponse.value.data;
@@ -272,21 +282,13 @@ export default function RentalChart() {
           }
 
           data.forEach(item => {
-            if (item.projectId && !projectMap.has(item.projectId)) {
-              projectMap.set(
-                item.projectId,
-                item.projectName || `Project ${item.projectId.substring(0, 8)}...`,
-              );
+            if (item.projectId && item.projectName && !projectMap.has(item.projectId)) {
+              projectMap.set(item.projectId, item.projectName);
             }
           });
 
-          setAvailableProjects(projectMap);
+          setFallbackProjectNames(projectMap);
           setRawData(data);
-
-          const toolNames = [...new Set(data.map(item => item.toolName))];
-          setAvailableTools(toolNames);
-
-          processChartData(data, projectMap);
         } else {
           setError('Failed to fetch data');
         }
@@ -303,12 +305,6 @@ export default function RentalChart() {
     fetchRentalData();
   }, []);
 
-  useEffect(() => {
-    if (rawData.length > 0) {
-      processChartData(rawData, availableProjects);
-    }
-  }, [chartType, selectedProject, selectedTool, dateRange, groupBy, rawData, availableProjects]);
-
   const options = useMemo(() => {
     const textColor = darkMode ? '#ffffff' : '#000000';
     const bgColor = darkMode ? '#1b2a41' : '#ffffff';
@@ -322,6 +318,8 @@ export default function RentalChart() {
       responsive: true,
       maintainAspectRatio: false,
       backgroundColor: darkMode ? CHART_COLORS.darkBg : CHART_COLORS.lightBg,
+      // Hovering anywhere in a month lists every project, so hidden labels stay readable
+      interaction: { mode: 'index', intersect: false },
       plugins: {
         legend: {
           position: 'top',
@@ -329,13 +327,7 @@ export default function RentalChart() {
         },
         title: {
           display: true,
-          text: buildChartTitle(
-            groupBy,
-            selectedProject,
-            selectedTool,
-            dateRange,
-            availableProjects,
-          ),
+          text: buildChartTitle(selectedProject, selectedTool, dateRange, availableProjects),
           font: {
             size: 14,
           },
@@ -345,11 +337,13 @@ export default function RentalChart() {
           },
         },
         tooltip: {
+          filter: item => Number.isFinite(item.parsed.y),
           callbacks: {
             label({ dataset, parsed }) {
               let label = dataset.label ? `${dataset.label}: ` : '';
               if (parsed.y !== null) {
-                label += chartType === 'percentage' ? `${parsed.y}%` : `$${parsed.y.toFixed(2)}`;
+                label +=
+                  chartType === 'percentage' ? formatPercent(parsed.y) : `$${parsed.y.toFixed(2)}`;
               }
               return label;
             },
@@ -364,9 +358,16 @@ export default function RentalChart() {
         },
         datalabels: {
           color: darkMode ? '#e0e0e0' : '#333333',
-          anchor: getDatalabelAnchor,
-          align: getDatalabelAlign,
-          offset: 8,
+          backgroundColor: darkMode ? 'rgba(27, 42, 65, 0.85)' : 'rgba(255, 255, 255, 0.85)',
+          borderRadius: 4,
+          padding: { top: 2, bottom: 2, left: 4, right: 4 },
+          anchor: ctx => (isHighestInMonth(ctx) ? 'end' : 'start'),
+          align: ctx => (isHighestInMonth(ctx) ? 'top' : 'bottom'),
+          offset: 4,
+          // Too narrow for per-point labels (the tooltip still shows values); otherwise hide
+          // only labels that would collide, and keep the rest inside the plot
+          display: ctx => (ctx.chart.width < MIN_LABELED_CHART_WIDTH ? false : 'auto'),
+          clamp: true,
           font: {
             size: 12,
           },
@@ -376,12 +377,16 @@ export default function RentalChart() {
       },
       scales: {
         x: {
+          // Pad both ends so edge points and their labels clear the y-axis ticks
+          offset: true,
           title: { display: true, text: 'Month/Year', color: textColor, font: { size: 18 } },
           ticks: { color: textColor },
           grid: { color: gridXColor },
         },
         y: {
           beginAtZero: true,
+          // Headroom above the highest point so its label doesn't hit the legend
+          grace: '10%',
           title: {
             display: true,
             text:
@@ -392,14 +397,14 @@ export default function RentalChart() {
             font: { size: 18 },
           },
           ticks: {
-            callback: value => (chartType === 'percentage' ? `${value}%` : `$${value}`),
+            callback: value => (chartType === 'percentage' ? formatPercent(value) : `$${value}`),
             color: textColor,
           },
           grid: { color: gridYColor },
         },
       },
     };
-  }, [darkMode, chartType, dateRange, selectedProject, selectedTool, availableProjects, groupBy]);
+  }, [darkMode, chartType, dateRange, selectedProject, selectedTool, availableProjects]);
 
   const handleTypeChange = e => {
     setChartType(e.target.value);
@@ -458,7 +463,7 @@ export default function RentalChart() {
       );
     }
 
-    return <Line ref={chartRef} data={chartData} options={options} />;
+    return <Line ref={chartRef} data={chartData} options={options} plugins={[ChartDataLabels]} />;
   };
 
   return (
@@ -466,7 +471,7 @@ export default function RentalChart() {
       <h1 className={darkMode ? styles['text-light'] : ''}>Rental Cost Over Time</h1>
 
       <div className={styles['chart-filters']}>
-        <div className={`${styles['filter-row']} ${styles['top-filters']}`}>
+        <div className={styles['filter-row']}>
           <div className={styles['filter-group']}>
             <label htmlFor="chart-type" className={darkMode ? styles['text-light'] : ''}>
               Display:{' '}
@@ -513,7 +518,6 @@ export default function RentalChart() {
               id="tool-filter"
               value={selectedTool}
               onChange={handleToolChange}
-              disabled={groupBy === 'project' && selectedProject !== 'All'}
               className={`${styles['rental-chart-select']} ${
                 darkMode ? styles['dark-select'] : ''
               }`}
@@ -528,7 +532,7 @@ export default function RentalChart() {
           </div>
         </div>
 
-        <div className={`${styles['filter-row']} ${styles['date-filters']}`}>
+        <div className={styles['filter-row']}>
           <div className={styles['filter-group']}>
             <label className={`${darkMode ? styles['text-light'] : ''} ${styles['date-label']}`}>
               From:{' '}
@@ -543,11 +547,14 @@ export default function RentalChart() {
               showYearDropdown
               showMonthDropdown
               dropdownMode="select"
+              calendarClassName={`${datePickerStyles.calendar} ${
+                darkMode ? datePickerStyles.dark : ''
+              }`}
               className={`${styles['date-picker']} ${darkMode ? styles['dark-date-picker'] : ''}`}
             />
           </div>
 
-          <div className={`${styles['filter-group']} ${styles['date-to-group']}`}>
+          <div className={styles['filter-group']}>
             <label className={`${darkMode ? styles['text-light'] : ''} ${styles['date-label']}`}>
               To:{' '}
             </label>
@@ -562,6 +569,9 @@ export default function RentalChart() {
               showYearDropdown
               showMonthDropdown
               dropdownMode="select"
+              calendarClassName={`${datePickerStyles.calendar} ${
+                darkMode ? datePickerStyles.dark : ''
+              }`}
               className={`${styles['date-picker']} ${darkMode ? styles['dark-date-picker'] : ''}`}
             />
           </div>

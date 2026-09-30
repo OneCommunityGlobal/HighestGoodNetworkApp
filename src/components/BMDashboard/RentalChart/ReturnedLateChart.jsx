@@ -6,6 +6,7 @@ import DatePicker from 'react-datepicker';
 import { MultiSelect } from 'react-multi-select-component';
 import 'react-datepicker/dist/react-datepicker.css';
 import styles from './ReturnedLateChart.module.css';
+import datePickerStyles from './RentalDatePicker.module.css';
 import { Select } from 'antd';
 import {
   Chart as ChartJS,
@@ -337,6 +338,9 @@ export default function ReturnedLateChart() {
   const options = useMemo(() => {
     const textColor = darkMode ? '#fff' : '#333';
     const datalabelColor = darkMode ? '#fff' : '#111';
+    // Same grid/axis line colors as the Rental Cost chart; Chart.js' default is invisible on dark
+    const gridColor = darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+    const axisBorderColor = darkMode ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.25)';
     return {
       responsive: true,
       maintainAspectRatio: false,
@@ -357,6 +361,9 @@ export default function ReturnedLateChart() {
           align: 'top',
           offset: 4,
           formatter: value => `${Number(value).toFixed(0)}%`,
+          // Skip empty bars so "0%" labels don't crowd the axis
+          display: ctx => ctx.dataset.data[ctx.dataIndex] > 0,
+          clamp: true,
           color: datalabelColor,
           font: { weight: 'bold' },
         },
@@ -368,7 +375,7 @@ export default function ReturnedLateChart() {
             label(context) {
               const v = context.parsed.y;
               const label = context.dataset.label;
-              return `${label}: ${v}%`;
+              return `${label}: ${Number(Number(v).toFixed(1))}%`;
             },
             afterLabel(context) {
               const toolDetail = rawToolsData.find(
@@ -395,6 +402,8 @@ export default function ReturnedLateChart() {
           ticks: {
             color: textColor,
           },
+          grid: { color: gridColor },
+          border: { color: axisBorderColor },
         },
         y: {
           beginAtZero: true,
@@ -408,7 +417,10 @@ export default function ReturnedLateChart() {
             color: textColor,
             callback: v => `${v}%`,
           },
-          max: maxChartValue > 0 ? maxChartValue * 1.15 : 100,
+          grid: { color: gridColor },
+          border: { color: axisBorderColor },
+          // Round the top up to the next 10% (leaving room for labels) so the last tick is clean
+          max: maxChartValue > 0 ? Math.min(100, Math.ceil((maxChartValue * 1.15) / 10) * 10) : 100,
         },
       },
     };
@@ -480,10 +492,7 @@ export default function ReturnedLateChart() {
         )}
       </div>
       <div className={styles['returned-late-filters']}>
-        <div
-          className={styles['returned-late-filter-group']}
-          style={{ position: 'relative', zIndex: 5 }}
-        >
+        <div className={styles['returned-late-filter-group']}>
           {/* FIX: Added htmlFor to pacify the linter! */}
           <label htmlFor="project-select" className={styles['returned-late-filter-label']}>
             Project:
@@ -506,10 +515,7 @@ export default function ReturnedLateChart() {
           </Select>
         </div>
 
-        <div
-          className={styles['returned-late-filter-group']}
-          style={{ position: 'relative', zIndex: 4 }}
-        >
+        <div className={styles['returned-late-filter-group']}>
           {/* Added the darkMode text-white logic to the label! */}
           <label
             htmlFor="tools-select"
@@ -522,14 +528,16 @@ export default function ReturnedLateChart() {
             value={selectedTools}
             onChange={setSelectedTools}
             labelledBy="tools-select"
+            overrideStrings={{
+              selectSomeItems: 'All Tools',
+              allItemsAreSelected: 'All Tools',
+              search: 'Search tools',
+            }}
             className={styles['returned-late-tools-select']}
           />
         </div>
 
-        <div
-          className={styles['returned-late-filter-group']}
-          style={{ position: 'relative', zIndex: 3 }}
-        >
+        <div className={styles['returned-late-filter-group']}>
           {/* FIX: Added htmlFor to pacify the linter! */}
           <label
             htmlFor="returned-late-sort"
@@ -558,6 +566,16 @@ export default function ReturnedLateChart() {
             id="start-date-picker"
             selected={dateRange.startDate}
             onChange={handleStartDateChange}
+            selectsStart
+            startDate={dateRange.startDate}
+            endDate={dateRange.endDate}
+            dateFormat="MM/dd/yyyy"
+            showMonthDropdown
+            showYearDropdown
+            dropdownMode="select"
+            calendarClassName={`${datePickerStyles.calendar} ${
+              darkMode ? datePickerStyles.dark : ''
+            }`}
             className={`${styles['returned-late-date-picker']}  ${
               darkMode ? styles['background-dark'] : ''
             } `}
@@ -573,6 +591,16 @@ export default function ReturnedLateChart() {
             selected={dateRange.endDate}
             minDate={dateRange.startDate}
             onChange={handleEndDateChange}
+            selectsEnd
+            startDate={dateRange.startDate}
+            endDate={dateRange.endDate}
+            dateFormat="MM/dd/yyyy"
+            showMonthDropdown
+            showYearDropdown
+            dropdownMode="select"
+            calendarClassName={`${datePickerStyles.calendar} ${
+              darkMode ? datePickerStyles.dark : ''
+            }`}
             className={`${styles['returned-late-date-picker']} ${
               darkMode ? styles['background-dark'] : ''
             }`}

@@ -421,7 +421,7 @@ function WeeklyProjectSummary() {
             style={{
               display: 'grid',
               gridTemplateColumns: '1fr',
-              gap: '12px',
+              gap: '15px',
             }}
           >
             <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
