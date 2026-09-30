@@ -1,114 +1,409 @@
 /* stylelint-disable */
 
-/* ======================== ROOT PAGE ======================== */
-.page {
+:root {
+  --bg: #f9fafb;
+  --fg: #111827;
+  --muted: #6b7280;
+  --card: #fff;
+  --card-border: #e5e7eb;
+  --shadow: 0 1px 3px rgb(0 0 0 / 8%), 0 1px 2px rgb(0 0 0 / 5%);
+  --primary: #3b82f6;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --purple: #8b5cf6;
+  --gray: #94a3b8;
+  --grid-stroke: #e5e7eb;
+}
+
+/* Dark Theme Support */
+[data-theme='dark'] {
+  --bg: #111827;
+  --fg: #f9fafb;
+  --muted: #9ca3af;
+  --card: #1f2937;
+  --card-border: #374151;
+  --shadow: 0 1px 3px rgb(0 0 0 / 40%), 0 1px 2px rgb(0 0 0 / 20%);
+  --primary: #60a5fa;
+  --success: #34d399;
+  --warning: #fbbf24;
+  --danger: #f87171;
+  --purple: #a78bfa;
+  --gray: #cbd5e1;
+  --grid-stroke: #374151;
+}
+
+.bmDashboardJobAnalytics {
   min-height: 100vh;
-  padding: 24px;
-  padding-right: 32px;
-  background-color: #f9fafb;
-  color: #111827;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  font-family: Arial, sans-serif;
+  padding: 1.5rem;
 }
 
-/* ======================== DARK MODE ========================
-   Applied via className on the root .page div — matches the
-   HoursPledgedChart pattern. No document.documentElement side-effects.
-   Every dark rule is scoped under .darkMode so it only affects
-   this component and never bleeds into other pages.
-*/
-.darkMode {
-  background-color: #111827;
-  color: #f9fafb;
-}
-
-/* ======================== HEADER ======================== */
 .header {
-  max-width: 1600px;
-  margin: 0 auto 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
-  overflow: visible;
-  box-sizing: border-box;
   width: 100%;
+  margin-bottom: 1.5rem;
+
+  .title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--fg);
+  }
+
+  .deviceBadge {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    background: var(--primary);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 999px;
+  }
+
+  .refreshButton {
+    display: flex;
+    align-items: center;
+    column-gap: 0.5rem;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--primary);
+    font-size: 0.8rem;
+    color: #fff;
+    box-shadow: 0 6px 14px rgb(59 130 246 / 25%);
+    box-shadow: 0 6px 14px rgb(59 130 246 / 25%);
+    transition: all 0.2s ease;
+  }
+
+  .refreshButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .refreshButton:hover:not(:disabled) {
+   transform: translateY(-1px);
+  }
+
+  .refreshLoader {
+    animation: spin 1s linear infinite;
+  }  
 }
 
-.title {
-  font-size: 2rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin: 0;
+@media screen and (min-width: 768px) {
+  .header {
+    .title {
+      font-size: 1.8rem;
+    }
+
+    .deviceBadge {
+      font-size: 0.8rem;
+    }
+
+    .refreshButton {
+      font-size: 1rem;
+    }
+  }
 }
 
-/* ======================== BUTTONS ======================== */
-.btn {
+/* spin animation for refresh button's icon */
+@keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+}
+
+.filters {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 8%), 0 1px 2px rgb(0 0 0 / 5%);
+  margin-bottom: 1.5rem;
+
+  .filtersRow {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--fg);
+  }
+
+  .quickSelectButtonList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .quickSelectButton {
+    display: flex;
+    align-items: center;
+    column-gap: 0.5rem;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    color: var(--fg);
+    border: 1px solid var(--card-border);
+    transition: all 0.2s ease;
+  }
+  
+  .quickSelectButton.active {
+    background-color: var(--primary);
+    color: #fff;
+    border: 1px solid transparent;
+  }
+
+  .dateRange {
+    display: flex;
+    align-items: center;
+  }
+
+  .to {
+    color: var(--fg);
+    margin-inline: 0.5rem;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .filters {
+    .filtersRow {
+      flex-wrap: wrap;
+      flex-direction: row;
+      gap: 1rem;
+    }
+  }
+}
+
+
+/* ======================== METRICS GRID ======================== */
+.metricsGrid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  margin-bottom: 1.5rem;
+
+  .metricCard {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 8%), 0 1px 2px rgb(0 0 0 / 5%);
+    transition: transform 0.15s ease;
+  }
+
+  .metricCard:hover {
+    transform: translateY(-3px);
+  }
+
+  .metricTop {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .metricIconWrap {
+    background-color: rgb(0 0 0 / 5%);
+    padding: 10px;
+    border-radius: 10px;
+  }
+
+  .metricIcon {
+    color: var(--muted);
+  }
+
+  .change {
+    font-weight: 600;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .positive {
+    color: #10b981;
+  }
+
+  .negative {
+    color: #ef4444;
+  }
+
+  .metricValue {
+    color: var(--fg);
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  .metricTitle {
+    color: var(--muted);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* ======================== TOOLTIP ======================== */
+.tooltipWrap {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border-radius: 8px;
-  justify-content: center;
-  font-size: 0.875rem;
-  font-weight: 600;
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  margin-left: 4px;
+  vertical-align: middle;
+
+  .tooltipIcon {
+    color: var(--muted);
+    cursor: help;
+    flex-shrink: 0;
+  }
+
+  .tooltipIcon:hover {
+    color: var(--primary);
+  }
+
+  .tooltipIcon:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+
+  .tooltipBox {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg);
+    color: var(--fg);
+    font-size: 0.75rem;
+    line-height: 1.4;
+    padding: 7px 10px;
+    border: 1px solid var(--card-border);
+    border-radius: 7px;
+    white-space: normal;
+    width: 200px;
+    text-align: left;
+    z-index: 100;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 7%);
+  }
+
+  .tooltipBox::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 1px solid transparent;
+    border-top-color: var(--card-border);
+  }
 }
 
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+/* ======================== CHART GRID ======================== */
+.chartsGrid {
+  width: 100%;
+  display: grid;
+  gap: 1.5rem;
 }
 
-.btnPrimary {
-  background: #3b82f6;
-  color: #fff;
-  box-shadow: 0 6px 14px rgb(59 130 246 / 25%);
+/* Mobile */
+.chartsGrid[data-mobile='1'] {
+  grid-template-columns: 1fr;
 }
 
-.darkMode .btnPrimary {
-  background: #60a5fa;
+/* Tablet */
+@media (641px <= width <= 1199px) {
+  .chartsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-.btnPrimary:hover:not(:disabled) {
-  transform: translateY(-1px);
+/* Desktop + Large Screens */
+@media (width >= 1200px) {
+  .chartsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-flow: dense;
+    gap: 1.5rem;
+  }
 }
 
-.btnGhost {
-  background: #fff;
-  color: #111827;
-  border: 1px solid #e5e7eb;
+/* ======================== CHART CARD ======================== */
+.chartCard {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 22px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 8%), 0 1px 2px rgb(0 0 0 / 5%);
+  transition: transform 0.15s ease;
+
+  .chartHeader {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .chartIconWrap {
+    background: rgb(0 0 0 / 5%);
+    padding: 8px;
+    border-radius: 10px;
+  }
+
+  .chartIcon {
+    color: var(--muted);
+  }
+
+  .chartTitle {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+
+  .chartBody {
+    margin: 0 -4px;
+  }
 }
 
-.darkMode .btnGhost {
-  background: #1f2937;
-  color: #f9fafb;
-  border-color: #374151;
+.chartCard:hover {
+  transform: translateY(-3px);
 }
 
-.btnGhost:hover:not(:disabled) {
-  box-shadow: 0 6px 14px rgb(0 0 0 / 8%);
-  transform: translateY(-1px);
+/* Pie chart hint text */
+.pieHint {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin: 8px 0 0;
+  font-style: italic;
 }
 
-.btnLink {
-  color: #ef4444;
-  border: none;
-  background: none;
-  padding: 0;
+.pieChartLabelContainer {
+  fill: #ffffff;
+  stroke: #e5e7eb;
 }
 
-.darkMode .btnLink {
-  color: #f87171;
+.bmDashboardJobAnalytics :global(.recharts-pie-labels) text {
+  .positive {
+    fill: green;
+  }
+
+  .negative {
+    fill: red;
+  }
 }
 
 /* ======================== INPUTS ======================== */
 .input {
   width: 100%;
-  padding: 10px 14px;
-  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
   background: #fff;
   color: #111827;
   font-size: 0.875rem;
@@ -118,22 +413,118 @@
 
 .input:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: var(--primary);
   box-shadow: 0 0 0 3px rgb(59 130 246 / 20%);
 }
 
-.darkMode .input {
-  background: #1f2937;
-  color: #f9fafb;
-  border-color: #374151;
-  color-scheme: dark;
+.compareSelect {
+  width: 100%;
+
+  :global(.job-analytics-compare-select__control) {
+    min-height: unset;
+    width: 100%;
+    min-width: 212px;
+    padding: 0;
+    background: #fff;
+    color: #111827;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    box-shadow: none;
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+  }
+
+  :global(.job-analytics-compare-select__control:hover) {
+    border-color: #e5e7eb;
+  }
+
+  :global(.job-analytics-compare-select__control--is-focused),
+  :global(.job-analytics-compare-select__control--is-focused:hover) {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgb(59 130 246 / 20%);
+  }
+
+  :global(.job-analytics-compare-select__value-container) {
+    padding: 0.5rem 1rem;
+  }
+
+  :global(.job-analytics-compare-select__single-value),
+  :global(.job-analytics-compare-select__input) {
+    color: #111827;
+    font-size: 0.875rem;
+    margin: 0;
+  }
+
+  :global(.job-analytics-compare-select__placeholder) {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin: 0;
+  }
+
+  :global(.job-analytics-compare-select__menu) {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    z-index: 20;
+  }
+
+  :global(.job-analytics-compare-select__menu-list) {
+    padding: 4px;
+  }
+
+  :global(.job-analytics-compare-select__option) {
+    background-color: transparent;
+    color: #111827;
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+
+  :global(.job-analytics-compare-select__option--is-focused) {
+    background-color: #f5f5f5;
+  }
+
+  :global(.job-analytics-compare-select__option--is-selected) {
+    background-color: var(--primary);
+    color: #fff;
+  }
+
+  :global(.job-analytics-compare-select__dropdown-indicator) {
+    color: #6b7280;
+    padding: 4px;
+    transition: transform 0.15s ease, color 0.15s ease;
+  }
+
+  :global(.job-analytics-compare-select__dropdown-indicator:hover) {
+    color: #374151;
+  }
+
+  :global(.job-analytics-compare-select__control--menu-is-open)
+    :global(.job-analytics-compare-select__dropdown-indicator) {
+    transform: rotate(180deg);
+  }
+
+  :global(.job-analytics-compare-select__indicator-separator) {
+    background-color: #e5e7eb;
+  }
+
+  :global(.job-analytics-compare-select__indicators) {
+    padding-right: 4px;
+  }
 }
 
-.darkMode .input::-webkit-calendar-picker-indicator {
-  filter: invert(1);
+.datePicker {
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: #111827;
+  font-size: 0.875rem;
 }
 
-/* ======================== LOADING ======================== */
+.react-datepicker__close-icon::after {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Loading UI */
 .loading {
   min-height: 240px;
   display: flex;
@@ -152,24 +543,11 @@
   margin-bottom: 12px;
 }
 
-.darkMode .spinner {
-  border-color: #374151;
-  border-top-color: #60a5fa;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
 .loadingText {
-  color: #6b7280;
+  color: var(--muted);
 }
 
-.darkMode .loadingText {
-  color: #9ca3af;
-}
-
-/* ======================== ERROR ======================== */
+/* Error UI */
 .errorBox {
   background: #fef2f2;
   border: 1px solid #fecaca;
@@ -179,7 +557,7 @@
   color: #991b1b;
 }
 
-.darkMode .errorBox {
+[data-theme='dark'] .errorBox {
   background: #7f1d1d;
   border-color: #991b1b;
   color: #fee2e2;
@@ -189,7 +567,7 @@
   margin: 0 0 8px;
 }
 
-/* ======================== ACCESS DENIED ======================== */
+/* Access Denied */
 .accessWrapper {
   min-height: 60vh;
   display: grid;
@@ -197,19 +575,13 @@
 }
 
 .accessCard {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 8%), 0 1px 2px rgb(0 0 0 / 5%);
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow);
   padding: 32px;
   border-radius: 12px;
   max-width: 500px;
   text-align: center;
-}
-
-.darkMode .accessCard {
-  background: #1f2937;
-  border-color: #374151;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 40%), 0 1px 2px rgb(0 0 0 / 20%);
 }
 
 .accessIcon {
@@ -219,271 +591,454 @@
   color: #ef4444;
 }
 
-.darkMode .accessIcon {
-  color: #f87171;
-}
+/* ======================== DEVICE BANNER ======================== */
 
-/* ======================== FILTER SELECTOR ======================== */
-.selectorCard {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 8%), 0 1px 2px rgb(0 0 0 / 5%);
-  margin-bottom: 24px;
-}
-
-.darkMode .selectorCard {
-  background: #1f2937;
-  border-color: #374151;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 40%), 0 1px 2px rgb(0 0 0 / 20%);
-}
-
-.selectorRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  align-items: flex-end;
-}
-
-.selectorCol {
-  flex: 1 1 320px;
-  min-width: 260px;
-}
-
-.selectorColNarrow {
-  min-width: 200px;
-}
-
-.label {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: #6b7280;
-}
-
-.darkMode .label {
-  color: #9ca3af;
-}
-
-.quickRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.datesRow {
+.deviceBanner {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
+  border-radius: 10px;
+  padding: 10px 16px;
+  margin-bottom: 20px;
+  font-size: 0.8rem;
+  color: var(--fg);
+  animation: banner-in 0.25s ease;
+
+  .description {
+    margin-bottom: 0;
+  }
+
+  span {
+    font-weight: 700;
+  }
 }
 
-.to {
-  color: #6b7280;
+@keyframes banner-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.darkMode .to {
-  color: #9ca3af;
+.deviceBannerClear {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: var(--bg);
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--danger);
+  transition: all 0.15s ease;
 }
 
-/* ======================== METRICS ======================== */
-.metricsGrid {
-  display: grid;
-  gap: 24px;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  margin-bottom: 24px;
-}
-
-.metricCard {
-  background: #fff;
-  border: 1px solid #e5e7eb;
+/* ======================== ENGAGEMENT PANEL ======================== */
+.engagementPanel {
+  background: var(--card);
+  border: 1px solid var(--card-border);
   border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 8%), 0 1px 2px rgb(0 0 0 / 5%);
-  transition: transform 0.15s ease;
+  padding: 20px 24px;
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+  animation: panel-in 0.25s ease;
 }
 
-.darkMode .metricCard {
-  background: #1f2937;
-  border-color: #374151;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 40%), 0 1px 2px rgb(0 0 0 / 20%);
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.metricCard:hover {
-  transform: translateY(-3px);
-}
-
-.metricTop {
+.engagementHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.metricIconWrap {
-  background: rgb(0 0 0 / 5%);
-  padding: 10px;
-  border-radius: 10px;
-}
-
-.darkMode .metricIconWrap {
-  background: rgb(255 255 255 / 6%);
-}
-
-.metricIcon {
-  color: #6b7280;
-}
-
-.darkMode .metricIcon {
-  color: #9ca3af;
-}
-
-.change {
-  font-weight: 600;
+.engagementDeviceLabel {
   display: flex;
-  gap: 4px;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
 }
 
-.positive {
-  color: #10b981;
+.engagementSubtitle {
+  font-size: 0.8rem;
+  color: var(--muted);
 }
 
-.darkMode .positive {
-  color: #34d399;
-}
-
-.negative {
-  color: #ef4444;
-}
-
-.darkMode .negative {
-  color: #f87171;
-}
-
-.metricValue {
-  font-size: 2rem;
-  font-weight: 700;
-}
-
-.metricTitle {
-  color: #6b7280;
-  font-size: 0.9rem;
-}
-
-.darkMode .metricTitle {
-  color: #9ca3af;
-}
-
-/* ======================== CHARTS GRID ======================== */
-.chartsGrid {
-  width: 100%;
+.engagementGrid {
   display: grid;
-  gap: 24px;
+  grid-template-columns: repeat(1, minmax(140px, 1fr));
+  gap: 1rem;
 }
 
-.chartsGrid[data-mobile='1'] {
-  grid-template-columns: 1fr;
-}
-
-@media (width >= 641px) and (width <= 1199px) {
-  .chartsGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (width >= 1200px) {
-  .chartsGrid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-auto-flow: dense;
-    gap: 24px;
-  }
-}
-
-/* ======================== CHART CARD ======================== */
-.chartCard {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 22px;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 8%), 0 1px 2px rgb(0 0 0 / 5%);
+.engagementItem {
+  background: var(--bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 1rem;
   transition: transform 0.15s ease;
 }
 
-.darkMode .chartCard {
-  background: #1f2937;
-  border-color: #374151;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 40%), 0 1px 2px rgb(0 0 0 / 20%);
+.engagementItem:hover {
+  transform: translateY(-2px);
 }
 
-.chartCard:hover {
-  transform: translateY(-3px);
+.engagementValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 4px;
 }
 
-.chartHeader {
+.engagementLabel {
+  font-size: 0.8rem;
+  color: var(--muted);
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 4px;
 }
 
-.chartIconWrap {
-  background: rgb(0 0 0 / 5%);
-  padding: 8px;
-  border-radius: 10px;
+@media screen and (min-width: 768px) {
+  .engagementGrid {
+    grid-template-columns: repeat(2, minmax(140px, 1fr));
+  }
 }
 
-.darkMode .chartIconWrap {
-  background: rgb(255 255 255 / 6%);
+@media screen and (min-width: 1200px) {
+  .engagementGrid {
+    grid-template-columns: repeat(4, minmax(140px, 1fr));
+  }
 }
 
-.chartIcon {
+/* ======================== OTHERS ======================== */
+.buttonDanger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--danger);
+  border: none;
+  background: none;
+}
+
+
+/* ======================== DATE PICKER ======================== */
+:global(.job-analytics-datepicker-light .react-datepicker__navigation-icon::before) {
+  border-color: #08060d !important;
+}
+
+:global(.job-analytics-datepicker .react-datepicker__navigation-icon) {
+  font-size: initial !important;
+}
+
+:global(.job-analytics-datepicker .react-datepicker__day--disabled:hover) {
+  background-color: transparent !important;
+  cursor:not-allowed;
+}
+
+/* ============= DATE PICKER LIGHT MODE ============= */
+:global(.job-analytics-datepicker-light .react-datepicker__day--disabled) {
+  color: #9ca3af !important;
+}
+
+:global(.job-analytics-datepicker-light .react-datepicker__day--keyboard-selected) {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+:global(.job-analytics-datepicker-light .react-datepicker__day--in-selecting-range:not(.react-datepicker__day--in-range)) {
+  color: #000000 !important;
+  background-color: #f0f0f0;
+}
+
+:global(.job-analytics-datepicker-light .react-datepicker__day--in-range) {
+  color: #000000 !important;
+}
+
+:global(.job-analytics-datepicker-light .react-datepicker__day--in-range.react-datepicker__day--in-selecting-range) {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+:global(.job-analytics-datepicker-light .react-datepicker__day--in-range.react-datepicker__day--outside-month) {
+  color: #ffffff !important;
+}
+
+:global(.job-analytics-datepicker-light .react-datepicker__month--selecting-range .react-datepicker__day--in-range:not(.react-datepicker__day--in-selecting-range)) {
+  color: #000000 !important;
+}
+
+/* ============= DATE PICKER DARK MODE ============= */
+:global(.job-analytics-datepicker-dark) {
+  background-color: #1b2a41;
+  color: #f9fafb;
+  border-color: #374151;
+}
+
+:global(.job-analytics-datepicker-dark .react-datepicker__header) {
+  background-color: #111827;
+  border-bottom: 1px solid #374151;
+}
+
+:global(.job-analytics-datepicker-dark .react-datepicker__current-month),
+:global(.job-analytics-datepicker-dark .react-datepicker__day-name),
+:global(.job-analytics-datepicker-dark .react-datepicker__day),
+:global(.job-analytics-datepicker-dark .react-datepicker__time-name) {
+  color: #f9fafb;
+}
+
+:global(.job-analytics-datepicker-dark .react-datepicker__day:hover) {
+  background-color: #374151;
+}
+
+:global(.job-analytics-datepicker-dark .react-datepicker__day--disabled) {
+  color: #9ca3af !important;
+}
+
+:global(.job-analytics-datepicker-dark .react-datepicker__day--keyboard-selected) {
+  background-color: #1b2a41;
+  color: #ffffff;
+}
+
+:global(.job-analytics-datepicker-dark .react-datepicker__day--in-selecting-range:not(.react-datepicker__day--in-range)) {
+  color: #ffffff !important;
+  background-color: #ffffff1b;
+}
+
+:global(.job-analytics-datepicker-dark .react-datepicker__day--in-range) {
+  color: #ffffff !important;
+  background-color: #3b82f6;
+}
+
+:global(.job-analytics-datepicker-dark .react-datepicker__day--in-range.react-datepicker__day--in-selecting-range) {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+:global(.job-analytics-datepicker-dark .react-datepicker__day--in-range.react-datepicker__day--outside-month) {
+  color: #ffffff !important;
+}
+
+:global(.job-analytics-datepicker-dark .react-datepicker__month--selecting-range .react-datepicker__day--in-range:not(.react-datepicker__day--in-selecting-range)) {
+  color: #ffffff !important;
+  background-color: #ffffff1b;
+}
+
+:global(.job-analytics-datepicker-dark .react-datepicker__day--disabled) {
   color: #6b7280;
 }
 
-.darkMode .chartIcon {
-  color: #9ca3af;
+:global(.job-analytics-datepicker-dark .react-datepicker__triangle) {
+  display: none;
 }
 
-.chartTitle {
-  margin: 0;
-  font-weight: 700;
-}
+/* ============= DATE PICKER DARK MODE ============= */
+:global(.dark-mode) .bmDashboardJobAnalytics {
+  background-color: #1b2a41;
+  
+  .filters {
+    background-color: #25354E;
+    border-color: #334155;
+  }
 
-.chartBody {
-  margin: 0 -4px;
-}
+  .quickSelectButton {
+    background-color: #2D3D57;
+    border-color: #334155;
+  }
 
-.fullWidth {
-  grid-column: 1 / -1 !important;
-}
+  .quickSelectButton.active {
+    background-color: var(--primary);
+    border-color: transparent;
+  }
 
-/* ======================== RECHARTS GRID LINES ======================== */
-/* Light mode */
-.gridStroke line {
-  stroke: #e5e7eb !important;
-}
+  .metricCard {
+    background-color: #25354E;
+    border-color: #334155;
+  }
 
-/* Dark mode — scoped under .darkMode ancestor */
-.darkMode .gridStroke line {
-  stroke: #374151 !important;
-}
+  .metricIconWrap {
+    background-color: #2D3D57;
+  }
 
-/* ======================== MISC ======================== */
-.headerActions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-shrink: 0;
-}
+  .metricIcon {
+    color: #94A3B8;
+  }
 
-.select {
-  width: auto;
-  min-width: 140px;
-  max-width: 180px;
-}
+  .chartCard {
+    background-color: #25354E;
+    border-color: #334155;
+  }
 
-.spin {
-  animation: spin 1s linear infinite;
+  .chartIconWrap {
+    background-color: #2D3D57;
+  }
+
+  .chartIcon {
+    color: #94A3B8;
+  }
+
+  .input {
+    background: #2D3D57;
+    color: #f9fafb;
+    border-color: #334155;
+    color-scheme: dark;
+  }
+
+  .positive {
+    color: #34d399;
+  }
+  
+  .negative {
+    color: #f87171;
+  }
+
+  .tooltipBox {
+    background-color: #1b2a41;
+  }
+
+  .accessIcon {
+  color: #f87171;
+  }
+
+  .description {
+    color: #ffffff !important;
+  }
+
+  .deviceBanner {
+    background: color-mix(in srgb, var(--primary) 18%, #1b2a41);
+    border-color: color-mix(in srgb, var(--primary) 45%, #1b2a41);
+    color: #f9fafb;
+  }
+
+  .deviceBannerClear {
+    background-color: transparent;
+    color: #f87171;
+    border-color: #f87171;
+  }
+
+  .engagementPanel {
+    background-color: #25354E;
+    border-color: #334155;
+  }
+
+  .engagementDeviceLabel {
+    color: #f9fafb;
+  }
+
+  .engagementSubtitle {
+    color: #9ca3af;
+  }
+
+  .engagementItem {
+    background-color: #2D3D57;
+    border-color: #334155;
+  }
+
+  .engagementLabel {
+    color: #9ca3af;
+  }
+
+  :global(.recharts-tooltip-label) {
+    color: #ffffff;
+  }
+
+  .compareSelect {
+    :global(.job-analytics-compare-select__control) {
+      background: #2d3d57;
+      color: #f9fafb;
+      border-color: #334155;
+    }
+
+    :global(.job-analytics-compare-select__control:hover) {
+      border-color: #334155;
+    }
+
+    :global(.job-analytics-compare-select__control--is-focused),
+    :global(.job-analytics-compare-select__control--is-focused:hover) {
+      border-color: var(--primary);
+    }
+
+    :global(.job-analytics-compare-select__single-value),
+    :global(.job-analytics-compare-select__input) {
+      color: #f9fafb;
+    }
+
+    :global(.job-analytics-compare-select__placeholder) {
+      color: #9ca3af;
+    }
+
+    :global(.job-analytics-compare-select__menu) {
+      background: #1b2a41;
+      border-color: #334155;
+    }
+
+    :global(.job-analytics-compare-select__option) {
+      color: #f9fafb;
+    }
+    
+    :global(.job-analytics-compare-select__option:active) {
+      background-color: #2563eb;
+    }
+
+    :global(.job-analytics-compare-select__option--is-focused:not(.job-analytics-compare-select__option--is-selected)) {
+      background-color: #25354e;
+    }
+
+    :global(.job-analytics-compare-select__dropdown-indicator) {
+      color: #9ca3af;
+    }
+
+    :global(.job-analytics-compare-select__dropdown-indicator:hover) {
+      color: #e5e7eb;
+    }
+
+    :global(.job-analytics-compare-select__indicator-separator) {
+      background-color: #334155;
+    }
+  }
+
+  .pieChartLabelContainer {
+    fill: #2b3a51;
+    stroke: #334155;
+  }
+
+  :global(.recharts-pie-labels) text {
+    fill: #ffffff;
+
+    .positive {
+      fill: green;
+    }
+
+    .negative {
+      fill: red;
+    }
+  }
 }
