@@ -230,7 +230,10 @@ function Collaboration() {
     setActiveTab('jobPostings');
     setCurrentPage(1);
 
-    fetchJobAds({ search: submittedSearch, page: 1 });
+    // The job refresh runs independently of the form state updates above.
+    fetchJobAds({ search: submittedSearch, page: 1 }).catch(() =>
+      toast.error('Error fetching jobs'),
+    );
   };
 
   const handleCategoryChange = e => {
@@ -239,7 +242,10 @@ function Collaboration() {
     setCurrentPage(1);
     setSummaries(null);
     setActiveTab('jobPostings');
-    fetchJobAds({ category: selectedValue || '', page: 1 });
+    // The job refresh runs independently of the category state updates above.
+    fetchJobAds({ category: selectedValue || '', page: 1 }).catch(() =>
+      toast.error('Error fetching jobs'),
+    );
   };
 
   const handleResetFilters = async () => {
@@ -278,7 +284,8 @@ function Collaboration() {
   const setPage = pageNumber => {
     const nextPage = clampPage(pageNumber, Math.max(1, totalPages));
     setCurrentPage(nextPage);
-    fetchJobAds({ page: nextPage });
+    // Pagination refreshes in the background while the viewport scrolls to the top.
+    fetchJobAds({ page: nextPage }).catch(() => toast.error('Error fetching jobs'));
     globalThis.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -413,8 +420,9 @@ function Collaboration() {
 
   // Initial fetch and setup
   useEffect(() => {
-    fetchJobAds();
-    fetchCategories();
+    // Initial API requests intentionally run in the background during mount.
+    fetchJobAds().catch(() => toast.error('Error fetching jobs'));
+    fetchCategories().catch(() => toast.error('Error fetching categories'));
     const handleResize = () => {
       if (resizeTimeoutRef.current) clearTimeout(resizeTimeoutRef.current);
       resizeTimeoutRef.current = setTimeout(() => {
@@ -423,7 +431,8 @@ function Collaboration() {
         columnsRef.current = newCols;
         setColumns(newCols);
         setCurrentPage(1);
-        fetchJobAds({ page: 1 });
+        // Resize-triggered refresh intentionally runs in the background to keep resizing responsive.
+        fetchJobAds({ page: 1 }).catch(() => toast.error('Error fetching jobs'));
       }, 200);
     };
     globalThis.addEventListener('resize', handleResize);
