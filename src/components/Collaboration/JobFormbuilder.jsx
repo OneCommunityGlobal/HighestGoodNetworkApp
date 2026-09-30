@@ -136,7 +136,9 @@ function JobFormBuilder() {
       }
     };
 
-    loadFirstAvailableForm();
+    loadFirstAvailableForm().catch(error => {
+      console.error('Unexpected error auto-loading form:', error);
+    });
   }, []);
 
   // Detect unsaved changes
