@@ -140,6 +140,7 @@
   margin: 10px 0;
   text-transform: uppercase;
   letter-spacing: 1px;
+  text-align: center;
 }
 
 @media (width <= 768px) {
