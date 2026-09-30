@@ -802,37 +802,6 @@
   }
 }
 
-/* ---------------- RESPONSIVE GRID LAYOUT ---------------- */
-.projectStatusGrid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 20px;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  max-width: 1600px;
-  margin: auto;
-}
-
-/* .projectStatusGrid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(2, auto);
-  gap: 10px;
-} */
-
-/* ---------------- OVAL STATUS BUTTON ---------------- */
-.weeklyStatusButton {
-  width: 130px;
-  height: 65px;
-  border-radius: 50px / 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 5px rgb(0 0 0 / 15%);
-  margin: 12px 0;
-}
-
 /* Status Grid Responsive */
 @media (width >=1600px) {
   .projectStatusGrid {

@@ -302,12 +302,12 @@ export default function RentalChart() {
       }
     };
 
-    fetchRentalData();
+    // Errors are handled inside fetchRentalData
+    fetchRentalData().catch(() => {});
   }, []);
 
   const options = useMemo(() => {
     const textColor = darkMode ? '#ffffff' : '#000000';
-    const bgColor = darkMode ? '#1b2a41' : '#ffffff';
     const tooltipBorder = darkMode ? '#ffffff' : '#000000';
     const tooltipBg = darkMode ? '#343a40' : '#f8f9fa';
     const titleColor = darkMode ? '#ffffff' : '#000000';

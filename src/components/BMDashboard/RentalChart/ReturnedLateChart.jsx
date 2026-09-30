@@ -180,7 +180,8 @@ export default function ReturnedLateChart() {
       }
     };
 
-    fetchInitial();
+    // Errors are handled inside fetchInitial
+    fetchInitial().catch(() => {});
   }, []);
 
   const buildUrl = () => {
@@ -302,7 +303,8 @@ export default function ReturnedLateChart() {
         setLoading(false);
       }
     };
-    fetchData();
+    // Errors are handled inside fetchData
+    fetchData().catch(() => {});
   }, [availableProjects, darkMode, selectedProject, dateRange, selectedTools, sortOption]);
 
   useEffect(() => {
@@ -436,7 +438,6 @@ export default function ReturnedLateChart() {
 
   const multiProjectLegendVisible = isMultiProjectView && legendItems.length > 1;
 
-  const handleProjectChange = e => setSelectedProject(e.target.value);
   const handleStartDateChange = date =>
     setDateRange(prev => ({ startDate: date, endDate: prev.endDate < date ? date : prev.endDate }));
   const handleEndDateChange = date =>
@@ -446,6 +447,11 @@ export default function ReturnedLateChart() {
     }));
 
   const isOxfordBlue = darkMode ? styles['bg-oxford-blue'] : '';
+
+  const getLegendItemClass = hidden => {
+    if (hidden) return styles['returned-late-legend-item-hidden'];
+    return darkMode ? 'dark-mode-legend' : '';
+  };
 
   return (
     <div className={`${styles['returned-late-chart']} ${isOxfordBlue}`}>
@@ -465,13 +471,9 @@ export default function ReturnedLateChart() {
                 <button
                   key={item.projectId}
                   type="button"
-                  className={`${styles['returned-late-legend-item']} ${
-                    item.hidden
-                      ? styles['returned-late-legend-item-hidden']
-                      : darkMode
-                      ? 'dark-mode-legend'
-                      : ''
-                  }`}
+                  className={`${styles['returned-late-legend-item']} ${getLegendItemClass(
+                    item.hidden,
+                  )}`}
                   onClick={() => toggleProjectVisibility(item.projectId)}
                   aria-pressed={!item.hidden}
                   title={`${item.hidden ? 'Show' : 'Hide'} ${item.label}`}
