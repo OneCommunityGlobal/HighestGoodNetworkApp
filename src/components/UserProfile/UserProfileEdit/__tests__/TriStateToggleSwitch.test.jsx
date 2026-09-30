@@ -2,81 +2,84 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import TriStateToggleSwitch from '../ToggleSwitch/TriStateToggleSwitch';
+import styles from '../ToggleSwitch/TriStateToggleSwitch.module.css';
+
+// The component renders CSS module classes, so resolve every selector through the same
+// module rather than hardcoding names — those are hashed and would never match.
+const SWITCH = styles['toggle-switch'];
+const KNOB_AREA = styles['knob-area'];
+const BUTTONS = `.${KNOB_AREA} button`;
 
 describe('TriStateToggleSwitch Component', () => {
   it('initializes state based on pos prop and applies correct background color', () => {
     const { container, rerender } = render(<TriStateToggleSwitch pos="posted" />);
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    const wrapper = container.querySelector('.toggle-switch');
+    const wrapper = container.querySelector(`.${SWITCH}`);
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    const knob = container.querySelector('.knob');
-    
-    expect(wrapper).toHaveClass('toggle-switch', 'bg-blue');
-    expect(knob).toHaveClass('posted');
+    const knob = container.querySelector(`.${styles.knob}`);
+
+    expect(wrapper).toHaveClass(SWITCH, styles['bg-blue']);
+    expect(knob).toHaveClass(styles.posted);
 
     rerender(<TriStateToggleSwitch pos="default" />);
-    expect(wrapper).toHaveClass('toggle-switch', 'bg-darkgray');
+    expect(wrapper).toHaveClass(SWITCH, styles['bg-darkgray']);
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    expect(container.querySelector('.knob')).toHaveClass('default');
+    expect(container.querySelector(`.${styles.knob}`)).toHaveClass(styles.default);
 
-    
     rerender(<TriStateToggleSwitch pos="requested" />);
-    expect(wrapper).toHaveClass('toggle-switch', 'bg-green');
+    expect(wrapper).toHaveClass(SWITCH, styles['bg-green']);
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    expect(container.querySelector('.knob')).toHaveClass('requested');
+    expect(container.querySelector(`.${styles.knob}`)).toHaveClass(styles.requested);
   });
 
   it('calls onChange and updates state and bgColor on click for all states', () => {
     const handleChange = vi.fn();
     const { container } = render(<TriStateToggleSwitch pos="default" onChange={handleChange} />);
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    const wrapper = container.querySelector('.toggle-switch');
+    const wrapper = container.querySelector(`.${SWITCH}`);
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    const options = container.querySelectorAll('.knob-area button');
-
+    const options = container.querySelectorAll(BUTTONS);
 
     fireEvent.click(options[0]);
     expect(handleChange).toHaveBeenCalledWith('posted');
-    expect(wrapper).toHaveClass('bg-blue');
+    expect(wrapper).toHaveClass(styles['bg-blue']);
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    expect(container.querySelector('.knob')).toHaveClass('posted');
+    expect(container.querySelector(`.${styles.knob}`)).toHaveClass(styles.posted);
 
-     handleChange.mockClear();
+    handleChange.mockClear();
     fireEvent.click(options[1]);
     expect(handleChange).toHaveBeenCalledWith('default');
-    expect(wrapper).toHaveClass('bg-darkgray');
+    expect(wrapper).toHaveClass(styles['bg-darkgray']);
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    expect(container.querySelector('.knob')).toHaveClass('default');
+    expect(container.querySelector(`.${styles.knob}`)).toHaveClass(styles.default);
 
     handleChange.mockClear();
     fireEvent.click(options[2]);
     expect(handleChange).toHaveBeenCalledWith('requested');
-    expect(wrapper).toHaveClass('bg-green');
+    expect(wrapper).toHaveClass(styles['bg-green']);
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    expect(container.querySelector('.knob')).toHaveClass('requested');
+    expect(container.querySelector(`.${styles.knob}`)).toHaveClass(styles.requested);
   });
 
   it('does not throw if onChange is not provided', () => {
     const { container } = render(<TriStateToggleSwitch pos="default" />);
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    const options = container.querySelectorAll('.knob-area button');
+    const options = container.querySelectorAll(BUTTONS);
 
     expect(() => fireEvent.click(options[0])).not.toThrow();
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    const wrapper = container.querySelector('.toggle-switch');
+    const wrapper = container.querySelector(`.${SWITCH}`);
+    expect(wrapper).toHaveClass(styles['bg-blue']);
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    expect(wrapper).toHaveClass('bg-blue');
-    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    expect(container.querySelector('.knob')).toHaveClass('posted');
+    expect(container.querySelector(`.${styles.knob}`)).toHaveClass(styles.posted);
   });
 
   it('does not call onChange on mount or prop change', () => {
     const handleChange = vi.fn();
     const { rerender } = render(<TriStateToggleSwitch pos="posted" onChange={handleChange} />);
-    
+
     expect(handleChange).not.toHaveBeenCalled();
 
-    
     rerender(<TriStateToggleSwitch pos="default" onChange={handleChange} />);
     expect(handleChange).not.toHaveBeenCalled();
   });
@@ -84,50 +87,47 @@ describe('TriStateToggleSwitch Component', () => {
   it('renders exactly three clickable areas for each state option', () => {
     const { container } = render(<TriStateToggleSwitch pos="requested" />);
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    const options = container.querySelectorAll('.knob-area button');
+    const options = container.querySelectorAll(BUTTONS);
     expect(options).toHaveLength(3);
   });
 
   it('wrapper always includes the toggle-switch class', () => {
     const { container } = render(<TriStateToggleSwitch pos="default" />);
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    const wrapper = container.querySelector('.toggle-switch');
+    const wrapper = container.querySelector(`.${SWITCH}`);
     expect(wrapper).toBeInTheDocument();
   });
 
   it('wrapper has exactly two classes (toggle-switch and bg-color) for each state', () => {
     const { container, rerender } = render(<TriStateToggleSwitch pos="default" />);
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    const wrapper = container.querySelector('.toggle-switch');
-    
-    expect(wrapper.classList).toHaveLength(2);
-    expect(wrapper.classList.contains('toggle-switch')).toBe(true);
-    expect(wrapper.classList.contains('bg-darkgray')).toBe(true);
+    const wrapper = container.querySelector(`.${SWITCH}`);
 
-    
+    expect(wrapper.classList).toHaveLength(2);
+    expect(wrapper.classList.contains(SWITCH)).toBe(true);
+    expect(wrapper.classList.contains(styles['bg-darkgray'])).toBe(true);
+
     rerender(<TriStateToggleSwitch pos="posted" />);
     expect(wrapper.classList).toHaveLength(2);
-    expect(wrapper.classList.contains('bg-blue')).toBe(true);
+    expect(wrapper.classList.contains(styles['bg-blue'])).toBe(true);
 
-    
     rerender(<TriStateToggleSwitch pos="requested" />);
     expect(wrapper.classList).toHaveLength(2);
-    expect(wrapper.classList.contains('bg-green')).toBe(true);
+    expect(wrapper.classList.contains(styles['bg-green'])).toBe(true);
   });
 
   it('allows sequential clicking through all states', () => {
     const handleChange = vi.fn();
     const { container } = render(<TriStateToggleSwitch pos="default" onChange={handleChange} />);
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    const options = container.querySelectorAll('.knob-area button');
+    const options = container.querySelectorAll(BUTTONS);
 
     options.forEach((option, idx) => {
       fireEvent.click(option);
       const expected = ['posted', 'default', 'requested'][idx];
       expect(handleChange).toHaveBeenLastCalledWith(expected);
       // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-      expect(container.querySelector('.knob')).toHaveClass(expected);
+      expect(container.querySelector(`.${styles.knob}`)).toHaveClass(styles[expected]);
     });
   });
-
 });
