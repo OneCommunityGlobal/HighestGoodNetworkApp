@@ -42,6 +42,7 @@ import {
   updateSummaryReportFromServerAction,
 } from '../../actions/weeklySummaries';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
+import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import SkeletonLoading from '../common/SkeletonLoading';
 import TeamChart from './TeamChart';
 
@@ -1731,6 +1732,7 @@ const WeeklySummariesReport = props => {
     const fetchInitialPermissions = async () => {
       try {
         await props.fetchAllBadges();
+        props.getAllTimeOffRequests();
         setPermissionState(prev => ({
           ...prev,
           // Keep the Owner/Administrator fallbacks identical to the other place that
@@ -2389,6 +2391,7 @@ const WeeklySummariesReport = props => {
                               handleBioStatusChange={handleBioStatusChange}
                               loadTrophies={state.loadTrophies}
                               handleSpecialColorDotClick={handleSpecialColorDotClick}
+                              timeOffRequests={props.timeOffRequests}
                             />
                           </Col>
                         </Row>
@@ -2454,6 +2457,7 @@ const mapStateToProps = state => {
     auth: state?.auth || {},
     darkMode: state?.theme?.darkMode || false,
     authEmailWeeklySummaryRecipient: state?.auth?.user?.email || '',
+    timeOffRequests: state.timeOffRequests?.requests || {},
   };
 };
 
@@ -2477,6 +2481,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(updateOneSummaryReport(userId, updatedField)),
   updateSummaryReport: payload => dispatch(updateSummaryReport(payload)),
   updateSummaryReportFromServerAction: user => dispatch(updateSummaryReportFromServerAction(user)),
+  getAllTimeOffRequests: () => dispatch(getAllTimeOffRequests()),
 });
 
 function WeeklySummariesReportTab({ tabId, hidden, children }) {

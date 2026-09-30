@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import UserStateDisplay from '../UserState/UserStateDisplay';
+import ReactTooltip from 'react-tooltip';
 import { permissions } from '../../utils/constants';
 // import moment from 'moment';
 // import 'moment-timezone';
@@ -106,6 +107,7 @@ function FormattedReport({
   handleTeamCodeChange,
   handleBioStatusChange,
   handleSpecialColorDotClick,
+  timeOffRequests,
 }) {
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission(permissions.totalValidWeeklySummaries));
@@ -175,6 +177,7 @@ function FormattedReport({
               auth={auth}
               handleSpecialColorDotClick={handleSpecialColorDotClick}
               isFinalWeek={isFinalWeek}
+              timeOffRequests={timeOffRequests}
             />
           );
         })}
@@ -294,6 +297,7 @@ function ReportDetails({
   auth,
   handleSpecialColorDotClick,
   isFinalWeek,
+  timeOffRequests,
 }) {
   // eslint-disable-next-line no-console
   // console.log('DEBUG ReportDetails:', {
@@ -332,6 +336,7 @@ function ReportDetails({
             handleSpecialColorDotClick={handleSpecialColorDotClick}
             isFinalWeek={isFinalWeek}
             darkMode={darkMode}
+            timeOffRequests={timeOffRequests}
           />
         </ListGroupItem>
         <ListGroupItem darkMode={darkMode}>
@@ -847,6 +852,7 @@ function Index({
   handleSpecialColorDotClick,
   isFinalWeek,
   darkMode,
+  timeOffRequests,
 }) {
   const colors = ['purple', 'green', 'navy'];
   const tangibleHoursLogged = (summary.totalTangibleSeconds?.[weekIndex] || 0) / 3600;
@@ -905,6 +911,27 @@ function Index({
     .subtract(weekIndex, 'week')
     .format('YYYY-MM-DD');
 
+  // Find a time-off request that covers the specific week currently being
+  // viewed (weekIndex: 0=This Week, 1=Last Week, etc.) - not just "now" - so
+  // the notification correctly moves from tab to tab as weeks pass, matching
+  // each request's actual date range rather than only the current real week.
+  const weekStartForTab = moment()
+    .tz(TZ)
+    .startOf('week')
+    .subtract(weekIndex, 'week');
+  const weekEndForTab = moment()
+    .tz(TZ)
+    .endOf('week')
+    .subtract(weekIndex, 'week');
+
+  const userTimeOffRequests = timeOffRequests[summary._id] || [];
+  const activeTimeOffRequest = userTimeOffRequests.find(request => {
+    if (!request.startingDate) return false;
+    const requestStart = moment(request.startingDate);
+    const requestEnd = request.endingDate ? moment(request.endingDate) : requestStart;
+    return weekStartForTab.isSameOrBefore(requestEnd) && weekEndForTab.isSameOrAfter(requestStart);
+  });
+
   const durationSinceStarted = calculateDurationBetweenDates(
     summarySubmissionDate,
     summary?.startDate?.split('T')[0] || null,
@@ -948,6 +975,36 @@ function Index({
       >
         {summary.firstName} {summary.lastName}
       </Link>
+      {activeTimeOffRequest && (
+        <span
+          style={{
+            backgroundColor: '#f8d7da',
+            color: '#721c24',
+            padding: '2px 8px',
+            borderRadius: '4px',
+            marginLeft: '8px',
+            fontSize: '0.85rem',
+            display: 'inline-flex',
+            alignItems: 'center',
+          }}
+        >
+          Requested Week Off
+          <i
+            className="fa fa-info-circle"
+            style={{ marginLeft: '6px', cursor: 'pointer' }}
+            data-tip
+            data-for={`week-off-reason-${summary._id}-${weekIndex}`}
+            aria-label="Time off reason"
+          />
+          <ReactTooltip
+            id={`week-off-reason-${summary._id}-${weekIndex}`}
+            place="top"
+            effect="solid"
+          >
+            {activeTimeOffRequest.reason || 'No reason provided'}
+          </ReactTooltip>
+        </span>
+      )}
       <div style={{ display: 'inline-block' }}>
         <div style={{ display: 'flex' }}>
           <GoogleDocIcon link={googleDocLink} />
@@ -1119,6 +1176,7 @@ Index.propTypes = {
   handleSpecialColorDotClick: PropTypes.func,
   isFinalWeek: PropTypes.bool,
   darkMode: PropTypes.bool,
+  timeOffRequests: PropTypes.objectOf(PropTypes.array),
 };
 
 FormattedReport.propTypes = {
@@ -1141,10 +1199,14 @@ FormattedReport.propTypes = {
       }),
     }),
   }),
+  // Keyed by userId, each value an array of that user's time-off requests
+  // ({ _id, reason, startingDate, endingDate, ... }), from timeOffRequestReducer.
+  timeOffRequests: PropTypes.objectOf(PropTypes.array),
 };
 
 FormattedReport.defaultProps = {
   auth: {},
+  timeOffRequests: {},
 };
 
 ReportDetails.propTypes = {
@@ -1162,10 +1224,12 @@ ReportDetails.propTypes = {
       }),
     }),
   }),
+  timeOffRequests: PropTypes.objectOf(PropTypes.array),
 };
 
 ReportDetails.defaultProps = {
   auth: {},
+  timeOffRequests: {},
 };
 
 export default FormattedReport;
