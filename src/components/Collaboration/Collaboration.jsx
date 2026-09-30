@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
 import WhatWeDoSection from '../WhatWeDo/WhatWeDo';
+import FAQSection from './FAQSection';
 
 function getColumnsFromMQ() {
   if (typeof globalThis.matchMedia !== 'function') return 1;
@@ -622,6 +623,10 @@ function Collaboration() {
                 {Array.from({ length: totalPages }, renderPaginationButton)}
               </div>
             )}
+
+            <div className={styles.faqOuter}>
+              <FAQSection />
+            </div>
           </>
         )}
       </div>
