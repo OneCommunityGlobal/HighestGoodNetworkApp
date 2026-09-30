@@ -1,10 +1,11 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { MemoryRouter } from 'react-router-dom';
 import moment from 'moment';
+import axios from 'axios';
 import FormattedReport from '../FormattedReport';
 import '@testing-library/jest-dom/extend-expect';
 
@@ -146,7 +147,72 @@ describe('FormattedReport minimal test', () => {
     );
     expect(screen.queryByText('Emails')).toBeNull();
   });
+  it('only suggests team codes currently in use on the visible weekly summaries page', () => {
+    const activeSummaryOne = {
+      ...dummySummary,
+      _id: 'active-1',
+      email: 'active1@example.com',
+      teamCode: 'ACT01',
+      endDate: null,
+    };
 
+    const activeSummaryTwo = {
+      ...dummySummary,
+      _id: 'active-2',
+      email: 'active2@example.com',
+      teamCode: 'ACT02',
+      endDate: null,
+    };
+
+    const expiredSummary = {
+      ...dummySummary,
+      _id: 'expired-1',
+      email: 'expired@example.com',
+      teamCode: 'OLD01',
+      endDate: moment()
+        .subtract(6, 'weeks')
+        .toISOString(),
+    };
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport
+            {...defaultProps}
+            summaries={[activeSummaryOne, activeSummaryTwo, expiredSummary]}
+          />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    expect(screen.getByText('ACT01')).toBeInTheDocument();
+    expect(screen.getByText('ACT02')).toBeInTheDocument();
+    expect(screen.queryByText('OLD01')).not.toBeInTheDocument();
+  });
+  it('keeps auto-save working when a valid team code is changed', async () => {
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport {...defaultProps} />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    const input = screen.getByPlaceholderText('X-XXX');
+
+    fireEvent.change(input, {
+      target: { value: 'NEW01' },
+    });
+
+    fireEvent.blur(input);
+
+    await waitFor(() => {
+      expect(axios.patch).toHaveBeenCalledWith(expect.any(String), {
+        userIds: ['1'],
+        replaceCode: 'NEW01',
+      });
+    });
+  });
   it('renders fallback text when weekly summary text is missing', () => {
     const summaryNoText = {
       ...dummySummary,
@@ -228,6 +294,6 @@ describe('FormattedReport minimal test', () => {
       </Provider>,
     );
     expect(screen.queryByPlaceholderText('X-XXX')).toBeNull();
-    expect(screen.getByText('ABC123')).toBeInTheDocument();
+    expect(screen.getByText('ABC123', { selector: 'div' })).toBeInTheDocument();
   });
 });
