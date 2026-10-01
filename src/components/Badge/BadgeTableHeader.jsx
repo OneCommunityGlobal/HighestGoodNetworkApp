@@ -35,7 +35,25 @@ function BadgeTableHeader({ darkMode }) {
         </UncontrolledTooltip>
       </th>
       <th>Action</th>
-      <th>Reports Page Notification</th>
+      <th>
+        Reports Page Notification{' '}
+        <i
+          className="fa fa-info-circle"
+          id="ReportsPageNotificationInfo"
+          data-testid="reports-page-notification-info-icon"
+          aria-label="Reports Page Notification information"
+          style={{ marginLeft: '5px', cursor: 'help' }}
+        />
+        <UncontrolledTooltip
+          placement="right"
+          target="ReportsPageNotificationInfo"
+          style={{ backgroundColor: '#666', color: '#fff' }}
+        >
+          Check this box to display the badge in the Badge Summary and Badge Summary Preview on
+          individual People Report pages. Uncheck it to hide the badge from these sections, such as
+          when excluding custom badges.
+        </UncontrolledTooltip>
+      </th>
     </tr>
   );
 }
