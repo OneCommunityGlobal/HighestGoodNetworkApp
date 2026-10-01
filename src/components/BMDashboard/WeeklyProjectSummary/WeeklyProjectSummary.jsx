@@ -36,8 +36,6 @@ import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarC
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import InjurySeverityChart from '../Injuries/InjurySeverityChart';
 import CostPredictionChart from './CostPredictionChart';
-import ToolReplacementChart from '../../ToolReplacementChart/ToolReplacementChart';
-import MaterialCostCorrelationChart from '../MaterialCostCorrelation';
 
 const projectStatusButtons = [
   {
@@ -142,14 +140,6 @@ function renderFinancialCard(i) {
   if (i === 2) return <CostPredictionChart projectId={1} />;
   if (i === 3) return <ActualVsPlannedCost />;
   return <div>📊 Card</div>;
-}
-
-function renderMaterialCard(idx, quantityOfMaterialsUsedData) {
-  if (idx === 0) return <MaterialCostCorrelationChart />;
-  if (idx === 1) return <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />;
-  if (idx === 2) return <TotalMaterialCostPerProject />;
-  if (idx === 3) return <ToolReplacementChart />;
-  return <p>📊 Card</p>;
 }
 
 function renderProjectStatusGrid() {
@@ -334,7 +324,7 @@ function WeeklyProjectSummary() {
         title: 'Material Consumption',
         key: 'Material Consumption',
         className: 'large',
-        // Shared with /bmdashboard/issuechart so the PR-required three-card grouping stays in sync.
+        // Shared with /bmdashboard/issuechart so the PR-required four-card grouping stays in sync.
         content: (
           <MaterialConsumptionCards quantityOfMaterialsUsedData={quantityOfMaterialsUsedData} />
         ),

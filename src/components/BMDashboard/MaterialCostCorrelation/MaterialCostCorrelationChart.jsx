@@ -51,6 +51,11 @@ function CustomTooltip({ active, payload, darkMode }) {
       }`}
     >
       <div className={styles.tooltipTitle}>{data.materialTypeName}</div>
+      {data.projectName && (
+        <div className={styles.tooltipRow}>
+          <strong>Project Name:</strong> {data.projectName}
+        </div>
+      )}
       {data.hasData === false ? (
         <div className={styles.tooltipRow}>No data available for this material</div>
       ) : (
@@ -83,6 +88,7 @@ CustomTooltip.propTypes = {
       value: PropTypes.number,
       payload: PropTypes.shape({
         materialTypeName: PropTypes.string,
+        projectName: PropTypes.string,
       }),
     }),
   ),
@@ -312,6 +318,7 @@ function MaterialCostCorrelationChart() {
           quantityUsed: 0,
           totalCostK: 0,
           costPerUnit: 0,
+          projectNames: [],
           hasData: false,
         });
       });
@@ -326,11 +333,15 @@ function MaterialCostCorrelationChart() {
                 materialTypeName: mat.materialTypeName || key,
                 quantityUsed: 0,
                 totalCostK: 0,
-                costPerUnit: mat.costPerUnit || 0,
+                costPerUnit: 0,
+                projectNames: [],
                 hasData: false,
               });
             }
             const existing = materialMap.get(key);
+            if (project.projectName && !existing.projectNames.includes(project.projectName)) {
+              existing.projectNames.push(project.projectName);
+            }
             existing.quantityUsed += mat.quantityUsed || 0;
             existing.totalCostK += mat.totalCostK || 0;
             existing.hasData = true;
@@ -341,7 +352,11 @@ function MaterialCostCorrelationChart() {
       if (materialMap.size === 0) {
         return null;
       }
-      return Array.from(materialMap.values());
+      return Array.from(materialMap.values()).map(item => ({
+        ...item,
+        projectName: item.projectNames.join(', '),
+        costPerUnit: item.quantityUsed > 0 ? (item.totalCostK * 1000) / item.quantityUsed : 0,
+      }));
     } catch (transformError) {
       logger.logError(
         new Error(
