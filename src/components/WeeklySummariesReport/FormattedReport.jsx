@@ -565,7 +565,7 @@ function TeamCodeRow({
 
     try {
       await axios.patch(url, { userIds: [userProfileSummary._id], replaceCode: newStatus });
-      handleTeamCodeChange(userProfileSummary.teamCode, newStatus, {
+      handleTeamCodeChange(userProfileSummary._id, newStatus, {
         [userProfileSummary._id]: true,
       }); // Update the team code dynamically
     } catch (err) {

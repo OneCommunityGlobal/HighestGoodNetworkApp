@@ -189,14 +189,36 @@ describe('FormattedReport minimal test', () => {
     expect(screen.getByText('ACT02')).toBeInTheDocument();
     expect(screen.queryByText('OLD01')).not.toBeInTheDocument();
   });
-  it('keeps auto-save working when a valid team code is changed', async () => {
+  it('updates active team code suggestions after a successful save', async () => {
+    function StatefulReport() {
+      const [summaries, setSummaries] = React.useState([dummySummary]);
+
+      const handleTeamCodeChange = (userId, newTeamCode) => {
+        setSummaries(prevSummaries =>
+          prevSummaries.map(summary =>
+            summary._id === userId ? { ...summary, teamCode: newTeamCode } : summary,
+          ),
+        );
+      };
+
+      return (
+        <FormattedReport
+          {...defaultProps}
+          summaries={summaries}
+          handleTeamCodeChange={handleTeamCodeChange}
+        />
+      );
+    }
+
     render(
       <Provider store={store}>
         <MemoryRouter>
-          <FormattedReport {...defaultProps} />
+          <StatefulReport />
         </MemoryRouter>
       </Provider>,
     );
+
+    expect(screen.getByText('ABC123', { selector: 'option' })).toBeInTheDocument();
 
     const input = screen.getByPlaceholderText('X-XXX');
 
@@ -211,6 +233,9 @@ describe('FormattedReport minimal test', () => {
         userIds: ['1'],
         replaceCode: 'NEW01',
       });
+
+      expect(screen.getByText('NEW01', { selector: 'option' })).toBeInTheDocument();
+      expect(screen.queryByText('ABC123', { selector: 'option' })).not.toBeInTheDocument();
     });
   });
   it('renders fallback text when weekly summary text is missing', () => {
