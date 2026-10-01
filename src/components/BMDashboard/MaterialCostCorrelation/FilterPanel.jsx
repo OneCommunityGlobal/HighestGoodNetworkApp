@@ -222,6 +222,7 @@ function FilterPanel({
               dateFormat="yyyy-MM-dd"
               className={darkMode ? styles.datePickerDark : styles.datePickerLight}
               isClearable
+              showIcon
             />
             <span className={styles.dateSeparator}>to</span>
             <DatePicker
@@ -236,6 +237,7 @@ function FilterPanel({
               dateFormat="yyyy-MM-dd"
               className={darkMode ? styles.datePickerDark : styles.datePickerLight}
               isClearable
+              showIcon
             />
           </div>
         </div>

@@ -115,6 +115,17 @@
   color: var(--input-text) !important;
 }
 
+/* Keep the react-datepicker calendar icon visible in dark mode. */
+.filterPanel.darkMode :global(.react-datepicker__calendar-icon) {
+  filter: brightness(0) invert(1);
+  opacity: 0.95;
+}
+
+/* Leave space for the calendar icon so it does not overlap the date text. */
+.filterPanel :global(.react-datepicker__view-calendar-icon input) {
+  padding-left: 40px !important;
+}
+
 .datePickerLight:focus,
 .datePickerDark:focus {
   outline: none;
