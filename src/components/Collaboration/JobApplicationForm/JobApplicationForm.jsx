@@ -6,7 +6,7 @@ import OneCommunityImage from '../../../assets/images/logo2.png';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import { useSelector } from 'react-redux';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import moment from 'moment-timezone';
@@ -1181,7 +1181,6 @@ function JobApplicationForm() {
 
   return (
     <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
-      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} />
       <header className={styles.logo}>
         <a
           href="https://www.onecommunityglobal.org/collaboration/"
