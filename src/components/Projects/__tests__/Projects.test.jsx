@@ -90,6 +90,11 @@ const renderProjects = (customStore = store) =>
     </MemoryRouter>,
   );
 
+const selectInventorySort = (option = 'Edited') => {
+  fireEvent.click(screen.getByRole('button', { name: 'Inventory sort options' }));
+  fireEvent.click(within(screen.getByRole('columnheader', { name: 'Inventory' })).getByRole('button', { name: option, exact: true }));
+};
+
 const buildTestAuth = frontPermissions => ({
   user: {
     permissions: {
@@ -119,6 +124,62 @@ const buildTestStore = ({
   });
 
 describe('Projects component', () => {
+  describe('empty states and reset', () => {
+    it.each([false, true])('matches empty and loading column spans to archive permission %s', async canArchive => {
+      mockAxiosSuccess();
+      const base = store.getState();
+      const state = {
+        ...base,
+        auth: buildTestAuth(canArchive ? ['deleteProject'] : []),
+        role: { roles: [{ roleName: 'Owner', permissions: [] }] },
+        allProjects: { ...base.allProjects, projects: [], archivedProjects: [] },
+      };
+      const { rerender } = renderProjects(mockStore(state));
+      expect(screen.getByText('No projects available.')).toBeInTheDocument();
+      expect(screen.getByRole('cell')).toHaveAttribute('colspan', String(screen.getAllByRole('columnheader').length));
+      expect(screen.queryByRole('columnheader', { name: 'Archive' }) !== null).toBe(canArchive);
+      fireEvent.click(screen.getByRole('button', { name: 'Show Archived' }));
+      expect(screen.getByText('No archived projects available.')).toBeInTheDocument();
+      fireEvent.change(screen.getByPlaceholderText('Search by Person Name'), { target: { value: 'Pending' } });
+      expect(screen.getByRole('status', { name: 'Searching projects' })).toBeInTheDocument();
+      expect(screen.queryByText('No archived projects available.')).not.toBeInTheDocument();
+      expect(screen.getByRole('cell')).toHaveAttribute('colspan', canArchive ? '8' : '7');
+      fireEvent.click(screen.getByRole('button', { name: 'Clear search and filters' }));
+      rerender(<MemoryRouter><Provider store={mockStore({ ...state, allProjects: { ...state.allProjects, fetching: true } })}><Projects /></Provider></MemoryRouter>);
+      expect(screen.queryByText(/No .*projects/)).not.toBeInTheDocument();
+    });
+
+    it('shows no matches and clears the visible input without changing archived mode or sort', async () => {
+      mockAxiosSuccess();
+      const base = store.getState();
+      renderProjects(mockStore({ ...base, allProjects: {
+        ...base.allProjects,
+        archivedProjects: [
+          { ...projects[0], _id: 'old', projectName: 'Older', inventoryModifiedDatetime: '2025-01-01' },
+          { ...projects[0], _id: 'new', projectName: 'Newer', inventoryModifiedDatetime: '2025-02-01' },
+        ],
+      } }));
+      fireEvent.click(screen.getByRole('button', { name: 'Show Archived' }));
+      fireEvent.change(screen.getByLabelText('Filter by'), { target: { value: 'project' } });
+      selectInventorySort();
+      const category = within(screen.getByRole('columnheader', { name: 'Category' }));
+      fireEvent.click(category.getByRole('button', { name: '' }));
+      fireEvent.click(category.getByRole('button', { name: 'Food', exact: true }));
+      const status = within(screen.getByRole('columnheader', { name: 'Active' }));
+      fireEvent.click(status.getByRole('button', { name: '' }));
+      fireEvent.click(status.getByRole('button', { name: 'Inactive', exact: true }));
+      fireEvent.change(screen.getByPlaceholderText('Search by Project Name'), { target: { value: 'missing' } });
+      expect(screen.getByText('No projects match your search and filters.')).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: 'Clear search and filters' }));
+      expect(screen.getByPlaceholderText('Search by Project Name')).toHaveValue('');
+      expect(screen.getByLabelText('Filter by')).toHaveValue('project');
+      expect(screen.getByRole('button', { name: 'Hide Archived' })).toBeInTheDocument();
+      expect(screen.getByRole('columnheader', { name: 'Inventory' })).toHaveAttribute('aria-sort', 'descending');
+      expect(screen.getAllByTestId('projects__name--input').map(cell => cell.textContent)).toEqual(['Newer', 'Older']);
+      expect(screen.queryByRole('button', { name: 'Clear search and filters' })).not.toBeInTheDocument();
+    });
+  });
+
   describe('combined search, filters, and sorting', () => {
     const items = [
       { ...projects[0], _id: 'old', projectName: 'Food Old', category: 'Food', inventoryModifiedDatetime: '2025-01-01' },
@@ -151,7 +212,10 @@ describe('Projects component', () => {
       }
     };
     const mode = value => fireEvent.change(screen.getByLabelText('Filter by'), { target: { value } });
-    const sort = heading => fireEvent.click(within(screen.getByRole('columnheader', { name: heading })).getByRole('button'));
+    const sort = heading => {
+      if (heading === 'Inventory') selectInventorySort();
+      else fireEvent.click(within(screen.getByRole('columnheader', { name: heading })).getByRole('button'));
+    };
     const select = (heading, value) => {
       const header = within(screen.getByRole('columnheader', { name: heading }));
       fireEvent.click(header.getByRole('button', { name: '' }));
@@ -185,6 +249,9 @@ describe('Projects component', () => {
       await expectNames(['Food New', 'Food Old']);
       await enterSearch('   ');
       await expectNames(['Food New', 'Food Old']);
+      await enterSearch(searchMode === 'person' ? 'Alice' : 'food');
+      selectInventorySort('Default order');
+      await expectNames(['Food Old', 'Food New']);
     });
 
     it('preserves member counts and does not refetch when controls or archived view change', async () => {
@@ -199,6 +266,9 @@ describe('Projects component', () => {
       expect(within(oldRow).getByText('3')).toBeInTheDocument();
       fireEvent.click(screen.getByRole('button', { name: 'Show Archived' }));
       await expectNames(['Archived Food']);
+      selectInventorySort();
+      await expectNames(['Archived Food']);
+      expect(screen.getByRole('columnheader', { name: 'Inventory' })).toHaveAttribute('aria-sort', 'descending');
       expect(searchRequest).toHaveBeenCalledTimes(1);
     });
 
@@ -224,7 +294,7 @@ describe('Projects component', () => {
       const { unmount } = renderProjects(makeStore());
       await enterSearch('Food');
       await waitFor(() => expect(searchRequest).toHaveBeenCalledTimes(1));
-      if (action === 'clear') await enterSearch('');
+      if (action === 'clear') fireEvent.click(screen.getByRole('button', { name: 'Clear search and filters' }));
       if (action === 'mode') mode('project');
       if (action === 'unmount') unmount();
       await act(async () => request.resolve({ data: { allProjects: ['energy'] } }));
@@ -277,7 +347,8 @@ describe('Projects component', () => {
       allProjects: { ...store.getState().allProjects, projects: items, archivedProjects: [] },
     });
     const clickSort = heading => {
-      fireEvent.click(within(screen.getByRole('columnheader', { name: heading })).getByRole('button'));
+      if (heading === 'Inventory') selectInventorySort();
+      else fireEvent.click(within(screen.getByRole('columnheader', { name: heading })).getByRole('button'));
     };
     const expectOrder = async ids => {
       await waitFor(() => {
@@ -292,16 +363,22 @@ describe('Projects component', () => {
 
     beforeEach(mockAxiosSuccess);
 
-    it('cycles newest-first, oldest-first, default without mutating source order', async () => {
+    it('opens without sorting, keeps Edited newest-first, and restores default order without mutating data', async () => {
       const source = Object.freeze(inventoryProjects.map(project => Object.freeze({ ...project })));
       renderProjects(makeInventoryStore(source));
-      clickSort('Inventory');
-      await expectOrder(['newest', 'middle', 'oldest']);
-      clickSort('Inventory');
-      await expectOrder(['oldest', 'middle', 'newest']);
-      clickSort('Inventory');
+      const toggle = screen.getByRole('button', { name: 'Inventory sort options' });
+      fireEvent.click(toggle);
       await expectOrder(['middle', 'oldest', 'newest']);
-      clickSort('Inventory');
+      fireEvent.click(screen.getByRole('button', { name: 'Edited', exact: true }));
+      await expectOrder(['newest', 'middle', 'oldest']);
+      expect(toggle).toHaveAttribute('aria-expanded', 'false');
+      expect(screen.getByRole('columnheader', { name: 'Inventory' })).toHaveAttribute('aria-sort', 'descending');
+      selectInventorySort();
+      await expectOrder(['newest', 'middle', 'oldest']);
+      selectInventorySort('Default order');
+      await expectOrder(['middle', 'oldest', 'newest']);
+      expect(screen.getByRole('columnheader', { name: 'Inventory' })).not.toHaveAttribute('aria-sort');
+      selectInventorySort();
       await expectOrder(['newest', 'middle', 'oldest']);
       expect(source.map(project => project._id)).toEqual(['middle', 'oldest', 'newest']);
     });
@@ -314,11 +391,16 @@ describe('Projects component', () => {
       await expectOrder(['oldest', 'middle', 'newest']);
       clickSort(heading);
       await expectOrder(['middle', 'oldest', 'newest']);
-      clickSort('Inventory');
+      clickSort(heading);
+      selectInventorySort();
+      await expectOrder(['newest', 'middle', 'oldest']);
+      clickSort(heading);
+      expect(screen.getByRole('columnheader', { name: 'Inventory' })).not.toHaveAttribute('aria-sort');
+      selectInventorySort();
       await expectOrder(['newest', 'middle', 'oldest']);
     });
 
-    it('keeps unknown dates last and breaks ties by name then ID in both directions', async () => {
+    it('keeps unknown dates last and breaks ties by name then ID when Edited is selected', async () => {
       const extra = [
         { _id: 'tie-b', projectName: 'bravo', inventoryModifiedDatetime: '2025-06-02T12:00:00Z' },
         { _id: 'tie-a', projectName: 'Bravo', inventoryModifiedDatetime: '2025-06-02T12:00:00Z' },
@@ -330,8 +412,8 @@ describe('Projects component', () => {
       renderProjects(makeInventoryStore([...extra, ...inventoryProjects]));
       clickSort('Inventory');
       await expectOrder(['newest', 'middle', 'tie-a', 'tie-b', 'oldest', 'empty', 'missing-a', 'missing-b', 'invalid']);
-      clickSort('Inventory');
-      await expectOrder(['oldest', 'middle', 'tie-a', 'tie-b', 'newest', 'empty', 'missing-a', 'missing-b', 'invalid']);
+      selectInventorySort();
+      await expectOrder(['newest', 'middle', 'tie-a', 'tie-b', 'oldest', 'empty', 'missing-a', 'missing-b', 'invalid']);
     });
 
     it('preserves inventory direction when category and status filters change', async () => {
@@ -348,8 +430,8 @@ describe('Projects component', () => {
       fireEvent.click(status.getByRole('button', { name: '' }));
       fireEvent.click(status.getByRole('button', { name: 'Active', exact: true }));
       await expectOrder(['middle', 'oldest']);
-      clickSort('Inventory');
-      await expectOrder(['oldest', 'middle']);
+      selectInventorySort('Default order');
+      await expectOrder(['middle', 'oldest']);
     });
 
     it('reorders refreshed timestamps without resetting the selected direction', async () => {
@@ -367,8 +449,8 @@ describe('Projects component', () => {
         </MemoryRouter>,
       );
       await expectOrder(['oldest', 'newest', 'middle']);
-      clickSort('Inventory');
-      await expectOrder(['middle', 'newest', 'oldest']);
+      selectInventorySort();
+      await expectOrder(['oldest', 'newest', 'middle']);
     });
   });
 
@@ -403,7 +485,7 @@ describe('Projects component', () => {
       await waitFor(() => {
         const visibleNames = screen.getAllByRole('row').slice(1).map(row =>
           filterProjects.find(project => within(row).queryByText(project.projectName))?.projectName,
-        );
+        ).filter(Boolean);
         expect(visibleNames).toEqual(expectedNames);
       });
     };

@@ -130,6 +130,14 @@ const Projects = function(props) {
   }, [searchQuery, debouncedSearchName, searchMode, searchProjectsByPerson]);
 
   const canPostProject = props.hasPermission(permissions.postProject);
+  const canDeleteProject = props.hasPermission(permissions.deleteProject);
+  const tableColumnCount = canDeleteProject ? 8 : 7;
+  const hasSearchOrFilters = Boolean(searchName || categorySelectedForSort || showStatus);
+  const clearSearchAndFilters = () => {
+    setSearchName('');
+    setCategorySelectedForSort('');
+    setShowStatus('');
+  };
 
   const onClickArchiveBtn = projectData => {
     setProjectTarget(projectData);
@@ -187,20 +195,24 @@ const Projects = function(props) {
     setShowStatus(value);
   };
 
-  const getNextSortDirection = (direction, column) => {
-    const firstDirection = column === 'INVENTORY' ? 'DESC' : 'ASC';
-    const secondDirection = column === 'INVENTORY' ? 'ASC' : 'DESC';
-    if (direction === 'DEFAULT') return firstDirection;
-    if (direction === firstDirection) return secondDirection;
+  const getNextSortDirection = direction => {
+    if (direction === 'DEFAULT') return 'ASC';
+    if (direction === 'ASC') return 'DESC';
     return 'DEFAULT';
+  };
+
+  const onInventorySortChange = option => {
+    if (option === 'EDITED' || option === 'DEFAULT') {
+      setSorter({ column: 'INVENTORY', direction: option === 'EDITED' ? 'DESC' : 'DEFAULT' });
+    }
   };
 
   const handleSort = column => {
     setSorter(prev => {
       if (prev.column === column) {
-        return { column, direction: getNextSortDirection(prev.direction, column) };
+        return { column, direction: getNextSortDirection(prev.direction) };
       }
-      return { column, direction: getNextSortDirection('DEFAULT', column) };
+      return { column, direction: getNextSortDirection('DEFAULT') };
     });
   };
 
@@ -284,7 +296,7 @@ const Projects = function(props) {
         // Unknown dates stay last regardless of the selected direction.
         if (validA !== validB) return validA ? -1 : 1;
         if (validA && dateA !== dateB) {
-          return direction === 'DESC' ? dateB - dateA : dateA - dateB;
+          return dateB - dateA;
         }
         return (
           a.projectName.localeCompare(b.projectName, undefined, { sensitivity: 'base' }) ||
@@ -298,6 +310,11 @@ const Projects = function(props) {
   }, [allReduxProjects, archivedReduxProjects, showArchived, categorySelectedForSort,
     showStatus, searchQuery, debouncedSearchName, searchMode, personSearchLoading,
     personSearchResult, sorter, activeMemberCounts]);
+
+  const sourceProjects = showArchived ? archivedReduxProjects : allReduxProjects;
+  const emptyMessage = sourceProjects.length === 0
+    ? (showArchived ? 'No archived projects available.' : 'No projects available.')
+    : 'No projects match your search and filters.';
 
   const projectList = sortedProjects.map((project, index) => (
     <Project
@@ -374,6 +391,7 @@ const Projects = function(props) {
         </div>
         <div className="d-flex flex-wrap mb-3" style={{ gap: '10px' }}>
           <SearchProjectByPerson
+            value={searchName}
             onSearch={handleSearchName}
             searchMode={searchMode}
             handleFetchArchivedProjects={handleFetchArchivedProjects}
@@ -414,6 +432,11 @@ const Projects = function(props) {
         >
           {showArchived ? 'Hide Archived' : 'Show Archived'}
         </button>
+        {hasSearchOrFilters && (
+          <button type="button" className={`btn ${darkMode ? 'btn-outline-light' : 'btn-outline-secondary'}`} onClick={clearSearchAndFilters}>
+            Clear search and filters
+          </button>
+        )}
         </div>
         <div className="table-responsive-sm w-100">
         <table
@@ -422,22 +445,30 @@ const Projects = function(props) {
         >
           <thead className={styles.projectsTableHead}>
             <ProjectTableHeader
+              canDeleteProject={canDeleteProject}
               onChange={onChangeCategory}
               selectedValue={categorySelectedForSort}
               showStatus={showStatus}
               selectStatus={onSelectStatus}
               sorted={sorter}
               handleSort={handleSort}
+              onInventorySortChange={onInventorySortChange}
               darkMode={darkMode}
             />
           </thead>
           <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
             {personSearchLoading ? (
               <tr>
-                <td colSpan={8}>
+                <td colSpan={tableColumnCount}>
                   <div role="status" aria-label="Searching projects">
                     <Loading align="center" darkMode={darkMode} />
                   </div>
+                </td>
+              </tr>
+            ) : fetching || !fetched || status !== 200 ? null : sortedProjects.length === 0 ? (
+              <tr>
+                <td colSpan={tableColumnCount} className="text-center py-4">
+                  <div role="status">{emptyMessage}</div>
                 </td>
               </tr>
             ) : projectList}
