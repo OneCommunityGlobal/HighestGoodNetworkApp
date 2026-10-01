@@ -90,7 +90,7 @@ const TeamLocations = forwardRef(() => {
         setLoading(false);
       }
     }
-    getUserProfiles();
+    void getUserProfiles();
   }, []);
 
   useEffect(() => {
@@ -99,19 +99,6 @@ const TeamLocations = forwardRef(() => {
       handleFlyTo(coords.lat, coords.lng);
     }
   }, [currentUser]);
-
-  // We don't need the back to top button on this page
-  useEffect(() => {
-    const btn = document.querySelector('.back-to-top');
-    if (!btn) return;
-
-    const prev = btn.style.display;
-    btn.style.display = 'none';
-
-    return () => {
-      btn.style.display = prev;
-    };
-  }, []);
 
   const searchHandler = e => {
     setSearchText(e.target.value);
@@ -149,6 +136,40 @@ const TeamLocations = forwardRef(() => {
     }
   };
 
+<<<<<<< HEAD
+=======
+  useEffect(() => {
+    async function getUserProfiles() {
+      try {
+        const locations = (await axios.get(ENDPOINTS.ALL_MAP_LOCATIONS())).data;
+        const users = locations.users.map(item => ({ ...item, type: 'user' })) || [];
+        const mUsers = locations.mUsers.map(item => ({ ...item, type: 'm_user' })) || [];
+
+        setUserProfiles(users);
+        setManuallyAddedProfiles(mUsers);
+        const allMapMarkers = [...users, ...mUsers];
+        const allMapMarkersOffset = allMapMarkers.map(ele => ({
+          ...ele,
+          location: {
+            ...ele.location,
+            coords: {
+              ...ele.location.coords,
+              lat: randomLocationOffset(ele.location.coords.lat),
+              lng: randomLocationOffset(ele.location.coords.lng),
+            },
+          },
+        }));
+        setMapMarkers(allMapMarkersOffset);
+        setLoading(false); // Set loading to false after data is loaded
+      } catch (error) {
+        toast.error(error.message);
+        setLoading(false); // Set loading to false if there's an error
+      }
+    }
+    void getUserProfiles();
+  }, []);
+
+>>>>>>> development
   const toggleTableVisibility = () => {
     if (tableVisible) {
       setCurrentUser(null);
