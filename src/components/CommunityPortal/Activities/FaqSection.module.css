@@ -129,22 +129,61 @@
   color: gray;
 }
 
-.faqSearchDark {
+.faqContainerDark {
+  color: #d8dee9;
+  background-color: #1b2a41;
+}
+
+.faqContainerDark .faqTitle,
+.faqContainerDark .faqQuestion,
+.faqContainerDark .faqContact {
+  color: #f5f7fa;
+}
+
+.faqContainerDark .faqSubtitle,
+.faqContainerDark .noResults {
+  color: #b7c1d1;
+}
+
+.faqContainerDark .faqItem {
+  border-bottom-color: #4a5a77;
+}
+
+.faqContainerDark .faqAnswer {
+  color: #d8dee9;
+}
+
+.faqContainerDark .faqSearch {
   background-color: #2b3e59;
-  color: #ffffff;
+  color: #fff;
   border-color: #4a5a77;
 }
 
-.faqSearchDark::placeholder {
-  color: #8899aa;
+.faqContainerDark .faqSearch::placeholder {
+  color: #89a;
 }
 
-.faqCategoryDark {
+.faqContainerDark .faqCategory {
   background-color: #2b3e59;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #4a5a77;
 }
 
-.faqQuestionDark {
-  color: #ffffff;
+.faqContainerDark .faqCategory:hover,
+.faqContainerDark .faqCategory.active {
+  background-color: #3b4f6b;
+  color: #fff;
+  border-color: #7aa2d6;
+}
+
+.faqContainerDark .contactLink {
+  color: #90caf9;
+}
+
+.faqContainerDark .contactLink:hover {
+  color: #bbdefb;
+}
+
+.faqContainerDark .copiedMessage {
+  color: #81c784;
 }

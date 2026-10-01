@@ -47,10 +47,6 @@ const SaveButton = props => {
       setIsLoading(false);
       setIsErr(false);
       setSaved();
-
-      setTimeout(() => {
-        setModal(true);
-      }, 1000); 
     } catch (err) {
       setIsErr(true);
       setIsLoading(false);

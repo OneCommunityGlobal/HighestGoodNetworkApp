@@ -14,6 +14,7 @@ import {
   clearCachedTeamMembers,
 } from './teamMembersCache';
 
+import { permissions } from '../../utils/constants';
 function computeCounts(members, loading, localMembers) {
   const list = Array.isArray(members) ? members : [];
 
@@ -65,8 +66,8 @@ export function Team({
   };
   const dispatch = useDispatch();
   const darkMode = useSelector(s => s.theme.darkMode);
-  const canDeleteTeam = props.hasPermission('deleteTeam');
-  const canPutTeam = props.hasPermission('putTeam');
+  const canDeleteTeam = props.hasPermission(permissions.deleteTeam);
+  const canPutTeam = props.hasPermission(permissions.putTeam);
 
   // Keep a raw id for callbacks (number stays number in tests)
   const teamIdRaw =
