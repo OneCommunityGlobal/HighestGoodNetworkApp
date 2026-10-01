@@ -1,0 +1,158 @@
+/* Shared calendar popup theme for the Rental Tracking charts.
+   Applied through react-datepicker's calendarClassName so it only affects these pickers.
+   Colors follow the HGN design system (N = neutral, P = primary, H = highlight). */
+
+.calendar {
+  --cal-bg: #fff;
+  --cal-border: #e5e5e6; /* N40 */
+  --cal-text: #1c313b; /* P500 */
+  --cal-muted: #63676c; /* N500 */
+  --cal-outside: #b6b8ba; /* N70 */
+  --cal-hover-bg: #efeff0; /* N30 */
+  --cal-selected-bg: #595d62; /* N600 */
+  --cal-selected-text: #fff;
+  --cal-range-bg: #e8f4f9; /* H50 */
+  --cal-range-text: #1c313b;
+  --cal-arrow: #2e5061; /* P300 */
+  --cal-select-bg: #fff;
+
+  font-family: inherit;
+  background-color: var(--cal-bg);
+  color: var(--cal-text);
+  border: 1px solid var(--cal-border);
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgb(0 0 0 / 12%);
+  padding: 4px;
+}
+
+.calendar.dark {
+  --cal-bg: #1b2a41;
+  --cal-border: #3f444a; /* N800 */
+  --cal-text: #e0e0e0;
+  --cal-muted: #b6b8ba; /* N70 */
+  --cal-outside: #707377; /* N400 */
+  --cal-hover-bg: #2c3e50;
+  --cal-selected-bg: #3ea0cb; /* H200 */
+  --cal-selected-text: #fff;
+  --cal-range-bg: #2e5061; /* P300 */
+  --cal-range-text: #fff;
+  --cal-arrow: #e0e0e0;
+  --cal-select-bg: #2c3e50;
+
+  box-shadow: 0 6px 20px rgb(0 0 0 / 45%);
+}
+
+.calendar :global(.react-datepicker__triangle) {
+  display: none;
+}
+
+.calendar :global(.react-datepicker__header) {
+  background-color: var(--cal-bg);
+  border-bottom: none;
+  padding-top: 10px;
+}
+
+.calendar :global(.react-datepicker__current-month) {
+  color: var(--cal-text);
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.calendar :global(.react-datepicker__day-name) {
+  color: var(--cal-muted);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.calendar :global(.react-datepicker__navigation) {
+  top: 10px;
+}
+
+.calendar :global(.react-datepicker__navigation-icon::before) {
+  border-color: var(--cal-arrow);
+  border-width: 2px 2px 0 0;
+}
+
+.calendar :global(.react-datepicker__navigation:hover .react-datepicker__navigation-icon::before) {
+  border-color: var(--cal-text);
+}
+
+.calendar :global(.react-datepicker__month-select),
+.calendar :global(.react-datepicker__year-select) {
+  background-color: var(--cal-select-bg);
+  color: var(--cal-text);
+  border: 1px solid var(--cal-border);
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-size: 13px;
+}
+
+.calendar :global(.react-datepicker__month) {
+  margin: 6px;
+}
+
+/* Every day: round, readable text. Three classes deep to beat the library's range rules. */
+.calendar :global(.react-datepicker__month .react-datepicker__day) {
+  color: var(--cal-text);
+  border-radius: 50%;
+  background-color: transparent;
+  font-weight: 400;
+}
+
+.calendar :global(.react-datepicker__month .react-datepicker__day--outside-month) {
+  color: var(--cal-outside);
+}
+
+.calendar :global(.react-datepicker__month .react-datepicker__day--in-range),
+.calendar :global(.react-datepicker__month .react-datepicker__day--in-selecting-range) {
+  background-color: var(--cal-range-bg);
+  color: var(--cal-range-text);
+}
+
+.calendar :global(.react-datepicker__month .react-datepicker__day:hover),
+.calendar :global(.react-datepicker__month .react-datepicker__day--keyboard-selected) {
+  background-color: var(--cal-hover-bg);
+  color: var(--cal-text);
+}
+
+.calendar :global(.react-datepicker__month .react-datepicker__day--selected),
+.calendar :global(.react-datepicker__month .react-datepicker__day--range-start),
+.calendar :global(.react-datepicker__month .react-datepicker__day--range-end),
+.calendar :global(.react-datepicker__month .react-datepicker__day--selected:hover) {
+  background-color: var(--cal-selected-bg);
+  color: var(--cal-selected-text);
+  font-weight: 600;
+}
+
+.calendar :global(.react-datepicker__month .react-datepicker__day--today) {
+  font-weight: 700;
+}
+
+.calendar :global(.react-datepicker__month .react-datepicker__day--disabled) {
+  color: var(--cal-outside);
+  background-color: transparent;
+  cursor: default;
+  opacity: 0.6;
+}
+
+/* Other dashboard cards ship `.darkMode .react-datepicker__tab-loop ...` rules with !important
+   that reach every calendar on the page; restate the values those rules override. */
+.calendar.dark :global(.react-datepicker__header) {
+  background-color: var(--cal-bg) !important;
+  border-bottom-color: transparent !important;
+}
+
+.calendar.dark :global(.react-datepicker__header .react-datepicker__day-name) {
+  color: var(--cal-muted) !important;
+}
+
+.calendar.dark :global(.react-datepicker__month .react-datepicker__day--outside-month) {
+  color: var(--cal-outside) !important;
+}
+
+:global(.react-datepicker-popper) :global(.react-datepicker).calendar.dark {
+  background-color: var(--cal-bg) !important;
+  border-color: var(--cal-border) !important;
+}
