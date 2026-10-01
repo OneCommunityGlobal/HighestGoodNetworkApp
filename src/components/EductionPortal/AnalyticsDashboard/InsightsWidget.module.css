@@ -179,6 +179,24 @@
   color: #ef4444 !important;
 }
 
+.cardChange.changeNeutral {
+  color: #6b7280 !important;
+}
+
+.summaryCard.darkSummaryCard .cardChange.changeNeutral {
+  color: #94a3b8 !important;
+}
+
+/* Override the global dark-mode `body.dark-mode * { color: #fff !important }` rule */
+.cardChange.changePositive .changeIcon,
+.cardChange.changePositive .changeText,
+.cardChange.changeNegative .changeIcon,
+.cardChange.changeNegative .changeText,
+.cardChange.changeNeutral .changeIcon,
+.cardChange.changeNeutral .changeText {
+  color: inherit !important;
+}
+
 .changeIcon {
   font-size: 14px;
   font-weight: bold;
@@ -316,6 +334,16 @@
 
 .darkPanel .trendNegative {
   color: #fca5a5 !important;
+  font-weight: 600;
+}
+
+.trendNeutral {
+  color: #6b7280 !important;
+  font-weight: 600;
+}
+
+.darkPanel .trendNeutral {
+  color: #94a3b8 !important;
   font-weight: 600;
 }
 

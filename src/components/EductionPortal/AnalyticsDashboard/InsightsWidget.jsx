@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './InsightsWidget.module.css';
 
@@ -34,31 +34,41 @@ const MOCK_ANALYTICS_DATA = {
       id: 1,
       strategy: 'Everything you do should increase choices',
       impact: 92,
-      color: '#10b981',
-      changeType: 'high',
     },
     {
       id: 2,
       strategy: 'Ask "what would Love do?"',
       impact: 88,
-      color: '#10b981',
-      changeType: 'good',
     },
     {
       id: 3,
       strategy: 'Choose to lead with observation',
       impact: 76,
-      color: '#d1d5db',
-      changeType: 'moderate',
     },
     {
       id: 4,
       strategy: 'Practice improving your emotional intelligence',
       impact: 79,
-      color: '#fbbf24',
-      changeType: 'moderate',
     },
   ],
+};
+
+const IMPACT_LEVELS = [
+  { min: 90, label: 'High Impact (90+)', color: '#10b981' },
+  { min: 80, label: 'Good Result (80-89)', color: '#84cc16' },
+  { min: 70, label: 'Moderate Impact (70-79)', color: '#fbbf24' },
+  { min: 0, label: 'Low Impact (<70)', color: '#ef4444' },
+];
+
+const getImpactColor = impact => IMPACT_LEVELS.find(level => impact >= level.min).color;
+
+const TREND_ICON = { up: '↑', down: '↓', flat: '–' };
+const TREND_CLASS = { up: 'Positive', down: 'Negative', flat: 'Neutral' };
+
+const getTrend = value => {
+  if (value > 0) return 'up';
+  if (value < 0) return 'down';
+  return 'flat';
 };
 
 const validateMetrics = data => {
@@ -79,13 +89,35 @@ const InsightsWidget = () => {
   const [retryCount, setRetryCount] = useState(0);
   const [animateIn, setAnimateIn] = useState(false);
   const MAX_RETRIES = 3;
+  const isMountedRef = useRef(true);
+  const timeoutsRef = useRef(new Set());
+
+  // Tracked setTimeout so pending timers are cleared on unmount
+  const schedule = useCallback((fn, delay) => {
+    const id = setTimeout(() => {
+      timeoutsRef.current.delete(id);
+      fn();
+    }, delay);
+    timeoutsRef.current.add(id);
+  }, []);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    const timeouts = timeoutsRef.current;
+    return () => {
+      isMountedRef.current = false;
+      timeouts.forEach(clearTimeout);
+      timeouts.clear();
+    };
+  }, []);
 
   const fetchAnalyticsOverview = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      await new Promise(resolve => setTimeout(resolve, FETCH_DELAY));
+      await new Promise(resolve => schedule(resolve, FETCH_DELAY));
+      if (!isMountedRef.current) return;
 
       const mockData = { ...MOCK_ANALYTICS_DATA };
 
@@ -99,8 +131,9 @@ const InsightsWidget = () => {
 
       setMetrics(mockData);
       setRetryCount(0);
-      setTimeout(() => setAnimateIn(true), 100);
+      schedule(() => setAnimateIn(true), 100);
     } catch (err) {
+      if (!isMountedRef.current) return;
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
       setError(errorMessage);
 
@@ -108,12 +141,12 @@ const InsightsWidget = () => {
       console.error('Error fetching analytics:', err);
 
       if (retryCount < MAX_RETRIES) {
-        setTimeout(() => setRetryCount(prev => prev + 1), 2000);
+        schedule(() => setRetryCount(prev => prev + 1), 2000);
       }
     } finally {
-      setLoading(false);
+      if (isMountedRef.current) setLoading(false);
     }
-  }, [retryCount]);
+  }, [retryCount, schedule]);
 
   useEffect(() => {
     fetchAnalyticsOverview();
@@ -125,6 +158,7 @@ const InsightsWidget = () => {
       ...metrics,
       topStudents: [...metrics.topStudents].sort((a, b) => b.score - a.score),
       topSubjects: [...metrics.topSubjects].sort((a, b) => b.averageScore - a.averageScore),
+      lifeStrategies: [...metrics.lifeStrategies].sort((a, b) => b.impact - a.impact),
     };
   }, [metrics]);
 
@@ -166,6 +200,7 @@ const InsightsWidget = () => {
 
   return (
     <div
+      data-testid="insights-widget"
       className={`${styles.insightsContainer} ${darkMode ? styles.dark : ''} ${
         animateIn ? styles.fadeIn : ''
       }`}
@@ -233,10 +268,8 @@ const InsightsWidget = () => {
                     <span className={styles.performerName}>{student.name}</span>
                     <div className={styles.performerMeta}>
                       <span className={styles.performerScore}>{student.score.toFixed(1)}%</span>
-                      <span
-                        className={student.trend > 0 ? styles.trendPositive : styles.trendNegative}
-                      >
-                        {student.trend > 0 ? '↑' : '↓'} {Math.abs(student.trend).toFixed(1)}%
+                      <span className={styles[`trend${TREND_CLASS[getTrend(student.trend)]}`]}>
+                        {TREND_ICON[getTrend(student.trend)]} {Math.abs(student.trend).toFixed(1)}%
                       </span>
                     </div>
                   </div>
@@ -254,12 +287,21 @@ const InsightsWidget = () => {
               {sortedMetrics.lifeStrategies.map(strategy => (
                 <div key={strategy.id} className={styles.strategyItem}>
                   <div className={styles.strategyLabel}>{strategy.strategy}</div>
-                  <div className={styles.strategyBar}>
+                  <div
+                    className={styles.strategyBar}
+                    role="progressbar"
+                    aria-label={strategy.strategy}
+                    aria-valuenow={strategy.impact}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuetext={`${strategy.impact}% impact`}
+                  >
                     <div
+                      data-testid="strategy-fill"
                       className={styles.strategyFill}
                       style={{
                         width: `${strategy.impact}%`,
-                        backgroundColor: strategy.color,
+                        backgroundColor: getImpactColor(strategy.impact),
                       }}
                     />
                   </div>
@@ -268,22 +310,16 @@ const InsightsWidget = () => {
               ))}
             </div>
             <div className={styles.strategyLegend}>
-              <span className={styles.legendItem}>
-                <span className={styles.legendDot} style={{ backgroundColor: '#10b981' }} />
-                High Impact (90+)
-              </span>
-              <span className={styles.legendItem}>
-                <span className={styles.legendDot} style={{ backgroundColor: '#10b981' }} />
-                Good Result (80-89)
-              </span>
-              <span className={styles.legendItem}>
-                <span className={styles.legendDot} style={{ backgroundColor: '#fbbf24' }} />
-                Moderate Impact (70-79)
-              </span>
-              <span className={styles.legendItem}>
-                <span className={styles.legendDot} style={{ backgroundColor: '#ef4444' }} />
-                Low Impact (&lt;70)
-              </span>
+              {IMPACT_LEVELS.map(level => (
+                <span key={level.label} className={styles.legendItem}>
+                  <span
+                    data-testid="legend-dot"
+                    className={styles.legendDot}
+                    style={{ backgroundColor: level.color }}
+                  />
+                  {level.label}
+                </span>
+              ))}
             </div>
             <div className={styles.insightNote}>
               <strong>Actionable Insight:</strong> Consistently applying &ldquo;Everything you do
@@ -305,7 +341,8 @@ const SummaryCard = ({ title, value, change, unit = '', isCount = false, darkMod
     return null;
   }
 
-  const isPositive = change > 0;
+  const trend = getTrend(change);
+  const formattedChange = isCount ? Math.round(change).toLocaleString() : change.toFixed(1);
 
   return (
     <div className={`${styles.summaryCard} ${darkMode ? styles.darkSummaryCard : ''}`}>
@@ -315,14 +352,13 @@ const SummaryCard = ({ title, value, change, unit = '', isCount = false, darkMod
         {unit && <span className={styles.cardUnit}>{unit}</span>}
       </div>
       <div
-        className={`${styles.cardChange} ${
-          isPositive ? styles.changePositive : styles.changeNegative
-        }`}
+        data-testid="card-change"
+        className={`${styles.cardChange} ${styles[`change${TREND_CLASS[trend]}`]}`}
       >
-        <span className={styles.changeIcon}>{isPositive ? '↑' : '↓'}</span>
+        <span className={styles.changeIcon}>{TREND_ICON[trend]}</span>
         <span className={styles.changeText}>
-          {isPositive ? '+' : ''}
-          {change.toFixed(1)}
+          {trend === 'up' ? '+' : ''}
+          {formattedChange}
           {isCount ? '' : unit} this month
         </span>
       </div>
@@ -330,4 +366,5 @@ const SummaryCard = ({ title, value, change, unit = '', isCount = false, darkMod
   );
 };
 
+export { SummaryCard, getTrend };
 export default InsightsWidget;
