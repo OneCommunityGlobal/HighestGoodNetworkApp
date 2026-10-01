@@ -317,6 +317,7 @@ function ReportDetails({
 
   // No bar for anyone unqualified, whatever the toggle says. 'default' and 'requested'
   // both count as "still to do"; only 'posted' ends the workflow and clears the bar.
+  const activeTimeOffRequest = getActiveTimeOffRequest(timeOffRequests, summary._id, weekIndex);
   const isMeetCriteria = canSeeBioHighlight && isQualifiedForBio(summary);
 
   return (
@@ -336,7 +337,6 @@ function ReportDetails({
             handleSpecialColorDotClick={handleSpecialColorDotClick}
             isFinalWeek={isFinalWeek}
             darkMode={darkMode}
-            timeOffRequests={timeOffRequests}
           />
         </ListGroupItem>
         <ListGroupItem darkMode={darkMode}>
@@ -372,6 +372,13 @@ function ReportDetails({
           >
             <ListGroupItem darkMode={darkMode}>
               <TeamCodeRow
+                weekOffBadge={
+                  <WeekOffBadge
+                    request={activeTimeOffRequest}
+                    summaryId={summary._id}
+                    weekIndex={weekIndex}
+                  />
+                }
                 canEditTeamCode={canEditTeamCode && !cantEditJaeRelatedRecord}
                 summary={summary}
                 handleTeamCodeChange={handleTeamCodeChange}
@@ -514,7 +521,7 @@ function WeeklySummaryMessage({ summary, weekIndex, darkMode }) {
   );
 }
 
-function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode }) {
+function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode, weekOffBadge }) {
   const [teamCode, setTeamCode] = useState(summary.teamCode);
   const [savedTeamCode, setSavedTeamCode] = useState(summary.teamCode);
   const [hasError, setHasError] = useState(false);
@@ -558,31 +565,34 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode 
   return (
     <>
       <div className={styles.teamcodeWrapper}>
-        {canEditTeamCode ? (
-          <div style={{ paddingRight: '5px', position: 'relative' }}>
-            <Input
-              id="codeInput"
-              value={teamCode}
-              onChange={e => setTeamCode(e.target.value)}
-              onBlur={e => {
-                handleCodeChange(e);
-              }}
-              onKeyDown={e => {
-                if (e.key === 'Enter') {
-                  e.currentTarget.blur(); // triggers onBlur
-                }
-              }}
-              placeholder="X-XXX"
-              className={`${styles.weeklySummariesCodeInput} ${
-                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-              }`}
-            />
-          </div>
-        ) : (
-          <div style={{ paddingRight: '5px' }}>
-            {teamCode === '' ? 'No assigned team code!' : teamCode}
-          </div>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {canEditTeamCode ? (
+            <div style={{ paddingRight: '5px', position: 'relative' }}>
+              <Input
+                id="codeInput"
+                value={teamCode}
+                onChange={e => setTeamCode(e.target.value)}
+                onBlur={e => {
+                  handleCodeChange(e);
+                }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    e.currentTarget.blur(); // triggers onBlur
+                  }
+                }}
+                placeholder="X-XXX"
+                className={`${styles.teamCodeInput} ${
+                  darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                }`}
+              />
+            </div>
+          ) : (
+            <div style={{ paddingRight: '5px' }}>
+              {teamCode === '' ? 'No assigned team code!' : teamCode}
+            </div>
+          )}
+          {weekOffBadge}
+        </div>
         <div>
           <b>Media URL:</b>
           <MediaUrlLink summary={summary} />
@@ -656,18 +666,21 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
   };
 
   return (
-    <div className={styles.totalValidWrapper}>
+    <div
+      className={styles.totalValidWrapper}
+      style={{ display: 'flex', alignItems: 'center', flexWrap: 'nowrap' }}
+    >
       {weeklySummariesCount === 8 ? (
-        <div className="total-valid-text" style={style}>
+        <div className="total-valid-text" style={{ ...style, whiteSpace: 'nowrap', flexShrink: 0 }}>
           <b>Total Valid Weekly Summaries:</b>{' '}
         </div>
       ) : (
-        <div className="total-valid-text">
+        <div className="total-valid-text" style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
           <b>Total Valid Weekly Summaries:</b>
         </div>
       )}
       {canEditSummaryCount ? (
-        <div className={`pl-2 ${styles.weeklySummariesCodeInput}`}>
+        <div className={styles.summaryCountInputWrapper}>
           <Input
             type="number"
             name="weeklySummaryCount"
@@ -675,7 +688,9 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
             value={weeklySummariesCount}
             onChange={e => handleWeeklySummaryCountChange(e)}
             className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+            style={{ width: '65px', height: '28px', padding: '2px 6px' }}
             min="0"
+            max="9999"
           />
         </div>
       ) : (
@@ -843,6 +858,58 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   );
 }
 
+// Returns the time-off request (if any) overlapping the week being viewed
+// (weekIndex: 0=This Week, 1=Last Week, ...), so the badge follows the request
+// across tabs as weeks pass.
+function getActiveTimeOffRequest(timeOffRequests, userId, weekIndex) {
+  const userRequests = (timeOffRequests || {})[userId] || [];
+  const weekStart = moment()
+    .tz(TZ)
+    .startOf('week')
+    .subtract(weekIndex, 'week');
+  const weekEnd = moment()
+    .tz(TZ)
+    .endOf('week')
+    .subtract(weekIndex, 'week');
+  return userRequests.find(request => {
+    if (!request.startingDate) return false;
+    const start = moment(request.startingDate);
+    const end = request.endingDate ? moment(request.endingDate) : start;
+    return weekStart.isSameOrBefore(end) && weekEnd.isSameOrAfter(start);
+  });
+}
+
+function WeekOffBadge({ request, summaryId, weekIndex }) {
+  if (!request) return null;
+  const tooltipId = `week-off-reason-${summaryId}-${weekIndex}`;
+  return (
+    <span
+      style={{
+        backgroundColor: '#f8d7da',
+        color: '#721c24',
+        padding: '1px 6px',
+        borderRadius: '4px',
+        fontSize: '0.75rem',
+        whiteSpace: 'nowrap',
+        display: 'inline-flex',
+        alignItems: 'center',
+      }}
+    >
+      Requested Week Off
+      <i
+        className="fa fa-info-circle"
+        style={{ marginLeft: '4px', cursor: 'pointer' }}
+        data-tip
+        data-for={tooltipId}
+        aria-label="Time off reason"
+      />
+      <ReactTooltip id={tooltipId} place="top" effect="solid">
+        {request.reason || 'No reason provided'}
+      </ReactTooltip>
+    </span>
+  );
+}
+
 function Index({
   summary,
   weekIndex,
@@ -852,7 +919,6 @@ function Index({
   handleSpecialColorDotClick,
   isFinalWeek,
   darkMode,
-  timeOffRequests,
 }) {
   const colors = ['purple', 'green', 'navy'];
   const tangibleHoursLogged = (summary.totalTangibleSeconds?.[weekIndex] || 0) / 3600;
@@ -911,27 +977,6 @@ function Index({
     .subtract(weekIndex, 'week')
     .format('YYYY-MM-DD');
 
-  // Find a time-off request that covers the specific week currently being
-  // viewed (weekIndex: 0=This Week, 1=Last Week, etc.) - not just "now" - so
-  // the notification correctly moves from tab to tab as weeks pass, matching
-  // each request's actual date range rather than only the current real week.
-  const weekStartForTab = moment()
-    .tz(TZ)
-    .startOf('week')
-    .subtract(weekIndex, 'week');
-  const weekEndForTab = moment()
-    .tz(TZ)
-    .endOf('week')
-    .subtract(weekIndex, 'week');
-
-  const userTimeOffRequests = timeOffRequests[summary._id] || [];
-  const activeTimeOffRequest = userTimeOffRequests.find(request => {
-    if (!request.startingDate) return false;
-    const requestStart = moment(request.startingDate);
-    const requestEnd = request.endingDate ? moment(request.endingDate) : requestStart;
-    return weekStartForTab.isSameOrBefore(requestEnd) && weekEndForTab.isSameOrAfter(requestStart);
-  });
-
   const durationSinceStarted = calculateDurationBetweenDates(
     summarySubmissionDate,
     summary?.startDate?.split('T')[0] || null,
@@ -975,36 +1020,6 @@ function Index({
       >
         {summary.firstName} {summary.lastName}
       </Link>
-      {activeTimeOffRequest && (
-        <span
-          style={{
-            backgroundColor: '#f8d7da',
-            color: '#721c24',
-            padding: '2px 8px',
-            borderRadius: '4px',
-            marginLeft: '8px',
-            fontSize: '0.85rem',
-            display: 'inline-flex',
-            alignItems: 'center',
-          }}
-        >
-          Requested Week Off
-          <i
-            className="fa fa-info-circle"
-            style={{ marginLeft: '6px', cursor: 'pointer' }}
-            data-tip
-            data-for={`week-off-reason-${summary._id}-${weekIndex}`}
-            aria-label="Time off reason"
-          />
-          <ReactTooltip
-            id={`week-off-reason-${summary._id}-${weekIndex}`}
-            place="top"
-            effect="solid"
-          >
-            {activeTimeOffRequest.reason || 'No reason provided'}
-          </ReactTooltip>
-        </span>
-      )}
       <div style={{ display: 'inline-block' }}>
         <div style={{ display: 'flex' }}>
           <GoogleDocIcon link={googleDocLink} />
