@@ -106,7 +106,7 @@ const ProjectTableHeader = props => {
             onSelect={props.selectStatus}
             menuAlign="right"
           >
-            <Dropdown.Item default value="" disabled={!props.showStatus} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{props.showStatus ? 'Clear filter' : 'Choose Status'}</Dropdown.Item>
+            <Dropdown.Item default eventKey="" disabled={!props.showStatus} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{props.showStatus ? 'Clear filter' : 'Choose Status'}</Dropdown.Item>
             {statusList.map((status, index) => (
               <Dropdown.Item key={index} eventKey={status} active={props.showStatus === status} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{status}</Dropdown.Item>
             ))}
@@ -169,4 +169,3 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps)(ProjectTableHeader)
-

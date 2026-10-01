@@ -212,20 +212,14 @@ const Projects = function(props) {
   const generateProjectList = (categorySelectedForSort, showStatus, isShowingArchived) => {
     const activeMemberCounts = props.state.projectMembers?.activeMemberCounts || {};
     const sourceProjects = isShowingArchived ? archivedReduxProjects : allReduxProjects;
-    const filteredProjects = sourceProjects
-      .filter(project => {
-        if (categorySelectedForSort && showStatus){
-          return project.category === categorySelectedForSort && project.isActive === showStatus;
-        } else if (categorySelectedForSort) {
-          return project.category === categorySelectedForSort;
-        } else if (showStatus === 'Active') {
-          return project.isActive === true;
-        } else if (showStatus === 'Inactive') {
-          return project.isActive === false;
-        } else {
-          return true;
-        }
-      });
+    const selectedStatus = { Active: true, Inactive: false }[showStatus];
+    const statusRestricted = showStatus === 'Active' || showStatus === 'Inactive';
+    const filteredProjects = sourceProjects.filter(project => {
+      const categoryMatches =
+        !categorySelectedForSort || project.category === categorySelectedForSort;
+      const statusMatches = !statusRestricted || project.isActive === selectedStatus;
+      return categoryMatches && statusMatches;
+    });
 
     const sortedProjects = [...filteredProjects].sort((a, b) => {
       const { column, direction } = sorter;

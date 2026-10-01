@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import Projects from '..';
 import { Provider } from 'react-redux';
@@ -119,6 +119,95 @@ const buildTestStore = ({
   });
 
 describe('Projects component', () => {
+  describe('category and status filtering', () => {
+    const filterProjects = [
+      { ...projects[0], _id: 'food-active', projectName: 'Zucchini', category: 'Food', isActive: true },
+      { ...projects[0], _id: 'food-inactive', projectName: 'Apple', category: 'Food', isActive: false },
+      { ...projects[0], _id: 'energy-active', projectName: 'Solar', category: 'Energy', isActive: true },
+      { ...projects[0], _id: 'energy-inactive', projectName: 'Battery', category: 'Energy', isActive: false },
+    ];
+
+    const renderFilterProjects = (overrides = {}) => {
+      mockAxiosSuccess();
+      renderProjects(mockStore({
+        ...store.getState(),
+        allProjects: {
+          ...store.getState().allProjects,
+          projects: filterProjects,
+          archivedProjects: [],
+          ...overrides,
+        },
+      }));
+    };
+
+    const selectFilter = (headerName, option) => {
+      const header = within(screen.getByRole('columnheader', { name: headerName }));
+      fireEvent.click(header.getByRole('button', { name: '' }));
+      fireEvent.click(header.getByRole('button', { name: option, exact: true }));
+    };
+
+    const expectVisibleProjects = async expectedNames => {
+      await waitFor(() => {
+        const visibleNames = screen.getAllByRole('row').slice(1).map(row =>
+          filterProjects.find(project => within(row).queryByText(project.projectName))?.projectName,
+        );
+        expect(visibleNames).toEqual(expectedNames);
+      });
+    };
+
+    it.each([
+      ['', '', ['Zucchini', 'Apple', 'Solar', 'Battery']],
+      ['Food', '', ['Zucchini', 'Apple']],
+      ['', 'Active', ['Zucchini', 'Solar']],
+      ['', 'Inactive', ['Apple', 'Battery']],
+      ['Food', 'Active', ['Zucchini']],
+      ['Food', 'Inactive', ['Apple']],
+      ['Housing', 'Active', []],
+    ])('filters category "%s" and status "%s"', async (category, status, expected) => {
+      renderFilterProjects();
+      if (category) selectFilter('Category', category);
+      if (status) selectFilter('Active', status);
+      await expectVisibleProjects(expected);
+      expect(screen.queryByText('ERROR')).not.toBeInTheDocument();
+    });
+
+    it.each(['Active', 'Inactive'])('supports selecting %s before category', async status => {
+      renderFilterProjects();
+      selectFilter('Active', status);
+      selectFilter('Category', 'Food');
+      await expectVisibleProjects(status === 'Active' ? ['Zucchini'] : ['Apple']);
+    });
+
+    it('preserves the remaining filter and sort when clearing filters', async () => {
+      renderFilterProjects();
+      fireEvent.click(within(screen.getByRole('columnheader', { name: 'Project Name' })).getByRole('button'));
+      selectFilter('Category', 'Food');
+      await expectVisibleProjects(['Apple', 'Zucchini']);
+      selectFilter('Active', 'Inactive');
+      await expectVisibleProjects(['Apple']);
+      selectFilter('Active', 'Clear filter');
+      await expectVisibleProjects(['Apple', 'Zucchini']);
+      selectFilter('Active', 'Inactive');
+      selectFilter('Category', 'Clear filter');
+      await expectVisibleProjects(['Apple', 'Battery']);
+      selectFilter('Active', 'Clear filter');
+      await expectVisibleProjects(['Apple', 'Battery', 'Solar', 'Zucchini']);
+    });
+
+    it('filters only the archived collection in the archived view', async () => {
+      renderFilterProjects({
+        projects: [{ ...projects[0], projectName: 'Unarchived Food', category: 'Food' }],
+        archivedProjects: filterProjects.map(project => ({ ...project, isArchived: true })),
+      });
+      fireEvent.click(screen.getByRole('button', { name: 'Show Archived' }));
+      await expectVisibleProjects(['Zucchini', 'Apple', 'Solar', 'Battery']);
+      selectFilter('Category', 'Food');
+      selectFilter('Active', 'Inactive');
+      await expectVisibleProjects(['Apple']);
+      expect(screen.queryByText('Unarchived Food')).not.toBeInTheDocument();
+    });
+  });
+
   it('renders without crashing', () => {
     mockAxiosSuccess();
     renderProjects();
