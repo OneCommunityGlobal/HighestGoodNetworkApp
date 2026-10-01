@@ -514,10 +514,15 @@ function WeeklySummaryMessage({ summary, weekIndex, darkMode }) {
           <FontAwesomeIcon
             icon={faCopy}
             className={styles.copyIcon}
-            onClick={() => {
+            onClick={async () => {
               const parsedSummary = summaryText.replace(/<\/?[^>]+>|&nbsp;/g, '');
-              navigator.clipboard.writeText(parsedSummary);
-              toast.success('Summary Copied!');
+
+              try {
+                await navigator.clipboard.writeText(parsedSummary);
+                toast.success('Summary Copied!');
+              } catch {
+                toast.error('Failed to copy summary.');
+              }
             }}
           />
         </div>
@@ -578,7 +583,7 @@ function TeamCodeRow({
       setHasError(false);
       setTeamCode(value);
       setSavedTeamCode(value);
-      handleOnChange(summary, value);
+      void handleOnChange(summary, value);
     } else {
       setTeamCode(savedTeamCode);
       setHasError(true);
@@ -688,7 +693,7 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
 
   const handleWeeklySummaryCountChange = e => {
     setWeeklySummariesCount(e.target.value);
-    handleOnChange(summary, e.target.value);
+    void handleOnChange(summary, e.target.value);
   };
 
   return (
