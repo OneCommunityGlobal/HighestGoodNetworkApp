@@ -346,7 +346,7 @@ function ReportDetails({
               backgroundColor: isMeetCriteria ? '#FFF200' : 'transparent',
               color: isMeetCriteria ? '#000000' : 'inherit',
               width: '100%',
-              padding: '6px 12px 6px 0px',
+              padding: '2px 12px 2px 0px',
             }}
           >
             {/* Dev-admin protected records stay read-only here, same as team code and
@@ -1044,11 +1044,25 @@ function Index({
                   marginLeft: '10px',
                   fontSize: '25px',
                   cursor: 'pointer',
+                  position: 'relative',
+                  lineHeight: 1,
+                  marginRight: '16px',
                   color: summary?.trophyFollowedUp === true ? '#ffbb00' : '#FF0800',
                 }}
                 onClick={trophyIconToggle}
               >
-                <p style={{ fontSize: '10px', marginLeft: '5px' }}>
+                <p
+                  style={{
+                    fontSize: '10px',
+                    position: 'absolute',
+                    left: '100%',
+                    bottom: 0,
+                    marginLeft: '1px',
+                    margin: 0,
+                    lineHeight: 1,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
                   {handleIconContent(durationSinceStarted)}
                 </p>
               </i>
