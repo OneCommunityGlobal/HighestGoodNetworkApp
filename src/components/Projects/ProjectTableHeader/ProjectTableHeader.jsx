@@ -10,20 +10,18 @@ import {
   INVENTORY,
   ARCHIVE,
 } from './../../../languages/en/ui';
-import hasPermission from '~/utils/permissions';
 import { connect } from 'react-redux';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faArrowDown, faSortDown, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
 
-import { permissions } from '../../../utils/constants';
 import { Button } from 'reactstrap';
 
 
 const ProjectTableHeader = props => {
   const { role, darkMode } = props;
-  const canDeleteProject = hasPermission(permissions.deleteProject)
+  const { canDeleteProject = false } = props;
 
   const categoryList = ['Unspecified', 'Food', 'Energy', 'Housing', 'Education', 'Society', 'Economics', 'Stewardship', 'Other'];
   const statusList = ['Active', 'Inactive'];
@@ -41,6 +39,11 @@ const ProjectTableHeader = props => {
   const baseColor = darkMode ? 'light' : 'secondary';
   const filterVariant = active => (active ? baseColor : `outline-${baseColor}`);
 
+  const getAriaSort = column => {
+    if (props.sorted.column !== column || props.sorted.direction === 'DEFAULT') return undefined;
+    return props.sorted.direction === 'DESC' ? 'descending' : 'ascending';
+  };
+  const inventoryEdited = props.sorted.column === 'INVENTORY' && props.sorted.direction === 'DESC';
   const renderSortButton = column => {
     const active = props.sorted.column === column && props.sorted.direction !== 'DEFAULT';
     return (
@@ -52,7 +55,7 @@ const ProjectTableHeader = props => {
         id={`${column.toLowerCase()}_sort`}
         onClick={() => props.handleSort(column)}
       >
-        <FontAwesomeIcon icon={getSortIcon(column)} pointerEvents="none" />
+        <FontAwesomeIcon icon={getSortIcon(column)} pointerEvents="none" aria-hidden="true" />
       </Button>
     );
   };
@@ -63,7 +66,7 @@ const ProjectTableHeader = props => {
         #
       </th>
       {/* <th scope="col">{PROJECT_NAME}</th> */}
-      <th scope="col" className='align-middle text-break'>
+      <th scope="col" aria-sort={getAriaSort('PROJECTS')} className='align-middle text-break'>
         <span className='d-flex justify-content-between align-items-center mt-1'>
           {PROJECT_NAME}
           <div>
@@ -106,22 +109,41 @@ const ProjectTableHeader = props => {
             onSelect={props.selectStatus}
             menuAlign="right"
           >
-            <Dropdown.Item default value="" disabled={!props.showStatus} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{props.showStatus ? 'Clear filter' : 'Choose Status'}</Dropdown.Item>
+            <Dropdown.Item default eventKey="" disabled={!props.showStatus} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{props.showStatus ? 'Clear filter' : 'Choose Status'}</Dropdown.Item>
             {statusList.map((status, index) => (
               <Dropdown.Item key={index} eventKey={status} active={props.showStatus === status} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{status}</Dropdown.Item>
             ))}
           </DropdownButton>
         </span>
       </th>
-      <th scope="col" id="projects__inv" className='align-middle text-center'>
+      <th scope="col" id="projects__inv" aria-label={INVENTORY} aria-sort={inventoryEdited ? 'descending' : undefined} className='align-middle text-center'>
         <span className='d-flex justify-content-center align-items-center'>
           {INVENTORY}
-          <div>
-            {renderSortButton('INVENTORY')}
-          </div>
+          <DropdownButton
+            id="project-inventory-sort"
+            focusFirstItemOnShow="keyboard"
+            title={(
+              <>
+                <span className="sr-only">Inventory sort options</span>
+                <FontAwesomeIcon icon={faChevronDown} pointerEvents="none" aria-hidden="true" />
+              </>
+            )}
+            size="sm"
+            variant={filterVariant(inventoryEdited)}
+            className="ml-2"
+            onSelect={props.onInventorySortChange}
+            menuAlign="right"
+          >
+            <Dropdown.Item eventKey="EDITED" active={inventoryEdited} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>
+              Edited
+            </Dropdown.Item>
+            <Dropdown.Item eventKey="DEFAULT" active={props.sorted.direction === 'DEFAULT'} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>
+              Default order
+            </Dropdown.Item>
+          </DropdownButton>
         </span>
       </th>
-      <th scope="col" id="projects__members" className='align-middle text-center'>
+      <th scope="col" id="projects__members" aria-sort={getAriaSort('MEMBERS')} className='align-middle text-center'>
         <span className='d-flex justify-content-center align-items-center'>
           {MEMBERS}
           {renderSortButton('MEMBERS')}
@@ -151,6 +173,7 @@ const ProjectTableHeader = props => {
 };
 
 ProjectTableHeader.propTypes = {
+  canDeleteProject: PropTypes.bool,
   role: PropTypes.string,
   darkMode: PropTypes.bool,
   selectedValue: PropTypes.string,
@@ -158,6 +181,7 @@ ProjectTableHeader.propTypes = {
   onChange: PropTypes.func.isRequired,
   selectStatus: PropTypes.func.isRequired,
   handleSort: PropTypes.func.isRequired,
+  onInventorySortChange: PropTypes.func.isRequired,
   sorted: PropTypes.shape({
     column: PropTypes.string.isRequired,
     direction: PropTypes.string.isRequired,
@@ -169,4 +193,3 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps)(ProjectTableHeader)
-
