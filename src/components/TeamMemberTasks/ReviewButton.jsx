@@ -462,10 +462,10 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
           title={
             onTimeOff
               ? "You can't submit a task for review while you're on time off this week."
-              : undefined
+              : 'Submit for review'
           }
         >
-          Submit for Review
+          Submit
         </button>
       );
     }

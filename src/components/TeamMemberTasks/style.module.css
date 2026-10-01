@@ -1,3 +1,10 @@
+/* 
+  ===== COMPLETE FIX =====
+  Combines:
+  1. Button overlap fix (Submit button)
+  2. Red deadline badge visibility fix
+*/
+
 /* stylelint-disable  */
 :global(.dark-mode) .modal-body p {
   color: #fff;
@@ -35,10 +42,12 @@
   outline-offset: 2px;
 }
 
+/* ===== FIX #2: RED BADGE VISIBILITY ===== */
 .progress-wrapper {
   display: inline-grid;
   width: fit-content;
   justify-items: start;
+  overflow: visible !important; /* ← Allow badge to show */
 }
 
 .team-task-progress-container {
@@ -47,6 +56,7 @@
   gap: 6px;
   flex-wrap: nowrap;
   width: fit-content;
+  overflow: visible !important; /* ← Allow badge to show */
 }
 
 .team-task-progress-bar {
@@ -62,32 +72,35 @@
   width: 100%;
 }
 
-/*
-  The ReviewButton ("Submit for Review" etc.) had no width limit, so at
-  narrower viewports it kept its natural single-line width and pushed the
-  Status column past the edge of the table instead of wrapping. Give it a
-  cap and let it wrap onto a second line if needed.
-*/
-.team-member-task-review-button button {
+/* Force the button (and any wrapper/dropdown inside ReviewButton) to stay inside the Status column */
+.team-member-task-review-button > *,
+.team-member-task-review-button button,
+.team-member-task-review-button .btn,
+.team-member-task-review-button .dropdown,
+.team-member-task-review-button .dropdown-toggle {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 0 !important; /* no padding, as requested */
+  margin: 0 !important;
+  font-size: 12px;
+  line-height: 1.2;
   white-space: normal;
   word-break: break-word;
   text-align: center;
-  font-size: 12px;
-  line-height: 1.2;
-  padding: 6px 8px;
-  max-width: 100%;
 }
 
-/*
-  Dedicated Status column width — kept separate from .task-align so sizing
-  the Status column can't also resize the Task(s) column. Paired with the
-  38%/62% split on the two header groups in TeamMemberTasks.jsx, this gives
-  the review button enough room to render without being clipped.
-*/
+.team-member-task-review-button button {
+  height: 32px; /* gives it height now that padding is gone */
+}
+
 .status-align {
   width: 95px;
   min-width: 85px;
   max-width: 105px;
+  padding-left: 6px !important;
+  padding-right: 0 !important;
   text-align: center;
   vertical-align: middle !important;
   height: auto !important;
@@ -174,12 +187,7 @@
   text-align: center;
 }
 
-/* .task-break {
-  border-bottom: 1px solid lightgray;
-} */
-
 .task-break {
-  /* border: red 1px solid; */
   border-bottom: 1px solid lightgray;
 }
 
@@ -235,14 +243,6 @@
   vertical-align: top !important;
 }
 
-/*
-  "User Status" is the first <th> here. It previously had display: flex,
-  which took it out of normal table-cell layout while its siblings ("Team
-  Member", the clock-icon header) stayed as regular cells sized to the row
-  height — that mismatch is what made "User Status" float up near the top
-  instead of sitting centered in the header row like the others. Centering
-  via vertical-align/text-align keeps it a proper table cell.
-*/
 .team-member-tasks-subtable th:first-child {
   vertical-align: middle;
   text-align: center;
@@ -253,8 +253,9 @@
   height: 22px;
 }
 
+/* ===== FIX #2: RED BADGE VISIBILITY - COMPLETE RULES ===== */
 .followup-info-override {
-  position: relative;
+  position: relative; /* ← Critical for badge positioning */
   display: inline-flex;
   align-items: center;
 }
@@ -262,11 +263,6 @@
 .deadlineCount {
   position: absolute;
   top: -4px;
-  /*
-    Was -17px, which pushed this badge out of the Progress cell and into
-    the neighboring Status button. Pulled in so it stays within its own
-    column.
-  */
   right: -4px;
   background: #e74c3c;
   color: #fff;
@@ -282,7 +278,7 @@
   white-space: nowrap;
   box-shadow: 0 0 0 2px #fff;
   cursor: pointer;
-  z-index: 3;
+  z-index: 3 !important; /* ← Ensure visible on top */
 }
 
 .task-followup-icon {
@@ -315,16 +311,6 @@
   color: #339cff !important;
 }
 
-/*
-  Previously this class put display: flex directly on the <th> itself,
-  same issue as the old "User Status" bug — it broke the cell's normal
-  table-cell layout and, combined with nowrap on the buttons, let the
-  icons/buttons get crushed together with no room to wrap, so the
-  "Show Trackers"/"Hide Tasks" buttons visually overlapped instead of
-  dropping to their own line. The flex layout now lives on the inner
-  wrapper divs (.team-clocks-header-inner etc.) so the <th> stays a
-  normal, properly-sized table cell.
-*/
 .team-clocks-header {
   height: auto;
   min-height: 73.5px;
@@ -603,15 +589,6 @@
   min-width: 0;
 }
 
-/*
-  Task(s) cell layout, used by TeamMemberTask.jsx.
-  - taskColumnLayout: wraps the task title row and the icon row below it.
-  - taskIconsUnderName: the bell/checkmark/remove icons that sit under the
-    task title (per the JSX comment "Icons UNDER task name").
-  These were previously referenced in the JSX with no matching rules here,
-  so the icon row just fell into normal block flow instead of being
-  deliberately laid out.
-*/
 .taskColumnLayout {
   display: grid;
   grid-template-columns: 1fr;
@@ -1012,7 +989,6 @@
   box-shadow: 2px 2px 4px 1px lightgray;
 }
 
-/* Previously `responsive-btn-size` */
 .responsiveBtnSize {
   /* keep sizing controlled by your existing .circle-border; this is a hook for future */
 }
@@ -1069,6 +1045,7 @@
     width: 50%;
   }
 }
+
 .task-age-badge {
   display: inline-flex;
   align-items: center;
