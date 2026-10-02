@@ -212,7 +212,6 @@ export default function ResourceUsage() {
   const [insightsTimePeriod, setInsightsTimePeriod] = useState('Last Week');
   const [data, setData] = useState(allData.material);
   const [insights, setInsights] = useState(allInsights['Last Week']);
-  const [showScroll, setShowScroll] = useState(false);
 
   const darkMode = useSelector(state => state.theme.darkMode);
   const badgeRefs = useRef([]);
@@ -235,20 +234,7 @@ export default function ResourceUsage() {
     setInsights(allInsights[insightsTimePeriod]);
   }, [insightsTimePeriod]);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowScroll(window.scrollY < 200);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   const ResourceTypeIcon = resourceTypeIcons[resourceType] ?? Package;
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
 
   return (
     <div
@@ -257,14 +243,6 @@ export default function ResourceUsage() {
         darkMode ? 'dark-mode bg-oxford-blue text-light' : ''
       }`}
     >
-      {showScroll && (
-        <button
-          onClick={scrollToTop}
-          className={`${styles.scrollButton} ${darkMode ? styles.dark : ''}`}
-        >
-          ↑
-        </button>
-      )}
       {/* LEFT SECTION */}
       <div className={`${styles.chartSection} ${darkMode ? 'bg-space-cadet' : ''}`}>
         <div className={styles.headerSection}>

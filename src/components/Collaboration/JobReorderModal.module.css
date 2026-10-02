@@ -1,0 +1,290 @@
+.jobsList {
+  min-height: 400px;
+  padding: 10px 0;
+}
+
+.jobsItem {
+  padding: 15px;
+  margin-bottom: 10px;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  cursor: grab;
+  transition: all 0.2s ease-in-out;
+  position: relative;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.jobsItem::before {
+  content: '☰';
+  color: #aaa;
+  position: absolute;
+  left: -20px;
+  font-size: 16px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.jobsItem:hover::before {
+  opacity: 1;
+}
+
+.jobsItem:hover {
+  border-color: #9c0;
+  transform: translateX(5px);
+}
+
+.positionNumber {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 36px;
+  height: 36px;
+  background-color: #9c0;
+  color: white;
+  border-radius: 50%;
+  font-weight: bold;
+  margin-right: 15px;
+  flex-shrink: 0;
+  font-size: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.jobsItemContent {
+  position: relative;
+  flex-grow: 1;
+  padding-right: 20px;
+}
+
+.dragging {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  transform: scale(1.02) translateX(10px);
+  z-index: 100;
+  background-color: #f9f9f9;
+  border: 2px solid #9c0;
+}
+
+.featured {
+  border-left: 4px solid #9c0;
+  background-color: #f9fff0;
+}
+
+.jobsItem h4 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.jobDetails {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.jobCategory {
+  padding: 4px 10px;
+  background-color: #f0f5e6;
+  border: 1px solid #dbebc0;
+  border-radius: 20px;
+  font-weight: 500;
+  color: #547c10;
+}
+
+.featuredBadge {
+  position: absolute;
+  top: -10px;
+  right: 0;
+  background-color: #9c0;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 5;
+}
+
+.reorderInstructions {
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f0f5e6;
+  border-radius: 6px;
+  border-left: 4px solid #9c0;
+  font-size: 15px;
+  color: #547c10;
+}
+
+/* Modal styling */
+:global(.modal-content) {
+  border-radius: 8px;
+  border: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+:global(.modal-header) {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  padding: 15px 20px;
+}
+
+:global(.modal-header) :global(.modal-title) {
+  font-weight: 600;
+  color: #333;
+}
+
+:global(.modal-body) {
+  padding: 20px;
+}
+
+:global(.modal-dialog) {
+  max-width: 800px;
+}
+
+:global(.modal-lg) {
+  max-width: 800px;
+}
+
+:global(.modal-footer) {
+  border-top: 1px solid #e9ecef;
+  padding: 15px 20px;
+}
+
+:global(.modal-footer) :global(.btn-primary) {
+  background-color: #9c0;
+  border-color: #9c0;
+}
+
+.modal-footer .btn-primary:hover {
+  background-color: #8ab000;
+  border-color: #8ab000;
+}
+
+/* Dark mode styles */
+.dark-mode .jobs-item {
+  background-color: #2c3e50;
+  border-color: #445566;
+  color: #f8f9fa;
+}
+
+.dark-mode .jobs-item h4 {
+  color: #f8f9fa;
+}
+
+.dark-mode .job-details {
+  color: #ddd;
+}
+
+.dark-mode .job-category {
+  background-color: #405224;
+  color: #e0e9d0;
+  border-color: #536b2f;
+}
+
+.dark-mode .jobs-item.featured {
+  border-left-color: #9c0;
+  background-color: #2a3d1a;
+}
+
+.dark-mode .jobs-item.dragging {
+  background-color: #34495e;
+  border-color: #9c0;
+}
+
+.dark-mode .positionNumber {
+  background-color: #9c0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .featured-badge {
+  background-color: #9c0;
+}
+
+/* Modal dark mode styles */
+:global(.dark-mode) .jobsItem {
+  background-color: #2c3e50;
+  border-color: #445566;
+  color: #f8f9fa;
+}
+
+:global(.dark-mode) .jobsItem h4 {
+  color: #f8f9fa;
+}
+
+:global(.dark-mode) .jobDetails {
+  color: #ddd;
+}
+
+:global(.dark-mode) .jobCategory {
+  background-color: #405224;
+  color: #e0e9d0;
+  border-color: #536b2f;
+}
+
+:global(.dark-mode) .featured {
+  border-left-color: #9c0;
+  background-color: #2a3d1a;
+}
+
+:global(.dark-mode) .dragging {
+  background-color: #34495e;
+  border-color: #9c0;
+}
+
+:global(.dark-mode) .positionNumber {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+:global(.dark-mode) .featuredBadge {
+  background-color: #9c0;
+}
+
+:global(.dark-mode) .reorderInstructions {
+  background-color: #263c17;
+  color: #fff;
+  border-left: 4px solid #9c0;
+}
+
+:global(.dark-mode) .reorderInstructions p {
+  color: #fff;
+  margin-bottom: 0;
+}
+
+:global(.dark-mode) .reorderInstructions i {
+  color: #9c0;
+}
+
+:global(.dark-mode) :global(.modal-content) {
+  background-color: #1e2b38;
+  border: 1px solid #445566;
+}
+
+:global(.dark-mode) :global(.modal-header) {
+  background-color: #1e2b38;
+  border-color: #445566;
+  color: white;
+}
+
+:global(.dark-mode) :global(.modal-title) {
+  color: white;
+}
+
+:global(.dark-mode) :global(.modal-footer) {
+  background-color: #1e2b38;
+  border-color: #445566;
+}
+
+:global(.dark-mode) :global(.close) {
+  color: white;
+}
+
+:global(.dark-mode) :global(.modal-header i) {
+  color: #9c0;
+}

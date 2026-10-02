@@ -27,8 +27,8 @@
   position: relative;
   width: 100%;
   min-width: 21.25rem;
-  max-width: 22rem;
-  height: 22rem;
+  max-width: 24rem;
+  height: 24rem;
   margin-left: 0;
   overflow: visible;
 }
@@ -51,7 +51,7 @@
   justify-content: center;
   gap: 0.28rem;
   width: 52%;
-  max-width: 7rem;
+  max-width: 6rem;
   pointer-events: none;
 }
 
@@ -60,14 +60,13 @@
 }
 
 .donutHeading {
-  color: var(--text-secondary);
-  font-size: .8rem;
+  color: #828282;
+  font-size: 0.88rem;
   letter-spacing: 0.03em;
   line-height: 1.15;
   text-transform: uppercase;
   white-space: normal;
   overflow-wrap: anywhere;
-  color: #828282;
 }
 
 .donutHeadingLine {
@@ -80,7 +79,7 @@
 
 .donutCount {
   color: #828282;
-  font-size: .8rem;
+  font-size: 2rem;
   line-height: 1;
   font-weight: 800;
 }
@@ -90,7 +89,7 @@
 }
 
 .donutComparisonPercent {
-  font-size: 0.62rem;
+  font-size: 0.7rem;
   line-height: 1.1;
 }
 
@@ -100,7 +99,6 @@
   justify-content: center;
   margin-top: 1.8rem;
   width: 100%;
-  color: var(--text-primary);
 }
 
 .donutContainerDark .donutLabels,
@@ -137,6 +135,7 @@
   display: inline-block;
   min-width: 1rem;
   min-height: 1rem;
+  flex-shrink: 0;
 }
 
 .donutNoData {
@@ -150,7 +149,6 @@
 }
 
 .noDataText {
-  color: var(--text-primary);
   font-size: 24px !important;
   font-weight: 600;
   margin-top: 1.5rem;
