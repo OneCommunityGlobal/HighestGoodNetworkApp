@@ -292,6 +292,19 @@ body {
   stroke: rgb(255 255 255 / 15%);
 }
 
+/* When there are only 3 metrics (e.g., for deactivated users): keep each card's width identical to the 4-metric layout without stretching, center them to make the overall section narrower, and eliminate dead space */
+.metrics.threeMetrics {
+  justify-content: center;
+  gap: 1.rem;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.metrics.threeMetrics > .metricCard {
+  flex: 0 1 calc((100% - 3rem) / 4);
+  min-width: 220px;
+}
+
 @media (width <= 850px) {
   .introDate {
     margin: 16px 0;
@@ -334,7 +347,9 @@ body {
 
 @media (width <= 1488px) {
   .peopleReportTimeLogsWrapper > .peopleReportTimeLogBlock {
-    flex: 0 1 calc((100% - 1rem) / 2);
+    /* flex: 0 1 calc((100% - 1rem) / 2); */
+    flex: 0 1 calc((100% - 2rem) / 3);
+    max-width: none;
   }
 }
 
@@ -351,6 +366,7 @@ body {
 
 .peopleReportTimeLogsWrapper.threeBoxes > .peopleReportTimeLogBlock {
   flex: 0 1 calc((100% - 2rem) / 3); /* 3 per row */
+  flex: 0 1 100%;
 }
 
 /* Prevent wrapping weirdly at mid-screen sizes for 3-box layout */
@@ -462,40 +478,50 @@ body {
   width: 100%;
 }
 
+/* Right-side stats card with flexbox layout for even vertical distribution */
 .reportStats {
-  flex-grow: 1;
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  align-items: center;
   background-color: white;
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 0 12px rgb(0 0 0 / 8%);
-  height: 698px;
-  margin-top: 2rem;
+  height: 100%;
+  margin-top: 0;
+  width: 100%;
+  gap: 12px; /* Uniform spacing between internal elements (name, role, title, dates) */
+}
+
+/* Ensure all direct children of reportStats participate in flex layout */
+.reportStats > * {
+  width: 100%;
+  flex-shrink: 0;
 }
 
 @media (width >= 1489px) and (width <= 1784px) {
   .reportStats {
-    height: 721px;
+    /* height removed - now 100% from parent */
   }
 }
 
 @media (width >= 1156px) and (width <= 1488px) {
   .reportStats {
-    height: 869px;
+    /* height removed - now 100% from parent */
   }
 }
 
 @media (width >= 1025px) and (width <= 1155px) {
   .reportStats {
-    height: 873px;
+    /* height removed - now 100% from parent */
   }
 }
 
 @media (width >= 960px) and (width <= 1024px) {
   .reportStats {
-    height: 895px;
+    /* height removed - now 100% from parent */
   }
 } 
 
@@ -648,8 +674,32 @@ body {
       flex-direction: row-reverse;
     }
 
+    /* .userProfile is already stretched to the row's height (align-items: stretch).
+       Making it a flex column lets the ReportBlock inside fill that height exactly,
+       instead of relying on percentage heights. */
     .userProfile {
       max-width: 20rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* The shared ReportBlock sets its inner content to height: 100% plus margin: 2px, so
+       the content overflows its wrapper by 4px and the visible card ends below the left
+       column. Here we swap the percentage heights for flex: 1 and drop the margin so the
+       card's bottom edge sits exactly on the row's bottom edge.
+       ReportBlock's class names are hashed by CSS Modules and can't be referenced from
+       this file, so we target its data-testid attributes instead. */
+    .userProfile > [data-testid='report-block-wrapper'] {
+      flex: 1;
+      height: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .userProfile [data-testid='report-block-content'] {
+      flex: 1;
+      height: auto;
+      margin: 0;
     }
 
     .metrics.fourMetrics {
