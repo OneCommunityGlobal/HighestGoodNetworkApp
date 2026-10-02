@@ -151,7 +151,6 @@ function FeedbackModal({ authUser }) {
   };
 
   const selectActiveMember = (index, user) => {
-    // FIX ISSUE #2: Check for duplicates
     const isDuplicate = activeMembers.some(
       (member, idx) => idx !== index && member.selectedUser?._id === user._id,
     );
@@ -171,7 +170,6 @@ function FeedbackModal({ authUser }) {
   };
 
   const selectInactiveMember = (index, user) => {
-    // FIX ISSUE #2: Check for duplicates
     const isDuplicate = inactiveMembers.some(
       (member, idx) => idx !== index && member.selectedUser?._id === user._id,
     );
@@ -208,7 +206,7 @@ function FeedbackModal({ authUser }) {
     return allTeamMembers
       .filter(member => {
         const matchesSearch = member.name?.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStatus = member.isActive === isActive; // FIX ISSUE #8: Filter by active status
+        const matchesStatus = member.isActive === isActive;
         return matchesSearch && matchesStatus;
       })
       .slice(0, 10);
@@ -282,7 +280,7 @@ function FeedbackModal({ authUser }) {
                 } else {
                   setShowInactiveDropdown({ ...showInactiveDropdown, [index]: false });
                 }
-              }, 300); // INCREASED FROM 200ms TO 300ms
+              }, 300);
             }}
             onFocus={() => {
               if (searchTerm.length > 0) {
@@ -302,7 +300,7 @@ function FeedbackModal({ authUser }) {
                 <div
                   key={user._id}
                   className={styles['autocomplete-item']}
-                  onMouseDown={() => selectMember(user)} // CHANGED FROM onClick
+                  onMouseDown={() => selectMember(user)}
                   onKeyPress={e => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       selectMember(user);
@@ -338,7 +336,7 @@ function FeedbackModal({ authUser }) {
         <div className={styles.section}>
           <h5>Were we able to help you last week?</h5>
           <div className={styles['radio-group']}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+            <label>
               <input
                 type="radio"
                 name="receivedHelp"
@@ -348,7 +346,7 @@ function FeedbackModal({ authUser }) {
               />
               Yes
             </label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+            <label>
               <input
                 type="radio"
                 name="receivedHelp"
@@ -397,9 +395,7 @@ function FeedbackModal({ authUser }) {
             rows={4}
             maxLength={1000}
           />
-          <p style={{ fontSize: '12px', color: '#666', marginTop: '4px', marginBottom: '8px' }}>
-            {comments.length}/1000 characters
-          </p>
+          <p className={styles['char-count']}>{comments.length}/1000 characters</p>
           <p className={styles['suggestion-link']}>
             If you have any suggestions please click{' '}
             <a

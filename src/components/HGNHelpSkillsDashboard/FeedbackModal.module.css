@@ -35,6 +35,17 @@
   white-space: nowrap !important;
 }
 
+.char-count {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+body.dark-mode .char-count {
+  color: #aaa;
+}
+
 .member-rating-row {
   display: flex;
   align-items: center;
