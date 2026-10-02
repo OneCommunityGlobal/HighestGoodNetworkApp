@@ -46,7 +46,9 @@
   display: inline-block;
   position: relative;
   margin: 5px;
-  background: #2563eb;
+  /* Reviewer feedback: keep the original dodgerblue for the default state; the
+     border keeps the track edge visible against the dark card. */
+  background: dodgerblue;
   border: 1px solid #60a5fa;
   transition: all 0.5s ease;
   appearance: none;
@@ -72,7 +74,9 @@
   }
 
   &:checked {
-    background: #475569;
+    /* Mid slate + lighter border: distinct from the navy card without glaring. */
+    background: #64748b;
+    border-color: #94a3b8;
 
     &::after {
       transform: translateX(15px);
@@ -80,14 +84,14 @@
   }
 
   &:disabled {
-    background: #334155;
-    border-color: #475569;
+    background: #3a506b;
+    border-color: #64748b;
     cursor: not-allowed;
-    opacity: 0.65;
+    opacity: 0.8;
   }
 
   &:disabled::after {
-    background: #94a3b8;
+    background: #cbd5e1;
   }
 }
 
