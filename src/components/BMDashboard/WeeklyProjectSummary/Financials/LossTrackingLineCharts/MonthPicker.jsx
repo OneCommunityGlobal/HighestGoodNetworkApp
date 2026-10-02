@@ -62,7 +62,7 @@ export default function MonthPicker({ value, onChange, min, max, ariaLabel }) {
       </button>
 
       {open && (
-        <div className={styles.calendarPopover} role="dialog" aria-label={ariaLabel}>
+        <dialog open className={styles.calendarPopover} aria-label={ariaLabel}>
           <div className={styles.calendarHeader}>
             <button
               type="button"
@@ -117,7 +117,7 @@ export default function MonthPicker({ value, onChange, min, max, ariaLabel }) {
               Clear
             </button>
           </div>
-        </div>
+        </dialog>
       )}
     </div>
   );

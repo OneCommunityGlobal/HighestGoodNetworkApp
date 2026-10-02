@@ -356,11 +356,14 @@
   position: absolute;
   top: calc(100% + 6px);
   left: 0;
+  right: auto;
+  margin: 0;
   z-index: 20;
   width: 240px;
   max-width: 100%;
   padding: 0.75rem;
   background: var(--surface);
+  color: var(--text-color);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow);

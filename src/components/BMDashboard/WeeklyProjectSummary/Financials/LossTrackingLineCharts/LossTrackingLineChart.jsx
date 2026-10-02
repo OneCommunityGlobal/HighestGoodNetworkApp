@@ -137,9 +137,9 @@ const rawData = [
 ];
 
 // Selectable date bounds, derived from the data itself
-const allDates = rawData.flatMap(l => l.data.map(d => d.date)).sort();
+const allDates = rawData.flatMap(l => l.data.map(d => d.date)).sort((a, b) => a.localeCompare(b));
 const MIN_DATE = allDates[0]; // e.g. '2022-01'
-const MAX_DATE = allDates[allDates.length - 1]; // e.g. '2024-06'
+const MAX_DATE = allDates.at(-1); // e.g. '2024-06'
 
 const DEFAULTS = { material: 'All', year: 'All', startDate: '', endDate: '' };
 
