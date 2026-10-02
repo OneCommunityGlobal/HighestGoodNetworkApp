@@ -6,6 +6,7 @@ import PhoneInput from 'react-phone-input-2';
 import { Button, Col, FormFeedback, FormGroup, Input, Label, Row } from 'reactstrap';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 
+import { permissions } from '../../../utils/constants';
 //// import 'react-phone-input-2/lib/style.css';
 import axios from 'axios';
 import { isString } from 'lodash';
@@ -500,12 +501,13 @@ const BasicInformationTab = props => {
   const [desktopDisplay, setDesktopDisplay] = useState(window.innerWidth > 1024);
   const [errorOccurred, setErrorOccurred] = useState(false);
   const [showRolePermsModal, setShowRolePermsModal] = useState(false);
+  const [newRole, setNewRole] = useState(userProfile.role);
   const dispatch = useDispatch();
   const rolesAllowedToEditStatusFinalDay = ['Administrator', 'Owner'];
-  const canEditStatus = dispatch(hasPermission('interactWithPauseUserButton'));
+  const canEditStatus = dispatch(hasPermission(permissions.interactWithPauseUserButton));
 
   const canEditEndDate =
-  rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission('setFinalDay'));
+  rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission(permissions.setFinalDay));
 
 
   let topMargin = '6px';
@@ -513,7 +515,7 @@ const BasicInformationTab = props => {
     topMargin = '0px';
   }
 
-  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
+  const canAddDeleteEditOwners = props.hasPermission(permissions.addDeleteEditOwners);
   const handleLocation = e => {
     setUserProfile({
       ...userProfile,
@@ -556,6 +558,22 @@ const BasicInformationTab = props => {
   const handleResize = () => {
     setDesktopDisplay(window.innerWidth > 1024);
   };
+
+  const updateSelectedRole = selectedRole => {
+    setNewRole(selectedRole);
+    const retrievedRole = roles.find(role => role.roleName === selectedRole);
+    const remainingAddedPermissions = userProfile.permissions.frontPermissions.some(permission => !retrievedRole.permissions.includes(permission));
+    const remainingRemovedPermissions = retrievedRole.permissions.some(permission => userProfile.permissions.removedDefaultPermissions.includes(permission));
+
+    if(remainingAddedPermissions || remainingRemovedPermissions) {
+      setShowRolePermsModal(true)
+    } else {
+      setUserProfile({ 
+        ...userProfile, 
+        role: selectedRole,
+      })
+    }
+  }
 
   useEffect(() => {
     window.addEventListener('resize', handleResize);
@@ -729,15 +747,38 @@ const BasicInformationTab = props => {
       </Col>
       <Col md={desktopDisplay ? '6' : ''} className={darkMode ? 'bg-yinmn-blue' : ''}>
         {canEditRole ? (
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <Button
-              color="primary"
-              style={darkMode ? boxStyleDark : boxStyle}
-              onClick={() => setShowRolePermsModal(true)}
+          <FormGroup>
+            <select
+              id="role"
+              name="role"
+              className={`form-control ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
+              value={newRole || ''}   // make sure this is a string
+              onChange={e => {
+                updateSelectedRole(e.target.value)
+              }}
             >
-              Manage Role & Permissions
-            </Button>
-          </div>
+              {/* Optional placeholder when no role selected */}
+              {!userProfile.role && <option value="">Select role</option>}
+
+              {canAddDeleteEditOwners && (
+                <option value="Owner" style={desktopDisplay ? { marginLeft: '5px' } : {}}>
+                  Owner
+                </option>
+              )}
+  
+              {(roles || [])
+                .map(r => (typeof r === 'string' ? r : r.roleName)) // normalize
+                .filter(Boolean)
+                .map(roleName => {
+                  if (roleName === 'Owner') return null; // skip Owner in this list
+                  return (
+                    <option key={roleName} value={roleName}>
+                      {roleName}
+                    </option>
+                  );
+                })}
+            </select>
+          </FormGroup>
           
         ) : (
           <p className={`text-right ${darkMode ? 'text-light' : ''}`}>{userProfile.role}</p>
@@ -989,21 +1030,26 @@ const BasicInformationTab = props => {
               {videoCallPreferenceComponent}
               <Col md="1" lg="1"></Col>
             </Row>
-            <Row style={{ marginBottom: '10px' }}>
+            <Row>
               {roleComponent}
               <Col md="1" lg="1"></Col>
             </Row>
-            <Row style={{  marginBottom: '10px' }}>
+            {/* Removed inline margins to align with standard CSS spacing and prevent dark mode layout gaps */}
+            <Row>
               {locationComponent}
               <Col md="1"></Col>
             </Row>
-            <Row style={{ marginTop: '15px', marginBottom: '10px' }}>
+            {/* Removed inline margins to align with standard CSS spacing and prevent dark mode layout gaps */}
+            <Row>
               {timeZoneComponent}
               <Col md="1"></Col>
             </Row>
-            <Row style={{ marginBottom: '10px' }}>{timeZoneDifferenceComponent}<Col md="1"></Col></Row>
-            <Row style={{ marginBottom: '10px' }}>{statusComponent}<Col md="1"></Col></Row>
-            <Row style={{ marginBottom: '10px' }}>{endDateComponent}<Col md="1"></Col></Row>
+            {/* Removed inline margins to align with standard CSS spacing and prevent dark mode layout gaps */}
+            <Row>{timeZoneDifferenceComponent}<Col md="1"></Col></Row>
+            {/* Removed inline margins to align with standard CSS spacing and prevent dark mode layout gaps */}
+            <Row>{statusComponent}<Col md="1"></Col></Row>
+            {/* Removed inline margins to align with standard CSS spacing and prevent dark mode layout gaps */}
+            <Row>{endDateComponent}<Col md="1"></Col></Row>
           </>
         ) : (
           <>
@@ -1029,6 +1075,7 @@ const BasicInformationTab = props => {
       <RoleChangePermissionsModal
         isOpen={showRolePermsModal}
         onClose={() => setShowRolePermsModal(false)}
+        newRole={newRole}
         roles={roles}
         userProfile={userProfile}
         setUserProfile={setUserProfile}

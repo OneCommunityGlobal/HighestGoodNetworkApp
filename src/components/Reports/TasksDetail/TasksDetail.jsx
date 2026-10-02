@@ -77,7 +77,7 @@ export function TasksDetail(props) {
 
 
   const tasksList = filteredTasks.map((task, index) => (
-    <tr key={task._id}>
+    <tr key={task._id} className={`${styles['tasks-detail-table-row']} ${darkMode ? styles['dark-mode-row'] : ''}`}>
       <td>{index + 1}</td>
       <td className={styles['tasks-detail-task-name']}>{truncate(task.taskName, 20)}</td>
       <td className={styles['collapse-column']}>{task.priority}</td>
@@ -130,19 +130,10 @@ export function TasksDetail(props) {
 
   return (
     <div>
-      <div className={`${styles['tasks-detail-total']} ${darkMode ? 'text-light' : ''}`}>
-        Total: {tasksList.length}
-      </div>
-      {/* .tasks-block gives the 800px-min table its own horizontal scroll instead
-          of letting it overflow the page. It was already defined but never applied. */}
-      <div className={styles['tasks-block']}>
-        <table
-          className={`${styles['tasks-detail-table']} ${
-            darkMode ? styles['dark-mode-table'] : ''
-          }`}
-        >
+      <div className={`${styles['tasks-detail-total']} ${darkMode ? 'text-light' : ''}`}>Total: {tasksList.length}</div>
+      <table className={`${styles['tasks-detail-table']} ${darkMode ? 'dark-mode-table' : ''}`}>
         <thead className={styles['tasks-detail-table-head']}>
-          <tr>
+          <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
             <th>#</th>
             <th>Task</th>
             <th className={styles['collapse-column']}>Priority</th>
@@ -157,9 +148,8 @@ export function TasksDetail(props) {
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody>{tasksList}</tbody>
-        </table>
-      </div>
+        <tbody className={darkMode ? 'dark-mode' : ''}>{tasksList}</tbody>
+      </table>
     </div>
   );
 }

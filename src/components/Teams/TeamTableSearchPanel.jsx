@@ -6,16 +6,17 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import hasPermission from '~/utils/permissions';
 import { SEARCH, CREATE_NEW_TEAM } from '../../languages/en/ui';
 import styles from './TeamTableSearchPanel.module.css';
+import { permissions } from '../../utils/constants';
 /**
  * The search panel stateless component for Teams grid
  */
 export function TeamTableSearchPanelBase(props) {
   const { darkMode } = props;
 
-  const [canPostTeam, setCanPostTeam] = useState(props.hasPermission('postTeam'));
+  const [canPostTeam, setCanPostTeam] = useState(props.hasPermission(permissions.postTeam));
 
   // prettier-ignore
-  if (canPostTeam === false) setTimeout(() => setCanPostTeam(props.hasPermission('postTeam')), 1000);
+  if (canPostTeam === false) setTimeout(() => setCanPostTeam(props.hasPermission(permissions.postTeam)), 1000);
 
   const inputRef = useRef(null);
 

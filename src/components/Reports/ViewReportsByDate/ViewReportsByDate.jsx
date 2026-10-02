@@ -56,7 +56,7 @@ class ViewReportByDate extends Component {
     return (
       <div
         className={`${styles['date-picker-container']} ${
-          darkMode ? styles['date-picker-dark'] : ''
+          darkMode ? `dark-mode ${styles['date-picker-dark']}` : ''
         }`}
       >
         <div id="task_startDate" className={styles['date-picker-item']}>
@@ -94,10 +94,7 @@ class ViewReportByDate extends Component {
           />
         </div>
         <div id="task_EndDate" className={styles['date-picker-item']}>
-          <label
-            htmlFor="task_EndDate"
-            className={`${styles['date-picker-label']} ${textColor}`}
-          />
+          <span className={styles['date-picker-label']} aria-hidden="true" />
           <Button
             onClick={this.clearDates}
             color="danger"

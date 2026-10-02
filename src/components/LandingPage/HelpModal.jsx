@@ -1,6 +1,6 @@
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { connect, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -100,14 +100,13 @@ function HelpModal({ show, onHide, auth }) {
   /* ---------------- Access Logic ---------------- */
   const role = auth?.user?.role?.trim().toLowerCase() || '';
 
-  const allowedRoles = useMemo(() => new Set(['owner', 'administrator']), []);
-
-  const isSoftwareDevMember = useMemo(() => {
-    return (
-      allowedRoles.has(role) ||
-      teams.some(team => team.teamName?.trim().toLowerCase() === 'software development team')
+  const isSoftwareDevMember =
+    ['owner', 'administrator'].includes(role) ||
+    teams.some(team =>
+      ['software development team', 'hgn software development team'].includes(
+        team.teamName?.trim().toLowerCase(),
+      ),
     );
-  }, [allowedRoles, teams, role]);
 
   const renderContent = () => {
     if (loading) return <div>Loading categories...</div>;
@@ -191,7 +190,7 @@ function HelpModal({ show, onHide, auth }) {
           If you have any suggestions please click{' '}
           <button
             type="button"
-            className="p-0 border-0 align-baseline"
+            className={`${styles.suggestionsLink} ${darkMode ? styles.suggestionsLinkDark : ''}`}
             onClick={handleSuggestionsClick}
           >
             here

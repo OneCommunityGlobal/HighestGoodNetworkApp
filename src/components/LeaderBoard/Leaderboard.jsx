@@ -28,6 +28,7 @@ import {
 } from '~/utils/leaderboardPermissions';
 import { calculateDurationBetweenDates, showTrophyIcon } from '~/utils/anniversaryPermissions';
 import hasPermission from '~/utils/permissions';
+import { permissions } from '../../utils/constants';
 // import MouseoverTextTotalTimeEditButton from '~/components/mouseoverText/MouseoverTextTotalTimeEditButton';
 import { toast } from 'react-toastify';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
@@ -92,8 +93,8 @@ function LeaderBoard({
   usersOnFutureTimeOff,
 }) {
   const userId = displayUserId;
-  const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
-  const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
+  const hasSummaryIndicatorPermission = hasPermission(permissions.seeSummaryIndicator); // ??? this permission doesn't exist?
+  const hasVisibilityIconPermission = hasPermission(permissions.seeVisibilityIcon); // ??? this permission doesn't exist?
   const todaysDate = moment()
     .tz('America/Los_Angeles')
     .endOf('week')

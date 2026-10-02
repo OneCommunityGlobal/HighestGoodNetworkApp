@@ -61,7 +61,7 @@ function TeamStatsBarChart({ data, yAxisLabel }) {
         >
           <XAxis type="number" tick={{ fill: darkMode ? 'white' : '#666' }}>
             <Label
-              value="Total Volunteers"
+              value="Total Hours Contributed"
               position="insideBottom"
               offset={-10}
               style={{
