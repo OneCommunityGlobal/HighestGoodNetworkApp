@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardTitle, CardText, Button, CardBody, Container } from 'reactstrap';
 import parse from 'html-react-parser';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { markNotificationAsRead } from '../../actions/notificationAction';
 import { convertDateFormatToMMMDDYY } from '../../utils/formatDate';
 import styles from './notificationCard.module.css';
@@ -49,13 +49,10 @@ import styles from './notificationCard.module.css';
 function NotificationCard({ notification }) {
   const dispatch = useDispatch();
   // const { _id, message, sender, isSystemGenerated } = mockData;
-  const { _id, message, sender, isSystemGenerated, createdTimeStamps } = notification;
-  const { firstName: senderFirstName, lastName: senderLastName } = sender;
-  const senderFullName = `${senderFirstName} ${senderLastName}`;
+  const { _id, message, isSystemGenerated, createdTimeStamps } = notification;
 
   // Fade animation state
   const [fade, setFade] = React.useState(false);
-  const darkMode = useSelector(state => state.theme.darkMode);
 
   // Replace the anchor tag with a styled anchor tag to acoomodate the card's background color.
   // We may use this to apply style to the text before parsing.
@@ -70,13 +67,10 @@ function NotificationCard({ notification }) {
   };
 
   return (
-    <Container
-      fluid
-      className={`${styles.notificationContainer} ${darkMode ? 'bg-oxford-blue' : 'bg-white'}`}
-    >
+    <Container fluid className={styles.notificationContainer}>
       <Card
         color="primary"
-        className={[styles.notificationCard, fade ? styles.fade : ''].filter(Boolean).join(' ')}
+        className={`${styles.notificationCard} ${fade ? styles.fade : ''}`}
         onAnimationEnd={() => setFade(false)}
         inverse
       >
@@ -85,11 +79,11 @@ function NotificationCard({ notification }) {
             <i className="fa fa-info-circle" id="TypeInfo" />
             {isSystemGenerated
               ? ' You have a new system notification!'
-              : ` You have a new notification from ${senderFullName}!`}
+              : ` You have a new notification!`}
           </CardTitle>
           <CardText>{parse(styledHtmlString)}</CardText>
           <CardText>Date: {convertDateFormatToMMMDDYY(createdTimeStamps)}</CardText>
-          <Button onClick={onClickMarkAsRead}> Mark as Read </Button>
+          <Button onClick={onClickMarkAsRead}>Mark as Read</Button>
         </CardBody>
       </Card>
     </Container>

@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Col, UncontrolledTooltip } from 'reactstrap';
 import hasPermission from '../../../utils/permissions';
+import { permissions } from '../../../utils/constants';
 // import styles from './UserProjectsTable.css';
 import { connect } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
@@ -21,11 +22,11 @@ const UserProjectsTable = React.memo(props => {
   const getProjectId = project => project?._id || project?.projectId;
 
   const [tooltipOpen, setTooltip] = useState(false);
-  const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
-  const canUpdateTask = props.hasPermission('updateTask');
-  const canDeleteProjects = props.hasPermission('deleteProject');
-  const canDeleteTasks = props.hasPermission('deleteTask')
-  const canPostTask = props.hasPermission('postTask');
+  const canAssignProjectToUsers = props.hasPermission(permissions.assignProjectToUsers);
+  const canUpdateTask = props.hasPermission(permissions.updateTask);
+  const canDeleteProjects = props.hasPermission(permissions.deleteProject);
+  const canDeleteTasks = props.hasPermission(permissions.deleteTask)
+  const canPostTask = props.hasPermission(permissions.postTask);
 
   const userProjects = ensureArray(props.userProjectsById);
   const userTasks = ensureArray(props.userTasks);

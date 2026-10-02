@@ -206,7 +206,7 @@ export function CPDashboard() {
       }
     };
 
-    fetchEvents();
+    void fetchEvents();
   }, []);
 
   // Darken the page body in dark mode (app-wide pattern) so the area

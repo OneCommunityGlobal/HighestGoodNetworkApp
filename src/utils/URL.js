@@ -684,7 +684,8 @@ export const ENDPOINTS = {
     return `${APIEndpoint}/job-analytics-router${qs}`;
   },
 
-  JOB_ANALYTICS_ROLES: `${APIEndpoint}/job-analytics-router/roles`,
+  JOB_ANALYTICS_ROLES: `${APIEndpoint.replace('/api', '')}/job-analytics/roles`,
+  JOB_ANALYTICS_EXPERIENCE_BREAKDOWN: `${APIEndpoint}/applicant-analytics/experience-breakdown`,
 
   // pr dashboard endpoints
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
@@ -703,6 +704,7 @@ export const ENDPOINTS = {
 
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
+  POPULAR_PRS: duration => `${APIEndpoint}/analytics/popular-prs?duration=${duration}`,
   GITHUB_REVIEW_SUMMARY: (duration, sort = 'desc', team) => {
     const params = new URLSearchParams({
       duration,
