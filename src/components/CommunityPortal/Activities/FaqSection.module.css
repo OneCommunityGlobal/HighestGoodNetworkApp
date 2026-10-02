@@ -156,7 +156,6 @@
 .faqContainerDark .faqSearch {
   background-color: #2b3e59;
   color: #fff;
-  color: #fff;
   border-color: #4a5a77;
 }
 
@@ -171,5 +170,5 @@
 }
 
 .faqQuestionDark {
-  color: #ffffff;
+  color: #fff;
 }

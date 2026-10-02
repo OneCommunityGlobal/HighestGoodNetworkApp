@@ -245,6 +245,13 @@
   color: #ff8b82 !important;
 }
 
+.checkbox_input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
 /* =========================================================
    TABLE MESSAGES
    ========================================================= */

@@ -16,18 +16,29 @@ export const postPromotionEligibility = async (memberIds, requestor) => {
   return res.data;
 };
 
-export const fetchReviewerGroups = async () => {
-  const res = await axios.post(ENDPOINTS.REVIEWER_GROUPS);
+export const fetchReviewerGroups = async currentUser => {
+  const res = await axios.post(ENDPOINTS.REVIEWER_GROUPS, {
+    requestor: currentUser,
+  });
+
   return res.data;
 };
 
-export const createReviewerGroup = async groupData => {
-  const res = await axios.post(ENDPOINTS.REVIEWER_GROUPS_NEW, groupData);
+export const createReviewerGroup = async (groupData, currentUser) => {
+  const res = await axios.post(ENDPOINTS.REVIEWER_GROUPS, {
+    ...groupData,
+    requestor: currentUser,
+  });
+
   return res.data;
 };
 
-export const updateReviewerGroup = async (groupKey, groupData) => {
-  const res = await axios.patch(`${ENDPOINTS.REVIEWER_GROUPS}/${groupKey}`, groupData);
+export const updateReviewerGroup = async (groupId, groupData, currentUser) => {
+  const res = await axios.put(`${ENDPOINTS.REVIEWER_GROUPS}/${groupId}`, {
+    ...groupData,
+    requestor: currentUser,
+  });
+
   return res.data;
 };
 

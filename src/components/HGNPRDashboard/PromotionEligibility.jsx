@@ -99,7 +99,7 @@ function PromotionEligibility() {
       }
     };
 
-    loadPromotionEligibility();
+    void loadPromotionEligibility();
   }, [currentUser]);
 
   /*
@@ -134,7 +134,7 @@ function PromotionEligibility() {
       }
     };
 
-    loadReviewerGroups();
+    void loadReviewerGroups();
   }, [currentUser]);
 
   useEffect(() => {
@@ -324,6 +324,16 @@ function PromotionEligibility() {
   }) => {
     const isSelected = selectedForPromotion.has(id);
 
+    let promotionLabel;
+
+    if (!promoteEligible) {
+      promotionLabel = `${reviewerName} is not eligible for promotion`;
+    } else if (isSelected) {
+      promotionLabel = `Deselect ${reviewerName} for promotion`;
+    } else {
+      promotionLabel = `Select ${reviewerName} for promotion`;
+    }
+
     return (
       <tr key={id}>
         <td data-label="Reviewer Name">{reviewerName}</td>
@@ -342,28 +352,27 @@ function PromotionEligibility() {
         <td data-label="Remaining Weeks">{remainingWeeks}</td>
 
         <td data-label="Promote?">
-          <button
-            type="button"
-            role="checkbox"
-            aria-checked={isSelected}
-            aria-label={
-              promoteEligible
-                ? `${isSelected ? 'Deselect' : 'Select'} ${reviewerName} for promotion`
-                : `${reviewerName} is not eligible for promotion`
-            }
-            disabled={!isOwner || !promoteEligible || processing}
-            onClick={() => toggleSelectPromotion(id)}
+          <label
             className={`${styles.custom_circular_checkbox_wrapper} ${
               !isOwner || !promoteEligible || processing ? styles.disabled : ''
             }`}
+            aria-label={promotionLabel}
           >
+            <input
+              type="checkbox"
+              checked={isSelected}
+              disabled={!isOwner || !promoteEligible || isPromoted || processing}
+              onChange={() => toggleSelectPromotion(id)}
+              className={styles.checkbox_input}
+            />
+
             <span
               className={`${styles.custom_circular_checkbox} ${isSelected ? styles.checked : ''}`}
               aria-hidden="true"
             >
               {isSelected && <FaCheck className={styles.check_icon} aria-hidden="true" />}
             </span>
-          </button>
+          </label>
         </td>
       </tr>
     );

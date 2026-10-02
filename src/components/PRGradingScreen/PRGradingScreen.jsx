@@ -70,7 +70,7 @@ const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
 
   const [showGradingModal, setShowGradingModal] = useState(null);
 
-  const [isFinalized, setIsFinalized] = useState(false);
+  const [isFinalized] = useState(false);
 
   /*
    * Keeps Owner-edited PRs Needed values locally until
