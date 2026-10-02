@@ -33,3 +33,4 @@ yarn-error.log*
 /public/tinymce/Community/
 Community/
 public/tinymce/
+.claude/

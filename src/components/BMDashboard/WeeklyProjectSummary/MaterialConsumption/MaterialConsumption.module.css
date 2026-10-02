@@ -31,7 +31,7 @@
 .materialConsumptionCard {
   --material-consumption-card-border: rgb(15 23 42 / 16%);
 
-  /* Local card boundary and stretching for the three-card Material Consumption row only. */
+  /* Local card boundary and stretching for the four-card Material Consumption row only. */
   border: 1px solid var(--material-consumption-card-border);
   display: flex;
   flex-direction: column;
