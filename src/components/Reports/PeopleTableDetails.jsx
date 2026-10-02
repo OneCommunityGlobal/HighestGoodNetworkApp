@@ -22,9 +22,9 @@ export function TaskResourceCell({
 
   return (
     <>
-      {taskResources.slice(0, 2).map((resource, index) => (
+      {taskResources.slice(0, 2).map((resource) => (
         <img
-          key={`${task._id}-${resource.name}-${index}`}
+          key={`${task._id}-${resource._id || resource.name}`}
           alt={resource.name}
           src={resource.profilePic || '/pfp-default.png'}
           className={styles['img-circle']}
@@ -49,9 +49,9 @@ export function TaskResourceCell({
         data-testid={`extra-resources-${task._id}`}
         style={{ display: isExpanded ? 'table-cell' : 'none' }}
       >
-        {taskResources.slice(2).map((resource, index) => (
+        {taskResources.slice(2).map((resource) => (
           <img
-            key={`${task._id}-${resource.name}-${index + 2}`}
+            key={`${task._id}-${resource._id || resource.name}`}
             alt={resource.name}
             src={resource.profilePic || '/pfp-default.png'}
             className={styles['img-circle']}
