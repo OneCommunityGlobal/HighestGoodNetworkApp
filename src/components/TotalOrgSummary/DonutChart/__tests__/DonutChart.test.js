@@ -95,3 +95,35 @@ describe('DonutChart center title', () => {
     expect(screen.getByText('VOLUNTEERS*')).toBeInTheDocument();
   });
 });
+
+describe('DonutChart small slices', () => {
+  const renderRoles = minLabelPercent =>
+    render(
+      createElement(DonutChart, {
+        title: 'TOTAL MEMBERS',
+        totalCount: 2685,
+        percentageChange: 0,
+        data: [
+          { label: 'Volunteer', value: 2654 },
+          { label: 'TestRole', value: 30 },
+          { label: 'Soham Admin', value: 1 },
+        ],
+        colors: ['#8ebfff', '#2F80ED', '#56CCF2'],
+        comparisonType: 'No Comparison',
+        minLabelPercent,
+      }),
+    );
+
+  it('skips outside labels below minLabelPercent', () => {
+    renderRoles(2);
+    const { formatter } = lastDoughnutProps.options.plugins.externalLabelGuides;
+    expect(formatter({ value: 2654, percentage: 99 })).toEqual(['2654', '(99%)']);
+    expect(formatter({ value: 30, percentage: 1 })).toBeNull();
+  });
+
+  it('keeps slivers too small to draw in the legend', () => {
+    renderRoles(0);
+    expect(lastDoughnutProps.data.labels).not.toContain('Soham Admin');
+    expect(screen.getByText('Soham Admin: 1 (0.0%)')).toBeInTheDocument();
+  });
+});
