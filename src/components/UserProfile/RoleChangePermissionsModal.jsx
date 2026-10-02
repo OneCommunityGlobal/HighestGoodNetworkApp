@@ -18,6 +18,7 @@ function RoleChangePermissionsModal(props) {
   const {
     isOpen,
     onClose,
+    newRole,
     roles = [],
     userProfile,
     loadUserProfile,
@@ -35,21 +36,20 @@ function RoleChangePermissionsModal(props) {
     return map;
   }, [roles]);
 
-  const initialSelectedRole = userProfile?.role || '';
   const initialCustomPerms = userProfile?.permissions?.frontPermissions || [];
   const initialRemovedDefaults = userProfile?.permissions?.removedDefaultPermissions || [];
 
-  const [selectedRole, setSelectedRole] = useState(initialSelectedRole);
+  const [selectedRole, setSelectedRole] = useState(newRole);
   const [userCustomPermissions, setUserCustomPermissions] = useState(initialCustomPerms);
   const [removedDefaultsByRole, setRemovedDefaultsByRole] = useState({});
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    setSelectedRole(initialSelectedRole);
+    setSelectedRole(newRole);
     setUserCustomPermissions(initialCustomPerms);
     setRemovedDefaultsByRole(prev => ({
       ...prev,
-      [initialSelectedRole]: initialRemovedDefaults,
+      [newRole]: initialRemovedDefaults,
     }));
   }, [isOpen]);
 
@@ -102,13 +102,15 @@ function RoleChangePermissionsModal(props) {
       await axios.patch(permissionURL, permissionData)
 
       loadUserProfile();
+      setSaving(false);
+      setKeptFrontPermissions([]); // reset all permissions to unchecked if modal is retriggered after saving
+      setKeptRemovedPermissions([]);
       toast.success('Your changes have been saved, you can verify it in Permissions Management');
       onClose();
     } catch (err) {
+      setSaving(false);
       const errorData = `: ${err.response.data}`
       toast.error(`Failed to update role/permissions${err?.response?.data ? errorData : ''}`);
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -129,17 +131,37 @@ function RoleChangePermissionsModal(props) {
     if(!selectedRole2) return
     const roleDefaults = roleNameToDefaults[selectedRole2.roleName] || [];
     const removedDefaults = getRemovedDefaults(selectedRole2.roleName)
+    const remainingAddedPermissions = userCustomPermissions.filter(perms => { return !roleDefaults.includes(perms) })?.length;
+    const remainingRemovedPermissions = removedDefaults.filter(perms => { return roleDefaults.includes(perms) })?.length;
     return (
       <div key={selectedRole2.roleName} style={{ border: '1px solid #ccc', borderRadius: 4, marginBottom: 8 }}>
         <div style={{ padding: '8px 12px' }}>
-          {userProfile?.role === selectedRole && <h4>User&apos;s Current Role</h4>}
-          {userProfile?.role !== selectedRole && <h5>Changing User&apos;s Role from {userProfile?.role} to {selectedRole}</h5>}
-          <div style={{ display: 'flex' }}>
-            <div style={{padding: '10px 0'}}>
-              These permissions were modified and do not match the new role&apos;s. 
-              Which of these permissions do you wish to keep?
+          {userProfile?.role === selectedRole &&
+            <div>
+              <h4>User&apos;s Current Role</h4>
+              <br></br>
+              <div>
+                To change just the user's permissions, utilize Permissions Management under Other Links if you have the
+                authority to modify individual user permissions.
+              </div>
             </div>
-          </div>
+          }
+          {userProfile?.role !== selectedRole && <h5>Changing User&apos;s Role from {userProfile?.role} to {selectedRole}</h5>}
+          {userProfile?.role !== selectedRole && (remainingAddedPermissions > 0 || remainingRemovedPermissions > 0) &&
+            <div style={{ display: 'flex' }}>
+              <div style={{padding: '10px 0'}}>
+                These permissions were modified and do not match the new role&apos;s. 
+                Which of these permissions do you wish to keep?
+              </div>
+            </div>
+          }
+          {userProfile?.role !== selectedRole && (remainingAddedPermissions === 0 && remainingRemovedPermissions === 0) &&
+            <div style={{ display: 'flex' }}>
+              <div style={{padding: '10px 0'}}>
+                There are added/removed pemissions remaining but they match the default permissions of the currently selected new role, so nothing to check in this case
+              </div>
+            </div>
+          }
           {userCustomPermissions
             .some(perms => {
               return !roleDefaults.includes(perms)
@@ -201,11 +223,11 @@ function RoleChangePermissionsModal(props) {
     <Modal isOpen={isOpen} toggle={onClose} className={darkMode ? 'dark-mode text-light' : ''} size="lg">
       <ModalHeader toggle={onClose} style={{}} className={darkMode ? 'bg-space-cadet' : ''}>
         <div style={{display: 'flex', gap: '10px'}}>
-          Manage Role & Permissions
+          You Are About to Change The Role & Permissions For This Person
           <EditableInfoModal
             role={authRole}
             areaName={'roleChangeInfo'}
-            areaTitle="Role Change"
+            areaTitle="Role Change Modal"
             fontSize={20}
             darkMode={darkMode}
           />
@@ -214,7 +236,7 @@ function RoleChangePermissionsModal(props) {
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <div style={{ marginBottom: 12 }}>
           <label htmlFor="roleSelect" className={darkMode ? 'text-light' : ''}>
-            Role
+            New Role
           </label>
           <Input
             type="select"
@@ -247,11 +269,11 @@ function RoleChangePermissionsModal(props) {
         </div>
       </ModalBody>
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-        <Button onClick={onClose} style={boxStyling} disabled={saving}>
+        <Button color="secondary" onClick={onClose} style={boxStyling} disabled={saving}>
           Cancel
         </Button>
-        <Button color="success" onClick={handleConfirm} style={boxStyling} disabled={saving || userProfile?.role === selectedRole}>
-          {saving ? 'Saving...' : 'Confirm'}
+        <Button onClick={handleConfirm} className={`${darkMode ? styles.darkMode : ''} ${styles.roleModal} ${styles.button}`} disabled={saving || userProfile?.role === selectedRole}>
+          {saving ? 'Saving...' : 'Save Changes'}
         </Button>
       </ModalFooter>
     </Modal>

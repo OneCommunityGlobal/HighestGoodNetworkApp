@@ -83,3 +83,32 @@
 .darkModeText {
   color: white;
 }
+
+.darkMode.roleModal.button {
+  border-color: #2563eb !important;
+  background-color: #2563eb !important;
+}
+
+.darkMode.roleModal.button:hover {
+  color: #fff;
+  background-color: #1d4ed8 !important;
+  border-color: #1d4ed8 !important;
+}
+
+.roleModal.button {
+  color: #007bff;
+  background-color: #f8f9fa;
+  border-color: #007bff;
+}
+
+.roleModal.button:hover {
+  color: #fff;
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.roleModal.button:disabled {
+  color: #007bff;
+  border-color: #007bff;
+  background-color: transparent;
+}

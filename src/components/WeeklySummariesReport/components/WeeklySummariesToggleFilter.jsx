@@ -3,6 +3,7 @@ import { Label } from 'reactstrap';
 import styles from '../WeeklySummariesReport.module.css';
 import ReactTooltip from 'react-tooltip';
 import { toggleField } from '~/utils/stateHelper';
+import { permissions } from '~/utils/constants';
 import { SlideToggle } from '../components';
 
 export default function WeeklySummariesToggleFilter({
@@ -33,7 +34,7 @@ export default function WeeklySummariesToggleFilter({
     <div className={styles.specialColorsRow}>
       <span className={styles.filterGroupLabel}>Filter by:</span>
 
-      {(hasPermissionToFilter || hasPermission?.('highlightEligibleBios')) && (
+      {(hasPermissionToFilter || hasPermission?.(permissions.highlightEligibleBios)) && (
         <div className={styles.specialColorsItem}>
           <span className={textColorClass}>Bio Status</span>
           <div style={{ marginTop: '10px' }}>

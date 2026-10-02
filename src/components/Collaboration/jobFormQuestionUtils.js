@@ -68,3 +68,52 @@ export function normalizeLoadedQuestions(questions = []) {
     };
   });
 }
+
+/**
+ * Normalize question text for duplicate comparison: trim, collapse
+ * internal whitespace, lowercase, and strip trailing punctuation.
+ */
+export function normalizeQuestionText(text) {
+  return String(text || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .replace(/[.,!?;:]+$/, '');
+}
+
+/**
+ * Returns true if a question with matching (normalized) text already
+ * exists in existingFields. Pure function, safe to unit test standalone.
+ */
+export function isDuplicateQuestion(candidate, existingFields = []) {
+  const candidateText = normalizeQuestionText(candidate?.questionText || candidate?.label);
+  if (!candidateText) return false;
+  return existingFields.some(
+    field => normalizeQuestionText(field?.questionText || field?.label) === candidateText,
+  );
+}
+
+/**
+ * Given a batch of candidate questions (e.g. from a template being
+ * appended) and the current form fields, returns the subset of candidates
+ * that look like duplicates — either against existingFields or against
+ * an earlier candidate in the same batch.
+ */
+export function findDuplicateQuestions(candidates = [], existingFields = []) {
+  const seen = new Set(
+    existingFields
+      .map(field => normalizeQuestionText(field?.questionText || field?.label))
+      .filter(Boolean),
+  );
+  const duplicates = [];
+  candidates.forEach(candidate => {
+    const text = normalizeQuestionText(candidate?.questionText || candidate?.label);
+    if (!text) return;
+    if (seen.has(text)) {
+      duplicates.push(candidate);
+    } else {
+      seen.add(text);
+    }
+  });
+  return duplicates;
+}

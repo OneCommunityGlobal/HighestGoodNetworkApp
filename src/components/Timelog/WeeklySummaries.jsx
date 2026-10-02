@@ -8,6 +8,8 @@ import { Button } from 'reactstrap';
 import { updateWeeklySummaries } from '../../actions/weeklySummaries';
 import styles from './Timelog.module.css';
 
+import { permissions } from '../../utils/constants';
+
 export const moveWeeklySummary = (
   weeklySummaries,
   sourceIndex,
@@ -60,7 +62,7 @@ function WeeklySummaries({ userProfile }) {
   const [wordCount, setWordCount] = useState(0);
 
   const dispatch = useDispatch();
-  const canEdit = dispatch(hasPermission('putUserProfile'));
+  const canEdit = dispatch(hasPermission(permissions.putUserProfile));
 
   useEffect(() => {
     setEditedSummaries([

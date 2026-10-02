@@ -7,32 +7,79 @@
   margin-bottom: 10px;
 }
 
+/* Projects table sizing.
+   The table uses `table-layout: fixed` (see .projectsTable) so column widths
+   come from these header cells instead of from cell content. Values are
+   percentages of the table width; the Project Name column has no id and takes
+   whatever is left (~25%). Keeping them as percentages lets the table shrink to
+   its wrapper instead of overflowing it. */
 :global(#projects__order) {
-  width: 5px;
+  width: 5%;
 }
 
 :global(#projects__active) {
-  width: 10px;
+  width: 8%;
 }
 
 :global(#projects__category) {
-  width: 15px;
+  width: 15%;
 }
 
 :global(#projects__members) {
-  width: 15px;
+  width: 12%;
 }
 
 :global(#projects__inv) {
-  width: 15px;
+  width: 12%;
 }
 
 :global(#projects__wbs) {
-  width: 15px;
+  width: 12%;
 }
 
 :global(#projects__delete) {
-  width: 20px;
+  width: 11%;
+}
+
+/* Fixed layout ties column widths to the header row, so long values in a cell
+   wrap or clip instead of stretching the whole table past its container. The
+   min-width gives the .table-responsive-sm wrapper something to scroll on very
+   narrow screens rather than squashing every column to nothing; it stays below
+   the smallest Bootstrap .container content box (~510px) so the table never
+   overflows on wider screens. */
+.projectsTable {
+  table-layout: fixed;
+  width: 100%;
+  min-width: 480px;
+}
+
+.projectsTable th,
+.projectsTable td {
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+}
+
+/* Inputs/selects must shrink with their (now fixed-width) column instead of
+   holding their default intrinsic width and forcing the column wider. Not
+   using overflow:hidden here on purpose: the members cell has a count badge
+   that is positioned to overhang the cell. */
+.projectsTable td :global(.form-control) {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* The action-icon buttons carry an inline box-shadow (boxStyle / boxStyleDark
+   from ~/styles). On the dark table that shadow bleeds across the thin cell
+   borders and reads as a smudge beside the Active column. Drop it for every
+   button in the table; the inline style needs !important to override. */
+.projectsTable :global(.btn) {
+  box-shadow: none !important;
+}
+
+/* The Category / Status filter toggles supply their own chevron glyph, so hide
+   react-bootstrap's built-in ::after caret to avoid two stacked arrows. */
+.projectsTable :global(.dropdown-toggle)::after {
+  display: none;
 }
 
 /* Keep overview layout global for now (likely used in Overview.jsx) */
@@ -64,7 +111,8 @@
 
 :global(.search-project-person) {
   position: relative;
-  width: 100%;
+  flex: 1 1 280px;
+  min-width: 0;
 }
 
 :global(.suggestions-list) {
@@ -123,6 +171,7 @@
 .projects__active--input i {
   margin-top: 10px;
   cursor: pointer;
+  box-shadow: none !important;
 }
 
 .projects__name--input input {
@@ -135,10 +184,15 @@
 
 .isActive i {
   color: lawngreen;
+  box-shadow: none !important;
 }
 
 .isNotActive {
   color: #dee2e6;
+}
+
+.isNotActive i {
+  box-shadow: none !important;
 }
 
 .isDisabled {
@@ -229,4 +283,10 @@ tr:hover {
 }
 .searchLabelDark {
   background-color: #1f3b63 !important;
+}
+
+.searchInput {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
