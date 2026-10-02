@@ -81,6 +81,7 @@ import { clearCachedTeamMembers } from '../Teams/teamMembersCache';
 import SetUpFinalDayPopUp from '../UserManagement/SetUpFinalDayPopUp';
 import AccessManagementModal from './UserProfileModal/AccessManagementModal';
 import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
+import RehireableStatusControl from './RehireableStatusControl';
 
 import { permissions } from '../../utils/constants';
 function UserProfile(props) {
@@ -162,9 +163,7 @@ function UserProfile(props) {
   const [showSummary, setShowSummary] = useState(false);
   const [saved, setSaved] = useState(false);
   const [summaryIntro, setSummaryIntro] = useState('');
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showToggleVisibilityModal, setShowToggleVisibilityModal] = useState(false);
-  const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
   const [isRehireable, setIsRehireable] = useState(null);
   const [specialWarnings, setSpecialWarnings] = useState([]);
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
@@ -1079,30 +1078,25 @@ setUpdatedTasks(prev => {
     history.push(`/peoplereport/${to}`);
   };
 
-  const handleRehireableChange = () => {
-    const newRehireableStatus = !isRehireable;
-    setPendingRehireableStatus(newRehireableStatus);
-    setShowConfirmDialog(true);
-  };
-
-  const handleConfirmChange = async () => {
-    setShowConfirmDialog(false);
+  const handleConfirmRehireableChange = async (newRehireableStatus, notRehireableReason) => {
     const updatedUserProfile = {
       ...userProfile,
-      isRehireable: pendingRehireableStatus,
+      isRehireable: newRehireableStatus,
     };
+    const savedReason = !newRehireableStatus ? notRehireableReason.trim() : '';
+    if (savedReason) updatedUserProfile.notRehireableReason = savedReason;
+    else delete updatedUserProfile.notRehireableReason;
+
     try {
-      await dispatch(updateRehireableStatus(updatedUserProfile, pendingRehireableStatus));
-      setIsRehireable(pendingRehireableStatus);
+      await dispatch(
+        updateRehireableStatus(updatedUserProfile, newRehireableStatus, savedReason),
+      );
+      setIsRehireable(newRehireableStatus);
       setUserProfile(updatedUserProfile);
       setOriginalUserProfile(updatedUserProfile);
     } catch (error) {
       toast.error('Unable change rehireable status');
     }
-  };
-
-  const handleCancelChange = () => {
-    setShowConfirmDialog(false);
   };
 
   /**
@@ -1524,15 +1518,12 @@ setUpdatedTasks(prev => {
               </span>
             )}
             {canChangeRehireableStatus && (
-              <span className="mr-2">
-                <i
-                  className={isRehireable ? 'fa fa-check-square-o' : 'fa fa-square-o'}
-                  aria-hidden="true"
-                  style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
-                  title="Click to change rehirable status"
-                  onClick={handleRehireableChange}
-                />
-              </span>
+              <RehireableStatusControl
+                isRehireable={Boolean(isRehireable)}
+                notRehireableReason={userProfile?.notRehireableReason || ''}
+                darkMode={darkMode}
+                onConfirm={handleConfirmRehireableChange}
+              />
             )}
             <Button
               onClick={() => {
@@ -1906,31 +1897,6 @@ setUpdatedTasks(prev => {
               >
                 Basic Information
               </Button>
-              <Modal
-                isOpen={showConfirmDialog}
-                toggle={handleCancelChange}
-                className={darkMode ? 'text-light dark-mode' : ''}
-              >
-                <ModalHeader
-                  toggle={handleCancelChange}
-                  className={darkMode ? 'bg-space-cadet' : ''}
-                >
-                  Confirm Status Change
-                </ModalHeader>
-                <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-                  {`Are you sure you want to change the user status to ${
-                    pendingRehireableStatus ? 'Rehireable' : 'Unrehireable'
-                  }?`}
-                </ModalBody>
-                <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-                  <Button color="primary" onClick={handleConfirmChange}>
-                    Confirm
-                  </Button>{' '}
-                  <Button color="secondary" onClick={handleCancelChange}>
-                    Cancel
-                  </Button>
-                </ModalFooter>
-              </Modal>
               <Modal
                 isOpen={menuModalTabletScreen === 'Basic Information'}
                 toggle={toggle}
