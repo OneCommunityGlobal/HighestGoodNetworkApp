@@ -319,8 +319,8 @@ function PeopleTableDetails(props) {
               <div className={styles['task-info']}>
                 <div className={styles['sub-head']}>Resources</div>
                 <div className={styles['sub-details']}>
-                  {(task.resources || []).flat().map((res, i) => (
-                    <img key={i} alt={res.name} src={res.profilePic || '/pfp-default.png'} className={styles['img-circle']} />
+                  {(task.resources || []).flat().map((res) => (
+                    <img key={`${task._id}-${res._id || res.name}`} alt={res.name} src={res.profilePic || '/pfp-default.png'} className={styles['img-circle']} />
                   ))}
                 </div>
               </div>
