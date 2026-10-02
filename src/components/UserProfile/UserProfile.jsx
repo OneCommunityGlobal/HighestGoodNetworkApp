@@ -82,6 +82,7 @@ import SetUpFinalDayPopUp from '../UserManagement/SetUpFinalDayPopUp';
 import AccessManagementModal from './UserProfileModal/AccessManagementModal';
 import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 
+import { permissions } from '../../utils/constants';
 function UserProfile(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
   /* Constant values */
@@ -110,12 +111,12 @@ function UserProfile(props) {
         params: { _ts: Date.now() },
         headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
       });
-  
+
       const teamCodes = (Array.isArray(response.data) ? response.data : [])
         .filter(item => typeof item === 'string' && item.trim() !== '');
   
       const uniqueTeamCodes = [...new Set(teamCodes)].sort((a, b) => a.localeCompare(b));
-  
+
       setInputAutoComplete(uniqueTeamCodes);
       setInputAutoStatus(response.status);
   
@@ -124,7 +125,9 @@ function UserProfile(props) {
       // eslint-disable-next-line no-console
       console.log('Team codes fetch failed:', error);
       return [];
-    }
+    } finally {
+        setIsLoading(false);
+      }
   }, []);
 
   /* Hooks */
@@ -204,7 +207,7 @@ function UserProfile(props) {
 
   const { userid: requestorId, role: requestorRole } = props.auth.user;
 
-  const canEditTeamCode = props.hasPermission('editTeamCode');
+  const canEditTeamCode = props.hasPermission(permissions.editTeamCode);
   const [titleOnSet, setTitleOnSet] = useState(false); // added by development
 
   /* useEffect functions */ // added by luis, the below useEffect
@@ -1200,21 +1203,20 @@ setUpdatedTasks(prev => {
   const authEmail = props.auth?.user?.email;
   const isUserSelf = targetUserId === requestorId;
 
-  const canChangeUserStatus = props.hasPermission('changeUserStatus');
-  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
-  const canPutUserProfile = props.hasPermission('putUserProfile');
-  const canUpdatePassword = props.hasPermission('updatePassword');
-  const canGetProjectMembers = props.hasPermission('getProjectMembers');
-  const canChangeRehireableStatus = props.hasPermission('changeUserRehireableStatus');
-  const canUpdateSummaryRequirements = props.hasPermission('updateSummaryRequirements');
-  const canManageAdminLinks = props.hasPermission('manageAdminLinks');
-  const canSeeQSC = props.hasPermission('seeQSC');
-  const canManageHGNAccessSetup = props.hasPermission('manageHGNAccessSetup');
-  const canEditVisibility = props.hasPermission('toggleInvisibility');
-  const canSeeReports = props.hasPermission('getReports');
+  const canChangeUserStatus = props.hasPermission(permissions.changeUserStatus);
+  const canAddDeleteEditOwners = props.hasPermission(permissions.addDeleteEditOwners);
+  const canPutUserProfile = props.hasPermission(permissions.putUserProfile);
+  const canUpdatePassword = props.hasPermission(permissions.updatePassword);
+  const canGetProjectMembers = props.hasPermission(permissions.getProjectMembers);
+  const canChangeRehireableStatus = props.hasPermission(permissions.changeUserRehireableStatus);
+  const canUpdateSummaryRequirements = props.hasPermission(permissions.updateSummaryRequirements);
+  const canManageAdminLinks = props.hasPermission(permissions.manageAdminLinks);
+  const canManageHGNAccessSetup = props.hasPermission(permissions.manageHGNAccessSetup);
+  const canEditVisibility = props.hasPermission(permissions.toggleInvisibility);
+  const canSeeReports = props.hasPermission(permissions.getReports);
   const { role: userRole } = userProfile;
   const canResetPassword =
-    props.hasPermission('updatePassword')&& !(userProfile.role === 'Administrator' || userProfile.role === 'Owner');
+    props.hasPermission(permissions.updatePassword)&& !(userProfile.role === 'Administrator' || userProfile.role === 'Owner');
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
   const canEditUserProfile = targetIsDevAdminUneditable
     ? false
@@ -1428,11 +1430,11 @@ setUpdatedTasks(prev => {
         </div>
 
         <div className="right-column">
-          {!codeValid ? (
+          {/* {!codeValid ? (
             <Alert color="danger">
-              NOT SAVED! The code must be between 5 and 7 characters long
+              NOT SAVED! The code must be between 5 and 77 characters long
             </Alert>
-          ) : null}
+          ) : null} */}
           <div className="profile-head">
             <h5 className={`mr-2 ${darkMode ? 'text-light' : ''}`}>{`${firstName} ${lastName}`}</h5>
             <div style={{ marginTop: '6px' }}>
