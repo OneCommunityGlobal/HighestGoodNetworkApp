@@ -310,10 +310,15 @@ const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
       setInputError('');
 
       // Import PRs from the reviewer's weekly summary
-      await importPREntries(reviewerId, currentUser);
+      const result = await importPREntries(reviewerId, currentUser);
 
       // Refresh all PR data so imported PRs appear immediately
       await loadAllPREntries();
+
+      if (result.added?.length === 0) {
+        toast.info(result.warnings?.[0] || 'No PRs found to import from the weekly summary.');
+        return;
+      }
 
       toast.success('PRs imported from weekly summary.');
     } catch (error) {
@@ -321,7 +326,6 @@ const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
       toast.error('Unable to import PRs from the weekly summary.');
     }
   };
-
   const handleInputSubmit = async reviewerId => {
     if (isFinalized) {
       return;

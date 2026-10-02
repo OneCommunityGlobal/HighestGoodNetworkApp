@@ -238,11 +238,11 @@
 }
 
 .promo_table_container.dark .promo_table td.status_met {
-  color: #6ee787;
+  color: #6ee787 !important;
 }
 
 .promo_table_container.dark .promo_table td.status_not_met {
-  color: #ff8b82;
+  color: #ff8b82 !important;
 }
 
 /* =========================================================
@@ -434,16 +434,19 @@
 }
 
 .modal {
-  width: 500px;
-  max-width: 90%;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  max-width: 90vw;
   max-height: 90vh;
-  overflow-y: auto;
-  padding: 24px;
-  background-color: #ffffff;
-  color: #171717;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  box-shadow: 0 8px 24px rgb(0 0 0 / 25%);
+  padding: 1em;
+  border-radius: 2%;
+}
+
+.modal::backdrop {
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .modal h2 {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { toast } from 'react-toastify';
 import { FaCheck } from 'react-icons/fa';
 import {
@@ -9,9 +9,10 @@ import {
   createReviewerGroup,
   updateReviewerGroup,
 } from '../../actions/promotionActions';
+import { getAllUserTeams } from '../../actions/allTeamsAction';
 import styles from './PromotionEligibility.module.css';
 import PRGradingModal from './PRGradingModal';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 function PromotionEligibility() {
   const [loading, setLoading] = useState(true);
@@ -52,10 +53,13 @@ function PromotionEligibility() {
   const [promotionPreview, setPromotionPreview] = useState([]);
   const [editingPromotionTeam, setEditingPromotionTeam] = useState(null);
   const [editingTeamId, setEditingTeamId] = useState('');
+  const promotionDialogRef = useRef(null);
 
   const darkMode = useSelector(state => state.theme.darkMode);
   const currentUser = useSelector(state => state.auth?.user);
   const isOwner = currentUser?.role === 'Owner';
+  const allTeams = useSelector(state => state.allTeamsData?.allTeams || []);
+  const dispatch = useDispatch();
 
   /*
    * Load promotion eligibility data
@@ -76,7 +80,18 @@ function PromotionEligibility() {
 
         setReviewers(mappedData);
       } catch (e) {
-        const msg = 'Failed to load Reviewers.';
+        console.error('Failed to load reviewers:', e);
+
+        let msg = 'Failed to load reviewers.';
+
+        if (e.response?.status === 403) {
+          msg = 'You do not have permission to load reviewers.';
+        } else if (e.response?.status === 404) {
+          msg = 'Reviewer data could not be found.';
+        } else if (e.response?.status >= 500) {
+          msg = 'Server error while loading reviewers. Please try again later.';
+        }
+
         setError(msg);
         toast.error(msg);
       } finally {
@@ -102,7 +117,18 @@ function PromotionEligibility() {
         setReviewOptions(groups);
       } catch (error) {
         console.error('Failed to fetch reviewer groups:', error);
-        toast.error('Unable to load review groups.');
+
+        let msg = 'Unable to load review groups.';
+
+        if (error.response?.status === 403) {
+          msg = 'You do not have permission to load review groups.';
+        } else if (error.response?.status === 404) {
+          msg = 'Review groups could not be found.';
+        } else if (error.response?.status >= 500) {
+          msg = 'Server error while loading review groups. Please try again later.';
+        }
+
+        toast.error(msg);
       } finally {
         setLoadingReviewOptions(false);
       }
@@ -110,6 +136,26 @@ function PromotionEligibility() {
 
     loadReviewerGroups();
   }, [currentUser]);
+
+  useEffect(() => {
+    const dialog = promotionDialogRef.current;
+
+    if (!dialog) return;
+
+    if (showPromotionModal && !dialog.open) {
+      dialog.showModal();
+    }
+
+    if (!showPromotionModal && dialog.open) {
+      dialog.close();
+    }
+  }, [showPromotionModal]);
+
+  useEffect(() => {
+    if (!allTeams.length) {
+      dispatch(getAllUserTeams());
+    }
+  }, [dispatch, allTeams]);
 
   const newMembers = reviewers.filter(r => r.isNewMember);
   const existingMembers = reviewers.filter(r => !r.isNewMember);
@@ -177,7 +223,6 @@ function PromotionEligibility() {
       const response = await previewPromotionEligibility(eligibleIds, currentUser);
 
       const placements = response?.placements || [];
-
       setPromotionPreview(placements);
       setShowPromotionModal(true);
     } catch (err) {
@@ -199,9 +244,7 @@ function PromotionEligibility() {
   };
 
   const handleSavePromotionTeam = reviewerId => {
-    const selectedTeam = promotionPreview.find(
-      item => item.teamId === editingTeamId && item.teamName,
-    );
+    const selectedTeam = allTeams.find(team => team._id === editingTeamId);
 
     setPromotionPreview(prev =>
       prev.map(item =>
@@ -277,6 +320,7 @@ function PromotionEligibility() {
     totalReviews,
     remainingWeeks,
     promoteEligible,
+    isPromoted,
   }) => {
     const isSelected = selectedForPromotion.has(id);
 
@@ -378,10 +422,6 @@ function PromotionEligibility() {
    */
   const handleReviewOptionSelect = option => {
     const filteredReviewers = getReviewersForGroup(option);
-
-    console.log('Review option:', option);
-    console.log('Reviewers from API/state:', reviewers);
-    console.log('Filtered reviewers:', filteredReviewers);
 
     setSelectedReviewGroup(option);
     setReviewersForModal(filteredReviewers);
@@ -512,16 +552,14 @@ function PromotionEligibility() {
       rangeEnd: '',
     });
   };
-  const promotionTeamOptions = Array.from(
-    new Map(
-      promotionPreview
-        .filter(item => item.teamId && item.teamName)
-        .map(item => [item.teamId, item.teamName]),
-    ).entries(),
-  ).map(([teamId, teamName]) => ({
-    teamId,
-    teamName,
-  }));
+
+  const promotionTeamOptions = allTeams
+    .filter(team => team.isActive)
+    .map(team => ({
+      teamId: team._id,
+      teamName: team.teamName,
+    }));
+
   return (
     <>
       <div className={`${styles.pageWrapper} ${darkMode ? styles.dark : ''}`}>
@@ -603,6 +641,7 @@ function PromotionEligibility() {
                 <div className={styles.modal_overlay}>
                   <dialog
                     className={styles.modal}
+                    ref={promotionDialogRef}
                     aria-modal="true"
                     aria-labelledby="manage-review-options-title"
                   >
@@ -667,6 +706,7 @@ function PromotionEligibility() {
               {showEditOption && selectedOption && (
                 <div className={styles.modal_overlay}>
                   <dialog
+                    ref={promotionDialogRef}
                     className={styles.modal}
                     aria-modal="true"
                     aria-labelledby="edit-review-option-title"
@@ -738,6 +778,7 @@ function PromotionEligibility() {
               {showAddOption && (
                 <div className={styles.modal_overlay}>
                   <dialog
+                    ref={promotionDialogRef}
                     className={styles.modal}
                     aria-modal="true"
                     aria-labelledby="add-review-option-title"
@@ -805,7 +846,7 @@ function PromotionEligibility() {
               <button
                 type="button"
                 onClick={handleProcessPromotions}
-                disabled={processing}
+                disabled={!isOwner || processing}
                 className={styles.process_promo_btn}
               >
                 {processing ? 'Processing...' : 'Process Promotions'}
@@ -886,6 +927,7 @@ function PromotionEligibility() {
       {showPromotionModal && (
         <div className={`${styles.modal_overlay} ${darkMode ? styles.darkModal : ''}`}>
           <dialog
+            ref={promotionDialogRef}
             className={styles.modal}
             aria-modal="true"
             aria-labelledby="promotion-confirmation-title"
