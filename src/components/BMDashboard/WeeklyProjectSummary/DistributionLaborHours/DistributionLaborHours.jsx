@@ -68,51 +68,59 @@ const CustomTooltip = ({ active, payload, total, darkMode }) => {
 
 export default function DistributionLaborHours() {
   const darkMode = useSelector(state => state.theme.darkMode);
+  const requestorId = useSelector(state => state.auth.user.userid);
 
   const [filteredData, setFilteredData] = useState(topFiveWithOthers(MOCK_DATA));
   const [dateRange, setDateRange] = useState({ from: '', to: '' });
   const [projectFilter, setProjectFilter] = useState('');
   const [memberFilter, setMemberFilter] = useState('');
 
-  const fetchDistribution = useCallback(async ({ from, to, category }) => {
-    try {
-      const token = localStorage.getItem(config.tokenKey);
-      const headers = {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: token }),
-      };
+  const fetchDistribution = useCallback(
+    async ({ from, to, category }) => {
+      try {
+        const token = localStorage.getItem(config.tokenKey);
+        const headers = {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: token }),
+        };
 
-      const startDate =
-        from ||
-        moment()
-          .subtract(30, 'days')
-          .format('YYYY-MM-DD');
-      const endDate = to || moment().format('YYYY-MM-DD');
-      const params = new URLSearchParams({ start_date: startDate, end_date: endDate });
-      if (category) params.set('category', category);
+        const startDate =
+          from ||
+          moment()
+            .subtract(30, 'days')
+            .format('YYYY-MM-DD');
+        const endDate = to || moment().format('YYYY-MM-DD');
+        const params = new URLSearchParams({
+          requestorId,
+          start_date: startDate,
+          end_date: endDate,
+        });
+        if (category) params.set('category', category);
 
-      const response = await fetch(
-        `${ENDPOINTS.APIEndpoint()}/labor-hours/distribution?${params.toString()}`,
-        { method: 'GET', headers, cache: 'no-store' },
-      );
+        const response = await fetch(
+          `${ENDPOINTS.APIEndpoint()}/labor-hours/distribution?${params.toString()}`,
+          { method: 'GET', headers, cache: 'no-store' },
+        );
 
-      if (!response.ok) throw new Error(`Status ${response.status}`);
-      const body = await response.json();
-      const distribution = (body.distribution || []).map(item => ({
-        name: item.category,
-        value: item.hours,
-      }));
+        if (!response.ok) throw new Error(`Status ${response.status}`);
+        const body = await response.json();
+        const distribution = (body.distribution || []).map(item => ({
+          name: item.category,
+          value: item.hours,
+        }));
 
-      setFilteredData(topFiveWithOthers(distribution.length > 0 ? distribution : MOCK_DATA));
-    } catch (error) {
-      logger.logError(error);
-      if (isDevelopmentEnvironment()) {
-        setFilteredData(topFiveWithOthers(MOCK_DATA));
-      } else {
-        setFilteredData([]);
+        setFilteredData(topFiveWithOthers(distribution.length > 0 ? distribution : MOCK_DATA));
+      } catch (error) {
+        logger.logError(error);
+        if (isDevelopmentEnvironment()) {
+          setFilteredData(topFiveWithOthers(MOCK_DATA));
+        } else {
+          setFilteredData([]);
+        }
       }
-    }
-  }, []);
+    },
+    [requestorId],
+  );
 
   useEffect(() => {
     fetchDistribution({ from: dateRange.from, to: dateRange.to, category: projectFilter });
