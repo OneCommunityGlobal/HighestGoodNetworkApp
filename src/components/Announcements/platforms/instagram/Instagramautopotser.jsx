@@ -22,7 +22,8 @@ import {
 } from './Instagramhelpers';
 
 // API Base for backend
-const API_BASE = 'https://freebase-sugar-duplicate.ngrok-free.dev';
+//const API_BASE = 'https://freebase-sugar-duplicate.ngrok-free.dev';
+const API_BASE = 'http://localhost:4500';
 
 // ─── InstagramScheduleField sub-component ────────────────────────────────────
 
@@ -74,25 +75,37 @@ InstagramScheduleField.propTypes = {
 // both the scheduled-posts queue and the post-history list below.
 
 function InstagramPostMedia({ mediaUrl, mediaType, captionPreview }) {
+  const [failed, setFailed] = useState(false);
+
   return (
     <>
-      {mediaUrl && (
+      {mediaUrl && !failed && (
         <div className={styles['instagram-saved__media']}>
           {mediaType === 'VIDEO' ? (
+            // eslint-disable-next-line jsx-a11y/media-has-caption -- history
+            // preview of already-published media; no caption track available
             <video
               src={mediaUrl}
               className={styles['instagram-saved__thumbnail']}
+              controls
               muted
               playsInline
+              onError={() => setFailed(true)}
             />
           ) : (
             <img
               src={mediaUrl}
-              alt={captionPreview}
+              alt="Instagram post media"
               className={styles['instagram-saved__thumbnail']}
+              onError={() => setFailed(true)}
             />
           )}
         </div>
+      )}
+      {mediaUrl && failed && (
+        <p className={styles['instagram-saved__error']}>
+          Media failed to load — link may be expired.
+        </p>
       )}
       <p className={styles['instagram-saved__excerpt']}>{captionPreview}</p>
     </>
@@ -120,15 +133,9 @@ const STATUS_LABEL = {
 // ─── ScheduledPostItem sub-component ──────────────────────────────────────────
 
 function getScheduledCaptionPreview(post) {
-  let captionPreview = post.caption || 'No content captured.';
-  try {
-    const data = JSON.parse(post.postData);
-    const text = data.status || '';
-    captionPreview = text.length > 140 ? `${text.slice(0, 140).trim()}...` : text || captionPreview;
-  } catch {
-    // keep default
-  }
-  return captionPreview;
+  const text = post.caption || '';
+  if (!text) return 'No content captured.';
+  return text.length > 140 ? `${text.slice(0, 140).trim()}...` : text;
 }
 
 function ScheduledPostItem({ post, darkMode, isEditing, onEdit, onRetry, onDelete }) {
@@ -420,41 +427,31 @@ function InstagramAutoPoster({ platform }) {
       toast.error(`Could not copy ${label.toLowerCase()}.`);
     }
   };
-
-  const shareToInstagram = async () => {
-    const text = buildCaptionForClipboard({ caption, hashtags });
-    if (navigator.share && media) {
-      try {
-        const blob = await (await fetch(media.base64)).blob();
-        const file = new File([blob], media.name || 'post', { type: blob.type });
-        if (navigator.canShare && !navigator.canShare({ files: [file] })) {
-          throw new Error('unsupported');
-        }
-        await navigator.share({ text, files: [file] });
-        return;
-      } catch {
-        // fall through to clipboard + manual open
-      }
-    }
-    await copyText(text, 'Caption');
-    window.open('https://www.instagram.com/', '_blank', 'noopener,noreferrer');
-    toast.info('Caption copied — attach your media and paste it in Instagram.');
-  };
-
   // ── Handlers: real posting ──────────────────────────────────────────────
 
-  const buildRequestBody = () => ({
-    caption: buildCaptionForClipboard({ caption, hashtags }),
-    media: media
-      ? {
-          base64: media.base64,
-          name: media.name,
-          isVideo: media.isVideo,
-        }
-      : null,
-    altText: trimmedAltText || null,
-  });
+  const buildRequestBody = () => {
+    const body = {
+      caption: buildCaptionForClipboard({ caption, hashtags }),
+      altText: trimmedAltText || null,
+      media: null,
+      existingMediaUrl: null,
+      existingMediaType: null,
+    };
 
+    if (media?.base64) {
+      // A real new upload.
+      body.media = {
+        base64: media.base64,
+        name: media.name,
+        isVideo: media.isVideo,
+      };
+    } else if (media?.preview) {
+      body.existingMediaUrl = media.preview;
+      body.existingMediaType = media.isVideo ? 'VIDEO' : 'IMAGE';
+    }
+
+    return body;
+  };
   const handlePostNow = async () => {
     if (!captionValid) {
       toast.error(`Caption must be 1–${CAPTION_MAX} characters.`);
@@ -599,11 +596,13 @@ function InstagramAutoPoster({ platform }) {
 
       if (post.mediaUrl) {
         setMedia({
-          base64: null, // no base64 available from a saved URL; see note below
-          preview: `${post.mediaUrl}?ngrok-skip-browser-warning=true`,
+          base64: null,
+          preview: post.mediaUrl,
           name: 'scheduled-media',
           isVideo: post.mediaType === 'VIDEO',
         });
+      } else {
+        setMedia(null);
       }
 
       const scheduled = new Date(post.scheduledTime);
@@ -729,7 +728,6 @@ function InstagramAutoPoster({ platform }) {
                     <img src={media.preview} alt="Upload preview" />
                   )}
                   <div>
-                    <p className={styles['instagram-field__hint']}>{media.name}</p>
                     <button
                       type="button"
                       style={buttonStyle('ghost', darkMode)}
@@ -787,7 +785,11 @@ function InstagramAutoPoster({ platform }) {
             </div>
 
             {/* Hashtags */}
-            <div className={styles['instagram-card']}>
+            <div
+              className={classNames(styles['instagram-card'], styles['instagram-card--wide'], {
+                [styles.invalid]: highlightCaption,
+              })}
+            >
               <div className={styles['instagram-field__header']}>
                 <label htmlFor="instagram-hashtags">Hashtags</label>
                 <span className={styles['instagram-field__meta']}>optional, up to 30</span>
@@ -830,58 +832,6 @@ function InstagramAutoPoster({ platform }) {
                   ))}
                 </div>
               )}
-            </div>
-
-            {/* Alt text */}
-            <div
-              className={classNames(styles['instagram-card'], {
-                [styles.invalid]: highlightAltText,
-              })}
-            >
-              <div className={styles['instagram-field__header']}>
-                <label htmlFor="instagram-alt-text">Alt text</label>
-                <span
-                  className={classNames(styles['instagram-field__meta'], {
-                    [styles.invalid]: highlightAltText,
-                  })}
-                >
-                  {altText.length}/{ALT_TEXT_MAX}
-                </span>
-              </div>
-              <input
-                id="instagram-alt-text"
-                type="text"
-                value={altText}
-                onChange={e => setAltText(e.target.value)}
-                className={styles['instagram-field__input']}
-                placeholder="Describe the image for screen readers"
-                maxLength={ALT_TEXT_MAX}
-              />
-              {highlightAltText && (
-                <p className={styles['instagram-field__error']}>
-                  Alt text exceeds {ALT_TEXT_MAX} characters.
-                </p>
-              )}
-            </div>
-
-            {/* Location */}
-            <div className={styles['instagram-card']}>
-              <div className={styles['instagram-field__header']}>
-                <label htmlFor="instagram-location">Location</label>
-                <span className={styles['instagram-field__meta']}>optional</span>
-              </div>
-              <input
-                id="instagram-location"
-                type="text"
-                value={location}
-                onChange={e => setLocation(e.target.value)}
-                className={styles['instagram-field__input']}
-                placeholder="e.g. San Francisco, CA"
-              />
-              <p className={styles['instagram-field__hint']}>
-                Reference note only — location tagging isn&apos;t exposed by the publishing API, so
-                add it manually if it matters.
-              </p>
             </div>
           </div>
 
@@ -960,7 +910,6 @@ function InstagramAutoPoster({ platform }) {
                 ) : (
                   <img src={media.preview} alt="" />
                 )}
-                <p className={styles['instagram-field__hint']}>{media.name}</p>
               </div>
             ) : (
               <p className={styles['instagram-field__error']}>
