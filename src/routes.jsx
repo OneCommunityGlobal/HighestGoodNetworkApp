@@ -859,6 +859,7 @@ export default (
           fallback
           component={BMTimeLogCard}
         />
+        {/* updated the correct route path  /bmdashboard/mostwastedmaterials */}
         <BMProtectedRoute
           path="/bmdashboard/mostwastedmaterials"
           exact
