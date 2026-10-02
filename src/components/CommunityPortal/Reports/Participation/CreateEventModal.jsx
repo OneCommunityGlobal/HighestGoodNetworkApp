@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment-timezone';
-import { toast } from 'react-toastify';
+import { createEvent } from '../../../../actions/communityPortal/eventActions';
 import '../../../Header/DarkMode.module.css';
 
 function CreateEventModal({ isOpen, toggle, onEventCreated = () => {} }) {
+  const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -128,7 +129,7 @@ function CreateEventModal({ isOpen, toggle, onEventCreated = () => {} }) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
 
     if (!validateForm()) {
@@ -139,7 +140,6 @@ function CreateEventModal({ isOpen, toggle, onEventCreated = () => {} }) {
 
     // Format the event data according to the Event model
     const eventData = {
-      id: `local-${Date.now()}`,
       title: formData.title.trim(),
       type: formData.type,
       location: formData.location,
@@ -162,10 +162,16 @@ function CreateEventModal({ isOpen, toggle, onEventCreated = () => {} }) {
       eventData.coverImage = formData.coverImage.trim();
     }
 
-    toast.success('Event created successfully!');
-    onEventCreated(eventData);
-    resetForm();
-    toggle();
+    try {
+      const result = await dispatch(createEvent(eventData));
+      if (result?.success) {
+        onEventCreated(result.event || eventData);
+        resetForm();
+        toggle();
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

@@ -21,9 +21,9 @@ function MyCases() {
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const filteredEvents = filterEventsByDate(events, filter).filter(
-    event => event.isNew || new Date(event.eventDate).getTime() >= now.getTime(),
-  );
+  const filteredEvents = filterEventsByDate(events, filter)
+    .filter(event => event.isNew || new Date(event.eventDate).getTime() >= now.getTime())
+    .sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
 
   const handleEventCreated = createdEvent => {
     if (!createdEvent) return;
