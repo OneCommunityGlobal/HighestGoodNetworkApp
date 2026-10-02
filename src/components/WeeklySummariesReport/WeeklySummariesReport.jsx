@@ -2288,7 +2288,7 @@ const WeeklySummariesReport = props => {
       )}
       <Row className={styles['mx-max-sm-0']}>
         <Col lg={{ size: 10, offset: 1 }} xs={{ size: 12 }}>
-          <Nav tabs>
+          <Nav tabs className={darkMode ? styles.weekTabsDark : ''}>
             {navItems.map(item => (
               <NavItem key={item}>
                 <NavLink

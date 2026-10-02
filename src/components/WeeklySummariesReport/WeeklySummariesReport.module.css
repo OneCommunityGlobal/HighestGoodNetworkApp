@@ -735,3 +735,33 @@
   background-color: inherit !important;
   border: inherit !important;
 }
+/* Dark week tabs. UserProfile.scss has a global hotfix
+   (`body.dark-mode .nav-link.active { background: #fff; color: #000 }`) that
+   keeps tabs readable app-wide, but leaves a bright white pill on this page.
+   These rules are scoped to this report's tabs only, and need body + the
+   module class to outrank that global (0,3,1) !important rule. */
+:global(body.dark-mode) .weekTabsDark {
+  border-bottom-color: #3a506b;
+}
+
+:global(body.dark-mode) .weekTabsDark :global(.nav-link) {
+  border-color: transparent;
+}
+
+:global(body.dark-mode) .weekTabsDark :global(.nav-link:hover) {
+  background-color: #1c2541 !important;
+  border-color: #3a506b #3a506b transparent;
+}
+
+:global(body.dark-mode) .weekTabsDark :global(.nav-link.active) {
+  background-color: #3a506b !important;
+  border-color: #3a506b #3a506b #3a506b;
+  font-weight: 600;
+}
+
+:global(body.dark-mode) .weekTabsDark :global(.nav-link:hover),
+:global(body.dark-mode) .weekTabsDark :global(.nav-link:hover *),
+:global(body.dark-mode) .weekTabsDark :global(.nav-link.active),
+:global(body.dark-mode) .weekTabsDark :global(.nav-link.active *) {
+  color: #fff !important;
+}
