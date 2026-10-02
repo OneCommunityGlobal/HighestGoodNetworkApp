@@ -912,7 +912,7 @@ export class WeeklySummary extends Component {
           </Col>
         </Row>
         <Form className="mt-4">
-          <Nav tabs className="border-0 responsive-font-size">
+          <Nav tabs className={`border-0 responsive-font-size ${styles.summaryNavTabs}`}>
             {Object.values(summariesLabels).map((weekName, i) => {
               const tId = String(i + 1);
               return (

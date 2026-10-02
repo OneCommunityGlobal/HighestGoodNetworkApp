@@ -90,6 +90,9 @@
   color: white;
 }
 
+:global(.dark-mode) .pieChartByProject label,
+:global(.dark-mode) .pieChartByProject h5,
+:global(.dark-mode) .pieChartByProject p,
 :global(.dark-mode) .pieChartRoot label,
 :global(.dark-mode) .pieChartRoot h5,
 :global(.dark-mode) .pieChartRoot p {

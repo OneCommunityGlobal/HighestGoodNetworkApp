@@ -349,9 +349,15 @@ const IntermediateTaskList = () => {
         </div>
 
         {/* Delete Confirmation Modal */}
-        <Modal isOpen={deleteModal.isOpen} toggle={cancelDelete}>
-          <ModalHeader toggle={cancelDelete}>Confirm Deletion</ModalHeader>
-          <ModalBody>
+        <Modal
+          isOpen={deleteModal.isOpen}
+          toggle={cancelDelete}
+          contentClassName={styles.modalContent}
+        >
+          <ModalHeader toggle={cancelDelete} className={styles.modalHeaderBox}>
+            Confirm Deletion
+          </ModalHeader>
+          <ModalBody className={styles.modalBodyBox}>
             <p>Are you sure you want to delete this sub-task?</p>
             {deleteModal.task && (
               <p>
@@ -360,8 +366,8 @@ const IntermediateTaskList = () => {
             )}
             <p className="text-muted">This action cannot be undone.</p>
           </ModalBody>
-          <ModalFooter>
-            <Button color="secondary" onClick={cancelDelete}>
+          <ModalFooter className={styles.modalFooterBox}>
+            <Button color="secondary" className={styles.btnSecondary} onClick={cancelDelete}>
               Cancel
             </Button>
             <Button color="danger" onClick={confirmDelete}>

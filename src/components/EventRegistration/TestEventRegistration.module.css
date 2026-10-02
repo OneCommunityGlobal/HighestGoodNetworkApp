@@ -16,12 +16,14 @@
   margin-bottom: 1rem;
   text-align: center;
 }
+
 .banner h1 {
   margin: 0;
   font-size: 2rem;
   color: #1e3a3a;
   letter-spacing: 0.2px;
 }
+
 .banner p {
   margin: 0.25rem 0 0;
   color: #516a6a;
@@ -32,7 +34,7 @@
   width: min(860px, 95%);
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  box-shadow: 0 4px 18px rgb(0 0 0 / 6%);
   padding: 1.25rem 1.25rem 1.5rem;
 }
 
@@ -41,6 +43,7 @@
   font-weight: 600;
   color: #234;
 }
+
 .sectionLink {
   color: #1b6eb8;
   text-decoration: underline;
@@ -48,6 +51,7 @@
   display: inline-block;
   margin-bottom: 0.25rem;
 }
+
 .requiredNote {
   color: #b04545;
   font-size: 0.9rem;
@@ -101,6 +105,7 @@
   flex-wrap: wrap;
   gap: 0.9rem 1.25rem;
 }
+
 .radioLabel {
   display: inline-flex;
   align-items: center;
@@ -112,10 +117,12 @@
   grid-template-columns: 1fr;
   gap: 0.6rem;
 }
-@media (min-width: 640px) {
+
+@media (width >= 640px) {
   .addrGrid {
     grid-template-columns: 1fr 1fr;
   }
+
   .addrGrid input#address {
     grid-column: 1 / -1;
   }
@@ -126,6 +133,7 @@
   grid-template-columns: 1fr;
   gap: 0.4rem;
 }
+
 .checkboxLabel {
   display: inline-flex;
   align-items: center;
@@ -138,6 +146,7 @@
   gap: 0.75rem;
   padding-top: 0.25rem;
 }
+
 .cancelBtn {
   padding: 0.6rem 1rem;
   background: #f44336;
@@ -151,7 +160,7 @@
 .cancelBtn:hover {
   background: #da190b;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+  box-shadow: 0 4px 12px rgb(244 67 54 / 30%);
 }
 
 .submitBtn {
@@ -167,14 +176,15 @@
 .submitBtn:hover {
   background: #1a3d47;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(33, 75, 87, 0.3);
+  box-shadow: 0 4px 12px rgb(33 75 87 / 30%);
 }
 
 .phoneContainer {
   display: block;
   width: 100%;
 }
-:global(.react-tel-input .form-control) {
+
+.phoneContainer :global(.form-control) {
   width: 100% !important;
   box-sizing: border-box;
 }
@@ -182,32 +192,37 @@
 .modalOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.48);
+  background: rgb(0 0 0 / 48%);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 40;
 }
+
 .modalContent {
   background: #fff;
   padding: 1.25rem 1.25rem 1rem;
   border-radius: 10px;
   width: min(540px, 92%);
-  box-shadow: 0 8px 28px rgba(0,0,0,0.18);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 18%);
 }
+
 .modalTitle {
   margin: 0 0 0.75rem;
   font-size: 1.35rem;
   color: #19323c;
 }
+
 .modalBody p {
   margin: 0.25rem 0;
 }
+
 .modalActions {
   display: flex;
   justify-content: center;
   margin-top: 0.9rem;
 }
+
 .modalBtn {
   padding: 0.55rem 1.2rem;
   background: #4CAF50;
@@ -221,13 +236,13 @@
 .modalBtn:hover {
   background: #45a049;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+  box-shadow: 0 4px 12px rgb(76 175 80 / 30%);
 }
 
 /* Dark Mode Styles */
 .darkMode {
   background: #1b2a41;
-  color: #ffffff;
+  color: #fff;
 }
 
 .bannerDark {
@@ -237,11 +252,11 @@
 
 .cardDark {
   background: #2e5061;
-  color: #ffffff;
+  color: #fff;
 }
 
 .textLight {
-  color: #ffffff;
+  color: #fff;
 }
 
 .inputDark {
@@ -258,7 +273,7 @@
   background: #162333;
   border-color: #6a9fc0;
   outline: none;
-  box-shadow: 0 0 0 0.2rem rgba(106, 159, 192, 0.3);
+  box-shadow: 0 0 0 0.2rem rgb(106 159 192 / 30%);
 }
 
 /* Dark mode for date input */
@@ -272,7 +287,7 @@
 .darkMode input[type="date"]:focus {
   background: #23344f;
   border-color: #4a6072;
-  box-shadow: 0 0 0 0.2rem rgba(74, 96, 114, 0.25);
+  box-shadow: 0 0 0 0.2rem rgb(74 96 114 / 25%);
 }
 
 .darkMode input[type="date"]::-webkit-calendar-picker-indicator {
@@ -281,7 +296,7 @@
 
 .modalContentDark {
   background: #2e5061;
-  color: #ffffff;
+  color: #fff;
 }
 
 /* Filter Styles */
@@ -294,7 +309,7 @@
 }
 
 .filterTitle {
-  margin: 0 0 1rem 0;
+  margin: 0 0 1rem;
   font-size: 1.1rem;
   font-weight: 600;
   color: #343a40;
@@ -393,11 +408,11 @@
 }
 
 .darkMode .filterTitle {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .darkMode .filterLabel {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .darkMode .filterInput {
@@ -410,23 +425,23 @@
   background: #23344f;
   border-color: #4a6072;
   outline: none;
-  box-shadow: 0 0 0 0.2rem rgba(74, 96, 114, 0.25);
+  box-shadow: 0 0 0 0.2rem rgb(74 96 114 / 25%);
 }
 
 /* Ensure all form labels have consistent white color in dark mode */
 .darkMode .label,
 .darkMode legend,
 .darkMode span.label {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .darkMode .requiredNote {
-  color: #ff9999 !important;
+  color: #f99 !important;
 }
 
 .darkMode .radioLabel,
 .darkMode .checkboxLabel {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .darkMode .sectionLink {
@@ -434,15 +449,15 @@
 }
 
 .darkMode .subheading {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .darkMode .modalBody p {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .darkMode .modalBody strong {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Dark mode for form fieldsets */
@@ -451,7 +466,7 @@
 }
 
 .darkMode legend {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 /* Dark mode for radio buttons and checkboxes */
@@ -471,7 +486,7 @@
   background: #162333;
   border-color: #6a9fc0;
   outline: none;
-  box-shadow: 0 0 0 0.2rem rgba(106, 159, 192, 0.3);
+  box-shadow: 0 0 0 0.2rem rgb(106 159 192 / 30%);
 }
 
 .darkMode option {
@@ -495,11 +510,11 @@
 
 /* Dark mode banner text */
 .darkMode .banner h1 {
-  color: #ffffff !important;
+  color: #fff !important;
 }
 
 .darkMode .banner p {
-  color: #cccccc !important;
+  color: #ccc !important;
 }
 
 /* Dark mode for phone input component */
@@ -542,7 +557,7 @@
 .darkMode :global(.react-tel-input .form-control:focus) {
   background: #162333 !important;
   border-color: #6a9fc0 !important;
-  box-shadow: 0 0 0 0.2rem rgba(106, 159, 192, 0.3) !important;
+  box-shadow: 0 0 0 0.2rem rgb(106 159 192 / 30%) !important;
 }
 
 /* Dark mode for phone dropdown search box */
@@ -563,21 +578,21 @@
 
 /* Dark mode button styles */
 .darkMode .submitBtn {
-  background: #4CAF50;
-  color: #ffffff;
-  border: 1px solid #45a049;
+  background: #2e7d32;
+  color: #fff;
+  border: 1px solid #1b5e20;
 }
 
 .darkMode .submitBtn:hover {
-  background: #45a049;
-  border-color: #3d8b40;
+  background: #256a2b;
+  border-color: #1b5e20;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+  box-shadow: 0 4px 12px rgb(76 175 80 / 30%);
 }
 
 .darkMode .cancelBtn {
   background: #dc3545;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid #c82333;
 }
 
@@ -585,16 +600,16 @@
   background: #c82333;
   border-color: #bd2130;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+  box-shadow: 0 4px 12px rgb(220 53 69 / 30%);
 }
 
 .darkMode .modalBtn {
-  background: #4CAF50;
-  color: #ffffff;
-  border: 1px solid #45a049;
+  background: #2e7d32;
+  color: #fff;
+  border: 1px solid #1b5e20;
 }
 
 .darkMode .modalBtn:hover {
-  background: #45a049;
-  border-color: #3d8b40;
+  background: #256a2b;
+  border-color: #1b5e20;
 }

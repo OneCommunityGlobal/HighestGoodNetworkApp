@@ -73,7 +73,7 @@
 }
 
 /* Additional styling for form labels in light mode */
-:global(.form-label) {
+.updateEquipmentPage :global(.form-label) {
   color: #212529 !important;
   font-weight: 600 !important;
 }
@@ -96,143 +96,141 @@
 /* =========================
    DARK MODE - Only change what's needed
    ========================= */
-@media (prefers-color-scheme: dark) {
-  .readOnlyDiv {
-    background-color: #2d2d2d !important;
-    border-color: #444 !important;
-    color: #e9ecef !important;
-  }
-  
-  .squareImage,
-  .largeSquareImage {
-    border-color: #444 !important;
-    box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
-  }
-  
-  .updateConfirmText {
-    color: #0dcaf0 !important;
-    background-color: #1a2a3a !important;
-    border-color: #0dcaf0 !important;
-  }
-  
-  :global(.form-label) {
-    color: #e9ecef !important;
-  }
-  
-  /* Dark mode overrides with improved contrast ratios */
-  :global(.dark-mode) .form-control {
-    background-color: #2d2d2d !important;
-    border-color: #666 !important; /* Improved contrast */
-    color: #fff !important; /* Improved contrast */
-  }
-  
-  :global(.dark-mode) .form-control:focus {
-    background-color: #2d2d2d !important;
-    border-color: #0dcaf0 !important;
-    color: #fff !important;
-    box-shadow: 0 0 0 0.25rem rgb(13 202 240 / 25%) !important;
-  }
-  
-  :global(.dark-mode) .alert {
-    background-color: #1a2a3a !important;
-    border-color: #0dcaf0 !important;
-    color: #fff !important; /* Improved contrast */
-  }
-  
-  :global(.dark-mode) .alert-info {
-    background-color: #0a3d4f !important; /* Improved contrast */
-    border-color: #0dcaf0 !important;
-    color: #d1ecf1 !important;
-  }
-  
-  :global(.dark-mode) .alert-warning {
-    background-color: #664d03 !important;
-    border-color: #ffc107 !important;
-    color: #fff9e6 !important; /* Improved contrast */
-  }
-  
-  :global(.dark-mode) .alert-danger {
-    background-color: #5c1a1a !important; /* Improved contrast */
-    border-color: #f5c2c7 !important;
-    color: #f8d7da !important;
-  }
-  
-  :global(.dark-mode) .alert-success {
-    background-color: #0a3a27 !important; /* Improved contrast */
-    border-color: #badbcc !important;
-    color: #d1e7dd !important;
-  }
-  
-  :global(.dark-mode) .btn-primary {
-    background-color: #0dcaf0 !important;
-    border-color: #0dcaf0 !important;
-    color: #000 !important; /* High contrast */
-  }
-  
-  :global(.dark-mode) .btn-secondary {
-    background-color: #555 !important; /* Improved contrast */
-    border-color: #555 !important;
-    color: #fff !important; /* High contrast */
-  }
-  
-  :global(.dark-mode) .btn-danger {
-    background-color: #c82333 !important; /* Improved contrast */
-    border-color: #c82333 !important;
-    color: #fff !important; /* High contrast */
-  }
-  
-  :global(.dark-mode) .badge {
-    background-color: #0dcaf0 !important;
-    color: #000 !important; /* High contrast */
-  }
-  
-  :global(.dark-mode) .text-muted {
-    color: #b0b7c0 !important; /* Improved contrast */
-  }
-  
-  :global(.dark-mode) .border {
-    border-color: #666 !important; /* Improved contrast */
-  }
-  
-  :global(.dark-mode) h1,
-  :global(.dark-mode) h2,
-  :global(.dark-mode) h3,
-  :global(.dark-mode) h4,
-  :global(.dark-mode) h5,
-  :global(.dark-mode) h6 {
-    color: #fff !important; /* High contrast */
-  }
-  
-  /* Remove any extra arrow from reactstrap */
-  :global(.dark-mode) select.form-control {
-    background-image: none !important;
-  }
-  
-  :global(.dark-mode) .form-select {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
-  }
+:global(.dark-mode) .updateEquipmentPage .readOnlyDiv {
+  background-color: #2d2d2d !important;
+  border-color: #444 !important;
+  color: #e9ecef !important;
+}
+
+:global(.dark-mode) .updateEquipmentPage .squareImage,
+:global(.dark-mode) .updateEquipmentPage .largeSquareImage {
+  border-color: #444 !important;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
+}
+
+:global(.dark-mode) .updateEquipmentPage .updateConfirmText {
+  color: #0dcaf0 !important;
+  background-color: #1a2a3a !important;
+  border-color: #0dcaf0 !important;
+}
+
+:global(.dark-mode) .updateEquipmentPage :global(.form-label) {
+  color: #e9ecef !important;
+}
+
+/* Dark mode overrides with improved contrast ratios */
+:global(.dark-mode) .updateEquipmentPage :global(.form-control) {
+  background-color: #2d2d2d !important;
+  border-color: #666 !important; /* Improved contrast */
+  color: #fff !important; /* Improved contrast */
+}
+
+:global(.dark-mode) .updateEquipmentPage :global(.form-control):focus {
+  background-color: #2d2d2d !important;
+  border-color: #0dcaf0 !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 0.25rem rgb(13 202 240 / 25%) !important;
+}
+
+:global(.dark-mode) .updateEquipmentPage :global(.alert) {
+  background-color: #1a2a3a !important;
+  border-color: #0dcaf0 !important;
+  color: #fff !important; /* Improved contrast */
+}
+
+:global(.dark-mode) .updateEquipmentPage :global(.alert-info) {
+  background-color: #0a3d4f !important; /* Improved contrast */
+  border-color: #0dcaf0 !important;
+  color: #d1ecf1 !important;
+}
+
+:global(.dark-mode) .updateEquipmentPage :global(.alert-warning) {
+  background-color: #664d03 !important;
+  border-color: #ffc107 !important;
+  color: #fff9e6 !important; /* Improved contrast */
+}
+
+:global(.dark-mode) .updateEquipmentPage :global(.alert-danger) {
+  background-color: #5c1a1a !important; /* Improved contrast */
+  border-color: #f5c2c7 !important;
+  color: #f8d7da !important;
+}
+
+:global(.dark-mode) .updateEquipmentPage :global(.alert-success) {
+  background-color: #0a3a27 !important; /* Improved contrast */
+  border-color: #badbcc !important;
+  color: #d1e7dd !important;
+}
+
+:global(.dark-mode) .updateEquipmentPage :global(.btn-primary) {
+  background-color: #0dcaf0 !important;
+  border-color: #0dcaf0 !important;
+  color: #000 !important; /* High contrast */
+}
+
+:global(.dark-mode) .updateEquipmentPage :global(.btn-secondary) {
+  background-color: #555 !important; /* Improved contrast */
+  border-color: #555 !important;
+  color: #fff !important; /* High contrast */
+}
+
+:global(.dark-mode) .updateEquipmentPage :global(.btn-danger) {
+  background-color: #c82333 !important; /* Improved contrast */
+  border-color: #c82333 !important;
+  color: #fff !important; /* High contrast */
+}
+
+:global(.dark-mode) .updateEquipmentPage :global(.badge) {
+  background-color: #0dcaf0 !important;
+  color: #000 !important; /* High contrast */
+}
+
+:global(.dark-mode) .updateEquipmentPage :global(.text-muted) {
+  color: #b0b7c0 !important; /* Improved contrast */
+}
+
+:global(.dark-mode) .updateEquipmentPage :global(.border) {
+  border-color: #666 !important; /* Improved contrast */
+}
+
+:global(.dark-mode) .updateEquipmentPage h1,
+:global(.dark-mode) .updateEquipmentPage h2,
+:global(.dark-mode) .updateEquipmentPage h3,
+:global(.dark-mode) .updateEquipmentPage h4,
+:global(.dark-mode) .updateEquipmentPage h5,
+:global(.dark-mode) .updateEquipmentPage h6 {
+  color: #fff !important; /* High contrast */
+}
+
+/* Remove any extra arrow from reactstrap */
+:global(.dark-mode) .updateEquipmentPage select:global(.form-control) {
+  background-image: none !important;
+}
+
+:global(.dark-mode) .updateEquipmentPage :global(.form-select) {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
 }
 
 /* Additional contrast improvements for accessibility */
-:global(.btn-link) {
+.updateEquipmentPage :global(.btn-link) {
   text-decoration: underline;
 }
 
 /* Ensure form labels have sufficient contrast */
-:global(.form-check-label) {
+.updateEquipmentPage :global(.form-check-label) {
   color: #212529;
 }
 
-:global(.dark-mode) .form-check-label {
+:global(.dark-mode) .updateEquipmentPage :global(.form-check-label) {
   color: #fff !important;
 }
 
 /* Improve placeholder contrast */
-:global(.form-control)::placeholder {
+.updateEquipmentPage :global(.form-control)::placeholder {
   color: #6c757d;
   opacity: 1;
 }
 
-:global(.dark-mode) .form-control::placeholder {
+:global(.dark-mode) .updateEquipmentPage :global(.form-control)::placeholder {
   color: #b0b7c0 !important;
 }

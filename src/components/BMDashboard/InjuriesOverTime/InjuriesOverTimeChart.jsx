@@ -220,7 +220,7 @@ function InjuriesOverTimeLine({ darkMode = false }) {
           onChange={setSelProjects}
           maxTagCount="responsive"
           maxTagPlaceholder={o => `+${o.length}`}
-          popupClassName={darkMode ? 'wrapperDark-dropdown' : ''}
+          popupClassName={darkMode ? styles.wrapperDarkDropdown : ''}
         >
           {projectOptions.map(p => (
             <Option className={styles.filterOptions} key={p.id} value={p.id}>
@@ -233,7 +233,7 @@ function InjuriesOverTimeLine({ darkMode = false }) {
           className={styles.filterSelect}
           value={dateRange}
           onChange={dates => setDateRange(dates || [null, null])}
-          popupClassName={darkMode ? 'wrapperDark-dropdown' : ''}
+          popupClassName={darkMode ? styles.wrapperDarkDropdown : ''}
         />
 
         <Select
@@ -245,7 +245,7 @@ function InjuriesOverTimeLine({ darkMode = false }) {
           onChange={setSelInjTypes}
           maxTagCount="responsive"
           maxTagPlaceholder={o => `+${o.length}`}
-          popupClassName={darkMode ? 'wrapperDark-dropdown' : ''}
+          popupClassName={darkMode ? styles.wrapperDarkDropdown : ''}
         >
           {injuryTypeOptions.map(t => (
             <Option key={t} value={t}>
@@ -263,7 +263,7 @@ function InjuriesOverTimeLine({ darkMode = false }) {
           onChange={setSelDepts}
           maxTagCount="responsive"
           maxTagPlaceholder={o => `+${o.length}`}
-          popupClassName={darkMode ? 'wrapperDark-dropdown' : ''}
+          popupClassName={darkMode ? styles.wrapperDarkDropdown : ''}
         >
           {departmentOptions.map(d => (
             <Option key={d} value={d}>
@@ -281,7 +281,7 @@ function InjuriesOverTimeLine({ darkMode = false }) {
           onChange={setSelSeverities}
           maxTagCount="responsive"
           maxTagPlaceholder={o => `+${o.length}`}
-          popupClassName={darkMode ? 'wrapperDark-dropdown' : ''}
+          popupClassName={darkMode ? styles.wrapperDarkDropdown : ''}
         >
           {severityOptions.map(s => (
             <Option key={s} value={s}>

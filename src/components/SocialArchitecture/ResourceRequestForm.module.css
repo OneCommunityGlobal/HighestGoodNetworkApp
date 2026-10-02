@@ -61,6 +61,10 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+.requestResourceContainer textarea {
+  resize: none;
+}
+
 .formGroup input:focus,
 .formGroup textarea:focus {
   border-color: #2563eb;

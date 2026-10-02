@@ -459,6 +459,7 @@ const Projects = function(props) {
           className={`table table-bordered ${styles.projectsTable}`}
           style={{ tableLayout: 'fixed', width: '100%' }}
         >
+
           <thead className={styles.projectsTableHead}>
             <ProjectTableHeader
               onChange={onChangeCategory}

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Row, Col, Card, CardHeader, CardBody, Spinner } from 'reactstrap';
 import StudentBadgeImage from './StudentBadgeImage';
-import '../Badge/Badge.css'; // Reuse shared badge styling
+import badgeStyles from '../Badge/Badge.module.css'; // Reuse shared badge styling
 import badgeIcon from '../SummaryBar/badges_icon.png';
 import reportIcon from '../SummaryBar/report_icon.png';
 import taskIcon from '../SummaryBar/task_icon.png';
@@ -159,7 +159,9 @@ function StudentBadgeGallery({ darkMode }) {
   return (
     <div className={styles.galleryContainer}>
       <Row
-        className={darkMode ? 'badge-box-shadow-dark' : 'bagde-box-shadow'}
+        className={
+          darkMode ? badgeStyles['badge-box-shadow-dark'] : badgeStyles['bagde-box-shadow']
+        }
         style={{
           margin: '0 2px',
           backgroundColor: darkMode ? '#1c2541' : '#ffffff',

@@ -141,24 +141,24 @@
 }
 
 /* Override React Datepicker Popper */
-:global(.react-datepicker-dark) {
+.reactDatepickerDark {
   background-color: #1a202c !important;
   border: 1px solid #2d3748 !important;
   color: #e2e8f0 !important;
 }
 
-:global(.react-datepicker-dark .react-datepicker__header) {
+.reactDatepickerDark :global(.react-datepicker__header) {
   background-color: #2d3748 !important;
   border-bottom-color: #4a5568 !important;
 }
 
-:global(.react-datepicker-dark .react-datepicker__current-month),
-:global(.react-datepicker-dark .react-datepicker__day-name),
-:global(.react-datepicker-dark .react-datepicker__day) {
+.reactDatepickerDark :global(.react-datepicker__current-month),
+.reactDatepickerDark :global(.react-datepicker__day-name),
+.reactDatepickerDark :global(.react-datepicker__day) {
   color: #e2e8f0 !important;
 }
 
-:global(.react-datepicker-dark .react-datepicker__day:hover) {
+.reactDatepickerDark :global(.react-datepicker__day:hover) {
   background-color: #4a5568 !important;
 }
 

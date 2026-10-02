@@ -80,12 +80,12 @@
   background-color: #ffebee;
 }
 
-button:disabled {
+.fieldControls button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
 
-button:not(:disabled):hover {
+.fieldControls button:not(:disabled):hover {
   transform: translateY(-1px);
 }
 

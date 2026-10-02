@@ -13,7 +13,7 @@
   align-items: flex-start;
 }
 
-h3 {
+.rightSection h3 {
   color: #3ea0cb;
   font-size: 20px;
   margin-bottom: 10px;
@@ -57,7 +57,7 @@ h3 {
   }
 }
 
-:global(.dark-mode) h3 {
+:global(.dark-mode) .rightSection h3 {
   color: #fff;
 }
 
