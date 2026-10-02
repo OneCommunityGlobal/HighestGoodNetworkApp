@@ -1,4 +1,3 @@
-// LossTrackingLineChart.jsx
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import {
@@ -140,16 +139,13 @@ export default function LossTrackingLineChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const hostRef = useRef(null);
 
-  // --- Promote parent wrapper (no parent code changes needed) ---
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
 
-    // Find the wrapper the page uses around our component
     const wrapper = host.closest('.weekly-project-summary-card.financial-big');
     if (!wrapper) return;
 
-    // Save previous inline styles to restore on unmount
     const prev = {
       gridColumn: wrapper.style.gridColumn,
       flex: wrapper.style.flex,
@@ -158,7 +154,6 @@ export default function LossTrackingLineChart() {
       minWidth: wrapper.style.minWidth,
     };
 
-    // Make the wrapper span the full grid row & fill flex rows
     wrapper.style.gridColumn = '1 / -1';
     wrapper.style.flex = '1 1 100%';
     wrapper.style.width = '100%';
@@ -192,26 +187,63 @@ export default function LossTrackingLineChart() {
   );
 
   const filteredLines = useMemo(() => {
+    const filterStart = startDate ? startDate.substring(0, 7) : '';
+    const filterEnd = endDate ? endDate.substring(0, 7) : '';
+
     return rawData.filter(line => {
-      const yearMatch = year === 'All' || String(line.year) === year;
       const materialMatch = material === 'All' || line.material === material;
+      let yearMatch = year === 'All' || String(line.year) === year;
+
+      // Filter lines dynamically if they sit entirely outside the selected calendar period
+      if (filterStart && `${line.year}-12` < filterStart) yearMatch = false; // Checks through end of year
+      if (filterEnd && `${line.year}-01` > filterEnd) yearMatch = false; // Checks from start of year
+
       return yearMatch && materialMatch;
     });
-  }, [material, year]);
+  }, [material, year, startDate, endDate]);
 
+  // Enforces valid boundary limitations on HTML pickers dynamically
+  const dateBounds = useMemo(() => {
+    if (year === 'All') return { min: '2022-01-01', max: '2024-12-31' };
+    return { min: `${year}-01-01`, max: `${year}-12-31` };
+  }, [year]);
+
+  // Clears date pickers gracefully if they don't belong to the newly active year selection
+  const handleYearChange = newYear => {
+    setYear(newYear);
+    if (newYear !== 'All') {
+      if (startDate && !startDate.startsWith(newYear)) setStartDate('');
+      if (endDate && !endDate.startsWith(newYear)) setEndDate('');
+    }
+  };
+
+  // Groups and explicitly sorts keys chronologically to handle continuous year-over-year transitions smoothly
   const chartData = useMemo(() => {
     const merged = {};
+    const filterStart = startDate ? startDate.substring(0, 7) : '';
+    const filterEnd = endDate ? endDate.substring(0, 7) : '';
+
     filteredLines.forEach(line => {
       line.data.forEach(({ date, month, value }) => {
-        const withinRange = (!startDate || date >= startDate) && (!endDate || date <= endDate);
+        const withinRange =
+          (!filterStart || date >= filterStart) && (!filterEnd || date <= filterEnd);
+
         if (withinRange) {
-          if (!merged[month]) merged[month] = { month };
-          merged[month][`${line.year}-${line.material}`] = value;
+          if (!merged[date]) {
+            merged[date] = {
+              date,
+              displayLabel: year === 'All' ? `${month} ${String(line.year).substring(2)}` : month,
+            };
+          }
+          merged[date][`${line.year}-${line.material}`] = value;
         }
       });
     });
-    return Object.values(merged);
-  }, [filteredLines, startDate, endDate]);
+
+    return Object.keys(merged)
+      .sort((a, b) => a.localeCompare(b))
+      .map(key => merged[key]);
+  }, [filteredLines, startDate, endDate, year]);
 
   const isDefaultFilters =
     material === DEFAULTS.material &&
@@ -255,10 +287,9 @@ export default function LossTrackingLineChart() {
               ))}
             </select>
           </label>
-
           <label>
             <span>Year</span>
-            <select value={year} onChange={e => setYear(e.target.value)}>
+            <select value={year} onChange={e => handleYearChange(e.target.value)}>
               {years.map(y => (
                 <option key={y} value={y}>
                   {y}
@@ -266,45 +297,36 @@ export default function LossTrackingLineChart() {
               ))}
             </select>
           </label>
-
           <label>
             <span>Start Date</span>
             <div className={styles.monthInputWrapper}>
               <input
                 className={styles.monthInput}
-                type="month"
+                type="date"
                 value={startDate}
+                min={dateBounds.min} // Locks the lower bounds dynamically
+                max={dateBounds.max} // Locks the upper bounds dynamically
                 onChange={e => setStartDate(e.target.value)}
               />
-              <span className={styles.monthInputIcon} aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1a3 3 0 0 1 3 3v11a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V7a3 3 0 0 1 3-3h1V3a1 1 0 0 1 1-1Zm12 8H5v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8ZM5 8h14V7a1 1 0 0 0-1-1H6A1 1 0 0 0 5 7v1Z" />
-                </svg>
-              </span>
             </div>
           </label>
-
           <label>
             <span>End Date</span>
             <div className={styles.monthInputWrapper}>
               <input
                 className={styles.monthInput}
-                type="month"
+                type="date"
                 value={endDate}
+                min={dateBounds.min} // Locks the lower bounds dynamically
+                max={dateBounds.max} // Locks the upper bounds dynamically
                 onChange={e => setEndDate(e.target.value)}
               />
-              <span className={styles.monthInputIcon} aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1a3 3 0 0 1 3 3v11a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V7a3 3 0 0 1 3-3h1V3a1 1 0 0 1 1-1Zm12 8H5v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8ZM5 8h14V7a1 1 0 0 0-1-1H6A1 1 0 0 0 5 7v1Z" />
-                </svg>
-              </span>
             </div>
           </label>
-
+          ...
           <button className={styles.resetBtn} onClick={handleReset} disabled={isDefaultFilters}>
             Reset Filters
           </button>
-
           {!isDateRangeValid && (
             <span className={styles.dateRangeError}>
               Start date must be before or equal to end date.
@@ -317,54 +339,59 @@ export default function LossTrackingLineChart() {
             <div className={styles.noDataMessage}>No data available for the selected filters.</div>
           ) : (
             <>
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 44 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-                  <XAxis
-                    dataKey="month"
-                    height={72}
-                    tick={{ fill: textColor }}
-                    axisLine={{ stroke: textColor }}
-                    tickLine={{ stroke: textColor }}
-                    label={{
-                      value: 'Time (months)',
-                      position: 'bottom',
-                      offset: 18,
-                      fill: textColor,
-                    }}
-                  />
-                  <YAxis
-                    tick={{ fill: textColor }}
-                    axisLine={{ stroke: textColor }}
-                    tickLine={{ stroke: textColor }}
-                    label={{
-                      value: 'Loss (%)',
-                      angle: -90,
-                      position: 'insideLeft',
-                      fill: textColor,
-                    }}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'var(--tooltip-bg)',
-                      color: 'var(--text-color)',
-                      border: `1px solid var(--border-color)`,
-                    }}
-                  />
-                  {filteredLines.map(line => (
-                    <Line
-                      key={`${line.year}-${line.material}`}
-                      type="monotone"
-                      dataKey={`${line.year}-${line.material}`}
-                      stroke={colors[`${line.year}-${line.material}`]}
-                      strokeWidth={2}
-                      dot={{ r: 3 }}
-                      activeDot={{ r: 5 }}
-                      name={`${line.year} - ${line.material}`}
+              {}
+              <div className={styles.responsiveChartBox}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 44 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+                    <XAxis
+                      dataKey="month"
+                      height={72}
+                      tick={{ fill: textColor }}
+                      axisLine={{ stroke: textColor }}
+                      tickLine={{ stroke: textColor }}
+                      label={{
+                        value: 'Time (months)',
+                        position: 'bottom',
+                        offset: 18,
+                        fill: textColor,
+                      }}
                     />
-                  ))}
-                </LineChart>
-              </ResponsiveContainer>
+                    <YAxis
+                      tick={{ fill: textColor }}
+                      axisLine={{ stroke: textColor }}
+                      tickLine={{ stroke: textColor }}
+                      label={{
+                        value: 'Loss (%)',
+                        angle: -90,
+                        position: 'insideLeft',
+                        fill: textColor,
+                      }}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'var(--tooltip-bg)',
+                        color: 'var(--text-color)',
+                        border: `1px solid var(--border-color)`,
+                      }}
+                    />
+                    {filteredLines.map(line => (
+                      <Line
+                        key={`${line.year}-${line.material}`}
+                        type="monotone"
+                        dataKey={`${line.year}-${line.material}`}
+                        stroke={colors[`${line.year}-${line.material}`]}
+                        strokeWidth={2}
+                        dot={{ r: 3 }}
+                        activeDot={{ r: 5 }}
+                        name={`${line.year} - ${line.material}`}
+                      />
+                    ))}
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+
+              {}
               <div className={styles.customLegend}>
                 {legendItems.map(item => (
                   <span key={item.key} className={styles.legendItem}>
