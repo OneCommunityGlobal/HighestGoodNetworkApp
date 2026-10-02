@@ -27,10 +27,6 @@ const PAIRS = [
     'components/HGNPRDashboard/PRDashboardTopReviewedPRs.jsx',
     'components/HGNPRDashboard/PRDashboardTopReviewedPRs.module.css',
   ],
-  [
-    'components/EmailManagement/email-sender/IntegratedEmailSender.jsx',
-    'components/EmailManagement/email-sender/IntegratedEmailSender.module.css',
-  ],
   ['components/LeaderBoard/Leaderboard.jsx', 'components/LeaderBoard/Leaderboard.module.css'],
   [
     'components/Reports/ViewReportsByDate/ViewReportsByDate.jsx',
@@ -70,9 +66,7 @@ describe('dark-mode CSS modules', () => {
     const src = read(jsxPath);
     const basename = path.basename(cssPath);
     // A bare `import './x.module.css'` ships the rules hashed while the JSX uses
-    // plain strings, so nothing matches. Scoped to the paired stylesheet on
-    // purpose: EmailManagementShared.module.css is still imported bare and is
-    // still inert, which is a known, separately-tracked problem.
+    // plain strings, so nothing matches. Scoped to the paired stylesheet only.
     const bare = new RegExp(`^import\\s+['"][^'"]*${basename.replace('.', '\\.')}['"];?\\s*$`, 'm');
     expect(bare.test(src)).toBe(false);
   });
