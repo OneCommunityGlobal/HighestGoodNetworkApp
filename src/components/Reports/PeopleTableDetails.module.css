@@ -300,24 +300,44 @@
   box-sizing: border-box;
 }
 
+
+/* ========== FIX: Scrollbar styling for both light and dark modes ========== Light Mode: Display scrollbar with light theme colors for better visibility */
+
 .people-table-scrollable::-webkit-scrollbar {
   height: 8px;
   width: 8px;
 }
 
 .people-table-scrollable::-webkit-scrollbar-track {
-  background: #162032;
+  background: #f0f0f0;
   border-radius: 4px;
 }
 
 .people-table-scrollable::-webkit-scrollbar-thumb {
-  background: #4b5563;
+  background: #999;
   border-radius: 4px;
 }
 
 .people-table-scrollable::-webkit-scrollbar-thumb:hover {
+  background: #666;
+}
+
+
+/* Dark Mode: Override light mode styles with dark theme colors */
+
+:global(.dark-mode) .people-table-scrollable::-webkit-scrollbar-track {
+  background: #162032;
+}
+
+:global(.dark-mode) .people-table-scrollable::-webkit-scrollbar-thumb {
+  background: #4b5563;
+}
+
+:global(.dark-mode) .people-table-scrollable::-webkit-scrollbar-thumb:hover {
   background: #6b7280;
 }
+
+/* ========== END: Scrollbar styling ========== */
 
 .reports-table-head-dark th {
   background-color: #1b2a41;
