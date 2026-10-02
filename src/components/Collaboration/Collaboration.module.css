@@ -669,19 +669,48 @@
 
 .activeTab {
   font-size: large;
-  font-weight: bold;
+  font-weight: 700;
   color: #fff;
   text-transform: uppercase;
+  background: transparent;
+  border: none;
+  cursor: pointer;
 }
 
 .tabButton {
   font-size: large;
-  font-weight: bold;
-  color: #808080;
+  font-weight: 700;
+  /* Dark text on the lime navbar (#9c0) for readable contrast in light mode */
+  color: #1a2e05;
   text-transform: uppercase;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.tabButton:hover {
+  color: #0f1a03;
+}
+
+/* Dark mode: light text on the navy navbar (#1c2541) */
+.jobLandingDark .tabButton {
+  color: #f1f5f9;
+}
+
+.jobLandingDark .tabButton:hover {
+  color: #fff;
+}
+
+.jobLandingDark .activeTab {
+  color: #fff;
 }
 
 :global(body.dark-mode) .tabButton,
 :global(body.bm-dashboard-dark) .tabButton {
-  color: #808080 !important;
+  color: #f1f5f9 !important;
+}
+
+:global(body.dark-mode) .activeTab,
+:global(body.bm-dashboard-dark) .activeTab {
+  color: #fff !important;
 }
