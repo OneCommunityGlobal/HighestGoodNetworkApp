@@ -1,15 +1,14 @@
-// Note: render real chart in a sized container so Recharts can mount in tests.
-
 import { render, screen } from '@testing-library/react';
 import React from 'react';
 
-import { renderCenterLabel } from '../../HoursWorkedPieChart/HoursWorkedPieChart';
 import VolunteerHoursDistribution, { computeDistribution } from '../VolunteerHoursDistribution';
+
+// Chart.js draws to a <canvas> jsdom doesn't implement; the legend and center label are plain DOM.
+vi.mock('react-chartjs-2', () => ({ Doughnut: () => null }));
 
 let container = null;
 beforeEach(() => {
   container = document.createElement('div');
-  // give the container explicit size so ResponsiveContainer can compute dimensions
   container.style.width = '800px';
   container.style.height = '600px';
   document.body.appendChild(container);
@@ -38,9 +37,9 @@ describe('VolunteerHoursDistribution wrapper', () => {
       { container },
     );
 
-    // FIXED: Assert using formatted range strings instead of raw bucket IDs
-    expect(screen.getByText('10-19 hrs')).toBeInTheDocument();
-    expect(screen.getByText('20-29 hrs')).toBeInTheDocument();
+    expect(screen.getByText('10-19 hrs: 494 (40.0%)')).toBeInTheDocument();
+    expect(screen.getByText('20-29 hrs: 740 (60.0%)')).toBeInTheDocument();
+    expect(screen.getByText('1234')).toBeInTheDocument();
 
     // Verify computeDistribution now allocates hours to buckets so slices add up to total hours
     const computed = computeDistribution(hoursData, totalHoursData);
@@ -71,16 +70,18 @@ describe('VolunteerHoursDistribution wrapper', () => {
         darkMode={false}
         hoursData={committedHoursData}
         title="Weekly Committed Hours"
-        legendTitle="Weekly Committed Hours"
         centerLabelLines={['TOTAL', 'VOLUNTEERS']}
         useBucketCounts
       />,
       { container },
     );
 
-    expect(screen.getAllByText('Weekly Committed Hours')).toHaveLength(2);
-    expect(screen.getByText('40 hrs')).toBeInTheDocument();
-    expect(screen.getByText('Over 40 hrs')).toBeInTheDocument();
+    expect(screen.getByText('Weekly Committed Hours')).toBeInTheDocument();
+    expect(screen.getByText('40 hrs: 1 (12.5%)')).toBeInTheDocument();
+    expect(screen.getByText('Over 40 hrs: 1 (12.5%)')).toBeInTheDocument();
+    expect(screen.getByText('TOTAL')).toBeInTheDocument();
+    expect(screen.getByText('VOLUNTEERS')).toBeInTheDocument();
+    expect(screen.getByText('8')).toBeInTheDocument();
 
     expect(computeDistribution(committedHoursData, undefined, true)).toEqual({
       userData: [
@@ -94,22 +95,18 @@ describe('VolunteerHoursDistribution wrapper', () => {
       totalHoursWorked: 8,
     });
   });
+});
 
-  it('renders the committed distribution center label', () => {
-    render(
-      <svg>
-        {renderCenterLabel({
-          darkMode: false,
-          isMobile: false,
-          totalHours: 8,
-          centerLabelLines: ['TOTAL', 'VOLUNTEERS'],
-        })}
-      </svg>,
-      { container },
+describe('bucket ordering', () => {
+  it('keeps 50-59 before 50+ when both start at 50', () => {
+    const { userData } = computeDistribution(
+      [
+        { _id: '50+', count: 45 },
+        { _id: '50', count: 22 },
+        { _id: '10', count: 932 },
+      ],
+      { current: 999 },
     );
-
-    expect(screen.getByText('TOTAL')).toBeInTheDocument();
-    expect(screen.getByText('VOLUNTEERS')).toBeInTheDocument();
-    expect(screen.getByText('8')).toBeInTheDocument();
+    expect(userData.map(d => d.name)).toEqual(['10-19 hrs', '50-59 hrs', '50+ hrs']);
   });
 });

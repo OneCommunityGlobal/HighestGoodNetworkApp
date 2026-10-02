@@ -40,7 +40,7 @@ function DonutChart(props) {
   const labelTextColor = darkMode ? '#e2e8f0' : '#334155';
   const labelBoxBackground = darkMode ? 'rgba(15, 23, 42, 0.96)' : 'rgba(255, 255, 255, 0.96)';
   const labelBoxBorder = darkMode ? 'rgba(148, 163, 184, 0.35)' : '#d0d0d0';
-  const titleLines = title === 'TOTAL BLUE SQUARES' ? ['TOTAL', 'BLUE SQUARES'] : [title];
+  const titleLines = title.startsWith('TOTAL ') ? ['TOTAL', title.slice(6)] : [title];
 
   const filtered = data
     .map((item, i) => ({ item, color: colors[i] }))

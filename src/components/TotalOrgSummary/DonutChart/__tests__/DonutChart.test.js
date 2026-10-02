@@ -1,5 +1,5 @@
 import { createElement } from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import DonutChart, { buildDonutTooltipOptions, formatLegendLabel } from '../DonutChart';
 
 // Chart.js draws to a <canvas> jsdom doesn't implement; capture the options instead.
@@ -76,5 +76,22 @@ describe('buildDonutTooltipOptions', () => {
       titleColor: '#fff',
       bodyColor: '#90cdf4',
     });
+  });
+});
+
+describe('DonutChart center title', () => {
+  it('splits any "TOTAL ..." title onto two lines so long names stay inside the hole', () => {
+    render(
+      createElement(DonutChart, {
+        title: 'TOTAL VOLUNTEERS*',
+        totalCount: 3127,
+        percentageChange: 0,
+        data: [{ label: 'Existing Active', value: 2049 }],
+        colors: ['#4C4AF5'],
+        comparisonType: 'No Comparison',
+      }),
+    );
+    expect(screen.getByText('TOTAL')).toBeInTheDocument();
+    expect(screen.getByText('VOLUNTEERS*')).toBeInTheDocument();
   });
 });

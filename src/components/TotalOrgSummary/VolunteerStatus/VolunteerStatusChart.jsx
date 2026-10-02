@@ -1,15 +1,18 @@
 import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import Loading from '~/components/common/Loading';
-import VolunteerStatusPieChart from './VolunteerStatusPieChart';
-import MentorStatusPieChart from './MentorStatusPieChart';
+import DonutChart from '../DonutChart/DonutChart';
 import styles from './VolunteerStatusChart.module.css';
+
+const VOLUNTEER_COLORS = ['#4C4AF5', '#2CCCF8', '#FF00C3'];
+const MENTOR_COLORS = ['#287D5A', '#2D9DA6', '#F26B38'];
 
 function VolunteerStatusChart({
   isLoading,
   volunteerNumberStats,
   mentorNumberStats,
   comparisonType,
+  darkMode,
 }) {
   const volunteerChartData = useMemo(() => {
     if (!volunteerNumberStats) {
@@ -95,17 +98,30 @@ function VolunteerStatusChart({
       ) : (
         <>
           <div className={styles.volunteerMentorChartsWrapper}>
-            <div className={styles.volunteerChartSection}>
-              {volunteerChartData && (
-                <VolunteerStatusPieChart
-                  data={volunteerChartData}
+            {volunteerChartData && (
+              <div className={styles.chartSection} data-chart="volunteer-status">
+                <DonutChart
+                  title="TOTAL VOLUNTEERS*"
+                  totalCount={volunteerChartData.totalVolunteers}
+                  percentageChange={volunteerChartData.percentageChange}
+                  data={volunteerChartData.data}
+                  colors={VOLUNTEER_COLORS}
                   comparisonType={comparisonType}
+                  darkMode={darkMode}
                 />
-              )}
-            </div>
+              </div>
+            )}
             {mentorChartData && (
-              <div className={styles.mentorChartSection}>
-                <MentorStatusPieChart data={mentorChartData} comparisonType={comparisonType} />
+              <div className={styles.chartSection} data-chart="mentor-status">
+                <DonutChart
+                  title="TOTAL MENTORS"
+                  totalCount={mentorChartData.totalMentors}
+                  percentageChange={mentorChartData.percentageChange}
+                  data={mentorChartData.data}
+                  colors={MENTOR_COLORS}
+                  comparisonType={comparisonType}
+                  darkMode={darkMode}
+                />
               </div>
             )}
           </div>
@@ -123,6 +139,7 @@ function VolunteerStatusChart({
 VolunteerStatusChart.propTypes = {
   isLoading: PropTypes.bool,
   comparisonType: PropTypes.string,
+  darkMode: PropTypes.bool,
   volunteerNumberStats: PropTypes.shape({
     donutChartData: PropTypes.shape({
       existingActive: PropTypes.shape({

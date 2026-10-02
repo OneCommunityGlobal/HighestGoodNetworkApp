@@ -1,6 +1,8 @@
 /* stylelint-disable  */
 .donutContainer {
   display: grid;
+  /* Fill the card instead of shrinking to the chart's min-width. */
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
   justify-content: center;
   width: 100%;
@@ -8,6 +10,7 @@
   padding: 0.6rem;
   margin-top: 20px;
   margin-bottom: -35px;
+  container-type: inline-size;
 }
 
 .donutContainerDark {
@@ -21,14 +24,16 @@
   align-items: center;
   width: 100%;
   min-width: 32rem;
+  max-width: 48rem;
+  margin: 0 auto;
 }
 
 .donutChart {
   position: relative;
   width: 100%;
   min-width: 21.25rem;
-  max-width: 24rem;
-  height: 24rem;
+  max-width: 30rem;
+  height: 26rem;
   margin-left: 0;
   overflow: visible;
 }
@@ -176,5 +181,25 @@
 
   .donutLabel {
     margin-left: 0;
+  }
+}
+/* Narrow slots (e.g. two charts side by side): stack the legend under the donut. */
+@container (width < 36rem) {
+  .donutScrollable {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    min-width: 0;
+  }
+
+  .donutChart {
+    min-width: 0;
+    max-width: 26rem;
+    height: auto;
+    aspect-ratio: 1;
+  }
+
+  .donutLabels {
+    width: auto;
+    margin-top: 1rem;
   }
 }
