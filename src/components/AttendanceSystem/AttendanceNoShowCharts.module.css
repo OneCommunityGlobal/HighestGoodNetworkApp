@@ -491,7 +491,7 @@
   color: #fff;
 }
 
-/* ponytail: real root cause is Teams/Team.module.css:110's bare, unscoped
+/* Root cause: Teams/Team.module.css:110's bare, unscoped
    `tr:hover { background: #e9f6ff }` — CSS Modules only hashes class selectors,
    not element selectors, so that rule leaks onto every <tr> in the app. Harmless
    in light mode (dark text on pale blue), but in dark mode the global
