@@ -10,6 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import MonthPicker from './MonthPicker';
 import styles from './LossTrackingLineChart.module.css';
 
 const colors = {
@@ -134,6 +135,12 @@ const rawData = [
     ],
   },
 ];
+
+// Selectable date bounds, derived from the data itself
+const allDates = rawData.flatMap(l => l.data.map(d => d.date)).sort();
+const MIN_DATE = allDates[0]; // e.g. '2022-01'
+const MAX_DATE = allDates[allDates.length - 1]; // e.g. '2024-06'
+
 const DEFAULTS = { material: 'All', year: 'All', startDate: '', endDate: '' };
 
 export default function LossTrackingLineChart() {
@@ -219,7 +226,9 @@ export default function LossTrackingLineChart() {
     startDate === DEFAULTS.startDate &&
     endDate === DEFAULTS.endDate;
 
+  // The pickers already prevent an invalid range; kept as a safety net.
   const isDateRangeValid = !startDate || !endDate || startDate <= endDate;
+
   const legendItems = useMemo(
     () =>
       filteredLines.map(line => ({
@@ -267,39 +276,27 @@ export default function LossTrackingLineChart() {
             </select>
           </label>
 
-          <label>
+          <div className={styles.field}>
             <span>Start Date</span>
-            <div className={styles.monthInputWrapper}>
-              <input
-                className={styles.monthInput}
-                type="month"
-                value={startDate}
-                onChange={e => setStartDate(e.target.value)}
-              />
-              <span className={styles.monthInputIcon} aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1a3 3 0 0 1 3 3v11a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V7a3 3 0 0 1 3-3h1V3a1 1 0 0 1 1-1Zm12 8H5v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8ZM5 8h14V7a1 1 0 0 0-1-1H6A1 1 0 0 0 5 7v1Z" />
-                </svg>
-              </span>
-            </div>
-          </label>
+            <MonthPicker
+              ariaLabel="Start date"
+              value={startDate}
+              onChange={setStartDate}
+              min={MIN_DATE}
+              max={endDate || MAX_DATE}
+            />
+          </div>
 
-          <label>
+          <div className={styles.field}>
             <span>End Date</span>
-            <div className={styles.monthInputWrapper}>
-              <input
-                className={styles.monthInput}
-                type="month"
-                value={endDate}
-                onChange={e => setEndDate(e.target.value)}
-              />
-              <span className={styles.monthInputIcon} aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1a3 3 0 0 1 3 3v11a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V7a3 3 0 0 1 3-3h1V3a1 1 0 0 1 1-1Zm12 8H5v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8ZM5 8h14V7a1 1 0 0 0-1-1H6A1 1 0 0 0 5 7v1Z" />
-                </svg>
-              </span>
-            </div>
-          </label>
+            <MonthPicker
+              ariaLabel="End date"
+              value={endDate}
+              onChange={setEndDate}
+              min={startDate || MIN_DATE}
+              max={MAX_DATE}
+            />
+          </div>
 
           <button className={styles.resetBtn} onClick={handleReset} disabled={isDefaultFilters}>
             Reset Filters
@@ -317,54 +314,56 @@ export default function LossTrackingLineChart() {
             <div className={styles.noDataMessage}>No data available for the selected filters.</div>
           ) : (
             <>
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 44 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-                  <XAxis
-                    dataKey="month"
-                    height={72}
-                    tick={{ fill: textColor }}
-                    axisLine={{ stroke: textColor }}
-                    tickLine={{ stroke: textColor }}
-                    label={{
-                      value: 'Time (months)',
-                      position: 'bottom',
-                      offset: 18,
-                      fill: textColor,
-                    }}
-                  />
-                  <YAxis
-                    tick={{ fill: textColor }}
-                    axisLine={{ stroke: textColor }}
-                    tickLine={{ stroke: textColor }}
-                    label={{
-                      value: 'Loss (%)',
-                      angle: -90,
-                      position: 'insideLeft',
-                      fill: textColor,
-                    }}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'var(--tooltip-bg)',
-                      color: 'var(--text-color)',
-                      border: `1px solid var(--border-color)`,
-                    }}
-                  />
-                  {filteredLines.map(line => (
-                    <Line
-                      key={`${line.year}-${line.material}`}
-                      type="monotone"
-                      dataKey={`${line.year}-${line.material}`}
-                      stroke={colors[`${line.year}-${line.material}`]}
-                      strokeWidth={2}
-                      dot={{ r: 3 }}
-                      activeDot={{ r: 5 }}
-                      name={`${line.year} - ${line.material}`}
+              <div className={styles.chartArea}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 44 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+                    <XAxis
+                      dataKey="month"
+                      height={72}
+                      tick={{ fill: textColor }}
+                      axisLine={{ stroke: textColor }}
+                      tickLine={{ stroke: textColor }}
+                      label={{
+                        value: 'Time (months)',
+                        position: 'bottom',
+                        offset: 18,
+                        fill: textColor,
+                      }}
                     />
-                  ))}
-                </LineChart>
-              </ResponsiveContainer>
+                    <YAxis
+                      tick={{ fill: textColor }}
+                      axisLine={{ stroke: textColor }}
+                      tickLine={{ stroke: textColor }}
+                      label={{
+                        value: 'Loss (%)',
+                        angle: -90,
+                        position: 'insideLeft',
+                        fill: textColor,
+                      }}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'var(--tooltip-bg)',
+                        color: 'var(--text-color)',
+                        border: `1px solid var(--border-color)`,
+                      }}
+                    />
+                    {filteredLines.map(line => (
+                      <Line
+                        key={`${line.year}-${line.material}`}
+                        type="monotone"
+                        dataKey={`${line.year}-${line.material}`}
+                        stroke={colors[`${line.year}-${line.material}`]}
+                        strokeWidth={2}
+                        dot={{ r: 3 }}
+                        activeDot={{ r: 5 }}
+                        name={`${line.year} - ${line.material}`}
+                      />
+                    ))}
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
               <div className={styles.customLegend}>
                 {legendItems.map(item => (
                   <span key={item.key} className={styles.legendItem}>
