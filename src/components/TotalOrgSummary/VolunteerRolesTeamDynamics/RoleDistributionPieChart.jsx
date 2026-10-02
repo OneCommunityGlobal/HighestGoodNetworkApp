@@ -3,7 +3,7 @@ import { ResponsiveContainer, PieChart, Pie, Cell, Legend, Tooltip } from 'recha
 import Loading from '~/components/common/Loading';
 import CustomTooltip from '../../CustomTooltip';
 
-const COLORS = [
+export const COLORS = [
   '#2F80ED',
   '#56CCF2',
   '#27AE60',
@@ -17,7 +17,7 @@ const COLORS = [
   '#828282',
 ];
 
-const ROLE_COLOR_MAP = {
+export const ROLE_COLOR_MAP = {
   Volunteer: '#8ebfff',
   Manager: '#27AE60',
   Administrator: '#fb0505',
@@ -28,17 +28,26 @@ const ROLE_COLOR_MAP = {
 
 const RADIAN = Math.PI / 180;
 
-const getContrastTextColor = hexColor => {
+// WCAG relative luminance of a #rrggbb colour.
+const relativeLuminance = hexColor => {
   const hex = hexColor.replace('#', '');
-
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
-
-  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-
-  return brightness > 160 ? '#000000' : '#FFFFFF';
+  const [r, g, b] = [0, 2, 4].map(i => {
+    const c = Number.parseInt(hex.substring(i, i + 2), 16) / 255;
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 };
+
+export const contrastRatio = (a, b) => {
+  const [hi, lo] = [relativeLuminance(a), relativeLuminance(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+};
+
+// Pick whichever of black/white has the higher WCAG contrast on the slice.
+// The old brightness > 160 heuristic put white on mid-tone slices such as
+// Manager green (2.87:1) and Administrator red (4.10:1).
+export const getContrastTextColor = hexColor =>
+  contrastRatio(hexColor, '#000000') >= contrastRatio(hexColor, '#ffffff') ? '#000000' : '#FFFFFF';
 
 const RoleDistributionPieChart = ({ roleDistributionStats = [], isLoading, darkMode }) => {
   // Reusable function to sort data and assign colors.

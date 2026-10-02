@@ -227,9 +227,6 @@
   color: #000 !important;
 }
 
-/* Both classes forced to black: the per-slice brightness pick in
-   RoleDistributionPieChart.jsx's getContrastTextColor() sends some slices
-   (e.g. the red Administrator wedge) to white, which is unreadable here. */
 .containerTotalOrgWrapper:global(.bg-oxford-blue)
   .componentContainer
   :global(.role-distribution-label-light),
@@ -237,8 +234,8 @@
   .componentContainer
   :global(.role-distribution-label-light)
   tspan {
-  fill: #000 !important;
-  color: #000 !important;
+  fill: #fff !important;
+  color: #fff !important;
 }
 
 .containerTotalOrgWrapper.bg-oxford-blue h3 {
