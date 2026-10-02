@@ -491,8 +491,6 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
             </DropdownToggle>
 
             <DropdownMenu
-              container="body"
-              strategy="fixed"
               className={`${style['review-button-dropdown']} ${
                 darkMode ? style['review-button-dropdown-dark'] : ''
               }`}
@@ -536,8 +534,6 @@ function ReviewButton({ user, task, updateTask, onTimeOff }) {
               Ready for Review
             </DropdownToggle>
             <DropdownMenu
-              container="body"
-              strategy="fixed"
               className={`${style['review-button-dropdown']} ${
                 darkMode ? style['review-button-dropdown-dark'] : ''
               }`}
