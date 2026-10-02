@@ -164,36 +164,29 @@
   }
 }
 
+/* Keep the controls on one horizontal row at every width. Turning .btns into a
+   grid stacked them into two or three rows, which is what padded the header out
+   vertically on narrow screens. The row measures roughly 240px once the gaps and
+   button padding come off — the readout is 100px and the five icons ~24px each —
+   so it still fits comfortably at 320px. */
 @media (width <= 460px) {
   .btns {
-    display: grid;
-    grid-template-columns: auto auto auto auto;
+    gap: 0.25rem;
   }
 
   .btns button {
-    padding: 1px 5px;
-  }
-}
-
-@media (width <= 410px) {
-  .btns {
-    display: grid;
-    grid-template-columns: auto auto auto;
-  }
-
-  .btns button {
-    padding: 1px 3px;
+    padding: 0;
+    margin: 0;
   }
 }
 
 @media (width <= 360px) {
   .btns {
-    display: grid;
-    grid-template-columns: auto auto;
+    gap: 0.125rem;
   }
 
-  .btns button {
-    padding: 1px;
+  .timerContainer {
+    gap: 0.25rem;
   }
 }
 

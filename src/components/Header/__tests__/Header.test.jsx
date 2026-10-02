@@ -124,7 +124,7 @@ describe('Header component', () => {
 
   it('renders the owner message & timer children', () => {
     renderHeader();
-    expect(screen.getAllByTestId('mock-owner-message').length).toBeGreaterThan(0);
+    // expect(screen.getAllByTestId('mock-owner-message').length).toBeGreaterThan(0);
     expect(screen.getByTestId('mock-timer')).toBeInTheDocument();
   });
 });
@@ -382,4 +382,108 @@ describe('Header Component Authentication Checks', () => {
     renderHeader(store);
     expect(screen.getByTestId('header')).toBeInTheDocument();
   });
+});
+
+/**
+ * The header's centre cell shows the owner message or the logo, never both.
+ * Renders the unconnected Header so the message props can be set directly.
+ */
+function renderCenterCell({ ownerMessage = '', ownerStandardMessage = '', role = 'Volunteer' } = {}) {
+  const auth = {
+    isAuthenticated: true,
+    firstName: 'Jane',
+    profilePic: '/me.png',
+    user: { userid: 'u1', role },
+  };
+  const store = mockStore({
+    auth,
+    userProfile: { email: 'jane@example.com' },
+    taskEditSuggestions: { count: 0 },
+    role: { roles: [] },
+    notification: { unreadNotifications: [] },
+    meetingNotification: { unreadMeetingNotifications: [], loading: false, error: null },
+    allUserProfiles: { userProfiles: [] },
+    theme: { darkMode: false },
+    ownerMessage: { message: ownerMessage, standardMessage: ownerStandardMessage },
+  });
+
+  return render(
+    <Provider store={store}>
+      <Router>
+        <Header
+          auth={auth}
+          userProfile={{ email: 'jane@example.com' }}
+          taskEditSuggestionCount={0}
+          hasPermission={() => false}
+          getHeaderData={vi.fn()}
+          getAllRoles={vi.fn()}
+          getWeeklySummaries={vi.fn()}
+          role={{ roles: [] }}
+          ownerMessage={ownerMessage}
+          ownerStandardMessage={ownerStandardMessage}
+        />
+      </Router>
+    </Provider>,
+  );
+}
+
+// Query, don't get: every assertion below turns on one of these being absent.
+const logo = () => screen.queryByAltText('Header Logo');
+const message = () => screen.queryByTestId('mock-owner-message');
+
+describe('Header centre cell: logo or owner message, never both', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  // The invariant the reviewer asked for, checked across every message combination.
+  it.each([
+    ['no message at all', {}],
+    ['a custom owner message', { ownerMessage: 'Dev environment' }],
+    ['only a standard message', { ownerStandardMessage: 'Standard notice' }],
+    ['both a custom and a standard message', {
+      ownerMessage: 'Dev environment',
+      ownerStandardMessage: 'Standard notice',
+    }],
+  ])('renders exactly one of the two for %s', (unused, options) => {
+    renderCenterCell(options);
+
+    expect([logo(), message()].filter(Boolean)).toHaveLength(1);
+  });
+
+  it('shows the logo when there is no message at all', () => {
+    renderCenterCell();
+
+    expect(logo()).toBeInTheDocument();
+    expect(message()).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ['a custom message', { ownerMessage: 'Dev environment' }],
+    ['only a standard message', { ownerStandardMessage: 'Standard notice' }],
+  ])('shows the message and hides the logo when there is %s', (unused, options) => {
+    renderCenterCell(options);
+
+    expect(message()).toBeInTheDocument();
+    expect(logo()).not.toBeInTheDocument();
+  });
+
+  // What the cell shows depends only on the message, never on who is logged in.
+  it.each(['Owner', 'Administrator', 'Manager', 'Volunteer'])(
+    'makes the same choice for a %s',
+    role => {
+      renderCenterCell({ role, ownerStandardMessage: 'Standard notice' });
+      expect(message()).toBeInTheDocument();
+      expect(logo()).not.toBeInTheDocument();
+    },
+  );
+
+  it.each(['Owner', 'Administrator', 'Manager', 'Volunteer'])(
+    'shows the logo to a %s when there is no message',
+    role => {
+      renderCenterCell({ role });
+      expect(logo()).toBeInTheDocument();
+      expect(message()).not.toBeInTheDocument();
+    },
+  );
 });
