@@ -35,9 +35,10 @@
 }
 
 /* added by shreya P — dark mode override for the member table header row.
-   Both classes are applied as plain strings by ProjectMemberTable.jsx, so inside
-   this `.module.css` they must stay :global() or they get hashed and match nothing. */
-:global(.bg-space-cadet.reports-table-head-members) {
+   ProjectMemberTable.jsx applies the header as styles['reports-table-head-members']
+   plus a plain `bg-space-cadet` in dark mode, so the header class stays local and
+   only bg-space-cadet is :global(). */
+.reports-table-head-members:global(.bg-space-cadet) {
   background-color: #1c2b3a !important;
   border-bottom: 3px solid #3a506b;
   color: #fff;
