@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
-import styles from './RehireableStatusControl.module.css';
 
 function RehireableStatusControl({ isRehireable, notRehireableReason, darkMode, onConfirm }) {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
   const [reason, setReason] = useState('');
-  const hasReason = !isRehireable && Boolean(notRehireableReason);
+  const hasReason =
+    !isRehireable &&
+    typeof notRehireableReason === 'string' &&
+    notRehireableReason.trim().length > 0;
 
   const handleChange = () => {
     const nextStatus = !isRehireable;
@@ -32,9 +34,7 @@ function RehireableStatusControl({ isRehireable, notRehireableReason, darkMode, 
     <>
       <span className="mr-2">
         <i
-          className={`${isRehireable ? 'fa fa-check-square-o' : 'fa fa-square-o'} ${
-            hasReason ? styles.reasonIcon : ''
-          }`}
+          className={isRehireable ? 'fa fa-check-square-o' : hasReason ? '' : 'fa fa-square-o'}
           role="button"
           tabIndex={0}
           aria-label={isRehireable ? 'Rehireable' : 'Not rehireable'}
@@ -42,7 +42,16 @@ function RehireableStatusControl({ isRehireable, notRehireableReason, darkMode, 
             fontSize: 24,
             cursor: 'pointer',
             marginTop: '6px',
-            ...(hasReason ? { color: '#f08c00' } : {}),
+            ...(hasReason
+              ? {
+                  display: 'inline-block',
+                  width: '0.75em',
+                  height: '0.75em',
+                  boxSizing: 'border-box',
+                  border: '2px solid #f08c00',
+                  verticalAlign: '-0.08em',
+                }
+              : {}),
           }}
           title={hasReason ? notRehireableReason : 'Click to change rehirable status'}
           onClick={handleChange}

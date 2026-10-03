@@ -40,9 +40,46 @@ describe('RehireableStatusControl', () => {
     expect(onConfirm).not.toHaveBeenCalled();
   });
 
-  it('shows a saved reason in orange on the unchecked control and clears it after restoring rehireability', () => {
+  it('renders each rehireable visual state from persisted props', () => {
     const onConfirm = vi.fn();
     const { rerender } = render(
+      <div className="right-column">
+        <RehireableStatusControl
+          isRehireable
+          notRehireableReason="Saved reason"
+          onConfirm={onConfirm}
+        />
+      </div>,
+    );
+    const checkedControl = screen.getByRole('button', { name: 'Rehireable' });
+    expect(checkedControl).toHaveClass('fa-check-square-o');
+    expect(checkedControl.style.border).toBe('');
+
+    rerender(
+      <div className="right-column">
+        <RehireableStatusControl isRehireable={false} onConfirm={onConfirm} />
+      </div>,
+    );
+    const uncheckedControl = screen.getByRole('button', { name: 'Not rehireable' });
+    expect(uncheckedControl).toHaveClass('fa-square-o');
+    expect(uncheckedControl.title).toBe('Click to change rehirable status');
+    expect(uncheckedControl.style.border).toBe('');
+
+    rerender(
+      <div className="right-column">
+        <RehireableStatusControl
+          isRehireable={false}
+          notRehireableReason="   "
+          onConfirm={onConfirm}
+        />
+      </div>,
+    );
+    const whitespaceReasonControl = screen.getByRole('button', { name: 'Not rehireable' });
+    expect(whitespaceReasonControl).toHaveClass('fa-square-o');
+    expect(whitespaceReasonControl.title).toBe('Click to change rehirable status');
+    expect(whitespaceReasonControl.style.border).toBe('');
+
+    rerender(
       <div className="right-column">
         <RehireableStatusControl
           isRehireable={false}
@@ -52,32 +89,16 @@ describe('RehireableStatusControl', () => {
       </div>,
     );
     const control = screen.getByRole('button', { name: 'Not rehireable' });
-    expect(control).toHaveAttribute('title', 'Saved reason');
-    expect(control.className).toContain('reasonIcon');
-    expect(window.getComputedStyle(control).color).toBe('rgb(240, 140, 0)');
+    expect(control.className).not.toContain('fa-square-o');
+    expect(control.title).toBe('Saved reason');
+    expect(control.style.border).toBe('2px solid rgb(240, 140, 0)');
+    expect(window.getComputedStyle(control).borderColor).toBe('rgb(240, 140, 0)');
+    expect(window.getComputedStyle(control).borderStyle).toBe('solid');
+    expect(window.getComputedStyle(control).borderWidth).toBe('2px');
 
     fireEvent.click(control);
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
     expect(onConfirm).toHaveBeenCalledWith(true, '');
-
-    rerender(
-      <div className="right-column">
-        <RehireableStatusControl isRehireable onConfirm={onConfirm} />
-      </div>,
-    );
-    rerender(
-      <div className="right-column">
-        <RehireableStatusControl
-          isRehireable={false}
-          notRehireableReason=""
-          onConfirm={onConfirm}
-        />
-      </div>,
-    );
-    const uncheckedControl = screen.getByRole('button', { name: 'Not rehireable' });
-    expect(uncheckedControl).toHaveAttribute('title', 'Click to change rehirable status');
-    expect(uncheckedControl.className).not.toContain('reasonIcon');
-    expect(window.getComputedStyle(uncheckedControl).color).not.toBe('rgb(240, 140, 0)');
   });
 });
