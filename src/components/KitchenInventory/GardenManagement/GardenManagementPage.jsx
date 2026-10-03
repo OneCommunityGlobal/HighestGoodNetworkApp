@@ -513,6 +513,13 @@ function GardenManagementPage() {
 
   const [formError, setFormError] = useState('');
 
+  const [popup, setPopup] = useState({
+    type: null,
+    message: '',
+    title: '',
+    onConfirm: null,
+  });
+
   const [calendarForm, setCalendarForm] = useState({
     name: '',
     startDate: '',
@@ -667,6 +674,43 @@ function GardenManagementPage() {
     resetAllForms();
   };
 
+  const showAlert = (message, title = 'Notice') => {
+    setPopup({
+      type: 'alert',
+      message,
+      title,
+      onConfirm: null,
+    });
+  };
+
+  const showConfirm = (message, onConfirm, title = 'Confirm Action') => {
+    setPopup({
+      type: 'confirm',
+      message,
+      title,
+      onConfirm,
+    });
+  };
+
+  const closePopup = () => {
+    setPopup({
+      type: null,
+      message: '',
+      title: '',
+      onConfirm: null,
+    });
+  };
+
+  const handlePopupConfirm = async () => {
+    const confirmAction = popup.onConfirm;
+
+    closePopup();
+
+    if (confirmAction) {
+      await confirmAction();
+    }
+  };
+
   /* =======================================================
    * Calendar
    * ======================================================= */
@@ -805,7 +849,7 @@ function GardenManagementPage() {
     const eventId = getId(event);
 
     if (!eventId) {
-      window.alert('Unable to update this event because its ID is missing.');
+      showAlert('Unable to update this event because its ID is missing.');
       return;
     }
 
@@ -816,7 +860,7 @@ function GardenManagementPage() {
     } catch (err) {
       console.error('Failed to update calendar event:', err);
 
-      window.alert(err?.response?.data?.message || 'Failed to update event.');
+      showAlert(err?.response?.data?.message || 'Failed to update event.');
     }
   };
 
@@ -824,25 +868,25 @@ function GardenManagementPage() {
     const eventId = getId(event);
 
     if (!eventId) {
-      window.alert('Unable to delete this event because its ID is missing.');
+      showAlert('Unable to delete this event because its ID is missing.');
       return;
     }
 
-    const confirmed = window.confirm(`Delete "${event.name || 'this event'}"?`);
+    showConfirm(
+      `Delete "${event.name || 'this event'}"?`,
+      async () => {
+        try {
+          await deleteGardenCalendarEvent(eventId);
 
-    if (!confirmed) {
-      return;
-    }
+          await loadGardenData();
+        } catch (err) {
+          console.error('Failed to delete calendar event:', err);
 
-    try {
-      await deleteGardenCalendarEvent(eventId);
-
-      await loadGardenData();
-    } catch (err) {
-      console.error('Failed to delete calendar event:', err);
-
-      window.alert(err?.response?.data?.message || 'Failed to delete event.');
-    }
+          showAlert(err?.response?.data?.message || 'Failed to delete event.');
+        }
+      },
+      'Delete Event',
+    );
   };
 
   /* =======================================================
@@ -912,25 +956,25 @@ function GardenManagementPage() {
     const seedId = getId(seed);
 
     if (!seedId) {
-      window.alert('Unable to delete this seed because its ID is missing.');
+      showAlert('Unable to delete this seed because its ID is missing.');
       return;
     }
 
-    const confirmed = window.confirm(`Delete "${seed.name || 'this seed'}"?`);
+    showConfirm(
+      `Delete "${seed.name || 'this seed'}"?`,
+      async () => {
+        try {
+          await deleteSeedInventory(seedId);
 
-    if (!confirmed) {
-      return;
-    }
+          await loadGardenData();
+        } catch (err) {
+          console.error('Failed to delete seed:', err);
 
-    try {
-      await deleteSeedInventory(seedId);
-
-      await loadGardenData();
-    } catch (err) {
-      console.error('Failed to delete seed:', err);
-
-      window.alert(err?.response?.data?.message || 'Failed to delete seed.');
-    }
+          showAlert(err?.response?.data?.message || 'Failed to delete seed.');
+        }
+      },
+      'Delete Seed',
+    );
   };
 
   /* =======================================================
@@ -1022,50 +1066,46 @@ function GardenManagementPage() {
     const orderId = getId(order);
 
     if (!orderId) {
-      window.alert('Unable to update this order because its ID is missing.');
+      showAlert('Unable to update this order because its ID is missing.');
       return;
     }
 
-    const confirmed = window.confirm(`Mark ${order.orderId || 'this order'} as received?`);
-
-    if (!confirmed) {
-      return;
-    }
-
-    try {
-      await updateSeedOrderStatus(orderId, 'received');
-
-      await loadGardenData();
-    } catch (err) {
-      console.error('Failed to update order:', err);
-
-      window.alert(err?.response?.data?.message || 'Failed to update order.');
-    }
+    showConfirm(
+      `Mark ${order.orderId || 'this order'} as received?`,
+      async () => {
+        try {
+          await updateSeedOrderStatus(orderId, 'received');
+          await loadGardenData();
+        } catch (err) {
+          console.error('Failed to update order:', err);
+          showAlert(err?.response?.data?.message || 'Failed to update order.');
+        }
+      },
+      'Mark Order as Received',
+    );
   };
 
   const handleCancelOrder = async order => {
     const orderId = getId(order);
 
     if (!orderId) {
-      window.alert('Unable to cancel this order because its ID is missing.');
+      showAlert('Unable to cancel this order because its ID is missing.');
       return;
     }
 
-    const confirmed = window.confirm(`Cancel ${order.orderId || 'this order'}?`);
-
-    if (!confirmed) {
-      return;
-    }
-
-    try {
-      await updateSeedOrderStatus(orderId, 'cancelled');
-
-      await loadGardenData();
-    } catch (err) {
-      console.error('Failed to cancel order:', err);
-
-      window.alert(err?.response?.data?.message || 'Failed to cancel order.');
-    }
+    showConfirm(
+      `Cancel ${order.orderId || 'this order'}?`,
+      async () => {
+        try {
+          await updateSeedOrderStatus(orderId, 'cancelled');
+          await loadGardenData();
+        } catch (err) {
+          console.error('Failed to cancel order:', err);
+          showAlert(err?.response?.data?.message || 'Failed to cancel order.');
+        }
+      },
+      'Cancel Order',
+    );
   };
 
   /* =======================================================
@@ -1782,6 +1822,54 @@ function GardenManagementPage() {
             </div>
           </form>
         </Modal>
+      )}
+
+      {popup.type && (
+        <div className={styles.popupOverlay}>
+          <div
+            className={styles.popup}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="garden-popup-title"
+          >
+            <div className={styles.popupHeader}>
+              <h2 id="garden-popup-title" className={styles.popupTitle}>
+                {popup.title}
+              </h2>
+
+              <button
+                type="button"
+                className={styles.popupClose}
+                onClick={closePopup}
+                aria-label="Close popup"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className={styles.popupBody}>
+              <p>{popup.message}</p>
+            </div>
+
+            <div className={styles.popupActions}>
+              {popup.type === 'confirm' && (
+                <button type="button" className={styles.cancelButton} onClick={closePopup}>
+                  Cancel
+                </button>
+              )}
+
+              {popup.type === 'confirm' ? (
+                <button type="button" className={styles.primaryButton} onClick={handlePopupConfirm}>
+                  Confirm
+                </button>
+              ) : (
+                <button type="button" className={styles.primaryButton} onClick={closePopup}>
+                  OK
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

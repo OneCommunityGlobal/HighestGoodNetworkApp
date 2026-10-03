@@ -1654,6 +1654,154 @@
   border-top-color: #7bc58b;
 }
 
+/* =========================================================
+   In-Page Popup
+   ========================================================= */
+
+.popupOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+  background: rgb(23 32 27 / 52%);
+  backdrop-filter: blur(3px);
+}
+
+.popup {
+  position: relative;
+  z-index: 2001;
+  width: min(440px, 100%);
+  background: #fff;
+  border: 1px solid #dfe7e2;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgb(20 32 25 / 25%);
+  overflow: hidden;
+}
+
+.containerDark .popup {
+  background: #1b2520;
+  border-color: #34423a;
+  color: #edf4ef;
+}
+
+.popupHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 18px 20px;
+  border-bottom: 1px solid #e7ebe8;
+}
+
+.containerDark .popupHeader {
+  border-color: #303c35;
+}
+
+.popupTitle {
+  margin: 0;
+  color: #2f3e35;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.containerDark .popupTitle {
+  color: #f0f5f1;
+}
+
+.popupClose {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #f0f3f1;
+  color: #56625c;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.popupClose:hover {
+  background: #e5ebe7;
+  color: #303c35;
+}
+
+.containerDark .popupClose {
+  background: #29332e;
+  color: #c5d0c9;
+}
+
+.containerDark .popupClose:hover {
+  background: #354139;
+  color: #edf4ef;
+}
+
+.popupBody {
+  padding: 20px;
+}
+
+.popupBody p {
+  margin: 0;
+  color: #4f5e55;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.containerDark .popupBody p {
+  color: #c4d0c8;
+}
+
+.popupActions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 9px;
+  padding: 15px 20px 18px;
+  border-top: 1px solid #e8ece9;
+}
+
+.containerDark .popupActions {
+  border-color: #303c35;
+}
+
+.popupActions button {
+  position: relative;
+  z-index: 2002;
+  pointer-events: auto;
+}
+
+.popupActions .primaryButton,
+.popupActions .cancelButton {
+  min-width: 80px;
+}
+
+@media (width <= 480px) {
+  .popupOverlay {
+    padding: 14px;
+  }
+
+  .popup {
+    width: 100%;
+  }
+
+  .popupHeader {
+    padding: 16px;
+  }
+
+  .popupBody {
+    padding: 18px 16px;
+  }
+
+  .popupActions {
+    padding: 14px 16px 16px;
+  }
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
