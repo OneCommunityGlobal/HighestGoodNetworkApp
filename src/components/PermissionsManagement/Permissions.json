@@ -436,6 +436,11 @@
         "label": "Send Emails",
         "key": "sendEmails",
         "description": "Gives the user permission to send email communications to other users."
+      },
+      {
+        "label": "Post Facebook Content",
+        "key": "postFacebookContent",
+        "description": "Gives the user permission to publish Facebook content and manage the Facebook connection."
       }
     ]
   },
