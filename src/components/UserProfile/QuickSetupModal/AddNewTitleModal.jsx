@@ -131,21 +131,21 @@ function AddNewTitleModal({
     : (teamsData && Array.isArray(teamsData.allTeams) ? teamsData.allTeams : []);
 
 
-  const existTeamCodes = new Set(
-    (Array.isArray(QSTTeamCodes) ? QSTTeamCodes : [])
-      .map(code => code?.value?.trim().toLowerCase())
-      .filter(Boolean)
-  );
+  // const existTeamCodes = new Set(
+  //   (Array.isArray(QSTTeamCodes) ? QSTTeamCodes : [])
+  //     .map(code => code?.value?.trim().toLowerCase())
+  //     .filter(Boolean)
+  // );
 
   const activeTeams = allTeamsArray.filter(
     team => team?.isActive === true
   );
 
-  const existTeamName = new Set(
-    activeTeams
-      .map(team => team?.teamName?.trim().toLowerCase())
-      .filter(Boolean)
-  );
+  // const existTeamName = new Set(
+  //   activeTeams
+  //     .map(team => team?.teamName?.trim().toLowerCase())
+  //     .filter(Boolean)
+  // );
 
 
   // ------------------- local UI state (selectors) --------------------------
@@ -265,7 +265,7 @@ const onTeamNameValidation = teamObj => {
   }
 
   // Validate the actual team ID against all teams, including inactive teams.
-  const selectedTeam = allTeamsArray.find(
+  const selectedTeam = allTeamsArray.some(
     team => team?._id === selectedTeamId
   );
 
@@ -295,9 +295,9 @@ const onTeamNameValidation = teamObj => {
       return;
     }
 
-    const safeTeams = allTeamsArray.filter(
-      team => team?.isActive === true
-    );
+    // const safeTeams = allTeamsArray.filter(
+    //   team => team?.isActive === true
+    // );
 
 const team = normalizeTeam(titleData.teamAssiged, allTeamsArray);
 
