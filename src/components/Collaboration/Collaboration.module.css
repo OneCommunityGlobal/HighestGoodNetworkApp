@@ -124,8 +124,8 @@
 
 /* --- Headings --- */
 .headings {
+  padding: 1rem 1rem 0;
   margin-bottom: 10px;
-  text-align: center;
 }
 
 .headings h1,
@@ -140,6 +140,7 @@
   margin: 10px 0;
   text-transform: uppercase;
   letter-spacing: 1px;
+  text-align: center;
 }
 
 @media (width <= 768px) {
