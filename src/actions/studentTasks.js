@@ -54,9 +54,16 @@ export const updateStudentTask = (taskId, updatedTask) => {
  * @returns {Object} Transformed task in flat format
  */
 const transformTaskToFlatFormat = (task, subjectData, subjectKey) => {
+  // The backend groups tasks under a synthetic 'Unknown Subject' key when a
+  // task has no real subject reference, so subjectKey/subjectData.subject
+  // must never be trusted as the primary display name. Fall back to the
+  // task's own real title fields (lesson plan / atom name) instead.
+  const realSubjectName = subjectData.subject?.name;
+  const realTaskTitle = task.lessonPlan?.title || task.atom?.name;
+
   return {
     id: task._id,
-    course_name: subjectData.subject?.name || subjectKey || 'Unknown Subject',
+    course_name: realSubjectName || realTaskTitle || subjectKey,
     subtitle: task.lessonPlan?.title || task.atom?.name || 'No Description',
     task_type: task.type || 'read',
     logged_hours: task.loggedHours || 0,
