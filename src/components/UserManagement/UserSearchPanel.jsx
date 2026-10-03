@@ -9,6 +9,7 @@ import hasPermission from '../../utils/permissions';
 import { SEARCH, SHOW, CREATE_NEW_USER, SEND_SETUP_LINK } from '../../languages/en/ui';
 import styles from './usermanagement.module.css';
 
+import { permissions } from '../../utils/constants';
 const setupHistoryTooltip = <Tooltip id="tooltip">Setup History Modal</Tooltip>;
 
 /**
@@ -27,7 +28,7 @@ function UserSearchPanel({
   darkMode,
   selectText,
 }) {
-  const canCreateUsers = hasPermission('postUserProfile');
+  const canCreateUsers = hasPermission(permissions.postUserProfile);
   const [tooltipCreateNewUserOpen, setTooltipCreateNewUserOpen] = useState(false);
   const toggleCreateNewUserTooltip = () => setTooltipCreateNewUserOpen(!tooltipCreateNewUserOpen);
   return (
@@ -113,6 +114,7 @@ function UserSearchPanel({
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
           <option value="paused">Paused</option>
+          <option value="production-sync">Prod Auto-Deactivated</option>
         </select>
       </div>
 

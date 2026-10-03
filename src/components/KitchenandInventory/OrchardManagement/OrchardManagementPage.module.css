@@ -1,0 +1,516 @@
+/* ===== PAGE ===== */
+.page {
+  min-height: 100vh;
+  background: #f0f4f8;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 15px;
+  color: #2d2d2d;
+  transition: background 0.3s, color 0.3s;
+}
+
+.pageDark {
+  background: #1a1f1a;
+  color: #e8e8e8;
+}
+
+/* ===== NAVBAR ===== */
+.nav {
+  background: #ffffff;
+  border-bottom: 1px solid #e8edf2;
+  padding: 12px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.nav.dark {
+  background: #1e241e;
+  border-bottom-color: #2e3a2e;
+}
+
+.navLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  width: 36px;
+  height: 36px;
+  background: #3a7d44;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navTitle {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.navSub {
+  font-size: 11px;
+  color: #888;
+}
+
+.navLinks {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  font-size: 13px;
+}
+
+.navLink {
+  color: #555;
+  cursor: pointer;
+}
+
+.navLink.dark {
+  color: #aaa;
+}
+
+.navLink:hover {
+  color: #3a7d44;
+}
+
+.navLinkActive {
+  color: #3a7d44;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.darkToggle {
+  background: none;
+  border: 1px solid #e0d8cf;
+  border-radius: 20px;
+  padding: 5px 12px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #555;
+  transition: all 0.2s;
+}
+
+.darkToggle.dark {
+  border-color: #3a4a3a;
+  color: #ccc;
+}
+
+.darkToggle:hover {
+  border-color: #3a7d44;
+  color: #3a7d44;
+}
+
+/* ===== MAIN ===== */
+.main {
+  padding: 28px 32px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.pageTitle {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.pageSub {
+  color: #888;
+  font-size: 13px;
+  margin-bottom: 24px;
+}
+
+/* ===== DASHBOARD CARDS ===== */
+.dashGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.dashCard {
+  background: #ffffff;
+  border: 1px solid #e8edf2;
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.dashCard.dark {
+  background: #242924;
+  border-color: #2e3a2e;
+}
+
+.dashLabel {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 8px;
+}
+
+.dashNum {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.dashRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ===== TABS ===== */
+.tabRow {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.tabBtn {
+  background: none;
+  border: 1px solid #e8edf2;
+  border-radius: 20px;
+  padding: 6px 16px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #555;
+  transition: all 0.2s;
+}
+
+.tabBtn.dark {
+  border-color: #2e3a2e;
+  color: #aaa;
+}
+
+.tabBtn:hover {
+  border-color: #3a7d44;
+  color: #3a7d44;
+}
+
+.tabBtnActive {
+  background: #1a1a1a !important;
+  border-color: #1a1a1a !important;
+  color: #ffffff !important;
+  font-weight: 500;
+}
+
+.tabBtnActive.dark {
+  background: #3a7d44 !important;
+  border-color: #3a7d44 !important;
+}
+
+/* ===== CARD ===== */
+.card {
+  background: #ffffff;
+  border: 1px solid #e8edf2;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.card.dark {
+  background: #242924;
+  border-color: #2e3a2e;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.cardTitle {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.cardSub {
+  font-size: 12px;
+  color: #888;
+  margin-top: 3px;
+}
+
+/* ===== BUTTONS ===== */
+.btnGreen {
+  background: #3a7d44;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.btnGreen:hover {
+  background: #2d6235;
+}
+
+.btnOutline {
+  background: none;
+  border: 1px solid #e8edf2;
+  border-radius: 8px;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #555;
+  transition: all 0.2s;
+}
+
+.btnOutline.dark {
+  border-color: #3a4a3a;
+  color: #ccc;
+}
+
+.btnOutline:hover {
+  border-color: #3a7d44;
+  color: #3a7d44;
+}
+
+/* ===== ORDER CARDS ===== */
+.orderCard {
+  border: 1px solid #e8edf2;
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.orderCard.dark {
+  border-color: #2e3a2e;
+  background: #1e271e;
+}
+
+.orderTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.orderId {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.orderSupplier {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 6px;
+}
+
+.orderMeta {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 3px;
+}
+
+.orderActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 20px;
+  color: #888;
+  font-size: 14px;
+}
+
+/* ===== BADGES ===== */
+.badge {
+  border-radius: 20px;
+  padding: 3px 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.badgeOrdered {
+  background: #f0f7f1;
+  color: #3a7d44;
+  border: 1px solid #c8e6cd;
+}
+
+.badgeShipped {
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+.badgeDelivered {
+  background: #e8f0fe;
+  color: #3a5da8;
+  border: 1px solid #c5d5f8;
+}
+
+/* ===== PLANTING SCHEDULE ===== */
+.plantCard {
+  border: 1px solid #e8edf2;
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.plantCard.dark {
+  border-color: #2e3a2e;
+  background: #1e271e;
+}
+
+.plantInfo {
+  flex: 1;
+}
+
+.plantQty {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.plantMeta {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 2px;
+}
+
+.plantDateBadge {
+  background: #f0f7f1;
+  color: #3a7d44;
+  border: 1px solid #c8e6cd;
+  border-radius: 20px;
+  padding: 3px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  margin-left: 12px;
+}
+
+.addPlantBtn {
+  width: 100%;
+  background: none;
+  border: 1px dashed #e8edf2;
+  border-radius: 10px;
+  padding: 12px;
+  color: #888;
+  cursor: pointer;
+  font-size: 13px;
+  margin-top: 4px;
+  transition: all 0.2s;
+}
+
+.addPlantBtn.dark {
+  border-color: #3a4a3a;
+}
+
+.addPlantBtn:hover {
+  border-color: #3a7d44;
+  color: #3a7d44;
+}
+
+/* ===== MODAL ===== */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalBox {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 28px;
+  width: 440px;
+  max-width: 90vw;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  transition: background 0.3s;
+}
+
+.modalBox.dark {
+  background: #242924;
+}
+
+.modalTitle {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.detailRow {
+  font-size: 13px;
+  line-height: 2;
+}
+
+.input {
+  width: 100%;
+  background: #f8fafc;
+  border: 1px solid #e8edf2;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 13px;
+  margin-bottom: 14px;
+  box-sizing: border-box;
+  color: #2d2d2d;
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.input.dark {
+  background: #1e271e;
+  border-color: #3a4a3a;
+  color: #e8e8e8;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #3a7d44;
+}
+
+.label {
+  font-size: 12px;
+  color: #555;
+  margin-bottom: 5px;
+  display: block;
+  font-weight: 500;
+}
+
+.modalBtns {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+/* ===== EMPTY STATE ===== */
+.emptyTab {
+  text-align: center;
+  padding: 50px 0;
+  color: #888;
+  font-size: 14px;
+}
+
+.emptyIcon {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .dashGrid { grid-template-columns: repeat(2, 1fr); }
+  .navLinks { display: none; }
+  .main { padding: 16px; }
+}
+
+@media (max-width: 480px) {
+  .dashGrid { grid-template-columns: 1fr; }
+  .pageTitle { font-size: 20px; }
+}

@@ -11,11 +11,10 @@ import { boxStyle } from '~/styles';
 import PropTypes from 'prop-types';
 
 
+import { permissions } from '../../../../utils/constants';
 const Member = ({ index = 0, ...props }) => {
   const { darkMode } = props;
-  const canGetProjectMembers = hasPermission('getProjectMembers');
-  const canUnassignUserInProject = hasPermission('unassignUserInProject');
-
+  const canGetProjectMembers = hasPermission(permissions.getProjectMembers);
 
   return (
     <React.Fragment>

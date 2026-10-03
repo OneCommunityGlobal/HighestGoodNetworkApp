@@ -12,6 +12,7 @@ import stylesPurchaseEquipment from './PurchaseEquipment.module.css';
 export default function PurchaseEquipment() {
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [isError, setIsError] = useState(false);
 
   useEffect(() => {
@@ -40,7 +41,11 @@ export default function PurchaseEquipment() {
     <main className={`${stylesPurchaseEquipment.purchaseEquipmentContainer}`}>
       <header className={`${stylesPurchaseEquipment.purchaseEquipmentHeader}`}>
         <h2>Purchase Request: Equipments</h2>
-        <div className="inv-form-info">
+        <div
+          className={`${stylesPurchaseEquipment.infoText} ${
+            darkMode ? stylesPurchaseEquipment.infoTextDark : ''
+          }`}
+        >
           <BsInfoCircle />
           Initiate a purchase request for approval/action by project admins.
         </div>

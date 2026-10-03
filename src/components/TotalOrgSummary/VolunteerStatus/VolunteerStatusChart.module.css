@@ -56,7 +56,8 @@
   }
 
   .mentorChartSection {
-    flex: 0 1 320px;
+    flex: 1 1 320px;
+    max-width: 400px;
   }
 }
 

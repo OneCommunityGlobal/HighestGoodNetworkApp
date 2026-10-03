@@ -102,7 +102,7 @@
   color-scheme: dark;
 }
 
-.darkModeInput[type="date"]::-webkit-calendar-picker-indicator {
+.darkModeInput[type='date']::-webkit-calendar-picker-indicator {
   filter: invert(1);
   cursor: pointer;
 }
@@ -211,7 +211,9 @@
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   background-color: #f9fafb;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .activityItem:hover {
@@ -282,7 +284,10 @@
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .clearFiltersButton:disabled {
@@ -445,4 +450,61 @@
     flex-direction: column;
     padding: 10px;
   }
+}
+
+/* Activity Icons */
+.alactivityIcon {
+  color: #2c3e50;
+  margin-top: 2px;
+  margin-right: 4px;
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+
+.activityRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.leftInfo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.rightInfo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.altypeRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.altypeText {
+  margin-top: 4px;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.allocationDateRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.allocation,
+.aldate {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }

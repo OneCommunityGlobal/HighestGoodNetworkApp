@@ -40,17 +40,6 @@ function WishListItem(props) {
 
   const { wishlistItem, wishlists } = props;
 
-  // Hide global "back to top" control while this page is mounted (element may not exist).
-  useEffect(() => {
-    const backToTopButton = document.querySelector('.top');
-    if (!backToTopButton) return undefined;
-    const prevDisplay = backToTopButton.style.display;
-    backToTopButton.style.display = 'none';
-    return () => {
-      backToTopButton.style.display = prevDisplay || '';
-    };
-  }, []);
-
   useEffect(() => {
     if (wishlistItem) {
       setCurrWishlistItem(wishlistItem);
@@ -303,7 +292,7 @@ function WishListItem(props) {
             >
               <h6>The Dates you picked are not available</h6>
               <Link
-                to="/lbdashboard/listingshome"
+                to={`/lbdashboard/wishlist/${currWishlistItem.id}/availability`}
                 className={getClassNames('', styles['item__error-link--dark'], darkMode)}
               >
                 Click here to see available dates
@@ -333,20 +322,17 @@ function WishListItem(props) {
                 </button>
               </div>
               <div className={styles['start__chat']}>
-                <button
-                  type="button"
+                <Link
+                  to="/lbdashboard/messaging"
                   className={getClassNames(
                     styles['start__chat-button'],
                     styles['start__chat-button--dark'],
                     darkMode,
                   )}
-                  onClick={e => {
-                    e.preventDefault();
-                  }}
                 >
                   <BsChat />
                   &nbsp;Chat with the Host
-                </button>
+                </Link>
               </div>
             </div>
           </div>

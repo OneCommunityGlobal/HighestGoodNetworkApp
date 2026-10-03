@@ -45,12 +45,13 @@
   padding: 14px 16px;
   border: none; 
   border-radius: 12px;
-  cursor: pointer;
   transition: all 0.25s ease;
   width: 100%;
   text-align: left;
+  cursor: default;
   background-color: var(--brand-color);
   color: whitesmoke;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 8%);
 }
 
 .kpiButton:hover {
@@ -95,7 +96,22 @@
   background-color: rgb(255 255 255 / 20%);
 }
 
+.error {
+  color: #b91c1c;
+}
+
+.budgetBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  margin-top: 4px;
+  white-space: nowrap;
+}
+
 /* --- RESPONSIVE --- */
+
 @media (width <= 600px) {
   .grid {
     grid-template-columns: 1fr;

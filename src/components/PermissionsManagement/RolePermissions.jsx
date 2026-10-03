@@ -12,9 +12,10 @@ import { getPresetsByRole, createNewPreset } from '~/actions/rolePermissionPrese
 import PermissionsPresetsModal from './PermissionsPresetsModal';
 import { ENDPOINTS } from '~/utils/URL';
 import { updateRole, getAllRoles } from '../../actions/role';
+import { permissions as permissionKeys } from '../../utils/constants';
+import hasPermission from '../../utils/permissions';
 import PermissionList from './PermissionList';
 import permissionLabel from './PermissionsConst';
-import hasPermission from '../../utils/permissions';
 import styles from './RolePermissions.module.css';
 
 function RolePermissions(props) {
@@ -81,11 +82,11 @@ function RolePermissions(props) {
 
   const isEditableRole =
     props.role === 'Owner'
-      ? props.hasPermission('addDeleteEditOwners')
+      ? props.hasPermission(permissionKeys.addDeleteEditOwners)
       : props.auth.user.role !== props.role;
 
-  const canEditRole = isEditableRole && props.hasPermission('putRole');
-  const canDeleteRole = isEditableRole && props.hasPermission('deleteRole');
+  const canEditRole = isEditableRole && props.hasPermission(permissionKeys.putRole);
+  const canDeleteRole = isEditableRole && props.hasPermission(permissionKeys.deleteRole);
 
   useEffect(() => {
     setRoleName(props.role);

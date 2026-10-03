@@ -4,6 +4,10 @@ const allProjectsInital = {
   fetching: false,
   fetched: false,
   projects: [],
+  // Archived projects are held separately so that `projects` always means
+  // "not archived". The Projects page needs both counts at once to show a
+  // total that does not change when the archived view is toggled.
+  archivedProjects: [],
   status: 200,
   error: null,
 };
@@ -31,6 +35,15 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
         fetching: false,
         fetched: true,
         projects: action.projects,
+        status,
+      });
+    }
+
+    case types.FETCH_ARCHIVED_PROJECTS_SUCCESS: {
+      return updateState({
+        fetching: false,
+        fetched: true,
+        archivedProjects: action.projects,
         status,
       });
     }

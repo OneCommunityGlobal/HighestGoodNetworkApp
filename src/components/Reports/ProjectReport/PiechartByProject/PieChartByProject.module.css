@@ -1,3 +1,7 @@
+.pieChartRoot {
+  width: 100%;
+}
+
 .pieChartTitle {
   display: flex;
   justify-content: center;
@@ -86,9 +90,9 @@
   color: white;
 }
 
-:global(.dark-mode) label,
-:global(.dark-mode) h5,
-:global(.dark-mode) p {
+:global(.dark-mode) .pieChartRoot label,
+:global(.dark-mode) .pieChartRoot h5,
+:global(.dark-mode) .pieChartRoot p {
   color: white !important;
 }
 
