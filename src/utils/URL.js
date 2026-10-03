@@ -728,6 +728,9 @@ export const ENDPOINTS = {
   EDUCATION_TASKS_BY_STUDENT: studentId => `${APIEndpoint}/education-tasks/student/${studentId}`,
   EDUCATION_TASK: taskId => `${APIEndpoint}/education-tasks/${taskId}`,
   EDUCATION_TASK_STATUS: taskId => `${APIEndpoint}/education-tasks/${taskId}/status`,
+  TASK_COMMENTS_STUDENT: taskId => `${APIEndpoint}/student/tasks/${taskId}/comments`,
+  TASK_COMMENTS_EDUCATOR: taskId => `${APIEndpoint}/educator/tasks/${taskId}/comments`,
+  TASK_COMMENT_DELETE: (taskId, commentId) => `${APIEndpoint}/student/tasks/${taskId}/comments/${commentId}`,
 
   STUDENT_PROFILE: `${APIEndpoint}/student/profile`,
   STUDENT_SUBJECT_TASKS: subjectId => `${APIEndpoint}/student/profile/subject/${subjectId}`,
