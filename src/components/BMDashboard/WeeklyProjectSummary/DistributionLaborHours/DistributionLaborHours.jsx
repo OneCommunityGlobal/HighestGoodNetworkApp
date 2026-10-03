@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Select from 'react-select';
 import { useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
@@ -9,30 +9,6 @@ import { ENDPOINTS } from '../../../../utils/URL';
 import logger from '../../../../services/logService';
 
 const COLORS = ['#2a647c', '#2e8ea3', '#ffab91', '#ffccbb', '#bbbbbb', '#f9f3e3'];
-
-const MOCK_DATA = [
-  { name: 'Stud Wall Construction', value: 25.9 },
-  { name: 'Foundation Concreting', value: 18.5 },
-  { name: 'Task A', value: 22.2 },
-  { name: 'Task B', value: 18.5 },
-  { name: 'Task C', value: 14.8 },
-  { name: 'Electrical', value: 12 },
-  { name: 'Plumbing', value: 8 },
-  { name: 'Welding', value: 6 },
-];
-
-const isDevelopmentEnvironment = () => {
-  if (globalThis.window === undefined) {
-    return process.env.NODE_ENV === 'development';
-  }
-  const { hostname } = globalThis.window.location;
-  return (
-    hostname.includes('dev') ||
-    hostname === 'localhost' ||
-    hostname === '127.0.0.1' ||
-    process.env.NODE_ENV === 'development'
-  );
-};
 
 const topFiveWithOthers = data => {
   const sorted = [...data].sort((a, b) => b.value - a.value);
@@ -68,68 +44,80 @@ const CustomTooltip = ({ active, payload, total, darkMode }) => {
 
 export default function DistributionLaborHours() {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const requestorId = useSelector(state => state.auth.user.userid);
 
-  const [filteredData, setFilteredData] = useState(topFiveWithOthers(MOCK_DATA));
+  const [filteredData, setFilteredData] = useState([]);
+  const [fetchError, setFetchError] = useState(null);
   const [dateRange, setDateRange] = useState({ from: '', to: '' });
   const [projectFilter, setProjectFilter] = useState('');
   const [memberFilter, setMemberFilter] = useState('');
 
-  const fetchDistribution = useCallback(
-    async ({ from, to, category }) => {
-      try {
-        const token = localStorage.getItem(config.tokenKey);
-        const headers = {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: token }),
-        };
+  const latestRequestId = useRef(0);
 
-        const startDate =
-          from ||
-          moment()
-            .subtract(30, 'days')
-            .format('YYYY-MM-DD');
-        const endDate = to || moment().format('YYYY-MM-DD');
-        const params = new URLSearchParams({
-          requestorId,
-          start_date: startDate,
-          end_date: endDate,
-        });
-        if (category) params.set('category', category);
+  const fetchDistribution = useCallback(async ({ from, to, category, member }) => {
+    const requestId = latestRequestId.current + 1;
+    latestRequestId.current = requestId;
 
-        const response = await fetch(
-          `${ENDPOINTS.APIEndpoint()}/labor-hours/distribution?${params.toString()}`,
-          { method: 'GET', headers, cache: 'no-store' },
-        );
+    try {
+      const token = localStorage.getItem(config.tokenKey);
+      const headers = {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: token }),
+      };
 
-        if (!response.ok) throw new Error(`Status ${response.status}`);
-        const body = await response.json();
-        const distribution = (body.distribution || []).map(item => ({
-          name: item.category,
-          value: item.hours,
-        }));
+      const startDate =
+        from ||
+        moment()
+          .subtract(30, 'days')
+          .format('YYYY-MM-DD');
+      const endDate = to || moment().format('YYYY-MM-DD');
+      const params = new URLSearchParams({
+        start_date: startDate,
+        end_date: endDate,
+      });
+      if (category) params.set('category', category);
+      if (member) params.set('member', member);
 
-        setFilteredData(topFiveWithOthers(distribution.length > 0 ? distribution : MOCK_DATA));
-      } catch (error) {
-        logger.logError(error);
-        if (isDevelopmentEnvironment()) {
-          setFilteredData(topFiveWithOthers(MOCK_DATA));
-        } else {
-          setFilteredData([]);
-        }
-      }
-    },
-    [requestorId],
-  );
+      const response = await fetch(
+        `${ENDPOINTS.APIEndpoint()}/labor-hours/distribution?${params.toString()}`,
+        { method: 'GET', headers, cache: 'no-store' },
+      );
+
+      if (!response.ok) throw new Error(`Status ${response.status}`);
+      const body = await response.json();
+      const distribution = (body.distribution || []).map(item => ({
+        name: item.category,
+        value: item.hours,
+      }));
+
+      if (latestRequestId.current !== requestId) return;
+      setFetchError(null);
+      setFilteredData(topFiveWithOthers(distribution));
+    } catch (error) {
+      logger.logError(error);
+      if (latestRequestId.current !== requestId) return;
+      setFetchError(error);
+      setFilteredData([]);
+    }
+  }, []);
 
   useEffect(() => {
-    fetchDistribution({ from: dateRange.from, to: dateRange.to, category: projectFilter });
+    fetchDistribution({
+      from: dateRange.from,
+      to: dateRange.to,
+      category: projectFilter,
+      member: memberFilter,
+    });
     // Initial load only; subsequent updates happen on Submit.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSubmit = () => {
-    fetchDistribution({ from: dateRange.from, to: dateRange.to, category: projectFilter });
+    fetchDistribution({
+      from: dateRange.from,
+      to: dateRange.to,
+      category: projectFilter,
+      member: memberFilter,
+    });
   };
 
   const totalHours = filteredData.reduce((sum, item) => sum + item.value, 0);
@@ -214,7 +202,11 @@ export default function DistributionLaborHours() {
 
         <div className={styles.pieChartContainer}>
           {filteredData.length === 0 ? (
-            <div className={styles.tooltip}>No data available for the selected filters.</div>
+            <div className={styles.tooltip}>
+              {fetchError
+                ? 'Unable to load labor hours distribution.'
+                : 'No data available for the selected filters.'}
+            </div>
           ) : (
             <ResponsiveContainer width={300} height={300}>
               <PieChart>

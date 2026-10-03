@@ -128,6 +128,17 @@
   outline: none;
 }
 
+.dateInput {
+  flex: 1;
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #000;
+  font-size: 0.9rem;
+}
+
 .dateInput:focus {
   border-color: #4285F4;
 }

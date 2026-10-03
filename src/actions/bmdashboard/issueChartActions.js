@@ -51,10 +51,11 @@ const formatFilters = ({ projectIds, startDate, endDate } = {}) => {
     (typeof projectIds === 'string' && projectIds.trim() !== '') ||
     (Array.isArray(projectIds) && projectIds.length > 0)
   ) {
-    formatted.projects = Array.isArray(projectIds) ? projectIds.join(',') : projectIds.trim();
+    formatted.projectIds = Array.isArray(projectIds) ? projectIds.join(',') : projectIds.trim();
   }
   if (startDate !== undefined && startDate !== '' && endDate !== undefined && endDate !== '') {
-    formatted.dates = `${startDate},${endDate}`;
+    formatted.startDate = startDate;
+    formatted.endDate = endDate;
   }
   return formatted;
 };
@@ -66,7 +67,7 @@ export const fetchLongestOpenIssues = filters => async dispatch => {
     const response = await axios.get(ENDPOINTS.BM_LONGEST_OPEN_ISSUES, {
       params: formattedFilters,
     });
-    dispatch({ type: FETCH_LONGEST_OPEN_ISSUES_SUCCESS, payload: response.data });
+    dispatch({ type: FETCH_LONGEST_OPEN_ISSUES_SUCCESS, payload: response.data.data });
   } catch (error) {
     dispatch({
       type: FETCH_LONGEST_OPEN_ISSUES_FAILURE,
@@ -82,7 +83,7 @@ export const fetchMostExpensiveIssues = filters => async dispatch => {
     const response = await axios.get(ENDPOINTS.BM_MOST_EXPENSIVE_ISSUES, {
       params: formattedFilters,
     });
-    dispatch({ type: FETCH_MOST_EXPENSIVE_ISSUES_SUCCESS, payload: response.data });
+    dispatch({ type: FETCH_MOST_EXPENSIVE_ISSUES_SUCCESS, payload: response.data.data });
   } catch (error) {
     dispatch({
       type: FETCH_MOST_EXPENSIVE_ISSUES_FAILURE,
