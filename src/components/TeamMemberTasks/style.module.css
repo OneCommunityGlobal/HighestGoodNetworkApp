@@ -1,3 +1,10 @@
+/* 
+  ===== COMPLETE FIX =====
+  Combines:
+  1. Button overlap fix (Submit button)
+  2. Red deadline badge visibility fix
+*/
+
 /* stylelint-disable  */
 :global(.dark-mode) .modal-body p {
   color: #fff;
@@ -35,10 +42,12 @@
   outline-offset: 2px;
 }
 
+/* ===== FIX #2: RED BADGE VISIBILITY ===== */
 .progress-wrapper {
   display: inline-grid;
   width: fit-content;
   justify-items: start;
+  overflow: visible !important; /* ← Allow badge to show */
 }
 
 .team-task-progress-container {
@@ -47,6 +56,7 @@
   gap: 6px;
   flex-wrap: nowrap;
   width: fit-content;
+  overflow: visible !important; /* ← Allow badge to show */
 }
 
 .team-task-progress-bar {
@@ -55,12 +65,47 @@
 }
 
 .team-member-task-review-button {
-  grid-column: 1;
-  grid-row: 2;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
   min-height: 40px;
+  width: 100%;
+}
+
+/* Force the button (and any wrapper/dropdown inside ReviewButton) to stay inside the Status column */
+.team-member-task-review-button > *,
+.team-member-task-review-button button,
+.team-member-task-review-button .btn,
+.team-member-task-review-button .dropdown,
+.team-member-task-review-button .dropdown-toggle {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 0 !important; /* no padding, as requested */
+  margin: 0 !important;
+  font-size: 12px;
+  line-height: 1.2;
+  white-space: normal;
+  word-break: break-word;
+  text-align: center;
+}
+
+.team-member-task-review-button button {
+  height: 32px; /* gives it height now that padding is gone */
+}
+
+.status-align {
+  width: 95px;
+  min-width: 85px;
+  max-width: 105px;
+  padding-left: 6px !important;
+  padding-right: 0 !important;
+  text-align: center;
+  vertical-align: middle !important;
+  height: auto !important;
+  overflow: visible !important;
+  z-index: 10;
 }
 
 .team-member-tasks h1 {
@@ -70,7 +115,7 @@
 
 .task_table-container {
   width: 100%;
-  overflow: hidden auto;
+  overflow: auto;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -139,15 +184,10 @@
   max-width: 160px;
   padding-right: 0 !important;
   padding-left: 0 !important;
-  text-align: left;
+  text-align: center;
 }
 
-/* .task-break {
-  border-bottom: 1px solid lightgray;
-} */
-
 .task-break {
-  /* border: red 1px solid; */
   border-bottom: 1px solid lightgray;
 }
 
@@ -204,9 +244,8 @@
 }
 
 .team-member-tasks-subtable th:first-child {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  vertical-align: middle;
+  text-align: center;
 }
 
 .team-member-tasks-user-report-link .team-member-tasks-user-report-link-image {
@@ -214,8 +253,9 @@
   height: 22px;
 }
 
+/* ===== FIX #2: RED BADGE VISIBILITY - COMPLETE RULES ===== */
 .followup-info-override {
-  position: relative;
+  position: relative; /* ← Critical for badge positioning */
   display: inline-flex;
   align-items: center;
 }
@@ -223,7 +263,7 @@
 .deadlineCount {
   position: absolute;
   top: -4px;
-  right: -17px;
+  right: -4px;
   background: #e74c3c;
   color: #fff;
   border-radius: 50%;
@@ -238,7 +278,7 @@
   white-space: nowrap;
   box-shadow: 0 0 0 2px #fff;
   cursor: pointer;
-  z-index: 3;
+  z-index: 3 !important; /* ← Ensure visible on top */
 }
 
 .task-followup-icon {
@@ -253,7 +293,6 @@
   vertical-align: top;
   padding-left: 10px !important;
 }
-
 
 .team-member-tasks-number {
   display: inline-block;
@@ -273,10 +312,33 @@
 }
 
 .team-clocks-header {
-  height: 73.5px;
-  align-items: center;
+  height: auto;
+  min-height: 73.5px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.team-clocks-header-inner {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.team-clocks-icons-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 4px;
+  flex-wrap: nowrap;
+}
+
+.team-clocks-buttons-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
 }
 
 .hours-btn-container {
@@ -525,6 +587,22 @@
   align-items: center;
   gap: 5px;
   min-width: 0;
+}
+
+.taskColumnLayout {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto;
+  gap: 4px;
+  width: 100%;
+}
+
+.taskIconsUnderName {
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
 }
 
 .taskTitle {
@@ -911,7 +989,6 @@
   box-shadow: 2px 2px 4px 1px lightgray;
 }
 
-/* Previously `responsive-btn-size` */
 .responsiveBtnSize {
   /* keep sizing controlled by your existing .circle-border; this is a hook for future */
 }
@@ -968,6 +1045,7 @@
     width: 50%;
   }
 }
+
 .task-age-badge {
   display: inline-flex;
   align-items: center;
