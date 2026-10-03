@@ -242,7 +242,7 @@ function Collaboration() {
     setActiveTab('jobPostings');
     setCurrentPage(1);
 
-    fetchJobAds();
+    void fetchJobAds();
   };
 
   const handleCategoryChange = e => {
@@ -251,7 +251,7 @@ function Collaboration() {
     setCurrentPage(1);
     setSummaries(null);
     setActiveTab('jobPostings');
-    fetchJobAds({ category: selectedValue || '', page: 1 });
+    void fetchJobAds({ category: selectedValue || '', page: 1 });
   };
 
   const handleResetFilters = async () => {
@@ -283,7 +283,7 @@ function Collaboration() {
 
   const setPage = pageNumber => {
     setCurrentPage(pageNumber);
-    fetchJobAds();
+    void fetchJobAds();
     globalThis.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -346,13 +346,13 @@ function Collaboration() {
     if (newCols === columns) return;
     setColumns(newCols);
     setCurrentPage(1);
-    fetchJobAds();
+    void fetchJobAds();
   }, 200);
 
   // Initial fetch and setup
   useEffect(() => {
-    fetchJobAds();
-    fetchCategories();
+    void fetchJobAds();
+    void fetchCategories();
     globalThis.addEventListener('resize', handleResize);
     return () => {
       globalThis.removeEventListener('resize', handleResize);
@@ -363,7 +363,7 @@ function Collaboration() {
   // Refetch when page changes
   useEffect(() => {
     if (currentPage > 0) {
-      fetchJobAds();
+      void fetchJobAds();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
@@ -572,7 +572,7 @@ function Collaboration() {
                             setCurrentPage(1);
                             setSummaries(null);
                             setActiveTab('jobPostings');
-                            fetchJobAds({ category: categoryName, page: 1 });
+                            void fetchJobAds({ category: categoryName, page: 1 });
                           }}
                         >
                           <img
