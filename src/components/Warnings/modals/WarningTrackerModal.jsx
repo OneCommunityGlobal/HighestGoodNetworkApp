@@ -41,6 +41,7 @@ function WarningTrackerModal({
 }) {
   const [toggeleWarningInput, setToggeleWarningInput] = useState(false);
   const [newWarning, setNewWarning] = useState('');
+  const [newWarningDescription, setNewWarningDescription] = useState('');
   const [warningDescriptions, setWarningDescriptions] = useState([]);
   const [toggleDeleteModal, setToggleDeleteModal] = useState(false);
   const [warningToDelete, setWarningToDelete] = useState(null);
@@ -250,23 +251,28 @@ function WarningTrackerModal({
 
     if (newWarning === '') return;
     const trimmedWarning = newWarning.trim();
-    dispatch(postNewWarning({ newWarning: trimmedWarning, activeWarning: true, isPermanent })).then(
-      res => {
-        setNewWarning('');
-        if (res?.error) {
-          setError(res.error);
-          return;
-        }
-        if (res?.message) {
-          setError(res.message);
-          return;
-        }
-        setWarningDescriptions(res.newWarnings);
-        getUsersWarnings();
-        setError(null);
-        setToggeleWarningInput(false);
-      },
-    );
+    dispatch(
+      postNewWarning({
+        newWarning: trimmedWarning,
+        activeWarning: true,
+        isPermanent,
+        newWarningDescription,
+      }),
+    ).then(res => {
+      setNewWarning('');
+      if (res?.error) {
+        setError(res.error);
+        return;
+      }
+      if (res?.message) {
+        setError(res.message);
+        return;
+      }
+      setWarningDescriptions(res.newWarnings);
+      getUsersWarnings();
+      setError(null);
+      setToggeleWarningInput(false);
+    });
   };
 
   if (toggleDeleteModal) {
@@ -500,6 +506,19 @@ function WarningTrackerModal({
                   value={isPermanent}
                 />
               </div>
+
+              <label htmlFor="warningDescription" className={styles.warning__title}>
+                Warning Tracker Description
+              </label>
+              <input
+                type="text"
+                id="warningDescription"
+                required
+                className={styles.warning__input}
+                value={newWarningDescription}
+                onChange={e => setNewWarningDescription(e.target.value)}
+              />
+
               <div className={styles.warning__form__btns}>
                 <Button
                   color="danger"
