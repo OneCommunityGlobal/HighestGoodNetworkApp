@@ -6,6 +6,19 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGri
 import axios from 'axios';
 import { ENDPOINTS } from '../../../../utils/URL';
 import styles from './ToolsHorizontalBarChart.module.css';
+
+function getChartFontSize(windowWidth) {
+  if (windowWidth < 480) return 10;
+  if (windowWidth < 768) return 11;
+  return 12;
+}
+
+function getYAxisWidth(windowWidth) {
+  if (windowWidth < 480) return 80;
+  if (windowWidth < 768) return 120;
+  return 150;
+}
+
 function CustomTooltip({ active, payload, label, darkMode }) {
   if (!active || !payload || !payload.length) {
     return null;
@@ -95,7 +108,7 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
         if (projects && projects.length > 0) {
           const projectOptions = projects.map(project => ({
             value: project.projectId,
-            label: project.projectId,
+            label: project.projectName || project.projectId,
           }));
           setAllProjects(projectOptions);
           setSelectedProject(null);
