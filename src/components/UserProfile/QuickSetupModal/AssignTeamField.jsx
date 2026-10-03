@@ -112,6 +112,7 @@ export default function AssignTeamField({
         onChange={handleChange}
         onFocus={handleFocus}
         autoComplete="off"
+        onBlur={() => setShowSuggestions(false)}
       />
 
       {showSuggestions && !disabled && suggestions.length > 0 && (
@@ -124,6 +125,7 @@ export default function AssignTeamField({
             zIndex: 1050,
             backgroundColor: darkMode ? '#335b6c' : undefined,
             color: darkMode ? '#fff' : undefined,
+            border: darkMode ? '1px solid #555' : '1px solid #ced4da',
             maxHeight: '200px',
             overflowY: 'auto',
           }}
