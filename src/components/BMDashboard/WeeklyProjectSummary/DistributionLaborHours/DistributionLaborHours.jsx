@@ -166,7 +166,7 @@ export default function DistributionLaborHours() {
             classNamePrefix="react-select"
           />
         </label>
-        <label htmlFor="member-filter">
+        <label htmlFor="member-filter" title="Member filtering is not yet supported by the backend">
           Member:
           <Select
             options={memberOptions}
@@ -174,6 +174,7 @@ export default function DistributionLaborHours() {
             onChange={opt => setMemberFilter(opt.value)}
             className="react-select-container"
             classNamePrefix="react-select"
+            isDisabled
           />
         </label>
 
