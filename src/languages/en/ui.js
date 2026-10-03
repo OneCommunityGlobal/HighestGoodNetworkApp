@@ -6,6 +6,7 @@ export const ACTIVE = 'Active';
 export const TITLE = 'Title'
 export const INACTIVE = 'InActive';
 export const ACTIVE_PROJECTS = 'Active Projects';
+export const ARCHIVED_PROJECTS = 'Archived Projects';
 export const BM_DASHBOARD = 'BM Dashboard';
 export const CP_DASHBOARD = 'CP Dashboard';
 export const BM_PROJECT = 'Project';
@@ -113,6 +114,7 @@ export const KI_REPORTS = 'Reports';
 export const FOOD_BARS = 'Food Bars';
 
 export const SEND_EMAILS = 'Send Emails';
+export const SCHEDULE_MEETINGS = 'Schedule Meeting';
 export const BLUE_SQUARE_EMAIL_MANAGEMENT = 'Blue Square Email Management';
 
  

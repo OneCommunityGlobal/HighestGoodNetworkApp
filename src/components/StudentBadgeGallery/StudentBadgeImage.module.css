@@ -1,0 +1,38 @@
+/* =========================================================
+   🌙 Dark Mode Styling — hover popover
+   Same palette as the badge card / detail modal.
+   ========================================================= */
+:global(body.dark-mode) .popoverCard {
+  background-color: #1c2541 !important;
+  color: #fff !important;
+  border: 1px solid #2e3d55 !important;
+}
+
+:global(body.dark-mode) .popoverCard :global(.card-title) {
+  color: #fff !important;
+}
+
+:global(body.dark-mode) .popoverCard :global(.card-text) {
+  color: #fff !important;
+}
+
+/* Popper arrow tip — matches the card background instead of Bootstrap's default white */
+:global(body.dark-mode) .studentBadgePopover:global(.bs-popover-auto)[x-placement^='top']
+  :global(.arrow)::after {
+  border-top-color: #1c2541 !important;
+}
+
+:global(body.dark-mode) .studentBadgePopover:global(.bs-popover-auto)[x-placement^='right']
+  :global(.arrow)::after {
+  border-right-color: #1c2541 !important;
+}
+
+:global(body.dark-mode) .studentBadgePopover:global(.bs-popover-auto)[x-placement^='bottom']
+  :global(.arrow)::after {
+  border-bottom-color: #1c2541 !important;
+}
+
+:global(body.dark-mode) .studentBadgePopover:global(.bs-popover-auto)[x-placement^='left']
+  :global(.arrow)::after {
+  border-left-color: #1c2541 !important;
+}

@@ -5,6 +5,7 @@ import { Button } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
 import 'react-datepicker/dist/react-datepicker.css';
 import '../../Header/index.module.css';
+import styles from '../reportsPage.module.css';
 
 class ViewReportByDate extends Component {
   constructor(props) {
@@ -53,11 +54,11 @@ class ViewReportByDate extends Component {
     const { minDate, maxDate, textColor, darkMode } = this.props;
 
     return (
-      <div className={`date-picker-container d-flex align-items-end gap-3 ${darkMode ? 'dark-mode' : ''}`}  style={{ marginTop: '15px', marginRight: '15px' }}>
-        <div id="task_startDate" className="date-picker-item">
+      <div className={`${styles['date-picker-container']} ${darkMode ? 'dark-mode' : ''}`}>
+        <div id="task_startDate" className={styles['date-picker-item']}>
           <label 
             htmlFor="task_startDate" 
-            className={`date-picker-label ${textColor}`}
+            className={`${styles['date-picker-label']} ${textColor}`}
             style={{ color: darkMode ? '#ffffff' : '#000000', fontWeight: '500' }}
           >
             Start Date
@@ -71,10 +72,10 @@ class ViewReportByDate extends Component {
             popperPlacement="top-start"
           />
         </div>
-        <div id="task_EndDate" className="date-picker-item">
+        <div id="task_EndDate" className={styles['date-picker-item']}>
           <label 
             htmlFor="task_EndDate" 
-            className={`date-picker-label ${textColor}`}
+            className={`${styles['date-picker-label']} ${textColor}`}
             style={{ color: darkMode ? '#ffffff' : '#000000', fontWeight: '500' }}
           >
             End Date
@@ -88,8 +89,8 @@ class ViewReportByDate extends Component {
             popperPlacement="top"
           />
         </div>
-        <div id="task_EndDate" className="date-picker-item">
-          <label htmlFor="task_EndDate" className={`date-picker-label ${textColor}`} />
+        <div id="task_EndDate" className={styles['date-picker-item']}>
+          <span className={styles['date-picker-label']} aria-hidden="true" />
           <Button
             onClick={this.clearDates}
             color="danger"

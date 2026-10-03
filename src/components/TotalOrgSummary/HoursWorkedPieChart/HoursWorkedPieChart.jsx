@@ -23,7 +23,7 @@ export const formatChartLabelValue = value => {
   }).format(rounded);
 };
 
-const parseHexColor = color => {
+export const parseHexColor = color => {
   if (!color || typeof color !== 'string' || !color.startsWith('#')) return null;
   const hex = color.replace('#', '');
   const normalizedHex =
@@ -39,21 +39,21 @@ const parseHexColor = color => {
   return { r, g, b };
 };
 
-const channelToLinear = c => {
+export const channelToLinear = c => {
   const normalized = c / 255;
   return normalized <= 0.03928 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
 };
 
-const relativeLuminance = ({ r, g, b }) =>
+export const relativeLuminance = ({ r, g, b }) =>
   0.2126 * channelToLinear(r) + 0.7152 * channelToLinear(g) + 0.0722 * channelToLinear(b);
 
-const contrastRatio = (l1, l2) => {
+export const contrastRatio = (l1, l2) => {
   const brightest = Math.max(l1, l2);
   const darkest = Math.min(l1, l2);
   return (brightest + 0.05) / (darkest + 0.05);
 };
 
-const getReadableTextColor = (bgColor, fallbackDarkMode) => {
+export const getReadableTextColor = (bgColor, fallbackDarkMode) => {
   const rgb = parseHexColor(bgColor);
   if (!rgb) return fallbackDarkMode ? '#F8FAFC' : '#111827';
 
@@ -66,7 +66,12 @@ const getReadableTextColor = (bgColor, fallbackDarkMode) => {
 const getLabelToneClass = color =>
   color === '#FFFFFF' ? 'hours-distribution-label-light' : 'hours-distribution-label-dark';
 
-export const renderCenterLabel = ({ darkMode, isMobile, totalHours }) => {
+export const renderCenterLabel = ({
+  darkMode,
+  isMobile,
+  totalHours,
+  centerLabelLines = ['TOTAL HOURS', 'WORKED'],
+}) => {
   const centerFill = darkMode ? '#D1D5DB' : '#696969';
   const totalText = formatNumber(totalHours || 0);
   const centerValueFontSize = totalText.length > 6 ? (isMobile ? 24 : 30) : isMobile ? 30 : 36;
@@ -81,7 +86,7 @@ export const renderCenterLabel = ({ darkMode, isMobile, totalHours }) => {
         fill={centerFill}
         fontSize={isMobile ? 16 : 20}
       >
-        TOTAL HOURS
+        {centerLabelLines[0]}
       </text>
       <text
         x="50%"
@@ -91,7 +96,7 @@ export const renderCenterLabel = ({ darkMode, isMobile, totalHours }) => {
         fill={centerFill}
         fontSize={isMobile ? 16 : 20}
       >
-        WORKED
+        {centerLabelLines[1]}
       </text>
       <text
         x="50%"
@@ -209,6 +214,7 @@ export default function HoursWorkedPieChart({
   colors,
   totalHours = 0,
   darkMode = false,
+  centerLabelLines = ['TOTAL HOURS', 'WORKED'],
 }) {
   let innerRadius = 80;
   let outerRadius = 160;
@@ -257,7 +263,12 @@ export default function HoursWorkedPieChart({
                 <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
               ))}
           </Pie>
-          {renderCenterLabel({ darkMode, isMobile, totalHours: displayTotalHours })}
+          {renderCenterLabel({
+            darkMode,
+            isMobile,
+            totalHours: displayTotalHours,
+            centerLabelLines,
+          })}
           {/* <Tooltip content={<CustomTooltip tooltipType="hoursDistribution" />} /> */}
           <Tooltip
             content={<CustomTooltip tooltipType="hoursDistribution" darkMode={darkMode} />}
@@ -274,4 +285,5 @@ HoursWorkedPieChart.propTypes = {
   colors: PropTypes.array,
   totalHours: PropTypes.number,
   darkMode: PropTypes.bool,
+  centerLabelLines: PropTypes.arrayOf(PropTypes.string),
 };

@@ -19,7 +19,15 @@ export const CustomDateComponent = ({
         ◀
       </button>
 
-      <span style={{ flex: 1, textAlign: 'center', fontWeight: 'bold', fontSize: '16px' }}>
+      <span
+        style={{
+          flex: 1,
+          textAlign: 'center',
+          fontWeight: 'bold',
+          fontSize: '16px',
+          color: darkMode ? 'white' : 'black',
+        }}
+      >
         {date.toLocaleString('default', {
           month: 'long',
           year: 'numeric',

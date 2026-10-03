@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Button, ButtonGroup } from 'react-bootstrap';
 
 /**
@@ -55,3 +56,15 @@ export function FilterBar({ currentFilter, onChange, isLoading, darkMode }) {
     </div>
   );
 }
+
+FilterBar.propTypes = {
+  currentFilter: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  isLoading: PropTypes.bool,
+  darkMode: PropTypes.bool,
+};
+
+FilterBar.defaultProps = {
+  isLoading: false,
+  darkMode: false,
+};

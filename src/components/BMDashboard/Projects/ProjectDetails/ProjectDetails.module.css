@@ -1,3 +1,5 @@
+/* stylelint-disable no-descending-specificity */
+
 /* =========================================
    PROJECT DETAILS MAIN LAYOUT
 ========================================= */
@@ -428,5 +430,5 @@
 
 ul.log-bar__btn-group {
   gap:5px;
-  padding: 0px;
+  padding: 0;
 }

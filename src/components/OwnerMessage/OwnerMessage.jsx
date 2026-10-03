@@ -28,6 +28,7 @@ import {
   getOwnerMessageHistory,
 } from '../../actions/ownerMessageAction';
 
+import { permissions } from '../../utils/constants';
 function OwnerMessage({
   auth,
   ownerMessage,
@@ -50,7 +51,7 @@ function OwnerMessage({
   const [modalDeleteWarning, setModalDeleteWarning] = useState(false);
   const [modalWrongPictureFormatWarning, setModalWrongPictureFormatWarning] = useState(false);
 
-  const canEditHeaderMessage = dispatch(hasPermission('editHeaderMessage'));
+  const canEditHeaderMessage = dispatch(hasPermission(permissions.editHeaderMessage));
   const isImageMessage = value => typeof value === 'string' && value.includes(';base64');
 
   function toggle() {
