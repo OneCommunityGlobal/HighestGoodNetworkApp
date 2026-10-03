@@ -21,9 +21,10 @@ import {
   buildJobFormRequestor,
   isFieldRequired,
   normalizeQuestionForApi,
-  prepareQuestionClone,
   normalizeLoadedQuestions,
   isDuplicateQuestion,
+  numberedQuestionLabel,
+  stripLeadingQuestionNumber,
 } from './jobFormQuestionUtils';
 import { hasUnsavedJobFormChanges } from './jobFormDirtyState';
 
@@ -154,48 +155,7 @@ function JobFormBuilder() {
     setHasUnsavedChanges(changed);
   }, [formFields, initialFormFields, newField, templateName, jobTitle, initialJobTitle]);
 
-  const syncFieldAction = async (actionLabel, apiCall, rollback) => {
-    try {
-      await apiCall();
-    } catch (error) {
-      console.error(`Error ${actionLabel}:`, error);
-      rollback?.();
-      const message =
-        error.response?.data?.message ||
-        error.response?.data?.error?.message ||
-        `Failed to ${actionLabel}. Changes were reverted locally.`;
-      alert(message);
-    }
-  };
-
   // CRUD Functions with Dynamic Form ID
-  const cloneField = async (field, index) => {
-    const clonedField = prepareQuestionClone(field);
-    const previousFields = formFields;
-
-    const newFields = [
-      ...formFields.slice(0, index + 1),
-      clonedField,
-      ...formFields.slice(index + 1),
-    ];
-    setFormFields(newFields);
-
-    if (currentFormId) {
-      await syncFieldAction(
-        'clone question',
-        async () => {
-          await axios.post(ENDPOINTS.ADD_QUESTION(currentFormId), {
-            question: clonedField,
-            position: index + 1,
-            requestor: getRequestor(),
-          });
-          markAsSaved(newFields);
-        },
-        () => setFormFields(previousFields),
-      );
-    }
-  };
-
   const moveField = async (index, direction) => {
     const newIndex = direction === 'up' ? index - 1 : index + 1;
 
@@ -247,7 +207,7 @@ function JobFormBuilder() {
   const editField = (field, index) => {
     // Transform the field structure to match what QuestionEditModal expects
     const questionForEdit = {
-      label: field.questionText,
+      label: stripLeadingQuestionNumber(field.questionText),
       type: field.questionType,
       options: field.options,
       required: isFieldRequired(field),
@@ -508,7 +468,6 @@ function JobFormBuilder() {
                       field={field}
                       index={index}
                       totalFields={formFields.length}
-                      onClone={cloneField}
                       onMove={moveField}
                       onDelete={deleteField}
                       onEdit={editField}
@@ -518,7 +477,7 @@ function JobFormBuilder() {
                     />
                     <div className={styles.formField}>
                       <label className={`${styles.fieldLabel} ${styles.jbformLabel}`}>
-                        {field.questionText}
+                        {numberedQuestionLabel(field.questionText, index)}
                         {isFieldRequired(field) && (
                           <span className={styles.requiredMark} aria-hidden="true">
                             {' '}
