@@ -177,25 +177,6 @@ function WeeklyProjectSummary() {
     setOpenSections(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const filterProps = useMemo(
-    () => ({
-      projectFilter,
-      dateRangeFilter,
-      comparisonPeriodFilter,
-      selectedProjectLabel,
-      selectedDateRangeLabel,
-      selectedComparisonRangeLabel,
-    }),
-    [
-      projectFilter,
-      dateRangeFilter,
-      comparisonPeriodFilter,
-      selectedProjectLabel,
-      selectedDateRangeLabel,
-      selectedComparisonRangeLabel,
-    ],
-  );
-
   const sections = useMemo(
     () => [
       {
@@ -206,7 +187,7 @@ function WeeklyProjectSummary() {
         hasData: true,
         emptyMessage: 'No risk profile data for this week.',
         comparisonText: `Risk profile: comparison period is ${selectedComparisonRangeLabel}.`,
-        content: <ProjectRiskProfileOverview {...filterProps} />,
+        content: <ProjectRiskProfileOverview />,
       },
       {
         title: 'Project Status',
@@ -252,7 +233,7 @@ function WeeklyProjectSummary() {
         comparisonText: `Issues: comparison period is ${selectedComparisonRangeLabel}.`,
         content: (
           <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
-            <IssuesBreakdownChart {...filterProps} />
+            <IssuesBreakdownChart />
           </div>
         ),
       },
@@ -260,6 +241,7 @@ function WeeklyProjectSummary() {
         title: 'Injury Severity by Projects',
         key: 'Injury Severity by Projects',
         className: 'full',
+        hasData: true,
         content: (
           <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
             <InjurySeverityChart />
@@ -304,7 +286,7 @@ function WeeklyProjectSummary() {
         content: (
           <>
             <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-              <ToolStatusDonutChart {...filterProps} />
+              <ToolStatusDonutChart />
             </div>
             <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
               <ToolsHorizontalBarChart darkMode={darkMode} />
@@ -313,13 +295,13 @@ function WeeklyProjectSummary() {
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
               style={{ minHeight: '300px', gridColumn: 'span 2' }}
             >
-              <SupplierPerformanceGraph {...filterProps} />
+              <SupplierPerformanceGraph />
             </div>
             <div
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
               style={{ minHeight: '300px', gridColumn: 'span 2' }}
             >
-              <ToolsStoppageHorizontalBarChart {...filterProps} />
+              <ToolsStoppageHorizontalBarChart />
             </div>
           </>
         ),
@@ -338,19 +320,19 @@ function WeeklyProjectSummary() {
             className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
             style={{ minHeight: '520px', height: 'auto', overflow: 'visible' }}
           >
-            <MostFrequentKeywords darkMode={darkMode} {...filterProps} />
+            <MostFrequentKeywords darkMode={darkMode} />
           </div>,
           <div
             key="injury-chart"
             className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
           >
-            <InjuryCategoryBarChart {...filterProps} />
+            <InjuryCategoryBarChart />
           </div>,
           <div
             key="lessons-learnt-chart"
             className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
           >
-            <LessonsLearntChart darkMode={darkMode} {...filterProps} />
+            <LessonsLearntChart darkMode={darkMode} />
           </div>,
         ],
       },
@@ -380,7 +362,7 @@ function WeeklyProjectSummary() {
                 flexDirection: 'column',
               }}
             >
-              <ExpenseBarChart darkMode={darkMode} {...filterProps} />
+              <ExpenseBarChart darkMode={darkMode} />
             </div>
 
             <div
@@ -392,14 +374,14 @@ function WeeklyProjectSummary() {
                 flexDirection: 'column',
               }}
             >
-              <CostVarianceTrendGraph darkMode={darkMode} {...filterProps} />
+              <CostVarianceTrendGraph darkMode={darkMode} />
             </div>
 
             <div
               className="weekly-project-summary-card financial-big"
               style={{ gridColumn: 'span 2', width: '100%', minHeight: '400px' }}
             >
-              <CostBreakDown {...filterProps} />
+              <CostBreakDown />
             </div>
           </div>
         ),
@@ -414,7 +396,7 @@ function WeeklyProjectSummary() {
         comparisonText: `Loss tracking: comparison period is ${selectedComparisonRangeLabel}.`,
         content: (
           <div className="weekly-project-summary-card financial-big">
-            <LossTrackingLineChart {...filterProps} />
+            <LossTrackingLineChart />
           </div>
         ),
       },
@@ -431,7 +413,7 @@ function WeeklyProjectSummary() {
             className={`${styles.weeklyProjectSummaryCard} ${styles.mapCard}`}
             style={{ height: '500px', padding: '0' }}
           >
-            <InteractiveMap {...filterProps} />
+            <InteractiveMap />
           </div>
         ),
       },
@@ -456,7 +438,7 @@ function WeeklyProjectSummary() {
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
               style={{ width: '100%', minHeight: '650px' }}
             >
-              <DistributionLaborHours {...filterProps} />
+              <DistributionLaborHours />
             </div>
             <div
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
@@ -467,7 +449,7 @@ function WeeklyProjectSummary() {
                 flexDirection: 'column',
               }}
             >
-              <PaidLaborCost {...filterProps} />
+              <PaidLaborCost />
             </div>
           </div>
         ),
@@ -485,12 +467,12 @@ function WeeklyProjectSummary() {
           // ActualVsPlannedCost internally; rendering them again here duplicated both
           // charts on the page.
           <div style={{ gridColumn: '1 / -1', width: '100%' }}>
-            <FinancialsTrackingSection {...filterProps} />
+            <FinancialsTrackingSection />
           </div>
         ),
       },
     ],
-    [darkMode, filterProps, bmProjects, quantityOfMaterialsUsedData, selectedComparisonRangeLabel],
+    [darkMode, bmProjects, quantityOfMaterialsUsedData, selectedComparisonRangeLabel],
   );
 
   const expandAllSections = () => {
@@ -628,24 +610,27 @@ function WeeklyProjectSummary() {
         pdfContainer.remove();
       }
 
-      toast.dismiss(loadingToastId);
-      toast.success('PDF generated and downloaded successfully!', {
-        position: 'top-right',
+      toast.update(loadingToastId, {
+        render: 'PDF generated and downloaded successfully!',
+        type: 'success',
         autoClose: 3000,
+        closeOnClick: true,
+        pauseOnHover: true,
       });
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('PDF generation failed:', err);
 
-      toast.dismiss(loadingToastId);
-
       const errorMessage =
         err?.message ||
         'Failed to generate PDF. Please try again or contact support if the issue persists.';
 
-      toast.error(errorMessage, {
-        position: 'top-right',
+      toast.update(loadingToastId, {
+        render: errorMessage,
+        type: 'error',
         autoClose: 5000,
+        closeOnClick: true,
+        pauseOnHover: true,
       });
 
       const pdfContainer = document.getElementById('pdf-export-container');
@@ -670,6 +655,7 @@ function WeeklyProjectSummary() {
       <WeeklyProjectSummaryHeader
         handleSaveAsPDF={handleSaveAsPDF}
         isGeneratingPDF={isGeneratingPDF}
+        bmProjects={bmProjects}
       />
 
       <div className={`${styles.weeklySummaryControls} no-print`}>
@@ -737,7 +723,7 @@ function WeeklyProjectSummary() {
                 {openSections[key] && (
                   <div className={styles.weeklyProjectSummaryDashboardCategoryContent}>
                     {compareWithPreviousWeek && comparisonText && (
-                      <div className={styles.comparisonBanner}>{comparisonText}</div>
+                      <div className={`${styles.comparisonBanner} no-print`}>{comparisonText}</div>
                     )}
 
                     {hasData ? (

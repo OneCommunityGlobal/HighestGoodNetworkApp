@@ -373,10 +373,11 @@
   min-width: 0;
 }
 
+/* display: contents removes this wrapper from the box model so its children
+   (the section's cards) stay direct items of .weeklyProjectSummaryDashboardCategoryContent's
+   grid, instead of being collapsed into one full-width block and stacking. */
 .sectionContentWrapper {
-  grid-column: 1 / -1;
-  width: 100%;
-  min-width: 0;
+  display: contents;
 }
 
 .darkMode .weeklyProjectSummaryDashboardCategoryContent {
@@ -854,18 +855,13 @@
   }
 }
 
+/* Extra small screens. .projectStatusGrid's 1-column rule at this breakpoint lives in the
+   "Status Grid Responsive" cascade below, so it isn't duplicated here. */
 @media (width <= 576px) {
-  .projectStatusGrid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Extra small screens */
-@media (width <= 576px) {
-  /* Ensure charts are fully visible on mobile - prevent clipping */
-  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-chart-container,
-  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-bar-chart-content,
-  .weeklyProjectSummaryDashboardCategoryContent .tool-donut-wrapper {
+  /* Ensure charts are fully visible on mobile - prevent clipping.
+     tools-horizontal-chart-container is applied as a plain string className
+     (not CSS-module-scoped), so it must stay :global to actually match. */
+  .weeklyProjectSummaryDashboardCategoryContent :global(.tools-horizontal-chart-container) {
     width: 100%;
     max-width: 100%;
     overflow: visible;
