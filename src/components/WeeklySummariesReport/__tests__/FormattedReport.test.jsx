@@ -98,6 +98,10 @@ const defaultProps = {
 };
 
 describe('FormattedReport minimal test', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('renders without crashing', () => {
     render(
       <Provider store={store}>
@@ -229,5 +233,57 @@ describe('FormattedReport minimal test', () => {
     );
     expect(screen.queryByPlaceholderText('X-XXX')).toBeNull();
     expect(screen.getByText('ABC123')).toBeInTheDocument();
+  });
+
+  it('renders a badge when any earnedDate falls within the selected week', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-09-19T12:00:00-07:00'));
+
+    const historicalBadgeId = '67919bab07b2a31a54e59265';
+
+    const summaryWithHistoricalBadge = {
+      ...dummySummary,
+      badgeCollection: [
+        {
+          count: 1,
+          earnedDate: ['Sep-12-26', 'Sep-19-26'],
+          badge: historicalBadgeId,
+        },
+      ],
+    };
+
+    const badgeData = [
+      {
+        _id: historicalBadgeId,
+        badgeName: '90 FOR 6 WEEK streak',
+        imageUrl: 'https://example.com/test-badge.png',
+      },
+    ];
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <FormattedReport
+            summaries={[summaryWithHistoricalBadge]}
+            weekIndex={1}
+            bioCanEdit={defaultProps.bioCanEdit}
+            allRoleInfo={defaultProps.allRoleInfo}
+            badges={badgeData}
+            loadBadges
+            canEditTeamCode={defaultProps.canEditTeamCode}
+            auth={defaultProps.auth}
+            canSeeBioHighlight={defaultProps.canSeeBioHighlight}
+            handleTeamCodeChange={defaultProps.handleTeamCodeChange}
+            handleSpecialColorDotClick={defaultProps.handleSpecialColorDotClick}
+          />
+        </MemoryRouter>
+      </Provider>,
+    );
+
+    const badgeImage = screen.getByAltText('', {
+      selector: 'img[src="https://example.com/test-badge.png"]',
+    });
+
+    expect(badgeImage).toBeInTheDocument();
   });
 });
