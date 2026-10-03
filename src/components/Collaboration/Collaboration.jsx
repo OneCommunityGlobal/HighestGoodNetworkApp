@@ -155,25 +155,6 @@ function Collaboration() {
     return 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=640&h=480&fit=crop&q=80';
   };
 
-  // Group jobs by category
-  const getUniqueCategories = () => {
-    const categoryMap = new Map();
-    jobAds.forEach(ad => {
-      if (ad?.category) {
-        const cat = ad.category;
-        if (!categoryMap.has(cat)) {
-          categoryMap.set(cat, {
-            category: cat,
-            count: 0,
-            firstJob: ad,
-          });
-        }
-        categoryMap.get(cat).count++;
-      }
-    });
-    return Array.from(categoryMap.values());
-  };
-
   const fetchJobAds = async (overrides = {}) => {
     const adsPerPage = calculateAdsPerPage();
     const page = overrides.page ?? currentPage;
@@ -378,40 +359,11 @@ function Collaboration() {
     setPage(Number(event.currentTarget.dataset.page));
   };
 
-  const handleCategoryCardClick = event => {
-    const { categoryName } = event.currentTarget.dataset;
-    setSelectedCategory(categoryName);
-    setCurrentPage(1);
-    setSummaries(null);
-    setActiveTab('jobPostings');
-    fetchJobAds({ category: categoryName, page: 1 }).catch(() =>
-      toast.error('Error fetching jobs'),
-    );
-  };
-
   const renderCategoryOption = category => (
     <option key={category} value={category}>
       {category}
     </option>
   );
-
-  const renderCategoryCard = catInfo => {
-    const categoryName = catInfo.category || 'General';
-    const categoryImage = getCategoryImage(categoryName);
-
-    return (
-      <button
-        type="button"
-        key={categoryName}
-        className={styles.jobAd}
-        data-category-name={categoryName}
-        onClick={handleCategoryCardClick}
-      >
-        <img src={categoryImage} alt={categoryName} loading="lazy" onError={handleImageError} />
-        <h3 className={styles.categoryTitle}>{categoryName.toUpperCase()}</h3>
-      </button>
-    );
-  };
 
   const renderJobAd = ad => {
     if (!ad?._id) return null;
@@ -447,15 +399,6 @@ function Collaboration() {
     }
     if (jobsFetchError) {
       return <p className={styles.noJobads}>{jobsFetchError}</p>;
-    }
-
-    // Show categories if no search term and no category filter
-    const shouldShowCategories = !searchTerm && !selectedCategory && jobAds.length > 0;
-    if (shouldShowCategories) {
-      const uniqueCategories = getUniqueCategories();
-      if (uniqueCategories.length > 0) {
-        return <>{uniqueCategories.map(renderCategoryCard)}</>;
-      }
     }
 
     if (jobAds.length > 0) {
