@@ -32,10 +32,20 @@ const EditConfirmModal = props => {
       onClosed={finishScrollRestoration}
       className={darkMode ? 'text-light dark-mode' : ''}
     >
-      <ModalHeader toggle={handleToggle} className={darkMode ? 'bg-space-cadet' : ''}>
+      <ModalHeader
+        toggle={disabled ? undefined : handleToggle}
+        className={darkMode ? 'bg-space-cadet' : ''}
+      >
         {modalTitle}
       </ModalHeader>
-      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{modalMessage}</ModalBody>
+      <ModalBody
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className={darkMode ? 'bg-yinmn-blue' : ''}
+      >
+        {modalMessage}
+      </ModalBody>
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Button
           color="primary"
