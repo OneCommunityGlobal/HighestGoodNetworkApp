@@ -595,33 +595,72 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Responsive sizing - optimized for perfect proportions
+  // Responsive sizing - optimized for all devices
   const getResponsiveSizes = useCallback(() => {
     const width = dimensions.width;
     const height = dimensions.height;
     const smallestDim = Math.min(width, height);
 
-    if (isMobile) {
+    // Extra small devices (< 360px)
+    if (width < 360) {
+      return {
+        centerSize: Math.min(28, smallestDim * 0.12),
+        minBubbleSize: 22,
+        maxBubbleSize: 36,
+        maxFontSize: 9,
+        countFontSize: 7,
+        centerFontSize: 9,
+        padding: 6,
+        radiusFactor: 0.24,
+        isMobile: true,
+        deviceType: 'extra-small',
+      };
+    }
+
+    // Small devices (360px - 480px)
+    if (width <= 480) {
       return {
         centerSize: Math.min(35, smallestDim * 0.14),
         minBubbleSize: 28,
         maxBubbleSize: 42,
-        maxFontSize: 11,
-        countFontSize: 9,
+        maxFontSize: 10,
+        countFontSize: 8,
+        centerFontSize: 10,
         padding: 8,
         radiusFactor: 0.24,
         isMobile: true,
+        deviceType: 'small',
       };
     }
+
+    // Tablet (481px - 768px)
+    if (width <= 768) {
+      return {
+        centerSize: Math.min(42, smallestDim * 0.12),
+        minBubbleSize: 32,
+        maxBubbleSize: 50,
+        maxFontSize: 12,
+        countFontSize: 10,
+        centerFontSize: 12,
+        padding: 12,
+        radiusFactor: 0.22,
+        isMobile: false,
+        deviceType: 'tablet',
+      };
+    }
+
+    // Large devices (> 768px)
     return {
       centerSize: Math.min(50, smallestDim * 0.1),
       minBubbleSize: 35,
       maxBubbleSize: 58,
       maxFontSize: 14,
       countFontSize: 11,
+      centerFontSize: 13,
       padding: 15,
       radiusFactor: 0.22,
       isMobile: false,
+      deviceType: 'large',
     };
   }, [dimensions, isMobile]);
 
@@ -707,13 +746,31 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
     [getResponsiveSizes],
   );
 
-  // SIMPLE: Text display - just truncate if too long
-  const getDisplayText = useCallback((tag, maxLength) => {
-    if (tag.length <= maxLength) return tag;
-    return `${tag.substring(0, maxLength - 2)}…`;
-  }, []);
+  // ===== FIX #1: CALCULATE DYNAMIC FONT SIZE BASED ON TEXT LENGTH =====
+  // Calculate font size that fits the text width in the bubble
+  const calculateFontSize = useCallback(
+    (textLength, bubbleRadius) => {
+      const sizes = getResponsiveSizes();
 
-  // Simple, reliable position calculation
+      // Bubble width is approximately bubbleRadius * 2, minus padding
+      const availableWidth = bubbleRadius * 1.8; // Leave 10% padding on each side
+
+      // Estimate: each character takes roughly 0.6 * fontSize pixels
+      const charWidthRatio = isMobile ? 0.55 : 0.6;
+
+      // Calculate font size that fits all characters
+      const calculatedSize = availableWidth / (textLength * charWidthRatio);
+
+      // Clamp between min and max
+      const minSize = isMobile ? 7 : 8;
+      const maxSize = sizes.maxFontSize;
+
+      return Math.max(minSize, Math.min(maxSize, calculatedSize));
+    },
+    [getResponsiveSizes, isMobile],
+  );
+
+  // Improved position calculation with collision avoidance
   const getPositions = useCallback(
     (tags, width, height, centerX, centerY) => {
       if (!tags.length) return [];
@@ -736,12 +793,25 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
         0,
         Math.min(centerY - topPadding, height - bottomPadding - centerY),
       );
+
+      // IMPROVED: Adaptive orbit radius based on device size
+      let orbitFactor = 0.26;
+      if (sizes.deviceType === 'extra-small') orbitFactor = 0.22;
+      else if (sizes.deviceType === 'tablet') orbitFactor = 0.28;
+      else if (sizes.deviceType === 'large') orbitFactor = 0.3;
+
       const idealRadius = Math.min(
-        Math.min(width, height) * (isMobile ? 0.2 : 0.17),
+        Math.min(width, height) * orbitFactor,
         availableOrbitX,
         availableOrbitY,
       );
-      const minRequiredRadius = centerSize + maxBubbleRadius + (isMobile ? 6 : 10);
+
+      let minGap = 30;
+      if (sizes.deviceType === 'extra-small') minGap = 12;
+      else if (sizes.deviceType === 'small') minGap = 18;
+      else if (sizes.deviceType === 'tablet') minGap = 25;
+
+      const minRequiredRadius = centerSize + maxBubbleRadius + minGap;
       const radius =
         idealRadius > 0
           ? Math.max(
@@ -760,8 +830,8 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
         let y = centerY + radius * Math.sin(angle);
 
         // Ensure minimum distance from center
-        const distFromCenter = calculateDistance(x, y, centerX, centerY);
-        const minCenterDist = centerSize + r + (isMobile ? 8 : 12);
+        const distFromCenter = Math.hypot(x - centerX, y - centerY);
+        const minCenterDist = centerSize + r + (isMobile ? 15 : 20);
 
         if (distFromCenter < minCenterDist && distFromCenter > 0) {
           const scale = minCenterDist / distFromCenter;
@@ -769,9 +839,9 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
           y = centerY + (y - centerY) * scale;
         }
 
-        // Keep within bounds
-        x = Math.max(sizes.padding + r, Math.min(width - sizes.padding - r, x));
-        y = Math.max(topPadding, Math.min(height - bottomPadding, y));
+        // Keep within bounds with extra padding
+        x = Math.max(sizes.padding + r + 5, Math.min(width - sizes.padding - r - 5, x));
+        y = Math.max(topPadding + 5, Math.min(height - bottomPadding - 5, y));
 
         positions.push({
           x,
@@ -782,6 +852,60 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
           count: tags[i].count,
           fullTag: tags[i].tag,
         });
+      }
+
+      // COLLISION DETECTION: Iteratively adjust overlapping bubbles
+      let hasCollision = true;
+      let iterations = 0;
+      const maxIterations = 10;
+
+      while (hasCollision && iterations < maxIterations) {
+        hasCollision = false;
+        iterations++;
+
+        for (let i = 0; i < positions.length; i++) {
+          for (let j = i + 1; j < positions.length; j++) {
+            const pos1 = positions[i];
+            const pos2 = positions[j];
+
+            const dx = pos2.x - pos1.x;
+            const dy = pos2.y - pos1.y;
+            const dist = Math.hypot(dx, dy);
+
+            // Minimum distance = sum of radii + gap (adaptive gap based on device)
+            let gap = 20;
+            if (sizes.deviceType === 'extra-small') gap = 10;
+            else if (sizes.deviceType === 'small') gap = 15;
+            else if (sizes.deviceType === 'tablet') gap = 18;
+            const minDist = pos1.r + pos2.r + gap;
+
+            if (dist < minDist) {
+              hasCollision = true;
+
+              // Push bubbles apart from each other
+              const angle = Math.atan2(dy, dx);
+              const overlap = minDist - dist;
+              const push = overlap / 2 + 2; // Extra push to separate
+
+              pos1.x -= Math.cos(angle) * push;
+              pos1.y -= Math.sin(angle) * push;
+              pos2.x += Math.cos(angle) * push;
+              pos2.y += Math.sin(angle) * push;
+
+              // Keep within bounds after push
+              pos1.x = Math.max(
+                sizes.padding + pos1.r + 5,
+                Math.min(width - sizes.padding - pos1.r - 5, pos1.x),
+              );
+              pos1.y = Math.max(topPadding + 5, Math.min(height - bottomPadding - 5, pos1.y));
+              pos2.x = Math.max(
+                sizes.padding + pos2.r + 5,
+                Math.min(width - sizes.padding - pos2.r - 5, pos2.x),
+              );
+              pos2.y = Math.max(topPadding + 5, Math.min(height - bottomPadding - 5, pos2.y));
+            }
+          }
+        }
       }
 
       return positions;
@@ -912,6 +1036,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
       .style('pointer-events', 'none');
   };
 
+  // ===== FIX #2: UPDATE TEXT CREATION TO USE DYNAMIC FONT SIZE =====
   // Function to create text elements
   const createTextElements = (svg, x, y, tag, count, r, sizes, colors) => {
     const textGroup = svg
@@ -919,16 +1044,11 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
       .attr('transform', `translate(${x}, ${y})`)
       .style('pointer-events', 'none');
 
-    const tagFontSize = sizes.isMobile
-      ? Math.min(sizes.maxFontSize, Math.max(9, r * 0.22))
-      : Math.min(sizes.maxFontSize, Math.max(10, r * 0.22));
-
+    // Calculate font size based on text length and bubble radius
+    const tagFontSize = calculateFontSize(tag.length, r);
     const countFontSize = sizes.countFontSize;
 
-    // Tag text - positioned in upper half of bubble
-    const maxTagLength = Math.floor(r / (sizes.isMobile ? 4 : 3.8));
-    const displayTag = getDisplayText(tag, maxTagLength);
-
+    // Tag text - NO TRUNCATION, use full keyword with dynamic font
     textGroup
       .append('text')
       .attr('x', 0)
@@ -937,7 +1057,9 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
       .attr('font-size', tagFontSize)
       .attr('font-weight', '600')
       .attr('fill', colors.text)
-      .text(displayTag);
+      .attr('dominant-baseline', 'middle')
+      .style('word-break', 'break-word')
+      .text(tag);
 
     // Count - positioned clearly at bottom of bubble
     textGroup
@@ -1091,27 +1213,20 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
           : 'drop-shadow(0 2px 3px rgba(0,0,0,0.1))',
       );
 
-    const centerFontSize = sizes.isMobile ? 11 : 13;
+    const centerFontSize = sizes.centerFontSize;
+    //const lineHeight = centerFontSize * 1.3;
 
+    // Single text: "Top Words" - positioned at top of circle to avoid overlap
     centerGroup
       .append('text')
       .attr('x', 0)
-      .attr('y', -centerFontSize * 0.25)
+      .attr('y', -centerFontSize * 0.8)
       .attr('text-anchor', 'middle')
+      .attr('dominant-baseline', 'middle')
       .attr('fill', darkMode ? '#f1f5f9' : '#1e293b')
-      .attr('font-weight', '600')
+      .attr('font-weight', '700')
       .attr('font-size', centerFontSize)
-      .text(sizes.isMobile ? 'Top' : 'Most');
-
-    centerGroup
-      .append('text')
-      .attr('x', 0)
-      .attr('y', centerFontSize * 0.8)
-      .attr('text-anchor', 'middle')
-      .attr('fill', darkMode ? '#f1f5f9' : '#1e293b')
-      .attr('font-weight', '600')
-      .attr('font-size', centerFontSize)
-      .text(sizes.isMobile ? 'Words' : 'Frequent');
+      .text('Top Words');
   };
 
   // Function to draw connection lines
