@@ -516,6 +516,10 @@ function WeeklyProjectSummary() {
 
       setOpenSections(allSectionsOpen);
 
+      // Force-opening every section mounts ~13 sections' worth of charts at once, each
+      // fetching its own data — a fixed short delay isn't enough for all of them to finish,
+      // so the export can capture mid-flight "Loading..." placeholders instead of charts.
+      // Poll until none remain visible (or we hit a reasonable cap) before cloning.
       await new Promise(resolve => setTimeout(resolve, 500));
 
       const contentElement =
@@ -526,6 +530,24 @@ function WeeklyProjectSummary() {
           'Weekly project summary container not found. Please refresh the page and try again.',
         );
       }
+
+      const waitStart = Date.now();
+      const maxWaitMs = 15000;
+
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const stillLoading = Array.from(contentElement.querySelectorAll('*')).some(
+          el => el.children.length === 0 && el.textContent.trim() === 'Loading...',
+        );
+        if (!stillLoading || Date.now() - waitStart > maxWaitMs) break;
+        // eslint-disable-next-line no-await-in-loop
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
+
+      // Several charts (e.g. Material Consumption) show no "Loading..." text at all — they
+      // just render empty until their data arrives, so the poll above can't see them. Give
+      // those a further settle window to finish fetching and painting before capture.
+      await new Promise(resolve => setTimeout(resolve, 2500));
 
       const pdfContainer = document.createElement('div');
       pdfContainer.id = 'pdf-export-container';
@@ -543,6 +565,21 @@ function WeeklyProjectSummary() {
 
       const clonedContent = contentElement.cloneNode(true);
 
+      // Section headings are interactive <button> elements (for expand/collapse), but the
+      // cleanup below strips every <button> from the clone. Swap each heading for a plain,
+      // noninteractive element carrying just its title text first, so the export keeps its
+      // section labels instead of losing all of them to the generic button removal.
+      clonedContent
+        .querySelectorAll(`.${styles.weeklyProjectSummaryDashboardCategoryTitle}`)
+        .forEach(headerButton => {
+          const titleText =
+            headerButton.querySelector(`.${styles.sectionTitleText}`)?.textContent ?? '';
+          const replacement = document.createElement('div');
+          replacement.className = headerButton.className;
+          replacement.textContent = titleText;
+          headerButton.replaceWith(replacement);
+        });
+
       clonedContent
         .querySelectorAll(
           'button, .weekly-project-summary-dropdown-icon, .no-print, .weekly-summary-header-controls',
@@ -550,6 +587,79 @@ function WeeklyProjectSummary() {
         .forEach(el => {
           el.remove();
         });
+
+      // .sectionContentWrapper uses display:contents so its children stay direct CSS Grid
+      // items on screen (see WeeklyProjectSummary.module.css), but html2canvas cannot
+      // compute a layout box for display:contents elements and silently fails to render
+      // anything inside them. The clone is a one-off flattened snapshot, not a live grid,
+      // so switching it to display:block here is safe and makes the chart content visible.
+      clonedContent.querySelectorAll(`.${styles.sectionContentWrapper}`).forEach(wrapper => {
+        wrapper.style.display = 'block';
+      });
+
+      // html2canvas cannot reliably rasterize live <svg> trees — recharts/d3 charts rely on
+      // transforms and clip-paths it doesn't render correctly, so chart areas come out blank
+      // even though the cloned markup is present. Work around this by rendering each chart
+      // SVG (from the still-live, already-correctly-rendered original) to a canvas and
+      // swapping the cloned <svg> for that rasterized <img>, which html2canvas handles fine.
+      const liveSvgs = Array.from(contentElement.querySelectorAll('svg'));
+      const clonedSvgs = Array.from(clonedContent.querySelectorAll('svg'));
+
+      await Promise.all(
+        clonedSvgs.map(async (clonedSvg, index) => {
+          const liveSvg = liveSvgs[index];
+          if (!liveSvg) return;
+
+          const width = liveSvg.clientWidth || Number(liveSvg.getAttribute('width')) || 0;
+          const height = liveSvg.clientHeight || Number(liveSvg.getAttribute('height')) || 0;
+          if (width < 20 || height < 20) return;
+
+          const svgClone = liveSvg.cloneNode(true);
+          svgClone.setAttribute('width', width);
+          svgClone.setAttribute('height', height);
+          svgClone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+
+          const svgString = new XMLSerializer().serializeToString(svgClone);
+          const svgDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`;
+
+          await new Promise(resolve => {
+            const rasterImg = new Image();
+            rasterImg.onload = () => {
+              const rasterCanvas = document.createElement('canvas');
+              rasterCanvas.width = width * 2;
+              rasterCanvas.height = height * 2;
+              const rasterCtx = rasterCanvas.getContext('2d');
+              rasterCtx.drawImage(rasterImg, 0, 0, rasterCanvas.width, rasterCanvas.height);
+
+              const pngImg = document.createElement('img');
+              pngImg.src = rasterCanvas.toDataURL('image/png');
+              pngImg.style.width = `${width}px`;
+              pngImg.style.height = `${height}px`;
+              clonedSvg.replaceWith(pngImg);
+              resolve();
+            };
+            rasterImg.onerror = resolve;
+            rasterImg.src = svgDataUrl;
+          });
+        }),
+      );
+
+      // cloneNode never copies a <canvas>'s drawn pixels, only the empty element, so
+      // Chart.js-based charts would be blank too. Replace each cloned canvas with an <img>
+      // of the live canvas's already-rendered content.
+      const liveCanvases = Array.from(contentElement.querySelectorAll('canvas'));
+      const clonedCanvases = Array.from(clonedContent.querySelectorAll('canvas'));
+
+      clonedCanvases.forEach((clonedCanvas, index) => {
+        const liveCanvas = liveCanvases[index];
+        if (!liveCanvas || liveCanvas.width === 0 || liveCanvas.height === 0) return;
+
+        const pngImg = document.createElement('img');
+        pngImg.src = liveCanvas.toDataURL('image/png');
+        pngImg.style.width = `${liveCanvas.clientWidth || liveCanvas.width}px`;
+        pngImg.style.height = `${liveCanvas.clientHeight || liveCanvas.height}px`;
+        clonedCanvas.replaceWith(pngImg);
+      });
 
       const styleElem = document.createElement('style');
       styleElem.textContent = `
