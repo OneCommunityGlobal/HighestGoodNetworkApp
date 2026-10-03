@@ -35,6 +35,12 @@
   align-items: flex-start;
 }
 
+.pr-grading-screen-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .pr-grading-screen-header-left {
   flex: 1;
 }
@@ -537,6 +543,12 @@
   .pr-grading-screen-header-content {
     flex-direction: column;
     gap: 15px;
+  }
+
+  .pr-grading-screen-header-actions {
+    align-self: flex-end;
+    flex-wrap: wrap;
+    justify-content: flex-end;
   }
   
   .pr-grading-screen-header-right {

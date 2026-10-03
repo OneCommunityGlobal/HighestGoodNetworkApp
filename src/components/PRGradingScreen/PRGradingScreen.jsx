@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
+import { downloadWeeklyPRGradingCsv } from './csvExport';
 import styles from './PRGradingScreen.module.css';
 
 const PRGradingScreen = ({ teamData, reviewers }) => {
@@ -112,6 +113,9 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
 
   const handleCloseGradingModal = () => setShowGradingModal(null);
   const handleFinalize = () => setIsFinalized(true);
+  const handleExport = () => {
+    downloadWeeklyPRGradingCsv(filteredReviewers, teamData.dateRange);
+  };
 
   /* ---------------- RENDER ---------------- */
 
@@ -132,14 +136,19 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                     {teamData.teamName} - {teamData.dateRange.start} to {teamData.dateRange.end}
                   </div>
                 </div>
-                <Button
-                  variant={isFinalized ? 'secondary' : 'outline-dark'}
-                  disabled={isFinalized}
-                  onClick={handleFinalize}
-                  className={dm}
-                >
-                  {isFinalized ? 'Finalized' : 'Done'}
-                </Button>
+                <div className={styles['pr-grading-screen-header-actions']}>
+                  <Button variant="outline-primary" onClick={handleExport} className={dm}>
+                    Export to CSV
+                  </Button>
+                  <Button
+                    variant={isFinalized ? 'secondary' : 'outline-dark'}
+                    disabled={isFinalized}
+                    onClick={handleFinalize}
+                    className={dm}
+                  >
+                    {isFinalized ? 'Finalized' : 'Done'}
+                  </Button>
+                </div>
               </div>
             </Card.Header>
 
