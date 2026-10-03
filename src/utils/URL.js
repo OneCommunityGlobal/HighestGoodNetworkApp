@@ -86,6 +86,7 @@ export const ENDPOINTS = {
     `${APIEndpoint}/dashboard/leaderboard/trophyIcon/${userId}/${trophyFollowedUp}`,
 
   // Questionnaire endpoints
+  QUESTIONNAIRE_CHECK_MODAL: userId => `${APIEndpoint}/dashboard/questionaire/checkModal/${userId}`,
   QUESTIONNAIRE_FEEDBACK_REQUEST: () => `${APIEndpoint}/dashboard/questionaire/feedbackrequest`,
   QUESTIONNAIRE_CLOSE_PERMANENTLY: () =>
     `${APIEndpoint}/dashboard/questionaire/checkUserFoundHelpSomewhere`,
