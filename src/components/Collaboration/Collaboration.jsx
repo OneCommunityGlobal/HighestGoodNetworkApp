@@ -148,9 +148,9 @@ function Collaboration() {
 
     // Find matching category using whole-word matching to avoid false
     // substring hits (e.g. 'it' inside 'Nutrition' or 'Writing')
-    const categoryWords = categoryLower.split(/\W+/).filter(Boolean);
+    const categoryWords = new Set(categoryLower.split(/\W+/).filter(Boolean));
     for (const { keywords, url } of categoryImageMap) {
-      if (keywords.some(keyword => categoryWords.includes(keyword))) {
+      if (keywords.some(keyword => categoryWords.has(keyword))) {
         return url;
       }
     }
