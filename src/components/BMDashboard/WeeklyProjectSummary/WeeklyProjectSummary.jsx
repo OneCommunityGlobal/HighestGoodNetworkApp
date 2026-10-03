@@ -28,14 +28,12 @@ import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import LessonsLearntChart from '../LessonsLearnt/LessonsLearntChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
-import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import { MaterialConsumptionCards } from './MaterialConsumption/MaterialConsumption';
 
 import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
 
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import InjurySeverityChart from '../Injuries/InjurySeverityChart';
-import CostPredictionChart from './CostPredictionChart';
 
 const projectStatusButtons = [
   {
@@ -415,23 +413,11 @@ function WeeklyProjectSummary() {
         key: 'Financials Tracking',
         className: 'full',
         content: (
+          // FinancialsTrackingSection already renders its own CostPredictionChart and
+          // ActualVsPlannedCost internally; rendering them again here duplicated both
+          // charts on the page.
           <div style={{ gridColumn: '1 / -1', width: '100%' }}>
             <FinancialsTrackingSection />
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: '15px',
-                marginTop: '15px',
-              }}
-            >
-              <div className="weekly-project-summary-card financial-small financial-chart">
-                <CostPredictionChart projectId={1} />
-              </div>
-              <div className="weekly-project-summary-card financial-small financial-chart">
-                <ActualVsPlannedCost />
-              </div>
-            </div>
           </div>
         ),
       },
