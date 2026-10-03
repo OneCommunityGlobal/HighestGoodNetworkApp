@@ -433,6 +433,9 @@ const externalLabelGuidesPlugin = {
 
       const percentage = options.total ? Math.round((value / options.total) * 100) : 0;
       const lines = options.formatter({ value, percentage, index });
+      if (!lines) {
+        return;
+      }
       const labelLines = Array.isArray(lines) ? lines : [String(lines)];
 
       const angle = (arc.startAngle + arc.endAngle) / 2;

@@ -36,15 +36,25 @@ export const buildDonutTooltipOptions = (totalCount, darkMode) => ({
 });
 
 function DonutChart(props) {
-  const { title, totalCount, percentageChange, data, colors, comparisonType, darkMode } = props;
+  const {
+    title,
+    totalCount,
+    percentageChange,
+    data,
+    colors,
+    comparisonType,
+    darkMode,
+    minLabelPercent,
+  } = props;
   const labelTextColor = darkMode ? '#e2e8f0' : '#334155';
   const labelBoxBackground = darkMode ? 'rgba(15, 23, 42, 0.96)' : 'rgba(255, 255, 255, 0.96)';
   const labelBoxBorder = darkMode ? 'rgba(148, 163, 184, 0.35)' : '#d0d0d0';
-  const titleLines = title === 'TOTAL BLUE SQUARES' ? ['TOTAL', 'BLUE SQUARES'] : [title];
+  const titleLines = title.startsWith('TOTAL ') ? ['TOTAL', title.slice(6)] : [title];
 
-  const filtered = data
-    .map((item, i) => ({ item, color: colors[i] }))
-    .filter(({ item }) => (item.value / totalCount) * 100 >= 0.05);
+  const withColors = data.map((item, i) => ({ item, color: colors[i] }));
+  // Slivers under 0.05% are not drawn, but every non-zero item stays in the legend.
+  const legendItems = withColors.filter(({ item }) => item.value > 0);
+  const filtered = withColors.filter(({ item }) => (item.value / totalCount) * 100 >= 0.05);
   const filteredData = filtered.map(({ item }) => item);
   const filteredColors = filtered.map(({ color }) => color);
 
@@ -91,7 +101,10 @@ function DonutChart(props) {
         lineColor: labelTextColor,
         backgroundColor: labelBoxBackground,
         borderColor: labelBoxBorder,
-        formatter: ({ value, percentage }) => [`${value}`, `(${percentage}%)`],
+        formatter: ({ value, percentage }) =>
+          calculatePercentage(value, totalCount) < minLabelPercent
+            ? null
+            : [`${value}`, `(${percentage}%)`],
       },
     },
     interaction: {
@@ -155,12 +168,9 @@ function DonutChart(props) {
         </div>
 
         <div className={styles.donutLabels}>
-          {filteredData.map((item, index) => (
+          {legendItems.map(({ item, color }) => (
             <div key={item.label} className={styles.donutLabel}>
-              <span
-                className={styles.donutColor}
-                style={{ backgroundColor: filteredColors[index] }}
-              />
+              <span className={styles.donutColor} style={{ backgroundColor: color }} />
               <span>{formatLegendLabel(item, totalCount)}</span>
             </div>
           ))}
@@ -183,10 +193,12 @@ DonutChart.propTypes = {
   colors: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
   comparisonType: PropTypes.string.isRequired,
   darkMode: PropTypes.bool,
+  minLabelPercent: PropTypes.number,
 };
 
 DonutChart.defaultProps = {
   darkMode: false,
+  minLabelPercent: 0,
 };
 
 export default DonutChart;

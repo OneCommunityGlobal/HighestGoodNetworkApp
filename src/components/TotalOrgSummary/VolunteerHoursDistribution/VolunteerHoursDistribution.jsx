@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import HoursWorkedPieChart from '../HoursWorkedPieChart/HoursWorkedPieChart';
+import DonutChart from '../DonutChart/DonutChart';
 
 // Components
 import Loading from '../../common/Loading';
@@ -14,6 +13,11 @@ function parseRangeStart(rangeStr) {
   const parsed = Number(first);
   return Number.isFinite(parsed) ? parsed : 0;
 }
+
+// '50' (50-59) sorts before '50+' even though both start at 50.
+const compareBuckets = (a, b) =>
+  parseRangeStart(a._id) - parseRangeStart(b._id) ||
+  Number(String(a._id).includes('+')) - Number(String(b._id).includes('+'));
 
 function normalizeBucketId(rangeStr) {
   if (!rangeStr) return '';
@@ -38,9 +42,7 @@ function mergeHoursBuckets(hoursData) {
     merged.set(normalizedId, existing + (Number(item?.count) || 0));
   });
 
-  return [...merged.entries()]
-    .map(([id, count]) => ({ _id: id, count }))
-    .sort((a, b) => parseRangeStart(a._id) - parseRangeStart(b._id));
+  return [...merged.entries()].map(([id, count]) => ({ _id: id, count })).sort(compareBuckets);
 }
 
 function allocateRoundedHoursByCount(normalizedHoursData, totalHoursWorked) {
@@ -73,9 +75,7 @@ function allocateRoundedHoursByCount(normalizedHoursData, totalHoursWorked) {
     i += 1;
   }
 
-  return byRemainderDesc
-    .map(({ remainder, ...bucket }) => bucket)
-    .sort((a, b) => parseRangeStart(a._id) - parseRangeStart(b._id));
+  return byRemainderDesc.map(({ remainder, ...bucket }) => bucket).sort(compareBuckets);
 }
 
 export function formatRangeLabel(rangeStr) {
@@ -131,46 +131,6 @@ function buildChartData(hoursData, totalHoursData, useBucketCounts = false) {
   return { normalizedHoursData, userData, totalVolunteers, totalHoursWorked };
 }
 
-// --- Sub-Components ---
-
-function HoursWorkList({ data, darkMode, title = 'Hours Worked', useCommittedLabels = false }) {
-  if (!data) return <div />;
-
-  const ranges = data.map((elem, index) => {
-    return {
-      name: elem._id,
-      count: elem.count,
-      displayName: useCommittedLabels
-        ? formatCommittedRangeLabel(elem._id)
-        : formatRangeLabel(elem._id),
-      color: COLORS[index % COLORS.length],
-    };
-  });
-
-  return (
-    <div>
-      <h6 style={{ color: darkMode ? 'white' : 'grey' }}>{title}</h6>
-      <div>
-        <ul className="list-unstyled">
-          {ranges.map(item => (
-            <li key={item.name} className="text-secondary d-flex align-items-center mb-1">
-              <div
-                className="me-2"
-                style={{
-                  width: '15px',
-                  height: '15px',
-                  backgroundColor: item.color,
-                }}
-              />
-              <span className="ms-2">{item.displayName}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  );
-}
-
 // --- Main Exported Component ---
 
 export default function VolunteerHoursDistribution({
@@ -179,31 +139,9 @@ export default function VolunteerHoursDistribution({
   hoursData,
   totalHoursData,
   title = 'Actual Hours Worked',
-  legendTitle = 'Hours Worked',
   centerLabelLines = ['TOTAL HOURS', 'WORKED'],
   useBucketCounts = false,
 }) {
-  // FIXED: Comparing with 'undefined' directly instead of using 'typeof' on an object property
-  const [windowSize, setWindowSize] = useState({
-    width: globalThis.window !== undefined ? globalThis.window.innerWidth : 1200,
-    height: globalThis.window !== undefined ? globalThis.window.innerHeight : 800,
-  });
-
-  useEffect(() => {
-    // FIXED: Removed 'typeof' check on globalThis.window property access
-    if (globalThis.window !== undefined) {
-      const updateWindowSize = () => {
-        setWindowSize({
-          width: globalThis.window.innerWidth,
-          height: globalThis.window.innerHeight,
-        });
-      };
-
-      globalThis.window.addEventListener('resize', updateWindowSize);
-      return () => globalThis.window.removeEventListener('resize', updateWindowSize);
-    }
-  }, []);
-
   if (isLoading) {
     return (
       <div
@@ -215,40 +153,29 @@ export default function VolunteerHoursDistribution({
     );
   }
 
-  const { normalizedHoursData, userData, totalHoursWorked } = buildChartData(
-    hoursData,
-    totalHoursData,
-    useBucketCounts,
-  );
+  const { userData, totalHoursWorked } = buildChartData(hoursData, totalHoursData, useBucketCounts);
 
   return (
-    <div className="d-flex flex-column align-items-center">
+    <div
+      className="d-flex flex-column align-items-center"
+      style={{ flex: '1 1 24rem', minWidth: 0 }}
+    >
       <h5 style={{ color: darkMode ? 'white' : 'inherit' }}>{title}</h5>
-      <div
-        className="d-flex flex-row flex-wrap align-items-center justify-content-center"
-        style={{ gap: '20px' }}
-      >
-        <HoursWorkedPieChart
-          darkMode={darkMode}
-          windowSize={windowSize}
-          userData={userData}
-          totalHours={totalHoursWorked}
-          colors={COLORS}
-          centerLabelLines={centerLabelLines}
-        />
-        <HoursWorkList
-          data={normalizedHoursData}
-          darkMode={darkMode}
-          title={legendTitle}
-          useCommittedLabels={useBucketCounts}
-        />
-      </div>
+      <DonutChart
+        title={centerLabelLines.join(' ')}
+        totalCount={Math.round(totalHoursWorked)}
+        percentageChange={0}
+        data={userData.map(({ name, value }) => ({ label: name, value }))}
+        colors={COLORS}
+        comparisonType="No Comparison"
+        darkMode={darkMode}
+      />
     </div>
   );
 }
 
 // Extra named exports for automated testing
-export { HoursWorkList, mergeHoursBuckets };
+export { mergeHoursBuckets };
 
 export function computeDistribution(hoursData, totalHoursData, useBucketCounts = false) {
   const { userData, totalVolunteers, totalHoursWorked } = buildChartData(
