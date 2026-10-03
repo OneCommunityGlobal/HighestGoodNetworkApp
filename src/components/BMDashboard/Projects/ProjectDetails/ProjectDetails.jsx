@@ -115,7 +115,7 @@ function ProjectDetails() {
           {/*           TEAM              */}
           {/* --------------------------- */}
           <DashboardSection icon="👥" title="Team" darkMode={darkMode}>
-            <TeamButtons darkMode={darkMode} />
+            <TeamButtons projectId={projectId} darkMode={darkMode} />
           </DashboardSection>
 
           {/* TOOLS + MATERIALS ROW */}
