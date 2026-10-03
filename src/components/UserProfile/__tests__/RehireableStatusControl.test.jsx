@@ -51,7 +51,7 @@ describe('RehireableStatusControl', () => {
     );
     const control = screen.getByRole('button', { name: 'Not rehireable' });
     expect(control).toHaveAttribute('title', 'Saved reason');
-    expect(control).toHaveStyle({ color: 'rgb(240, 140, 0)' });
+    expect(control.className).toContain('reasonIcon');
 
     fireEvent.click(control);
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
@@ -68,6 +68,6 @@ describe('RehireableStatusControl', () => {
     );
     const uncheckedControl = screen.getByRole('button', { name: 'Not rehireable' });
     expect(uncheckedControl).toHaveAttribute('title', 'Click to change rehirable status');
-    expect(uncheckedControl).not.toHaveStyle({ color: 'rgb(240, 140, 0)' });
+    expect(uncheckedControl.className).not.toContain('reasonIcon');
   });
 });

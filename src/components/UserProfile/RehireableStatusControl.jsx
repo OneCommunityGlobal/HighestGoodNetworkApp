@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import styles from './RehireableStatusControl.module.css';
 
 function RehireableStatusControl({ isRehireable, notRehireableReason, darkMode, onConfirm }) {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -31,7 +32,9 @@ function RehireableStatusControl({ isRehireable, notRehireableReason, darkMode, 
     <>
       <span className="mr-2">
         <i
-          className={isRehireable ? 'fa fa-check-square-o' : 'fa fa-square-o'}
+          className={`${isRehireable ? 'fa fa-check-square-o' : 'fa fa-square-o'} ${
+            hasReason ? styles.reasonIcon : ''
+          }`}
           role="button"
           tabIndex={0}
           aria-label={isRehireable ? 'Rehireable' : 'Not rehireable'}
@@ -39,7 +42,6 @@ function RehireableStatusControl({ isRehireable, notRehireableReason, darkMode, 
             fontSize: 24,
             cursor: 'pointer',
             marginTop: '6px',
-            ...(hasReason ? { color: '#f08c00' } : {}),
           }}
           title={hasReason ? notRehireableReason : 'Click to change rehirable status'}
           onClick={handleChange}
