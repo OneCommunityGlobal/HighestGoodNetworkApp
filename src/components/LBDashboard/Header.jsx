@@ -33,6 +33,15 @@ function LBDashboardHeader(props) {
             <VillageDropdownFilter />
           </div>
 
+          <ThemeIconToggle
+            buttonClassName={`${cx(
+              itemStyles['item__nav-link'],
+              itemStyles['item__nav-link--dark'],
+              darkMode,
+            )} ${itemStyles.item__themeIconBtn}`}
+            iconClassName={itemStyles['item__nav-icon']}
+          />
+
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav" className={itemStyles.item__navbarCollapse}>
             <div
@@ -46,15 +55,6 @@ function LBDashboardHeader(props) {
 
               <div className={itemStyles.item__icons}>
                 <Nav className="ml-auto">
-                  <ThemeIconToggle
-                    buttonClassName={`${cx(
-                      itemStyles['item__nav-link'],
-                      itemStyles['item__nav-link--dark'],
-                      darkMode,
-                    )} ${itemStyles.item__themeIconBtn}`}
-                    iconClassName={itemStyles['item__nav-icon']}
-                  />
-
                   <Nav.Link
                     as={Link}
                     to="/lbdashboard/messaging"
