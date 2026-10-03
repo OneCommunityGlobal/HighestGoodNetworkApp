@@ -39,7 +39,7 @@ function MentorStatusPieChart({
         verticalOffsetMap: { 0: 34, 1: -20, 2: -46 },
         sideMap: { 0: 1, 1: -1, 2: 1 },
         total: totalMentors,
-        formatter: ({ value, percentage }) => [`${value}`, `(${percentage}%)`],
+        formatter: ({ value, percentage }) => [`${value}`, `(${percentage.toFixed(1)}%)`],
       },
     },
     maintainAspectRatio: false,
