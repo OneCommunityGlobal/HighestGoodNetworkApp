@@ -846,6 +846,16 @@ export function Header(props) {
                       {canAccessUserManagement && <DropdownItem tag={Link} to="/usermanagement" className={fontColor} disabled={headerDisabled}>{USER_MANAGEMENT}</DropdownItem>}
                       {canAccessBadgeManagement && <DropdownItem tag={Link} to="/badgemanagement" className={fontColor} disabled={headerDisabled}>{BADGE_MANAGEMENT}</DropdownItem>}
                       {canAccessProjects && <DropdownItem tag={Link} to="/projects" className={fontColor} disabled={headerDisabled}>{PROJECTS}</DropdownItem>}
+                      {(canAccessProjects || canUpdateTask) && (
+                        <DropdownItem
+                          tag={Link}
+                          to="/resolvedtasks"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
+                          {TASKS}
+                        </DropdownItem>
+                      )}
                       {canAccessTeams && <DropdownItem tag={Link} to="/teams" className={fontColor} disabled={headerDisabled}>{TEAMS}</DropdownItem>}
                       {canAccessSendEmails && <DropdownItem tag={Link} to="/announcements" className={fontColor} disabled={headerDisabled}>{SEND_EMAILS}</DropdownItem>}
                       {canAccessScheduleMeetings && (
