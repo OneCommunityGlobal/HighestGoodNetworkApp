@@ -43,31 +43,41 @@ describe('RehireableStatusControl', () => {
   it('shows a saved reason in orange on the unchecked control and clears it after restoring rehireability', () => {
     const onConfirm = vi.fn();
     const { rerender } = render(
-      <RehireableStatusControl
-        isRehireable={false}
-        notRehireableReason="Saved reason"
-        onConfirm={onConfirm}
-      />,
+      <div className="right-column">
+        <RehireableStatusControl
+          isRehireable={false}
+          notRehireableReason="Saved reason"
+          onConfirm={onConfirm}
+        />
+      </div>,
     );
     const control = screen.getByRole('button', { name: 'Not rehireable' });
     expect(control).toHaveAttribute('title', 'Saved reason');
     expect(control.className).toContain('reasonIcon');
+    expect(window.getComputedStyle(control).color).toBe('rgb(240, 140, 0)');
 
     fireEvent.click(control);
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
     expect(onConfirm).toHaveBeenCalledWith(true, '');
 
-    rerender(<RehireableStatusControl isRehireable onConfirm={onConfirm} />);
     rerender(
-      <RehireableStatusControl
-        isRehireable={false}
-        notRehireableReason=""
-        onConfirm={onConfirm}
-      />,
+      <div className="right-column">
+        <RehireableStatusControl isRehireable onConfirm={onConfirm} />
+      </div>,
+    );
+    rerender(
+      <div className="right-column">
+        <RehireableStatusControl
+          isRehireable={false}
+          notRehireableReason=""
+          onConfirm={onConfirm}
+        />
+      </div>,
     );
     const uncheckedControl = screen.getByRole('button', { name: 'Not rehireable' });
     expect(uncheckedControl).toHaveAttribute('title', 'Click to change rehirable status');
     expect(uncheckedControl.className).not.toContain('reasonIcon');
+    expect(window.getComputedStyle(uncheckedControl).color).not.toBe('rgb(240, 140, 0)');
   });
 });

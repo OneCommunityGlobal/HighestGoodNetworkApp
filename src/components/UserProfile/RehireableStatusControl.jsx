@@ -42,6 +42,7 @@ function RehireableStatusControl({ isRehireable, notRehireableReason, darkMode, 
             fontSize: 24,
             cursor: 'pointer',
             marginTop: '6px',
+            ...(hasReason ? { color: '#f08c00' } : {}),
           }}
           title={hasReason ? notRehireableReason : 'Click to change rehirable status'}
           onClick={handleChange}
