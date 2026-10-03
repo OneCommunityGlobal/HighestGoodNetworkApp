@@ -108,7 +108,7 @@ export default function MaterialUsageDashboard() {
   return (
     <>
       <Header />
-      <div className={`${styles.dashboardWrapper} ${darkMode ? styles.darkMode : ''}`}>
+      <main className={`${styles.dashboardWrapper} ${darkMode ? styles.darkMode : ''}`}>
         <h1 className={styles.dashboardTitle}>Material Usage Dashboard</h1>
         <div className={styles.gridContainer}>
           {/* Filters Section */}
@@ -238,6 +238,7 @@ export default function MaterialUsageDashboard() {
                               padding: 10,
                               font: { size: 12 },
                               boxWidth: 12,
+                              color: darkMode ? '#f1f5f9' : '#1f2937',
                             },
                           },
                           tooltip: {
@@ -247,6 +248,13 @@ export default function MaterialUsageDashboard() {
                                 const value = context.raw || 0;
                                 return `${label} (${value} units)`;
                               },
+                            },
+                          },
+                          datalabels: {
+                            color: '#000',
+                            font: {
+                              size: 14,
+                              weight: 'bold',
                             },
                           },
                         },
@@ -316,7 +324,7 @@ export default function MaterialUsageDashboard() {
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </>
   );
 }
