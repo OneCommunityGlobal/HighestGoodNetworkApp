@@ -1,13 +1,22 @@
+import axios from 'axios';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import CharacterCounter from '../../CharacterCounter';
 import ConfirmationModal from '../../ConfirmationModal';
-import './SocialMediaComposer.module.css';
+import { ENDPOINTS } from '~/utils/URL';
+import styles from './SocialMediaComposer.module.css';
+import toScheduleInputValues from './scheduleTime';
 const PREFS_KEY = 'mastodon_composer_prefs';
 
+// Prefer the backend's own message (for example a validation error) over a
+// generic one, so people can see why a request failed.
+const errorMessage = (err, fallback) => err?.response?.data?.error || fallback;
+
 export default function SocialMediaComposer({ platform }) {
+  const darkMode = useSelector(state => state.theme?.darkMode);
   const PLATFORM_CHAR_LIMITS = {
     mastodon: 500,
     x: 280,
@@ -88,11 +97,8 @@ export default function SocialMediaComposer({ platform }) {
   const loadScheduledPosts = async () => {
     setIsLoadingScheduled(true);
     try {
-      const response = await fetch('/api/mastodon/schedule');
-      if (response.ok) {
-        const data = await response.json();
-        setScheduledPosts(data || []);
-      }
+      const { data } = await axios.get(ENDPOINTS.MASTODON_SCHEDULED_POSTS);
+      setScheduledPosts(data || []);
     } catch (err) {
       if (process.env.NODE_ENV === 'development') {
         console.error('Error loading scheduled posts:', err);
@@ -105,18 +111,13 @@ export default function SocialMediaComposer({ platform }) {
   const loadPostHistory = async () => {
     setIsLoadingHistory(true);
     try {
-      const response = await fetch('/api/mastodon/history?limit=20');
-      if (response.ok) {
-        const data = await response.json();
-        setPostHistory(data || []);
-      } else {
-        toast.error('Failed to load post history');
-      }
+      const { data } = await axios.get(ENDPOINTS.MASTODON_POST_HISTORY(20));
+      setPostHistory(data || []);
     } catch (err) {
       if (process.env.NODE_ENV === 'development') {
         console.error('Error loading post history:', err);
       }
-      toast.error('Error loading post history');
+      toast.error(errorMessage(err, 'Failed to load post history'));
     } finally {
       setIsLoadingHistory(false);
     }
@@ -214,34 +215,26 @@ export default function SocialMediaComposer({ platform }) {
 
     setIsPosting(true);
     try {
-      const response = await fetch('/api/mastodon/createPin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: 'Mastodon Post',
-          description: postContent.trim(),
-          imgType: uploadedImage ? 'FILE' : 'URL',
-          mediaItems: uploadedImage ? `data:image/png;base64,${uploadedImage.base64}` : '',
-          mediaAltText: imageAltText || null,
-          crossPostTo: selectedPlatforms,
-        }),
+      await axios.post(ENDPOINTS.MASTODON_POST, {
+        title: 'Mastodon Post',
+        description: postContent.trim(),
+        imgType: uploadedImage ? 'FILE' : 'URL',
+        mediaItems: uploadedImage ? `data:image/png;base64,${uploadedImage.base64}` : '',
+        mediaAltText: imageAltText || null,
+        crossPostTo: selectedPlatforms,
       });
 
-      if (response.ok) {
-        let message = `Successfully posted to ${platform}!`;
-        if (selectedPlatforms.length > 0) {
-          message += ` (Selected for: ${selectedPlatforms.join(', ')})`;
-        }
-        toast.success(message, { autoClose: 5000 });
-        clearComposer();
-        if (activeSubTab === 'history') {
-          loadPostHistory();
-        }
-      } else {
-        toast.error(`Failed to post to ${platform}.`);
+      let message = `Successfully posted to ${platform}!`;
+      if (selectedPlatforms.length > 0) {
+        message += ` (Selected for: ${selectedPlatforms.join(', ')})`;
+      }
+      toast.success(message, { autoClose: 5000 });
+      clearComposer();
+      if (activeSubTab === 'history') {
+        loadPostHistory();
       }
     } catch (err) {
-      toast.error(`Error while posting to ${platform}.`);
+      toast.error(errorMessage(err, `Failed to post to ${platform}.`));
     } finally {
       setIsPosting(false);
     }
@@ -271,38 +264,29 @@ export default function SocialMediaComposer({ platform }) {
 
     setIsPosting(true);
     try {
-      // If editing, delete the old version first
-      if (editingPostId) {
-        await fetch(`/api/mastodon/schedule/${editingPostId}`, { method: 'DELETE' });
-      }
-
-      const response = await fetch('/api/mastodon/schedule', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: 'Mastodon Scheduled Post',
-          description: postContent.trim(),
-          imgType: uploadedImage ? 'FILE' : 'URL',
-          mediaItems: uploadedImage ? `data:image/png;base64,${uploadedImage.base64}` : '',
-          mediaAltText: imageAltText || null,
-          scheduledTime: scheduledDateTime.toISOString(),
-          crossPostTo: selectedPlatforms,
-        }),
+      await axios.post(ENDPOINTS.MASTODON_SCHEDULED_POSTS, {
+        title: 'Mastodon Scheduled Post',
+        description: postContent.trim(),
+        imgType: uploadedImage ? 'FILE' : 'URL',
+        mediaItems: uploadedImage ? `data:image/png;base64,${uploadedImage.base64}` : '',
+        mediaAltText: imageAltText || null,
+        scheduledTime: scheduledDateTime.toISOString(),
+        crossPostTo: selectedPlatforms,
       });
 
-      if (response.ok) {
-        toast.success(
-          editingPostId ? 'Post updated successfully!' : 'Post scheduled successfully!',
-        );
-        clearComposer();
-        if (activeSubTab === 'scheduled') {
-          loadScheduledPosts();
-        }
-      } else {
-        toast.error('Failed to schedule post.');
+      // When editing, remove the old version only after the new one is saved,
+      // so a failed save never loses the original post.
+      if (editingPostId) {
+        await axios.delete(ENDPOINTS.MASTODON_SCHEDULED_POST_BY_ID(editingPostId));
+      }
+
+      toast.success(editingPostId ? 'Post updated successfully!' : 'Post scheduled successfully!');
+      clearComposer();
+      if (activeSubTab === 'scheduled') {
+        loadScheduledPosts();
       }
     } catch (err) {
-      toast.error('Error while scheduling post.');
+      toast.error(errorMessage(err, 'Failed to schedule post.'));
     } finally {
       setIsPosting(false);
     }
@@ -328,9 +312,7 @@ export default function SocialMediaComposer({ platform }) {
       setImageAltText(postData.mediaAltText || '');
 
       // Load scheduled time
-      const scheduledTime = new Date(post.scheduledTime);
-      const dateStr = scheduledTime.toISOString().split('T')[0];
-      const timeStr = scheduledTime.toTimeString().slice(0, 5);
+      const { date: dateStr, time: timeStr } = toScheduleInputValues(post.scheduledTime);
       setScheduleDate(dateStr);
       setScheduleTime(timeStr);
 
@@ -355,17 +337,11 @@ export default function SocialMediaComposer({ platform }) {
   const handleDeleteScheduled = async (postId, skipConfirmation = false) => {
     const performDelete = async () => {
       try {
-        const response = await fetch(`/api/mastodon/schedule/${postId}`, {
-          method: 'DELETE',
-        });
-        if (response.ok) {
-          toast.success('Scheduled post deleted!');
-          loadScheduledPosts();
-        } else {
-          toast.error('Failed to delete post.');
-        }
+        await axios.delete(ENDPOINTS.MASTODON_SCHEDULED_POST_BY_ID(postId));
+        toast.success('Scheduled post deleted!');
+        loadScheduledPosts();
       } catch (err) {
-        toast.error('Error deleting post.');
+        toast.error(errorMessage(err, 'Failed to delete post.'));
       }
     };
 
@@ -388,26 +364,17 @@ export default function SocialMediaComposer({ platform }) {
     const performPost = async () => {
       try {
         const postData = JSON.parse(post.postData);
-        const response = await fetch('/api/mastodon/createPin', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            title: 'Mastodon Post',
-            description: postData.status,
-            imgType: postData.local_media_base64 ? 'FILE' : 'URL',
-            mediaItems: postData.local_media_base64 || '',
-            mediaAltText: postData.mediaAltText || null,
-          }),
+        await axios.post(ENDPOINTS.MASTODON_POST, {
+          title: 'Mastodon Post',
+          description: postData.status,
+          imgType: postData.local_media_base64 ? 'FILE' : 'URL',
+          mediaItems: postData.local_media_base64 || '',
+          mediaAltText: postData.mediaAltText || null,
         });
-
-        if (response.ok) {
-          toast.success('Posted successfully!');
-          await handleDeleteScheduled(post._id, true);
-        } else {
-          toast.error('Failed to post.');
-        }
+        toast.success('Posted successfully!');
+        await handleDeleteScheduled(post._id, true);
       } catch (err) {
-        toast.error('Error posting.');
+        toast.error(errorMessage(err, 'Failed to post.'));
       }
     };
 
@@ -463,15 +430,18 @@ export default function SocialMediaComposer({ platform }) {
   };
 
   return (
-    <div className="social-media-composer">
-      <h3 className="platform-title">{platform}</h3>
+    <div
+      className={`${styles['social-media-composer']} ${darkMode ? styles['composer-dark'] : ''}`}
+      data-testid="social-media-composer"
+    >
+      <h3 className={styles['platform-title']}>{platform}</h3>
 
-      <div className="tabs-container">
+      <div className={styles['tabs-container']}>
         {tabOrder.map(({ id, label }) => (
           <button
             key={id}
             onClick={() => setActiveSubTab(id)}
-            className={`tab-button ${activeSubTab === id ? 'active' : ''}`}
+            className={`${styles['tab-button']} ${activeSubTab === id ? styles.active : ''}`}
           >
             {id.charAt(0).toUpperCase() + id.slice(1)}
           </button>
@@ -479,11 +449,15 @@ export default function SocialMediaComposer({ platform }) {
       </div>
 
       {activeSubTab === 'composer' && (
-        <div className="composer-content">
+        <div className={styles['composer-content']}>
           {editingPostId && (
-            <div className="edit-banner">
+            <div className={styles['edit-banner']}>
               <span>✏️ Editing scheduled post</span>
-              <button type="button" onClick={handleCancelEdit} className="btn-cancel-edit">
+              <button
+                type="button"
+                onClick={handleCancelEdit}
+                className={styles['btn-cancel-edit']}
+              >
                 Cancel Edit
               </button>
             </div>
@@ -493,12 +467,12 @@ export default function SocialMediaComposer({ platform }) {
             value={postContent}
             onChange={e => setPostContent(e.target.value)}
             placeholder={`Write your ${platform} post here...`}
-            className="post-textarea"
+            className={styles['post-textarea']}
           />
           <CharacterCounter currentLength={postContent.length} maxLength={charLimit} />
 
-          <div className="upload-section">
-            <label htmlFor="image-upload" className="section-label">
+          <div className={styles['upload-section']}>
+            <label htmlFor="image-upload" className={styles['section-label']}>
               Add Image (optional):
             </label>
             <input
@@ -506,23 +480,27 @@ export default function SocialMediaComposer({ platform }) {
               type="file"
               accept="image/*"
               onChange={handleImageUpload}
-              className="file-input"
+              className={styles['file-input']}
             />
             {uploadedImage && (
               <div>
-                <div className="image-preview-container">
-                  <img src={uploadedImage.preview} alt="Upload preview" className="image-preview" />
+                <div className={styles['image-preview-container']}>
+                  <img
+                    src={uploadedImage.preview}
+                    alt="Upload preview"
+                    className={styles['image-preview']}
+                  />
                   <button
                     type="button"
                     onClick={handleRemoveImage}
-                    className="remove-image-btn"
+                    className={styles['remove-image-btn']}
                     title="Remove image"
                   >
                     ✕
                   </button>
                 </div>
-                <div className="alt-text-section">
-                  <label htmlFor="alt-text" className="section-label">
+                <div className={styles['alt-text-section']}>
+                  <label htmlFor="alt-text" className={styles['section-label']}>
                     Alt Text (for accessibility):
                   </label>
                   <input
@@ -531,7 +509,7 @@ export default function SocialMediaComposer({ platform }) {
                     value={imageAltText}
                     onChange={e => setImageAltText(e.target.value)}
                     placeholder="Describe the image for screen readers..."
-                    className="alt-text-input"
+                    className={styles['alt-text-input']}
                     maxLength={1500}
                   />
                   <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.25rem' }}>
@@ -542,29 +520,31 @@ export default function SocialMediaComposer({ platform }) {
             )}
           </div>
 
-          <div className="schedule-section">
-            <label htmlFor="schedule-date" className="section-label">
+          <div className={styles['schedule-section']}>
+            <label htmlFor="schedule-date" className={styles['section-label']}>
               Schedule for later (optional):
             </label>
-            <div className="datetime-inputs">
+            <div className={styles['datetime-inputs']}>
               <input
                 id="schedule-date"
                 type="date"
+                aria-label="Schedule date"
                 value={scheduleDate}
                 onChange={e => setScheduleDate(e.target.value)}
-                className="datetime-input"
+                className={styles['datetime-input']}
               />
               <input
                 id="schedule-time"
                 type="time"
+                aria-label="Schedule time"
                 value={scheduleTime}
                 onChange={e => setScheduleTime(e.target.value)}
-                className="datetime-input"
+                className={styles['datetime-input']}
               />
             </div>
           </div>
 
-          <div className="action-buttons">
+          <div className={styles['action-buttons']}>
             <button
               type="button"
               onClick={handleShowPreview}
@@ -596,7 +576,7 @@ export default function SocialMediaComposer({ platform }) {
                 : 'Schedule Post'}
             </button>
 
-            <div className="crosspost-container">
+            <div className={styles['crosspost-container']}>
               <button
                 type="button"
                 onClick={() => setShowCrossPost(!showCrossPost)}
@@ -605,8 +585,8 @@ export default function SocialMediaComposer({ platform }) {
                 Also post to {showCrossPost ? '▴' : '▾'}
               </button>
               {showCrossPost && (
-                <div className="crosspost-dropdown">
-                  <label className="crosspost-option">
+                <div className={styles['crosspost-dropdown']}>
+                  <label className={styles['crosspost-option']}>
                     <input
                       type="checkbox"
                       checked={crossPostPlatforms.facebook}
@@ -614,7 +594,7 @@ export default function SocialMediaComposer({ platform }) {
                     />
                     <span>Facebook</span>
                   </label>
-                  <label className="crosspost-option">
+                  <label className={styles['crosspost-option']}>
                     <input
                       type="checkbox"
                       checked={crossPostPlatforms.linkedin}
@@ -622,7 +602,7 @@ export default function SocialMediaComposer({ platform }) {
                     />
                     <span>LinkedIn</span>
                   </label>
-                  <label className="crosspost-option">
+                  <label className={styles['crosspost-option']}>
                     <input
                       type="checkbox"
                       checked={crossPostPlatforms.instagram}
@@ -630,7 +610,7 @@ export default function SocialMediaComposer({ platform }) {
                     />
                     <span>Instagram</span>
                   </label>
-                  <label className="crosspost-option">
+                  <label className={styles['crosspost-option']}>
                     <input
                       type="checkbox"
                       checked={crossPostPlatforms.x}
@@ -638,7 +618,7 @@ export default function SocialMediaComposer({ platform }) {
                     />
                     <span>X (Twitter)</span>
                   </label>
-                  <p className="crosspost-note">
+                  <p className={styles['crosspost-note']}>
                     Note: Cross-posting functionality coming soon. Currently shows selection only.
                   </p>
                 </div>
@@ -649,12 +629,12 @@ export default function SocialMediaComposer({ platform }) {
       )}
 
       {activeSubTab === 'scheduled' && (
-        <div className="scheduled-content">
+        <div className={styles['scheduled-content']}>
           <h4>Scheduled Posts for {platform}</h4>
           {isLoadingScheduled && <p>Loading...</p>}
           {!isLoadingScheduled && scheduledPosts.length === 0 && <p>No scheduled posts yet.</p>}
           {!isLoadingScheduled && scheduledPosts.length > 0 && (
-            <div className="posts-list">
+            <div className={styles['posts-list']}>
               {scheduledPosts.map(post => {
                 let postText = '';
                 try {
@@ -666,19 +646,25 @@ export default function SocialMediaComposer({ platform }) {
                 const imageBase64 = getScheduledPostImage(post);
 
                 return (
-                  <div key={post._id} className="post-card">
-                    <div className="post-card-content">
-                      <p className="post-text">{postText}</p>
-                      <p className="post-meta">📅 {formatScheduledTime(post.scheduledTime)}</p>
+                  <div key={post._id} className={styles['post-card']}>
+                    <div className={styles['post-card-content']}>
+                      <p className={styles['post-text']}>{postText}</p>
+                      <p className={styles['post-meta']}>
+                        📅 {formatScheduledTime(post.scheduledTime)}
+                      </p>
                       {imageBase64 && (
-                        <img src={imageBase64} alt="Post thumbnail" className="post-thumbnail" />
+                        <img
+                          src={imageBase64}
+                          alt="Post thumbnail"
+                          className={styles['post-thumbnail']}
+                        />
                       )}
                     </div>
-                    <div className="post-card-actions">
+                    <div className={styles['post-card-actions']}>
                       <button
                         type="button"
                         onClick={() => handleEditScheduled(post)}
-                        className="action-btn edit"
+                        className={`${styles['action-btn']} ${styles['edit']}`}
                         title="Edit"
                       >
                         ✏️
@@ -686,7 +672,7 @@ export default function SocialMediaComposer({ platform }) {
                       <button
                         type="button"
                         onClick={() => handlePostScheduledNow(post)}
-                        className="action-btn success"
+                        className={`${styles['action-btn']} ${styles['success']}`}
                         title="Post now"
                       >
                         ✓
@@ -694,7 +680,7 @@ export default function SocialMediaComposer({ platform }) {
                       <button
                         type="button"
                         onClick={() => handleDeleteScheduled(post._id)}
-                        className="action-btn danger"
+                        className={`${styles['action-btn']} ${styles['danger']}`}
                         title="Delete"
                       >
                         ✕
@@ -709,29 +695,29 @@ export default function SocialMediaComposer({ platform }) {
       )}
 
       {activeSubTab === 'history' && (
-        <div className="history-content">
+        <div className={styles['history-content']}>
           <h4>Post History for {platform}</h4>
           {isLoadingHistory && <p>Loading...</p>}
           {!isLoadingHistory && postHistory.length === 0 && <p>No posts found in history.</p>}
           {!isLoadingHistory && postHistory.length > 0 && (
-            <div className="posts-list">
+            <div className={styles['posts-list']}>
               {postHistory.map(post => (
-                <div key={post.id} className="post-card">
-                  <div className="post-card-full">
-                    <p className="post-text">{stripHtml(post.content)}</p>
-                    <p className="post-meta">📅 {formatScheduledTime(post.created_at)}</p>
-                    <div className="post-stats">
+                <div key={post.id} className={styles['post-card']}>
+                  <div className={styles['post-card-full']}>
+                    <p className={styles['post-text']}>{stripHtml(post.content)}</p>
+                    <p className={styles['post-meta']}>📅 {formatScheduledTime(post.created_at)}</p>
+                    <div className={styles['post-stats']}>
                       <span>❤️ {post.favourites_count}</span>
                       <span>🔄 {post.reblogs_count}</span>
                     </div>
                     {post.media_attachments?.length > 0 && (
-                      <div className="post-media">
+                      <div className={styles['post-media']}>
                         {post.media_attachments.map((media, idx) => (
                           <img
                             key={idx}
                             src={media.preview_url || media.url}
                             alt="Post media"
-                            className="post-thumbnail"
+                            className={styles['post-thumbnail']}
                           />
                         ))}
                       </div>
@@ -740,7 +726,7 @@ export default function SocialMediaComposer({ platform }) {
                       href={post.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="post-link"
+                      className={styles['post-link']}
                     >
                       View on Mastodon →
                     </a>
@@ -753,7 +739,7 @@ export default function SocialMediaComposer({ platform }) {
       )}
 
       {activeSubTab === 'details' && (
-        <div className="details-content">
+        <div className={styles['details-content']}>
           <p>
             <strong>{platform}-Specific Details</strong>
           </p>
@@ -765,16 +751,9 @@ export default function SocialMediaComposer({ platform }) {
             <li>Recommended dimensions: 1200x675 px</li>
             <li>Max image size: 5MB</li>
           </ul>
-          <div
-            style={{
-              marginTop: '1.5rem',
-              padding: '1rem',
-              background: 'var(--card-bg, #f8f9fa)',
-              borderRadius: '6px',
-            }}
-          >
-            <h5>Confirmation Preferences</h5>
-            <label style={{ display: 'block', marginBottom: '0.5rem' }}>
+          <div className={styles['preferences-box']}>
+            <h5 className={styles['preferences-title']}>Confirmation Preferences</h5>
+            <label className={styles['preferences-option']}>
               <input
                 type="checkbox"
                 checked={preferences.confirmDeleteScheduled}
@@ -783,7 +762,7 @@ export default function SocialMediaComposer({ platform }) {
               />
               Show confirmation when deleting scheduled posts
             </label>
-            <label style={{ display: 'block' }}>
+            <label className={styles['preferences-option']}>
               <input
                 type="checkbox"
                 checked={preferences.confirmPostNow}
@@ -812,8 +791,8 @@ export default function SocialMediaComposer({ platform }) {
         <ModalHeader toggle={() => setPreviewOpen(false)}>Post Preview</ModalHeader>
         <ModalBody>
           {previewData && (
-            <div className="preview-container">
-              <div className="preview-header">
+            <div className={styles['preview-container']}>
+              <div className={styles['preview-header']}>
                 <img
                   src="https://cdn-icons-png.flaticon.com/512/6295/6295417.png"
                   alt="Mastodon"
@@ -834,7 +813,7 @@ export default function SocialMediaComposer({ platform }) {
                 </div>
               </div>
               <div
-                className="preview-content"
+                className={styles['preview-content']}
                 style={{
                   marginTop: '1rem',
                   whiteSpace: 'pre-wrap',
