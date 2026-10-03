@@ -259,6 +259,11 @@ HistoryPostItem.propTypes = {
 };
 
 // ─── InstagramAutoPoster ───────────────────────────────────────────────────────
+const getScheduleButtonText = () => {
+  if (isPosting) return 'Saving…';
+  if (editingScheduleId) return 'Update scheduled post';
+  return 'Save scheduled post';
+};
 
 function InstagramAutoPoster({ platform }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -355,9 +360,11 @@ function InstagramAutoPoster({ platform }) {
   };
 
   useEffect(() => {
-    if (activeSubTab === 'schedule') loadScheduledPosts();
-    if (activeSubTab === 'history') loadHistory();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (activeSubTab === 'schedule') {
+      void loadScheduledPosts();
+    } else if (activeSubTab === 'history') {
+      void loadHistory();
+    }
   }, [activeSubTab]);
 
   // ── Handlers: fields ─────────────────────────────────────────────────────
@@ -484,7 +491,7 @@ function InstagramAutoPoster({ platform }) {
       toast.success('Posted to Instagram!');
 
       handleReset();
-      loadHistory();
+      void loadHistory();
     } catch (err) {
       toast.error(err.message);
     } finally {
@@ -579,7 +586,7 @@ function InstagramAutoPoster({ platform }) {
 
       handleReset();
       setScheduleAttemptedSave(false);
-      loadScheduledPosts();
+      void loadScheduledPosts();
     } catch (err) {
       toast.error(err.message);
     } finally {
@@ -629,7 +636,7 @@ function InstagramAutoPoster({ platform }) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || 'Failed to delete scheduled post.');
       toast.success('Scheduled post deleted.');
-      loadScheduledPosts();
+      void loadScheduledPosts();
     } catch (err) {
       toast.error(err.message);
     }
@@ -644,7 +651,7 @@ function InstagramAutoPoster({ platform }) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || 'Failed to retry post.');
       toast.success('Post re-queued.');
-      loadScheduledPosts();
+      void loadScheduledPosts();
     } catch (err) {
       toast.error(err.message);
     }
@@ -923,11 +930,7 @@ function InstagramAutoPoster({ platform }) {
                 disabled={isPosting}
                 onClick={handleSaveSchedule}
               >
-                {isPosting
-                  ? 'Saving…'
-                  : editingScheduleId
-                  ? 'Update scheduled post'
-                  : 'Save scheduled post'}
+                {getScheduleButtonText()}
               </button>
               <button
                 type="button"
