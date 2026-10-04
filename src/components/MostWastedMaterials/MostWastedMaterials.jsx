@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Bar,
   BarChart,
@@ -54,6 +54,104 @@ const mockData = {
   ],
 };
 
+// ---------------- Theme ----------------
+// Light = your original design. Dark = only used when the APP is in dark mode.
+const light = {
+  pageBg: '#f9fafb',
+  cardBg: '#ffffff',
+  border: '#e5e7eb',
+  inputBorder: '#d1d5db',
+  text: '#111827',
+  text2: '#374151',
+  muted: '#6b7280',
+  hover: '#f3f4f6',
+  grid: '#e5e7eb',
+  bar: '#3b82f6',
+  shadow: 'rgba(0, 0, 0, 0.1)',
+  scheme: 'light',
+};
+
+const dark = {
+  pageBg: '#0f172a',
+  cardBg: '#1e293b',
+  border: '#334155',
+  inputBorder: '#475569',
+  text: '#f1f5f9',
+  text2: '#cbd5e1',
+  muted: '#94a3b8',
+  hover: '#334155',
+  grid: '#334155',
+  bar: '#60a5fa',
+  shadow: 'rgba(0, 0, 0, 0.4)',
+  scheme: 'dark',
+};
+
+// Is this CSS color dark? Returns null when transparent / unknown.
+function isDarkColor(cssColor) {
+  const m = cssColor && cssColor.match(/rgba?\(([^)]+)\)/);
+  if (!m) return null;
+  const [r, g, b, a = 1] = m[1]
+    .split(/[ ,/]+/)
+    .filter(Boolean)
+    .map(Number);
+  if (a === 0) return null;
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 < 0.5;
+}
+
+// Detects the APP's theme (not the OS preference), so light stays light
+// unless the app itself is switched to dark.
+function detectAppDark() {
+  const html = document.documentElement;
+  const body = document.body;
+
+  // 1. Explicit markers set by common theme toggles
+  for (const el of [html, body]) {
+    if (!el) continue;
+    const marker = `${el.getAttribute('data-theme') || ''} ${el.getAttribute('data-bs-theme') ||
+      ''} ${el.getAttribute('data-mode') || ''}`.toLowerCase();
+    if (el.classList.contains('dark') || marker.includes('dark')) return true;
+    if (el.classList.contains('light') || marker.includes('light')) return false;
+  }
+
+  // 2. Fall back to the actual page background color
+  for (const el of [body, html]) {
+    if (!el) continue;
+    const result = isDarkColor(getComputedStyle(el).backgroundColor);
+    if (result !== null) return result;
+  }
+
+  return false;
+}
+
+function useTheme() {
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const update = () => setIsDark(detectAppDark());
+    update();
+
+    const opts = {
+      attributes: true,
+      attributeFilter: ['class', 'style', 'data-theme', 'data-bs-theme', 'data-mode'],
+    };
+    const obs = new MutationObserver(update);
+    obs.observe(document.documentElement, opts);
+    if (document.body) obs.observe(document.body, opts);
+
+    // If the app follows the OS setting via CSS, re-check right after it flips
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const onMq = () => setTimeout(update, 50);
+    mq.addEventListener('change', onMq);
+
+    return () => {
+      obs.disconnect();
+      mq.removeEventListener('change', onMq);
+    };
+  }, []);
+
+  return isDark ? dark : light;
+}
+
 // ---------------- Small utils ----------------
 const fmtPct = n => new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 }).format(n);
 
@@ -78,6 +176,7 @@ const downloadCSV = (rows, filename = 'most-wasted-materials.csv') => {
 // ---------------- Reusable Dropdown ----------------
 // `buttonId` links the label's htmlFor to this button for a11y.
 function CustomDropdown({ options, selected, onSelect, buttonId = undefined }) {
+  const t = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -94,8 +193,9 @@ function CustomDropdown({ options, selected, onSelect, buttonId = undefined }) {
           width: '100%',
           padding: '8px 16px',
           textAlign: 'left',
-          backgroundColor: '#ffffff',
-          border: '1px solid #d1d5db',
+          backgroundColor: t.cardBg,
+          color: t.text,
+          border: `1px solid ${t.inputBorder}`,
           borderRadius: '6px',
           cursor: 'pointer',
           display: 'flex',
@@ -116,10 +216,10 @@ function CustomDropdown({ options, selected, onSelect, buttonId = undefined }) {
             zIndex: 10,
             width: '100%',
             marginTop: '4px',
-            backgroundColor: '#ffffff',
-            border: '1px solid #d1d5db',
+            backgroundColor: t.cardBg,
+            border: `1px solid ${t.inputBorder}`,
             borderRadius: '6px',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            boxShadow: `0 4px 6px ${t.shadow}`,
           }}
         >
           {options.map(option => (
@@ -137,11 +237,12 @@ function CustomDropdown({ options, selected, onSelect, buttonId = undefined }) {
                 padding: '8px 16px',
                 textAlign: 'left',
                 backgroundColor: 'transparent',
+                color: t.text,
                 border: 'none',
                 cursor: 'pointer',
               }}
               onMouseEnter={e => {
-                e.target.style.backgroundColor = '#f3f4f6';
+                e.target.style.backgroundColor = t.hover;
               }}
               onMouseLeave={e => {
                 e.target.style.backgroundColor = 'transparent';
@@ -158,28 +259,29 @@ function CustomDropdown({ options, selected, onSelect, buttonId = undefined }) {
 
 // ---------------- Tooltip ----------------
 function CustomTooltip({ active, payload, label }) {
+  const t = useTheme();
   if (active && payload?.length) {
     const v = payload[0].value;
     return (
       <div
         style={{
-          backgroundColor: '#ffffff',
-          border: '1px solid #e5e7eb',
+          backgroundColor: t.cardBg,
+          border: `1px solid ${t.border}`,
           borderRadius: '8px',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          boxShadow: `0 4px 6px ${t.shadow}`,
           padding: '12px',
         }}
       >
         <p
           style={{
             fontWeight: '500',
-            color: '#111827',
+            color: t.text,
             margin: '0 0 4px 0',
           }}
         >
           {label}
         </p>
-        <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>Waste: {fmtPct(v)}%</p>
+        <p style={{ fontSize: '14px', color: t.muted, margin: 0 }}>Waste: {fmtPct(v)}%</p>
       </div>
     );
   }
@@ -188,6 +290,8 @@ function CustomTooltip({ active, payload, label }) {
 
 // ---------------- Main Component (mock-only) ----------------
 export default function MostWastedMaterials() {
+  const t = useTheme();
+
   const [selectedProject, setSelectedProject] = useState(mockProjects[0]);
   const [dateRange, setDateRange] = useState({
     from: '2024-01-01',
@@ -209,6 +313,43 @@ export default function MostWastedMaterials() {
     return sorted.slice(0, Math.max(1, Math.min(20, topN || 1)));
   }, [selectedProject, sortDir, topN, dateRange]);
 
+  // Shared themed styles
+  const labelStyle = {
+    display: 'block',
+    fontSize: 14,
+    fontWeight: 600,
+    color: t.text2,
+    marginBottom: 8,
+  };
+
+  const inputStyle = {
+    width: '100%',
+    padding: '8px 12px',
+    fontSize: 14,
+    borderRadius: 6,
+    border: `1px solid ${t.inputBorder}`,
+    backgroundColor: t.cardBg,
+    color: t.text,
+    colorScheme: t.scheme, // keeps the date picker icon visible
+  };
+
+  const btnStyle = {
+    padding: '8px 12px',
+    borderRadius: 6,
+    cursor: 'pointer',
+    border: `1px solid ${t.inputBorder}`,
+    background: t.cardBg,
+    color: t.text,
+  };
+
+  const cardStyle = {
+    backgroundColor: t.cardBg,
+    borderRadius: '8px',
+    border: `1px solid ${t.border}`,
+    padding: '24px',
+    boxShadow: `0 1px 3px ${t.shadow}`,
+  };
+
   return (
     <div
       style={{
@@ -216,30 +357,22 @@ export default function MostWastedMaterials() {
         maxWidth: '1200px',
         margin: '0 auto',
         padding: '24px',
-        backgroundColor: '#f9fafb',
+        backgroundColor: t.pageBg,
+        color: t.text,
         minHeight: '100vh',
       }}
     >
       <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '32px', fontWeight: 'bold', color: '#111827', margin: 0 }}>
+        <h1 style={{ fontSize: '32px', fontWeight: 'bold', color: t.text, margin: 0 }}>
           Most Wasted Materials
         </h1>
-        <p style={{ color: '#6b7280', marginTop: 8, fontSize: 14 }}>
+        <p style={{ color: t.muted, marginTop: 8, fontSize: 14 }}>
           Y-axis: % of material wasted · X-axis: material name
         </p>
       </div>
 
       {/* Filters */}
-      <div
-        style={{
-          backgroundColor: '#ffffff',
-          borderRadius: '8px',
-          border: '1px solid #e5e7eb',
-          padding: '24px',
-          marginBottom: '24px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        }}
-      >
+      <div style={{ ...cardStyle, marginBottom: '24px' }}>
         <div
           style={{
             display: 'grid',
@@ -248,16 +381,7 @@ export default function MostWastedMaterials() {
           }}
         >
           <div>
-            <label
-              htmlFor="project-filter"
-              style={{
-                display: 'block',
-                fontSize: 14,
-                fontWeight: 600,
-                color: '#374151',
-                marginBottom: 8,
-              }}
-            >
+            <label htmlFor="project-filter" style={labelStyle}>
               Project Filter
             </label>
             <CustomDropdown
@@ -269,16 +393,7 @@ export default function MostWastedMaterials() {
           </div>
 
           <div>
-            <label
-              htmlFor="mw-from"
-              style={{
-                display: 'block',
-                fontSize: 14,
-                fontWeight: 600,
-                color: '#374151',
-                marginBottom: 8,
-              }}
-            >
+            <label htmlFor="mw-from" style={labelStyle}>
               From
             </label>
             <input
@@ -286,27 +401,12 @@ export default function MostWastedMaterials() {
               type="date"
               value={dateRange.from}
               onChange={e => setDateRange(r => ({ ...r, from: e.target.value }))}
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                border: '1px solid #d1d5db',
-                borderRadius: 6,
-                fontSize: 14,
-              }}
+              style={inputStyle}
             />
           </div>
 
           <div>
-            <label
-              htmlFor="mw-to"
-              style={{
-                display: 'block',
-                fontSize: 14,
-                fontWeight: 600,
-                color: '#374151',
-                marginBottom: 8,
-              }}
-            >
+            <label htmlFor="mw-to" style={labelStyle}>
               To
             </label>
             <input
@@ -314,27 +414,12 @@ export default function MostWastedMaterials() {
               type="date"
               value={dateRange.to}
               onChange={e => setDateRange(r => ({ ...r, to: e.target.value }))}
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                border: '1px solid #d1d5db',
-                borderRadius: 6,
-                fontSize: 14,
-              }}
+              style={inputStyle}
             />
           </div>
 
           <div>
-            <label
-              htmlFor="mw-topn"
-              style={{
-                display: 'block',
-                fontSize: 14,
-                fontWeight: 600,
-                color: '#374151',
-                marginBottom: 8,
-              }}
-            >
+            <label htmlFor="mw-topn" style={labelStyle}>
               Top N
             </label>
             <input
@@ -366,13 +451,7 @@ export default function MostWastedMaterials() {
                   return Math.max(1, Math.min(20, n));
                 });
               }}
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                border: '1px solid #d1d5db',
-                borderRadius: 6,
-                fontSize: 14,
-              }}
+              style={inputStyle}
             />
           </div>
         </div>
@@ -381,51 +460,27 @@ export default function MostWastedMaterials() {
           <button
             type="button"
             onClick={() => setSortDir(d => (d === 'desc' ? 'asc' : 'desc'))}
-            style={{
-              padding: '8px 12px',
-              border: '1px solid #d1d5db',
-              borderRadius: 6,
-              background: '#fff',
-              cursor: 'pointer',
-            }}
+            style={btnStyle}
             title="Toggle sort order"
           >
             Sort: {sortDir === 'desc' ? 'Most → Least' : 'Least → Most'}
           </button>
 
-          <button
-            type="button"
-            onClick={() => downloadCSV(chartData)}
-            style={{
-              padding: '8px 12px',
-              border: '1px solid #d1d5db',
-              borderRadius: 6,
-              background: '#fff',
-              cursor: 'pointer',
-            }}
-          >
+          <button type="button" onClick={() => downloadCSV(chartData)} style={btnStyle}>
             Export CSV
           </button>
         </div>
       </div>
 
       {/* Chart */}
-      <div
-        style={{
-          backgroundColor: '#ffffff',
-          borderRadius: '8px',
-          border: '1px solid #e5e7eb',
-          padding: '24px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        }}
-      >
+      <div style={cardStyle}>
         {chartData.length === 0 ? (
           <div
             style={{
               height: 500,
               display: 'grid',
               placeItems: 'center',
-              color: '#6b7280',
+              color: t.muted,
             }}
           >
             No data for the selected filters.
@@ -434,7 +489,7 @@ export default function MostWastedMaterials() {
           <div style={{ width: '100%', height: 500 }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ top: 30, right: 30, left: 20, bottom: 60 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <CartesianGrid strokeDasharray="3 3" stroke={t.grid} />
                 <XAxis
                   dataKey="material"
                   angle={-45}
@@ -442,25 +497,25 @@ export default function MostWastedMaterials() {
                   height={80}
                   fontSize={12}
                   interval={0}
-                  tick={{ fill: '#374151' }}
+                  tick={{ fill: t.text2 }}
                 />
                 <YAxis
                   label={{
                     value: 'Percentage of Material Wasted (%)',
                     angle: -90,
                     position: 'insideLeft',
-                    style: { textAnchor: 'middle', fill: '#374151' },
+                    style: { textAnchor: 'middle', fill: t.text2 },
                   }}
                   fontSize={12}
-                  tick={{ fill: '#374151' }}
+                  tick={{ fill: t.text2 }}
                 />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="wastePercentage" fill="#3b82f6" radius={[4, 4, 0, 0]}>
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: t.hover }} />
+                <Bar dataKey="wastePercentage" fill={t.bar} radius={[4, 4, 0, 0]}>
                   <LabelList
                     dataKey="wastePercentage"
                     position="top"
                     formatter={v => `${fmtPct(v)}%`}
-                    className="fill-gray-700"
+                    fill={t.text}
                   />
                 </Bar>
               </BarChart>
