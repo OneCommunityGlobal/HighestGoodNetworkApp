@@ -116,12 +116,65 @@ function findFormByDeveloperFamily(formsArr, jobTitle) {
 }
 
 /**
+ * Map roles like "Office Coordinator" and "Environmental Planner" to a Management/Administrative form
+ * when an exact match is not found. Does not treat bare "admin" as enough to include a form title
+ * (that incorrectly pulled in "ADMIN OF PR REVIEW TEAM AND FRONTEND TESTER").
+ */
+export function findFormByManagementFamily(formsArr, jobTitle) {
+  const j = normalizeTitleKey(jobTitle);
+  if (
+    !/\bcoordinator\b/.test(j) &&
+    !/\bplanner\b/.test(j) &&
+    !/\bmanager\b/.test(j) &&
+    !/\bmanagement\b/.test(j) &&
+    !/\badministrative\b/.test(j) &&
+    !/\badmin\b/.test(j)
+  ) {
+    return null;
+  }
+
+  const softwareLikeTitle = t =>
+    /\bfrontend\b/.test(t) ||
+    /\btester\b/.test(t) ||
+    /\breact\b/.test(t) ||
+    /\bjavascript\b/.test(t) ||
+    /\bpr review\b/.test(t) ||
+    /\breview team\b/.test(t);
+
+  const candidates = formsArr.filter(f => {
+    const t = normalizeTitleKey(f.title || '');
+    if (!t || softwareLikeTitle(t)) return false;
+    // Prefer real admin/management forms — bare "admin" alone matches PR-review software titles.
+    return /\bmanagement\b/.test(t) || /\bmanager\b/.test(t) || /\badministrative\b/.test(t);
+  });
+
+  if (!candidates.length) return null;
+  if (candidates.length === 1) return candidates[0];
+
+  const score = form => {
+    const t = normalizeTitleKey(form.title || '');
+    if (t.includes('administrative assistant')) return 400;
+    if (/\badministrative\b/.test(t)) return 300;
+    if (t === 'management' || t === 'job application management') return 200;
+    if (/\bmanagement\b/.test(t)) return 150;
+    if (/\bmanager\b/.test(t)) return 100;
+    return 0;
+  };
+
+  return [...candidates].sort((a, b) => {
+    const diff = score(b) - score(a);
+    if (diff !== 0) return diff;
+    return String(a.title || '').localeCompare(String(b.title || ''));
+  })[0];
+}
+
+/**
  * Match a job listing title to a saved applicant-facing form (titles may differ slightly).
  * Retired / internal forms are never matched. A fuzzy step that matches more than one form is
  * treated as no match, so an ambiguous title (e.g. "T.A.S.T") falls back with a warning
  * instead of a silent guess.
  */
-export function findFormForJobTitle(formsArr, jobTitle) {
+export function findFormForJobTitle(formsArr, jobTitle, { includeManagementFamily = true } = {}) {
   if (!jobTitle || !formsArr?.length) return null;
   const candidates = formsArr.filter(isApplicantFacingForm);
   if (!candidates.length) return null;
@@ -140,11 +193,26 @@ export function findFormForJobTitle(formsArr, jobTitle) {
   if (bySubstring.length) return bySubstring.length === 1 ? bySubstring[0] : null;
   const byLikely = candidates.filter(f => titlesLikelyMatch(jobTitle, f.title));
   if (byLikely.length) return byLikely.length === 1 ? byLikely[0] : null;
-  return (
+  const family =
     findFormByTokenOverlap(candidates, jobTitle) ||
     findFormByDeveloperFamily(candidates, jobTitle) ||
-    null
+    null;
+  if (family) return family;
+  if (!includeManagementFamily) return null;
+  return findFormByManagementFamily(candidates, jobTitle);
+}
+
+/** True when the only way this job title maps to the form is the management-family heuristic. */
+export function isManagementFamilySoftMatch(formsArr, jobTitle, matchedForm) {
+  if (!matchedForm || !jobTitle) return false;
+  const without = findFormForJobTitle(formsArr, jobTitle, { includeManagementFamily: false });
+  if (without) return false;
+  const management = findFormByManagementFamily(
+    (formsArr || []).filter(isApplicantFacingForm),
+    jobTitle,
   );
+  if (!management) return false;
+  return String(management._id || management.id) === String(matchedForm._id || matchedForm.id);
 }
 
 /** Role clicked on the job board: React Router state or ?jobTitle= (a bare slug is resolved later). */
@@ -252,8 +320,20 @@ function warnDefaultFormFallback(title, form) {
   );
 }
 
-function notifyInitialFormSelection(navTitle, formMatch, chosen) {
-  if (!navTitle || formMatch) return;
+function warnManagementFamilyMatch(title, form) {
+  toast.warn(
+    `No exact form for "${title}". Showing "${form.title}" — pick another role from the dropdown if this is not the right questionnaire.`,
+    { autoClose: false, closeOnClick: false, toastId: 'job-title-management-family-warning' },
+  );
+}
+
+function notifyInitialFormSelection(navTitle, formMatch, chosen, managementFamilySoftMatch = false) {
+  if (!navTitle) return;
+  if (managementFamilySoftMatch && formMatch) {
+    warnManagementFamilyMatch(navTitle, formMatch);
+    return;
+  }
+  if (formMatch) return;
   if (chosen) {
     warnDefaultFormFallback(navTitle, chosen);
     return;
@@ -384,7 +464,12 @@ export function buildInitialSelection({
   };
   const formMatch = slugMatch || (navTitle ? findFormForJobTitle(formsArr, navTitle) : null);
   const chosen = pickInitialForm(formsArr, navState, positionSlug);
-  notifyInitialFormSelection(navTitle, formMatch, chosen);
+  const managementFamilySoftMatch =
+    !slugMatch &&
+    Boolean(navTitle) &&
+    Boolean(formMatch) &&
+    isManagementFamilySoftMatch(formsArr, navTitle, formMatch);
+  notifyInitialFormSelection(navTitle, formMatch, chosen, managementFamilySoftMatch);
 
   // Show a real position or form title, never the raw query / slug: near-miss titles select the
   // matched position, and unmatched ones (e.g. "Applied through site", /apply/<unknown>) select
