@@ -539,6 +539,17 @@ const WeeklyUpdateComposer = ({ onClose }) => {
               cursor: 'pointer',
             }}
           >
+            <input
+              id="header-image-upload"
+              type="file"
+              accept="image/*"
+              style={{ display: 'none' }}
+              onChange={e => {
+                if (e.target.files?.[0]) {
+                  handleImageDrop({ dataTransfer: { files: e.target.files } });
+                }
+              }}
+            />
             <FaUpload size={32} color={imageDragging ? '#3b82f6' : '#9ca3af'} />
             <p style={{ margin: '10px 0', color: imageDragging ? '#3b82f6' : '#6b7280' }}>
               {imageDragging ? 'Drop image here!' : 'Drag & drop an image here'}
