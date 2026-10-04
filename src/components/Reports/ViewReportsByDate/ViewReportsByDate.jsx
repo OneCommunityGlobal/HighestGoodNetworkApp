@@ -54,7 +54,11 @@ class ViewReportByDate extends Component {
     const { minDate, maxDate, textColor, darkMode } = this.props;
 
     return (
-      <div className={`${styles['date-picker-container']} ${darkMode ? 'dark-mode' : ''}`}>
+      <div
+        className={`${styles['date-picker-container']} ${
+          darkMode ? `dark-mode ${styles['date-picker-dark']}` : ''
+        }`}
+      >
         <div id="task_startDate" className={styles['date-picker-item']}>
           <label 
             htmlFor="task_startDate" 
@@ -68,7 +72,7 @@ class ViewReportByDate extends Component {
             minDate={minDate}
             maxDate={maxDate}
             onChange={this.onStartDateChange}
-            className={`form-control ${darkMode ? "bg-darkmode-liblack text-light border-0" : ''}`}
+            className={`form-control ${darkMode ? styles['date-picker-input'] : ''}`}
             popperPlacement="top-start"
           />
         </div>
@@ -85,7 +89,7 @@ class ViewReportByDate extends Component {
             minDate={minDate}
             maxDate={maxDate}
             onChange={this.onEndDateChange}
-            className={`form-control ${darkMode ? "bg-darkmode-liblack text-light border-0" : ''}`}
+            className={`form-control ${darkMode ? styles['date-picker-input'] : ''}`}
             popperPlacement="top"
           />
         </div>

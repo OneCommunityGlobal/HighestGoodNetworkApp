@@ -219,10 +219,24 @@
   z-index: 2;
 }
 
+/* index.css's `body.dark-mode * { color: #fff !important }` repaints this
+   dark-on-green count white, so it disappears against the lawngreen circle.
+   Re-assert the dark text with matching !important. */
+:global(.dark-mode) .project-member-badge {
+  color: #111 !important;
+}
+
 .project-member-btn .fa-users {
   font-size: 1.5rem;
   line-height: 1;
   margin-top: 0;
+}
+
+/* ================= DARK MODE FIXES ================= */
+
+:global(.dark-mode) :global(.suggestions-list) {
+  background-color: #1c2541;
+  color: #fff;
 }
 
 .suggestion-item {

@@ -1,0 +1,20 @@
+/* AddWBS had no stylesheet before this — the dark-mode branch in AddWBS.jsx
+   applied `bg-light-grey`/`bg-white` (light colors) when dark mode was *on*,
+   the opposite of what was intended, and neither class exists as real dark
+   styling anyway. Palette matches TableFilter.module.css so this filter bar
+   looks consistent with the rest of the WBS page. */
+:global(.dark-mode) .wbsLabel {
+  background-color: #1c2541;
+  border-color: #3a506b;
+  color: #fff;
+}
+
+:global(.dark-mode) .wbsInput {
+  background-color: #1c2541;
+  border-color: #3a506b;
+  color: #fff;
+}
+
+:global(.dark-mode) .wbsInput::placeholder {
+  color: #94a3b8;
+}

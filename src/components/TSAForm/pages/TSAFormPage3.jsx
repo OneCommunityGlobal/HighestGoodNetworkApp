@@ -1,8 +1,11 @@
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import styles from '../TSAForm.module.css';
 
 function TSAFormPage3() {
   const history = useHistory();
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const [errors, setErrors] = useState({
     meetingAvailability: false,
@@ -63,13 +66,13 @@ function TSAFormPage3() {
 
   return (
     <div
+      className={`${styles.page} ${darkMode ? styles.dark : ''}`}
       style={{
         position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: '#e6f5fb',
         fontFamily: 'Arial, sans-serif',
         overflowY: 'auto',
         zIndex: 1000,
@@ -78,8 +81,8 @@ function TSAFormPage3() {
     >
       {/* Banner */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: 'auto',
@@ -103,8 +106,8 @@ function TSAFormPage3() {
 
       {/* Title + Intro */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: 'auto',
@@ -156,9 +159,9 @@ function TSAFormPage3() {
         },
       ].map(item => (
         <div
+          className={styles.card}
           key={item.name}
           style={{
-            backgroundColor: '#fff',
             borderRadius: '8px',
             maxWidth: '800px',
             margin: '15px auto',
@@ -228,8 +231,8 @@ function TSAFormPage3() {
 
       {/* Checkbox Question Section */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -348,8 +351,8 @@ function TSAFormPage3() {
       </div>
 
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -432,8 +435,8 @@ function TSAFormPage3() {
       </div>
 
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -516,8 +519,8 @@ function TSAFormPage3() {
       </div>
 
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -597,8 +600,8 @@ function TSAFormPage3() {
       </div>
 
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -678,8 +681,8 @@ function TSAFormPage3() {
       </div>
 
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -757,8 +760,8 @@ function TSAFormPage3() {
       </div>
 
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -840,8 +843,8 @@ function TSAFormPage3() {
       </div>
 
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -922,8 +925,8 @@ function TSAFormPage3() {
 
       {/* Anything Else Box */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -956,8 +959,8 @@ function TSAFormPage3() {
 
       {/* Availability Time Commitment Box */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',

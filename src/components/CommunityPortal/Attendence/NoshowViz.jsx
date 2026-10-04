@@ -28,6 +28,15 @@ function EventNoShowChart() {
   const [period, setPeriod] = useState('month');
   const [selectedEventType, setSelectedEventType] = useState('All');
   const dispatch = useDispatch();
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const tooltipStyle = {
+    contentStyle: darkMode
+      ? { backgroundColor: '#1b2a41', border: '1px solid #3a506b', color: '#f9fafb' }
+      : undefined,
+    labelStyle: darkMode ? { color: '#f9fafb' } : undefined,
+  };
+  const tooltipCursor = darkMode ? { fill: '#26364d', stroke: '#64748b' } : undefined;
+  const axisTick = { fill: darkMode ? '#d1d5db' : '#666' };
 
   useEffect(() => {
     dispatch(getNoShowsByLocation());
@@ -102,7 +111,16 @@ function EventNoShowChart() {
   };
 
   const renderPieLabel = ({ name, percent, x, y }) => (
-    <text x={x} y={y} textAnchor="middle" fill="black" fontSize="12px" dy={10}>
+    // Recharts draws this label outside the slice, on the chart background —
+    // hardcoded black was invisible once that background went dark.
+    <text
+      x={x}
+      y={y}
+      textAnchor="middle"
+      fill={darkMode ? '#f9fafb' : 'black'}
+      fontSize="12px"
+      dy={10}
+    >
       <tspan x={x} dy="0">
         {name}
       </tspan>
@@ -113,31 +131,35 @@ function EventNoShowChart() {
   );
 
   return (
-    <div className={`${styles.eventContainer}`}>
-      <h2 className={`${styles.eventTitle}`}>Event No Shows by Date</h2>
-      <div className={`${styles.buttonGroup}`}>
+    <div className={`${styles['event-container']} ${darkMode ? styles.dark : ''}`}>
+      <h2 className={styles['event-title']}>Event No Shows by Date</h2>
+      <div className={styles['button-group']}>
         <button
           type="button"
           onClick={() => setPeriod('month')}
-          className={`${styles.chartButton} ${period === 'month' ? styles.active : ''}`}
+          className={`${styles['chart-button']} ${period === 'month' ? styles.active : ''} ${
+            darkMode ? styles.dark : ''
+          }`}
         >
           Month View
         </button>
         <button
           type="button"
           onClick={() => setPeriod('year')}
-          className={`${styles.chartButton} ${period === 'year' ? styles.active : ''}`}
+          className={`${styles['chart-button']} ${period === 'year' ? styles.active : ''} ${
+            darkMode ? styles.dark : ''
+          }`}
         >
           Year View
         </button>
       </div>
-      <div className={`${styles.chartWrapper}`}>
+      <div className={`${styles['chart-wrapper']} ${darkMode ? styles.dark : ''}`}>
         <ResponsiveContainer width="100%" height={400}>
           <BarChart data={noShowPeriod}>
-            <XAxis dataKey="date" />
-            <YAxis ticks={ticks} />
-            <Tooltip />
-            <Legend />
+            <XAxis dataKey="date" tick={axisTick} />
+            <YAxis ticks={ticks} tick={axisTick} />
+            <Tooltip {...tooltipStyle} cursor={tooltipCursor} />
+            <Legend wrapperStyle={darkMode ? { color: '#d1d5db' } : undefined} />
             {uniqueEventTypes.map(event => (
               <React.Fragment key={event}>
                 <Bar
@@ -157,14 +179,14 @@ function EventNoShowChart() {
           </BarChart>
         </ResponsiveContainer>
       </div>
-      <h2 className={`${styles.eventTitle}`}>Event No Shows by Location</h2>
-      <div className={`${styles.chartWrapper}`}>
+      <h2 className={styles['event-title']}>Event No Shows by Location</h2>
+      <div className={`${styles['chart-wrapper']} ${darkMode ? styles.dark : ''}`}>
         <ResponsiveContainer width="100%" height={400}>
           <BarChart data={locationData}>
-            <XAxis dataKey="location" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
+            <XAxis dataKey="location" tick={axisTick} />
+            <YAxis tick={axisTick} />
+            <Tooltip {...tooltipStyle} cursor={tooltipCursor} />
+            <Legend wrapperStyle={darkMode ? { color: '#d1d5db' } : undefined} />
             {locationData.length > 0 &&
               Object.keys(locationData[0])
                 .filter(key => key !== 'location') // Exclude 'location' key
@@ -179,14 +201,14 @@ function EventNoShowChart() {
         </ResponsiveContainer>
       </div>
 
-      <h2 className={`${styles.eventTitle}`}>No Shows by Age Group and Gender</h2>
-      <div className={`${styles.chartWrapper}`}>
+      <h2 className={styles['event-title']}>No Shows by Age Group and Gender</h2>
+      <div className={`${styles['chart-wrapper']} ${darkMode ? styles.dark : ''}`}>
         <ResponsiveContainer width="100%" height={400}>
           <BarChart data={ageGroupData}>
-            <XAxis dataKey="ageGroup" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
+            <XAxis dataKey="ageGroup" tick={axisTick} />
+            <YAxis tick={axisTick} />
+            <Tooltip {...tooltipStyle} cursor={tooltipCursor} />
+            <Legend wrapperStyle={darkMode ? { color: '#d1d5db' } : undefined} />
             {genderTypes.map(gender => (
               <Bar key={gender} dataKey={gender} fill={genderColorMapping[gender] || '#8884d8'} />
             ))}
@@ -194,8 +216,8 @@ function EventNoShowChart() {
         </ResponsiveContainer>
       </div>
 
-      <h2 className={`${styles.eventTitle}`}>Proportion of No-Shows by Gender</h2>
-      <div className={`${styles.chartWrapper}`}>
+      <h2 className={styles['event-title']}>Proportion of No-Shows by Gender</h2>
+      <div className={`${styles['chart-wrapper']} ${darkMode ? styles.dark : ''}`}>
         <ResponsiveContainer width="100%" height={400}>
           <PieChart>
             <Pie
@@ -212,18 +234,21 @@ function EventNoShowChart() {
                 <Cell key={`cell-${entry.name}`} fill={genderColorMapping[entry.name]} />
               ))}
             </Pie>
-            <Tooltip />
-            <Legend />
+            <Tooltip {...tooltipStyle} cursor={tooltipCursor} />
+            <Legend wrapperStyle={darkMode ? { color: '#d1d5db' } : undefined} />
           </PieChart>
         </ResponsiveContainer>
       </div>
 
-      <h2 className={`${styles.eventTitle}`}>Attendance Trend by Day of the Week</h2>
-      <label className={styles['no-show-viz-label']} htmlFor="event-type-select">
+      <h2 className={styles['event-title']}>Attendance Trend by Day of the Week</h2>
+      <label
+        className={`${styles['no-show-viz-label']} ${darkMode ? styles.dark : ''}`}
+        htmlFor="event-type-select"
+      >
         Select Event Type:
       </label>
       <select
-        className={styles['no-show-viz-select']}
+        className={`${styles['no-show-viz-select']} ${darkMode ? styles.dark : ''}`}
         value={selectedEventType}
         onChange={handleEventTypeChange}
       >
@@ -234,13 +259,13 @@ function EventNoShowChart() {
         ))}
       </select>
 
-      <div className={`${styles.chartWrapper}`}>
+      <div className={`${styles['chart-wrapper']} ${darkMode ? styles.dark : ''}`}>
         <ResponsiveContainer width="100%" height={400}>
           <LineChart data={attendanceByDay}>
-            <XAxis dataKey="day" />
-            <YAxis ticks={ticksLine} />
-            <Tooltip />
-            <Legend />
+            <XAxis dataKey="day" tick={axisTick} />
+            <YAxis ticks={ticksLine} tick={axisTick} />
+            <Tooltip {...tooltipStyle} cursor={tooltipCursor} />
+            <Legend wrapperStyle={darkMode ? { color: '#d1d5db' } : undefined} />
             <Line
               type="monotone"
               dataKey="attended"

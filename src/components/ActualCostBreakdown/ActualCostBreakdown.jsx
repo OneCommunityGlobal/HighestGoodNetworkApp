@@ -2,10 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, LabelList } from 'recharts';
 import httpService from '../../services/httpService';
 import { ApiEndpoint } from '../../utils/URL';
+import { useSelector } from 'react-redux';
 import styles from './ActualCostBreakdown.module.css';
 
 const ActualCostBreakdown = () => {
   const [projects, setProjects] = useState([]);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [selectedProject, setSelectedProject] = useState('');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
@@ -315,7 +317,7 @@ const ActualCostBreakdown = () => {
   };
 
   return (
-    <div className={styles['actual-cost-breakdown']}>
+    <div className={`${styles['actual-cost-breakdown']} ${darkMode ? styles.dark : ''}`}>
       <div className={styles['chart-header']}>
         <h2>Total Cost Breakdown by Category</h2>
       </div>

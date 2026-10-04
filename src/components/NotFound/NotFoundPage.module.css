@@ -39,7 +39,9 @@
 }
 
 .backHomeLink {
-  color: #3293f9;
+  /* !important because index.css's `body.dark-mode * { color: #fff !important }`
+     otherwise repaints this link white in dark mode. */
+  color: #3293f9 !important;
   cursor: pointer;
   text-decoration: underline;
   transition: background-color 0.3s;
@@ -47,6 +49,10 @@
 
 .backHomeLink:hover {
   background-color: transparent;
+}
+
+:global(body.dark-mode) .backHomeLink {
+  color: #3293f9 !important;
 }
 
 .darkMode {

@@ -1,8 +1,11 @@
 import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import styles from '../TSAForm.module.css';
 
 function TSAFormPage2() {
   const history = useHistory();
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const [errors, setErrors] = useState({
     interested: false,
@@ -53,13 +56,13 @@ function TSAFormPage2() {
 
   return (
     <div
+      className={`${styles.page} ${darkMode ? styles.dark : ''}`}
       style={{
         position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: '#e6f5fb',
         fontFamily: 'Arial, sans-serif',
         overflowY: 'auto',
         zIndex: 1000,
@@ -68,8 +71,8 @@ function TSAFormPage2() {
     >
       {/* Banner */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: 'auto',
@@ -93,8 +96,8 @@ function TSAFormPage2() {
 
       {/* Title + Intro */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: 'auto',
@@ -136,8 +139,8 @@ function TSAFormPage2() {
 
       {/* Overall Interest */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -198,8 +201,8 @@ function TSAFormPage2() {
 
       {/* Availability */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -282,8 +285,8 @@ function TSAFormPage2() {
 
       {/* Area of Interest Section */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -323,8 +326,8 @@ function TSAFormPage2() {
 
       {/* Building Infrastructure Interest Rating */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -410,8 +413,8 @@ function TSAFormPage2() {
 
       {/* Food Infrastructure Interest Rating */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -495,8 +498,8 @@ function TSAFormPage2() {
 
       {/* Energy infrastructure Interest Rating */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
@@ -577,8 +580,8 @@ function TSAFormPage2() {
 
       {/* Stewardship infrastructure Interest Rating */}
       <div
+        className={styles.card}
         style={{
-          backgroundColor: '#fff',
           borderRadius: '8px',
           maxWidth: '800px',
           margin: '15px auto',
