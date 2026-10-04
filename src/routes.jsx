@@ -85,6 +85,7 @@ import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOvervi
 import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
 import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
 import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
+import Activity from './components/CommunityPortal/Activities/activityId/Activity';
 import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
 import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
 import EventList from './components/CommunityPortal/Event/EventList/EventList';
@@ -601,9 +602,11 @@ export default (
           component={CountryOfApplicationMapChart}
           fallback
         />
+        {/* Not exact: Announcements drives its own tabs off the URL and pushes
+            sub-paths such as /announcements/email/templates. With exact, those
+            fall through to the catch-all NotFoundPage at the end of this Switch. */}
         <ProtectedRoute
           path="/announcements"
-          exact
           component={Announcements}
           routePermissions={RoutePermissions.announcements}
         />
@@ -905,6 +908,11 @@ export default (
           path="/communityportal/profile/:userId"
           fallback
           component={UserProfile}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityid/faq"
+          exact
+          render={() => <Activity initialTab="FAQs" />}
         />
         <CPProtectedRoute
           path="/communityportal/ActivityAttendance"

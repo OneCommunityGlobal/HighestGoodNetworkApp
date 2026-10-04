@@ -20,7 +20,7 @@ const PRGradingScreenContainer = () => {
     }));
 
     const teamData = {
-      teamName: config.teamName,
+      teamName: config.name,
       dateRange: {
         start: new Date().toLocaleDateString(),
         end: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString(),

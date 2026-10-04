@@ -6,6 +6,7 @@ describe('allProjectsReducer', () => {
     fetching: false,
     fetched: false,
     projects: [],
+    archivedProjects: [],
     status: 200,
     error: null,
   };
@@ -57,6 +58,40 @@ describe('allProjectsReducer', () => {
     };
     const newState = allProjectsReducer(initialState, action);
     expect(newState).toEqual(expectedState);
+  });
+
+  it('should handle FETCH_ARCHIVED_PROJECTS_SUCCESS without touching projects', () => {
+    const stateWithProjects = {
+      ...initialState,
+      projects: [{ _id: '1', isActive: true }],
+    };
+    const archived = [{ _id: '2' }, { _id: '3' }];
+    const action = {
+      type: types.FETCH_ARCHIVED_PROJECTS_SUCCESS,
+      projects: archived,
+      status: 200,
+    };
+    const newState = allProjectsReducer(stateWithProjects, action);
+
+    expect(newState.archivedProjects).toEqual(archived);
+    // The archived list must not overwrite `projects` — several other
+    // components read that key.
+    expect(newState.projects).toEqual(stateWithProjects.projects);
+    expect(newState.fetched).toBe(true);
+    expect(newState.fetching).toBe(false);
+  });
+
+  it('should keep archivedProjects when FETCH_PROJECTS_SUCCESS arrives', () => {
+    const stateWithArchived = { ...initialState, archivedProjects: [{ _id: '9' }] };
+    const action = {
+      type: types.FETCH_PROJECTS_SUCCESS,
+      projects: [{ _id: '1' }],
+      status: 200,
+    };
+    const newState = allProjectsReducer(stateWithArchived, action);
+
+    expect(newState.projects).toEqual([{ _id: '1' }]);
+    expect(newState.archivedProjects).toEqual([{ _id: '9' }]);
   });
 
   it('should handle ADD_NEW_PROJECT with successful status', () => {
