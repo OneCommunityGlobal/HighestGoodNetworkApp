@@ -65,6 +65,9 @@ function Collaboration() {
   const columnsRef = useRef(columns);
   // KEEP ACTIVE TAB (required)
   const [activeTab, setActiveTab] = useState('jobPostings');
+  const [bothFiltersTooltipDismissed, setBothFiltersTooltipDismissed] = useState(
+    () => globalThis.localStorage?.getItem('collabUseBothFiltersTooltipDismissed') === 'true',
+  );
 
   const darkMode = useSelector(state => state.theme?.darkMode);
   const history = useHistory();
@@ -246,6 +249,16 @@ function Collaboration() {
     fetchJobAds({ category: selectedValue || '', page: 1 }).catch(() =>
       toast.error('Error fetching jobs'),
     );
+  };
+
+  const showBothFiltersTooltip =
+    activeTab === 'jobPostings' &&
+    !bothFiltersTooltipDismissed &&
+    Boolean(searchTerm.trim()) !== Boolean(selectedCategory);
+
+  const dismissBothFiltersTooltip = () => {
+    setBothFiltersTooltipDismissed(true);
+    globalThis.localStorage?.setItem('collabUseBothFiltersTooltipDismissed', 'true');
   };
 
   const handleResetFilters = async () => {
@@ -616,6 +629,18 @@ function Collaboration() {
             </select>
           </div>
         </nav>
+        {showBothFiltersTooltip && (
+          <aside className={styles.jobTooltip} aria-label="Filter recommendation">
+            <p>Use both filters to refine your search further.</p>
+            <button
+              type="button"
+              className={styles.jobTooltipDismiss}
+              onClick={dismissBothFiltersTooltip}
+            >
+              Got it
+            </button>
+          </aside>
+        )}
         {activeTab === 'whatWeDo' ? (
           <WhatWeDoSection />
         ) : (
