@@ -102,6 +102,42 @@ function findFormByDeveloperFamily(formsArr, jobTitle) {
   return candidates[0];
 }
 
+/**
+ * Map roles like "Office Coordinator" and "Environmental Planner" to a Management/Administrative form
+ * if an exact match isn't found.
+ */
+function findFormByManagementFamily(formsArr, jobTitle) {
+  const j = normalizeTitleKey(jobTitle);
+  if (
+    !j.includes('coordinator') &&
+    !j.includes('planner') &&
+    !j.includes('manager') &&
+    !j.includes('management') &&
+    !j.includes('administrative') &&
+    !j.includes('admin')
+  ) {
+    return null;
+  }
+  const candidates = formsArr.filter(f => {
+    const t = normalizeTitleKey(f.title || '');
+    return (
+      t.includes('management') ||
+      t.includes('manager') ||
+      t.includes('administrative') ||
+      t.includes('admin')
+    );
+  });
+  if (candidates.length === 1) return candidates[0];
+  if (candidates.length > 1) {
+    const exact = candidates.find(f => {
+      const t = normalizeTitleKey(f.title || '');
+      return t === 'management' || t === 'manager' || t === 'job application management';
+    });
+    return exact || candidates[0];
+  }
+  return null;
+}
+
 /** Match a job listing title to a saved application form (titles may differ slightly). */
 function findFormForJobTitle(formsArr, jobTitle) {
   if (!jobTitle || !formsArr?.length) return null;
@@ -120,6 +156,8 @@ function findFormForJobTitle(formsArr, jobTitle) {
   m = findFormByTokenOverlap(formsArr, jobTitle);
   if (m) return m;
   m = findFormByDeveloperFamily(formsArr, jobTitle);
+  if (m) return m;
+  m = findFormByManagementFamily(formsArr, jobTitle);
   return m || null;
 }
 
