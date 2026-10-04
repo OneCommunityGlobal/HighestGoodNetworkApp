@@ -15,8 +15,9 @@
 }
 
 
-:global(body.dark-mode:not(.no-global-theme)) .darkDropdown {
+.darkDropdown {
   background-color: #1e293b;
+  border-color: #334155;
 }
 
 .darkDropdownItem {

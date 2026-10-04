@@ -373,22 +373,38 @@
 }
 
 .strategyBar {
+  display: block;
   width: 200px;
   height: 20px;
+  border: none;
   background: #e5e7eb;
   border-radius: 10px;
   overflow: hidden;
-  position: relative;
+  appearance: none;
+}
+
+.strategyBar::-webkit-progress-bar {
+  background: #e5e7eb;
+  border-radius: 10px;
+}
+
+.strategyBar::-webkit-progress-value {
+  background: var(--impact-color);
+  border-radius: 10px;
+  transition: width 0.6s ease;
+}
+
+.strategyBar::-moz-progress-bar {
+  background: var(--impact-color);
+  border-radius: 10px;
 }
 
 .insightPanel.darkPanel .strategyBar {
   background: #334155;
 }
 
-.strategyFill {
-  height: 100%;
-  border-radius: 10px;
-  transition: width 0.6s ease;
+.insightPanel.darkPanel .strategyBar::-webkit-progress-bar {
+  background: #334155;
 }
 
 .strategyValue {

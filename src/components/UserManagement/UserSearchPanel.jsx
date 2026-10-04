@@ -7,6 +7,7 @@ import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { boxStyle, boxStyleDark } from '../../styles';
 import hasPermission from '../../utils/permissions';
 import { SEARCH, SHOW, CREATE_NEW_USER, SEND_SETUP_LINK } from '../../languages/en/ui';
+import appStyles from '~/App.module.css';
 import styles from './usermanagement.module.css';
 
 import { permissions } from '../../utils/constants';
@@ -80,14 +81,14 @@ function UserSearchPanel({
         {CREATE_NEW_USER}
       </button>
       <div className="input-group-prepend">
-        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+        <span className={`input-group-text ${darkMode ? `${appStyles['bg-yinmn-blue']} text-light` : ''}`}>
           {SEARCH}
         </span>
       </div>
       <input
         // autoFocus
         type="text"
-        className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
+        className={`form-control ${darkMode ? `${appStyles['bg-darkmode-liblack']} text-light` : ''}`}
         aria-label="Search"
         placeholder="Search Text"
         id="user-profiles-wild-card-search"
@@ -98,7 +99,7 @@ function UserSearchPanel({
         style={{ marginRight: '5px' }}
       />
       <div className="input-group-prepend">
-        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+        <span className={`input-group-text ${darkMode ? `${appStyles['bg-yinmn-blue']} text-light` : ''}`}>
           {SHOW}
         </span>
         <select
@@ -108,7 +109,7 @@ function UserSearchPanel({
             onActiveFilter(e.target.value);
           }}
           value={selectText}
-          className={darkMode ? 'bg-darkmode-liblack text-light' : ''}
+          className={darkMode ? `${appStyles['bg-darkmode-liblack']} text-light` : ''}
         >
           <option value="all">All</option>
           <option value="active">Active</option>

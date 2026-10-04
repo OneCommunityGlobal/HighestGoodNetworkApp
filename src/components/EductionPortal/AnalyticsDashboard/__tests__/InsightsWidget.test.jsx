@@ -39,7 +39,7 @@ describe('InsightsWidget', () => {
 
       const values = screen
         .getAllByRole('progressbar')
-        .map(bar => Number(bar.getAttribute('aria-valuenow')));
+        .map(bar => Number(bar.getAttribute('value')));
 
       expect(values).toEqual([92, 88, 79, 76]);
     });
@@ -48,19 +48,13 @@ describe('InsightsWidget', () => {
       renderWidget();
       await waitForData();
 
-      const fillFor = name =>
-        within(screen.getByRole('progressbar', { name })).getByTestId('strategy-fill');
+      const colorFor = name =>
+        screen.getByRole('progressbar', { name }).style.getPropertyValue('--impact-color');
 
-      expect(fillFor('Everything you do should increase choices')).toHaveStyle({
-        backgroundColor: '#10b981',
-      });
-      expect(fillFor('Ask "what would Love do?"')).toHaveStyle({ backgroundColor: '#84cc16' });
-      expect(fillFor('Practice improving your emotional intelligence')).toHaveStyle({
-        backgroundColor: '#fbbf24',
-      });
-      expect(fillFor('Choose to lead with observation')).toHaveStyle({
-        backgroundColor: '#fbbf24',
-      });
+      expect(colorFor('Everything you do should increase choices')).toBe('#10b981');
+      expect(colorFor('Ask "what would Love do?"')).toBe('#84cc16');
+      expect(colorFor('Practice improving your emotional intelligence')).toBe('#fbbf24');
+      expect(colorFor('Choose to lead with observation')).toBe('#fbbf24');
     });
 
     it('only uses bar colors that appear in the legend', async () => {
@@ -70,9 +64,15 @@ describe('InsightsWidget', () => {
       const legendColors = screen
         .getAllByTestId('legend-dot')
         .map(dot => dot.style.backgroundColor);
+      // Normalize the hex custom property to the rgb() form jsdom uses for the legend dots
+      const toRgb = color => {
+        const el = document.createElement('div');
+        el.style.backgroundColor = color;
+        return el.style.backgroundColor;
+      };
       const barColors = screen
-        .getAllByTestId('strategy-fill')
-        .map(fill => fill.style.backgroundColor);
+        .getAllByRole('progressbar')
+        .map(bar => toRgb(bar.style.getPropertyValue('--impact-color')));
 
       barColors.forEach(color => expect(legendColors).toContain(color));
     });
@@ -96,9 +96,9 @@ describe('InsightsWidget', () => {
       const bar = screen.getByRole('progressbar', {
         name: 'Everything you do should increase choices',
       });
-      expect(bar).toHaveAttribute('aria-valuenow', '92');
-      expect(bar).toHaveAttribute('aria-valuemin', '0');
-      expect(bar).toHaveAttribute('aria-valuemax', '100');
+      expect(bar.tagName).toBe('PROGRESS');
+      expect(bar).toHaveAttribute('value', '92');
+      expect(bar).toHaveAttribute('max', '100');
       expect(bar).toHaveAttribute('aria-valuetext', '92% impact');
     });
   });

@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { connect } from 'react-redux';
 import TagSent from './TagSent';
+import appStyles from '~/App.module.css';
 import styles from './TagsSearch.module.css';
 import ReadOnlySectionWrapper from '../EditTask/ReadOnlySectionWrapper';
 import { findProjectMembers } from '../../../../../actions/projectMembers';
@@ -110,7 +111,7 @@ function TagsSearch(props) {
               type="text"
               placeholder={placeholder}
               className={`border border-dark rounded form-control px-2 ${
-                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                darkMode ? `${appStyles['bg-darkmode-liblack']} text-light border-0` : ''
               }`}
               value={searchWord}
               onChange={e => handleFilter(e)}
@@ -159,6 +160,7 @@ function TagsSearch(props) {
 const mapStateToProps = state => ({
   // ✅ do NOT overwrite `members` prop anymore
   membersFromStore: state.projectMembers.members,
+  darkMode: state.theme.darkMode,
   foundProjectMembers: state.projectMembers.foundProjectMembers,
 });
 

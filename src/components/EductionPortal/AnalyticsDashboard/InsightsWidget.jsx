@@ -64,6 +64,7 @@ const getImpactColor = impact => IMPACT_LEVELS.find(level => impact >= level.min
 
 const TREND_ICON = { up: '↑', down: '↓', flat: '–' };
 const TREND_CLASS = { up: 'Positive', down: 'Negative', flat: 'Neutral' };
+const CHANGE_CLASS = { up: 'changePositive', down: 'changeNegative', flat: 'changeNeutral' };
 
 const getTrend = value => {
   if (value > 0) return 'up';
@@ -287,24 +288,16 @@ const InsightsWidget = () => {
               {sortedMetrics.lifeStrategies.map(strategy => (
                 <div key={strategy.id} className={styles.strategyItem}>
                   <div className={styles.strategyLabel}>{strategy.strategy}</div>
-                  <div
+                  <progress
                     className={styles.strategyBar}
-                    role="progressbar"
+                    value={strategy.impact}
+                    max={100}
                     aria-label={strategy.strategy}
-                    aria-valuenow={strategy.impact}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
                     aria-valuetext={`${strategy.impact}% impact`}
+                    style={{ '--impact-color': getImpactColor(strategy.impact) }}
                   >
-                    <div
-                      data-testid="strategy-fill"
-                      className={styles.strategyFill}
-                      style={{
-                        width: `${strategy.impact}%`,
-                        backgroundColor: getImpactColor(strategy.impact),
-                      }}
-                    />
-                  </div>
+                    {`${strategy.impact}%`}
+                  </progress>
                   <div className={styles.strategyValue}>{strategy.impact}%</div>
                 </div>
               ))}
@@ -353,7 +346,7 @@ const SummaryCard = ({ title, value, change, unit = '', isCount = false, darkMod
       </div>
       <div
         data-testid="card-change"
-        className={`${styles.cardChange} ${styles[`change${TREND_CLASS[trend]}`]}`}
+        className={`${styles.cardChange} ${styles[CHANGE_CLASS[trend]]}`}
       >
         <span className={styles.changeIcon}>{TREND_ICON[trend]}</span>
         <span className={styles.changeText}>
