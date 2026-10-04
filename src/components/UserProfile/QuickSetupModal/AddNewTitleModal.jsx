@@ -137,9 +137,9 @@ function AddNewTitleModal({
   //     .filter(Boolean)
   // );
 
-  const activeTeams = allTeamsArray.filter(
-    team => team?.isActive === true
-  );
+  // const activeTeams = allTeamsArray.filter(
+  //   team => team?.isActive === true
+  // );
 
   // const existTeamName = new Set(
   //   activeTeams
