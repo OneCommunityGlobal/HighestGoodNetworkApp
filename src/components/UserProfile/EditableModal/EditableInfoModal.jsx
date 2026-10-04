@@ -13,6 +13,7 @@ import {
 } from '../../../actions/information';
 import { boxStyle, boxStyleDark } from '~/styles';
 import RichTextEditor from './RichTextEditor';
+import appStyles from '~/App.module.css';
 import styles from './EditableInfoModal.module.css';
 
 const options = [
@@ -280,11 +281,11 @@ export class EditableInfoModal extends Component {
               size="lg"
               className={darkMode ? 'text-light' : ''}
             >
-              <ModalHeader className={`d-flex justify-content-center ${darkMode ? 'bg-space-cadet' : ''}`}>
+              <ModalHeader className={`d-flex justify-content-center ${darkMode ? `${appStyles['bg-space-cadet']} text-light` : ''}`}>
                 Welcome to the {this.sanitizeText(this.props.areaTitle)} Information Page!
               </ModalHeader>
 
-              <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ padding: '20px 40px' }}>
+              <ModalBody className={darkMode ? `${appStyles['bg-yinmn-blue']} text-light` : ''} style={{ padding: '20px 40px' }}>
                 {this.state.editing ? (
                   <RichTextEditor
                     disabled={!this.state.editing}
@@ -302,7 +303,7 @@ export class EditableInfoModal extends Component {
                 )}
               </ModalBody>
 
-              <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+              <ModalFooter className={darkMode ? `${appStyles['bg-yinmn-blue']} text-light` : ''}>
                 <div
                   style={{
                     display: 'flex',
