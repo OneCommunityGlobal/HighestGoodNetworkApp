@@ -5,15 +5,15 @@ export const normalizeVolunteerStats = (volunteerNumberStats, totalHoursWorked) 
 
   const normalizeStats = (stats, key) => ({
     ...VOLUNTEER_STATUS_TAB[key],
-    number: stats.count,
-    percentageChange: Math.abs((stats.comparisonPercentage ?? 0) * 100).toFixed(0),
-    isIncreased: (stats.comparisonPercentage ?? 0) >= 0,
+    number: stats?.count ?? 0,
+    percentageChange: Math.abs(((stats?.comparisonPercentage ?? stats?.percentage) ?? 0) * 100).toFixed(0),
+    isIncreased: ((stats?.comparisonPercentage ?? stats?.percentage) ?? 0) >= 0,
   });
 
   return [
     normalizeStats(volunteerNumberStats.activeVolunteers, 'activeVolunteers'),
     normalizeStats(volunteerNumberStats.newVolunteers, 'newVolunteers'),
-    normalizeStats(volunteerNumberStats.mentors, 'mentors'),
+    normalizeStats(volunteerNumberStats.mentorNumberStats?.totalMentors || volunteerNumberStats.mentors, 'mentors'),
     normalizeStats(volunteerNumberStats.deactivatedVolunteers, 'deactivatedVolunteers'),
     {
       ...VOLUNTEER_STATUS_TAB.totalHoursWorked,
@@ -23,7 +23,6 @@ export const normalizeVolunteerStats = (volunteerNumberStats, totalHoursWorked) 
     },
   ];
 };
-
 export const normalizeVolunteerActivities = (
   totalSummariesSubmitted,
   completedAssignedHours,
@@ -41,7 +40,7 @@ export const normalizeVolunteerActivities = (
       };
     }
 
-    const current = data.current || data.count || 0;
+    const current = data.current ?? data.count ?? data.total ?? data.value ?? 0;
     const percentage = data.percentage ?? data.comparisonPercentage ?? 0;
     return {
       ...VOLUNTEER_ACTIVITIES_TAB.find(tab => tab.type === key),
