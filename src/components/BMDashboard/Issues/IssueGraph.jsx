@@ -21,8 +21,7 @@ const formattedDate = date => date.toISOString().split('T')[0];
 const maxEndDate = formattedDate(today);
 const minStartDate = formattedDate(new Date(today.getTime() - TWELVE_WEEKS_IN_MS));
 
-const ERROR_STYLE = { color: 'red', margin: '10px 0', fontWeight: '500' };
-const NO_DATA_STYLE = { color: 'red' };
+const NO_DATA_STYLE = { color: '#ff4d4f' };
 const CHART_MARGIN = { top: 20, right: 20, left: 0, bottom: 30 };
 
 // Isolated Validation Helper to reduce Cognitive Complexity below 15
@@ -164,7 +163,7 @@ function IssueGraph() {
           </div>
         </div>
 
-        {validationError && <p style={ERROR_STYLE}>{validationError}</p>}
+        {validationError && <p className={styles.errorText}>{validationError}</p>}
 
         {issueSummary && (
           <div className={styles.tileRow}>
@@ -190,7 +189,11 @@ function IssueGraph() {
         <div className={styles.graphWrapper}>
           <h2>Issues Created vs. Resolved</h2>
           {loading && <p>Loading...</p>}
-          {error && <p style={NO_DATA_STYLE}>{error}</p>}
+          {error && (
+            <p className={styles.noDataText} style={NO_DATA_STYLE}>
+              {error}
+            </p>
+          )}
           {graphData.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={graphData} margin={CHART_MARGIN}>
@@ -215,7 +218,7 @@ function IssueGraph() {
           ) : (
             !loading &&
             !error && (
-              <p className={styles.noDataMessage} style={NO_DATA_STYLE}>
+              <p className={`${styles.noDataMessage} ${styles.noDataText}`} style={NO_DATA_STYLE}>
                 No issue data found for the selected timeframe.
               </p>
             )
