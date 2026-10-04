@@ -62,7 +62,7 @@ const TeamMemberTask = React.memo(
     const ref = useRef(null);
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     const dispatch = useDispatch();
-    const canSeeFollowUpCheckButton = userRole !== 'Volunteer';
+    const canSeeFollowUpCheckButton = dispatch(hasPermission('viewAndInteractWithTaskDeadlinesBoxes'));
 
     const [isDashboardModalOpen, setIsDashboardModalOpen] = useState(false);
     const manager = 'Manager';
