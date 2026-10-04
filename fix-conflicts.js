@@ -6,7 +6,7 @@ const files = [
   'src/components/BMDashboard/AddMaterial/AddMaterial.module.css',
   'src/components/BMDashboard/Equipment/Update/UpdateEquipment.module.css',
   'src/components/BMDashboard/Issues/issueChart.module.css',
-  'src/components/BMDashboard/Issues/issueCharts.module.css',
+  'src/components/BMDashboard/Issues/IssueCharts.module.css',
   'src/components/BMDashboard/ItemList/ItemListView.module.css',
   'src/components/BMDashboard/Lesson/LessonForm.module.css',
   'src/components/BMDashboard/LessonList/LessonCard.module.css',

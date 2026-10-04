@@ -268,13 +268,13 @@
   font-weight: 500;
 }
 
-@media only screen and (max-width: 1408px) {
+@media only screen and (width <= 1408px) {
   .permissions-management__header {
     flex-direction: column;
   }
 }
 
-@media only screen and (max-width: 1024px) {
+@media only screen and (width <= 1024px) {
   .navbar {
     flex-wrap: wrap;
   }
