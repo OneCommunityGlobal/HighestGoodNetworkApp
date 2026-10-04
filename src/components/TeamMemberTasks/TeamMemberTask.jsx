@@ -62,7 +62,8 @@ const TeamMemberTask = React.memo(
     const ref = useRef(null);
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     const dispatch = useDispatch();
-    const canSeeFollowUpCheckButton = dispatch(hasPermission('viewAndInteractWithTaskDeadlinesBoxes'));
+    const canSeeFollowUpCheckButton =
+      userRole !== 'Volunteer' || dispatch(hasPermission('viewAndInteractWithTaskDeadlinesBoxes'));
 
     const [isDashboardModalOpen, setIsDashboardModalOpen] = useState(false);
     const manager = 'Manager';
@@ -154,8 +155,7 @@ const TeamMemberTask = React.memo(
     const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
     const isAllowedToResolveTasks =
       rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('resolveTask'));
-    const isAllowedToSeeDeadlineCount =
-      dispatch(hasPermission('viewAndInteractWithTaskDeadlinesBoxes'));
+    const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
 
     const canGetWeeklySummaries = dispatch(hasPermission('getWeeklySummaries'));
     const canSeeReports =
