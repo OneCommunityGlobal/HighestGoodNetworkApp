@@ -109,6 +109,7 @@ import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
 import { JobsHitsApplicationsReducer } from './jobAnalytics/JobsHitsApplicationsReducer';
 import { studentTasksReducer } from './studentTasksReducer';
+import { jobExperienceBreakdownReducer } from './jobAnalytics/jobExperienceBreakdownReducer';
 import { toolReplacementReducer } from './toolReplacementReducer';
 
 // Education Dashboard Reducers
@@ -219,6 +220,7 @@ const localReducers = {
 
   // job analytics
   hoursPledged: hoursPledgedReducer,
+  jobExperienceBreakdown: jobExperienceBreakdownReducer,
   jobsHitsApplications: JobsHitsApplicationsReducer,
 
   // student tasks
