@@ -21,6 +21,11 @@ import {
   editWarningDescription,
   reorderWarningDescriptions,
 } from '../../../actions/warnings';
+import {
+  getInfoCollections,
+  updateInfoCollection,
+  deleteInfoCollectionById,
+} from '../../../actions/information';
 
 import styles from '../Warnings.module.css';
 import reorder from '../reorder.svg';
@@ -43,6 +48,7 @@ function WarningTrackerModal({
   const [newWarning, setNewWarning] = useState('');
   const [newWarningDescription, setNewWarningDescription] = useState('');
   const [warningDescriptions, setWarningDescriptions] = useState([]);
+  const [originalWarningDescriptions, setOriginalWarningDescriptions] = useState([]);
   const [toggleDeleteModal, setToggleDeleteModal] = useState(false);
   const [warningToDelete, setWarningToDelete] = useState(null);
   const [warningEdited, setWarningEdited] = useState(false);
@@ -53,6 +59,9 @@ function WarningTrackerModal({
   const [dragIndex, setDragIndex] = useState(null);
   const [initialDragIndex, setInitialDragIndex] = useState(null);
   const [warningsEdited, setWarningsEdited] = useState(false);
+  const [infoCollections, setInfoCollections] = useState({});
+  const [infoCollectionToUpdate, setInfoCollectionToUpdate] = useState(null);
+  const [infoCollectionToDelete, setInfoCollectionToDelete] = useState(null);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const dispatch = useDispatch();
@@ -77,11 +86,31 @@ function WarningTrackerModal({
         return;
       }
       setWarningDescriptions(res);
+      setOriginalWarningDescriptions(res);
+    });
+    dispatch(getInfoCollections()).then(res => {
+      if (res.error) {
+        setError(res.error);
+        return;
+      }
+      setInfoCollections(res);
     });
   };
   useEffect(() => {
     fetchWarningDescriptions();
   }, []);
+
+  useEffect(() => {
+    if (!editedWarning) return;
+    const originalWarning = originalWarningDescriptions.find(
+      warning => warning._id === editedWarning._id,
+    );
+    if (!infoCollections.find(info => info?.infoName === originalWarning.warningTitle + 'Info'))
+      return;
+    setInfoCollectionToUpdate(
+      infoCollections.find(info => info?.infoName === originalWarning.warningTitle + 'Info'),
+    );
+  }, [editedWarning]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -162,6 +191,9 @@ function WarningTrackerModal({
   const handleTriggerDeleteWarningDescription = warning => {
     setToggleDeleteModal(true);
     setWarningToDelete(warning);
+    setInfoCollectionToDelete(
+      infoCollections.find(info => info?.infoName === warning.warningTitle + 'Info'),
+    );
   };
 
   const handleDeactivate = warningId => {
@@ -182,10 +214,16 @@ function WarningTrackerModal({
     });
   };
   const handleDeleteWarningDescription = warningId => {
+    if (infoCollectionToDelete) {
+      dispatch(deleteInfoCollectionById(infoCollectionToDelete._id)).then(res => {
+        if (res.error) return;
+      });
+    }
     dispatch(deleteWarningDescription(warningId)).then(res => {
       if (res.error) {
         setError(res.error);
       }
+      fetchWarningDescriptions();
     });
     setWarningDescriptions(prev => prev.filter(warning => warning._id !== warningId));
   };
@@ -209,10 +247,27 @@ function WarningTrackerModal({
     setWarningEdited(false);
     setWarningsEdited(false);
     setWarningWasEdited(false);
+    setInfoCollectionToUpdate(null);
   };
 
   const handleSaveEditedWarning = () => {
     if (warningEdited) {
+      if (infoCollectionToUpdate) {
+        const newInfo = {
+          infoName: editedWarning.warningTitle + 'Info',
+          infoContent: infoCollectionToUpdate.infoContent,
+          visibility: infoCollectionToUpdate.visibility,
+        };
+        dispatch(updateInfoCollection(infoCollectionToUpdate._id, newInfo)).then(res => {
+          if (res.error) {
+            setError(res.error);
+            setWarningEdited(false);
+            setEditedWarning(null);
+            fetchWarningDescriptions();
+            return;
+          }
+        });
+      }
       dispatch(editWarningDescription(editedWarning)).then(res => {
         if (res.error) {
           setError(res.error);
@@ -260,6 +315,7 @@ function WarningTrackerModal({
       }),
     ).then(res => {
       setNewWarning('');
+      setNewWarningDescription('');
       if (res?.error) {
         setError(res.error);
         return;
@@ -383,7 +439,7 @@ function WarningTrackerModal({
         <ul>
           {warningDescriptions.map((warning, index) => (
             <li
-              className={styles.warnings__descriptions}
+              className={`${styles.warnings__descriptions} ${darkMode ? styles.darkMode : ''}`}
               key={warning._id}
               onDragStart={() => handleDragStart(index, warning?.disabled)}
               onDragOver={e => handleDragOver(e, index, warning?.disabled)}
@@ -513,7 +569,6 @@ function WarningTrackerModal({
               <input
                 type="text"
                 id="warningDescription"
-                required
                 className={styles.warning__input}
                 value={newWarningDescription}
                 onChange={e => setNewWarningDescription(e.target.value)}
@@ -524,6 +579,7 @@ function WarningTrackerModal({
                   color="danger"
                   onClick={() => {
                     setNewWarning(null);
+                    setNewWarningDescription('');
                     setToggeleWarningInput(false);
                   }}
                 >

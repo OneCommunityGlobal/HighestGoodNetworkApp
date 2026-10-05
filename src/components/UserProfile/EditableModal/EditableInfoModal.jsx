@@ -102,7 +102,7 @@ export class EditableInfoModal extends Component {
     const CanEdit = role === 'Owner';
     const contentToDisplay = () => {
       if (content) return content;
-      return initialInfo ? initialInfo : 'Please input information!';
+      return initialInfo ? this.sanitizeText(initialInfo) : 'Please input information!';
     };
     return {
       infoElements: Array.isArray(infoCollections) ? [...infoCollections] : [],
@@ -261,7 +261,7 @@ export class EditableInfoModal extends Component {
     const { infoContent, editableModalOpen, fontSize, CanRead, CanEdit } = this.state;
     const { darkMode } = this.props;
 
-    const sanitizedContent = infoContent;
+    const sanitizedContent = this.sanitizeText(infoContent);
 
     return (
       CanRead && (

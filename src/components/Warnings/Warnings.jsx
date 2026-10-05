@@ -181,7 +181,7 @@ export default function Warning({
     ? usersWarnings.map(warning => (
         <div className={`${styles['warning-item-container']}`} key={warning.title}>
           <div className={`${styles['warning-wrapper']}`}>
-            <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+            <div className={styles.trackerInfoIcons}>
               <p className={`${styles['warning-text']}`}> {warning.title}</p>
               <EditableInfoModal
                 role={userRole}

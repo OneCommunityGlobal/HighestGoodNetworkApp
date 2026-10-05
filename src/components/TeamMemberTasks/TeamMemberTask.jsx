@@ -253,7 +253,7 @@ const TeamMemberTask = React.memo(
     return (
       <tr
         ref={ref}
-        className={`${styles['table-row']} ${darkMode ? 'bg-yinmn-blue' : ''}`}
+        className={`${styles['table-row']} ${darkMode ? `${styles.darkMode} bg-yinmn-blue` : ''}`}
         key={user.personId}
       >
         <td className={styles['remove-padding']} colSpan={6}>
@@ -293,7 +293,7 @@ const TeamMemberTask = React.memo(
             )}
             <Table className={styles['no-bottom-margin']}>
               <tbody>
-                <tr className="remove-child-borders">
+                <tr className={`remove-child-borders ${darkMode ? styles.darkMode : ''}`}>
                   {/* green if member has met committed hours for the week, red if not */}
                   <td colSpan={1} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
                     <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column' }}>
@@ -411,7 +411,10 @@ const TeamMemberTask = React.memo(
                       style={{ margin: '0 auto', width: '100%' }}
                     >
                       <tbody>
-                        <tr style={{ width: '500px' }}>
+                        <tr
+                          className={`${darkMode ? styles.darkMode : ''}`}
+                          style={{ width: '500px' }}
+                        >
                           <td
                             colSpan={2}
                             className={styles['team-member-tasks-user-name']}
@@ -566,7 +569,7 @@ const TeamMemberTask = React.memo(
                                   <tr
                                     key={`${task._id}`}
                                     className={`${styles['task-break']} ${
-                                      darkMode ? 'bg-yinmn-blue' : ''
+                                      darkMode ? `${styles.darkMode} bg-yinmn-blue` : ''
                                     }`}
                                   >
                                     <td

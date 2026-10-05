@@ -326,6 +326,10 @@
   position: relative;
 }
 
+tr.darkMode:hover {
+  background: #2f4157 !important;
+}
+
 .hidden {
   visibility: hidden;
 }
