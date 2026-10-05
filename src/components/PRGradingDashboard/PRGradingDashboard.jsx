@@ -1,9 +1,7 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { fetchPRGradingConfig } from '../../actions/prGradingActions';
 import AddReviewerModal from './AddReviewerModal';
 import ConfirmationModal from './ConfirmationModal';
 import GradingTable from './GradingTable';
@@ -12,6 +10,7 @@ import styles from './PRGradingDashboard.module.css';
 import { SelectionProvider } from './SelectionContext';
 import SummaryList from './SummaryList';
 
+const TEAM_CODE = 'TeamA';
 const TEAM_NAME = 'Team Alpha';
 
 // Mock data for fallback
@@ -38,47 +37,25 @@ const mockData = [
 
 function PRGradingDashboard() {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const dispatch = useDispatch();
   const [gradings, setGradings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [openAddModal, setOpenAddModal] = useState(null);
-  const [pendingPR, setPendingPR] = useState(null);
+  const [openAddModal, setOpenAddModal] = useState(null); // reviewer name or null
+  const [pendingPR, setPendingPR] = useState(null); // { reviewer, prNumbers, grade } or null
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showAddReviewerModal, setShowAddReviewerModal] = useState(false);
   const [selectedMockWeek, setSelectedMockWeek] = useState('Current Week');
-  const [selectedTeamName, setSelectedTeamName] = useState(null);
-  const [teamOptions, setTeamOptions] = useState([]);
 
-  // Load team list from config, then fetch grading data for the first team
+  // Fetch data on mount
   useEffect(() => {
-    const initDashboard = async () => {
-      try {
-        const result = await dispatch(fetchPRGradingConfig());
-        if (result.success && Array.isArray(result.data) && result.data.length > 0) {
-          setTeamOptions(result.data);
-          const firstTeam = result.data[0].teamName;
-          setSelectedTeamName(firstTeam);
-          await fetchGradings(firstTeam);
-        } else {
-          setGradings(mockData);
-          toast.info('Using mock data - no teams configured');
-          setLoading(false);
-        }
-      } catch {
-        setGradings(mockData);
-        toast.info('Using mock data - API connection failed');
-        setLoading(false);
-      }
-    };
-    initDashboard();
-  }, [dispatch]);
+    fetchGradings();
+  }, []);
 
-  const fetchGradings = async teamName => {
+  const fetchGradings = async () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${process.env.REACT_APP_APIENDPOINT}/weekly-grading?team=${encodeURIComponent(teamName)}`,
+        `${process.env.REACT_APP_APIENDPOINT}/weekly-grading?team=${TEAM_CODE}`,
       );
       if (response.data && Array.isArray(response.data)) {
         // Mark all existing PRs as not new
@@ -218,7 +195,7 @@ function PRGradingDashboard() {
 
       // Remove isNew flag before sending to API
       const payload = {
-        teamName: selectedTeamName,
+        teamCode: TEAM_CODE,
         date: currentDate,
         gradings: gradings.map(g => ({
           reviewer: g.reviewer,
@@ -273,7 +250,7 @@ function PRGradingDashboard() {
         <div className={styles.header}>
           <div className={styles.headerContent}>
             <div>
-              <h1 className={styles.title}>{selectedTeamName ?? 'PR Grading Dashboard'}</h1>
+              <h1 className={styles.title}>{TEAM_NAME}</h1>
               <p className={styles.date}>{currentDate}</p>
             </div>
             <div className={styles.headerControls}>

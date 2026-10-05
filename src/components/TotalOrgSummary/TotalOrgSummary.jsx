@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { connect } from 'react-redux';
-import { normalizeVolunteerStats } from '../../utils/totalOrgSummary';
 import {
   Alert,
   Button,
@@ -291,7 +290,7 @@ async function fetchOrgStats(props, selectedComparison, currentFromDate, current
 function getMentorDonutTotal(mentorNumberStats) {
   if (!mentorNumberStats) return null;
   const { donutChartData, activeMentors, newMentors, deactivatedMentors } = mentorNumberStats;
-  if (donutChartData && donutChartData.existingActive !== undefined) {
+  if (donutChartData?.existingActive !== undefined) {
     return (
       (donutChartData.existingActive?.count || 0) +
       (donutChartData.newActive?.count || 0) +
