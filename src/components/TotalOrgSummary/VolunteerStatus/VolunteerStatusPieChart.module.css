@@ -7,7 +7,7 @@
   width: 100%;
 }
 
-.volunteer-status-chart {
+.volunteerStatusChart {
   position: relative;
   width: min(320px, 100%);
   max-width: 320px;
@@ -18,7 +18,7 @@
   container-type: inline-size;
 }
 
-.volunteer-status-center {
+.volunteerStatusCenter {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -27,7 +27,7 @@
   font-size: 14px;
 }
 
-.volunteer-status-center .volunteer-status-heading {
+.volunteerStatusCenter .volunteerStatusHeading {
   color: #828282;
   text-align: center;
   line-height: 1.2;
@@ -44,7 +44,7 @@
   font-size: clamp(0.95rem, 5.71cqw, 1.2rem);
 }
 
-.volunteer-status-center .volunteer-count {
+.volunteerStatusCenter .volunteerCount {
   color: #6c6c6c;
   font-weight: bolder;
 
@@ -58,15 +58,15 @@
   font-size: clamp(1.35rem, 8.36cqw, 1.8rem);
 }
 
-.volunteer-status-center > p {
+.volunteerStatusCenter > p {
   font-weight: bold;
 }
 
-.volunteer-status-center div {
+.volunteerStatusCenter div {
   margin: 2px 0;
 }
 
-.volunteer-status-labels {
+.volunteerStatusLabels {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -81,7 +81,7 @@
   box-sizing: border-box;
 }
 
-.volunteer-status-label {
+.volunteerStatusLabel {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -93,7 +93,7 @@
   flex-shrink: 0;
 }
 
-.volunteer-status-color {
+.volunteerStatusColor {
   display: inline-block;
   width: 12px;
   height: 12px;
@@ -101,11 +101,11 @@
   border-radius: 2px;
 }
 
-:global(.bg-oxford-blue) .volunteerStatusHeading {
+:global(.bgOxfordBlue) .volunteerStatusHeading {
   color: #f1f5ff;
 }
 
-:global(.bg-oxford-blue) .volunteerCount {
+:global(.bgOxfordBlue) .volunteerCount {
   color: #fff;
 }
 
