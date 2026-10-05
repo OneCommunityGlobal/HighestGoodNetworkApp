@@ -433,6 +433,7 @@ export const ENDPOINTS = {
   BM_INJURY_SEVERITIES: `${APIEndpoint}/bm/injuries/injury-severities`,
   BM_INJURY_TYPES: `${APIEndpoint}/bm/injuries/injury-types`,
   BM_INJURY_PROJECTS: `${APIEndpoint}/bm/injuries/project-injury`,
+  BM_INJURY_TREND: `${APIEndpoint}/bm/injuries/trend-data`,
   BM_INJURY_OVER_TIME: `${APIEndpoint}/bm/injuries/over-time`,
   BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
   BM_INJURY_SEVERITY: `${APIEndpoint}/bm/injuries/severity-by-project`,
@@ -473,6 +474,9 @@ export const ENDPOINTS = {
   BM_TAGS: `${APIEndpoint}/bm/tags`,
   BM_TAG_ADD: `${APIEndpoint}/bm/tags`,
   BM_TAGS_DELETE: `${APIEndpoint}/bm/tags`,
+
+  BM_LONGEST_OPEN_ISSUES: `${APIEndpoint}/bm/issues/longest-open`,
+  BM_MOST_EXPENSIVE_ISSUES: `${APIEndpoint}/bm/issues/most-expensive`,
 
   BM_ORGS_WITH_LOCATION: `${APIEndpoint}/bm/orgLocation`,
   ORG_DETAILS: projectId => `${APIEndpoint}/bm/orgLocation/${projectId}`,
@@ -680,7 +684,8 @@ export const ENDPOINTS = {
     return `${APIEndpoint}/job-analytics-router${qs}`;
   },
 
-  JOB_ANALYTICS_ROLES: `${APIEndpoint}/job-analytics-router/roles`,
+  JOB_ANALYTICS_ROLES: `${APIEndpoint.replace('/api', '')}/job-analytics/roles`,
+  JOB_ANALYTICS_EXPERIENCE_BREAKDOWN: `${APIEndpoint}/applicant-analytics/experience-breakdown`,
 
   // pr dashboard endpoints
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
@@ -699,6 +704,7 @@ export const ENDPOINTS = {
 
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
+  POPULAR_PRS: duration => `${APIEndpoint}/analytics/popular-prs?duration=${duration}`,
   GITHUB_REVIEW_SUMMARY: (duration, sort = 'desc', team) => {
     const params = new URLSearchParams({
       duration,
