@@ -3,8 +3,43 @@
   background-color: #f6f6f3;
 }
 
+.bioToggleContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.bioToggleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  justify-content: center;
+}
+
 .bioToggle {
-  display: inline-block;
+  display: inline-flex;
+  margin: 0;
+  
+  button {
+    margin-top: 0;
+  }
+}
+
+.toggleLabel {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+/* public/index.css forces white text via "body.dark-mode *", which is unreadable on the
+   yellow bio bar; the body prefix is needed to out-rank that selector */
+:global(body.dark-mode) .bioHighlightDark,
+:global(body.dark-mode) .bioHighlightDark *,
+:global(body.bm-dashboard-dark) .bioHighlightDark,
+:global(body.bm-dashboard-dark) .bioHighlightDark * {
+  color: #000000 !important;
 }
 
 .nameInfo {

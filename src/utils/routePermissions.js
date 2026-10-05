@@ -61,9 +61,12 @@ const RoutePermissions = {
   ],
   announcements: [permissions.sendEmails],
   faq: [''],
+
   faqManagement: [permissions.manageFAQs],
   meetings: [permissions.scheduleMeetings],
   accessHgnSkillsDashboard: [permissions.accessHgnSkillsDashboard],
+  accessPMResourceDashboard: [permissions.accessPMResourceDashboard],
+
   jobFormManagement: [
     permissions.manageJobForms,
     permissions.createFormQuestions,

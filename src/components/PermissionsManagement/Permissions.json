@@ -325,6 +325,11 @@
                 "label": "View and Interact with Task \"X\" on Dashboards",
                 "key": "canDeleteTask",
                 "description": "Gives the user permission to DELETE tasks from the Management Dashboard showing all their team members."
+              },
+              {
+                "label": "View and Interact with Task Deadlines Boxes",
+                "key": "viewAndInteractWithTaskDeadlinesBoxes",
+                "description": "Gives the user permission to view and interact with task deadline tracking boxes on the Dashboard Tasks tab."
               }
             ]
           }
@@ -515,6 +520,11 @@
         "label": "Access HGN Skills Dashboard",
         "key": "accessHgnSkillsDashboard",
         "description": "Lets the user access the HGN skills dashboard, which provides insights into user skills and competencies."
+      },
+      {
+        "label": "Access PM Resource Dashboard",
+        "key": "accessPMResourceDashboard",
+        "description": "Lets the user access the PM Resource Dashboard for resource requests and educator certifications."
       },
       {
         "label": "Blue Square Email Management",
