@@ -56,6 +56,9 @@ function IssuesCharts({ bmProjects = [] }) {
         borderColor:
           graphType === 'Longest Open' ? 'rgba(54, 162, 235, 1)' : 'rgba(255, 99, 132, 1)',
         borderWidth: 1,
+        barPercentage: 0.6,
+        categoryPercentage: 0.8,
+        maxBarThickness: 32,
       },
     ],
   };
@@ -64,16 +67,32 @@ function IssuesCharts({ bmProjects = [] }) {
     const vals = chartData.map(d => (graphType === 'Longest Open' ? d.daysOpen : d.totalCost));
     const dataMax = vals.length > 0 ? Math.max(...vals) : 600;
     const xMax = Math.ceil((dataMax + 50) / 250) * 250;
+    const gridColor = darkMode ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.08)';
+    const axisBorderColor = darkMode ? 'rgba(255, 255, 255, 0.35)' : 'rgba(0, 0, 0, 0.25)';
 
     return {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
+      resizeDelay: 100,
       layout: {
-        padding: { right: 80, left: 10 },
+        padding: ({ chart }) => ({ right: chart.width < 420 ? 56 : 80, left: 4 }),
       },
       plugins: {
         legend: { display: false },
+        tooltip: {
+          backgroundColor: darkMode ? '#1e2d42' : '#ffffff',
+          titleColor: darkMode ? '#ffffff' : '#111111',
+          bodyColor: darkMode ? '#e0e6f0' : '#333333',
+          borderColor: darkMode ? '#4a5a72' : '#ced4da',
+          borderWidth: 1,
+          callbacks: {
+            title: items => {
+              const issue = chartData[items[0]?.dataIndex];
+              return issue ? issue.title || String(issue.issueId) : '';
+            },
+          },
+        },
         datalabels: {
           anchor: 'end',
           align: 'right',
@@ -102,10 +121,12 @@ function IssuesCharts({ bmProjects = [] }) {
             color: darkMode ? '#fff' : '#000',
           },
           ticks: { stepSize: 250, color: darkMode ? '#ccc' : '#333' },
+          grid: { color: gridColor },
+          border: { color: axisBorderColor },
         },
         y: {
           afterFit: scale => {
-            scale.width = 200;
+            scale.width = Math.round(Math.min(200, Math.max(90, scale.chart.width * 0.32)));
           },
           title: {
             display: true,
@@ -117,7 +138,14 @@ function IssuesCharts({ bmProjects = [] }) {
             color: darkMode ? '#ccc' : '#333',
             maxRotation: 0,
             autoSkip: false,
+            callback(value) {
+              const label = this.getLabelForValue(value);
+              const maxChars = Math.max(10, Math.floor((this.chart.width * 0.32) / 7.5));
+              return label.length > maxChars ? `${label.slice(0, maxChars - 1)}…` : label;
+            },
           },
+          grid: { color: gridColor },
+          border: { color: axisBorderColor },
         },
       },
       elements: {
@@ -129,73 +157,77 @@ function IssuesCharts({ bmProjects = [] }) {
   const projectOptions = bmProjects.map(p => ({ value: p._id, label: p.name }));
   const selectedProjectOptions = projectOptions.filter(opt => selectedProjects.includes(opt.value));
 
-  const darkSelectStyles = darkMode
-    ? {
-        control: base => ({
-          ...base,
-          background: '#2b3e59',
-          borderColor: '#4a5a72',
-          color: '#fff',
-        }),
-        menu: base => ({ ...base, background: '#2b3e59' }),
-        option: (base, { isFocused }) => ({
-          ...base,
-          background: isFocused ? '#4a5a72' : '#2b3e59',
-          color: '#fff',
-        }),
-        multiValue: base => ({ ...base, background: '#4a5a72' }),
-        multiValueLabel: base => ({ ...base, color: '#fff' }),
-        singleValue: base => ({ ...base, color: '#fff' }),
-        input: base => ({ ...base, color: '#fff' }),
-        placeholder: base => ({ ...base, color: '#aaa' }),
-      }
-    : {};
+  const selectStyles = {
+    control: base => ({
+      ...base,
+      minHeight: 38,
+      ...(darkMode && { background: '#2b3e59', borderColor: '#4a5a72', color: '#fff' }),
+    }),
+    menu: base => ({ ...base, zIndex: 5, ...(darkMode && { background: '#2b3e59' }) }),
+    option: (base, { isFocused }) =>
+      darkMode ? { ...base, background: isFocused ? '#4a5a72' : '#2b3e59', color: '#fff' } : base,
+    multiValue: base => (darkMode ? { ...base, background: '#4a5a72' } : base),
+    multiValueLabel: base => (darkMode ? { ...base, color: '#fff' } : base),
+    singleValue: base => (darkMode ? { ...base, color: '#fff' } : base),
+    input: base => (darkMode ? { ...base, color: '#fff' } : base),
+    placeholder: base => ({ ...base, color: darkMode ? '#cfd7e3' : '#6c757d' }),
+  };
+
+  // Height grows with the number of bars; width always follows the card.
+  const chartHeight = Math.max(240, chartData.length * 56 + 110);
 
   return (
     <div className={darkMode ? styles.dark : ''}>
-      <div className={styles.container}>
-        <div className={styles.dateInputs}>
+      <div className={styles.filtersRow}>
+        <div className={styles.dateRangeGroup}>
           <DatePicker
             selected={dateRange.start}
             onChange={value => setDateRange(prev => ({ ...prev, start: value }))}
             placeholderText="Start date"
+            ariaLabelledBy="issues-start-date"
             calendarClassName={darkMode ? styles.darkCalendar : styles.lightCalendar}
-            className={darkMode ? styles.dateDark : styles.dateInput}
+            className={`${darkMode ? styles.dateDark : styles.dateInput} ${styles.filterControl}`}
             isClearable
           />
-          <span>to</span>
+          <span className={styles.dateSeparator}>to</span>
           <DatePicker
             selected={dateRange.end}
             onChange={value => setDateRange(prev => ({ ...prev, end: value }))}
             placeholderText="End date"
+            ariaLabelledBy="issues-end-date"
             calendarClassName={darkMode ? styles.darkCalendar : styles.lightCalendar}
-            className={darkMode ? styles.dateDark : styles.dateInput}
+            className={`${darkMode ? styles.dateDark : styles.dateInput} ${styles.filterControl}`}
             isClearable
           />
         </div>
-        <div className={styles.multiSelectWrapper}>
+        <div className={styles.projectsFilter}>
           <Select
             isMulti
             options={projectOptions}
             value={selectedProjectOptions}
             onChange={selected => setSelectedProjects(selected.map(s => s.value))}
             placeholder="All Projects"
-            styles={darkSelectStyles}
+            aria-label="Filter by project"
+            styles={selectStyles}
           />
         </div>
-        <div className={styles.inputGroup}>
+        <div className={styles.typeFilter}>
           <select
             id="type"
+            aria-label="Chart type"
             value={graphType}
             onChange={e => setGraphType(e.target.value)}
-            className={darkMode ? styles.selectDark : styles.select}
+            className={`${darkMode ? styles.selectDark : styles.select} ${styles.filterControl}`}
           >
             <option value="Longest Open">Longest Open</option>
             <option value="Most Expensive">Most Expensive</option>
           </select>
         </div>
       </div>
-      <div className={styles.chartContainer}>
+      <div
+        className={styles.issuesChartArea}
+        style={{ height: chartData.length > 0 ? chartHeight : 'auto' }}
+      >
         {chartData.length > 0 ? (
           <Bar
             key={`${graphType}-${selectedProjects.join(',')}-${dateRange.start}-${dateRange.end}`}

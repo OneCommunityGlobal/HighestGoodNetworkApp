@@ -549,3 +549,93 @@ Issue Charts Module CSS
 :global(.darkCalendar) :global(.react-datepicker__triangle) {
   display: none !important;
 }
+
+/* ----- Issue Tracking card (Weekly Project Summary) ----- */
+.filtersRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1rem 0.5rem;
+}
+
+.dateRangeGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.dateRangeGroup :global(.react-datepicker-wrapper) {
+  width: 9.5rem;
+}
+
+.dateRangeGroup :global(.react-datepicker-wrapper) input {
+  width: 100%;
+}
+
+.dateSeparator {
+  white-space: nowrap;
+}
+
+.projectsFilter {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.typeFilter {
+  flex: 0 0 auto;
+}
+
+.filterControl {
+  height: 38px;
+  font-size: 0.875rem;
+  box-sizing: border-box;
+}
+
+.issuesChartArea {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 0.5rem 1rem 1rem;
+}
+
+.dark .noData {
+  color: #cfd7e3;
+}
+
+@media (width <= 576px) {
+  .dateRangeGroup {
+    flex: 1 1 100%;
+  }
+
+  .dateRangeGroup :global(.react-datepicker-wrapper) {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+  }
+
+  .projectsFilter,
+  .typeFilter {
+    flex: 1 1 100%;
+  }
+
+  .typeFilter select {
+    width: 100%;
+  }
+}
+
+/* Dark mode: readable date placeholders + match the type select to the other controls */
+.dark .dateDark::placeholder {
+  color: #cfd7e3 !important;
+  opacity: 1;
+}
+
+.dark .selectDark {
+  background-color: #2b3e59 !important;
+  border-color: #4a5a72 !important;
+  color: #fff !important;
+}
