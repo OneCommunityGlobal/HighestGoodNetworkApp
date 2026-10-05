@@ -128,6 +128,14 @@ function IssuesCharts({ bmProjects = [] }) {
           afterFit: scale => {
             scale.width = Math.round(Math.min(200, Math.max(90, scale.chart.width * 0.32)));
           },
+          // Shorten y-axis labels to fit the label column (full title is in the tooltip).
+          afterTickToLabelConversion: scale => {
+            const maxChars = Math.max(10, Math.floor((scale.chart.width * 0.32) / 7.5));
+            scale.ticks.forEach(tick => {
+              const label = String(tick.label ?? '');
+              tick.label = label.length > maxChars ? `${label.slice(0, maxChars - 1)}…` : label;
+            });
+          },
           title: {
             display: true,
             text: 'Issue Title',
@@ -138,11 +146,6 @@ function IssuesCharts({ bmProjects = [] }) {
             color: darkMode ? '#ccc' : '#333',
             maxRotation: 0,
             autoSkip: false,
-            callback(value) {
-              const label = this.getLabelForValue(value);
-              const maxChars = Math.max(10, Math.floor((this.chart.width * 0.32) / 7.5));
-              return label.length > maxChars ? `${label.slice(0, maxChars - 1)}…` : label;
-            },
           },
           grid: { color: gridColor },
           border: { color: axisBorderColor },
