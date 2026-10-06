@@ -1,268 +1,204 @@
-import React from 'react';
-import * as d3 from 'd3/dist/d3.min';
+import React, { useMemo, useState } from 'react';
 import { Button } from 'react-bootstrap';
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import { boxStyle, boxStyleDark } from '../../styles';
 
-function TimeEntriesViz({ timeEntries, fromDate, toDate, darkMode }) {
-  const [show, setShow] = React.useState(false);
+const TIME_ENTRY_FORMAT = new Intl.DateTimeFormat('en-US', {
+  weekday: 'long',
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+});
 
-  React.useEffect(() => {
-    // eslint-disable-next-line no-use-before-define
-    generateGraph();
-  }, [show, fromDate, toDate]);
+const DATE_LABEL_FORMAT = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
 
-  function displayGraph(logs, maxHoursCount, totalHours) {
-    if (!show) {
-      d3.selectAll('#tlplot > *').remove();
-    } else {
-      d3.selectAll('#tlplot > *').remove();
-      const margin = { top: 30, right: 20, bottom: 30, left: 20 };
-      const containerWidth = '1000';
-      // Adjusted width based on the available space
-      const width = Math.min(containerWidth - margin.left - margin.right, 1000);
+function parseDate(key) {
+  if (!key) return new Date(Number.NaN);
+  const d = new Date(key);
+  if (!Number.isNaN(d.getTime())) return d;
+  // Best-effort parse for 'YYYY-MM-DD' style strings.
+  return new Date(`${key}T00:00:00`);
+}
 
-      const height = 400 - margin.top - margin.bottom;
+function aggregateTimeEntries(timeEntries, fromDate, toDate) {
+  const dict = {};
+  let maxHoursCount = 0;
+  let totalHours = 0;
 
-      const tooltipEl = function generateTooltipElement(d) {
-        return (
-          `${'<div class="tip__container">' +
-            '<div class="close">' +
-            '<button>&times</button>' +
-            '</div>' +
-            '<div>' +
-            'Exact date: '}${d3.timeFormat('%A, %B %e, %Y')(d.date)}<br>` +
-          `Hours logged on this day: ${d.count.toFixed(2)}</div>` +
-          `</div>`
-        );
-      };
+  if (timeEntries && Array.isArray(timeEntries.period)) {
+    for (let i = 0; i < timeEntries.period.length; i += 1) {
+      const entry = timeEntries.period[i];
+      const hours = parseInt(entry.hours, 10) || 0;
+      const minutes = entry.minutes === '0' ? 0 : parseInt(entry.minutes, 10) || 0;
+      const convertedHours = hours + minutes / 60;
+      totalHours += convertedHours;
 
-      const legendEl = function generateLegendElement(innerTotalHours) {
-        return (
-          `${'<div class="lengendSubContainer">' +
-            '<div class="totalCount">' +
-            'Total Hours: '}${innerTotalHours.toFixed(2)}</div>` +
-          `<div class="entLabelsOff">` +
-          `<button>Labels Off</button>` +
-          `</div>` +
-          `<div class="entCountLabelsOn">` +
-          `<button>Show Daily Hours</button>` +
-          `</div>` +
-          `<div class="entDateLabelsOn">` +
-          `<button>Show Dates</button>` +
-          `</div>` +
-          `</div>`
-        );
-      };
-
-      const svg = d3
-        .select('#tlplot')
-        .append('svg')
-        .attr('width', '100%')
-        .attr('height', height + margin.top + margin.bottom)
-        .attr('viewBox', `0 0 ${containerWidth} ${height + margin.top + margin.bottom}`)
-        .append('g')
-        .attr('transform', `translate(${margin.left},${margin.top})`);
-
-      const x = d3
-        .scaleTime()
-        .domain(d3.extent(logs, d => d.date))
-        .range([0, width]);
-      svg
-        .append('g')
-        .attr('transform', `translate(0, ${height})`)
-        .call(d3.axisBottom(x));
-
-      const y = d3
-        .scaleLinear()
-        .domain([0, maxHoursCount + 2])
-        .range([height, 0]);
-      svg.append('g').call(d3.axisLeft(y));
-
-      svg
-        .append('path')
-        .datum(logs)
-        .attr('fill', 'none')
-        .attr('stroke', 'black')
-        .attr('stroke-width', 1.5)
-        .attr(
-          'd',
-          d3
-            .line()
-            .x(d => x(d.date))
-            .y(d => y(d.count)),
-        );
-
-      svg
-        .append('g')
-        .selectAll('dot')
-        .data(logs)
-        .join('circle')
-        .attr('class', 'myCircle')
-        .attr('cx', d => x(d.date))
-        .attr('cy', d => y(d.count))
-        .attr('r', 3)
-        .attr('stroke', '#69b3a2')
-        .attr('stroke-width', 3)
-        .attr('fill', 'white')
-        .on('click', function handleEvent(event, d) {
-          const prevTooltip = d3.select(`.ent${d.id}`);
-
-          if (prevTooltip.empty()) {
-            const Tooltip = d3
-              .select('#tlplot')
-              .append('div')
-              .style('opacity', 0)
-              .attr('class', `tooltip ent${d.id}`)
-              .style('background-color', 'white')
-              .style('border', 'solid')
-              .style('border-width', '2px')
-              .style('border-radius', '5px')
-              .style('padding', '5px')
-              .style('z-index', 1000);
-
-            Tooltip.html(tooltipEl(d))
-              .style('left', `${event.pageX + 10}px`)
-              .style('top', `${event.pageY}px`)
-              .style('opacity', 1);
-
-            Tooltip.select('.close').on('click', function closeTooltip() {
-              Tooltip.remove();
-            });
-          }
-        });
-
-      svg
-        .append('g')
-        .selectAll('text')
-        .data(logs)
-        .join('text')
-        .attr('class', 'entCountLabel')
-        .attr('x', d => x(d.date) + 10)
-        .attr('y', d => y(d.count) - 5)
-        .attr('fill', 'black')
-        .style('z-index', 999)
-        .style('font-weight', 700)
-        .style('display', 'none')
-        .text(d => d.count.toFixed(2));
-
-      svg
-        .append('g')
-        .selectAll('text')
-        .data(logs)
-        .join('text')
-        .attr('class', 'entDateLabel')
-        .attr('x', d => x(d.date) + 10)
-        .attr('y', d => y(d.count) - 5)
-        .attr('fill', 'black')
-        .style('z-index', 999)
-        .style('font-weight', 700)
-        .style('display', 'none')
-        .text(d => d3.timeFormat('%m/%d/%Y')(d.date));
-
-      const legend = d3
-        .select('#tlplot')
-        .append('div')
-        .attr('class', 'legendContainer');
-      legend.html(legendEl(totalHours));
-
-      legend.select('.entLabelsOff').on('click', function handleEntLabelsOffClick() {
-        d3.selectAll('.entCountLabel').style('display', 'none');
-        d3.selectAll('.entDateLabel').style('display', 'none');
-      });
-
-      legend.select('.entCountLabelsOn').on('click', function handleEntCountLabelsOnClick() {
-        d3.selectAll('.entCountLabel').style('display', 'block');
-        d3.selectAll('.entDateLabel').style('display', 'none');
-      });
-
-      legend.select('.entDateLabelsOn').on('click', function handleEntDateLabelsOnClick() {
-        d3.selectAll('.entDateLabel').style('display', 'block');
-        d3.selectAll('.entCountLabel').style('display', 'none');
-      });
+      if (entry.dateOfWork in dict) {
+        dict[entry.dateOfWork].time += convertedHours;
+        dict[entry.dateOfWork].des.push(entry.notes || '');
+      } else {
+        dict[entry.dateOfWork] = {
+          time: convertedHours,
+          isTangible: [[entry.isTangible, convertedHours]],
+          des: [entry.notes || ''],
+        };
+      }
     }
   }
 
-  const generateGraph = () => {
-    const timeEntriesDict = {};
-    const timeEntryvalues = [];
-    let maxHoursCount = 0;
-    let totalHours = 0;
+  const fromDateObj = fromDate ? new Date(fromDate) : null;
+  const toDateObj = toDate ? new Date(toDate) : null;
+  const hasRange =
+    fromDateObj &&
+    toDateObj &&
+    !Number.isNaN(fromDateObj.getTime()) &&
+    !Number.isNaN(toDateObj.getTime());
 
-    // aggregate entries
-    if (timeEntries.period) {
-      for (let i = 0; i < timeEntries.period.length; i += 1) {
-        const convertedHours =
-          parseInt(timeEntries.period[i].hours, 10) +
-          (timeEntries.period[i].minutes === '0'
-            ? 0
-            : parseInt(timeEntries.period[i].minutes, 10) / 60);
-        totalHours += convertedHours;
-        if (timeEntries.period[i].dateOfWork in timeEntriesDict) {
-          timeEntriesDict[timeEntries.period[i].dateOfWork].time += convertedHours;
-          timeEntriesDict[timeEntries.period[i].dateOfWork].des.push(timeEntries.period[i].notes);
-        } else {
-          timeEntriesDict[timeEntries.period[i].dateOfWork] = {
-            time: convertedHours,
-            isTangible: [[timeEntries.period[i].isTangible, convertedHours]],
-            des: [timeEntries.period[i].notes],
-          };
-        }
-      }
+  const values = [];
+  let counter = 0;
+  Object.keys(dict).forEach(key => {
+    if (hasRange) {
+      const keyDate = new Date(key);
+      if (Number.isNaN(keyDate.getTime())) return;
+      if (keyDate < fromDateObj || keyDate > toDateObj) return;
     }
-
-    // filter time entries by date
-    if (fromDate === '' || toDate === '') {
-      // if cond not needed
-      Object.keys(timeEntriesDict).forEach(key => {
-        timeEntryvalues.push({
-          date: d3.timeParse('%Y-%m-%d')(key),
-          count: timeEntriesDict[key].time,
-          des: timeEntriesDict[key].des,
-          isTangible: timeEntriesDict[key].isTangible,
-          type: 'Entry',
-        });
-        if (timeEntriesDict[key].time > maxHoursCount) {
-          maxHoursCount = timeEntriesDict[key].time;
-        }
-      });
-    } else {
-      let counter = 0;
-      Object.keys(timeEntriesDict).forEach(currentKey => {
-        if (
-          Date.parse(fromDate) <= Date.parse(currentKey.toString()) &&
-          Date.parse(currentKey.toString()) <= Date.parse(toDate)
-        ) {
-          timeEntryvalues.push({
-            id: counter,
-            date: d3.timeParse('%Y-%m-%d')(currentKey.toString()),
-            count: timeEntriesDict[currentKey].time,
-            des: timeEntriesDict[currentKey].des,
-            isTangible: timeEntriesDict[currentKey].isTangible,
-            type: 'Entry',
-          });
-          if (timeEntriesDict[currentKey].time > maxHoursCount) {
-            maxHoursCount = timeEntriesDict[currentKey].time;
-          }
-          counter += 1;
-        }
-      });
-    }
-
-    timeEntryvalues.sort(function sortDates(a, b) {
-      return new Date(b.date) - new Date(a.date);
+    const date = parseDate(key);
+    if (Number.isNaN(date.getTime())) return;
+    values.push({
+      id: counter,
+      date,
+      ts: date.getTime(),
+      count: dict[key].time,
+      des: dict[key].des,
+      isTangible: dict[key].isTangible,
+      type: 'Entry',
     });
+    if (dict[key].time > maxHoursCount) maxHoursCount = dict[key].time;
+    counter += 1;
+  });
 
-    displayGraph(timeEntryvalues, maxHoursCount, totalHours);
-  };
+  values.sort((a, b) => a.date - b.date);
+  return { values, maxHoursCount, totalHours };
+}
+
+function TimeEntriesViz({ timeEntries, fromDate, toDate, darkMode }) {
+  const [show, setShow] = useState(false);
+
+  const { values, maxHoursCount, totalHours } = useMemo(
+    () => aggregateTimeEntries(timeEntries, fromDate, toDate),
+    [timeEntries, fromDate, toDate],
+  );
+
+  const textColor = darkMode ? '#f9fafb' : '#1f1f1f';
+  const gridColor = darkMode ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)';
 
   return (
     <div>
-      <Button onClick={() => setShow(!show)} aria-expanded={show} style={darkMode ? boxStyleDark : boxStyle}>
+      <Button
+        onClick={() => setShow(!show)}
+        aria-expanded={show}
+        style={darkMode ? boxStyleDark : boxStyle}
+      >
         {show ? 'Hide Time Entries Graph' : 'Show Time Entries Graph'}
       </Button>
-      <div id="tlplot" className={`${darkMode ? 'bg-light mt-2' : ''}`}/>
+
+      {show && (values.length === 0 ? (
+        <div
+          className={darkMode ? 'mt-2' : ''}
+          data-testid="time-entries-empty-state"
+          style={{ color: textColor, width: '100%', padding: '1rem 0' }}
+        >
+          No time entries to display. 
+        </div>
+      ) : (
+        <div
+          className={darkMode ? 'mt-2' : ''}
+          data-testid="time-entries-chart"
+          style={{ width: '100%' }}
+        >
+          <ResponsiveContainer width="100%" height={400}>
+            <LineChart
+              data={values}
+              margin={{ top: 30, right: 20, bottom: 30, left: 20 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+              <XAxis
+                dataKey="ts"
+                type="number"
+                scale="time"
+                domain={['dataMin', 'dataMax']}
+                tick={{ fill: textColor }}
+                axisLine={{ stroke: textColor }}
+                tickLine={{ stroke: textColor }}
+                tickFormatter={ts => {
+                  const d = new Date(ts);
+                  return Number.isNaN(d.getTime()) ? '' : DATE_LABEL_FORMAT.format(d);
+                }}
+              />
+              <YAxis
+                domain={[0, maxHoursCount + 2]}
+                tick={{ fill: textColor }}
+                axisLine={{ stroke: textColor }}
+                tickLine={{ stroke: textColor }}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: darkMode ? '#1b2a41' : '#ffffff',
+                  color: textColor,
+                  border: `1px solid ${textColor}`,
+                  borderRadius: 5,
+                }}
+                labelFormatter={ts => {
+                  const d = new Date(ts);
+                  return Number.isNaN(d.getTime()) ? '' : TIME_ENTRY_FORMAT.format(d);
+                }}
+                formatter={value => [`${Number(value).toFixed(2)} hrs`, 'Hours logged']}
+              />
+              <Line
+                type="monotone"
+                dataKey="count"
+                stroke={darkMode ? '#f9fafb' : '#000000'}
+                strokeWidth={1.5}
+                dot={{ r: 3, stroke: '#69b3a2', strokeWidth: 3, fill: '#ffffff' }}
+                activeDot={{ r: 5 }}
+                isAnimationActive={false}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+
+          <div
+            className="time-entries-legend"
+            style={{
+              color: textColor,
+              marginTop: 8,
+              fontWeight: 700,
+            }}
+          >
+            Total Hours: {totalHours.toFixed(2)}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
+
+TimeEntriesViz.defaultProps = {
+  timeEntries: { period: [] },
+  fromDate: '',
+  toDate: '',
+  darkMode: false,
+};
 
 export default TimeEntriesViz;

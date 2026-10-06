@@ -1,65 +1,44 @@
 /* eslint-disable import/prefer-default-export */
 import { useSelector } from 'react-redux';
-import { PieChart } from '../../../common/PieChart';
-import { UserProjectPieChart } from '../../../common/PieChart/ProjectPieChart';
+import UserProjectD3PieChart from '../../../common/PieChart/ProjectPieChart';
+import { FiFolder } from "react-icons/fi";
 import { peopleTasksPieChartViewData } from '../selectors';
-import { ReportPage } from '../../sharedComponents/ReportPage';
-import './PeopleTasksPieChart.css';
-// import { ProjectPieChart } from 'components/Reports/ProjectReport/ProjectPieChart/ProjectPieChart';
+import styles from './PeopleTasksPieChart.module.css';
+import { clsx } from 'clsx';
 
 export function PeopleTasksPieChart({ darkMode }) {
   const {
-    tasksWithLoggedHoursById,
-    showTasksPieChart,
     showProjectsPieChart,
     tasksLegend,
-    showViewAllTasksButton,
     hoursLoggedToProjectsOnly,
   } = useSelector(peopleTasksPieChartViewData);
   
-  // const [showAllTasks, setShowAllTasks] = useState(false);
-
-  if (!showTasksPieChart && !showProjectsPieChart) {
-    return null;
-  }
-
-  // function handleViewAll() {
-  //   setShowAllTasks(prev => !prev);
-  // }
-
   return (
-    <div className={`people-pie-charts-wrapper ${darkMode ? 'text-light' : ''}`}>
-      {hoursLoggedToProjectsOnly.length!==0 && (
-        <ReportPage.ReportBlock darkMode={darkMode}>
-          <h5 className="people-pie-charts-header">Projects With Completed Hours</h5>
-          {hoursLoggedToProjectsOnly.length!==0 && <UserProjectPieChart
+    <div
+    className={clsx(styles['people-pie-charts-wrapper'], !showProjectsPieChart && styles['full-height'])}
+    >
+      {showProjectsPieChart && (
+        <div>
+          <h5 className={styles['people-pie-charts-header']}>Time Logged to Projects/Non-tasks</h5>
+
+          <UserProjectD3PieChart
             pieChartId="projectsPieChart"
             darkMode={darkMode}
             projectsData={hoursLoggedToProjectsOnly}
-            tasksData={tasksLegend}       
-          />}
-        </ReportPage.ReportBlock>
-      )}
-      {showTasksPieChart && (
-        <ReportPage.ReportBlock darkMode={darkMode}>
-          <h5 className="people-pie-charts-header">{`${
-            showViewAllTasksButton ? 'Last ' : ''
-          }Tasks With Completed Hours`}</h5>
-          <PieChart
-            pieChartId="tasksPieChart"
-            darkMode={darkMode}
-            data={tasksWithLoggedHoursById}
             tasksData={tasksLegend}
-            projectsData={hoursLoggedToProjectsOnly}
           />
-          {/* {showViewAllTasksButton && (
-            <div>
-              <div onClick={handleViewAll} className="show-all-tasks-button">
-                {showAllTasks ? 'Collapse' : 'View all'}
-              </div>
+        </div>
+      )}
+      {!showProjectsPieChart && (
+          <div className={styles['pie-empty-state-inner']}>
+            <div className={styles['pie-empty-state-icon']} aria-hidden="true">
+              <FiFolder size={20}/>
             </div>
-          )} */}
-        </ReportPage.ReportBlock>
+            <h5 className={styles['pie-empty-state-title']}>No project time logged yet</h5>
+            <p className={styles['pie-empty-state-body']}>
+              Once this person logs hours to a project, a breakdown of where their time is going will appear here.
+            </p>
+          </div>
       )}
     </div>
   );

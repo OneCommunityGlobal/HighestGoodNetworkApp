@@ -22,6 +22,8 @@ export const teamUsersReducer = (teamMembers = teamUsersInitial, action) => {
         fetched: true,
         status: '200',
       });
+    case types.CLEAR_TEAM_MEMBERS:
+      return { ...teamMembers, teamMembers: [], fetching: false };
     case types.TEAM_MEMBER_ADD:
       return updateObject(teamMembers, {
         teamMembers: Object.assign([...teamMembers.teamMembers, action.member]),

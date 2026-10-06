@@ -1,12 +1,14 @@
 import { GiHollowCat } from 'react-icons/gi';
-import './Stub.css';
+import styles from './Stub.module.css';
 
-// eslint-disable-next-line import/prefer-default-export, react/function-component-definition
-export const Stub = ({ darkMode }) => (
-  <div className="stub-wrapper">
-    <GiHollowCat size={72} />
-    <div className={`stub-hint ${darkMode ? 'text-light' : ''}`}>
-      Nothing&apos;s here at the moment
+function Stub({ darkMode }) {
+  return (
+    <div className={`${styles.stubWrapper}`} data-testid="stub-wrapper">
+      <GiHollowCat size={72} data-testid="stub-icon" />
+      <div className={`stub-hint ${darkMode ? 'text-light' : ''}`}>
+        Nothing&apos;s here at the moment
+      </div>
     </div>
-  </div>
-);
+  );
+}
+export default Stub;

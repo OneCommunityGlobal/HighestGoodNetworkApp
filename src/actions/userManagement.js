@@ -14,10 +14,11 @@ import {
   DISABLE_USER_PROFILE_EDIT,
   CHANGE_USER_PROFILE_PAGE,
   START_USER_INFO_UPDATE,
+  FINISH_USER_INFO_UPDATE,
 } from '../constants/userManagement';
-import { ENDPOINTS } from '../utils/URL';
-import { UserStatus } from '../utils/enums';
-import { getTimeEndDateEntriesByPeriod } from './timeEntries';
+import { ENDPOINTS } from '~/utils/URL';
+import { UserStatus, UserStatusOperations, InactiveReason } from '~/utils/enums';
+import { COMPANY_TZ } from '~/utils/formatDate';
 
 /**
  * Set a flag that fetching user profiles
@@ -110,8 +111,16 @@ export const getAllUserProfile = () => {
   const userProfilesPromise = axios.get(ENDPOINTS.USER_PROFILES);
   return async dispatch => {
     await dispatch(userProfilesFetchStartAction());
+    if (!userProfilesPromise || typeof userProfilesPromise.then !== 'function') {
+      return Promise.resolve([]);
+    }
     return userProfilesPromise
       .then(res => {
+        // API must return an array; error payloads are objects and crash UserManagement.map
+        if (!Array.isArray(res.data)) {
+          dispatch(userProfilesFetchErrorAction());
+          return [];
+        }
         dispatch(userProfilesFetchCompleteACtion(res.data));
         return res.data;
       })
@@ -126,46 +135,161 @@ export const getAllUserProfile = () => {
  * @param {*} user - the user to be updated
  * @param {*} status  - Active/InActive
  */
-export const updateUserStatus = (user, status, reactivationDate) => {
-  const userProfile = { ...user };
-  userProfile.isActive = status === UserStatus.Active;
-  userProfile.reactivationDate = reactivationDate;
-  const patchData = { status, reactivationDate };
-  return async dispatch => {
-    // Optimistic update
-    dispatch(userProfileUpdateAction(userProfile));
 
+const resolveEndDate = (user) => {
+
+  //1) endDate + lastActivityAt -> earlier of the two
+  if (user?.endDate && user?.lastActivityAt) {
+    return moment.min(moment(user.endDate), moment(user.lastActivityAt)).toISOString();
+  }
+
+  //2) if no lastActivityAt, use createdDate (if present)
+  // format createdDate to real datetime in COMPANY_TZ
+  if (!user?.lastActivityAt && user?.createdDate) {
+    const created = moment.tz(user.createdDate, 'YYYY-MM-DD', COMPANY_TZ).startOf('day');
+    return created.toISOString();
+  }
+
+  //3) if no createdDate -> endDate will be set as passed
+  if (user?.endDate) {
+    return moment(user.endDate).toISOString();
+  }
+
+  // optional: if lastActivityAt is present, use that
+  if (user?.lastActivityAt) {
+    return moment(user.lastActivityAt).toISOString();
+  }
+
+  // if everything is missing, fall back to current date
+  return moment().tz(COMPANY_TZ).toISOString();
+}
+
+export const buildUpdatedUserLifecycleDetails = (user, payload) => {
+  const { action, endDate, reactivationDate } = payload;
+  switch (action) {
+    case UserStatusOperations.ACTIVATE:
+      return {
+        ...user,
+        isActive: true,
+        inactiveReason: null,
+        endDate: null,
+        reactivationDate: null,
+      };
+
+    case UserStatusOperations.DEACTIVATE: {
+      const resolvedEndDate = resolveEndDate(user);
+      return {
+        ...user,
+        isActive: false,
+        inactiveReason: InactiveReason.SEPARATED,
+        endDate: resolvedEndDate
+      };
+    }
+
+    case UserStatusOperations.SCHEDULE_DEACTIVATION:
+      return {
+        ...user,
+        isActive: true,
+        inactiveReason: InactiveReason.SCHEDULED_SEPARATION,
+        endDate: endDate || user.endDate,
+      };
+
+    case UserStatusOperations.PAUSE:
+      return {
+        ...user,
+        isActive: false,
+        inactiveReason: InactiveReason.PAUSED,
+        reactivationDate: reactivationDate || user.reactivationDate,
+        endDate: null,
+      };
+
+    default:
+      return user;
+  }
+};
+
+const buildBackendPayload = (userDetails, action) => {
+  switch (action) {
+    case UserStatusOperations.ACTIVATE:
+      return {
+        action: action,
+        status: UserStatus.Active,
+        endDate: null,
+      };
+    case UserStatusOperations.DEACTIVATE:
+      return {
+        action: action,
+        status: UserStatus.Inactive,
+        endDate: userDetails.endDate,
+      };
+    case UserStatusOperations.SCHEDULE_DEACTIVATION:
+      return {
+        action: action,
+        endDate: userDetails.endDate,
+      };
+    case UserStatusOperations.PAUSE:
+      return {
+        action: action,
+        reactivationDate: userDetails.reactivationDate,
+      };
+    default:
+      throw new Error(`Unknown lifecycle action: ${action}`);
+  }
+};
+
+export const updateUserLifecycle = (updatedUser, payload) => {
+  return async (dispatch, getState) => {
+    const { auth } = getState();
+    dispatch(userProfileUpdateAction(updatedUser));
+    const requestor = {
+      requestorId: auth.user.userid,
+      role: auth.user.role,
+      permissions: auth.user.permissions,
+    };
+    const backendPayload = {
+      ...buildBackendPayload(updatedUser, payload.action),
+      requestor,
+    };
     try {
-      if (status === UserStatus.InActive) {
-        // Check for the last week of work
-        const lastEnddate = await dispatch(
-          getTimeEndDateEntriesByPeriod(user._id, user.createdDate, userProfile.toDate),
-        );
-        if (lastEnddate !== 'N/A') {
-          // if work exists, set EndDate to that week
-          patchData.endDate = moment(lastEnddate).format('YYYY-MM-DDTHH:mm:ss');
-          userProfile.endDate = moment(lastEnddate).format('YYYY-MM-DDTHH:mm:ss');
-        } else {
-          // No work exists, set end date to start date
-          patchData.endDate = moment(user.createdDate);
-          userProfile.endDate = moment(user.createdDate);
-        }
-      } else {
-        // User is active
-        patchData.endDate = undefined;
-        userProfile.endDate = undefined;
-      }
+      await axios.patch(ENDPOINTS.USER_PROFILE_FIXED(updatedUser._id), backendPayload);
+    } catch (error) {
+      toast.error('Error updating user lifecycle:', error);
+      dispatch(userProfileUpdateAction(payload.originalUser));
+      throw error;
+    }
+  };
+};
 
-      // Perform the API call
-      await axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData);
-
-      // Ensure the dispatched action is final (optional if optimistic update is sufficient)
+/**
+ * Update the pause/resume status of a user via the dedicated pause endpoint.
+ * Requires the 'interactWithPauseUserButton' permission.
+ * @param {*} user - the user to be paused or resumed
+ * @param {string} status - UserStatus.Active or UserStatus.Inactive
+ * @param {*} reactivationDate - the date on which the user should be reactivated
+ */
+export const updateUserPauseStatus = (user, status, reactivationDate) => {
+  return async (dispatch, getState) => {
+    const userProfile = { ...user };
+    userProfile.isActive = status === UserStatus.Active;
+    userProfile.reactivationDate = reactivationDate;
+    const auth = getState().auth;
+    const requestor = {
+      requestorId: auth.user.userid,
+      role: auth.user.role,
+      permissions: auth.user.permissions,
+      email: auth.user.email,
+    };
+    const patchData = {
+      status,
+      reactivationDate: status === UserStatus.Active ? undefined : reactivationDate,
+      requestor,
+    };
+    try {
+      await axios.patch(ENDPOINTS.USER_PAUSE(user._id), patchData);
       dispatch(userProfileUpdateAction(userProfile));
     } catch (error) {
-      toast.error('Error updating user status:', error);
-
-      // Rollback to previous state on error
-      dispatch(userProfileUpdateAction(user));
+      toast.error('Error updating user pause status:', error);
+      throw error;
     }
   };
 };
@@ -260,11 +384,7 @@ export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet)
       // Prepare patch data
       const patchData = {
         status,
-        endDate: finalDayDate
-          ? moment(finalDayDate)
-              .add(1, 'days')
-              .format('YYYY-MM-DD')
-          : undefined,
+        endDate: finalDayDate ? new Date(finalDayDate) : undefined,
         isSet,
       };
 
@@ -285,12 +405,20 @@ export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet)
   };
 };
 
+
 /**
  * fetching all user profiles basic info
+ *  Added `source` parameter to identify the calling component.
  */
-export const getUserProfileBasicInfo = () => {
+export const getUserProfileBasicInfo = ({ userId, source } = {}) => {
   // API request to fetch basic user profile information
-  const userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO);
+  let userProfileBasicInfoPromise;
+  if (userId)
+    userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE(userId));
+  else if (source)
+    userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO(source));
+  else
+    userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILES);
 
   return async dispatch => {
     // Dispatch action indicating the start of the fetch process
@@ -325,14 +453,13 @@ export const updateUserInfomation = value => dispatch => {
   dispatch({ type: START_USER_INFO_UPDATE, payload: value });
 };
 
-// export const updateUserInformation=(value)=>async(dispatch,getState)=>{
-//   try {
-//     dispatch({type:START_USER_INFO_UPDATE})
-//     var response=await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE,value);
-//     const {data} = await axios.get(ENDPOINTS.USER_PROFILES);
-//     dispatch({type:FINISH_USER_INFO_UPDATE,payload:data})
-//   } catch (error) {
-//     console.log(error)
-//     dispatch({type:ERROR_USER_INFO_UPDATE})
-//   }
-// }
+/**
+ * Clears the queue of pending user info edits (newUserData) after they have
+ * been successfully saved to the backend. Without this, previously-saved
+ * edits remain in the queue and get resubmitted (replayed) the next time any
+ * user's info is saved, silently overwriting that user's data with stale
+ * values. See hotfix: User Management stale date replay bug.
+ */
+export const finishUserInfoUpdate = () => dispatch => {
+  dispatch({ type: FINISH_USER_INFO_UPDATE });
+};

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import './BiddingOverview.module.css';
 import { Link } from 'react-router-dom';
+import styles from './BiddingOverview.module.css';
 
 import logo from '../../../assets/images/logo2.png';
 
@@ -76,55 +76,61 @@ function BiddingOverview() {
   };
 
   return (
-    <div className="bidding-page">
-      <div className="top-logo-container">
-        <img src={logo} alt="One Community Logo" className="top-logo" />
+    <div className={`${styles.biddingPage}`}>
+      <div className={`${styles.topLogoContainer}`}>
+        <img src={logo} alt="One Community Logo" className={`${styles.topLogo}`} />
       </div>
-      <div className="box-container">
-        <header className="bidding-header">
-          <div className="header-left">
+      <div className={`${styles.boxContainer}`}>
+        <header className={`${styles.biddingHeader}`}>
+          <div className={`${styles.headerLeft}`}>
             <div className="village-selector">
-              <select id="village" className="village-select" aria-label="Choose your Village">
+              <select
+                id="village"
+                className={`${styles.villageSelect}`}
+                aria-label="Choose your Village"
+              >
                 <option value="">Choose your Village</option>
                 <option value="earthbag">Earthbag Village</option>
                 <option value="strawbale">Straw Bale Village</option>
                 <option value="cob">Cob Village</option>
               </select>
             </div>
-            <button type="button" className="go-button">
+            <button type="button" className={`${styles.goButton}`}>
               Go
             </button>
           </div>
 
-          <div className="header-right">
-            <span className="welcome-text">WELCOME USER_NAME</span>
+          <div className={`${styles.headerRight}`}>
+            <span className={`${styles.welcomeText}`}>WELCOME USER_NAME</span>
             {/* Replace USER_NAME */}
-            <div className="icon-container">
-              <div className="icon-badge">
-                <i className="fa fa-comment message-icon" />
-                <span className="badge" />
+            <div className={`${styles.iconContainer}`}>
+              <div className={`${styles.iconBadge}`}>
+                <i className={`fa fa-comment ${styles.messageIcon}`} />
+                <span className={`${styles.badge}`} />
               </div>
-              <div className="icon-badge">
-                <i className="fa fa-bell notification-icon" />
-                <span className="badge" />
+              <div className={`${styles.iconBadge}`}>
+                <i className={`fa fa-bell ${styles.notificationIcon}`} />
+                <span className={`${styles.badge}`} />
               </div>
-              <i className="fa fa-user user-icon" />
+              <i className={`fa fa-user ${styles.userIcon}`} />
             </div>
           </div>
         </header>
 
-        <main className="bidding-container">
-          <div className="bidding-card">
-            <div className="bidding-left">
-              <div className="current-bid">Current bid: {unitDetails.currentBid} /night</div>
-              <div className="bidding-image">
+        <main className={`${styles.biddingContainer}`}>
+          <div className={`${styles.biddingCard}`}>
+            <div className={`${styles.biddingLeft}`}>
+              <div className={`${styles.currentBid}`}>
+                Current bid: {unitDetails.currentBid} /night
+              </div>
+              <div className={`${styles.biddingImage}`}>
                 <img
                   src={unitDetails.images[currentImageIndex]}
                   alt={`Unit ${unitDetails.unitNumber} ${unitDetails.villageName}`}
                 />
                 <button
                   type="button"
-                  className="image-nav-button left-nav"
+                  className={`${styles.imageNavButton} ${styles.leftNav}`}
                   onClick={() => navigateImages('prev')}
                   aria-label="Previous image"
                 >
@@ -132,13 +138,13 @@ function BiddingOverview() {
                 </button>
                 <button
                   type="button"
-                  className="image-nav-button right-nav"
+                  className={`${styles.imageNavButton} ${styles.rightNav}`}
                   onClick={() => navigateImages('next')}
                   aria-label="Next image"
                 >
                   <i className="fa fa-chevron-right" />
                 </button>
-                <div className="image-dots">
+                <div className={`${styles.imageDots}`}>
                   {unitDetails.images.map((image, index) => (
                     <span
                       key={image} // Using unique image URL as key is correct here
@@ -158,8 +164,8 @@ function BiddingOverview() {
                 </div>
               </div>
 
-              <div className="amenities-container">
-                <div className="amenities-section">
+              <div className={`${styles.amenitiesContainer}`}>
+                <div className={`${styles.amenitiesSection}`}>
                   <h4>Available amenities in this Unit:</h4>
                   <ol>
                     {/* FIXED: Use the unique 'id' property as the key */}
@@ -169,7 +175,7 @@ function BiddingOverview() {
                   </ol>
                 </div>
 
-                <div className="amenities-section">
+                <div className={`${styles.amenitiesSection}`}>
                   <h4>Village level amenities:</h4>
                   <ol>
                     {unitDetails.villageAmenities.map(amenity => (
@@ -180,27 +186,27 @@ function BiddingOverview() {
                 </div>
               </div>
 
-              <div className="map-link-container">
-                <Link to="/property-map" className="map-link">
-                  <i className="fa fa-map-marker location-icon" />
+              <div className={`${styles.mapLinkContainer}`}>
+                <Link to="/property-map" className={`${styles.mapLink}`}>
+                  <i className={`fa fa-map-marker ${styles.locationIcon}`} />
                   View on Property Map
                 </Link>
               </div>
             </div>
 
-            <div className="bidding-right">
-              <div className="unit-header">
-                <h2 className="unit-title">Unit {unitDetails.unitNumber}</h2>
-                <h3 className="unit-subtitle">{unitDetails.villageName}</h3>
+            <div className={`${styles.biddingRight}`}>
+              <div className={`${styles.unitHeader}`}>
+                <h2 className={`${styles.unitTitle}`}>Unit {unitDetails.unitNumber}</h2>
+                <h3 className={`${styles.unitSubtitle}`}>{unitDetails.villageName}</h3>
               </div>
 
-              <p className="unit-description">{unitDetails.description}</p>
+              <p className={`${styles.unitDescription}`}>{unitDetails.description}</p>
 
-              <form className="bidding-form" onSubmit={handleSubmit}>
-                <div className="form-row-container">
-                  <div className="form-group bidding-form-group">
+              <form className={`${styles.biddingForm}`} onSubmit={handleSubmit}>
+                <div className={`${styles.formRowContainer}`}>
+                  <div className={`${styles.formGroup} ${styles.biddingFormGroup}`}>
                     <label htmlFor="rentingFrom">Renting from:</label>
-                    <div className="input-with-icon">
+                    <div className={`${styles.inputWithIcon}`}>
                       <input
                         type="date"
                         id="rentingFrom"
@@ -211,9 +217,9 @@ function BiddingOverview() {
                     </div>
                   </div>
 
-                  <div className="form-group bidding-form-group">
+                  <div className={`${styles.formGroup} ${styles.biddingFormGroup}`}>
                     <label htmlFor="rentingTo">Renting to:</label>
-                    <div className="input-with-icon">
+                    <div className={`${styles.inputWithIcon}`}>
                       <input
                         type="date"
                         id="rentingTo"
@@ -225,7 +231,9 @@ function BiddingOverview() {
                   </div>
                 </div>
 
-                <div className="form-group full-width bidding-form-group">
+                <div
+                  className={`${styles.formGroup} ${styles.fullWidth} ${styles.biddingFormGroup}`}
+                >
                   <label htmlFor="name">Name</label>
                   <input
                     type="text"
@@ -237,7 +245,9 @@ function BiddingOverview() {
                   />
                 </div>
 
-                <div className="form-group full-width bidding-form-group">
+                <div
+                  className={`${styles.formGroup} ${styles.fullWidth} ${styles.biddingFormGroup}`}
+                >
                   <label htmlFor="biddingPrice">Bidding Price ($/night)</label>
                   <input
                     type="text" // Keep as text to allow custom validation logic
@@ -252,20 +262,20 @@ function BiddingOverview() {
                 </div>
 
                 <div className="submit-button-container">
-                  <button type="submit" className="submit-button1">
+                  <button type="submit" className={`${styles.submitButton1}`}>
                     Proceed to submit with details{' '}
                   </button>
                 </div>
               </form>
 
-              <div className="bidding-actions">
-                <button type="button" className="action-button reviews-button">
+              <div className={`${styles.biddingActions}`}>
+                <button type="button" className={`${styles.actionButton} reviews-button`}>
                   <i className="fa fa-star" /> Reviews
                 </button>
-                <button type="button" className="action-button save-button">
+                <button type="button" className={`${styles.actionButton} ${styles.saveButton}`}>
                   <i className="fa fa-heart" /> Save
                 </button>
-                <button type="button" className="action-button chat-button">
+                <button type="button" className={`${styles.actionButton} ${styles.chatButton}`}>
                   <i className="fa fa-comment" /> CHAT WITH HOST
                 </button>
               </div>

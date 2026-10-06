@@ -1,9 +1,12 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'reactstrap';
 import moment from 'moment';
+import { useSelector } from 'react-redux';
 
-import './ToolRecordsModal.css';
+import styles from './ToolRecordsModal.module.css';
 
 export default function RecordsModal({ modal, setModal, record, setRecord, recordType }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   if (record) {
     const toggle = () => {
       setModal(false);
@@ -11,16 +14,18 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
     };
 
     return (
-      <Modal isOpen={modal} size="xl">
-        <ModalHeader>{recordType} Record</ModalHeader>
-        <ModalBody>
-          <div className="records_modal_table_container">
-            <Table>
+      <Modal isOpen={modal} size="xl" className={darkMode ? styles.modalDark : ''}>
+        <ModalHeader className={darkMode ? styles.modalHeaderDark : ''}>
+          {recordType} Record
+        </ModalHeader>
+        <ModalBody className={darkMode ? styles.modalBodyDark : ''}>
+          <div className={styles.recordsModalTableContainer}>
+            <Table className={darkMode ? styles.tableDark : ''}>
               <Record record={record} recordType={recordType} />
             </Table>
           </div>
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter className={darkMode ? styles.modalBodyDark : ''}>
           <Button onClick={toggle}>Close</Button>
         </ModalFooter>
       </Modal>

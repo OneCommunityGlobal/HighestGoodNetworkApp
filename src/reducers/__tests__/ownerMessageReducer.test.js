@@ -5,6 +5,7 @@ describe('ownerMessageReducer', () => {
   const initialState = {
     message: '',
     standardMessage: '',
+    history: [],
   };
 
   it('should return the initial state when no action is provided', () => {
@@ -23,6 +24,7 @@ describe('ownerMessageReducer', () => {
     const expectedState = {
       message: 'Updated owner message',
       standardMessage: 'This is the standard message',
+      history: [],
     };
 
     expect(ownerMessageReducer(initialState, action)).toEqual(expectedState);

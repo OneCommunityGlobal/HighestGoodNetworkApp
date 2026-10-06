@@ -1,0 +1,364 @@
+/* stylelint-disable  */
+
+/* ============================================
+   PAGE WRAPPER
+   ============================================ */
+.centerContainer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 100vh;
+  flex-direction: column;
+  padding: 2rem 1rem;
+}
+
+.componentBox {
+  border: 1px solid #e0e4ea;
+  padding: 2rem 2.5rem 2.5rem;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgb(0 0 0 / 8%);
+  background-color: #fff;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* ============================================
+   HEADING
+   ============================================ */
+.componentBox h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a2a40;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e0e4ea;
+  letter-spacing: 0.01em;
+}
+
+/* ============================================
+   SKILL SELECTOR ROW
+   ============================================ */
+.filterRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.filterRow label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #444;
+  white-space: nowrap;
+}
+
+.select {
+  padding: 7px 14px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #333;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.select:focus {
+  border-color: #4a90d9;
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(74 144 217 / 20%);
+}
+
+/* ============================================
+   TABLE - LIGHT MODE
+   ============================================ */
+.table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.875rem;
+  margin-bottom: 1.25rem;
+}
+
+.table th {
+  padding: 10px 14px;
+  text-align: left;
+  background-color: #f0f4f8;
+  color: #3a4a5c;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid #dce3ec;
+}
+
+.table td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid #eef0f3;
+  vertical-align: middle;
+  color: #2d3748;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background-color: #f7f9fc;
+}
+
+.table td a,
+.table td span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ============================================
+   SCORE & PRIVATE HELPERS
+   ============================================ */
+.scoreCell {
+  white-space: nowrap;
+}
+
+.lowScore {
+  color: #d6353f;
+  font-weight: 700;
+}
+
+.highScore {
+  color: #278049;
+  font-weight: 700;
+}
+
+/* The global dark-mode rule (body.dark-mode * { color: #fff !important })
+   forces white text everywhere, so the score colors need to be reapplied
+   against the real body.dark-mode class to take precedence in dark mode. */
+:global(.dark-mode) .lowScore {
+  color: #fc8181 !important;
+}
+
+:global(.dark-mode) .highScore {
+  color: #68d391 !important;
+}
+
+.private {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #a0aec0;
+  cursor: help;
+  font-style: italic;
+  font-size: 0.82rem;
+}
+
+/* ============================================
+   ICON LINKS
+   ============================================ */
+.iconLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #3182ce;
+  transition: color 0.2s;
+  font-size: 18px;
+  margin: 0 5px;
+}
+
+.iconLink:hover {
+  color: #1a5fa8;
+  text-decoration: underline;
+}
+
+.iconSlack {
+  color: #611f69;
+  font-size: 18px;
+  transition: color 0.2s ease;
+}
+
+.iconSlack:hover {
+  color: #400d40;
+}
+
+.privateIcon {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.slackLogo {
+  width: 20px;
+  height: 20px;
+}
+
+.slackLogoPrivate {
+  width: 20px;
+  height: 20px;
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.tableScroll {
+  overflow-x: auto;
+  width: 100%;
+}
+
+/* ============================================
+   FOOTER LINK
+   ============================================ */
+.underlineLink {
+  display: inline-block;
+  margin-top: 0.5rem;
+  text-decoration: underline;
+  color: #3182ce;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.underlineLink:hover {
+  color: #1a5fa8;
+  text-decoration: none;
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+.emptyState {
+  text-align: center;
+  color: #888;
+  padding: 2rem 0;
+  font-size: 0.95rem;
+}
+
+/* ============================================
+   DARK MODE
+   ============================================ */
+.darkMode {
+  background-color: #111827;
+  color: #f1f5f9;
+}
+
+.darkMode.componentBox {
+  background-color: #1e2c3f;
+  border-color: #2f4157;
+  box-shadow: 0 4px 18px rgb(0 0 0 / 30%);
+}
+
+.darkMode h2 {
+  color: #e2e8f0;
+  border-bottom-color: #2f4157;
+}
+
+.darkMode .filterRow label {
+  color: #cbd5e0;
+}
+
+.selectDark {
+  padding: 7px 14px;
+  border: 1px solid #4a5a77;
+  border-radius: 6px;
+  background-color: #2d3f55;
+  color: #e2e8f0;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.selectDark:focus {
+  border-color: #e8a71c;
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(232 167 28 / 25%);
+}
+
+.tableDark {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.875rem;
+  margin-bottom: 1.25rem;
+  color: #e2e8f0;
+}
+
+.tableDark th {
+  padding: 10px 14px;
+  text-align: left;
+  background-color: #243447;
+  color: #94a3b8;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border: 1px solid #2f4157;
+}
+
+.tableDark td {
+  padding: 10px 14px;
+  text-align: left;
+  border: 1px solid #2f4157;
+  vertical-align: middle;
+  color: #e2e8f0;
+}
+
+.tableDark tbody tr:hover {
+  background-color: #1e3248;
+}
+
+.tableDark td a,
+.tableDark td span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.iconLinkDark {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #60a5fa;
+  transition: color 0.2s;
+  font-size: 18px;
+  margin: 0 5px;
+}
+
+.iconLinkDark:hover {
+  color: #93c5fd;
+  text-decoration: underline;
+}
+
+.underlineLinkDark {
+  display: inline-block;
+  margin-top: 0.5rem;
+  text-decoration: underline;
+  color: #60a5fa;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.underlineLinkDark:hover {
+  color: #93c5fd;
+  text-decoration: none;
+}
+
+/* Global dark-mode rule forces link text to white; restore legible link
+   colors (both clear 4.5:1 on the dark table surface). */
+:global(.dark-mode) .iconLinkDark,
+:global(.dark-mode) .iconLinkDark span {
+  color: #63b3ed !important;
+}
+
+:global(.dark-mode) .iconLinkDark:hover,
+:global(.dark-mode) .iconLinkDark:hover span {
+  color: #90cdf4 !important;
+}
+
+:global(.dark-mode) .underlineLinkDark {
+  color: #63b3ed !important;
+}
+
+:global(.dark-mode) .underlineLinkDark:hover {
+  color: #90cdf4 !important;
+}

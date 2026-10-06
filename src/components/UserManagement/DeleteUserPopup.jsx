@@ -15,18 +15,19 @@ import {
 import hasPermission from '../../utils/permissions';
 import { CLOSE } from '../../languages/en/ui';
 import { boxStyle, boxStyleDark } from '../../styles';
-import '../Header/DarkMode.css';
+import { permissions } from '../../utils/constants';
+import '../Header/index.module.css';
 
 /**
  * Modal popup to delete the user profile
  */
-const DeleteUserPopup = React.memo(props => {
+const DeleteUserPopupComponent = (props) => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const closePopup = () => {
     props.onClose();
   };
-  const canDeleteUser = props.hasPermission('deleteUserProfile');
+  const canDeleteUser = props.hasPermission(permissions.deleteUserProfile);
 
   return (
     <Modal
@@ -88,10 +89,16 @@ const DeleteUserPopup = React.memo(props => {
       </ModalFooter>
     </Modal>
   );
-});
+};
 
-const DivSpacer = React.memo(() => {
+const DeleteUserPopup = React.memo(DeleteUserPopupComponent);
+DeleteUserPopup.displayName = 'DeleteUserPopup';
+
+const DivSpacerComponent = () => {
   return <div style={{ padding: '5px' }} />;
-});
+};
+
+const DivSpacer = React.memo(DivSpacerComponent);
+DivSpacer.displayName = 'DivSpacer';
 
 export default connect(null, { hasPermission })(DeleteUserPopup);

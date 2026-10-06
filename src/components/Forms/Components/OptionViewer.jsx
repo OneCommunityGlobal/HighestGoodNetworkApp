@@ -1,4 +1,5 @@
-import { QuestionType } from 'utils/enums';
+import { QuestionType } from '~/utils/enums';
+import PropTypes from 'prop-types';
 
 export default function OptionViewer({ data, SetFormAnswers, formAnwers }) {
   // console.log(data);
@@ -51,3 +52,23 @@ export default function OptionViewer({ data, SetFormAnswers, formAnwers }) {
     </div>
   );
 }
+
+OptionViewer.propTypes = {
+  data: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+    options: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        value: PropTypes.string,
+      }),
+    ).isRequired,
+  }).isRequired,
+  SetFormAnswers: PropTypes.func.isRequired,
+  formAnwers: PropTypes.arrayOf(
+    PropTypes.shape({
+      questionId: PropTypes.string.isRequired,
+      answer: PropTypes.string,
+    }),
+  ).isRequired,
+};

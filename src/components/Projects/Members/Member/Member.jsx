@@ -6,22 +6,21 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { assignProject } from './../../../../actions/projectMembers';
-import hasPermission from 'utils/permissions';
-import { boxStyle } from 'styles';
+import hasPermission from '~/utils/permissions';
+import { boxStyle } from '~/styles';
 import PropTypes from 'prop-types';
 
 
-const Member = props => {
+import { permissions } from '../../../../utils/constants';
+const Member = ({ index = 0, ...props }) => {
   const { darkMode } = props;
-  const canGetProjectMembers = props.hasPermission('getProjectMembers');
-  const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
-
+  const canGetProjectMembers = hasPermission(permissions.getProjectMembers);
 
   return (
     <React.Fragment>
-      <tr className={`members__tr ${darkMode ? 'dark-mode' : ''}`}>
+      <tr className={`members__tr ${darkMode ? 'bg-space-cadet' : ''}`}>
         <th scope="row">
-          <div>{typeof props.index === 'number' ? props.index + 1 : null}</div>
+          <div>{typeof index === 'number' ? index + 1 : null}</div>
         </th>
         <td className="members__name">
           {canGetProjectMembers ? (
@@ -53,10 +52,7 @@ const Member = props => {
   );
 };
 
-// Define default props
-Member.defaultProps = {
-  index: 0
-};
+// ...existing code...
 
 // Define prop types
 Member.propTypes = {
@@ -66,4 +62,4 @@ Member.propTypes = {
 const mapStateToProps = state => {
   return { state };
 };
-export default connect(mapStateToProps, { assignProject, hasPermission })(Member);
+export default connect(mapStateToProps, { assignProject })(Member);

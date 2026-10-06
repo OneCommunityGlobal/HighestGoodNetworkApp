@@ -2,7 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { Input } from 'reactstrap';
 import styles from './WeeklySummariesReport.module.scss';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 function TotalValidSummaries(props) {
   const { summary, textColors, canEditSummaryCount } = props;

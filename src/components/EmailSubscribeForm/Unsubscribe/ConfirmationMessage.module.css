@@ -1,3 +1,4 @@
+/* stylelint-disable keyframes-name-pattern */
 .confirmationContainer {
   align-items: center;
   display: flex;
@@ -9,7 +10,7 @@
   padding: 50px;
   background-color: #f9f9f9;
   border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
 .envelope {
@@ -28,6 +29,7 @@
   from {
     transform: scale(0);
   }
+
   to {
     transform: scale(1);
   }
@@ -74,14 +76,14 @@
   padding: 50px;
   background-color: #f9f9f9;
   border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
 .oneCommunityIcon {
   width: 648px;
   height: 200px;
   border-radius: 5px;
-  box-shadow: 0 20px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 20px rgb(0 0 0 / 10%);
   background: url('./HGN-Your-Email-Has-Been-Removed-648x200px.jpg') no-repeat center center;
   background-size: cover;
 }

@@ -1,4 +1,4 @@
-import './StatisticsTab.css';
+import styles from './StatisticsTab.module.css';
 
 function StatisticsTab(props) {
   const {
@@ -9,37 +9,40 @@ function StatisticsTab(props) {
     isIncreased,
     tabBackgroundColor,
     shapeBackgroundColor,
+    comparisonType,
   } = props;
 
   return (
     <div
-      className="statistics-tab-holder"
+      className={styles.statisticsTabHolder}
       style={{ backgroundColor: tabBackgroundColor }}
       role="region"
       aria-labelledby={`${type}-title`}
     >
-      <h3 className="statistics-title" id={`${type}-title`}>
+      <h3 className={styles.statisticsTitle} id={`${type}-title`}>
         {title}
       </h3>
       <div
-        className="statistics-number-shape"
+        className={styles.statisticsNumberShape}
         style={{ backgroundColor: shapeBackgroundColor }}
         role="figure"
         aria-labelledby={`${type}-number`}
       >
-        <h3 className="statistics-number" id={`${type}-number`}>
+        <h3 className={styles.statisticsNumber} id={`${type}-number`}>
           {number}
         </h3>
       </div>
-      <h4
-        className={`statistics-percentage ${
-          isIncreased ? 'statistics-percentage-increase' : 'statistics-percentage-decrease'
-        }`}
-        aria-live="polite"
-      >
-        {isIncreased ? '+' : '-'}
-        {percentageChange}% week over week
-      </h4>
+      {comparisonType !== 'No Comparison' && (
+        <h4
+          className={`${styles.statisticsPercentage} ${
+            isIncreased ? styles.statisticsPercentageIncrease : styles.statisticsPercentageDecrease
+          }`}
+          aria-live="polite"
+        >
+          {isIncreased ? '+' : '-'}
+          {percentageChange}% {comparisonType.toLowerCase()}
+        </h4>
+      )}
     </div>
   );
 }

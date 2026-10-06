@@ -1,0 +1,180 @@
+.varianceContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.varianceTitle {
+  text-align: center;
+  margin-bottom: 24px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.darkMode .varianceTitle {
+  color: #f8fafc;
+}
+
+.varianceLoading {
+  text-align: center;
+  padding: 40px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.darkMode .varianceLoading {
+  color: #94a3b8;
+}
+
+.filtersGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2.5fr; 
+  gap: 16px;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .filtersGrid {
+    grid-template-columns: 1fr; 
+  }
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filterLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.darkMode .filterLabel {
+  color: #cbd5e1;
+}
+
+.dateRangeFlex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.datePickerWrapper {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+}
+
+.datePickerWrapper > div {
+  width: 100%;
+}
+
+.dateInput {
+  width: 100%;
+  padding: 8px 30px 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  box-sizing: border-box;
+  height: 38px;
+  outline: none;
+}
+
+.dateInput:focus {
+  border-color: #4285F4;
+}
+
+.darkDateInput {
+  background-color: #253342;
+  color: #fff;
+  border-color: #2d4059;
+  color-scheme: dark;
+}
+
+.darkDateInput:focus {
+  border-color: #3a506b;
+}
+
+.dateSeparator {
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+  text-align: center;
+}
+
+.darkMode .dateSeparator {
+  color: #94a3b8;
+}
+
+.chartWrapper {
+  width: 100%;
+  min-height: 350px;
+  margin-bottom: 12px;
+  flex-grow: 1;
+}
+
+.chartContainer {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+.emptyState {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: #64748b;
+  font-style: italic;
+  font-size: 14px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px dashed #cbd5e1;
+}
+
+.darkMode .emptyState {
+  color: #94a3b8;
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+.legendContainer {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  color: #334155;
+  flex-wrap: wrap;
+}
+
+.darkMode .legendContainer {
+  color: #cbd5e1;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legendDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.varianceOverLight { color: #e74c3c !important; }
+.varianceOverDark { color: #ff4444 !important; }
+
+.varianceUnderLight { color: #2ecc71 !important; }
+.varianceUnderDark { color: #4ade80 !important; }

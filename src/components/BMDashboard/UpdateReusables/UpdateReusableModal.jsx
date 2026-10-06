@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import UpdateReusable from './UpdateReusable';
-import './UpdateReusable.css';
 
 function UpdateReusableModal({ modal, setModal, record }) {
   const [cancelSignal, setCancelSignal] = useState(0);

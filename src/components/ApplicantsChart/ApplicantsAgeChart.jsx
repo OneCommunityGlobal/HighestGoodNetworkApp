@@ -8,7 +8,7 @@ import {
   ResponsiveContainer,
   LabelList,
 } from 'recharts';
-
+import styles from './ApplicationChart.module.css';
 const data = [
   { ageGroup: '18 - 21', applicants: 25, change: 10 },
   { ageGroup: '21 - 24', applicants: 60, change: -5 },
@@ -18,7 +18,7 @@ const data = [
 ];
 
 function ApplicantsChartPage() {
-  const formatTooltip = (value, name, props) => {
+  const formatTooltip = (value, props) => {
     const { change } = props.payload;
     let changeText = '';
     if (change > 0) {
@@ -32,7 +32,7 @@ function ApplicantsChartPage() {
   };
 
   return (
-    <div style={{ width: '800px', height: 500, margin: '0 auto', padding: '20px' }}>
+    <div className={`${styles.ApplicantsChartPage}`}>
       <h2>Applicants grouped by Age</h2>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }} barSize={80}>

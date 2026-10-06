@@ -1,0 +1,267 @@
+/* =========================
+   BASE LAYOUT
+========================= */
+
+.main-container {
+  width: 100%;
+  min-height: 100vh;
+  padding: 20px 0;
+  background-color: #f9f9f9;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* GLOBAL DARK MODE WRAPPER */
+.dark-mode {
+  background-color: #1e2a3a;
+  color: #e0e0e0;
+}
+
+/* =========================
+   REGISTER LAYOUT
+========================= */
+
+.register-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
+  gap: 20px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.dark-mode .register-container {
+  background-color: transparent;
+  color: #e0e0e0;
+}
+
+/* =========================
+   COLUMNS
+========================= */
+
+.left-column,
+.middle-column,
+.right-column {
+  flex: 1;
+  min-width: 300px;
+}
+
+/* LEFT COLUMN */
+.left-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.event-image {
+  width: 100%;
+  max-width: 450px;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 20%);
+  margin: 10px auto;
+  display: block;
+}
+
+/* MIDDLE COLUMN */
+.middle-column h1 {
+  font-size: 1.8rem;
+  margin-bottom: 12px;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.register-button {
+  background-color: #06c;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: 0.2s ease;
+}
+
+.register-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.share-button {
+  margin-top: 8px;
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  background: #f3f4f6;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.share-button:hover {
+  background-color: #e5e7eb;
+}
+
+.dark-mode .share-button {
+  background: #3d4f62;
+  color: #e5e7eb;
+  border-color: #4b5563;
+}
+
+/* =========================
+   DETAILS / GRID
+========================= */
+
+.details-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.details-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.details-row p {
+  flex: 1;
+  min-width: 150px;
+}
+
+.details-row p strong {
+  font-weight: bold;
+}
+
+/* =========================
+   CALENDAR
+========================= */
+
+.calendar-container {
+  margin-top: 20px;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* react-calendar base */
+.calendar-container :global(.react-calendar) {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+  font-family: inherit;
+  background: white;
+}
+
+.calendar-container :global(.react-calendar__tile) {
+  position: relative;
+  padding: 10px 6px;
+  height: 60px;
+}
+
+/* booked / available */
+.booked-indicator,
+.available-indicator {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 12px;
+}
+
+.booked-indicator {
+  color: #d32f2f;
+}
+
+.available-indicator {
+  color: #2e7d32;
+}
+
+/* selected/today */
+.calendar-container :global(.react-calendar__tile--active) {
+  background-color: #06c !important;
+  color: white !important;
+}
+
+/* DARK MODE CALENDAR */
+.dark-mode :global(.react-calendar) {
+  background: #1e2a3a !important;
+  color: #e0e0e0 !important;
+  border-color: #3a4a5c !important;
+}
+
+.dark-mode :global(.react-calendar__tile) {
+  color: #e0e0e0;
+}
+
+.dark-mode :global(.react-calendar__navigation button) {
+  background: #2c3e50;
+  color: #e0e0e0;
+}
+
+/* =========================
+   FEEDBACK
+========================= */
+
+.feedback-message {
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.feedback-message.success {
+  background: #e6ffe6;
+  color: #1b5e20;
+}
+
+.feedback-message.error {
+  background: #ffe6e6;
+  color: #c62828;
+}
+
+/* =========================
+   DETAILS LIST
+========================= */
+
+.detailsList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 14px 20px;
+}
+
+.detailsList p {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+}
+
+.dark-mode .detailsList p {
+  background: #0f172a;
+  border-color: #1f2937;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1200px) {
+  .register-container {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  .middle-column h1 {
+    font-size: 1.5rem;
+  }
+
+  .details-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

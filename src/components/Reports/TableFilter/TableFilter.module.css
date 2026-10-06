@@ -1,0 +1,179 @@
+:global(td > input),
+:global(select) {
+  width: 100%;
+}
+
+.tableFilterWrapper {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  padding-top: 1rem;
+  gap: 0.5rem;
+}
+
+.tableFilterWrapper .tableFilterDatePicker.tableFilterInput.tableFilterItem {
+  width: 100%;
+  position: relative;
+}
+
+:global(.dark-mode) .tableFilterWrapper .tableFilterDatePicker.tableFilterInput.tableFilterItem {
+  background-color: #1f1f1f !important;
+  border-color: #3f3f3f !important;
+}
+
+.tableFilterItem {
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  padding: 4px 10px;
+  min-height: 38px;
+}
+
+.checkboxGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+
+  label {
+    margin-bottom: 0;
+    font-weight: 500;
+  }
+}
+
+.tableFilterInput {
+  width: 140px;
+  min-height: 38px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #333;
+  font-size: 14px;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+
+.tableFilterInput::placeholder {
+  color: #757575;
+}
+
+.tableFilterInput:focus,
+.tableFilterInput:active {
+  outline: none;
+  border-color: #2684ff;
+  box-shadow: 0 0 0 1px #2684ff;
+}
+
+.datePickerIcon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translateY(65%);
+  padding-right: 12px;
+  color: #c6c6c6;
+  width: auto;
+}
+
+/* Dark mode: parent adds global .text-light */
+:global(.text-light) .tableFilterInput {
+  background-color: #1f1f1f;
+  border-color: #3f3f3f;
+  color: #f1f1f1;
+}
+
+:global(.text-light) .tableFilterInput::placeholder {
+  color: #8c8c8c;
+}
+
+:global(.text-light) .tableFilterInput:focus,
+:global(.text-light) .tableFilterInput:active {
+  border-color: #8ec0ff;
+  box-shadow: 0 0 0 1px #8ec0ff;
+}
+
+:global(.text-light) select.tableFilterInput {
+  background-color: #1f1f1f;
+  border-color: #3f3f3f;
+  color: #f1f1f1;
+  color-scheme: dark;
+}
+
+:global(.text-light) select.tableFilterInput option {
+  background-color: #1f1f1f;
+  color: #f1f1f1;
+}
+
+:global(.text-light) .datePickerIcon {
+  color: #8c8c8c;
+}
+
+.tableFilterWrapper :global(.react-datepicker__day--selected) {
+  color: #fff !important;
+  background-color: #a02db5 !important;
+}
+
+.tableFilterWrapper :global(.react-datepicker__day--selected:hover) {
+  color: #fff !important;
+  background-color: #a02db5 !important;
+}
+
+:global(.dark-mode) .tableFilterWrapper :global(.react-datepicker) {
+  background-color: #1f1f1f !important;
+  border-color: #3f3f3f;
+  color: #f1f1f1;
+}
+
+:global(.dark-mode) .tableFilterWrapper :global(.react-datepicker__header) {
+  background-color: #1f1f1f !important;
+  border-bottom-color: #3f3f3f;
+}
+
+:global(.dark-mode) .tableFilterWrapper :global(.react-datepicker__current-month),
+:global(.dark-mode) .tableFilterWrapper :global(.react-datepicker__day-name),
+:global(.dark-mode) .tableFilterWrapper :global(.react-datepicker__day) {
+  color: #f1f1f1;
+}
+
+:global(.dark-mode) .tableFilterWrapper :global(.react-datepicker__day:hover) {
+  background-color: #2c2c2c;
+}
+
+:global(.dark-mode) .tableFilterWrapper :global(.react-datepicker__day--selected) {
+  background-color: #a02db5;
+}
+
+:global(.dark-mode) .tableFilterWrapper :global(.react-datepicker__day--selected:hover) {
+  background-color: #a02db5;
+}
+
+:global(.dark-mode) .tableFilterWrapper :global(.react-datepicker__day--keyboard-selected) {
+  background-color: #a02db5;
+}
+
+:global(.dark-mode) .tableFilterWrapper :global(.react-datepicker__day--keyboard-selected:hover) {
+  background-color: #a02db5;
+}
+
+:global(.dark-mode) .tableFilterWrapper :global(.react-datepicker__day--disabled),
+:global(.dark-mode) .tableFilterWrapper :global(.react-datepicker__day--disabled:hover) {
+  color: #6b7280 !important;
+  background-color: transparent;
+  cursor: not-allowed;
+} 
+
+:global(.text-light) .tableFilterItem label {
+  color: #fff;
+}
+
+:global(.text-light) .tableFilterItem input[type='checkbox'] {
+  border-color: #3f3f3f;
+}
+
+:global(.text-light) .tableFilterItem input[type='checkbox']:checked {
+  background-color: #ca50db;
+  border-color: #ca50db;
+}
+
+:global(.text-light) .tableFilterItem input[type='checkbox']:hover {
+  border-color: #ca50db;
+}

@@ -2,6 +2,7 @@
 import { Redirect, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Suspense } from 'react';
+import EducationPortalLayout from '~/components/EductionPortal/layout/EducationPortalLayout';
 
 // eslint-disable-next-line react/function-component-definition
 const EPProtectedRoute = ({ component: Component, render, auth, fallback, ...rest }) => {
@@ -12,29 +13,57 @@ const EPProtectedRoute = ({ component: Component, render, auth, fallback, ...res
         if (!auth.isAuthenticated) {
           return <Redirect to={{ pathname: '/login', state: { from: props.location } }} />;
         }
-        if (auth.user.access && !auth.user.access.canAccessBMPortal) {
+
+        // Only enforce portal access check once access flags are available.
+        // Some environments expose EP access as `canAccessGEPortal`, others as `canAccessBMPortal`.
+        const access = auth.user.access || {};
+        const hasGEFlag = Object.hasOwn(access, 'canAccessGEPortal');
+        const canAccessEP = hasGEFlag ? access.canAccessGEPortal : access.canAccessBMPortal;
+
+        // If the user explicitly logged out of the Education Portal, require EP login again --
+        // unless their current token already grants access (e.g. a fresh login happened since),
+        // in which case clear the stale flag instead of permanently trapping them here.
+        const epLoggedOut =
+          typeof window !== 'undefined' && window.sessionStorage
+            ? window.sessionStorage.getItem('gePortalLoggedOut') === 'true'
+            : false;
+        if (epLoggedOut) {
+          if (canAccessEP) {
+            window.sessionStorage.removeItem('gePortalLoggedOut');
+          } else {
+            return (
+              <Redirect
+                to={{ pathname: '/educationportal/login', state: { from: props.location } }}
+              />
+            );
+          }
+        }
+
+        if (!canAccessEP) {
           return (
             <Redirect
               to={{ pathname: '/educationportal/login', state: { from: props.location } }}
             />
           );
         }
+
+        const Page = Component ? <Component {...props} /> : render(props);
+        const Wrapped = <EducationPortalLayout>{Page}</EducationPortalLayout>;
+
         // eslint-disable-next-line no-nested-ternary
-        return Component && fallback ? (
+        return fallback ? (
           <Suspense
             fallback={
+              // eslint-disable-next-line react/jsx-wrap-multilines
               <div className="d-flex justify-content-center">
                 <i className="fa fa-spinner fa-pulse" />
               </div>
             }
           >
-            {' '}
-            <Component {...props} />{' '}
+            {Wrapped}
           </Suspense>
-        ) : Component ? (
-          <Component {...props} />
         ) : (
-          render(props)
+          Wrapped
         );
       }}
     />

@@ -1,9 +1,11 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { Component } from 'react';
 import DatePicker from 'react-datepicker';
 import { Button } from 'reactstrap';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import 'react-datepicker/dist/react-datepicker.css';
-import '../../Header/DarkMode.css';
+import '../../Header/index.module.css';
+import styles from '../reportsPage.module.css';
 
 class ViewReportByDate extends Component {
   constructor(props) {
@@ -33,20 +35,32 @@ class ViewReportByDate extends Component {
   }
 
   clearDates() {
-    this.setState({
+    try {
+       this.setState({
       startDate: new Date(this.props.minDate),
       endDate: new Date(),
     });
     this.props.onClearFilters();
+    } catch (error) {
+      this.setState({
+      startDate: new Date(this.props.minDate),
+      endDate: new Date(),
+    });
+    }
+   
   }
 
   render() {
     const { minDate, maxDate, textColor, darkMode } = this.props;
 
     return (
-      <div className={`date-picker-container ${darkMode ? 'dark-mode' : ''}`}>
-        <div id="task_startDate" className="date-picker-item">
-          <label htmlFor="task_startDate" className={`date-picker-label ${textColor}`}>
+      <div className={`${styles['date-picker-container']} ${darkMode ? 'dark-mode' : ''}`}>
+        <div id="task_startDate" className={styles['date-picker-item']}>
+          <label 
+            htmlFor="task_startDate" 
+            className={`${styles['date-picker-label']} ${textColor}`}
+            style={{ color: darkMode ? '#ffffff' : '#000000', fontWeight: '500' }}
+          >
             Start Date
           </label>
           <DatePicker
@@ -58,8 +72,12 @@ class ViewReportByDate extends Component {
             popperPlacement="top-start"
           />
         </div>
-        <div id="task_EndDate" className="date-picker-item">
-          <label htmlFor="task_EndDate" className={`date-picker-label ${textColor}`}>
+        <div id="task_EndDate" className={styles['date-picker-item']}>
+          <label 
+            htmlFor="task_EndDate" 
+            className={`${styles['date-picker-label']} ${textColor}`}
+            style={{ color: darkMode ? '#ffffff' : '#000000', fontWeight: '500' }}
+          >
             End Date
           </label>
           <DatePicker
@@ -71,8 +89,8 @@ class ViewReportByDate extends Component {
             popperPlacement="top"
           />
         </div>
-        <div id="task_EndDate" className="date-picker-item">
-          <label htmlFor="task_EndDate" className={`date-picker-label ${textColor}`} />
+        <div id="task_EndDate" className={styles['date-picker-item']}>
+          <span className={styles['date-picker-label']} aria-hidden="true" />
           <Button
             onClick={this.clearDates}
             color="danger"

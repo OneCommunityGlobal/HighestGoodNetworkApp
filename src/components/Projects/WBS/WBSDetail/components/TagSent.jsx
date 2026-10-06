@@ -4,6 +4,7 @@ import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 
 function TagSent({ elm, removeResource }) {
   return (
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
     <li
       className="rounded-pill badge bg-primary text-wrap"
       onClick={() => removeResource(elm.userID)}

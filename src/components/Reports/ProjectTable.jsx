@@ -1,8 +1,5 @@
-// eslint-disable-next-line no-unused-vars
 import React from 'react';
-import { boxStyle, boxStyleDark } from 'styles';
-// These styles were not being used
-// import './reports.css';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { Link } from 'react-router-dom';
 
 function ProjectTable({ projects, darkMode }) {
@@ -10,7 +7,7 @@ function ProjectTable({ projects, darkMode }) {
   let ProjectsList = [];
   if (projects.length > 0) {
     ProjectsList = projects.map((project, index) => (
-      <tr id={`tr_${project._id}`} key={project._id}>
+      <tr data-testid={`project-row-${project._id}`} key={project._id}>
         <th scope="row" className={darkMode ? 'text-light' : ''}>
           <div>{index + 1}</div>
         </th>
@@ -20,11 +17,11 @@ function ProjectTable({ projects, darkMode }) {
         <td>
           {project.isActive ? (
             <div className="isActive">
-              <i className="fa fa-circle" aria-hidden="true" />
+              <i className="fa fa-circle" data-testid="status-icon" aria-hidden="true" />
             </div>
           ) : (
             <div className="isNotActive">
-              <i className="fa fa-circle-o" aria-hidden="true" />
+              <i className="fa fa-circle-o" data-testid="status-icon" aria-hidden="true" />
             </div>
           )}
         </td>

@@ -1,0 +1,147 @@
+/* stylelint-disable  */
+.addToolForm {
+  width: 100%;
+}
+
+.addToolForm label {
+  font-size: 0.8em;
+}
+
+.addToolFlexGroup {
+  display: flex;
+  gap: 2rem;
+}
+
+.addToolButtons {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem auto 2rem;
+}
+
+.addToolButtons button {
+  width: 50%;
+}
+
+.addToolTotalPrice {
+  display: flex;
+  border-radius: 10px;
+  line-height: 3rem;
+  font-weight: bolder;
+  background-color: #f5e6e6;
+  padding-left: 1em;
+}
+
+.addToolTotalPriceDark {
+  background-color: #2a2a4a;
+  color: #fff;
+}
+
+.addToolTotalPrice div {
+  width: 50%;
+}
+
+.totalPriceCalculated {
+  text-align: end;
+  padding-right: 1em;
+}
+
+.filePreviewContainer {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.toolFormError {
+  font-weight: 500;
+  font-size: 11px !important;
+  color: red !important;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.fieldRequired {
+  color: red !important;
+}
+
+/* Dark mode: inputs, textareas, selects */
+.addToolFormDark :global(input:not(.search-box)),
+.addToolFormDark :global(textarea) {
+  background-color: #1a1a2e !important;
+  color: #f1f5f9 !important;
+  border-color: #555 !important;
+}
+
+.addToolFormDark :global(input::placeholder),
+.addToolFormDark :global(textarea::placeholder) {
+  color: #9ca3af !important;
+}
+
+/* Selects in dark mode — hide the default browser arrow then use custom one */
+.addToolFormDark :global(select) {
+  background-color: #1a1a2e !important;
+  color: #f1f5f9 !important;
+  border-color: #555 !important;
+  /* Remove browser native arrow */
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  /* Single custom arrow */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23aaa' d='M1 1l5 5 5-5'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  background-size: 12px 8px !important;
+  padding-right: 2rem !important;
+}
+
+.addToolFormDark :global(select option) {
+  background-color: #1a1a2e;
+  color: #f1f5f9;
+}
+
+/* Dark mode labels */
+.addToolFormDark :global(label) {
+  color: #e2e8f0 !important;
+}
+
+/* Dark mode: phone country dropdown */
+.addToolFormDark :global(.react-tel-input .country-list) {
+  background-color: #1a1a2e;
+  border-color: #555;
+  color: #fff;
+}
+
+.addToolFormDark :global(.react-tel-input .country-list .country:hover),
+.addToolFormDark :global(.react-tel-input .country-list .country.highlight) {
+  background-color: #2d2d4e;
+}
+
+.addToolFormDark :global(.react-tel-input .country-list .country-name) {
+  color: #fff;
+}
+
+.addToolFormDark :global(.react-tel-input .country-list .dial-code) {
+  color: #aaa;
+}
+
+.addToolFormDark :global(.react-tel-input .country-list .search) {
+  background-color: #1a1a2e;
+  padding: 10px 10px 6px;
+}
+
+.addToolFormDark :global(.react-tel-input .country-list .search-box) {
+  background-color: #1a1a2e;
+  color: #fff;
+  border-color: #555;
+}
+
+@media screen and (width <= 640px) {
+  .addToolFlexGroup {
+    display: block;
+  }
+
+  .filePreviewContainer {
+    display: block;
+  }
+}

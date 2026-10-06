@@ -1,16 +1,20 @@
 import axios from 'axios';
 import * as actions from '../../constants/weeklySummaries';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import { fetchWeeklySummariesBegin, fetchWeeklySummariesSuccess, fetchWeeklySummariesError, getWeeklySummaries, updateWeeklySummaries } from '../weeklySummaries'
-import { getUserProfileActionCreator } from '../userProfile';
+import { getUserProfileActionCreator } from "../userProfile";
 
-jest.mock('axios');
+vi.mock('axios');
+
 
 describe('Weekly Summaries Action', () => {
 
   it('Should return action FETCH_WEEKLY_SUMMARIES_BEGIN', () => {
 
+
     const data = fetchWeeklySummariesBegin();
+
+    expect(data).toEqual({ type: actions.FETCH_WEEKLY_SUMMARIES_BEGIN });
 
     expect(data).toEqual({ type: actions.FETCH_WEEKLY_SUMMARIES_BEGIN });
 
@@ -20,8 +24,8 @@ describe('Weekly Summaries Action', () => {
 
     const weeklySummariesData = {
       id: 1,
-      dueDate: "2024-12-29",
-      summary: "Weekly Summary"
+      dueDate: '2024-12-29',
+      summary: 'Weekly Summary',
     };
 
     const result = fetchWeeklySummariesSuccess(weeklySummariesData);
@@ -36,7 +40,6 @@ describe('Weekly Summaries Action', () => {
   });
 
   it('Should return action FETCH_WEEKLY_SUMMARIES_ERROR ', () => {
-
     const error = {};
     const result = fetchWeeklySummariesError(error);
 
@@ -44,17 +47,16 @@ describe('Weekly Summaries Action', () => {
       type: actions.FETCH_WEEKLY_SUMMARIES_ERROR,
       payload: { error }
     });
-  })
-
+  });
 });
 
 describe('Weekly Summaries', () => {
 
-  jest.mock('axios');
-  const dispatch = jest.fn();
+  vi.mock('axios');
+  const dispatch = vi.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('Get Weekly Summaries', () => {
@@ -65,14 +67,14 @@ describe('Weekly Summaries', () => {
         weeklySummariesCount: 1,
         weeklySummaries: [
           {
-            id: "1",
-            dueDate: "2024-12-29",
-            summary: "Weekly Summary"
-          }
+            id: '1',
+            dueDate: '2024-12-29',
+            summary: 'Weekly Summary',
+          },
         ],
         mediaUrl: 'http://media.com',
-        adminLinks: [{ Name: 'Media Folder', Link: 'http://newmedia.com' }]
-      }
+        adminLinks: [{ Name: 'Media Folder', Link: 'http://newmedia.com' }], //NOSONAR - using http for test data
+      };
 
       axios.get.mockResolvedValue({ data: mockData, status: 200 });
 
@@ -93,7 +95,6 @@ describe('Weekly Summaries', () => {
 
       expect(dispatch).toHaveBeenCalledWith(getUserProfileActionCreator(mockData));
       expect(result).toBe(200);
-
     });
 
     it('Should dispatch an error action when GET request fails', async () => {
@@ -125,9 +126,9 @@ describe('Weekly Summaries', () => {
         weeklySummariesCount: 1,
         weeklySummaries: [
           {
-            id: "1",
-            dueDate: "2025-01-05",
-            summary: "Weekly Summary Week1"
+            id: '1',
+            dueDate: '2025-01-05',
+            summary: 'Weekly Summary Week1',
           },
         ],
         mediaUrl: 'http://media.com'
@@ -149,7 +150,6 @@ describe('Weekly Summaries', () => {
     });
 
     it('Ensure that if the "Media Folder" link already exists, it should be updated correctly.', async () => {
-
       const mockUserProfile = {
         firstName: 'User First Name',
         lastName: 'User Last Name',
@@ -162,13 +162,13 @@ describe('Weekly Summaries', () => {
         weeklySummariesCount: 1,
         weeklySummaries: [
           {
-            id: "1",
-            dueDate: "2025-01-05",
-            summary: "Weekly Summary Week1"
+            id: '1',
+            dueDate: '2025-01-05',
+            summary: 'Weekly Summary Week1',
           },
         ],
-        mediaUrl: 'http://newmedia.com'
-      }
+        mediaUrl: 'http://newmedia.com', // NOSONAR - using http for test data
+      };
 
       axios.get.mockResolvedValue({ data: mockUserProfile });
       axios.put.mockResolvedValue({ status: 200 });
@@ -186,7 +186,6 @@ describe('Weekly Summaries', () => {
     });
 
     it('Should throw error when API request fails', async () => {
-
       const mockError = { response: { status: 500 } };
       axios.get.mockRejectedValueOnce(mockError);
 
@@ -198,9 +197,6 @@ describe('Weekly Summaries', () => {
 
       expect(dispatch).not.toHaveBeenCalled();
       expect(result).toBe(500);
-
     });
-
   });
-
 });

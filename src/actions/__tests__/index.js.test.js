@@ -1,6 +1,8 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import axios from 'axios'; // Add this import
+import axios from 'axios';
+
+
 import httpService from '../../services/httpService';
 import {
   clearUserProfile,
@@ -26,8 +28,12 @@ import {
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
-jest.mock('../../services/httpService');
-jest.mock('axios'); // Mock axios
+vi.mock('../../services/httpService');
+vi.mock('axios');
+
+// Add this to fix "setImmediate is not defined" error
+// vi runs in JSDom environment by default which doesn't have setImmediate
+global.setImmediate = vi.fn(callback => callback());
 
 describe('clearUserProfile action', () => {
   it('should create an action to clear user profile', () => {
@@ -39,7 +45,7 @@ describe('clearUserProfile action', () => {
 });
 
 describe('getUserTeamMembers action', () => {
-  it('should create an action to get user team members', () => {
+  it('should create an action to get user team members', async () => {
     const userId = '123';
     const mockData = { teamMembers: [] };
     httpService.get.mockResolvedValue({ data: mockData });
@@ -48,15 +54,16 @@ describe('getUserTeamMembers action', () => {
 
     const store = mockStore({});
 
-    store.dispatch(getUserTeamMembers(userId));
-    setImmediate(() => {
-      expect(store.getActions()).toEqual(expectedActions);
-    });
+    // Use async/await approach instead of setImmediate
+    await store.dispatch(getUserTeamMembers(userId));
+    // Wait for promises to resolve
+    await new Promise(process.nextTick);
+    expect(store.getActions()).toEqual(expectedActions);
   });
 });
 
 describe('getUserProjectMembers action', () => {
-  it('should create an action to get user project members', () => {
+  it('should create an action to get user project members', async () => {
     const projectId = '456';
     const mockData = { projectMembers: [] };
     httpService.get.mockResolvedValue({ data: mockData });
@@ -65,15 +72,14 @@ describe('getUserProjectMembers action', () => {
 
     const store = mockStore({});
 
-    store.dispatch(getUserProjectMembers(projectId));
-    setImmediate(() => {
-      expect(store.getActions()).toEqual(expectedActions);
-    });
+    await store.dispatch(getUserProjectMembers(projectId));
+    await new Promise(process.nextTick);
+    expect(store.getActions()).toEqual(expectedActions);
   });
 });
 
 describe('getDashboardData action', () => {
-  it('should create an action to get dashboard data', () => {
+  it('should create an action to get dashboard data', async () => {
     const userId = '789';
     const mockData = { dashboardData: [] };
     httpService.get.mockResolvedValue({ data: mockData });
@@ -82,15 +88,14 @@ describe('getDashboardData action', () => {
 
     const store = mockStore({});
 
-    store.dispatch(getDashboardData(userId));
-    setImmediate(() => {
-      expect(store.getActions()).toEqual(expectedActions);
-    });
+    await store.dispatch(getDashboardData(userId));
+    await new Promise(process.nextTick);
+    expect(store.getActions()).toEqual(expectedActions);
   });
 });
 
 describe('getActionItems action', () => {
-  it('should create an action to get action items', () => {
+  it('should create an action to get action items', async () => {
     const userId = '101';
     const mockData = { actionItems: [] };
     httpService.get.mockResolvedValue({ data: mockData });
@@ -99,15 +104,14 @@ describe('getActionItems action', () => {
 
     const store = mockStore({});
 
-    store.dispatch(getActionItems(userId));
-    setImmediate(() => {
-      expect(store.getActions()).toEqual(expectedActions);
-    });
+    await store.dispatch(getActionItems(userId));
+    await new Promise(process.nextTick);
+    expect(store.getActions()).toEqual(expectedActions);
   });
 });
 
 describe('getNotifications action', () => {
-  it('should create an action to get notifications', () => {
+  it('should create an action to get notifications', async () => {
     const userId = '202';
     const mockData = { notifications: [] };
     httpService.get.mockResolvedValue({ data: mockData });
@@ -116,15 +120,14 @@ describe('getNotifications action', () => {
 
     const store = mockStore({});
 
-    store.dispatch(getNotifications(userId));
-    setImmediate(() => {
-      expect(store.getActions()).toEqual(expectedActions);
-    });
+    await store.dispatch(getNotifications(userId));
+    await new Promise(process.nextTick);
+    expect(store.getActions()).toEqual(expectedActions);
   });
 });
 
 describe('getAllProjects action', () => {
-  it('should create an action to get all projects', () => {
+  it('should create an action to get all projects', async () => {
     const mockData = { projects: [] };
     httpService.get.mockResolvedValue({ data: mockData });
 
@@ -132,15 +135,14 @@ describe('getAllProjects action', () => {
 
     const store = mockStore({});
 
-    store.dispatch(getAllProjects());
-    setImmediate(() => {
-      expect(store.getActions()).toEqual(expectedActions);
-    });
+    await store.dispatch(getAllProjects());
+    await new Promise(process.nextTick);
+    expect(store.getActions()).toEqual(expectedActions);
   });
 });
 
 describe('getProjectById action', () => {
-  it('should create an action to get project by id', () => {
+  it('should create an action to get project by id', async () => {
     const projectId = '303';
     const mockData = { project: {} };
     httpService.get.mockResolvedValue({ data: mockData });
@@ -149,15 +151,14 @@ describe('getProjectById action', () => {
 
     const store = mockStore({});
 
-    store.dispatch(getProjectById(projectId));
-    setImmediate(() => {
-      expect(store.getActions()).toEqual(expectedActions);
-    });
+    await store.dispatch(getProjectById(projectId));
+    await new Promise(process.nextTick);
+    expect(store.getActions()).toEqual(expectedActions);
   });
 });
 
 describe('getProjectsByUser action', () => {
-  it('should create an action to get projects by user', () => {
+  it('should create an action to get projects by user', async () => {
     const userId = '404';
     const mockData = { projects: [] };
     httpService.get.mockResolvedValue({ data: mockData });
@@ -166,15 +167,14 @@ describe('getProjectsByUser action', () => {
 
     const store = mockStore({});
 
-    store.dispatch(getProjectsByUser(userId));
-    setImmediate(() => {
-      expect(store.getActions()).toEqual(expectedActions);
-    });
+    await store.dispatch(getProjectsByUser(userId));
+    await new Promise(process.nextTick);
+    expect(store.getActions()).toEqual(expectedActions);
   });
 });
 
 describe('getProjectMembership action', () => {
-  it('should create an action to get project membership', () => {
+  it('should create an action to get project membership', async () => {
     const projectId = '505';
     const mockData = { members: [] };
     httpService.get.mockResolvedValue({ data: mockData });
@@ -183,15 +183,14 @@ describe('getProjectMembership action', () => {
 
     const store = mockStore({});
 
-    store.dispatch(getProjectMembership(projectId));
-    setImmediate(() => {
-      expect(store.getActions()).toEqual(expectedActions);
-    });
+    await store.dispatch(getProjectMembership(projectId));
+    await new Promise(process.nextTick);
+    expect(store.getActions()).toEqual(expectedActions);
   });
 });
 
 describe('getAllTeams action', () => {
-  it('should create an action to get all teams', () => {
+  it('should create an action to get all teams', async () => {
     const mockData = { teams: [] };
     httpService.get.mockResolvedValue({ data: mockData });
 
@@ -199,15 +198,14 @@ describe('getAllTeams action', () => {
 
     const store = mockStore({});
 
-    store.dispatch(getAllTeams());
-    setImmediate(() => {
-      expect(store.getActions()).toEqual(expectedActions);
-    });
+    await store.dispatch(getAllTeams());
+    await new Promise(process.nextTick);
+    expect(store.getActions()).toEqual(expectedActions);
   });
 });
 
 describe('getTeamById action', () => {
-  it('should create an action to get team by id', () => {
+  it('should create an action to get team by id', async () => {
     const teamId = '606';
     const mockData = { team: {} };
     httpService.get.mockResolvedValue({ data: mockData });
@@ -216,15 +214,14 @@ describe('getTeamById action', () => {
 
     const store = mockStore({});
 
-    store.dispatch(getTeamById(teamId));
-    setImmediate(() => {
-      expect(store.getActions()).toEqual(expectedActions);
-    });
+    await store.dispatch(getTeamById(teamId));
+    await new Promise(process.nextTick);
+    expect(store.getActions()).toEqual(expectedActions);
   });
 });
 
 describe('getTeamMembership action', () => {
-  it('should create an action to get team membership', () => {
+  it('should create an action to get team membership', async () => {
     const teamId = '707';
     const mockData = { members: [] };
     httpService.get.mockResolvedValue({ data: mockData });
@@ -233,15 +230,14 @@ describe('getTeamMembership action', () => {
 
     const store = mockStore({});
 
-    store.dispatch(getTeamMembership(teamId));
-    setImmediate(() => {
-      expect(store.getActions()).toEqual(expectedActions);
-    });
+    await store.dispatch(getTeamMembership(teamId));
+    await new Promise(process.nextTick);
+    expect(store.getActions()).toEqual(expectedActions);
   });
 });
 
 describe('getAllTimeEntries action', () => {
-  it('should create an action to get all time entries', () => {
+  it('should create an action to get all time entries', async () => {
     const mockData = { timeEntries: [] };
     httpService.get.mockResolvedValue({ data: mockData });
 
@@ -249,15 +245,14 @@ describe('getAllTimeEntries action', () => {
 
     const store = mockStore({});
 
-    store.dispatch(getAllTimeEntries());
-    setImmediate(() => {
-      expect(store.getActions()).toEqual(expectedActions);
-    });
+    await store.dispatch(getAllTimeEntries());
+    await new Promise(process.nextTick);
+    expect(store.getActions()).toEqual(expectedActions);
   });
 });
 
 describe('getTimeEntryForSpecifiedPeriod action', () => {
-  it('should create an action to get time entry for specified period', () => {
+  it('should create an action to get time entry for specified period', async () => {
     const userId = '808';
     const fromDate = '2021-01-01';
     const toDate = '2021-01-31';
@@ -268,15 +263,14 @@ describe('getTimeEntryForSpecifiedPeriod action', () => {
 
     const store = mockStore({});
 
-    store.dispatch(getTimeEntryForSpecifiedPeriod(userId, fromDate, toDate));
-    setImmediate(() => {
-      expect(store.getActions()).toEqual(expectedActions);
-    });
+    await store.dispatch(getTimeEntryForSpecifiedPeriod(userId, fromDate, toDate));
+    await new Promise(process.nextTick);
+    expect(store.getActions()).toEqual(expectedActions);
   });
 });
 
 describe('postTimeEntry action', () => {
-  it('should create an action to post time entry', () => {
+  it('should create an action to post time entry', async () => {
     const timeEntryObj = { description: 'Worked on project' };
     const mockResponse = { data: { id: '909' } };
     httpService.post.mockResolvedValue(mockResponse);
@@ -285,10 +279,9 @@ describe('postTimeEntry action', () => {
 
     const store = mockStore({});
 
-    store.dispatch(postTimeEntry(timeEntryObj));
-    setImmediate(() => {
-      expect(store.getActions()).toEqual(expectedActions);
-    });
+    await store.dispatch(postTimeEntry(timeEntryObj));
+    await new Promise(process.nextTick);
+    expect(store.getActions()).toEqual(expectedActions);
   });
 });
 
