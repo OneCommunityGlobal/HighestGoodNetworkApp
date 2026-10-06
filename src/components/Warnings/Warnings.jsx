@@ -17,6 +17,7 @@ import WarningModal from './modals/WarningModal';
 import WarningTrackerModal from './modals/WarningTrackerModal';
 import WarningIcons from './WarningIcons';
 import styles from './Warnings.module.css';
+import { permissions } from '../../utils/constants';
 // Better Descriptions (“i” = ,ltd = Please be more specific in your time log descriptions.)
 // Log Time to Tasks (“i” = ,lttt = Please log all time working on specific tasks to those tasks rather than the general category. )
 // Log Time as You Go (“i” = ,ltayg = Reminder to please log your time as you go. At a minimum, please log daily any time you work.)
@@ -40,13 +41,14 @@ export default function Warning({
   const [error, setError] = useState(null);
   const rolesAllowedToTracking = ['Administrator', 'Owner'];
   const canViewTrackerButton =
-    rolesAllowedToTracking.includes(userRole) || dispatch(hasPermission('viewTrackingOverview'));
+    rolesAllowedToTracking.includes(userRole) ||
+    dispatch(hasPermission(permissions.viewTrackingOverview));
   const canEditWarning =
     rolesAllowedToTracking.includes(userRole) ||
-    dispatch(hasPermission('addWarningTracker')) ||
-    dispatch(hasPermission('deactivateWarningTracker')) ||
-    dispatch(hasPermission('reactivateWarningTracker')) ||
-    dispatch(hasPermission('deleteWarningTracker'));
+    dispatch(hasPermission(permissions.addWarningTracker)) ||
+    dispatch(hasPermission(permissions.deactivateWarningTracker)) ||
+    dispatch(hasPermission(permissions.reactivateWarningTracker)) ||
+    dispatch(hasPermission(permissions.deleteWarningTracker));
 
   const fetchUsersWarningsById = async () => {
     return dispatch(getWarningsByUserId(personId))

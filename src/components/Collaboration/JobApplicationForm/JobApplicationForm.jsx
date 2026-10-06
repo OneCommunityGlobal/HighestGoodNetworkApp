@@ -8,6 +8,9 @@ import { ENDPOINTS } from '../../../utils/URL';
 import { useSelector } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
+import moment from 'moment-timezone';
+import { isJobApplicationFileUploadQuestion } from './jobApplicationQuestionUtils';
 
 function normalizeTitleKey(s) {
   return String(s || '')
@@ -205,17 +208,6 @@ function formRequiresResumeUpload(form) {
   );
 }
 
-function isFileUploadQuestion(q) {
-  if (isResumeQuestion(q)) return false;
-  const qt = getQuestionType(q);
-  if (['file', 'upload', 'document', 'attachment'].includes(qt)) return true;
-  const label = (q.label || q.questionText || '').toLowerCase();
-  return (
-    /\b(upload|attach|file)\b/.test(label) &&
-    !/\b(work\s*sample|portfolio|writing\s*sample)\b/.test(label)
-  );
-}
-
 function formatFileSize(bytes) {
   if (bytes == null || bytes === 0) return '';
   if (bytes < 1024) return `${bytes} B`;
@@ -373,7 +365,7 @@ function isAnswerEmpty(answer, q) {
 
 function missingRequiredQuestionLabel(q, idx, answers, questionFiles) {
   if (!isQuestionRequired(q)) return null;
-  if (isFileUploadQuestion(q)) {
+  if (isJobApplicationFileUploadQuestion(q)) {
     return questionFiles[idx] ? null : getQuestionLabel(q, idx);
   }
   return isAnswerEmpty(answers[idx], q) ? getQuestionLabel(q, idx) : null;
@@ -408,18 +400,111 @@ function validateHoursPerWeekAnswer(label, answer) {
   return null;
 }
 
-function collectMissingRequiredFields({
-  applicantName,
+function validateName(name, label = 'Name') {
+  const trimmed = String(name || '').trim();
+
+  if (!trimmed) return `${label} is required.`;
+  if (trimmed.length < 2) return `${label} must be at least 2 characters.`;
+  if (trimmed.length > 100) return `${label} must not exceed 100 characters.`;
+
+  if (!/^[\p{L}\s'-]+$/u.test(trimmed)) {
+    return `${label} may contain only letters, spaces, hyphens, and apostrophes.`;
+  }
+
+  return '';
+}
+
+function validateEmail(email) {
+  const trimmed = String(email || '').trim();
+
+  if (!trimmed) return 'Email is required.';
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+    return 'Please enter a valid email address.';
+  }
+
+  return '';
+}
+
+function validatePhone(phone) {
+  const trimmed = String(phone || '').trim();
+
+  if (!trimmed) return 'Phone number is required.';
+
+  try {
+    const phoneNumber = parsePhoneNumberFromString(trimmed);
+
+    if (!phoneNumber?.isPossible()) {
+      return 'Please enter a valid phone number format (e.g., +1 213-456-7890).';
+    }
+  } catch {
+    return 'Invalid phone number format.';
+  }
+
+  return '';
+}
+
+function validateLocation(location) {
+  const trimmed = String(location || '').trim();
+
+  if (!trimmed) return 'Location is required.';
+
+  if (trimmed.length > 100 || !/^[\p{L}\s,.'-]{3,100}$/u.test(trimmed)) {
+    return 'Please enter a valid location (e.g., Charlotte, NC).';
+  }
+
+  return '';
+}
+
+function validateTimeZone(timeZone) {
+  const trimmed = String(timeZone || '').trim();
+
+  if (!trimmed) return 'Time zone is required.';
+
+  if (!moment.tz.zone(trimmed)) {
+    return 'Please select a valid time zone.';
+  }
+
+  return '';
+}
+
+function getProfileValidationErrors({
+  firstName,
+  lastName,
   applicantEmail,
+  phone,
+  location,
+  timeZone,
+}) {
+  const errors = {};
+
+  const firstNameError = validateName(firstName, 'First name');
+  const lastNameError = validateName(lastName, 'Last name');
+  const emailError = validateEmail(applicantEmail);
+  const phoneError = validatePhone(phone);
+  const locationError = validateLocation(location);
+  const timeZoneError = validateTimeZone(timeZone);
+
+  if (firstNameError) errors.firstName = firstNameError;
+  if (lastNameError) errors.lastName = lastNameError;
+  if (emailError) errors.applicantEmail = emailError;
+  if (phoneError) errors.phone = phoneError;
+  if (locationError) errors.location = locationError;
+  if (timeZoneError) errors.timeZone = timeZoneError;
+
+  return errors;
+}
+
+function collectMissingRequiredFields({
+  profileErrors,
   visibleQuestions,
   answers,
   questionFiles,
   resumeFile,
   resumeRequired,
 }) {
-  const missing = [];
-  if (!applicantName.trim()) missing.push('Name');
-  if (!applicantEmail.trim()) missing.push('Email');
+  const missing = Object.values(profileErrors);
+
   if (resumeRequired && !resumeFile) missing.push('Resume');
   for (const [idx, q] of visibleQuestions.entries()) {
     const label = getQuestionLabel(q, idx);
@@ -434,7 +519,7 @@ function collectMissingRequiredFields({
 }
 
 function serializeAnswerForSubmit(q, idx, answers, questionFiles) {
-  if (!isFileUploadQuestion(q)) return answers[idx];
+  if (!isJobApplicationFileUploadQuestion(q)) return answers[idx];
   const file = questionFiles[idx];
   if (!file) return '';
   return {
@@ -565,16 +650,19 @@ FileUploadField.defaultProps = {
 };
 
 function JobApplicationForm() {
-  const location = useLocation();
+  const routerLocation = useLocation();
+
   const [forms, setForms] = useState([]);
   const [selectedJob, setSelectedJob] = useState('');
   const [answers, setAnswers] = useState([]);
   const [jobTitleInput, setJobTitleInput] = useState('');
   const [filteredForm, setFilteredForm] = useState(null);
   const [showDescription, setShowDescription] = useState(false);
-  const [applicantName, setApplicantName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [applicantEmail, setApplicantEmail] = useState('');
-  const [locationTimezone, setLocationTimezone] = useState('');
+  const [applicantLocation, setApplicantLocation] = useState('');
+  const [timeZone, setTimeZone] = useState('');
   const [phone, setPhone] = useState('');
   const [companyPosition, setCompanyPosition] = useState('');
   const [websiteSocial, setWebsiteSocial] = useState('');
@@ -593,6 +681,7 @@ function JobApplicationForm() {
   /** Owner/Admin: optional manual toggles on top of auto-calculated requirement flags. */
   const [requirementPreviewOverrides, setRequirementPreviewOverrides] = useState({});
   const [fieldErrors, setFieldErrors] = useState({});
+  const locationTimezone = [applicantLocation.trim(), timeZone.trim()].filter(Boolean).join(' | ');
 
   const darkMode = useSelector(state => state.theme?.darkMode);
   const isAdmin = useSelector(state => {
@@ -606,17 +695,6 @@ function JobApplicationForm() {
       return false;
     }
   });
-
-  /* Global back-to-top lives outside #root in index.html; hide it on this long form page. */
-  useEffect(() => {
-    const btn = document.querySelector('.back-to-top');
-    if (!btn) return undefined;
-    const prev = btn.style.display;
-    btn.style.display = 'none';
-    return () => {
-      btn.style.display = prev;
-    };
-  }, []);
 
   /*
    * Match html/body/#root to the page strip. Global #root is white; dark mode uses !important —
@@ -640,9 +718,22 @@ function JobApplicationForm() {
 
   const applyQuestionnairePreFill = data => {
     if (!data) return;
-    if (data.name) setApplicantName(data.name);
+    if (data.name) {
+      const [firstPart, ...restParts] = String(data.name)
+        .trim()
+        .split(/\s+/);
+      setFirstName(firstPart || '');
+      setLastName(restParts.join(' '));
+    }
     if (data.email) setApplicantEmail(data.email);
-    if (data.locationTimezone) setLocationTimezone(data.locationTimezone);
+    if (data.location) {
+      setApplicantLocation(data.location);
+    } else if (data.locationTimezone) {
+      setApplicantLocation(data.locationTimezone);
+    }
+    if (data.timeZone || data.timezone) {
+      setTimeZone(data.timeZone || data.timezone);
+    }
     if (data.phone) setPhone(data.phone);
     if (data.fullTimeYears) setFullTimeYears(data.fullTimeYears);
     if (data.monthsVolunteer) setMonthsVolunteer(data.monthsVolunteer);
@@ -683,25 +774,25 @@ function JobApplicationForm() {
   };
 
   useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
+    const searchParams = new URLSearchParams(routerLocation.search);
     const referralId = searchParams.get('ref') || searchParams.get('referral');
     const jobIdParam = searchParams.get('jobId');
-    const pathJobId = location.pathname.split('/').pop();
+    const pathJobId = routerLocation.pathname.split('/').pop();
     const jobId = jobIdParam || (pathJobId && pathJobId !== 'job-application' ? pathJobId : null);
 
     if (referralId && isValidId(referralId)) {
-      fetchUserQuestionnaireData(referralId);
+      void fetchUserQuestionnaireData(referralId);
     }
 
-    if (location.state) {
-      setJobDataFromRedirect(location.state);
-      if (location.state.jobTitle) {
-        setJobTitleInput(location.state.jobTitle);
+    if (routerLocation.state) {
+      setJobDataFromRedirect(routerLocation.state);
+      if (routerLocation.state.jobTitle) {
+        setJobTitleInput(routerLocation.state.jobTitle);
       }
     } else if (jobId && isValidId(jobId)) {
-      fetchJobData(jobId);
+      void fetchJobData(jobId);
     }
-  }, [location.state, location.search, location.pathname]);
+  }, [routerLocation.state, routerLocation.search, routerLocation.pathname]);
 
   useEffect(() => {
     let cancelled = false;
@@ -713,8 +804,11 @@ function JobApplicationForm() {
         const formsArr = parseFormsResponse(res);
         setForms(formsArr);
 
-        const navTitle = resolveNavigationJobTitle(jobDataFromRedirect, location);
-        const navState = { ...location.state, jobTitle: navTitle || location.state?.jobTitle };
+        const navTitle = resolveNavigationJobTitle(jobDataFromRedirect, routerLocation);
+        const navState = {
+          ...routerLocation.state,
+          jobTitle: navTitle || routerLocation.state?.jobTitle,
+        };
         const formMatch = navTitle ? findFormForJobTitle(formsArr, navTitle) : null;
         const chosen = pickInitialForm(formsArr, navState);
         notifyInitialFormSelection(navTitle, formMatch, chosen);
@@ -736,11 +830,11 @@ function JobApplicationForm() {
       }
     }
 
-    fetchForms();
+    void fetchForms();
     return () => {
       cancelled = true;
     };
-  }, [location.key, jobDataFromRedirect]);
+  }, [routerLocation.key, jobDataFromRedirect]);
 
   useEffect(() => {
     if (!selectedJob) return;
@@ -958,10 +1052,18 @@ function JobApplicationForm() {
     [fullTimeYears, monthsVolunteer, hoursPerWeek, roleSkills, locationTimezone],
   );
 
-  const validateBeforeSubmit = () =>
-    collectMissingRequiredFields({
-      applicantName,
+  const validateBeforeSubmit = () => {
+    const profileErrors = getProfileValidationErrors({
+      firstName,
+      lastName,
       applicantEmail,
+      phone,
+      location: applicantLocation,
+      timeZone,
+    });
+
+    const missing = collectMissingRequiredFields({
+      profileErrors,
       visibleQuestions,
       answers,
       questionFiles,
@@ -969,10 +1071,15 @@ function JobApplicationForm() {
       resumeRequired,
     });
 
+    return { missing, profileErrors };
+  };
+
   const resetFormAfterSubmit = () => {
-    setApplicantName('');
+    setFirstName('');
+    setLastName('');
     setApplicantEmail('');
-    setLocationTimezone('');
+    setApplicantLocation('');
+    setTimeZone('');
     setPhone('');
     setCompanyPosition('');
     setWebsiteSocial('');
@@ -997,9 +1104,34 @@ function JobApplicationForm() {
       return;
     }
 
-    const missing = validateBeforeSubmit();
+    const { missing, profileErrors } = validateBeforeSubmit();
+
+    setFieldErrors(prev => {
+      const next = { ...prev };
+
+      delete next.firstName;
+      delete next.lastName;
+      delete next.applicantEmail;
+      delete next.location;
+      delete next.timeZone;
+      delete next.phone;
+
+      return {
+        ...next,
+        ...profileErrors,
+      };
+    });
+
     if (missing.length > 0) {
-      toast.error(`Please complete required fields: ${missing.join(', ')}`, { autoClose: 7000 });
+      toast.error(
+        <div>
+          <div>Please complete required fields:</div>
+          {missing.map(field => (
+            <div key={field}>• {field}</div>
+          ))}
+        </div>,
+        { autoClose: 7000 },
+      );
       return;
     }
 
@@ -1009,7 +1141,7 @@ function JobApplicationForm() {
       formData.append(
         'payload',
         JSON.stringify({
-          applicantName: applicantName.trim(),
+          applicantName: `${firstName.trim()} ${lastName.trim()}`.trim(),
           applicantEmail: applicantEmail.trim(),
           profile: {
             locationTimezone,
@@ -1034,7 +1166,7 @@ function JobApplicationForm() {
       }
 
       visibleQuestions.forEach((q, idx) => {
-        if (isFileUploadQuestion(q) && questionFiles[idx] && q._id) {
+        if (isJobApplicationFileUploadQuestion(q) && questionFiles[idx] && q._id) {
           formData.append(`questionFile_${q._id}`, questionFiles[idx]);
         }
       });
@@ -1165,24 +1297,89 @@ function JobApplicationForm() {
             <div className={styles.formContentGroup}>
               <div className={styles.formProfileDetailGroup}>
                 <div className={styles.profileField}>
-                  <label htmlFor="jaf-applicant-name" className={styles.fieldLabel}>
-                    <span>Name</span>
+                  <label htmlFor="jaf-applicant-first-name" className={styles.fieldLabel}>
+                    <span>First Name</span>
                     <span className={styles.requiredMark} aria-hidden="true">
                       *
                     </span>
                   </label>
+
                   <input
-                    id="jaf-applicant-name"
+                    id="jaf-applicant-first-name"
                     type="text"
-                    placeholder="Name"
-                    className={styles.inputField}
-                    value={applicantName}
-                    onChange={e => setApplicantName(e.target.value)}
+                    placeholder="First Name"
+                    className={`${styles.inputField} ${
+                      fieldErrors.firstName ? styles.inputFieldError : ''
+                    }`}
+                    value={firstName}
+                    onChange={e => {
+                      setFirstName(e.target.value);
+
+                      if (fieldErrors.firstName) {
+                        setFieldErrors(prev => {
+                          const next = { ...prev };
+                          delete next.firstName;
+                          return next;
+                        });
+                      }
+                    }}
+                    minLength={2}
+                    maxLength={100}
                     required
                     aria-required="true"
-                    autoComplete="name"
+                    aria-invalid={Boolean(fieldErrors.firstName)}
+                    autoComplete="given-name"
                   />
+
+                  {fieldErrors.firstName && (
+                    <p className={styles.fieldError} role="alert">
+                      {fieldErrors.firstName}
+                    </p>
+                  )}
                 </div>
+
+                <div className={styles.profileField}>
+                  <label htmlFor="jaf-applicant-last-name" className={styles.fieldLabel}>
+                    <span>Last Name</span>
+                    <span className={styles.requiredMark} aria-hidden="true">
+                      *
+                    </span>
+                  </label>
+
+                  <input
+                    id="jaf-applicant-last-name"
+                    type="text"
+                    placeholder="Last Name"
+                    className={`${styles.inputField} ${
+                      fieldErrors.lastName ? styles.inputFieldError : ''
+                    }`}
+                    value={lastName}
+                    onChange={e => {
+                      setLastName(e.target.value);
+
+                      if (fieldErrors.lastName) {
+                        setFieldErrors(prev => {
+                          const next = { ...prev };
+                          delete next.lastName;
+                          return next;
+                        });
+                      }
+                    }}
+                    minLength={2}
+                    maxLength={100}
+                    required
+                    aria-required="true"
+                    aria-invalid={Boolean(fieldErrors.lastName)}
+                    autoComplete="family-name"
+                  />
+
+                  {fieldErrors.lastName && (
+                    <p className={styles.fieldError} role="alert">
+                      {fieldErrors.lastName}
+                    </p>
+                  )}
+                </div>
+
                 <div className={styles.profileField}>
                   <label htmlFor="jaf-applicant-email" className={styles.fieldLabel}>
                     <span>Email</span>
@@ -1190,45 +1387,163 @@ function JobApplicationForm() {
                       *
                     </span>
                   </label>
+
                   <input
                     id="jaf-applicant-email"
                     type="email"
                     placeholder="Email"
-                    className={styles.inputField}
+                    className={`${styles.inputField} ${
+                      fieldErrors.applicantEmail ? styles.inputFieldError : ''
+                    }`}
                     value={applicantEmail}
-                    onChange={e => setApplicantEmail(e.target.value)}
+                    onChange={e => {
+                      setApplicantEmail(e.target.value);
+
+                      if (fieldErrors.applicantEmail) {
+                        setFieldErrors(prev => {
+                          const next = { ...prev };
+                          delete next.applicantEmail;
+                          return next;
+                        });
+                      }
+                    }}
                     required
                     aria-required="true"
+                    aria-invalid={Boolean(fieldErrors.applicantEmail)}
                     autoComplete="email"
                   />
+
+                  {fieldErrors.applicantEmail && (
+                    <p className={styles.fieldError} role="alert">
+                      {fieldErrors.applicantEmail}
+                    </p>
+                  )}
                 </div>
+
                 <div className={styles.profileField}>
-                  <label htmlFor="jaf-location-tz" className={styles.fieldLabel}>
-                    Location &amp; timezone
+                  <label htmlFor="jaf-location" className={styles.fieldLabel}>
+                    <span>Location</span>
+                    <span className={styles.requiredMark} aria-hidden="true">
+                      *
+                    </span>
                   </label>
+
                   <input
-                    id="jaf-location-tz"
+                    id="jaf-location"
                     type="text"
-                    placeholder="Location & Timezone"
-                    className={styles.inputField}
-                    value={locationTimezone}
-                    onChange={e => setLocationTimezone(e.target.value)}
-                    autoComplete="off"
+                    placeholder="Location (e.g., Charlotte, NC)"
+                    className={`${styles.inputField} ${
+                      fieldErrors.location ? styles.inputFieldError : ''
+                    }`}
+                    value={applicantLocation}
+                    onChange={e => {
+                      setApplicantLocation(e.target.value);
+
+                      if (fieldErrors.location) {
+                        setFieldErrors(prev => {
+                          const next = { ...prev };
+                          delete next.location;
+                          return next;
+                        });
+                      }
+                    }}
+                    maxLength={100}
+                    required
+                    aria-required="true"
+                    aria-invalid={Boolean(fieldErrors.location)}
+                    autoComplete="address-level2"
                   />
+
+                  {fieldErrors.location && (
+                    <p className={styles.fieldError} role="alert">
+                      {fieldErrors.location}
+                    </p>
+                  )}
                 </div>
+
+                <div className={styles.profileField}>
+                  <label htmlFor="jaf-timezone" className={styles.fieldLabel}>
+                    <span>Time Zone</span>
+                    <span className={styles.requiredMark} aria-hidden="true">
+                      *
+                    </span>
+                  </label>
+
+                  <select
+                    id="jaf-timezone"
+                    className={`${styles.inputField} ${
+                      fieldErrors.timeZone ? styles.inputFieldError : ''
+                    }`}
+                    value={timeZone}
+                    onChange={e => {
+                      setTimeZone(e.target.value);
+
+                      if (fieldErrors.timeZone) {
+                        setFieldErrors(prev => {
+                          const next = { ...prev };
+                          delete next.timeZone;
+                          return next;
+                        });
+                      }
+                    }}
+                    required
+                    aria-required="true"
+                    aria-invalid={Boolean(fieldErrors.timeZone)}
+                  >
+                    <option value="">Select Time Zone</option>
+
+                    {moment.tz.names().map(tz => (
+                      <option key={tz} value={tz}>
+                        {tz}
+                      </option>
+                    ))}
+                  </select>
+
+                  {fieldErrors.timeZone && (
+                    <p className={styles.fieldError} role="alert">
+                      {fieldErrors.timeZone}
+                    </p>
+                  )}
+                </div>
+
                 <div className={styles.profileField}>
                   <label htmlFor="jaf-phone" className={styles.fieldLabel}>
-                    Phone number
+                    <span>Phone number</span>
+                    <span className={styles.requiredMark} aria-hidden="true">
+                      *
+                    </span>
                   </label>
+
                   <input
                     id="jaf-phone"
-                    type="text"
-                    placeholder="Phone Number"
-                    className={styles.inputField}
+                    type="tel"
+                    placeholder="+1 213-456-7890"
+                    className={`${styles.inputField} ${
+                      fieldErrors.phone ? styles.inputFieldError : ''
+                    }`}
                     value={phone}
-                    onChange={e => setPhone(e.target.value)}
+                    onChange={e => {
+                      setPhone(e.target.value);
+
+                      if (fieldErrors.phone) {
+                        setFieldErrors(prev => {
+                          const next = { ...prev };
+                          delete next.phone;
+                          return next;
+                        });
+                      }
+                    }}
+                    required
+                    aria-required="true"
+                    aria-invalid={Boolean(fieldErrors.phone)}
                     autoComplete="tel"
                   />
+
+                  {fieldErrors.phone && (
+                    <p className={styles.fieldError} role="alert">
+                      {fieldErrors.phone}
+                    </p>
+                  )}
                 </div>
                 <div className={styles.profileField}>
                   <label htmlFor="jaf-company" className={styles.fieldLabel}>
@@ -1296,7 +1611,7 @@ function JobApplicationForm() {
                       )}
                     </h2>
                     {['textbox', 'text'].includes(qt) &&
-                      !isFileUploadQuestion(q) &&
+                      !isJobApplicationFileUploadQuestion(q) &&
                       !isIndividualOrgQuestion && (
                         <>
                           <input
@@ -1421,7 +1736,7 @@ function JobApplicationForm() {
                         </select>
                       )
                     )}
-                    {isFileUploadQuestion(q) && (
+                    {isJobApplicationFileUploadQuestion(q) && (
                       <FileUploadField
                         id={`${formKey}-file`}
                         accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
@@ -1443,7 +1758,7 @@ function JobApplicationForm() {
                       'radio',
                       'dropdown',
                     ].includes(qt) &&
-                      !isFileUploadQuestion(q) && (
+                      !isJobApplicationFileUploadQuestion(q) && (
                         <input
                           type="text"
                           placeholder="Type your response here"
@@ -1551,3 +1866,68 @@ RequirementsSection.defaultProps = {
 };
 
 export default JobApplicationForm;
+
+/* const validateEmail = email => {
+    if (!email.trim()) return 'Email is required.';
+
+    if (!email.includes('@') || !email.includes('.')) {
+      return 'Please enter a valid email address.';
+    }
+
+    return '';
+  };
+
+  const validatePhone = phone => {
+    if (!phone.trim()) return 'Phone number is required.';
+    try {
+      const phoneNumber = parsePhoneNumberFromString(phone);
+      if (!phoneNumber?.isPossible()) {
+        return 'Please enter a valid phone number format (e.g., +1 213-456-7890).';
+      }
+    } catch {
+      return 'Invalid phone number format.';
+    }
+    return '';
+  };
+
+  const validateLocation = value => {
+    if (!value.trim()) return 'Location is required.';
+    if (!/^[a-zA-Z\s,.-]{3,}$/.test(value)) {
+      return 'Please enter a valid location (e.g., City, Country).';
+    }
+    return '';
+  };
+
+  const validateTimeZone = tz => {
+    if (!tz) return 'Time zone is required.';
+    return '';
+  };
+
+  const validateAllFields = () => {
+    const newErrors = {};
+
+    const emailError = validateEmail(applicantEmail);
+    if (emailError) newErrors.email = emailError;
+
+    const phoneError = validatePhone(phone);
+    if (phoneError) newErrors.phone = phoneError;
+
+    const locationError = validateLocation(location);
+    if (locationError) newErrors.location = locationError;
+
+    const tzError = validateTimeZone(timeZone);
+    if (tzError) newErrors.timeZone = tzError;
+
+    if (!firstName.trim()) {
+      newErrors.firstName = 'First name is required.';
+    }
+
+    if (!lastName.trim()) {
+      newErrors.lastName = 'Last name is required.';
+    }
+
+    return newErrors;
+  };
+
+  const visibleQuestions = useMemo(() => {
+    const seen = new Set(); */

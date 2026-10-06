@@ -309,6 +309,25 @@
     padding: 3px 4px;
     font-size: 0.8rem;
   }
+
+  .addItemCategory {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .addItemModalBackdrop {
+    padding: 10px;
+  }
+
+  .addItemModalHeader,
+  .addItemModalFooter,
+  .addItemModalBody {
+    padding: 12px;
+  }
+
+  .addItemFormGrid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .noResults {
@@ -350,5 +369,9 @@
 
   .notificationBody {
   flex-direction: column;
+  }
+
+  .addItemFormGrid {
+    grid-template-columns: 1fr;
   }
 }

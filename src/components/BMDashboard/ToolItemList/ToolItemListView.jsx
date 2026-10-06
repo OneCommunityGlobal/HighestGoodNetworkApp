@@ -1,177 +1,433 @@
 // ToolItemListView.jsx
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux'; // Added to tap into your application theme state
+import { useSelector } from 'react-redux';
+import {
+  FaCubes,
+  FaShoppingCart,
+  FaTools,
+  FaRecycle,
+  FaWrench,
+  FaRulerCombined,
+} from 'react-icons/fa';
 import BMError from '../shared/BMError';
 import SelectForm from '../ItemList/SelectForm';
 import SelectItem from '../ItemList/SelectItem';
 import ToolItemsTable from './ToolItemsTable';
+import InventoryNavBar from '../InventoryTypesList/InventoryNavBar';
 import styles from './ToolItemListView.module.css';
-import { Button } from 'reactstrap';
+import { ToolFiltersProvider, useToolFilters } from '../Tools/ToolFiltersContext';
+import { Form, FormGroup, Label } from 'reactstrap';
 
-const PROJECT_KEY = 'tool_selected_projects';
-const ITEM_KEY = 'tool_selected_items';
+const siblingCategories = [
+  { label: 'Materials', route: '/bmdashboard/materials', icon: <FaCubes /> },
+  { label: 'Consumables', route: '/bmdashboard/consumables', icon: <FaShoppingCart /> },
+  { label: 'Equipment', route: '/bmdashboard/equipment', icon: <FaTools /> },
+  { label: 'Reusables', route: '/bmdashboard/reusables', icon: <FaRecycle /> },
+  { label: 'Units', route: '/bmdashboard/units', icon: <FaRulerCombined /> },
+];
 
-export function ToolItemListView({
-  itemType,
-  items,
-  errors = {},
-  UpdateItemModal,
-  dynamicColumns,
-}) {
-  const [filteredItems, setFilteredItems] = useState([]);
-  const [selectedProject, setSelectedProject] = useState('all');
-  const [selectedItem, setSelectedItem] = useState('all');
-  const [isError, setIsError] = useState(false);
+const isItemUsing = item =>
+  Array.isArray(item.itemType?.using) && item.itemType.using.includes(item._id);
+
+const isItemAvailable = item =>
+  Array.isArray(item.itemType?.available) &&
+  item.itemType.available.includes(item._id) &&
+  item.condition !== 'Lost' &&
+  item.condition !== 'Needs Replacing';
+
+// helper to normalize many possible truthy / falsy formats
+const toBool = raw => {
+  if (typeof raw === 'boolean') return raw;
+  if (typeof raw === 'number') return raw !== 0;
+
+  if (typeof raw === 'string') {
+    const v = raw.trim().toLowerCase();
+    if (['yes', 'y', 'true', 't', '1'].includes(v)) return true;
+    if (['no', 'n', 'false', 'f', '0'].includes(v)) return false;
+  }
+  return undefined;
+};
+
+function ToolItemListViewInner({ itemType, items, errors = {}, UpdateItemModal, dynamicColumns }) {
+  const [filteredItems, setFilteredItems] = useState(items || []);
   const [localValues, setLocalValues] = useState([]);
+  const [isError, setIsError] = useState(false);
 
-  // Safely grab current theme state configuration
-  const darkMode = useSelector(state => state.theme?.darkMode);
-  const themeClass = darkMode ? styles.darkTheme : styles.lightTheme;
+  const projectKey = `${itemType}_selected_projects`;
+  const itemKey = `${itemType}_selected_items`;
 
-  // Load initial items
-  useEffect(() => {
-    if (Array.isArray(items)) {
-      setFilteredItems([...items]);
-    }
-  }, [items]);
+  // Read dark mode directly from Redux
+  const isDarkMode = useSelector(state => state.theme.darkMode);
 
-  // FULL multi-select compatible filtering
-  useEffect(() => {
-    if (!Array.isArray(items)) return;
+  const { filters, setFilters } = useToolFilters();
+  const {
+    selectedProject,
+    selectedItem,
+    availableFilter,
+    usingFilter,
+    toolStatusFilter,
+    conditionFilter,
+    searchTerm,
+    sortConfig,
+  } = filters;
 
-    const projectIsMulti = Array.isArray(selectedProject);
-    const itemIsMulti = Array.isArray(selectedItem);
-
-    const hasProjects = projectIsMulti && selectedProject.length > 0;
-    const hasItems = itemIsMulti && selectedItem.length > 0;
-
-    let result = [...items];
-
-    // Project filter (single + multi)
-    if (hasProjects) {
-      result = result.filter(item => selectedProject.includes(item.project?.name));
-    } else if (!projectIsMulti && selectedProject !== 'all') {
-      result = result.filter(item => item.project?.name === selectedProject);
-    }
-
-    // Item / Tool filter (single + multi)
-    if (hasItems) {
-      result = result.filter(item => selectedItem.includes(item.itemType?.name));
-    } else if (!itemIsMulti && selectedItem !== 'all') {
-      result = result.filter(item => item.itemType?.name === selectedItem);
-    }
-
-    setFilteredItems(result);
-  }, [selectedProject, selectedItem, items]);
-
-  // Error handling
   useEffect(() => {
     setIsError(Object.entries(errors).length > 0);
   }, [errors]);
 
-  // The Reset Handler
+  // Compute list of unique conditions for dropdown
+  const conditionOptions = useMemo(() => {
+    if (!Array.isArray(items)) return [];
+    return [...new Set(items.map(i => i.condition).filter(Boolean))].sort((a, b) =>
+      String(a).localeCompare(String(b)),
+    );
+  }, [items]);
+
+  const processedItems = useMemo(() => {
+    if (!items) return [];
+    let data = [...items];
+
+    // 1) Project filter
+    if (Array.isArray(selectedProject) && selectedProject.length > 0) {
+      data = data.filter(item => selectedProject.includes(item.project?.name));
+    }
+
+    // 2) Tool type filter
+    if (Array.isArray(selectedItem) && selectedItem.length > 0) {
+      data = data.filter(item => selectedItem.includes(item.itemType?.name));
+    }
+
+    // 3) Available filter
+    if (availableFilter !== 'all') {
+      const wantAvailable = availableFilter === 'yes';
+      data = data.filter(item => isItemAvailable(item) === wantAvailable);
+    }
+
+    // 4) Using filter
+    if (usingFilter !== 'all') {
+      const wantUsing = usingFilter === 'yes';
+      data = data.filter(item => isItemUsing(item) === wantUsing);
+    }
+
+    // 4.5) Tool Status
+    if (toolStatusFilter && toolStatusFilter !== 'all') {
+      data = data.filter(item => {
+        if (toolStatusFilter === 'using') return isItemUsing(item);
+        if (toolStatusFilter === 'available') return isItemAvailable(item);
+        if (toolStatusFilter === 'underMaintenance') {
+          return (
+            item.condition === 'Worn' ||
+            item.condition === 'Damaged' ||
+            item.condition === 'Needs Repair'
+          );
+        }
+        return true;
+      });
+    }
+
+    // 4.6) Condition
+    if (conditionFilter && conditionFilter !== 'all') {
+      data = data.filter(item => item.condition === conditionFilter);
+    }
+
+    // 5) Search
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase();
+      data = data.filter(item => {
+        const candidates = [
+          item.name,
+          item.itemType?.name,
+          item.project?.name,
+          item.code ?? item.Code,
+          item.condition,
+        ];
+        return candidates.some(v => typeof v === 'string' && v.toLowerCase().includes(term));
+      });
+    }
+
+    // 6) Sorting
+    if (sortConfig?.key) {
+      const { key, direction } = sortConfig;
+      const mult = direction === 'asc' ? 1 : -1;
+
+      data.sort((a, b) => {
+        let aVal;
+        let bVal;
+
+        switch (key) {
+          case 'project':
+            aVal = a.project?.name || '';
+            bVal = b.project?.name || '';
+            break;
+          case 'name':
+            aVal = a.name || '';
+            bVal = b.name || '';
+            break;
+          case 'bought':
+            aVal = a.bought || a.Bought || '';
+            bVal = b.bought || b.Bought || '';
+            break;
+          case 'using':
+            aVal = toBool(a.using ?? a.inUse ?? a.Using) ? 1 : 0;
+            bVal = toBool(b.using ?? b.inUse ?? b.Using) ? 1 : 0;
+            break;
+          case 'available':
+            aVal = toBool(a.available ?? a.isAvailable ?? a.Available) ? 1 : 0;
+            bVal = toBool(b.available ?? b.isAvailable ?? b.Available) ? 1 : 0;
+            break;
+          case 'condition':
+            aVal = a.condition || '';
+            bVal = b.condition || '';
+            break;
+          case 'code':
+            aVal = a.code || a.Code || '';
+            bVal = b.code || b.Code || '';
+            break;
+          default:
+            return 0;
+        }
+
+        if (aVal < bVal) return -1 * mult;
+        if (aVal > bVal) return 1 * mult;
+        return 0;
+      });
+    }
+
+    return data;
+  }, [
+    items,
+    selectedProject,
+    selectedItem,
+    availableFilter,
+    usingFilter,
+    toolStatusFilter,
+    conditionFilter,
+    searchTerm,
+    sortConfig,
+  ]);
+
+  useEffect(() => {
+    setFilteredItems(processedItems);
+  }, [processedItems]);
+
+  const updateFilter = patch => setFilters(prev => ({ ...prev, ...patch }));
+
+  const handleSort = columnKey => {
+    updateFilter({
+      sortConfig:
+        sortConfig?.key === columnKey
+          ? { key: columnKey, direction: sortConfig.direction === 'asc' ? 'desc' : 'asc' }
+          : { key: columnKey, direction: 'asc' },
+    });
+  };
+
   const handleReset = () => {
-    setLocalValues([]); // Clear React-Select UI
-    setSelectedProject([]); // Clear parent project state
-    setSelectedItem([]); // Clear parent item state
-    localStorage.removeItem(PROJECT_KEY); // Clear localStorage cache
-    localStorage.removeItem(ITEM_KEY); // Clear item filter cache as well
+    setLocalValues([]);
+    updateFilter({ selectedProject: [], selectedItem: [] });
+    localStorage.removeItem(projectKey);
+    localStorage.removeItem(itemKey);
   };
 
   if (isError) {
     return (
-      <main className={`${styles.itemsListContainer} ${themeClass}`}>
+      <main
+        className={`${styles.itemsListContainer} ${
+          isDarkMode ? styles.darkTheme : styles.lightTheme
+        }`}
+      >
         <h2>{itemType} List</h2>
         <BMError errors={errors} />
       </main>
     );
   }
 
+  const themeClass = isDarkMode ? styles.darkTheme : styles.lightTheme;
+
   return (
     <main className={`${styles.itemsListContainer} ${themeClass}`}>
-      <h3 className={styles.viewTitle}>{itemType}</h3>
+      <h3 className={styles.pageTitle}>
+        <span className={styles.pageTitleIcon}>
+          <FaWrench />
+        </span>
+        {itemType}
+      </h3>
 
-      <section className={styles.selectContainers}>
-        <div className={styles.containers}>
-          {items && (
-            <div className={styles.filtersWrapper}>
+      {/* Inventory Navigation Bar */}
+      <InventoryNavBar categories={siblingCategories} styles={styles} />
+
+      <section>
+        {items && (
+          <div className={styles.filtersRow}>
+            <div className={styles.projectToolColumn}>
               <div className={styles.filterGroup}>
                 <SelectForm
                   items={items}
-                  setSelectedProject={setSelectedProject}
+                  setSelectedProject={value => updateFilter({ selectedProject: value })}
                   localValues={localValues}
                   setLocalValues={setLocalValues}
+                  itemType={itemType}
                 />
               </div>
-
               <div className={styles.filterGroup}>
                 <SelectItem
                   items={items}
                   selectedProject={selectedProject}
                   selectedItem={selectedItem}
-                  setSelectedItem={setSelectedItem}
+                  setSelectedItem={value => updateFilter({ selectedItem: value })}
                   label="Tool"
+                  itemType={itemType}
                 />
               </div>
-
               <div className={styles.resetContainer}>
-                <Button
-                  type="button"
-                  color="danger"
-                  onClick={handleReset}
-                  disabled={
-                    localStorage.getItem(PROJECT_KEY) === null &&
-                    localStorage.getItem(ITEM_KEY) === null
-                  }
-                  className={styles.resetButton}
-                >
-                  Reset
-                </Button>
+                <Form onSubmit={e => e.preventDefault()}>
+                  <FormGroup>
+                    <Label>&nbsp;</Label>
+                    <button
+                      type="button"
+                      className={styles.btnReset}
+                      onClick={handleReset}
+                      disabled={
+                        localStorage.getItem(projectKey) === null &&
+                        localStorage.getItem(itemKey) === null
+                      }
+                    >
+                      Reset
+                    </button>
+                  </FormGroup>
+                </Form>
               </div>
             </div>
-          )}
-        </div>
+
+            <div className={styles.availSearchColumn}>
+              <div className={styles.availSearchRow}>
+                <div className={styles.availUsingGroup}>
+                  <div className={styles.filterGroupSmall}>
+                    <label className={styles.filterLabel} htmlFor="available-filter">
+                      Available
+                    </label>
+                    <select
+                      id="available-filter"
+                      className={styles.filterSelect}
+                      value={availableFilter}
+                      onChange={e => updateFilter({ availableFilter: e.target.value })}
+                    >
+                      <option value="all">All</option>
+                      <option value="yes">Yes</option>
+                      <option value="no">No</option>
+                    </select>
+                  </div>
+
+                  <div className={styles.filterGroupSmall}>
+                    <label className={styles.filterLabel} htmlFor="using-filter">
+                      Using
+                    </label>
+                    <select
+                      id="using-filter"
+                      className={styles.filterSelect}
+                      value={usingFilter}
+                      onChange={e => updateFilter({ usingFilter: e.target.value })}
+                    >
+                      <option value="all">All</option>
+                      <option value="yes">Yes</option>
+                      <option value="no">No</option>
+                    </select>
+                  </div>
+
+                  <div className={styles.filterGroupSmall}>
+                    <label className={styles.filterLabel} htmlFor="tool-status-filter">
+                      Tool Status
+                    </label>
+                    <select
+                      id="tool-status-filter"
+                      className={styles.filterSelect}
+                      value={toolStatusFilter || 'all'}
+                      onChange={e => updateFilter({ toolStatusFilter: e.target.value })}
+                    >
+                      <option value="all">All</option>
+                      <option value="using">Using</option>
+                      <option value="available">Available</option>
+                      <option value="underMaintenance">Under Maintenance</option>
+                    </select>
+                  </div>
+
+                  <div className={styles.filterGroupSmall}>
+                    <label className={styles.filterLabel} htmlFor="condition-filter">
+                      Condition
+                    </label>
+                    <select
+                      id="condition-filter"
+                      className={styles.filterSelect}
+                      value={conditionFilter || 'all'}
+                      onChange={e => updateFilter({ conditionFilter: e.target.value })}
+                    >
+                      <option value="all">All</option>
+                      {conditionOptions.map(cond => (
+                        <option key={cond} value={cond}>
+                          {cond}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className={`${styles.filterGroup} ${styles.searchGroup}`}>
+                  <label className={styles.filterLabel} htmlFor="tool-search">
+                    Tool Name
+                  </label>
+                  <input
+                    id="tool-search"
+                    type="text"
+                    className={styles.searchInput}
+                    placeholder="Search by name…"
+                    value={searchTerm}
+                    onChange={e => updateFilter({ searchTerm: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {filteredItems && (
-          /* Removed the manual inline ternary condition to keep styles unified */
-          <div className={styles.tableResponsiveWrapper}>
-            <ToolItemsTable
-              selectedProject={selectedProject}
-              selectedItem={selectedItem}
-              filteredItems={filteredItems}
-              UpdateItemModal={UpdateItemModal}
-              dynamicColumns={dynamicColumns}
-              className={styles.filteredTable}
-            />
-          </div>
+          <ToolItemsTable
+            selectedProject={selectedProject}
+            selectedItem={selectedItem}
+            filteredItems={filteredItems}
+            UpdateItemModal={UpdateItemModal}
+            dynamicColumns={dynamicColumns}
+            onSort={handleSort}
+            sortConfig={sortConfig}
+          />
         )}
       </section>
     </main>
   );
 }
 
-ToolItemListView.propTypes = {
+ToolItemListViewInner.propTypes = {
   itemType: PropTypes.string,
-  items: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number,
-      name: PropTypes.string,
-    }),
-  ).isRequired,
-  errors: PropTypes.shape({
-    message: PropTypes.string,
-  }),
+  items: PropTypes.arrayOf(PropTypes.shape({ id: PropTypes.number, name: PropTypes.string }))
+    .isRequired,
+  errors: PropTypes.shape({ message: PropTypes.string }),
   UpdateItemModal: PropTypes.oneOfType([PropTypes.func, PropTypes.elementType]),
   dynamicColumns: PropTypes.array,
 };
 
-ToolItemListView.defaultProps = {
+ToolItemListViewInner.defaultProps = {
   itemType: 'Tools',
   errors: {},
   UpdateItemModal: null,
   dynamicColumns: [],
 };
+
+export function ToolItemListView(props) {
+  return (
+    <ToolFiltersProvider>
+      <ToolItemListViewInner {...props} />
+    </ToolFiltersProvider>
+  );
+}
 
 export default ToolItemListView;

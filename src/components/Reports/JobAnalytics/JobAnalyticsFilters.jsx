@@ -76,7 +76,6 @@ function JobAnalyticsFilters({ filters, setFilters }) {
           dateMode: "All",
           startDate: "",
           endDate: "",
-          granularity: "totals",
         }));
         return;
       }
@@ -84,15 +83,8 @@ function JobAnalyticsFilters({ filters, setFilters }) {
       return;
     }
 
-    if (name === "granularity" && filters.dateMode === "All") {
-      setFilters((prev) => ({ ...prev, granularity: "totals" }));
-      return;
-    }
-
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
-
-  const nonTotalsDisabled = filters.dateMode !== "Custom";
 
   return (
     <div className={styles.jobAnalyticsFilters}>
@@ -156,11 +148,7 @@ function JobAnalyticsFilters({ filters, setFilters }) {
           className={styles.filterInput}
         >
           {GRANULARITY_OPTS.map((opt) => (
-            <option
-              key={opt.value}
-              value={opt.value}
-              disabled={opt.value !== "totals" && nonTotalsDisabled}
-            >
+            <option key={opt.value} value={opt.value}>
               {opt.label}
             </option>
           ))}
