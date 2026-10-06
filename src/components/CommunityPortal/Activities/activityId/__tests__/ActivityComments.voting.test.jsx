@@ -2,11 +2,18 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
 import ThemeManager from '../../../../common/ThemeManager';
 import ActivityComments from '../ActivityComments';
 import styles from '../ActivityComments.module.css';
 
-const mockStore = configureMockStore([]);
+const mockStore = configureMockStore([thunk]);
+
+const createStore = (darkMode = false) =>
+  mockStore({
+    theme: { darkMode },
+    membersList: { loading: false, members: [], error: null },
+  });
 
 describe('ActivityComments voting controls', () => {
   beforeEach(() => {
@@ -21,7 +28,12 @@ describe('ActivityComments voting controls', () => {
   });
 
   test('uses the semantic vote button classes and updates both counts', () => {
-    render(<ActivityComments />);
+    const store = createStore();
+    render(
+      <Provider store={store}>
+        <ActivityComments />
+      </Provider>,
+    );
     const upvoteButtons = screen.getAllByRole('button', { name: 'Upvote comment' });
     const downvoteButtons = screen.getAllByRole('button', { name: 'Downvote comment' });
 
@@ -40,7 +52,7 @@ describe('ActivityComments voting controls', () => {
   });
 
   test('keeps vote buttons under the global dark-mode selector chain', async () => {
-    const store = mockStore({ theme: { darkMode: true } });
+    const store = createStore(true);
     render(
       <Provider store={store}>
         <ThemeManager />
