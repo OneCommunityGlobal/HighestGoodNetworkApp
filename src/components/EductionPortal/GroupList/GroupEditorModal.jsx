@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import styles from './GroupList.module.css';
+import GroupMemberSelector from './GroupMemberSelector';
 
 export default function GroupEditorModal({
   group = null,
@@ -189,26 +190,14 @@ export default function GroupEditorModal({
             )}
           </div>
 
-          <div className={styles.membersSection}>
-            <div className={styles.membersTitle}>Members</div>
-            <div className={styles.checklist}>
-              {learners.length === 0 && <div className={styles.empty}>No learners available</div>}
-              {learners.map(l => {
-                const label = l.displayName || l.name || l.email || 'Learner';
-                return (
-                  <label key={l.id} className={styles.checkItem}>
-                    <input
-                      type="checkbox"
-                      disabled={pending}
-                      checked={members.includes(l.id)}
-                      onChange={() => toggleMember(l.id)}
-                    />
-                    <span className={styles.checkLabel}>{label}</span>
-                  </label>
-                );
-              })}
-            </div>
-          </div>
+          {/* The checklist lives in ./GroupMemberSelector.jsx; selection state and
+              toggleMember stay in this modal. pending disables its checkboxes. */}
+          <GroupMemberSelector
+            learners={learners}
+            members={members}
+            pending={pending}
+            onToggleMember={toggleMember}
+          />
         </div>
 
         <div className={styles.footer}>
