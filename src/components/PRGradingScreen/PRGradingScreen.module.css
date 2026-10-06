@@ -1007,3 +1007,108 @@
 .pr-grading-screen-no-results.dark-mode {
   color: #9ab0cc;
 }
+
+/* ===== TEAM SELECTOR ===== */
+.pr-grading-screen-team-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.pr-grading-screen-team-selector-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #495057;
+  white-space: nowrap;
+  margin: 0;
+}
+
+.pr-grading-screen-team-select {
+  padding: 6px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #495057;
+  background-color: #fff;
+  cursor: pointer;
+  outline: none;
+  min-width: 160px;
+}
+
+.pr-grading-screen-team-select:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 2px rgb(0 123 255 / 25%);
+}
+
+/* Dark mode */
+.pr-grading-screen-team-selector.dark-mode {
+  background-color: transparent;
+}
+
+.pr-grading-screen-team-selector-label.dark-mode {
+  color: #9ab0cc;
+}
+
+.pr-grading-screen-team-select.dark-mode {
+  background-color: #2d4059;
+  border-color: #5a6b88;
+  color: #fff;
+}
+
+.pr-grading-screen-team-select.dark-mode:focus {
+  border-color: #e8a71c;
+  box-shadow: 0 0 0 2px rgb(232 167 28 / 25%);
+}
+
+/* ===== SAVE STATUS BANNER ===== */
+.pr-grading-screen-save-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-bottom: 1px solid transparent;
+}
+
+.pr-grading-screen-save-banner--success {
+  background-color: #e6f4ea;
+  color: #2d6a4f;
+  border-bottom-color: #b7dfcb;
+}
+
+.pr-grading-screen-save-banner--error {
+  background-color: #fdf0f0;
+  color: #a33b3b;
+  border-bottom-color: #f5c2c2;
+}
+
+.pr-grading-screen-save-banner-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: bold;
+  line-height: 1;
+  padding: 0 4px;
+  color: inherit;
+  opacity: 0.7;
+}
+
+.pr-grading-screen-save-banner-close:hover {
+  opacity: 1;
+}
+
+/* Dark mode */
+.pr-grading-screen-save-banner--success.dark-mode {
+  background-color: #1e3a2f;
+  color: #6fcf97;
+  border-bottom-color: #2d6a4f;
+}
+
+.pr-grading-screen-save-banner--error.dark-mode {
+  background-color: #3a1f1f;
+  color: #f28b82;
+  border-bottom-color: #7a2d2d;
+}
