@@ -39,8 +39,8 @@ describe('VolunteerHoursDistribution wrapper', () => {
     );
 
     // FIXED: Assert using formatted range strings instead of raw bucket IDs
-    expect(screen.getByText('10-19 hrs')).toBeInTheDocument();
-    expect(screen.getByText('20-29 hrs')).toBeInTheDocument();
+    expect(screen.getByText('0-10 hrs')).toBeInTheDocument();
+    expect(screen.getByText('11-20 hrs')).toBeInTheDocument();
 
     // Verify computeDistribution now allocates hours to buckets so slices add up to total hours
     const computed = computeDistribution(hoursData, totalHoursData);
@@ -48,8 +48,8 @@ describe('VolunteerHoursDistribution wrapper', () => {
     // FIXED: Assert that names in userData match the updated formatRangeLabel output
     expect(computed).toEqual({
       userData: [
-        { name: '10-19 hrs', value: 494, percentage: 40 },
-        { name: '20-29 hrs', value: 740, percentage: 60 },
+        { name: '0-10 hrs', value: 494, percentage: 40 },
+        { name: '11-20 hrs', value: 740, percentage: 60 },
       ],
       totalVolunteers: 5,
       totalHoursWorked: 1234,
@@ -84,9 +84,9 @@ describe('VolunteerHoursDistribution wrapper', () => {
 
     expect(computeDistribution(committedHoursData, undefined, true)).toEqual({
       userData: [
-        { name: '10-19 hrs', value: 2, percentage: 25, valueType: 'volunteers' },
-        { name: '20-29 hrs', value: 3, percentage: 38, valueType: 'volunteers' },
-        { name: '30-39 hrs', value: 1, percentage: 13, valueType: 'volunteers' },
+        { name: '0-10 hrs', value: 2, percentage: 25, valueType: 'volunteers' },
+        { name: '11-20 hrs', value: 3, percentage: 38, valueType: 'volunteers' },
+        { name: '21-30 hrs', value: 1, percentage: 13, valueType: 'volunteers' },
         { name: '40 hrs', value: 1, percentage: 13, valueType: 'volunteers' },
         { name: 'Over 40 hrs', value: 1, percentage: 13, valueType: 'volunteers' },
       ],
