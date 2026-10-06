@@ -30,6 +30,102 @@ const loadStoredViewState = () => {
   }
 };
 
+function renderSubmissionContent({
+  groupId,
+  membersReady,
+  membersFailed,
+  membership,
+  setMembersRetry,
+  activeClassTasks,
+  activeClassId,
+  handleExpand,
+  expandedTasks,
+  handleKeyPress,
+}) {
+  if (groupId && !membersReady) {
+    if (membersFailed)
+      return (
+        <div className={styles.noData} role="alert">
+          Could not load group members.{' '}
+          <button
+            type="button"
+            className={styles.retryButton}
+            onClick={() => setMembersRetry(value => value + 1)}
+          >
+            Retry members
+          </button>
+        </div>
+      );
+    return <output className={`${styles.noData} d-block`}>Loading group members…</output>;
+  }
+  if (groupId && membership.ids.size === 0) {
+    return <div className={styles.noData}>This group has no members.</div>;
+  }
+  if (Object.keys(activeClassTasks).length === 0) {
+    return (
+      <div className={styles.noData}>
+        <p>
+          {activeClassId
+            ? 'No tasks in this course match the current filter.'
+            : 'No submissions match the current filter.'}
+        </p>
+      </div>
+    );
+  }
+  return Object.entries(activeClassTasks).map(([taskName, subs]) => (
+    <div key={taskName} className={styles.taskSection}>
+      <div
+        className={styles.sectionHeader}
+        onClick={() => handleExpand(taskName)}
+        role="button"
+        tabIndex={0}
+        aria-expanded={!!expandedTasks[taskName]}
+        onKeyPress={e => handleKeyPress(e, taskName)}
+      >
+        <div className={styles.sectionInfo}>
+          <h3>{taskName}</h3>
+          {subs[0]?.dueAt && (
+            <p className={styles.dueDate}>
+              Due{' '}
+              {new Date(subs[0].dueAt).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+              })}{' '}
+              at{' '}
+              {new Date(subs[0].dueAt).toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true,
+              })}
+            </p>
+          )}
+        </div>
+        <div className={styles.sectionActions}>
+          <span className={styles.submissionCount}>
+            {subs.length} {subs.length === 1 ? 'submission' : 'submissions'}
+          </span>
+          <span className={styles.expandIcon}>
+            {expandedTasks[taskName] ? <FiChevronUp /> : <FiChevronDown />}
+          </span>
+        </div>
+      </div>
+      {expandedTasks[taskName] && (
+        <div className={styles.cardsGrid}>
+          {subs.map(submission => (
+            <SubmissionCard
+              key={
+                submission._id ||
+                `${submission.studentEmail}-${submission.taskName}-${submission.submittedAt}`
+              }
+              submission={submission}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  ));
+}
+
 const TaskSubmissionsPage = () => {
   const storedViewState = useRef(loadStoredViewState()).current;
 
@@ -347,9 +443,7 @@ const TaskSubmissionsPage = () => {
       </div>
 
       {groupsStatus === 'loading' && (
-        <div role="status" className={styles.noData}>
-          Loading groups…
-        </div>
+        <output className={`${styles.noData} d-block`}>Loading groups…</output>
       )}
       {groupsStatus === 'error' && (
         <div role="alert" className={styles.noData}>
@@ -401,87 +495,18 @@ const TaskSubmissionsPage = () => {
       </div>
 
       <div className={`${styles.content} ${refreshing ? styles.refreshing : ''}`}>
-        {groupId && !membersReady ? (
-          <div className={styles.noData} role={membersFailed ? 'alert' : 'status'}>
-            {membersFailed ? (
-              <>
-                Could not load group members.
-                <button
-                  type="button"
-                  className={styles.retryButton}
-                  onClick={() => setMembersRetry(value => value + 1)}
-                >
-                  Retry members
-                </button>
-              </>
-            ) : (
-              'Loading group members…'
-            )}
-          </div>
-        ) : groupId && membership.ids.size === 0 ? (
-          <div className={styles.noData}>This group has no members.</div>
-        ) : Object.keys(activeClassTasks).length === 0 ? (
-          <div className={styles.noData}>
-            <p>
-              {activeClassId
-                ? 'No tasks in this course match the current filter.'
-                : 'No submissions match the current filter.'}
-            </p>
-          </div>
-        ) : (
-          Object.entries(activeClassTasks).map(([taskName, subs]) => (
-            <div key={taskName} className={styles.taskSection}>
-              <div
-                className={styles.sectionHeader}
-                onClick={() => handleExpand(taskName)}
-                role="button"
-                tabIndex={0}
-                aria-expanded={!!expandedTasks[taskName]}
-                onKeyPress={e => handleKeyPress(e, taskName)}
-              >
-                <div className={styles.sectionInfo}>
-                  <h3>{taskName}</h3>
-                  {subs[0]?.dueAt && (
-                    <p className={styles.dueDate}>
-                      Due{' '}
-                      {new Date(subs[0].dueAt).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                      })}{' '}
-                      at{' '}
-                      {new Date(subs[0].dueAt).toLocaleTimeString('en-US', {
-                        hour: 'numeric',
-                        minute: '2-digit',
-                        hour12: true,
-                      })}
-                    </p>
-                  )}
-                </div>
-                <div className={styles.sectionActions}>
-                  <span className={styles.submissionCount}>
-                    {subs.length} {subs.length === 1 ? 'submission' : 'submissions'}
-                  </span>
-                  <span className={styles.expandIcon}>
-                    {expandedTasks[taskName] ? <FiChevronUp /> : <FiChevronDown />}
-                  </span>
-                </div>
-              </div>
-              {expandedTasks[taskName] && (
-                <div className={styles.cardsGrid}>
-                  {subs.map(submission => (
-                    <SubmissionCard
-                      key={
-                        submission._id ||
-                        `${submission.studentEmail}-${submission.taskName}-${submission.submittedAt}`
-                      }
-                      submission={submission}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          ))
-        )}
+        {renderSubmissionContent({
+          groupId,
+          membersReady,
+          membersFailed,
+          membership,
+          setMembersRetry,
+          activeClassTasks,
+          activeClassId,
+          handleExpand,
+          expandedTasks,
+          handleKeyPress,
+        })}
       </div>
     </div>
   );

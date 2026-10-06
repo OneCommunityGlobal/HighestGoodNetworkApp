@@ -136,8 +136,8 @@ export default function GroupList() {
       }
     };
 
-    loadGroups();
-    loadStudents();
+    void loadGroups();
+    void loadStudents();
     return () => {
       cancelled = true;
     };
@@ -268,6 +268,33 @@ export default function GroupList() {
     }
   }, []);
 
+  const handleSaveError = useCallback(
+    async (error, draft, created, confirmed) => {
+      const detail = error.response?.data?.error || error.message || 'Request error';
+      if (created) {
+        setMutationError(
+          `Group created, but its members could not be loaded. Save will retry using this group. ${detail}`,
+        );
+      } else if (draft.id) {
+        const reconciled = await reconcile(confirmed || draft);
+        setMutationError(
+          `Save did not complete. Some changes may already be saved. ${
+            reconciled
+              ? 'Current server data was reloaded; your draft is preserved.'
+              : 'Current server data could not be fully confirmed.'
+          } ${detail}`,
+        );
+      } else {
+        // A rejected create may have reached the server. Do not risk a duplicate POST.
+        setUncertainCreate(true);
+        setMutationError(
+          `Creation could not be confirmed. Refresh groups to check existing groups before creating again. ${detail}`,
+        );
+      }
+    },
+    [reconcile],
+  );
+
   const handleSave = useCallback(
     async draft => {
       if (mutationLock.current || (!draft.id && uncertainCreate)) return;
@@ -306,33 +333,13 @@ export default function GroupList() {
         }
         setShowModal(false);
       } catch (error) {
-        const detail = error.response?.data?.error || error.message || 'Request error';
-        if (created) {
-          setMutationError(
-            `Group created, but its members could not be loaded. Save will retry using this group. ${detail}`,
-          );
-        } else if (draft.id) {
-          const reconciled = await reconcile(confirmed || draft);
-          setMutationError(
-            `Save did not complete. Some changes may already be saved. ${
-              reconciled
-                ? 'Current server data was reloaded; your draft is preserved.'
-                : 'Current server data could not be fully confirmed.'
-            } ${detail}`,
-          );
-        } else {
-          // A rejected create may have reached the server. Do not risk a duplicate POST.
-          setUncertainCreate(true);
-          setMutationError(
-            `Creation could not be confirmed. Refresh groups to check existing groups before creating again. ${detail}`,
-          );
-        }
+        await handleSaveError(error, draft, created, confirmed);
       } finally {
         mutationLock.current = false;
         setPending(false);
       }
     },
-    [uncertainCreate, storeGroup, refreshMembers, reconcile, groups, editing],
+    [uncertainCreate, storeGroup, refreshMembers, reconcile, groups, editing, handleSaveError],
   );
 
   const handleDelete = useCallback(async id => {

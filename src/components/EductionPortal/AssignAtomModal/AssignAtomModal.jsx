@@ -29,6 +29,74 @@ import {
   clearForm,
 } from '~/actions/educationPortal/atomActions';
 
+function showCompletedGroupToast(results, selectedAtoms) {
+  const count = new Set(selectedAtoms).size;
+  if (results.every(result => result.status === 'already assigned')) {
+    toast.info('The selected atoms are already assigned to all group members.');
+  } else if (results.every(result => result.status === 'assigned')) {
+    toast.success(
+      `${count} selected atom${count === 1 ? '' : 's'} assigned successfully to ${
+        results.length
+      } student${results.length === 1 ? '' : 's'}.`,
+    );
+  } else {
+    const assignedCount = results.filter(result => result.status === 'assigned').length;
+    toast.info(
+      `Group assignment complete: ${assignedCount} student${
+        assignedCount === 1 ? '' : 's'
+      } assigned; ${results.length - assignedCount} already or previously assigned.`,
+    );
+  }
+}
+
+function renderStudentMatches(isLoadingUsers, filteredUsers, searchText, handleStudentSelect) {
+  if (isLoadingUsers) return <div className={styles['user__auto-complete']}>Loading users...</div>;
+  if (filteredUsers.length > 0)
+    return filteredUsers.map(user => (
+      <div
+        className={styles['user__auto-complete']}
+        key={user._id}
+        role="button"
+        tabIndex={0}
+        onClick={() => handleStudentSelect(user)}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            handleStudentSelect(user);
+          }
+        }}
+      >
+        {user.firstName} {user.lastName}
+      </div>
+    ));
+  if (searchText.trim()) return <div className={styles['user__auto-complete']}>No users found</div>;
+  return null;
+}
+
+function renderStudentSearchResults({
+  isInputFocus,
+  searchText,
+  allUsers,
+  isUserDropdownOpen,
+  darkMode,
+  isLoadingUsers,
+  filteredUsers,
+  handleStudentSelect,
+}) {
+  return isInputFocus || (searchText !== '' && allUsers && allUsers.length > 0) ? (
+    <div
+      tabIndex="-1"
+      role="menu"
+      aria-hidden="false"
+      className={`dropdown-menu${isUserDropdownOpen ? ' show dropdown__user-perms' : ''} ${
+        darkMode ? 'bg-darkmode-liblack text-light' : ''
+      }`}
+      style={{ marginTop: '0px', width: '100%' }}
+    >
+      {renderStudentMatches(isLoadingUsers, filteredUsers, searchText, handleStudentSelect)}
+    </div>
+  ) : null;
+}
+
 export const AssignAtomModal = ({
   // Redux state
   isModalOpen,
@@ -197,7 +265,16 @@ export const AssignAtomModal = ({
     setIsUserDropdownOpen(true);
   };
 
-  const submissionKey = JSON.stringify([target, groupId, [...selectedAtoms].sort(), localNote]);
+  const submissionKey = JSON.stringify([
+    target,
+    groupId,
+    [...selectedAtoms].sort((a, b) => {
+      if (a < b) return -1;
+      if (a > b) return 1;
+      return 0;
+    }),
+    localNote,
+  ]);
   const visibleGroupResults =
     groupResults?.snapshot === submissionKey ? groupResults.results : null;
 
@@ -216,13 +293,11 @@ export const AssignAtomModal = ({
           localNote,
           assignmentLedger.current,
         );
-        if (results.length > 0 && results.every(result => result.status === 'assigned')) {
-          const count = new Set(selectedAtoms).size;
-          toast.success(
-            `${count} selected atom${count === 1 ? '' : 's'} assigned successfully to ${
-              results.length
-            } student${results.length === 1 ? '' : 's'}.`,
-          );
+        if (
+          results.length > 0 &&
+          !results.some(result => ['failed', 'unconfirmed'].includes(result.status))
+        ) {
+          showCompletedGroupToast(results, selectedAtoms);
           clearForm();
           setGroupId('');
           setMembership({ id: '', status: 'idle' });
@@ -331,7 +406,9 @@ export const AssignAtomModal = ({
     <Modal
       isOpen={isModalOpen}
       toggle={handleClose}
-      className={`${styles.modal} ${darkMode ? `dark-mode ${styles.darkMode}` : ''}`}
+      className={`${styles.modal} ${darkMode ? 'dark-mode' : ''} ${
+        darkMode ? styles.darkMode : ''
+      }`}
       size="lg"
     >
       <ModalHeader toggle={handleClose} className={styles.modalHeader}>
@@ -382,7 +459,7 @@ export const AssignAtomModal = ({
                 </option>
               ))}
             </Input>
-            {groupsStatus === 'loading' && <div role="status">Loading groups…</div>}
+            {groupsStatus === 'loading' && <output className="d-block">Loading groups…</output>}
             {groupsStatus === 'error' && (
               <div role="alert" className={styles.errorMessage}>
                 Could not load groups. Switch targets to retry.
@@ -390,7 +467,7 @@ export const AssignAtomModal = ({
             )}
             {groupsStatus === 'ready' && groups.length === 0 && <div>No groups available.</div>}
             {groupId && membership.id === groupId && membership.status === 'loading' && (
-              <div role="status">Loading members…</div>
+              <output className="d-block">Loading members…</output>
             )}
             {groupId && membership.id === groupId && membership.status === 'error' && (
               <div role="alert" className={styles.errorMessage}>
@@ -430,40 +507,16 @@ export const AssignAtomModal = ({
                   autoComplete="off"
                   name="student-search"
                 />
-                {isInputFocus || (searchText !== '' && allUsers && allUsers.length > 0) ? (
-                  <div
-                    tabIndex="-1"
-                    role="menu"
-                    aria-hidden="false"
-                    className={`dropdown-menu${
-                      isUserDropdownOpen ? ' show dropdown__user-perms' : ''
-                    } ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
-                    style={{ marginTop: '0px', width: '100%' }}
-                  >
-                    {isLoadingUsers ? (
-                      <div className={styles['user__auto-complete']}>Loading users...</div>
-                    ) : filteredUsers.length > 0 ? (
-                      filteredUsers.map(user => (
-                        <div
-                          className={styles['user__auto-complete']}
-                          key={user._id}
-                          role="button"
-                          tabIndex={0}
-                          onClick={() => handleStudentSelect(user)}
-                          onKeyDown={e => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                              handleStudentSelect(user);
-                            }
-                          }}
-                        >
-                          {user.firstName} {user.lastName}
-                        </div>
-                      ))
-                    ) : searchText.trim() ? (
-                      <div className={styles['user__auto-complete']}>No users found</div>
-                    ) : null}
-                  </div>
-                ) : null}
+                {renderStudentSearchResults({
+                  isInputFocus,
+                  searchText,
+                  allUsers,
+                  isUserDropdownOpen,
+                  darkMode,
+                  isLoadingUsers,
+                  filteredUsers,
+                  handleStudentSelect,
+                })}
               </Dropdown>
             </div>
           </FormGroup>
@@ -538,9 +591,9 @@ export const AssignAtomModal = ({
         </FormGroup>
 
         {target === 'group' && visibleGroupResults && (
-          <div role="status" className={styles.selectedSummary}>
+          <output className={`${styles.selectedSummary} d-block`}>
             <strong>Group assignment results</strong>
-            <div>
+            <span className="d-block">
               {visibleGroupResults.filter(result => result.status === 'assigned').length} assigned;{' '}
               {visibleGroupResults.filter(result => result.status === 'already assigned').length}{' '}
               already assigned;{' '}
@@ -549,32 +602,32 @@ export const AssignAtomModal = ({
               unconfirmed;{' '}
               {visibleGroupResults.filter(result => result.status === 'previously assigned').length}{' '}
               previously assigned (not resent).
-            </div>
+            </span>
             {visibleGroupResults
               .filter(result => ['failed', 'unconfirmed'].includes(result.status))
               .map(result => (
-                <div key={result.studentId}>
+                <span className="d-block" key={result.studentId}>
                   Student {result.studentId}: {result.status}
-                </div>
+                </span>
               ))}
             {visibleGroupResults.some(result => result.status === 'failed') && (
-              <div>Submit again to retry confirmed failures.</div>
+              <span className="d-block">Submit again to retry confirmed failures.</span>
             )}
             {visibleGroupResults.some(result => result.status === 'unconfirmed') && (
-              <div>
+              <span className="d-block">
                 Unconfirmed requests are not resent. Check individual assignments before retrying
                 them.
-              </div>
+              </span>
             )}
             {visibleGroupResults.some(result =>
               ['assigned', 'already assigned', 'previously assigned'].includes(result.status),
             ) && (
-              <div>
+              <span className="d-block">
                 Existing or successful assignments are not resent, and their notes are not updated.
-              </div>
+              </span>
             )}
-            <div>Selected atoms and note are preserved.</div>
-          </div>
+            <span className="d-block">Selected atoms and note are preserved.</span>
+          </output>
         )}
         {/* Error Messages */}
         {validationError && <div className={styles.errorMessage}>{validationError}</div>}

@@ -24,6 +24,19 @@ export const classifyAssignmentError = (error, atomIds) => {
   return 'unconfirmed';
 };
 
+function getAssignmentStatus(existing, created) {
+  if (existing) return 'already assigned';
+  return created ? 'assigned' : 'unconfirmed';
+}
+
+function getStudentStatus(statuses) {
+  if (statuses.has('unconfirmed')) return 'unconfirmed';
+  if (statuses.has('failed')) return 'failed';
+  if (statuses.has('assigned')) return 'assigned';
+  if (statuses.has('previously assigned')) return 'previously assigned';
+  return 'already assigned';
+}
+
 // Keep confirmed outcomes for the current recovery flow and uncertain outcomes across
 // cancellation. Only definite pre-write failures are eligible for explicit retry.
 export const assignGroupAtoms = async (studentIds, atomIds, note, ledger) => {
@@ -42,26 +55,20 @@ export const assignGroupAtoms = async (studentIds, atomIds, note, ledger) => {
           const created = data.successfulAssignments?.some(
             item => String(item.atomId?._id || item.atomId) === id,
           );
-          ledger.set(key(id), existing ? 'already assigned' : created ? 'assigned' : 'unconfirmed');
+          ledger.set(key(id), getAssignmentStatus(existing, created));
         });
       } catch (error) {
         const status = classifyAssignmentError(error, remaining);
         remaining.forEach(id => ledger.set(key(id), status));
       }
     }
-    const statuses = ids.map(id => {
-      const status = ledger.get(key(id));
-      return status === 'assigned' && !remaining.includes(id) ? 'previously assigned' : status;
-    });
-    const status = statuses.includes('unconfirmed')
-      ? 'unconfirmed'
-      : statuses.includes('failed')
-      ? 'failed'
-      : statuses.includes('assigned')
-      ? 'assigned'
-      : statuses.includes('previously assigned')
-      ? 'previously assigned'
-      : 'already assigned';
+    const statuses = new Set(
+      ids.map(id => {
+        const status = ledger.get(key(id));
+        return status === 'assigned' && !remaining.includes(id) ? 'previously assigned' : status;
+      }),
+    );
+    const status = getStudentStatus(statuses);
     results.push({ studentId, status });
   }, Promise.resolve());
   return results;

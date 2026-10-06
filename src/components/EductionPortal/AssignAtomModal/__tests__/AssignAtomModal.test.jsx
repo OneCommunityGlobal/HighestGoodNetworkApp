@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-vi.mock('react-toastify', () => ({ toast: { success: vi.fn() } }));
+vi.mock('react-toastify', () => ({ toast: { success: vi.fn(), info: vi.fn() } }));
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { AssignAtomModal } from '../AssignAtomModal';
 import httpService from '~/services/httpService';
@@ -173,6 +173,47 @@ test('fully successful group assignment closes with one toast and no recovery pa
   expect(httpService.post).toHaveBeenCalledTimes(2);
 });
 
+test.each(['already assigned', 'previously assigned'])(
+  'completed mixed results with %s close with one aggregate toast',
+  async existingStatus => {
+    httpService.post.mockResolvedValueOnce(assigned).mockRejectedValueOnce(
+      existingStatus === 'already assigned'
+        ? {
+            response: {
+              status: 400,
+              data: {
+                error: 'All atoms are already assigned to this student',
+                alreadyAssignedAtomIds: ['a1'],
+              },
+            },
+          }
+        : { response: { status: 403 } },
+    );
+    const input = props();
+    render(<AssignAtomModal {...input} />);
+    await chooseGroup();
+    await screen.findByText('2 group members');
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+    if (existingStatus === 'previously assigned') {
+      await screen.findByText('Group assignment results');
+      fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+    }
+    await waitFor(() => expect(input.hideModal).toHaveBeenCalledTimes(1));
+    expect(input.clearForm).toHaveBeenCalledTimes(1);
+    expect(toast.info).toHaveBeenCalledTimes(1);
+    expect(toast.info).toHaveBeenCalledWith(
+      'Group assignment complete: 1 student assigned; 1 already or previously assigned.',
+    );
+    expect(toast.success).not.toHaveBeenCalled();
+    expect(screen.queryByText('Group assignment results')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Assign to:')).toHaveValue('student');
+    expect(httpService.post).toHaveBeenCalledTimes(existingStatus === 'already assigned' ? 2 : 3);
+    expect(httpService.post.mock.calls.filter(([, body]) => body.studentId === 's1')).toHaveLength(
+      1,
+    );
+  },
+);
+
 test('pending group submission locks controls and prevents duplicate submissions and dismissal', async () => {
   let resolve;
   httpService.post.mockReturnValueOnce(
@@ -325,6 +366,19 @@ test.each(['failed', 'unconfirmed', 'already assigned'])(
     await chooseGroup();
     await screen.findByText('1 group members');
     fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+    if (outcome === 'already assigned') {
+      await waitFor(() => expect(input.hideModal).toHaveBeenCalledTimes(1));
+      expect(input.clearForm).toHaveBeenCalledTimes(1);
+      expect(toast.info).toHaveBeenCalledTimes(1);
+      expect(toast.info).toHaveBeenCalledWith(
+        'The selected atoms are already assigned to all group members.',
+      );
+      expect(toast.success).not.toHaveBeenCalled();
+      expect(screen.queryByText('Group assignment results')).not.toBeInTheDocument();
+      expect(screen.getByLabelText('Assign to:')).toHaveValue('student');
+      expect(httpService.post).toHaveBeenCalledTimes(1);
+      return;
+    }
     await screen.findByText('Group assignment results');
     expect(input.hideModal).not.toHaveBeenCalled();
     expect(input.clearForm).not.toHaveBeenCalled();
