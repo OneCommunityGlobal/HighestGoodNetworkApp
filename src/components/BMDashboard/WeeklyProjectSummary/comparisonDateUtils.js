@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 export const COMPARISON_OPTIONS = [
   'No Comparison',
   'Week Over Week',
@@ -6,9 +8,17 @@ export const COMPARISON_OPTIONS = [
 ];
 
 export function shiftComparisonDate(date, diffDays, type) {
-  if (type === 'Week Over Week') return new Date(date.setDate(date.getDate() - diffDays));
-  if (type === 'Month Over Month') return new Date(date.setMonth(date.getMonth() - 1));
-  if (type === 'Year Over Year') return new Date(date.setFullYear(date.getFullYear() - 1));
+  if (type === 'Week Over Week') return new Date(date.setUTCDate(date.getUTCDate() - diffDays));
+  if (type === 'Month Over Month')
+    return moment
+      .utc(date)
+      .subtract(1, 'month')
+      .toDate();
+  if (type === 'Year Over Year')
+    return moment
+      .utc(date)
+      .subtract(1, 'year')
+      .toDate();
   return null;
 }
 
@@ -39,8 +49,8 @@ export function parseWeeklySummaryDateRange(dateRange) {
   if (!startText || !endText) return { startDate: null, endDate: null };
 
   const normalizeDateText = value => {
-    const parsed = new Date(value);
-    return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString().split('T')[0];
+    const parsed = moment(value, 'MMM DD, YY');
+    return parsed.isValid() ? parsed.format('YYYY-MM-DD') : null;
   };
 
   return {
