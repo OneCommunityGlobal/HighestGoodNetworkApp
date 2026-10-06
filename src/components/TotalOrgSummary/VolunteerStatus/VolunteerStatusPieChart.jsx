@@ -50,7 +50,7 @@ function VolunteerStatusPieChart({
         verticalOffsetMap: { 0: 30, 1: -20, 2: -40 },
         sideMap: { 0: 1, 1: -1, 2: 1 },
         total: totalVolunteers,
-        formatter: ({ value, percentage }) => [`${value}`, `(${percentage}%)`],
+        formatter: ({ value, percentage }) => [`${value}`, `(${percentage.toFixed(1)}%)`],
       },
     },
   };
