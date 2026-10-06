@@ -183,6 +183,11 @@ export function Header(props) {
   // environments that set one — e.g. the dev warning — show the text; the logo
   // appears only when both are empty, as in production.
   const showOwnerMessage = Boolean(props.ownerMessage || props.ownerStandardMessage);
+  // Editors still need OwnerMessage's edit controls next to the logo when no message
+  // exists yet — otherwise there is no way to create the first one from the header.
+  // Mirrors the check OwnerMessage uses to show its edit button.
+  const canEditOwnerMessage =
+    props.auth.user.role === 'Owner' || props.hasPermission(permissions.editHeaderMessage);
 
   // Reports / nav access — prefer RoutePermissions lists (OR any key)
   const canGetReports = props.hasPermission(RoutePermissions.reports, !isAuthUser);
@@ -782,7 +787,8 @@ export function Header(props) {
               <Timer darkMode={darkMode} />
             )}
             </div>
-          {/* Either the owner message or the logo occupies this cell — never both.
+          {/* Either the owner message or the logo occupies this cell — never both
+              (an editor additionally gets the edit controls beside the logo).
               On narrow screens Header.module.css dissolves this wrapper with
               `display: contents` so whichever one renders lands in its own grid
               area; the layout is driven entirely from CSS. */}
@@ -791,7 +797,10 @@ export function Header(props) {
               (showOwnerMessage ? (
                 <OwnerMessage />
               ) : (
-                <img src="/header-test.png" alt="Header Logo" className={styles.headerLogo} />
+                <>
+                  <img src="/header-test.png" alt="Header Logo" className={styles.headerLogo} />
+                  {canEditOwnerMessage && <OwnerMessage />}
+                </>
               ))}
           </div>
           <div className={styles.rightSection}>

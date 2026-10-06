@@ -10,16 +10,21 @@ import UserStateModal from './UserStateModal';
 import ManageStatesModal from './ManageStatesModal';
 import styles from './UserState.module.css';
 
-// Replaced deprecated defaultProps with ES6 default parameters to prevent React deprecation warnings
+// Shared defaults: a literal `[]` default parameter would be a new array on every
+// render, and since `initialSelected` is an effect dependency that re-runs the effect
+// (and its setState) forever when the prop is omitted.
+const EMPTY_ARRAY = [];
+const noop = () => {};
+
 function UserStateDisplay({
   userId,
   userName = '',
   canEdit = false,
   canManage = false,
-  catalog = [],
-  onCatalogChange = () => {},
-  initialSelected = [],
-  onSelectionChange = () => {},
+  catalog = EMPTY_ARRAY,
+  onCatalogChange = noop,
+  initialSelected = EMPTY_ARRAY,
+  onSelectionChange = noop,
 }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [selected, setSelected] = useState(initialSelected || []);
@@ -140,17 +145,5 @@ UserStateDisplay.propTypes = {
   initialSelected: PropTypes.arrayOf(PropTypes.shape({ key: PropTypes.string })),
   onSelectionChange: PropTypes.func,
 };
-
-// UserStateDisplay.defaultProps = {
-//   userName: '',
-//   canEdit: false,
-//   canManage: false,
-//   catalog: [],
-//   onCatalogChange: () => {},
-//   initialSelected: [],
-//   onSelectionChange: () => {},
-// };
-
-// UserStateDisplay.defaultProps has been removed in favor of function default parameters above.
 
 export default UserStateDisplay;

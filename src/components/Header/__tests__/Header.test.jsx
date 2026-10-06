@@ -388,7 +388,12 @@ describe('Header Component Authentication Checks', () => {
  * The header's centre cell shows the owner message or the logo, never both.
  * Renders the unconnected Header so the message props can be set directly.
  */
-function renderCenterCell({ ownerMessage = '', ownerStandardMessage = '', role = 'Volunteer' } = {}) {
+function renderCenterCell({
+  ownerMessage = '',
+  ownerStandardMessage = '',
+  role = 'Volunteer',
+  canEditHeaderMessage = false,
+} = {}) {
   const auth = {
     isAuthenticated: true,
     firstName: 'Jane',
@@ -414,7 +419,7 @@ function renderCenterCell({ ownerMessage = '', ownerStandardMessage = '', role =
           auth={auth}
           userProfile={{ email: 'jane@example.com' }}
           taskEditSuggestionCount={0}
-          hasPermission={() => false}
+          hasPermission={key => canEditHeaderMessage && key === 'editHeaderMessage'}
           getHeaderData={vi.fn()}
           getAllRoles={vi.fn()}
           getWeeklySummaries={vi.fn()}
@@ -478,12 +483,22 @@ describe('Header centre cell: logo or owner message, never both', () => {
     },
   );
 
-  it.each(['Owner', 'Administrator', 'Manager', 'Volunteer'])(
-    'shows the logo to a %s when there is no message',
+  it.each(['Administrator', 'Manager', 'Volunteer'])(
+    'shows only the logo to a %s without edit permission when there is no message',
     role => {
       renderCenterCell({ role });
       expect(logo()).toBeInTheDocument();
       expect(message()).not.toBeInTheDocument();
     },
   );
+
+  // Editors must keep the edit controls with no message, or the first one can't be created.
+  it.each([
+    ['an Owner', { role: 'Owner' }],
+    ['a user with editHeaderMessage', { role: 'Manager', canEditHeaderMessage: true }],
+  ])('shows the logo and the edit controls to %s when there is no message', (unused, options) => {
+    renderCenterCell(options);
+    expect(logo()).toBeInTheDocument();
+    expect(message()).toBeInTheDocument();
+  });
 });
