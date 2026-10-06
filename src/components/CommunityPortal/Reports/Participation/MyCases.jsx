@@ -1,15 +1,18 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import styles from './MyCases.module.css';
-import mockEvents from './mockData';
+import { getEvents } from '../../../../actions/eventActions';
 import CreateEventModal from './CreateEventModal';
 import { filterEventsByDate } from './FilterByDate';
 
 function MyCases() {
+  const [events, setEvents] = useState([]);
+  const [loadingEvents, setLoadingEvents] = useState(true);
+  const [eventError, setEventError] = useState(null);
   const [view, setView] = useState('card');
   const [filter, setFilter] = useState('All Time');
   const [expanded, setExpanded] = useState(false);
@@ -22,9 +25,52 @@ function MyCases() {
   const now = new Date();
 
   const darkMode = useSelector(state => state.theme.darkMode);
+  const loadEvents = useCallback(async () => {
+    setLoadingEvents(true);
+    setEventError(null);
 
-  const filteredEvents = filterEventsByDate(mockEvents, filter).filter(
-    event => new Date(event.eventDate).getTime() >= now.getTime(),
+    try {
+      const response = await getEvents({
+        page: 1,
+        limit: 200,
+        sortBy: 'date',
+        sortOrder: 'desc',
+      });
+
+      if (response?.status && response.status >= 400) {
+        throw new Error(response.message || 'Failed to fetch events');
+      }
+
+      const backendEvents = response?.data?.events || [];
+
+      const formattedEvents = backendEvents.map(event => ({
+        id: event._id,
+        eventName: event.title,
+        eventType: event.type,
+        eventDate: event.date,
+        startTime: event.startTime,
+        eventTime: new Date(event.startTime).toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+        attendees: event.currentAttendees || 0,
+        image: event.coverImage,
+      }));
+
+      setEvents(formattedEvents);
+    } catch (error) {
+      setEventError(error.message || 'Unable to load events');
+    } finally {
+      setLoadingEvents(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadEvents();
+  }, [loadEvents]);
+
+  const filteredEvents = filterEventsByDate(events, filter).filter(
+    event => new Date(event.startTime).getTime() >= now.getTime(),
   );
 
   let visibleEvents = filteredEvents;
@@ -381,6 +427,7 @@ function MyCases() {
       <CreateEventModal
         isOpen={isCreateModalOpen}
         toggle={() => setIsCreateModalOpen(!isCreateModalOpen)}
+        onEventCreated={loadEvents}
       />
     </div>
   );

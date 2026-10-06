@@ -14,7 +14,7 @@ import { ENDPOINTS } from '~/utils/URL';
  */
 export async function getEvents(params = {}) {
   try {
-    const { type = '', location = '', page = 1, limit = 9, sortBy = 'date', userId = '' } = params;
+    const { type = '', location = '', page = 1, limit = 9, sortBy = 'date', sortOrder = 'asc', userId = '' } = params;
     const queryParams = new URLSearchParams();
     if (userId) queryParams.append('userId', userId);
     if (type) queryParams.append('type', type);
@@ -22,6 +22,7 @@ export async function getEvents(params = {}) {
     queryParams.append('page', page);
     queryParams.append('limit', limit);
     queryParams.append('sortBy', sortBy);
+    queryParams.append('sortOrder', sortOrder);
 
     const url = `${ENDPOINTS.EVENTS}?${queryParams.toString()}`;
     const response = await axios.get(url);
