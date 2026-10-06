@@ -2,13 +2,14 @@
 import { useState } from 'react';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import PropTypes from 'prop-types';
+import { isQualifiedForBio } from '~/utils/bioQualification';
 import styles from './WeeklySummariesReport.module.scss';
 
 function BioFunction(props) {
   const {
     bioPosted,
     totalTangibleHrs,
-    totalValidWeeklySummaries,
+    daysInTeam,
     textColors,
     summary,
     bioCanEdit,
@@ -18,8 +19,7 @@ function BioFunction(props) {
 
   const [bioStatus, setBioStatus] = useState(bioPosted);
 
-  const isMeetCriteria =
-    totalTangibleHrs > 80 && totalValidWeeklySummaries >= 8 && bioPosted !== 'posted';
+  const isMeetCriteria = isQualifiedForBio({ totalTangibleHrs, daysInTeam, bioPosted });
   const style = {
     color: textColors[summary?.weeklySummaryOption] || textColors.Default,
   };
@@ -59,7 +59,7 @@ function BioFunction(props) {
 BioFunction.propTypes = {
   bioPosted: PropTypes.string,
   totalTangibleHrs: PropTypes.number,
-  totalValidWeeklySummaries: PropTypes.number,
+  daysInTeam: PropTypes.number,
   textColors: PropTypes.object,
   summary: PropTypes.object,
   bioCanEdit: PropTypes.bool,
