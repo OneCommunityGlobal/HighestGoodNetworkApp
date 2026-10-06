@@ -55,9 +55,9 @@ const handleRemoveFromTaskModal = vi.fn();
 const handleTaskModalOption = vi.fn();
 const updateTaskStatus = vi.fn();
 
-const renderComponent = mockProps => {
+const renderComponent = (mockProps, currentStore = store) => {
   return render(
-    <Provider store={store}>
+    <Provider store={currentStore}>
       <MemoryRouter>
         <table>
           <tbody>
@@ -104,6 +104,50 @@ describe('Team Member Task Component', () => {
 
     const href = linkElement[0].getAttribute('href');
     expect(href).toBe(`/userprofile/${props.personId}`);
+  });
+  it('shows the deadline checkbox but not the count with only the deadline permission', () => {
+    const volunteerStore = mockStore({
+      auth: {
+        ...authMock,
+        user: {
+          ...authMock.user,
+          role: 'Volunteer',
+          permissions: {
+            frontPermissions: ['viewAndInteractWithTaskDeadlinesBoxes'],
+          },
+        },
+      },
+      userProfile: userProfileMock,
+      role: rolesMock.role,
+      theme: themeMock,
+    });
+
+    renderComponent({ ...props, role: 'Volunteer' }, volunteerStore);
+
+    expect(screen.getByRole('checkbox')).toBeInTheDocument();
+    expect(screen.queryByTestId('deadline-Task 1')).not.toBeInTheDocument();
+  });
+  it('shows the count but not the deadline checkbox with only the time-added permission', () => {
+    const volunteerStore = mockStore({
+      auth: {
+        ...authMock,
+        user: {
+          ...authMock.user,
+          role: 'Volunteer',
+          permissions: {
+            frontPermissions: ['seeNumberOfTimesTimeAdded'],
+          },
+        },
+      },
+      userProfile: userProfileMock,
+      role: rolesMock.role,
+      theme: themeMock,
+    });
+
+    renderComponent({ ...props, role: 'Volunteer' }, volunteerStore);
+
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+    expect(screen.getByTestId('deadline-Task 1')).toBeInTheDocument();
   });
   it('weeklycommittedHours, LoggedHours, remainingHours,  showing up beside the task is right', () => {
     renderComponent(props);

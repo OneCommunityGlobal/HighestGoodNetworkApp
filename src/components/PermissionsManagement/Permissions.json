@@ -335,6 +335,11 @@
                 "label": "See # of Times Time Added to Task",
                 "key": "seeNumberOfTimesTimeAdded",
                 "description": "Gives the user permission to see how many times a time entry has been added to a task. \"Admin/Owner Login\" -> \"Dashboard\" -> \"Tasks tab\" -> \"Task Details\" -> \"# of Times Time Added\""
+              },
+              {
+                "label": "View and Interact with Task Deadlines Boxes",
+                "key": "viewAndInteractWithTaskDeadlinesBoxes",
+                "description": "Gives the user permission to view and interact with task deadline tracking boxes on the Dashboard Tasks tab."
               }
             ]
           }
