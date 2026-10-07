@@ -258,6 +258,7 @@ export class EditableInfoModal extends Component {
   render() {
     const { infoContent, editableModalOpen, fontSize, CanRead, CanEdit } = this.state;
     const { darkMode } = this.props;
+    const headerDarkClass = darkMode ? `${appStyles['bg-space-cadet']} text-light` : '';
 
     const sanitizedContent = infoContent;
 
@@ -281,7 +282,7 @@ export class EditableInfoModal extends Component {
               size="lg"
               className={darkMode ? 'text-light' : ''}
             >
-              <ModalHeader className={`d-flex justify-content-center ${darkMode ? `${appStyles['bg-space-cadet']} text-light` : ''}`}>
+              <ModalHeader className={`d-flex justify-content-center ${headerDarkClass}`}>
                 Welcome to the {this.sanitizeText(this.props.areaTitle)} Information Page!
               </ModalHeader>
 
