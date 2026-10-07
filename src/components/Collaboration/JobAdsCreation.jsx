@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styles from './JobAdsCreation.module.css';
 import { toast } from 'react-toastify';
@@ -8,6 +8,29 @@ import OneCommunityImage from '../../assets/images/logo2.png';
 import { isValidDropboxImageUrl, isValidUrl } from '../../utils/checkValidURL';
 import { createCollaborationAds } from '../../actions/collaborationAdsActions';
 import getWordCount from '../../utils/getWordCount';
+
+const getJobAdsTinyMceInit = (darkMode, { withMedia = false } = {}) => ({
+  license_key: 'gpl',
+  menubar: false,
+  plugins: withMedia
+    ? 'autolink autoresize lists link help wordcount preview media'
+    : 'autolink autoresize lists link help wordcount preview ',
+  toolbar: withMedia
+    ? 'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | forecolor backcolor | help | preview | media'
+    : 'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | forecolor backcolor | help | preview ',
+  branding: false,
+  toolbar_mode: 'sliding',
+  min_height: 180,
+  max_height: 600,
+  width: 700,
+  autoresize_bottom_margin: 1,
+  content_style: darkMode
+    ? 'body { background-color: #2a2a2a; color: #e0e0e0; cursor: text !important; }'
+    : 'body { background-color: #fff; color: #000; cursor: text !important; }',
+  ...(darkMode
+    ? { skin: 'oxide-dark', content_css: 'dark' }
+    : { skin: 'oxide', content_css: 'default' }),
+});
 
 function JobAdsCreation() {
   const dispatch = useDispatch();
@@ -64,50 +87,9 @@ function JobAdsCreation() {
   // const dispatch = useDispatch();
   const textareaRef = useRef(null);
 
-  const TINY_MCE_INIT_OPTIONS = {
-    license_key: 'gpl',
-    menubar: false,
-    //    placeholder: 'Description (10-word minimum) and reference link',
-    // advlist
-    plugins: 'autolink autoresize lists link help wordcount preview ',
-    toolbar:
-      // eslint-disable-next-line no-multi-str
-      'bold italic underline link removeformat | bullist numlist outdent indent |\
-                      styleselect fontsizeselect | forecolor backcolor |\
-                      help | preview ',
-    branding: false,
-    toolbar_mode: 'sliding',
-    min_height: 180,
-    max_height: 600,
-    width: 700,
-    autoresize_bottom_margin: 1,
-    content_style: 'body { cursor: text !important; }',
-    // images_upload_handler: customImageUploadHandler,
-    skin: darkMode ? 'oxide-dark' : 'oxide',
-    content_css: darkMode ? 'dark' : 'default',
-  };
-
-  const TINY_MCE_INIT_OPTIONS_MEDIA = {
-    license_key: 'gpl',
-    menubar: false,
-    //    placeholder: 'Description (10-word minimum) and reference link',
-    // advlist
-    plugins: 'autolink autoresize lists link help wordcount preview media',
-    toolbar:
-      // eslint-disable-next-line no-multi-str
-      'bold italic underline link removeformat | bullist numlist outdent indent |\
-                      styleselect fontsizeselect | forecolor backcolor |\
-                      help | preview | media',
-    branding: false,
-    toolbar_mode: 'sliding',
-    min_height: 180,
-    max_height: 600,
-    autoresize_bottom_margin: 1,
-    content_style: 'body { cursor: text !important; }',
-    // images_upload_handler: customImageUploadHandler,
-    skin: darkMode ? 'oxide-dark' : 'oxide',
-    content_css: darkMode ? 'dark' : 'default',
-  };
+  const tinyMceInitMedia = useMemo(() => getJobAdsTinyMceInit(darkMode, { withMedia: true }), [
+    darkMode,
+  ]);
 
   const submitJobAds = async () => {
     setLoading(true);
@@ -476,9 +458,10 @@ function JobAdsCreation() {
               </label>
 
               <Editor
-                className={styles['jobAds-input']}
+                key={`${field.key}-${darkMode ? 'dark' : 'light'}`}
+                className={`${styles['jobAds-input']} ${styles['jobAds-editor']}`}
                 tinymceScriptSrc="/tinymce/tinymce.min.js"
-                init={TINY_MCE_INIT_OPTIONS_MEDIA}
+                init={tinyMceInitMedia}
                 id={field.key}
                 value={formData[field.key] || ''}
                 onEditorChange={newVal => setFormData(prev => ({ ...prev, [field.key]: newVal }))}

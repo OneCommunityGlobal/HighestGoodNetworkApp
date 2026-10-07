@@ -1,7 +1,24 @@
 .jobAds-header {
-  display:flex;
+  display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
+}
+
+.jobAds-header a {
+  display: block;
+  padding: 0;
+  margin: 0 auto;
+  width: fit-content;
+}
+
+.jobAds-header img {
+  width: 60%;
+  max-width: 500px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  object-fit: contain;
 }
 
 .jobAds-creation {
@@ -121,13 +138,18 @@ input {
 }
 
 
-.user-collaboration-dark-mode {  
-  background-color: #121212; /* #1B2A41; */
-  color: #E0E0E0; /* #f1f1f1; */
+.user-collaboration-dark-mode {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+.user-collaboration-dark-mode .title-header h3 {
+  color: #e0e0e0;
 }
 
 .user-collaboration-dark-mode .jobAds-creation-container {
-   background-color: #1E1E1E;
+  background-color: #1e1e1e;
+  border-color: #444;
 }
 
 .user-collaboration-dark-mode .jobAds-creation-container .jobAds-creation-button-group{
@@ -155,8 +177,17 @@ input {
 .user-collaboration-dark-mode input,
 .user-collaboration-dark-mode select,
 .user-collaboration-dark-mode textarea {
-  background-color: #2A2A2A;
-  color: #E0E0E0;
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+  border: 1px solid #555;
+}
+
+.user-collaboration-dark-mode .error {
+  color: #ff8a80;
+}
+
+.user-collaboration-dark-mode .jobAds-editor :global(.tox-tinymce) {
+  border-color: #555;
 }
 
 .user-collaboration-dark-mode .jobAds-creation-container .input-label{
