@@ -286,6 +286,9 @@
 
 .people-report-task-name {
   flex: 1;
+  /* Flex items default to min-width: auto (their longest word), so a space-free name
+     would refuse to shrink and push .task-status out of the card. */
+  min-width: 0;
   font-weight: 600;
   font-size: 16px;
   text-align: left;
