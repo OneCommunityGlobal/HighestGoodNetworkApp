@@ -29,22 +29,21 @@
   width: 100%;
   margin: 0 auto;
   padding: 20px;
-  gap:20px;
-  background-color: #f9f9f9; 
+  gap: 20px;
+  background-color: #f9f9f9;
 }
 
 .jobAds-creation .header img {
   height: auto;
   margin: 0 auto;
   flex-direction: column;
-
-} 
+}
 
 .jobAds-creation .h3 {
   justify-content: center;
-  display:flex;
+  display: flex;
   align-items: center;
-} 
+}
 
 .title-header {
   display: flex;
@@ -54,77 +53,61 @@
 .input-error {
   display: flex;
   flex-direction: row;
-  align-items: flex-start; /* center;
-  /* justify-content: center; */
-
-  /* width: 100%; */
-  width: 1000px; 
+  align-items: flex-start;
+  width: 1000px;
   padding-left: 50px;
-  padding-top:10px;
-  margin-left:50px;
-
-/*  background-color: aliceblue; */
+  padding-top: 10px;
+  margin-left: 50px;
 }
 
-.input-item{  
-  display:flex;
-  flex-direction: row; 
-  align-items: flex-start; 
-  justify-content:center;
-  margin-bottom: 1rem;  
-
- /* text-align: center; */
-  text-align:left;
+.input-item {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  margin-bottom: 1rem;
+  text-align: left;
   background-color: blueviolet;
 }
 
-.input-label  {
+.input-label {
   display: flex;
   align-items: center;
-  width:200px;
-  text-align:justify; /* center;  
-  background-color: #445A77; */
-  }
-
-.jobAds-input{
-max-width: 100%;
-width: 700px; 
-
-/* background-color: #1E88E5; */
+  width: 200px;
+  text-align: justify;
 }
 
-/* textarea {
-  width:100%;
-  height:auto;
-  min-height:150px;
-  background-color: aquamarine;
-} */
+.jobAds-input {
+  max-width: 100%;
+  width: 700px;
+}
+
 input {
-  width:100%;
-  height:30px;
+  width: 100%;
+  height: 30px;
 }
 
-.error { color: red;
+.error {
+  color: #c62828;
   font-size: 0.9em;
   margin-top: 5px;
-  margin-bottom: 10px;  
+  margin-bottom: 10px;
   text-align: center;
 }
 
 .jobAds-creation-button-group {
-  margin-top:20px;
+  margin-top: 20px;
   display: flex;
   width: 90%;
-  justify-content: space-evenly;  
+  justify-content: space-evenly;
 }
 
-.submit-button,.cancel-button {
-  /* padding: 10px 20px; */
+.submit-button,
+.cancel-button {
   padding: 10px;
   font-size: 1em;
   cursor: pointer;
   transition: background 0.2s ease;
-
 }
 
 .jobAds-creation-container {
@@ -133,10 +116,9 @@ input {
   justify-items: center;
   width: 90%;
   margin: 0 auto;
-  background-color: #fff; 
+  background-color: #fff;
   border: 1px solid #ddd;
 }
-
 
 .user-collaboration-dark-mode {
   background-color: #121212;
@@ -152,28 +134,22 @@ input {
   border-color: #444;
 }
 
-.user-collaboration-dark-mode .jobAds-creation-container .jobAds-creation-button-group{
-    background-color:#2A2A2A; 
-
-    /* #32455A; /* lighter gray-blue background */
-    color:#E0E0E0;
-  border: 1px solid #445A77; /* optional for definition */
-
+.user-collaboration-dark-mode .jobAds-creation-container .jobAds-creation-button-group {
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+  border: 1px solid #445a77;
 }
 
-/* Title */
 .user-collaboration-dark-mode h2 {
   text-align: center;
-  color: #1E88E5; /* accent blue */
+  color: #1e88e5;
   margin-bottom: 2rem;
 }
 
-/* Labels */
 .user-collaboration-dark-mode label {
-  color: #B0BEC5; /* muted gray for labels */
- }
+  color: #b0bec5;
+}
 
- /* Inputs & Selects */
 .user-collaboration-dark-mode input,
 .user-collaboration-dark-mode select,
 .user-collaboration-dark-mode textarea {
@@ -190,20 +166,19 @@ input {
   border-color: #555;
 }
 
-.user-collaboration-dark-mode .jobAds-creation-container .input-label{
-   background-color:transparent; /* #2E3A4D; /* slightly lighter than main bg */
-  color:#A0A0A0; /* #f1f1f1;            /* keep text readable */
+.user-collaboration-dark-mode .jobAds-creation-container .input-label {
+  background-color: transparent;
+  color: #a0a0a0;
 }
 
 .user-collaboration-dark-mode textarea::placeholder,
-.user-collaboration-dark-mode select::placeholder, 
-.user-collaboration-dark-mode input::placeholder 
-{
-  color:  #888; /* softer placeholders */
+.user-collaboration-dark-mode select::placeholder,
+.user-collaboration-dark-mode input::placeholder {
+  color: #888;
 }
 
 .user-collaboration-dark-mode .jobAds-creation-button-group .submit-button {
-  background-color: #1E88E5;
+  background-color: #1e88e5;
   color: #fff;
   border: none;
   padding: 0.7rem 1.5rem;
@@ -213,12 +188,11 @@ input {
   transition: background 0.2s ease;
 }
 
-.user-collaboration-dark-mode .jobAds-creation-button-group .submit-btn:hover {
-  background-color: #1565C0; /* darker blue on hover */
+.user-collaboration-dark-mode .jobAds-creation-button-group .submit-button:hover {
+  background-color: #1565c0;
 }
 
-/* Cancel Button */
-.user-collaboration-dark-mode .jobAds-creation-button-group .cancel-btn {
+.user-collaboration-dark-mode .jobAds-creation-button-group .cancel-button {
   background-color: #555;
   color: #fff;
   border: none;
@@ -229,7 +203,7 @@ input {
   transition: background 0.2s ease;
 }
 
-.user-collaboration-dark-mode .jobAds-creation-button-group .cancel-btn:hover {
+.user-collaboration-dark-mode .jobAds-creation-button-group .cancel-button:hover {
   background-color: #666;
 }
 
@@ -247,7 +221,7 @@ input {
   }
 
   .input-item {
-    flex-direction: column; 
+    flex-direction: column;
     align-items: center;
   }
 
@@ -256,7 +230,8 @@ input {
     font-size: 0.9em;
   }
 
-  .submit-button, .cancel-button {
+  .submit-button,
+  .cancel-button {
     width: 100px;
     font-size: 0.9em;
     padding: 8px 16px;

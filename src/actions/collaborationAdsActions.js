@@ -22,6 +22,8 @@ export const createCollaborationAds = formData => async dispatch => {
     }
   } catch (error) {
     dispatch({ type: CREATE_COLLABORATION_ADS_FAIL });
-    toast.error('Error updating the details. Please try again.');
+    toast.error(
+      error.response?.data?.message || 'Error updating the details. Please try again.',
+    );
   }
 };

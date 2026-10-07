@@ -5,9 +5,8 @@ import { toast } from 'react-toastify';
 import { Editor } from '@tinymce/tinymce-react';
 import { ENDPOINTS } from '../../utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
-import { isValidDropboxImageUrl, isValidUrl } from '../../utils/checkValidURL';
 import { createCollaborationAds } from '../../actions/collaborationAdsActions';
-import getWordCount from '../../utils/getWordCount';
+import { validateJobAdsForm } from './jobAdsCreationValidation';
 
 const getJobAdsTinyMceInit = (darkMode, { withMedia = false } = {}) => ({
   license_key: 'gpl',
@@ -37,39 +36,24 @@ function JobAdsCreation() {
   const userRole = useSelector(state => state.auth?.user?.role);
   const canCreateCollabJobAds = userRole === 'Owner' || userRole === 'Administrator';
 
-  const [loading, setLoading] = useState('');
-  //  const formFields = ['imageUrl', 'location', 'applyLink', 'jobDetailsLink'];
   const textareaFields = [
     { key: 'description', display: 'Description' },
     { key: 'requirements', display: 'Requirements' },
-    //    { key: 'skills', display: 'Skills' },
     { key: 'projects', display: 'Projects' },
-    //    { key: 'whoareyou', display: 'Who are you' },
-    // apply: '',
     { key: 'ourCommunity', display: 'Our Community' },
-    //        { key: 'whoweare', display: 'Who are we' },
   ];
 
   const formFields = [
     { key: 'imageUrl', display: 'Image Url' },
     { key: 'location', display: 'Location' },
-    // { key: 'applyLink', display: 'Apply Link' },
-    // { key: 'jobDetailsLink', display: 'Job Details Link' },
   ];
 
   const initialState = {
     title: '',
     category: '',
-    /* new fields */
-    // about: '',
     requirements: '',
-    // skills: '',
     projects: '',
-    // whoareyou: '',
-    // apply: '',
-    //  whoweare: '',
     ourCommunity: '',
-    /* newly */
     description: '',
     imageUrl: '',
     location: 'remote',
@@ -80,11 +64,8 @@ function JobAdsCreation() {
   const [categories, setCategories] = useState([]);
   const [positions, setPositions] = useState([]);
   const [jobFormsAll, setJobFormsAll] = useState([]);
-  const [jobTemplates, setJobTemplates] = useState([]);
-
   const [errors, setErrors] = useState({});
   const darkMode = useSelector(state => state.theme.darkMode);
-  // const dispatch = useDispatch();
   const textareaRef = useRef(null);
 
   const tinyMceInitMedia = useMemo(() => getJobAdsTinyMceInit(darkMode, { withMedia: true }), [
@@ -92,30 +73,11 @@ function JobAdsCreation() {
   ]);
 
   const submitJobAds = async () => {
-    setLoading(true);
     try {
-      /*
-      const response = await axios.post(`${ENDPOINTS.JOBS}`, formData);
-      console.log('response inside submitJobAds:');
-      console.log(response);
-      if (!response.status === 201) {
-        throw new Error(`Failed to submit jobs: ${response.statusText}`);
-      }
-
-      const data = await response.data;
-      console.log('data inside submitJobAds:');
-      console.log(data);
-
-      toast.success('Collaboration Ads created successfully');
-      */
-      dispatch(createCollaborationAds(formData));
-
-      // const res = await createCollaborationAds(formData);
-      // console.log(res);
-      setLoading(false);
+      await dispatch(createCollaborationAds(formData));
       setFormData({ ...initialState });
     } catch (error) {
-      toast.error('Failed to submit jobs');
+      toast.error(`Failed to submit jobs: ${error.message}`);
     }
   };
 
@@ -128,34 +90,12 @@ function JobAdsCreation() {
       const sortedCategories = data.categories.sort((a, b) => a.localeCompare(b));
       setCategories(sortedCategories);
     } catch (error) {
-      toast.error('Error fetching categories');
-    }
-  };
-
-  // Get all templates
-  const fetchTemplates = async () => {
-    try {
-      const res = await fetch(`${ENDPOINTS.GET_ALL_TEMPLATES}`, {
-        method: 'GET',
-        headers: {
-          Authorization: localStorage.getItem('token'),
-        },
-      });
-
-      if (!res.ok) throw new Error(`Failed to fetch all Templates: ${response.statusText}`);
-
-      const data = await res.json();
-
-      setJobTemplates(data.templates);
-    } catch (error) {
-      toast.error('Error fetching Templates');
+      toast.error(`Error fetching categories: ${error.message}`);
     }
   };
 
   const fetchJobFormsAll = async () => {
     try {
-      // eslint-disable-next-line no-console
-      console.log(`${ENDPOINTS.GET_ALL_JOB_FORMS}`);
       const response = await fetch(`${ENDPOINTS.GET_ALL_JOB_FORMS}`, {
         method: 'GET',
         headers: {
@@ -163,12 +103,10 @@ function JobAdsCreation() {
         },
       });
       if (!response.ok) throw new Error(`Failed to fetch all jobForms: ${response.statusText}`);
-      // eslint-disable-next-line no-console
-      console.log(response);
       const data = await response.json();
       setJobFormsAll(data.forms);
     } catch (error) {
-      toast.error('Error fetching jobFormsAll');
+      toast.error(`Error fetching jobFormsAll: ${error.message}`);
     }
   };
 
@@ -188,154 +126,22 @@ function JobAdsCreation() {
       const sortedPositions = data.positions.sort((a, b) => a.localeCompare(b));
       setPositions(sortedPositions);
     } catch (error) {
-      toast.error('Error fetching positions');
+      toast.error(`Error fetching positions: ${error.message}`);
     }
   };
 
   const handleSubmit = event => {
     event.preventDefault();
-    console.log('formData');
-    console.log(formData);
-    if (!formData.category) {
-      setErrors({ category: 'Category is required' });
-      toast.error('Category is required');
-      return;
-    }
-    if (!formData.title) {
-      setErrors({ title: 'Title is required' });
-      toast.error('Title is required');
-      return;
-    }
-
-    if (!formData.description) {
-      setErrors({ description: 'Description is required' });
-      toast.error('Description is required');
-      return;
-    }
-    //
-    const descriptionWordCount = getWordCount(formData.description);
-    // eslint-disable-next-line no-console
-    console.log(`word count ${descriptionWordCount}`);
-
-    if (descriptionWordCount < 30) {
-      setErrors({ description: 'Description must be at least 30 characters long' });
-      toast.error('Description must be at least 30 characters long');
+    const validationError = validateJobAdsForm(formData);
+    if (validationError) {
+      setErrors({ [validationError.field]: validationError.message });
+      toast.error(validationError.message);
       textareaRef.current?.focus();
       return;
     }
 
-    /* if (!formData.about) {
-      setErrors({ about: 'About is required' });
-      toast.error('About is required');
-      return;
-    }
-    //
-    const aboutWordCount = getWordCount(formData.about);
-    // eslint-disable-next-line no-console
-    console.log(`word count ${aboutWordCount}`);
-
-    if (aboutWordCount < 30) {
-      setErrors({ about: 'About must be at least 30 words long' });
-      toast.error('About must be at least 30 words long');
-      textareaRef.current?.focus();
-      return;
-    } */
-    if (!formData.requirements) {
-      setErrors({ requirements: 'Requirements is required' });
-      toast.error('Requirements is required');
-      return;
-    }
-    //
-    const requirementsWordCount = getWordCount(formData.requirements);
-    // eslint-disable-next-line no-console
-    console.log(`word count ${requirementsWordCount}`);
-
-    if (requirementsWordCount < 30) {
-      setErrors({ requirements: 'Requirements must be at least 30 words long' });
-      toast.error('Requirements must be at least 30 words long');
-      textareaRef.current?.focus();
-      return;
-    }
-    if (!formData.projects) {
-      setErrors({ projects: 'Projects is required' });
-      toast.error('Projects is required');
-      return;
-    }
-    //
-    const projectsWordCount = getWordCount(formData.projects);
-    // eslint-disable-next-line no-console
-    console.log(`word count ${projectsWordCount}`);
-
-    if (projectsWordCount < 1) {
-      setErrors({ projects: 'Projects must be at least 1 word long' });
-      toast.error('Projects must be at least 1 word long');
-      textareaRef.current?.focus();
-      return;
-    }
-    if (!formData.ourCommunity) {
-      setErrors({ ourCommunity: 'Our Community is required' });
-      toast.error('Our Community is required');
-      return;
-    }
-    //
-    const ourCommunityWordCount = getWordCount(formData.ourCommunity);
-    // eslint-disable-next-line no-console
-    console.log(`word count ${ourCommunityWordCount}`);
-
-    if (ourCommunityWordCount < 30) {
-      setErrors({ ourCommunity: 'Our Community must be at least 30 words long' });
-      toast.error('Our Community must be at least 30 words long');
-      textareaRef.current?.focus();
-      return;
-    }
-
-    if (!formData.imageUrl) {
-      setErrors({ imageUrl: 'ImageURL is required' });
-      toast.error('ImageURL is required');
-      return;
-    }
-
-    if (!formData.imageUrl || !isValidDropboxImageUrl(formData.imageUrl)) {
-      setErrors({ imageUrl: 'Enter a valid ImageURL' });
-      toast.error('Enter a valid ImageURL');
-      return;
-    }
-    if (!formData.location) {
-      setErrors({ location: 'Location is required' });
-      toast.error('Location is required');
-      return;
-    }
-    if (formData.location !== 'remote') {
-      setErrors({ location: 'Location should be remote only' });
-      toast.error('Location should be remote only');
-      return;
-    }
-
-    if (!formData.applyLink) {
-      setErrors({ applyLink: 'Apply Link is required' });
-      toast.error('Apply Link is required');
-      return;
-    }
-    // eslint-disable-next-line no-console
-    console.log('formData.applyLink');
-    // eslint-disable-next-line no-console
-    console.log(formData.applyLink);
-    // eslint-disable-next-line no-console
-    console.log(isValidUrl(applyLink));
-    if (!formData.applyLink || !isValidUrl(formData.applyLink)) {
-      setErrors({ applyLink: 'Enter the valid Apply Link' });
-      toast.error('Enter the valid Apply Link');
-      return;
-    }
-    // eslint-disable-next-line no-console
-    console.log(formData.jobDetailsLink);
-    // eslint-disable-next-line no-console
-    console.log(isValidUrl(formData.jobDetailsLink));
-
-    const emptyMsg = '';
-    setErrors(emptyMsg);
+    setErrors({});
     void submitJobAds();
-    setFormData({ ...initialState });
   };
 
   const handleCancel = event => {
@@ -360,19 +166,11 @@ function JobAdsCreation() {
       }
       void fetchPositions(value);
     }
-    if (name === 'applyLink') {
-      // eslint-disable-next-line no-console
-      console.log('APPLYLINK');
-
-      // eslint-disable-next-line no-console
-      console.log(value);
-    }
   };
 
   useEffect(() => {
     void fetchCategories();
     void fetchJobFormsAll();
-    void fetchTemplates();
   }, []);
 
   if (!canCreateCollabJobAds) {

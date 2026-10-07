@@ -10,19 +10,19 @@ export const isValidMediaUrl = url => {
   return urlPattern.test(trimmedUrl);
 };
 
-const DROPBOX_HOSTS = [
+const DROPBOX_HOSTS = new Set([
   'www.dropbox.com',
   'dropbox.com',
   'dl.dropboxusercontent.com',
   'www.dropboxusercontent.com',
-];
+]);
 
 export const isValidDropboxImageUrl = string => {
   try {
     const url = new URL(string);
     if (!(url.protocol === 'http:' || url.protocol === 'https:')) return false;
-    if (!url.hostname || !url.hostname.includes('.')) return false;
-    if (!DROPBOX_HOSTS.includes(url.hostname)) return false;
+    if (!url.hostname?.includes('.')) return false;
+    if (!DROPBOX_HOSTS.has(url.hostname)) return false;
     return /\.(jpg|jpeg|png|gif|webp)$/i.test(url.pathname);
   } catch {
     return false;
@@ -33,8 +33,8 @@ export const isValidDropboxDocUrl = string => {
   try {
     const url = new URL(string);
     if (!(url.protocol === 'http:' || url.protocol === 'https:')) return false;
-    if (!url.hostname || !url.hostname.includes('.')) return false;
-    if (!DROPBOX_HOSTS.includes(url.hostname)) return false;
+    if (!url.hostname?.includes('.')) return false;
+    if (!DROPBOX_HOSTS.has(url.hostname)) return false;
     return /\.(doc|pdf|docx|odt|rtf|txt)$/i.test(url.pathname);
   } catch {
     return false;

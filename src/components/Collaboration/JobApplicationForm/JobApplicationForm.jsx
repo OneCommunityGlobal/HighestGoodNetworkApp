@@ -929,18 +929,20 @@ function JobApplicationForm() {
   };
 
   const updateTechnologyDetail = (idx, technology, patch) => {
-    setTechnologyExperience(prev => ({
-      ...prev,
-      [idx]: {
-        ...(prev[idx] || {}),
-        [technology]: {
-          fullTime: false,
-          years: '',
-          ...(prev[idx]?.[technology] || {}),
-          ...patch,
+    setTechnologyExperience(prev => {
+      const row = prev[idx] ?? {};
+      const existing = row[technology] ?? { fullTime: false, years: '' };
+      return {
+        ...prev,
+        [idx]: {
+          ...row,
+          [technology]: {
+            ...existing,
+            ...patch,
+          },
         },
-      },
-    }));
+      };
+    });
   };
 
   const isCheckboxOptionChecked = (answer, opt) => {
@@ -1750,7 +1752,7 @@ function JobApplicationForm() {
                                 full-time
                               </label>
                               <label>
-                                Years
+                                <span>Years</span>
                                 <input
                                   type="number"
                                   min="0"
