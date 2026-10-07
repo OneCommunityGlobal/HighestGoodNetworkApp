@@ -664,6 +664,7 @@ function JobApplicationForm() {
   /** Shown in the page title — the role the user clicked, not only the matched DB form name. */
   const [bannerJobTitle, setBannerJobTitle] = useState('');
   const [jobDataFromRedirect, setJobDataFromRedirect] = useState(null);
+  const [jobLookupStatus, setJobLookupStatus] = useState('idle');
   const [fullTimeYears, setFullTimeYears] = useState('');
   const [monthsVolunteer, setMonthsVolunteer] = useState('');
   const [hoursPerWeek, setHoursPerWeek] = useState('');
@@ -750,7 +751,7 @@ function JobApplicationForm() {
   const fetchJobData = async jobId => {
     try {
       const response = await axios.get(ENDPOINTS.GET_JOB(jobId));
-      if (response.data) {
+      if (response.data?.title) {
         setJobDataFromRedirect({
           jobId: response.data._id,
           jobTitle: response.data.title,
@@ -761,10 +762,13 @@ function JobApplicationForm() {
         if (response.data.title) {
           setJobTitleInput(response.data.title);
         }
+        setJobLookupStatus('loaded');
+      } else {
+        setJobLookupStatus('not-found');
       }
     } catch (error) {
       console.error('Error fetching job data:', error);
-      toast.error('Failed to load job details');
+      setJobLookupStatus('not-found');
     }
   };
 
@@ -773,19 +777,29 @@ function JobApplicationForm() {
     const referralId = searchParams.get('ref') || searchParams.get('referral');
     const jobIdParam = searchParams.get('jobId');
     const pathJobId = routerLocation.pathname.split('/').pop();
-    const jobId = jobIdParam || (pathJobId && pathJobId !== 'job-application' ? pathJobId : null);
+    const pathHasJobId = pathJobId && pathJobId !== 'job-application';
+    const hasJobId = Boolean(jobIdParam || pathHasJobId);
+    const jobId = jobIdParam || (pathHasJobId ? pathJobId : null);
 
     if (referralId && isValidId(referralId)) {
       fetchUserQuestionnaireData(referralId);
     }
 
     if (routerLocation.state) {
+      setJobLookupStatus('idle');
       setJobDataFromRedirect(routerLocation.state);
       if (routerLocation.state.jobTitle) {
         setJobTitleInput(routerLocation.state.jobTitle);
       }
-    } else if (jobId && isValidId(jobId)) {
-      fetchJobData(jobId);
+    } else if (hasJobId) {
+      if (isValidId(jobId)) {
+        setJobLookupStatus('loading');
+        fetchJobData(jobId);
+      } else {
+        setJobLookupStatus('not-found');
+      }
+    } else {
+      setJobLookupStatus('idle');
     }
   }, [routerLocation.state, routerLocation.search, routerLocation.pathname]);
 
@@ -1176,6 +1190,33 @@ function JobApplicationForm() {
       setIsSubmitting(false);
     }
   };
+
+  if (jobLookupStatus === 'loading' || jobLookupStatus === 'not-found') {
+    return (
+      <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
+        <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} />
+        <header className={styles.logo}>
+          <a
+            href="https://www.onecommunityglobal.org/collaboration/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <img src={OneCommunityImage} alt="One Community Logo" />
+          </a>
+        </header>
+        <main className={styles.header}>
+          <section className={styles.formContainer} role="status" aria-live="polite">
+            <h1 className={styles.formTitle}>
+              {jobLookupStatus === 'loading' ? 'Loading job…' : 'Job not found'}
+            </h1>
+            {jobLookupStatus === 'not-found' && (
+              <p>This job may have been removed or the link may be incorrect.</p>
+            )}
+          </section>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
