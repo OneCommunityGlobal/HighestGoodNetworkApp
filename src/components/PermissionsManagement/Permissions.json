@@ -576,6 +576,17 @@
     ]
   },
   {
+    "label": "CollabJobAds",
+    "description": "Collaboration Job Ads related permissions",
+    "subperms": [
+      {
+        "label": "Create CollabJobAds",
+        "key": "createCollabJobAds",
+        "description": "Gives the user permission to create CollabJobAds"
+      }
+    ]
+  },
+  {
     "label":"Activity Log Management",
     "description":"Category for all permissions related to activity logs",
     "subperms":[

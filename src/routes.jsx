@@ -106,6 +106,9 @@ import TeamLocations from './components/TeamLocations';
 import Inventory from './components/Inventory';
 import Collaboration from './components/Collaboration';
 import SuggestedJobsList from './components/Collaboration/SuggestedJobsList';
+import JobAdsCreation from './components/Collaboration/JobAdsCreation';
+import JobDetailsLink from './components/Collaboration/JobDetailsLink';
+import JobApplyLink from './components/Collaboration/JobApplyLink';
 import TestEventRegistration from './components/EventRegistration/TestEventRegistration';
 import MemberList from './components/QuestionnaireDashboard/MemberList';
 import PromotionTable from './components/QuestionnaireDashboard/PromotionTable';
@@ -1138,6 +1141,9 @@ export default (
         <Route path="/collaboration" component={Collaboration} />
         <ProtectedRoute path="/kitchenandinventory/orders" component={OrdersPage} />
         <Route path="/suggestedjobslist" component={SuggestedJobsList} />
+        <Route path="/jobDetailsLink/:givenId" component={JobDetailsLink} />
+        <Route path="/jobApplyLink/:formId" component={JobApplyLink} />
+        <ProtectedRoute path="/jobAdsCreation" component={JobAdsCreation} />
         <ProtectedRoute path="/jobformbuilder" fallback component={JobFormBuilder} />
         <ProtectedRoute path="/materials/mostwastedmaterials" component={MostWastedMaterials} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />

@@ -11,6 +11,14 @@ import 'react-toastify/dist/ReactToastify.css';
 import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import moment from 'moment-timezone';
 import { isJobApplicationFileUploadQuestion } from './jobApplicationQuestionUtils';
+import {
+  isDegreeMajorQuestion,
+  isTechnologyExperienceQuestion,
+  missingTechnologyYearMessages,
+  serializeTechnologyAnswer,
+  syncTechnologyDetails,
+  selectedTechnologyNames,
+} from '../jobQuestionFollowUps';
 
 function normalizeTitleKey(s) {
   return String(s || '')
@@ -196,6 +204,7 @@ function isResumeQuestion(q) {
 /** Resume/CV and built-in profile prompts are collected above — skip duplicates in the list. */
 function shouldHideQuestionFromApplicantList(q) {
   if (isResumeQuestion(q)) return true;
+  if (isDegreeMajorQuestion(q)) return true;
   if (isStandardProfileFieldQuestion(q)) return true;
   const raw = (q.label || q.questionText || '').trim();
   return /^(19|20)[.)\s]/.test(raw) || /^question\s*(19|20)\b/i.test(raw);
@@ -502,6 +511,7 @@ function collectMissingRequiredFields({
   questionFiles,
   resumeFile,
   resumeRequired,
+  technologyExperience,
 }) {
   const missing = Object.values(profileErrors);
 
@@ -514,11 +524,17 @@ function collectMissingRequiredFields({
       const hoursError = validateHoursPerWeekAnswer(label, answers[idx]);
       if (hoursError) missing.push(hoursError);
     }
+    if (isTechnologyExperienceQuestion(q)) {
+      missing.push(...missingTechnologyYearMessages(answers[idx], technologyExperience?.[idx]));
+    }
   }
   return missing;
 }
 
-function serializeAnswerForSubmit(q, idx, answers, questionFiles) {
+function serializeAnswerForSubmit(q, idx, answers, questionFiles, technologyExperience) {
+  if (isTechnologyExperienceQuestion(q)) {
+    return serializeTechnologyAnswer(answers[idx], technologyExperience?.[idx]);
+  }
   if (!isJobApplicationFileUploadQuestion(q)) return answers[idx];
   const file = questionFiles[idx];
   if (!file) return '';
@@ -668,6 +684,7 @@ function JobApplicationForm() {
   const [websiteSocial, setWebsiteSocial] = useState('');
   const [resumeFile, setResumeFile] = useState(null);
   const [questionFiles, setQuestionFiles] = useState({});
+  const [technologyExperience, setTechnologyExperience] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const resumeInputRef = useRef(null);
   const questionFileInputRefs = useRef({});
@@ -843,6 +860,7 @@ function JobApplicationForm() {
     const qs = getVisibleQuestionsForForm(form);
     setAnswers(initialAnswersForQuestions(qs));
     setQuestionFiles({});
+    setTechnologyExperience({});
     questionFileInputRefs.current = {};
     setFieldErrors({});
   }, [selectedJob, forms]);
@@ -893,13 +911,34 @@ function JobApplicationForm() {
   };
 
   /** Checkbox question with multiple options: toggle selection in an array stored at answers[idx]. */
-  const toggleCheckboxOption = (idx, opt) => {
+  const toggleCheckboxOption = (idx, opt, trackTechnology = false) => {
     const prev = answers[idx];
     const arr = normalizeCheckboxAnswerArray(prev);
     const i = arr.indexOf(opt);
     if (i >= 0) arr.splice(i, 1);
     else arr.push(opt);
     handleAnswerChange(idx, arr);
+    if (trackTechnology) {
+      setTechnologyExperience(prevDetails => ({
+        ...prevDetails,
+        [idx]: syncTechnologyDetails(prevDetails[idx], arr),
+      }));
+    }
+  };
+
+  const updateTechnologyDetail = (idx, technology, patch) => {
+    setTechnologyExperience(prev => ({
+      ...prev,
+      [idx]: {
+        ...(prev[idx] || {}),
+        [technology]: {
+          fullTime: false,
+          years: '',
+          ...(prev[idx]?.[technology] || {}),
+          ...patch,
+        },
+      },
+    }));
   };
 
   const isCheckboxOptionChecked = (answer, opt) => {
@@ -1069,6 +1108,7 @@ function JobApplicationForm() {
       questionFiles,
       resumeFile,
       resumeRequired,
+      technologyExperience,
     });
 
     return { missing, profileErrors };
@@ -1086,6 +1126,7 @@ function JobApplicationForm() {
     setResumeFile(null);
     if (resumeInputRef.current) resumeInputRef.current.value = '';
     setQuestionFiles({});
+    setTechnologyExperience({});
     questionFileInputRefs.current = {};
     setFullTimeYears('');
     setMonthsVolunteer('');
@@ -1156,7 +1197,7 @@ function JobApplicationForm() {
           },
           answers: visibleQuestions.map((q, idx) => ({
             questionId: q._id,
-            answer: serializeAnswerForSubmit(q, idx, answers, questionFiles),
+            answer: serializeAnswerForSubmit(q, idx, answers, questionFiles, technologyExperience),
           })),
         }),
       );
@@ -1678,13 +1719,55 @@ function JobApplicationForm() {
                               name={`question-${formKey}-${String(opt)}`}
                               value={opt}
                               checked={isCheckboxOptionChecked(answers[idx], opt)}
-                              onChange={() => toggleCheckboxOption(idx, opt)}
+                              onChange={() =>
+                                toggleCheckboxOption(idx, opt, isTechnologyExperienceQuestion(q))
+                              }
                             />{' '}
                             {opt}
                           </label>
                         ))}
                       </fieldset>
                     )}
+                    {isTechnologyExperienceQuestion(q) &&
+                      selectedTechnologyNames(answers[idx]).length > 0 && (
+                        <div className={styles.technologyFollowUps}>
+                          {selectedTechnologyNames(answers[idx]).map(technology => (
+                            <div key={technology} className={styles.technologyFollowUp}>
+                              <span className={styles.technologyName}>{technology}</span>
+                              <label>
+                                <input
+                                  type="checkbox"
+                                  checked={Boolean(
+                                    technologyExperience[idx]?.[technology]?.fullTime,
+                                  )}
+                                  onChange={e =>
+                                    updateTechnologyDetail(idx, technology, {
+                                      fullTime: e.target.checked,
+                                    })
+                                  }
+                                />{' '}
+                                full-time
+                              </label>
+                              <label>
+                                Years
+                                <input
+                                  type="number"
+                                  min="0"
+                                  step="0.5"
+                                  className={`${styles.inputField} ${styles.yearsInput}`}
+                                  value={technologyExperience[idx]?.[technology]?.years ?? ''}
+                                  onChange={e =>
+                                    updateTechnologyDetail(idx, technology, {
+                                      years: e.target.value,
+                                    })
+                                  }
+                                  aria-label={`Years of experience in ${technology}`}
+                                />
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     {qt === 'radio' && q.options && q.options.length > 0 && (
                       <fieldset
                         className={styles.optionFieldset}
@@ -1774,7 +1857,7 @@ function JobApplicationForm() {
                 );
               })}
               <button type="submit" className={styles.submitButton} disabled={isSubmitting}>
-                {isSubmitting ? 'Submitting…' : 'Submit your application'}
+                {isSubmitting ? 'Submitting…' : 'Submit now'}
               </button>
             </div>
           </form>

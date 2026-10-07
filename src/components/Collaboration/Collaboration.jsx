@@ -354,6 +354,30 @@ function Collaboration() {
     }
   };
 
+  const isUsableJobImageUrl = url => {
+    if (!url || typeof url !== 'string') return false;
+    const trimmed = url.trim();
+    if (!trimmed) return false;
+    try {
+      const parsed = new URL(trimmed);
+      if (!['http:', 'https:'].includes(parsed.protocol)) return false;
+      // Seed/demo jobs often store placeholder hosts that 404 in the browser.
+      if (
+        ['example.com', 'www.example.com', 'placeholder.com', 'via.placeholder.com'].includes(
+          parsed.hostname,
+        )
+      ) {
+        return false;
+      }
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const getJobImageSrc = (ad, jobCategory) =>
+    isUsableJobImageUrl(ad?.imageUrl) ? ad.imageUrl.trim() : getCategoryImage(jobCategory);
+
   const handleImageError = event => {
     event.currentTarget.onerror = null;
     event.currentTarget.src =
@@ -392,7 +416,7 @@ function Collaboration() {
         onClick={handleJobAdClick}
       >
         <img
-          src={getCategoryImage(jobCategory)}
+          src={getJobImageSrc(ad, jobCategory)}
           alt={jobTitle}
           loading="lazy"
           onError={handleImageError}

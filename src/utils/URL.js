@@ -691,6 +691,17 @@ export const ENDPOINTS = {
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
   PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
 
+  // Collaboration - Job Ads endpoints
+  JOBS: `${APIEndpoint}/jobs`,
+  JOB_CATEGORIES: `${APIEndpoint}/jobs/categories`,
+  JOB_POSITIONS: `${APIEndpoint}/jobs/positions`,
+
+  // Collaboration - Jobforms endpoints
+  JOBFORMS_RESPONSES: `${APIEndpoint}/jobforms/responses`,
+
+  // Collaboration - Jobforms Upload endpoints
+  JOBFORMS_RESPONSES_UPLOAD: `${APIEndpoint}/jobforms/responses/upload`,
+
   // LinkedIn autoposter endpoints
   LINKEDIN_POST: `${APIEndpoint}/postToLinkedIn`,
   LINKEDIN_SCHEDULED_POSTS: `${APIEndpoint}/scheduledPosts`,
