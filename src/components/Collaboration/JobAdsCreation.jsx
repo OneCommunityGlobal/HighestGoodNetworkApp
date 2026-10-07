@@ -352,7 +352,7 @@ function JobAdsCreation() {
 
     const emptyMsg = '';
     setErrors(emptyMsg);
-    submitJobAds();
+    void submitJobAds();
     setFormData({ ...initialState });
   };
 
@@ -376,7 +376,7 @@ function JobAdsCreation() {
         setPositions([]);
         return;
       }
-      fetchPositions(value);
+      void fetchPositions(value);
     }
     if (name === 'applyLink') {
       // eslint-disable-next-line no-console
@@ -388,11 +388,22 @@ function JobAdsCreation() {
   };
 
   useEffect(() => {
-    fetchCategories();
-    //  fetchPositions();
-    fetchJobFormsAll();
-    fetchTemplates();
+    void fetchCategories();
+    void fetchJobFormsAll();
+    void fetchTemplates();
   }, []);
+
+  if (!canCreateCollabJobAds) {
+    return (
+      <div
+        className={`${styles['jobAds-creation']} ${
+          darkMode ? styles['user-collaboration-dark-mode'] : ''
+        }`}
+      >
+        <div>You do not have permission to create Collaboration Job Ads.</div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -400,150 +411,138 @@ function JobAdsCreation() {
         darkMode ? styles['user-collaboration-dark-mode'] : ''
       }`}
     >
-      {canCreateCollabJobAds === false ? (
-        <div>You do not have permission to create Collaboration Job Ads.</div>
-      ) : canCreateCollabJobAds === true ? (
-        <>
-          <div className={styles['jobAds-header']}>
-            <a
-              href="https://www.onecommunityglobal.org/collaboration/"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <img src={OneCommunityImage} alt="One Community Logo" />
-            </a>
-          </div>
-          <div className={styles['title-header']}>
-            <h3> Collaboration Ads Creation </h3>
-          </div>
+      <div className={styles['jobAds-header']}>
+        <a
+          href="https://www.onecommunityglobal.org/collaboration/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <img src={OneCommunityImage} alt="One Community Logo" />
+        </a>
+      </div>
+      <div className={styles['title-header']}>
+        <h3> Collaboration Ads Creation </h3>
+      </div>
 
-          <form className={styles['jobAds-creation-container']} onSubmit={handleSubmit}>
-            <div className={styles['input-error']}>
-              <label className={styles['input-label']} htmlFor="category">
-                Category
-              </label>
-              <select
-                className={styles['jobAds-input']}
-                id="category"
-                value={formData.category}
-                onChange={handleChange}
-                name="category"
-              >
-                <option value="">Select from Categories</option>
-                {categories.map(specificCategory => (
-                  <option key={specificCategory} value={specificCategory}>
-                    {specificCategory}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {!errors.category ? null : <div className={styles.error}>{errors.category}</div>}
-
-            <div className={styles['input-error']}>
-              <label className={styles['input-label']} htmlFor="title">
-                Title
-              </label>
-              <select
-                className={styles['jobAds-input']}
-                value={formData.title}
-                name="title"
-                id="title"
-                onChange={handleChange}
-              >
-                <option value="">Select from Positions</option>
-                {positions.map(specificPosition => (
-                  <option key={specificPosition} value={specificPosition}>
-                    {specificPosition}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {!errors.title ? null : <div className={styles.error}>{errors.title}</div>}
-            {textareaFields.map((field, display, idx) => (
-              <>
-                <div className={styles['input-error']} key={field.key}>
-                  <label className={styles['input-label']} htmlFor={field.key}>
-                    {field.display}
-                  </label>
-
-                  <Editor
-                    className={styles['jobAds-input']}
-                    tinymceScriptSrc="/tinymce/tinymce.min.js"
-                    init={TINY_MCE_INIT_OPTIONS_MEDIA}
-                    id={field.key}
-                    value={formData[field.key] || ''}
-                    onEditorChange={newVal =>
-                      setFormData(prev => ({ ...prev, [field.key]: newVal }))
-                    }
-                  />
-                </div>
-                {!errors[field.key] ? null : (
-                  <div className={styles.error}>{errors[field.key]}</div>
-                )}
-              </>
+      <form className={styles['jobAds-creation-container']} onSubmit={handleSubmit}>
+        <div className={styles['input-error']}>
+          <label className={styles['input-label']} htmlFor="category">
+            Category
+          </label>
+          <select
+            className={styles['jobAds-input']}
+            id="category"
+            value={formData.category}
+            onChange={handleChange}
+            name="category"
+          >
+            <option value="">Select from Categories</option>
+            {categories.map(specificCategory => (
+              <option key={specificCategory} value={specificCategory}>
+                {specificCategory}
+              </option>
             ))}
-            {formFields.map((field, display, idx) => (
-              <>
-                <div className={styles['input-error']} key={field.key}>
-                  <label className={styles['input-label']} htmlFor={field.key}>
-                    {field.display}
-                  </label>
-                  <input
-                    className={styles['jobAds-input']}
-                    id={field.key}
-                    value={formData[field.key] || ''}
-                    placeholder={`Enter the ${field.display}`}
-                    onChange={handleChange}
-                    name={field.key}
-                    disabled={idx === 1}
-                  />
-                </div>
-                {errors[field.key] && <div className={styles.error}>{errors[field.key]}</div>}
-              </>
+          </select>
+        </div>
+
+        {!errors.category ? null : <div className={styles.error}>{errors.category}</div>}
+
+        <div className={styles['input-error']}>
+          <label className={styles['input-label']} htmlFor="title">
+            Title
+          </label>
+          <select
+            className={styles['jobAds-input']}
+            value={formData.title}
+            name="title"
+            id="title"
+            onChange={handleChange}
+          >
+            <option value="">Select from Positions</option>
+            {positions.map(specificPosition => (
+              <option key={specificPosition} value={specificPosition}>
+                {specificPosition}
+              </option>
             ))}
+          </select>
+        </div>
+
+        {!errors.title ? null : <div className={styles.error}>{errors.title}</div>}
+        {textareaFields.map(field => (
+          <div key={field.key}>
             <div className={styles['input-error']}>
-              <label className={styles['input-label']} htmlFor="applyLinktest2">
-                Apply Link
+              <label className={styles['input-label']} htmlFor={field.key}>
+                {field.display}
               </label>
-              <select
+
+              <Editor
                 className={styles['jobAds-input']}
-                id="applyLink"
-                value={formData.applyLink}
+                tinymceScriptSrc="/tinymce/tinymce.min.js"
+                init={TINY_MCE_INIT_OPTIONS_MEDIA}
+                id={field.key}
+                value={formData[field.key] || ''}
+                onEditorChange={newVal => setFormData(prev => ({ ...prev, [field.key]: newVal }))}
+              />
+            </div>
+            {!errors[field.key] ? null : <div className={styles.error}>{errors[field.key]}</div>}
+          </div>
+        ))}
+        {formFields.map((field, idx) => (
+          <div key={field.key}>
+            <div className={styles['input-error']}>
+              <label className={styles['input-label']} htmlFor={field.key}>
+                {field.display}
+              </label>
+              <input
+                className={styles['jobAds-input']}
+                id={field.key}
+                value={formData[field.key] || ''}
+                placeholder={`Enter the ${field.display}`}
                 onChange={handleChange}
-                name="applyLink"
-              >
-                <option value="">Select from job forms</option>
-                {jobFormsAll.map(({ _id, title }) => {
-                  return (
-                    <option key={_id} value={`${ENDPOINTS.APIEndpoint()}/jobforms/${_id}`}>
-                      {title}
-                    </option>
-                  );
-                })}
-              </select>
+                name={field.key}
+                disabled={idx === 1}
+              />
             </div>
+            {errors[field.key] && <div className={styles.error}>{errors[field.key]}</div>}
+          </div>
+        ))}
+        <div className={styles['input-error']}>
+          <label className={styles['input-label']} htmlFor="applyLinktest2">
+            Apply Link
+          </label>
+          <select
+            className={styles['jobAds-input']}
+            id="applyLink"
+            value={formData.applyLink}
+            onChange={handleChange}
+            name="applyLink"
+          >
+            <option value="">Select from job forms</option>
+            {jobFormsAll.map(({ _id, title }) => {
+              return (
+                <option key={_id} value={`${ENDPOINTS.APIEndpoint()}/jobforms/${_id}`}>
+                  {title}
+                </option>
+              );
+            })}
+          </select>
+        </div>
 
-            {!errors.applyLink ? null : <div className={styles.error}>{errors.applyLink}</div>}
+        {!errors.applyLink ? null : <div className={styles.error}>{errors.applyLink}</div>}
 
-            <div className={styles['jobAds-creation-button-group']}>
-              <button type="submit" className={`${styles['submit-button']} btn-primary`}>
-                Submit
-              </button>
-              <button
-                type="button"
-                className={`${styles['cancel-button']} btn-secondary`}
-                onClick={handleCancel}
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        </>
-      ) : (
-        ''
-      )}
+        <div className={styles['jobAds-creation-button-group']}>
+          <button type="submit" className={`${styles['submit-button']} btn-primary`}>
+            Submit
+          </button>
+          <button
+            type="button"
+            className={`${styles['cancel-button']} btn-secondary`}
+            onClick={handleCancel}
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

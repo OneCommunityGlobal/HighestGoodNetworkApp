@@ -134,22 +134,21 @@ function JobDetailsLink() {
   };
 
   useEffect(() => {
-    getJobDetailsById(givenId);
-    if (!loading && jobsDetailById?.applyLink) getJobForms(jobsDetailById.applyLink);
+    void getJobDetailsById(givenId);
   }, []);
 
   useEffect(() => {
-    if (!loading && jobsDetailById?.applyLink) getJobForms(jobsDetailById.applyLink);
-  }, [loading, jobsDetailById.applyLink]);
+    if (!loading && jobsDetailById?.applyLink) {
+      void getJobForms(jobsDetailById.applyLink);
+    }
+  }, [loading, jobsDetailById?.applyLink]);
 
   useEffect(() => {
     if (!loading && jobsDetailById?.applyLink) {
-      const applyLinkFormId = jobsDetailById?.applyLink.split('jobforms/')[1];
-      // eslint-disable-next-line no-console
-      console.log(applyLinkFormId);
+      const applyLinkFormId = jobsDetailById.applyLink.split('jobforms/')[1];
       setFormData(prev => ({ ...prev, formId: applyLinkFormId }));
     }
-  }, [loading, jobsDetailById.applyLink]);
+  }, [loading, jobsDetailById?.applyLink]);
 
   const getValue = name => {
     if (!Array.isArray(formData.answers)) return ''; // ✅ fallback
@@ -170,16 +169,12 @@ function JobDetailsLink() {
     }));
   };
 
-  const handleFileChange = async event => {
+  const handleFileChange = async (event, index) => {
     const { id, name } = event.target;
-    console.log(`name  is ${event.target.name}`);
-
-    console.log(`name  is ${event.target.files[0].name}`);
     const selFile = event.target.files[0];
     if (!selFile) return;
     if (selFile.size > 5 * 1024 * 1024) {
       toast.error('File size exceeds 5MB limit. Please choose a smaller file. ');
-      selFile.value = null;
       return;
     }
     if (
@@ -193,18 +188,13 @@ function JobDetailsLink() {
       ].includes(selFile.type)
     ) {
       toast.error('Invalid file type. Please upload a PDF, DOC, DOCX, JPG, PNG, or BMP file.');
-      selFile.value = null;
-
       return;
     }
     try {
       setUploadingFiles(prev => ({ ...prev, [name]: true }));
-      console.log(uploadingFiles);
 
       const formResumeData = new FormData();
       formResumeData.append('file', selFile);
-      // eslint-disable-next-line no-console
-      console.log(`res is ${ENDPOINTS.APIEndpoint()}/jobforms/responses/upload`);
 
       const formResumeDataResponse = await axios.post(
         `${ENDPOINTS.APIEndpoint()}/jobforms/responses/upload`,
@@ -216,48 +206,29 @@ function JobDetailsLink() {
         },
       );
 
-      // eslint-disable-next-line no-console
-      console.log('formResumeDataResponse');
-      // eslint-disable-next-line no-console
-      console.log(formResumeDataResponse);
-
-      const responseData = await formResumeDataResponse.data;
-      // eslint-disable-next-line no-console
-      console.log('data');
-      // eslint-disable-next-line no-console
-      console.log(responseData);
-      console.log(responseData?.data?.url);
+      const responseData = formResumeDataResponse.data;
       const dropboxLink = responseData?.data?.url;
       setFormData(prev => ({
         ...prev,
         answers: Array.isArray(prev.answers)
           ? [
               ...prev.answers.filter(a => a.questionId !== id),
-              { questionId: id, questionText: name, answer: dropboxLink },
+              { questionId: id, questionText: name, answer: dropboxLink, order: index },
             ]
-          : [{ questionId: id, questionText: name, answer: dropboxLink }],
+          : [{ questionId: id, questionText: name, answer: dropboxLink, order: index }],
       }));
       setUploadingFiles(prev => ({ ...prev, [name]: false }));
-      console.log(uploadingFiles);
     } catch (err) {
-      console.error('Upload failed', err);
       let errorMessage = 'File upload failed.';
       if (err.response) {
-        console.log('Backend response', err.response.data);
         errorMessage = err.response.data?.message || `Server error (${err.response.status})`;
-        toast.error(errorMessage);
       } else if (err.request) {
-        console.log('No response received');
         errorMessage = 'No response from server. Check your connection.';
       } else {
-        console.error('Request Error', err.request);
         errorMessage = err.message;
       }
-      console.log('err');
-      console.log(err);
       toast.error(errorMessage);
       setUploadingFiles(prev => ({ ...prev, [name]: false }));
-      console.log(uploadingFiles);
     }
   };
 
@@ -383,10 +354,12 @@ function JobDetailsLink() {
     if (!inputValidation()) {
       return;
     }
-    submitJobforms();
+    void submitJobforms();
   };
   const resetForm = e => {
-    alert('form cancelled');
+    e.preventDefault();
+    setFormData({ ...initialState });
+    setErrors({});
   };
   useEffect(() => {
     console.log('updated errors:', errors);
@@ -568,7 +541,7 @@ function JobDetailsLink() {
               <button type="submit" className="btn-primary">
                 Submit
               </button>
-              <button type="cancel" onClick={resetForm}>
+              <button type="button" onClick={resetForm}>
                 Cancel
               </button>
             </div>

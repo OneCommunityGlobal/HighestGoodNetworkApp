@@ -1,26 +1,20 @@
-import { Route, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 
 import { toast } from 'react-toastify';
 import { ENDPOINTS } from '../../utils/URL';
 
-//import { ApiEndpoint } from '../../utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
 import styles from '../Collaboration/JobApplyLink.module.css';
 
 function JobApplyLink() {
-  const { formId } = useParams();
   const [jobFormsAll, setJobFormsAll] = useState([]);
-
   const [jobForms, setJobForms] = useState([]);
-
   const [loading, setLoading] = useState(false);
   const [applyLink, setApplyLink] = useState('');
+
   const fetchJobFormsAll = async () => {
     try {
-      // eslint-disable-next-line no-console
-      console.log(`${ENDPOINTS.GET_ALL_JOB_FORMS}`);
       const response = await fetch(`${ENDPOINTS.GET_ALL_JOB_FORMS}`, {
         method: 'GET',
         headers: {
@@ -28,8 +22,6 @@ function JobApplyLink() {
         },
       });
       if (!response.ok) throw new Error(`Failed to fetch all jobForms: ${response.statusText}`);
-      // eslint-disable-next-line no-console
-      console.log(response);
       const data = await response.json();
       setJobFormsAll(data.forms);
     } catch (error) {
@@ -37,90 +29,45 @@ function JobApplyLink() {
     }
   };
   useEffect(() => {
-    fetchJobFormsAll();
+    void fetchJobFormsAll();
   }, []);
 
   const getJobForms = async () => {
-    // console.log(`formId: ${formId}`);
-    console.log(`applyLink:${applyLink}`);
-    const formId = new URL(applyLink).pathname.split('/').pop();
+    if (!applyLink) return;
 
     try {
       setLoading(true);
-      /*console.log(`res is ${ENDPOINTS.APIEndpoint()}/jobforms/${formId}`);
-      const response = await fetch(`${ENDPOINTS.APIEndpoint()}/jobforms/${formId}`, {
-        method: 'get',
-        headers: {
-          Authorization: localStorage.getItem('token'),
-        },
-      });
-      */
-      console.log(`res is ${ENDPOINTS.APIEndpoint()}/jobforms/${formId}`);
-      const response = await fetch(`${ENDPOINTS.APIEndpoint()}/jobforms/${formId}`, {
+      const selectedFormId = new URL(applyLink).pathname.split('/').pop();
+      const response = await fetch(`${ENDPOINTS.APIEndpoint()}/jobforms/${selectedFormId}`, {
         method: 'get',
         headers: {
           Authorization: localStorage.getItem('token'),
         },
       });
 
-      console.log(response);
       if (!response.ok) throw new Error(`Failed to fetch all Templates: ${response.statusText}`);
 
       const data = await response.json();
-      console.log(data);
-      // console.log(data.template);
-      // console.log(data.template.fields.length);
-
       setJobForms(data);
-      // console.log(jobTemplate);
-      // console.log(jobTemplate.template.fields.length);
       setLoading(false);
     } catch (error) {
       toast.error('Error fetching JobForms');
+      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    console.log(`before calling getTemplate`);
-    getJobForms();
-  }, []);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const handleSubmit = e => {
     e.preventDefault();
-    alert('form submitted');
-    /* try {
-      setLoading(true);
-      console.log(`res is ${ENDPOINTS.APIEndpoint()}/jobforms/${formId}`);
-      const response = await fetch(`${ENDPOINTS.APIEndpoint()}/jobforms/${formId}`, {
-        method: 'get',
-        headers: {
-          Authorization: localStorage.getItem('token'),
-        },
-      });
-      console.log(response);
-      if (!response.ok) throw new Error(`Failed to fetch all Templates: ${response.statusText}`);
-
-      const data = await response.json();
-      console.log(data);
-      // console.log(data.template);
-      // console.log(data.template.fields.length);
-  }*/
   };
   const handleChange = event => {
-    const { name, value } = event.target;
-    // eslint-disable-next-line no-console
-    console.log(value);
+    const { value } = event.target;
     setApplyLink(value);
   };
   useEffect(() => {
-    console.log(`before calling getJobForms`);
-    getJobForms();
+    void getJobForms();
   }, [applyLink]);
-
-  const resetForm = e => {
-    alert('form cancelled');
-  };
   return !loading ? (
     <div className={darkMode ? styles.darkModeContainer : styles.lightModeContainer}>
       <div className={styles['ApplyLink-header']}>
