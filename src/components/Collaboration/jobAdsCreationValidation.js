@@ -3,57 +3,65 @@ import getWordCount from '../../utils/getWordCount';
 
 const MIN_WORDS = 30;
 
+const requireField = (value, field, message) => (value ? null : { field, message });
+
+const requireMinWords = (value, field, min, message) =>
+  getWordCount(value) < min ? { field, message } : null;
+
 /**
  * @returns {{ field: string, message: string } | null}
  */
 export function validateJobAdsForm(formData) {
-  if (!formData.category) {
-    return { field: 'category', message: 'Category is required' };
-  }
-  if (!formData.title) {
-    return { field: 'title', message: 'Title is required' };
-  }
-  if (!formData.description) {
-    return { field: 'description', message: 'Description is required' };
-  }
-  if (getWordCount(formData.description) < MIN_WORDS) {
-    return { field: 'description', message: 'Description must be at least 30 characters long' };
-  }
-  if (!formData.requirements) {
-    return { field: 'requirements', message: 'Requirements is required' };
-  }
-  if (getWordCount(formData.requirements) < MIN_WORDS) {
-    return { field: 'requirements', message: 'Requirements must be at least 30 words long' };
-  }
-  if (!formData.projects) {
-    return { field: 'projects', message: 'Projects is required' };
-  }
-  if (getWordCount(formData.projects) < 1) {
-    return { field: 'projects', message: 'Projects must be at least 1 word long' };
-  }
-  if (!formData.ourCommunity) {
-    return { field: 'ourCommunity', message: 'Our Community is required' };
-  }
-  if (getWordCount(formData.ourCommunity) < MIN_WORDS) {
-    return { field: 'ourCommunity', message: 'Our Community must be at least 30 words long' };
-  }
-  if (!formData.imageUrl) {
-    return { field: 'imageUrl', message: 'ImageURL is required' };
-  }
-  if (!isValidDropboxImageUrl(formData.imageUrl)) {
-    return { field: 'imageUrl', message: 'Enter a valid ImageURL' };
-  }
-  if (!formData.location) {
-    return { field: 'location', message: 'Location is required' };
-  }
-  if (formData.location !== 'remote') {
-    return { field: 'location', message: 'Location should be remote only' };
-  }
-  if (!formData.applyLink) {
-    return { field: 'applyLink', message: 'Apply Link is required' };
-  }
-  if (!isValidUrl(formData.applyLink)) {
-    return { field: 'applyLink', message: 'Enter the valid Apply Link' };
+  const checks = [
+    () => requireField(formData.category, 'category', 'Category is required'),
+    () => requireField(formData.title, 'title', 'Title is required'),
+    () => requireField(formData.description, 'description', 'Description is required'),
+    () =>
+      requireMinWords(
+        formData.description,
+        'description',
+        MIN_WORDS,
+        'Description must be at least 30 characters long',
+      ),
+    () => requireField(formData.requirements, 'requirements', 'Requirements is required'),
+    () =>
+      requireMinWords(
+        formData.requirements,
+        'requirements',
+        MIN_WORDS,
+        'Requirements must be at least 30 words long',
+      ),
+    () => requireField(formData.projects, 'projects', 'Projects is required'),
+    () =>
+      requireMinWords(formData.projects, 'projects', 1, 'Projects must be at least 1 word long'),
+    () => requireField(formData.ourCommunity, 'ourCommunity', 'Our Community is required'),
+    () =>
+      requireMinWords(
+        formData.ourCommunity,
+        'ourCommunity',
+        MIN_WORDS,
+        'Our Community must be at least 30 words long',
+      ),
+    () => requireField(formData.imageUrl, 'imageUrl', 'ImageURL is required'),
+    () =>
+      isValidDropboxImageUrl(formData.imageUrl)
+        ? null
+        : { field: 'imageUrl', message: 'Enter a valid ImageURL' },
+    () => requireField(formData.location, 'location', 'Location is required'),
+    () =>
+      formData.location === 'remote'
+        ? null
+        : { field: 'location', message: 'Location should be remote only' },
+    () => requireField(formData.applyLink, 'applyLink', 'Apply Link is required'),
+    () =>
+      isValidUrl(formData.applyLink)
+        ? null
+        : { field: 'applyLink', message: 'Enter the valid Apply Link' },
+  ];
+
+  for (const check of checks) {
+    const error = check();
+    if (error) return error;
   }
   return null;
 }

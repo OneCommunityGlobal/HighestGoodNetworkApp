@@ -154,10 +154,9 @@ function JobDetailsLink() {
       return false;
     }
 
-    for (let i = 0; i < questions.length; i += 1) {
-      const question = questions[i];
+    for (const question of questions) {
       const answerObj = formData.answers.find(a => a.questionId === question._id);
-      if ((!answerObj || !answerObj.answer) && question.isRequired) {
+      if (!answerObj?.answer && question.isRequired) {
         setErrors({
           [question.questionText]: `${question.questionText} is required`,
         });
