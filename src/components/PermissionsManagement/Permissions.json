@@ -582,7 +582,7 @@
       {
         "label": "Create CollabJobAds",
         "key": "createCollabJobAds",
-        "description": "Gives the user permission to create CollabJobAds"
+        "description": "Make the \"Other Links\" -> \"Job Ads Creation\" button appear/accessible and allow creating collaboration job ads. Intended for Owner and Administrator roles."
       }
     ]
   },

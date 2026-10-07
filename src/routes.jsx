@@ -1143,7 +1143,11 @@ export default (
         <Route path="/suggestedjobslist" component={SuggestedJobsList} />
         <Route path="/jobDetailsLink/:givenId" component={JobDetailsLink} />
         <Route path="/jobApplyLink/:formId" component={JobApplyLink} />
-        <ProtectedRoute path="/jobAdsCreation" component={JobAdsCreation} />
+        <ProtectedRoute
+          path="/jobAdsCreation"
+          component={JobAdsCreation}
+          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+        />
         <ProtectedRoute path="/jobformbuilder" fallback component={JobFormBuilder} />
         <ProtectedRoute path="/materials/mostwastedmaterials" component={MostWastedMaterials} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />

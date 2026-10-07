@@ -8,32 +8,12 @@ import OneCommunityImage from '../../assets/images/logo2.png';
 import { isValidDropboxImageUrl, isValidUrl } from '../../utils/checkValidURL';
 import { createCollaborationAds } from '../../actions/collaborationAdsActions';
 import getWordCount from '../../utils/getWordCount';
-import hasPermission from '../../utils/permissions';
 
 function JobAdsCreation() {
   const dispatch = useDispatch();
-  // const canCreateCollabJobAds = hasPermission('createCollabJobAds');
-  // console.log('canCreateCollabJobAds');
-  // console.log(canCreateCollabJobAds);
+  const userRole = useSelector(state => state.auth?.user?.role);
+  const canCreateCollabJobAds = userRole === 'Owner' || userRole === 'Administrator';
 
-  const [canCreateCollabJobAds, setCanCreateCollabJobAds] = useState(null);
-
-  useEffect(() => {
-    const checkPermission = async () => {
-      try {
-        const result = await dispatch(hasPermission('createCollabJobAds'));
-        console.log('createCollabJobAds permission:', result);
-        setCanCreateCollabJobAds(Boolean(result));
-      } catch (error) {
-        console.error('Error checking permission', error);
-        setCanCreateCollabJobAds(false);
-      }
-    };
-
-    checkPermission();
-  }, [dispatch]);
-
-  // const canCreateCollabJobAdsDis = await dispatch(hasPermission('createCollabJobAds'));
   const [loading, setLoading] = useState('');
   //  const formFields = ['imageUrl', 'location', 'applyLink', 'jobDetailsLink'];
   const textareaFields = [
