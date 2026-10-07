@@ -25,6 +25,24 @@ function clampPage(page, totalPages) {
   return page;
 }
 
+const PLACEHOLDER_LINK_HOSTS = ['example.com', 'jobs.example.com'];
+
+/** Resolve a safe job details URL, falling back to the internal application page
+ * when jobDetailsLink is missing or still set to a placeholder domain. */
+function getSafeJobDetailsLink(summary) {
+  const link = summary?.jobDetailsLink;
+  if (typeof link === 'string' && link.trim()) {
+    try {
+      const { hostname } = new URL(link);
+      if (!PLACEHOLDER_LINK_HOSTS.includes(hostname.toLowerCase())) return link;
+    } catch {
+      // Not a valid absolute URL - treat as unusable and fall back below.
+    }
+  }
+  const jobTitle = summary?.title ? `?jobTitle=${encodeURIComponent(summary.title)}` : '';
+  return `/job-application${jobTitle}`;
+}
+
 /** Keep first listing per title+category (API may return duplicate job records). */
 function dedupeJobsByTitle(jobs) {
   const seen = new Set();
@@ -532,23 +550,31 @@ function Collaboration() {
             <h1>Summaries</h1>
 
             {pageItems.length > 0 ? (
-              pageItems.map(summary => (
-                <div
-                  key={summary._id || summary.jobDetailsLink || summary.title}
-                  className={styles.summariesItem}
-                >
-                  <h3>
-                    <a href={summary.jobDetailsLink} target="_blank" rel="noreferrer">
-                      {summary.title}
-                    </a>
-                  </h3>
-                  <p>{summary.description}</p>
-                  <p className={styles.date}>
-                    Date Posted:{' '}
-                    {summary.datePosted ? new Date(summary.datePosted).toLocaleDateString() : '—'}
-                  </p>
-                </div>
-              ))
+              pageItems.map(summary => {
+                const jobDetailsLink = getSafeJobDetailsLink(summary);
+                const isExternalLink = /^https?:\/\//i.test(jobDetailsLink);
+
+                return (
+                  <div
+                    key={summary._id || summary.jobDetailsLink || summary.title}
+                    className={styles.summariesItem}
+                  >
+                    <h3>
+                      <a
+                        href={jobDetailsLink}
+                        {...(isExternalLink ? { target: '_blank', rel: 'noreferrer' } : {})}
+                      >
+                        {summary.title}
+                      </a>
+                    </h3>
+                    <p>{summary.description}</p>
+                    <p className={styles.date}>
+                      Date Posted:{' '}
+                      {summary.datePosted ? new Date(summary.datePosted).toLocaleDateString() : '—'}
+                    </p>
+                  </div>
+                );
+              })
             ) : (
               <p>No summaries found.</p>
             )}
