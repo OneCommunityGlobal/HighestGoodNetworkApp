@@ -112,6 +112,135 @@ const VariableRow = React.memo(
       }
     }, [onImageLoadStatusChange, variable?.name]);
 
+    const invalidImageUrlMessage = youtubeId
+      ? `The YouTube video "${youtubeId}" could not be loaded. Please verify the video exists and is publicly accessible.`
+      : 'The provided URL is not a valid image or YouTube video. Please provide a direct image URL (.jpg, .png, .gif) or a valid YouTube link.';
+    const defaultInputPlaceholder =
+      variable.type === 'number' ? 'Enter number' : `Enter ${variable.name.toLowerCase()}`;
+
+    let variableInput;
+
+    if (variable.type === 'textarea') {
+      variableInput = (
+        <Input
+          type="textarea"
+          rows={3}
+          value={value}
+          onChange={e => onVariableChange(variable.name, e.target.value)}
+          placeholder={`Enter ${variable.name.toLowerCase()}`}
+          invalid={!!error}
+          className="variable-input variable-textarea"
+        />
+      );
+    } else if (variable.type === 'image') {
+      variableInput = (
+        <div>
+          <Input
+            type="url"
+            value={value}
+            onChange={e => onImageSourceChange(variable.name, e.target.value)}
+            placeholder="Image URL or YouTube link"
+            invalid={!!error}
+            className="variable-input"
+          />
+          <small className="text-muted">
+            Supports: Direct image URLs (.jpg, .png, .gif, .webp, .svg), YouTube links
+            {extractedValue && <span className="text-success ms-1">(Auto-extracted)</span>}
+          </small>
+          {(value || extractedValue) && (
+            <div className="mt-2">
+              <small className="text-muted d-block mb-1">Preview:</small>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                {!imgError ? (
+                  <img
+                    key={computedSrc}
+                    src={computedSrc}
+                    alt="Preview"
+                    style={{
+                      maxWidth: '200px',
+                      maxHeight: '150px',
+                      width: 'auto',
+                      height: 'auto',
+                      objectFit: 'contain',
+                      borderRadius: '4px',
+                      border: '1px solid #dee2e6',
+                    }}
+                    onError={handleImageError}
+                    onLoad={handleImageLoad}
+                  />
+                ) : (
+                  <Alert color="danger" className="mb-0">
+                    <div className="d-flex align-items-start">
+                      <FaExclamationTriangle className="me-2 mt-1" />
+                      <div>
+                        <strong>Invalid Image/Video URL</strong>
+                        <div className="mt-1" style={{ fontSize: '0.875rem' }}>
+                          {invalidImageUrlMessage}
+                        </div>
+                      </div>
+                    </div>
+                  </Alert>
+                )}
+                {extractedValue && (
+                  <div style={{ flex: 1, overflow: 'hidden', maxWidth: '200px' }}>
+                    <div style={{ fontSize: '12px', color: '#6c757d', marginBottom: '2px' }}>
+                      Extracted from:
+                    </div>
+                    <div
+                      style={{
+                        fontSize: '11px',
+                        wordBreak: 'break-all',
+                        overflowWrap: 'break-word',
+                      }}
+                    >
+                      {value}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    } else if (variable.type === 'url') {
+      variableInput = (
+        <div>
+          <Input
+            type="url"
+            value={value}
+            onChange={e => onVariableChange(variable.name, e.target.value)}
+            placeholder="https://example.com"
+            invalid={!!error}
+            className="variable-input"
+          />
+          {value && (
+            <div className="mt-2">
+              <small className="text-muted d-block mb-1">URL Preview:</small>
+              <a
+                href={value}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: '0.85rem', wordBreak: 'break-all', color: '#3182ce' }}
+              >
+                {value}
+              </a>
+            </div>
+          )}
+        </div>
+      );
+    } else {
+      variableInput = (
+        <Input
+          type={variable.type}
+          value={value}
+          onChange={e => onVariableChange(variable.name, e.target.value)}
+          placeholder={defaultInputPlaceholder}
+          invalid={!!error}
+          className="variable-input"
+        />
+      );
+    }
+
     return (
       <tr>
         <td>
@@ -126,122 +255,7 @@ const VariableRow = React.memo(
           </Badge>
         </td>
         <td>
-          {variable.type === 'textarea' ? (
-            <Input
-              type="textarea"
-              rows={3}
-              value={value}
-              onChange={e => onVariableChange(variable.name, e.target.value)}
-              placeholder={`Enter ${variable.name.toLowerCase()}`}
-              invalid={!!error}
-              className="variable-input variable-textarea"
-            />
-          ) : variable.type === 'image' ? (
-            <div>
-              <Input
-                type="url"
-                value={value}
-                onChange={e => onImageSourceChange(variable.name, e.target.value)}
-                placeholder="Image URL or YouTube link"
-                invalid={!!error}
-                className="variable-input"
-              />
-              <small className="text-muted">
-                Supports: Direct image URLs (.jpg, .png, .gif, .webp, .svg), YouTube links
-                {extractedValue && <span className="text-success ms-1">(Auto-extracted)</span>}
-              </small>
-              {(value || extractedValue) && (
-                <div className="mt-2">
-                  <small className="text-muted d-block mb-1">Preview:</small>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    {!imgError ? (
-                      <img
-                        key={computedSrc}
-                        src={computedSrc}
-                        alt="Preview"
-                        style={{
-                          maxWidth: '200px',
-                          maxHeight: '150px',
-                          width: 'auto',
-                          height: 'auto',
-                          objectFit: 'contain',
-                          borderRadius: '4px',
-                          border: '1px solid #dee2e6',
-                        }}
-                        onError={handleImageError}
-                        onLoad={handleImageLoad}
-                      />
-                    ) : (
-                      <Alert color="danger" className="mb-0">
-                        <div className="d-flex align-items-start">
-                          <FaExclamationTriangle className="me-2 mt-1" />
-                          <div>
-                            <strong>Invalid Image/Video URL</strong>
-                            <div className="mt-1" style={{ fontSize: '0.875rem' }}>
-                              {youtubeId
-                                ? `The YouTube video "${youtubeId}" could not be loaded. Please verify the video exists and is publicly accessible.`
-                                : 'The provided URL is not a valid image or YouTube video. Please provide a direct image URL (.jpg, .png, .gif) or a valid YouTube link.'}
-                            </div>
-                          </div>
-                        </div>
-                      </Alert>
-                    )}
-                    {extractedValue && (
-                      <div style={{ flex: 1, overflow: 'hidden', maxWidth: '200px' }}>
-                        <div style={{ fontSize: '12px', color: '#6c757d', marginBottom: '2px' }}>
-                          Extracted from:
-                        </div>
-                        <div
-                          style={{
-                            fontSize: '11px',
-                            wordBreak: 'break-all',
-                            overflowWrap: 'break-word',
-                          }}
-                        >
-                          {value}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : variable.type === 'url' ? (
-            <div>
-              <Input
-                type="url"
-                value={value}
-                onChange={e => onVariableChange(variable.name, e.target.value)}
-                placeholder="https://example.com"
-                invalid={!!error}
-                className="variable-input"
-              />
-              {value && (
-                <div className="mt-2">
-                  <small className="text-muted d-block mb-1">URL Preview:</small>
-                  <a
-                    href={value}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ fontSize: '0.85rem', wordBreak: 'break-all', color: '#3182ce' }}
-                  >
-                    {value}
-                  </a>
-                </div>
-              )}
-            </div>
-          ) : (
-            <Input
-              type={variable.type}
-              value={value}
-              onChange={e => onVariableChange(variable.name, e.target.value)}
-              placeholder={
-                variable.type === 'number' ? 'Enter number' : `Enter ${variable.name.toLowerCase()}`
-              }
-              invalid={!!error}
-              className="variable-input"
-            />
-          )}
+          {variableInput}
           {error && <div className="invalid-feedback d-block">{error}</div>}
         </td>
       </tr>
