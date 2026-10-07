@@ -25,7 +25,7 @@ function clampPage(page, totalPages) {
   return page;
 }
 
-const PLACEHOLDER_LINK_HOSTS = ['example.com', 'jobs.example.com'];
+const PLACEHOLDER_LINK_HOSTS = new Set(['example.com', 'jobs.example.com']);
 
 /** Resolve a safe job details URL, falling back to the internal application page
  * when jobDetailsLink is missing or still set to a placeholder domain. */
@@ -34,7 +34,7 @@ function getSafeJobDetailsLink(summary) {
   if (typeof link === 'string' && link.trim()) {
     try {
       const { hostname } = new URL(link);
-      if (!PLACEHOLDER_LINK_HOSTS.includes(hostname.toLowerCase())) return link;
+      if (!PLACEHOLDER_LINK_HOSTS.has(hostname.toLowerCase())) return link;
     } catch {
       // Not a valid absolute URL - treat as unusable and fall back below.
     }
