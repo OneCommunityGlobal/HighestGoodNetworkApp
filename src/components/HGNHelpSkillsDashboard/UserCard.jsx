@@ -3,13 +3,16 @@ import avatar from './style/avatar.png';
 import emailIcon from './style/email_icon.png';
 import slackIcon from './style/slack_icon.png';
 import { useSelector } from 'react-redux';
+import { formatSkillName } from './FilerData.js';
 
 function UserCard({ user }) {
-  const { name, email, slack, score, topSkills, skills } = user;
+  const { name, email, slack, score, topSkills, displaySkills, skills } = user;
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const normalizedSkills = Array.isArray(topSkills)
-    ? topSkills
+  const normalizedSkills = Array.isArray(displaySkills)
+    ? displaySkills
+    : Array.isArray(topSkills)
+    ? topSkills.map(formatSkillName)
     : Array.isArray(skills)
     ? skills
         .map(skill => {
@@ -17,6 +20,7 @@ function UserCard({ user }) {
           return skill.name || skill.skill || skill.label || skill.type || '';
         })
         .filter(Boolean)
+        .map(formatSkillName)
     : [];
 
   return (

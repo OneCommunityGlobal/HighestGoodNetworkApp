@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ENDPOINTS } from '~/utils/URL';
+import { formatSkillName } from './FilerData.js';
 import styles from './style/RankedUserList.module.css';
 import UserCard from './UserCard';
 
@@ -41,10 +42,10 @@ const extractSkillEntries = skillData => {
 };
 
 const normalizeUser = user => {
-  if (Array.isArray(user.topSkills) && user.topSkills.length > 0) return user;
-
   const rawSkills = user.skills;
-  const skillEntries = extractSkillEntries(rawSkills);
+  const skillEntries = Array.isArray(user.topSkills)
+    ? user.topSkills.map(name => ({ name, rating: undefined }))
+    : extractSkillEntries(rawSkills);
 
   const uniqueSkills = Array.from(
     new Map(
@@ -56,10 +57,15 @@ const normalizeUser = user => {
     .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
     .map(entry => entry.name);
 
+  // Keep the raw skill keys (used by the filter buttons, which pass FilerData's
+  // keys) separate from the human-readable names search/display should use,
+  // and leave the original `skills` field untouched for other consumers.
+  const displaySkills = sortedSkills.map(formatSkillName);
+
   return {
     ...user,
     topSkills: sortedSkills,
-    skills: sortedSkills,
+    displaySkills,
   };
 };
 
@@ -111,7 +117,14 @@ function RankedUserList({ selectedSkills, selectedPreferences, searchQuery, sort
 
     if (query) {
       const name = (user.name || '').toLowerCase();
-      const matchesQuery = name.includes(query) || userSkills.some(skill => skill.includes(query));
+      const displaySkills = (user.displaySkills || []).map(skill => skill.toLowerCase());
+      // Match against both the raw skill keys and their human-readable labels,
+      // since the keys (e.g. "UnitTest") don't contain the words a member
+      // would actually type (e.g. "testing").
+      const matchesQuery =
+        name.includes(query) ||
+        userSkills.some(skill => skill.includes(query)) ||
+        displaySkills.some(skill => skill.includes(query));
       if (!matchesQuery) return false;
     }
 
