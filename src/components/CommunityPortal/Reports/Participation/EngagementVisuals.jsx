@@ -199,7 +199,7 @@ function EngagementVisuals() {
       }
     };
 
-    fetchData();
+    void fetchData();
   }, [selectedFormat]);
 
   if (loading) {

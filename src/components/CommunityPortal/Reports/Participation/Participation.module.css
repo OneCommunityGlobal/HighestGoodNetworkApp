@@ -487,9 +487,6 @@
   border: 1px solid var(--color-border-dark);
 }
 
-.insightsDark .insightsTab:not(:last-child) {
-  border-right: 1px solid var(--color-border-dark);
-}
 
 .insightsDark .insightsTab.activeTab {
   background-color: #007bff;
