@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import Select from 'react-select';
 import PropTypes from 'prop-types';
+import { Form, FormGroup, Label } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import styles from './ItemListView.module.css';
 import { getReactSelectStyles } from './selectStyles.js';
@@ -69,24 +70,24 @@ export default function SelectItem({
   };
 
   return (
-    <div className={`${styles.filterItem} ${styles.filterItemSelect}`}>
-      <label htmlFor="select-item" style={{ fontWeight: 'bold' }}>
-        {label ? `${label}:` : 'Item:'}
-      </label>
-      <Select
-        inputId="select-item"
-        isMulti
-        isSearchable
-        isClearable
-        options={itemOptions}
-        value={localValues}
-        onChange={handleChange}
-        isDisabled={!items?.length}
-        placeholder={`Search or select ${label || 'items'}...`}
-        classNamePrefix="react-select"
-        styles={getReactSelectStyles(darkMode)}
-      />
-    </div>
+    <Form className={styles.filterItem} onSubmit={e => e.preventDefault()}>
+      <FormGroup className={styles.filterGroup}>
+        <Label htmlFor="select-item">{label ? `${label}:` : 'Item:'}</Label>
+        <Select
+          inputId="select-item"
+          isMulti
+          isSearchable
+          isClearable
+          options={itemOptions}
+          value={localValues}
+          onChange={handleChange}
+          isDisabled={!items?.length}
+          placeholder={`Search or select ${label || 'items'}...`}
+          classNamePrefix="react-select"
+          styles={getReactSelectStyles(darkMode)}
+        />
+      </FormGroup>
+    </Form>
   );
 }
 

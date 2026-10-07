@@ -1,6 +1,6 @@
 /**
  *
- * @param {string} action
+ * @param {string|string[]} action permission key, or list of keys (OR — any match grants access)
  * @param {boolean} viewingUser indicate whether to check authUser or other user. Default to `false`
  * @returns
  */
@@ -25,7 +25,14 @@ const hasPermission = (action, viewingUser = false) => {
         permissions = rolePermissions[roleIndex].permissions;
       }
       const rolePerms = permissions.filter(perm => !removedDefaultPermissions.includes(perm));
-      return userPermissions?.includes(action) || rolePerms?.includes(action);
+      const hasOne = key => userPermissions?.includes(key) || rolePerms?.includes(key);
+
+      // Support RoutePermissions-style arrays: any matching key is enough
+      if (Array.isArray(action)) {
+        return action.some(hasOne);
+      }
+
+      return hasOne(action);
     }
     return false;
   };

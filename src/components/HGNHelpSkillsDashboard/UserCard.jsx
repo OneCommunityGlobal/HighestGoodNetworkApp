@@ -2,11 +2,12 @@ import styles from './style/UserCard.module.css';
 import avatar from './style/avatar.png';
 import emailIcon from './style/email_icon.png';
 import slackIcon from './style/slack_icon.png';
+import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { formatSkillName } from './FilerData.js';
 
 function UserCard({ user }) {
-  const { name, email, slack, score, topSkills, displaySkills, skills } = user;
+  const { userId, name, email, slack, score, topSkills, displaySkills, skills } = user;
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const normalizedSkills = Array.isArray(displaySkills)
@@ -27,7 +28,16 @@ function UserCard({ user }) {
     <div className={`${styles.userCard} ${darkMode ? styles.darkMode : ''}`}>
       <img src={avatar} alt="Avatar" className={`${styles.avatar}`} />
       <div className={`${styles.info}`}>
-        <div className={`${styles.userName}`}>{name}</div>
+        {userId ? (
+          <Link
+            to={`/hgnhelp/profile/${userId}`}
+            className={`${styles.userName} ${styles.profileLink}`}
+          >
+            {name}
+          </Link>
+        ) : (
+          <div className={`${styles.userName}`}>{name}</div>
+        )}
         {email && (
           <div className={`${styles.contactLine}`}>
             <img src={emailIcon} alt="Email" className={`${styles.contactIcon}`} />
