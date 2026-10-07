@@ -185,6 +185,12 @@ describe('FormattedReport minimal test', () => {
       </Provider>,
     );
 
+    const inputs = screen.getAllByPlaceholderText('X-XXX');
+    fireEvent.focus(inputs[0]);
+    fireEvent.change(inputs[0], {
+      target: { value: '' },
+    });
+
     expect(screen.getByText('ACT01')).toBeInTheDocument();
     expect(screen.getByText('ACT02')).toBeInTheDocument();
     expect(screen.queryByText('OLD01')).not.toBeInTheDocument();
@@ -218,9 +224,11 @@ describe('FormattedReport minimal test', () => {
       </Provider>,
     );
 
-    expect(screen.getByText('ABC123', { selector: 'option' })).toBeInTheDocument();
-
     const input = screen.getByPlaceholderText('X-XXX');
+
+    fireEvent.focus(input);
+
+    expect(screen.getByText('ABC123')).toBeInTheDocument();
 
     fireEvent.change(input, {
       target: { value: 'NEW01' },
@@ -233,10 +241,16 @@ describe('FormattedReport minimal test', () => {
         userIds: ['1'],
         replaceCode: 'NEW01',
       });
-
-      expect(screen.getByText('NEW01', { selector: 'option' })).toBeInTheDocument();
-      expect(screen.queryByText('ABC123', { selector: 'option' })).not.toBeInTheDocument();
     });
+
+    fireEvent.focus(input);
+
+    fireEvent.change(input, {
+      target: { value: '' },
+    });
+
+    expect(screen.getByText('NEW01')).toBeInTheDocument();
+    expect(screen.queryByText('ABC123')).not.toBeInTheDocument();
   });
   it('renders fallback text when weekly summary text is missing', () => {
     const summaryNoText = {

@@ -155,18 +155,9 @@ function FormattedReport({
         .filter(Boolean),
     ),
   ].sort((a, b) => a.localeCompare(b));
-  const teamCodeDatalistId = `weekly-summary-active-team-codes-${weekIndex}`;
 
   return (
     <>
-      <datalist id={teamCodeDatalistId}>
-        {activeTeamCodes.map(code => (
-          <option key={code} value={code}>
-            {code}
-          </option>
-        ))}
-      </datalist>
-
       <ListGroup flush className={darkMode ? 'bg-yinmn-blue' : ''}>
         {summaries.map(summary => {
           // Add safety check for each summary
@@ -191,7 +182,7 @@ function FormattedReport({
               key={summary._id}
               summary={summary}
               weekIndex={weekIndex}
-              teamCodeDatalistId={teamCodeDatalistId}
+              activeTeamCodes={activeTeamCodes}
               bioCanEdit={bioCanEdit}
               canEditSummaryCount={isEditCount}
               allRoleInfo={allRoleInfo}
@@ -310,7 +301,7 @@ function getTextColorForHoursLogged(hoursLogged, promisedHours, darkMode) {
 function ReportDetails({
   summary,
   weekIndex,
-  teamCodeDatalistId,
+  activeTeamCodes,
   bioCanEdit,
   canEditSummaryCount,
   allRoleInfo,
@@ -402,7 +393,7 @@ function ReportDetails({
                 canEditTeamCode={canEditTeamCode && !cantEditJaeRelatedRecord}
                 summary={summary}
                 handleTeamCodeChange={handleTeamCodeChange}
-                teamCodeDatalistId={teamCodeDatalistId}
+                activeTeamCodes={activeTeamCodes}
                 darkMode={darkMode}
               />
             </ListGroupItem>
@@ -551,15 +542,18 @@ function TeamCodeRow({
   canEditTeamCode,
   summary,
   handleTeamCodeChange,
-  teamCodeDatalistId,
+  activeTeamCodes,
   darkMode,
 }) {
   const [teamCode, setTeamCode] = useState(summary.teamCode);
   const [savedTeamCode, setSavedTeamCode] = useState(summary.teamCode);
   const [hasError, setHasError] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const fullCodeRegex = /^.{5,7}$/;
   const dispatch = useDispatch();
-
+  const filteredTeamCodes = activeTeamCodes.filter(code =>
+    code.toLowerCase().includes((teamCode || '').toLowerCase()),
+  );
   const handleOnChange = async (userProfileSummary, newStatus) => {
     const url = ENDPOINTS.USERS_ALLTEAMCODE_CHANGE;
 
@@ -599,25 +593,60 @@ function TeamCodeRow({
       <div className={styles.teamcodeWrapper}>
         {canEditTeamCode ? (
           <div style={{ paddingRight: '5px', position: 'relative' }}>
-            <Input
-              id="codeInput"
-              list={teamCodeDatalistId}
-              autoComplete="off"
-              value={teamCode}
-              onChange={e => setTeamCode(e.target.value)}
-              onBlur={e => {
-                handleCodeChange(e);
-              }}
-              onKeyDown={e => {
-                if (e.key === 'Enter') {
-                  e.currentTarget.blur(); // triggers onBlur
-                }
-              }}
-              placeholder="X-XXX"
-              className={`${styles.weeklySummariesCodeInput} ${
-                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-              }`}
-            />
+            <div className={styles.teamCodeInputWrapper}>
+              <Input
+                id="codeInput"
+                autoComplete="off"
+                value={teamCode}
+                onFocus={() => setShowSuggestions(true)}
+                onChange={e => {
+                  setTeamCode(e.target.value);
+                  setShowSuggestions(true);
+                }}
+                onBlur={e => {
+                  handleCodeChange(e);
+                  setShowSuggestions(false);
+                }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    e.currentTarget.blur();
+                  }
+
+                  if (e.key === 'Escape') {
+                    setShowSuggestions(false);
+                  }
+                }}
+                placeholder="X-XXX"
+                className={`${styles.weeklySummariesCodeInput} ${
+                  darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                }`}
+              />
+
+              {showSuggestions && filteredTeamCodes.length > 0 && (
+                <div
+                  className={`${styles.teamCodeSuggestions} ${
+                    darkMode ? styles.teamCodeSuggestionsDark : ''
+                  }`}
+                >
+                  {filteredTeamCodes.map(code => (
+                    <button
+                      key={code}
+                      type="button"
+                      className={`${styles.teamCodeSuggestionItem} ${
+                        darkMode ? styles.teamCodeSuggestionItemDark : ''
+                      }`}
+                      onMouseDown={e => {
+                        e.preventDefault();
+                        setTeamCode(code);
+                        setShowSuggestions(false);
+                      }}
+                    >
+                      {code}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         ) : (
           <div style={{ paddingRight: '5px' }}>
@@ -1194,7 +1223,7 @@ FormattedReport.defaultProps = {
 };
 
 ReportDetails.propTypes = {
-  teamCodeDatalistId: PropTypes.string.isRequired,
+  activeTeamCodes: PropTypes.arrayOf(PropTypes.string).isRequired,
   summary: PropTypes.shape({
     _id: PropTypes.string,
     email: PropTypes.string,
