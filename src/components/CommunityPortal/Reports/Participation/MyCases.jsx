@@ -11,8 +11,6 @@ import { filterEventsByDate } from './FilterByDate';
 
 function MyCases() {
   const [events, setEvents] = useState([]);
-  const [loadingEvents, setLoadingEvents] = useState(true);
-  const [eventError, setEventError] = useState(null);
   const [view, setView] = useState('card');
   const [filter, setFilter] = useState('All Time');
   const [expanded, setExpanded] = useState(false);
@@ -26,8 +24,6 @@ function MyCases() {
 
   const darkMode = useSelector(state => state.theme.darkMode);
   const loadEvents = useCallback(async () => {
-    setLoadingEvents(true);
-    setEventError(null);
 
     try {
       const response = await getEvents({
@@ -59,10 +55,8 @@ function MyCases() {
 
       setEvents(formattedEvents);
     } catch (error) {
-      setEventError(error.message || 'Unable to load events');
-    } finally {
-      setLoadingEvents(false);
-    }
+      console.error('loadEvents error:', error);
+    } 
   }, []);
 
   useEffect(() => {
