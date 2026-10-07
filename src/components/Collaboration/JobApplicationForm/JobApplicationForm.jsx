@@ -754,7 +754,7 @@ function JobApplicationForm() {
 
   const fetchJobData = async jobId => {
     try {
-      const response = await axios.get(`${ENDPOINTS.GET_JOB}/${jobId}`);
+      const response = await axios.get(ENDPOINTS.GET_JOB(jobId));
       if (response.data) {
         setJobDataFromRedirect({
           jobId: response.data._id,
