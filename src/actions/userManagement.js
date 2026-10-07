@@ -414,7 +414,7 @@ export const getUserProfileBasicInfo = ({ userId, source } = {}) => {
   // API request to fetch basic user profile information
   let userProfileBasicInfoPromise;
   if (userId)
-    userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE(userId));
+    userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO_BY_ID(userId));
   else if (source)
     userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO(source));
   else
