@@ -24,7 +24,6 @@ function MyCases() {
 
   const darkMode = useSelector(state => state.theme.darkMode);
   const loadEvents = useCallback(async () => {
-
     try {
       const response = await getEvents({
         page: 1,
@@ -56,7 +55,7 @@ function MyCases() {
       setEvents(formattedEvents);
     } catch (error) {
       console.error('loadEvents error:', error);
-    } 
+    }
   }, []);
 
   useEffect(() => {
