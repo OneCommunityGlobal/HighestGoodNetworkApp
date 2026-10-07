@@ -489,6 +489,15 @@ function isWithinDateRange(item, startDate, endDate) {
   return true;
 }
 
+// Truncate text with "..." so it fits within maxWidth at the given font size.
+// Uses the same ~0.6em average char width estimate as calculateFontSize.
+function truncateToFit(text, fontSize, maxWidth, charWidthRatio = 0.6) {
+  const maxChars = Math.floor(maxWidth / (fontSize * charWidthRatio));
+  if (text.length <= maxChars) return text;
+  if (maxChars <= 3) return '...';
+  return `${text.slice(0, maxChars - 3).trimEnd()}...`;
+}
+
 function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
   const svgRef = useRef();
   const containerRef = useRef();
@@ -1035,15 +1044,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
       )
       .style('pointer-events', 'none');
   };
-
-  // Truncate text with "..." so it fits within maxWidth at the given font size.
-  // Uses the same ~0.6em average char width estimate as calculateFontSize.
-  function truncateToFit(text, fontSize, maxWidth, charWidthRatio = 0.6) {
-    const maxChars = Math.floor(maxWidth / (fontSize * charWidthRatio));
-    if (text.length <= maxChars) return text;
-    if (maxChars <= 3) return '...';
-    return `${text.slice(0, maxChars - 3).trimEnd()}...`;
-  }
 
   // ===== FIX #2: UPDATE TEXT CREATION TO USE DYNAMIC FONT SIZE =====
   // Function to create text elements
