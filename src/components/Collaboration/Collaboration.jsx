@@ -44,6 +44,55 @@ function dedupeJobsByTitle(jobs) {
   });
 }
 
+/**
+ * Backend parseCategory() splits on commas, which breaks names like
+ * "Architecture, Landscape & Environment". Sending a JSON array keeps the
+ * full category string intact (API already supports JSON.parse first).
+ */
+function encodeJobsCategoryParam(category) {
+  const trimmed = String(category || '').trim();
+  if (!trimmed) return '';
+  return JSON.stringify([trimmed]);
+}
+
+/** Dropbox share links need raw=1 (or dl=1) to render as <img> src. */
+function normalizeJobImageUrl(url) {
+  const trimmed = String(url || '').trim();
+  if (!trimmed) return '';
+  try {
+    const parsed = new URL(trimmed);
+    const host = parsed.hostname.replace(/^www\./, '');
+    if (host === 'dropbox.com' || host === 'dl.dropboxusercontent.com') {
+      parsed.searchParams.delete('dl');
+      parsed.searchParams.set('raw', '1');
+      return parsed.toString();
+    }
+    return trimmed;
+  } catch {
+    return trimmed;
+  }
+}
+
+function isUsableJobImageUrl(url) {
+  if (!url || typeof url !== 'string') return false;
+  const trimmed = url.trim();
+  if (!trimmed) return false;
+  try {
+    const parsed = new URL(trimmed);
+    if (!['http:', 'https:'].includes(parsed.protocol)) return false;
+    if (
+      ['example.com', 'www.example.com', 'placeholder.com', 'via.placeholder.com'].includes(
+        parsed.hostname,
+      )
+    ) {
+      return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function Collaboration() {
   const [searchTerm, setSearchTerm] = useState('');
   const [submittedSearchTerm, setSubmittedSearchTerm] = useState('');
@@ -175,7 +224,7 @@ function Collaboration() {
       const response = await fetch(
         `${ApiEndpoint}/jobs?page=${page}&limit=${adsPerPage}` +
           `&search=${encodeURIComponent(search)}` +
-          `&category=${encodeURIComponent(category)}`,
+          `&category=${encodeURIComponent(encodeJobsCategoryParam(category))}`,
         requestOptions,
       );
 
@@ -307,7 +356,7 @@ function Collaboration() {
       setActiveTab('jobPostings');
       const response = await fetch(
         `${ApiEndpoint}/jobs/summaries?search=${encodeURIComponent(searchTerm)}` +
-          `&category=${encodeURIComponent(selectedCategory)}`,
+          `&category=${encodeURIComponent(encodeJobsCategoryParam(selectedCategory))}`,
         { method: 'GET' },
       );
 
@@ -354,9 +403,22 @@ function Collaboration() {
     }
   };
 
+  const getJobImageSrc = (ad, jobCategory) => {
+    if (isUsableJobImageUrl(ad?.imageUrl)) {
+      return normalizeJobImageUrl(ad.imageUrl);
+    }
+    return getCategoryImage(jobCategory);
+  };
+
   const handleImageError = event => {
-    event.currentTarget.onerror = null;
-    event.currentTarget.src =
+    const img = event.currentTarget;
+    img.onerror = null;
+    const fallback = img.dataset.fallback;
+    if (fallback && img.src !== fallback) {
+      img.src = fallback;
+      return;
+    }
+    img.src =
       'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=640&h=480&fit=crop&q=80';
   };
 
@@ -380,6 +442,7 @@ function Collaboration() {
     if (!ad?._id) return null;
     const jobTitle = ad.title || 'Untitled Position';
     const jobCategory = ad.category || 'General';
+    const categoryFallback = getCategoryImage(jobCategory);
 
     return (
       <button
@@ -392,7 +455,8 @@ function Collaboration() {
         onClick={handleJobAdClick}
       >
         <img
-          src={getCategoryImage(jobCategory)}
+          src={getJobImageSrc(ad, jobCategory)}
+          data-fallback={categoryFallback}
           alt={jobTitle}
           loading="lazy"
           onError={handleImageError}

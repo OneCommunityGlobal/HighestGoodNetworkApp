@@ -74,7 +74,9 @@ function SuggestedJobsList() {
       try {
         const url = `${ApiEndpoint}/jobs?page=${currentPage}&limit=${adsPerPage}&search=${encodeURIComponent(
           query || '',
-        )}&category=${encodeURIComponent(category || '')}`;
+        )}&category=${encodeURIComponent(
+          category ? JSON.stringify([category]) : '',
+        )}`;
         const response = await fetch(url, { method: 'GET' });
         if (!response.ok) throw new Error(`Failed to fetch jobs: ${response.statusText}`);
         const data = await response.json();
