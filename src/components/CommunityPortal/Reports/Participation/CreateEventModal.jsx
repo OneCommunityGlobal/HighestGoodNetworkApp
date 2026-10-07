@@ -162,7 +162,9 @@ function CreateEventModal({ isOpen, toggle, onEventCreated = () => {} }) {
       eventData.coverImage = formData.coverImage.trim();
     }
 
-    toast.success('Event created successfully!');
+    toast.success(
+      'Event created! Note: this preview event is not saved and will be lost on reload.',
+    );
     onEventCreated(eventData);
     resetForm();
     toggle();
