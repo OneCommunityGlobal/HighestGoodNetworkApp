@@ -1036,6 +1036,15 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
       .style('pointer-events', 'none');
   };
 
+  // Truncate text with "..." so it fits within maxWidth at the given font size.
+  // Uses the same ~0.6em average char width estimate as calculateFontSize.
+  function truncateToFit(text, fontSize, maxWidth, charWidthRatio = 0.6) {
+    const maxChars = Math.floor(maxWidth / (fontSize * charWidthRatio));
+    if (text.length <= maxChars) return text;
+    if (maxChars <= 3) return '...';
+    return `${text.slice(0, maxChars - 3).trimEnd()}...`;
+  }
+
   // ===== FIX #2: UPDATE TEXT CREATION TO USE DYNAMIC FONT SIZE =====
   // Function to create text elements
   const createTextElements = (svg, x, y, tag, count, r, sizes, colors) => {
@@ -1044,11 +1053,13 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
       .attr('transform', `translate(${x}, ${y})`)
       .style('pointer-events', 'none');
 
-    // Calculate font size based on text length and bubble radius
     const tagFontSize = calculateFontSize(tag.length, r);
     const countFontSize = sizes.countFontSize;
 
-    // Tag text - NO TRUNCATION, use full keyword with dynamic font
+    // Usable width inside the ellipse (rx = r), with a little side padding
+    const maxTextWidth = r * 1.7;
+    const displayTag = truncateToFit(tag, tagFontSize, maxTextWidth, isMobile ? 0.55 : 0.6);
+
     textGroup
       .append('text')
       .attr('x', 0)
@@ -1058,10 +1069,8 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
       .attr('font-weight', '600')
       .attr('fill', colors.text)
       .attr('dominant-baseline', 'middle')
-      .style('word-break', 'break-word')
-      .text(tag);
+      .text(displayTag);
 
-    // Count - positioned clearly at bottom of bubble
     textGroup
       .append('text')
       .attr('x', 0)
