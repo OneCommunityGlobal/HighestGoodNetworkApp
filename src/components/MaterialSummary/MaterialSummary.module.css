@@ -210,6 +210,13 @@
   margin: 24px 0;
 }
 
+.chartCanvasWrapper {
+  position: relative;
+  width: min(100%, 300px);
+  min-width: 0;
+  aspect-ratio: 1;
+}
+
 .loadingArea {
   display: flex;
   flex-direction: column;
@@ -338,7 +345,7 @@
   }
 
   .gridContainer {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

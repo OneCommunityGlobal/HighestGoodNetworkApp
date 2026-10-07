@@ -222,14 +222,14 @@ export default function MaterialUsageDashboard() {
                   </div>
                 )}
                 {!loading && chartData && (
-                  <div style={{ width: '100%', maxWidth: '300px' }} key={`chart-${chartKey}`}>
+                  <div className={styles.chartCanvasWrapper} key={`chart-${chartKey}`}>
                     <Pie
                       ref={chartRef}
                       key={`pie-${chartKey}`}
                       data={chartData}
                       options={{
                         responsive: true,
-                        maintainAspectRatio: true,
+                        maintainAspectRatio: false,
                         cutout: '50%',
                         plugins: {
                           legend: {
