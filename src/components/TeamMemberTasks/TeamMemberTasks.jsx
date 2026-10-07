@@ -647,18 +647,22 @@ const TeamMemberTasks = React.memo(props => {
             darkMode ? styles['dark-teammember-row'] : styles['light-teammember-row'],
           ].join(' ')}
         >
+          {/*
+            Only the outer sticky <thead> carries darkStickyHeader. The inner
+            <thead>/<th> elements take their colors from `.dark-teammember-row th`
+            so there are no mixed navy / blue patches in dark mode.
+          */}
           <thead
             className={[styles['pc-component'], darkMode ? styles.darkStickyHeader : ''].join(' ')}
             style={{ position: 'sticky', top: 0 }}
           >
             <tr>
-              <th
-                colSpan={3}
-                className={[
-                  styles['team-member-tasks-headers'],
-                  darkMode ? styles.darkStickyHeader : '',
-                ].join(' ')}
-              >
+              {/*
+                Left half: mirrors the body row exactly — a 1/3 "User Status" column
+                and a 2/3 "Team Member" column (name + clocks), so the headers sit
+                directly above their content.
+              */}
+              <th colSpan={3} className={styles['header-left-cell']}>
                 <Table
                   borderless
                   data-testid="team-member-tasks-subtable"
@@ -667,33 +671,12 @@ const TeamMemberTasks = React.memo(props => {
                     darkMode ? styles.textLight : '',
                   ].join(' ')}
                 >
-                  <thead className={darkMode ? styles.darkStickyHeader : ''}>
+                  <thead>
                     <tr>
-                      <th
-                        className={darkMode ? styles.darkStickyHeader : ''}
-                        style={{ background: 'transparent' }}
-                      >
-                        User Status
-                      </th>
-                      <th
-                        className={[
-                          styles['team-member-tasks-headers'],
-                          styles['team-member-tasks-user-name'],
-                          darkMode ? styles.darkStickyHeader : '',
-                          darkMode ? styles.transparentHeader : '',
-                        ].join(' ')}
-                      >
-                        Team Member
-                      </th>
-                      <th
-                        className={[
-                          styles['team-member-tasks-headers'],
-                          styles['team-clocks'],
-                          styles['team-clocks-header'],
-                          darkMode ? styles.darkStickyHeader : '',
-                        ].join(' ')}
-                      >
+                      <th className={styles['header-col-status']}>User Status</th>
+                      <th className={styles['header-col-member']}>
                         <div className={styles['team-clocks-header-inner']}>
+                          <span>Team Member</span>
                           <div className={styles['team-clocks-icons-row']}>
                             <FontAwesomeIcon
                               style={{ color: darkMode ? 'lightgray' : '' }}
@@ -719,19 +702,10 @@ const TeamMemberTasks = React.memo(props => {
                               onClick={handleShowTrackers}
                               className={[
                                 styles.m1,
+                                styles.headerToggleBtn,
+                                showTrackers ? styles.headerToggleBtnActive : '',
                                 darkMode ? styles.boxShadowDark : styles.boxShadowLight,
                               ].join(' ')}
-                              style={{
-                                padding: '2px 8px',
-                                fontSize: '12px',
-                                borderRadius: '4px',
-                                border: '1px solid #17a2b8',
-                                backgroundColor: showTrackers ? '#17a2b8' : 'white',
-                                color: showTrackers ? 'white' : '#17a2b8',
-                                cursor: 'pointer',
-                                whiteSpace: 'nowrap',
-                                flexShrink: 0,
-                              }}
                             >
                               {showTrackers ? 'Hide Trackers' : 'Show Trackers'}
                             </button>
@@ -740,19 +714,10 @@ const TeamMemberTasks = React.memo(props => {
                               onClick={handleHideTasks}
                               className={[
                                 styles.m1,
+                                styles.headerToggleBtn,
+                                !showTasks ? styles.headerToggleBtnActive : '',
                                 darkMode ? styles.boxShadowDark : styles.boxShadowLight,
                               ].join(' ')}
-                              style={{
-                                padding: '2px 8px',
-                                fontSize: '12px',
-                                borderRadius: '4px',
-                                border: '1px solid #17a2b8',
-                                backgroundColor: showTasks ? 'white' : '#17a2b8',
-                                color: showTasks ? '#17a2b8' : 'white',
-                                cursor: 'pointer',
-                                whiteSpace: 'nowrap',
-                                flexShrink: 0,
-                              }}
                             >
                               {showTasks ? 'Hide Tasks' : 'Show Tasks'}
                             </button>
@@ -764,13 +729,7 @@ const TeamMemberTasks = React.memo(props => {
                 </Table>
               </th>
 
-              <th
-                colSpan={3}
-                className={[
-                  styles['team-member-tasks-headers'],
-                  darkMode ? styles.darkStickyHeader : '',
-                ].join(' ')}
-              >
+              <th colSpan={3} className={styles['team-member-tasks-headers']}>
                 <Table
                   borderless
                   className={[
@@ -778,27 +737,16 @@ const TeamMemberTasks = React.memo(props => {
                     darkMode ? styles.textLight : '',
                   ].join(' ')}
                 >
-                  <thead className={darkMode ? styles.darkStickyHeader : ''}>
+                  <thead>
                     <tr>
-                      <th className={darkMode ? styles.darkStickyHeader : ''}>Tasks(s)</th>
-                      <th
-                        className={[
-                          styles['team-task-progress'],
-                          darkMode ? styles.darkStickyHeader : '',
-                        ].join(' ')}
-                      >
-                        Progress
-                      </th>
-                      {displayUser.role === 'Administrator' ? (
-                        <th
-                          className={[
-                            styles['status-align'],
-                            darkMode ? styles.darkStickyHeader : '',
-                          ].join(' ')}
-                        >
-                          Status
-                        </th>
-                      ) : null}
+                      <th>Tasks(s)</th>
+                      <th className={styles['team-task-progress']}>Progress</th>
+                      {/*
+                        Status header is unconditional so the header and body always
+                        have the same number of columns. ReviewButton decides who sees
+                        controls inside the cell.
+                      */}
+                      <th className={styles['status-align']}>Status</th>
                     </tr>
                   </thead>
                 </Table>

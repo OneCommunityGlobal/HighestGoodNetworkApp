@@ -3,6 +3,8 @@
   Combines:
   1. Button overlap fix (Submit button)
   2. Red deadline badge visibility fix
+  3. Header <-> body alignment, dark mode header, small-device layout
+  4. Full task names (wrap instead of truncating)
 */
 
 /* stylelint-disable  */
@@ -92,13 +94,13 @@
 }
 
 .team-member-task-review-button button {
-  height: 32px; /* gives it height now that padding is gone */
+  min-height: 32px; /* was height: 32px — lets "Ready for Review" wrap to two lines */
 }
 
 .status-align {
-  width: 95px;
-  min-width: 85px;
-  max-width: 105px;
+  width: 120px;
+  min-width: 100px;
+  max-width: 130px;
   padding-left: 6px !important;
   padding-right: 0 !important;
   text-align: center;
@@ -123,7 +125,6 @@
   table-layout: fixed;
   width: 100%;
   border-collapse: collapse;
-  overflow-y: scroll;
 }
 
 .team-member-tasks-bell {
@@ -166,7 +167,6 @@
 
 .team-member-tasks .team-member-tasks-headers {
   justify-content: center;
-  margin-left: -10px;
   vertical-align: middle;
   text-align: center;
 }
@@ -229,14 +229,23 @@
   z-index: 10;
 }
 
-.team-member-tasks-user-name {
-  width: 50%;
-  text-align: center;
-  vertical-align: top !important;
+.team-member-tasks td.team-member-tasks-user-name {
   display: flex;
   flex-direction: column;
+  align-items: flex-start !important;
+  text-align: left !important;
+  width: 100%;
+}
+
+/* children carry inline textAlign/justifyContent: center */
+.team-member-tasks td.team-member-tasks-user-name > * {
+  text-align: left !important;
   justify-content: flex-start !important;
-  align-items: center;
+  align-self: flex-start;
+}
+
+.name-wrapper {
+  justify-content: flex-start;
 }
 
 .team-member-tasks td {
@@ -580,11 +589,12 @@
   flex-wrap: nowrap;
 }
 
+/* Task title row: lets a long name wrap instead of being cut off */
 .team-member-tasks-content {
   grid-column: 1;
   grid-row: 1;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 5px;
   min-width: 0;
 }
@@ -607,18 +617,19 @@
 
 .taskTitle {
   white-space: normal !important;
-  overflow-wrap: normal !important;
+  overflow-wrap: anywhere !important; /* long unbroken words wrap instead of overflowing */
   word-break: normal !important;
   hyphens: auto;
 }
 
 .team-member-tasks-content-link {
   display: inline-block;
+  flex: 0 1 auto;
   max-width: 100%;
   min-width: 0;
   white-space: normal;
   word-break: normal;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
   hyphens: auto;
 }
 
@@ -851,11 +862,6 @@
   .responsive-font-size {
     font-size: 0.75rem !important;
   }
-
-  .multi-select-filter {
-    width: 50%;
-    z-index: 20;
-  }
 }
 
 @media ((width <= 1075px) and (width >= 992px)) {
@@ -1040,10 +1046,6 @@
   .responsiveFontSize {
     font-size: 0.75rem !important;
   }
-
-  .multiSelectFilter {
-    width: 50%;
-  }
 }
 
 .task-age-badge {
@@ -1075,4 +1077,170 @@
 
 .task-age-badge-very-old {
   background-color: #dc3545;
+}
+
+/* ============================================================
+   NEW: Header <-> body alignment
+   ============================================================ */
+.header-left-cell {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* body is 1/6 + 2/6 of the table => 1/3 + 2/3 of the left half */
+.header-col-status {
+  width: 33.333%;
+  text-align: center;
+  vertical-align: middle !important;
+}
+
+.header-col-member {
+  width: 66.667%;
+  text-align: center;
+  vertical-align: middle !important;
+}
+
+.headerToggleBtn {
+  padding: 2px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  border: 1px solid #17a2b8;
+  background: #fff;
+  color: #17a2b8;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.headerToggleBtnActive {
+  background: #17a2b8;
+  color: #fff;
+}
+
+.hoursDone {
+  color: green !important;
+}
+
+.hoursLeft {
+  color: red !important;
+}
+
+/* ============================================================
+   NEW: Dark mode
+   ============================================================ */
+.darkContainer h1 {
+  color: #f8f9fa !important;
+}
+
+.darkContainer .dark-teammember-row thead,
+.darkContainer .dark-teammember-row thead table,
+.darkContainer .dark-teammember-row thead th {
+  background-color: #3a506b;
+  color: #fff;
+}
+
+.darkContainer .headerToggleBtn {
+  background: transparent;
+  color: #5fd3e6;
+  border-color: #5fd3e6;
+}
+
+.darkContainer .headerToggleBtnActive {
+  background: #17a2b8;
+  color: #fff;
+  border-color: #17a2b8;
+}
+
+.darkContainer .hoursDone {
+  color: #4cd964 !important;
+}
+
+.darkContainer .hoursLeft {
+  color: #ff6b6b !important;
+}
+
+/* badge ring should match the dark row, not white */
+.darkContainer .deadlineCount {
+  box-shadow: 0 0 0 2px #223b5a;
+}
+
+/* ============================================================
+   NEW: Small devices
+   ============================================================ */
+@media (width <= 768px) {
+  .task_table-container {
+    max-height: none;
+    overflow-x: hidden;
+  }
+
+  /* stop the dropdowns overflowing */
+  .filtersCol {
+    margin-left: 0;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .multiSelectFilter {
+    width: 100%;
+  }
+
+  /* card look, and dark mode support (was hard-coded light) */
+  .table-row {
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+
+  .darkTbody .table-row {
+    background: #223b5a;
+    border-color: rgb(255 255 255 / 20%);
+    color: #fff;
+  }
+
+  /* beat `.team-member-tasks td { display:block }` so centering works again */
+  .team-member-tasks td.team-member-tasks-user-name {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center !important;
+    width: 100%;
+  }
+
+  .name-wrapper {
+    justify-content: center;
+  }
+
+  /* progress + status use the full card width */
+  .team-task-progress {
+    text-align: left;
+  }
+
+  .progress-wrapper {
+    display: grid;
+    width: 100%;
+    max-width: 260px;
+  }
+
+  .status-align {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    padding-left: 2px !important;
+  }
+
+  .team-member-task-review-button {
+    justify-content: flex-start;
+  }
+
+  .team-member-task-review-button > *,
+  .team-member-task-review-button button {
+    max-width: 220px !important;
+  }
+}
+
+/* keep rows dark on hover in dark mode */
+.darkTbody tr:hover,
+.darkTbody tr:hover > td,
+.darkTbody tr:hover > th {
+  background-color: #223b5a !important;
+  color: #fff !important;
 }
