@@ -158,14 +158,17 @@ const PRGradingScreenContainer = () => {
         const result = await dispatch(fetchPRGradingConfig());
         if (result.success && Array.isArray(result.data) && result.data.length > 0) {
           setTeamOptions(result.data);
-          setSelectedTeamName(result.data[0].teamName);
+          const requestedTeamName = location.state?.teamName;
+          const requestedTeamExists = result.data.some(team => team.teamName === requestedTeamName);
+
+          setSelectedTeamName(requestedTeamExists ? requestedTeamName : result.data[0].teamName);
         }
       } catch {
         // Non-fatal
       }
     };
     loadTeams();
-  }, [dispatch]);
+  }, [dispatch, location.state]);
 
   const loadGradingData = useCallback(
     async (name, weekStart, currentSyncData, currentTeamOptions) => {

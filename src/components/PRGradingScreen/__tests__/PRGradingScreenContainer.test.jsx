@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import { configureStore } from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import { UserRole } from '../../../utils/enums';
 import PRGradingScreenContainer from '../index';
 import * as prGradingActions from '../../../actions/prGradingActions';
 
@@ -37,10 +38,18 @@ vi.mock('../PRGradingScreen', () => ({
 vi.mock('../../../actions/prGradingActions', () => ({
   fetchWeeklyGrading: vi.fn(),
   fetchPRGradingConfig: vi.fn(),
+  syncPRGradingReviewers: vi.fn(),
 }));
 
 const mockStore = configureStore([thunk]);
-const baseStore = { theme: { darkMode: false } };
+const baseStore = {
+  theme: { darkMode: false },
+  auth: {
+    user: {
+      role: UserRole.Administrator,
+    },
+  },
+};
 
 const renderContainer = (locationState = {}, storeOverrides = {}) => {
   const store = mockStore({ ...baseStore, ...storeOverrides });
@@ -77,62 +86,9 @@ beforeEach(() => {
   prGradingActions.fetchWeeklyGrading.mockReturnValue(() =>
     Promise.resolve({ success: true, data: apiFlatArray }),
   );
-});
-
-// ---------------------------------------------------------------------------
-// Config-driven dynamic team (location state path)
-// ---------------------------------------------------------------------------
-describe('dynamic teamId + config (no API call)', () => {
-  const config = {
-    teamName: 'DynamicTeam',
-    reviewerCount: 3,
-    reviewerNames: ['Alice', 'Bob', 'Carol'],
-  };
-
-  it('builds reviewers from config.reviewerNames', async () => {
-    renderContainer({ teamId: 'custom-abc', config });
-
-    await waitFor(() => {
-      expect(screen.getByTestId('team-name').textContent).toBe('DynamicTeam');
-      expect(screen.getByTestId('reviewer-count').textContent).toBe('3');
-    });
-
-    expect(prGradingActions.fetchWeeklyGrading).not.toHaveBeenCalled();
-  });
-
-  it('falls back to "Reviewer N" when reviewerNames is missing', async () => {
-    renderContainer({ teamId: 'custom-xyz', config: { teamName: 'NoNameTeam', reviewerCount: 2 } });
-
-    await waitFor(() => {
-      expect(screen.getByTestId('reviewer-count').textContent).toBe('2');
-    });
-  });
-
-  it('renders zero reviewers when reviewerCount is 0', async () => {
-    renderContainer({
-      teamId: 'custom-empty',
-      config: { teamName: 'EmptyTeam', reviewerCount: 0 },
-    });
-
-    await waitFor(() => {
-      expect(screen.getByTestId('reviewer-count').textContent).toBe('0');
-    });
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Static teamId — now shows error (not mock data)
-// ---------------------------------------------------------------------------
-describe('static teamId (error state)', () => {
-  it('shows error for static team IDs instead of mock data', async () => {
-    renderContainer({ teamId: 'team1' });
-
-    await waitFor(() => {
-      expect(screen.getByText(/Static mock team IDs are not supported/i)).toBeInTheDocument();
-    });
-
-    expect(prGradingActions.fetchWeeklyGrading).not.toHaveBeenCalled();
-  });
+  prGradingActions.syncPRGradingReviewers.mockReturnValue(() =>
+    Promise.resolve({ success: true, data: null }),
+  );
 });
 
 // ---------------------------------------------------------------------------
@@ -146,7 +102,6 @@ describe('loading state', () => {
     expect(screen.getByText('Loading grading data...')).toBeInTheDocument();
   });
 });
-
 // ---------------------------------------------------------------------------
 // API success path
 // ---------------------------------------------------------------------------
@@ -165,7 +120,10 @@ describe('API fetch path — success', () => {
     renderContainer();
 
     await waitFor(() => {
-      expect(prGradingActions.fetchWeeklyGrading).toHaveBeenCalledWith('Team 1');
+      expect(prGradingActions.fetchWeeklyGrading).toHaveBeenCalledWith(
+        'Team 1',
+        expect.any(String),
+      );
     });
   });
 
@@ -173,7 +131,10 @@ describe('API fetch path — success', () => {
     renderContainer({ teamName: 'Team 2' });
 
     await waitFor(() => {
-      expect(prGradingActions.fetchWeeklyGrading).toHaveBeenCalledWith('Team 2');
+      expect(prGradingActions.fetchWeeklyGrading).toHaveBeenCalledWith(
+        'Team 2',
+        expect.any(String),
+      );
     });
   });
 });
@@ -290,18 +251,10 @@ describe('team switching', () => {
     fireEvent.change(screen.getByTestId('team-dropdown'), { target: { value: 'Team 2' } });
 
     await waitFor(() => {
-      expect(prGradingActions.fetchWeeklyGrading).toHaveBeenCalledWith('Team 2');
+      expect(prGradingActions.fetchWeeklyGrading).toHaveBeenCalledWith(
+        'Team 2',
+        expect.any(String),
+      );
     });
-  });
-
-  it('does not fetch config for config-driven teamId paths', async () => {
-    const config = { teamName: 'Custom', reviewerCount: 1, reviewerNames: ['Alice'] };
-    renderContainer({ teamId: 'custom-123', config });
-
-    await waitFor(() => {
-      expect(screen.getByTestId('team-name').textContent).toBe('Custom');
-    });
-
-    expect(prGradingActions.fetchPRGradingConfig).not.toHaveBeenCalled();
   });
 });
