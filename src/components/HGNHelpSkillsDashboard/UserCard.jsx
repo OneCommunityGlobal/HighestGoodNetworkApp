@@ -6,23 +6,26 @@ import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { formatSkillName } from './FilerData.js';
 
+const getNormalizedSkills = ({ displaySkills, topSkills, skills }) => {
+  if (Array.isArray(displaySkills)) return displaySkills;
+  if (Array.isArray(topSkills)) return topSkills.map(formatSkillName);
+  if (Array.isArray(skills)) {
+    return skills
+      .map(skill => {
+        if (typeof skill === 'string') return skill;
+        return skill.name || skill.skill || skill.label || skill.type || '';
+      })
+      .filter(Boolean)
+      .map(formatSkillName);
+  }
+  return [];
+};
+
 function UserCard({ user }) {
   const { userId, name, email, slack, score, topSkills, displaySkills, skills } = user;
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const normalizedSkills = Array.isArray(displaySkills)
-    ? displaySkills
-    : Array.isArray(topSkills)
-    ? topSkills.map(formatSkillName)
-    : Array.isArray(skills)
-    ? skills
-        .map(skill => {
-          if (typeof skill === 'string') return skill;
-          return skill.name || skill.skill || skill.label || skill.type || '';
-        })
-        .filter(Boolean)
-        .map(formatSkillName)
-    : [];
+  const normalizedSkills = getNormalizedSkills({ displaySkills, topSkills, skills });
 
   return (
     <div className={`${styles.userCard} ${darkMode ? styles.darkMode : ''}`}>
