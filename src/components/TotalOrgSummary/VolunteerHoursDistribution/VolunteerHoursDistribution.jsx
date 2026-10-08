@@ -95,7 +95,6 @@ export function formatRangeLabel(rangeStr) {
 
 export function formatCommittedRangeLabel(rangeStr) {
   const normalizedRange = normalizeBucketId(rangeStr);
-  if (normalizedRange === '40') return '40 hrs';
   if (normalizedRange === '40+') return 'Over 40 hrs';
   return formatRangeLabel(normalizedRange);
 }

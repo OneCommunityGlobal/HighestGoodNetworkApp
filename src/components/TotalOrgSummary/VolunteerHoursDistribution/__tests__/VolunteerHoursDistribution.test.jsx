@@ -79,7 +79,7 @@ describe('VolunteerHoursDistribution wrapper', () => {
     );
 
     expect(screen.getAllByText('Weekly Committed Hours')).toHaveLength(2);
-    expect(screen.getByText('40 hrs')).toBeInTheDocument();
+    expect(screen.getByText('31-40 hrs')).toBeInTheDocument();
     expect(screen.getByText('Over 40 hrs')).toBeInTheDocument();
 
     expect(computeDistribution(committedHoursData, undefined, true)).toEqual({
@@ -87,7 +87,7 @@ describe('VolunteerHoursDistribution wrapper', () => {
         { name: '0-10 hrs', value: 2, percentage: 25, valueType: 'volunteers' },
         { name: '11-20 hrs', value: 3, percentage: 38, valueType: 'volunteers' },
         { name: '21-30 hrs', value: 1, percentage: 13, valueType: 'volunteers' },
-        { name: '40 hrs', value: 1, percentage: 13, valueType: 'volunteers' },
+        { name: '31-40 hrs', value: 1, percentage: 13, valueType: 'volunteers' },
         { name: 'Over 40 hrs', value: 1, percentage: 13, valueType: 'volunteers' },
       ],
       totalVolunteers: 8,
