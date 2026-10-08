@@ -65,7 +65,7 @@
   border-radius: 12px;
   padding: 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
 }
 
 .studentInfo {
@@ -99,7 +99,7 @@
   font-size: 1.75rem;
   font-weight: 600;
   color: #333;
-  margin: 0 0 0.25rem 0;
+  margin: 0 0 0.25rem;
   text-align: left;
 }
 
@@ -156,7 +156,7 @@
 .infoLabel {
   font-size: 0.75rem;
   color: #666;
-  margin: 0 0 0.25rem 0;
+  margin: 0 0 0.25rem;
   font-weight: 500;
 }
 
@@ -204,7 +204,7 @@
   background: white;
   padding: 0.5rem;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 5%);
   overflow-x: auto;
 }
 
@@ -237,28 +237,27 @@
   border-radius: 12px;
   padding: 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
 }
 
 .sectionTitle {
   font-size: 1.5rem;
   font-weight: 600;
   color: #333;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.5rem;
 }
 
 .sectionSubtitle {
   font-size: 0.95rem;
   color: #666;
-  margin: 0 0 2rem 0;
+  margin: 0 0 2rem;
 }
 
 .chartsGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
-  justify-items: stretch;
-  align-items: start;
+  place-items: start stretch;
 }
 
 .noData {
@@ -281,7 +280,7 @@
   border-radius: 12px;
   padding: 1.5rem;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
   transition: transform 0.2s;
 }
 
@@ -292,7 +291,7 @@
 .statCard h3 {
   font-size: 0.9rem;
   color: #666;
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 0.75rem;
   font-weight: 500;
 }
 
@@ -308,7 +307,7 @@
   background: white;
   border-radius: 12px;
   padding: 1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: center;
@@ -317,7 +316,7 @@
 
 .subjectCard:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 15%);
 }
 
 .subjectIcon {
@@ -327,14 +326,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1rem auto;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin: 0 auto 1rem;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .subjectIcon:hover {
   transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 16px rgb(0 0 0 / 20%);
 }
 
 .subjectIconText {
@@ -344,7 +343,7 @@
   text-align: center;
   line-height: 1.1;
   max-width: 70px;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
   hyphens: auto;
 }
 
@@ -352,7 +351,7 @@
   font-size: 1.1rem;
   font-weight: 600;
   color: #333;
-  margin: 0 0 1rem 0;
+  margin: 0 0 1rem;
 }
 
 .stats {
@@ -380,11 +379,8 @@
 /* Modal */
 .modalOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background: rgb(0 0 0 / 50%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -398,10 +394,7 @@
 
 .modalBackdrop {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -425,7 +418,7 @@
   max-height: 80vh;
   overflow-y: auto;
   position: relative;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 32px rgb(0 0 0 / 20%);
 }
 
 .modalHeader {
@@ -473,32 +466,32 @@
 .molecule {
   cursor: pointer;
   transition: all 0.2s ease;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 2px 4px rgb(0 0 0 / 10%));
 }
 
 .molecule:hover {
-  filter: brightness(1.1) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2));
+  filter: brightness(1.1) drop-shadow(0 2px 6px rgb(0 0 0 / 20%));
 }
 
 /* Specific molecule state styles */
 .completedMolecule {
   cursor: pointer;
   transition: all 0.2s ease;
-  filter: drop-shadow(0 2px 8px rgba(255, 215, 0, 0.4));
+  filter: drop-shadow(0 2px 8px rgb(255 215 0 / 40%));
 }
 
 .completedMolecule:hover {
-  filter: drop-shadow(0 4px 12px rgba(255, 215, 0, 0.6)) brightness(1.15);
+  filter: drop-shadow(0 4px 12px rgb(255 215 0 / 60%)) brightness(1.15);
 }
 
 .inProgressMolecule {
   cursor: pointer;
   transition: all 0.2s ease;
-  filter: drop-shadow(0 2px 4px rgba(76, 175, 80, 0.3));
+  filter: drop-shadow(0 2px 4px rgb(76 175 80 / 30%));
 }
 
 .inProgressMolecule:hover {
-  filter: drop-shadow(0 4px 8px rgba(76, 175, 80, 0.5)) brightness(1.1);
+  filter: drop-shadow(0 4px 8px rgb(76 175 80 / 50%)) brightness(1.1);
 }
 
 .notStartedMolecule {
@@ -519,14 +512,14 @@
   transform: translate(-50%, -100%);
   background: white;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
   padding: 1rem;
   z-index: 1001;
   pointer-events: none;
 }
 
 .tooltip h4 {
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.5rem;
   font-size: 0.9rem;
   color: #333;
 }
@@ -538,19 +531,19 @@
 }
 
 /* Responsive Design */
-@media (max-width: 1200px) {
+@media (width <= 1200px) {
   .chartsGrid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-@media (max-width: 900px) {
+@media (width <= 900px) {
   .chartsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .container {
     padding: 1rem;
   }
@@ -586,7 +579,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .studentName {
     font-size: 1.25rem;
   }
@@ -623,7 +616,7 @@
 
 .header.dark {
   background: #1e293b;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 40%);
 }
 
 .header.dark .studentName {
@@ -660,7 +653,7 @@
 
 .tabs.dark {
   background: #1e293b;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 40%);
 }
 
 .tab.dark {
@@ -679,7 +672,7 @@
 
 .progressSection.dark {
   background: #1e293b;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 40%);
 }
 
 .progressSection.dark .sectionTitle {
@@ -696,12 +689,12 @@
 
 .subjectCard.dark {
   background: #1e293b;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 40%);
   color: #e0e0e0;
 }
 
 .subjectCard.dark:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 60%);
 }
 
 .subjectCard.dark .subjectName {
@@ -718,7 +711,7 @@
 
 .statCard.dark {
   background: #1e293b;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 40%);
 }
 
 .statCard.dark h3 {
@@ -727,7 +720,7 @@
 
 .modal.dark {
   background: #1e293b;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 8px 32px rgb(0 0 0 / 60%);
   color: #e0e0e0;
 }
 
@@ -751,7 +744,7 @@
 
 .tooltip.dark {
   background: #1e293b;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 50%);
   color: #e0e0e0;
   border: 1px solid #2b3b50;
 }
