@@ -126,10 +126,19 @@
    `body.dark-mode * { color:#fff !important }` then forces the label text
    white too, so the active tab (e.g. "Edit History") rendered as a blank
    white box in dark mode. Scoped to .profile-tabs so it only affects this
-   tab group. */
-body.dark-mode .profile-tabs .nav-tabs .nav-link.active {
-  background-color: #1c2541;
-  color: #fff;
+   tab group. !important (and this selector's higher specificity) is needed to
+   beat the later global hotfix `body.dark-mode .nav-link.active` below, which
+   turns every active tab into a white pill with black text. */
+body.dark-mode .profile-tabs .nav-tabs .nav-link.active,
+body.dark-mode .profile-tabs .nav-tabs .nav-link.active * {
+  background-color: #1c2541 !important;
+  color: #fff !important;
+}
+
+body.dark-mode .profile-tabs .nav-tabs .nav-link:not(.active):hover,
+body.dark-mode .profile-tabs .nav-tabs .nav-link:not(.active):hover * {
+  background-color: #24344d !important;
+  color: #fff !important;
 }
 
 .profile-work p {
