@@ -69,7 +69,7 @@ function PRGradingDashboard() {
         setLoading(false);
       }
     };
-    initDashboard();
+    void initDashboard();
   }, [dispatch]);
 
   const fetchGradings = async teamName => {

@@ -192,11 +192,11 @@ const PRGradingScreenContainer = () => {
 
           // Determine which sync team array to use based on team name
           const isTeam1 = name.toLowerCase().trim() === 'team 1';
-          const syncTeamArray = currentSyncData
-            ? isTeam1
-              ? currentSyncData.team1
-              : currentSyncData.team2
-            : null;
+          let syncTeamArray = null;
+
+          if (currentSyncData) {
+            syncTeamArray = isTeam1 ? currentSyncData.team1 : currentSyncData.team2;
+          }
 
           if (reviewerNames.length > 0) {
             setTeamData(buildTeamData(name, weekStart));
