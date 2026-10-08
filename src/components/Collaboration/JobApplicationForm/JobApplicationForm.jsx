@@ -6,7 +6,7 @@ import OneCommunityImage from '../../../assets/images/logo2.png';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import { useSelector } from 'react-redux';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import moment from 'moment-timezone';
@@ -156,13 +156,15 @@ function resolveNavigationJobTitle(jobDataFromRedirect, location) {
 function notifyInitialFormSelection(navTitle, formMatch, chosen) {
   if (!navTitle || formMatch) return;
   if (chosen) {
-    toast.info(
+    toast.warn(
       `Could not match "${navTitle}" to a form title. Showing "${chosen.title}" — pick another role from the dropdown if this is not the right application.`,
-      { autoClose: 7000 },
+      { autoClose: false, closeOnClick: false, toastId: 'job-title-mismatch-warning' },
     );
     return;
   }
-  toast.warn('No application form is available. Please contact support or try again later.');
+  toast.warn('No application form is available. Please contact support or try again later.', {
+    toastId: 'job-title-mismatch-no-form',
+  });
 }
 
 function getInitialFormState(chosen, navTitle) {
@@ -1187,7 +1189,6 @@ function JobApplicationForm() {
 
   return (
     <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
-      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} />
       <header className={styles.logo}>
         <a
           href="https://www.onecommunityglobal.org/collaboration/"
