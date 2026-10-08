@@ -220,7 +220,6 @@ import PRReviewTeamAnalyticsDashboard from './components/Analytics/AnalyticsDash
 import PopularPRChart from './components/Analytics/PopularPRChart';
 import ReviewersRequirementChart from './components/Analytics/ReviewersRequirementChart';
 
-
 import PRGradingTest from './components/PRGradingScreen/PRGradingTest'; //temporary route for testing - delete after testing
 import ProtectedRoute from './components/common/ProtectedRoute';
 import { UserRole } from './utils/enums';
