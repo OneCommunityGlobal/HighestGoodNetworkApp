@@ -20,10 +20,6 @@ const ROOT = path.resolve(__dirname, '../..');
 const PAIRS = [
   ['components/Announcements/index.jsx', 'components/Announcements/Announcements.module.css'],
   [
-    'components/CommunityPortal/Attendence/NoshowViz.jsx',
-    'components/CommunityPortal/Attendence/NoshowViz.module.css',
-  ],
-  [
     'components/HGNPRDashboard/PRDashboardTopReviewedPRs.jsx',
     'components/HGNPRDashboard/PRDashboardTopReviewedPRs.module.css',
   ],
