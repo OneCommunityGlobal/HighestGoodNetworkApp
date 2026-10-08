@@ -40,7 +40,7 @@ function StatisticsTab(props) {
           aria-live="polite"
         >
           {isIncreased ? '+' : '-'}
-          {percentageChange}% {comparisonType.toLowerCase()}
+          {percentageChange}% {comparisonType?.toLowerCase()}
         </h4>
       )}
     </div>

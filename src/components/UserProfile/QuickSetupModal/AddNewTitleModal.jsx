@@ -111,7 +111,7 @@ function AddNewTitleModal({
 
   // live teamCode validity (using QSTTeamCodes list)
   useEffect(() => {
-  const codeValue = titleData.teamCode?.trim() || '';
+    const codeValue = titleData.teamCode?.trim() || '';
 
   setIsValidTeamCode(
     codeValue === '' ||
@@ -122,6 +122,7 @@ function AddNewTitleModal({
         ))
   );
 }, [titleData.teamCode, QSTTeamCodes]);
+
 
   // ----------------- canonical lists for validation ------------------------
 
