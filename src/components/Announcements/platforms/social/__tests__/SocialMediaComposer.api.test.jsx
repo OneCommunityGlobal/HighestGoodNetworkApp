@@ -101,4 +101,92 @@ describe('SocialMediaComposer API calls (Mastodon)', () => {
       expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.MASTODON_POST_HISTORY(20)),
     );
   });
+
+  const editFirstScheduledPost = async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'Scheduled' }));
+    fireEvent.click(await screen.findByTitle('Edit'));
+  };
+
+  const scheduledPost = overrides => ({
+    _id: 'old-1',
+    postData: JSON.stringify({ status: 'Original post' }),
+    scheduledTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+    status: 'pending',
+    ...overrides,
+  });
+
+  it('deletes the original after saving an edited post', async () => {
+    axios.get.mockResolvedValue({ data: [scheduledPost()] });
+    renderComposer();
+    await editFirstScheduledPost();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Update Post' }));
+
+    await waitFor(() =>
+      expect(axios.delete).toHaveBeenCalledWith(ENDPOINTS.MASTODON_SCHEDULED_POST_BY_ID('old-1')),
+    );
+    expect(toast.success).toHaveBeenCalledWith('Post updated successfully!');
+    expect(toast.error).not.toHaveBeenCalled();
+  });
+
+  it('warns that both versions are scheduled when deleting the original fails', async () => {
+    axios.get.mockResolvedValue({ data: [scheduledPost()] });
+    axios.delete.mockRejectedValue({ response: { status: 500 } });
+    renderComposer();
+    await editFirstScheduledPost();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Update Post' }));
+
+    await waitFor(() => expect(toast.warning).toHaveBeenCalledTimes(1));
+    expect(toast.warning.mock.calls[0][0]).toMatch(/original could not be removed/);
+    expect(toast.error).not.toHaveBeenCalled();
+    expect(toast.success).not.toHaveBeenCalled();
+  });
+
+  it('keeps the original when saving an edited post fails', async () => {
+    axios.get.mockResolvedValue({ data: [scheduledPost()] });
+    axios.post.mockRejectedValue({ response: { data: { error: 'Server unavailable' } } });
+    renderComposer();
+    await editFirstScheduledPost();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Update Post' }));
+
+    await waitFor(() => expect(toast.error).toHaveBeenCalledWith('Server unavailable'));
+    expect(axios.delete).not.toHaveBeenCalled();
+  });
+
+  it('shows an error instead of an empty list when scheduled posts fail to load', async () => {
+    axios.get.mockRejectedValue({ response: { data: { error: 'Not authorized' } } });
+    renderComposer();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Scheduled' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Not authorized');
+    expect(screen.queryByText('No scheduled posts yet.')).not.toBeInTheDocument();
+  });
+
+  it('shows a failed post with its error', async () => {
+    axios.get.mockResolvedValue({
+      data: [scheduledPost({ status: 'failed', lastError: 'Bad gateway' })],
+    });
+    renderComposer();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Scheduled' }));
+
+    expect(await screen.findByText(/Not published\./)).toBeInTheDocument();
+    expect(screen.getByText(/Bad gateway/)).toBeInTheDocument();
+    expect(screen.getByTitle('Delete')).not.toBeDisabled();
+  });
+
+  it('disables actions on a post that is being published', async () => {
+    axios.get.mockResolvedValue({ data: [scheduledPost({ status: 'publishing' })] });
+    renderComposer();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Scheduled' }));
+
+    expect(await screen.findByText('Publishing now…')).toBeInTheDocument();
+    expect(screen.getByTitle('Edit')).toBeDisabled();
+    expect(screen.getByTitle('Post now')).toBeDisabled();
+    expect(screen.getByTitle('Delete')).toBeDisabled();
+  });
 });

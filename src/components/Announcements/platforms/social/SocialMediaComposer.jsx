@@ -34,6 +34,7 @@ export default function SocialMediaComposer({ platform }) {
   const [scheduleDate, setScheduleDate] = useState('');
   const [scheduleTime, setScheduleTime] = useState('');
   const [scheduledPosts, setScheduledPosts] = useState([]);
+  const [scheduledLoadError, setScheduledLoadError] = useState('');
   const [isLoadingScheduled, setIsLoadingScheduled] = useState(false);
   const [uploadedImage, setUploadedImage] = useState(null);
   const [imageAltText, setImageAltText] = useState('');
@@ -96,13 +97,15 @@ export default function SocialMediaComposer({ platform }) {
 
   const loadScheduledPosts = async () => {
     setIsLoadingScheduled(true);
+    setScheduledLoadError('');
     try {
       const { data } = await axios.get(ENDPOINTS.MASTODON_SCHEDULED_POSTS);
       setScheduledPosts(data || []);
     } catch (err) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Error loading scheduled posts:', err);
-      }
+      // Show the failure instead of an empty list, so it isn't mistaken for
+      // having no scheduled posts
+      setScheduledPosts([]);
+      setScheduledLoadError(errorMessage(err, 'Failed to load scheduled posts'));
     } finally {
       setIsLoadingScheduled(false);
     }
@@ -114,9 +117,6 @@ export default function SocialMediaComposer({ platform }) {
       const { data } = await axios.get(ENDPOINTS.MASTODON_POST_HISTORY(20));
       setPostHistory(data || []);
     } catch (err) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Error loading post history:', err);
-      }
       toast.error(errorMessage(err, 'Failed to load post history'));
     } finally {
       setIsLoadingHistory(false);
@@ -263,6 +263,7 @@ export default function SocialMediaComposer({ platform }) {
     const selectedPlatforms = Object.keys(crossPostPlatforms).filter(p => crossPostPlatforms[p]);
 
     setIsPosting(true);
+    const isEdit = Boolean(editingPostId);
     try {
       await axios.post(ENDPOINTS.MASTODON_SCHEDULED_POSTS, {
         title: 'Mastodon Scheduled Post',
@@ -273,22 +274,37 @@ export default function SocialMediaComposer({ platform }) {
         scheduledTime: scheduledDateTime.toISOString(),
         crossPostTo: selectedPlatforms,
       });
-
-      // When editing, remove the old version only after the new one is saved,
-      // so a failed save never loses the original post.
-      if (editingPostId) {
-        await axios.delete(ENDPOINTS.MASTODON_SCHEDULED_POST_BY_ID(editingPostId));
-      }
-
-      toast.success(editingPostId ? 'Post updated successfully!' : 'Post scheduled successfully!');
-      clearComposer();
-      if (activeSubTab === 'scheduled') {
-        loadScheduledPosts();
-      }
     } catch (err) {
       toast.error(errorMessage(err, 'Failed to schedule post.'));
-    } finally {
       setIsPosting(false);
+      return;
+    }
+
+    // When editing, remove the old version only after the new one is saved,
+    // so a failed save never loses the original post. The new version is
+    // already saved at this point, so a failed delete is reported on its
+    // own: both versions are now scheduled and the user must remove one.
+    let oldVersionRemoved = true;
+    if (isEdit) {
+      try {
+        await axios.delete(ENDPOINTS.MASTODON_SCHEDULED_POST_BY_ID(editingPostId));
+      } catch {
+        oldVersionRemoved = false;
+      }
+    }
+
+    if (!oldVersionRemoved) {
+      toast.warning(
+        'Your changes were saved as a new scheduled post, but the original could not be removed. Delete the older version on the Scheduled tab so it is not published too.',
+        { autoClose: false },
+      );
+    } else {
+      toast.success(isEdit ? 'Post updated successfully!' : 'Post scheduled successfully!');
+    }
+    clearComposer();
+    setIsPosting(false);
+    if (activeSubTab === 'scheduled' || !oldVersionRemoved) {
+      loadScheduledPosts();
     }
   };
 
@@ -323,9 +339,8 @@ export default function SocialMediaComposer({ platform }) {
       setActiveSubTab('composer');
 
       toast.info('Editing scheduled post. Modify and click "Schedule Post" to update.');
-    } catch (err) {
+    } catch {
       toast.error('Failed to load post for editing');
-      console.error('Edit error:', err);
     }
   };
 
@@ -632,8 +647,15 @@ export default function SocialMediaComposer({ platform }) {
         <div className={styles['scheduled-content']}>
           <h4>Scheduled Posts for {platform}</h4>
           {isLoadingScheduled && <p>Loading...</p>}
-          {!isLoadingScheduled && scheduledPosts.length === 0 && <p>No scheduled posts yet.</p>}
-          {!isLoadingScheduled && scheduledPosts.length > 0 && (
+          {!isLoadingScheduled && scheduledLoadError && (
+            <p role="alert" className={styles['load-error']}>
+              {scheduledLoadError}
+            </p>
+          )}
+          {!isLoadingScheduled && !scheduledLoadError && scheduledPosts.length === 0 && (
+            <p>No scheduled posts yet.</p>
+          )}
+          {!isLoadingScheduled && !scheduledLoadError && scheduledPosts.length > 0 && (
             <div className={styles['posts-list']}>
               {scheduledPosts.map(post => {
                 let postText = '';
@@ -644,6 +666,10 @@ export default function SocialMediaComposer({ platform }) {
                   postText = 'Invalid post data';
                 }
                 const imageBase64 = getScheduledPostImage(post);
+                // The backend marks a post failed when delivery could not be
+                // confirmed, and does not retry it, so the user must reschedule
+                const isFailed = post.status === 'failed';
+                const isPublishing = post.status === 'publishing';
 
                 return (
                   <div key={post._id} className={styles['post-card']}>
@@ -652,6 +678,16 @@ export default function SocialMediaComposer({ platform }) {
                       <p className={styles['post-meta']}>
                         📅 {formatScheduledTime(post.scheduledTime)}
                       </p>
+                      {isFailed && (
+                        <p className={styles['post-status-failed']}>
+                          <strong>Not published.</strong>{' '}
+                          {post.lastError || 'Delivery could not be confirmed.'} Check your Mastodon
+                          account, then reschedule or delete this post.
+                        </p>
+                      )}
+                      {isPublishing && (
+                        <p className={styles['post-status-publishing']}>Publishing now…</p>
+                      )}
                       {imageBase64 && (
                         <img
                           src={imageBase64}
@@ -666,6 +702,7 @@ export default function SocialMediaComposer({ platform }) {
                         onClick={() => handleEditScheduled(post)}
                         className={`${styles['action-btn']} ${styles['edit']}`}
                         title="Edit"
+                        disabled={isPublishing}
                       >
                         ✏️
                       </button>
@@ -674,6 +711,7 @@ export default function SocialMediaComposer({ platform }) {
                         onClick={() => handlePostScheduledNow(post)}
                         className={`${styles['action-btn']} ${styles['success']}`}
                         title="Post now"
+                        disabled={isPublishing}
                       >
                         ✓
                       </button>
@@ -682,6 +720,7 @@ export default function SocialMediaComposer({ platform }) {
                         onClick={() => handleDeleteScheduled(post._id)}
                         className={`${styles['action-btn']} ${styles['danger']}`}
                         title="Delete"
+                        disabled={isPublishing}
                       >
                         ✕
                       </button>
