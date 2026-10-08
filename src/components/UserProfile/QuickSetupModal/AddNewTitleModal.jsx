@@ -225,7 +225,7 @@ const onTeamNameValidation = teamObj => {
   }
 
   // Resolve against ALL teams, including inactive teams.
-  const selectedTeam = allTeamsArray.find(
+  const selectedTeam = allTeamsArray.some(
     team => team?._id === teamId
   );
 
