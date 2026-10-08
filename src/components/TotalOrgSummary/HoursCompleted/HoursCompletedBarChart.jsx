@@ -51,10 +51,15 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode, comp
 
   const { taskHours, projectHours } = data;
 
-  const taskPercentage = taskHours.submittedToCommittedHoursPercentage ?? 0;
-  const projectPercentage = projectHours.submittedToCommittedHoursPercentage ?? 0;
-  const taskChangePercentage = taskHours.comparisonPercentage ?? 0;
-  const projectChangePercentage = projectHours.comparisonPercentage ?? 0;
+  const normalizePercentage = value => {
+    const raw = value ?? 0;
+    return raw > 1 ? raw : raw * 100;
+  };
+
+  const taskPercentage = normalizePercentage(taskHours.submittedToCommittedHoursPercentage);
+  const projectPercentage = normalizePercentage(projectHours.submittedToCommittedHoursPercentage);
+  const taskChangePercentage = normalizePercentage(taskHours.comparisonPercentage);
+  const projectChangePercentage = normalizePercentage(projectHours.comparisonPercentage);
   const stats = [
     {
       name: 'Tasks',
@@ -77,14 +82,28 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode, comp
   const chartData = stats.map(item => ({
     name: item.name,
     amount: item.amount,
-    percentage: `${(item.percentage * 100).toFixed(2)}%`,
-    change:
-      item.change > 0
-        ? `+${(item.change * 100).toFixed(0)}%`
-        : `${(item.change * 100).toFixed(0)}%`,
+    percentage: `${item.percentage.toFixed(2)}%`,
+    change: item.change > 0 ? `+${item.change.toFixed(0)}%` : `${item.change.toFixed(0)}%`,
     fontcolor: item.change >= 0 ? greenColor : 'red',
     color: ['rgba(76,75,245,255)', 'rgba(0,175,244,255)'],
   }));
+  // --- Item G: Tasks/Projects hour distribution (sums to 100% dynamically) ---
+  const taskHoursCount = Number(taskHours.count) || 0;
+  const projectHoursCount = Number(projectHours.count) || 0;
+  const totalCompletedHours = taskHoursCount + projectHoursCount;
+  // Guard against divide-by-zero when no hours were submitted at all.
+  const taskSharePercent =
+    totalCompletedHours > 0 ? (taskHoursCount / totalCompletedHours) * 100 : 0;
+  // Derive the project share from 100 - taskSharePercent (rather than computing it
+  // independently) so the two values always sum to exactly 100%, even with
+  // floating point rounding.
+  const projectSharePercent = totalCompletedHours > 0 ? 100 - taskSharePercent : 0;
+  const distributionLabel = `Hours Completed Split — ${taskSharePercent.toFixed(
+    1,
+  )}% Tasks (${taskHoursCount.toFixed(2)}) | ${projectSharePercent.toFixed(
+    1,
+  )}% Projects (${projectHoursCount.toFixed(2)}) (Total = 100%)`;
+
   const projectBarInfo = {
     ifcompare:
       comparisonType !== 'No Comparison' &&
@@ -113,7 +132,7 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode, comp
           x={x + width / 2}
           y={y - 40}
           style={{ fontSize: numFontSize, fontWeight: 'bold' }}
-          fill={darkMode ? 'white' : 'dark'}
+          fill={darkMode ? 'white' : '#333'}
           textAnchor="middle"
           dominantBaseline="middle"
         >
@@ -123,7 +142,7 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode, comp
           x={x + width / 2}
           y={y - 25}
           style={{ fontSize: perFontSize, fontWeight: 'bold' }}
-          fill={darkMode ? 'white' : 'dark'}
+          fill={darkMode ? 'white' : '#444'}
           textAnchor="middle"
           dominantBaseline="middle"
         >
@@ -143,75 +162,17 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode, comp
     );
   };
 
-  // for top right positioning of the projects box
-  const projectsBoxPosition =
-    cardSize.height === '300px'
-      ? { top: '28%', right: '10%' }
-      : cardSize.height === '548px'
-      ? { top: '30%', right: '8%' }
-      : { top: '30%', right: '6%' };
-
-  const projectsTextStyle = {
-    color: darkMode ? '#ffffff' : '#222222',
-  };
-
-  const projectsMutedTextStyle = {
-    color: darkMode ? '#d1d5db' : '#666666',
-  };
-
   return (
-    <div
-      style={{
-        height: '380px',
-        minHeight: '300px',
-        maxHeight: '548px',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative',
-      }}
-    >
-      {/* Projects box positioned in the right side middle area */}
-      <div
-        style={{
-          position: 'absolute',
-          ...projectsBoxPosition,
-          left: 'auto',
-          transform: 'translateY(-50%)',
-          zIndex: 10,
-          background: darkMode ? '#1f2937' : '#ffffff',
-          borderRadius: 4,
-          padding: 4,
-          boxShadow: darkMode ? '0 2px 6px rgba(0,0,0,0.35)' : '0 2px 6px rgba(0,0,0,0.15)',
-          border: darkMode ? '1px solid rgba(255,255,255,0.15)' : '1px solid #eee',
-          minWidth: 105,
-          minHeight: 45,
-          display: 'grid',
-          justifyItems: 'center',
-          gap: 2,
-          isolation: 'isolate',
-        }}
-      >
-        <div style={{ ...projectsTextStyle, fontWeight: 'bold', fontSize: 15 }}>Projects</div>
-        <div style={{ ...projectsTextStyle, fontWeight: 'bold', fontSize: 14 }}>
-          {projectBarInfo.amount}
-        </div>
-
-        <div style={{ ...projectsMutedTextStyle, fontSize: 10 }}>({projectBarInfo.percentage})</div>
-
-        {projectBarInfo.ifcompare && (
-          <div
-            style={{
-              ...projectsTextStyle,
-              color: darkMode ? 'lightgreen' : 'green',
-
-              fontSize: 10,
-              fontWeight: 'bold',
-            }}
-          >
-            {projectBarInfo.change}
-          </div>
-        )}
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      {/*
+        The old floating "Projects" summary box (positioned via fixed
+        top/right percentages) has been removed. It duplicated the amount,
+        percentage, and change already rendered directly above the Project
+        bar via renderCustomizedLabel, and its fixed-percentage positioning
+        caused it to visually collide with that in-chart label whenever the
+        bar was tall (e.g. short date ranges with small maxY). The in-chart
+        label is now the single source of truth for the Project bar's stats.
+      */}
 
       <div style={{ textAlign: 'center', marginBottom: 0 }}>
         <div
@@ -223,39 +184,73 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode, comp
             justifyItems: 'center',
           }}
         >
-          <span style={{ maxWidth: 200 }}>
-            {`${data.hoursSubmittedToTasksPercentage *
-              100}% of Total Tangible Hours Submitted to Tasks`}
-          </span>
           {(() => {
-            const percentage = data.hoursSubmittedToTasksComparisonPercentage;
-
-            if (percentage === undefined || percentage === null) {
+            const raw = data.hoursSubmittedToTasksPercentage ?? 0;
+            const normalized = raw > 1 ? raw : raw * 100;
+            const formatted = `${normalized.toFixed(1)}%`;
+            return `${formatted} of Committed Hours Submitted (Tasks)`;
+          })()}
+          {(() => {
+            const raw = data.hoursSubmittedToTasksComparisonPercentage;
+            if (raw === undefined || raw === null) {
               // No comparison → hide metrics
               return null;
             }
-            const isPositive = percentage >= 0;
+            const normalized = raw > 1 ? raw : raw * 100;
+            const isPositive = normalized >= 0;
             let color;
             if (isPositive) {
               color = darkMode ? 'lightgreen' : 'green';
             } else {
               color = 'red';
             }
-            const value = isPositive
-              ? `+${(percentage * 100).toFixed(0)}%`
-              : `${(percentage * 100).toFixed(0)}%`;
-            return <span style={{ color, marginLeft: 8, fontSize: '12px' }}>{value}</span>;
+            const formatted = isPositive
+              ? `+${normalized.toFixed(0)}%`
+              : `${normalized.toFixed(0)}%`;
+            return <span style={{ color, marginLeft: 8, fontSize: '12px' }}>{formatted}</span>;
           })()}
         </div>
       </div>
+
+      {/*
+        Previously TinyBarChart was rendered TWICE here (both instances
+        filtering chartData down to just 'Tasks'), which produced the
+        second, empty-looking "Hours" axis stacked below the first one in
+        the screenshot — and meant Project hours were never actually
+        plotted as a bar, only shown in the floating Projects box above.
+        This is now a single chart render, including both Tasks and
+        Project bars with their labels.
+      */}
       <div style={{ flex: 1, minHeight: 0 }}>
         <TinyBarChart
-          chartData={chartData.filter(item => item.name === 'Tasks')}
+          chartData={chartData}
           maxY={maxY}
           tickInterval={tickInterval}
+          renderCustomizedLabel={renderCustomizedLabel}
           darkMode={darkMode}
           yAxisLabel="Hours"
         />
+      </div>
+
+      {/*
+        Item G: single combined label below the chart showing the
+        Tasks/Projects hour distribution, e.g. "34.5% Tasks (12.34) | 65.5%
+        Projects (23.45) (Total = 100%)". Percentages are derived so they
+        always sum to exactly 100%, unlike the independent
+        submittedToCommittedHoursPercentage values shown above/in the
+        Projects box, which measure something different (submitted vs.
+        committed hours per category) and do not sum to 100%.
+      */}
+      <div
+        style={{
+          textAlign: 'center',
+          marginTop: 8,
+          fontSize: '13px',
+          fontWeight: 500,
+          color: darkMode ? 'white' : '#222',
+        }}
+      >
+        {distributionLabel}
       </div>
     </div>
   );

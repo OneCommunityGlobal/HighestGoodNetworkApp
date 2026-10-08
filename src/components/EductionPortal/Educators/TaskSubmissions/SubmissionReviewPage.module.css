@@ -1,0 +1,483 @@
+/* stylelint-disable */
+.container {
+  min-height: 100vh;
+  background-color: #F8F9FA;
+}
+
+.content {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 28px 32px;
+}
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: #4B5563;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 0;
+  margin-bottom: 16px;
+}
+
+.backButton:hover {
+  color: #1F2937;
+}
+
+.reviewCard {
+  background-color: #FFFFFF;
+  border: 1px solid #EAEAEA;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  padding: 28px;
+}
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #EAEAEA;
+}
+
+.taskName {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 4px 0;
+}
+
+.taskMeta {
+  font-size: 13px;
+  color: #6B7280;
+  margin: 0;
+}
+
+.statusBadge {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  background: linear-gradient(135deg, #374151 0%, #1F2937 100%);
+  color: white;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.infoLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #9CA3AF;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.infoValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.infoSubValue {
+  font-size: 13px;
+  color: #6B7280;
+}
+
+.section {
+  margin-top: 24px;
+}
+
+.sectionTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 12px 0;
+}
+
+.emptyText {
+  font-size: 14px;
+  color: #9CA3AF;
+  margin: 0;
+}
+
+.linkList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.linkItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #2563EB;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.linkItem:hover {
+  text-decoration: underline;
+}
+
+.atomList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.atomCard {
+  background-color: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.atomHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.atomName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.atomDifficulty {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: #6B7280;
+  background-color: #E5E7EB;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.atomDescription {
+  font-size: 13px;
+  color: #6B7280;
+  margin: 6px 0 0 0;
+}
+
+.marksRow {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.fieldLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 16px;
+}
+
+.marksRow .fieldLabel {
+  margin-bottom: 0;
+  flex: 1;
+}
+
+.numberInput {
+  padding: 10px 12px;
+  border: 1px solid #D9D9D9;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+}
+
+.numberInput:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.feedbackInput {
+  padding: 12px;
+  border: 1px solid #D9D9D9;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #111827;
+  resize: vertical;
+}
+
+.feedbackInput:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.saveError {
+  font-size: 13px;
+  color: #DC2626;
+  margin: 0 0 12px 0;
+}
+
+.saveMessage {
+  font-size: 13px;
+  color: #059669;
+  margin: 0 0 12px 0;
+}
+
+.actionsRow {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.secondaryButton {
+  padding: 10px 20px;
+  background-color: #FFFFFF;
+  color: #374151;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.secondaryButton:hover:not(:disabled) {
+  background-color: #F9FAFB;
+  border-color: #9CA3AF;
+}
+
+.primaryButton {
+  padding: 10px 20px;
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.primaryButton:hover:not(:disabled) {
+  background-color: #4338ca;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.secondaryButton:disabled,
+.primaryButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Loading / Error States */
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 60px 20px;
+  text-align: center;
+  font-size: 16px;
+  color: #555;
+  background-color: #fff;
+  border-radius: 12px;
+  margin: 24px 32px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #E5E7EB;
+  border-top-color: #4f46e5;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.errorState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 60px 20px;
+  text-align: center;
+  color: #D32F2F;
+  background-color: #FEF2F2;
+  border: 1px solid #FEE2E2;
+  border-radius: 12px;
+  margin: 24px 32px;
+}
+
+.retryButton {
+  padding: 10px 24px;
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .content {
+    padding: 20px 16px;
+  }
+
+  .reviewCard {
+    padding: 20px;
+  }
+
+  .marksRow {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+/* Dark Mode */
+:global(.dark-mode) .container {
+  background-color: #1a1a2e;
+}
+
+:global(.dark-mode) .backButton {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .backButton:hover {
+  color: #e0e0e0;
+}
+
+:global(.dark-mode) .reviewCard {
+  background-color: #16213e;
+  border-color: #2d2d2d;
+}
+
+:global(.dark-mode) .reviewHeader {
+  border-bottom-color: #2d2d2d;
+}
+
+:global(.dark-mode) .taskName {
+  color: #e0e0e0;
+}
+
+:global(.dark-mode) .taskMeta {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .infoLabel {
+  color: #6b7280;
+}
+
+:global(.dark-mode) .infoValue {
+  color: #e0e0e0;
+}
+
+:global(.dark-mode) .infoSubValue {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .sectionTitle {
+  color: #e0e0e0;
+}
+
+:global(.dark-mode) .emptyText {
+  color: #6b7280;
+}
+
+:global(.dark-mode) .linkItem {
+  color: #60a5fa;
+}
+
+:global(.dark-mode) .fieldLabel {
+  color: #d1d5db;
+}
+
+:global(.dark-mode) .numberInput,
+:global(.dark-mode) .feedbackInput {
+  background-color: #2d2d2d;
+  border-color: #444;
+  color: #e0e0e0;
+}
+
+:global(.dark-mode) .numberInput:focus,
+:global(.dark-mode) .feedbackInput:focus {
+  border-color: #3b82f6;
+}
+
+:global(.dark-mode) .atomCard {
+  background-color: #1e1e2e;
+  border-color: #3d3d3d;
+}
+
+:global(.dark-mode) .atomName {
+  color: #e0e0e0;
+}
+
+:global(.dark-mode) .atomDifficulty {
+  background-color: #363636;
+  color: #d1d5db;
+}
+
+:global(.dark-mode) .atomDescription {
+  color: #9ca3af;
+}
+
+:global(.dark-mode) .secondaryButton {
+  background-color: #2d2d2d;
+  border-color: #444;
+  color: #d1d5db;
+}
+
+:global(.dark-mode) .secondaryButton:hover:not(:disabled) {
+  background-color: #363636;
+  border-color: #666;
+}
+
+:global(.dark-mode) .loadingState,
+:global(.dark-mode) .errorState {
+  background-color: #16213e;
+}
+
+/* A global "body.dark-mode *" rule (public/index.css) forces all text to white with
+   !important; these need matching specificity + !important to keep their status color. */
+:global(.dark-mode) .saveError {
+  color: #f87171 !important;
+}
+
+:global(.dark-mode) .saveMessage {
+  color: #34d399 !important;
+}

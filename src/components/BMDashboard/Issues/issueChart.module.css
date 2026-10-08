@@ -27,7 +27,7 @@
 }
 
 .chartWrapper {
-  padding: 20px 20px 36px;
+  padding: 12px 20px 32px;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
@@ -40,7 +40,9 @@
 }
 
 .issueChartLabel {
+  display: block;
   font-size: 16px;
+  margin-bottom: 6px;
   color: #555;
 }
 
@@ -52,7 +54,7 @@
   padding: 0;
   border: none;
   background: transparent;
-  margin-bottom: 20px;
+  margin-bottom: 8px;
 }
 
 .filterMenuActions {
@@ -80,7 +82,7 @@
   text-align: center;
   font-size: 13px;
   color: #5b6470;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   font-weight: 600;
 }
 

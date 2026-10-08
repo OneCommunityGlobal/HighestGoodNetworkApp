@@ -1,15 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Table, Button, UncontrolledTooltip } from 'reactstrap';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import AssignTableRow from './AssignTableRow';
 import './AssignBadgePopup.module.css';
-import { clearSelected } from '../../actions/badgeManagement';
 
 function AssignBadgePopup(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const selectedBadges = useSelector(state => state.badge.selectedBadges);
   const [searchedName, setSearchedName] = useState('');
-  const dispatch = useDispatch();
 
   useEffect(() => {}, [selectedBadges]);
 
@@ -29,7 +27,6 @@ function AssignBadgePopup(props) {
     if (typeof submitCallback === 'function') {
       submitCallback();
     }
-    dispatch(clearSelected());
   };
 
   const filteredBadges = filterBadges(props.allBadgeData);
