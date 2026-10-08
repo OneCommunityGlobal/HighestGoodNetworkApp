@@ -48,7 +48,6 @@ function PRGradingDashboard() {
   const [showAddReviewerModal, setShowAddReviewerModal] = useState(false);
   const [selectedMockWeek, setSelectedMockWeek] = useState('Current Week');
   const [selectedTeamName, setSelectedTeamName] = useState(null);
-  const [teamOptions, setTeamOptions] = useState([]);
 
   // Load team list from config, then fetch grading data for the first team
   useEffect(() => {
@@ -56,7 +55,6 @@ function PRGradingDashboard() {
       try {
         const result = await dispatch(fetchPRGradingConfig());
         if (result.success && Array.isArray(result.data) && result.data.length > 0) {
-          setTeamOptions(result.data);
           const firstTeam = result.data[0].teamName;
           setSelectedTeamName(firstTeam);
           await fetchGradings(firstTeam);

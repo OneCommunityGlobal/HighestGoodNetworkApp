@@ -12,7 +12,7 @@ import {
 import { UserRole } from '../../utils/enums';
 import PRGradingScreen from './PRGradingScreen';
 
-const ALLOWED_ROLES = [UserRole.Administrator, UserRole.Owner];
+const ALLOWED_ROLES = new Set([UserRole.Administrator, UserRole.Owner]);
 
 const PST_TIMEZONE = 'America/Los_Angeles';
 
@@ -140,7 +140,7 @@ const PRGradingScreenContainer = () => {
   const [saveStatus, setSaveStatus] = useState(null); // 'success' | 'error' | null
 
   // Role gate — only Owner and Administrator can access this page
-  const isAuthorized = ALLOWED_ROLES.includes(userRole);
+  const isAuthorized = ALLOWED_ROLES.has(userRole);
 
   // Sync reviewers then load team config on mount
   useEffect(() => {
@@ -167,7 +167,7 @@ const PRGradingScreenContainer = () => {
         // Non-fatal
       }
     };
-    loadTeams();
+    void loadTeams();
   }, [dispatch, location.state]);
 
   const loadGradingData = useCallback(
