@@ -1,9 +1,21 @@
 import PropTypes from 'prop-types';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
+import { loadSavedGradings, mergeSavedGradings, saveAddedPR } from './prGradingPersistence';
 import styles from './PRGradingScreen.module.css';
+
+const hasDuplicatePR = (gradedPrs, value) => {
+  const enteredNumbers = value.split('+').map(number => number.trim());
+  const existingNumbers = gradedPrs.flatMap(pr =>
+    pr.prNumbers.split('+').map(number => number.trim()),
+  );
+  return (
+    new Set(enteredNumbers).size !== enteredNumbers.length ||
+    enteredNumbers.some(number => existingNumbers.includes(number))
+  );
+};
 
 const PRGradingScreen = ({ teamData, reviewers }) => {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -14,6 +26,31 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
   const [inputError, setInputError] = useState('');
   const [showGradingModal, setShowGradingModal] = useState(null);
   const [isFinalized, setIsFinalized] = useState(false);
+  const [isLoadingSaved, setIsLoadingSaved] = useState(true);
+  const [isSavingPR, setIsSavingPR] = useState(false);
+  const [loadError, setLoadError] = useState('');
+
+  useEffect(() => {
+    if (!teamData || !reviewers) return undefined;
+    let active = true;
+    setIsLoadingSaved(true);
+    loadSavedGradings(teamData)
+      .then(saved => {
+        if (active) {
+          setReviewerData(mergeSavedGradings(reviewers, saved));
+          setLoadError('');
+        }
+      })
+      .catch(() => {
+        if (active) setLoadError('Could not load saved PRs. Try again before adding a PR.');
+      })
+      .finally(() => {
+        if (active) setIsLoadingSaved(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [teamData, reviewers]);
 
   // Search state
   const [searchTerm, setSearchTerm] = useState('');
@@ -62,24 +99,51 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
     setInputError('');
   };
 
-  const handleInputSubmit = reviewerId => {
-    if (isFinalized) return;
+  const handleInputSubmit = async reviewerId => {
+    if (isFinalized || isLoadingSaved || isSavingPR) return;
     const validation = validatePRNumber(inputValue);
     if (!validation.isValid) {
       setInputError(validation.error);
       return;
     }
-    const newPREntry = { id: uuidv4(), prNumbers: inputValue.trim(), grade: 'Okay' };
-    setReviewerData(prev =>
-      prev.map(r =>
-        r.id === reviewerId
-          ? { ...r, gradedPrs: [...r.gradedPrs, newPREntry], prsReviewed: r.gradedPrs.length + 1 }
-          : r,
-      ),
-    );
-    setActiveInput(null);
-    setInputValue('');
-    setInputError('');
+    const reviewer = reviewerData.find(item => item.id === reviewerId);
+    if (hasDuplicatePR(reviewer.gradedPrs, inputValue)) {
+      setInputError('This PR number has already been added for this reviewer.');
+      return;
+    }
+    setIsSavingPR(true);
+    try {
+      const saved = await loadSavedGradings(teamData);
+      const currentReviewers = mergeSavedGradings(reviewerData, saved);
+      const currentReviewer = currentReviewers.find(item => item.id === reviewerId);
+      if (hasDuplicatePR(currentReviewer.gradedPrs, inputValue)) {
+        setReviewerData(currentReviewers);
+        setInputError('This PR number has already been added for this reviewer.');
+        return;
+      }
+      const prNumbers = inputValue.trim();
+      await saveAddedPR(teamData, currentReviewer, prNumbers);
+      const newPREntry = { id: uuidv4(), prNumbers, grade: 'Okay' };
+      setReviewerData(
+        currentReviewers.map(item =>
+          item.id === reviewerId
+            ? {
+                ...item,
+                gradedPrs: [...item.gradedPrs, newPREntry],
+                prsReviewed: item.gradedPrs.length + 1,
+              }
+            : item,
+        ),
+      );
+      setActiveInput(null);
+      setInputValue('');
+      setInputError('');
+      setLoadError('');
+    } catch {
+      setInputError('Could not save this PR. Please try again.');
+    } finally {
+      setIsSavingPR(false);
+    }
   };
 
   const handleCancel = () => {
@@ -134,13 +198,15 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                 </div>
                 <Button
                   variant={isFinalized ? 'secondary' : 'outline-dark'}
-                  disabled={isFinalized}
+                  disabled={isFinalized || isSavingPR}
                   onClick={handleFinalize}
                   className={dm}
                 >
                   {isFinalized ? 'Finalized' : 'Done'}
                 </Button>
               </div>
+
+              {loadError && <p role="alert">{loadError}</p>}
             </Card.Header>
 
             <Card.Body className={dm}>
@@ -240,6 +306,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                               size="sm"
                               className={styles['pr-grading-screen-add-btn']}
                               onClick={() => handleAddNewClick(reviewer.id)}
+                              disabled={isLoadingSaved}
                             >
                               + Add new
                             </Button>
@@ -250,16 +317,28 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                               <input
                                 type="text"
                                 value={inputValue}
-                                onChange={e => setInputValue(e.target.value)}
+                                onChange={e => {
+                                  setInputValue(e.target.value);
+                                  setInputError('');
+                                }}
                                 className={styles['pr-grading-screen-pr-number-input']}
                                 placeholder="1070 or 1070 + 1256"
                               />
+                              {inputError && (
+                                <p
+                                  role="alert"
+                                  className={`${styles['pr-grading-screen-error-message']} ${dm}`}
+                                >
+                                  {inputError}
+                                </p>
+                              )}
                               <Button
                                 variant="primary"
                                 size="sm"
                                 onClick={() => handleInputSubmit(reviewer.id)}
+                                disabled={isSavingPR}
                               >
-                                Add
+                                {isSavingPR ? 'Adding...' : 'Add'}
                               </Button>
                               <Button variant="secondary" size="sm" onClick={handleCancel}>
                                 Cancel

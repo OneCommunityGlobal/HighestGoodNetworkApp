@@ -383,7 +383,7 @@
 }
 
 .pr-grading-screen-error-message {
-  color: #f8d7da;
+  color: #b02a37;
   font-size: 0.75rem;
   margin-top: 4px;
   text-align: center;
@@ -1006,4 +1006,8 @@
 
 .pr-grading-screen-no-results.dark-mode {
   color: #9ab0cc;
+}
+
+.pr-grading-screen-error-message.dark-mode {
+  color: #f8d7da;
 }
