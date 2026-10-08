@@ -285,6 +285,28 @@ async function fetchOrgStats(props, selectedComparison, currentFromDate, current
   return { ...volunteerStatsResponse.data, taskAndProjectStats: taskAndProjectStatsResponse };
 }
 
+// Mentors card must match the TOTAL MENTORS donut: same source
+// (top-level mentorNumberStats) and same total (sum of the donut segments).
+function getMentorDonutTotal(mentorNumberStats) {
+  if (!mentorNumberStats) return null;
+  const { donutChartData, activeMentors, newMentors, deactivatedMentors } = mentorNumberStats;
+  if (donutChartData?.existingActive !== undefined) {
+    return (
+      (donutChartData.existingActive?.count || 0) +
+      (donutChartData.newActive?.count || 0) +
+      (donutChartData.deactivated?.count || 0)
+    );
+  }
+  return (activeMentors?.count || 0) + (newMentors?.count || 0) + (deactivatedMentors?.count || 0);
+}
+
+function buildMentorsCardValue(mentorNumberStats, fallbackMentors) {
+  const total = getMentorDonutTotal(mentorNumberStats);
+  if (total === null) return fallbackMentors;
+  const base = mentorNumberStats.totalMentors || fallbackMentors;
+  return base && typeof base === 'object' ? { ...base, count: total } : total;
+}
+
 async function generateTotalOrgPdf({ rootRef, darkMode, volunteerStats, isLoading }) {
   if (!validatePDFPrerequisites(volunteerStats, isLoading)) return;
   await new Promise(resolve => setTimeout(resolve, 5000));
@@ -638,7 +660,17 @@ function TotalOrgSummary(props) {
             <Col lg={{ size: 12 }}>
               <VolunteerStatus
                 isLoading={isLoading}
-                volunteerNumberStats={volunteerStats?.volunteerNumberStats}
+                volunteerNumberStats={
+                  volunteerStats?.volunteerNumberStats
+                    ? {
+                        ...volunteerStats.volunteerNumberStats,
+                        mentors: buildMentorsCardValue(
+                          volunteerStats.mentorNumberStats,
+                          volunteerStats.volunteerNumberStats?.mentors,
+                        ),
+                      }
+                    : null
+                }
                 totalHoursWorked={volunteerStats?.totalHoursWorked}
                 comparisonType={selectedComparison}
               />
