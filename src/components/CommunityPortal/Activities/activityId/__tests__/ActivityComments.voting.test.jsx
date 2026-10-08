@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -15,7 +15,44 @@ const createStore = (darkMode = false) =>
     membersList: { loading: false, members: [], error: null },
   });
 
-describe('ActivityComments voting controls', () => {
+const renderComments = (darkMode = false) =>
+  render(
+    <Provider store={createStore(darkMode)}>
+      <ThemeManager />
+      <ActivityComments />
+    </Provider>,
+  );
+
+// Cards have no semantic role; scope queries through the uniquely identified comment text.
+// eslint-disable-next-line testing-library/no-node-access
+const getCard = text => screen.getByText(text).closest(`.${styles.commentItem}`);
+
+const commentTexts = [
+  /Great event! Really enjoyed the presentation/,
+  /Thanks for organizing this! The networking session/,
+  /Could we get the slides shared/,
+  /Excellent speakers and well-organized agenda/,
+  /This event exceeded my expectations/,
+];
+
+const expectCommentVotes = (text, upvotes, downvotes) => {
+  const card = within(getCard(text));
+  expect(
+    within(card.getByRole('button', { name: 'Upvote comment' })).getByText(String(upvotes)),
+  ).toBeInTheDocument();
+  expect(
+    within(card.getByRole('button', { name: 'Downvote comment' })).getByText(String(downvotes)),
+  ).toBeInTheDocument();
+};
+
+const getCommentOrder = () =>
+  screen
+    .getAllByText(/.+/, {
+      selector: `.${styles.commentsList} > .${styles.commentItem} > .${styles.commentTopRow} > .${styles.commentName}`,
+    })
+    .map(name => name.textContent);
+
+describe('ActivityComments interactions', () => {
   beforeEach(() => {
     localStorage.clear();
     document.body.classList.remove('dark-mode', 'bm-dashboard-dark');
@@ -28,12 +65,7 @@ describe('ActivityComments voting controls', () => {
   });
 
   test('uses the semantic vote button classes and updates both counts', () => {
-    const store = createStore();
-    render(
-      <Provider store={store}>
-        <ActivityComments />
-      </Provider>,
-    );
+    renderComments();
     const upvoteButtons = screen.getAllByRole('button', { name: 'Upvote comment' });
     const downvoteButtons = screen.getAllByRole('button', { name: 'Downvote comment' });
 
@@ -41,24 +73,74 @@ describe('ActivityComments voting controls', () => {
     expect(downvoteButtons).toHaveLength(5);
     upvoteButtons.forEach(button => expect(button).toHaveClass(styles.upvoteBtn));
     downvoteButtons.forEach(button => expect(button).toHaveClass(styles.downvoteBtn));
-    expect(upvoteButtons[0]).toHaveTextContent('5');
-    expect(downvoteButtons[0]).toHaveTextContent('0');
+    expectCommentVotes(commentTexts[0], 5, 0);
+    const card = within(getCard(commentTexts[0]));
+    fireEvent.click(card.getByRole('button', { name: 'Upvote comment' }));
+    fireEvent.click(card.getByRole('button', { name: 'Downvote comment' }));
+    expectCommentVotes(commentTexts[0], 6, 1);
+  });
 
-    fireEvent.click(upvoteButtons[0]);
-    fireEvent.click(downvoteButtons[0]);
+  test('toggles top-level comments between newest and oldest order', () => {
+    renderComments();
+    const newest = ['Sarah Wilson', 'Alex Rodriguez', 'Emma Thompson', 'David Kim', 'Lisa Chen'];
+    expect(getCommentOrder()).toEqual(newest);
 
-    expect(upvoteButtons[0]).toHaveTextContent('6');
-    expect(downvoteButtons[0]).toHaveTextContent('1');
+    fireEvent.click(screen.getByRole('button', { name: /Newest/ }));
+    expect(getCommentOrder()).toEqual([
+      'Lisa Chen',
+      'David Kim',
+      'Emma Thompson',
+      'Alex Rodriguez',
+      'Sarah Wilson',
+    ]);
+
+    fireEvent.click(screen.getByRole('button', { name: /Oldest/ }));
+    expect(screen.getByRole('button', { name: /Newest/ })).toBeInTheDocument();
+    expect(getCommentOrder()).toEqual(newest);
+  });
+
+  test('toggles Helpful on and off without changing other reviews', () => {
+    renderComments();
+    fireEvent.click(screen.getByRole('button', { name: 'Feedback', exact: true }));
+    const helpfulButton = text => within(getCard(text)).getByTitle('Helpful');
+    const sarah = /This was an absolutely fantastic event!/;
+    const expectHelpfulCounts = count => {
+      expect(within(helpfulButton(sarah)).getByText(String(count))).toBeInTheDocument();
+      expect(
+        within(helpfulButton(/Really enjoyed the event overall/)).getByText('8'),
+      ).toBeInTheDocument();
+      expect(within(helpfulButton(/The event was okay/)).getByText('3')).toBeInTheDocument();
+    };
+
+    expectHelpfulCounts(12);
+    fireEvent.click(helpfulButton(sarah));
+    expectHelpfulCounts(13);
+    fireEvent.click(helpfulButton(sarah));
+    expectHelpfulCounts(12);
+  });
+
+  test.each([
+    ['Upvote comment', 6, 0],
+    ['Downvote comment', 5, 1],
+  ])('%s changes only the selected comment and survives reordering', (buttonName, up, down) => {
+    renderComments();
+    fireEvent.click(screen.getByRole('button', { name: /Newest/ }));
+    const expectCounts = () => {
+      expectCommentVotes(commentTexts[0], up, down);
+      expectCommentVotes(commentTexts[1], 3, 0);
+      expectCommentVotes(commentTexts[2], 8, 1);
+      expectCommentVotes(commentTexts[3], 2, 0);
+      expectCommentVotes(commentTexts[4], 12, 0);
+    };
+
+    fireEvent.click(within(getCard(commentTexts[0])).getByRole('button', { name: buttonName }));
+    expectCounts();
+    fireEvent.click(screen.getByRole('button', { name: /Oldest/ }));
+    expectCounts();
   });
 
   test('keeps vote buttons under the global dark-mode selector chain', async () => {
-    const store = createStore(true);
-    render(
-      <Provider store={store}>
-        <ThemeManager />
-        <ActivityComments />
-      </Provider>,
-    );
+    renderComments(true);
 
     await waitFor(() => {
       expect(document.body).toHaveClass('dark-mode', 'bm-dashboard-dark');
