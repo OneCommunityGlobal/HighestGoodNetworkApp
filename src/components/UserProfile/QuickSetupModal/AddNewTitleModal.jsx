@@ -131,21 +131,6 @@ function AddNewTitleModal({
     : (teamsData && Array.isArray(teamsData.allTeams) ? teamsData.allTeams : []);
 
 
-  // const existTeamCodes = new Set(
-  //   (Array.isArray(QSTTeamCodes) ? QSTTeamCodes : [])
-  //     .map(code => code?.value?.trim().toLowerCase())
-  //     .filter(Boolean)
-  // );
-
-  // const activeTeams = allTeamsArray.filter(
-  //   team => team?.isActive === true
-  // );
-
-  // const existTeamName = new Set(
-  //   activeTeams
-  //     .map(team => team?.teamName?.trim().toLowerCase())
-  //     .filter(Boolean)
-  // );
 
 
   // ------------------- local UI state (selectors) --------------------------
@@ -211,62 +196,37 @@ function AddNewTitleModal({
 
   // ------------------- validations -----------------------------------------
 
-//   const onTeamCodeValidation = teamCode => {
-//   const format1 = /^[A-Za-z]-[A-Za-z]{3}$/;
-//   const format2 = /^[A-Z]{5}$/;
-
-//   const normalizedTeamCode = teamCode?.trim() || '';
-
-//   const isValidFormat =
-//     format1.test(normalizedTeamCode) ||
-//     format2.test(normalizedTeamCode);
-
-//   if (!isValidFormat) {
-//     setWarningMessage({
-//       title: 'Error',
-//       content: 'Invalid Team Code Format',
-//     });
-
-//     setShowMessage(true);
-
-//     setTitleData(prev => ({
-//       ...prev,
-//       teamCode: '',
-//     }));
-
-//     return;
-//   }
-//   if (!existTeamCodes.has(normalizedTeamCode.toLowerCase())) {
-//     setWarningMessage({
-//       title: 'Error',
-//       content: 'Team Code Not Exists',
-//     });
-//     setShowMessage(true);
-//     setTitleData(prev => ({
-//       ...prev,
-//       teamCode: '',
-//     }));
-
-//     return;
-//   }
-//   setShowMessage(false);
-// };
   // Treat empty selection as OK (make it required here if your business rule requires it)
 const onTeamNameValidation = teamObj => {
-  const selectedTeamId =
+  const teamId =
     teamObj && typeof teamObj === 'object'
       ? teamObj._id
       : teamObj;
 
-  // No team selected is valid.
-  if (!selectedTeamId) {
+  const teamName =
+    teamObj && typeof teamObj === 'object'
+      ? (teamObj.teamName || '').trim()
+      : '';
+
+  // Explicitly cleared assignment is allowed.
+  if (!teamId && !teamName) {
     setShowMessage(false);
     return true;
   }
 
-  // Validate the actual team ID against all teams, including inactive teams.
-  const selectedTeam = allTeamsArray.some(
-    team => team?._id === selectedTeamId
+  // User entered a team name but did not select a real team.
+  if (!teamId && teamName) {
+    setWarningMessage({
+      title: 'Error',
+      content: 'Team Name Not Exists',
+    });
+    setShowMessage(true);
+    return false;
+  }
+
+  // Resolve against ALL teams, including inactive teams.
+  const selectedTeam = allTeamsArray.find(
+    team => team?._id === teamId
   );
 
   if (!selectedTeam) {
@@ -281,7 +241,6 @@ const onTeamNameValidation = teamObj => {
   setShowMessage(false);
   return true;
 };
-
   // ------------------- submit ----------------------------------------------
 
   const confirmOnClick = () => {
@@ -303,24 +262,26 @@ const team = normalizeTeam(titleData.teamAssiged, allTeamsArray);
 
 const enteredTeamCode = titleData.teamCode?.trim() || '';
 
-const matchingTeamCode = (Array.isArray(QSTTeamCodes) ? QSTTeamCodes : []).find(
+const matchingTeamCode = (
+  Array.isArray(QSTTeamCodes) ? QSTTeamCodes : []
+).find(
   code =>
     code?.value?.trim().toLowerCase() ===
     enteredTeamCode.toLowerCase()
 );
 
-  const canonicalTeamCode = matchingTeamCode
-    ? matchingTeamCode.value.trim()
-    : enteredTeamCode;
+const canonicalTeamCode = matchingTeamCode
+  ? matchingTeamCode.value.trim()
+  : enteredTeamCode;
 
   const payload = {
-   id: titleData.id,
-   titleName: titleData.titleName?.trim() || '',
-   titleCode: titleData.titleCode?.trim() || '',
-   mediaFolder: titleData.mediaFolder?.trim() || '',
-   teamCode: canonicalTeamCode,
-   projectAssigned: titleData.projectAssigned || '',
-  };
+  id: titleData.id,
+  titleName: titleData.titleName?.trim() || '',
+  titleCode: titleData.titleCode?.trim() || '',
+  mediaFolder: titleData.mediaFolder?.trim() || '',
+  teamCode: canonicalTeamCode,
+  projectAssigned: titleData.projectAssigned || '',
+};
     if (team && team._id) {
       payload.teamAssiged = team;
       payload.teamName = team.teamName;

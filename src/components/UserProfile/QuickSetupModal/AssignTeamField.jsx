@@ -21,19 +21,22 @@ export default function AssignTeamField({
   );
 
   const nameFromValue = value => {
-    if (!value) return '';
+  if (!value) return '';
 
-    if (typeof value === 'string') {
-      const found = activeTeams.find(team => team?._id === value);
-      return found ? found.teamName || '' : '';
-    }
+  if (typeof value === 'string') {
+    const found = (Array.isArray(teamsData) ? teamsData : []).find(
+      team => team?._id === value
+    );
 
-    if (typeof value === 'object') {
-      return value.teamName || '';
-    }
+    return found ? found.teamName || '' : '';
+  }
 
-    return '';
-  };
+  if (typeof value === 'object') {
+    return value.teamName || '';
+  }
+
+  return '';
+};
 
   const [text, setText] = useState(nameFromValue(value));
   const [showSuggestions, setShowSuggestions] = useState(false);
