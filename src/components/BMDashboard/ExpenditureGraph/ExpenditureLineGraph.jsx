@@ -1,8 +1,11 @@
 import React, { useRef, useState, useEffect } from 'react';
 import Chart from 'chart.js/auto';
 import axios from 'axios';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { ENDPOINTS } from '~/utils/URL';
 import { useSelector } from 'react-redux';
+import styles from './ExpenditureLineGraph.module.css';
 
 const CATEGORIES = [
   { key: 'plumbing', label: 'Plumbing' },
@@ -14,6 +17,21 @@ const CHART_COLORS = ['#6293CC', '#C55151', '#E8D06B', '#94B66F'];
 
 function isInvalidDateRange(startDate, endDate) {
   return Boolean(startDate) && Boolean(endDate) && startDate > endDate;
+}
+
+// The API takes YYYY-MM-DD strings; react-datepicker works with Date objects. Convert with
+// local date parts so the selected day doesn't shift across a UTC boundary.
+function parseDateStr(value) {
+  if (!value) return null;
+  const [year, month, day] = value.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function formatDateStr(date) {
+  if (!date) return '';
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${date.getFullYear()}-${month}-${day}`;
 }
 
 function buildDatasets(actual, darkMode) {
@@ -298,12 +316,24 @@ export default function ExpenditureLineGraph() {
   }, [actualData, dateError, noDataError, darkMode]);
 
   const handleProjectChange = e => setSelectedProject(e.target.value);
-  const handleStartDateChange = e => setStartDate(e.target.value);
-  const handleEndDateChange = e => setEndDate(e.target.value);
+  // react-datepicker only calls onChange when a day is picked (month navigation is a separate
+  // event), so browsing the calendar no longer triggers a cost-breakdown request.
+  const handleStartDateChange = date => setStartDate(formatDateStr(date));
+  const handleEndDateChange = date => setEndDate(formatDateStr(date));
 
-  const todayStr = new Date().toISOString().slice(0, 10);
+  const today = new Date();
 
   const { inputStyle, labelStyle, errorStyle } = buildThemeStyles(darkMode);
+
+  const datePickerProps = {
+    dateFormat: 'MM/dd/yyyy',
+    placeholderText: 'mm/dd/yyyy',
+    maxDate: today,
+    isClearable: true,
+    className: `${styles.dateInput} ${darkMode ? styles.dateInputDark : ''}`,
+    calendarClassName: `${styles.calendar} ${darkMode ? styles.calendarDark : ''}`,
+    popperClassName: darkMode ? styles.popperDark : '',
+  };
 
   return (
     <div
@@ -361,31 +391,27 @@ export default function ExpenditureLineGraph() {
                 ))}
               </select>
             </div>
-            <div style={filterItemStyle}>
+            <div className={styles.dateField} style={filterItemStyle}>
               <label htmlFor="start-date" style={labelStyle}>
                 From:
               </label>
-              <input
+              <DatePicker
+                {...datePickerProps}
                 id="start-date"
-                type="date"
-                value={startDate}
+                selected={parseDateStr(startDate)}
                 onChange={handleStartDateChange}
-                max={todayStr}
-                style={inputStyle}
               />
             </div>
-            <div style={filterItemStyle}>
+            <div className={styles.dateField} style={filterItemStyle}>
               <label htmlFor="end-date" style={labelStyle}>
                 To:
               </label>
-              <input
+              <DatePicker
+                {...datePickerProps}
                 id="end-date"
-                type="date"
-                value={endDate}
+                selected={parseDateStr(endDate)}
                 onChange={handleEndDateChange}
-                min={startDate}
-                max={todayStr}
-                style={inputStyle}
+                minDate={parseDateStr(startDate)}
               />
             </div>
           </div>
