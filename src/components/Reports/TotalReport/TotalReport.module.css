@@ -39,6 +39,63 @@
   font-weight: 400;
 }
 
+.comparisonControls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 12px 0 8px;
+}
+
+.comparisonToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  margin: 0;
+}
+
+.comparePickers {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 16px;
+}
+
+.comparePickerItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.comparisonGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.comparisonPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.panelTitle {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 0;
+  color: steelblue;
+}
+
+@media screen and (width <= 700px) {
+  .comparisonGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .totalDetail {
   margin-top: 20px;
 }
@@ -65,6 +122,39 @@
   font-size: inherit;
 }
 
+.contributorPeriodLabel {
+  font-size: 17px;
+  line-height: 1.45;
+}
+
+.contributorSummaryMetrics {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contributorSummaryItem {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 14px;
+  min-height: 44px;
+}
+
+.contributorSummaryNumber {
+  margin-right: 0;
+  font-size: 30px;
+  line-height: 1.15;
+  text-align: right;
+}
+
+.contributorSummaryText {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 18px;
+  line-height: 1.45;
+}
+
 @media screen and (width <= 1100px) {
   .totalTitle,
   .totalNumber,
@@ -74,6 +164,24 @@
 
   .totalText {
     font-size: 12px;
+  }
+
+  .contributorPeriodLabel {
+    font-size: 16px;
+  }
+
+  .contributorSummaryItem {
+    grid-template-columns: 96px minmax(0, 1fr);
+    column-gap: 12px;
+  }
+
+  .contributorSummaryNumber {
+    font-size: 26px;
+  }
+
+  .contributorSummaryText {
+    font-size: 16px;
+    line-height: 1.45;
   }
 }
 
@@ -87,11 +195,41 @@
   .totalText {
     font-size: 14px;
   }
+
+  .comparisonPanel {
+    gap: 12px;
+  }
+
+  .contributorPeriodLabel {
+    font-size: 16px;
+  }
+
+  .contributorSummaryItem {
+    grid-template-columns: 104px minmax(0, 1fr);
+  }
+
+  .contributorSummaryNumber {
+    font-size: 28px;
+  }
+
+  .contributorSummaryText {
+    font-size: 16px;
+    line-height: 1.45;
+  }
 }
 
 @media screen and (width <= 550px) {
   .totalContainer {
     padding: 15px;
+  }
+
+  .contributorSummaryItem {
+    grid-template-columns: 88px minmax(0, 1fr);
+    column-gap: 10px;
+  }
+
+  .contributorSummaryNumber {
+    font-size: 24px;
   }
 }
 
@@ -102,6 +240,10 @@
 }
 
 :global(.dark-mode) .totalTitle {
+  color: #60a5fa;
+}
+
+:global(.dark-mode) .panelTitle {
   color: #60a5fa;
 }
 
@@ -134,4 +276,3 @@
 :global(.dark-mode) .totalWarning {
   color: #fbbf24;
 }
-
