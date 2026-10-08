@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
   Modal,
@@ -15,6 +15,7 @@ import {
 } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import { FaSave, FaTimes, FaExclamationTriangle } from 'react-icons/fa';
+import { getGroups } from '~/services/studentGroupsService';
 import styles from './AnnouncementModal.module.css';
 
 const getBadgeClass = audience => {
@@ -28,12 +29,17 @@ const getSubmitButtonText = (isSubmitting, isEditing) => {
   return isEditing ? 'Update' : 'Create';
 };
 
-const AnnouncementModal = ({ isOpen, toggle, announcement = null, onSave, userInfo = null }) => {
+const AnnouncementModal = ({ isOpen, toggle, announcement = null, onSave }) => {
   const [formData, setFormData] = useState({
     title: '',
     body: '',
     audience: 'all',
   });
+  const [groupId, setGroupId] = useState('');
+  const [groups, setGroups] = useState([]);
+  const [groupsStatus, setGroupsStatus] = useState('idle');
+  const [groupRetry, setGroupRetry] = useState(0);
+  const submitLock = useRef(false);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfirmDiscard, setShowConfirmDiscard] = useState(false);
@@ -58,10 +64,31 @@ const AnnouncementModal = ({ isOpen, toggle, announcement = null, onSave, userIn
           audience: 'all',
         });
       }
+      setGroupId(announcement?.groupId || '');
+      setShowConfirmDiscard(false);
       setErrors({});
       setHasUnsavedChanges(false);
     }
   }, [isOpen, announcement]);
+
+  useEffect(() => {
+    if (!isOpen || formData.audience !== 'students') return undefined;
+    let cancelled = false;
+    setGroupsStatus('loading');
+    getGroups()
+      .then(data => {
+        if (!cancelled) {
+          setGroups(data);
+          setGroupsStatus('ready');
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setGroupsStatus('error');
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, formData.audience, groupRetry]);
 
   // Track changes to detect unsaved modifications
   useEffect(() => {
@@ -82,52 +109,55 @@ const AnnouncementModal = ({ isOpen, toggle, announcement = null, onSave, userIn
     const hasChanges =
       formData.title !== originalData.title ||
       formData.body !== originalData.body ||
-      formData.audience !== originalData.audience;
+      formData.audience !== originalData.audience ||
+      groupId !== (announcement?.groupId || '');
 
     setHasUnsavedChanges(hasChanges);
-  }, [formData, announcement, isOpen]);
+  }, [formData, announcement, isOpen, groupId]);
 
   const validateForm = () => {
     const newErrors = {};
 
-    console.log('Validating form with data:', formData);
-
     // Title validation
     if (!formData.title.trim()) {
       newErrors.title = 'Title is required';
-      console.log('Title error: Title is required');
     } else if (formData.title.trim().length < 3) {
       newErrors.title = 'Title must be at least 3 characters long';
-      console.log('Title error: Too short');
     } else if (formData.title.trim().length > 100) {
       newErrors.title = 'Title must not exceed 100 characters';
-      console.log('Title error: Too long');
     }
 
     // Body validation
     if (!formData.body.trim()) {
       newErrors.body = 'Announcement body is required';
-      console.log('Body error: Body is required');
     } else if (formData.body.trim().length < 3) {
       newErrors.body = 'Announcement body must be at least 3 characters long';
-      console.log('Body error: Too short');
     } else if (formData.body.trim().length > 2000) {
       newErrors.body = 'Announcement body must not exceed 2000 characters';
-      console.log('Body error: Too long');
     }
 
     // Audience validation
-    if (!['all', 'students', 'educators'].includes(formData.audience)) {
+    if (
+      !['all', 'students', 'educators'].includes(formData.audience) &&
+      formData.audience !== announcement?.audience
+    ) {
       newErrors.audience = 'Please select a valid audience';
-      console.log('Audience error: Invalid audience');
     }
 
-    console.log('Validation errors:', newErrors);
+    if (
+      groupId &&
+      groupId !== announcement?.groupId &&
+      (groupsStatus !== 'ready' || !groups.some(group => group.id === groupId))
+    ) {
+      newErrors.groupId = 'Select an available Student Group.';
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleInputChange = (field, value) => {
+    if (submitLock.current) return;
+    if (field === 'audience' && value !== 'students') setGroupId('');
     setFormData(prev => ({
       ...prev,
       [field]: value,
@@ -144,41 +174,27 @@ const AnnouncementModal = ({ isOpen, toggle, announcement = null, onSave, userIn
 
   const handleSubmit = async e => {
     e.preventDefault();
-
-    console.log('Form submitted, current formData:', formData);
-    console.log('Current errors:', errors);
+    if (submitLock.current) return;
 
     const isValid = validateForm();
-    console.log('Form validation result:', isValid);
 
     if (!isValid) {
-      console.log('Form validation failed, errors:', errors);
       return;
     }
 
+    submitLock.current = true;
     setIsSubmitting(true);
 
     try {
       const announcementData = {
-        // Preserve all original fields when editing so nothing is lost (createdAt, course, grade, isNew, etc.)
-        ...(isEditing ? announcement : {}),
-        ...formData,
         title: formData.title.trim(),
         body: formData.body.trim(),
-        ...(isEditing
-          ? {
-              id: announcement.id,
-              author: announcement.author,
-              updatedAt: new Date().toISOString(),
-            }
-          : {
-              author: userInfo?.name || 'Unknown',
-              createdAt: new Date().toISOString(),
-              isNew: true,
-            }),
+        audience: formData.audience,
       };
-
-      console.log('Saving announcement data:', announcementData);
+      // Omit unchanged targeting so editing text does not refresh the recipient snapshot.
+      if (groupId !== (announcement?.groupId || '')) {
+        announcementData.groupId = groupId || null;
+      }
 
       if (onSave) {
         await onSave(announcementData);
@@ -187,14 +203,17 @@ const AnnouncementModal = ({ isOpen, toggle, announcement = null, onSave, userIn
       setHasUnsavedChanges(false);
       toggle();
     } catch (error) {
-      console.error('Error saving announcement:', error);
-      setErrors({ submit: 'Failed to save announcement. Please try again.' });
+      setErrors({
+        submit: error.response?.data?.error || error.message || 'Failed to save announcement.',
+      });
     } finally {
+      submitLock.current = false;
       setIsSubmitting(false);
     }
   };
 
   const handleClose = () => {
+    if (submitLock.current) return;
     if (hasUnsavedChanges) {
       setShowConfirmDiscard(true);
     } else {
@@ -249,12 +268,12 @@ const AnnouncementModal = ({ isOpen, toggle, announcement = null, onSave, userIn
                 Title <span className={styles.required}>*</span>
               </Label>
               <Input
+                disabled={isSubmitting}
                 type="text"
                 id="announcementTitle"
                 name="title"
                 value={formData.title || ''}
                 onChange={e => {
-                  console.log('Title changed:', e.target.value);
                   handleInputChange('title', e.target.value);
                 }}
                 invalid={!!errors.title}
@@ -273,6 +292,7 @@ const AnnouncementModal = ({ isOpen, toggle, announcement = null, onSave, userIn
                 Audience <span className={styles.required}>*</span>
               </Label>
               <Input
+                disabled={isSubmitting}
                 type="select"
                 id="announcementAudience"
                 value={formData.audience}
@@ -280,6 +300,7 @@ const AnnouncementModal = ({ isOpen, toggle, announcement = null, onSave, userIn
                 invalid={!!errors.audience}
                 className={styles.audienceSelect}
               >
+                {announcement?.audience === 'support' && <option value="support">support</option>}
                 <option value="all">Everyone</option>
                 <option value="students">Students Only</option>
                 <option value="educators">Educators Only</option>
@@ -287,17 +308,64 @@ const AnnouncementModal = ({ isOpen, toggle, announcement = null, onSave, userIn
               {errors.audience && <FormFeedback>{errors.audience}</FormFeedback>}
             </FormGroup>
 
+            {formData.audience === 'students' && (
+              <FormGroup>
+                <Label for="announcementGroup" className={styles.fieldLabel}>
+                  Student Group (optional)
+                </Label>
+                <Input
+                  id="announcementGroup"
+                  type="select"
+                  className={styles.audienceSelect}
+                  value={groupId}
+                  disabled={isSubmitting || groupsStatus !== 'ready'}
+                  onChange={e => setGroupId(e.target.value)}
+                  invalid={!!errors.groupId}
+                >
+                  <option value="">All students</option>
+                  {groupId && !groups.some(group => group.id === groupId) && (
+                    <option value={groupId}>Existing group target</option>
+                  )}
+                  {groups.map(group => (
+                    <option key={group.id} value={group.id}>
+                      {group.name}
+                    </option>
+                  ))}
+                </Input>
+                {errors.groupId && <FormFeedback>{errors.groupId}</FormFeedback>}
+                {groupsStatus === 'loading' && <output>Loading groups…</output>}
+                {groupsStatus === 'error' && (
+                  <Alert color="danger">
+                    Could not load groups.{' '}
+                    <button
+                      type="button"
+                      disabled={isSubmitting}
+                      onClick={() => setGroupRetry(value => value + 1)}
+                    >
+                      Retry groups
+                    </button>
+                  </Alert>
+                )}
+                {groupsStatus === 'ready' && groups.length === 0 && (
+                  <p>
+                    No Student Groups available. Broad Students Only announcements are still
+                    available.
+                  </p>
+                )}
+              </FormGroup>
+            )}
+
             <FormGroup>
               <Label for="announcementBody" className={styles.fieldLabel}>
                 Message <span className={styles.required}>*</span>
               </Label>
               <Input
+                disabled={isSubmitting}
                 type="textarea"
                 id="announcementBody"
                 name="body"
                 value={formData.body || ''}
                 onChange={e => {
-                  console.log('Body changed:', e.target.value);
                   handleInputChange('body', e.target.value);
                 }}
                 invalid={!!errors.body}
@@ -342,7 +410,7 @@ const AnnouncementModal = ({ isOpen, toggle, announcement = null, onSave, userIn
             <Button
               type="submit"
               color="primary"
-              disabled={isSubmitting || Object.keys(errors).length > 0}
+              disabled={isSubmitting}
               className={styles.saveButton}
             >
               <FaSave className="me-2" />
@@ -380,10 +448,11 @@ AnnouncementModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   toggle: PropTypes.func.isRequired,
   announcement: PropTypes.shape({
-    id: PropTypes.number,
+    id: PropTypes.string,
     title: PropTypes.string,
     body: PropTypes.string,
     audience: PropTypes.string,
+    groupId: PropTypes.string,
     author: PropTypes.string,
     createdAt: PropTypes.string,
     updatedAt: PropTypes.string,

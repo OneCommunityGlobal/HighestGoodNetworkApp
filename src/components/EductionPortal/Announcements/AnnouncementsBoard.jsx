@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Container, Row, Col, Card, CardBody, Button, Input, Badge } from 'reactstrap';
 import { useSelector } from 'react-redux';
@@ -22,26 +22,11 @@ const AnnouncementsBoard = ({
   dateToFilter = '',
   isEmbedded = false,
 }) => {
-  const [filteredAnnouncements, setFilteredAnnouncements] = useState([]);
   const [loading] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   // Filter announcements based on all filters
-  useEffect(() => {
-    console.log('Filtering announcements:', {
-      selectedAudience,
-      searchQuery,
-      courseFilter,
-      dateFromFilter,
-      dateToFilter,
-      totalAnnouncements: announcements.length,
-    });
-
-    console.log(
-      'Sample announcement courses:',
-      announcements.map(a => ({ title: a.title, course: a.course })),
-    );
-
+  const filteredAnnouncements = useMemo(() => {
     const filtered = announcements.filter(announcement => {
       // Audience filter
       const audienceMatch =
@@ -71,8 +56,7 @@ const AnnouncementsBoard = ({
       return audienceMatch && searchMatch && courseMatch && dateFromMatch && dateToMatch;
     });
 
-    console.log('Filtered result:', filtered.length, 'announcements');
-    setFilteredAnnouncements(filtered);
+    return filtered;
   }, [announcements, selectedAudience, searchQuery, courseFilter, dateFromFilter, dateToFilter]);
 
   const handleCreateClick = () => {
@@ -157,10 +141,11 @@ const AnnouncementsBoard = ({
           >
             {announcement.title}
           </h5>
-          {userRole === 'educator' && (
+          {userRole === 'educator' && announcement.canEdit && (
             <Button
               size="sm"
               color="light"
+              aria-label={`Edit ${announcement.title}`}
               onClick={() => handleEditClick(announcement)}
               style={{
                 padding: '4px 8px',
@@ -267,10 +252,11 @@ const AnnouncementsBoard = ({
                   </Badge>
                 )}
               </div>
-              {userRole === 'educator' && (
+              {userRole === 'educator' && announcement.canEdit && (
                 <Button
                   size="sm"
                   color="light"
+                  aria-label={`Edit ${announcement.title}`}
                   onClick={() => handleEditClick(announcement)}
                   className={styles.editButton}
                 >
@@ -369,7 +355,8 @@ AnnouncementsBoard.propTypes = {
   onEditAnnouncement: PropTypes.func,
   announcements: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number,
+      id: PropTypes.string,
+      canEdit: PropTypes.bool,
       title: PropTypes.string,
       body: PropTypes.string,
       audience: PropTypes.string,

@@ -733,6 +733,10 @@ export const ENDPOINTS = {
   STUDENT_SUBJECT_TASKS: subjectId => `${APIEndpoint}/student/profile/subject/${subjectId}`,
   EDUCATOR_ASSIGN_ATOMS: () => `${APIEndpoint}/educator/assign-atoms`,
   EDUCATOR_STUDENTS: () => `${APIEndpoint}/educator/students`,
+  EDUCATOR_ANNOUNCEMENTS: () => `${APIEndpoint}/educator/announcements`,
+  EDUCATOR_ANNOUNCEMENT: announcementId =>
+    `${APIEndpoint}/educator/announcements/${encodeURIComponent(announcementId)}`,
+  STUDENT_ANNOUNCEMENTS: () => `${APIEndpoint}/student/announcements`,
   EDUCATOR_GROUPS: () => `${APIEndpoint}/educator/groups`,
   EDUCATOR_GROUP: groupId => `${APIEndpoint}/educator/groups/${encodeURIComponent(groupId)}`,
   EDUCATOR_GROUP_MEMBERS: groupId =>
