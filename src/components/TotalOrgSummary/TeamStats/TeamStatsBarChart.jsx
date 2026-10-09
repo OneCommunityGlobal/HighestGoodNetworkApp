@@ -36,9 +36,20 @@ function renderTeamStatsBarLabel(data, totalValue) {
   return TeamStatsBarLabelContent;
 }
 
+// change is a growth fraction (-0.02); show it as the bar label does ("-2%")
+const formatChangePercent = change =>
+  `${change >= 0 ? '+' : ''}${Math.round((Number(change) || 0) * 100)}%`;
+
 function createTeamStatsTooltipContent(yAxisLabel, darkMode) {
   function TeamStatsTooltipContent(props) {
-    return <CustomTooltip {...props} yAxisLabel={yAxisLabel} darkMode={darkMode} />;
+    const { payload } = props;
+    const formatted = payload?.map(item => ({
+      ...item,
+      payload: { ...item.payload, change: formatChangePercent(item.payload?.change) },
+    }));
+    return (
+      <CustomTooltip {...props} payload={formatted} yAxisLabel={yAxisLabel} darkMode={darkMode} />
+    );
   }
   TeamStatsTooltipContent.displayName = 'TeamStatsTooltipContent';
   return TeamStatsTooltipContent;

@@ -155,7 +155,7 @@ function VolunteerStatusChart({
           </div>
           {(volunteerChartData || mentorChartData) && (
             <p className={styles.volunteerMentorFootnote}>
-              *Does not include the “Mentor” members shown in the graph to the right.
+              *Does not include the “Mentor” members shown in the Total Mentors graph.
             </p>
           )}
         </>
