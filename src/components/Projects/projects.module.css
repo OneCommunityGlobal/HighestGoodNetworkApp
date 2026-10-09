@@ -315,11 +315,8 @@ tr:hover {
   background-color: #1f3b63 !important;
 }
 
-<<<<<<< HEAD
-=======
 .searchInput {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
 }
->>>>>>> origin/development
