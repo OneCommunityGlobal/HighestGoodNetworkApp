@@ -99,24 +99,57 @@ describe('ActivityComments interactions', () => {
     expect(getCommentOrder()).toEqual(newest);
   });
 
-  test('toggles Helpful on and off without changing other reviews', () => {
-    renderComments();
-    fireEvent.click(screen.getByRole('button', { name: 'Feedback', exact: true }));
-    const helpfulButton = text => within(getCard(text)).getByTitle('Helpful');
-    const sarah = /This was an absolutely fantastic event!/;
-    const expectHelpfulCounts = count => {
-      expect(within(helpfulButton(sarah)).getByText(String(count))).toBeInTheDocument();
-      expect(
-        within(helpfulButton(/Really enjoyed the event overall/)).getByText('8'),
-      ).toBeInTheDocument();
-      expect(within(helpfulButton(/The event was okay/)).getByText('3')).toBeInTheDocument();
-    };
+  test.each([false, true])(
+    'toggles Helpful without changing other reviews (darkMode=%s)',
+    darkMode => {
+      renderComments(darkMode);
+      fireEvent.click(screen.getByRole('button', { name: 'Feedback', exact: true }));
+      const helpfulButton = text => within(getCard(text)).getByRole('button', { name: 'Helpful' });
+      const sarah = /This was an absolutely fantastic event!/;
+      const expectHelpfulCounts = (count, pressed) => {
+        expect(helpfulButton(sarah)).toHaveAttribute('aria-pressed', String(pressed));
+        expect(helpfulButton(/Really enjoyed the event overall/)).toHaveAttribute(
+          'aria-pressed',
+          'false',
+        );
+        expect(helpfulButton(/The event was okay/)).toHaveAttribute('aria-pressed', 'false');
+        expect(within(helpfulButton(sarah)).getByText(String(count))).toBeInTheDocument();
+        expect(
+          within(helpfulButton(/Really enjoyed the event overall/)).getByText('8'),
+        ).toBeInTheDocument();
+        expect(within(helpfulButton(/The event was okay/)).getByText('3')).toBeInTheDocument();
+      };
 
-    expectHelpfulCounts(12);
-    fireEvent.click(helpfulButton(sarah));
-    expectHelpfulCounts(13);
-    fireEvent.click(helpfulButton(sarah));
-    expectHelpfulCounts(12);
+      expectHelpfulCounts(12, false);
+      fireEvent.click(helpfulButton(sarah));
+      expectHelpfulCounts(13, true);
+      fireEvent.click(helpfulButton(sarah));
+      expectHelpfulCounts(12, false);
+    },
+  );
+
+  test('restores Helpful selection and count after remounting', () => {
+    const { unmount } = renderComments();
+    const openFeedback = () =>
+      fireEvent.click(screen.getByRole('button', { name: 'Feedback', exact: true }));
+    const helpfulButton = () =>
+      within(getCard(/This was an absolutely fantastic event!/)).getByRole('button', {
+        name: 'Helpful',
+      });
+
+    openFeedback();
+    fireEvent.click(helpfulButton());
+    expect(helpfulButton()).toHaveAttribute('aria-pressed', 'true');
+    expect(within(helpfulButton()).getByText('13')).toBeInTheDocument();
+    unmount();
+
+    renderComments();
+    openFeedback();
+    expect(helpfulButton()).toHaveAttribute('aria-pressed', 'true');
+    expect(within(helpfulButton()).getByText('13')).toBeInTheDocument();
+    fireEvent.click(helpfulButton());
+    expect(helpfulButton()).toHaveAttribute('aria-pressed', 'false');
+    expect(within(helpfulButton()).getByText('12')).toBeInTheDocument();
   });
 
   test.each([

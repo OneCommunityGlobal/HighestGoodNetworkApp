@@ -1131,6 +1131,8 @@ function ActivityComments() {
                         <button
                           type="button"
                           className={styles.upvoteBtn}
+                          aria-label="Helpful"
+                          aria-pressed={Boolean(feedback.hasLiked)}
                           title="Helpful"
                           onClick={() => handleHelpfulClick(feedback.id)}
                         >
