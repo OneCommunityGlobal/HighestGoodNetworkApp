@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -150,5 +151,28 @@ describe('<SaveButton />', () => {
     expect(handleSubmit).toHaveBeenCalledOnce();
     expect(saveButton).toBeDisabled();
     expect(saveButton).toHaveAttribute('aria-busy', 'true');
+  });
+
+  it('ignores a save result that arrives after the component unmounts', async () => {
+    let resolveSave;
+    const handleSubmit = vi.fn(
+      () =>
+        new Promise(resolve => {
+          resolveSave = resolve;
+        }),
+    );
+    const setSaved = vi.fn();
+    const requestFrame = vi.spyOn(window, 'requestAnimationFrame').mockReturnValue(42);
+    const { unmount } = render(<SaveButton {...createProps({ handleSubmit, setSaved })} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /save changes/i }));
+    unmount();
+    requestFrame.mockClear();
+
+    await act(async () => resolveSave());
+
+    expect(setSaved).not.toHaveBeenCalled();
+    expect(requestFrame).not.toHaveBeenCalled();
+    requestFrame.mockRestore();
   });
 });
