@@ -76,8 +76,8 @@ describe('VolunteerHoursDistribution wrapper', () => {
     );
 
     expect(screen.getByText('Weekly Committed Hours')).toBeInTheDocument();
-    expect(screen.getByText('40 hrs: 1 volunteers (12.5%)')).toBeInTheDocument();
-    expect(screen.getByText('Over 40 hrs: 1 volunteers (12.5%)')).toBeInTheDocument();
+    expect(screen.getByText('40 hrs: 1 volunteer (12.5%)')).toBeInTheDocument();
+    expect(screen.getByText('Over 40 hrs: 1 volunteer (12.5%)')).toBeInTheDocument();
     expect(screen.getByText('TOTAL')).toBeInTheDocument();
     expect(screen.getByText('VOLUNTEERS')).toBeInTheDocument();
     expect(screen.getByText('8')).toBeInTheDocument();

@@ -89,6 +89,7 @@
   font-size: clamp(0.85rem, 24cqi, 2rem);
   line-height: 1;
   font-weight: 800;
+  white-space: nowrap;
 }
 
 .donutCountDark {
@@ -99,6 +100,10 @@
   font-size: clamp(0.45rem, 8cqi, 0.7rem);
   line-height: 1.1;
   font-weight: 700;
+
+  /* wrap only between words ("+12% / WEEK OVER WEEK"), never inside one */
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 .donutLabels {
@@ -189,6 +194,10 @@
 /* Narrow slots (e.g. two charts side by side): stack the legend under the donut. */
 @container (width < 36rem) {
   .donutScrollable {
+    /* .donutContainer's -35px bottom margin suits the side legend; stacked, it
+       pulled the next heading up over the legend. The container can't style
+       itself in its own query, so cancel it here. */
+    padding-bottom: 35px;
     grid-template-columns: 1fr;
     justify-items: center;
     min-width: 0;

@@ -12,11 +12,21 @@ const calculatePercentage = (value, totalCount) =>
 
 // One format for slice labels, legend and tooltip so they never disagree
 // (a label used to round 8 of 2,573 to "0%" while the legend said "0.3%").
-export const formatPercent = (value, totalCount) =>
-  `${calculatePercentage(value, totalCount).toFixed(1)}%`;
+export const formatPercent = (value, totalCount) => {
+  const pct = calculatePercentage(value, totalCount);
+  // e.g. 1 of 2,708 is 0.04%: show "<0.1%" rather than a misleading "0.0%"
+  if (value > 0 && pct < 0.05) return '<0.1%';
+  return `${pct.toFixed(1)}%`;
+};
+
+// "1 volunteer", "2 volunteers"
+const withUnit = (value, unitLabel) => {
+  if (!unitLabel) return `${value}`;
+  return `${value} ${value === 1 ? unitLabel.replace(/s$/, '') : unitLabel}`;
+};
 
 export const formatLegendLabel = ({ label, value }, totalCount, unitLabel = '') =>
-  `${label}: ${value}${unitLabel ? ` ${unitLabel}` : ''} (${formatPercent(value, totalCount)})`;
+  `${label}: ${withUnit(value, unitLabel)} (${formatPercent(value, totalCount)})`;
 
 // The backend sends "No Comparison Data" (a string) when the previous period was 0.
 export const formatComparison = (percentageChange, comparisonType) => {
@@ -32,13 +42,16 @@ export const formatComparison = (percentageChange, comparisonType) => {
 // Publishes the doughnut's real hole diameter as --donut-hole on the chart wrapper,
 // so the centre text can size itself to fit instead of spilling under the ring
 // when the chart is narrow (e.g. Volunteers and Mentors side by side at ~1470px).
+// Read after the update, from the controller: during layout (and while an arc is
+// animating in) the radius is still 0, which collapsed the centre to one
+// character per line.
 export const holeSizePlugin = {
   id: 'donutHoleSize',
-  afterLayout(chart) {
-    const arc = chart.getDatasetMeta(0)?.data?.[0];
+  afterUpdate(chart) {
+    const innerRadius = chart.getDatasetMeta(0)?.controller?.innerRadius;
     const wrapper = chart.canvas?.parentNode;
-    if (!arc || !wrapper) return;
-    wrapper.style.setProperty('--donut-hole', `${Math.max(0, arc.innerRadius * 2)}px`);
+    if (!wrapper || !(innerRadius > 0)) return;
+    wrapper.style.setProperty('--donut-hole', `${innerRadius * 2}px`);
   },
 };
 
@@ -57,7 +70,7 @@ export const buildDonutTooltipOptions = (totalCount, darkMode, unitLabel = '') =
     label: context => {
       const count = Number.isFinite(context.raw) ? context.raw : 0;
       return [
-        `Count: ${count}${unitLabel ? ` ${unitLabel}` : ''}`,
+        `Count: ${withUnit(count, unitLabel)}`,
         `Percentage: ${formatPercent(count, totalCount)}`,
       ];
     },
@@ -94,9 +107,6 @@ function DonutChart(props) {
     return (
       <div className={styles.donutContainer}>
         <div className={styles.donutNoData}>
-          <h5 className="donut-heading" style={{ color: darkMode ? '#F7FAFC' : '#1A202C' }}>
-            {title}
-          </h5>
           <div className={styles.noDataText}>{emptyMessage}</div>
         </div>
       </div>

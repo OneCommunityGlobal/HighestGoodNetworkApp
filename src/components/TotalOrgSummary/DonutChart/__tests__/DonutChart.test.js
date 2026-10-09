@@ -130,7 +130,7 @@ describe('DonutChart small slices', () => {
   it('keeps slivers too small to draw in the legend', () => {
     renderRoles(0);
     expect(lastDoughnutProps.data.labels).not.toContain('Soham Admin');
-    expect(screen.getByText('Soham Admin: 1 (0.0%)')).toBeInTheDocument();
+    expect(screen.getByText('Soham Admin: 1 (<0.1%)')).toBeInTheDocument();
   });
 });
 
@@ -186,14 +186,29 @@ describe('DonutChart review fixes (#5608)', () => {
     expect(screen.getByText('10-19 hrs: 2 volunteers (40.0%)')).toBeInTheDocument();
   });
 
-  it('publishes the hole diameter so the centre text can fit inside the ring', () => {
+  it('publishes the hole diameter after update, ignoring the 0 radius seen mid-layout', () => {
     const wrapper = document.createElement('div');
     const canvas = document.createElement('canvas');
     wrapper.appendChild(canvas);
-    holeSizePlugin.afterLayout({
+    const chartWith = innerRadius => ({
       canvas,
-      getDatasetMeta: () => ({ data: [{ innerRadius: 53 }] }),
+      getDatasetMeta: () => ({ controller: { innerRadius } }),
     });
+    holeSizePlugin.afterUpdate(chartWith(53));
     expect(wrapper.style.getPropertyValue('--donut-hole')).toBe('106px');
+    // a 0 reading must not collapse the centre to one character per line
+    holeSizePlugin.afterUpdate(chartWith(0));
+    expect(wrapper.style.getPropertyValue('--donut-hole')).toBe('106px');
+  });
+
+  it('shows <0.1% for a tiny non-zero slice instead of 0.0%', () => {
+    expect(formatPercent(1, 2708)).toBe('<0.1%');
+    expect(formatPercent(0, 2708)).toBe('0.0%');
+  });
+
+  it('uses the singular unit for a count of 1', () => {
+    expect(formatLegendLabel({ label: '10-19 hrs', value: 1 }, 2, 'volunteers')).toBe(
+      '10-19 hrs: 1 volunteer (50.0%)',
+    );
   });
 });
