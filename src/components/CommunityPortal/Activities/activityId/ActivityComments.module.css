@@ -587,15 +587,18 @@
   color: #fff !important;
 }
 
-/* Keep Helpful selection visible, including while hovering. */
-.upvoteBtn[aria-pressed='true'] {
+/* Keep vote selection visible, including while hovering. */
+.upvoteBtn[aria-pressed='true'],
+.downvoteBtn[aria-pressed='true'] {
   background: #e3eafc;
   color: #234e83;
   box-shadow: inset 0 0 0 2px currentColor;
 }
 
 :global(body.dark-mode) .upvoteBtn[aria-pressed='true'],
-:global(body.bm-dashboard-dark) .upvoteBtn[aria-pressed='true'] {
+:global(body.bm-dashboard-dark) .upvoteBtn[aria-pressed='true'],
+:global(body.dark-mode) .downvoteBtn[aria-pressed='true'],
+:global(body.bm-dashboard-dark) .downvoteBtn[aria-pressed='true'] {
   background: #3a506b !important;
   color: #fff !important;
 }

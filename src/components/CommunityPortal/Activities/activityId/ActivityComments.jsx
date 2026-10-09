@@ -432,19 +432,22 @@ function ActivityComments() {
     if (sortType === 'Oldest') return new Date(a.createdAt) - new Date(b.createdAt);
     return 0;
   });
-  const handleUpvote = commentId => {
+  const handleVote = (commentId, direction) => {
     setComments(prevComments =>
-      prevComments.map(comment =>
-        comment.id === commentId ? { ...comment, upvotes: comment.upvotes + 1 } : comment,
-      ),
-    );
-  };
+      prevComments.map(comment => {
+        if (comment.id !== commentId) return comment;
 
-  const handleDownvote = commentId => {
-    setComments(prevComments =>
-      prevComments.map(comment =>
-        comment.id === commentId ? { ...comment, downvotes: comment.downvotes + 1 } : comment,
-      ),
+        const previousVote = comment.userVote ?? null;
+        const userVote = previousVote === direction ? null : direction;
+
+        return {
+          ...comment,
+          upvotes: comment.upvotes - Number(previousVote === 'up') + Number(userVote === 'up'),
+          downvotes:
+            comment.downvotes - Number(previousVote === 'down') + Number(userVote === 'down'),
+          userVote,
+        };
+      }),
     );
   };
 
@@ -928,7 +931,8 @@ function ActivityComments() {
                       <button
                         type="button"
                         aria-label="Upvote comment"
-                        onClick={() => handleUpvote(comment.id)}
+                        aria-pressed={comment.userVote === 'up'}
+                        onClick={() => handleVote(comment.id, 'up')}
                         className={styles.upvoteBtn}
                       >
                         <span style={{ fontSize: '1.1em' }}>↑</span>
@@ -937,7 +941,8 @@ function ActivityComments() {
                       <button
                         type="button"
                         aria-label="Downvote comment"
-                        onClick={() => handleDownvote(comment.id)}
+                        aria-pressed={comment.userVote === 'down'}
+                        onClick={() => handleVote(comment.id, 'down')}
                         className={styles.downvoteBtn}
                       >
                         <span style={{ fontSize: '1.1em' }}>↓</span>
