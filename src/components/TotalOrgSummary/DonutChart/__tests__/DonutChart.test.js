@@ -206,6 +206,19 @@ describe('DonutChart review fixes (#5608)', () => {
     expect(formatPercent(0, 2708)).toBe('0.0%');
   });
 
+  it('draws a single 100% slice as a full ring, with no spacing notch', () => {
+    render(
+      createElement(DonutChart, {
+        title: 'TOTAL HOURS WORKED',
+        totalCount: 3,
+        data: [{ label: '10-19 hrs', value: 3 }],
+        colors: ['#00AFF4'],
+        comparisonType: 'No Comparison',
+      }),
+    );
+    expect(lastDoughnutProps.data.datasets[0].spacing).toBe(0);
+  });
+
   it('uses the singular unit for a count of 1', () => {
     expect(formatLegendLabel({ label: '10-19 hrs', value: 1 }, 2, 'volunteers')).toBe(
       '10-19 hrs: 1 volunteer (50.0%)',

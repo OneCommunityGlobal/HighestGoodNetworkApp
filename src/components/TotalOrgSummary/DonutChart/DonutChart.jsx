@@ -120,7 +120,8 @@ function DonutChart(props) {
         data: filteredData.map(item => item.value),
         backgroundColor: filteredColors,
         borderWidth: 0,
-        spacing: 2,
+        // a gap only makes sense between slices; with one slice it leaves a notch
+        spacing: filteredData.length > 1 ? 2 : 0,
       },
     ],
   };
