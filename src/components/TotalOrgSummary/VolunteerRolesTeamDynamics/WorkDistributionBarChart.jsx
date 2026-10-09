@@ -111,7 +111,11 @@ export default function WorkDistributionBarChart({ isLoading, workDistributionSt
                 fontSize: 14,
               }}
             />
-            <Tooltip content={<CustomTooltip yAxisLabel="totalHours" darkMode={isDarkMode} />} />
+            <Tooltip
+              content={<CustomTooltip yAxisLabel="totalHours" darkMode={isDarkMode} />}
+              // Default hover band is #ccc, which glares on the dark card.
+              cursor={{ fill: isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)' }}
+            />
             <Legend />
             <Bar
               dataKey="totalHours"
