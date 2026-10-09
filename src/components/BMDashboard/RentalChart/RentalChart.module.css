@@ -3,16 +3,39 @@
 /* ======================
    Light Mode Base
    ====================== */
-.rentalContainer {
+.rental-container {
   position: relative;
   width: 100%;
   margin: 0 auto;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #fff;
+  border-radius: 8px;
+  min-height: 15vh;
 }
 
-/* General text */
-.textLight {
+.rental-container.dark-mode {
+  background-color: #1b2a41 !important;
   color: #e0e0e0;
+}
+
+.text-light {
+  color: #e0e0e0;
+}
+
+/* Same title style as the Percent of Tools Returned Late card */
+.rental-container h1 {
+  margin-bottom: 20px;
+  text-align: left;
+  color: #333;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.rental-container h1.text-light {
+  color: #fff;
 }
 
 /* Chart wrapper (applies in dark + light mode) */
@@ -27,8 +50,10 @@
   box-shadow: 0 2px 10px rgb(0 0 0 / 5%);
 }
 
-/* Chart controls + filters */
-.chartControls {
+/* =========================================
+     Filter Controls
+     ========================================= */
+.chart-controls {
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -36,30 +61,38 @@
   width: 100%;
 }
 
-.filterRow {
+.chart-filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
-  margin-top: 40px;
-  align-items: flex-start;
-  justify-content: flex-end;
+  justify-content: center;
+  align-items: center;
+  gap: 12px 24px;
+  margin: 15px 0 20px;
 }
 
-.topFilters {
-  width: 100%;
-  margin-bottom: 10px;
+/* Let both filter rows flow into one centered row that wraps on small screens */
+.filter-row {
+  display: contents;
 }
 
-.dateFilters {
-  width: 100%;
-}
-
-.filterGroup {
+/* Label sits inline, to the left of its control */
+.filter-group {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
-  min-width: 150px;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-group label {
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* Datepicker's inline wrapper adds a line-height gap under the input; its input is
+   forced to width: 100% by a dashboard-wide rule, so size the wrapper instead */
+.filter-group :global(.react-datepicker-wrapper) {
+  display: block;
+  width: 130px;
 }
 
 .filterGroup label {
@@ -69,33 +102,74 @@
   color: inherit;
 }
 
-.filterText {
-  margin-right: 0;
+.filter-text,
+.date-label {
+  margin-right: 8px;
   white-space: nowrap;
 }
 
-/* Date picker input */
-.datePicker {
+/* =========================================
+     Inputs & Dropdowns
+     ========================================= */
+
+/* 38px matches the dashboard-wide datepicker input height */
+.rental-chart-select,
+.date-picker {
+  box-sizing: border-box;
+  height: 38px;
   padding: 6px 10px;
   border: 1px solid #ccc;
-  border-radius: 6px; /* rounded */
+  border-radius: 4px;
   font-size: 14px;
+}
+
+.rental-chart-select {
+  min-width: 150px;
+}
+
+.date-picker {
   width: 120px;
 }
 
-select,
-.rentalChartSelect {
+.dark-select {
+  background-color: #1b2a41 !important;
+  color: #e0e0e0;
+  border: 1px solid #555 !important;
+}
+
+/* Tool filter stays disabled until a project is picked */
+.rental-chart-select:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.date-picker.dark-date-picker {
+  background-color: #1b2a41 !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #555 !important;
+}
+
+/* =========================================
+     Chart Area & Loading States
+     ========================================= */
+
+/* Flat, like the Returned Late chart: the dashboard card already frames it */
+.chart-wrapper {
+  height: 500px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
   background-color: #fff;
-  color: #333;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  cursor: pointer;
+}
+
+.dark-chart {
+  background-color: #1b2a41;
 }
 
 /* States */
 .loading,
 .error,
-.noData {
+.no-data {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -108,128 +182,9 @@ select,
   color: #d32f2f;
 }
 
-/* React DatePicker overrides (light mode base) */
-.reactDatepicker {
-  background-color: #fff;
-  color: #333;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-}
-
-.reactDatepicker__header {
-  background-color: #f5f5f5;
-  border-bottom: 1px solid #ccc;
-  border-radius: 6px 6px 0 0;
-}
-
-.reactDatepicker__current-month,
-.reactDatepicker__day-name,
-.reactDatepicker__day,
-.reactDatepicker__month-text,
-.reactDatepicker__year-text {
-  color: #333;
-}
-
-.reactDatepicker__day:hover,
-.reactDatepicker__month-text:hover,
-.reactDatepicker__year-text:hover {
-  background-color: #eee;
-}
-
-.reactDatepicker__day--selected,
-.reactDatepicker__day--in-selecting-range,
-.reactDatepicker__day--in-range {
-  background-color: #0078d7;
-  color: white;
-  border-radius: 50%;
-}
-
-.reactDatepickerPopper {
+:global(.react-datepicker-popper) {
   z-index: 999 !important;
   max-width: 100vw;
-  border-radius: 6px;
-}
-
-/* ======================
-   Dark Mode Overrides
-   ====================== */
-.darkMode {
-  background-color: #1b2a41;
-  color: #e0e0e0;
-}
-
-.darkMode .rentalContainer {
-  background-color: #1b2a41;
-  color: #e0e0e0;
-}
-
-.darkMode select,
-.darkMode .rentalChartSelect {
-  background-color: #333;
-  color: #e0e0e0;
-  border: 1px solid #555;
-}
-
-/* DatePicker input & popper */
-.darkMode .DatePickerInput,
-.darkMode .DatePicker,
-.darkMode .DatePickerPopper,
-.darkMode .DatePickerCalendar {
-  background-color: #333;
-  color: #e0e0e0;
-  border: 1px solid #555;
-  border-radius: 6px;
-  z-index: 9999;
-}
-
-/* Calendar header */
-.darkMode .DatePickerCalendar .react-datepicker__header {
-  background-color: #333;
-  border-bottom: 1px solid #555;
-  color: #e0e0e0;
-  border-radius: 6px 6px 0 0;
-}
-
-/* Days, months, years */
-.darkMode .DatePickerCalendar .react-datepicker__day,
-.darkMode .DatePickerCalendar .react-datepicker__day-name,
-.darkMode .DatePickerCalendar .react-datepicker__month-text,
-.darkMode .DatePickerCalendar .react-datepicker__year-text {
-  color: #e0e0e0;
-  background-color: #333;
-  border-radius: 4px;
-}
-
-/* Dark mode DatePicker root */
-.darkMode .react-datepicker {
-  background-color: #000 !important; /* match your select */
-  color: #e0e0e0 !important;
-  border: 1px solid #444 !important;
-  border-radius: 6px;
-}
-
-/* Header inside */
-.darkMode .react-datepicker__header {
-  background-color: #111 !important;
-  border-bottom: 1px solid #444 !important;
-  color: #e0e0e0 !important;
-}
-
-/* Hover effect */
-.darkMode .DatePickerCalendar .react-datepicker__day:hover,
-.darkMode .DatePickerCalendar .react-datepicker__month-text:hover,
-.darkMode .DatePickerCalendar .react-datepicker__year-text:hover {
-  background-color: #444;
-  color: #fff;
-}
-
-/* Selected and in-range */
-.darkMode .DatePickerCalendar .react-datepicker__day--selected,
-.darkMode .DatePickerCalendar .react-datepicker__day--in-range,
-.darkMode .DatePickerCalendar .react-datepicker__day--in-selecting-range {
-  background-color: #555;
-  color: #fff;
-  border-radius: 50%;
 }
 
 /* Chart wrapper */
@@ -237,4 +192,64 @@ select,
   background-color: #1b2a41;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgb(255 255 255 / 5%);
+}
+
+/* =========================================
+     Small Screens
+     ========================================= */
+
+/* Sized by the card's own width, not the viewport: the dashboard can make the card
+   narrow even on a wide screen */
+.rental-container {
+  container-type: inline-size;
+}
+
+@container (width <= 640px) {
+  .rental-container h1 {
+    margin-bottom: 12px;
+    font-size: 20px;
+  }
+
+  /* Stack filters in a two-column grid so labels and controls line up */
+  .chart-filters {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 10px 12px;
+    width: 100%;
+    max-width: 420px;
+    margin: 10px auto 16px;
+  }
+
+  .filter-group {
+    display: contents;
+  }
+
+  .filter-group label {
+    text-align: left;
+  }
+
+  .rental-chart-select,
+  .date-picker {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .filter-group :global(.react-datepicker-wrapper) {
+    width: 100%;
+  }
+
+  .filter-text,
+  .date-label {
+    margin-right: 0;
+  }
+
+  .chart-wrapper {
+    height: 380px;
+  }
+}
+
+@media (width <= 576px) {
+  .rental-container {
+    padding: 12px;
+  }
 }

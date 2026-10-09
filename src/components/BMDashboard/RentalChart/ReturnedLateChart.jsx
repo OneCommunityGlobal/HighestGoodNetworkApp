@@ -6,6 +6,8 @@ import DatePicker from 'react-datepicker';
 import { MultiSelect } from 'react-multi-select-component';
 import 'react-datepicker/dist/react-datepicker.css';
 import styles from './ReturnedLateChart.module.css';
+import datePickerStyles from './RentalDatePicker.module.css';
+import { Select } from 'antd';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -66,12 +68,17 @@ function getRequestErrorMessage(error, fallbackMessage) {
   );
 }
 
+// Below this width the chart switches to smaller fonts and shorter axis titles
+const COMPACT_CHART_WIDTH = 576;
+
 export default function ReturnedLateChart() {
   const chartRef = useRef(null);
+  const chartContainerRef = useRef(null);
+  const [chartWidth, setChartWidth] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [availableProjects, setAvailableProjects] = useState([]);
-  const [availableTools, setAvailableTools] = useState([]);
+  const [allToolsData, setAllToolsData] = useState([]);
   const [selectedProject, setSelectedProject] = useState('All');
   const [selectedTools, setSelectedTools] = useState([]);
   const [dateRange, setDateRange] = useState({
@@ -87,6 +94,17 @@ export default function ReturnedLateChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [sortOption, setSortOption] = useState('DESC');
   const isMultiProjectView = selectedProject === 'All';
+  // Tools are picked per project, so the list only has the selected project's tools
+  const availableTools = useMemo(() => {
+    if (isMultiProjectView) return [];
+    const tools = allToolsData
+      .filter(item => item.projectId === selectedProject)
+      .map(item => item.toolName)
+      .filter(Boolean);
+    return [...new Set(tools)]
+      .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
+      .map(tool => ({ label: tool, value: tool }));
+  }, [allToolsData, isMultiProjectView, selectedProject]);
   const visibleDatasets = useMemo(
     () =>
       chartData.datasets.map(dataset => ({
@@ -154,8 +172,7 @@ export default function ReturnedLateChart() {
 
         if (toolsResult.status === 'fulfilled') {
           const data = getArrayPayload(toolsResult.value.data);
-          const tools = Array.from(new Set(data.map(d => d.toolName))).filter(Boolean);
-          setAvailableTools(tools.map(t => ({ label: t, value: t })));
+          setAllToolsData(data);
           didLoadAnyData = didLoadAnyData || data.length > 0;
         }
 
@@ -178,7 +195,8 @@ export default function ReturnedLateChart() {
       }
     };
 
-    fetchInitial();
+    // Errors are handled inside fetchInitial
+    fetchInitial().catch(() => {});
   }, []);
 
   const buildUrl = () => {
@@ -300,7 +318,8 @@ export default function ReturnedLateChart() {
         setLoading(false);
       }
     };
-    fetchData();
+    // Errors are handled inside fetchData
+    fetchData().catch(() => {});
   }, [availableProjects, darkMode, selectedProject, dateRange, selectedTools, sortOption]);
 
   useEffect(() => {
@@ -333,9 +352,23 @@ export default function ReturnedLateChart() {
     [chartData.datasets, chartData.labels, rawToolsData],
   );
 
+  // Track the chart area's width so fonts and labels can shrink on small screens
+  useEffect(() => {
+    const container = chartContainerRef.current;
+    if (!container || typeof ResizeObserver === 'undefined') return undefined;
+    const observer = new ResizeObserver(([entry]) => setChartWidth(entry.contentRect.width));
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
+
+  const isCompact = chartWidth > 0 && chartWidth < COMPACT_CHART_WIDTH;
+
   const options = useMemo(() => {
     const textColor = darkMode ? '#fff' : '#333';
-    const datalabelCOlor = darkMode ? '#fff' : '#111';
+    const datalabelColor = darkMode ? '#fff' : '#111';
+    // Same grid/axis line colors as the Rental Cost chart; Chart.js' default is invisible on dark
+    const gridColor = darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+    const axisBorderColor = darkMode ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.25)';
     return {
       responsive: true,
       maintainAspectRatio: false,
@@ -356,8 +389,11 @@ export default function ReturnedLateChart() {
           align: 'top',
           offset: 4,
           formatter: value => `${Number(value).toFixed(0)}%`,
-          color: datalabelCOlor,
-          font: { weight: 'bold' },
+          // Skip empty bars so "0%" labels don't crowd the axis
+          display: ctx => ctx.dataset.data[ctx.dataIndex] > 0,
+          clamp: true,
+          color: datalabelColor,
+          font: { weight: 'bold', size: isCompact ? 10 : 12 },
         },
         tooltip: {
           callbacks: {
@@ -367,7 +403,7 @@ export default function ReturnedLateChart() {
             label(context) {
               const v = context.parsed.y;
               const label = context.dataset.label;
-              return `${label}: ${v}%`;
+              return `${label}: ${Number(Number(v).toFixed(1))}%`;
             },
             afterLabel(context) {
               const toolDetail = rawToolsData.find(
@@ -388,30 +424,39 @@ export default function ReturnedLateChart() {
           title: {
             display: true,
             text: 'Tool Name',
-            font: { size: 16, weight: 'bold' },
+            font: { size: isCompact ? 12 : 16, weight: 'bold' },
             color: textColor,
           },
           ticks: {
             color: textColor,
+            font: { size: isCompact ? 10 : 12 },
+            maxRotation: isCompact ? 60 : 50,
+            autoSkip: true,
           },
+          grid: { color: gridColor },
+          border: { color: axisBorderColor },
         },
         y: {
           beginAtZero: true,
           title: {
             display: true,
-            text: 'Percent of tools returned late',
-            font: { size: 16, weight: 'bold' },
+            text: isCompact ? '% returned late' : 'Percent of tools returned late',
+            font: { size: isCompact ? 12 : 16, weight: 'bold' },
             color: textColor,
           },
           ticks: {
             color: textColor,
+            font: { size: isCompact ? 10 : 12 },
             callback: v => `${v}%`,
           },
-          max: maxChartValue > 0 ? maxChartValue * 1.15 : 100,
+          grid: { color: gridColor },
+          border: { color: axisBorderColor },
+          // Round the top up to the next 10% (leaving room for labels) so the last tick is clean
+          max: maxChartValue > 0 ? Math.min(100, Math.ceil((maxChartValue * 1.15) / 10) * 10) : 100,
         },
       },
     };
-  }, [darkMode, handleBarClick, maxChartValue, rawToolsData]);
+  }, [darkMode, handleBarClick, maxChartValue, rawToolsData, isCompact]);
 
   const toggleProjectVisibility = projectId => {
     if (!projectId || !isMultiProjectView) return;
@@ -423,7 +468,6 @@ export default function ReturnedLateChart() {
 
   const multiProjectLegendVisible = isMultiProjectView && legendItems.length > 1;
 
-  const handleProjectChange = e => setSelectedProject(e.target.value);
   const handleStartDateChange = date =>
     setDateRange(prev => ({ startDate: date, endDate: prev.endDate < date ? date : prev.endDate }));
   const handleEndDateChange = date =>
@@ -431,7 +475,13 @@ export default function ReturnedLateChart() {
       startDate: prev.startDate > date ? date : prev.startDate,
       endDate: date,
     }));
-  const isOxfordBlue = darkMode ? 'bg-oxford-blue' : '';
+
+  const isOxfordBlue = darkMode ? styles['bg-oxford-blue'] : '';
+
+  const getLegendItemClass = hidden => {
+    if (hidden) return styles['returned-late-legend-item-hidden'];
+    return darkMode ? 'dark-mode-legend' : '';
+  };
 
   return (
     <div className={`${styles['returned-late-chart']} ${isOxfordBlue}`}>
@@ -451,9 +501,9 @@ export default function ReturnedLateChart() {
                 <button
                   key={item.projectId}
                   type="button"
-                  className={`${styles['returned-late-legend-item']} ${
-                    item.hidden ? styles['returned-late-legend-item-hidden'] : ''
-                  }`}
+                  className={`${styles['returned-late-legend-item']} ${getLegendItemClass(
+                    item.hidden,
+                  )}`}
                   onClick={() => toggleProjectVisibility(item.projectId)}
                   aria-pressed={!item.hidden}
                   title={`${item.hidden ? 'Show' : 'Hide'} ${item.label}`}
@@ -475,83 +525,106 @@ export default function ReturnedLateChart() {
       </div>
       <div className={styles['returned-late-filters']}>
         <div className={styles['returned-late-filter-group']}>
-          <label htmlFor="project-select" className={`${styles['returned-late-filter-label']} `}>
+          {/* FIX: Added htmlFor to pacify the linter! */}
+          <label htmlFor="project-select" className={styles['returned-late-filter-label']}>
             Project:
           </label>
-          <select
-            id="project-select"
+          <Select
+            id="project-select" /* <-- Added ID to match the label */
             value={selectedProject}
-            onChange={handleProjectChange}
+            onChange={value => {
+              setSelectedProject(value);
+              setSelectedTools([]);
+            }}
             className={`${styles['returned-late-project-select']} ${
               darkMode ? styles['background-dark'] : ''
             }`}
+            popupClassName={darkMode ? styles['dark-dropdown-menu'] : ''}
           >
-            <option value="All">All Projects</option>
+            <Select.Option value="All">All Projects</Select.Option>
             {availableProjects.map(p => (
-              <option key={p.projectId} value={p.projectId}>
+              <Select.Option key={p.projectId} value={p.projectId}>
                 {p.projectName}
-              </option>
+              </Select.Option>
             ))}
-          </select>
+          </Select>
         </div>
 
         <div className={styles['returned-late-filter-group']}>
+          {/* Added the darkMode text-white logic to the label! */}
           <label
             htmlFor="tools-select"
             className={`${styles['returned-late-filter-label']} ${darkMode ? 'text-white' : ''}`}
           >
             Tools:
           </label>
-          <MultiSelect
-            options={availableTools}
-            value={selectedTools}
-            onChange={setSelectedTools}
-            labelledBy="tools-select"
-            className={styles['returned-late-tools-select']}
-          />
+          {/* MultiSelect has no title prop, so the wrapper shows the disabled hint */}
+          <div title={isMultiProjectView ? 'Select a project to filter by tool' : undefined}>
+            <MultiSelect
+              options={availableTools}
+              value={selectedTools}
+              onChange={setSelectedTools}
+              disabled={isMultiProjectView}
+              labelledBy="tools-select"
+              overrideStrings={{
+                selectSomeItems: 'All Tools',
+                allItemsAreSelected: 'All Tools',
+                search: 'Search tools',
+              }}
+              className={`${styles['returned-late-tools-select']} ${
+                isMultiProjectView ? styles['returned-late-tools-select-disabled'] : ''
+              }`}
+            />
+          </div>
         </div>
 
         <div className={styles['returned-late-filter-group']}>
+          {/* FIX: Added htmlFor to pacify the linter! */}
           <label
             htmlFor="returned-late-sort"
             className={`${styles['returned-late-filter-label']} ${darkMode ? 'text-white' : ''}`}
           >
             Sort By:
           </label>
-
-          <select
-            id="returned-late-sort"
+          <Select
+            id="returned-late-sort" /* <-- Added ID to match the label */
             value={sortOption}
-            onChange={e => setSortOption(e.target.value)}
+            onChange={value => setSortOption(value)}
             className={styles['returned-late-project-select']}
+            popupClassName={darkMode ? styles['dark-dropdown-menu'] : ''}
           >
-            <option value="DESC">Highest % Late</option>
-            <option value="ASC">Lowest % Late</option>
-            <option value="ALPHA">Alphabetical (A–Z)</option>
-          </select>
+            <Select.Option value="DESC">Highest % Late</Select.Option>
+            <Select.Option value="ASC">Lowest % Late</Select.Option>
+            <Select.Option value="ALPHA">Alphabetical (A–Z)</Select.Option>
+          </Select>
         </div>
 
         <div className={styles['returned-late-filter-group']}>
-          <label
-            htmlFor="start-date-picker"
-            className={`${styles['returned-late-filter-label']} ${darkMode ? 'text-white' : ''}`}
-          >
+          <label htmlFor="start-date-picker" className={styles['returned-late-filter-label']}>
             From:
           </label>
           <DatePicker
             id="start-date-picker"
             selected={dateRange.startDate}
             onChange={handleStartDateChange}
+            selectsStart
+            startDate={dateRange.startDate}
+            endDate={dateRange.endDate}
+            dateFormat="MM/dd/yyyy"
+            showMonthDropdown
+            showYearDropdown
+            dropdownMode="select"
+            calendarClassName={`${datePickerStyles.calendar} ${
+              darkMode ? datePickerStyles.dark : ''
+            }`}
             className={`${styles['returned-late-date-picker']}  ${
               darkMode ? styles['background-dark'] : ''
             } `}
           />
         </div>
+
         <div className={styles['returned-late-filter-group']}>
-          <label
-            htmlFor="end-date-picker"
-            className={`${styles['returned-late-filter-label']} ${darkMode ? 'text-white' : ''}`}
-          >
+          <label htmlFor="end-date-picker" className={styles['returned-late-filter-label']}>
             To:
           </label>
           <DatePicker
@@ -559,13 +632,26 @@ export default function ReturnedLateChart() {
             selected={dateRange.endDate}
             minDate={dateRange.startDate}
             onChange={handleEndDateChange}
+            selectsEnd
+            startDate={dateRange.startDate}
+            endDate={dateRange.endDate}
+            dateFormat="MM/dd/yyyy"
+            showMonthDropdown
+            showYearDropdown
+            dropdownMode="select"
+            calendarClassName={`${datePickerStyles.calendar} ${
+              darkMode ? datePickerStyles.dark : ''
+            }`}
             className={`${styles['returned-late-date-picker']} ${
               darkMode ? styles['background-dark'] : ''
             }`}
           />
         </div>
       </div>
-      <div className={`${styles['returned-late-chart-container']} text-white`}>
+      <div
+        ref={chartContainerRef}
+        className={`${styles['returned-late-chart-container']} text-white`}
+      >
         {loading && (
           <div
             className={`${styles['returned-late-loading']} ${
