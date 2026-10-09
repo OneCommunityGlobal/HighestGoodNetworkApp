@@ -1079,6 +1079,7 @@ export default (
         <EPProtectedRoute path="/educationportal/student/tasks/:id" exact component={TaskDetails} />
         <Redirect exact from="/student/tasks" to="/educationportal/student/tasks" />
         <Redirect exact from="/student/tasks/:id" to="/educationportal/student/tasks/:id" />
+        <Redirect exact from="/educationportal/timer" to="/educationportal/dashboard" />
         <EPProtectedRoute
           path="/educationportal/pm/dashboard"
           exact
