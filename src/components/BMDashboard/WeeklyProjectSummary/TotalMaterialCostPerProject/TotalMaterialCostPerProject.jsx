@@ -53,21 +53,41 @@ function TotalMaterialCostPerProject() {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    layout: { padding: { top: 24 } },
     plugins: {
       legend: {
         position: 'top',
         labels: { color: textColor },
       },
+      title: { display: false },
       // Keep bar value labels readable when the globally registered datalabels plugin runs.
       datalabels: {
         // Match label color to the active theme so values stay visible on light and dark charts.
-        color: darkMode ? '#ffffff' : '#000000',
+        color: darkMode ? '#fff' : '#1a1a1a',
+        anchor: 'end',
+        align: 'end',
+        offset: 4,
+        clamp: true,
         // Emphasize the displayed values without changing label position or chart data.
-        font: { weight: 'bold' },
+        font: { weight: '600' },
+        textStrokeColor: darkMode ? '#1a1f26' : '#fff',
+        textStrokeWidth: 3,
         // Round only the displayed label text; keep the chart data unchanged.
-        formatter: value => Number(value).toFixed(3),
+        formatter: value => Number(value ?? 0).toFixed(3),
       },
-      title: { display: false },
+      tooltip: {
+        backgroundColor: darkMode ? '#22272e' : '#fff',
+        titleColor: textColor,
+        bodyColor: textColor,
+        borderColor: darkMode ? '#375071' : '#ccc',
+        borderWidth: 1,
+        callbacks: {
+          label(context) {
+            const value = Number(context.parsed.y ?? 0);
+            return `${context.dataset.label}: ${value.toFixed(3)}`;
+          },
+        },
+      },
     },
     scales: {
       x: {
@@ -82,8 +102,13 @@ function TotalMaterialCostPerProject() {
         },
       },
       y: {
-        grid: { color: '#ccc' },
-        ticks: { color: textColor },
+        grid: { color: darkMode ? '#4a5a77' : '#ccc' },
+        ticks: {
+          color: textColor,
+          callback(val) {
+            return Number(val).toFixed(3);
+          },
+        },
       },
     },
   };
