@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import './../projects.module.css';
+import styles from '../projects.module.css';
 import {
   PROJECT_NAME,
   ACTIVE,
@@ -25,8 +25,6 @@ const ProjectTableHeader = props => {
 
   const categoryList = ['Unspecified', 'Food', 'Energy', 'Housing', 'Education', 'Society', 'Economics', 'Stewardship', 'Other'];
   const statusList = ['Active', 'Inactive'];
-  // 如果 Inventory 也有自己的列表数据，可以在这里定义（例如 inventoryList = [...]）
-  const inventoryList = ['All', 'In Stock', 'Out of Stock']; // 可根据实际需求调整
 
   const getSortIcon = column => {
     if (props.sorted.column !== column || props.sorted.direction === "DEFAULT") return faSortDown;
@@ -50,7 +48,10 @@ const ProjectTableHeader = props => {
 
   // Standardized dropdown filter button helper to ensure uniform size (30x30px), exact icon matching, and clean layout
   const renderDropdownFilterButton = (selectedValue, onChange, list, placeholder, isDark) => (
-    <Dropdown className="ml-3 d-inline-block">
+    <Dropdown
+      className={`${styles.projectFilterDropdown} ml-3 d-inline-block`}
+      onSelect={onChange}
+    >
       {/* Used native button toggle via Dropdown.Toggle to bypass component ref conflicts and eliminate unwanted default caret/shadow artifacts */}
       <Dropdown.Toggle 
         as="button"
@@ -110,8 +111,7 @@ const ProjectTableHeader = props => {
       <th scope="col" id="projects__inv" className='align-middle'>
         <span className='d-flex justify-content-between align-items-center'>
           <span>{INVENTORY}</span>
-          {/* Converted Inventory to use the standardized dropdown filter button layout for visual consistency */}
-          {renderDropdownFilterButton(props.inventoryValue, props.onInventoryChange, inventoryList, 'Choose Inventory', darkMode)}
+          <div>{renderSortButton('INVENTORY')}</div>
         </span> 
       </th>
 
@@ -156,10 +156,8 @@ ProjectTableHeader.propTypes = {
   darkMode: PropTypes.bool,
   selectedValue: PropTypes.string,
   showStatus: PropTypes.string,
-  inventoryValue: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   selectStatus: PropTypes.func.isRequired,
-  onInventoryChange: PropTypes.func.isRequired,
   handleSort: PropTypes.func.isRequired,
   sorted: PropTypes.shape({
     column: PropTypes.string.isRequired,

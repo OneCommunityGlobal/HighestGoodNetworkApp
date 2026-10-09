@@ -234,8 +234,9 @@ tr:hover {
 }
 
 
-/* Standardize dropdown toggle button dimensions and alignment */
-:global(.dropdown-toggle) {
+/* Header filter toggles only (Category / Active): fixed 30x30 box, no Bootstrap caret.
+   Scoped to .projectFilterDropdown so other dropdowns (account, nav menus) keep their size and arrow. */
+.projectFilterDropdown :global(.dropdown-toggle) {
   width: 30px !important;
   height: 30px !important;
   padding: 0 !important;
@@ -244,18 +245,10 @@ tr:hover {
   justify-content: center !important;
 }
 
-/* Completely remove default dropdown arrows, pseudo-elements, and borders */
-:global(.dropdown-toggle)::after {
+.projectFilterDropdown :global(.dropdown-toggle)::after {
   display: none !important;
   content: none !important;
   border: none !important;
-}
-
-@media (width <= 375px) {
-  #new_project .form-control {
-    flex: 1 1 auto;
-    width: 50%;
-  }
 }
 
 @media (width <= 375px) {
