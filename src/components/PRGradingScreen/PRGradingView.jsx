@@ -215,41 +215,54 @@ const PRGradingView = ({
       )}
 
       {showGradingModal && gradingReviewer && (
-        <div className={styles['pr-grading-screen-modal-overlay']}>
-          <div className={`${styles['pr-grading-screen-modal-content']} ${dm}`}>
-            <h3>Grade PRs for {gradingReviewer.name}</h3>
-            <table className={`${styles['pr-grading-screen-table']} ${dm}`}>
-              <thead>
-                <tr>
-                  <th>PR Number</th>
-                  {GRADE_OPTIONS.map(g => (
-                    <th key={g}>{g}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {gradingReviewer.gradedPrs.map(pr => (
-                  <tr key={pr.id}>
-                    <td>{pr.prNumbers}</td>
-                    {GRADE_OPTIONS.map(grade => (
-                      <td key={grade}>
-                        <input
-                          type="checkbox"
-                          disabled={isFinalized}
-                          checked={pr.grade === grade}
-                          onChange={() => onGradeChange(showGradingModal, pr.id, grade)}
-                        />
-                      </td>
+        <div className={`${styles['pr-grading-screen-modal-overlay']} ${dm}`}>
+          <div className={`${styles['pr-grading-screen-modal']} ${dm}`}>
+            <div className={`${styles['pr-grading-screen-modal-header']} ${dm}`}>
+              <h3>Grade PRs for {gradingReviewer.reviewer}</h3>
+              <button
+                type="button"
+                className={`${styles['pr-grading-screen-modal-close']} ${dm}`}
+                onClick={onCloseGradingModal}
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className={`${styles['pr-grading-screen-modal-body']} ${dm}`}>
+              <table className={`${styles['pr-grading-screen-grading-table']} ${dm}`}>
+                <thead>
+                  <tr>
+                    <th>PR Number</th>
+                    {GRADE_OPTIONS.map(g => (
+                      <th key={g}>{g}</th>
                     ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {gradingReviewer.gradedPrs.map(pr => (
+                    <tr key={pr.id}>
+                      <td>{pr.prNumbers}</td>
+                      {GRADE_OPTIONS.map(grade => (
+                        <td key={grade}>
+                          <input
+                            type="checkbox"
+                            disabled={isFinalized}
+                            checked={pr.grade === grade}
+                            onChange={() => onGradeChange(showGradingModal, pr.id, grade)}
+                          />
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
 
-            <div className={`${styles['pr-grading-screen-modal-footer']} ${dm}`}>
-              <Button variant="primary" onClick={onCloseGradingModal}>
-                Done
-              </Button>
+              <div className={`${styles['pr-grading-screen-modal-footer']} ${dm}`}>
+                <Button variant="primary" onClick={onCloseGradingModal}>
+                  Done
+                </Button>
+              </div>
             </div>
           </div>
         </div>

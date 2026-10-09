@@ -1009,6 +1009,22 @@
 }
 
 /* Promotion Confirmation Modal Actions */
+.pr-promotion-no-history {
+  margin-bottom: 16px;
+  padding: 12px;
+  border: 1px dashed #ced4da;
+  border-radius: 6px;
+  background-color: #f8f9fa;
+  color: #6c757d;
+  text-align: center;
+}
+
+.pr-promotion-no-history.dark-mode {
+  border-color: #4a5a77;
+  background-color: #1b2a41;
+  color: #b0b8c4;
+}
+
 .pr-promotion-footer {
   display: flex;
   justify-content: center;

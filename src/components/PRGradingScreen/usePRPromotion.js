@@ -10,21 +10,14 @@ export const usePRPromotion = (defaultTeamName = 'PR Review Team') => {
   // Handler triggered when the Promote button is clicked
   const handlePromoteClick = useCallback(
     reviewer => {
-      const currentCount = reviewer.gradedPrs
-        ? reviewer.gradedPrs.length
-        : reviewer.prsReviewed || 0;
-
       setPromotingReviewer({
         id: reviewer.id,
         reviewerId: reviewer.id,
         reviewerName: reviewer.reviewer,
         teamCode: reviewer.teamCode || defaultTeamName,
         teamReviewerName: reviewer.teamLeader || reviewer.teamReviewerName || 'Team Lead',
-        weeklyPRs: reviewer.weeklyPRs || [
-          { week: 'Week 1', count: currentCount },
-          { week: 'Week 2', count: Math.max(0, currentCount - 1) },
-          { week: 'Week 3', count: currentCount >= 8 ? 9 : 5 },
-        ],
+        // Pass through real history only; an empty list means "no history available".
+        weeklyPRs: reviewer.weeklyPRs || [],
       });
     },
     [defaultTeamName],
