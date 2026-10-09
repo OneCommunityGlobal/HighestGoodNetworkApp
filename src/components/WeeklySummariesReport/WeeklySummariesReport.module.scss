@@ -20,7 +20,7 @@
 .bioToggle {
   display: inline-flex;
   margin: 0;
-  
+
   button {
     margin-top: 0;
   }
@@ -152,9 +152,9 @@
 }
 
 .teamcodeWrapper {
-    display: flex;
-    white-space: wrap;
-    flex-direction: column;
+  display: flex;
+  white-space: wrap;
+  flex-direction: column;
 }
 
 @media screen and (width <= 544px) {
@@ -170,9 +170,58 @@
     width: 100%;
   }
 
+  .teamCodeInputWrapper {
+    width: 100%;
+  }
   .weeklySummariesCodeInput {
     width: 100% !important;
   }
+}
+
+.teamCodeInputWrapper {
+  position: relative;
+  width: 150px;
+}
+
+.teamCodeSuggestions {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  z-index: 1000;
+  width: 100%;
+  max-height: 180px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
+}
+
+.teamCodeSuggestionsDark {
+  background: #343a40;
+  border-color: #5a6268;
+}
+
+.teamCodeSuggestionItem {
+  display: block;
+  width: 100%;
+  padding: 6px 10px;
+  background: transparent;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.teamCodeSuggestionItem:hover {
+  background: #f1f1f1;
+}
+
+.teamCodeSuggestionItemDark {
+  color: #fff;
+}
+
+.teamCodeSuggestionItemDark:hover {
+  background: #495057;
 }
 
 @media screen and (width <= 490px) {
@@ -194,7 +243,6 @@
     width: 40px;
   }
 }
-
 
 .codeAlert {
   margin: 10px 0 0;
