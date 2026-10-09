@@ -258,20 +258,11 @@ HistoryPostItem.propTypes = {
   }).isRequired,
 };
 
-// ─── InstagramAutoPoster ───────────────────────────────────────────────────────
-const getScheduleButtonText = () => {
-  if (isPosting) return 'Saving…';
-  if (editingScheduleId) return 'Update scheduled post';
-  return 'Save scheduled post';
-};
-
 function InstagramAutoPoster({ platform }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const [caption, setCaption] = useState('');
   const [hashtags, setHashtags] = useState('');
-  const [altText, setAltText] = useState('');
-  const [location, setLocation] = useState('');
   const [media, setMedia] = useState(null); // { base64, preview, name, isVideo }
 
   const [activeSubTab, setActiveSubTab] = useState('make');
@@ -289,9 +280,6 @@ function InstagramAutoPoster({ platform }) {
 
   const [hashtagSuggestions, setHashtagSuggestions] = useState([]);
 
-  const [postStatus, setPostStatus] = useState(null);
-  const [publishedPost, setPublishedPost] = useState(null);
-
   const subTabs = useMemo(
     () => [
       { id: 'make', label: 'Create Post' },
@@ -301,25 +289,28 @@ function InstagramAutoPoster({ platform }) {
     [],
   );
 
+  // ─── InstagramAutoPoster ───────────────────────────────────────────────────────
+  const getScheduleButtonText = () => {
+    if (isPosting) return 'Saving…';
+    if (editingScheduleId) return 'Update scheduled post';
+    return 'Save scheduled post';
+  };
+
   // ── Derived validation state ──────────────────────────────────────────────
 
   const trimmedCaption = caption.trim();
-  const trimmedAltText = altText.trim();
   const captionValid = trimmedCaption.length > 0 && trimmedCaption.length <= CAPTION_MAX;
-  const altTextValid = trimmedAltText.length <= ALT_TEXT_MAX;
   const hasMedia = Boolean(media);
 
   const highlightCaption = caption.length > 0 && !captionValid;
-  const highlightAltText = trimmedAltText.length > 0 && !altTextValid;
-
   const readyToPost = captionValid && hasMedia;
 
-  const hasAnyInput = Boolean(trimmedCaption || hashtags.trim() || location.trim() || media);
+  const hasAnyInput = Boolean(trimmedCaption || hashtags.trim() || media);
 
   const preview = useMemo(() => {
     if (!hasAnyInput) return '';
-    return buildPreview({ caption, hashtags, altText, location });
-  }, [caption, hashtags, altText, location, hasAnyInput]);
+    return buildPreview({ caption, hashtags });
+  }, [caption, hashtags, hasAnyInput]);
 
   // ── Data loading ──────────────────────────────────────────────────────────
 
@@ -402,15 +393,13 @@ function InstagramAutoPoster({ platform }) {
   const handleReset = () => {
     setCaption('');
     setHashtags('');
-    setAltText('');
-    setLocation('');
     setMedia(null);
     setHashtagSuggestions([]);
     setEditingScheduleId(null);
   };
 
   const handleSuggestHashtags = () => {
-    const suggestions = extractHashtagSuggestions(caption, altText);
+    const suggestions = extractHashtagSuggestions(caption);
     setHashtagSuggestions(suggestions);
     if (suggestions.length === 0) toast.info('No hashtag suggestions found.');
   };
@@ -439,7 +428,6 @@ function InstagramAutoPoster({ platform }) {
   const buildRequestBody = () => {
     const body = {
       caption: buildCaptionForClipboard({ caption, hashtags }),
-      altText: trimmedAltText || null,
       media: null,
       existingMediaUrl: null,
       existingMediaType: null,
@@ -598,8 +586,6 @@ function InstagramAutoPoster({ platform }) {
     try {
       setCaption(post.caption || '');
       setHashtags('');
-      setAltText(post.mediaAltText || '');
-      setLocation('');
 
       if (post.mediaUrl) {
         setMedia({

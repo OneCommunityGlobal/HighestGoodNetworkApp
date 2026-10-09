@@ -60,12 +60,10 @@ export const parseHashtags = raw =>
     .filter((tag, index, arr) => arr.indexOf(tag) === index)
     .slice(0, HASHTAG_MAX_COUNT);
 
-export const buildPreview = ({ caption, hashtags, altText, location }) => {
+export const buildPreview = ({ caption, hashtags }) => {
   const tagList = parseHashtags(hashtags || '');
   const tagLine = tagList.length > 0 ? tagList.join(' ') : '(none)';
-  return `Caption\n${caption?.trim() ||
-    '—'}\n\nHashtags\n${tagLine}\n\nLocation\n${location?.trim() ||
-    '(none)'}\n\nAlt text\n${altText?.trim() || '(none)'}\n`;
+  return `Caption\n${caption?.trim() || '—'}\n\nHashtags\n${tagLine}\n`;
 };
 
 /** The text you'd actually paste into Instagram: caption + hashtags combined. */
@@ -77,8 +75,8 @@ export const buildCaptionForClipboard = ({ caption, hashtags }) => {
 
 // ─── Hashtag suggestion ────────────────────────────────────────────────────────
 
-export const extractHashtagSuggestions = (caption, altText) => {
-  const text = `${caption} ${altText}`.toLowerCase();
+export const extractHashtagSuggestions = caption => {
+  const text = `${caption}`.toLowerCase();
 
   const matched = [];
   for (const [keyword, tags] of Object.entries(KEYWORD_HASHTAG_MAP)) {
