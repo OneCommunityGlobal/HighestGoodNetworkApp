@@ -84,6 +84,11 @@ import userSkillsReducer from './userSkillsReducer';
 // community portalgit
 import { eventFeedbackReducer } from './communityPortal/eventFeedback';
 import { noShowVizReducer } from './communityPortal/noShowVizReducer';
+import {
+  FetchEventReducer,
+  CreateEventReducer,
+  FetchCalendarEventReducer,
+} from './communityPortal/EventActivityReducer';
 
 import { jobApplicationReducer } from './jobApplication/jobApplicationReducer';
 
@@ -246,6 +251,11 @@ const localReducers = {
   // Kitchen and Inventory Management
   [kiCalendarApi.reducerPath]: kiCalendarApi.reducer,
   form: formReducer,
+
+  // community portal
+  fetchEvent: FetchEventReducer,
+  createEvent: CreateEventReducer,
+  fetchCalendarEvent: FetchCalendarEventReducer,
 };
 
 const sessionReducers = {
