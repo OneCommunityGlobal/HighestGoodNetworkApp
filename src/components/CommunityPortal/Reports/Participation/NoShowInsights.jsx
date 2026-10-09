@@ -1,8 +1,6 @@
 import { useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { Tooltip } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import InfoTooltip from './InfoTooltip';
 import { ArrowUpDown, ArrowUp, ArrowDown, SquareArrowOutUpRight } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
@@ -15,7 +13,6 @@ function NoShowInsights() {
   const [scopeFilter, setScopeFilter] = useState('My Event');
   const [activeTab, setActiveTab] = useState('Event type');
   const [sortOrder, setSortOrder] = useState('none');
-  const [tooltipOpen, setTooltipOpen] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
   const insightsRef = useRef(null);
   const [isExportOpen, setIsExportOpen] = useState(false);
@@ -30,8 +27,6 @@ function NoShowInsights() {
     });
   };
   const SortIcon = sortOrder === 'none' ? ArrowUpDown : sortOrder === 'asc' ? ArrowUp : ArrowDown;
-
-  const toggleTooltip = () => setTooltipOpen(!tooltipOpen);
 
   const getTooltipContent = () => {
     let categoryDescription;
@@ -276,20 +271,7 @@ function NoShowInsights() {
         <div className={`${styles.insightsHeader} ${darkMode ? styles.insightsHeaderDark : ''}`}>
           <div className={styles.insightsTitleWrapper}>
             <h3>No-show rate insights</h3>
-            <span id="noShowInsightsTooltip" className={styles.infoIcon}>
-              <FontAwesomeIcon icon={faInfoCircle} />
-            </span>
-            <Tooltip
-              key={activeTab}
-              delay={{ show: 0, hide: 500 }}
-              autohide={false}
-              placement="right"
-              isOpen={tooltipOpen}
-              target="noShowInsightsTooltip"
-              toggle={toggleTooltip}
-            >
-              {getTooltipContent()}
-            </Tooltip>
+            <InfoTooltip content={getTooltipContent()} />
           </div>
           <div
             className={`${styles.insightsFilters} ${darkMode ? styles.insightsFiltersDark : ''}`}
