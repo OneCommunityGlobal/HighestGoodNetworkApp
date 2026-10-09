@@ -1,17 +1,60 @@
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styles from './MyCases.module.css';
-import mockEvents from './mockData';
 import CreateEventModal from './CreateEventModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import { filterEventsByDate } from './FilterByDate';
+import { fetchEventDetails } from '../../../../actions/communityPortal/EventActivityActions';
+import { transformEvents } from './HelperFunctions';
+import { EventsCalendar } from './EventsCalendar';
 
 function MyCases() {
   const [view, setView] = useState('card');
   const [filter, setFilter] = useState('All Time');
   const [expanded, setExpanded] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  const dispatch = useDispatch();
+  const fetchEventState = useSelector(state => state.fetchEvent);
+
+  const [eventsData, setEventsData] = useState([]);
+  const [eventsError, setEventsError] = useState('');
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      setEventsError('Please log in to view events.');
+      return;
+    }
+
+    dispatch(fetchEventDetails(token));
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (fetchEventState?.data?.events) {
+      const events = transformEvents(fetchEventState.data.events);
+
+      const adaptedEvents = events.map(event => ({
+        ...event,
+        id: event._id,
+        eventType: event.type,
+        eventName: event.title,
+        eventTime: event.date,
+        attendees: event.currentAttendees ?? 0,
+      }));
+
+      setEventsData(adaptedEvents);
+      setEventsError('');
+    }
+  }, [fetchEventState?.data]);
+
+  useEffect(() => {
+    if (fetchEventState?.error) {
+      setEventsError(fetchEventState.error);
+    }
+  }, [fetchEventState?.error]);
 
   const isExporting =
     typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true';
@@ -20,7 +63,7 @@ function MyCases() {
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const filteredEvents = filterEventsByDate(mockEvents, filter).filter(
+  const filteredEvents = filterEventsByDate(eventsData, filter).filter(
     event => new Date(event.eventDate).getTime() >= now.getTime(),
   );
 
@@ -123,11 +166,7 @@ function MyCases() {
     </ul>
   );
 
-  const renderCalendarView = () => (
-    <div className={`${styles.calendarView} ${darkMode ? styles.calendarViewDark : ''}`}>
-      <p>Calendar View is under construction...</p>
-    </div>
-  );
+  const renderCalendarView = () => <EventsCalendar />;
 
   return (
     <div
@@ -201,9 +240,24 @@ function MyCases() {
       </header>
 
       <main className={styles.content}>
-        {view === 'card' && renderCardView()}
-        {view === 'list' && renderListView()}
-        {view === 'calendar' && renderCalendarView()}
+        {fetchEventState?.loading && <p role="status">Loading events...</p>}
+
+        {eventsError && <p role="alert">{eventsError}</p>}
+
+        {!fetchEventState?.loading &&
+          !eventsError &&
+          view !== 'calendar' &&
+          filteredEvents.length === 0 && (
+            <p role="status">No upcoming events found for the selected date range.</p>
+          )}
+
+        {!fetchEventState?.loading && !eventsError && (
+          <>
+            {view === 'card' && renderCardView()}
+            {view === 'list' && renderListView()}
+            {view === 'calendar' && renderCalendarView()}
+          </>
+        )}
       </main>
 
       <CreateEventModal
