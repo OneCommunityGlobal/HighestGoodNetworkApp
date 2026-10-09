@@ -6,6 +6,19 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGri
 import axios from 'axios';
 import { ENDPOINTS } from '../../../../utils/URL';
 import styles from './ToolsHorizontalBarChart.module.css';
+
+const getChartFontSize = width => {
+  if (width <= 480) return 10;
+  if (width <= 768) return 11;
+  return 12;
+};
+
+const getYAxisWidth = width => {
+  if (width <= 480) return 90;
+  if (width <= 768) return 120;
+  return 150;
+};
+
 function CustomTooltip({ active, payload, label, darkMode }) {
   if (!active || !payload || !payload.length) {
     return null;
@@ -51,6 +64,7 @@ CustomTooltip.propTypes = {
   label: PropTypes.string,
   darkMode: PropTypes.bool,
 };
+
 CustomTooltip.defaultProps = {
   active: false,
   payload: [],
@@ -63,6 +77,7 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
   const darkMode = typeof darkModeProp === 'boolean' ? darkModeProp : reduxDarkMode;
 
   const [data, setData] = useState([]);
+  const [toolsData, setToolsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [allProjects, setAllProjects] = useState([]);
@@ -85,7 +100,6 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Fetch projects list
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -95,7 +109,7 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
         if (projects && projects.length > 0) {
           const projectOptions = projects.map(project => ({
             value: project.projectId,
-            label: project.projectId,
+            label: project.projectName || project.projectId,
           }));
           setAllProjects(projectOptions);
           setSelectedProject(null);
@@ -121,6 +135,7 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
     const fetchToolsData = async () => {
       if (!selectedProject?.value) {
         setData([]);
+        setToolsData([]);
         setAllTools([]);
         setError(null);
         setLoading(false);
@@ -132,18 +147,15 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
         setError(null);
 
         const projectId = selectedProject.value;
-
         const toolsResponseNoFilter = await axios.get(
           ENDPOINTS.TOOLS_AVAILABILITY_BY_PROJECT(projectId),
         );
-
         const toolsResponse = await axios.get(
           ENDPOINTS.TOOLS_AVAILABILITY_BY_PROJECT(projectId, startDate, endDate),
         );
 
         const toolsDataFiltered = toolsResponse.data;
         const toolsDataUnfiltered = toolsResponseNoFilter.data;
-
         const toolsData =
           toolsDataFiltered && toolsDataFiltered.length > 0
             ? toolsDataFiltered
@@ -156,34 +168,18 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
               label: tool,
               value: tool,
             }));
-
           setAllTools(uniqueTools);
         } else {
           setAllTools([]);
         }
 
-        let filteredForChart = toolsData;
-        if (selectedTools.length > 0) {
-          const selectedNames = selectedTools.map(t => t.value);
-          filteredForChart = toolsData.filter(item => selectedNames.includes(item.toolName));
-        }
-
-        if (filteredForChart.length > 0) {
-          const formattedData = filteredForChart.map(item => ({
-            name: item.toolName || 'Unknown Tool',
-            inUse: item.inUse || 0,
-            needsReplacement: item.needsReplacement || 0,
-            yetToReceive: item.yetToReceive || 0,
-          }));
-          setData(formattedData);
-        } else {
-          setData([]);
-        }
+        setToolsData(toolsData);
       } catch (err) {
         // eslint-disable-next-line no-console
         console.error('Failed to load tools data:', err);
         setError('Failed to load tools data');
         setData([]);
+        setToolsData([]);
         setAllTools([]);
       } finally {
         setLoading(false);
@@ -191,21 +187,38 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
     };
 
     fetchToolsData();
-  }, [selectedProject, startDate, endDate, selectedTools]);
+  }, [selectedProject, startDate, endDate]);
+  useEffect(() => {
+    let filteredForChart = toolsData;
+
+    if (selectedTools.length > 0) {
+      const selectedNames = new Set(selectedTools.map(tool => tool.value));
+      filteredForChart = toolsData.filter(item => selectedNames.has(item.toolName));
+    }
+
+    if (filteredForChart.length > 0) {
+      setData(
+        filteredForChart.map(item => ({
+          name: item.toolName || 'Unknown Tool',
+          inUse: item.inUse || 0,
+          needsReplacement: item.needsReplacement || 0,
+          yetToReceive: item.yetToReceive || 0,
+        })),
+      );
+    } else {
+      setData([]);
+    }
+  }, [toolsData, selectedTools]);
 
   const handleToolChange = selectedOption => setSelectedTools(selectedOption || []);
 
   const handleProjectChange = selectedOption => {
     setSelectedProject(selectedOption);
+    setSelectedTools([]);
   };
 
-  const handleStartDateChange = e => {
-    setStartDate(e.target.value);
-  };
-
-  const handleEndDateChange = e => {
-    setEndDate(e.target.value);
-  };
+  const handleStartDateChange = event => setStartDate(event.target.value);
+  const handleEndDateChange = event => setEndDate(event.target.value);
 
   const handleClearDates = () => {
     const now = new Date();
@@ -213,10 +226,15 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
     const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
     setStartDate(start.toISOString().split('T')[0]);
     setEndDate(end.toISOString().split('T')[0]);
-    setSelectedProject(null);
+  };
+
+  const sharedSelectStyles = {
+    menuPortal: base => ({ ...base, zIndex: 9999 }),
+    menu: base => ({ ...base, zIndex: 9999 }),
   };
 
   const darkSelectStyles = {
+    ...sharedSelectStyles,
     control: base => ({
       ...base,
       backgroundColor: '#253342',
@@ -228,6 +246,7 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
       ...base,
       backgroundColor: '#253342',
       fontSize: '12px',
+      zIndex: 9999,
     }),
     option: (base, state) => ({
       ...base,
@@ -235,58 +254,24 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
       color: '#e0e0e0',
       fontSize: '12px',
     }),
-    multiValue: base => ({
-      ...base,
-      backgroundColor: '#3a506b',
-    }),
-    multiValueLabel: base => ({
-      ...base,
-      color: '#e0e0e0',
-      fontSize: '12px',
-    }),
-    singleValue: base => ({
-      ...base,
-      color: '#e0e0e0',
-      fontSize: '12px',
-    }),
-    placeholder: base => ({
-      ...base,
-      color: '#aaaaaa',
-      fontSize: '12px',
-    }),
+    multiValue: base => ({ ...base, backgroundColor: '#3a506b' }),
+    multiValueLabel: base => ({ ...base, color: '#e0e0e0', fontSize: '12px' }),
+    singleValue: base => ({ ...base, color: '#e0e0e0', fontSize: '12px' }),
+    placeholder: base => ({ ...base, color: '#aaaaaa', fontSize: '12px' }),
   };
 
   const lightSelectStyles = {
-    control: base => ({
-      ...base,
-      minHeight: '32px',
-      fontSize: '12px',
-    }),
-    menu: base => ({
-      ...base,
-      fontSize: '12px',
-    }),
-    option: base => ({
-      ...base,
-      fontSize: '12px',
-    }),
-    multiValue: base => ({
-      ...base,
-      backgroundColor: '#e6e6e6',
-    }),
-    multiValueLabel: base => ({
-      ...base,
-      fontSize: '12px',
-    }),
-    singleValue: base => ({
-      ...base,
-      fontSize: '12px',
-    }),
-    placeholder: base => ({
-      ...base,
-      fontSize: '12px',
-    }),
+    ...sharedSelectStyles,
+    control: base => ({ ...base, minHeight: '32px', fontSize: '12px' }),
+    menu: base => ({ ...base, fontSize: '12px', zIndex: 9999 }),
+    option: base => ({ ...base, fontSize: '12px' }),
+    multiValue: base => ({ ...base, backgroundColor: '#e6e6e6' }),
+    multiValueLabel: base => ({ ...base, fontSize: '12px' }),
+    singleValue: base => ({ ...base, fontSize: '12px' }),
+    placeholder: base => ({ ...base, fontSize: '12px' }),
   };
+
+  const selectStyles = darkMode ? darkSelectStyles : lightSelectStyles;
 
   return (
     <div
@@ -296,29 +281,11 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
     >
       <h4 className={styles['tools-horizontal-bar-chart-title']}>Tools by Availability</h4>
 
-      <div className={styles['tools-horizontal-bar-chart-filter-group']}>
-        <label htmlFor="tool-select">Tool(s)</label>
-        <Select
-          id="tool-select"
-          className={styles['tools-horizontal-bar-chart-tool-select']}
-          classNamePrefix="select"
-          value={selectedTools}
-          onChange={handleToolChange}
-          options={allTools}
-          placeholder="Select tools"
-          isMulti
-          isClearable
-          isDisabled={allTools.length === 0}
-          closeMenuOnSelect={false}
-          styles={darkMode ? darkSelectStyles : lightSelectStyles}
-        />
-      </div>
-
       <div className={styles['tools-horizontal-bar-chart-filters']}>
         <div className={styles['tools-horizontal-bar-chart-filter-group']}>
           <label htmlFor="project-select">Project</label>
           <Select
-            id="project-select"
+            inputId="project-select"
             className={styles['tools-horizontal-bar-chart-project-select']}
             classNamePrefix="select"
             value={selectedProject}
@@ -327,7 +294,29 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
             placeholder="Select a project"
             isClearable={false}
             isDisabled={allProjects.length === 0}
-            styles={darkMode ? darkSelectStyles : lightSelectStyles}
+            styles={selectStyles}
+            menuPortalTarget={document.body}
+            menuPosition="fixed"
+          />
+        </div>
+
+        <div className={styles['tools-horizontal-bar-chart-filter-group']}>
+          <label htmlFor="tool-select">Tool(s)</label>
+          <Select
+            inputId="tool-select"
+            className={styles['tools-horizontal-bar-chart-tool-select']}
+            classNamePrefix="select"
+            value={selectedTools}
+            onChange={handleToolChange}
+            options={allTools}
+            placeholder={selectedProject ? 'Select tools' : 'Select a project first'}
+            isMulti
+            isClearable
+            isDisabled={!selectedProject || allTools.length === 0}
+            closeMenuOnSelect={false}
+            styles={selectStyles}
+            menuPortalTarget={document.body}
+            menuPosition="fixed"
           />
         </div>
 
@@ -340,7 +329,6 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
               className={styles['tools-horizontal-bar-chart-date-picker']}
               value={startDate}
               onChange={handleStartDateChange}
-              placeholder="Start date"
               aria-label="Start date"
             />
             <span>to</span>
@@ -350,14 +338,13 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
               className={styles['tools-horizontal-bar-chart-date-picker']}
               value={endDate}
               onChange={handleEndDateChange}
-              placeholder="End date"
               aria-label="End date"
             />
             <button
               type="button"
               className={styles['tools-horizontal-bar-chart-clear-dates-btn']}
               onClick={handleClearDates}
-              aria-label="Clear date filters"
+              aria-label="Reset date filters"
               title="Reset to default date range"
             >
               ↻
@@ -449,9 +436,9 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
               >
                 Select a project to load data
               </div>
-              {[80, 55, 70].map(w => (
+              {[80, 55, 70].map(width => (
                 <div
-                  key={w}
+                  key={width}
                   style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}
                 >
                   <div
@@ -464,7 +451,7 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
                   />
                   <div
                     style={{
-                      width: `${w}%`,
+                      width: `${width}%`,
                       height: '14px',
                       borderRadius: '4px',
                       background: darkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.1)',
@@ -486,10 +473,7 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
       )}
 
       {selectedProject?.value && !loading && !error && data.length > 0 && (
-        <div
-          className={styles['tools-horizontal-bar-chart-content']}
-          style={{ flex: 1, minHeight: 0 }}
-        >
+        <div className={styles['tools-horizontal-bar-chart-content']}>
           <ResponsiveContainer width="100%" height={Math.max(data.length * 100 + 60, 320)}>
             <BarChart
               layout="vertical"
@@ -536,6 +520,7 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
 ToolsHorizontalBarChart.propTypes = {
   darkMode: PropTypes.bool,
 };
+
 ToolsHorizontalBarChart.defaultProps = {
   darkMode: undefined,
 };
