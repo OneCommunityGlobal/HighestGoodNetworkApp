@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './ActivityComments.module.css';
 import StatusBadge from './StatusBadge';
@@ -427,11 +427,15 @@ function ActivityComments() {
     setSortType(prev => (prev === 'Newest' ? 'Oldest' : 'Newest'));
   };
 
-  const sortedComments = [...comments].sort((a, b) => {
-    if (sortType === 'Newest') return new Date(b.createdAt) - new Date(a.createdAt);
-    if (sortType === 'Oldest') return new Date(a.createdAt) - new Date(b.createdAt);
-    return 0;
-  });
+  const sortedComments = useMemo(
+    () =>
+      [...comments].sort((a, b) => {
+        if (sortType === 'Newest') return new Date(b.createdAt) - new Date(a.createdAt);
+        if (sortType === 'Oldest') return new Date(a.createdAt) - new Date(b.createdAt);
+        return 0;
+      }),
+    [comments, sortType],
+  );
   const handleVote = (commentId, direction) => {
     setComments(prevComments =>
       prevComments.map(comment => {
