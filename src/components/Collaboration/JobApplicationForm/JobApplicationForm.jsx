@@ -6,10 +6,11 @@ import OneCommunityImage from '../../../assets/images/logo2.png';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import { useSelector } from 'react-redux';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import moment from 'moment-timezone';
+import { isJobApplicationFileUploadQuestion } from './jobApplicationQuestionUtils';
 
 function normalizeTitleKey(s) {
   return String(s || '')
@@ -155,13 +156,15 @@ function resolveNavigationJobTitle(jobDataFromRedirect, location) {
 function notifyInitialFormSelection(navTitle, formMatch, chosen) {
   if (!navTitle || formMatch) return;
   if (chosen) {
-    toast.info(
+    toast.warn(
       `Could not match "${navTitle}" to a form title. Showing "${chosen.title}" — pick another role from the dropdown if this is not the right application.`,
-      { autoClose: 7000 },
+      { autoClose: false, closeOnClick: false, toastId: 'job-title-mismatch-warning' },
     );
     return;
   }
-  toast.warn('No application form is available. Please contact support or try again later.');
+  toast.warn('No application form is available. Please contact support or try again later.', {
+    toastId: 'job-title-mismatch-no-form',
+  });
 }
 
 function getInitialFormState(chosen, navTitle) {
@@ -204,17 +207,6 @@ function formRequiresResumeUpload(form) {
   if (!form?.questions) return false;
   return form.questions.some(
     q => q.visible !== false && isResumeQuestion(q) && isQuestionRequired(q),
-  );
-}
-
-function isFileUploadQuestion(q) {
-  if (isResumeQuestion(q)) return false;
-  const qt = getQuestionType(q);
-  if (['file', 'upload', 'document', 'attachment'].includes(qt)) return true;
-  const label = (q.label || q.questionText || '').toLowerCase();
-  return (
-    /\b(upload|attach|file)\b/.test(label) &&
-    !/\b(work\s*sample|portfolio|writing\s*sample)\b/.test(label)
   );
 }
 
@@ -375,7 +367,7 @@ function isAnswerEmpty(answer, q) {
 
 function missingRequiredQuestionLabel(q, idx, answers, questionFiles) {
   if (!isQuestionRequired(q)) return null;
-  if (isFileUploadQuestion(q)) {
+  if (isJobApplicationFileUploadQuestion(q)) {
     return questionFiles[idx] ? null : getQuestionLabel(q, idx);
   }
   return isAnswerEmpty(answers[idx], q) ? getQuestionLabel(q, idx) : null;
@@ -410,15 +402,15 @@ function validateHoursPerWeekAnswer(label, answer) {
   return null;
 }
 
-function validateName(name) {
+function validateName(name, label = 'Name') {
   const trimmed = String(name || '').trim();
 
-  if (!trimmed) return 'Name is required.';
-  if (trimmed.length < 2) return 'Name must be at least 2 characters.';
-  if (trimmed.length > 100) return 'Name must not exceed 100 characters.';
+  if (!trimmed) return `${label} is required.`;
+  if (trimmed.length < 2) return `${label} must be at least 2 characters.`;
+  if (trimmed.length > 100) return `${label} must not exceed 100 characters.`;
 
   if (!/^[\p{L}\s'-]+$/u.test(trimmed)) {
-    return 'Name may contain only letters, spaces, hyphens, and apostrophes.';
+    return `${label} may contain only letters, spaces, hyphens, and apostrophes.`;
   }
 
   return '';
@@ -478,16 +470,25 @@ function validateTimeZone(timeZone) {
   return '';
 }
 
-function getProfileValidationErrors({ applicantName, applicantEmail, phone, location, timeZone }) {
+function getProfileValidationErrors({
+  firstName,
+  lastName,
+  applicantEmail,
+  phone,
+  location,
+  timeZone,
+}) {
   const errors = {};
 
-  const nameError = validateName(applicantName);
+  const firstNameError = validateName(firstName, 'First name');
+  const lastNameError = validateName(lastName, 'Last name');
   const emailError = validateEmail(applicantEmail);
   const phoneError = validatePhone(phone);
   const locationError = validateLocation(location);
   const timeZoneError = validateTimeZone(timeZone);
 
-  if (nameError) errors.applicantName = nameError;
+  if (firstNameError) errors.firstName = firstNameError;
+  if (lastNameError) errors.lastName = lastNameError;
   if (emailError) errors.applicantEmail = emailError;
   if (phoneError) errors.phone = phoneError;
   if (locationError) errors.location = locationError;
@@ -520,7 +521,7 @@ function collectMissingRequiredFields({
 }
 
 function serializeAnswerForSubmit(q, idx, answers, questionFiles) {
-  if (!isFileUploadQuestion(q)) return answers[idx];
+  if (!isJobApplicationFileUploadQuestion(q)) return answers[idx];
   const file = questionFiles[idx];
   if (!file) return '';
   return {
@@ -659,7 +660,8 @@ function JobApplicationForm() {
   const [jobTitleInput, setJobTitleInput] = useState('');
   const [filteredForm, setFilteredForm] = useState(null);
   const [showDescription, setShowDescription] = useState(false);
-  const [applicantName, setApplicantName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [applicantEmail, setApplicantEmail] = useState('');
   const [applicantLocation, setApplicantLocation] = useState('');
   const [timeZone, setTimeZone] = useState('');
@@ -696,17 +698,6 @@ function JobApplicationForm() {
     }
   });
 
-  /* Global back-to-top lives outside #root in index.html; hide it on this long form page. */
-  useEffect(() => {
-    const btn = document.querySelector('.back-to-top');
-    if (!btn) return undefined;
-    const prev = btn.style.display;
-    btn.style.display = 'none';
-    return () => {
-      btn.style.display = prev;
-    };
-  }, []);
-
   /*
    * Match html/body/#root to the page strip. Global #root is white; dark mode uses !important —
    * route class + :global rules in the module CSS set backgrounds with !important while mounted.
@@ -729,7 +720,13 @@ function JobApplicationForm() {
 
   const applyQuestionnairePreFill = data => {
     if (!data) return;
-    if (data.name) setApplicantName(data.name);
+    if (data.name) {
+      const [firstPart, ...restParts] = String(data.name)
+        .trim()
+        .split(/\s+/);
+      setFirstName(firstPart || '');
+      setLastName(restParts.join(' '));
+    }
     if (data.email) setApplicantEmail(data.email);
     if (data.location) {
       setApplicantLocation(data.location);
@@ -786,7 +783,7 @@ function JobApplicationForm() {
     const jobId = jobIdParam || (pathJobId && pathJobId !== 'job-application' ? pathJobId : null);
 
     if (referralId && isValidId(referralId)) {
-      fetchUserQuestionnaireData(referralId);
+      void fetchUserQuestionnaireData(referralId);
     }
 
     if (routerLocation.state) {
@@ -795,7 +792,7 @@ function JobApplicationForm() {
         setJobTitleInput(routerLocation.state.jobTitle);
       }
     } else if (jobId && isValidId(jobId)) {
-      fetchJobData(jobId);
+      void fetchJobData(jobId);
     }
   }, [routerLocation.state, routerLocation.search, routerLocation.pathname]);
 
@@ -835,7 +832,7 @@ function JobApplicationForm() {
       }
     }
 
-    fetchForms();
+    void fetchForms();
     return () => {
       cancelled = true;
     };
@@ -1059,7 +1056,8 @@ function JobApplicationForm() {
 
   const validateBeforeSubmit = () => {
     const profileErrors = getProfileValidationErrors({
-      applicantName,
+      firstName,
+      lastName,
       applicantEmail,
       phone,
       location: applicantLocation,
@@ -1079,7 +1077,8 @@ function JobApplicationForm() {
   };
 
   const resetFormAfterSubmit = () => {
-    setApplicantName('');
+    setFirstName('');
+    setLastName('');
     setApplicantEmail('');
     setApplicantLocation('');
     setTimeZone('');
@@ -1112,7 +1111,8 @@ function JobApplicationForm() {
     setFieldErrors(prev => {
       const next = { ...prev };
 
-      delete next.applicantName;
+      delete next.firstName;
+      delete next.lastName;
       delete next.applicantEmail;
       delete next.location;
       delete next.timeZone;
@@ -1143,7 +1143,7 @@ function JobApplicationForm() {
       formData.append(
         'payload',
         JSON.stringify({
-          applicantName: applicantName.trim(),
+          applicantName: `${firstName.trim()} ${lastName.trim()}`.trim(),
           applicantEmail: applicantEmail.trim(),
           profile: {
             locationTimezone,
@@ -1168,7 +1168,7 @@ function JobApplicationForm() {
       }
 
       visibleQuestions.forEach((q, idx) => {
-        if (isFileUploadQuestion(q) && questionFiles[idx] && q._id) {
+        if (isJobApplicationFileUploadQuestion(q) && questionFiles[idx] && q._id) {
           formData.append(`questionFile_${q._id}`, questionFiles[idx]);
         }
       });
@@ -1189,7 +1189,6 @@ function JobApplicationForm() {
 
   return (
     <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
-      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} />
       <header className={styles.logo}>
         <a
           href="https://www.onecommunityglobal.org/collaboration/"
@@ -1299,28 +1298,28 @@ function JobApplicationForm() {
             <div className={styles.formContentGroup}>
               <div className={styles.formProfileDetailGroup}>
                 <div className={styles.profileField}>
-                  <label htmlFor="jaf-applicant-name" className={styles.fieldLabel}>
-                    <span>Name</span>
+                  <label htmlFor="jaf-applicant-first-name" className={styles.fieldLabel}>
+                    <span>First Name</span>
                     <span className={styles.requiredMark} aria-hidden="true">
                       *
                     </span>
                   </label>
 
                   <input
-                    id="jaf-applicant-name"
+                    id="jaf-applicant-first-name"
                     type="text"
-                    placeholder="Name"
+                    placeholder="First Name"
                     className={`${styles.inputField} ${
-                      fieldErrors.applicantName ? styles.inputFieldError : ''
+                      fieldErrors.firstName ? styles.inputFieldError : ''
                     }`}
-                    value={applicantName}
+                    value={firstName}
                     onChange={e => {
-                      setApplicantName(e.target.value);
+                      setFirstName(e.target.value);
 
-                      if (fieldErrors.applicantName) {
+                      if (fieldErrors.firstName) {
                         setFieldErrors(prev => {
                           const next = { ...prev };
-                          delete next.applicantName;
+                          delete next.firstName;
                           return next;
                         });
                       }
@@ -1329,13 +1328,55 @@ function JobApplicationForm() {
                     maxLength={100}
                     required
                     aria-required="true"
-                    aria-invalid={Boolean(fieldErrors.applicantName)}
-                    autoComplete="name"
+                    aria-invalid={Boolean(fieldErrors.firstName)}
+                    autoComplete="given-name"
                   />
 
-                  {fieldErrors.applicantName && (
+                  {fieldErrors.firstName && (
                     <p className={styles.fieldError} role="alert">
-                      {fieldErrors.applicantName}
+                      {fieldErrors.firstName}
+                    </p>
+                  )}
+                </div>
+
+                <div className={styles.profileField}>
+                  <label htmlFor="jaf-applicant-last-name" className={styles.fieldLabel}>
+                    <span>Last Name</span>
+                    <span className={styles.requiredMark} aria-hidden="true">
+                      *
+                    </span>
+                  </label>
+
+                  <input
+                    id="jaf-applicant-last-name"
+                    type="text"
+                    placeholder="Last Name"
+                    className={`${styles.inputField} ${
+                      fieldErrors.lastName ? styles.inputFieldError : ''
+                    }`}
+                    value={lastName}
+                    onChange={e => {
+                      setLastName(e.target.value);
+
+                      if (fieldErrors.lastName) {
+                        setFieldErrors(prev => {
+                          const next = { ...prev };
+                          delete next.lastName;
+                          return next;
+                        });
+                      }
+                    }}
+                    minLength={2}
+                    maxLength={100}
+                    required
+                    aria-required="true"
+                    aria-invalid={Boolean(fieldErrors.lastName)}
+                    autoComplete="family-name"
+                  />
+
+                  {fieldErrors.lastName && (
+                    <p className={styles.fieldError} role="alert">
+                      {fieldErrors.lastName}
                     </p>
                   )}
                 </div>
@@ -1571,7 +1612,7 @@ function JobApplicationForm() {
                       )}
                     </h2>
                     {['textbox', 'text'].includes(qt) &&
-                      !isFileUploadQuestion(q) &&
+                      !isJobApplicationFileUploadQuestion(q) &&
                       !isIndividualOrgQuestion && (
                         <>
                           <input
@@ -1696,7 +1737,7 @@ function JobApplicationForm() {
                         </select>
                       )
                     )}
-                    {isFileUploadQuestion(q) && (
+                    {isJobApplicationFileUploadQuestion(q) && (
                       <FileUploadField
                         id={`${formKey}-file`}
                         accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
@@ -1718,7 +1759,7 @@ function JobApplicationForm() {
                       'radio',
                       'dropdown',
                     ].includes(qt) &&
-                      !isFileUploadQuestion(q) && (
+                      !isJobApplicationFileUploadQuestion(q) && (
                         <input
                           type="text"
                           placeholder="Type your response here"
