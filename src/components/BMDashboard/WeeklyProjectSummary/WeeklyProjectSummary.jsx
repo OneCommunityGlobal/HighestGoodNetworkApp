@@ -3,7 +3,6 @@
 /* eslint-disable import/no-unresolved */
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { toast } from 'react-toastify';
@@ -42,7 +41,6 @@ const projectStatusButtons = [
     change: '+16% week over week',
     bgColor: '#F0FFEE',
     buttonColor: '#BAF0B6',
-    textColor: '#328D1B',
   },
   {
     title: 'Completed Projects',
@@ -50,7 +48,6 @@ const projectStatusButtons = [
     change: '+14% week over week',
     bgColor: '#F3FCFF',
     buttonColor: '#C1EFFB',
-    textColor: '#328D1B',
   },
   {
     title: 'Delayed Projects',
@@ -58,7 +55,6 @@ const projectStatusButtons = [
     change: '-18% week over week',
     bgColor: '#FFE9FA',
     buttonColor: '#FECFF3',
-    textColor: '#C82F2F',
   },
   {
     title: 'Active Projects',
@@ -66,7 +62,6 @@ const projectStatusButtons = [
     change: '+3% week over week',
     bgColor: '#E8E8FF',
     buttonColor: '#CBCBFE',
-    textColor: '#328D1B',
   },
   {
     title: 'Avg Project Duration',
@@ -74,7 +69,6 @@ const projectStatusButtons = [
     change: '+13% week over week',
     bgColor: '#FFF6EE',
     buttonColor: '#FFD8A5',
-    textColor: '#FFD8A5',
   },
   {
     title: 'Total Material Cost',
@@ -82,7 +76,6 @@ const projectStatusButtons = [
     change: '+9% week over week',
     bgColor: '#FFF3F3',
     buttonColor: '#FBC1C2',
-    textColor: '#328D1B',
   },
   {
     title: 'Total Material Used',
@@ -90,7 +83,6 @@ const projectStatusButtons = [
     change: '+11% week over week',
     bgColor: '#DAC8FF',
     buttonColor: '#B28ECC',
-    textColor: '#328D1B',
   },
   {
     title: 'Active Projects',
@@ -98,7 +90,6 @@ const projectStatusButtons = [
     change: '+3% week over week',
     bgColor: '#E8E8FF',
     buttonColor: '#CBCBFE',
-    textColor: '#328D1B',
   },
   {
     title: 'Total Labor Hours Invested',
@@ -106,7 +97,6 @@ const projectStatusButtons = [
     change: '+17% week over week',
     bgColor: '#E5C1FC',
     buttonColor: '#F6E1FB',
-    textColor: '#328D1B',
   },
   {
     title: 'Total Labor Cost',
@@ -114,7 +104,6 @@ const projectStatusButtons = [
     change: '+14% week over week',
     bgColor: '#FFFDF3',
     buttonColor: '#FBF9C1',
-    textColor: '#328D1B',
   },
   {
     title: 'Material Available',
@@ -122,7 +111,6 @@ const projectStatusButtons = [
     change: '-8% week over week',
     bgColor: '#B4D9C5',
     buttonColor: '#31BD41',
-    textColor: '#C82F2F',
   },
   {
     title: 'Material Wasted',
@@ -130,7 +118,6 @@ const projectStatusButtons = [
     change: '+14% week over week',
     bgColor: '#EFBABB',
     buttonColor: '#F79395',
-    textColor: '#328D1B',
   },
 ];
 
@@ -190,11 +177,13 @@ function WeeklyProjectSummary() {
         className: 'full',
         content: (
           <div className={`${styles.projectStatusGrid}`}>
-            {projectStatusButtons.map(button => {
-              const uniqueId = uuidv4();
+            {projectStatusButtons.map((button, index) => {
+              const changeClass = button.change.trim().startsWith('-')
+                ? styles.changeDown
+                : styles.changeUp;
               return (
                 <div
-                  key={uniqueId}
+                  key={`${button.title}-${index}`}
                   className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
                   style={{ backgroundColor: button.bgColor }}
                 >
@@ -205,7 +194,7 @@ function WeeklyProjectSummary() {
                   >
                     <span className={`${styles.weeklyStatusValue}`}>{button.value}</span>
                   </div>
-                  <div className="weekly-status-change" style={{ color: button.textColor }}>
+                  <div className={`${styles.weeklyStatusChange} ${changeClass}`}>
                     {button.change}
                   </div>
                 </div>

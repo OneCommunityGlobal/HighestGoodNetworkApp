@@ -43,20 +43,23 @@
   color: #fff;
 }
 
+/* Even 2-column filter grid: Projects | Severities, Injury types (full row), Start | End */
 :global(.injury-chart-filters) {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem 1rem;
   width: 100%;
-  align-items: flex-start;
+  align-items: end;
 }
 
 :global(.filter.injury-filter) {
   display: flex;
   flex-direction: column;
-  min-width: 160px;
-  flex: 1 1 160px;
-  max-width: 220px;
+  min-width: 0;
+}
+
+:global(.injury-chart-filters .injury-filter:nth-child(3)) {
+  grid-column: 1 / -1;
 }
 
 .chartArea {
@@ -433,4 +436,18 @@
 
 :global(.darkMode) .tooltipSeriesRow * {
   color: inherit !important;
+}
+
+/* Date inputs match the dropdowns' width and height inside the injury filters only */
+:global(.injury-filter .react-datepicker__input-container input) {
+  width: 100%;
+  max-width: none;
+  min-height: 38px;
+  box-sizing: border-box;
+}
+
+@media (width <= 480px) {
+  :global(.injury-chart-filters) {
+    grid-template-columns: 1fr;
+  }
 }
