@@ -33,9 +33,12 @@
   align-items: center;
   justify-content: center;
   text-align: center;
+  font-size: 14px;
+  /* Merged width, pointer-events, z-index from development branch and custom gap/flex layout */
   width: 55%;
   pointer-events: none;
   z-index: 2;
+  gap: 6px;
 }
 
 .volunteerStatusHeading {
@@ -59,8 +62,13 @@
 .comparisonText,
 .volunteerStatusCenter > p {
   font-weight: bold;
+  margin: 0;
   font-size: clamp(0.7rem, 4cqw, 0.85rem);
   margin-top: 2px;
+}
+
+.volunteerStatusCenter div {
+  margin: 2px 0;
 }
 
 .volunteerStatusLabels {
