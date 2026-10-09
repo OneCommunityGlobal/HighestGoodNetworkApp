@@ -1,0 +1,84 @@
+/* Date filter inputs. Other BM Dashboard modules declare global, !important rules on
+   ".react-datepicker-wrapper input" (e.g. ToolsStoppageHorizontalBarChart forces a white
+   background), so these selectors out-specify them rather than relying on inline styles. */
+.dateField :global(.react-datepicker-wrapper) {
+  display: block;
+  width: 100%;
+}
+
+.dateField :global(.react-datepicker-wrapper) input.dateInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #fff !important;
+  color: #333 !important;
+  border: 1px solid #ddd !important;
+}
+
+.dateField :global(.react-datepicker-wrapper) input.dateInputDark {
+  background-color: #253342 !important;
+  color: #fff !important;
+  border: 1px solid rgb(255 255 255 / 20%) !important;
+}
+
+.dateField :global(.react-datepicker-wrapper) input.dateInputDark::placeholder {
+  color: #c8d2e0;
+}
+
+.calendar :global(.react-datepicker__day--outside-month) {
+  color: #b0b0b0;
+}
+
+/* Dark calendar. react-datepicker's class names must sit inside :global() or CSS Modules
+   hashes them and the rules never match. Outside-month and disabled (future) days are
+   dimmed so dark mode matches light mode's "not selectable here" cue; those colors need
+   !important to beat the app-wide "body.dark-mode * { color: #fff !important }". */
+.calendarDark {
+  background-color: #253342;
+  border-color: #3f5269;
+  color: #e8edf4;
+}
+
+.calendarDark :global(.react-datepicker__header) {
+  background-color: #2f4157;
+  border-color: #3f5269;
+}
+
+.calendarDark :global(.react-datepicker__current-month),
+.calendarDark :global(.react-datepicker__day-name),
+.calendarDark :global(.react-datepicker__day) {
+  color: #e8edf4;
+}
+
+.calendarDark :global(.react-datepicker__day:hover) {
+  background-color: #3a506b;
+}
+
+.calendarDark :global(.react-datepicker__day--outside-month) {
+  color: #7d8a9c !important;
+}
+
+.calendarDark :global(.react-datepicker__day--disabled),
+.calendarDark :global(.react-datepicker__day--disabled:hover) {
+  color: #56637a !important;
+  background-color: transparent;
+  cursor: default;
+}
+
+.calendarDark :global(.react-datepicker__day--selected),
+.calendarDark :global(.react-datepicker__day--keyboard-selected),
+.calendarDark :global(.react-datepicker__day--in-range) {
+  background-color: #468ef9;
+  color: #fff;
+}
+
+.calendarDark :global(.react-datepicker__navigation-icon::before) {
+  border-color: #c8d2e0 !important;
+}
+
+.popperDark :global(.react-datepicker__triangle::before),
+.popperDark :global(.react-datepicker__triangle::after) {
+  border-bottom-color: #2f4157 !important;
+}
