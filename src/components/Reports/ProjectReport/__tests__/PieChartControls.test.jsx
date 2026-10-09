@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
+import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 import TwoWayToggleSwitch from '../../../common/TwoWayToggleSwitch/TwoWayToggleSwitch';
 import twoWayStyles from '../../../common/TwoWayToggleSwitch/TwoWayToggleSwitch.module.css';
@@ -11,6 +13,18 @@ import triStateStyles from '../TriMembersStateToggleSwitch/TriMembersStateToggle
 vi.mock('../ProjectPieChart/ProjectPieChart', () => ({
   ProjectPieChart: () => <div data-testid="project-pie-chart" />,
 }));
+
+function ControlledTwoWayToggleSwitch() {
+  const [isOn, setIsOn] = useState(false);
+
+  return (
+    <TwoWayToggleSwitch
+      id="keyboard-chart-values"
+      isOn={isOn}
+      handleToggle={() => setIsOn(currentValue => !currentValue)}
+    />
+  );
+}
 
 describe('Project Report pie chart controls', () => {
   it('wires the TwoWayToggleSwitch CSS Module classes', () => {
@@ -29,6 +43,22 @@ describe('Project Report pie chart controls', () => {
 
     fireEvent.click(screen.getByLabelText('Toggle setting'));
     expect(handleToggle).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the native checkbox tabbable and connected to controlled state', async () => {
+    render(<ControlledTwoWayToggleSwitch />);
+
+    const checkbox = screen.getByRole('checkbox');
+    expect(checkbox).not.toBeChecked();
+
+    await userEvent.tab();
+    expect(checkbox).toHaveFocus();
+
+    fireEvent.click(checkbox);
+    expect(checkbox).toBeChecked();
+
+    fireEvent.click(checkbox);
+    expect(checkbox).not.toBeChecked();
   });
 
   it('wires the TriMembersStateToggleSwitch CSS Module classes and states', () => {
