@@ -10,12 +10,39 @@ Chart.register(ArcElement, Tooltip, Legend);
 const calculatePercentage = (value, totalCount) =>
   Number.isFinite(totalCount) && totalCount > 0 ? (value / totalCount) * 100 : 0;
 
-export const formatLegendLabel = ({ label, value }, totalCount) => {
-  const percentage = calculatePercentage(value, totalCount);
-  return `${label}: ${value} (${percentage.toFixed(1)}%)`;
+// One format for slice labels, legend and tooltip so they never disagree
+// (a label used to round 8 of 2,573 to "0%" while the legend said "0.3%").
+export const formatPercent = (value, totalCount) =>
+  `${calculatePercentage(value, totalCount).toFixed(1)}%`;
+
+export const formatLegendLabel = ({ label, value }, totalCount, unitLabel = '') =>
+  `${label}: ${value}${unitLabel ? ` ${unitLabel}` : ''} (${formatPercent(value, totalCount)})`;
+
+// The backend sends "No Comparison Data" (a string) when the previous period was 0.
+export const formatComparison = (percentageChange, comparisonType) => {
+  const type = comparisonType.toUpperCase();
+  const change = Number(percentageChange);
+  if (percentageChange === null || percentageChange === '' || !Number.isFinite(change)) {
+    return `N/A ${type}`;
+  }
+  const pct = (change * 100).toFixed(0);
+  return `${change >= 0 ? '+' : ''}${pct}% ${type}`;
 };
 
-export const buildDonutTooltipOptions = (totalCount, darkMode) => ({
+// Publishes the doughnut's real hole diameter as --donut-hole on the chart wrapper,
+// so the centre text can size itself to fit instead of spilling under the ring
+// when the chart is narrow (e.g. Volunteers and Mentors side by side at ~1470px).
+export const holeSizePlugin = {
+  id: 'donutHoleSize',
+  afterLayout(chart) {
+    const arc = chart.getDatasetMeta(0)?.data?.[0];
+    const wrapper = chart.canvas?.parentNode;
+    if (!arc || !wrapper) return;
+    wrapper.style.setProperty('--donut-hole', `${Math.max(0, arc.innerRadius * 2)}px`);
+  },
+};
+
+export const buildDonutTooltipOptions = (totalCount, darkMode, unitLabel = '') => ({
   enabled: true,
   backgroundColor: darkMode ? '#222' : '#fff',
   titleColor: darkMode ? '#fff' : '#222',
@@ -29,8 +56,10 @@ export const buildDonutTooltipOptions = (totalCount, darkMode) => ({
     title: items => items?.[0]?.label || '',
     label: context => {
       const count = Number.isFinite(context.raw) ? context.raw : 0;
-      const percentage = calculatePercentage(count, totalCount);
-      return [`Count: ${count}`, `Percentage: ${percentage.toFixed(1)}%`];
+      return [
+        `Count: ${count}${unitLabel ? ` ${unitLabel}` : ''}`,
+        `Percentage: ${formatPercent(count, totalCount)}`,
+      ];
     },
   },
 });
@@ -45,6 +74,9 @@ function DonutChart(props) {
     comparisonType,
     darkMode,
     minLabelPercent,
+    centerCount,
+    unitLabel,
+    emptyMessage,
   } = props;
   const labelTextColor = darkMode ? '#e2e8f0' : '#334155';
   const labelBoxBackground = darkMode ? 'rgba(15, 23, 42, 0.96)' : 'rgba(255, 255, 255, 0.96)';
@@ -65,7 +97,7 @@ function DonutChart(props) {
           <h5 className="donut-heading" style={{ color: darkMode ? '#F7FAFC' : '#1A202C' }}>
             {title}
           </h5>
-          <div className={styles.noDataText}>No data available yet</div>
+          <div className={styles.noDataText}>{emptyMessage}</div>
         </div>
       </div>
     );
@@ -87,7 +119,7 @@ function DonutChart(props) {
     plugins: {
       datalabels: { display: false },
       legend: { display: false },
-      tooltip: buildDonutTooltipOptions(totalCount, darkMode),
+      tooltip: buildDonutTooltipOptions(totalCount, darkMode, unitLabel),
       externalLabelGuides: {
         placement: 'outside',
         outsideGap: 12,
@@ -101,10 +133,10 @@ function DonutChart(props) {
         lineColor: labelTextColor,
         backgroundColor: labelBoxBackground,
         borderColor: labelBoxBorder,
-        formatter: ({ value, percentage }) =>
+        formatter: ({ value }) =>
           calculatePercentage(value, totalCount) < minLabelPercent
             ? null
-            : [`${value}`, `(${percentage}%)`],
+            : [`${value}`, `(${formatPercent(value, totalCount)})`],
       },
     },
     interaction: {
@@ -128,13 +160,21 @@ function DonutChart(props) {
     },
   };
 
-  const percentageChangeColor = percentageChange >= 0 ? 'var(--success)' : 'var(--danger)';
+  const comparisonText =
+    comparisonType !== 'No Comparison' ? formatComparison(percentageChange, comparisonType) : null;
+  let percentageChangeColor = 'var(--success)';
+  if (comparisonText?.startsWith('N/A')) percentageChangeColor = undefined;
+  else if (Number(percentageChange) < 0) percentageChangeColor = 'var(--danger)';
 
   return (
     <div className={clsx(styles.donutContainer, darkMode && styles.donutContainerDark)}>
       <div className={styles.donutScrollable}>
         <div className={styles.donutChart}>
-          <Doughnut data={chartData} options={options} plugins={[externalLabelGuidesPlugin]} />
+          <Doughnut
+            data={chartData}
+            options={options}
+            plugins={[externalLabelGuidesPlugin, holeSizePlugin]}
+          />
           <div className={styles.donutCenter}>
             <h5
               className={clsx(
@@ -152,16 +192,14 @@ function DonutChart(props) {
             <h4
               className={clsx('donut-count', styles.donutCount, darkMode && styles.donutCountDark)}
             >
-              {totalCount}
+              {centerCount ?? totalCount}
             </h4>
-            {comparisonType !== 'No Comparison' && (
+            {comparisonText && (
               <h6
                 className={styles.donutComparisonPercent}
                 style={{ color: percentageChangeColor }}
               >
-                {percentageChange >= 0
-                  ? `+${(percentageChange * 100).toFixed(0)}% ${comparisonType.toUpperCase()}`
-                  : `${(percentageChange * 100).toFixed(0)}% ${comparisonType.toUpperCase()}`}
+                {comparisonText}
               </h6>
             )}
           </div>
@@ -171,7 +209,7 @@ function DonutChart(props) {
           {legendItems.map(({ item, color }) => (
             <div key={item.label} className={styles.donutLabel}>
               <span className={styles.donutColor} style={{ backgroundColor: color }} />
-              <span>{formatLegendLabel(item, totalCount)}</span>
+              <span>{formatLegendLabel(item, totalCount, unitLabel)}</span>
             </div>
           ))}
         </div>
@@ -183,7 +221,8 @@ function DonutChart(props) {
 DonutChart.propTypes = {
   title: PropTypes.string.isRequired,
   totalCount: PropTypes.number.isRequired,
-  percentageChange: PropTypes.number.isRequired,
+  // number, or the backend's "No Comparison Data" string (shown as N/A)
+  percentageChange: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   data: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string.isRequired,
@@ -194,11 +233,20 @@ DonutChart.propTypes = {
   comparisonType: PropTypes.string.isRequired,
   darkMode: PropTypes.bool,
   minLabelPercent: PropTypes.number,
+  // number shown in the centre when it differs from the slice total (e.g. total hours)
+  centerCount: PropTypes.number,
+  // unit appended to legend/tooltip counts, e.g. "volunteers"
+  unitLabel: PropTypes.string,
+  emptyMessage: PropTypes.string,
 };
 
 DonutChart.defaultProps = {
   darkMode: false,
+  percentageChange: null,
   minLabelPercent: 0,
+  centerCount: undefined,
+  unitLabel: '',
+  emptyMessage: 'No data available yet',
 };
 
 export default DonutChart;

@@ -20,7 +20,7 @@ afterEach(() => {
 });
 
 describe('VolunteerHoursDistribution wrapper', () => {
-  it('passes totalHoursData.current to child and computes userData percentages', () => {
+  it('shows volunteer counts per bucket and total hours in the centre', () => {
     const hoursData = [
       { _id: '10', count: 2 },
       { _id: '20', count: 3 },
@@ -37,18 +37,17 @@ describe('VolunteerHoursDistribution wrapper', () => {
       { container },
     );
 
-    expect(screen.getByText('10-19 hrs: 494 (40.0%)')).toBeInTheDocument();
-    expect(screen.getByText('20-29 hrs: 740 (60.0%)')).toBeInTheDocument();
+    // slices are volunteers (2 and 3), not hours split across buckets
+    expect(screen.getByText('10-19 hrs: 2 volunteers (40.0%)')).toBeInTheDocument();
+    expect(screen.getByText('20-29 hrs: 3 volunteers (60.0%)')).toBeInTheDocument();
+    // centre still shows the headline total hours
     expect(screen.getByText('1234')).toBeInTheDocument();
 
-    // Verify computeDistribution now allocates hours to buckets so slices add up to total hours
     const computed = computeDistribution(hoursData, totalHoursData);
-
-    // FIXED: Assert that names in userData match the updated formatRangeLabel output
     expect(computed).toEqual({
       userData: [
-        { name: '10-19 hrs', value: 494, percentage: 40 },
-        { name: '20-29 hrs', value: 740, percentage: 60 },
+        { name: '10-19 hrs', value: 2, percentage: 40, valueType: 'volunteers' },
+        { name: '20-29 hrs', value: 3, percentage: 60, valueType: 'volunteers' },
       ],
       totalVolunteers: 5,
       totalHoursWorked: 1234,
@@ -77,8 +76,8 @@ describe('VolunteerHoursDistribution wrapper', () => {
     );
 
     expect(screen.getByText('Weekly Committed Hours')).toBeInTheDocument();
-    expect(screen.getByText('40 hrs: 1 (12.5%)')).toBeInTheDocument();
-    expect(screen.getByText('Over 40 hrs: 1 (12.5%)')).toBeInTheDocument();
+    expect(screen.getByText('40 hrs: 1 volunteers (12.5%)')).toBeInTheDocument();
+    expect(screen.getByText('Over 40 hrs: 1 volunteers (12.5%)')).toBeInTheDocument();
     expect(screen.getByText('TOTAL')).toBeInTheDocument();
     expect(screen.getByText('VOLUNTEERS')).toBeInTheDocument();
     expect(screen.getByText('8')).toBeInTheDocument();
@@ -94,6 +93,23 @@ describe('VolunteerHoursDistribution wrapper', () => {
       totalVolunteers: 8,
       totalHoursWorked: 8,
     });
+  });
+});
+
+describe('empty committed hours', () => {
+  it('explains that committed hours are not available yet instead of a blank chart', () => {
+    render(
+      <VolunteerHoursDistribution
+        isLoading={false}
+        darkMode={false}
+        hoursData={undefined}
+        title="Weekly Committed Hours"
+        centerLabelLines={['TOTAL', 'VOLUNTEERS']}
+        useBucketCounts
+      />,
+      { container },
+    );
+    expect(screen.getByText('Weekly committed hours are not available yet')).toBeInTheDocument();
   });
 });
 

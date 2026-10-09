@@ -45,39 +45,6 @@ function mergeHoursBuckets(hoursData) {
   return [...merged.entries()].map(([id, count]) => ({ _id: id, count })).sort(compareBuckets);
 }
 
-function allocateRoundedHoursByCount(normalizedHoursData, totalHoursWorked) {
-  const roundedTotalHours = Math.max(0, Math.round(Number(totalHoursWorked) || 0));
-  const totalCount = normalizedHoursData.reduce(
-    (sum, bucket) => sum + (Number(bucket.count) || 0),
-    0,
-  );
-
-  if (!totalCount || !roundedTotalHours) {
-    return normalizedHoursData.map(bucket => ({ ...bucket, allocatedHours: 0 }));
-  }
-
-  const provisional = normalizedHoursData.map(bucket => {
-    const count = Number(bucket.count) || 0;
-    const exact = (count / totalCount) * roundedTotalHours;
-    const base = Math.floor(exact);
-    return { ...bucket, allocatedHours: base, remainder: exact - base };
-  });
-
-  let assigned = provisional.reduce((sum, bucket) => sum + bucket.allocatedHours, 0);
-  let remaining = roundedTotalHours - assigned;
-
-  const byRemainderDesc = [...provisional].sort((a, b) => b.remainder - a.remainder);
-  let i = 0;
-  while (remaining > 0 && byRemainderDesc.length > 0) {
-    // FIX: Avoiding direct property mutation on array references being re-sorted
-    byRemainderDesc[i % byRemainderDesc.length].allocatedHours += 1;
-    remaining -= 1;
-    i += 1;
-  }
-
-  return byRemainderDesc.map(({ remainder, ...bucket }) => bucket).sort(compareBuckets);
-}
-
 export function formatRangeLabel(rangeStr) {
   if (!rangeStr) return '';
   const normalizedRange = normalizeBucketId(rangeStr);
@@ -99,32 +66,23 @@ export function formatCommittedRangeLabel(rangeStr) {
   return formatRangeLabel(normalizedRange);
 }
 
+// Slices are always volunteer counts per bucket. The old version split the total
+// hours across buckets in proportion to those counts, so the legend showed
+// estimated hours that read like counts (e.g. "10-19 hrs: 41").
 function buildChartData(hoursData, totalHoursData, useBucketCounts = false) {
   const normalizedHoursData = mergeHoursBuckets(hoursData);
   const totalVolunteers = normalizedHoursData.reduce((total, cur) => total + (cur.count || 0), 0);
   const totalHoursWorked = useBucketCounts
     ? totalVolunteers
-    : Number(totalHoursData?.current ?? totalHoursData?.count ?? 0);
+    : Math.round(Number(totalHoursData?.current ?? totalHoursData?.count ?? 0));
 
-  const hoursByBucket = allocateRoundedHoursByCount(normalizedHoursData, totalHoursWorked);
-  const totalAllocatedHours = hoursByBucket.reduce(
-    (sum, bucket) => sum + (bucket.allocatedHours || 0),
-    0,
-  );
-
-  const userData = hoursByBucket.map(range => {
-    let value = range.count || 0;
-    let denominator = totalVolunteers;
-    if (!useBucketCounts && totalHoursWorked > 0) {
-      value = range.allocatedHours || 0;
-      denominator = totalAllocatedHours;
-    }
-
+  const userData = normalizedHoursData.map(range => {
+    const value = range.count || 0;
     return {
       name: useBucketCounts ? formatCommittedRangeLabel(range._id) : formatRangeLabel(range._id),
       value,
-      percentage: denominator ? Math.round((value / denominator) * 100) : 0,
-      ...(useBucketCounts && { valueType: 'volunteers' }),
+      percentage: totalVolunteers ? Math.round((value / totalVolunteers) * 100) : 0,
+      valueType: 'volunteers',
     };
   });
 
@@ -153,7 +111,11 @@ export default function VolunteerHoursDistribution({
     );
   }
 
-  const { userData, totalHoursWorked } = buildChartData(hoursData, totalHoursData, useBucketCounts);
+  const { userData, totalVolunteers, totalHoursWorked } = buildChartData(
+    hoursData,
+    totalHoursData,
+    useBucketCounts,
+  );
 
   return (
     <div
@@ -163,12 +125,18 @@ export default function VolunteerHoursDistribution({
       <h5 style={{ color: darkMode ? 'white' : 'inherit' }}>{title}</h5>
       <DonutChart
         title={centerLabelLines.join(' ')}
-        totalCount={Math.round(totalHoursWorked)}
+        // slices and percentages are volunteers; the centre shows the headline total
+        totalCount={totalVolunteers}
+        centerCount={totalHoursWorked}
+        unitLabel="volunteers"
         percentageChange={0}
         data={userData.map(({ name, value }) => ({ label: name, value }))}
         colors={COLORS}
         comparisonType="No Comparison"
         darkMode={darkMode}
+        emptyMessage={
+          useBucketCounts ? 'Weekly committed hours are not available yet' : 'No data available yet'
+        }
       />
     </div>
   );

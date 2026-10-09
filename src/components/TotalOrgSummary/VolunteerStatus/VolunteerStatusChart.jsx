@@ -59,7 +59,8 @@ function VolunteerStatusChart({
 
     return {
       totalVolunteers: computedTotal,
-      percentageChange: Number(totalVolunteers?.comparisonPercentage) || 0,
+      // raw value: DonutChart shows N/A for "No Comparison Data" instead of a fake +0%
+      percentageChange: totalVolunteers?.comparisonPercentage ?? null,
       data: chartDataValues,
     };
   }, [volunteerNumberStats]);
@@ -108,7 +109,8 @@ function VolunteerStatusChart({
 
     return {
       totalMentors: computedTotal,
-      percentageChange: Number(totalMentors?.comparisonPercentage) || 0,
+      // raw value: DonutChart shows N/A for "No Comparison Data" instead of a fake +0%
+      percentageChange: totalMentors?.comparisonPercentage ?? null,
       data: chartDataValues,
     };
   }, [mentorNumberStats]);
