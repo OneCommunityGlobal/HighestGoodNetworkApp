@@ -7,7 +7,13 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 Chart.register(ChartDataLabels);
 
-function PRQualityGraph({ selectedTeams, qualityData, isDataViewActive, orderedTeamIds }) {
+function PRQualityGraph({
+  selectedTeams,
+  qualityData,
+  isDataViewActive,
+  orderedTeamIds,
+  teamData,
+}) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   if (!selectedTeams || selectedTeams.length === 0) {
@@ -67,9 +73,8 @@ function PRQualityGraph({ selectedTeams, qualityData, isDataViewActive, orderedT
         displayColors: false,
         enabled: true,
         callbacks: {
-          title: items =>
-            items && items[0] ? `${items[0].label}: ${items[0].formattedValue}` : '',
-          label: ctx => (isDataViewActive ? `${ctx.raw.toFixed(1)}%` : ctx.raw),
+          title: () => '',
+          label: ctx => `${ctx.label}: ${isDataViewActive ? `${ctx.raw.toFixed(1)}%` : ctx.raw}`,
         },
       },
       datalabels: {
@@ -101,6 +106,14 @@ function PRQualityGraph({ selectedTeams, qualityData, isDataViewActive, orderedT
               }`}
             >
               {team}
+              <span
+                className={`${sharedStyles.riTeamMemberCount} ${
+                  darkMode ? sharedStyles.darkModeForeground : ''
+                }`}
+              >
+                {' '}
+                ({teamData[team]?.memberCount || 0} members)
+              </span>
             </h3>
             <Pie data={generateChartData(team)} options={options} />
           </div>
@@ -127,6 +140,11 @@ PRQualityGraph.propTypes = {
   ),
   isDataViewActive: PropTypes.bool,
   orderedTeamIds: PropTypes.arrayOf(PropTypes.string),
+  teamData: PropTypes.objectOf(
+    PropTypes.shape({
+      memberCount: PropTypes.number,
+    }),
+  ),
 };
 
 PRQualityGraph.defaultProps = {
@@ -134,6 +152,7 @@ PRQualityGraph.defaultProps = {
   qualityData: {},
   isDataViewActive: false,
   orderedTeamIds: [],
+  teamData: {},
 };
 
 export default PRQualityGraph;
