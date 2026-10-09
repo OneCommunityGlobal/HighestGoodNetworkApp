@@ -88,19 +88,44 @@
 }
 
 .team-member-tasks-done {
-  color: green;
+  color: green !important;
   cursor: pointer;
 }
 
 .team-member-task-remove {
   margin-left: 10px;
   margin-right: 10px;
-  color: red;
+  color: red !important;
   cursor: pointer;
 }
 
 .team-member-task-info {
   cursor: pointer;
+}
+
+/* The global body.dark-mode/body.bm-dashboard-dark "*" rule forces every element's
+   text white !important, which beat these icons' intended colors (and, for the info
+   icon, even its inline color prop) regardless of selector specificity. Matches the
+   .clockIconGreen/.clockIconRed pattern already used in this file for the same issue. */
+:global(.dark-mode) .team-member-tasks-done,
+:global(.dark-mode) .team-member-tasks-done *,
+:global(.bm-dashboard-dark) .team-member-tasks-done,
+:global(.bm-dashboard-dark) .team-member-tasks-done * {
+  color: green !important;
+}
+
+:global(.dark-mode) .team-member-task-remove,
+:global(.dark-mode) .team-member-task-remove *,
+:global(.bm-dashboard-dark) .team-member-task-remove,
+:global(.bm-dashboard-dark) .team-member-task-remove * {
+  color: red !important;
+}
+
+:global(.dark-mode) .team-member-task-info,
+:global(.dark-mode) .team-member-task-info *,
+:global(.bm-dashboard-dark) .team-member-task-info,
+:global(.bm-dashboard-dark) .team-member-task-info * {
+  color: lightgray !important;
 }
 
 .task-info-modal-backdrop {
@@ -706,6 +731,10 @@
     text-align: center;
   }
 
+  :global(.dark-mode) .team-member-tasks h1 {
+    color: #fff;
+  }
+
   .hours-btn-container {
     display: flex;
     justify-content: space-between;
@@ -743,6 +772,10 @@
     font-size: 0.75rem !important;
   }
 
+  :global(.dark-mode) .table-row {
+    background: #223b5a;
+  }
+
   .table-row td {
     padding: 2px !important;
   }
@@ -766,6 +799,10 @@
     color: black;
     font-size: 14px;
     text-align: center;
+  }
+
+  :global(.dark-mode) .team-member-tasks h1 {
+    color: #fff;
   }
 }
 
@@ -997,4 +1034,27 @@
 
 .task-age-badge-very-old {
   background-color: #dc3545;
+}
+
+:global(.dark-mode) .clockIconNeutral,
+:global(.dark-mode) .clockIconNeutral * {
+  color: lightgray !important;
+}
+
+.clockIconGreen {
+  color: green !important;
+}
+
+.clockIconRed {
+  color: red !important;
+}
+
+:global(.dark-mode) .clockIconGreen,
+:global(.dark-mode) .clockIconGreen * {
+  color: green !important;
+}
+
+:global(.dark-mode) .clockIconRed,
+:global(.dark-mode) .clockIconRed * {
+  color: red !important;
 }

@@ -313,6 +313,11 @@ const TeamMemberTask = React.memo(
                               }}
                             >
                               <FontAwesomeIcon
+                                className={
+                                  user.totaltangibletime_hrs >= user.weeklycommittedHours
+                                    ? styles.clockIconGreen
+                                    : styles.clockIconRed
+                                }
                                 style={{
                                   color:
                                     user.totaltangibletime_hrs >= user.weeklycommittedHours

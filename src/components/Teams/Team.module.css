@@ -108,7 +108,7 @@
   display: none;
 }
 
-tr:hover {
+tr.teams__tr:hover {
   background: #e9f6ff;
 }
 
