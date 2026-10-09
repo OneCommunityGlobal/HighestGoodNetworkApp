@@ -369,7 +369,7 @@ function WeeklyProjectSummary() {
         content: (
           <div
             className={`${styles.weeklyProjectSummaryCard} ${styles.mapCard}`}
-            style={{ height: '500px', padding: '0' }}
+            style={{ padding: '0' }}
           >
             <InteractiveMap />
           </div>
