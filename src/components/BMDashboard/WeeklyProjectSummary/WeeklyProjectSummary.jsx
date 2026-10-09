@@ -417,13 +417,7 @@ function WeeklyProjectSummary() {
         key: 'Rental Tracking',
         className: 'full',
         content: (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr',
-              gap: '15px',
-            }}
-          >
+          <div className={styles.fullWidthStack}>
             <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
               <RentalChart />
             </div>

@@ -341,6 +341,16 @@
   grid-column: span 4;
 }
 
+/* Stacks cards in one column across every column of the section grid, so the
+   section's 2-column tablet layout can't squeeze them into half the width */
+.fullWidthStack {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 15px;
+  min-width: 0;
+}
+
 /* ---------------- SECTION ---------------- */
 .weeklyProjectSummaryDashboardSection {
   background: var(--section-bg);

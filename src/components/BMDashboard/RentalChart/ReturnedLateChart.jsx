@@ -68,12 +68,17 @@ function getRequestErrorMessage(error, fallbackMessage) {
   );
 }
 
+// Below this width the chart switches to smaller fonts and shorter axis titles
+const COMPACT_CHART_WIDTH = 576;
+
 export default function ReturnedLateChart() {
   const chartRef = useRef(null);
+  const chartContainerRef = useRef(null);
+  const [chartWidth, setChartWidth] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [availableProjects, setAvailableProjects] = useState([]);
-  const [availableTools, setAvailableTools] = useState([]);
+  const [allToolsData, setAllToolsData] = useState([]);
   const [selectedProject, setSelectedProject] = useState('All');
   const [selectedTools, setSelectedTools] = useState([]);
   const [dateRange, setDateRange] = useState({
@@ -89,6 +94,17 @@ export default function ReturnedLateChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [sortOption, setSortOption] = useState('DESC');
   const isMultiProjectView = selectedProject === 'All';
+  // Tools are picked per project, so the list only has the selected project's tools
+  const availableTools = useMemo(() => {
+    if (isMultiProjectView) return [];
+    const tools = allToolsData
+      .filter(item => item.projectId === selectedProject)
+      .map(item => item.toolName)
+      .filter(Boolean);
+    return [...new Set(tools)]
+      .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
+      .map(tool => ({ label: tool, value: tool }));
+  }, [allToolsData, isMultiProjectView, selectedProject]);
   const visibleDatasets = useMemo(
     () =>
       chartData.datasets.map(dataset => ({
@@ -156,8 +172,7 @@ export default function ReturnedLateChart() {
 
         if (toolsResult.status === 'fulfilled') {
           const data = getArrayPayload(toolsResult.value.data);
-          const tools = Array.from(new Set(data.map(d => d.toolName))).filter(Boolean);
-          setAvailableTools(tools.map(t => ({ label: t, value: t })));
+          setAllToolsData(data);
           didLoadAnyData = didLoadAnyData || data.length > 0;
         }
 
@@ -337,6 +352,17 @@ export default function ReturnedLateChart() {
     [chartData.datasets, chartData.labels, rawToolsData],
   );
 
+  // Track the chart area's width so fonts and labels can shrink on small screens
+  useEffect(() => {
+    const container = chartContainerRef.current;
+    if (!container || typeof ResizeObserver === 'undefined') return undefined;
+    const observer = new ResizeObserver(([entry]) => setChartWidth(entry.contentRect.width));
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
+
+  const isCompact = chartWidth > 0 && chartWidth < COMPACT_CHART_WIDTH;
+
   const options = useMemo(() => {
     const textColor = darkMode ? '#fff' : '#333';
     const datalabelColor = darkMode ? '#fff' : '#111';
@@ -367,7 +393,7 @@ export default function ReturnedLateChart() {
           display: ctx => ctx.dataset.data[ctx.dataIndex] > 0,
           clamp: true,
           color: datalabelColor,
-          font: { weight: 'bold' },
+          font: { weight: 'bold', size: isCompact ? 10 : 12 },
         },
         tooltip: {
           callbacks: {
@@ -398,11 +424,14 @@ export default function ReturnedLateChart() {
           title: {
             display: true,
             text: 'Tool Name',
-            font: { size: 16, weight: 'bold' },
+            font: { size: isCompact ? 12 : 16, weight: 'bold' },
             color: textColor,
           },
           ticks: {
             color: textColor,
+            font: { size: isCompact ? 10 : 12 },
+            maxRotation: isCompact ? 60 : 50,
+            autoSkip: true,
           },
           grid: { color: gridColor },
           border: { color: axisBorderColor },
@@ -411,12 +440,13 @@ export default function ReturnedLateChart() {
           beginAtZero: true,
           title: {
             display: true,
-            text: 'Percent of tools returned late',
-            font: { size: 16, weight: 'bold' },
+            text: isCompact ? '% returned late' : 'Percent of tools returned late',
+            font: { size: isCompact ? 12 : 16, weight: 'bold' },
             color: textColor,
           },
           ticks: {
             color: textColor,
+            font: { size: isCompact ? 10 : 12 },
             callback: v => `${v}%`,
           },
           grid: { color: gridColor },
@@ -426,7 +456,7 @@ export default function ReturnedLateChart() {
         },
       },
     };
-  }, [darkMode, handleBarClick, maxChartValue, rawToolsData]);
+  }, [darkMode, handleBarClick, maxChartValue, rawToolsData, isCompact]);
 
   const toggleProjectVisibility = projectId => {
     if (!projectId || !isMultiProjectView) return;
@@ -502,7 +532,10 @@ export default function ReturnedLateChart() {
           <Select
             id="project-select" /* <-- Added ID to match the label */
             value={selectedProject}
-            onChange={value => setSelectedProject(value)}
+            onChange={value => {
+              setSelectedProject(value);
+              setSelectedTools([]);
+            }}
             className={`${styles['returned-late-project-select']} ${
               darkMode ? styles['background-dark'] : ''
             }`}
@@ -525,18 +558,24 @@ export default function ReturnedLateChart() {
           >
             Tools:
           </label>
-          <MultiSelect
-            options={availableTools}
-            value={selectedTools}
-            onChange={setSelectedTools}
-            labelledBy="tools-select"
-            overrideStrings={{
-              selectSomeItems: 'All Tools',
-              allItemsAreSelected: 'All Tools',
-              search: 'Search tools',
-            }}
-            className={styles['returned-late-tools-select']}
-          />
+          {/* MultiSelect has no title prop, so the wrapper shows the disabled hint */}
+          <div title={isMultiProjectView ? 'Select a project to filter by tool' : undefined}>
+            <MultiSelect
+              options={availableTools}
+              value={selectedTools}
+              onChange={setSelectedTools}
+              disabled={isMultiProjectView}
+              labelledBy="tools-select"
+              overrideStrings={{
+                selectSomeItems: 'All Tools',
+                allItemsAreSelected: 'All Tools',
+                search: 'Search tools',
+              }}
+              className={`${styles['returned-late-tools-select']} ${
+                isMultiProjectView ? styles['returned-late-tools-select-disabled'] : ''
+              }`}
+            />
+          </div>
         </div>
 
         <div className={styles['returned-late-filter-group']}>
@@ -609,7 +648,10 @@ export default function ReturnedLateChart() {
           />
         </div>
       </div>
-      <div className={`${styles['returned-late-chart-container']} text-white`}>
+      <div
+        ref={chartContainerRef}
+        className={`${styles['returned-late-chart-container']} text-white`}
+      >
         {loading && (
           <div
             className={`${styles['returned-late-loading']} ${

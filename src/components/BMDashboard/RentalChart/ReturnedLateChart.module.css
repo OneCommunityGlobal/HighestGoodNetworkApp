@@ -1,6 +1,9 @@
 /* stylelint-disable */
 .returned-late-chart {
   padding: 20px;
+
+  /* Lets the small-screen rules below follow the card's width, not the viewport */
+  container-type: inline-size;
 }
 
 .returned-late-header-row {
@@ -192,6 +195,16 @@
   color: #e0e0e0;
 }
 
+/* Tools filter stays disabled until a project is picked */
+.returned-late-tools-select-disabled {
+  opacity: 0.55;
+}
+
+.returned-late-tools-select-disabled :global(.dropdown-container),
+.returned-late-tools-select-disabled :global(.dropdown-heading) {
+  cursor: not-allowed;
+}
+
 /* Options are <label>s, so the app-wide label margin/bold leaked in as gaps between rows */
 .returned-late-tools-select :global(.select-item) {
   margin: 0;
@@ -329,4 +342,60 @@
   opacity: 0.45 !important;
   background-color: #152234 !important;
   border-color: #334155 !important;
+}
+
+/* ==========================================================================
+   Small Screens
+   ========================================================================== */
+@container (width <= 640px) {
+  .returned-late-chart h1 {
+    margin-bottom: 12px;
+    font-size: 20px;
+  }
+
+  .returned-late-legend-block {
+    align-items: flex-start;
+  }
+
+  .returned-late-legend {
+    justify-content: flex-start;
+  }
+
+  /* One filter per row, labels in a fixed column so the controls line up */
+  .returned-late-filters {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
+    max-width: 420px;
+    margin: 10px auto 16px;
+  }
+
+  .returned-late-filter-group {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .returned-late-filter-label {
+    text-align: left;
+  }
+
+  .returned-late-filter-group > div,
+  .returned-late-project-select,
+  .returned-late-chart .returned-late-tools-select,
+  .returned-late-filter-group :global(.react-datepicker-wrapper) {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .returned-late-chart-container {
+    height: 380px;
+  }
+}
+
+@media (width <= 576px) {
+  .returned-late-chart {
+    padding: 12px;
+  }
 }

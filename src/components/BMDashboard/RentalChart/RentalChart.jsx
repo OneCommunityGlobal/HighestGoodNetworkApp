@@ -54,6 +54,8 @@ const CHART_COLORS = {
 
 const FILTER_ALL = 'All';
 const MIN_LABELED_CHART_WIDTH = 600;
+// Below this width the chart switches to smaller fonts and shorter axis titles
+const COMPACT_CHART_WIDTH = 576;
 
 const filterRentalData = (data, selectedProject, selectedTool, dateRange) =>
   data.filter(item => {
@@ -170,6 +172,13 @@ const getDatalabelFormatter = (value, chartType) => {
   return `$${value.toFixed(2)}`;
 };
 
+const getYAxisTitle = (chartType, isCompact) => {
+  if (chartType === 'percentage') {
+    return isCompact ? '% of Materials Cost' : 'Percentage of Total Materials Cost (%)';
+  }
+  return isCompact ? 'Rental Cost ($)' : 'Total Rental Cost ($)';
+};
+
 const formatDate = date => `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
 
 const buildChartTitle = (selectedProject, selectedTool, dateRange, availableProjects) => {
@@ -186,6 +195,8 @@ const buildChartTitle = (selectedProject, selectedTool, dateRange, availableProj
 
 export default function RentalChart() {
   const chartRef = useRef(null);
+  const chartWrapperRef = useRef(null);
+  const [chartWidth, setChartWidth] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [chartType, setChartType] = useState('cost');
@@ -221,12 +232,10 @@ export default function RentalChart() {
     return projectMap;
   }, [rawData, bmProjects, fallbackProjectNames]);
 
-  // Tool options follow the selected project so every choice has data behind it
+  // Tools are picked per project, so the list only has the selected project's tools
   const availableTools = useMemo(() => {
-    const projectData =
-      selectedProject === FILTER_ALL
-        ? rawData
-        : rawData.filter(item => item.projectId === selectedProject);
+    if (selectedProject === FILTER_ALL) return [];
+    const projectData = rawData.filter(item => item.projectId === selectedProject);
     return [...new Set(projectData.map(item => item.toolName))].sort((a, b) =>
       a.localeCompare(b, undefined, { sensitivity: 'base' }),
     );
@@ -306,6 +315,17 @@ export default function RentalChart() {
     fetchRentalData().catch(() => {});
   }, []);
 
+  // Track the chart area's width so fonts and labels can shrink on small screens
+  useEffect(() => {
+    const wrapper = chartWrapperRef.current;
+    if (!wrapper || typeof ResizeObserver === 'undefined') return undefined;
+    const observer = new ResizeObserver(([entry]) => setChartWidth(entry.contentRect.width));
+    observer.observe(wrapper);
+    return () => observer.disconnect();
+  }, []);
+
+  const isCompact = chartWidth > 0 && chartWidth < COMPACT_CHART_WIDTH;
+
   const options = useMemo(() => {
     const textColor = darkMode ? '#ffffff' : '#000000';
     const tooltipBorder = darkMode ? '#ffffff' : '#000000';
@@ -323,17 +343,21 @@ export default function RentalChart() {
       plugins: {
         legend: {
           position: 'top',
-          labels: { color: textColor, font: { size: 16 } },
+          labels: {
+            color: textColor,
+            font: { size: isCompact ? 12 : 16 },
+            boxWidth: isCompact ? 24 : 40,
+          },
         },
         title: {
           display: true,
           text: buildChartTitle(selectedProject, selectedTool, dateRange, availableProjects),
           font: {
-            size: 14,
+            size: isCompact ? 12 : 14,
           },
           color: darkMode ? CHART_COLORS.darkText : CHART_COLORS.lightText,
           padding: {
-            bottom: 20,
+            bottom: isCompact ? 10 : 20,
           },
         },
         tooltip: {
@@ -353,8 +377,8 @@ export default function RentalChart() {
           bodyColor: textColor,
           borderColor: tooltipBorder,
           borderWidth: 2,
-          titleFont: { size: 18 },
-          bodyFont: { size: 16 },
+          titleFont: { size: isCompact ? 14 : 18 },
+          bodyFont: { size: isCompact ? 12 : 16 },
         },
         datalabels: {
           color: darkMode ? '#e0e0e0' : '#333333',
@@ -379,8 +403,19 @@ export default function RentalChart() {
         x: {
           // Pad both ends so edge points and their labels clear the y-axis ticks
           offset: true,
-          title: { display: true, text: 'Month/Year', color: textColor, font: { size: 18 } },
-          ticks: { color: textColor },
+          title: {
+            display: true,
+            text: 'Month/Year',
+            color: textColor,
+            font: { size: isCompact ? 13 : 18 },
+          },
+          ticks: {
+            color: textColor,
+            font: { size: isCompact ? 10 : 12 },
+            maxRotation: isCompact ? 60 : 50,
+            autoSkip: true,
+            autoSkipPadding: isCompact ? 4 : 10,
+          },
           grid: { color: gridXColor },
         },
         y: {
@@ -389,22 +424,20 @@ export default function RentalChart() {
           grace: '10%',
           title: {
             display: true,
-            text:
-              chartType === 'percentage'
-                ? 'Percentage of Total Materials Cost (%)'
-                : 'Total Rental Cost ($)',
+            text: getYAxisTitle(chartType, isCompact),
             color: textColor,
-            font: { size: 18 },
+            font: { size: isCompact ? 13 : 18 },
           },
           ticks: {
             callback: value => (chartType === 'percentage' ? formatPercent(value) : `$${value}`),
             color: textColor,
+            font: { size: isCompact ? 10 : 12 },
           },
           grid: { color: gridYColor },
         },
       },
     };
-  }, [darkMode, chartType, dateRange, selectedProject, selectedTool, availableProjects]);
+  }, [darkMode, chartType, dateRange, selectedProject, selectedTool, availableProjects, isCompact]);
 
   const handleTypeChange = e => {
     setChartType(e.target.value);
@@ -412,6 +445,7 @@ export default function RentalChart() {
 
   const handleProjectChange = e => {
     setSelectedProject(e.target.value);
+    setSelectedTool(FILTER_ALL);
   };
 
   const handleToolChange = e => {
@@ -518,6 +552,10 @@ export default function RentalChart() {
               id="tool-filter"
               value={selectedTool}
               onChange={handleToolChange}
+              disabled={selectedProject === FILTER_ALL}
+              title={
+                selectedProject === FILTER_ALL ? 'Select a project to filter by tool' : undefined
+              }
               className={`${styles['rental-chart-select']} ${
                 darkMode ? styles['dark-select'] : ''
               }`}
@@ -578,7 +616,10 @@ export default function RentalChart() {
         </div>
       </div>
 
-      <div className={`${styles['chart-wrapper']} ${darkMode ? styles['dark-chart'] : ''}`}>
+      <div
+        ref={chartWrapperRef}
+        className={`${styles['chart-wrapper']} ${darkMode ? styles['dark-chart'] : ''}`}
+      >
         {renderChartContent()}
       </div>
     </div>
