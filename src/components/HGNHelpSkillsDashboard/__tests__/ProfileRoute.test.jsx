@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
@@ -113,5 +113,49 @@ describe('HGN Help profile route', () => {
     renderProfile('user-error');
 
     await screen.findByText('Error: Failed to load user profile data');
+  });
+
+  it('renders skills in Deployment & DevOps and Software Practices tabs', async () => {
+    axios.get.mockResolvedValue({
+      data: {
+        userId: 'user-123',
+        name: { displayName: 'Member One' },
+        teams: [],
+        skillInfo: {
+          frontend: { React: '8' },
+          backend: {
+            MongoDB: '7',
+            Deployment: '6',
+            VersionControl: '5',
+            EnvironmentSetup: '4',
+            CodeReview: '9',
+            AdvancedCoding: '8',
+            AgileDevelopment: '7',
+          },
+        },
+      },
+    });
+
+    renderProfile();
+
+    expect(await screen.findByText('Member One')).toBeInTheDocument();
+
+    const devOpsTab = screen.getByText('Deployment & DevOps');
+    fireEvent.click(devOpsTab);
+    expect(devOpsTab.className).toContain('activeNavLink');
+
+    expect(await screen.findByText('Deployment')).toBeInTheDocument();
+    expect(screen.getByText('VersionControl')).toBeInTheDocument();
+    expect(screen.getByText('EnvironmentSetup')).toBeInTheDocument();
+    expect(screen.getByText('6')).toBeInTheDocument();
+
+    const practicesTab = screen.getByText('Software Practices');
+    fireEvent.click(practicesTab);
+    expect(practicesTab.className).toContain('activeNavLink');
+
+    expect(await screen.findByText('CodeReview')).toBeInTheDocument();
+    expect(screen.getByText('AdvancedCoding')).toBeInTheDocument();
+    expect(screen.getByText('AgileDevelopment')).toBeInTheDocument();
+    expect(screen.getByText('9')).toBeInTheDocument();
   });
 });
