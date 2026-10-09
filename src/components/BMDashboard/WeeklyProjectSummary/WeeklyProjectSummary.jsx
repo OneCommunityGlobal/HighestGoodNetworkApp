@@ -254,20 +254,29 @@ function WeeklyProjectSummary() {
         key: 'Tools and Equipment Tracking',
         className: 'full',
         content: (
-          <div className={styles.toolsTrackingGrid}>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
+            <div
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+              style={{ width: '100%' }}
+            >
               <ToolStatusDonutChart />
             </div>
-
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+            <div
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+              style={{ width: '100%' }}
+            >
               <ToolsHorizontalBarChart darkMode={darkMode} />
             </div>
-
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+            <div
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+              style={{ width: '100%' }}
+            >
               <SupplierPerformanceGraph />
             </div>
-
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+            <div
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+              style={{ width: '100%' }}
+            >
               <ToolsStoppageHorizontalBarChart />
             </div>
           </div>
