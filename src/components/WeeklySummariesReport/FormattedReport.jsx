@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import UserStateDisplay from '../UserState/UserStateDisplay';
+import ReactTooltip from 'react-tooltip';
 import { permissions } from '../../utils/constants';
 // import moment from 'moment';
 // import 'moment-timezone';
@@ -106,6 +107,7 @@ function FormattedReport({
   handleTeamCodeChange,
   handleBioStatusChange,
   handleSpecialColorDotClick,
+  timeOffRequests,
 }) {
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission(permissions.totalValidWeeklySummaries));
@@ -175,6 +177,7 @@ function FormattedReport({
               auth={auth}
               handleSpecialColorDotClick={handleSpecialColorDotClick}
               isFinalWeek={isFinalWeek}
+              timeOffRequests={timeOffRequests}
             />
           );
         })}
@@ -294,6 +297,7 @@ function ReportDetails({
   auth,
   handleSpecialColorDotClick,
   isFinalWeek,
+  timeOffRequests,
 }) {
   // eslint-disable-next-line no-console
   // console.log('DEBUG ReportDetails:', {
@@ -313,6 +317,7 @@ function ReportDetails({
 
   // No bar for anyone unqualified, whatever the toggle says. 'default' and 'requested'
   // both count as "still to do"; only 'posted' ends the workflow and clears the bar.
+  const activeTimeOffRequest = getActiveTimeOffRequest(timeOffRequests, summary._id, weekIndex);
   const isMeetCriteria = canSeeBioHighlight && isQualifiedForBio(summary);
 
   return (
@@ -341,7 +346,7 @@ function ReportDetails({
               backgroundColor: isMeetCriteria ? '#FFF200' : 'transparent',
               color: isMeetCriteria ? '#000000' : 'inherit',
               width: '100%',
-              padding: '6px 12px 6px 0px',
+              padding: '2px 12px 2px 0px',
             }}
           >
             {/* Dev-admin protected records stay read-only here, same as team code and
@@ -367,6 +372,13 @@ function ReportDetails({
           >
             <ListGroupItem darkMode={darkMode}>
               <TeamCodeRow
+                weekOffBadge={
+                  <WeekOffBadge
+                    request={activeTimeOffRequest}
+                    summaryId={summary._id}
+                    weekIndex={weekIndex}
+                  />
+                }
                 canEditTeamCode={canEditTeamCode && !cantEditJaeRelatedRecord}
                 summary={summary}
                 handleTeamCodeChange={handleTeamCodeChange}
@@ -509,7 +521,7 @@ function WeeklySummaryMessage({ summary, weekIndex, darkMode }) {
   );
 }
 
-function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode }) {
+function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode, weekOffBadge }) {
   const [teamCode, setTeamCode] = useState(summary.teamCode);
   const [savedTeamCode, setSavedTeamCode] = useState(summary.teamCode);
   const [hasError, setHasError] = useState(false);
@@ -553,31 +565,34 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode 
   return (
     <>
       <div className={styles.teamcodeWrapper}>
-        {canEditTeamCode ? (
-          <div style={{ paddingRight: '5px', position: 'relative' }}>
-            <Input
-              id="codeInput"
-              value={teamCode}
-              onChange={e => setTeamCode(e.target.value)}
-              onBlur={e => {
-                handleCodeChange(e);
-              }}
-              onKeyDown={e => {
-                if (e.key === 'Enter') {
-                  e.currentTarget.blur(); // triggers onBlur
-                }
-              }}
-              placeholder="X-XXX"
-              className={`${styles.weeklySummariesCodeInput} ${
-                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-              }`}
-            />
-          </div>
-        ) : (
-          <div style={{ paddingRight: '5px' }}>
-            {teamCode === '' ? 'No assigned team code!' : teamCode}
-          </div>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {canEditTeamCode ? (
+            <div style={{ paddingRight: '5px', position: 'relative' }}>
+              <Input
+                id="codeInput"
+                value={teamCode}
+                onChange={e => setTeamCode(e.target.value)}
+                onBlur={e => {
+                  handleCodeChange(e);
+                }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    e.currentTarget.blur(); // triggers onBlur
+                  }
+                }}
+                placeholder="X-XXX"
+                className={`${styles.teamCodeInput} ${
+                  darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                }`}
+              />
+            </div>
+          ) : (
+            <div style={{ paddingRight: '5px' }}>
+              {teamCode === '' ? 'No assigned team code!' : teamCode}
+            </div>
+          )}
+          {weekOffBadge}
+        </div>
         <div>
           <b>Media URL:</b>
           <MediaUrlLink summary={summary} />
@@ -651,18 +666,21 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
   };
 
   return (
-    <div className={styles.totalValidWrapper}>
+    <div
+      className={styles.totalValidWrapper}
+      style={{ display: 'flex', alignItems: 'center', flexWrap: 'nowrap' }}
+    >
       {weeklySummariesCount === 8 ? (
-        <div className="total-valid-text" style={style}>
+        <div className="total-valid-text" style={{ ...style, whiteSpace: 'nowrap', flexShrink: 0 }}>
           <b>Total Valid Weekly Summaries:</b>{' '}
         </div>
       ) : (
-        <div className="total-valid-text">
+        <div className="total-valid-text" style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
           <b>Total Valid Weekly Summaries:</b>
         </div>
       )}
       {canEditSummaryCount ? (
-        <div className={`pl-2 ${styles.weeklySummariesCodeInput}`}>
+        <div className={styles.summaryCountInputWrapper}>
           <Input
             type="number"
             name="weeklySummaryCount"
@@ -670,7 +688,9 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
             value={weeklySummariesCount}
             onChange={e => handleWeeklySummaryCountChange(e)}
             className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+            style={{ width: '65px', height: '28px', padding: '2px 6px' }}
             min="0"
+            max="9999"
           />
         </div>
       ) : (
@@ -838,6 +858,58 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   );
 }
 
+// Returns the time-off request (if any) overlapping the week being viewed
+// (weekIndex: 0=This Week, 1=Last Week, ...), so the badge follows the request
+// across tabs as weeks pass.
+function getActiveTimeOffRequest(timeOffRequests, userId, weekIndex) {
+  const userRequests = (timeOffRequests || {})[userId] || [];
+  const weekStart = moment()
+    .tz(TZ)
+    .startOf('week')
+    .subtract(weekIndex, 'week');
+  const weekEnd = moment()
+    .tz(TZ)
+    .endOf('week')
+    .subtract(weekIndex, 'week');
+  return userRequests.find(request => {
+    if (!request.startingDate) return false;
+    const start = moment(request.startingDate);
+    const end = request.endingDate ? moment(request.endingDate) : start;
+    return weekStart.isSameOrBefore(end) && weekEnd.isSameOrAfter(start);
+  });
+}
+
+function WeekOffBadge({ request, summaryId, weekIndex }) {
+  if (!request) return null;
+  const tooltipId = `week-off-reason-${summaryId}-${weekIndex}`;
+  return (
+    <span
+      style={{
+        backgroundColor: '#f8d7da',
+        color: '#721c24',
+        padding: '1px 6px',
+        borderRadius: '4px',
+        fontSize: '0.75rem',
+        whiteSpace: 'nowrap',
+        display: 'inline-flex',
+        alignItems: 'center',
+      }}
+    >
+      Requested Week Off
+      <i
+        className="fa fa-info-circle"
+        style={{ marginLeft: '4px', cursor: 'pointer' }}
+        data-tip
+        data-for={tooltipId}
+        aria-label="Time off reason"
+      />
+      <ReactTooltip id={tooltipId} place="top" effect="solid">
+        {request.reason || 'No reason provided'}
+      </ReactTooltip>
+    </span>
+  );
+}
+
 function Index({
   summary,
   weekIndex,
@@ -972,11 +1044,25 @@ function Index({
                   marginLeft: '10px',
                   fontSize: '25px',
                   cursor: 'pointer',
+                  position: 'relative',
+                  lineHeight: 1,
+                  marginRight: '16px',
                   color: summary?.trophyFollowedUp === true ? '#ffbb00' : '#FF0800',
                 }}
                 onClick={trophyIconToggle}
               >
-                <p style={{ fontSize: '10px', marginLeft: '5px' }}>
+                <p
+                  style={{
+                    fontSize: '10px',
+                    position: 'absolute',
+                    left: '100%',
+                    bottom: 0,
+                    marginLeft: '1px',
+                    margin: 0,
+                    lineHeight: 1,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
                   {handleIconContent(durationSinceStarted)}
                 </p>
               </i>
@@ -1119,6 +1205,7 @@ Index.propTypes = {
   handleSpecialColorDotClick: PropTypes.func,
   isFinalWeek: PropTypes.bool,
   darkMode: PropTypes.bool,
+  timeOffRequests: PropTypes.objectOf(PropTypes.array),
 };
 
 FormattedReport.propTypes = {
@@ -1141,10 +1228,14 @@ FormattedReport.propTypes = {
       }),
     }),
   }),
+  // Keyed by userId, each value an array of that user's time-off requests
+  // ({ _id, reason, startingDate, endingDate, ... }), from timeOffRequestReducer.
+  timeOffRequests: PropTypes.objectOf(PropTypes.array),
 };
 
 FormattedReport.defaultProps = {
   auth: {},
+  timeOffRequests: {},
 };
 
 ReportDetails.propTypes = {
@@ -1162,10 +1253,12 @@ ReportDetails.propTypes = {
       }),
     }),
   }),
+  timeOffRequests: PropTypes.objectOf(PropTypes.array),
 };
 
 ReportDetails.defaultProps = {
   auth: {},
+  timeOffRequests: {},
 };
 
 export default FormattedReport;
