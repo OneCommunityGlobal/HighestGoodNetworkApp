@@ -192,8 +192,8 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
     let filteredForChart = toolsData;
 
     if (selectedTools.length > 0) {
-      const selectedNames = selectedTools.map(tool => tool.value);
-      filteredForChart = toolsData.filter(item => selectedNames.includes(item.toolName));
+      const selectedNames = new Set(selectedTools.map(tool => tool.value));
+      filteredForChart = toolsData.filter(item => selectedNames.has(item.toolName));
     }
 
     if (filteredForChart.length > 0) {

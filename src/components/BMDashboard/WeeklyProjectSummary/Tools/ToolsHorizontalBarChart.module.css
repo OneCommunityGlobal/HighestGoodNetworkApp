@@ -129,6 +129,7 @@
 
 .tools-horizontal-bar-chart-filter-group:last-child {
   grid-column: 1 / -1;
+  text-align: center;
 }
 
 .tools-horizontal-bar-chart-filter-group label {
@@ -156,6 +157,7 @@
 .tools-horizontal-bar-chart-date-picker-group {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   flex-wrap: wrap;
 }
