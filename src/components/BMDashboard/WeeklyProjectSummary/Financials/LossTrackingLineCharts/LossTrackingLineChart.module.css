@@ -217,15 +217,20 @@
 .chartWrapper {
   width: 100%;
 
-  /* Responsive, predictable height for ResponsiveContainer (height="100%") */
+  /* Height of the plot area only; the wrapper grows to fit the legend below it */
   --chart-height: clamp(320px, 42vh, 680px);
 
-  height: var(--chart-height);
   background-color: var(--surface-muted);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   padding: 1rem;
   min-width: 0; /* let SVG measure correctly in flex/grid */
+}
+
+/* Fixed-height box for ResponsiveContainer (height="100%") */
+.chartArea {
+  height: var(--chart-height);
+  min-width: 0;
 }
 
 @media screen and (width >= 1440px) {
@@ -269,7 +274,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  height: var(--chart-height);
+  box-sizing: border-box;
   font-size: 1rem;
   font-weight: 600;
   color: var(--muted-text);
