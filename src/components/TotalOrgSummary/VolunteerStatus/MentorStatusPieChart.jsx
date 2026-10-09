@@ -45,7 +45,7 @@ function MentorStatusPieChart({
       },
     },
     maintainAspectRatio: false,
-    cutout: '60%',
+    cutout: '65%',
     layout: {
       padding: 20,
     },

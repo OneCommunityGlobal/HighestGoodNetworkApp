@@ -113,11 +113,11 @@
   border-radius: 2px;
 }
 
-:global(.bg-oxford-blue) .mentorStatusHeading {
+:global(.bgOxfordBlue) .mentorStatusHeading {
   color: #f1f5ff;
 }
 
-:global(.bg-oxford-blue) .mentorCount {
+:global(.bgOxfordBlue) .mentorCount {
   color: #fff;
 }
 
