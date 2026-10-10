@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import styles from '../Projects/projects.module.css';
 
 export default function SearchProjectByPerson({
+  value: controlledValue,
   onSearch,
   suggestions,
   onSelectSuggestion,
@@ -12,6 +13,7 @@ export default function SearchProjectByPerson({
 }) {
   const [inputValue, setInputValue] = useState(''); // Keep track of input value
   const [showSuggestions, setShowSuggestions] = useState(false); // Control whether suggestions are shown
+  const value = controlledValue ?? inputValue;
   const darkMode = useSelector(state => state.theme.darkMode);
 
   // Handle when the user types in the input field
@@ -31,6 +33,7 @@ export default function SearchProjectByPerson({
   const handleSuggestionClick = suggestion => {
     setInputValue(`${suggestion.firstName} ${suggestion.lastName}`); // Set the selected suggestion
     setShowSuggestions(false); // Hide suggestions after selection
+    if (controlledValue !== undefined) onSearch(`${suggestion.firstName} ${suggestion.lastName}`);
     onSelectSuggestion(suggestion); // Notify parent component of the selection
   };
 
@@ -52,12 +55,12 @@ export default function SearchProjectByPerson({
             darkMode ? 'bg-darkmode-liblack text-light' : ''
           }`}
           placeholder={searchMode === 'person' ? 'Search by Person Name' : 'Search by Project Name'}
-          value={inputValue}
+          value={value}
           onChange={handleInputChange} // Trigger input change
         />
       </form>
 
-      {showSuggestions && suggestions?.length > 0 && (
+      {value.trim() && showSuggestions && suggestions?.length > 0 && (
         <ul className="suggestions-list">
           {suggestions.map(suggestion => (
             <li key={suggestion._id} className="suggestion-item">
