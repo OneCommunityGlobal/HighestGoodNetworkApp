@@ -53,12 +53,15 @@ export default function SearchProjectByPerson({
           }`}
           placeholder={searchMode === 'person' ? 'Search by Person Name' : 'Search by Project Name'}
           value={inputValue}
-          onChange={handleInputChange} // Trigger input change
+          onChange={handleInputChange}
+          style={
+            darkMode ? { backgroundColor: '#1c2541', color: '#ffffff', borderColor: '#3a506b' } : {}
+          }
         />
       </form>
 
       {showSuggestions && suggestions?.length > 0 && (
-        <ul className="suggestions-list">
+        <ul className={`suggestions-list ${darkMode ? styles.suggestionsListDark : ''}`}>
           {suggestions.map(suggestion => (
             <li key={suggestion._id} className="suggestion-item">
               <button

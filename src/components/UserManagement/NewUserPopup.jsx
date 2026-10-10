@@ -6,6 +6,7 @@ import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 import AddNewUserProfile from '../UserProfile/AddNewUserProfile';
 import { boxStyle, boxStyleDark } from '../../styles';
 import '../Header/index.module.css';
+import styles from './NewUserPopup.module.css';
 
 /**
  * Modal popup to show the user profile in create mode
@@ -53,7 +54,9 @@ const NewUserPopupComponent = (props) => {
       <Modal
         isOpen={props.open}
         toggle={closePopup}
-        className={`modal-dialog modal-lg ${darkMode ? 'text-light dark-mode' : ''}`}
+        className={`modal-dialog modal-lg ${
+          darkMode ? `text-light dark-mode ${styles.newUserModalDark}` : ''
+        }`}
       >
         <ModalHeader
           className={darkMode ? 'bg-space-cadet' : ''}

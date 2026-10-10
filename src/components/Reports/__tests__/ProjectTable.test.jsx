@@ -3,6 +3,7 @@ import { render, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
 import ProjectTable from '../ProjectTable';
+import reportsPageStyles from '../reportsPage.module.css';
 
 describe('ProjectTable component', () => {
   const mockProjects = [
@@ -86,7 +87,11 @@ describe('ProjectTable component', () => {
   it('renders the table with dark mode styles when darkMode is true', () => {
     renderWithRouter(<ProjectTable projects={mockProjects} darkMode />);
     const table = screen.getByRole('table');
-    expect(table).toHaveClass('bg-yinmn-blue');
+    // `bg-yinmn-blue` (App.module.css passed as a plain string) never applied —
+    // Vite scopes App.module.css as a CSS module, so the class gets hashed and
+    // the literal string never matched. The table now gets its dark styling
+    // from a real, correctly-scoped local class instead.
+    expect(table).toHaveClass(reportsPageStyles['reports-table-dark']);
     const links = screen.getAllByRole('link');
     links.forEach(link => {
       expect(link).toHaveClass('text-light');

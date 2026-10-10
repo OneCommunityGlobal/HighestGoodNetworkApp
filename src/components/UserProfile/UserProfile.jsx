@@ -1644,7 +1644,7 @@ setUpdatedTasks(prev => {
                         ? activeTab === '1'
                           ? 'bg-space-cadet text-light'
                           : 'text-azure'
-                        : 'text-azure',
+                        : '',
                     )}
                     onClick={() => toggleTab('1')}
                     id="nabLink-basic"
@@ -1661,7 +1661,7 @@ setUpdatedTasks(prev => {
                         ? activeTab === '1'
                           ? 'bg-space-cadet text-light'
                           : 'text-azure'
-                        : 'text-azure',
+                        : '',
                     )}
                     onClick={() => toggleTab('2')}
                     id="nabLink-time"
@@ -1678,7 +1678,7 @@ setUpdatedTasks(prev => {
                         ? activeTab === '1'
                           ? 'bg-space-cadet text-light'
                           : 'text-azure'
-                        : 'text-azure',
+                        : '',
                     )}
                     onClick={() => toggleTab('3')}
                     id="nabLink-teams"
@@ -1695,7 +1695,7 @@ setUpdatedTasks(prev => {
                         ? activeTab === '1'
                           ? 'bg-space-cadet text-light'
                           : 'text-azure'
-                        : 'text-azure',
+                        : '',
                     )}
                     onClick={() => toggleTab('4')}
                     id="nabLink-projects"
@@ -1713,7 +1713,7 @@ setUpdatedTasks(prev => {
                         ? activeTab === '1'
                           ? 'bg-space-cadet text-light'
                           : 'text-azure'
-                        : 'text-azure',
+                        : '',
                     )}
                     onClick={() => toggleTab('5')}
                   >

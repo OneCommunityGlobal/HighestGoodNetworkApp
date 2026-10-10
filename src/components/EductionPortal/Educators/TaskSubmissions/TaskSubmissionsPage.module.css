@@ -9,7 +9,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 24px 32px;
-  background-color: #FFFFFF;
+  background-color: #FFF;
   border-bottom: 1px solid #EDEDED;
 }
 
@@ -26,8 +26,6 @@
 }
 
 .filterSelect {
-  -webkit-appearance: none;
-  -moz-appearance: none;
   appearance: none;
   background-color: #fff;
   border: 1px solid #D9D9D9;
@@ -36,7 +34,7 @@
   padding-right: 40px;
   font-size: 14px;
   font-weight: 500;
-  color: #333333;
+  color: #333;
   cursor: pointer;
   width: 100%;
   height: 42px;
@@ -50,7 +48,7 @@
 .filterSelect:focus {
   outline: none;
   border-color: #4f46e5;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  box-shadow: 0 0 0 3px rgb(79 70 229 / 10%);
 }
 
 .filterIcon {
@@ -92,13 +90,13 @@
   color: #6B7280;
   transition: all 0.2s ease;
   z-index: 10;
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 2px 0 8px rgb(0 0 0 / 4%);
 }
 
 .scrollButton:last-child {
   border-right: none;
   border-left: 1px solid #E5E7EB;
-  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.04);
+  box-shadow: -2px 0 8px rgb(0 0 0 / 4%);
 }
 
 .scrollButton:hover {
@@ -113,8 +111,7 @@
 .tabs {
   display: flex;
   flex: 1;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: auto hidden;
   scroll-behavior: smooth;
   scrollbar-width: thin;
   scrollbar-color: #D1D5DB #F9FAFB;
@@ -153,7 +150,7 @@
   transition: all 0.2s ease;
   white-space: nowrap;
   min-width: fit-content;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
 }
 
 .tab:hover:not(.activeTab) {
@@ -161,7 +158,7 @@
   border-color: #D1D5DB;
   color: #374151;
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 8%);
 }
 
 .tab:active:not(.activeTab) {
@@ -172,13 +169,13 @@
   background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
   color: white;
   border-color: #3B82F6;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 12px rgb(59 130 246 / 30%);
   transform: translateY(-2px);
 }
 
 .activeTab:hover {
   background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
-  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 6px 16px rgb(59 130 246 / 40%);
 }
 
 /* Content Section */
@@ -187,11 +184,11 @@
 }
 
 .taskSection {
-  background-color: #ffffff;
+  background-color: #fff;
   border: 1px solid #EAEAEA;
   border-radius: 12px;
   margin-bottom: 24px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 4%);
   overflow: hidden;
 }
 
@@ -341,7 +338,7 @@
 .retryButton:hover {
   background-color: #4338ca;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 4px 12px rgb(79 70 229 / 30%);
 }
 
 /* No Data State */
@@ -350,7 +347,7 @@
   padding: 60px 20px;
   color: #757575;
   font-size: 16px;
-  background-color: #FFFFFF;
+  background-color: #FFF;
   border: 1px solid #E0E0E0;
   border-radius: 12px;
 }
@@ -361,7 +358,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .cardsGrid {
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 16px;
@@ -382,7 +379,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .header {
     flex-direction: column;
     align-items: flex-start;
@@ -431,131 +428,97 @@
   }
 }
 
-@media (min-width: 1024px) {
+@media (width >= 1024px) {
   .tabs::-webkit-scrollbar {
     height: 8px;
   }
 }
 
-/* Dark Mode */
-:global(.dark-mode) .container {
-  background-color: #1a1a2e;
+/* ─── Dark mode ───
+   Keyed off `.darkMode`, applied to `.container` by TaskSubmissionsPage.jsx —
+   same convention as the sibling EducationPortalLayout.module.css. Only the
+   surfaces that were plain white/light-grey need a dark counterpart; the blue
+   `.activeTab` gradient and the red-on-pink `.errorState` already read fine in
+   both themes and are left alone. */
+.darkMode.container {
+  background-color: #1a1d23;
 }
 
-:global(.dark-mode) .header {
-  background-color: #16213e;
-  border-bottom-color: #2d2d2d;
+.darkMode .header {
+  background-color: #1c2541;
+  border-bottom-color: #3a506b;
 }
 
-:global(.dark-mode) .title {
-  color: #e0e0e0;
+.darkMode .title {
+  color: #f9fafb;
 }
 
-:global(.dark-mode) .filterSelect {
-  background-color: #2d2d2d;
-  border-color: #444;
-  color: #e0e0e0;
+.darkMode .filterSelect {
+  background-color: #1c2541;
+  border-color: #3a506b;
+  color: #f9fafb;
 }
 
-:global(.dark-mode) .filterSelect:hover {
-  border-color: #666;
+.darkMode .filterIcon {
+  color: #94a3b8;
 }
 
-:global(.dark-mode) .filterSelect:focus {
-  border-color: #3b82f6;
+.darkMode .tabsContainer,
+.darkMode .tabs,
+.darkMode .scrollButton {
+  background-color: #1c2541;
+  border-color: #3a506b;
 }
 
-:global(.dark-mode) .filterIcon {
-  color: #9ca3af;
+.darkMode .scrollButton {
+  color: #94a3b8;
 }
 
-:global(.dark-mode) .tabsContainer {
-  background-color: #1e1e2e;
-  border-bottom-color: #2d2d2d;
-}
-
-:global(.dark-mode) .tabs {
-  background-color: #1e1e2e;
-  scrollbar-color: #444 #1e1e2e;
-}
-
-:global(.dark-mode) .tabs::-webkit-scrollbar-track {
-  background: #1e1e2e;
-}
-
-:global(.dark-mode) .tabs::-webkit-scrollbar-thumb {
-  background: #444;
-}
-
-:global(.dark-mode) .tab {
-  background-color: #2d2d2d;
-  border-color: #3d3d3d;
-  color: #9ca3af;
-}
-
-:global(.dark-mode) .tab:hover:not(.activeTab) {
-  background-color: #363636;
-  border-color: #555;
+.darkMode .tab:not(.activeTab) {
+  background-color: #232946;
+  border-color: #3a506b;
   color: #d1d5db;
 }
 
-:global(.dark-mode) .scrollButton {
-  background-color: #1e1e2e;
-  border-color: #2d2d2d;
-  color: #9ca3af;
+.darkMode .tab:hover:not(.activeTab) {
+  background-color: #1c2541;
+  border-color: #4b5563;
+  color: #f9fafb;
 }
 
-:global(.dark-mode) .scrollButton:hover {
-  background-color: #2d2d2d;
-  color: #e0e0e0;
+.darkMode .taskSection {
+  background-color: #1c2541;
+  border-color: #3a506b;
 }
 
-:global(.dark-mode) .taskSection {
-  background-color: #16213e;
-  border-color: #2d2d2d;
+.darkMode .sectionHeader {
+  background-color: #232946;
+  border-bottom-color: #3a506b;
 }
 
-:global(.dark-mode) .sectionHeader {
-  background-color: #1e1e2e;
-  border-bottom-color: #2d2d2d;
+.darkMode .sectionHeader:hover,
+.darkMode .sectionHeader:focus {
+  background-color: #1c2541;
 }
 
-:global(.dark-mode) .sectionHeader:hover {
-  background-color: #252540;
+.darkMode .sectionHeader h3 {
+  color: #f9fafb;
 }
 
-:global(.dark-mode) .sectionHeader h3 {
-  color: #e0e0e0;
+.darkMode .dueDate,
+.darkMode .submissionCount,
+.darkMode .expandIcon {
+  color: #94a3b8;
 }
 
-:global(.dark-mode) .dueDate {
-  color: #9ca3af;
+.darkMode .loadingState,
+.darkMode .noData {
+  background-color: #1c2541;
+  border-color: #3a506b;
+  color: #d1d5db;
 }
 
-:global(.dark-mode) .submissionCount {
-  color: #9ca3af;
-}
-
-:global(.dark-mode) .expandIcon {
-  color: #9ca3af;
-}
-
-:global(.dark-mode) .loadingState {
-  background-color: #16213e;
-  color: #9ca3af;
-}
-
-:global(.dark-mode) .loadingState p {
-  color: #9ca3af;
-}
-
-:global(.dark-mode) .spinner {
-  border-color: #2d2d2d;
-  border-top-color: #3b82f6;
-}
-
-:global(.dark-mode) .noData {
-  background-color: #16213e;
-  border-color: #2d2d2d;
-  color: #9ca3af;
+.darkMode .loadingState p,
+.darkMode .noData p {
+  color: #d1d5db;
 }

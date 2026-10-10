@@ -1,6 +1,7 @@
 import React from 'react';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { Link } from 'react-router-dom';
+import styles from './reportsPage.module.css';
 
 function ProjectTable({ projects, darkMode }) {
   // Display project lists
@@ -30,7 +31,7 @@ function ProjectTable({ projects, darkMode }) {
   }
 
   return (
-    <table className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`} style={darkMode ? boxStyleDark : boxStyle}>
+    <table className={`table ${darkMode ? styles['reports-table-dark'] : 'table-bordered'}`} style={darkMode ? boxStyleDark : boxStyle}>
       <thead>
         <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
           <th scope="col" id="projects__order">
