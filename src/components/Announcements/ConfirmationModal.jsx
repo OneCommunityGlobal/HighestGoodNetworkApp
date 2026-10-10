@@ -12,6 +12,7 @@ const ConfirmationModal = ({
   confirmColor = 'primary',
   showDontShowAgain = false,
   onDontShowAgainChange = null,
+  modalClassName,
 }) => {
   const [dontShowAgain, setDontShowAgain] = useState(false);
 
@@ -30,7 +31,7 @@ const ConfirmationModal = ({
   };
 
   return (
-    <Modal isOpen={isOpen} toggle={handleCancel} centered>
+    <Modal isOpen={isOpen} toggle={handleCancel} centered modalClassName={modalClassName}>
       <ModalHeader toggle={handleCancel}>{title}</ModalHeader>
       <ModalBody>
         <p style={{ margin: 0, marginBottom: showDontShowAgain ? '1rem' : 0 }}>{message}</p>
