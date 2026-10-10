@@ -13,6 +13,16 @@
   background-color: white;
   overflow: hidden;
   max-width: 100%;
+  height: 100%;
+}
+
+.team-member-tasks table {
+  height: 100%;
+}
+
+.team-member-tasks tbody,
+.team-member-tasks tr {
+  height: 100%;
 }
 
 .truncateTasksBtn {
@@ -70,6 +80,7 @@
 
 .task_table-container {
   width: 100%;
+  height: 100%;
   overflow: hidden auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -190,13 +201,50 @@
 }
 
 .team-member-tasks-user-name {
-  width: 50%;
+  width: 100%;
+  height: 100%;
   text-align: center;
-  vertical-align: top !important;
+  vertical-align: stretch !important;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start !important;
+  justify-content: flex-start;
   align-items: center;
+  padding: 10px 5px;
+  gap: 12px;
+}
+
+/* Ensure all direct child elements of user card have proper flex behavior */
+.team-member-tasks-user-name > * {
+  flex-shrink: 0;
+  width: 100%;
+}
+
+/* Push team-clocks to the bottom of the card */
+.team-member-tasks-user-name .team-clocks {
+  margin-top: auto;
+  margin-bottom: 0;
+}
+
+/* User name link styling */
+.team-member-tasks-user-name-link {
+  display: block;
+  margin: 0;
+  line-height: 1.3;
+  width: 100%;
+}
+
+/* Ensure subtable inside user card stretches to fill parent */
+.team-member-tasks-subtable {
+  height: 100%;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.team-member-tasks-subtable tbody,
+.team-member-tasks-subtable tbody tr,
+.team-member-tasks-subtable tbody tr td {
+  height: 100%;
+  vertical-align: stretch !important;
 }
 
 .team-member-tasks td {
@@ -248,10 +296,12 @@
 }
 
 .team-clocks {
-  display: table-cell;
+  display: block;
   text-align: center;
-  vertical-align: top;
-  padding-left: 10px !important;
+  width: 100%;
+  padding: 8px 0;
+  margin-top: auto;
+  flex-shrink: 0;
 }
 
 
@@ -324,6 +374,8 @@
 
 .table-row {
   position: relative;
+  height: 100%;
+  vertical-align: stretch !important;
 }
 
 .hidden {
@@ -347,6 +399,14 @@
 .row-content {
   position: relative;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ensure the remove-padding td (containing row-content) stretches */
+.remove-padding {
+  height: 100% !important;
+  vertical-align: stretch !important;
 }
 
 .no-bottom-margin {
@@ -470,6 +530,8 @@
 .grid-container {
   display: grid;
   grid-template-rows: 1fr auto;
+  height: 100%;
+  min-height: 100%;
 }
 
 .expand-time-off-detail-button {
@@ -857,6 +919,7 @@
 
 .container {
   width: 100%;
+  height: 100%;
   margin-left: auto;
   margin-right: auto;
 }
