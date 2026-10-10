@@ -13,8 +13,8 @@ describe('HoursWorkList label formatting', () => {
     render(<HoursWorkList data={mockNormalizedData} darkMode={false} />);
 
     // Asserting against the updated, clean text formats
-    expect(screen.getByText('10-19 hrs')).toBeInTheDocument();
-    expect(screen.getByText('40-49 hrs')).toBeInTheDocument();
-    expect(screen.getByText('40+ hrs')).toBeInTheDocument();
+    expect(screen.getByText('0-10 hrs')).toBeInTheDocument();
+    expect(screen.getByText('31-40 hrs')).toBeInTheDocument();
+    expect(screen.getByText('Over 40 hrs')).toBeInTheDocument();
   });
 });

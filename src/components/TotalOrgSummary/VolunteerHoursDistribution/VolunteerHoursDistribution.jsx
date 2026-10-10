@@ -82,19 +82,19 @@ export function formatRangeLabel(rangeStr) {
   if (!rangeStr) return '';
   const normalizedRange = normalizeBucketId(rangeStr);
 
+  // Backend bucket ids are UPPER limits (overviewReportHelper.assignToBucket):
+  // '10' = 0-10 hrs, '20' = 11-20 hrs, ..., '50' = 41-50 hrs, '50+' = over 50 hrs.
   if (normalizedRange.includes('+')) {
-    // FIX: Prefer Number() over parseFloat() for safer numeric string conversions
     const num = Number(normalizedRange.replace('+', ''));
-    return `${num}+ hrs`;
-  } else {
-    const num = Number(normalizedRange);
-    return `${num}-${num + 9} hrs`;
+    return `Over ${num} hrs`;
   }
+  const upper = Number(normalizedRange);
+  const lower = upper <= 10 ? 0 : upper - 9;
+  return `${lower}-${upper} hrs`;
 }
 
 export function formatCommittedRangeLabel(rangeStr) {
   const normalizedRange = normalizeBucketId(rangeStr);
-  if (normalizedRange === '40') return '40 hrs';
   if (normalizedRange === '40+') return 'Over 40 hrs';
   return formatRangeLabel(normalizedRange);
 }
