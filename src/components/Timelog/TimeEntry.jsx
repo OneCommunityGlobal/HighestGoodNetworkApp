@@ -37,6 +37,21 @@ function TimeEntry(props) {
   const { _id: timeEntryUserId } = timeEntryUserProfile;
   const { _id: timeEntryId } = data;
   const { dateOfWork, isTangible, hours, minutes, projectName, taskName, taskId, notes } = data;
+  // populated by the backend: editor once the entry is edited, creator on entries logged after
+  // the field was added; both absent on older entries
+  const { lastModifiedBy: editor, lastModifiedDateTime, createdBy: creator, createdDateTime } = data;
+  const auditNotices = [
+    // only when someone logged time for this user, not their own entries
+    creator?.firstName &&
+      String(creator._id) !== String(data.personId) &&
+      `This time log was added on ${moment(createdDateTime).format('MMM D, YYYY')} by ${
+        creator.role
+      }: ${creator.firstName} ${creator.lastName}`,
+    editor?.firstName &&
+      `This time log was edited on ${moment(lastModifiedDateTime).format('MMM D, YYYY')} by ${
+        editor.role
+      }: ${editor.firstName} ${editor.lastName}`,
+  ].filter(Boolean);
 
   const [timeEntryFormModal, setTimeEntryFormModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -216,6 +231,24 @@ function TimeEntry(props) {
             </div>
           </Col>
         </Row>
+        {auditNotices.length > 0 && (
+          <Row className="mx-0">
+            <Col md={7} className="px-0">
+              {auditNotices.map(notice => (
+                <small
+                  key={notice}
+                  className={`${styles.editedNotice} ${
+                    darkMode
+                      ? `${styles['dark-text-muted']} dark-text-muted`
+                      : `${styles['text-muted']} text-muted`
+                  } font-italic`}
+                >
+                  {notice}
+                </small>
+              ))}
+            </Col>
+          </Row>
+        )}
       </Card>
       {/* this TimeEntryForm could be rendered from either weekly tab or task tab */}
       <TimeEntryForm
