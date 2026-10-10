@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import Loading from '~/components/common/Loading';
+import { getMentorTotal } from '~/utils/totalOrgSummary';
 import VolunteerStatusPieChart from './VolunteerStatusPieChart';
 import MentorStatusPieChart from './MentorStatusPieChart';
 import styles from './VolunteerStatusChart.module.css';
@@ -75,7 +76,6 @@ function VolunteerStatusChart({
     } = mentorNumberStats;
 
     let chartDataValues;
-    let computedTotal;
 
     if (donutChartData && donutChartData.existingActive !== undefined) {
       const existingActive = donutChartData.existingActive.count || 0;
@@ -87,8 +87,6 @@ function VolunteerStatusChart({
         { label: 'New Active', value: newActive },
         { label: 'Deactivated', value: deactivated },
       ];
-
-      computedTotal = existingActive + newActive + deactivated;
     } else {
       const active = activeMentors?.count || 0;
       const newM = newMentors?.count || 0;
@@ -99,12 +97,10 @@ function VolunteerStatusChart({
         { label: 'New', value: newM },
         { label: 'Deactivated This Week', value: deactM },
       ];
-
-      computedTotal = active + newM + deactM;
     }
 
     return {
-      totalMentors: computedTotal,
+      totalMentors: getMentorTotal(mentorNumberStats),
       percentageChange: Number(totalMentors?.comparisonPercentage) || 0,
       data: chartDataValues,
     };
