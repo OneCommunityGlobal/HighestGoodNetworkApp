@@ -7,28 +7,36 @@ import { formatSkillName } from './FilerData.js';
 import styles from './style/RankedUserList.module.css';
 import UserCard from './UserCard';
 
+const TOP_SKILLS_PER_SECTION = 4;
+
 const extractSkillEntries = skillData => {
   if (!skillData || typeof skillData !== 'object') return [];
 
   if (Array.isArray(skillData)) {
     return skillData.flatMap(skill => {
-      if (typeof skill === 'string') return [{ name: skill, rating: undefined }];
+      if (typeof skill === 'string')
+        return [{ name: skill, rating: undefined, section: 'default' }];
       if (skill && typeof skill === 'object') {
         const name = skill.name || skill.skill || skill.label || skill.type;
-        return name ? [{ name, rating: skill.rating ?? skill.score ?? undefined }] : [];
+        return name
+          ? [{ name, rating: skill.rating ?? skill.score ?? undefined, section: 'default' }]
+          : [];
       }
       return [];
     });
   }
 
-  return Object.values(skillData).flatMap(section => {
+  return Object.entries(skillData).flatMap(([sectionName, section]) => {
     if (!section || typeof section !== 'object') return [];
     if (Array.isArray(section)) {
       return section.flatMap(skill => {
-        if (typeof skill === 'string') return [{ name: skill, rating: undefined }];
+        if (typeof skill === 'string')
+          return [{ name: skill, rating: undefined, section: sectionName }];
         if (skill && typeof skill === 'object') {
           const name = skill.name || skill.skill || skill.label || skill.type;
-          return name ? [{ name, rating: skill.rating ?? skill.score ?? undefined }] : [];
+          return name
+            ? [{ name, rating: skill.rating ?? skill.score ?? undefined, section: sectionName }]
+            : [];
         }
         return [];
       });
@@ -37,6 +45,7 @@ const extractSkillEntries = skillData => {
     return Object.entries(section).map(([skillName, rating]) => ({
       name: skillName,
       rating: typeof rating === 'number' ? rating : undefined,
+      section: sectionName,
     }));
   });
 };
@@ -44,7 +53,7 @@ const extractSkillEntries = skillData => {
 const normalizeUser = user => {
   const rawSkills = user.skills;
   const skillEntries = Array.isArray(user.topSkills)
-    ? user.topSkills.map(name => ({ name, rating: undefined }))
+    ? user.topSkills.map(name => ({ name, rating: undefined, section: 'default' }))
     : extractSkillEntries(rawSkills);
 
   const uniqueSkills = Array.from(
@@ -53,18 +62,32 @@ const normalizeUser = user => {
     ).values(),
   );
 
-  const sortedSkills = uniqueSkills
-    .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
-    .map(entry => entry.name);
+  // Mirror the backend's strict /ranked rule: a skill only counts for filtering
+  // and search if it's in the top 4 (by score) within its own section, so the
+  // filter stays meaningful instead of matching anyone who rated a skill at all.
+  const skillsBySection = uniqueSkills.reduce((acc, entry) => {
+    const section = entry.section || 'default';
+    if (!acc[section]) acc[section] = [];
+    acc[section].push(entry);
+    return acc;
+  }, {});
+
+  const topSkillNames = Object.values(skillsBySection).flatMap(entries =>
+    entries
+      .slice()
+      .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
+      .slice(0, TOP_SKILLS_PER_SECTION)
+      .map(entry => entry.name),
+  );
 
   // Keep the raw skill keys (used by the filter buttons, which pass FilerData's
   // keys) separate from the human-readable names search/display should use,
   // and leave the original `skills` field untouched for other consumers.
-  const displaySkills = sortedSkills.map(formatSkillName);
+  const displaySkills = topSkillNames.map(formatSkillName);
 
   return {
     ...user,
-    topSkills: sortedSkills,
+    topSkills: topSkillNames,
     displaySkills,
   };
 };
