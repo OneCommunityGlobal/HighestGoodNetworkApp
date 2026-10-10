@@ -1885,6 +1885,7 @@ setUpdatedTasks(prev => {
                   user={userProfile}
                   authEmail={authEmail}
                   canUpdatePassword={canResetPassword}
+                  darkMode={darkMode}
                 />
               )}
               {isUserSelf && (activeTab === '1' || canPutUserProfile) && (
@@ -2017,6 +2018,7 @@ setUpdatedTasks(prev => {
                           user={userProfile}
                           authEmail={authEmail}
                           canUpdatePassword
+                          darkMode={darkMode}
                         />
                       )}
                       {isUserSelf && (activeTab == '1' || canPutUserProfile) && (
