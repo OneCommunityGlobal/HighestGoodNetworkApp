@@ -167,7 +167,7 @@
 }
 
 .errorText {
-  color: #c0392b;
+  color: #d32f2f;
   font-size: 0.85rem;
   margin: 0;
 }
@@ -282,7 +282,7 @@
 }
 
 .errorTextDark {
-  color: #f4a3a3;
+  color: #ff5252;
 }
 
 /* Calendar tile highlight - uses global override since react-calendar injects its own classes */
@@ -337,6 +337,14 @@
   color: #fff;
   border: 1px solid #7a90b3;
   border-radius: 4px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  padding: 4px 8px;
+}
+
+.eventPageDark :global(.react-datepicker__input-container input:focus) {
+  outline: none;
+  border-color: #9fb1cc;
 }
 
 .eventPageDark :global(.react-datepicker__day--selected),
