@@ -20,9 +20,7 @@ function PromotionEligibility() {
   const [reviewers, setReviewers] = useState([]);
 
   const [selectedForPromotion, setSelectedForPromotion] = useState(new Set());
-
   const [processing, setProcessing] = useState(false);
-
   const [selectGroup, setSelectedGroup] = useState('new');
 
   const [showReviewDropdown, setShowReviewDropdown] = useState(false);
@@ -53,6 +51,11 @@ function PromotionEligibility() {
   const [promotionPreview, setPromotionPreview] = useState([]);
   const [editingPromotionTeam, setEditingPromotionTeam] = useState(null);
   const [editingTeamId, setEditingTeamId] = useState('');
+
+  // Each dialog needs its own ref.
+  const manageOptionsDialogRef = useRef(null);
+  const editOptionDialogRef = useRef(null);
+  const addOptionDialogRef = useRef(null);
   const promotionDialogRef = useRef(null);
 
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -79,6 +82,7 @@ function PromotionEligibility() {
         }));
 
         setReviewers(mappedData);
+        setError(null);
       } catch (e) {
         console.error('Failed to load reviewers:', e);
 
@@ -111,7 +115,6 @@ function PromotionEligibility() {
         setLoadingReviewOptions(true);
 
         const data = await fetchReviewerGroups(currentUser);
-
         const groups = [...(data.groups || [])].sort((a, b) => a.sortOrder - b.sortOrder);
 
         setReviewOptions(groups);
@@ -137,6 +140,54 @@ function PromotionEligibility() {
     void loadReviewerGroups();
   }, [currentUser]);
 
+  /*
+   * Manage Review Options dialog
+   */
+  useEffect(() => {
+    const dialog = manageOptionsDialogRef.current;
+
+    if (!dialog) return;
+
+    if (showManageOptions && !dialog.open) {
+      dialog.showModal();
+    } else if (!showManageOptions && dialog.open) {
+      dialog.close();
+    }
+  }, [showManageOptions]);
+
+  /*
+   * Edit Review Option dialog
+   */
+  useEffect(() => {
+    const dialog = editOptionDialogRef.current;
+
+    if (!dialog) return;
+
+    if (showEditOption && !dialog.open) {
+      dialog.showModal();
+    } else if (!showEditOption && dialog.open) {
+      dialog.close();
+    }
+  }, [showEditOption]);
+
+  /*
+   * Add Review Option dialog
+   */
+  useEffect(() => {
+    const dialog = addOptionDialogRef.current;
+
+    if (!dialog) return;
+
+    if (showAddOption && !dialog.open) {
+      dialog.showModal();
+    } else if (!showAddOption && dialog.open) {
+      dialog.close();
+    }
+  }, [showAddOption]);
+
+  /*
+   * Promotion Confirmation dialog
+   */
   useEffect(() => {
     const dialog = promotionDialogRef.current;
 
@@ -144,13 +195,14 @@ function PromotionEligibility() {
 
     if (showPromotionModal && !dialog.open) {
       dialog.showModal();
-    }
-
-    if (!showPromotionModal && dialog.open) {
+    } else if (!showPromotionModal && dialog.open) {
       dialog.close();
     }
   }, [showPromotionModal]);
 
+  /*
+   * Load teams
+   */
   useEffect(() => {
     if (!allTeams.length) {
       dispatch(getAllUserTeams());
@@ -223,6 +275,7 @@ function PromotionEligibility() {
       const response = await previewPromotionEligibility(eligibleIds, currentUser);
 
       const placements = response?.placements || [];
+
       setPromotionPreview(placements);
       setShowPromotionModal(true);
     } catch (err) {
@@ -309,6 +362,7 @@ function PromotionEligibility() {
       setProcessing(false);
     }
   };
+
   /*
    * Render reviewer table row
    */
@@ -473,7 +527,7 @@ function PromotionEligibility() {
     }
 
     try {
-      const response = await updateReviewerGroup(selectedOption.key, editOption);
+      const response = await updateReviewerGroup(selectedOption.key, editOption, currentUser);
 
       const updatedGroup = response.group || response;
 
@@ -514,7 +568,7 @@ function PromotionEligibility() {
     }
 
     try {
-      const response = await createReviewerGroup(newOption);
+      const response = await createReviewerGroup(newOption, currentUser);
 
       const createdGroup = response.group || response;
 
@@ -650,7 +704,8 @@ function PromotionEligibility() {
                 <div className={styles.modal_overlay}>
                   <dialog
                     className={styles.modal}
-                    ref={promotionDialogRef}
+                    ref={manageOptionsDialogRef}
+                    onClose={() => setShowManageOptions(false)}
                     aria-modal="true"
                     aria-labelledby="manage-review-options-title"
                   >
@@ -715,8 +770,9 @@ function PromotionEligibility() {
               {showEditOption && selectedOption && (
                 <div className={styles.modal_overlay}>
                   <dialog
-                    ref={promotionDialogRef}
+                    ref={editOptionDialogRef}
                     className={styles.modal}
+                    onClose={handleCloseEditOption}
                     aria-modal="true"
                     aria-labelledby="edit-review-option-title"
                   >
@@ -787,8 +843,9 @@ function PromotionEligibility() {
               {showAddOption && (
                 <div className={styles.modal_overlay}>
                   <dialog
-                    ref={promotionDialogRef}
+                    ref={addOptionDialogRef}
                     className={styles.modal}
+                    onClose={handleCloseAddOption}
                     aria-modal="true"
                     aria-labelledby="add-review-option-title"
                   >
@@ -938,6 +995,7 @@ function PromotionEligibility() {
           <dialog
             ref={promotionDialogRef}
             className={styles.modal}
+            onClose={() => setShowPromotionModal(false)}
             aria-modal="true"
             aria-labelledby="promotion-confirmation-title"
           >

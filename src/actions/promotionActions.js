@@ -25,7 +25,7 @@ export const fetchReviewerGroups = async currentUser => {
 };
 
 export const createReviewerGroup = async (groupData, currentUser) => {
-  const res = await axios.post(ENDPOINTS.REVIEWER_GROUPS, {
+  const res = await axios.post(ENDPOINTS.REVIEWER_GROUPS_NEW, {
     ...groupData,
     requestor: currentUser,
   });
@@ -34,7 +34,7 @@ export const createReviewerGroup = async (groupData, currentUser) => {
 };
 
 export const updateReviewerGroup = async (groupId, groupData, currentUser) => {
-  const res = await axios.put(`${ENDPOINTS.REVIEWER_GROUPS}/${groupId}`, {
+  const res = await axios.patch(`${ENDPOINTS.REVIEWER_GROUPS}/${groupId}`, {
     ...groupData,
     requestor: currentUser,
   });
