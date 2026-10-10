@@ -12,6 +12,55 @@ import TextSearchBox from '~/components/UserManagement/TextSearchBox';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { TasksDetail } from '../TasksDetail';
 
+const getDarkOptionBackground = ({ isFocused, isSelected }) => {
+  if (isSelected) return '#2563eb';
+  if (isFocused) return '#111831';
+  return '#3a506b';
+};
+
+const getTasksSelectStyles = darkMode => ({
+  control: base => ({
+    ...base,
+    minHeight: 30,
+    height: 30,
+    ...(darkMode ? { backgroundColor: '#3a506b', borderColor: '#d1cfd4' } : {}),
+  }),
+  dropdownIndicator: base => ({
+    ...base,
+    padding: '4px 8px',
+    ...(darkMode ? { color: '#fff' } : {}),
+  }),
+  indicatorSeparator: base => ({
+    ...base,
+    ...(darkMode ? { backgroundColor: '#d1cfd4' } : {}),
+  }),
+  indicatorsContainer: base => ({ ...base, height: 26 }),
+  input: base => ({
+    ...base,
+    margin: 0,
+    padding: 0,
+    ...(darkMode ? { color: '#fff' } : {}),
+  }),
+  menu: base => ({ ...base, ...(darkMode ? { backgroundColor: '#3a506b' } : {}) }),
+  menuList: base => ({ ...base, ...(darkMode ? { backgroundColor: '#3a506b' } : {}) }),
+  option: (base, state) =>
+    darkMode
+      ? {
+          ...base,
+          backgroundColor: getDarkOptionBackground(state),
+          color: '#fff',
+        }
+      : base,
+  placeholder: base => ({ ...base, margin: 0, ...(darkMode ? { color: '#fff' } : {}) }),
+  singleValue: base => ({ ...base, margin: 0, ...(darkMode ? { color: '#fff' } : {}) }),
+  valueContainer: base => ({
+    ...base,
+    height: 26,
+    padding: '0 8px',
+    alignItems: 'center',
+  }),
+});
+
 export function TasksTable({ darkMode, tasks, projectId }) {
   const [isActive, setActive] = useState(true);
   const [isAssigned, setAssigned] = useState(true);
@@ -24,10 +73,10 @@ export function TasksTable({ darkMode, tasks, projectId }) {
   });
 
   // Derived values / constants
-  const darkModeSelectClass = darkMode ? styles['dark-mode-select'] : '';
   const darkModeCheckboxClass = darkMode ? styles['dark-mode-checkbox'] : '';
   const darkModeButtonClass = darkMode ? styles['dark-mode-button'] : '';
   const currentBoxStyle = darkMode ? boxStyleDark : boxStyle;
+  const selectStyles = getTasksSelectStyles(darkMode);
 
   const userRef = useRef(null);
 
@@ -86,41 +135,47 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             options={getUserOptions()}
             placeholder="Any user"
             onChange={(selectedOption) => handleSelectChange(selectedOption, 'users')}
-            className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']} ${darkModeSelectClass}`}
-            classNamePrefix="select"
+            className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']}`}
+            classNamePrefix="tasks-select"
             menuPortalTarget={document.body}
+            styles={selectStyles}
             value={filters.users ? { value: filters.users, label: filters.users } : null}
           />
           <Select
             options={getOptions('classification')}
             placeholder="Any classification"
             onChange={(selectedOption) => handleSelectChange(selectedOption, 'classification')}
-            className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']} ${darkModeSelectClass}`}
-            classNamePrefix="select"
+            className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']}`}
+            classNamePrefix="tasks-select"
             menuPortalTarget={document.body}
+            styles={selectStyles}
             value={filters.classification ? { value: filters.classification, label: filters.classification } : null}
           />
           <Select
             options={getOptions('priority')}
             placeholder="Any priority"
             onChange={(selectedOption) => handleSelectChange(selectedOption, 'priority')}
-            className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']} ${darkModeSelectClass}`}
-            classNamePrefix="select"
+            className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']}`}
+            classNamePrefix="tasks-select"
             menuPortalTarget={document.body}
+            styles={selectStyles}
             value={filters.priority ? { value: filters.priority, label: filters.priority } : null}
           />
           <Select
             options={getOptions('status')}
             placeholder="Any status"
             onChange={(selectedOption) => handleSelectChange(selectedOption, 'status')}
-            className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']} ${darkModeSelectClass}`}
-            classNamePrefix="select"
+            className={`${styles['tasks-table-filter-item']} ${styles['tasks-table-filter-input']}`}
+            classNamePrefix="tasks-select"
             menuPortalTarget={document.body}
+            styles={selectStyles}
             value={filters.status ? { value: filters.status, label: filters.status } : null}
           />
           <TextSearchBox
             placeholder="Estimated hours"
-            className={styles['tasks-table-text-search-box']}
+            className={`${styles['tasks-table-text-search-box']} ${
+              darkMode ? styles['dark-mode-text-input'] : ''
+            }`}
             searchCallback={() => { }}
           />
           <Checkbox
@@ -129,6 +184,8 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             id="active_checkbox"
             wrapperClassname={styles['tasks-table-filter-item']}
             backgroundColorCN={darkModeCheckboxClass}
+            darkMode={darkMode}
+            textColorCN={darkMode ? styles['dark-mode-checkbox-label'] : ''}
             label="Active"
           />
           <Checkbox
@@ -137,11 +194,13 @@ export function TasksTable({ darkMode, tasks, projectId }) {
             id="assign_checkbox"
             wrapperClassname={styles['tasks-table-filter-item']}
             backgroundColorCN={darkModeCheckboxClass}
+            darkMode={darkMode}
+            textColorCN={darkMode ? styles['dark-mode-checkbox-label'] : ''}
             label="Assign"
           />
         </div>
 
-        <div className='d-flex'>
+        <div className={styles['tasks-table-actions']}>
           <button
             className={`${styles['tasks-table-edit-tasks-button']} ${darkModeButtonClass}`}
             onClick={() => setToggleEditTasks(!toggleEditTasks)}
