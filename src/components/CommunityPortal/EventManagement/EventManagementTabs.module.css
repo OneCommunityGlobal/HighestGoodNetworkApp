@@ -1,0 +1,89 @@
+.eventTabs {
+  margin-top: 10px;
+}
+
+.tabButtons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.tabBtn {
+  padding: 10px 15px;
+  border: none;
+  background-color: transparent;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-weight: normal;
+}
+
+.tabBtn:hover {
+  font-weight: bold;
+}
+
+.tabBtn.active {
+  font-weight: bold;
+  border-bottom: 2px solid black;
+}
+
+.engagementSections {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.sectionBtn {
+  padding: 8px 12px;
+  border: none;
+  background-color: lightgray;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.sectionBtn.active {
+  font-weight: bold;
+  background-color: #595959;
+  color: white;
+}
+
+.contentBox {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.mainContent {
+  margin-top: 10px;
+}
+
+/* Dark mode */
+.eventTabsDark {
+  color: #fff;
+}
+
+.tabBtnDark {
+  color: #d0d0d0;
+}
+
+.tabBtnDark.active {
+  color: #fff;
+  border-bottom-color: #fff;
+}
+
+.eventTabsDark .contentBox {
+  border-color: #3a506b;
+  background-color: #1c2541;
+  color: #fff;
+}
+
+.eventTabsDark .sectionBtn {
+  background-color: #3a506b;
+  color: #d0d0d0;
+}
+
+.eventTabsDark .sectionBtn.active {
+  background-color: #2e5485;
+  color: #fff;
+}
