@@ -55,11 +55,7 @@ function FeedbackModal() {
     const checkHelpRequest = async () => {
       try {
         const response = await axios.get(ENDPOINTS.QUESTIONNAIRE_CHECK_MODAL(userProfile._id));
-        if (response.data.showModal) {
-          setIsOpen(true);
-        } else {
-          setIsOpen(false);
-        }
+        setIsOpen(Boolean(response.data?.showModal));
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('Error checking help request:', error);
