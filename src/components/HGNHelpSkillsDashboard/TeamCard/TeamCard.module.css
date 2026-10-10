@@ -275,16 +275,34 @@
   background: #5a6268;
 }
 
-@media (prefers-color-scheme: dark) {
-  .modal {
-    background: #2b2b2b;
-  }
+/* ── Dark Mode ── */
+.darkMode .teamCardContainer {
+  border-color: #444;
+}
 
-  .modalTitle {
-    color: #fff;
-  }
+.darkMode .teamCardTitle,
+.darkMode .teamCardRatingLabel {
+  color: #ccc;
+}
 
-  .modalText {
-    color: #ccc;
-  }
+.darkMode .teamMemberName,
+.darkMode .showMoreText {
+  color: #f0f0f0;
+}
+
+.darkMode .teamMemberRowSelected {
+  background: rgb(0 123 255 / 15%);
+}
+
+.darkMode .modal {
+  background: #2b2b2b;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 60%);
+}
+
+.darkMode .modalTitle {
+  color: #fff;
+}
+
+.darkMode .modalText {
+  color: #ccc;
 }
