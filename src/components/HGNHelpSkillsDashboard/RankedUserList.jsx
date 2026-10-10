@@ -2,6 +2,8 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { ENDPOINTS } from '~/utils/URL';
+import { formatSkillName } from './FilerData.js';
 import styles from './style/RankedUserList.module.css';
 import UserCard from './UserCard';
 
@@ -40,10 +42,10 @@ const extractSkillEntries = skillData => {
 };
 
 const normalizeUser = user => {
-  if (Array.isArray(user.topSkills) && user.topSkills.length > 0) return user;
-
   const rawSkills = user.skills;
-  const skillEntries = extractSkillEntries(rawSkills);
+  const skillEntries = Array.isArray(user.topSkills)
+    ? user.topSkills.map(name => ({ name, rating: undefined }))
+    : extractSkillEntries(rawSkills);
 
   const uniqueSkills = Array.from(
     new Map(
@@ -55,79 +57,81 @@ const normalizeUser = user => {
     .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
     .map(entry => entry.name);
 
+  // Keep the raw skill keys (used by the filter buttons, which pass FilerData's
+  // keys) separate from the human-readable names search/display should use,
+  // and leave the original `skills` field untouched for other consumers.
+  const displaySkills = sortedSkills.map(formatSkillName);
+
   return {
     ...user,
     topSkills: sortedSkills,
-    skills: sortedSkills,
+    displaySkills,
   };
 };
 
-function RankedUserList({ selectedSkills, selectedPreferences, searchQuery, sortBy, sortOrder }) {
+function RankedUserList({ selectedSkills, selectedPreferences, searchQuery, sortOrder }) {
   const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const darkMode = useSelector(state => state.theme.darkMode);
 
+  // Load every community member once, then filter/search/sort on the client so all
+  // skills in the filter list work regardless of the backend's skill-key handling.
   useEffect(() => {
     const fetchUsers = async () => {
       setLoading(true);
+      setError(null);
       try {
-        const params = {};
-        const hasFilters =
-          (selectedSkills && selectedSkills.length > 0) ||
-          (selectedPreferences && selectedPreferences.length > 0) ||
-          (searchQuery && searchQuery.trim().length > 0);
-
-        if (selectedSkills && selectedSkills.length > 0) params.skills = selectedSkills.join(',');
-        if (selectedPreferences && selectedPreferences.length > 0)
-          params.preferences = selectedPreferences.join(',');
-        if (searchQuery && searchQuery.trim().length > 0) params.search = searchQuery.trim();
-
-        const endpoint = hasFilters
-          ? `${process.env.REACT_APP_APIENDPOINT}/hgnform/ranked`
-          : `${process.env.REACT_APP_APIENDPOINT}/hgnHelp/community`;
-
-        if (!hasFilters && sortBy === 'name' && sortOrder) {
-          params.sortOrder = sortOrder;
-        }
-
-        const response = await axios.get(endpoint, {
-          params,
-        });
-        setAllUsers(response.data.map(normalizeUser));
+        const response = await axios.get(ENDPOINTS.HGN_COMMUNITY_MEMBERS);
+        const users = Array.isArray(response.data) ? response.data : [];
+        setAllUsers(users.map(normalizeUser));
       } catch (err) {
-        // error handled silently
+        const detail = err.response?.status ? ` (${err.response.status})` : '';
+        setError(`Unable to load community members. Please try again later.${detail}`);
+        setAllUsers([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchUsers();
-  }, [selectedSkills, selectedPreferences, searchQuery, sortOrder]);
+  }, []);
 
-  // Client-side filter by searchQuery on top of API results
-  const filteredUsers = searchQuery
-    ? allUsers.filter(user => {
-        const name = (user.name || '').toLowerCase();
-        const skills = (user.topSkills || []).join(' ').toLowerCase();
-        return (
-          name.includes(searchQuery.toLowerCase()) || skills.includes(searchQuery.toLowerCase())
-        );
-      })
-    : allUsers;
+  const query = searchQuery.trim().toLowerCase();
 
-  const sortedUsers = [...filteredUsers].sort((a, b) => {
-    if (sortBy === 'score') {
-      const scoreA = typeof a.score === 'number' ? a.score : -Infinity;
-      const scoreB = typeof b.score === 'number' ? b.score : -Infinity;
-      if (scoreA < scoreB) return sortOrder === 'desc' ? 1 : -1;
-      if (scoreA > scoreB) return sortOrder === 'desc' ? -1 : 1;
-      const nameA = (a.name || '').toLowerCase();
-      const nameB = (b.name || '').toLowerCase();
-      if (nameA < nameB) return -1;
-      if (nameA > nameB) return 1;
-      return 0;
+  const filteredUsers = allUsers.filter(user => {
+    const userSkills = (user.topSkills || []).map(skill => skill.toLowerCase());
+
+    if (selectedSkills && selectedSkills.length > 0) {
+      const matchesSkills = selectedSkills.every(skill => userSkills.includes(skill.toLowerCase()));
+      if (!matchesSkills) return false;
     }
 
+    if (selectedPreferences && selectedPreferences.length > 0) {
+      const userPreferences = new Set((user.preferences || []).map(pref => pref.toLowerCase()));
+      const matchesPreferences = selectedPreferences.every(pref =>
+        userPreferences.has(pref.toLowerCase()),
+      );
+      if (!matchesPreferences) return false;
+    }
+
+    if (query) {
+      const name = (user.name || '').toLowerCase();
+      const displaySkills = (user.displaySkills || []).map(skill => skill.toLowerCase());
+      // Match against both the raw skill keys and their human-readable labels,
+      // since the keys (e.g. "UnitTest") don't contain the words a member
+      // would actually type (e.g. "testing").
+      const matchesQuery =
+        name.includes(query) ||
+        userSkills.some(skill => skill.includes(query)) ||
+        displaySkills.some(skill => skill.includes(query));
+      if (!matchesQuery) return false;
+    }
+
+    return true;
+  });
+
+  const sortedUsers = [...filteredUsers].sort((a, b) => {
     const nameA = (a.name || '').toLowerCase();
     const nameB = (b.name || '').toLowerCase();
     if (nameA < nameB) return sortOrder === 'desc' ? 1 : -1;
@@ -135,8 +139,9 @@ function RankedUserList({ selectedSkills, selectedPreferences, searchQuery, sort
     return 0;
   });
 
-  if (loading) return <p className={`${styles.message}`}>Loading ranked users...</p>;
-  if (!sortedUsers.length) return <p className={`${styles.message}`}>No users found.</p>;
+  if (loading) return <p className={`${styles.message}`}>Loading community members...</p>;
+  if (error) return <p className={`${styles.message}`}>{error}</p>;
+  if (!sortedUsers.length) return <p className={`${styles.message}`}>No members found.</p>;
 
   return (
     <div className={darkMode ? `${styles.darkMode}` : ''}>
@@ -155,7 +160,6 @@ RankedUserList.propTypes = {
   selectedSkills: PropTypes.arrayOf(PropTypes.string),
   selectedPreferences: PropTypes.arrayOf(PropTypes.string),
   searchQuery: PropTypes.string,
-  sortBy: PropTypes.string,
   sortOrder: PropTypes.string,
 };
 
