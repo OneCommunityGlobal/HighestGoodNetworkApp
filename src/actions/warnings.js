@@ -29,15 +29,19 @@ export const getWarningsByUserId = userId => {
     }
   };
 };
-export const getSpecialWarnings = userId => {
+export const getSpecialWarnings = (userId, signal) => {
   const url = ENDPOINTS.GET_SPECIAL_WARNINGS(userId);
 
   return async dispatch => {
     try {
-      const res = await axios.get(url);
+      const res = await axios.get(url, { signal });
       const response = await dispatch(getSpecialWarningsAction(res.data.warnings));
       return response.payload;
     } catch (error) {
+      if (signal?.aborted || error?.code === 'ERR_CANCELED') {
+        return { error: 'Request canceled' };
+      }
+
       if (error.response && error.response.status === 400) {
         return { error: error.response.data.message };
       }
