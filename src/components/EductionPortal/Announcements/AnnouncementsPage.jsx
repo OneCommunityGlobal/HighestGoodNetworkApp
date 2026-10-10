@@ -1,8 +1,17 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import AnnouncementModal from './AnnouncementModal';
 import AnnouncementsPageMainPanel from './AnnouncementsPageMainPanel';
+import {
+  getEducatorAnnouncements,
+  getStudentAnnouncements,
+  createAnnouncement,
+  updateAnnouncement,
+  normalizeAnnouncement,
+  loadAnnouncementFeed,
+} from '~/services/announcementService';
 import { permissions } from '../../../utils/constants';
 
 const EDUCATOR_ROLES = new Set(['Owner', 'Administrator', 'Mentor', 'Core Team']);
@@ -42,48 +51,6 @@ const getButtonStyle = (isActive, activeColor, darkMode) => {
     cursor: 'pointer',
   };
 };
-
-const DEFAULT_ANNOUNCEMENTS = [
-  {
-    id: 1,
-    title: 'Welcome to Phase 4 Education Portal',
-    body:
-      'We are excited to launch the new education portal features. Students can now access enhanced learning resources and educators can better manage their content.',
-    author: 'Dr. Smith',
-    audience: 'all',
-    course: 'Mathematics',
-    grade: 'Grade 5 PM',
-    createdAt: new Date('2024-01-15T10:00:00Z').toISOString(),
-    updatedAt: new Date('2024-01-15T10:00:00Z').toISOString(),
-    isNew: true,
-  },
-  {
-    id: 2,
-    title: 'New Assignment Guidelines',
-    body:
-      'Please review the updated assignment submission guidelines. All assignments must be submitted through the new portal interface.',
-    author: 'Prof. Johnson',
-    audience: 'students',
-    course: 'Computer Science',
-    grade: 'Grade 8 PM',
-    createdAt: new Date('2024-01-14T14:30:00Z').toISOString(),
-    updatedAt: new Date('2024-01-14T14:30:00Z').toISOString(),
-    isNew: false,
-  },
-  {
-    id: 3,
-    title: 'Faculty Meeting Tomorrow',
-    body:
-      'Reminder: Monthly faculty meeting scheduled for tomorrow at 2 PM in the conference room.',
-    author: 'Admin Team',
-    audience: 'educators',
-    course: 'Administration',
-    grade: 'Grade 11 PM',
-    createdAt: new Date('2024-01-13T09:15:00Z').toISOString(),
-    updatedAt: new Date('2024-01-13T09:15:00Z').toISOString(),
-    isNew: false,
-  },
-];
 
 const getInputStyle = (darkMode, width) => ({
   padding: '6px',
@@ -291,34 +258,6 @@ const createCloseModalHandler = (setIsModalOpen, setEditingAnnouncement) => () =
   setEditingAnnouncement(null);
 };
 
-const createSaveAnnouncementHandler = ({
-  editingAnnouncement,
-  setAnnouncements,
-  handleCloseModal,
-}) => async announcementData => {
-  try {
-    if (editingAnnouncement) {
-      const targetId = editingAnnouncement.id;
-      setAnnouncements(buildAnnouncementUpdater(announcementData, targetId));
-      handleCloseModal();
-      alert('Announcement saved successfully!');
-      return;
-    }
-    const newAnnouncement = {
-      ...announcementData,
-      id: Date.now(),
-      createdAt: new Date().toISOString(),
-      isNew: true,
-    };
-    setAnnouncements(prependItem(newAnnouncement));
-    handleCloseModal();
-    alert('Announcement saved successfully!');
-  } catch (error) {
-    console.error('Failed to save announcement:', error);
-    throw error;
-  }
-};
-
 const createClearFiltersHandler = (
   setSearchQuery,
   setCourseFilter,
@@ -335,20 +274,14 @@ const createSearchQueryChangeHandler = setSearchQuery => event => {
   setSearchQuery(event.target.value);
 };
 
-const loadStoredAnnouncements = () => {
-  try {
-    const stored = localStorage.getItem('edu_announcements');
-    if (stored) return JSON.parse(stored);
-  } catch (e) {
-    console.error('Failed to parse stored announcements:', e);
-  }
-  return DEFAULT_ANNOUNCEMENTS;
-};
-
 const AnnouncementsPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAnnouncement, setEditingAnnouncement] = useState(null);
-  const [announcements, setAnnouncements] = useState(loadStoredAnnouncements);
+  const [announcements, setAnnouncements] = useState([]);
+  const [loadStatus, setLoadStatus] = useState('loading');
+  const [retry, setRetry] = useState(0);
+  const uncertainCreate = useRef(false);
+  const saving = useRef(false);
   const [selectedAudience, setSelectedAudience] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [courseFilter, setCourseFilter] = useState('');
@@ -360,8 +293,45 @@ const AnnouncementsPage = () => {
   const userRole = getUserRole(authUser);
 
   useEffect(() => {
-    localStorage.setItem('edu_announcements', JSON.stringify(announcements));
-  }, [announcements]);
+    let cancelled = false;
+    setLoadStatus('loading');
+    setAnnouncements([]);
+    const load = async () => {
+      try {
+        const [feed, authored] = await Promise.all([
+          loadAnnouncementFeed(getStudentAnnouncements),
+          userRole === 'educator'
+            ? loadAnnouncementFeed(getEducatorAnnouncements)
+            : Promise.resolve([]),
+        ]);
+        if (cancelled) return;
+        const visible =
+          userRole === 'educator'
+            ? [...feed.filter(item => item.audience === 'all'), ...authored]
+            : feed;
+        const ownedIds = new Set(authored.map(item => item.id));
+        setAnnouncements([
+          ...new Map(
+            visible.map(item => [
+              item.id,
+              {
+                ...item,
+                canEdit: ownedIds.has(item.id),
+              },
+            ]),
+          ).values(),
+        ]);
+        uncertainCreate.current = false;
+        setLoadStatus('ready');
+      } catch {
+        if (!cancelled) setLoadStatus('error');
+      }
+    };
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, [userRole, authUser?._id, authUser?.id, retry]);
 
   const handleCreateAnnouncement = createCreateAnnouncementHandler(
     setEditingAnnouncement,
@@ -372,11 +342,41 @@ const AnnouncementsPage = () => {
     setIsModalOpen,
   );
   const handleCloseModal = createCloseModalHandler(setIsModalOpen, setEditingAnnouncement);
-  const handleSaveAnnouncement = createSaveAnnouncementHandler({
-    editingAnnouncement,
-    setAnnouncements,
-    handleCloseModal,
-  });
+  const handleSaveAnnouncement = async data => {
+    if (saving.current) throw new Error('An announcement is already being saved.');
+    if (!editingAnnouncement && uncertainCreate.current) {
+      throw new Error(
+        'Creation could not be confirmed. Reload announcements before creating again.',
+      );
+    }
+    saving.current = true;
+    try {
+      const response = editingAnnouncement
+        ? await updateAnnouncement(editingAnnouncement.id, data)
+        : await createAnnouncement(data);
+      const saved = { ...normalizeAnnouncement(response.data), canEdit: true };
+      setAnnouncements(
+        editingAnnouncement
+          ? buildAnnouncementUpdater(saved, editingAnnouncement.id)
+          : prependItem(saved),
+      );
+      toast.success(
+        editingAnnouncement
+          ? 'Announcement updated successfully.'
+          : 'Announcement created successfully.',
+      );
+    } catch (error) {
+      if (!editingAnnouncement && ![400, 401, 403, 404].includes(error.response?.status)) {
+        uncertainCreate.current = true;
+        throw new Error(
+          'Creation could not be confirmed. Reload announcements before creating again.',
+        );
+      }
+      throw error;
+    } finally {
+      saving.current = false;
+    }
+  };
   const clearFilters = createClearFiltersHandler(
     setSearchQuery,
     setCourseFilter,
@@ -405,20 +405,35 @@ const AnnouncementsPage = () => {
         dateToFilter={dateToFilter}
         setDateToFilter={setDateToFilter}
       />
-      <AnnouncementsPageMainPanel
-        darkMode={darkMode}
-        userRole={userRole}
-        handleCreateAnnouncement={handleCreateAnnouncement}
-        searchQuery={searchQuery}
-        handleSearchQueryChange={handleSearchQueryChange}
-        selectedAudience={selectedAudience}
-        courseFilter={courseFilter}
-        dateFromFilter={dateFromFilter}
-        dateToFilter={dateToFilter}
-        clearFilters={clearFilters}
-        handleEditAnnouncement={handleEditAnnouncement}
-        announcements={announcements}
-      />
+      {loadStatus !== 'ready' ? (
+        <div role={loadStatus === 'error' ? 'alert' : undefined}>
+          {loadStatus === 'loading' ? (
+            <output>Loading announcements…</output>
+          ) : (
+            <>
+              Could not load announcements.{' '}
+              <button type="button" onClick={() => setRetry(value => value + 1)}>
+                Retry
+              </button>
+            </>
+          )}
+        </div>
+      ) : (
+        <AnnouncementsPageMainPanel
+          darkMode={darkMode}
+          userRole={userRole}
+          handleCreateAnnouncement={handleCreateAnnouncement}
+          searchQuery={searchQuery}
+          handleSearchQueryChange={handleSearchQueryChange}
+          selectedAudience={selectedAudience}
+          courseFilter={courseFilter}
+          dateFromFilter={dateFromFilter}
+          dateToFilter={dateToFilter}
+          clearFilters={clearFilters}
+          handleEditAnnouncement={handleEditAnnouncement}
+          announcements={announcements}
+        />
+      )}
       <AnnouncementModal
         isOpen={isModalOpen}
         toggle={handleCloseModal}

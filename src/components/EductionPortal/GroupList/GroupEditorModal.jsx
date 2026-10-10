@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import styles from './GroupList.module.css';
+import GroupMemberSelector from './GroupMemberSelector';
 
 export default function GroupEditorModal({
   group = null,
@@ -10,6 +11,9 @@ export default function GroupEditorModal({
   onSave,
   onDelete,
   existingGroups = [],
+  pending = false,
+  mutationError = '',
+  saveBlocked = false,
 }) {
   const [name, setName] = useState(group?.name || '');
   const [members, setMembers] = useState(() =>
@@ -102,15 +106,16 @@ export default function GroupEditorModal({
   }, [name, existingGroups, group]);
 
   const save = useCallback(() => {
-    if (!validate()) return;
+    if (pending || saveBlocked || !validate()) return;
     const payload = { ...group, name: name.trim(), members };
     onSave(payload);
-  }, [group, name, members, onSave, validate]);
+  }, [group, name, members, onSave, validate, pending, saveBlocked]);
 
   const remove = useCallback(() => {
+    if (pending) return;
     if (group?.id) onDelete(group.id);
     else onClose();
-  }, [group, onDelete, onClose]);
+  }, [group, onDelete, onClose, pending]);
 
   return (
     <div
@@ -134,13 +139,20 @@ export default function GroupEditorModal({
         ref={modalRef}
         role="dialog"
         aria-modal="true"
+        aria-busy={pending}
         aria-labelledby="group-modal-title"
       >
         <div className={styles.head}>
           <h3 id="group-modal-title" className={styles.modalTitle}>
             {group ? 'Edit Group' : 'New Group'}
           </h3>
-          <button type="button" className={styles.closeButton} onClick={onClose} aria-label="Close">
+          <button
+            type="button"
+            className={styles.closeButton}
+            onClick={onClose}
+            disabled={pending}
+            aria-label="Close"
+          >
             ×
           </button>
         </div>
@@ -153,6 +165,7 @@ export default function GroupEditorModal({
                 ref={firstInputRef}
                 className={styles.input}
                 value={name}
+                disabled={pending}
                 onChange={e => setName(e.target.value)}
                 placeholder="Group name"
                 aria-label="Group name"
@@ -170,43 +183,42 @@ export default function GroupEditorModal({
                 {error}
               </div>
             )}
+            {mutationError && (
+              <div className={styles.fieldError} role="alert">
+                {mutationError}
+              </div>
+            )}
           </div>
 
-          <div className={styles.membersSection}>
-            <div className={styles.membersTitle}>Members</div>
-            <div className={styles.checklist}>
-              {learners.length === 0 && <div className={styles.empty}>No learners available</div>}
-              {learners.map(l => {
-                const label = l.displayName || l.name || l.email || 'Learner';
-                return (
-                  <label key={l.id} className={styles.checkItem}>
-                    <input
-                      type="checkbox"
-                      checked={members.includes(l.id)}
-                      onChange={() => toggleMember(l.id)}
-                    />
-                    <span className={styles.checkLabel}>{label}</span>
-                  </label>
-                );
-              })}
-            </div>
-          </div>
+          {/* The checklist lives in ./GroupMemberSelector.jsx; selection state and
+              toggleMember stay in this modal. pending disables its checkboxes. */}
+          <GroupMemberSelector
+            learners={learners}
+            members={members}
+            pending={pending}
+            onToggleMember={toggleMember}
+          />
         </div>
 
         <div className={styles.footer}>
           <div>
             {group && (
-              <button type="button" className={styles.danger} onClick={remove}>
+              <button type="button" className={styles.danger} onClick={remove} disabled={pending}>
                 Delete
               </button>
             )}
           </div>
 
           <div className={styles.actions}>
-            <button type="button" className={styles.cancel} onClick={onClose}>
+            <button type="button" className={styles.cancel} onClick={onClose} disabled={pending}>
               Cancel
             </button>
-            <button type="button" className={styles.primary} onClick={save} disabled={!name.trim()}>
+            <button
+              type="button"
+              className={styles.primary}
+              onClick={save}
+              disabled={pending || saveBlocked || !name.trim()}
+            >
               Save
             </button>
           </div>
@@ -230,6 +242,9 @@ GroupEditorModal.propTypes = {
       email: PropTypes.string,
     }),
   ),
+  pending: PropTypes.bool,
+  mutationError: PropTypes.string,
+  saveBlocked: PropTypes.bool,
   onClose: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
