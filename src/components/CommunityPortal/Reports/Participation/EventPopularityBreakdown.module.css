@@ -1,0 +1,262 @@
+.container {
+  margin: 30px 0;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.containerDark {
+  background: #1e293b;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.sectionTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.sectionTitleDark {
+  color: #ffffff;
+  border-bottom-color: #475569;
+}
+
+.valueSummary {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.valueSummaryDark {
+  background: #0f172a;
+}
+
+.valueCard {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.valueSummaryDark .valueCard {
+  background: #1e293b;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.valueLabel {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.valueSummaryDark .valueLabel {
+  color: #94a3b8;
+}
+
+.valueAmount {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+.valueSummaryDark .valueAmount {
+  color: #60a5fa;
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.metricCard {
+  padding: 24px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.metricCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.metricCardDark {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.metricCardDark:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.metricHeader {
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.metricCardDark .metricHeader {
+  border-bottom-color: #334155;
+}
+
+.eventType {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #111;
+  margin: 0;
+}
+
+.metricCardDark .eventType {
+  color: #ffffff;
+}
+
+.metricStats {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.statItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.statIcon {
+  font-size: 1.5rem;
+  color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.metricCardDark .statIcon {
+  color: #60a5fa;
+}
+
+.statContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.statValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.metricCardDark .statValue {
+  color: #ffffff;
+}
+
+.statLabel {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.metricCardDark .statLabel {
+  color: #94a3b8;
+}
+
+.detailedStats {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.metricCardDark .detailedStats {
+  border-top-color: #334155;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.detailLabel {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.metricCardDark .detailLabel {
+  color: #94a3b8;
+}
+
+.detailValue {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #111;
+}
+
+.metricCardDark .detailValue {
+  color: #ffffff;
+}
+
+.loadingContainer,
+.errorContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: #64748b;
+}
+
+.loadingContainer p,
+.errorContainer p {
+  color: inherit;
+  margin: 0;
+}
+
+.containerDark .loadingContainer,
+.containerDark .errorContainer {
+  color: #94a3b8;
+}
+
+.containerDark .loadingContainer p,
+.containerDark .errorContainer p {
+  color: #94a3b8;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 40px;
+  color: #64748b;
+}
+
+.emptyState p {
+  color: inherit;
+  margin: 0;
+}
+
+.containerDark .emptyState {
+  color: #94a3b8;
+}
+
+.containerDark .emptyState p {
+  color: #94a3b8;
+}
+
+@media (max-width: 768px) {
+  .metricsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .valueSummary {
+    flex-direction: column;
+  }
+}
