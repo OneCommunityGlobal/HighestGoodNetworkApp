@@ -32,7 +32,7 @@ describe('<TimeEntry />', () => {
   let store;
   const data = timeEntryMock.weeks[0][0];
 
-  const renderComponent = () => {
+  const renderComponent = (entry = data) => {
     store = mockStore({
       auth: authMock,
       userProjects: userProjectMock,
@@ -43,7 +43,7 @@ describe('<TimeEntry />', () => {
 
     renderWithProvider(
       <TimeEntry
-        data={data}
+        data={entry}
         displayYear
         from="WeeklyTab"
         timeEntryUserProfile={userProfileMock}
@@ -52,6 +52,20 @@ describe('<TimeEntry />', () => {
       { store }
     );
   };
+
+  it('shows who edited the entry, and nothing for an entry never edited', () => {
+    renderComponent();
+    expect(screen.queryByText(/This time log was edited on/)).not.toBeInTheDocument();
+
+    renderComponent({
+      ...data,
+      lastModifiedDateTime: '2026-10-09T12:00:00.000Z',
+      lastModifiedBy: { firstName: 'Jane', lastName: 'Doe', role: 'Administrator' },
+    });
+    expect(
+      screen.getByText('This time log was edited on Oct 9, 2026 by Administrator: Jane Doe'),
+    ).toBeInTheDocument();
+  });
 
   it('should render <TimeEntry /> without crashing', () => {
     renderComponent();

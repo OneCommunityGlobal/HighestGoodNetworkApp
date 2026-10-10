@@ -37,6 +37,8 @@ function TimeEntry(props) {
   const { _id: timeEntryUserId } = timeEntryUserProfile;
   const { _id: timeEntryId } = data;
   const { dateOfWork, isTangible, hours, minutes, projectName, taskName, taskId, notes } = data;
+  // populated by the backend once someone edits the entry; absent on entries never edited
+  const { lastModifiedBy: editor, lastModifiedDateTime } = data;
 
   const [timeEntryFormModal, setTimeEntryFormModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -216,6 +218,22 @@ function TimeEntry(props) {
             </div>
           </Col>
         </Row>
+        {editor?.firstName && (
+          <Row className="mx-0">
+            <Col md={7} className="px-0">
+              <small
+                className={`${styles.editedNotice} ${
+                  darkMode
+                    ? `${styles['dark-text-muted']} dark-text-muted`
+                    : `${styles['text-muted']} text-muted`
+                } font-italic`}
+              >
+                This time log was edited on {moment(lastModifiedDateTime).format('MMM D, YYYY')} by{' '}
+                {editor.role}: {editor.firstName} {editor.lastName}
+              </small>
+            </Col>
+          </Row>
+        )}
       </Card>
       {/* this TimeEntryForm could be rendered from either weekly tab or task tab */}
       <TimeEntryForm
