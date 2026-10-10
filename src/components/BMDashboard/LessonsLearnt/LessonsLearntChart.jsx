@@ -230,9 +230,10 @@ function LessonsLearntChart({ darkMode: propDarkMode }) {
             color: tickColor,
             autoSkip: false,
             maxRotation: 45,
-            // Long project names are shortened here; the tooltip shows the full name
-            callback(value) {
-              const name = this.getLabelForValue(value);
+            // Shorten long project names (tooltip shows the full name). On a category
+            // axis `value` is the bar index, so the name comes from the data.
+            callback: value => {
+              const name = lessonsData[value]?.projectName || 'Unknown';
               return name.length > MAX_TICK_LABEL ? `${name.slice(0, MAX_TICK_LABEL - 1)}…` : name;
             },
           },
