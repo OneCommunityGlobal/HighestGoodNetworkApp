@@ -539,16 +539,40 @@
 }
 
 .weeklyStatusValue {
-  color: #000;
-  font-size: 40px;
+  /* Pills are always pastel, so the value stays dark in both themes */
+  color: #1a1a1a;
+  font-size: clamp(26px, 2.2vw, 36px);
+  font-weight: 600;
+  white-space: nowrap;
+  transition: color 0.3s ease;
+}
+
+/* Week-over-week change: green when up, red when down */
+.weeklyStatusChange {
+  font-size: 14px;
   font-weight: 600;
   transition: color 0.3s ease;
 }
 
-.weekly-status-change {
-  transition: color 0.3s ease;
-  font-size: 14px;
-  font-weight: 500;
+.changeUp {
+  color: #2e7d32;
+}
+
+.changeDown {
+  color: #c62828;
+}
+
+/* !important: a global `body.dark-mode *` rule forces all text white in dark mode */
+.darkMode .weeklyStatusValue {
+  color: #1a1a1a !important;
+}
+
+.darkMode .changeUp {
+  color: #7ee08a !important;
+}
+
+.darkMode .changeDown {
+  color: #ff8a80 !important;
 }
 
 .darkMode .statusCard {
@@ -557,9 +581,7 @@
   border-color: rgb(255 255 255 / 10%) !important;
 }
 
-.darkMode .weeklyCardTitle,
-.darkMode .weeklyStatusValue,
-.darkMode .weekly-status-change {
+.darkMode .weeklyCardTitle {
   color: var(--text-color) !important;
 }
 
@@ -627,6 +649,8 @@
 
 /* MERGED: keep ONLY one projectStatusGrid */
 .projectStatusGrid {
+  /* Span the full section even when the section content is a 2-column grid (tablet) */
+  grid-column: 1 / -1;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 20px;
@@ -646,7 +670,8 @@
 
 /* ---------------- OVAL STATUS BUTTON ---------------- */
 .weeklyStatusButton {
-  width: 130px;
+  min-width: 130px; /* grows to fit values like "$27.6K" */
+  padding: 0 16px;
   height: 65px;
   border-radius: 50px / 32px;
   display: flex;
@@ -736,9 +761,9 @@
   .darkMode .weeklySummaryShareBtn {
     background: #e8a71c !important;
     color: #000 !important; /* readable in dark mode */
-  /* Tools and Equipment Tracking - 2 column layout on tablet */
   }
-  
+
+  /* Tools and Equipment Tracking - 2 column layout on tablet */
   .weeklyProjectSummaryDashboardCategoryContent {
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
