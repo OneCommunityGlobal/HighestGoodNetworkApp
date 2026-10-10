@@ -325,6 +325,11 @@
                 "label": "View and Interact with Task \"X\" on Dashboards",
                 "key": "canDeleteTask",
                 "description": "Gives the user permission to DELETE tasks from the Management Dashboard showing all their team members."
+              },
+              {
+                "label": "View and Interact with Task Deadlines Boxes",
+                "key": "viewAndInteractWithTaskDeadlinesBoxes",
+                "description": "Gives the user permission to view and interact with task deadline tracking boxes on the Dashboard Tasks tab."
               }
             ]
           }

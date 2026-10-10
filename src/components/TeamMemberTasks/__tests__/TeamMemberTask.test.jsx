@@ -55,9 +55,9 @@ const handleRemoveFromTaskModal = vi.fn();
 const handleTaskModalOption = vi.fn();
 const updateTaskStatus = vi.fn();
 
-const renderComponent = mockProps => {
+const renderComponent = (mockProps, currentStore = store) => {
   return render(
-    <Provider store={store}>
+    <Provider store={currentStore}>
       <MemoryRouter>
         <table>
           <tbody>
@@ -102,6 +102,49 @@ describe('Team Member Task Component', () => {
 
     const href = linkElement[0].getAttribute('href');
     expect(href).toBe(`/userprofile/${props.personId}`);
+  });
+  it('shows the deadline checkbox but not the deadline count to volunteers with permission', () => {
+    const volunteerAuth = {
+      ...authMock,
+      user: {
+        ...authMock.user,
+        role: 'Volunteer',
+        permissions: {
+          frontPermissions: ['viewAndInteractWithTaskDeadlinesBoxes'],
+        },
+      },
+    };
+    const volunteerStore = mockStore({
+      auth: volunteerAuth,
+      userProfile: userProfileMock,
+      role: rolesMock.role,
+      theme: themeMock,
+    });
+
+    renderComponent({ ...props, role: 'Volunteer' }, volunteerStore);
+
+    expect(screen.getByRole('checkbox')).toBeInTheDocument();
+    expect(screen.queryByTestId('deadline-Task 1')).not.toBeInTheDocument();
+  });
+  it('does not show the deadline checkbox to volunteers without permission', () => {
+    const volunteerAuth = {
+      ...authMock,
+      user: {
+        ...authMock.user,
+        role: 'Volunteer',
+        permissions: { frontPermissions: [] },
+      },
+    };
+    const volunteerStore = mockStore({
+      auth: volunteerAuth,
+      userProfile: userProfileMock,
+      role: rolesMock.role,
+      theme: themeMock,
+    });
+
+    renderComponent({ ...props, role: 'Volunteer' }, volunteerStore);
+
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
   });
   it('weeklycommittedHours, LoggedHours, remainingHours,  showing up beside the task is right', () => {
     renderComponent(props);

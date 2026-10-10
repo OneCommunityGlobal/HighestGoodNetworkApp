@@ -103,10 +103,10 @@ function UserProfile(props) {
   //        getAllTeamCode() will get all team codes from the database directly with distinct teamcode value (~15ms res time cache enabled).
   const fetchTeamCodeAllUsers = useCallback(async () => {
     const url = ENDPOINTS.WEEKLY_SUMMARIES_TEAM_CODES();
-  
+
     try {
       setIsLoading(true);
-  
+
       const response = await axios.get(url, {
         params: { _ts: Date.now() },
         headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
@@ -114,12 +114,12 @@ function UserProfile(props) {
 
       const teamCodes = (Array.isArray(response.data) ? response.data : [])
         .filter(item => typeof item === 'string' && item.trim() !== '');
-  
+
       const uniqueTeamCodes = [...new Set(teamCodes)].sort((a, b) => a.localeCompare(b));
 
       setInputAutoComplete(uniqueTeamCodes);
       setInputAutoStatus(response.status);
-  
+
       return uniqueTeamCodes;
       } catch (error) {
       // eslint-disable-next-line no-console
@@ -212,32 +212,37 @@ function UserProfile(props) {
 
   /* useEffect functions */ // added by luis, the below useEffect
   useEffect(() => {
+    const controller = new AbortController();
+
     getCurretLoggedinUserEmail();
     dispatch(fetchAllProjects());
     dispatch(getAllUserTeams());
     dispatch(getAllTimeOffRequests());
     dispatch(getAllTeamCode());
-    fetchSpecialWarnings();
+    fetchSpecialWarnings(controller.signal);
+
+    return () => {
+      controller.abort();
+    };
   }, []);
 
-  const updateProjectTouserProfile = () => {
-    return new Promise(resolve => {
-      checkIsProjectsEqual();
+  const updateProjectToUserProfile = () => {
+    checkIsProjectsEqual();
 
-      setUserProfile(prevState => {
-        const updatedProfile = prevState;
-        if (updatedProfile) {
-          updatedProfile.projects = projects || updatedProfile.projects;
-        }
-        return updatedProfile;
-      });
-      setOriginalUserProfile(prevState => {
-        const updatedOriginalProfile = prevState;
-        if (updatedOriginalProfile) {
-          updatedOriginalProfile.projects = projects || updatedOriginalProfile.projects;
-        }
-        return updatedOriginalProfile;
-      });
+    setUserProfile(prevState => {
+      const updatedProfile = prevState;
+      if (updatedProfile) {
+        updatedProfile.projects = projects || updatedProfile.projects;
+      }
+      return updatedProfile;
+    });
+
+    setOriginalUserProfile(prevState => {
+      const updatedOriginalProfile = prevState;
+      if (updatedOriginalProfile) {
+        updatedOriginalProfile.projects = projects || updatedOriginalProfile.projects;
+      }
+      return updatedOriginalProfile;
     });
   };
 
@@ -276,34 +281,34 @@ function UserProfile(props) {
 
   const buildSummaryIntroDetails = async (teamId, user) => {
     const currentManager = user;
-  
+
     if (!teamId) {
       return `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes .
        These people did NOT provide a summary .
        <Insert the proofread and single-paragraph summary created by ChatGPT>`;
     }
-  
+
     try {
       const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
       const { data } = res;
-  
+
       const activeMembers = data.filter(
         member => member._id !== currentManager._id && member.isActive,
       );
-  
+
       const memberSubmitted = await Promise.all(
         activeMembers
           .filter(member => member.weeklySummaries[0].summary !== '')
           .map(async member => {
             const results = await dispatch(getTimeEntriesForWeek(member._id, 0));
             const returnData = calculateTotalTime(results.data, true);
-  
+
             return returnData < member.weeklycommittedHours
               ? `${member.firstName} ${member.lastName} hasn't completed hours`
               : `${member.firstName} ${member.lastName}`;
           }),
       );
-  
+
       const memberNotSubmitted = activeMembers
         .filter(member => member.weeklySummaries[0].summary === '')
         .map(member =>
@@ -311,24 +316,24 @@ function UserProfile(props) {
             ? `${member.firstName} ${member.lastName} off for the week`
             : `${member.firstName} ${member.lastName}`,
         );
-  
+
       const memberSubmittedString =
         memberSubmitted.length !== 0
           ? memberSubmitted.join(', ')
           : '<list all team members names included in the summary>';
-  
+
       const memberDidntSubmitString =
         memberNotSubmitted.length !== 0
           ? memberNotSubmitted.join(', ')
           : '<list all team members names NOT included in the summary>';
-  
+
       return `This week's summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes ${memberSubmittedString}. These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
     } catch (error) {
       console.error('Error fetching team users:', error);
       return '';
     }
   };
-  
+
 
   const calculateTotalTime = (data, isTangible) => {
     const filteredData = data.filter(entry => entry.isTangible === isTangible);
@@ -336,16 +341,22 @@ function UserProfile(props) {
     return filteredData.reduce(reducer, 0);
   };
 
-  const loadUserTasks = async () => {
+  const loadUserTasks = async signal => {
     const userId = props?.match?.params?.userId;
-    axios
-      .get(ENDPOINTS.TASKS_BY_USERID(userId))
-      .then(res => {
-        setTasks(res?.data || []);
-        setOriginalTasks(res.data);
-      })
+
+    try {
+      const res = await axios.get(ENDPOINTS.TASKS_BY_USERID(userId), { signal });
+
+      if (signal?.aborted) return;
+
+      setTasks(res?.data || []);
+      setOriginalTasks(res.data);
+    } catch (err) {
+      if (signal?.aborted || err?.code === 'ERR_CANCELED') return;
+
       // eslint-disable-next-line no-console
-      .catch(err => console.log(err));
+      console.log(err);
+    }
   };
 
   const getCurretLoggedinUserEmail = async () => {
@@ -371,12 +382,17 @@ function UserProfile(props) {
     }
   };
 
-  const fetchCalculatedStartDate = async (userId, userProfileData) => {
+  const fetchCalculatedStartDate = async (userId, userProfileData, signal) => {
+    if (signal?.aborted) return;
+
     if (!userProfileData?.endDate) {
-      const createdDate = userProfileData?.createdDate ? userProfileData.createdDate.split('T')[0] : '';
+      const createdDate = userProfileData?.createdDate
+      ? userProfileData.createdDate.split('T')[0]
+      : '';
       setCalculatedStartDate(createdDate);
       return;
     }
+
     try {
       const startDate = await dispatch(
         getTimeStartDateEntriesByPeriod(
@@ -386,19 +402,28 @@ function UserProfile(props) {
         ),
       );
 
+      if (signal?.aborted) return;
+
       if (startDate !== 'N/A') {
         const formattedStartDate = startDate.split('T')[0];
         setCalculatedStartDate(formattedStartDate);
       } else {
         // No time entries yet, use createdDate as fallback
-        const createdDate = userProfile?.createdDate ? userProfile.createdDate.split('T')[0] : '';
+        const createdDate = userProfile?.createdDate
+        ? userProfile.createdDate.split('T')[0]
+        : '';
         setCalculatedStartDate(createdDate);
       }
     } catch (error) {
+      if (signal?.aborted || error?.code === 'ERR_CANCELED') return;
+
       // eslint-disable-next-line no-console
       console.error('Error fetching calculated start date:', error);
+
       // Fallback to createdDate on error
-      const createdDate = userProfile?.createdDate ? userProfile.createdDate.split('T')[0] : '';
+      const createdDate = userProfile?.createdDate
+        ? userProfile.createdDate.split('T')[0]
+        : '';
       setCalculatedStartDate(createdDate);
     }
   };
@@ -426,14 +451,18 @@ function UserProfile(props) {
     return isCurrentlyOff;
   };
 
-  const loadUserProfile = async () => {
+  const loadUserProfile = async signal => {
     const userId = props?.match?.params?.userId;
 
     if (!userId) return;
 
     try {
       // run requests in parallel
-      const [response] = await Promise.all([axios.get(ENDPOINTS.USER_PROFILE(userId))]);
+      const [response] = await Promise.all([
+        axios.get(ENDPOINTS.USER_PROFILE(userId), { signal }),
+      ]);
+
+      if (signal?.aborted) return;
 
       const newUserProfile = response.data;
       // Assuming newUserProfile contains isRehireable attribute
@@ -449,7 +478,10 @@ function UserProfile(props) {
           ENDPOINTS.USER_PROJECTS
             ? ENDPOINTS.USER_PROJECTS(userId)
             : `${ENDPOINTS.PROJECTS}/user/${userId}`,
+          { signal },
         );
+
+        if (signal?.aborted) return;
         const normalized = (data || []).map(row => {
           // common shapes: {project: {...}}, {projectId: {...}}, or already {...}
           let project;
@@ -466,8 +498,9 @@ function UserProfile(props) {
         setResetProjects(normalized);
         // keep profile copy in sync so Save/Cancel logic works
         newUserProfile.projects = normalized;
-      } catch {
-        // fallback to whatever came on the profile (might be empty on your env)
+      } catch (error) {
+        if (signal?.aborted || error?.code === 'ERR_CANCELED') return;
+
         const fallback = newUserProfile.projects || [];
         setProjects(fallback);
         setOriginalProjects(fallback);
@@ -505,7 +538,8 @@ function UserProfile(props) {
       setUserStartDate(profileWithFormattedDates.startDate || '');
 
       // Fetch calculated start date from first time entry
-      await fetchCalculatedStartDate(userId, newUserProfile);
+      await fetchCalculatedStartDate(userId, newUserProfile, signal);
+      if (signal?.aborted) return;
 
       // Note: Removed automatic getTimeStartDateEntriesByPeriod call to prevent overwriting manual startDate changes
       // Users can now toggle between manual and calculated startDate via button
@@ -513,6 +547,8 @@ function UserProfile(props) {
       checkIsProjectsEqual();
       setShowLoading(false);
     } catch (err) {
+      if (signal?.aborted || err?.code === 'ERR_CANCELED') return;
+
       setShowLoading(false);
       // eslint-disable-next-line no-console
       console.log(err);
@@ -625,7 +661,7 @@ const onAssignProject = async (assignedProject) => {
 };
 
 const onUpdateTask = async (taskId, updatedTask, method) => {
-  
+
   let newTasks;
 
   if (method === 'remove') {
@@ -654,7 +690,7 @@ const onUpdateTask = async (taskId, updatedTask, method) => {
 
   const updatedUserProfile = {
   ...userProfileRef.current,
-  tasks: newTasks 
+  tasks: newTasks
 };
 
 setUpdatedTasks(prev => {
@@ -826,10 +862,12 @@ setUpdatedTasks(prev => {
     }
   };
 
-  const fetchSpecialWarnings = async () => {
+  const fetchSpecialWarnings = async signal => {
     const userId = props?.match?.params?.userId;
     try {
-      dispatch(getSpecialWarnings(userId)).then(res => {
+      dispatch(getSpecialWarnings(userId, signal)).then(res => {
+        if (signal?.aborted) return;
+
         if (res.error) {
           // eslint-disable-next-line no-console
           console.error('Error fetching special warnings:', res.error);
@@ -929,9 +967,9 @@ setUpdatedTasks(prev => {
           } else {
             const blSqMessage = getWarningMessage(warningData, noSummary, inCompleteHours)
             if(blSqMessage) {
-              modifyBlueSquares('', 
+              modifyBlueSquares('',
                 moment(warningData.date).format("YYYY-MM-DD"),
-                blSqMessage, 
+                blSqMessage,
                 'add')
                 toastMessage = 'Successfully logged and Blue Square issued';
             } else {
@@ -1009,18 +1047,19 @@ setUpdatedTasks(prev => {
   });
 
   useEffect(() => {
-    const helper = async () => {
-      try {
-        await updateProjectTouserProfile();
-      } catch (error) {}
-    };
-    helper();
+    updateProjectToUserProfile();
   }, [projects]);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     setShowLoading(true);
-    loadUserProfile();
-    loadUserTasks();
+    loadUserProfile(controller.signal);
+    loadUserTasks(controller.signal);
+
+    return () => {
+      controller.abort();
+    };
   }, [props?.match?.params?.userId]);
 
   useEffect(() => {
@@ -1032,9 +1071,23 @@ setUpdatedTasks(prev => {
   }, [userProfile]);
 
   useEffect(() => {
-    if (!shouldRefresh) return;
-    setShouldRefresh(false);
-    loadUserProfile();
+    if (!shouldRefresh) return undefined;
+
+    const controller = new AbortController();
+
+    const refreshProfile = async () => {
+      await loadUserProfile(controller.signal);
+
+      if (!controller.signal.aborted) {
+        setShouldRefresh(false);
+      }
+    };
+
+    refreshProfile();
+
+    return () => {
+      controller.abort();
+    };
   }, [shouldRefresh]);
 
   useEffect(() => {
@@ -1301,7 +1354,7 @@ setUpdatedTasks(prev => {
           userProfile={userProfile}
           id={id}
           handleLinkModel={props.handleLinkModel}
-          role={requestorRole}      
+          role={requestorRole}
           handleLogWarning={handleLogWarning}
           specialWarnings={specialWarnings}
         />
@@ -1474,7 +1527,7 @@ setUpdatedTasks(prev => {
                   if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
                     return; // Let browser handle it — new tab, etc.
                   }
-            
+
                   e.preventDefault(); // SPA navigation
                   props.history.push(`/timelog/${targetUserId}#currentWeek`);
                   setActiveInactivePopupOpen(true);
