@@ -32,6 +32,7 @@ import FollowUpInfoModal from './FollowUpInfoModal';
 import ReviewButton from './ReviewButton';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 
+import { permissions } from '../../utils/constants';
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
 const TeamMemberTask = React.memo(
@@ -62,7 +63,11 @@ const TeamMemberTask = React.memo(
     const ref = useRef(null);
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     const dispatch = useDispatch();
-    const canSeeFollowUpCheckButton = userRole !== 'Volunteer';
+    // Subscribe to the store so the check re-runs once roles/permissions finish loading
+    const canInteractWithDeadlineBoxes = useSelector(state =>
+      hasPermission('viewAndInteractWithTaskDeadlinesBoxes')(dispatch, () => state),
+    );
+    const canSeeFollowUpCheckButton = userRole !== 'Volunteer' || canInteractWithDeadlineBoxes;
 
     const [isDashboardModalOpen, setIsDashboardModalOpen] = useState(false);
     const manager = 'Manager';
@@ -153,14 +158,16 @@ const TeamMemberTask = React.memo(
     const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
     const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
     const isAllowedToResolveTasks =
-      rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('resolveTask'));
+      rolesAllowedToResolveTasks.includes(userRole) ||
+      dispatch(hasPermission(permissions.resolveTask));
     const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
 
-    const canGetWeeklySummaries = dispatch(hasPermission('getWeeklySummaries'));
+    const canGetWeeklySummaries = dispatch(hasPermission(permissions.getWeeklySummaries));
     const canSeeReports =
-      rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('getReports'));
-    const canUpdateTask = dispatch(hasPermission('updateTask'));
-    const canUnassignTask = dispatch(hasPermission('removeUserFromTask'));
+      rolesAllowedToResolveTasks.includes(userRole) ||
+      dispatch(hasPermission(permissions.getReports));
+    const canUpdateTask = dispatch(hasPermission(permissions.updateTask));
+    const canUnassignTask = dispatch(hasPermission(permissions.removeUserFromTask));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
     const colorsObjs = {
@@ -526,15 +533,27 @@ const TeamMemberTask = React.memo(
                               className={`${styles['team-clocks']} ${darkMode ? 'text-light' : ''}`}
                             >
                               <div style={{ display: 'block', whiteSpace: 'nowrap' }}>
-                                <u className={darkMode ? styles['dashboard-team-clocks'] : ''}>
+                                <u className={darkMode ? styles.hoursCommittedDark : ''}>
                                   {user.weeklycommittedHours ? user.weeklycommittedHours : 0}
                                 </u>{' '}
                                 /
-                                <font color="green">
+                                <span
+                                  className={
+                                    darkMode ? styles.hoursCompletedDark : styles.hoursCompleted
+                                  }
+                                >
                                   {' '}
                                   {thisWeekHours ? thisWeekHours.toFixed(1) : 0}
-                                </font>{' '}
-                                /<font color="red"> {totalHoursRemaining.toFixed(1)}</font>
+                                </span>{' '}
+                                /
+                                <span
+                                  className={
+                                    darkMode ? styles.hoursRemainingDark : styles.hoursRemaining
+                                  }
+                                >
+                                  {' '}
+                                  {totalHoursRemaining.toFixed(1)}
+                                </span>
                               </div>
                               <UserStateDisplay
                                 userId={user.personId}

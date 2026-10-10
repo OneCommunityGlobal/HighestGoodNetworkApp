@@ -116,6 +116,11 @@ export const getAllUserProfile = () => {
     }
     return userProfilesPromise
       .then(res => {
+        // API must return an array; error payloads are objects and crash UserManagement.map
+        if (!Array.isArray(res.data)) {
+          dispatch(userProfilesFetchErrorAction());
+          return [];
+        }
         dispatch(userProfilesFetchCompleteACtion(res.data));
         return res.data;
       })

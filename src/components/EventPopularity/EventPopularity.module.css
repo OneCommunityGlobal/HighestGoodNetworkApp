@@ -532,7 +532,89 @@
   color: var(--ep-warning);
 }
 
+:global(.dark-mode) .pageTitle {
+  color: #f8fafc !important;
+}
+
+:global(.dark-mode) .chartCard {
+  background-color: #1e293b !important;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 40%) !important;
+  border-color: #334155 !important;
+}
+
+:global(.dark-mode) .cardTitle,
+:global(.dark-mode) .eventName,
+:global(.dark-mode) .eventCount,
+:global(.dark-mode) .statTitle,
+:global(.dark-mode) .participationTitle {
+  color: #f1f5f9 !important;
+}
+
+:global(.dark-mode) .statCard,
+:global(.dark-mode) .participationCard {
+  background-color: #334155 !important;
+  border-color: #475569 !important;
+}
+
+:global(.dark-mode) .progressBarBackground {
+  background-color: #475569 !important;
+}
+
+:global(.dark-mode) .smallInfoIcon {
+  background-color: #475569 !important;
+  color: #e2e8f0 !important;
+}
+
+.dashboardContainer.dark :global(.recharts-text) {
+  fill: #94a3b8 !important;
+}
+
+.dashboardContainer.dark :global(.recharts-cartesian-grid-horizontal line),
+.dashboardContainer.dark :global(.recharts-cartesian-grid-vertical line) {
+  stroke: #334155 !important;
+}
+
+.dashboardContainer.dark :global(.recharts-legend-item-text) {
+  color: #94a3b8 !important;
+}
+
+/* Tooltip and Tooltip Hover */
+.infotooltipHover {
+  position: relative;
+  display: inline-flex;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.infotooltipheading {
+  position: absolute;
+  bottom: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1e293b;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  z-index: 1000;
+  font-size: 12px;
+}
+
+:global(.dark-mode) .infotooltipheading {
+  background: #334155;
+  color: #f8fafc;
+  border: 1px solid #475569;
+}
+
+/* Recharts Tooltip Fix */
+.tooltipBox {
+  background: #fff;
+  border: 1px solid #e2e8f0;
 /* Detail View Panel */
+}
+
 .epDetailViewPanel {
   margin-top: 20px;
   background: var(--ep-card-bg);

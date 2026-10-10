@@ -1,5 +1,5 @@
-import axios from "axios";
-import { ENDPOINTS } from "../../utils/URL";
+import axios from 'axios';
+import { ENDPOINTS } from '../../utils/URL';
 import {
   FETCH_USER_PREFERENCES_REQUEST,
   FETCH_USER_PREFERENCES_SUCCESS,
@@ -7,10 +7,9 @@ import {
   UPDATE_USER_PREFERENCES_REQUEST,
   UPDATE_USER_PREFERENCES_SUCCESS,
   UPDATE_USER_PREFERENCES_FAILURE,
-} from "../../constants/lbdashboard/userPreferenceConstants";
+} from '../../constants/lbdashboard/userPreferenceConstants';
 
-// Fetch user preferences
-export const fetchUserPreferences = (userId, selectedUserId = null) => async (dispatch) => {
+export const fetchUserPreferences = (userId, selectedUserId) => async dispatch => {
   try {
     dispatch({ type: FETCH_USER_PREFERENCES_REQUEST });
 
@@ -24,26 +23,25 @@ export const fetchUserPreferences = (userId, selectedUserId = null) => async (di
       payload: data,
     });
 
-    return data;
+    return { type: FETCH_USER_PREFERENCES_SUCCESS, payload: data };
   } catch (error) {
-    Error("Error fetching user preferences:", error);
     dispatch({
       type: FETCH_USER_PREFERENCES_FAILURE,
       payload: error.response?.data?.message || error.message,
     });
-    return null;
+    throw error;
   }
 };
 
-// Update user preferences
-export const updateUserPreferences = (userId, selectedUserId, preferences) => async (dispatch) => {
+export const updateUserPreferences = (userId, selectedUserId, preferences) => async dispatch => {
   try {
     dispatch({ type: UPDATE_USER_PREFERENCES_REQUEST });
 
     const { data } = await axios.put(ENDPOINTS.LB_UPDATE_USER_PREFERENCES, {
       userId,
       selectedUserId,
-      ...preferences,
+      notifyInApp: preferences?.notifyInApp,
+      notifyEmail: preferences?.notifyEmail,
     });
 
     dispatch({
@@ -51,7 +49,7 @@ export const updateUserPreferences = (userId, selectedUserId, preferences) => as
       payload: data,
     });
 
-    return data;
+    return { type: UPDATE_USER_PREFERENCES_SUCCESS, payload: data };
   } catch (error) {
     dispatch({
       type: UPDATE_USER_PREFERENCES_FAILURE,
@@ -60,3 +58,4 @@ export const updateUserPreferences = (userId, selectedUserId, preferences) => as
     throw error;
   }
 };
+

@@ -211,6 +211,7 @@ endDate: moment()
       showAddProjHistory: false,
       showAddPersonHistory: false,
       showAddTeamHistory: false,
+      showCharts: !prevState.showAddTimeForm,
     }));
   }
 
@@ -417,7 +418,8 @@ endDate: moment()
       showAddProjHistory: !prevState.showAddProjHistory,
       showAddPersonHistory: false,
       showAddTeamHistory: false,
-      showContributorsReport: false
+      showContributorsReport: false,
+      showCharts: !prevState.showAddProjHistory
     }));
   }
 
@@ -433,7 +435,8 @@ endDate: moment()
       showAddProjHistory: false,
       showAddPersonHistory: !prevState.showAddPersonHistory,
       showAddTeamHistory: false,
-      showContributorsReport: false
+      showContributorsReport: false,
+      showCharts: !prevState.showAddPersonHistory
     }));
   }
 
@@ -449,7 +452,8 @@ endDate: moment()
       showAddProjHistory: false,
       showAddPersonHistory: false,
       showAddTeamHistory: !prevState.showAddTeamHistory,
-      showContributorsReport: false
+      showContributorsReport: false,
+      showCharts: !prevState.showAddTeamHistory
     }));
   }
 
@@ -564,8 +568,10 @@ endDate: moment()
               </div>
             </h2>
             <div>
-              <p >Select a Category</p>
+
+              <p className={darkMode ? styles['text-light'] : undefined}>Select a Category</p>
             </div>
+            
             <div className={styles['report-container-data']}>
               <div className={styles['data-container']} style={this.state.showCharts ? {width: '50%'} : {width: '100%'}}>
                 <div className={styles['category-container']}>
@@ -580,10 +586,13 @@ endDate: moment()
                     onClick={this.showProjectTable}
                   >
                     <h3 className={styles['card-category-item-title']}> Projects</h3>
-                    <h3 className={styles['card-category-item-number']}>
-                      {this.state.projectSearchData.length}
-                      {' '}
-                    </h3>
+                      <h3 className={styles['card-category-item-number']}>
+                        {this.props.state.allProjects.fetching ? (
+                          <Loading align="center" darkMode={darkMode} className="fa-lg" containerClassName={styles['card-spinner']}/>
+                        ) : (
+                          this.state.projectSearchData.length
+                          )}
+                      </h3>
                     <img src={projectsImage} alt="Projects" />
                   </button>
                   <button
@@ -598,7 +607,11 @@ endDate: moment()
                   >
                     <h3 className={styles['card-category-item-title']}> People </h3>
                     <h3 className={styles['card-category-item-number']}>
-                      {this.state.peopleSearchData.length}
+                      {this.props.state.allUserProfilesBasicInfo.fetching ? (
+                        <Loading align="center" darkMode={darkMode} className="fa-lg" containerClassName={styles['card-spinner']}/>
+                      ) : (
+                        this.state.peopleSearchData.length
+                        )}
                     </h3>
                     <img src={peopleImage} alt="that representes the people" />
                   </button>
@@ -613,9 +626,14 @@ endDate: moment()
                     onClick={this.showTeamsTable}
                   >
                     <h3 className={styles['card-category-item-title']}> Teams </h3>
-                    <h3 className={styles['card-category-item-number']}>{this.state.teamSearchData?.length}</h3>
-                    <img src={teamsImage} alt="that representes the teams" />
-                  </button>
+                    <h3 className={styles['card-category-item-number']}>
+                      {this.props.state.allTeamsData.fetching ? (
+                        <Loading align="center" darkMode={darkMode} className="fa-lg" containerClassName={styles['card-spinner']}/>
+                      ) : (
+                        this.state.teamSearchData.length
+                      )}
+                    </h3><img src={teamsImage} alt="that representes the teams" />
+                    </button>
                 </div>
                 <div
                   className={`mt-3 p-3 rounded-lg ${darkMode ? 'bg-yinmn-blue text-light' : 'bg-white'
@@ -849,7 +867,7 @@ endDate: moment()
                 )}
               </div>
               {this.state.showCharts && (
-                <div className="table-data-container" style={(this.state.showPeople || this.state.showProjects || this.state.showTeams) ? { overflowY: 'auto' } : {overflowY: 'none'}}>
+                <div className={styles['table-data-container']} style={(this.state.showPeople || this.state.showProjects || this.state.showTeams) ? { overflowY: 'auto' } : {overflowY: 'none'}}>
                   {this.state.showPeople && (
                     <PeopleTable userProfiles={this.state.peopleSearchData} darkMode={darkMode} />
                   )}
