@@ -67,6 +67,22 @@ describe('<TimeEntry />', () => {
     ).toBeInTheDocument();
   });
 
+  it('shows who added the entry only when it was logged by someone else', () => {
+    const creator = { _id: 'admin1', firstName: 'Sam', lastName: 'Lee', role: 'Owner' };
+    renderComponent({ ...data, personId: 'user1', createdBy: { ...creator, _id: 'user1' } });
+    expect(screen.queryByText(/This time log was added on/)).not.toBeInTheDocument();
+
+    renderComponent({
+      ...data,
+      personId: 'user1',
+      createdDateTime: '2026-10-08T12:00:00.000Z',
+      createdBy: creator,
+    });
+    expect(
+      screen.getByText('This time log was added on Oct 8, 2026 by Owner: Sam Lee'),
+    ).toBeInTheDocument();
+  });
+
   it('should render <TimeEntry /> without crashing', () => {
     renderComponent();
   });
