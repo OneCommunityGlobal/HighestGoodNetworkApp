@@ -3,11 +3,11 @@
 .individualReport {
   padding: 1.5rem;
   transition: all 0.3s ease;
-  animation: fade-in 0.5s ease-out;
+  animation: fadeIn 0.5s ease-out;
 }
 
-.darkMode .individualReport {
-  color: #fff;
+.individualReport.darkMode {
+  color: #ffffff;
 }
 
 /* Empty State */
@@ -20,7 +20,7 @@
 }
 
 .emptyState.darkMode {
-  color: #fff;
+  color: #ffffff;
 }
 
 .emptyContent {
@@ -32,26 +32,6 @@
   font-size: 4rem;
   color: #d1d5db;
   margin-bottom: 1rem;
-}
-
-.chartLoading i {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-}
-
-.chartLoading p {
-  margin: 0;
-  font-weight: 500;
-}
-
-.loading i {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-}
-
-.loading p {
-  margin: 0;
-  font-weight: 500;
 }
 
 .darkMode .emptyContent i {
@@ -91,36 +71,27 @@
 
 /* Report Cards */
 .reportCard {
-  background-color: #fff;
+  background-color: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   margin-bottom: 1.5rem;
   transition: all 0.3s ease;
 }
 
-.darkMode .reportCard {
+.reportCard.darkMode {
   background-color: #1f2937;
   border-color: #374151;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
-}
-
-.reportCard:focus-within {
-  outline: 2px solid #4f46e5;
-  outline-offset: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .reportCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
-}
-
-.darkMode .reportCard:focus-within {
-  outline-color: #818cf8;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .darkMode .reportCard:hover {
-  box-shadow: 0 4px 12px rgb(0 0 0 / 40%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 /* Card Headers */
@@ -156,7 +127,7 @@
 
 .subjectCount {
   font-size: 0.875rem;
-  color: #374151;
+  color: #6b7280;
   background-color: #f3f4f6;
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
@@ -231,10 +202,6 @@
   font-weight: 600;
 }
 
-.insightContent strong {
-  font-weight: 600;
-}
-
 .darkMode .performanceCell strong {
   color: #818cf8;
 }
@@ -242,13 +209,42 @@
 /* Status Badges */
 .statusBadge {
   display: inline-block;
-  padding: 5px 12px;
-  border-radius: 16px;
-  font-size: 12px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  text-align: center;
-  min-width: 80px;
-  border: 1px solid transparent;
+  text-transform: capitalize;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.statusBadge.excellent {
+  background-color: #d1fae5;
+  color: #047857;
+}
+
+.darkMode .statusBadge.excellent {
+  background-color: #064e3b;
+  color: #34d399;
+}
+
+.statusBadge.good {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+.darkMode .statusBadge.good {
+  background-color: #1e3a8a;
+  color: #60a5fa;
+}
+
+.statusBadge.needsImprovement {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.darkMode .statusBadge.needsImprovement {
+  background-color: #78350f;
+  color: #fbbf24;
 }
 
 /* Visual Indicators */
@@ -257,23 +253,18 @@
 }
 
 .visualIndicator {
-  font-size: 18px;
+  font-size: 1.25rem;
   display: inline-block;
 }
 
 /* Chart Styles */
 .chartCol {
-  margin-bottom: 30px;
-}
-
-.darkMode .cardBody {
-  background-color: #0f172a !important;
+  margin-bottom: 1rem;
 }
 
 .chartContainer {
   height: 300px;
   position: relative;
-  margin: 20px 0 60px;
 }
 
 .chartLoading {
@@ -287,6 +278,16 @@
 
 .darkMode .chartLoading {
   color: #9ca3af;
+}
+
+.chartLoading i {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.chartLoading p {
+  margin: 0;
+  font-weight: 500;
 }
 
 /* Loading States */
@@ -303,6 +304,16 @@
   color: #9ca3af;
 }
 
+.loading i {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.loading p {
+  margin: 0;
+  font-weight: 500;
+}
+
 /* Insights Section */
 .insightsContainer {
   margin-top: 1rem;
@@ -312,76 +323,7 @@
   border: none;
   border-radius: 8px;
   margin-bottom: 1rem;
-  padding: 0.75rem 1rem;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
-}
-
-/* Insight alert variants — match ReportsView colors exactly */
-.insightAlert.insightAlertInfo {
-  background-color: #d1ecf1;
-  border: 1px solid #bee5eb;
-  color: #0c5460;
-}
-
-.insightAlert.insightAlertSuccess {
-  background-color: #d4edda;
-  border: 1px solid #c3e6cb;
-  color: #155724;
-}
-
-.insightAlert.insightAlertWarning {
-  background-color: #fff3cd;
-  border: 1px solid #ffeeba;
-  color: #856404;
-}
-
-.insightAlert.insightAlertDanger {
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-  color: #721c24;
-}
-
-.insightAlert.insightAlertPrimary {
-  background-color: #cce5ff;
-  border: 1px solid #b8daff;
-  color: #004085;
-}
-
-.darkMode .insightAlert {
-  color: #e2e8f0;
-  background-color: #1e293b;
-  box-shadow: 0 10px 24px rgb(0 0 0 / 35%);
-  border: 1px solid #334155;
-}
-
-.darkMode .insightAlert.insightAlertInfo {
-  background-color: #172554;
-  border-color: #1e40af;
-  color: #93c5fd;
-}
-
-.darkMode .insightAlert.insightAlertSuccess {
-  background-color: #052e16;
-  border-color: #166534;
-  color: #86efac;
-}
-
-.darkMode .insightAlert.insightAlertWarning {
-  background-color: #451a03;
-  border-color: #92400e;
-  color: #fde68a;
-}
-
-.darkMode .insightAlert.insightAlertDanger {
-  background-color: #450a0a;
-  border-color: #991b1b;
-  color: #fca5a5;
-}
-
-.darkMode .insightAlert.insightAlertPrimary {
-  background-color: #172554;
-  border-color: #1e40af;
-  color: #93c5fd;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .insightAlert:last-child {
@@ -392,16 +334,12 @@
   line-height: 1.6;
 }
 
-.darkMode .insightContent {
-  color: #e5e7eb;
-}
-
-.darkMode .insightContent strong {
-  color: #f9fafb;
+.insightContent strong {
+  font-weight: 600;
 }
 
 /* Responsive Design */
-@media (width <= 992px) {
+@media (max-width: 992px) {
   .individualReport {
     padding: 1rem;
   }
@@ -427,13 +365,13 @@
   }
 }
 
-@media (width <= 768px) {
+@media (max-width: 768px) {
   .individualReport {
     padding: 0.5rem;
   }
 
   .reportCard {
-    margin: 0 -0.5rem 1.5rem;
+    margin: 0 -0.5rem 1.5rem -0.5rem;
   }
 
   .performanceTable {
@@ -458,7 +396,7 @@
   }
 }
 
-@media (width <= 480px) {
+@media (max-width: 480px) {
   .emptyContent i {
     font-size: 3rem;
   }
@@ -489,12 +427,11 @@
   }
 }
 
-@keyframes fade-in {
+@keyframes fadeIn {
   from {
     opacity: 0;
     transform: translateY(10px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
@@ -522,16 +459,25 @@
 
   .statusBadge {
     background: transparent !important;
-    border: 1px solid currentcolor;
+    border: 1px solid currentColor;
   }
 
   .insightAlert {
     background: transparent !important;
-    border: 1px solid currentcolor;
+    border: 1px solid currentColor;
   }
 }
 
 /* Accessibility */
+.reportCard:focus-within {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+.darkMode .reportCard:focus-within {
+  outline-color: #818cf8;
+}
+
 .performanceTable:focus-within {
   outline: 2px solid #4f46e5;
   outline-offset: 2px;
@@ -539,52 +485,4 @@
 
 .darkMode .performanceTable:focus-within {
   outline-color: #818cf8;
-}
-
-.statusBadgeExcellent {
-  background-color: #dcfce7;
-  color: #15803d;
-  border-color: #bbf7d0;
-}
-
-.statusBadgeGood {
-  background-color: #fefce8;
-  color: #a16207;
-  border-color: #fef08a;
-}
-
-.statusBadgeNeedsImprovement {
-  background-color: #fff7ed;
-  color: #c2410c;
-  border-color: #fed7aa;
-}
-
-.statusBadgeCritical {
-  background-color: #fee2e2;
-  color: #b91c1c;
-  border-color: #fecaca;
-}
-
-.darkMode .statusBadgeExcellent {
-  background-color: #064e3b;
-  color: #6ee7b7 !important;
-  border-color: #065f46;
-}
-
-.darkMode .statusBadgeGood {
-  background-color: #78350f;
-  color: #fde68a !important;
-  border-color: #92400e;
-}
-
-.darkMode .statusBadgeNeedsImprovement {
-  background-color: #7c2d12;
-  color: #fed7aa !important;
-  border-color: #9a3412;
-}
-
-.darkMode .statusBadgeCritical {
-  background-color: #7f1d1d;
-  color: #fecaca !important;
-  border-color: #991b1b;
 }
