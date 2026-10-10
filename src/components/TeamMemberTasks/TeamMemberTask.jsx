@@ -65,7 +65,7 @@ const TeamMemberTask = React.memo(
     const dispatch = useDispatch();
     // Subscribe to the store so the check re-runs once roles/permissions finish loading
     const canInteractWithDeadlineBoxes = useSelector(state =>
-      hasPermission('viewAndInteractWithTaskDeadlinesBoxes')(dispatch, () => state),
+      hasPermission(permissions.viewAndInteractWithTaskDeadlinesBoxes)(dispatch, () => state),
     );
     const canSeeFollowUpCheckButton = userRole !== 'Volunteer' || canInteractWithDeadlineBoxes;
 
@@ -156,11 +156,12 @@ const TeamMemberTask = React.memo(
     const thisWeekHours = user.totaltangibletime_hrs;
 
     const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
-    const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
     const isAllowedToResolveTasks =
       rolesAllowedToResolveTasks.includes(userRole) ||
       dispatch(hasPermission(permissions.resolveTask));
-    const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
+    const isAllowedToSeeDeadlineCount = dispatch(
+      hasPermission(permissions.seeNumberOfTimesTimeAdded),
+    );
 
     const canGetWeeklySummaries = dispatch(hasPermission(permissions.getWeeklySummaries));
     const canSeeReports =
@@ -696,15 +697,20 @@ const TeamMemberTask = React.memo(
                                                 )}`}
                                               </p>
                                             </div>
-                                            {canSeeFollowUpCheckButton && (
+                                            {(canSeeFollowUpCheckButton ||
+                                              isAllowedToSeeDeadlineCount) && (
                                               <div className={styles['task-followup-icon']}>
-                                                <FollowupCheckButton
-                                                  moseoverText={followUpMouseoverText(task)}
-                                                  user={user}
-                                                  task={task}
-                                                />
+                                                {canSeeFollowUpCheckButton && (
+                                                  <FollowupCheckButton
+                                                    moseoverText={followUpMouseoverText(task)}
+                                                    user={user}
+                                                    task={task}
+                                                  />
+                                                )}
                                                 <div className={styles['followup-info-override']}>
-                                                  <FollowUpInfoModal />
+                                                  {canSeeFollowUpCheckButton && (
+                                                    <FollowUpInfoModal />
+                                                  )}
                                                   {isAllowedToSeeDeadlineCount && (
                                                     <span
                                                       className={styles['deadlineCount']}
