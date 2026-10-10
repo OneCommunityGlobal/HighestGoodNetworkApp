@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
+import { useHistory, useLocation } from 'react-router-dom';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -28,6 +29,7 @@ import styles from './LBDashboard.module.css';
 import UserManagementSection from './UserManagement/UserManagement';
 import ConversionFunnel from './LbAnalytics/ConversionFunnel/ConversionFunnel';
 import { randomInt } from './lbUtils';
+import Logout from '../Logout';
 
 const METRIC_OPTIONS = {
   DEMAND: [
@@ -175,24 +177,34 @@ CategoryControls.propTypes = {
   onToggleDD: PropTypes.func.isRequired,
 };
 
-const DashboardHeader = ({ darkMode, onBack }) => (
+const DashboardHeader = ({ darkMode, onBack, onLogout }) => (
   <header className={styles.dashboardHeader}>
     <h1 className={getClassNames(styles.title, styles.darkText, darkMode)}>
       Listing and Bidding Platform Dashboard
     </h1>
-    <Button
-      size="sm"
-      onClick={onBack}
-      className={getClassNames(styles.backBtn, styles.darkBackBtn, darkMode)}
-    >
-      Back
-    </Button>
+    <div className={styles.headerActions}>
+      <Button
+        size="sm"
+        onClick={onBack}
+        className={getClassNames(styles.backBtn, styles.darkBackBtn, darkMode)}
+      >
+        Back
+      </Button>
+      <Button
+        size="sm"
+        onClick={onLogout}
+        className={getClassNames(styles.logoutBtn, styles.darkLogoutBtn, darkMode)}
+      >
+        Logout
+      </Button>
+    </div>
   </header>
 );
 
 DashboardHeader.propTypes = {
   darkMode: PropTypes.bool,
   onBack: PropTypes.func.isRequired,
+  onLogout: PropTypes.func.isRequired,
 };
 
 const FilterSection = ({
@@ -571,7 +583,17 @@ export function LBDashboard() {
   };
 
   const toggleDD = category => setOpenDD(s => ({ ...s, [category]: !s[category] }));
-  const goBack = () => globalThis.history.back();
+  const history = useHistory();
+  const location = useLocation();
+  const [logoutOpen, setLogoutOpen] = useState(false);
+  const goBack = () => {
+    const isFirstPage = location.state?.fromLBLogin || globalThis.history.length <= 1;
+    if (isFirstPage) {
+      globalThis.location.reload();
+    } else {
+      history.goBack();
+    }
+  };
 
   const metricLabel = getMetricLabel();
   const mappedMetric = METRIC_MAPPING[selectedMetricKey];
@@ -581,7 +603,8 @@ export function LBDashboard() {
       fluid
       className={getClassNames(styles.dashboardContainer, styles.darkContainer, darkMode)}
     >
-      <DashboardHeader darkMode={darkMode} onBack={goBack} />
+      <DashboardHeader darkMode={darkMode} onBack={goBack} onLogout={() => setLogoutOpen(true)} />
+      <Logout open={logoutOpen} setLogoutPopup={setLogoutOpen} />
 
       <FilterSection
         darkMode={darkMode}
