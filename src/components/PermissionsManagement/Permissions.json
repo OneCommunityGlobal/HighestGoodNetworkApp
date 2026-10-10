@@ -576,6 +576,17 @@
     ]
   },
   {
+    "label": "CollabJobAds",
+    "description": "Collaboration Job Ads related permissions",
+    "subperms": [
+      {
+        "label": "Create CollabJobAds",
+        "key": "createCollabJobAds",
+        "description": "Make the \"Other Links\" -> \"Job Ads Creation\" button appear/accessible and allow creating collaboration job ads. Intended for Owner and Administrator roles."
+      }
+    ]
+  },
+  {
     "label":"Activity Log Management",
     "description":"Category for all permissions related to activity logs",
     "subperms":[
