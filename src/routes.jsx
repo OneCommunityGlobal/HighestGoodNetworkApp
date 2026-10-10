@@ -187,6 +187,8 @@ import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import BrowseLessonPlan from './components/EductionPortal/BrowseLessonPlan/BrowseLP';
 import EPDashboard from './components/EductionPortal';
+import GroupList from './components/EductionPortal/GroupList/GroupList';
+import EducatorReports from './components/EductionPortal/EducatorReports';
 import TaskSubmissions from './components/EductionPortal/Educators/TaskSubmissions';
 import SubmissionReviewPage from './components/EductionPortal/Educators/TaskSubmissions/SubmissionReviewPage';
 import AnnouncementsPage from './components/EductionPortal/Announcements/AnnouncementsPage';
@@ -195,15 +197,12 @@ import StudentProfile from './components/EductionPortal/StudentProfile';
 import StudentProfilePage from './components/EductionPortal/StudentProfile/StudentProfilePage';
 import AssignAtoms from './components/EductionPortal/AssignAtoms/AssignAtoms';
 import ReportDownloadButton from './components/EductionPortal/AnalyticsDashboard/ReportDownloadButton';
-import GroupList from './components/EductionPortal/GroupList/GroupList';
 import EvaluationResultsWrapper from './components/EductionPortal/EvaluationResultsWrapper';
 import InsightWidget from './components/EductionPortal/AnalyticsDashboard/InsightsWidget';
 import ProjectManagerEducatorView from './components/EductionPortal/ProjectManager/ProjectManagerEducatorView';
 import StudentDashboard from './components/EductionPortal/StudentTasks/StudentDashboard';
 import StudentTasks from './components/EductionPortal/StudentTasks/StudentTasks';
 import TaskDetails from './components/EductionPortal/StudentTasks/TaskDetails';
-import EducatorReports from './components/EductionPortal/EducatorReports';
-import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
 import PRDashboardOverview from './components/HGNPRDashboard/PRDashboardOverview';
 import PRDashboardPromotionEligibility from './components/HGNPRDashboard/PRDashboardPromotionEligibility';
 import PRDashboardTopReviewedPRs from './components/HGNPRDashboard/PRDashboardTopReviewedPRs';
@@ -213,6 +212,7 @@ import BookingPage from './components/Booking/BookingPage';
 import BookingConfirmPage from './components/Booking/BookingConfirmPage';
 import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
 import ReviewersStackedBarChart from './components/HGNPRDashboard/ReviewersStackedBarChart/ReviewersStackedBarChart';
+import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
 import PRReviewTeamAnalyticsDashboard from './components/Analytics/AnalyticsDashboard';
 import PopularPRChart from './components/Analytics/PopularPRChart';
 import ReviewersRequirementChart from './components/Analytics/ReviewersRequirementChart';
@@ -1026,6 +1026,8 @@ export default (
           component={StudentProfile}
         />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
+        <Route path="/educator/groups" exact component={GroupList} />
+        <EPProtectedRoute path="/educator/reports" exact component={EducatorReports} />
         <EPProtectedRoute
           path="/educationportal/announcements"
           exact
@@ -1055,8 +1057,6 @@ export default (
         />
         <EPProtectedRoute path="/educationportal/assignAtoms" exact component={AssignAtoms} />
         <EPProtectedRoute path="/educationportal/reportButton" component={ReportDownloadButton} />
-        <EPProtectedRoute path="/educationportal/groups" exact component={GroupList} />
-        <EPProtectedRoute path="/educationportal/reports" exact component={EducatorReports} />
         <EPProtectedRoute
           path="/educationportal/tasks/intermediate"
           exact
