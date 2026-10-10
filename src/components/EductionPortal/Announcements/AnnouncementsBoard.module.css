@@ -43,12 +43,12 @@
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+  box-shadow: 0 2px 4px rgb(0 123 255 / 20%);
 }
 
 .createButton:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+  box-shadow: 0 4px 8px rgb(0 123 255 / 30%);
 }
 
 /* Filter Section */
@@ -77,7 +77,7 @@
 
 .audienceFilter:focus {
   border-color: #007bff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
 }
 
 .resultCount {
@@ -99,7 +99,7 @@
   border: 1px solid #e9ecef;
   border-radius: 0.75rem;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 5%);
   height: 100%;
   overflow: hidden;
   background: #fff;
@@ -113,12 +113,12 @@
 
 .announcementCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
   border-color: #007bff;
 }
 
 .darkMode .announcementCard:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 40%);
 }
 
 .newAnnouncement {
@@ -196,6 +196,14 @@
   background: #243B5A;
   border-color: #3A506B;
   color: #e2e8f0;
+}
+
+/* Focus States */
+.createButton:focus,
+.editButton:focus,
+.audienceFilter:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
 }
 
 .darkMode .editButton:hover {
@@ -326,7 +334,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .headerRow {
     flex-direction: column;
     gap: 1rem;
@@ -355,7 +363,7 @@
   }
 }
 
-@media (max-width: 576px) {
+@media (width <= 576px) {
   .announcementsBoard {
     padding: 1rem 0;
   }
@@ -389,16 +397,8 @@
   }
 }
 
-/* Focus States */
-.createButton:focus,
-.editButton:focus,
-.audienceFilter:focus {
-  outline: 2px solid #007bff;
-  outline-offset: 2px;
-}
-
 /* High Contrast Mode */
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .announcementCard {
     border-width: 2px;
   }
