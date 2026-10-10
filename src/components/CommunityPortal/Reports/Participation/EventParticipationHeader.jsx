@@ -1,15 +1,44 @@
 import { useSelector } from 'react-redux';
+import { useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import styles from './Participation.module.css';
 
-function EventParticipationHeader() {
+function EventParticipationHeader({ events = [], loading = false }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const eventMetrics = {
-    totalEvents: 24,
-    averageAttendance: 35,
-    highestRatedEvent: 'Yoga Class',
-    totalParticipants: 840,
-  };
+  const eventMetrics = useMemo(() => {
+    if (!events.length) {
+      return {
+        totalEvents: 0,
+        averageAttendance: 0,
+        topEventType: loading ? '…' : 'N/A',
+        totalParticipants: 0,
+      };
+    }
+
+    const totalParticipants = events.reduce(
+      (sum, event) => sum + (Number(event.attendees) || 0),
+      0,
+    );
+
+    const attendanceByType = events.reduce((acc, event) => {
+      acc[event.eventType] = (acc[event.eventType] || 0) + (Number(event.attendees) || 0);
+      return acc;
+    }, {});
+
+    const topEventType = Object.entries(attendanceByType).reduce(
+      (top, [eventType, attendance]) =>
+        attendance > top.attendance ? { eventType, attendance } : top,
+      { eventType: 'N/A', attendance: -1 },
+    ).eventType;
+
+    return {
+      totalEvents: events.length,
+      averageAttendance: Math.round(totalParticipants / events.length),
+      topEventType,
+      totalParticipants,
+    };
+  }, [events, loading]);
 
   return (
     <header
@@ -27,18 +56,21 @@ function EventParticipationHeader() {
 
         <div className={styles.headerNavigation}>
           <nav className={styles.navLinks}>
-            <a
-              href="/communityportal/reports/participation/virtual-vs-inperson"
+            <Link
+              to="/communityportal/reports/participation/virtual-vs-inperson"
               className={styles.navLink}
             >
               Virtual vs. In-Person
-            </a>
-            <a href="/communityportal/reports/participation/event-value" className={styles.navLink}>
+            </Link>
+            <Link
+              to="/communityportal/reports/participation/event-value"
+              className={styles.navLink}
+            >
               Event Value Estimates
-            </a>
-            <a href="/communityportal/reports/participation/trends" className={styles.navLink}>
+            </Link>
+            <Link to="/communityportal/reports/participation/trends" className={styles.navLink}>
               Participation Trends
-            </a>
+            </Link>
           </nav>
         </div>
       </div>
@@ -53,7 +85,7 @@ function EventParticipationHeader() {
           <div className={styles.metricLabel}>Avg Attendance</div>
         </div>
         <div className={styles.metricCard}>
-          <div className={styles.metricValue}>{eventMetrics.highestRatedEvent}</div>
+          <div className={styles.metricValue}>{eventMetrics.topEventType}</div>
           <div className={styles.metricLabel}>Top Event Type</div>
         </div>
         <div className={styles.metricCard}>

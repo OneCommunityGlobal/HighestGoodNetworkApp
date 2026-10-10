@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import styles from './Participation.module.css';
 
 function AnalyticsNavigation() {
@@ -48,9 +49,9 @@ function AnalyticsNavigation() {
 
       <div className={styles.navigationGrid}>
         {navigationItems.map(item => (
-          <a
+          <Link
             key={item.link}
-            href={item.link}
+            to={item.link}
             className={`${styles.navigationCard} ${darkMode ? styles.navigationCardDark : ''}`}
           >
             <div className={styles.cardIcon}>{item.icon}</div>
@@ -60,7 +61,7 @@ function AnalyticsNavigation() {
               <div className={styles.cardStats}>{item.stats}</div>
             </div>
             <div className={styles.cardArrow}>→</div>
-          </a>
+          </Link>
         ))}
       </div>
     </div>
