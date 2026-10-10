@@ -1268,8 +1268,8 @@ setUpdatedTasks(prev => {
   const canEditVisibility = props.hasPermission(permissions.toggleInvisibility);
   const canSeeReports = props.hasPermission(permissions.getReports);
   const { role: userRole } = userProfile;
-  const canResetPassword =
-    props.hasPermission(permissions.updatePassword)&& !(userProfile.role === 'Administrator' || userProfile.role === 'Owner');
+  // Update Password (Others) is the only gate: it applies to every target role, Admin and Owner included
+  const canResetPassword = canUpdatePassword;
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
   const canEditUserProfile = targetIsDevAdminUneditable
     ? false
@@ -1885,6 +1885,7 @@ setUpdatedTasks(prev => {
                   user={userProfile}
                   authEmail={authEmail}
                   canUpdatePassword={canResetPassword}
+                  darkMode={darkMode}
                 />
               )}
               {isUserSelf && (activeTab === '1' || canPutUserProfile) && (
@@ -2017,6 +2018,7 @@ setUpdatedTasks(prev => {
                           user={userProfile}
                           authEmail={authEmail}
                           canUpdatePassword
+                          darkMode={darkMode}
                         />
                       )}
                       {isUserSelf && (activeTab == '1' || canPutUserProfile) && (
