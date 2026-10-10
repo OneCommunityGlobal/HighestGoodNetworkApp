@@ -131,12 +131,14 @@
 .dateInput {
   flex: 1;
   width: 100%;
-  padding: 0.4rem 0.6rem;
+  padding: 8px 30px 8px 12px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 6px;
   background-color: #fff;
   color: #000;
-  font-size: 0.9rem;
+  font-size: 13px;
+  box-sizing: border-box;
+  height: 38px;
 }
 
 .dateInput:focus {

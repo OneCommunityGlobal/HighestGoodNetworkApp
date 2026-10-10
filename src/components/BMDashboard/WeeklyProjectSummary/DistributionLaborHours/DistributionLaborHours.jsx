@@ -203,7 +203,7 @@ export default function DistributionLaborHours() {
 
         <div className={styles.pieChartContainer}>
           {filteredData.length === 0 ? (
-            <div className={styles.tooltip}>
+            <div className={styles.emptyMessage}>
               {fetchError
                 ? 'Unable to load labor hours distribution.'
                 : 'No data available for the selected filters.'}

@@ -213,6 +213,23 @@
   color: #fff !important;
 }
 
+.emptyMessage {
+  background-color: #f3f4f6;
+  color: #111827;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+/* Dark mode: give the empty/error message its own dark background so the
+   white text stays readable (reusing .tooltip's light background made it
+   unreadable in dark mode). */
+:global(.dark) .emptyMessage,
+:global(.dark-mode) .emptyMessage,
+:global([data-theme='dark']) .emptyMessage {
+  background-color: #2e3e5a;
+  color: #fff;
+}
+
 .buttonContainer {
   width: 100%;           
   display: flex;
