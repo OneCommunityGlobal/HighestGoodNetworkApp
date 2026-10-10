@@ -1,3 +1,12 @@
+/* 
+  ===== COMPLETE FIX =====
+  Combines:
+  1. Button overlap fix (Submit button)
+  2. Red deadline badge visibility fix
+  3. Header <-> body alignment, dark mode header, small-device layout
+  4. Full task names (wrap instead of truncating)
+*/
+
 /* stylelint-disable  */
 :global(.dark-mode) .modal-body p {
   color: #fff;
@@ -35,10 +44,12 @@
   outline-offset: 2px;
 }
 
+/* ===== FIX #2: RED BADGE VISIBILITY ===== */
 .progress-wrapper {
   display: inline-grid;
   width: fit-content;
   justify-items: start;
+  overflow: visible !important; /* ← Allow badge to show */
 }
 
 .team-task-progress-container {
@@ -47,6 +58,7 @@
   gap: 6px;
   flex-wrap: nowrap;
   width: fit-content;
+  overflow: visible !important; /* ← Allow badge to show */
 }
 
 .team-task-progress-bar {
@@ -55,12 +67,47 @@
 }
 
 .team-member-task-review-button {
-  grid-column: 1;
-  grid-row: 2;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
   min-height: 40px;
+  width: 100%;
+}
+
+/* Force the button (and any wrapper/dropdown inside ReviewButton) to stay inside the Status column */
+.team-member-task-review-button > *,
+.team-member-task-review-button button,
+.team-member-task-review-button .btn,
+.team-member-task-review-button .dropdown,
+.team-member-task-review-button .dropdown-toggle {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 0 !important; /* no padding, as requested */
+  margin: 0 !important;
+  font-size: 12px;
+  line-height: 1.2;
+  white-space: normal;
+  word-break: break-word;
+  text-align: center;
+}
+
+.team-member-task-review-button button {
+  min-height: 32px; /* was height: 32px — lets "Ready for Review" wrap to two lines */
+}
+
+.status-align {
+  width: 120px;
+  min-width: 100px;
+  max-width: 130px;
+  padding-left: 6px !important;
+  padding-right: 0 !important;
+  text-align: center;
+  vertical-align: middle !important;
+  height: auto !important;
+  overflow: visible !important;
+  z-index: 10;
 }
 
 .team-member-tasks h1 {
@@ -70,7 +117,7 @@
 
 .task_table-container {
   width: 100%;
-  overflow: hidden auto;
+  overflow: auto;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -78,7 +125,6 @@
   table-layout: fixed;
   width: 100%;
   border-collapse: collapse;
-  overflow-y: scroll;
 }
 
 .team-member-tasks-bell {
@@ -121,7 +167,6 @@
 
 .team-member-tasks .team-member-tasks-headers {
   justify-content: center;
-  margin-left: -10px;
   vertical-align: middle;
   text-align: center;
 }
@@ -139,15 +184,10 @@
   max-width: 160px;
   padding-right: 0 !important;
   padding-left: 0 !important;
-  text-align: left;
+  text-align: center;
 }
 
-/* .task-break {
-  border-bottom: 1px solid lightgray;
-} */
-
 .task-break {
-  /* border: red 1px solid; */
   border-bottom: 1px solid lightgray;
 }
 
@@ -189,14 +229,23 @@
   z-index: 10;
 }
 
-.team-member-tasks-user-name {
-  width: 50%;
-  text-align: center;
-  vertical-align: top !important;
+.team-member-tasks td.team-member-tasks-user-name {
   display: flex;
   flex-direction: column;
+  align-items: flex-start !important;
+  text-align: left !important;
+  width: 100%;
+}
+
+/* children carry inline textAlign/justifyContent: center */
+.team-member-tasks td.team-member-tasks-user-name > * {
+  text-align: left !important;
   justify-content: flex-start !important;
-  align-items: center;
+  align-self: flex-start;
+}
+
+.name-wrapper {
+  justify-content: flex-start;
 }
 
 .team-member-tasks td {
@@ -204,9 +253,8 @@
 }
 
 .team-member-tasks-subtable th:first-child {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  vertical-align: middle;
+  text-align: center;
 }
 
 .team-member-tasks-user-report-link .team-member-tasks-user-report-link-image {
@@ -214,8 +262,9 @@
   height: 22px;
 }
 
+/* ===== FIX #2: RED BADGE VISIBILITY - COMPLETE RULES ===== */
 .followup-info-override {
-  position: relative;
+  position: relative; /* ← Critical for badge positioning */
   display: inline-flex;
   align-items: center;
 }
@@ -223,7 +272,7 @@
 .deadlineCount {
   position: absolute;
   top: -4px;
-  right: -17px;
+  right: -4px;
   background: #e74c3c;
   color: #fff;
   border-radius: 50%;
@@ -238,7 +287,7 @@
   white-space: nowrap;
   box-shadow: 0 0 0 2px #fff;
   cursor: pointer;
-  z-index: 3;
+  z-index: 3 !important; /* ← Ensure visible on top */
 }
 
 .task-followup-icon {
@@ -253,7 +302,6 @@
   vertical-align: top;
   padding-left: 10px !important;
 }
-
 
 .team-member-tasks-number {
   display: inline-block;
@@ -273,10 +321,33 @@
 }
 
 .team-clocks-header {
-  height: 73.5px;
-  align-items: center;
+  height: auto;
+  min-height: 73.5px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.team-clocks-header-inner {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.team-clocks-icons-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 4px;
+  flex-wrap: nowrap;
+}
+
+.team-clocks-buttons-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
 }
 
 .hours-btn-container {
@@ -518,29 +589,47 @@
   flex-wrap: nowrap;
 }
 
+/* Task title row: lets a long name wrap instead of being cut off */
 .team-member-tasks-content {
   grid-column: 1;
   grid-row: 1;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 5px;
   min-width: 0;
 }
 
+.taskColumnLayout {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto;
+  gap: 4px;
+  width: 100%;
+}
+
+.taskIconsUnderName {
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
 .taskTitle {
   white-space: normal !important;
-  overflow-wrap: normal !important;
+  overflow-wrap: anywhere !important; /* long unbroken words wrap instead of overflowing */
   word-break: normal !important;
   hyphens: auto;
 }
 
 .team-member-tasks-content-link {
   display: inline-block;
+  flex: 0 1 auto;
   max-width: 100%;
   min-width: 0;
   white-space: normal;
   word-break: normal;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
   hyphens: auto;
 }
 
@@ -773,11 +862,6 @@
   .responsive-font-size {
     font-size: 0.75rem !important;
   }
-
-  .multi-select-filter {
-    width: 50%;
-    z-index: 20;
-  }
 }
 
 @media ((width <= 1075px) and (width >= 992px)) {
@@ -911,7 +995,6 @@
   box-shadow: 2px 2px 4px 1px lightgray;
 }
 
-/* Previously `responsive-btn-size` */
 .responsiveBtnSize {
   /* keep sizing controlled by your existing .circle-border; this is a hook for future */
 }
@@ -963,11 +1046,8 @@
   .responsiveFontSize {
     font-size: 0.75rem !important;
   }
-
-  .multiSelectFilter {
-    width: 50%;
-  }
 }
+
 .task-age-badge {
   display: inline-flex;
   align-items: center;
@@ -997,4 +1077,170 @@
 
 .task-age-badge-very-old {
   background-color: #dc3545;
+}
+
+/* ============================================================
+   NEW: Header <-> body alignment
+   ============================================================ */
+.header-left-cell {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* body is 1/6 + 2/6 of the table => 1/3 + 2/3 of the left half */
+.header-col-status {
+  width: 33.333%;
+  text-align: center;
+  vertical-align: middle !important;
+}
+
+.header-col-member {
+  width: 66.667%;
+  text-align: center;
+  vertical-align: middle !important;
+}
+
+.headerToggleBtn {
+  padding: 2px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  border: 1px solid #17a2b8;
+  background: #fff;
+  color: #17a2b8;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.headerToggleBtnActive {
+  background: #17a2b8;
+  color: #fff;
+}
+
+.hoursDone {
+  color: green !important;
+}
+
+.hoursLeft {
+  color: red !important;
+}
+
+/* ============================================================
+   NEW: Dark mode
+   ============================================================ */
+.darkContainer h1 {
+  color: #f8f9fa !important;
+}
+
+.darkContainer .dark-teammember-row thead,
+.darkContainer .dark-teammember-row thead table,
+.darkContainer .dark-teammember-row thead th {
+  background-color: #3a506b;
+  color: #fff;
+}
+
+.darkContainer .headerToggleBtn {
+  background: transparent;
+  color: #5fd3e6;
+  border-color: #5fd3e6;
+}
+
+.darkContainer .headerToggleBtnActive {
+  background: #17a2b8;
+  color: #fff;
+  border-color: #17a2b8;
+}
+
+.darkContainer .hoursDone {
+  color: #4cd964 !important;
+}
+
+.darkContainer .hoursLeft {
+  color: #ff6b6b !important;
+}
+
+/* badge ring should match the dark row, not white */
+.darkContainer .deadlineCount {
+  box-shadow: 0 0 0 2px #223b5a;
+}
+
+/* ============================================================
+   NEW: Small devices
+   ============================================================ */
+@media (width <= 768px) {
+  .task_table-container {
+    max-height: none;
+    overflow-x: hidden;
+  }
+
+  /* stop the dropdowns overflowing */
+  .filtersCol {
+    margin-left: 0;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .multiSelectFilter {
+    width: 100%;
+  }
+
+  /* card look, and dark mode support (was hard-coded light) */
+  .table-row {
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+
+  .darkTbody .table-row {
+    background: #223b5a;
+    border-color: rgb(255 255 255 / 20%);
+    color: #fff;
+  }
+
+  /* beat `.team-member-tasks td { display:block }` so centering works again */
+  .team-member-tasks td.team-member-tasks-user-name {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center !important;
+    width: 100%;
+  }
+
+  .name-wrapper {
+    justify-content: center;
+  }
+
+  /* progress + status use the full card width */
+  .team-task-progress {
+    text-align: left;
+  }
+
+  .progress-wrapper {
+    display: grid;
+    width: 100%;
+    max-width: 260px;
+  }
+
+  .status-align {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    padding-left: 2px !important;
+  }
+
+  .team-member-task-review-button {
+    justify-content: flex-start;
+  }
+
+  .team-member-task-review-button > *,
+  .team-member-task-review-button button {
+    max-width: 220px !important;
+  }
+}
+
+/* keep rows dark on hover in dark mode */
+.darkTbody tr:hover,
+.darkTbody tr:hover > td,
+.darkTbody tr:hover > th {
+  background-color: #223b5a !important;
+  color: #fff !important;
 }
