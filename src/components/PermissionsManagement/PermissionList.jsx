@@ -29,7 +29,7 @@ function PermissionList(props) {
     editPermission,
   } = props;
   return (
-    <div className="user-role-tab__permissionList" data-testid="permission-list">
+    <div data-testid="permission-list">
       {' '}
       <ul>
         {permissionsList.map(permission => (
