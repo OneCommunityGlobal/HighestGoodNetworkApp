@@ -97,8 +97,8 @@ function FeedbackModal() {
     // Validate that all filled member names are valid users from the list
     const allUsers = [...activeUsers, ...inactiveUsers];
 
-    const invalidActive = ratedMembers.find(m => isValidMemberName(m, allUsers));
-    const invalidInactive = inactiveRatedMembers.find(m => isValidMemberName(m, allUsers));
+    const invalidActive = ratedMembers.some(m => isValidMemberName(m, allUsers));
+    const invalidInactive = inactiveRatedMembers.some(m => isValidMemberName(m, allUsers));
 
     if (invalidActive || invalidInactive) {
       toast.warn('Please select valid members from the dropdown only.');
