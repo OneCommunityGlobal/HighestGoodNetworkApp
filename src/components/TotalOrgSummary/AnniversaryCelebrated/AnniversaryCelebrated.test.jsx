@@ -11,6 +11,16 @@ describe('AnniversaryCelebrated', () => {
       </MemoryRouter>,
     );
 
+    expect(screen.getByText('No anniversary data available for this period.')).toBeInTheDocument();
+  });
+
+  it('renders the empty state when anniversary data is available but contains no users', () => {
+    render(
+      <MemoryRouter>
+        <AnniversaryCelebrated isLoading={false} data={{}} darkMode={false} />
+      </MemoryRouter>,
+    );
+
     expect(screen.getByText('No anniversaries found')).toBeInTheDocument();
   });
 });

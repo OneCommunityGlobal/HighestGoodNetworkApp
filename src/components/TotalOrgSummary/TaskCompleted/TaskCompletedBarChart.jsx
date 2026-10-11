@@ -23,8 +23,6 @@ export const normalizeTaskCompletedStats = data => {
 export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
   const stats = normalizeTaskCompletedStats(data);
 
-  const total = stats.reduce((sum, item) => sum + item.amount, 0);
-
   const chartData = stats.map((item, index) => {
     let fontcolor = 'red';
 
@@ -35,7 +33,6 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
     return {
       name: item.name,
       amount: item.amount,
-      percentage: total > 0 ? `${((item.amount / total) * 100).toFixed(2)}%` : '0%',
       change: `${item.change >= 0 ? '+' : ''}${item.change}%`,
       fontcolor,
       color: index === 0 ? '#8e44ad' : '#3498db',
@@ -51,28 +48,18 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
   const renderCustomizedLabel = props => {
     const { x, y, width, value, index } = props;
 
-    const { percentage, change, fontcolor } = chartData[index];
+    const { change, fontcolor } = chartData[index];
 
     return (
       <g>
         <text
           x={x + width / 2}
-          y={y - 40}
+          y={y - 25}
           fill={darkMode ? 'white' : 'black'}
           fontWeight="bold"
           textAnchor="middle"
         >
           {value}
-        </text>
-
-        <text
-          x={x + width / 2}
-          y={y - 25}
-          fill={darkMode ? 'white' : 'black'}
-          fontSize="0.8em"
-          textAnchor="middle"
-        >
-          ({percentage})
         </text>
 
         <text x={x + width / 2} y={y - 10} fill={fontcolor} fontSize="0.8em" textAnchor="middle">
@@ -84,25 +71,33 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
 
   const exportCSV = () => {
     const raw = data?.raw || {};
+    const hasRawEntries = value =>
+      Array.isArray(value)
+        ? value.length > 0
+        : value !== null && typeof value === 'object' && Object.keys(value).length > 0;
 
-    if (!raw?.current?.length && !raw?.comparison?.length) {
+    if (!hasRawEntries(raw.current) && !hasRawEntries(raw.comparison)) {
       alert('No raw data available to export.');
       return;
     }
 
     let csv = 'Range,Status,Count\n';
 
-    if (raw.current) {
-      raw.current.forEach(item => {
-        csv += `Current,${item._id},${item.count}\n`;
-      });
-    }
+    const appendRows = (range, entries) => {
+      if (Array.isArray(entries)) {
+        entries.forEach(item => {
+          csv += `${range},${item._id},${item.count}\n`;
+        });
+        return;
+      }
 
-    if (raw.comparison) {
-      raw.comparison.forEach(item => {
-        csv += `Comparison,${item._id},${item.count}\n`;
+      Object.entries(entries || {}).forEach(([status, count]) => {
+        csv += `${range},${status},${count}\n`;
       });
-    }
+    };
+
+    appendRows('Current', raw.current);
+    appendRows('Comparison', raw.comparison);
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
 

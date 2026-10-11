@@ -1,5 +1,18 @@
-import { describe, expect, it } from 'vitest';
-import { normalizeTaskCompletedStats } from './TaskCompletedBarChart';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import TaskCompletedBarChart, { normalizeTaskCompletedStats } from './TaskCompletedBarChart';
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+const readBlob = blob =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsText(blob);
+  });
 
 describe('TaskCompletedBarChart', () => {
   it('supports assigned/completed alias keys returned by the API', () => {
@@ -69,5 +82,62 @@ describe('TaskCompletedBarChart', () => {
         change: 0,
       },
     ]);
+  });
+
+  it('exports counts from paired current and comparison response objects', async () => {
+    const createObjectURL = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:task-stats');
+    const clickLink = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+
+    render(
+      <TaskCompletedBarChart
+        isLoading
+        data={{
+          raw: {
+            current: { assigned: 7, completed: 8 },
+            comparison: { assigned: 3, completed: 4 },
+          },
+        }}
+        darkMode={false}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Export CSV' }));
+
+    const csv = await readBlob(createObjectURL.mock.calls[0][0]);
+
+    expect(csv).toBe(
+      'Range,Status,Count\n' +
+        'Current,assigned,7\n' +
+        'Current,completed,8\n' +
+        'Comparison,assigned,3\n' +
+        'Comparison,completed,4\n',
+    );
+    expect(clickLink).toHaveBeenCalledOnce();
+  });
+
+  it('continues to export legacy raw-data arrays', async () => {
+    const createObjectURL = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:task-stats');
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+
+    render(
+      <TaskCompletedBarChart
+        isLoading
+        data={{
+          raw: {
+            current: [
+              { _id: 'assigned', count: 7 },
+              { _id: 'completed', count: 8 },
+            ],
+          },
+        }}
+        darkMode={false}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Export CSV' }));
+
+    const csv = await readBlob(createObjectURL.mock.calls[0][0]);
+
+    expect(csv).toBe('Range,Status,Count\nCurrent,assigned,7\nCurrent,completed,8\n');
   });
 });
