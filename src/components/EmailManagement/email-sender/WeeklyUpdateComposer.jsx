@@ -7,6 +7,7 @@ import {
   FaImage,
   FaPaperPlane,
   FaTimes,
+  FaTrash,
   FaUpload,
 } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
@@ -522,7 +523,6 @@ const WeeklyUpdateComposer = ({ onClose }) => {
         {/* 1. Header Image */}
         <FormGroup>
           <Label>1. Header Image *</Label>
-
           {/* Drag & Drop Zone */}
           <div
             onDrop={handleImageDrop}
@@ -556,7 +556,6 @@ const WeeklyUpdateComposer = ({ onClose }) => {
             </p>
             <small style={{ color: '#9ca3af' }}>or paste URL below</small>
           </div>
-
           <Input
             type="url"
             value={headerImage}
@@ -571,11 +570,29 @@ const WeeklyUpdateComposer = ({ onClose }) => {
             <FaImage className="me-1" />
             Supports: Drag & drop image files, or paste image URLs
           </small>
-
           {/* Image Preview */}
           {imagePreview && (
             <div className="mt-3">
-              <Label>Preview:</Label>
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <Label className="mb-0">Preview:</Label>
+                <Button
+                  type="button"
+                  color="danger"
+                  size="sm"
+                  onClick={() => {
+                    setHeaderImage('');
+                    setImagePreview('');
+                    setValidationErrors(prev => ({
+                      ...prev,
+                      headerImage: null,
+                    }));
+                  }}
+                >
+                  <FaTrash className="me-1" />
+                  Delete Image
+                </Button>
+              </div>
+
               <img
                 src={imagePreview}
                 alt="Header preview"
@@ -589,12 +606,12 @@ const WeeklyUpdateComposer = ({ onClose }) => {
                 onError={() => {
                   toast.error('Invalid image URL');
                   setImagePreview('');
+                  setHeaderImage('');
                 }}
               />
             </div>
           )}
         </FormGroup>
-
         {/* 2. Intro Paragraph */}
         <FormGroup>
           <Label>2. Opening Paragraph *</Label>
