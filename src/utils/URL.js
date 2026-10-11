@@ -695,6 +695,10 @@ export const ENDPOINTS = {
   LINKEDIN_POST: `${APIEndpoint}/postToLinkedIn`,
   LINKEDIN_SCHEDULED_POSTS: `${APIEndpoint}/scheduledPosts`,
   LINKEDIN_SCHEDULED_POST_BY_ID: postId => `${APIEndpoint}/scheduledPosts/${postId}`,
+  MASTODON_POST: `${APIEndpoint}/mastodon/createPin`,
+  MASTODON_SCHEDULED_POSTS: `${APIEndpoint}/mastodon/schedule`,
+  MASTODON_SCHEDULED_POST_BY_ID: postId => `${APIEndpoint}/mastodon/schedule/${postId}`,
+  MASTODON_POST_HISTORY: limit => `${APIEndpoint}/mastodon/history?limit=${limit}`,
 
   // actual cost endpoints
   ACTUAL_COST_BREAKDOWN: projectId => `${APIEndpoint}/projects/${projectId}/actual-cost-breakdown`,
