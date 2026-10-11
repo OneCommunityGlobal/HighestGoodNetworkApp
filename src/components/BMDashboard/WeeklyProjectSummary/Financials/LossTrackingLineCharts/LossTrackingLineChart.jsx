@@ -345,7 +345,7 @@ export default function LossTrackingLineChart() {
                   <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 44 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
                     <XAxis
-                      dataKey="month"
+                      dataKey="displayLabel"
                       height={72}
                       tick={{ fill: textColor }}
                       axisLine={{ stroke: textColor }}
