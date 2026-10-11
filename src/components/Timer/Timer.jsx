@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/media-has-caption */
+import { setUser } from '@sentry/browser';
 import cs from 'classnames';
 import moment from 'moment';
 import PropTypes from 'prop-types';
@@ -127,7 +128,10 @@ function Timer({ authUser, darkMode, isPopout }) {
   const logHours = timeToLog.hours();
   const logMinutes = timeToLog.minutes();
 
-  const sendJsonMessageNoQueue = useCallback(msg => sendJsonMessage(msg, false), [sendMessage]);
+  // Handle visual race conditions for the timer start and pause buttons
+  const isCurrentlyPaused = !started || paused;
+
+  const sendJsonMessageNoQueue = useCallback(msg => sendJsonMessage(msg, false), [sendJsonMessage]);
 
   // Enhanced function to clear submitted time with better logging
   const clearSubmittedTime = useCallback(() => {
@@ -324,8 +328,12 @@ function Timer({ authUser, darkMode, isPopout }) {
   const wsJsonMessageHandler = useMemo(() => {
     if (viewingUserId == null) {
       return {
-        sendStart: () => sendJsonMessageNoQueue({ action: action.START_TIMER }),
-        sendPause: () => sendJsonMessageNoQueue({ action: action.PAUSE_TIMER }),
+        sendStart: () => {
+          sendJsonMessageNoQueue({ action: action.START_TIMER });
+        },
+        sendPause: () => {
+          sendJsonMessageNoQueue({ action: action.PAUSE_TIMER });
+        },
         sendClear: () => sendJsonMessageNoQueue({ action: action.CLEAR_TIMER }),
         sendStop: () => {
           sendJsonMessageNoQueue({ action: action.STOP_TIMER });
@@ -346,10 +354,12 @@ function Timer({ authUser, darkMode, isPopout }) {
       };
     }
     return {
-      sendStart: () =>
-        sendJsonMessageNoQueue({ action: action.START_TIMER, userId: viewingUserId }),
-      sendPause: () =>
-        sendJsonMessageNoQueue({ action: action.PAUSE_TIMER, userId: viewingUserId }),
+      sendStart: () => {
+        sendJsonMessageNoQueue({ action: action.START_TIMER, userId: viewingUserId });
+      },
+      sendPause: () => {
+        sendJsonMessageNoQueue({ action: action.PAUSE_TIMER, userId: viewingUserId });
+      },
       sendClear: () =>
         sendJsonMessageNoQueue({ action: action.CLEAR_TIMER, userId: viewingUserId }),
       sendStop: () => {
@@ -441,10 +451,27 @@ function Timer({ authUser, darkMode, isPopout }) {
   const handleStartButton = useCallback(() => {
     if (remaining === 0) {
       toast.error('There is no more Remaining time, please add more or log your passed time');
-    } else {
-      sendStart();
+      return;
     }
-  }, [remaining]);
+    setMessage(prev => ({
+      ...prev,
+      started: true,
+      paused: false,
+    }));
+    setRunning(true);
+    sendStart();
+  }, [remaining, sendStart]);
+
+  const handlePauseButton = useCallback(() => {
+    setMessage(prev => ({
+      ...prev,
+      started: true,
+      paused: true,
+    }));
+    setRunning(false);
+
+    sendPause();
+  }, [sendPause]);
 
   const handleAddButton = useCallback(
     duration => {
@@ -564,8 +591,18 @@ function Timer({ authUser, darkMode, isPopout }) {
       weekEndPause: weekEndPauseLJM,
     } = lastJsonMessage || defaultMessage;
 
+    // console.log('DEBUG WS TIMER RECEIVED', {
+    //   time: lastJsonMessage?.time,
+    //   started: lastJsonMessage?.started,
+    //   paused: lastJsonMessage?.paused,
+    //   receivedAt: Date.now(),
+    // });
+
     setMessage(lastJsonMessage || defaultMessage);
     setRunning(startedLJM && !pausedLJM);
+    if (!startedLJM || pausedLJM) {
+      setRemaining(lastJsonMessage?.time ?? defaultMessage.time);
+    }
 
     // Show inactivity or time-over modals based on message state
     setInacModal(forcedPauseLJM);
@@ -595,7 +632,6 @@ function Timer({ authUser, darkMode, isPopout }) {
 
   useEffect(() => {
     if (!running) {
-      setRemaining(time);
       return undefined;
     }
     updateRemaining();
@@ -1004,7 +1040,7 @@ function Timer({ authUser, darkMode, isPopout }) {
               />
             </div>
           </button>
-          {!started || paused ? (
+          {isCurrentlyPaused ? (
             <button
               type="button"
               disabled={isButtonDisabled}
@@ -1029,7 +1065,7 @@ function Timer({ authUser, darkMode, isPopout }) {
             <button
               type="button"
               disabled={isButtonDisabled}
-              onClick={sendPause}
+              onClick={handlePauseButton}
               aria-label="Pause timer"
               style={{ background: 'none', border: 'none' }}
             >

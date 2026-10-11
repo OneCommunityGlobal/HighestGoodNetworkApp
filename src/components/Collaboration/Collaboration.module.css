@@ -39,6 +39,36 @@
   border-radius: 0;
 }
 
+.jobTooltip {
+  width: min(100% - 24px, 440px);
+  margin: 12px auto 0;
+  padding: 12px;
+  border: 1px solid #7c8f00;
+  border-radius: 8px;
+  background-color: #f6ffd9;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 12%);
+  color: #1d2b00;
+}
+
+.jobTooltip p {
+  margin: 0 0 8px;
+}
+
+.jobTooltipDismiss {
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 5px;
+  background-color: #526000;
+  color: #fff;
+  cursor: pointer;
+}
+
+.jobLandingDark .jobTooltip {
+  border-color: #b4cc42;
+  background-color: #2e3700;
+  color: #fff;
+}
+
 .navbarLeft input,
 .navbarLeft select {
   display: flex;
@@ -124,8 +154,8 @@
 
 /* --- Headings --- */
 .headings {
+  padding: 1rem 1rem 0;
   margin-bottom: 10px;
-  text-align: center;
 }
 
 .headings h1,
@@ -140,6 +170,7 @@
   margin: 10px 0;
   text-transform: uppercase;
   letter-spacing: 1px;
+  text-align: center;
 }
 
 @media (width <= 768px) {
@@ -406,6 +437,14 @@
   }
 }
 
+.faqOuter {
+  width: 100%;
+  margin-top: 2rem;
+  padding: 2rem clamp(1rem, 4vw, 2.5rem);
+  box-sizing: border-box;
+  background-color: #f7f7f8;
+}
+
 .pagination {
   margin: 20px 0;
   display: flex;
@@ -537,6 +576,10 @@
   padding: 0;
 }
 
+.jobLandingDark .faqOuter {
+  background-color: #1c2541;
+}
+
 .jobLandingDark .navbar {
   background-color: #1c2541 !important;
   color: #fff;
@@ -657,19 +700,48 @@
 
 .activeTab {
   font-size: large;
-  font-weight: bold;
+  font-weight: 700;
   color: #fff;
   text-transform: uppercase;
+  background: transparent;
+  border: none;
+  cursor: pointer;
 }
 
 .tabButton {
   font-size: large;
-  font-weight: bold;
-  color: #808080;
+  font-weight: 700;
+  /* Dark text on the lime navbar (#9c0) for readable contrast in light mode */
+  color: #1a2e05;
   text-transform: uppercase;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.tabButton:hover {
+  color: #0f1a03;
+}
+
+/* Dark mode: light text on the navy navbar (#1c2541) */
+.jobLandingDark .tabButton {
+  color: #f1f5f9;
+}
+
+.jobLandingDark .tabButton:hover {
+  color: #fff;
+}
+
+.jobLandingDark .activeTab {
+  color: #fff;
 }
 
 :global(body.dark-mode) .tabButton,
 :global(body.bm-dashboard-dark) .tabButton {
-  color: #808080 !important;
+  color: #f1f5f9 !important;
+}
+
+:global(body.dark-mode) .activeTab,
+:global(body.bm-dashboard-dark) .activeTab {
+  color: #fff !important;
 }

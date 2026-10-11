@@ -10,8 +10,6 @@ function VolunteerStatusPieChart({
   data: { totalVolunteers, percentageChange, data: volunteerData },
   comparisonType,
 }) {
-  // Debug: Log the data used for the chart
-  // console.log('VolunteerStatusPieChart data:', { volunteerData, totalVolunteers });
   const chartData = {
     labels: volunteerData.map(item => item.label),
     datasets: [
@@ -24,9 +22,19 @@ function VolunteerStatusPieChart({
   };
 
   const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '65%',
+    layout: {
+      padding: {
+        top: 36,
+        bottom: 36,
+        left: 48,
+        right: 48,
+      },
+    },
     plugins: {
       datalabels: {
-        // Hide in-slice labels because values are already shown with external guides.
         display: false,
       },
       legend: {
@@ -36,19 +44,14 @@ function VolunteerStatusPieChart({
         enabled: true,
       },
       externalLabelGuides: {
-        offset: 20,
-        horizontalSpread: 34,
-        horizontalSpreadMap: { 0: 34, 1: 48, 2: 5 },
-        verticalOffsetMap: { 0: 38, 1: -22, 2: -50 },
+        offset: 16,
+        horizontalSpread: 28,
+        horizontalSpreadMap: { 0: 28, 1: 36, 2: 8 },
+        verticalOffsetMap: { 0: 30, 1: -20, 2: -40 },
         sideMap: { 0: 1, 1: -1, 2: 1 },
         total: totalVolunteers,
         formatter: ({ value, percentage }) => [`${value}`, `(${percentage}%)`],
       },
-    },
-    maintainAspectRatio: false,
-    cutout: '55%',
-    layout: {
-      padding: 24,
     },
   };
 
@@ -64,17 +67,18 @@ function VolunteerStatusPieChart({
       >
         <Doughnut data={chartData} options={options} plugins={[externalLabelGuidesPlugin]} />
         <div className={styles.volunteerStatusCenter}>
-          <h2 className={styles.volunteerStatusHeading}>TOTAL VOLUNTEERS*</h2>
-          <p className={styles.volunteerCount}>{totalVolunteers}</p>
-          {comparisonType !== 'No Comparison' && (
-            <p
+          <span className={styles.volunteerStatusHeading}>TOTAL VOLUNTEERS*</span>
+          <span className={styles.volunteerCount}>{totalVolunteers}</span>
+          {comparisonType && comparisonType !== 'No Comparison' && (
+            <span
+              className={styles.comparisonText}
               style={{ color: percentageChangeColor }}
               aria-label={`Percentage change: ${percentageChange}% ${comparisonType.toLowerCase()}`}
             >
               {percentageChange >= 0
                 ? `+${percentageChange}% ${comparisonType.toUpperCase()}`
                 : `${percentageChange}% ${comparisonType.toUpperCase()}`}
-            </p>
+            </span>
           )}
         </div>
       </div>
