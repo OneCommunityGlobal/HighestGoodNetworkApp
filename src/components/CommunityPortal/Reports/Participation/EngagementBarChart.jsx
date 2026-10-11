@@ -1,24 +1,96 @@
-import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useMemo } from 'react';
+import {
+  BarChart,
+  Bar,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 import styles from './Participation.module.css';
 
-function EngagementBarChart() {
+const MONTH_COUNT = 6;
+
+function buildLastMonths(count) {
+  const months = [];
+  const now = new Date();
+
+  for (let i = count - 1; i >= 0; i -= 1) {
+    const monthDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push({
+      key: `${monthDate.getFullYear()}-${monthDate.getMonth()}`,
+      label: monthDate.toLocaleString('en-US', { month: 'short' }),
+      year: monthDate.getFullYear(),
+      monthIndex: monthDate.getMonth(),
+    });
+  }
+
+  return months;
+}
+
+function EngagementBarChart({ events = [] }) {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const [tooltip, setTooltip] = useState(null);
 
-  const engagementData = [
-    { month: 'Jan', attendance: 35, engagement: 78, events: 6 },
-    { month: 'Feb', attendance: 42, engagement: 82, events: 8 },
-    { month: 'Mar', attendance: 38, engagement: 75, events: 7 },
-    { month: 'Apr', attendance: 45, engagement: 85, events: 9 },
-    { month: 'May', attendance: 40, engagement: 80, events: 8 },
-    { month: 'Jun', attendance: 48, engagement: 88, events: 10 },
-  ];
+  const engagementData = useMemo(() => {
+    const months = buildLastMonths(MONTH_COUNT);
 
-  const maxValue = Math.max(
-    ...engagementData.map(item => item.attendance),
-    ...engagementData.map(item => item.engagement),
+    return months.map(({ key, label, year, monthIndex }) => {
+      const monthEvents = events.filter(event => {
+        const eventDate = new Date(event.eventDate);
+        return eventDate.getFullYear() === year && eventDate.getMonth() === monthIndex;
+      });
+
+      const attendance = monthEvents.length
+        ? Math.round(
+            monthEvents.reduce((sum, event) => sum + (Number(event.attendees) || 0), 0) /
+              monthEvents.length,
+          )
+        : 0;
+
+      const eventsWithCapacity = monthEvents.filter(event => Number(event.maxAttendees) > 0);
+      const fillRate = eventsWithCapacity.length
+        ? Math.round(
+            eventsWithCapacity.reduce(
+              (sum, event) => sum + (Number(event.attendees) / Number(event.maxAttendees)) * 100,
+              0,
+            ) / eventsWithCapacity.length,
+          )
+        : 0;
+
+      return { key, month: label, attendance, fillRate, events: monthEvents.length };
+    });
+  }, [events]);
+
+  const peakMonth = engagementData.reduce(
+    (peak, item) => (item.attendance > peak.attendance ? item : peak),
+    engagementData[0] || { month: 'N/A', attendance: 0 },
   );
+
+  const firstAttendance = engagementData[0]?.attendance || 0;
+  const lastAttendance = engagementData[engagementData.length - 1]?.attendance || 0;
+  const growthTrend = firstAttendance
+    ? Math.round(((lastAttendance - firstAttendance) / firstAttendance) * 100)
+    : null;
+
+  let growthTrendLabel = 'N/A';
+  if (growthTrend !== null) {
+    const growthSign = growthTrend >= 0 ? '+' : '';
+    const firstMonthLabel = engagementData[0]?.month;
+    const lastMonthLabel = engagementData[engagementData.length - 1]?.month;
+    growthTrendLabel = `${growthSign}${growthTrend}% from ${firstMonthLabel} to ${lastMonthLabel}`;
+  }
+
+  const tooltipStyle = {
+    backgroundColor: darkMode ? '#1C2541' : '#ffffff',
+    border: `1px solid ${darkMode ? '#3a4a6b' : '#e0e0e0'}`,
+    borderRadius: '6px',
+    color: darkMode ? '#e5e7eb' : '#1a1a1a',
+  };
+  const axisColor = darkMode ? '#b8c5d1' : '#4b5563';
+  const gridColor = darkMode ? '#3a4a6b' : '#e0e0e0';
 
   return (
     <div className={`${styles.barChartSection} ${darkMode ? styles.barChartSectionDark : ''}`}>
@@ -27,116 +99,49 @@ function EngagementBarChart() {
       </h3>
 
       <div className={styles.barChartContainer}>
-        <div className={styles.chartArea}>
-          <div className={styles.yAxis}>
-            <div className={styles.yAxisValues}>
-              {[0, 20, 40, 60, 80].map(value => (
-                <div key={value} className={styles.yAxisValue}>
-                  {value}
-                </div>
-              ))}
-            </div>
-            <div className={styles.yAxisLabel}>Value</div>
-          </div>
-
-          <div className={styles.barsContainer} style={{ position: 'relative', height: '200px' }}>
-            {tooltip && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: tooltip.y,
-                  left: tooltip.x,
-                  background: darkMode ? '#1b2a41' : '#fff',
-                  color: darkMode ? '#fff' : '#333',
-                  border: '1px solid #ccc',
-                  borderRadius: '6px',
-                  padding: '6px 10px',
-                  fontSize: '0.8rem',
-                  pointerEvents: 'none',
-                  zIndex: 10,
-                  whiteSpace: 'nowrap',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                }}
-              >
-                <div>
-                  <strong>{tooltip.month}</strong>
-                </div>
-                <div>Attendance: {tooltip.attendance}</div>
-                <div>Engagement: {tooltip.engagement}%</div>
-                <div>Events: {tooltip.events}</div>
-              </div>
-            )}
-            {engagementData.map(item => (
-              <div
-                key={item.month}
-                className={styles.barGroup}
-                style={{ height: '100%' }}
-                onMouseEnter={e => {
-                  const rect = e.currentTarget.parentElement.getBoundingClientRect();
-                  const itemRect = e.currentTarget.getBoundingClientRect();
-                  setTooltip({
-                    month: item.month,
-                    attendance: item.attendance,
-                    engagement: item.engagement,
-                    events: item.events,
-                    x: itemRect.left - rect.left,
-                    y: -80,
-                  });
-                }}
-                onMouseLeave={() => setTooltip(null)}
-              >
-                <div className={styles.barWrapper} style={{ height: '100%' }}>
-                  <div
-                    className={`${styles.bar} ${styles.attendanceBar}`}
-                    style={{
-                      height: `${(item.attendance / maxValue) * 100}%`,
-                      backgroundColor: darkMode ? '#4CAF50' : '#2196F3',
-                    }}
-                  />
-                  <div
-                    className={`${styles.bar} ${styles.engagementBar}`}
-                    style={{
-                      height: `${(item.engagement / maxValue) * 100}%`,
-                      backgroundColor: darkMode ? '#FF9800' : '#4CAF50',
-                    }}
-                  />
-                </div>
-                <div className={styles.barLabel}>{item.month}</div>
-                <div className={styles.barValues}>
-                  <div className={styles.barValue}>{item.attendance}</div>
-                  <div className={styles.barValue}>{item.engagement}%</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className={styles.chartLegend}>
-          <div className={styles.legendItem}>
-            <div
-              className={styles.legendColor}
-              style={{ backgroundColor: darkMode ? '#4CAF50' : '#2196F3' }}
+        <ResponsiveContainer width="100%" height={260}>
+          <BarChart data={engagementData}>
+            <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+            <XAxis dataKey="month" stroke={axisColor} />
+            <YAxis stroke={axisColor} />
+            <Tooltip
+              contentStyle={tooltipStyle}
+              itemStyle={{ color: tooltipStyle.color }}
+              labelStyle={{ color: tooltipStyle.color }}
+              formatter={(value, name) => [
+                name === 'fillRate' ? `${value}%` : value,
+                name === 'fillRate' ? 'Avg Fill Rate' : 'Avg Attendance',
+              ]}
             />
-            <span className={styles.legendLabel}>Average Attendance</span>
-          </div>
-          <div className={styles.legendItem}>
-            <div
-              className={styles.legendColor}
-              style={{ backgroundColor: darkMode ? '#FF9800' : '#4CAF50' }}
+            <Legend
+              formatter={value =>
+                value === 'fillRate' ? 'Avg Fill Rate (%)' : 'Average Attendance'
+              }
             />
-            <span className={styles.legendLabel}>Engagement Rate (%)</span>
-          </div>
-        </div>
+            <Bar
+              dataKey="attendance"
+              fill={darkMode ? '#4CAF50' : '#2196F3'}
+              isAnimationActive={false}
+            />
+            <Bar
+              dataKey="fillRate"
+              fill={darkMode ? '#FF9800' : '#4CAF50'}
+              isAnimationActive={false}
+            />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
 
       <div className={styles.chartInsights}>
         <div className={styles.insightItem}>
           <span className={styles.insightLabel}>Peak Month:</span>
-          <span className={styles.insightValue}>June (48 avg attendance)</span>
+          <span className={styles.insightValue}>
+            {peakMonth.month} ({peakMonth.attendance} avg attendance)
+          </span>
         </div>
         <div className={styles.insightItem}>
           <span className={styles.insightLabel}>Growth Trend:</span>
-          <span className={styles.insightValue}>+37% from Jan to Jun</span>
+          <span className={styles.insightValue}>{growthTrendLabel}</span>
         </div>
       </div>
     </div>
