@@ -330,9 +330,16 @@
   margin-bottom: 40px;
 }
 
-.filterItem {
-  margin-bottom: 0;
-}
+.filterItem:has(select) label {
+     margin-bottom: 0;
+     line-height: 1.3;
+   }
+
+   .filterItem:has(select) select {
+     margin-top: 4px;
+     padding-top: 10px;
+     padding-bottom: 10px;
+   }
 
 .filterOptionsVertical {
   display: flex;

@@ -563,7 +563,7 @@ export const ENDPOINTS = {
   SUPPLIER_PROJECTS: `${APIEndpoint}/suppliers/projects`,
 
   // event endpoint
-  EVENTS: `${APIEndpoint}/events`,
+  EVENTS: `${APIEndpoint}/communityportal/events`,
   EVENTS_BY_ID: (activityId) => `${APIEndpoint}/events/${activityId}`,
   REGISTER_FOR_EVENT: (activityId) => `${APIEndpoint}/events/${activityId}/register`,
   EVENT_TYPES: `${APIEndpoint}/events/types`,
