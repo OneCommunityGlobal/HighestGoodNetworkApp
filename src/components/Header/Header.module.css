@@ -10,6 +10,8 @@
 
 /* General Styling */
 .headerWrapper {
+  display: flex;
+  flex-direction: column;
   height: fit-content;
   width: 100%;
 }
@@ -164,11 +166,13 @@
 }
 
 .navbarOwnerMessage {
-  flex: 1;
-  text-align: center;
+  display: flex;
+  align-items: center;
   justify-content: center;
+  width: 100%;
   padding-left: 20px;
   padding-right: 20px;
+  box-sizing: border-box;
 }
 
 .dashboardTextLink {
@@ -776,6 +780,18 @@
     gap: 1rem;
   }
 
+  /* Show owner message banner on tablet and larger screens */
+  .showInTablet {
+    display: block !important;
+    padding: 0.5rem 20px !important;
+    margin: 0 !important;
+  }
+
+  /* Hide mobile owner message section on tablet and larger screens */
+  .hideInTablet {
+    display: none !important;
+  }
+
   /* Three stacked rows: timer, logo + message, user/nav. `position: relative` is
      the positioning context used by the >850px rule below, which lifts the logo
      out of flow; at or under 850px the logo stays in flow and simply sits on its
@@ -863,5 +879,17 @@
 
   .hideInMobile {
     display: flex !important;
+  }
+
+  /* Show owner message banner on large screens */
+  .showInTablet {
+    display: block !important;
+    padding: 0.5rem 20px !important;
+    margin: 0 !important;
+  }
+
+  /* Hide mobile owner message section on large screens */
+  .hideInTablet {
+    display: none !important;
   }
 }

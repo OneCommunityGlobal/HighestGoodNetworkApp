@@ -64,6 +64,9 @@
   padding: 0.25rem;
   box-shadow: none;
   appearance: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .btns {
