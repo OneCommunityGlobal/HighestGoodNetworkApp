@@ -31,7 +31,7 @@ export default function CertificationProfile({ educator, onClose, onSave }) {
   };
 
   // Fetch all PM certifications
-  useEffect(() => {
+  useEffect(async () => {
     const fetchAllCerts = async () => {
       try {
         const res = await axios.get(ENDPOINTS.PM_CERTIFICATIONS());
@@ -41,7 +41,7 @@ export default function CertificationProfile({ educator, onClose, onSave }) {
         setError('Failed to load certifications.');
       }
     };
-    fetchAllCerts();
+    await fetchAllCerts();
   }, []);
 
   // Start editing
@@ -64,15 +64,55 @@ export default function CertificationProfile({ educator, onClose, onSave }) {
     setExpiryDate('');
   };
 
-  // Handle save (add or edit)
-  const handleSave = async () => {
+  // Helper function to validate required states before starting the request
+  const validateSaveInput = (selectedCertId, certName, educatorId, token) => {
     if (!selectedCertId && !certName) {
-      setError('Please select a certification or enter a new name');
-      return;
+      return 'Please select a certification or enter a new name';
+    }
+    if (!educatorId) {
+      return 'Educator ID is missing';
+    }
+    if (!token) {
+      return 'User not authenticated';
+    }
+    return null;
+  };
+
+  // Helper function to isolate conditional payload building
+  const buildCertPayload = (editing, selectedCertId, certName, description, status, expiryDate) => {
+    const payload = {};
+
+    // Apply shared optional fields safely
+    if (status) payload.status = status;
+    if (expiryDate) payload.expiryDate = expiryDate;
+
+    if (editing) {
+      const id = selectedCertId || editing.certificationId?._id;
+      if (id) payload.certificationId = id;
+      if (description) payload.description = description;
+      return payload;
     }
 
-    if (!educator?.educator?._id) {
-      setError('Educator ID is missing');
+    // Handle ADD new workflow
+    if (selectedCertId) {
+      payload.certificationId = selectedCertId;
+    } else if (certName) {
+      payload.certificationName = certName;
+      if (description) payload.description = description;
+    }
+
+    return payload;
+  };
+
+  // 3. The cleaned-up handler function
+  const handleSave = async () => {
+    const token = localStorage.getItem('token');
+    const educatorId = educator?.educator?._id;
+
+    // Run validation
+    const validationError = validateSaveInput(selectedCertId, certName, educatorId, token);
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
@@ -80,65 +120,43 @@ export default function CertificationProfile({ educator, onClose, onSave }) {
     setError(null);
 
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setError('User not authenticated');
-        setSaving(false);
-        return;
-      }
+      const payload = buildCertPayload(
+        editing,
+        selectedCertId,
+        certName,
+        description,
+        status,
+        expiryDate,
+      );
 
-      const payload = {};
-
-      if (editing) {
-        // EDIT existing
-        const id = selectedCertId || editing.certificationId?._id;
-        if (id) payload.certificationId = id;
-        if (description) payload.description = description;
-        if (status) payload.status = status;
-        if (expiryDate) payload.expiryDate = expiryDate;
-      } else {
-        // ADD new
-        if (selectedCertId) {
-          payload.certificationId = selectedCertId; // existing cert
-        } else if (certName) {
-          payload.certificationName = certName; // new cert
-          if (description) payload.description = description;
-        }
-
-        if (status) payload.status = status;
-        if (expiryDate) payload.expiryDate = expiryDate;
-      }
-
-      const url = ENDPOINTS.PM_ASSIGN_CERTIFICATIONS(educator.educator._id);
-
+      const url = ENDPOINTS.PM_ASSIGN_CERTIFICATIONS(educatorId);
       const response = await axios.post(url, payload, {
-        headers: {
-          Authorization: token,
-        },
+        headers: { Authorization: token },
       });
 
+      // Determine certification name cleanly
       const certNameFromList =
         selectedCertId && certList?.find(c => c._id === selectedCertId)?.name;
-
       const finalCertName = certNameFromList || certName || 'Unnamed Certification';
 
-      const updatedCert = {
-        _id: response.data._id,
-        status: response.data.status,
-        expiryDate: response.data.expiryDate,
-        assignedAt: response.data.assignedAt,
-        assignedBy: response.data.assignedBy,
-        certificationId: {
-          _id: response.data.certificationId,
-          name: finalCertName,
-        },
-      };
+      // Note: If you need to use updatedCert downstream, pass it into your state or callbacks here
+      // const updatedCert = {
+      //   _id: response.data._id,
+      //   status: response.data.status,
+      //   expiryDate: response.data.expiryDate,
+      //   assignedAt: response.data.assignedAt,
+      //   assignedBy: response.data.assignedBy,
+      //   certificationId: {
+      //     _id: response.data.certificationId,
+      //     name: finalCertName,
+      //   },
+      // };
+
       onSave();
       onClose();
     } catch (err) {
       console.error('Axios Error:', err);
-      if (err.response?.data?.error) setError(err.response.data.error);
-      else setError('Failed to save certification');
+      setError(err.response?.data?.error || 'Failed to save certification');
     } finally {
       setSaving(false);
     }

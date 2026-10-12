@@ -11,7 +11,7 @@ export default function EducatorTrainingDashboard() {
   const [error, setError] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
   // === FETCH ALL CERTIFICATION DATA AND GROUP BY EDUCATOR ===
-  useEffect(() => {
+  useEffect(async () => {
     const fetchCertifications = async () => {
       setLoading(true);
       try {
@@ -52,7 +52,7 @@ export default function EducatorTrainingDashboard() {
       }
     };
 
-    fetchCertifications();
+    await fetchCertifications();
   }, [refreshKey]);
 
   // === UPDATE LOCAL STATE AFTER SAVE ===
@@ -62,10 +62,10 @@ export default function EducatorTrainingDashboard() {
 
   if (loading) return <div className={styles.loader}>Loading...</div>;
   if (error) return <div className={styles.error}>{error}</div>;
-  const getStatusClass = status => {
-    if (!status) return '';
-    return status.toLowerCase().replace(/[\s-]/g, ''); // remove dash/space
-  };
+  // const getStatusClass = status => {
+  //   if (!status) return '';
+  //   return status.toLowerCase().replace(/[\s-]/g, ''); // remove dash/space
+  // };
   return (
     <div className={styles.etdContainer}>
       <h1 className={styles.etdTitle}>Educator Training Dashboard</h1>
