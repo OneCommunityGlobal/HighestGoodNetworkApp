@@ -216,6 +216,37 @@ function matchPositionOption(options, title) {
   return found || '';
 }
 
+/**
+ * Nearest dropdown position for a typed query (e.g. "CAD" → "CAD Designer").
+ * Prefers exact, then prefix, then substring; ties break to the shortest title.
+ */
+function findNearestPositionOption(options, query) {
+  const q = String(query || '')
+    .trim()
+    .toLowerCase();
+  if (!q || !options?.length) return '';
+
+  const exact = matchPositionOption(options, query);
+  if (exact) return exact;
+
+  const ranked = options
+    .map(option => {
+      const title = String(option || '').trim();
+      const lower = title.toLowerCase();
+      if (!lower) return null;
+      let score = 0;
+      if (lower.startsWith(q)) score = 3;
+      else if (lower.split(/[^a-z0-9]+/).some(part => part.startsWith(q))) score = 2;
+      else if (lower.includes(q)) score = 1;
+      else return null;
+      return { title, score, length: title.length };
+    })
+    .filter(Boolean)
+    .sort((a, b) => b.score - a.score || a.length - b.length);
+
+  return ranked[0]?.title || '';
+}
+
 function getInitialFormState(chosen, navTitle) {
   const displayTitle = (navTitle && String(navTitle).trim()) || chosen?.title || '';
   if (!chosen) {
@@ -1110,9 +1141,13 @@ function JobApplicationForm() {
       toast.info('Enter a job title.');
       return;
     }
-    const positionMatch = matchPositionOption(positionOptions, raw);
-    let form = forms.find(f => f.title?.toLowerCase() === raw.toLowerCase());
-    if (!form) form = findFormForJobTitle(forms, raw);
+    // Partial search (e.g. "CAD") should pick the nearest dropdown position.
+    const positionMatch = findNearestPositionOption(positionOptions, raw);
+    const lookupTitle = positionMatch || raw;
+    let form = forms.find(f => f.title?.toLowerCase() === lookupTitle.toLowerCase());
+    if (!form) form = findFormForJobTitle(forms, lookupTitle);
+    if (!form && lookupTitle !== raw) form = findFormForJobTitle(forms, raw);
+
     if (positionMatch || form) {
       const selected = positionMatch || form.title;
       setSelectedJob(selected);
@@ -1124,7 +1159,7 @@ function JobApplicationForm() {
         );
       }
     } else {
-      toast.info('No form matches that job title.');
+      toast.info('No position matches that search. Pick one from the dropdown.');
     }
   };
 
