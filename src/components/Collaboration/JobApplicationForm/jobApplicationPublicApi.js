@@ -8,8 +8,9 @@ export function slugifyPositionTitle(title) {
   return String(title || '')
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+    .split(/[^a-z0-9]+/)
+    .filter(Boolean)
+    .join('-');
 }
 
 /** Build a friendly apply URL for a position title. */
@@ -35,16 +36,16 @@ function hasApplicantToken() {
  */
 export function publicApplyRequestConfig(extra = {}) {
   if (hasApplicantToken()) {
-    return { ...extra };
+    return extra;
   }
-
-  const headers = { ...(extra.headers || {}) };
-  // axios 1.x: `false` removes a header for this request (including defaults).
-  headers.Authorization = false;
 
   return {
     ...extra,
-    headers,
+    headers: {
+      ...extra.headers,
+      // axios 1.x: `false` removes a header for this request (including defaults).
+      Authorization: false,
+    },
   };
 }
 
@@ -62,8 +63,8 @@ export function findFormByPositionSlug(formsArr, slug) {
 /** Decode slug into a rough job title hint for matching / banner display. */
 export function titleHintFromSlug(slug) {
   return String(slug || '')
-    .replace(/-/g, ' ')
-    .replace(/\s+/g, ' ')
+    .replaceAll('-', ' ')
+    .replaceAll(/\s+/g, ' ')
     .trim();
 }
 

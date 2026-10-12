@@ -217,7 +217,7 @@ function matchPositionOption(options, title) {
 }
 
 function getInitialFormState(chosen, navTitle) {
-  const displayTitle = (navTitle && String(navTitle).trim()) || (chosen && chosen.title) || '';
+  const displayTitle = (navTitle && String(navTitle).trim()) || chosen?.title || '';
   if (!chosen) {
     // Still surface the navigated/typed job in the dropdown even when no form matched yet.
     return {
@@ -236,6 +236,62 @@ function getInitialFormState(chosen, navTitle) {
     bannerJobTitle: displayTitle,
     jobTitleInput: navTitle || null,
   };
+}
+
+async function loadActivePositions() {
+  try {
+    const positionsRes = await axios.get(ENDPOINTS.GET_JOB_POSITIONS, publicApplyRequestConfig());
+    return Array.isArray(positionsRes.data?.positions)
+      ? positionsRes.data.positions.filter(Boolean)
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+async function loadJobForms(formId) {
+  if (formId && isMongoObjectId(formId)) {
+    try {
+      const single = await axios.get(ENDPOINTS.GET_JOB_FORM(formId), publicApplyRequestConfig());
+      const form = single.data?.form || single.data;
+      if (form) return [form];
+    } catch {
+      /* Fall through to /all */
+    }
+  }
+  const res = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS, publicApplyRequestConfig());
+  return parseFormsResponse(res);
+}
+
+function buildInitialSelection({
+  formsArr,
+  positions,
+  navTitle,
+  positionSlug,
+  routerLocation,
+  formId,
+}) {
+  const navState = {
+    ...routerLocation.state,
+    jobTitle: navTitle || routerLocation.state?.jobTitle,
+    formId: formId || routerLocation.state?.formId,
+  };
+  const slugMatch = positionSlug ? findFormByPositionSlug(formsArr, positionSlug) : null;
+  const formMatch = slugMatch || (navTitle ? findFormForJobTitle(formsArr, navTitle) : null);
+  const chosen = pickInitialForm(formsArr, navState, positionSlug);
+  notifyInitialFormSelection(navTitle, formMatch, chosen);
+
+  const bannerTitle = navTitle || slugMatch?.title || chosen?.title || '';
+  const baseOptions = positions.length ? positions : formsArr.map(f => f.title).filter(Boolean);
+  const options = ensurePositionOption(baseOptions, bannerTitle);
+  const initial = getInitialFormState(chosen, bannerTitle);
+  const selected =
+    matchPositionOption(options, initial.selectedJob || bannerTitle) ||
+    initial.selectedJob ||
+    bannerTitle ||
+    '';
+
+  return { options, initial, selected, bannerTitle };
 }
 
 function getQuestionType(q) {
@@ -959,77 +1015,36 @@ function JobApplicationForm() {
 
     async function fetchForms() {
       try {
-        let positions = [];
-        try {
-          const positionsRes = await axios.get(
-            ENDPOINTS.GET_JOB_POSITIONS,
-            publicApplyRequestConfig(),
-          );
-          if (!cancelled && Array.isArray(positionsRes.data?.positions)) {
-            positions = positionsRes.data.positions.filter(Boolean);
-          }
-        } catch {
-          /* Positions dropdown can fall back to form titles. */
-        }
-
         const formId = getFormIdFromNavigation(routerLocation);
-        let formsArr = [];
-        if (formId && isMongoObjectId(formId)) {
-          try {
-            const single = await axios.get(
-              ENDPOINTS.GET_JOB_FORM(formId),
-              publicApplyRequestConfig(),
-            );
-            const form = single.data?.form || single.data;
-            if (form) formsArr = [form];
-          } catch {
-            /* Fall through to /all */
-          }
-        }
-        if (!formsArr.length) {
-          const res = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS, publicApplyRequestConfig());
-          formsArr = parseFormsResponse(res);
-        }
+        const [positions, formsArr] = await Promise.all([
+          loadActivePositions(),
+          loadJobForms(formId),
+        ]);
         if (cancelled) return;
-        setForms(formsArr);
 
+        setForms(formsArr);
         const navTitle = resolveNavigationJobTitle(
           jobDataFromRedirect,
           routerLocation,
           positionSlug,
         );
-        const navState = {
-          ...routerLocation.state,
-          jobTitle: navTitle || routerLocation.state?.jobTitle,
-          formId: formId || routerLocation.state?.formId,
-        };
-        const slugMatch = positionSlug ? findFormByPositionSlug(formsArr, positionSlug) : null;
-        const formMatch = slugMatch || (navTitle ? findFormForJobTitle(formsArr, navTitle) : null);
-        const chosen = pickInitialForm(formsArr, navState, positionSlug);
-        notifyInitialFormSelection(navTitle, formMatch, chosen);
+        const { options, initial, selected, bannerTitle } = buildInitialSelection({
+          formsArr,
+          positions,
+          navTitle,
+          positionSlug,
+          routerLocation,
+          formId,
+        });
 
-        const bannerTitle =
-          navTitle || (slugMatch && slugMatch.title) || (chosen && chosen.title) || '';
-        const baseOptions = positions.length
-          ? positions
-          : formsArr.map(f => f.title).filter(Boolean);
-        const options = ensurePositionOption(baseOptions, bannerTitle);
         setPositionOptions(options);
-
-        const initial = getInitialFormState(chosen, bannerTitle);
-        // Prefer the canonical casing from /jobs/positions so the custom dropdown highlights correctly.
-        const selected =
-          matchPositionOption(options, initial.selectedJob || bannerTitle) ||
-          initial.selectedJob ||
-          bannerTitle ||
-          '';
         setSelectedJob(selected);
         setFilteredForm(initial.filteredForm);
         setAnswers(initial.answers);
         setBannerJobTitle(initial.bannerJobTitle || selected || bannerTitle);
         if (initial.jobTitleInput) setJobTitleInput(initial.jobTitleInput);
         else if (selected || bannerTitle) setJobTitleInput(selected || bannerTitle);
-      } catch (err) {
+      } catch {
         if (!cancelled) {
           setForms([]);
           setPositionOptions([]);
