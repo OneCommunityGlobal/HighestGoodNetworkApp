@@ -433,6 +433,7 @@ export const ENDPOINTS = {
   BM_INJURY_SEVERITIES: `${APIEndpoint}/bm/injuries/injury-severities`,
   BM_INJURY_TYPES: `${APIEndpoint}/bm/injuries/injury-types`,
   BM_INJURY_PROJECTS: `${APIEndpoint}/bm/injuries/project-injury`,
+  BM_INJURY_TREND: `${APIEndpoint}/bm/injuries/trend-data`,
   BM_INJURY_OVER_TIME: `${APIEndpoint}/bm/injuries/over-time`,
   BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
   BM_INJURY_SEVERITY: `${APIEndpoint}/bm/injuries/severity-by-project`,
@@ -681,7 +682,8 @@ export const ENDPOINTS = {
     return `${APIEndpoint}/job-analytics-router${qs}`;
   },
 
-  JOB_ANALYTICS_ROLES: `${APIEndpoint}/job-analytics-router/roles`,
+  JOB_ANALYTICS_ROLES: `${APIEndpoint.replace('/api', '')}/job-analytics/roles`,
+  JOB_ANALYTICS_EXPERIENCE_BREAKDOWN: `${APIEndpoint}/applicant-analytics/experience-breakdown`,
 
   // pr dashboard endpoints
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
@@ -691,6 +693,10 @@ export const ENDPOINTS = {
   LINKEDIN_POST: `${APIEndpoint}/postToLinkedIn`,
   LINKEDIN_SCHEDULED_POSTS: `${APIEndpoint}/scheduledPosts`,
   LINKEDIN_SCHEDULED_POST_BY_ID: postId => `${APIEndpoint}/scheduledPosts/${postId}`,
+  MASTODON_POST: `${APIEndpoint}/mastodon/createPin`,
+  MASTODON_SCHEDULED_POSTS: `${APIEndpoint}/mastodon/schedule`,
+  MASTODON_SCHEDULED_POST_BY_ID: postId => `${APIEndpoint}/mastodon/schedule/${postId}`,
+  MASTODON_POST_HISTORY: limit => `${APIEndpoint}/mastodon/history?limit=${limit}`,
 
   // actual cost endpoints
   ACTUAL_COST_BREAKDOWN: projectId => `${APIEndpoint}/projects/${projectId}/actual-cost-breakdown`,
@@ -700,6 +706,7 @@ export const ENDPOINTS = {
 
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
+  POPULAR_PRS: duration => `${APIEndpoint}/analytics/popular-prs?duration=${duration}`,
   GITHUB_REVIEW_SUMMARY: (duration, sort = 'desc', team) => {
     const params = new URLSearchParams({
       duration,
