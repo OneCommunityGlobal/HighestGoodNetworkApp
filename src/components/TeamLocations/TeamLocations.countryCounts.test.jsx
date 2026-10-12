@@ -37,6 +37,7 @@ describe('Team Locations country counts', () => {
     render(<TeamLocations />);
 
     const counts = await screen.findByLabelText('Volunteer country counts');
+    expect(screen.getByRole('heading', { level: 5 })).toHaveTextContent('Total Countries:0');
     expect(counts).toHaveTextContent('All-time contributing countries: 76');
     expect(counts).toHaveTextContent('Currently active countries: 23');
   });

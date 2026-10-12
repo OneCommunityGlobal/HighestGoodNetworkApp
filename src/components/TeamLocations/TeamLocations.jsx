@@ -153,6 +153,8 @@ const TeamLocations = forwardRef(() => {
     }
   };
 
+  const countries = mapMarkers.map(user => user.location.country);
+  const totalUniqueCountries = [...new Set(countries)].length;
   let filteredMapMarkers = mapMarkers;
   if (searchText) {
     filteredMapMarkers = filteredMapMarkers.filter(
@@ -219,6 +221,10 @@ const TeamLocations = forwardRef(() => {
       )}
       <div className="py-2 d-flex justify-content-between flex-column flex-md-row">
         <div className="text-and-table-icon-container">
+          <h5>
+            Total Countries:
+            {totalUniqueCountries}
+          </h5>
           <div aria-label="Volunteer country counts">
             <p className="mb-1">
               All-time contributing countries: <strong>{countryCounts?.allTime ?? '—'}</strong>
