@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { useEffect, useRef } from 'react';
 import PRGradingScreen from './../PRGradingScreen/PRGradingScreen';
 import styles from './PRGradingModal.module.css';
 
@@ -11,41 +12,59 @@ const PRGradingModal = ({
   darkMode,
   onClose,
 }) => {
-  if (!isOpen) {
-    return null;
-  }
+  const dialogRef = useRef(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+
+    if (!dialog) return;
+
+    if (isOpen && !dialog.open) {
+      dialog.showModal();
+    } else if (!isOpen && dialog.open) {
+      dialog.close();
+    }
+  }, [isOpen]);
+
+  const handleClose = () => {
+    onClose();
+  };
+
+  const handleCancel = event => {
+    // Let React control the dialog's open state.
+    event.preventDefault();
+    handleClose();
+  };
 
   return (
-    <div
-      className={styles.overlay}
-      role="dialog"
-      aria-modal="true"
+    <dialog
+      ref={dialogRef}
+      className={`${styles.prGradingModal} ${darkMode ? styles.prGradingModalDark : ''}`}
       aria-labelledby="pr-grading-modal-title"
+      onCancel={handleCancel}
     >
-      <div className={`${styles.modal} ${darkMode ? styles.dark : ''}`}>
-        <div className={styles.modalHeader}>
-          <h2 id="pr-grading-modal-title">{reviewGroup?.label || 'Review for This Week'}</h2>
+      <div className={styles.prGradingModalHeader}>
+        <h2 id="pr-grading-modal-title">{reviewGroup?.label || 'Review for This Week'}</h2>
 
-          <button
-            type="button"
-            className={styles.closeButton}
-            onClick={onClose}
-            aria-label="Close PR grading"
-          >
-            ×
-          </button>
-        </div>
-
-        <div className={styles.modalContent}>
-          <PRGradingScreen
-            teamData={teamData}
-            reviewers={reviewers}
-            currentUser={currentUser}
-            darkMode={darkMode}
-          />
-        </div>
+        <button
+          type="button"
+          className={styles.prGradingModalCloseButton}
+          onClick={handleClose}
+          aria-label="Close PR grading"
+        >
+          ×
+        </button>
       </div>
-    </div>
+
+      <div className={styles.prGradingModalContent}>
+        <PRGradingScreen
+          teamData={teamData}
+          reviewers={reviewers}
+          currentUser={currentUser}
+          darkMode={darkMode}
+        />
+      </div>
+    </dialog>
   );
 };
 
@@ -75,6 +94,7 @@ PRGradingModal.propTypes = {
     _id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     token: PropTypes.string,
   }),
+
   teamData: PropTypes.shape({
     teamName: PropTypes.string,
     dateRange: PropTypes.shape({

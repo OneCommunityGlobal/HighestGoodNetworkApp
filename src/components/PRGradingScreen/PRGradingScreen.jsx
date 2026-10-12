@@ -13,7 +13,6 @@ import {
 } from '../../actions/promotionActions';
 
 import styles from './PRGradingScreen.module.css';
-import InlinePRSummary from './InlinePRSummary';
 import GRADE_OPTIONS from './gradeOptions';
 
 const getRatingClass = (grade, styles) => {
