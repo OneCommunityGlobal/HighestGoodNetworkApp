@@ -46,7 +46,7 @@
   display: flex !important;
   align-items: center; /* Vertically center */
   justify-content: center; /* Horizontally center */
-  min-width: 140px;
+  min-width: 0; /* Allow flex child to shrink and text to wrap properly */
   overflow: visible !important;
 }
 
@@ -813,6 +813,18 @@
      message is showing. */
   .centerSection {
     grid-row: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0; /* Critical: prevents flex child from causing text wrap */
+  }
+
+  .navbarOwnerMessage {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    min-width: 0; /* Prevent flex child overflow */
   }
 
   /* `py-3` on the Navbar is a Bootstrap utility with the same specificity as this
@@ -906,6 +918,19 @@
     align-items: center;
     justify-content: center;
     overflow: visible !important;
+    min-width: 0 !important; /* Override base min-width: 140px */
+    width: 100%; /* Take full width of grid cell */
+    flex: 1; /* Expand to fill available space in grid */
+    max-width: 100%;
+  }
+
+  /* Owner message wrapper at large screens */
+  .navbarOwnerMessage {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    min-width: 0; /* Prevent flex child overflow */
   }
 
   /* Show owner message banner on large screens */
@@ -915,6 +940,15 @@
     margin: 0 !important;
     white-space: normal;
     overflow-wrap: break-word;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  /* Ensure owner message content has full width */
+  .messageContainer {
+    width: 100% !important;
+    min-width: 0;
+    max-width: 100%;
   }
 
   /* Hide mobile owner message section on large screens */
