@@ -880,6 +880,7 @@
     flex-direction: column !important;
     align-items: flex-end !important;
     gap: 0.5rem;
+    flex-shrink: 1; /* Allow to shrink if needed, default was 0 */
   }
 
   /* No `order` here: userInfoRow now sits before the nav panel in the DOM, so
@@ -908,7 +909,7 @@
 
   /* Restore proper 3-column grid layout for desktop: timer (left) | message (center) | user+nav (right) */
   .headerRow {
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(0, 1fr) minmax(auto, 500px);
     gap: 0.5rem;
   }
 
@@ -918,7 +919,7 @@
     align-items: center;
     justify-content: center;
     overflow: visible !important;
-    min-width: 0 !important; /* Override base min-width: 140px */
+    min-width: auto; /* Allow natural sizing in grid */
     width: 100%;
     max-width: 100%;
   }
@@ -931,6 +932,7 @@
     justify-content: center;
     min-width: 0; /* Prevent flex child overflow */
     overflow: visible !important;
+    flex: 1; /* Expand to fill flex container */
   }
 
   /* Show owner message banner on large screens */
@@ -950,6 +952,7 @@
     min-width: 0;
     max-width: 100%;
     overflow: visible !important;
+    flex: 1; /* Expand within navbarOwnerMessage flex container */
   }
 
   /* Allow message text to display normally on large screens */
@@ -959,6 +962,8 @@
     white-space: normal !important;
     overflow-wrap: break-word;
     max-width: 100%;
+    flex: 1 1 auto !important; /* Expand in flex container */
+    min-width: 0; /* Allow flex child to shrink and wrap text */
   }
 
   /* Hide mobile owner message section on large screens */
