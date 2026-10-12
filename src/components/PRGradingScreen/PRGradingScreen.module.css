@@ -441,18 +441,6 @@
        GRADING MODAL
        ========================================================= */
 
-.pr-grading-screen-modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1050;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  box-sizing: border-box;
-  background-color: rgb(0 0 0 / 50%);
-}
-
 .pr-grading-screen-modal {
   width: min(700px, 95vw);
   display: flex;
@@ -460,15 +448,15 @@
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 10px 30px rgb(0 0 0 / 25%);
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  margin: 0;
+  margin: auto;
   max-width: calc(100vw - 32px);
   max-height: calc(100vh - 32px);
   overflow: auto;
   border: 1px solid #9ca3af;
+}
+
+.pr-grading-screen-modal::backdrop {
+  background-color: rgb(0 0 0 / 50%);
 }
 
 /* =========================================================
@@ -937,10 +925,6 @@
 
 /* Modal dark */
 
-.pr-grading-screen-modal-overlay.dark-mode {
-  background-color: rgb(0 0 0 / 70%);
-}
-
 .pr-grading-screen-modal.dark-mode {
   background-color: #1b2a41;
   border: 1px solid #4a5a77;
@@ -1159,10 +1143,6 @@
   .pr-grading-screen-table thead,
   .pr-grading-screen-table tbody {
     min-width: 700px;
-  }
-
-  .pr-grading-screen-modal-overlay {
-    padding: 10px;
   }
 
   .pr-grading-screen-modal {
