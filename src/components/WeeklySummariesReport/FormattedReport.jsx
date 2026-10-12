@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import UserStateDisplay from '../UserState/UserStateDisplay';
-import ReactTooltip from 'react-tooltip';
 import { permissions } from '../../utils/constants';
 // import moment from 'moment';
 // import 'moment-timezone';
@@ -50,6 +49,7 @@ import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permission
 import GoogleDocIcon from '../common/GoogleDocIcon';
 import TriStateToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch/TriStateToggleSwitch';
 import styles from './WeeklySummariesReport.module.scss';
+import getActiveTimeOffRequest from './getActiveTimeOffRequest';
 
 const TZ = 'America/Los_Angeles';
 
@@ -377,6 +377,7 @@ function ReportDetails({
                     request={activeTimeOffRequest}
                     summaryId={summary._id}
                     weekIndex={weekIndex}
+                    darkMode={darkMode}
                   />
                 }
                 canEditTeamCode={canEditTeamCode && !cantEditJaeRelatedRecord}
@@ -858,54 +859,39 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   );
 }
 
-// Returns the time-off request (if any) overlapping the week being viewed
-// (weekIndex: 0=This Week, 1=Last Week, ...), so the badge follows the request
-// across tabs as weeks pass.
-function getActiveTimeOffRequest(timeOffRequests, userId, weekIndex) {
-  const userRequests = (timeOffRequests || {})[userId] || [];
-  const weekStart = moment()
-    .tz(TZ)
-    .startOf('week')
-    .subtract(weekIndex, 'week');
-  const weekEnd = moment()
-    .tz(TZ)
-    .endOf('week')
-    .subtract(weekIndex, 'week');
-  return userRequests.find(request => {
-    if (!request.startingDate) return false;
-    const start = moment(request.startingDate);
-    const end = request.endingDate ? moment(request.endingDate) : start;
-    return weekStart.isSameOrBefore(end) && weekEnd.isSameOrAfter(start);
-  });
-}
-
-function WeekOffBadge({ request, summaryId, weekIndex }) {
+// Shows "Requested Week Off" for the viewed week. Clicking (or pressing Enter/Space on)
+// the info button toggles the logged reason, as the ticket asks for; it closes on blur
+// or Escape.
+function WeekOffBadge({ request, summaryId, weekIndex, darkMode }) {
+  const [showReason, setShowReason] = useState(false);
   if (!request) return null;
-  const tooltipId = `week-off-reason-${summaryId}-${weekIndex}`;
+  const reasonId = `week-off-reason-${summaryId}-${weekIndex}`;
   return (
-    <span
-      style={{
-        backgroundColor: '#f8d7da',
-        color: '#721c24',
-        padding: '1px 6px',
-        borderRadius: '4px',
-        fontSize: '0.75rem',
-        whiteSpace: 'nowrap',
-        display: 'inline-flex',
-        alignItems: 'center',
-      }}
-    >
+    <span className={`${styles.weekOffBadge} ${darkMode ? styles.weekOffBadgeDark : ''}`}>
       Requested Week Off
-      <i
-        className="fa fa-info-circle"
-        style={{ marginLeft: '4px', cursor: 'pointer' }}
-        data-tip
-        data-for={tooltipId}
-        aria-label="Time off reason"
-      />
-      <ReactTooltip id={tooltipId} place="top" effect="solid">
-        {request.reason || 'No reason provided'}
-      </ReactTooltip>
+      <button
+        type="button"
+        className={styles.weekOffInfoButton}
+        aria-label="Show time off reason"
+        aria-expanded={showReason}
+        aria-controls={reasonId}
+        onClick={() => setShowReason(prev => !prev)}
+        onBlur={() => setShowReason(false)}
+        onKeyDown={e => {
+          if (e.key === 'Escape') setShowReason(false);
+        }}
+      >
+        <i className="fa fa-info-circle" aria-hidden="true" />
+      </button>
+      {showReason && (
+        <span
+          id={reasonId}
+          role="tooltip"
+          className={`${styles.weekOffReason} ${darkMode ? styles.weekOffReasonDark : ''}`}
+        >
+          {request.reason || 'No reason provided'}
+        </span>
+      )}
     </span>
   );
 }

@@ -162,6 +162,62 @@
   padding-left: 6px;
 }
 
+// "Requested Week Off" notice beside the team code, and its click-to-show reason.
+.weekOffBadge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.weekOffBadgeDark {
+  background-color: #f5c2c7;
+  color: #58151c;
+}
+
+.weekOffInfoButton {
+  margin-left: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  line-height: 1;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 1px;
+    border-radius: 50%;
+  }
+}
+
+.weekOffReason {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  z-index: 10;
+  min-width: 160px;
+  max-width: 280px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  background-color: #222;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.weekOffReasonDark {
+  background-color: #f8f9fa;
+  color: #1b2a41;
+}
+
 .teamcodeWrapper {
     display: flex;
     white-space: wrap;
