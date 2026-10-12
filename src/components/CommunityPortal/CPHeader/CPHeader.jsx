@@ -223,11 +223,11 @@ export function Header(props) {
   return (
     <div className={styles.headerWrapper}>
       {isAuthenticated && (
-        <div className={`${styles.navbarOwnerMessage} ${styles.showInTablet} bg-dark pt-3 `}>
+        <div className={`${styles.navbarOwnerMessage} ${styles.showInTablet} bg-dark`}>
           <OwnerMessage />
         </div>
       )}
-      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl">
+      <Navbar className={`py-1 ${styles.navbar}`} color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
 
         {isAuthenticated && <Timer />}

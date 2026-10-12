@@ -816,11 +816,18 @@
   }
 
   /* `py-3` on the Navbar is a Bootstrap utility with the same specificity as this
-     module's .navbar, so !important is needed to win the tie reliably. Scoped to
-     this breakpoint — wide screens keep the full 1rem padding. */
+     module's .navbar, so !important is needed to win the tie reliably. Reduced to
+     compact 0.25rem for sub-headers (KIHeader, CPHeader). */
   .navbar {
-    padding-top: 0.5rem !important;
-    padding-bottom: 0.5rem !important;
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
+  }
+
+  /* Show owner message banner on tablet and larger screens */
+  .showInTablet {
+    display: block !important;
+    padding: 0.25rem 20px !important;
+    margin: 0 !important;
   }
 }
 
@@ -881,10 +888,16 @@
     display: flex !important;
   }
 
+  /* Override Bootstrap `py-3` on Navbar at large screens for compact header */
+  .navbar {
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
+  }
+
   /* Show owner message banner on large screens */
   .showInTablet {
     display: block !important;
-    padding: 0.5rem 20px !important;
+    padding: 0.25rem 20px !important;
     margin: 0 !important;
   }
 
