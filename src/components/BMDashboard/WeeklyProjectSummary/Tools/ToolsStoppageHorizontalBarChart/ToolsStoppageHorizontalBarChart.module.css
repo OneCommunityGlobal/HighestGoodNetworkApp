@@ -150,7 +150,7 @@
 
 /* Dark mode for chart container */
 :global(.tools-availability-page.dark-mode .tools-horizontal-chart-container) {
-  background-color: #2c3344 !important;
+  background-color: var(--card-bg, #2b3e59) !important;
 }
 
 /* Ensure Chart.js canvas wrapper has background */
@@ -159,7 +159,7 @@
 }
 
 :global(.tools-availability-page.dark-mode .tools-horizontal-chart-container > div) {
-  background-color: #2c3344 !important;
+  background-color: var(--card-bg, #2b3e59) !important;
 }
 
 /* Override min-height for tools-availability-page when used in card context */
@@ -177,7 +177,7 @@
 
 /* Dark mode background for tools-availability-page */
 :global(.tools-availability-page.dark-mode) {
-  background-color: #2c3344 !important; /* Dark background in dark mode */
+  background-color: var(--card-bg, #2b3e59) !important;
 }
 
 /* Chart title styling */
@@ -193,6 +193,7 @@
 /* Dark mode for chart title */
 :global(.tools-availability-page.dark-mode .tools-chart-title) {
   color: #fff !important;
+  background-color: transparent !important;
 }
 
 :global(.tools-availability-page .row) {

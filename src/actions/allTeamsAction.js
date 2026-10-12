@@ -4,6 +4,7 @@ import { ENDPOINTS } from '~/utils/URL';
 
 import {
   RECEIVE_ALL_USER_TEAMS,
+  FETCH_USER_TEAMS_START,
   CLEAR_TEAM_MEMBERS,
   USER_TEAMS_UPDATE,
   UPDATE_TEAM,
@@ -123,6 +124,8 @@ export const updateVisibilityAction = (visibility, userId, teamId) => ({
 export const getAllUserTeams = () => {
   const userTeamsPromise = axios.get(ENDPOINTS.TEAM);
   return async dispatch => {
+    dispatch({ type: FETCH_USER_TEAMS_START });
+
     return userTeamsPromise
       .then(res => {
         dispatch(teamMembersFectchACtion(res.data));

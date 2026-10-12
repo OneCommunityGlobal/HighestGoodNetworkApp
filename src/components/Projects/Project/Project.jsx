@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import { modifyProject } from '../../../actions/projects';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
+import { permissions } from '../../../utils/constants';
 const Project = props => {
   const { darkMode, index } = props;
   const [projectData, setProjectData] = useState(props.projectData);
@@ -20,11 +21,11 @@ const Project = props => {
     props.projectData?.category || props.category || 'Unspecified',
   );
 
-  const canPutProject = props.hasPermission('putProject');
-  const canDeleteProject = props.hasPermission('deleteProject');
+  const canPutProject = props.hasPermission(permissions.putProject);
+  const canDeleteProject = props.hasPermission(permissions.deleteProject);
 
-  const canSeeProjectManagementFullFunctionality = props.hasPermission('seeProjectManagement');
-  const canEditCategoryAndStatus = props.hasPermission('editProject');
+  const canSeeProjectManagementFullFunctionality = props.hasPermission(permissions.seeProjectManagement);
+  const canEditCategoryAndStatus = props.hasPermission(permissions.editProject);
 
   const persistProjectUpdate = async (field, value) => {
     if (!projectData) return;
@@ -104,7 +105,7 @@ const Project = props => {
 
         <td
           data-testid="projects__name--input"
-          className={styles['projects__name--input']}
+          className={`${styles['projects__name--input']} text-break`}
         >
           {canPutProject || canSeeProjectManagementFullFunctionality ? (
             <input
@@ -117,11 +118,11 @@ const Project = props => {
               onBlur={onUpdateProjectName}
             />
           ) : (
-            projectName
+            <span className="d-block text-break">{projectName}</span>
           )}
         </td>
 
-        <td className="projects__category--input">
+        <td className="projects__category--input text-break">
           {canEditCategoryAndStatus || canPutProject ? (
             <select
               data-testid="projects__category--input" // added for unit test
@@ -140,7 +141,7 @@ const Project = props => {
               <option value="Other">Other</option>
             </select>
           ) : (
-            category
+            <span className="d-block text-break">{category}</span>
           )}
         </td>
 

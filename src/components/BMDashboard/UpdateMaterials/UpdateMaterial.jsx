@@ -205,13 +205,13 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
           </Input>
         </td>
         <td>
-          <span className={updateRecord.newAvailable < 0 ? 'materialFormErrorClr' : undefined}>
+          <span className={updateRecord.newAvailable < 0 ? styles.materialFormErrorClr : undefined}>
             {updateRecord.newAvailable}
           </span>
         </td>
       </tr>
       <tr>
-        <td colSpan={7} className={`${styles.materialFormTableError}`}>
+        <td colSpan={8} className={`${styles.materialFormTableError}`}>
           {validations.quantityTogether}
         </td>
       </tr>
@@ -302,7 +302,9 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
                 </Label>
                 <Col sm={6} className={`${styles.materialFormValue}`}>
                   <span
-                    className={updateRecord.newAvailable < 0 ? 'materialFormErrorClr' : undefined}
+                    className={
+                      updateRecord.newAvailable < 0 ? styles.materialFormErrorClr : undefined
+                    }
                   >
                     {updateRecord.newAvailable}
                   </span>
