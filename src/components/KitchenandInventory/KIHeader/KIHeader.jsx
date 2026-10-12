@@ -169,57 +169,60 @@ export function Header(props) {
     : `${styles.mobileDropdownText} ${styles.mobileDropdownItem}`;
 
   return (
-    <div className={styles.headerWrapper}>
-      {isAuthenticated && (
-        <div className={`${styles.navbarOwnerMessage} ${styles.showInTablet} bg-dark`}>
-          <OwnerMessage />
-        </div>
-      )}
+    <div className={`${styles.headerWrapper}`} data-testid="header">
       <Navbar className={`py-1 ${styles.navbar}`} color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
 
-        {isAuthenticated && <Timer />}
+        <div className={styles.headerRow}>
+          <div className={styles.leftSection}>{isAuthenticated && <Timer />}</div>
 
-        {/* ITEM SHOWS OUTSIDE OF THE DROPDOWN IN MOBILE */}
-        <div className={`${styles.showInMobile} ml-auto mr-3`}>
-          <BellNotification userId={displayUserId} />
-        </div>
-        {/* --------------------------------------------- */}
-
-        <div ref={toggleRef}>
-          <NavbarToggler onClick={toggle} className="mr-3" />
-        </div>
-
-        {isAuthenticated && (
-          <Collapse isOpen={isOpen} navbar innerRef={collapseRef}>
+          {/* Owner message occupies center, shown on tablets and above */}
+          <div className={styles.centerSection}>
             {isAuthenticated && (
-              <div className={`${styles.hideInTablet} ${styles.navbarOwnerMessage}`}>
+              <div className={`${styles.navbarOwnerMessage} ${styles.showInTablet}`}>
                 <OwnerMessage />
               </div>
             )}
-            <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>
-              {/* --PROFILE SHOWS ON TOP IN MOBILE VIEW */}
-              <NavItem className={styles.showInMobile}>
-                <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
-                  <img
-                    alt=""
-                    src={`${profilePic || '/pfp-default-header.png'}`}
-                    style={{ maxWidth: '60px', maxHeight: '60px' }}
-                    className="dashboardimg"
-                  />
-                </NavLink>
-              </NavItem>
-              <UncontrolledDropdown inNavbar nav className={styles.showInMobile}>
-                <DropdownToggle nav caret>
+          </div>
+
+          <div className={styles.rightSection}>
+            {/* User info row (bell, avatar, welcome menu) - always visible on desktop */}
+            <div className={styles.userInfoRow}>
+              <BellNotification userId={displayUserId} />
+              <NavLink tag={Link} to={`/userprofile/${displayUserId}`} className="p-0">
+                <div
+                  style={{
+                    width: '40px',
+                    height: '40px',
+                    minWidth: '40px',
+                    minHeight: '40px',
+                    backgroundImage: `url(${profilePic || '/pfp-default-header.png'})`,
+                    backgroundSize: 'contain',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                  }}
+                  className="dashboardimg rounded-circle"
+                />
+              </NavLink>
+              <UncontrolledDropdown inNavbar>
+                <DropdownToggle nav caret className="text-light">
                   <span>
                     {WELCOME}, {firstName}
                   </span>
                 </DropdownToggle>
                 <DropdownMenu
-                  className={` ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown} ${
-                    styles.noMaxHeight
+                  right
+                  className={`${styles.noMaxHeight} ${
+                    darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
                   }`}
                 >
+                  <DropdownItem
+                    header
+                    className={darkMode ? 'text-custom-grey' : styles.mobileDropdownText}
+                  >
+                    Hello {firstName}
+                  </DropdownItem>
+                  <DropdownItem divider />
                   <DropdownItem
                     tag={Link}
                     to={`/userprofile/${displayUserId}`}
@@ -239,158 +242,130 @@ export function Header(props) {
                   <DropdownItem className={fontColor}>
                     <DarkModeButton />
                   </DropdownItem>
+                  <DropdownItem divider />
                   <DropdownItem onClick={openModal} className={fontColor}>
                     {LOGOUT}
                   </DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
-              {/* ------------------------------------- */}
+            </div>
 
-              {canUpdateTask && (
+            {/* Hamburger menu toggle */}
+            <NavbarToggler
+              onClick={toggle}
+              ref={toggleRef}
+              className={styles.navbarToggler}
+              aria-label="Toggle navigation"
+            />
+
+            {/* Collapsible navigation menu - hidden on desktop, shown on mobile */}
+            <div
+              ref={collapseRef}
+              className={`${styles.navCollapse} ${isOpen ? styles.navCollapseOpen : ''}`}
+              role="menu"
+              tabIndex={-1}
+              onKeyDown={e => {
+                if (e.key === 'Escape') setIsOpen(false);
+              }}
+            >
+              <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>
+                {canUpdateTask && (
+                  <NavItem>
+                    <NavLink tag={Link} to="/taskeditsuggestions">
+                      <div className={`${styles.redBackGroupHeader} ${styles.hideInMobile}`}>
+                        <span>{props.taskEditSuggestionCount}</span>
+                      </div>
+                      {/* --- MOBILE VIEW ONLY --- */}
+                      <span className={styles.showInMobile}>
+                        Task Edit Suggestion ({props.taskEditSuggestionCount})
+                      </span>
+                      {/* ------------------- */}
+                    </NavLink>
+                  </NavItem>
+                )}
                 <NavItem>
-                  <NavLink tag={Link} to="/taskeditsuggestions">
-                    <div className={`${styles.redBackGroupHeader} ${styles.hideInMobile}`}>
-                      <span>{props.taskEditSuggestionCount}</span>
-                    </div>
-                    {/* --- MOBILE VIEW ONLY --- */}
-                    <span className={styles.showInMobile}>
-                      Task Edit Suggestion ({props.taskEditSuggestionCount})
-                    </span>
-                    {/* ------------------- */}
+                  <NavLink tag={Link} to="/kitchenandinventory">
+                    <span>{DASHBOARD}</span>
                   </NavLink>
                 </NavItem>
-              )}
-              <NavItem>
-                <NavLink tag={Link} to="/kitchenandinventory">
-                  <span>{DASHBOARD}</span>
-                </NavLink>
-              </NavItem>
-              <UncontrolledDropdown nav inNavbar>
-                <DropdownToggle nav caret>
-                  <span>{PRODUCTION}</span>
-                </DropdownToggle>
-                <DropdownMenu
-                  className={`${styles.noMaxHeight} ${
-                    darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
-                  }`}
-                >
-                  <DropdownItem
-                    tag={Link}
-                    to="/kitchenandinventory/gardenmanagement"
-                    className={fontColor}
+                <UncontrolledDropdown nav inNavbar>
+                  <DropdownToggle nav caret>
+                    <span>{PRODUCTION}</span>
+                  </DropdownToggle>
+                  <DropdownMenu
+                    className={`${styles.noMaxHeight} ${
+                      darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                    }`}
                   >
-                    {GARDEN_MANAGEMENT}
-                  </DropdownItem>
-                  <DropdownItem
-                    tag={Link}
-                    to="/kitchenandinventory/orchardmanagement"
-                    className={fontColor}
-                  >
-                    {ORCHARD_MANAGEMENT}
-                  </DropdownItem>
-                  <DropdownItem
-                    tag={Link}
-                    to="/kitchenandinventory/animalmanagement"
-                    className={fontColor}
-                  >
-                    {ANIMAL_MANAGEMENT}
-                  </DropdownItem>
-                  <DropdownItem
-                    tag={Link}
-                    to="/kitchenandinventory/animalmanagementtracking"
-                    className={fontColor}
-                  >
-                    {ANIMAL_MANAGEMENT_TRACKING}
-                  </DropdownItem>
-                </DropdownMenu>
-              </UncontrolledDropdown>
-              <NavItem>
-                <NavLink tag={Link} to="/kitchenandinventory/processing">
-                  <span>{KI_PROCESSING}</span>
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink tag={Link} to="/kitchenandinventory/recipes">
-                  <span>{RECIPES}</span>
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink tag={Link} to="/kitchenandinventory/inventory">
-                  <span>{KI_INVENTORY}</span>
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink tag={Link} to="/kitchenandinventory/orders">
-                  <span>{ORDERS}</span>
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink tag={Link} to="/kitchenandinventory/reports">
-                  <span>{KI_REPORTS}</span>
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink tag={Link} to="/kitchenandinventory/foodbars">
-                  <span>{FOOD_BARS}</span>
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink tag={Link} to="/kitchenandinventory/calendar">
-                  <span>{KI_CALENDAR}</span>
-                </NavLink>
-              </NavItem>
-              <NavItem className={styles.hideInMobile}>
-                <BellNotification userId={displayUserId} />
-              </NavItem>
-              <NavItem className={styles.hideInMobile}>
-                <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
-                  <img
-                    src={`${profilePic || '/pfp-default-header.png'}`}
-                    alt=""
-                    style={{ maxWidth: '60px', maxHeight: '60px' }}
-                    className="dashboardimg"
-                  />
-                </NavLink>
-              </NavItem>
-              <UncontrolledDropdown nav className={styles.hideInMobile}>
-                <DropdownToggle nav caret>
-                  <span>
-                    {WELCOME}, {firstName}
-                  </span>
-                </DropdownToggle>
-                <DropdownMenu
-                  className={`${styles.noMaxHeight} ${
-                    darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
-                  }`}
-                >
-                  <DropdownItem header className={fontColor}>
-                    Hello {firstName}
-                  </DropdownItem>
-                  <DropdownItem divider />
-                  <DropdownItem tag={Link} to={`/userprofile/${user.userid}`} className={fontColor}>
-                    {VIEW_PROFILE}
-                  </DropdownItem>
-                  {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
                     <DropdownItem
                       tag={Link}
-                      to={`/updatepassword/${user.userid}`}
+                      to="/kitchenandinventory/gardenmanagement"
                       className={fontColor}
                     >
-                      {UPDATE_PASSWORD}
+                      {GARDEN_MANAGEMENT}
                     </DropdownItem>
-                  )}
-                  <DropdownItem className={fontColor}>
-                    <DarkModeButton />
-                  </DropdownItem>
-                  <DropdownItem divider />
-                  <DropdownItem onClick={openModal} className={fontColor}>
-                    {LOGOUT}
-                  </DropdownItem>
-                </DropdownMenu>
-              </UncontrolledDropdown>
-            </Nav>
-          </Collapse>
-        )}
+                    <DropdownItem
+                      tag={Link}
+                      to="/kitchenandinventory/orchardmanagement"
+                      className={fontColor}
+                    >
+                      {ORCHARD_MANAGEMENT}
+                    </DropdownItem>
+                    <DropdownItem
+                      tag={Link}
+                      to="/kitchenandinventory/animalmanagement"
+                      className={fontColor}
+                    >
+                      {ANIMAL_MANAGEMENT}
+                    </DropdownItem>
+                    <DropdownItem
+                      tag={Link}
+                      to="/kitchenandinventory/animalmanagementtracking"
+                      className={fontColor}
+                    >
+                      {ANIMAL_MANAGEMENT_TRACKING}
+                    </DropdownItem>
+                  </DropdownMenu>
+                </UncontrolledDropdown>
+                <NavItem>
+                  <NavLink tag={Link} to="/kitchenandinventory/processing">
+                    <span>{KI_PROCESSING}</span>
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink tag={Link} to="/kitchenandinventory/recipes">
+                    <span>{RECIPES}</span>
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink tag={Link} to="/kitchenandinventory/inventory">
+                    <span>{KI_INVENTORY}</span>
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink tag={Link} to="/kitchenandinventory/orders">
+                    <span>{ORDERS}</span>
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink tag={Link} to="/kitchenandinventory/reports">
+                    <span>{KI_REPORTS}</span>
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink tag={Link} to="/kitchenandinventory/foodbars">
+                    <span>{FOOD_BARS}</span>
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink tag={Link} to="/kitchenandinventory/calendar">
+                    <span>{KI_CALENDAR}</span>
+                  </NavLink>
+                </NavItem>
+              </Nav>
+            </div>
+          </div>
+        </div>
       </Navbar>
     </div>
   );
