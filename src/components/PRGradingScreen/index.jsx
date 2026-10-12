@@ -17,35 +17,46 @@ const ALLOWED_ROLES = new Set([UserRole.Administrator, UserRole.Owner]);
 const PST_TIMEZONE = 'America/Los_Angeles';
 
 // Get the current date components in PST
+const parseDateOnlyUTC = dateStr => {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  return new Date(Date.UTC(year, month - 1, day));
+};
+
+const formatDateOnlyUTC = date => date.toISOString().split('T')[0];
+
 const getPSTDate = () => {
   const now = new Date();
-  const pst = new Intl.DateTimeFormat('en-CA', {
+
+  return new Intl.DateTimeFormat('en-CA', {
     timeZone: PST_TIMEZONE,
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
   }).format(now);
-  // en-CA gives YYYY-MM-DD
-  return new Date(pst + 'T00:00:00');
 };
 
 const getSunday = (weeksAgo = 0) => {
-  const today = getPSTDate();
-  const dayOfWeek = today.getDay(); // 0 = Sunday
-  today.setDate(today.getDate() - dayOfWeek - weeksAgo * 7);
-  return today.toISOString().split('T')[0];
+  const today = parseDateOnlyUTC(getPSTDate());
+  const dayOfWeek = today.getUTCDay();
+
+  today.setUTCDate(today.getUTCDate() - dayOfWeek - weeksAgo * 7);
+
+  return formatDateOnlyUTC(today);
 };
 
 const getSaturday = sundayDateStr => {
-  const d = new Date(sundayDateStr + 'T00:00:00');
-  d.setDate(d.getDate() + 6);
-  return d.toISOString().split('T')[0];
+  const date = parseDateOnlyUTC(sundayDateStr);
+
+  date.setUTCDate(date.getUTCDate() + 6);
+
+  return formatDateOnlyUTC(date);
 };
 
 const formatShort = dateStr => {
-  const d = new Date(dateStr + 'T00:00:00');
-  return d.toLocaleDateString('en-US', {
-    timeZone: PST_TIMEZONE,
+  const date = parseDateOnlyUTC(dateStr);
+
+  return date.toLocaleDateString('en-US', {
+    timeZone: 'UTC',
     month: 'short',
     day: 'numeric',
   });
@@ -65,20 +76,21 @@ const WEEK_OPTIONS = [
 ];
 
 const buildTeamData = (teamName, weekStart) => {
-  const start = new Date(weekStart + 'T00:00:00');
-  const end = new Date(weekStart + 'T00:00:00');
-  end.setDate(end.getDate() + 6);
+  const start = parseDateOnlyUTC(weekStart);
+  const end = parseDateOnlyUTC(weekStart);
+  end.setUTCDate(end.getUTCDate() + 6);
+
   return {
     teamName,
     dateRange: {
       start: start.toLocaleDateString('en-US', {
-        timeZone: PST_TIMEZONE,
+        timeZone: 'UTC',
         month: 'short',
         day: 'numeric',
         year: 'numeric',
       }),
       end: end.toLocaleDateString('en-US', {
-        timeZone: PST_TIMEZONE,
+        timeZone: 'UTC',
         month: 'short',
         day: 'numeric',
         year: 'numeric',
@@ -334,5 +346,5 @@ const PRGradingScreenContainer = () => {
     />
   );
 };
-
+export { getSunday, getSaturday, buildTeamData };
 export default PRGradingScreenContainer;

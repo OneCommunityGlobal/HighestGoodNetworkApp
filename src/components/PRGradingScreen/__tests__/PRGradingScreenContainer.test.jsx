@@ -1,12 +1,12 @@
 import React from 'react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import { configureStore } from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { UserRole } from '../../../utils/enums';
-import PRGradingScreenContainer from '../index';
+import PRGradingScreenContainer, { getSunday, getSaturday, buildTeamData } from '../index';
 import * as prGradingActions from '../../../actions/prGradingActions';
 
 // Mock the child — expose all props needed for assertions
@@ -90,10 +90,28 @@ beforeEach(() => {
     Promise.resolve({ success: true, data: null }),
   );
 });
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 // ---------------------------------------------------------------------------
 // Loading state
 // ---------------------------------------------------------------------------
+describe('week date calculations', () => {
+  it('calculates the correct Pacific week using UTC date math', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-10-09T12:00:00Z'));
+
+    expect(getSunday()).toBe('2026-10-04');
+    expect(getSaturday('2026-10-04')).toBe('2026-10-10');
+
+    const teamData = buildTeamData('Team 1', '2026-10-04');
+
+    expect(teamData.dateRange.start).toBe('Oct 4, 2026');
+    expect(teamData.dateRange.end).toBe('Oct 10, 2026');
+  });
+});
+
 describe('loading state', () => {
   it('shows loading text while API is in flight', () => {
     prGradingActions.fetchWeeklyGrading.mockReturnValue(() => new Promise(() => {}));
