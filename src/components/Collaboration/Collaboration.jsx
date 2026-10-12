@@ -7,6 +7,7 @@ import { ApiEndpoint } from '~/utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
 import WhatWeDoSection from '../WhatWeDo/WhatWeDo';
 import FAQSection from './FAQSection';
+import { buildApplyPath } from './JobApplicationForm/jobApplicationPublicApi';
 
 function getColumnsFromMQ() {
   if (typeof globalThis.matchMedia !== 'function') return 1;
@@ -39,8 +40,8 @@ function getSafeJobDetailsLink(summary) {
       // Not a valid absolute URL - treat as unusable and fall back below.
     }
   }
-  const jobTitle = summary?.title ? `?jobTitle=${encodeURIComponent(summary.title)}` : '';
-  return `/job-application${jobTitle}`;
+  if (summary?.title) return buildApplyPath(summary.title);
+  return '/job-application';
 }
 
 /** Keep first listing per title+category (API may return duplicate job records). */
@@ -351,10 +352,11 @@ function Collaboration() {
 
   const navigateToJobApplication = (ad, jobTitle, jobCategory) => {
     try {
+      const pathname = buildApplyPath(jobTitle);
       if (history && typeof history.push === 'function') {
         const search = jobTitle ? `?jobTitle=${encodeURIComponent(jobTitle)}` : '';
         history.push({
-          pathname: '/job-application',
+          pathname,
           search,
           state: {
             jobId: ad._id,
@@ -366,7 +368,7 @@ function Collaboration() {
           },
         });
       } else {
-        globalThis.location.href = '/job-application';
+        globalThis.location.href = pathname;
       }
     } catch {
       toast.error('Error opening job application');

@@ -537,9 +537,12 @@ export const ENDPOINTS = {
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   GET_JOB_FORM: formId => `${APIEndpoint}/jobforms/${formId}`,
   GET_ALL_JOB_FORMS: `${APIEndpoint}/jobforms/all`,
+  /** Admin/Owner only — never call from the public apply UI. */
   GET_FORM_RESPONSES: formID => `${APIEndpoint}/jobforms/${formID}/responses`,
   SUBMIT_JOB_APPLICATION: formId =>
   `${APIEndpoint}/jobforms/${formId}/responses`,
+  /** Public: distinct job titles for the apply-page position dropdown. */
+  GET_JOB_POSITIONS: `${APIEndpoint}/jobs/positions`,
 
   ADD_QUESTION: formId => `${APIEndpoint}/jobforms/${formId}/questions`,
   UPDATE_QUESTION: (formId, questionIndex) =>
