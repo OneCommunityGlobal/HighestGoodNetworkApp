@@ -1,9 +1,15 @@
+import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
+
 import { useEffect, useMemo, useState } from 'react';
+
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import styles from './PRGradingScreen.module.css';
+import InlinePRSummary from './InlinePRSummary';
+// Shared with InlinePRSummary so both tables stay in sync. See gradeOptions.js.
+import GRADE_OPTIONS from './gradeOptions';
 
 const PRGradingScreen = ({
   teamData,
@@ -466,7 +472,9 @@ const PRGradingScreen = ({
                       </td>
                     </tr>
                   ) : (
+                    /* Render each reviewer row followed by its inline summary component using React.Fragment */
                     filteredReviewers.map(reviewer => (
+
                       <tr key={reviewer.id}>
                         <td>{reviewer.reviewer}</td>
 
@@ -501,6 +509,28 @@ const PRGradingScreen = ({
                               }}
                             >
                               <span
+
+                      <React.Fragment key={reviewer.id}>
+                        <tr>
+                          <td>{reviewer.reviewer}</td>
+
+                          <td>
+                            <input
+                              type="number"
+                              value={reviewer.gradedPrs.length}
+                              readOnly
+                              disabled={isFinalized}
+                              className={`${styles['pr-grading-screen-pr-input']} ${dm}`}
+                            />
+                          </td>
+
+                          <td>{reviewer.prsNeeded}</td>
+
+                          <td className={styles['pr-grading-screen-td-numbers']}>
+                            {reviewer.gradedPrs.map(pr => (
+                              <span
+                                key={pr.id}
+
                                 role="button"
                                 tabIndex={0}
                                 className={`${styles['pr-grading-screen-pr-number']} ${
@@ -516,6 +546,7 @@ const PRGradingScreen = ({
                               >
                                 {pr.prNumbers}
                               </span>
+
                               <button
                                 type="button"
                                 aria-label={`Remove PR ${pr.prNumbers}`}
@@ -567,11 +598,18 @@ const PRGradingScreen = ({
                                   {inputError}
                                 </span>
                               )}
+
+                            ))}
+
+                            {!isFinalized && activeInput !== reviewer.id && (
+
                               <Button
-                                variant="primary"
+                                variant="success"
                                 size="sm"
-                                onClick={() => handleInputSubmit(reviewer.id)}
+                                className={styles['pr-grading-screen-add-btn']}
+                                onClick={() => handleAddNewClick(reviewer.id)}
                               >
+
                                 Add
                               </Button>
                               <Button variant="secondary" size="sm" onClick={handleCancelInput}>
@@ -601,6 +639,42 @@ const PRGradingScreen = ({
                           </button>
                         </td>
                       </tr>
+
+                                + Add new
+                              </Button>
+                            )}
+
+                            {!isFinalized && activeInput === reviewer.id && (
+                              <div className={styles['pr-grading-screen-input-container']}>
+                                <input
+                                  type="text"
+                                  value={inputValue}
+                                  onChange={e => setInputValue(e.target.value)}
+                                  className={styles['pr-grading-screen-pr-number-input']}
+                                  placeholder="1070 or 1070 + 1256"
+                                />
+                                <Button
+                                  variant="primary"
+                                  size="sm"
+                                  onClick={() => handleInputSubmit(reviewer.id)}
+                                >
+                                  Add
+                                </Button>
+                                <Button variant="secondary" size="sm" onClick={handleCancel}>
+                                  Cancel
+                                </Button>
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                        <InlinePRSummary
+                          reviewer={reviewer}
+                          onGradeChange={handleGradeChange}
+                          isFinalized={isFinalized}
+                          darkMode={darkMode}
+                        />
+                      </React.Fragment>
+
                     ))
                   )}
                 </tbody>
@@ -626,12 +700,20 @@ const PRGradingScreen = ({
             <div className={`${styles['pr-grading-screen-modal-body']} ${dm}`}>
               <table className={`${styles['pr-grading-screen-grading-table']} ${dm}`}>
                 <thead>
+                  {/* Rendered from GRADE_OPTIONS rather than hardcoded, so these
+                      columns always match the inline summary's. */}
                   <tr>
                     <th>PR Number</th>
+
                     <th>Exceptional</th>
                     <th>Okay</th>
                     <th>Unsatisfactory</th>
                     <th>No Correct Image</th>
+
+                    {GRADE_OPTIONS.map(opt => (
+                      <th key={opt.value}>{opt.label}</th>
+                    ))}
+
                   </tr>
                 </thead>
                 <tbody>
@@ -640,6 +722,7 @@ const PRGradingScreen = ({
                     ?.gradedPrs.map(pr => (
                       <tr key={pr.id}>
                         <td>{pr.prNumbers}</td>
+
                         <td>
                           <input
                             type="checkbox"
@@ -674,6 +757,23 @@ const PRGradingScreen = ({
                             }
                           />
                         </td>
+
+                        {/* One cell per grade, driven by the shared list. The
+                            value written here and the one compared for `checked`
+                            are the same opt.value, which is what keeps this modal
+                            in sync with the inline summary in both directions. */}
+                        {GRADE_OPTIONS.map(opt => (
+                          <td key={opt.value}>
+                            <input
+                              type="checkbox"
+                              disabled={isFinalized}
+                              checked={pr.grade === opt.value}
+                              onChange={() => handleGradeChange(showGradingModal, pr.id, opt.value)}
+                              aria-label={`${pr.prNumbers} ${opt.label}`}
+                            />
+                          </td>
+                        ))}
+
                       </tr>
                     ))}
                 </tbody>

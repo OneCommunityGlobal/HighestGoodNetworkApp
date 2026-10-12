@@ -380,6 +380,8 @@ export const ENDPOINTS = {
   BM_PROJECTS_WITH_LOCATION: `${APIEndpoint}/bm/projects/location`,
   BM_PROJECT_EXPENSE_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}/expenses`,
   BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}`,
+  BM_DELETE_INVENTORTY_TYPE_BY_ID: id => `${APIEndpoint}/bm/invtypes/${id}`,
+  BM_UPDATE_INVENTORY_TYPE_BY_ID: id => `${APIEndpoint}/bm/invtypes/${id}`,
 
   BM_PROJECT_MATERIALS_COST: `${APIEndpoint}/material-costs`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
@@ -695,6 +697,10 @@ export const ENDPOINTS = {
   LINKEDIN_POST: `${APIEndpoint}/postToLinkedIn`,
   LINKEDIN_SCHEDULED_POSTS: `${APIEndpoint}/scheduledPosts`,
   LINKEDIN_SCHEDULED_POST_BY_ID: postId => `${APIEndpoint}/scheduledPosts/${postId}`,
+  MASTODON_POST: `${APIEndpoint}/mastodon/createPin`,
+  MASTODON_SCHEDULED_POSTS: `${APIEndpoint}/mastodon/schedule`,
+  MASTODON_SCHEDULED_POST_BY_ID: postId => `${APIEndpoint}/mastodon/schedule/${postId}`,
+  MASTODON_POST_HISTORY: limit => `${APIEndpoint}/mastodon/history?limit=${limit}`,
 
   // actual cost endpoints
   ACTUAL_COST_BREAKDOWN: projectId => `${APIEndpoint}/projects/${projectId}/actual-cost-breakdown`,
