@@ -114,6 +114,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex: 0 0 auto;
+  width: auto;
+  min-width: fit-content;
   height: 38px;
   padding: 0 16px;
   background-color: #0958a8;
@@ -124,6 +127,7 @@
   font-size: 16px;
   font-weight: 600;
   white-space: nowrap;
+  overflow: visible;
   line-height: normal;
   vertical-align: middle;
   transition: filter 0.15s ease, transform 0.02s ease;
@@ -603,8 +607,16 @@
   color: #fff !important;
   border: none !important;
   border-radius: 8px;
-  padding: 6px 12px;
+  padding: 0 16px;
   font-weight: 600;
+  flex: 0 0 auto;
+  width: auto;
+  min-width: fit-content;
+  white-space: nowrap;
+}
+
+.jobLandingDark .showSummaries {
+  padding: 0 22px;
 }
 
 .jobLandingDark .pagination button:hover {

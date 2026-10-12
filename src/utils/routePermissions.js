@@ -73,5 +73,6 @@ const RoutePermissions = {
     permissions.editFormQuestions,
     permissions.deleteFormQuestions,
   ],
+  createCollabJobAds: [permissions.createCollabJobAds],
 };
 export default RoutePermissions;

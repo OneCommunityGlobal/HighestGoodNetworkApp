@@ -201,7 +201,9 @@ describe('Collaboration', () => {
 
     await waitFor(() => {
       expect(
-        globalThis.fetch.mock.calls.some(([url]) => url.includes('category=Engineering')),
+        globalThis.fetch.mock.calls.some(([url]) =>
+          decodeURIComponent(url).includes('category=["Engineering"]'),
+        ),
       ).toBe(true);
     });
   });

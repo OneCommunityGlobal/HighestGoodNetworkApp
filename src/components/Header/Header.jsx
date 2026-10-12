@@ -47,6 +47,7 @@ import {
   BADGE_MANAGEMENT,
   BLUE_SQUARE_EMAIL_MANAGEMENT,
   DASHBOARD,
+  JOB_ADS_CREATION,
   JOB_ANALYTICS_REPORT,
   LOGOUT,
   OTHER_LINKS,
@@ -220,6 +221,9 @@ export function Header(props) {
     !isAuthUser,
   );
   const canAccessPRDashboard = props.hasPermission(RoutePermissions.prDashboard, !isAuthUser);
+  // Job Ads Creation: Owner/Administrator only
+  const canAccessJobAdsCreation =
+    props.auth.user.role === 'Owner' || props.auth.user.role === 'Administrator';
 
   const userId = user.userid;
   const viewerTimeZone = resolveUserTimeZone(props.userProfile?.timeZone);
@@ -835,7 +839,7 @@ export function Header(props) {
                   </NavItem>
                 )}
 
-                {(canAccessUserManagement || canAccessBadgeManagement || canAccessProjects || canAccessTeams || canAccessPopups || canAccessSendEmails || canAccessScheduleMeetings || canAccessPermissionsManagement || canAccessBlueSquareEmailManagement) && (
+                {(canAccessUserManagement || canAccessBadgeManagement || canAccessProjects || canAccessTeams || canAccessPopups || canAccessSendEmails || canAccessScheduleMeetings || canAccessPermissionsManagement || canAccessBlueSquareEmailManagement || canAccessJobAdsCreation) && (
                   <UncontrolledDropdown
                     nav
                     inNavbar
@@ -856,6 +860,16 @@ export function Header(props) {
                           disabled={headerDisabled}
                         >
                           {SCHEDULE_MEETINGS}
+                        </DropdownItem>
+                      )}
+                      {canAccessJobAdsCreation && (
+                        <DropdownItem
+                          tag={Link}
+                          to="/jobAdsCreation"
+                          className={fontColor}
+                          disabled={headerDisabled}
+                        >
+                          {JOB_ADS_CREATION}
                         </DropdownItem>
                       )}
                       {canAccessPermissionsManagement && (

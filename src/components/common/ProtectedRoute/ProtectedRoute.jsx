@@ -43,7 +43,8 @@ const ProtectedRoute = ({
         if (!auth.isAuthenticated) {
           return <Redirect to={{ pathname: '/login', state: { from: props.location } }} />;
         }
-        if (routePermissions && !hasPermissionToAccess) {
+        // Enforce either routePermissions and/or allowedRoles when provided
+        if ((routePermissions || allowedRoles) && !hasPermissionToAccess) {
           return (
             <Redirect
               to={{

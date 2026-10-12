@@ -86,6 +86,7 @@ import { eventFeedbackReducer } from './communityPortal/eventFeedback';
 import { noShowVizReducer } from './communityPortal/noShowVizReducer';
 
 import { jobApplicationReducer } from './jobApplication/jobApplicationReducer';
+import collaborationAdsReducer from './collaborationAdsReducer';
 
 import emailOutboxReducer from './emailOutboxReducer';
 import emailTemplateReducer from './emailTemplateReducer';
@@ -226,6 +227,7 @@ const localReducers = {
   // student tasks
   studentTasks: studentTasksReducer,
   jobApplication: jobApplicationReducer,
+  collaborationAds: collaborationAdsReducer,
   toolReplacement: toolReplacementReducer,
 
   // education portal
