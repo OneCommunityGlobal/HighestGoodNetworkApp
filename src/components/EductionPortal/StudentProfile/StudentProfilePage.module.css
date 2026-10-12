@@ -158,12 +158,23 @@
   justify-content: center;
   color: #fff;
   font-weight: 600;
-  font-size: 0.9rem;
+
+  /* Smaller type gives long names such as Mathematics more room inside the
+     fixed 80px circle. Compact line spacing accommodates multiword labels
+     such as Social Studies when they wrap at a space. Applies to both themes. */
+  font-size: 0.7rem;
+  line-height: 1.2;
   text-align: center;
-  padding: 5px;
+
+  /* Recover horizontal text space without changing the circle's dimensions. */
+  padding: 2px;
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   overflow: hidden;
-  word-break: break-word;
+
+  /* Wrap at normal word boundaries instead of splitting individual words.
+     Keep overflow-wrap normal as well so it cannot introduce mid-word breaks. */
+  word-break: normal;
+  overflow-wrap: normal;
 }
 
 .subjectNameBelow {
@@ -260,4 +271,38 @@
   background: #475569;
   border-color: #41ff01;
   color: #f8fafc;
+}
+
+/* Scope the card overrides to this profile's dark-mode container so light-mode
+   card colors stay unchanged. Replace the white surface with slate and use a
+   lighter border to distinguish each card from the surrounding profile. */
+.container.dark .subjectCard {
+  background: #334155;
+  border-color: #475569;
+}
+
+/* Set the heading color explicitly against the dark card surface rather than
+   relying on inherited text colors or the base light-mode heading rule. */
+.container.dark .subjectNameBelow {
+  color: #f8fafc;
+}
+
+/* Use a slightly softer light color for completed, in-progress, and remaining
+   counts, keeping them readable on both the normal and hovered card surface. */
+.container.dark .progressDetails {
+  color: #e2e8f0;
+}
+
+/* Make the unfilled track visible against the card. Only the track changes:
+   the fill and subject circle retain their inline, subject-specific colors. */
+.container.dark .progressBar {
+  background: #64748b;
+}
+
+/* Lighten the surface and border on hover, with a stronger shadow for the dark
+   background. Retain the base rule's upward movement and transition behavior. */
+.container.dark .subjectCard:hover {
+  background: #3e4c63;
+  border-color: #94a3b8;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 30%);
 }
