@@ -50,7 +50,11 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
         </ModalHeader>
 
         <ModalBody className={darkMode ? 'dark-modal-body bg-yinmn-blue text-light' : ''}>
-          <div className={styles.records_modal_table_container}>
+          <div
+            className={`${styles.records_modal_table_container} ${
+              recordType === 'Purchase' ? styles.purchaseRecordTableContainer : ''
+            }`}
+          >
             <Table className={darkMode ? 'dark-table bg-yinmn-blue text-white' : ''}>
               <Record
                 record={record}
@@ -178,7 +182,39 @@ export function Record({ record, recordType, setRecord, itemType }) {
       </>
     );
   }
+  if (recordType === 'UsageRecord') {
+    return (
+      <>
+        <thead className={darkMode ? 'dark-thead bg-space-cadet text-white' : ''}>
+          <tr className={darkMode ? 'dark-row text-white bg-yinmn-blue' : ''}>
+            <th>Date</th>
+            <th>Quantity Used</th>
+            <th>Logged By</th>
+            <th>Email</th>
+          </tr>
+        </thead>
 
+        <tbody className={darkMode ? 'dark-tbody bg-yinmn-blue text-light' : ''}>
+          {record?.usageRecord?.length ? (
+            record.usageRecord.map(data => (
+              <tr key={data._id} className={darkMode ? 'dark-row text-white bg-yinmn-blue' : ''}>
+                <td>{data.date ? moment.utc(data.date).format('LL') : '-'}</td>
+                <td>{formatQuantity(data.quantityUsed, record.itemType?.unit)}</td>
+                <td>{renderUser(data.createdBy)}</td>
+                <td>{data?.createdBy?.email || '-'}</td>
+              </tr>
+            ))
+          ) : (
+            <tr className={darkMode ? 'text-light bg-space-cadet' : ''}>
+              <td colSpan={4} style={{ fontWeight: 'bold' }}>
+                There are no usage records for this item.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </>
+    );
+  }
   if (recordType === 'Purchase') {
     return (
       <>
@@ -191,7 +227,7 @@ export function Record({ record, recordType, setRecord, itemType }) {
             <th>Email</th>
             <th>Date</th>
             <th>Status</th>
-            {canApproveReject && <th>Action</th>}
+            {canApproveReject && <th className={styles.purchaseRecordActionColumn}>Action</th>}
           </tr>
         </thead>
 
@@ -224,7 +260,7 @@ export function Record({ record, recordType, setRecord, itemType }) {
                       </span>
                     </td>
                     {canApproveReject && (
-                      <td>
+                      <td className={styles.purchaseRecordActionColumn}>
                         {isLoading ? (
                           <Spinner size="sm" />
                         ) : (

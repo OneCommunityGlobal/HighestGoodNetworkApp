@@ -106,7 +106,7 @@
   font-weight: 600;
   color: var(--text-color);
   text-align: center;
-  margin: 0 0 10px 0;
+  margin: 0 0 10px;
 }
 
 /* ResponsiveContainer wrapper — must have explicit height */
@@ -190,7 +190,7 @@
 }
 
 /* ── Responsive: small screens ─────────────────────────────── */
-@media (max-width: 640px) {
+@media (width <= 640px) {
   /* Show tab bar in comparison mode */
   .expenditure-chart-tab-bar {
     display: flex;

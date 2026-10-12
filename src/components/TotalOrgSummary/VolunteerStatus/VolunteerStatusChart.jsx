@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import Loading from '~/components/common/Loading';
+import { getMentorTotal } from '~/utils/totalOrgSummary';
 import VolunteerStatusPieChart from './VolunteerStatusPieChart';
 import MentorStatusPieChart from './MentorStatusPieChart';
 import styles from './VolunteerStatusChart.module.css';
@@ -24,27 +25,39 @@ function VolunteerStatusChart({
       totalVolunteers,
     } = volunteerNumberStats;
 
-    // Use donutChartData if available, otherwise fall back to original structure
     let chartDataValues;
+    let computedTotal;
+
     if (donutChartData && donutChartData.existingActive !== undefined) {
-      // donutChartData properties are objects with 'count' property
+      const existingActive = donutChartData.existingActive.count || 0;
+      const newActive = donutChartData.newActive.count || 0;
+      const deactivated = donutChartData.deactivated.count || 0;
+
       chartDataValues = [
-        { label: 'Existing Active', value: donutChartData.existingActive.count },
-        { label: 'New Active', value: donutChartData.newActive.count },
-        { label: 'Deactivated', value: donutChartData.deactivated.count },
+        { label: 'Existing Active', value: existingActive },
+        { label: 'New Active', value: newActive },
+        { label: 'Deactivated', value: deactivated },
       ];
+
+      // Sum exact non-overlapping segments to prevent any inflation
+      computedTotal = existingActive + newActive + deactivated;
     } else {
-      // Fallback to original structure with updated labels
+      const existing = activeVolunteers?.count || 0;
+      const newV = newVolunteers?.count || 0;
+      const deact = deactivatedVolunteers?.count || 0;
+
       chartDataValues = [
-        { label: 'Existing Active', value: activeVolunteers?.count || 0 },
-        { label: 'New Active', value: newVolunteers?.count || 0 },
-        { label: 'Deactivated', value: deactivatedVolunteers?.count || 0 },
+        { label: 'Existing Active', value: existing },
+        { label: 'New Active', value: newV },
+        { label: 'Deactivated', value: deact },
       ];
+
+      computedTotal = existing + newV + deact;
     }
 
     return {
-      totalVolunteers: totalVolunteers.count,
-      percentageChange: Number(totalVolunteers.comparisonPercentage) || 0,
+      totalVolunteers: computedTotal,
+      percentageChange: Number(totalVolunteers?.comparisonPercentage) || 0,
       data: chartDataValues,
     };
   }, [volunteerNumberStats]);
@@ -63,23 +76,32 @@ function VolunteerStatusChart({
     } = mentorNumberStats;
 
     let chartDataValues;
+
     if (donutChartData && donutChartData.existingActive !== undefined) {
+      const existingActive = donutChartData.existingActive.count || 0;
+      const newActive = donutChartData.newActive.count || 0;
+      const deactivated = donutChartData.deactivated.count || 0;
+
       chartDataValues = [
-        { label: 'Existing Active', value: donutChartData.existingActive.count },
-        { label: 'New Active', value: donutChartData.newActive.count },
-        { label: 'Deactivated', value: donutChartData.deactivated.count },
+        { label: 'Existing Active', value: existingActive },
+        { label: 'New Active', value: newActive },
+        { label: 'Deactivated', value: deactivated },
       ];
     } else {
+      const active = activeMentors?.count || 0;
+      const newM = newMentors?.count || 0;
+      const deactM = deactivatedMentors?.count || 0;
+
       chartDataValues = [
-        { label: 'Active', value: activeMentors.count },
-        { label: 'New', value: newMentors.count },
-        { label: 'Deactivated This Week', value: deactivatedMentors.count },
+        { label: 'Active', value: active },
+        { label: 'New', value: newM },
+        { label: 'Deactivated This Week', value: deactM },
       ];
     }
 
     return {
-      totalMentors: totalMentors.count,
-      percentageChange: Number(totalMentors.comparisonPercentage) || 0,
+      totalMentors: getMentorTotal(mentorNumberStats),
+      percentageChange: Number(totalMentors?.comparisonPercentage) || 0,
       data: chartDataValues,
     };
   }, [mentorNumberStats]);
@@ -146,7 +168,7 @@ VolunteerStatusChart.propTypes = {
     }),
     totalVolunteers: PropTypes.shape({
       count: PropTypes.number,
-      comparisonPercentage: PropTypes.number,
+      comparisonPercentage: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     }),
   }),
   mentorNumberStats: PropTypes.shape({
@@ -172,7 +194,7 @@ VolunteerStatusChart.propTypes = {
     }),
     totalMentors: PropTypes.shape({
       count: PropTypes.number,
-      comparisonPercentage: PropTypes.number,
+      comparisonPercentage: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     }),
   }),
 };

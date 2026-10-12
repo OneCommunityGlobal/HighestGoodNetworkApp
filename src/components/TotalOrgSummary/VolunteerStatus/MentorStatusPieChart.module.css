@@ -81,7 +81,7 @@
   margin-bottom: 24px;
   flex-wrap: wrap;
   overflow-x: visible;
-  padding: 0 20px;
+  padding: 0 8px;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
@@ -105,11 +105,11 @@
   border-radius: 2px;
 }
 
-:global(.bg-oxford-blue) .mentorStatusHeading {
+:global(.bgOxfordBlue) .mentorStatusHeading {
   color: #f1f5ff;
 }
 
-:global(.bg-oxford-blue) .mentorCount {
+:global(.bgOxfordBlue) .mentorCount {
   color: #fff;
 }
 

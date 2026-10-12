@@ -1,13 +1,8 @@
-/* stylelint-disable  */
 .jobCcDashboard {
   padding: 20px;
   font-family: Arial, sans-serif;
-}
-
-.darkModeJobCcDashboard {
-  /*  #2c2f33 */
-  background-color: #1b2a41;
-  color: #fff;
+  background-color: #fff;
+  color: #000;
 }
 
 .dashboardTitle {
@@ -22,11 +17,6 @@
   border-radius: 8px;
   box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
   margin-bottom: 30px;
-}
-
-.darkModeJobCcDashboard .formContainer {
-  background-color: #3c3f44;
-  color: #fff;
 }
 
 .formContainer form {
@@ -46,21 +36,13 @@
   box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
 }
 
-.darkModeJobCcDashboard .ccListContainer {
-  background-color: #3c3f44;
-}
-
 .jobCcDashboardTable {
   margin-top: 10px;
 }
 
 .jobCcDashboardTable th {
-  background-color: #007bff;
-  color: #fff;
-}
-
-.darkModeJobCcDashboard .jobCcDashboardTable th {
   background-color: #0056b3;
+  color: #fff;
 }
 
 .jobCcDashboardTable td {
@@ -69,4 +51,162 @@
 
 .jobCcDashboardTable button {
   font-size: 0.85rem;
+}
+
+.modalWrapper {
+  background-color: #fff;
+  color: #000;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #dee2e6;
+  padding: 1rem;
+}
+
+.modalTitle {
+  margin: 0;
+}
+
+.modalBody {
+  padding: 1rem;
+  background-color: #fff;
+  color: #000;
+}
+
+.modalFooter {
+  padding: 1rem;
+  border-top: 1px solid #dee2e6;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.label {
+  font-weight: 500;
+}
+
+.input {
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #ccc;
+}
+
+.selectInput {
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.selectInput:focus {
+  background-color: #f0f0f0;
+  outline: none;
+}
+
+.modalCloseButton {
+  font-size: 1.5rem;
+  padding: 0 0.5rem;
+  line-height: 1;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.modalCloseButton:hover {
+  background: rgb(255 0 0 / 10%);
+}
+
+.darkModeModel {
+  background-color: #2b2e33;
+  color: #fff;
+}
+
+.darkModeModel input,
+.darkModeModel table,
+.darkModeModel label {
+  background-color: #2b2e33;
+  color: #fff;
+  border-color: #555;
+}
+
+.darkModeModel input:focus {
+  background-color: black;
+  color: #fff;
+}
+
+.darkModeModel table th,
+.darkModeModel table td {
+  border-color: #555;
+  color: #fff;
+}
+
+.darkModeModel .modalHeader {
+  border-bottom: 1px solid #555;
+}
+
+.darkModeModel .modalBody {
+  background-color: #2b2e33;
+  color: #fff;
+}
+
+.darkModeModel .selectInput {
+  background-color: #2b2e33;
+  color: #fff;
+  border-color: #555;
+}
+
+.darkModeModel .selectInput:focus {
+  background-color: #1e1e2e;
+  color: #fff;
+}
+
+.categoryButton {
+  margin: 10px;
+}
+
+.darkMode {
+  background-color: #1b2a41;
+  color: #fff;
+}
+
+.darkMode .jobCcDashboard {
+  background-color: #1b2a41;
+  color: #fff;
+}
+
+.darkMode .formContainer {
+  background-color: #3c3f44;
+  color: #fff;
+}
+
+.darkMode .ccListContainer {
+  background-color: #3c3f44;
+  color: #fff;
+}
+
+.darkMode .jobCcDashboardTable th {
+  background-color: #0056b3;
+  color: #fff;
+}
+
+.darkMode .jobCcDashboardTable td {
+  color: #fff;
+}
+
+.darkMode .formContainer label {
+  color: #fff;
+}
+
+.darkMode .formContainer input,
+.darkMode .formContainer select {
+  background-color: #1b1b1b;
+  color: #fff;
+  border: 1px solid #555;
+}
+
+.darkMode .dashboardTitle {
+  filter: brightness(1.5);
 }

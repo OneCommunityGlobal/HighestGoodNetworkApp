@@ -1,5 +1,4 @@
-/* stylelint-disable  */
-* {
+:global(*) {
   box-sizing: border-box;
   margin: 0;
 }
@@ -32,17 +31,6 @@
   padding: 0 16px;
 }
 
-@media screen and (width <= 1200px) {
-  .category-data-container {
-    grid-template-columns: 1fr;
-  }
-
-  .table-data-container {
-    max-width: 720px;
-    margin: 0 auto;
-  }
-}
-
 .no-active-selection {
   grid-template-columns: 1fr !important;
 }
@@ -57,7 +45,7 @@
 
 .category-container {
   display: flex;
-  flex-direction: row;
+  flex-flow: row wrap;
   justify-content: space-evenly;
   gap: 10px;
 }
@@ -67,7 +55,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  width: 30%;
+  flex: 1 1 140px;
+  min-width: 140px;
+  max-width: 200px;
   padding: 24px;
   border: 0;
   background-color: #f1ebf7;
@@ -76,29 +66,6 @@
   margin: 8px;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
   transform-origin: center center;
-}
-
-.report-container-data {
-  display: flex;
-  gap: 10px;
-}
-
-.category-container > .card-category-item.selected {
-  background-color: #d7cdda;
-  box-shadow: 0 8px 16px rgb(78 32 125 / 20%);
-  transform: scale(1.03);
-  position: relative;
-  z-index: 1;
-}
-
-.card-category-item:focus-visible {
-  outline: none;
-}
-
-.card-category-item img {
-  width: 100px;
-  height: 100px;
-  object-fit: contain;
 }
 
 .card-category-item-title {
@@ -117,6 +84,39 @@
   margin: 12px 0;
 }
 
+.report-container-data {
+  display: flex;
+  gap: 10px;
+}
+
+.category-container > .card-category-item.selected {
+  background-color: #d7cdda;
+  box-shadow: 0 8px 16px rgb(78 32 125 / 20%);
+  transform: scale(1.03);
+  position: relative;
+  z-index: 1;
+}
+
+.category-container > .card-category-item:global(.bg-yinmn-blue).selected {
+  background-color: #4a6a8a;
+  box-shadow: 0 8px 16px rgb(58 80 107 / 40%);
+}
+
+.category-container > .card-category-item:global(.bg-yinmn-blue).selected .card-category-item-title,
+.category-container > .card-category-item:global(.bg-yinmn-blue).selected .card-category-item-number {
+  color: #fff;
+}
+
+.card-category-item:focus-visible {
+  outline: none;
+}
+
+.card-category-item img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
 .text-light {
   color: white;
 }
@@ -130,36 +130,105 @@
   -webkit-overflow-scrolling: touch;
 }
 
+.table-data-container :global(.bg-yinmn-blue tbody tr:hover) {
+  background: #2f4157 !important;
+}
+
 .search-field-container {
   max-width: 100%;
 }
 
+.report-filter-panel {
+  --report-filter-label-width: 88px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.report-filter-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.report-filter-options-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+}
+
+.report-filter-options-row label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.report-filter-label-action {
+  width: var(--report-filter-label-width);
+}
+
+:global(.dark-mode) .report-filter-label-action {
+  background-color: #3a506b;
+}
+
 .date-picker-container {
   display: flex;
-  flex-flow: row;
-  justify-content: flex-start;
-  padding: 8px 0;
-  gap: 4%;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  background-color: transparent !important;
 }
 
 .date-picker-item {
   display: flex;
-  width: 30%;
-  flex-flow: column nowrap;
-  justify-content: space-between;
+  align-items: center;
 }
 
 .date-picker-label {
+  width: var(--report-filter-label-width, 88px);
+  flex: 0 0 var(--report-filter-label-width, 88px);
   text-align: left;
-  margin: 8px 0;
+  margin: 0;
 }
 
-/* Unified spacing system */
-:root {
+.date-picker-item :global(.react-datepicker-wrapper) {
+  width: 220px;
+}
+
+.date-picker-item :global(.react-datepicker__input-container),
+.date-picker-item input {
+  width: 100%;
+}
+
+@media screen and (width <= 575px) {
+  .report-filter-header-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .date-picker-item {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .date-picker-label,
+  .report-filter-label-action {
+    width: 100%;
+    flex-basis: auto;
+  }
+
+  .date-picker-item :global(.react-datepicker-wrapper) {
+    width: 100%;
+  }
+}
+
+:global(:root) {
   --spacing-unit: 0.5rem;
 }
 
-/* Container styling */
 .total-report-container,
 .lost-time-container {
   display: flex;
@@ -168,44 +237,32 @@
   width: 100%;
   gap: var(--spacing-unit);
   margin: var(--spacing-unit) 0;
-
-  /* Unified margin */
   padding: 0;
 }
 
-/* Item styling */
 .total-report-item,
 .lost-time-item {
   flex: 0 0 calc(50% - var(--spacing-unit));
-
-  /* Exact 50% with gap compensation */
   min-width: 200px;
   max-width: 240px;
   display: flex;
   align-items: center;
   margin-bottom: var(--spacing-unit);
-
-  /* Ensures consistent bottom spacing */
 }
 
-/* Button styling */
 .total-report-item button,
 .lost-time-item button {
   width: 100%;
   font-size: 0.9rem;
   white-space: nowrap;
   padding: 0.5rem;
-
-  /* Added for better button appearance */
 }
 
-/* Info icon */
 .info-icon-wrapper {
   margin-left: 6px;
   flex-shrink: 0;
 }
 
-/* Remove extra space from last container */
 .total-report-container:last-child,
 .lost-time-container:last-child {
   margin-bottom: 0;
@@ -225,6 +282,35 @@
   display: flex;
   justify-content: center;
   margin-bottom: 1rem;
+}
+
+.card-spinner {
+  background-color: transparent !important;
+}
+
+:global(.bg-yinmn-blue .info-modal-content) {
+  color: #fff !important;
+}
+
+:global(.force-white-text),
+:global(.bg-yinmn-blue .force-white-text),
+:global(.bg-yinmn-blue .info-modal-content.force-white-text) {
+  color: #fff !important;
+}
+
+:global(.bg-yinmn-blue .info-modal-content.force-white-text),
+:global(.bg-yinmn-blue .info-modal-content.force-white-text *) {
+  color: #fff !important;
+}
+
+@media screen and (width <= 1200px) {
+  .category-data-container {
+    grid-template-columns: 1fr;
+  }
+
+  .table-data-container {
+    max-width: 720px;
+  }
 }
 
 @media screen and (width <= 1350px) {
@@ -367,4 +453,12 @@
 .bg-yinmn-blue .info-modal-content.force-white-text,
 .bg-yinmn-blue .info-modal-content.force-white-text * {
   color: #fff !important;
+}
+
+/* The EmailManagement dark-mode stylesheet applies a global
+   `filter: invert(1)` to any `.modal-title` on the page whenever
+   `body.bm-dashboard-dark` is present, which inverts our light
+   title text to black. Neutralize it for this modal specifically. */
+.add-lost-time-header :global(.modal-title) {
+  filter: none !important;
 }

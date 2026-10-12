@@ -392,17 +392,6 @@ function CPDashboard() {
     return () => document.body.classList.remove('dark-mode-body');
   }, [darkMode]);
 
-  // Hide the global back-to-top button — not needed on this page
-  useEffect(() => {
-    const scrollBtn = document.querySelector('.back-to-top');
-    if (!scrollBtn) return;
-    const prevDisplay = scrollBtn.style.display;
-    scrollBtn.style.display = 'none';
-    return () => {
-      scrollBtn.style.display = prevDisplay;
-    };
-  }, []);
-
   // Consolidated filter states
   const [pendingFilters, setPendingFilters] = useState(DEFAULT_FILTERS);
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS);
@@ -433,7 +422,7 @@ function CPDashboard() {
       }
     };
 
-    fetchEvents();
+    void fetchEvents();
   }, []);
 
   useEffect(() => {

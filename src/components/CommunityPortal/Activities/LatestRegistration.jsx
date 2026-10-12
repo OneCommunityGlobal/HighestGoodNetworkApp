@@ -1,9 +1,9 @@
-import styles from './styles.module.css';
+import styles from './Activitiesstyles.module.css';
 
 function LatestRegistration() {
   return (
     <div className={`${styles.latestRegistration}`}>
-      <h2 className={`${styles.headerTitle}`}>Latest Registration</h2>
+      <h2>Latest Registration</h2>
       <ul>
         <li>
           <div className={`${styles.registerinfo}`}>
