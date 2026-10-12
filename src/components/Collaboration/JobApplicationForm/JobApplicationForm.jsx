@@ -189,21 +189,6 @@ function resolveNavigationJobTitle(jobDataFromRedirect, location, positionSlug) 
   );
 }
 
-function resolveJobDetailsLink(jobData, jobsList, title) {
-  const fromNav = jobData?.jobDetailsLink;
-  if (fromNav && String(fromNav).trim()) return String(fromNav).trim();
-  const t = String(title || '')
-    .trim()
-    .toLowerCase();
-  if (!t || !jobsList?.length) return '';
-  const match = jobsList.find(j => {
-    const jobTitle = String(j.title || '').toLowerCase();
-    const jobPosition = String(j.position || '').toLowerCase();
-    return jobTitle === t || jobPosition === t;
-  });
-  return (match?.jobDetailsLink && String(match.jobDetailsLink).trim()) || '';
-}
-
 function notifyInitialFormSelection(navTitle, formMatch, chosen) {
   if (!navTitle || formMatch) return;
   if (chosen) {
@@ -222,7 +207,12 @@ function notifyInitialFormSelection(navTitle, formMatch, chosen) {
 function matchPositionOption(options, title) {
   const t = String(title || '').trim();
   if (!t || !options?.length) return '';
-  const found = options.find(o => String(o).trim().toLowerCase() === t.toLowerCase());
+  const found = options.find(
+    o =>
+      String(o)
+        .trim()
+        .toLowerCase() === t.toLowerCase(),
+  );
   return found || '';
 }
 
@@ -814,7 +804,6 @@ function JobApplicationForm() {
   const [forms, setForms] = useState([]);
   const [positionOptions, setPositionOptions] = useState([]);
   const [selectedJob, setSelectedJob] = useState('');
-  const [jobsData, setJobsData] = useState([]);
   const [answers, setAnswers] = useState([]);
   const [jobTitleInput, setJobTitleInput] = useState('');
   const [filteredForm, setFilteredForm] = useState(null);
@@ -983,18 +972,6 @@ function JobApplicationForm() {
           /* Positions dropdown can fall back to form titles. */
         }
 
-        try {
-          const jobsRes = await axios.get(
-            `${ENDPOINTS.APIEndpoint()}/jobs?limit=1000`,
-            publicApplyRequestConfig(),
-          );
-          if (!cancelled && jobsRes.data?.jobs) {
-            setJobsData(Array.isArray(jobsRes.data.jobs) ? jobsRes.data.jobs : []);
-          }
-        } catch {
-          /* Job listings are only used for optional details links; form load can continue. */
-        }
-
         const formId = getFormIdFromNavigation(routerLocation);
         let formsArr = [];
         if (formId && isMongoObjectId(formId)) {
@@ -1027,8 +1004,7 @@ function JobApplicationForm() {
           formId: formId || routerLocation.state?.formId,
         };
         const slugMatch = positionSlug ? findFormByPositionSlug(formsArr, positionSlug) : null;
-        const formMatch =
-          slugMatch || (navTitle ? findFormForJobTitle(formsArr, navTitle) : null);
+        const formMatch = slugMatch || (navTitle ? findFormForJobTitle(formsArr, navTitle) : null);
         const chosen = pickInitialForm(formsArr, navState, positionSlug);
         notifyInitialFormSelection(navTitle, formMatch, chosen);
 
@@ -1187,11 +1163,6 @@ function JobApplicationForm() {
         setFullTimeYears(str);
     });
   }, [answers, visibleQuestions]);
-
-  const currentJobDetailsLink = useMemo(
-    () => resolveJobDetailsLink(jobDataFromRedirect, jobsData, bannerJobTitle || selectedJob),
-    [jobDataFromRedirect, jobsData, bannerJobTitle, selectedJob],
-  );
 
   const handleKnowMoreClick = () => {
     setShowDescription(true);
@@ -1509,20 +1480,16 @@ function JobApplicationForm() {
             Job Application – {(bannerJobTitle || selectedJob || 'this role').trim()}
           </h1>
           <p className={styles.formSubtitle}>
-            {currentJobDetailsLink ? (
-              <a href={currentJobDetailsLink} target="_blank" rel="noopener noreferrer">
-                Click to know more about this position
-              </a>
-            ) : (
-              <button
-                type="button"
-                className={styles.linkButton}
-                onClick={handleKnowMoreClick}
-                aria-haspopup="dialog"
-              >
-                Click to know more about this position
-              </button>
-            )}
+            {/* Match development: always open the in-page "About the role" modal.
+                Do not navigate to jobDetailsLink (often bad seed data → 404). */}
+            <button
+              type="button"
+              className={styles.linkButton}
+              onClick={handleKnowMoreClick}
+              aria-haspopup="dialog"
+            >
+              Click to know more about this position
+            </button>
           </p>
           {showDescription && filteredForm && (
             <div className={styles.popupOverlay}>
