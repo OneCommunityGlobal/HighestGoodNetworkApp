@@ -24,22 +24,48 @@ export const setComparisonPeriodFilter = comparisonPeriod => ({
   payload: comparisonPeriod,
 });
 
-export const fetchWeeklyProjectSummaryProjectStatusBegin = () => ({
+let weeklyProjectSummaryProjectStatusRequestCounter = 0;
+
+const createWeeklyProjectSummaryProjectStatusRequestId = () => {
+  weeklyProjectSummaryProjectStatusRequestCounter += 1;
+  return `weekly-project-summary-project-status-${Date.now()}-${weeklyProjectSummaryProjectStatusRequestCounter}`;
+};
+
+export const getWeeklyProjectSummaryProjectStatusRequestKey = params => {
+  const queryParams = new URLSearchParams();
+  Object.entries(params || {})
+    .filter(([, value]) => value !== undefined && value !== null && value !== '')
+    .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
+    .forEach(([key, value]) => {
+      queryParams.append(key, value);
+    });
+
+  return queryParams.toString();
+};
+
+export const fetchWeeklyProjectSummaryProjectStatusBegin = meta => ({
   type: FETCH_WEEKLY_PROJECT_SUMMARY_PROJECT_STATUS_BEGIN,
+  meta,
 });
 
-export const fetchWeeklyProjectSummaryProjectStatusSuccess = payload => ({
+export const fetchWeeklyProjectSummaryProjectStatusSuccess = (payload, meta) => ({
   type: FETCH_WEEKLY_PROJECT_SUMMARY_PROJECT_STATUS_SUCCESS,
   payload,
+  meta,
 });
 
-export const fetchWeeklyProjectSummaryProjectStatusError = error => ({
+export const fetchWeeklyProjectSummaryProjectStatusError = (error, meta) => ({
   type: FETCH_WEEKLY_PROJECT_SUMMARY_PROJECT_STATUS_ERROR,
   payload: error,
+  meta,
 });
 
 export const fetchWeeklyProjectSummaryProjectStatus = params => async dispatch => {
-  dispatch(fetchWeeklyProjectSummaryProjectStatusBegin());
+  const requestId = createWeeklyProjectSummaryProjectStatusRequestId();
+  const requestKey = getWeeklyProjectSummaryProjectStatusRequestKey(params);
+  const requestMeta = { requestId, requestKey };
+
+  dispatch(fetchWeeklyProjectSummaryProjectStatusBegin(requestMeta));
 
   try {
     const queryParams = new URLSearchParams();
@@ -51,10 +77,10 @@ export const fetchWeeklyProjectSummaryProjectStatus = params => async dispatch =
 
     const url = `${ENDPOINTS.BM_WEEKLY_PROJECT_SUMMARY_PROJECT_STATUS}?${queryParams.toString()}`;
     const response = await axios.get(url);
-    dispatch(fetchWeeklyProjectSummaryProjectStatusSuccess(response.data));
+    dispatch(fetchWeeklyProjectSummaryProjectStatusSuccess(response.data, requestMeta));
     return response.data;
   } catch (error) {
-    dispatch(fetchWeeklyProjectSummaryProjectStatusError(error));
+    dispatch(fetchWeeklyProjectSummaryProjectStatusError(error, requestMeta));
     return null;
   }
 };

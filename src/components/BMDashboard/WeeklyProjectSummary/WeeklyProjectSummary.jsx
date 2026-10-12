@@ -12,7 +12,10 @@ import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
-import { fetchWeeklyProjectSummaryProjectStatus } from '../../../actions/bmdashboard/weeklyProjectSummaryActions';
+import {
+  fetchWeeklyProjectSummaryProjectStatus,
+  getWeeklyProjectSummaryProjectStatusRequestKey,
+} from '../../../actions/bmdashboard/weeklyProjectSummaryActions';
 import IssuesCharts from '../Issues/LongestOpenIssuesChart';
 import ProjectRiskProfileOverview from './ProjectRiskProfileOverview';
 import IssuesBreakdownChart from './IssuesBreakdownChart';
@@ -137,6 +140,14 @@ function getProjectStatusChangeColor(metric) {
   return metric.percentageChange > 0 ? '#328D1B' : '#C82F2F';
 }
 
+function getProjectStatusErrorMessage(error) {
+  return (
+    error?.response?.data?.message ||
+    error?.message ||
+    'Unable to load Project Status data. Please try again.'
+  );
+}
+
 function WeeklyProjectSummary() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);
@@ -149,6 +160,16 @@ function WeeklyProjectSummary() {
     state => state.weeklyProjectSummary?.comparisonPeriodFilter || 'No Comparison',
   );
   const projectStatusData = useSelector(state => state.weeklyProjectSummary?.projectStatusData);
+  const projectStatusLoading = useSelector(
+    state => state.weeklyProjectSummary?.projectStatusLoading || false,
+  );
+  const projectStatusError = useSelector(state => state.weeklyProjectSummary?.projectStatusError);
+  const projectStatusDataRequestKey = useSelector(
+    state => state.weeklyProjectSummary?.projectStatusDataRequestKey,
+  );
+  const projectStatusErrorRequestKey = useSelector(
+    state => state.weeklyProjectSummary?.projectStatusErrorRequestKey,
+  );
   const containerRef = useRef(null);
   const comparisonEnabled = comparisonPeriodFilter !== 'No Comparison';
 
@@ -192,19 +213,8 @@ function WeeklyProjectSummary() {
     return selectedProject?._id;
   }, [bmProjects, projectFilter]);
 
-  // Fetch initial data
-  useEffect(() => {
-    if (materials.length === 0) {
-      dispatch(fetchAllMaterials());
-    }
-
-    if (bmProjects.length === 0) {
-      dispatch(fetchBMProjects());
-    }
-  }, [dispatch, materials.length, bmProjects.length]);
-
-  useEffect(() => {
-    if (!currentDateRange.startDate || !currentDateRange.endDate) return;
+  const projectStatusRequestParams = useMemo(() => {
+    if (!currentDateRange.startDate || !currentDateRange.endDate) return null;
 
     const params = {
       startDate: currentDateRange.startDate,
@@ -217,15 +227,14 @@ function WeeklyProjectSummary() {
 
     if (comparisonEnabled) {
       if (!comparisonDateRange.comparisonStartDate || !comparisonDateRange.comparisonEndDate) {
-        return;
+        return null;
       }
       params.comparisonStartDate = comparisonDateRange.comparisonStartDate;
       params.comparisonEndDate = comparisonDateRange.comparisonEndDate;
     }
 
-    dispatch(fetchWeeklyProjectSummaryProjectStatus(params));
+    return params;
   }, [
-    dispatch,
     currentDateRange.startDate,
     currentDateRange.endDate,
     selectedProjectId,
@@ -234,7 +243,46 @@ function WeeklyProjectSummary() {
     comparisonDateRange.comparisonEndDate,
   ]);
 
-  const projectStatusMetrics = projectStatusData?.current?.metrics || EMPTY_PROJECT_STATUS_METRICS;
+  const projectStatusRequestKey = useMemo(
+    () =>
+      projectStatusRequestParams
+        ? getWeeklyProjectSummaryProjectStatusRequestKey(projectStatusRequestParams)
+        : null,
+    [projectStatusRequestParams],
+  );
+
+  // Fetch initial data
+  useEffect(() => {
+    if (materials.length === 0) {
+      dispatch(fetchAllMaterials());
+    }
+
+    if (bmProjects.length === 0) {
+      dispatch(fetchBMProjects());
+    }
+  }, [dispatch, materials.length, bmProjects.length]);
+
+  useEffect(() => {
+    if (!projectStatusRequestParams) return;
+
+    dispatch(fetchWeeklyProjectSummaryProjectStatus(projectStatusRequestParams));
+  }, [dispatch, projectStatusRequestParams]);
+
+  const isProjectStatusDataCurrent =
+    Boolean(projectStatusData) && projectStatusDataRequestKey === projectStatusRequestKey;
+  const isProjectStatusErrorCurrent =
+    Boolean(projectStatusError) && projectStatusErrorRequestKey === projectStatusRequestKey;
+  const isProjectStatusLoading =
+    Boolean(projectStatusRequestParams) &&
+    (projectStatusLoading || (!isProjectStatusDataCurrent && !isProjectStatusErrorCurrent));
+  const projectStatusDisplayError = isProjectStatusErrorCurrent ? projectStatusError : null;
+  const showProjectStatusComparison =
+    comparisonEnabled && !isProjectStatusLoading && !projectStatusDisplayError;
+
+  const projectStatusMetrics =
+    isProjectStatusDataCurrent && !isProjectStatusLoading && !projectStatusDisplayError
+      ? projectStatusData?.current?.metrics || EMPTY_PROJECT_STATUS_METRICS
+      : EMPTY_PROJECT_STATUS_METRICS;
 
   const projectStatusCards = useMemo(
     () =>
@@ -264,69 +312,79 @@ function WeeklyProjectSummary() {
         key: 'Project Status',
         className: 'full',
         content: (
-          <div className={`${styles.projectStatusGrid}`}>
-            {projectStatusCards.map(button => {
-              const unavailableTooltipId = `project-status-unavailable-${button.metricKey}`;
-              return (
-                <div
-                  key={button.metricKey}
-                  className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
-                  style={{ backgroundColor: button.bgColor }}
-                >
-                  <div className={`${styles.weeklyCardTitle}`}>{button.title}</div>
+          <>
+            {isProjectStatusLoading && (
+              <div role="status" aria-live="polite">
+                Loading Project Status data...
+              </div>
+            )}
+            {projectStatusDisplayError && (
+              <div role="alert">{getProjectStatusErrorMessage(projectStatusDisplayError)}</div>
+            )}
+            <div className={`${styles.projectStatusGrid}`}>
+              {projectStatusCards.map(button => {
+                const unavailableTooltipId = `project-status-unavailable-${button.metricKey}`;
+                return (
                   <div
-                    className={`${styles.weeklyStatusButton}`}
-                    style={{ backgroundColor: button.buttonColor }}
+                    key={button.metricKey}
+                    className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
+                    style={{ backgroundColor: button.bgColor }}
                   >
-                    <span className={`${styles.weeklyStatusValue}`}>
-                      {button.value}
-                      {button.unavailableReason && (
-                        <>
-                          <span
-                            id={unavailableTooltipId}
-                            className={styles.projectStatusUnavailableInfo}
-                          >
-                            <button
-                              type="button"
-                              className={styles.projectStatusUnavailableButton}
-                              aria-label={button.unavailableReason}
-                            >
-                              i
-                            </button>
-                          </span>
-                          <UncontrolledTooltip
-                            placement="top"
-                            target={unavailableTooltipId}
-                            trigger="hover focus"
-                            className={styles.projectStatusUnavailableTooltip}
-                            container="body"
-                            autohide={false}
-                            modifiers={{
-                              offset: { offset: '0, 12' },
-                              preventOverflow: { boundariesElement: 'viewport' },
-                            }}
-                          >
-                            {button.unavailableReason}
-                          </UncontrolledTooltip>
-                        </>
-                      )}
-                    </span>
-                  </div>
-                  {comparisonEnabled && button.change && (
+                    <div className={`${styles.weeklyCardTitle}`}>{button.title}</div>
                     <div
-                      className="weekly-status-change"
-                      style={{
-                        color: button.changeColor,
-                        '--project-status-change-color': button.changeColor,
-                      }}
+                      className={`${styles.weeklyStatusButton}`}
+                      style={{ backgroundColor: button.buttonColor }}
                     >
-                      {button.change}
+                      <span className={`${styles.weeklyStatusValue}`}>
+                        {button.value}
+                        {button.unavailableReason && (
+                          <>
+                            <span
+                              id={unavailableTooltipId}
+                              className={styles.projectStatusUnavailableInfo}
+                            >
+                              <button
+                                type="button"
+                                className={styles.projectStatusUnavailableButton}
+                                aria-label={button.unavailableReason}
+                              >
+                                i
+                              </button>
+                            </span>
+                            <UncontrolledTooltip
+                              placement="top"
+                              target={unavailableTooltipId}
+                              trigger="hover focus"
+                              className={styles.projectStatusUnavailableTooltip}
+                              container="body"
+                              autohide={false}
+                              modifiers={{
+                                offset: { offset: '0, 12' },
+                                preventOverflow: { boundariesElement: 'viewport' },
+                              }}
+                            >
+                              {button.unavailableReason}
+                            </UncontrolledTooltip>
+                          </>
+                        )}
+                      </span>
                     </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+                    {showProjectStatusComparison && button.change && (
+                      <div
+                        className="weekly-status-change"
+                        style={{
+                          color: button.changeColor,
+                          '--project-status-change-color': button.changeColor,
+                        }}
+                      >
+                        {button.change}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </>
         ),
       },
       {
@@ -559,6 +617,9 @@ function WeeklyProjectSummary() {
       darkMode,
       comparisonPeriodFilter,
       projectStatusCards,
+      isProjectStatusLoading,
+      projectStatusDisplayError,
+      showProjectStatusComparison,
       currentDateRange,
       comparisonDateRange,
     ],

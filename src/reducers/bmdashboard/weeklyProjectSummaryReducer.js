@@ -14,6 +14,17 @@ const initialState = {
   projectStatusData: null,
   projectStatusLoading: false,
   projectStatusError: null,
+  projectStatusActiveRequestId: null,
+  projectStatusActiveRequestKey: null,
+  projectStatusDataRequestKey: null,
+  projectStatusErrorRequestKey: null,
+};
+
+const isStaleProjectStatusAction = (state, action) => {
+  const activeRequestId = state.projectStatusActiveRequestId;
+  const actionRequestId = action.meta?.requestId;
+
+  return Boolean(activeRequestId && actionRequestId && actionRequestId !== activeRequestId);
 };
 
 // eslint-disable-next-line default-param-last, import/prefer-default-export
@@ -42,21 +53,43 @@ export const weeklyProjectSummaryReducer = (state = initialState, action) => {
         ...state,
         projectStatusLoading: true,
         projectStatusError: null,
+        projectStatusData: null,
+        projectStatusActiveRequestId: action.meta?.requestId || null,
+        projectStatusActiveRequestKey: action.meta?.requestKey || null,
+        projectStatusDataRequestKey: null,
+        projectStatusErrorRequestKey: null,
       };
 
     case FETCH_WEEKLY_PROJECT_SUMMARY_PROJECT_STATUS_SUCCESS:
+      if (isStaleProjectStatusAction(state, action)) {
+        return state;
+      }
+
       return {
         ...state,
         projectStatusLoading: false,
         projectStatusData: action.payload,
         projectStatusError: null,
+        projectStatusActiveRequestId: null,
+        projectStatusActiveRequestKey: null,
+        projectStatusDataRequestKey: action.meta?.requestKey || null,
+        projectStatusErrorRequestKey: null,
       };
 
     case FETCH_WEEKLY_PROJECT_SUMMARY_PROJECT_STATUS_ERROR:
+      if (isStaleProjectStatusAction(state, action)) {
+        return state;
+      }
+
       return {
         ...state,
         projectStatusLoading: false,
+        projectStatusData: null,
         projectStatusError: action.payload,
+        projectStatusActiveRequestId: null,
+        projectStatusActiveRequestKey: null,
+        projectStatusDataRequestKey: null,
+        projectStatusErrorRequestKey: action.meta?.requestKey || null,
       };
 
     default:
