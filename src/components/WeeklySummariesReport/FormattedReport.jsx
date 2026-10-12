@@ -377,7 +377,6 @@ function ReportDetails({
                     request={activeTimeOffRequest}
                     summaryId={summary._id}
                     weekIndex={weekIndex}
-                    darkMode={darkMode}
                   />
                 }
                 canEditTeamCode={canEditTeamCode && !cantEditJaeRelatedRecord}
@@ -862,12 +861,12 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
 // Shows "Requested Week Off" for the viewed week. Clicking (or pressing Enter/Space on)
 // the info button toggles the logged reason, as the ticket asks for; it closes on blur
 // or Escape.
-function WeekOffBadge({ request, summaryId, weekIndex, darkMode }) {
+function WeekOffBadge({ request, summaryId, weekIndex }) {
   const [showReason, setShowReason] = useState(false);
   if (!request) return null;
   const reasonId = `week-off-reason-${summaryId}-${weekIndex}`;
   return (
-    <span className={`${styles.weekOffBadge} ${darkMode ? styles.weekOffBadgeDark : ''}`}>
+    <span className={styles.weekOffBadge}>
       Requested Week Off
       <button
         type="button"
@@ -884,11 +883,7 @@ function WeekOffBadge({ request, summaryId, weekIndex, darkMode }) {
         <i className="fa fa-info-circle" aria-hidden="true" />
       </button>
       {showReason && (
-        <span
-          id={reasonId}
-          role="tooltip"
-          className={`${styles.weekOffReason} ${darkMode ? styles.weekOffReasonDark : ''}`}
-        >
+        <span id={reasonId} role="tooltip" className={styles.weekOffReason}>
           {request.reason || 'No reason provided'}
         </span>
       )}

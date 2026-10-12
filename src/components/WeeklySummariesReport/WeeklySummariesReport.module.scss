@@ -163,6 +163,8 @@
 }
 
 // "Requested Week Off" notice beside the team code, and its click-to-show reason.
+// Same colors in light and dark mode. The colors use !important because the dark
+// report card forces white text on everything inside it.
 .weekOffBadge {
   position: relative;
   display: inline-flex;
@@ -171,13 +173,8 @@
   border-radius: 4px;
   font-size: 0.75rem;
   white-space: nowrap;
-  background-color: #f8d7da;
-  color: #721c24;
-}
-
-.weekOffBadgeDark {
-  background-color: #f5c2c7;
-  color: #58151c;
+  background-color: #f8d7da !important;
+  color: #000 !important;
 }
 
 .weekOffInfoButton {
@@ -185,12 +182,12 @@
   padding: 0;
   border: 0;
   background: none;
-  color: inherit;
+  color: #000 !important;
   line-height: 1;
   cursor: pointer;
 
   &:focus-visible {
-    outline: 2px solid currentColor;
+    outline: 2px solid #000;
     outline-offset: 1px;
     border-radius: 50%;
   }
@@ -208,14 +205,9 @@
   font-size: 0.8rem;
   white-space: normal;
   overflow-wrap: anywhere;
-  background-color: #222;
-  color: #fff;
+  background-color: #222 !important;
+  color: #fff !important;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-}
-
-.weekOffReasonDark {
-  background-color: #f8f9fa;
-  color: #1b2a41;
 }
 
 .teamcodeWrapper {
