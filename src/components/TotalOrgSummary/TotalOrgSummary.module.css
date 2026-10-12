@@ -466,6 +466,23 @@
   font-size: 1.8rem !important;
 }
 
+.mapTitle p {
+  line-height: 1.25;
+  margin-bottom: 14px;
+}
+
+.countryCounts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+  margin-bottom: 10px;
+}
+
+.countryCounts p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
 /* Report Header Styles */
 
 /* .totalOrgReportHeaderRow  {
