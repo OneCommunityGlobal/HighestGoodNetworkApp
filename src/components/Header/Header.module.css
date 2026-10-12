@@ -894,11 +894,27 @@
     padding-bottom: 0.25rem !important;
   }
 
+  /* Restore proper 3-column grid layout for desktop: timer (left) | message (center) | user+nav (right) */
+  .headerRow {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 0.5rem;
+  }
+
+  /* Ensure centerSection occupies middle column and centers its content */
+  .centerSection {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    overflow: visible !important;
+  }
+
   /* Show owner message banner on large screens */
   .showInTablet {
     display: block !important;
     padding: 0.25rem 20px !important;
     margin: 0 !important;
+    white-space: normal;
+    overflow-wrap: break-word;
   }
 
   /* Hide mobile owner message section on large screens */
