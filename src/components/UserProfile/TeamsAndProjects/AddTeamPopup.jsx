@@ -265,10 +265,11 @@ const AddTeamPopup = React.memo((props) => {
   };
 
   useEffect(() => {
-    if (props.open) {
+    if (props.open && !(isTeamManagement && isEdit)) {
+      // Teams-page edits already have the list; fetching would unmount and reopen this popup.
       refreshTeams();
     }
-  }, [props.open]);
+  }, [props.open, isTeamManagement, isEdit]);
 
   useEffect(() => {
     if (isEdit && teamName) {
