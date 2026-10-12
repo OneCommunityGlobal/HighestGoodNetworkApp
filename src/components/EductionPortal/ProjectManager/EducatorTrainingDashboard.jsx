@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import CertificationProfile from './CertificationProfile';
-import { mockEducatorCertifications } from './mockCertification';
 import { ENDPOINTS } from '../../../utils/URL';
 import styles from './EducatorTrainingDashboard.module.css';
 

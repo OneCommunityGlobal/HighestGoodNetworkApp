@@ -943,11 +943,6 @@ export default (
           component={EventPerformance}
         />
         <CPProtectedRoute
-          path="/communityportal/reports/event/personalization"
-          exact
-          component={EventStats}
-        />
-        <CPProtectedRoute
           path="/communityportal/activities/:activityid"
           exact
           component={ActivityDetailPage}
