@@ -56,8 +56,8 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode, comp
     return raw > 1 ? raw : raw * 100;
   };
 
-  const taskPercentage = normalizePercentage(taskHours.percentageOfTotal);
-  const projectPercentage = normalizePercentage(projectHours.percentageOfTotal);
+  const taskPercentage = taskHours.percentageOfTotal ?? 0;
+  const projectPercentage = projectHours.percentageOfTotal ?? 0;
   const taskChangePercentage = normalizePercentage(taskHours.comparisonPercentage);
   const projectChangePercentage = normalizePercentage(projectHours.comparisonPercentage);
   const stats = [
@@ -185,17 +185,13 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode, comp
           }}
         >
           {(() => {
-            const raw = data.hoursSubmittedToTasksPercentage ?? 0;
-            const normalized = raw > 1 ? raw : raw * 100;
-            const formatted = `${normalized.toFixed(1)}%`;
-            return `${formatted} of Committed Hours Submitted (Tasks)`;
+            const formatted = `${(taskHours.percentageOfTotal ?? 0).toFixed(1)}%`;
+            return `${formatted} of Total Logged Hours (Tasks)`;
           })()}
 
           {(() => {
-            const raw = data.projectHours.percentageOfTotal ?? 0;
-            const normalized = raw > 1 ? raw : raw * 100;
-            const formatted = `${normalized.toFixed(1)}%`;
-            return ` | ${formatted} of Committed Hours (Projects)`;
+            const formatted = `${(projectHours.percentageOfTotal ?? 0).toFixed(1)}%`;
+            return ` | ${formatted} of Total Logged Hours (Projects)`;
           })()}
 
           {(() => {
