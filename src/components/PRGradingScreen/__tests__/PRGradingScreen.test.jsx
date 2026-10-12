@@ -5,6 +5,25 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import PRGradingScreen from '../PRGradingScreen';
 import GRADE_OPTIONS from '../gradeOptions';
 
+const showModalMock = vi.fn(function() {
+  this.setAttribute('open', '');
+});
+
+const closeMock = vi.fn(function() {
+  this.removeAttribute('open');
+  this.dispatchEvent(new Event('close'));
+});
+
+Object.defineProperty(HTMLDialogElement.prototype, 'showModal', {
+  configurable: true,
+  value: showModalMock,
+});
+
+Object.defineProperty(HTMLDialogElement.prototype, 'close', {
+  configurable: true,
+  value: closeMock,
+});
+
 const {
   fetchPREntriesBulkMock,
   updatePRRatingMock,
@@ -93,7 +112,7 @@ const renderScreen = (reviewers = makeReviewers()) => {
   );
 };
 
-// The native dialog is closed, so its contents require hidden: true.
+// Open the dialog through the PR number button and verify native modal behavior.
 const openModal = async () => {
   fireEvent.click(
     await screen.findByRole('button', {
@@ -101,20 +120,20 @@ const openModal = async () => {
     }),
   );
 
-  const modal = await screen.findByRole('dialog', {
-    hidden: true,
-  });
+  const modal = await screen.findByRole('dialog');
+
+  expect(modal).toBeInTheDocument();
+  expect(modal.open).toBe(true);
+  expect(showModalMock).toHaveBeenCalled();
 
   expect(
     within(modal).getByRole('heading', {
       name: 'Grade PRs',
-      hidden: true,
     }),
   ).toBeInTheDocument();
 
   return modal;
 };
-
 describe('PRGradingScreen', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -162,7 +181,6 @@ describe('PRGradingScreen', () => {
 
     const ratingSelect = within(modal).getByRole('combobox', {
       name: 'Rating for PR 1070',
-      hidden: true,
     });
 
     expect(ratingSelect).toHaveValue('Good');
@@ -175,14 +193,12 @@ describe('PRGradingScreen', () => {
 
     const ratingSelect = within(modal).getByRole('combobox', {
       name: 'Rating for PR 1070',
-      hidden: true,
     });
 
     for (const option of GRADE_OPTIONS) {
       expect(
         within(ratingSelect).getByRole('option', {
           name: option.label,
-          hidden: true,
         }),
       ).toBeInTheDocument();
     }
@@ -196,12 +212,11 @@ describe('PRGradingScreen', () => {
     fireEvent.click(
       within(modal).getByRole('button', {
         name: 'Close grading modal',
-        hidden: true,
       }),
     );
 
     await waitFor(() => {
-      expect(screen.queryByRole('dialog', { hidden: true })).not.toBeInTheDocument();
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
   });
 
@@ -213,12 +228,11 @@ describe('PRGradingScreen', () => {
     fireEvent.click(
       within(modal).getByRole('button', {
         name: 'Done',
-        hidden: true,
       }),
     );
 
     await waitFor(() => {
-      expect(screen.queryByRole('dialog', { hidden: true })).not.toBeInTheDocument();
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
   });
 
@@ -229,7 +243,6 @@ describe('PRGradingScreen', () => {
 
     const ratingSelect = within(modal).getByRole('combobox', {
       name: 'Rating for PR 1070',
-      hidden: true,
     });
 
     fireEvent.change(ratingSelect, {
@@ -252,7 +265,7 @@ describe('PRGradingScreen', () => {
 
     await screen.findByText('Ada Lovelace');
 
-    expect(screen.queryByRole('dialog', { hidden: true })).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
   it('shows the no-reviewers message when the reviewer list is empty', async () => {
@@ -271,5 +284,26 @@ describe('PRGradingScreen', () => {
     ];
 
     expect(GRADE_OPTIONS.map(option => option.label)).toEqual(expectedRatings);
+  });
+
+  it('opens the grading dialog natively and closes it on Escape', async () => {
+    renderScreen();
+
+    const modal = await openModal();
+
+    expect(showModalMock).toHaveBeenCalledTimes(1);
+    expect(modal.open).toBe(true);
+
+    fireEvent(
+      modal,
+      new Event('cancel', {
+        bubbles: false,
+        cancelable: true,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
   });
 });

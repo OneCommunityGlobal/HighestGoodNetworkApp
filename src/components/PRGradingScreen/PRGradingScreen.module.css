@@ -455,13 +455,20 @@
 
 .pr-grading-screen-modal {
   width: min(700px, 95vw);
-  max-height: 85vh;
   display: flex;
   flex-direction: column;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 10px 30px rgb(0 0 0 / 25%);
-  overflow: hidden;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  border: 1px solid #9ca3af;
 }
 
 /* =========================================================
@@ -536,15 +543,6 @@
 }
 
 /* Grading Table Styles */
-.pr-grading-screen-grading-table {
-  width: 100%;
-
-  /* Same four grade columns as the inline summary, so it clips the same way on
-     narrow screens. Keep a usable minimum and let the modal body scroll. */
-  min-width: 380px;
-  border-collapse: collapse;
-  margin-bottom: 20px;
-}
 
 .pr-grading-screen-rating-help {
   margin-bottom: 14px;
@@ -616,6 +614,7 @@
 
 .pr-grading-screen-grading-table {
   width: 100%;
+  min-width: 380px;
   border-collapse: collapse;
   margin-bottom: 16px;
   table-layout: fixed;
@@ -1167,8 +1166,9 @@
   }
 
   .pr-grading-screen-modal {
-    width: 96vw;
-    max-height: 90vh;
+    width: calc(100vw - 20px);
+    max-width: calc(100vw - 20px);
+    max-height: calc(100vh - 20px);
   }
 
   .pr-grading-screen-modal-header {
@@ -1209,10 +1209,6 @@
   .pr-grading-screen-team-info-badge {
     max-width: 100%;
     font-size: 0.7rem;
-  }
-
-  .pr-grading-screen-modal {
-    width: 98vw;
   }
 
   .pr-grading-screen-modal-header h4 {

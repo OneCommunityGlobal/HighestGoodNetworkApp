@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -51,6 +51,7 @@ const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
   const [showGradingModal, setShowGradingModal] = useState(null);
 
   const [isFinalized] = useState(false);
+  const gradingDialogRef = useRef(null);
 
   /*
    * Keeps Owner-edited PRs Needed values locally until
@@ -62,6 +63,14 @@ const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
   const [roleFilter, setRoleFilter] = useState('');
 
   const [isLoadingEntries, setIsLoadingEntries] = useState(false);
+
+  useEffect(() => {
+    const dialog = gradingDialogRef.current;
+
+    if (showGradingModal && dialog && !dialog.open) {
+      dialog.showModal();
+    }
+  }, [showGradingModal]);
 
   /*
    * ---------------------------------------------------------
@@ -741,9 +750,13 @@ const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
       {showGradingModal && (
         <div className={`${styles['pr-grading-screen-modal-overlay']} ${dm}`}>
           <dialog
+            ref={gradingDialogRef}
             className={`${styles['pr-grading-screen-modal']} ${dm}`}
-            aria-modal="true"
             aria-labelledby="pr-grading-modal-title"
+            onCancel={event => {
+              event.preventDefault();
+              handleCloseGradingModal();
+            }}
           >
             <div className={`${styles['pr-grading-screen-modal-header']} ${dm}`}>
               <div>
