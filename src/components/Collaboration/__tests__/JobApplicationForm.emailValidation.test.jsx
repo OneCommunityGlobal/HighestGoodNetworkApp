@@ -51,7 +51,9 @@ describe('JobApplicationForm email field', () => {
     const input = typeEmailAndBlur('ada@gmial.com');
 
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'ada@gmail.com' }));
+    // The address is plain text; the fix is an explicit, labelled button.
+    expect(screen.getByText('ada@gmail.com').tagName).toBe('STRONG');
+    fireEvent.click(screen.getByRole('button', { name: 'Use this email: ada@gmail.com' }));
 
     expect(input).toHaveValue('ada@gmail.com');
     expect(screen.queryByText(/Did you mean/)).not.toBeInTheDocument();

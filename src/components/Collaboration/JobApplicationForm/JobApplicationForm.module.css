@@ -446,36 +446,66 @@
   font-size: 0.85rem;
 }
 
+/* Hint line: suggested address in bold, followed by an explicit "Use this" button */
 .fieldHint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
   margin: 4px 0 0;
   color: #555;
   font-size: 0.85rem;
 }
 
-/* Inline, link-styled button that applies the suggested email */
-.suggestionButton {
-  min-height: 24px;
-  padding: 0;
-  border: none;
-  background: none;
-  color: #0062cc;
-  font: inherit;
+.fieldHint strong {
+  font-size: inherit; /* a global rule sets strong to 16px */
   font-weight: 600;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  cursor: pointer;
   overflow-wrap: anywhere;
 }
 
+/* Secondary outline button in the form's green; filled buttons stay for primary actions */
+.suggestionButton {
+  min-height: 32px;
+  padding: 4px 12px;
+  border: 1px solid #006b32;
+  border-radius: 8px;
+  background: #fff;
+  color: #006b32;
+  font: inherit;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 160ms ease-out, transform 160ms ease-out;
+}
+
+.suggestionButton:active {
+  transform: scale(0.97);
+}
+
 .suggestionButton:focus-visible {
-  outline: 2px solid currentcolor;
+  outline: 2px solid #006b32;
   outline-offset: 2px;
-  border-radius: 2px;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .suggestionButton:hover {
-    color: #004a99;
+    background: #e8f3ec;
+  }
+}
+
+@media (pointer: coarse) {
+  .suggestionButton {
+    min-height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .suggestionButton {
+    transition: none;
+  }
+
+  .suggestionButton:active {
+    transform: none;
   }
 }
 
@@ -847,12 +877,18 @@
 }
 
 .darkMode .suggestionButton {
+  border-color: #9c0;
+  background: transparent;
   color: #9c0 !important;
+}
+
+.darkMode .suggestionButton:focus-visible {
+  outline-color: #9c0;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .darkMode .suggestionButton:hover {
-    color: #bde533 !important;
+    background: rgb(153 204 0 / 15%);
   }
 }
 

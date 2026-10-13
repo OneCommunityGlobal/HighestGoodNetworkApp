@@ -1801,15 +1801,17 @@ function JobApplicationForm() {
                       className={styles.fieldHint}
                       aria-live="polite"
                     >
-                      Did you mean{' '}
+                      <span>
+                        Did you mean <strong>{emailSuggestion}</strong>?
+                      </span>
                       <button
                         type="button"
                         className={styles.suggestionButton}
                         onClick={applyEmailSuggestion}
+                        aria-label={`Use this email: ${emailSuggestion}`}
                       >
-                        {emailSuggestion}
+                        Use this
                       </button>
-                      ?
                     </p>
                   )}
                 </div>
