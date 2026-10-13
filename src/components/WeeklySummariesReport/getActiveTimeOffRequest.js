@@ -6,7 +6,7 @@ const TZ = 'America/Los_Angeles';
 // (weekIndex: 0 = This Week, 1 = Last Week, ...), so the notice moves across the
 // tabs as weeks pass. `now` is only passed in tests.
 export default function getActiveTimeOffRequest(timeOffRequests, userId, weekIndex, now) {
-  const userRequests = (timeOffRequests || {})[userId] || [];
+  const userRequests = timeOffRequests?.[userId] || [];
   const viewedWeek = moment(now)
     .tz(TZ)
     .subtract(weekIndex, 'week');

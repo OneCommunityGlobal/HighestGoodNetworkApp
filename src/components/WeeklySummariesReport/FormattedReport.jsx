@@ -853,7 +853,7 @@ function WeekOffBadge({ request, summaryId, weekIndex }) {
   const reasonId = `week-off-reason-${summaryId}-${weekIndex}`;
   return (
     <span className={styles.weekOffBadge}>
-      Requested Week Off
+      Requested Week Off{' '}
       <button
         type="button"
         className={styles.weekOffInfoButton}
@@ -1166,7 +1166,6 @@ Index.propTypes = {
   handleSpecialColorDotClick: PropTypes.func,
   isFinalWeek: PropTypes.bool,
   darkMode: PropTypes.bool,
-  timeOffRequests: PropTypes.objectOf(PropTypes.array),
 };
 
 FormattedReport.propTypes = {
