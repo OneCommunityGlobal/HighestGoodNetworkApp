@@ -176,8 +176,7 @@ function Collaboration() {
       },
       {
         keywords: ['creative', 'media', 'graphic'],
-        url:
-          'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=640&h=480&fit=crop&q=80',
+        url: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=640&h=480&fit=crop&q=80',
       },
       {
         keywords: ['skilled', 'trades', 'craft', 'carpenter'],
@@ -280,19 +279,20 @@ function Collaboration() {
     );
   };
 
-  const selectCategory = selectedValue => {
-    const nextCategory = selectedValue || '';
-    setSelectedCategory(nextCategory);
+  const selectCategory = (selectedValue = '') => {
+    setSelectedCategory(selectedValue);
     setCurrentPage(1);
     setSummaries(null);
     setActiveTab('jobPostings');
-    if (!nextCategory && !submittedSearchTerm) {
+    if (!selectedValue && !submittedSearchTerm) {
       setJobAds([]);
       setTotalPages(0);
       setLoadingJobs(false);
       return;
     }
-    fetchJobAds({ category: nextCategory, page: 1 }).catch(() => toast.error('Error fetching jobs'));
+    fetchJobAds({ category: selectedValue, page: 1 }).catch(() =>
+      toast.error('Error fetching jobs'),
+    );
   };
 
   const handleCategoryChange = e => {
@@ -752,9 +752,7 @@ function Collaboration() {
           <>
             <div className={styles.headings}>
               <h1 className={styles.mainHeading}>LIKE TO WORK WITH US? APPLY NOW!</h1>
-              {showCategoryBrowse && (
-                <p>Choose a category to see open positions.</p>
-              )}
+              {showCategoryBrowse && <p>Choose a category to see open positions.</p>}
               {!showCategoryBrowse && selectedCategory && (
                 <div className={styles.categoryBrowseHeader}>
                   <button
