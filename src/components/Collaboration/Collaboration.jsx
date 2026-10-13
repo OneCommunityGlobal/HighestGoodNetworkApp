@@ -7,6 +7,7 @@ import { ApiEndpoint } from '~/utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
 import WhatWeDoSection from '../WhatWeDo/WhatWeDo';
 import FAQSection from './FAQSection';
+import { buildApplyPath } from './JobApplicationForm/jobApplicationPublicApi';
 
 function getColumnsFromMQ() {
   if (typeof globalThis.matchMedia !== 'function') return 1;
@@ -27,20 +28,27 @@ function clampPage(page, totalPages) {
 
 const PLACEHOLDER_LINK_HOSTS = new Set(['example.com', 'jobs.example.com']);
 
-/** Resolve a safe job details URL, falling back to the internal application page
- * when jobDetailsLink is missing or still set to a placeholder domain. */
+/** True when jobDetailsLink is a real external details URL (not placeholder / fake app paths). */
+function isUsableJobDetailsLink(link) {
+  if (typeof link !== 'string' || !link.trim()) return false;
+  try {
+    const url = new URL(link.trim());
+    if (PLACEHOLDER_LINK_HOSTS.has(url.hostname.toLowerCase())) return false;
+    // Bad seed data: jobs store localhost:/jobDetailsLink/:id — that route does not exist.
+    if (/\/jobDetailsLink(\/|$)/i.test(url.pathname)) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Resolve a safe job details URL, falling back to the internal apply page
+ * when jobDetailsLink is missing, placeholder, or a non-existent app path. */
 function getSafeJobDetailsLink(summary) {
   const link = summary?.jobDetailsLink;
-  if (typeof link === 'string' && link.trim()) {
-    try {
-      const { hostname } = new URL(link);
-      if (!PLACEHOLDER_LINK_HOSTS.has(hostname.toLowerCase())) return link;
-    } catch {
-      // Not a valid absolute URL - treat as unusable and fall back below.
-    }
-  }
-  const jobTitle = summary?.title ? `?jobTitle=${encodeURIComponent(summary.title)}` : '';
-  return `/job-application${jobTitle}`;
+  if (isUsableJobDetailsLink(link)) return link.trim();
+  if (summary?.title) return buildApplyPath(summary.title);
+  return '/job-application';
 }
 
 /** Keep first listing per title+category (API may return duplicate job records). */
@@ -351,10 +359,11 @@ function Collaboration() {
 
   const navigateToJobApplication = (ad, jobTitle, jobCategory) => {
     try {
+      const pathname = buildApplyPath(jobTitle);
       if (history && typeof history.push === 'function') {
         const search = jobTitle ? `?jobTitle=${encodeURIComponent(jobTitle)}` : '';
         history.push({
-          pathname: '/job-application',
+          pathname,
           search,
           state: {
             jobId: ad._id,
@@ -362,10 +371,11 @@ function Collaboration() {
             jobDescription: ad.description || '',
             requirements: Array.isArray(ad.requirements) ? ad.requirements : [],
             category: jobCategory,
+            jobDetailsLink: ad.jobDetailsLink || '',
           },
         });
       } else {
-        globalThis.location.href = '/job-application';
+        globalThis.location.href = pathname;
       }
     } catch {
       toast.error('Error opening job application');
