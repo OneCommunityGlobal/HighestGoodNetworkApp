@@ -165,7 +165,7 @@
   white-space: nowrap;
 }
 
-.roleCell svg {
+.roleCell > svg {
   width: 14px;
   height: 14px;
   font-size: 14px;
