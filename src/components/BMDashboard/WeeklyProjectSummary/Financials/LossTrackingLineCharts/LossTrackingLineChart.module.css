@@ -217,15 +217,20 @@
 .chartWrapper {
   width: 100%;
 
-  /* Responsive, predictable height for ResponsiveContainer (height="100%") */
+  /* Height of the plot area only; the wrapper grows to fit the legend below it */
   --chart-height: clamp(320px, 42vh, 680px);
 
-  height: var(--chart-height);
   background-color: var(--surface-muted);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   padding: 1rem;
   min-width: 0; /* let SVG measure correctly in flex/grid */
+}
+
+/* Fixed-height box for ResponsiveContainer (height="100%") */
+.chartArea {
+  height: var(--chart-height);
+  min-width: 0;
 }
 
 @media screen and (width >= 1440px) {
@@ -269,7 +274,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  height: var(--chart-height);
+  box-sizing: border-box;
   font-size: 1rem;
   font-weight: 600;
   color: var(--muted-text);
@@ -307,4 +313,51 @@
   .customLegend {
     grid-template-columns: 1fr;
   }
+}
+
+/* ---------- Tooltip ---------- */
+.tooltip {
+  min-width: 190px;
+  padding: 0.6rem 0.75rem;
+  background-color: var(--tooltip-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 18%);
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+.tooltipTitle {
+  margin-bottom: 0.45rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--border-color);
+  font-weight: 700;
+}
+
+.tooltipRow {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.15rem 0;
+}
+
+.tooltipSwatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+
+  /* Outline keeps pale colors (e.g. yellow) visible on light backgrounds */
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 15%);
+}
+
+.tooltipLabel {
+  white-space: nowrap;
+}
+
+.tooltipValue {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
 }
