@@ -25,7 +25,7 @@ const ResolvedTasks = props => {
       }
     };
 
-    fetchResolvedTasks();
+    void fetchResolvedTasks();
   }, []);
 
   if (loading) return <div className="text-center mt-5">Loading...</div>;

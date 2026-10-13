@@ -853,7 +853,7 @@ export function Header(props) {
                           className={fontColor}
                           disabled={headerDisabled}
                         >
-                          {TASKS}
+                          Resolved Tasks
                         </DropdownItem>
                       )}
                       {canAccessTeams && <DropdownItem tag={Link} to="/teams" className={fontColor} disabled={headerDisabled}>{TEAMS}</DropdownItem>}
