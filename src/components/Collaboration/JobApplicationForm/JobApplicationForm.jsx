@@ -1804,9 +1804,10 @@ function JobApplicationForm() {
                       <span>
                         Did you mean <strong>{emailSuggestion}</strong>?
                       </span>
+                      {/* Same small action button as the resume "Remove" */}
                       <button
                         type="button"
-                        className={styles.suggestionButton}
+                        className={styles.clearFileBtn}
                         onClick={applyEmailSuggestion}
                         aria-label={`Use this email: ${emailSuggestion}`}
                       >
