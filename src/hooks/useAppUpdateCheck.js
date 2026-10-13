@@ -52,7 +52,7 @@ export default function useAppUpdateCheck({
     };
 
     const onVisibilityChange = () => {
-      if (document.visibilityState === 'visible') check();
+      if (document.visibilityState === 'visible') void check();
     };
 
     const intervalId = setInterval(check, intervalMs);
