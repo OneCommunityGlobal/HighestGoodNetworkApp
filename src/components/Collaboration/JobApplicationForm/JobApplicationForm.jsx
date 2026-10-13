@@ -927,6 +927,7 @@ function JobApplicationForm() {
   const [questionFiles, setQuestionFiles] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const resumeInputRef = useRef(null);
+  const emailInputRef = useRef(null);
   const questionFileInputRefs = useRef({});
   /** Shown in the page title — the role the user clicked, not only the matched DB form name. */
   const [bannerJobTitle, setBannerJobTitle] = useState('');
@@ -1428,6 +1429,8 @@ function JobApplicationForm() {
   const applyEmailSuggestion = () => {
     setApplicantEmail(emailSuggestion);
     setEmailSuggestion(null);
+    // The suggestion button unmounts, so return focus to the field rather than the page.
+    emailInputRef.current?.focus();
     setFieldErrors(prev => {
       const next = { ...prev };
       delete next.applicantEmail;
@@ -1752,6 +1755,7 @@ function JobApplicationForm() {
 
                   <input
                     id="jaf-applicant-email"
+                    ref={emailInputRef}
                     type="email"
                     placeholder="Email"
                     className={`${styles.inputField} ${

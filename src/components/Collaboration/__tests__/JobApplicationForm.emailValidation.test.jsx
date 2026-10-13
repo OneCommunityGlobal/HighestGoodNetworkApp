@@ -55,6 +55,8 @@ describe('JobApplicationForm email field', () => {
 
     expect(input).toHaveValue('ada@gmail.com');
     expect(screen.queryByText(/Did you mean/)).not.toBeInTheDocument();
+    // The suggestion button disappears, so focus goes back to the field instead of the page.
+    expect(input).toHaveFocus();
   });
 
   it('clears the error and suggestion as soon as the applicant edits the email', () => {
