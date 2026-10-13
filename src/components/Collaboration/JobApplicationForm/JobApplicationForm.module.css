@@ -836,21 +836,23 @@
   cursor: pointer;
 }
 
+/* !important: the global `body.dark-mode * { color: #fff !important }` rule would otherwise
+   turn the error and suggestion white */
 .darkMode .fieldError {
-  color: #ff8a80;
+  color: #ff8a80 !important;
 }
 
 .darkMode .fieldHint {
-  color: #e0e0e0;
+  color: #e0e0e0 !important;
 }
 
 .darkMode .suggestionButton {
-  color: #9c0;
+  color: #9c0 !important;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .darkMode .suggestionButton:hover {
-    color: #bde533;
+    color: #bde533 !important;
   }
 }
 
