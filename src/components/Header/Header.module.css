@@ -146,6 +146,7 @@
 .navbar {
   z-index: 100;
   position: relative;
+  padding-right: 1.5rem !important; /* Ensure right space for nav menu */
 } 
 
 .redBackGroupHeader {
@@ -783,7 +784,7 @@
   /* Show owner message banner on tablet and larger screens */
   .showInTablet {
     display: block !important;
-    padding: 0.5rem 20px !important;
+    padding: 0.25rem 20px !important;
     margin: 0 !important;
   }
 
@@ -868,20 +869,23 @@
     display: flex !important;
     flex-direction: column !important;
     align-items: flex-end !important;
-    gap: 0.5rem;
+    gap: 0.25rem;
     flex-basis: auto;
     max-height: none;
     overflow: visible;
     position: static;
     background: none;
-    max-width: 800px; /* Limit width to prevent excessive stretching on narrow navigation */
+    max-width: none; /* Allow menu to expand for all items */
   }
 
   .rightSection {
     flex-direction: column !important;
     align-items: flex-end !important;
-    gap: 0.5rem;
+    gap: 0.25rem;
     flex-shrink: 1; /* Allow to shrink if needed, default was 0 */
+    overflow: visible;
+    padding-right: 0; /* Reset padding to prevent extra spacing */
+    margin-right: 0; /* Remove right margin to eliminate gaps */
   }
 
   /* No `order` here: userInfoRow now sits before the nav panel in the DOM, so
@@ -893,11 +897,14 @@
 
   .menuContainer {
     width: auto;
-    max-width: 800px;
+    max-width: none;
     order: 2 !important;
-    flex-flow: row wrap !important;
-    gap: 1rem;
+    flex-flow: row nowrap !important;
+    gap: 0.5rem;
     justify-content: flex-end; /* Right-align nav items */
+    overflow: visible;
+    margin-right: 0; /* Remove margin that could cause clipping */
+    padding-right: 0; /* Remove padding from flex container */
   }
 
   .hideInMobile {
@@ -913,7 +920,7 @@
   /* Restore proper 3-column grid layout for desktop: timer (left) | message (center) | user+nav (right) */
   .headerRow {
     grid-template-columns: auto minmax(0, 1fr) minmax(auto, 500px);
-    gap: 0.5rem;
+    gap: 0.25rem;
   }
 
   /* Ensure centerSection occupies middle column and centers its content */

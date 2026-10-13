@@ -845,7 +845,7 @@ export function Header(props) {
               tabIndex={-1}
               onKeyDown={e => { if (e.key === 'Escape') setIsOpen(false); }}
             >
-              <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>
+              <Nav className={`ml-auto ${styles.menuContainer}`} navbar>
                 {canUpdateTask && (
                   <NavItem>
                     <NavLink tag={Link} to="/taskeditsuggestions" disabled={headerDisabled}>
