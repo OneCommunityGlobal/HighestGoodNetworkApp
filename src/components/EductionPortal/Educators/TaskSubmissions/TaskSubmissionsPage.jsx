@@ -157,6 +157,7 @@ const TaskSubmissionsPage = () => {
       .then(data => {
         if (!cancelled) {
           setGroups(data);
+          setGroupId(current => (data.some(group => group.id === current) ? current : ''));
           setGroupsStatus('ready');
         }
       })
@@ -169,7 +170,9 @@ const TaskSubmissionsPage = () => {
   }, [groupsRetry]);
 
   useEffect(() => {
-    if (!groupId) return undefined;
+    if (groupsStatus !== 'ready' || !groupId || !groups.some(group => group.id === groupId)) {
+      return undefined;
+    }
     let cancelled = false;
     setMembership({ id: groupId, status: 'loading' });
     getGroupMembers(groupId)
@@ -183,7 +186,7 @@ const TaskSubmissionsPage = () => {
     return () => {
       cancelled = true;
     };
-  }, [groupId, membersRetry]);
+  }, [groupId, membersRetry, groupsStatus, groups]);
 
   const membersReady = membership.id === groupId && membership.status === 'ready';
   const membersFailed = membership.id === groupId && membership.status === 'error';
@@ -418,9 +421,11 @@ const TaskSubmissionsPage = () => {
                   {group.name}
                 </option>
               ))}
-              {groupId && !groups.some(group => group.id === groupId) && (
-                <option value={groupId}>Selected group</option>
-              )}
+              {groupsStatus !== 'ready' &&
+                groupId &&
+                !groups.some(group => group.id === groupId) && (
+                  <option value={groupId}>Saved group (not yet verified)</option>
+                )}
             </optgroup>
           </select>
           <FiChevronDown className={styles.filterIcon} />

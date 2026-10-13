@@ -284,8 +284,10 @@ export default function GroupList() {
               : 'Current server data could not be fully confirmed.'
           } ${detail}`,
         );
+      } else if (error.response?.status >= 400 && error.response.status < 500) {
+        setMutationError(detail);
       } else {
-        // A rejected create may have reached the server. Do not risk a duplicate POST.
+        // Without a definite rejection, creation may have succeeded. Do not repeat the POST.
         setUncertainCreate(true);
         setMutationError(
           `Creation could not be confirmed. Refresh groups to check existing groups before creating again. ${detail}`,

@@ -125,3 +125,82 @@ test('group list failure does not hide All students and supports retry', async (
   await screen.findByRole('option', { name: 'Readers' });
   expect(getGroups).toHaveBeenCalledTimes(2);
 });
+
+const storageKey = 'educatorTaskSubmissions:lastView';
+function restoreView(groupId) {
+  sessionStorage.setItem(
+    storageKey,
+    JSON.stringify({
+      groupId,
+      activeClassId: 'c2',
+      filterStatus: 'graded',
+      expandedTasks: { Essay: true },
+    }),
+  );
+}
+
+test('deleted saved group resets only after a successful group fetch and persists All students', async () => {
+  restoreView('deleted');
+  let resolve;
+  getGroups.mockReturnValueOnce(
+    new Promise(done => {
+      resolve = done;
+    }),
+  );
+  render(<TaskSubmissionsPage />);
+  await screen.findByLabelText('Filter by Student Group');
+  expect(screen.getByLabelText('Filter by Student Group')).toHaveValue('deleted');
+  expect(JSON.parse(sessionStorage.getItem(storageKey)).groupId).toBe('deleted');
+  await act(async () => resolve([{ id: 'g1', name: 'Readers' }]));
+  expect(screen.getByLabelText('Filter by Student Group')).toHaveValue('');
+  expect(screen.queryByRole('option', { name: /Saved group/ })).not.toBeInTheDocument();
+  await waitFor(() =>
+    expect(JSON.parse(sessionStorage.getItem(storageKey))).toMatchObject({
+      groupId: '',
+      activeClassId: 'c2',
+      filterStatus: 'graded',
+    }),
+  );
+  expect(screen.getByText('Alice Science')).toBeInTheDocument();
+});
+
+test('valid saved group and course/status filters remain selected', async () => {
+  restoreView('g1');
+  render(<TaskSubmissionsPage />);
+  await screen.findByRole('option', { name: 'Readers' });
+  expect(screen.getByLabelText('Filter by Student Group')).toHaveValue('g1');
+  expect(screen.getByLabelText('Filter Submissions')).toHaveValue('graded');
+  expect(JSON.parse(sessionStorage.getItem(storageKey))).toMatchObject({
+    groupId: 'g1',
+    activeClassId: 'c2',
+    filterStatus: 'graded',
+  });
+});
+
+test('failed group fetch retains saved selection until a successful retry confirms deletion', async () => {
+  restoreView('deleted');
+  getGroups.mockRejectedValueOnce(new Error('Offline'));
+  render(<TaskSubmissionsPage />);
+  const retry = await screen.findByRole('button', { name: 'Retry groups' });
+  expect(screen.getByLabelText('Filter by Student Group')).toHaveValue('deleted');
+  expect(JSON.parse(sessionStorage.getItem(storageKey)).groupId).toBe('deleted');
+  fireEvent.click(retry);
+  await waitFor(() => expect(screen.getByLabelText('Filter by Student Group')).toHaveValue(''));
+  expect(JSON.parse(sessionStorage.getItem(storageKey)).groupId).toBe('');
+});
+
+test('invalid saved group never fetches members before or after group verification', async () => {
+  restoreView('deleted-group');
+  let resolve;
+  getGroups.mockReturnValueOnce(
+    new Promise(done => {
+      resolve = done;
+    }),
+  );
+  render(<TaskSubmissionsPage />);
+  await screen.findByLabelText('Filter by Student Group');
+  expect(getGroupMembers).not.toHaveBeenCalled();
+  await act(async () => resolve([{ id: 'g1', name: 'Readers' }]));
+  expect(screen.getByLabelText('Filter by Student Group')).toHaveValue('');
+  expect(getGroupMembers).not.toHaveBeenCalled();
+});

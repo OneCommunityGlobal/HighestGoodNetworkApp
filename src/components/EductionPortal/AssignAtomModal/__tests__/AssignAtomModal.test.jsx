@@ -237,6 +237,31 @@ test('pending group submission locks controls and prevents duplicate submissions
   expect(httpService.post).toHaveBeenCalledTimes(2);
 });
 
+test('group recovery results resolve names and fall back to IDs without additional profile requests', async () => {
+  axios.get.mockResolvedValueOnce({
+    data: [
+      { _id: 's1', firstName: ' Alice ', lastName: ' Smith ' },
+      { _id: 's2', firstName: 'Bob', lastName: 'Jones' },
+      { _id: 's3', firstName: '   ', lastName: '' },
+    ],
+  });
+  getGroupMembers.mockResolvedValue(members(['s1', 's2', 's3', 's4']));
+  httpService.post
+    .mockRejectedValueOnce({ response: { status: 403 } })
+    .mockRejectedValueOnce(new Error('Response lost'))
+    .mockRejectedValueOnce({ response: { status: 403 } })
+    .mockRejectedValueOnce(new Error('Response lost'));
+  render(<AssignAtomModal {...props()} />);
+  await chooseGroup();
+  await screen.findByText('4 group members');
+  fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+  expect(await screen.findByText('Student Alice Smith: failed')).toBeInTheDocument();
+  expect(screen.getByText('Student Bob Jones: unconfirmed')).toBeInTheDocument();
+  expect(screen.getByText('Student s3: failed')).toBeInTheDocument();
+  expect(screen.getByText('Student s4: unconfirmed')).toBeInTheDocument();
+  expect(axios.get).toHaveBeenCalledTimes(1);
+});
+
 test('separates already-assigned, failed and uncertain outcomes and retains the draft', async () => {
   getGroupMembers.mockResolvedValue(members(['s1', 's2', 's3']));
   httpService.post

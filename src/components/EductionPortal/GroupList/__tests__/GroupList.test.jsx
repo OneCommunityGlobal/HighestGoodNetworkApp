@@ -62,6 +62,21 @@ async function openNew() {
   return screen.getByRole('dialog');
 }
 
+test('create requires a non-whitespace group name before enabling Save', async () => {
+  const dialog = await openNew();
+  const name = within(dialog).getByLabelText('Group name');
+  const save = within(dialog).getByRole('button', { name: 'Save' });
+
+  expect(name).toHaveValue('');
+  expect(save).toBeDisabled();
+  fireEvent.change(name, { target: { value: '   ' } });
+  expect(save).toBeDisabled();
+  expect(service.createGroup).not.toHaveBeenCalled();
+
+  fireEvent.change(name, { target: { value: 'Reading group' } });
+  expect(save).not.toBeDisabled();
+});
+
 test('creates with selected IDs, hydrates the server ID, and locks all dismissal paths while pending', async () => {
   const request = deferred();
   service.createGroup.mockReturnValue(request.promise);
@@ -124,6 +139,7 @@ test('delete retains the group until the backend confirms success', async () => 
   const request = deferred();
   service.deleteGroup.mockReturnValue(request.promise);
   fireEvent.click(within(dialog).getByRole('button', { name: 'Delete' }));
+  fireEvent.click(await screen.findByRole('button', { name: 'Confirm Delete' }));
   expect(screen.getByRole('button', { name: 'Edit Reading' })).toBeInTheDocument();
   expect(within(dialog).getByRole('button', { name: 'Delete' })).toBeDisabled();
   await act(async () => request.resolve());
@@ -135,8 +151,9 @@ test('delete failure keeps the group and modal', async () => {
   service.deleteGroup.mockRejectedValue(new Error('Network unavailable'));
   const dialog = await openEdit();
   fireEvent.click(within(dialog).getByRole('button', { name: 'Delete' }));
+  fireEvent.click(await screen.findByRole('button', { name: 'Confirm Delete' }));
   expect(await screen.findByText(/Deletion could not be confirmed/)).toBeInTheDocument();
-  expect(screen.getByRole('dialog')).toBeInTheDocument();
+  expect(dialog).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Edit Reading' })).toBeInTheDocument();
 });
 
@@ -217,8 +234,33 @@ test('failed reconciliation preserves draft and blocks further writes until memb
   expect(service.addGroupMembers).toHaveBeenCalledTimes(1);
 });
 
-test('unconfirmed creation preserves input and prevents repeating POST', async () => {
-  service.createGroup.mockRejectedValue(new Error('Connection lost'));
+test.each([400, 403])(
+  'HTTP %s creation rejection shows the server error and allows retry',
+  async status => {
+    service.createGroup.mockRejectedValueOnce({
+      response: { status, data: { error: 'Server rejected this group' } },
+    });
+    await openNew();
+    fireEvent.change(screen.getByLabelText('Group name'), { target: { value: 'Draft' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    expect(await screen.findByText('Server rejected this group')).toBeInTheDocument();
+    expect(screen.queryByText(/Creation could not be confirmed/)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save' })).not.toBeDisabled();
+    service.createGroup.mockResolvedValue({ id: 'created', name: 'Draft' });
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(service.createGroup).toHaveBeenCalledTimes(2);
+  },
+);
+
+test.each([
+  new Error('Connection lost'),
+  { code: 'ECONNABORTED', message: 'Timeout' },
+  { response: { status: 500, data: { error: 'Server failure' } } },
+  { response: { status: 503 } },
+  { response: {} },
+])('unconfirmed creation preserves input and prevents repeating POST: %j', async error => {
+  service.createGroup.mockRejectedValue(error);
   const dialog = await openNew();
   fireEvent.change(within(dialog).getByLabelText('Group name'), { target: { value: 'Draft' } });
   fireEvent.click(within(dialog).getByLabelText('Bob'));
@@ -356,4 +398,63 @@ test('partial reconciliation cannot become an edit baseline after closing and re
   });
   expect(service.addGroupMembers).not.toHaveBeenCalled();
   expect(service.removeGroupMembers).not.toHaveBeenCalled();
+});
+
+test('canceling deletion preserves the group and sends no DELETE request', async () => {
+  const dialog = await openEdit();
+  fireEvent.change(within(dialog).getByLabelText('Group name'), {
+    target: { value: 'Unsaved name' },
+  });
+  fireEvent.click(within(dialog).getByLabelText('Bob'));
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Delete' }));
+  await screen.findByRole('button', { name: 'Confirm Delete' });
+  const confirmation = screen.getAllByRole('dialog').find(item => item !== dialog);
+  expect(
+    within(confirmation).getByText("Delete 'Reading' and its 1 member? This can't be undone."),
+  ).toBeInTheDocument();
+  expect(service.deleteGroup).not.toHaveBeenCalled();
+  fireEvent.click(within(confirmation).getByRole('button', { name: 'Cancel' }));
+  await waitFor(() =>
+    expect(screen.queryByRole('button', { name: 'Confirm Delete' })).not.toBeInTheDocument(),
+  );
+  expect(service.deleteGroup).not.toHaveBeenCalled();
+  expect(within(dialog).getByLabelText('Group name')).toHaveValue('Unsaved name');
+});
+
+test('delete confirmation stacks above the editor and Escape preserves the editor draft', async () => {
+  const dialog = await openEdit();
+  fireEvent.change(within(dialog).getByLabelText('Group name'), {
+    target: { value: 'Draft name' },
+  });
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Delete' }));
+  await screen.findByRole('button', { name: 'Confirm Delete' });
+  const confirmation = screen.getAllByRole('dialog').find(item => item !== dialog);
+  // Reactstrap sets stacking on its portal wrapper; JSDOM cannot test visual occlusion.
+  // eslint-disable-next-line testing-library/no-node-access
+  expect(confirmation.closest('[style*="z-index"]')).toHaveStyle({ zIndex: '1300' });
+  fireEvent.keyDown(document, { key: 'Escape', keyCode: 27 });
+  expect(dialog).toBeInTheDocument();
+  fireEvent.keyUp(confirmation, { key: 'Escape', keyCode: 27 });
+  await waitFor(() =>
+    expect(screen.queryByRole('button', { name: 'Confirm Delete' })).not.toBeInTheDocument(),
+  );
+  expect(within(dialog).getByLabelText('Group name')).toHaveValue('Draft name');
+  expect(service.deleteGroup).not.toHaveBeenCalled();
+});
+
+test('confirmation shows plural saved membership count and deletes exactly once', async () => {
+  service.getGroupMembers.mockResolvedValue([membership('s1'), membership('s2')]);
+  const dialog = await openEdit();
+  const request = deferred();
+  service.deleteGroup.mockReturnValue(request.promise);
+  fireEvent.click(within(dialog).getByRole('button', { name: 'Delete' }));
+  expect(
+    await screen.findByText("Delete 'Reading' and its 2 members? This can't be undone."),
+  ).toBeInTheDocument();
+  const confirm = screen.getByRole('button', { name: 'Confirm Delete' });
+  fireEvent.click(confirm);
+  fireEvent.click(confirm);
+  expect(service.deleteGroup).toHaveBeenCalledTimes(1);
+  expect(service.deleteGroup).toHaveBeenCalledWith('server-group');
+  await act(async () => request.resolve());
 });

@@ -29,6 +29,16 @@ import {
   clearForm,
 } from '~/actions/educationPortal/atomActions';
 
+function getStudentResultName(studentId, users) {
+  const user = users.find(profile => String(profile._id) === String(studentId));
+  return (
+    [user?.firstName, user?.lastName]
+      .map(part => (part || '').trim())
+      .filter(Boolean)
+      .join(' ') || studentId
+  );
+}
+
 function showCompletedGroupToast(results, selectedAtoms) {
   const count = new Set(selectedAtoms).size;
   if (results.every(result => result.status === 'already assigned')) {
@@ -607,7 +617,7 @@ export const AssignAtomModal = ({
               .filter(result => ['failed', 'unconfirmed'].includes(result.status))
               .map(result => (
                 <span className="d-block" key={result.studentId}>
-                  Student {result.studentId}: {result.status}
+                  Student {getStudentResultName(result.studentId, allUsers)}: {result.status}
                 </span>
               ))}
             {visibleGroupResults.some(result => result.status === 'failed') && (
