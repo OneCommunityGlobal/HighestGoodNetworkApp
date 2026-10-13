@@ -149,10 +149,6 @@
   background-color: #f0f0f0;
 }
 
-:global(tr:hover) {
-  background: #e9f6ff;
-}
-
 @media (width <= 375px) {
   :global(#new_project .form-control) {
     flex: 1 1 auto;
@@ -248,14 +244,14 @@
   background-color: #f0f0f0;
 }
 
-tr:hover {
+.projects__tr:hover {
   background: #e9f6ff;
 }
 
 /* In dark mode the page wrapper carries .bg-oxford-blue. Keep the row-hover
    highlight on-theme (yinmn-blue) instead of the light default, so the dark
    inputs/buttons in the hovered row stay legible instead of washing out. */
-:global(.bg-oxford-blue) tr:hover {
+:global(.bg-oxford-blue) .projects__tr:hover {
   background: #3a506b;
 }
 
