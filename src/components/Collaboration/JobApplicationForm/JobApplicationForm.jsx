@@ -1756,6 +1756,7 @@ function JobApplicationForm() {
                   <input
                     id="jaf-applicant-email"
                     ref={emailInputRef}
+                    maxLength={254}
                     type="email"
                     placeholder="Email"
                     className={`${styles.inputField} ${

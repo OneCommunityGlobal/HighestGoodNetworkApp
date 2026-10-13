@@ -1,19 +1,27 @@
 import { IANA_TLDS } from './ianaTlds';
 
 const EMAIL_FORMAT = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_EMAIL_LENGTH = 254;
+// Zero-width and word-joiner characters ride along with copy-paste and are invisible on screen
+const HIDDEN_CHARACTERS = /[​-‍⁠﻿]/;
+const INVALID_EMAIL = 'Please enter a valid email address.';
+const HIDDEN_CHARACTER_ERROR = 'This email has a hidden character in it. Please retype it.';
 
 // Popular mailbox providers. A near miss of one of these is almost always a typo.
+// Regional domains are listed so their own typos get caught (hotmial.ca -> hotmail.ca).
 const POPULAR_DOMAINS = [
   'gmail.com',
   'googlemail.com',
   'yahoo.com',
   'yahoo.co.uk',
   'yahoo.co.in',
+  'yahoo.ca',
   'ymail.com',
   'rocketmail.com',
   'outlook.com',
   'hotmail.com',
   'hotmail.co.uk',
+  'hotmail.ca',
   'live.com',
   'msn.com',
   'icloud.com',
@@ -37,11 +45,10 @@ const POPULAR_DOMAINS = [
 // Endings offered when the typed one doesn't exist (".con" -> ".com").
 const COMMON_TLDS = ['com', 'net', 'org', 'edu', 'gov', 'io', 'us', 'uk', 'ca', 'in', 'de', 'info'];
 
-// Short domains are too easy to confuse with real ones (gm.com vs gmx.com), so only
-// longer domains get fuzzy matching, and only the longest allow two edits.
-function maxEditsFor(domain) {
-  if (domain.length < 7) return 0;
-  return domain.length < 10 ? 1 : 2;
+// Split "hotmail.co.uk" into the provider name and the rest.
+function splitDomain(domain) {
+  const dot = domain.indexOf('.');
+  return { name: domain.slice(0, dot), suffix: domain.slice(dot + 1) };
 }
 
 // Optimal string alignment distance: insertions, deletions, substitutions and adjacent swaps
@@ -83,20 +90,49 @@ function toAsciiTld(domain) {
   }
 }
 
-// Fix a non-existent ending first ("gmial.con" -> "gmial.com"), then look for a provider typo
-// in the result ("gmial.com" -> "gmail.com").
+function hasRealTld(domain) {
+  return IANA_TLDS.has(toAsciiTld(domain));
+}
+
+// Provider names close enough to count as a typo. Short names allow one edit, long ones two,
+// and the first letter must match so different words ("cloud" vs "icloud") aren't "corrected".
+function isProviderTypo(name, providerName) {
+  if (name === providerName) return true;
+  if (name.length < 4 || name[0] !== providerName[0]) return false;
+  return editDistance(name, providerName) <= (name.length < 9 ? 1 : 2);
+}
+
+// Only the provider name is fuzzy-matched. The ending is kept unless it doesn't exist
+// (gmail.con) or is a one-letter slip of ".com" (gmail.co, gmail.cm), so real regional
+// domains like hotmail.ca, hotmail.cl or yahoo.co.jp are left alone.
+function suggestProvider(domain) {
+  const { name, suffix } = splitDomain(domain);
+  const providers = POPULAR_DOMAINS.filter(d => isProviderTypo(name, splitDomain(d).name));
+  const sameSuffix = providers.find(d => splitDomain(d).suffix === suffix);
+  if (sameSuffix) return sameSuffix;
+  if (!hasRealTld(domain)) {
+    const nearest = closest(suffix, providers.map(d => splitDomain(d).suffix), Infinity);
+    return providers.find(d => splitDomain(d).suffix === nearest) || null;
+  }
+  const dotCom = providers.find(d => splitDomain(d).suffix === 'com');
+  return dotCom && editDistance(suffix, 'com') === 1 ? dotCom : null;
+}
+
 function suggestDomain(domain) {
   if (POPULAR_DOMAINS.includes(domain)) return null;
-  let candidate = domain;
-  if (!IANA_TLDS.has(toAsciiTld(domain))) {
-    const dot = domain.lastIndexOf('.');
-    const fixedTld = closest(domain.slice(dot + 1), COMMON_TLDS, 1);
-    if (fixedTld) candidate = `${domain.slice(0, dot + 1)}${fixedTld}`;
-  }
-  if (POPULAR_DOMAINS.includes(candidate)) return candidate;
-  const provider = closest(candidate, POPULAR_DOMAINS, maxEditsFor(candidate));
+  const provider = suggestProvider(domain);
   if (provider) return provider;
-  return candidate === domain ? null : candidate;
+  if (hasRealTld(domain)) return null;
+  // Not a provider: fix only the ending ("school.ogr" -> "school.org")
+  const dot = domain.lastIndexOf('.');
+  const fixedTld = closest(domain.slice(dot + 1), COMMON_TLDS, 1);
+  return fixedTld ? `${domain.slice(0, dot + 1)}${fixedTld}` : null;
+}
+
+// A suggestion is only offered if it would pass the check itself.
+function validSuggestion(local, domain) {
+  const suggestion = `${local}@${domain}`;
+  return EMAIL_FORMAT.test(suggestion) && hasRealTld(domain) ? suggestion : null;
 }
 
 /**
@@ -110,6 +146,8 @@ function suggestDomain(domain) {
 export function checkEmail(rawEmail) {
   const email = String(rawEmail ?? '').trim();
   if (!email) return { error: 'Email is required.', suggestion: null };
+  if (email.length > MAX_EMAIL_LENGTH) return { error: INVALID_EMAIL, suggestion: null };
+  if (HIDDEN_CHARACTERS.test(email)) return { error: HIDDEN_CHARACTER_ERROR, suggestion: null };
 
   const at = email.lastIndexOf('@');
   const local = email.slice(0, at);
@@ -117,27 +155,28 @@ export function checkEmail(rawEmail) {
   const lowerDomain = domain.toLowerCase();
 
   if (!EMAIL_FORMAT.test(email) || lowerDomain.endsWith('.')) {
-    // "name@gmail.com." only has a stray trailing dot
-    if (lowerDomain.endsWith('.') && EMAIL_FORMAT.test(email.slice(0, -1))) {
-      return { error: 'Please enter a valid email address.', suggestion: email.slice(0, -1) };
+    // "name@gmail.com." only has stray trailing dots
+    const undotted = lowerDomain.replace(/\.+$/, '');
+    if (undotted !== lowerDomain && at > 0 && EMAIL_FORMAT.test(`${local}@${undotted}`)) {
+      const fixed = hasRealTld(undotted) ? undotted : suggestDomain(undotted);
+      return { error: INVALID_EMAIL, suggestion: fixed ? validSuggestion(local, fixed) : null };
     }
     // "name@gmail" is missing its ending; offer the provider's full domain
     const provider =
       at > 0 && lowerDomain && !lowerDomain.includes('.')
         ? POPULAR_DOMAINS.find(d => d.split('.')[0] === lowerDomain)
         : null;
-    return {
-      error: 'Please enter a valid email address.',
-      suggestion: provider ? `${local}@${provider}` : null,
-    };
+    return { error: INVALID_EMAIL, suggestion: provider ? `${local}@${provider}` : null };
   }
 
   const suggestedDomain = suggestDomain(lowerDomain);
-  const suggestion = suggestedDomain ? `${local}@${suggestedDomain}` : null;
+  const suggestion = suggestedDomain ? validSuggestion(local, suggestedDomain) : null;
 
-  if (!IANA_TLDS.has(toAsciiTld(lowerDomain))) {
+  if (!hasRealTld(lowerDomain)) {
     const tld = domain.split('.').pop();
-    return { error: `".${tld}" isn't a valid email domain ending. Check for a typo.`, suggestion };
+    // With a suggestion on screen, the hint already says how to fix it
+    const advice = suggestion ? '' : ' Check for a typo.';
+    return { error: `".${tld}" isn't a valid email domain ending.${advice}`, suggestion };
   }
 
   return { error: '', suggestion };

@@ -40,10 +40,13 @@ describe('JobApplicationForm email field', () => {
     renderForm();
     const input = typeEmailAndBlur('rabstu@gmail.con');
 
-    expect(screen.getByRole('alert')).toHaveTextContent(
-      '".con" isn\'t a valid email domain ending. Check for a typo.',
+    // The hint below carries the fix, so the error doesn't repeat "check for a typo"
+    expect(screen.getByRole('alert').textContent).toBe(
+      '".con" isn\'t a valid email domain ending.',
     );
+    expect(screen.getByText(/Did you mean/)).toHaveTextContent('Did you mean rabstu@gmail.com?');
     expect(input).toHaveAttribute('aria-invalid', 'true');
+    expect(input).toHaveAttribute('maxLength', '254');
   });
 
   it('offers a one-click fix for a likely typo without blocking', () => {
