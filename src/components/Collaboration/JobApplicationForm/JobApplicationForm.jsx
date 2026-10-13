@@ -152,16 +152,25 @@ function getFormIdFromNavigation(location) {
   return '';
 }
 
+/** Skip retired / internal ATS templates when picking applicant forms. */
+function isApplicantFacingForm(form) {
+  const title = String(form?.title || '')
+    .trim()
+    .toUpperCase();
+  if (!title) return false;
+  if (title.startsWith('[RETIRED]')) return false;
+  if (title.includes('APPLIED THROUGH SITE')) return false;
+  if (title.includes('TEST CREATE FORM')) return false;
+  return true;
+}
+
 /** Default questionnaire when a job listing has no dedicated form. */
 function findDefaultSoftwareForm(formsArr) {
   if (!formsArr?.length) return null;
-  const preferredTitles = [
-    'Software Developer',
-    'Software Engineer',
-    'APPLIED THROUGH SITE - SEEKING SOFTWARE POSITION',
-  ];
+  const activeForms = formsArr.filter(isApplicantFacingForm);
+  const preferredTitles = ['SEEKING SOFTWARE POSITION', 'Software Developer', 'Software Engineer'];
   for (const title of preferredTitles) {
-    const exact = formsArr.find(
+    const exact = activeForms.find(
       f =>
         String(f.title || '')
           .trim()
@@ -170,10 +179,11 @@ function findDefaultSoftwareForm(formsArr) {
     if (exact) return exact;
   }
   return (
-    findFormForJobTitle(formsArr, 'Software Developer') ||
-    findFormForJobTitle(formsArr, 'Software Engineer') ||
-    formsArr.find(f => f.questions?.length) ||
-    formsArr[0] ||
+    findFormForJobTitle(activeForms, 'SEEKING SOFTWARE POSITION') ||
+    findFormForJobTitle(activeForms, 'Software Developer') ||
+    findFormForJobTitle(activeForms, 'Software Engineer') ||
+    activeForms.find(f => f.questions?.length) ||
+    activeForms[0] ||
     null
   );
 }
