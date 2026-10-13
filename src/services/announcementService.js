@@ -54,14 +54,13 @@ export const normalizeAnnouncement = announcement => ({
 
 // Load every page so existing client-side search and filters cover the complete feed.
 export const loadAnnouncementFeed = async getPage => {
-  const announcements = [];
-  let page = 1;
-  let totalPages;
-  do {
-    const response = await getPage({ page, limit: 100 });
-    announcements.push(...response.data.map(normalizeAnnouncement));
-    totalPages = response.pagination.totalPages;
-    page += 1;
-  } while (page <= totalPages);
-  return announcements;
+  const firstPage = await getPage({ page: 1, limit: 100 });
+  const remainingPages = await Promise.all(
+    Array.from({ length: Math.max(0, firstPage.pagination.totalPages - 1) }, (_, index) =>
+      getPage({ page: index + 2, limit: 100 }),
+    ),
+  );
+  return [firstPage, ...remainingPages].flatMap(response =>
+    response.data.map(normalizeAnnouncement),
+  );
 };
