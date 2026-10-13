@@ -1,6 +1,3 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
-import { permissions } from '../../../utils/constants';
-// import { getUserProfile } from '../../actions/userProfile'
 import { Link } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import {
@@ -15,28 +12,25 @@ import {
   DropdownMenu,
   DropdownItem,
 } from 'reactstrap';
-import DarkModeButton from '~/components/Header/DarkModeButton';
-import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
+import { permissions } from '../../../utils/constants';
 import BellNotification from '~/components/Header/BellNotification';
+import UserProfileLink from '~/components/Header/UserProfileLink';
+import UserInfoDropdown from '~/components/Header/UserInfoDropdown';
 import { getHeaderData } from '../../../actions/authActions';
 import { getAllRoles } from '../../../actions/role';
 import Timer from '../../Timer/Timer';
 import OwnerMessage from '../../OwnerMessage/OwnerMessage';
+import Logout from '../../Logout/Logout';
+import { useHeaderState } from '../../../hooks/useHeaderState';
+import { useHeaderEffects } from '../../../hooks/useHeaderEffects';
 import {
-  // LOGO,
   DASHBOARD,
-  // BM_DASHBOARD,
-  // CP_DASHBOARD,
   REPORTS,
   OTHER_LINKS,
   USER_MANAGEMENT,
   BADGE_MANAGEMENT,
   PROJECTS,
   TEAMS,
-  WELCOME,
-  VIEW_PROFILE,
-  UPDATE_PASSWORD,
-  LOGOUT,
   PERMISSIONS_MANAGEMENT,
   ACTIVITY,
   PARTICIPATION,
@@ -50,39 +44,50 @@ import {
   ACTIVITY_RESOURCE_USAGE,
   EVENT_DATABASE_DESIGN,
 } from '../../../languages/en/ui';
-import Logout from '../../Logout/Logout';
-// import './CPHeader.module.css';
 import styles from '../../Header/Header.module.css';
-import hasPermission, { cantUpdateDevAdminDetails } from '../../../utils/permissions';
+import hasPermission from '../../../utils/permissions';
 
 export function Header(props) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [logoutPopup, setLogoutPopup] = useState(false);
+  const dispatch = useDispatch();
+  const { darkMode } = props;
+
+  // Use shared header state hook
+  const {
+    isOpen,
+    setIsOpen,
+    logoutPopup,
+    setLogoutPopup,
+    firstName,
+    setFirstName,
+    profilePic,
+    setProfilePic,
+    isAuthUser,
+    setIsAuthUser,
+    displayUserId,
+    setDisplayUserId,
+    collapseRef,
+    toggleRef,
+    canInteractWithViewingUser,
+    openModal,
+    toggle,
+  } = useHeaderState(props.auth);
+
+  // Use shared header effects hook
+  useHeaderEffects({
+    auth: props.auth,
+    role: props.role,
+    collapseRef,
+    toggleRef,
+    isOpen,
+    setIsOpen,
+    stateSetters: { setFirstName, setProfilePic, setDisplayUserId, setIsAuthUser },
+    getHeaderData: props.getHeaderData,
+    getAllRoles: props.getAllRoles,
+    dispatch,
+    includeTaskEditSuggestions: true,
+  });
+
   const { isAuthenticated, user } = props.auth;
-  const [firstName, setFirstName] = useState(props.auth.firstName);
-  const [profilePic, setProfilePic] = useState(props.auth.profilePic);
-  const [isAuthUser, setIsAuthUser] = useState(true);
-  const [displayUserId, setDisplayUserId] = useState(user.userid);
-  const collapseRef = useRef(null);
-  const toggleRef = useRef(null);
-
-  const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
-  const canInteractWithViewingUser = useMemo(
-    () => ALLOWED_ROLES_TO_INTERACT.includes(props.auth.user.role),
-    [ALLOWED_ROLES_TO_INTERACT, props.auth.user.role],
-  );
-
-  const PROFILE_ROUTE = '/communityportal/profile';
-  const userProfileLink = (
-    <NavLink tag={Link} to={`${PROFILE_ROUTE}/${displayUserId}`}>
-      <img
-        src={profilePic || '/pfp-default-header.png'}
-        alt=""
-        style={{ maxWidth: '60px', maxHeight: '60px' }}
-        className="dashboardimg"
-      />
-    </NavLink>
-  );
 
   // Users
   const canAccessUserManagement =
@@ -140,81 +145,7 @@ export function Header(props) {
       !isAuthUser && canInteractWithViewingUser,
     );
 
-  const dispatch = useDispatch();
-  const { darkMode } = props;
-
-  useEffect(() => {
-    const handleStorageEvent = () => {
-      const sessionStorageData = JSON.parse(window.sessionStorage.getItem('viewingUser'));
-      if (sessionStorageData) {
-        setDisplayUserId(sessionStorageData.userId);
-        setFirstName(sessionStorageData.firstName);
-        setProfilePic(sessionStorageData.profilePic);
-        setIsAuthUser(false);
-      } else {
-        setDisplayUserId(user.userid);
-        setFirstName(props.auth.firstName);
-        setProfilePic(props.auth.profilePic);
-        setIsAuthUser(true);
-      }
-    };
-
-    // Set the initial state when the component mounts
-    handleStorageEvent();
-
-    // Add the event listener
-    window.addEventListener('storage', handleStorageEvent);
-
-    // Clean up the event listener when the component unmounts
-    return () => {
-      window.removeEventListener('storage', handleStorageEvent);
-    };
-  }, [user.userid, props.auth.firstName]);
-
-  useEffect(() => {
-    if (props.auth.isAuthenticated) {
-      props.getHeaderData(props.auth.user.userid);
-      if (props.auth.user.role === 'Administrator') {
-        dispatch(fetchTaskEditSuggestions());
-      }
-    }
-  }, [props.auth.isAuthenticated]);
-
-  const roles = props.role?.roles;
-
-  useEffect(() => {
-    if (roles.length === 0) {
-      props.getAllRoles();
-    }
-  }, []);
-
-  const openModal = () => {
-    setLogoutPopup(true);
-  };
-
-  const toggle = () => {
-    setIsOpen(prevIsOpen => !prevIsOpen);
-  };
-
-  useEffect(() => {
-    const handleClickOutside = event => {
-      if (
-        collapseRef.current &&
-        !collapseRef.current.contains(event.target) &&
-        !toggleRef.current?.contains(event.target)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen]);
+  const PROFILE_ROUTE = '/communityportal/profile';
 
   const fontColor = darkMode
     ? `${styles.darkDropdownText} ${styles.darkDropdownItem}`
@@ -241,51 +172,19 @@ export function Header(props) {
             {/* User info row (bell, avatar, welcome menu) - always visible on desktop */}
             <div className={styles.userInfoRow}>
               <BellNotification userId={displayUserId} />
-              {userProfileLink}
-              <UncontrolledDropdown inNavbar>
-                <DropdownToggle nav caret className="text-light">
-                  <span>
-                    {WELCOME}, {firstName}
-                  </span>
-                </DropdownToggle>
-                <DropdownMenu
-                  right
-                  className={`${styles.noMaxHeight} ${
-                    darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
-                  }`}
-                >
-                  <DropdownItem
-                    header
-                    className={darkMode ? 'text-custom-grey' : styles.mobileDropdownText}
-                  >
-                    Hello {firstName}
-                  </DropdownItem>
-                  <DropdownItem divider />
-                  <DropdownItem
-                    tag={Link}
-                    to={`${PROFILE_ROUTE}/${displayUserId}`}
-                    className={fontColor}
-                  >
-                    {VIEW_PROFILE}
-                  </DropdownItem>
-                  {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
-                    <DropdownItem
-                      tag={Link}
-                      to={`/updatepassword/${displayUserId}`}
-                      className={fontColor}
-                    >
-                      {UPDATE_PASSWORD}
-                    </DropdownItem>
-                  )}
-                  <DropdownItem className={fontColor}>
-                    <DarkModeButton />
-                  </DropdownItem>
-                  <DropdownItem divider />
-                  <DropdownItem onClick={openModal} className={fontColor}>
-                    {LOGOUT}
-                  </DropdownItem>
-                </DropdownMenu>
-              </UncontrolledDropdown>
+              <UserProfileLink profileRoute={PROFILE_ROUTE} displayUserId={displayUserId} profilePic={profilePic} />
+              <UserInfoDropdown
+                firstName={firstName}
+                displayUserId={displayUserId}
+                profileRoute={PROFILE_ROUTE}
+                userEmail={props.userProfile.email}
+                darkMode={darkMode}
+                onLogout={openModal}
+                dropdownMenuClass={`${styles.noMaxHeight} ${
+                  darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
+                }`}
+                dropdownItemClass={fontColor}
+              />
             </div>
 
             {/* Hamburger menu toggle */}

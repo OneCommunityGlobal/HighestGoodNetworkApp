@@ -6,7 +6,7 @@
 body {
   font-family: Arial, Helvetica, sans-serif;
   line-height: 1.6;
-  color: #333333;
+  color: #333;
   margin: 0;
   padding: 0;
   background-color: #f4f4f4;
@@ -15,8 +15,8 @@ body {
 .email-wrapper {
   max-width: 600px;
   margin: 0 auto;
-  background-color: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
 }
 
 /* Header Section */
@@ -27,7 +27,7 @@ body {
 }
 
 .email-header h1 {
-  color: #ffffff;
+  color: #fff;
   margin: 0;
   font-size: 28px;
   font-weight: bold;
@@ -35,7 +35,7 @@ body {
 
 .email-header .date {
   color: #e0e7ff;
-  margin: 8px 0 0 0;
+  margin: 8px 0 0;
   font-size: 16px;
 }
 
@@ -52,7 +52,7 @@ body {
   display: block;
   margin: 0 auto;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
 /* Content Section */
@@ -61,7 +61,7 @@ body {
 }
 
 .content p {
-  margin: 0 0 15px 0;
+  margin: 0 0 15px;
   line-height: 1.6;
 }
 
@@ -87,6 +87,7 @@ body {
   cursor: pointer;
   transition: transform 0.2s ease;
 }
+
 .video-thumbnail:hover {
   transform: scale(1.02);
 }
@@ -96,7 +97,7 @@ body {
   margin-top: 15px;
   padding: 12px 30px;
   background-color: #2c5aa0;
-  color: #ffffff !important;
+  color: #fff !important;
   text-decoration: none;
   border-radius: 4px;
   font-weight: bold;
@@ -111,7 +112,7 @@ body {
 }
 
 .love-section p {
-  margin: 0 0 10px 0;
+  margin: 0 0 10px;
 }
 
 .love-section a {
@@ -147,12 +148,12 @@ body {
   text-align: center;
   padding: 20px;
   background-color: #2c5aa0;
-  color: #ffffff;
+  color: #fff;
   font-size: 12px;
 }
 
 .footer a {
-  color: #ffffff;
+  color: #fff;
   text-decoration: underline;
 }
 
