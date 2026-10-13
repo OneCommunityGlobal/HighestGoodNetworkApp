@@ -168,11 +168,7 @@ function isApplicantFacingForm(form) {
 function findDefaultSoftwareForm(formsArr) {
   if (!formsArr?.length) return null;
   const activeForms = formsArr.filter(isApplicantFacingForm);
-  const preferredTitles = [
-    'SEEKING SOFTWARE POSITION',
-    'Software Developer',
-    'Software Engineer',
-  ];
+  const preferredTitles = ['SEEKING SOFTWARE POSITION', 'Software Developer', 'Software Engineer'];
   for (const title of preferredTitles) {
     const exact = activeForms.find(
       f =>
