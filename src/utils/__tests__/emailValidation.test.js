@@ -122,11 +122,11 @@ describe('checkEmail', () => {
   });
 
   it('rejects hidden characters pasted into the address', () => {
-    expect(checkEmail('ada@hotmail.com​')).toEqual({
+    expect(checkEmail('ada@hotmail.com\u200B')).toEqual({
       error: 'This email has a hidden character in it. Please retype it.',
       suggestion: null,
     });
-    expect(checkEmail('a⁠da@gmail.com').error).toBe(
+    expect(checkEmail('a\u2060da@gmail.com').error).toBe(
       'This email has a hidden character in it. Please retype it.',
     );
   });

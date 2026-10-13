@@ -3,7 +3,7 @@ import { IANA_TLDS } from './ianaTlds';
 const EMAIL_FORMAT = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_EMAIL_LENGTH = 254;
 // Zero-width and word-joiner characters ride along with copy-paste and are invisible on screen
-const HIDDEN_CHARACTERS = /[​-‍⁠﻿]/;
+const HIDDEN_CHARACTERS = /[\u200B-\u200D\u2060\uFEFF]/;
 const INVALID_EMAIL = 'Please enter a valid email address.';
 const HIDDEN_CHARACTER_ERROR = 'This email has a hidden character in it. Please retype it.';
 
