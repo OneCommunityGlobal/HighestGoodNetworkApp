@@ -73,6 +73,15 @@ export function ensurePositionOption(options, title) {
   const list = Array.isArray(options) ? [...options] : [];
   const t = String(title || '').trim();
   if (!t) return list;
-  if (list.some(o => String(o).trim().toLowerCase() === t.toLowerCase())) return list;
+  if (
+    list.some(
+      o =>
+        String(o)
+          .trim()
+          .toLowerCase() === t.toLowerCase(),
+    )
+  ) {
+    return list;
+  }
   return [t, ...list];
 }
