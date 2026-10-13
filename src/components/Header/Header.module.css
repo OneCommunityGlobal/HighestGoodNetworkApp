@@ -14,6 +14,7 @@
   flex-direction: column;
   height: fit-content;
   width: 100%;
+  overflow: visible; /* Prevent clipping of navbar content */
 }
 
 .notificationOverlay {
@@ -146,7 +147,8 @@
 .navbar {
   z-index: 100;
   position: relative;
-  padding-right: 1.5rem !important; /* Ensure right space for nav menu */
+  padding: 0.75rem 1.5rem 0.75rem 1rem !important; /* Reduce right padding to move menu left */
+  overflow: visible !important; /* Prevent clipping of navigation items */
 } 
 
 .redBackGroupHeader {
@@ -213,6 +215,11 @@
 .noMaxHeight {
   max-height: none !important;
   overflow: visible !important;
+  position: absolute !important;
+  right: 0 !important;
+  left: auto !important;
+  min-width: max-content !important;
+  z-index: 1000 !important;
 }
 
 .showInMobile {
@@ -881,7 +888,7 @@
   .rightSection {
     flex-direction: column !important;
     align-items: flex-end !important;
-    gap: 0.25rem;
+    gap: 0.1rem; /* Reduce gap to move menu items closer together */
     flex-shrink: 1; /* Allow to shrink if needed, default was 0 */
     overflow: visible;
     padding-right: 0; /* Reset padding to prevent extra spacing */
@@ -900,7 +907,7 @@
     max-width: none;
     order: 2 !important;
     flex-flow: row nowrap !important;
-    gap: 0.5rem;
+    gap: 0.25rem; /* Reduce gap between menu items to move them closer */
     justify-content: flex-end; /* Right-align nav items */
     overflow: visible;
     margin-right: 0; /* Remove margin that could cause clipping */
@@ -911,6 +918,21 @@
     display: flex !important;
   }
 
+  /* Allow dropdowns to overflow container */
+  :global(.navbar-nav .dropdown) {
+    position: relative !important;
+    overflow: visible !important;
+  }
+
+  :global(.navbar-nav .dropdown-menu) {
+    position: absolute !important;
+    right: 0 !important;
+    left: auto !important;
+    white-space: nowrap !important;
+    min-width: max-content !important;
+    overflow: visible !important;
+  }
+
   /* Override Bootstrap `py-3` on Navbar at large screens for compact header */
   .navbar {
     padding-top: 0.25rem !important;
@@ -919,8 +941,9 @@
 
   /* Restore proper 3-column grid layout for desktop: timer (left) | message (center) | user+nav (right) */
   .headerRow {
-    grid-template-columns: auto minmax(0, 1fr) minmax(auto, 500px);
+    grid-template-columns: auto minmax(0, 1fr) minmax(auto, 1fr);
     gap: 0.25rem;
+    max-width: 100%;
   }
 
   /* Ensure centerSection occupies middle column and centers its content */

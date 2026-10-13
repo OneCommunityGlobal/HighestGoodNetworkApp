@@ -64,6 +64,7 @@ import {
 import Logout from '../../Logout/Logout';
 // import './CPHeader.module.css';
 import styles from '../../Header/Header.module.css';
+import kiStyles from './KIHeader.module.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../../utils/permissions';
 
 export function Header(props) {
@@ -268,7 +269,7 @@ export function Header(props) {
                 if (e.key === 'Escape') setIsOpen(false);
               }}
             >
-              <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>
+              <Nav className={`ml-auto ${kiStyles.kiMenuContainer} mr-3`} navbar>
                 {canUpdateTask && (
                   <NavItem>
                     <NavLink tag={Link} to="/taskeditsuggestions">
