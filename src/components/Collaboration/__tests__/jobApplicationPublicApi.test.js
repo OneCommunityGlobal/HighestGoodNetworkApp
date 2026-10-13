@@ -1,7 +1,10 @@
 import {
   buildApplyPath,
   ensurePositionOption,
+  filterApplicantVisibleForms,
+  filterApplicantVisiblePositions,
   findFormByPositionSlug,
+  isApplicantVisibleForm,
   publicApplyRequestConfig,
   slugifyPositionTitle,
   titleHintFromSlug,
@@ -35,6 +38,31 @@ describe('jobApplicationPublicApi', () => {
 
     it('returns null when no slug match', () => {
       expect(findFormByPositionSlug(forms, 'unknown-role')).toBeNull();
+    });
+  });
+
+  describe('applicant-facing filtering', () => {
+    it('hides inactive, retired, and internal forms', () => {
+      const forms = [
+        { title: 'SEEKING SOFTWARE POSITION', isActive: true },
+        { title: 'Inactive Form', isActive: false },
+        { title: '[RETIRED] Old Form', isActive: true },
+        { title: 'APPLIED THROUGH SITE - SEEKING SOFTWARE POSITION', isActive: true },
+      ];
+
+      expect(isApplicantVisibleForm(forms[0])).toBe(true);
+      expect(filterApplicantVisibleForms(forms)).toEqual([forms[0]]);
+    });
+
+    it('hides inactive, retired, and internal position options', () => {
+      const positions = [
+        'SEEKING SOFTWARE POSITION',
+        '[RETIRED] Old Position',
+        'APPLIED THROUGH SITE - GENERAL',
+        { title: 'Inactive Position', isActive: false },
+      ];
+
+      expect(filterApplicantVisiblePositions(positions)).toEqual(['SEEKING SOFTWARE POSITION']);
     });
   });
 

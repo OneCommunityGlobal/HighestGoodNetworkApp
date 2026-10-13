@@ -13,7 +13,10 @@ import moment from 'moment-timezone';
 import { isJobApplicationFileUploadQuestion } from './jobApplicationQuestionUtils';
 import {
   ensurePositionOption,
+  filterApplicantVisibleForms,
+  filterApplicantVisiblePositions,
   findFormByPositionSlug,
+  isApplicantVisibleForm,
   publicApplyRequestConfig,
   titleHintFromSlug,
 } from './jobApplicationPublicApi';
@@ -155,11 +158,7 @@ function getFormIdFromNavigation(location) {
 /** Default questionnaire when a job listing has no dedicated form. */
 function findDefaultSoftwareForm(formsArr) {
   if (!formsArr?.length) return null;
-  const preferredTitles = [
-    'Software Developer',
-    'Software Engineer',
-    'APPLIED THROUGH SITE - SEEKING SOFTWARE POSITION',
-  ];
+  const preferredTitles = ['SEEKING SOFTWARE POSITION', 'Software Developer', 'Software Engineer'];
   for (const title of preferredTitles) {
     const exact = formsArr.find(
       f =>
@@ -300,7 +299,7 @@ async function loadActivePositions() {
   try {
     const positionsRes = await axios.get(ENDPOINTS.GET_JOB_POSITIONS, publicApplyRequestConfig());
     return Array.isArray(positionsRes.data?.positions)
-      ? positionsRes.data.positions.filter(Boolean)
+      ? filterApplicantVisiblePositions(positionsRes.data.positions.filter(Boolean))
       : [];
   } catch {
     return [];
@@ -312,13 +311,13 @@ async function loadJobForms(formId) {
     try {
       const single = await axios.get(ENDPOINTS.GET_JOB_FORM(formId), publicApplyRequestConfig());
       const form = single.data?.form || single.data;
-      if (form) return [form];
+      if (isApplicantVisibleForm(form)) return [form];
     } catch {
       /* Fall through to /all */
     }
   }
   const res = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS, publicApplyRequestConfig());
-  return parseFormsResponse(res);
+  return filterApplicantVisibleForms(parseFormsResponse(res));
 }
 
 function buildInitialSelection({

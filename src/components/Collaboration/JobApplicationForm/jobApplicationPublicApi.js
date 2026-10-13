@@ -49,6 +49,32 @@ export function publicApplyRequestConfig(extra = {}) {
   };
 }
 
+/**
+ * Applicant-facing forms must not expose inactive, retired, or internal
+ * "Applied Through Site" templates.
+ */
+export function isApplicantVisibleForm(form) {
+  if (!form || form.isActive === false) return false;
+
+  const title = String(form.title || '').trim();
+  return !/\[retired\]|applied through site/i.test(title);
+}
+
+export function filterApplicantVisibleForms(forms) {
+  return (Array.isArray(forms) ? forms : []).filter(isApplicantVisibleForm);
+}
+
+export function filterApplicantVisiblePositions(positions) {
+  return (Array.isArray(positions) ? positions : []).filter(position => {
+    if (position && typeof position === 'object' && position.isActive === false) {
+      return false;
+    }
+
+    const title = typeof position === 'string' ? position : position?.title;
+    return !/\[retired\]|applied through site/i.test(String(title || '').trim());
+  });
+}
+
 /** Match a form by URL slug against form titles. */
 export function findFormByPositionSlug(formsArr, slug) {
   if (!slug || !formsArr?.length) return null;
