@@ -446,6 +446,39 @@
   font-size: 0.85rem;
 }
 
+.fieldHint {
+  margin: 4px 0 0;
+  color: #555;
+  font-size: 0.85rem;
+}
+
+/* Inline, link-styled button that applies the suggested email */
+.suggestionButton {
+  min-height: 24px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #0062cc;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.suggestionButton:focus-visible {
+  outline: 2px solid currentcolor;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .suggestionButton:hover {
+    color: #004a99;
+  }
+}
+
 .submitButton {
   background-color: #006b32;
   color: #fff;
@@ -805,6 +838,20 @@
 
 .darkMode .fieldError {
   color: #ff8a80;
+}
+
+.darkMode .fieldHint {
+  color: #e0e0e0;
+}
+
+.darkMode .suggestionButton {
+  color: #9c0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .darkMode .suggestionButton:hover {
+    color: #bde533;
+  }
 }
 
 .darkMode .inputFieldError {
