@@ -192,6 +192,7 @@ const DashboardHeader = ({ darkMode, onBack, onLogout }) => (
       </Button>
       <Button
         size="sm"
+        color="danger"
         onClick={onLogout}
         className={getClassNames(styles.logoutBtn, styles.darkLogoutBtn, darkMode)}
       >
