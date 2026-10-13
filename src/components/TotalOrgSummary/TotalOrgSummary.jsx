@@ -672,6 +672,7 @@ function TotalOrgSummary(props) {
                     : null
                 }
                 totalHoursWorked={volunteerStats?.totalHoursWorked}
+                mentorNumberStats={volunteerStats?.mentorNumberStats}
                 comparisonType={selectedComparison}
               />
             </Col>

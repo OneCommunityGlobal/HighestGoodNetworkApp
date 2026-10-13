@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import Loading from '~/components/common/Loading';
+import { getMentorTotal } from '~/utils/totalOrgSummary';
 import DonutChart from '../DonutChart/DonutChart';
 import styles from './VolunteerStatusChart.module.css';
 
@@ -79,7 +80,6 @@ function VolunteerStatusChart({
     } = mentorNumberStats;
 
     let chartDataValues;
-    let computedTotal;
 
     if (donutChartData && donutChartData.existingActive !== undefined) {
       const existingActive = donutChartData.existingActive.count || 0;
@@ -91,8 +91,6 @@ function VolunteerStatusChart({
         { label: 'New Active', value: newActive },
         { label: 'Deactivated', value: deactivated },
       ];
-
-      computedTotal = existingActive + newActive + deactivated;
     } else {
       const active = activeMentors?.count || 0;
       const newM = newMentors?.count || 0;
@@ -103,12 +101,11 @@ function VolunteerStatusChart({
         { label: 'New', value: newM },
         { label: 'Deactivated This Week', value: deactM },
       ];
-
-      computedTotal = active + newM + deactM;
     }
 
     return {
-      totalMentors: computedTotal,
+      // Shared with the Mentors card so the two totals always match.
+      totalMentors: getMentorTotal(mentorNumberStats),
       // raw value: DonutChart shows N/A for "No Comparison Data" instead of a fake +0%
       percentageChange: totalMentors?.comparisonPercentage ?? null,
       data: chartDataValues,
