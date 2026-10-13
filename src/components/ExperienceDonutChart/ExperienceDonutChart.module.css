@@ -362,6 +362,12 @@
   place-items: stretch stretch;
 }
 
+/* The details are a list for screen readers; keep the card-grid look */
+ul.chart-details {
+  list-style: none;
+  padding: 0;
+}
+
 /* 2) Let cards fill the grid cell on desktop (remove narrow cap) */
 .chart-details .detail-item {
   width: 100%;
@@ -491,6 +497,29 @@
   font-weight: 800;
   color: #6b7280;
   margin: 0 0 0.4rem;
+}
+
+/* ===================== Data labels on the donut ===================== */
+
+/* Dark text keeps at least 5.6:1 contrast on every segment color, in both themes */
+.segment-count {
+  fill: #0f172a;
+  font-size: 0.85rem;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.segment-percent {
+  fill: #334155;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.not-reported-note {
+  margin: 0.75rem auto 0;
+  font-size: 0.875rem;
+  color: #475569;
 }
 
 .no-data-subtitle {
@@ -725,6 +754,14 @@
 
 .experience-donut-chart-dark-mode .spinner-container p {
   color: #dbe3ff;
+}
+
+.experience-donut-chart-dark-mode .segment-percent {
+  fill: #e5e7eb;
+}
+
+.experience-donut-chart-dark-mode .not-reported-note {
+  color: #cbd5e1 !important;
 }
 
 .experience-donut-chart-dark-mode .error-message {
