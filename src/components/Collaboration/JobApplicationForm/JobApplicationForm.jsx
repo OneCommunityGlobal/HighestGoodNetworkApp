@@ -166,13 +166,9 @@ function pickInitialForm(formsArr, navState, positionSlug) {
   }
 
   if (navState?.jobTitle) {
-    const matched = findFormForJobTitle(formsArr, navState.jobTitle);
-    if (matched) return matched;
-    return formsArr.find(f => f.questions?.length) || formsArr[0];
-  }
-
-  if (positionSlug) {
-    return formsArr.find(f => f.questions?.length) || formsArr[0];
+    // Do NOT fall back to an unrelated form (e.g. software questionnaire for
+    // "Office Coordinator") — that confuses applicants and shows wrong requirements.
+    return findFormForJobTitle(formsArr, navState.jobTitle);
   }
 
   return null;
@@ -189,18 +185,12 @@ function resolveNavigationJobTitle(jobDataFromRedirect, location, positionSlug) 
   );
 }
 
-function notifyInitialFormSelection(navTitle, formMatch, chosen) {
+function notifyInitialFormSelection(navTitle, formMatch) {
   if (!navTitle || formMatch) return;
-  if (chosen) {
-    toast.warn(
-      `Could not match "${navTitle}" to a form title. Showing "${chosen.title}" — pick another role from the dropdown if this is not the right application.`,
-      { autoClose: false, closeOnClick: false, toastId: 'job-title-mismatch-warning' },
-    );
-    return;
-  }
-  toast.warn('No application form is available. Please contact support or try again later.', {
-    toastId: 'job-title-mismatch-no-form',
-  });
+  toast.warn(
+    `No application form is linked to "${navTitle}" yet. The position is selected — pick another role, or ask an admin to create a form for this job.`,
+    { autoClose: false, closeOnClick: false, toastId: 'job-title-mismatch-warning' },
+  );
 }
 
 /** Case-insensitive match against position dropdown options. */
@@ -310,7 +300,7 @@ function buildInitialSelection({
   const slugMatch = positionSlug ? findFormByPositionSlug(formsArr, positionSlug) : null;
   const formMatch = slugMatch || (navTitle ? findFormForJobTitle(formsArr, navTitle) : null);
   const chosen = pickInitialForm(formsArr, navState, positionSlug);
-  notifyInitialFormSelection(navTitle, formMatch, chosen);
+  notifyInitialFormSelection(navTitle, formMatch);
 
   const bannerTitle = navTitle || slugMatch?.title || chosen?.title || '';
   const baseOptions = positions.length ? positions : formsArr.map(f => f.title).filter(Boolean);
