@@ -305,6 +305,7 @@
 .chart-area {
   width: 100%;
   min-width: 0;
+  padding-top: 0.75rem; /* room for percentage labels at the top of the donut */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -493,10 +494,11 @@ ul.chart-details {
 }
 
 .no-data-message {
-  font-size: 1.15rem;
-  font-weight: 800;
+  font-size: 1.05rem;
+  font-weight: 600;
   color: #6b7280;
-  margin: 0 0 0.4rem;
+  margin: 1.5rem 0 0.4rem;
+  text-align: center;
 }
 
 /* ===================== Data labels on the donut ===================== */
@@ -590,6 +592,11 @@ ul.chart-details {
   .chart-canvas {
     max-width: 360px;
     min-height: 220px;
+  }
+
+  /* Keep the last line clear of the floating scroll-to-top button */
+  .chart-area {
+    padding-bottom: 4rem;
   }
 
   .chart-details {

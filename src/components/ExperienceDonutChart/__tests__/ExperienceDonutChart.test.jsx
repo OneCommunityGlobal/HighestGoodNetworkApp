@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor, within } from '@testing-library/rea
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Provider } from 'react-redux';
 import axios from 'axios';
-import ExperienceDonutChart from '../ExperienceDonutChart';
+import ExperienceDonutChart, { renderSegmentLabel } from '../ExperienceDonutChart';
 
 vi.mock('axios');
 
@@ -75,8 +75,11 @@ describe('ExperienceDonutChart', () => {
   it('says how many applicants did not report their experience', async () => {
     renderChart();
 
+    // The note says these people are not part of the total or the percentages
     expect(
-      await screen.findByText("5 applicants didn't report years of experience."),
+      await screen.findByText(
+        "5 more applicants didn't report years of experience and aren't counted above.",
+      ),
     ).toBeInTheDocument();
   });
 
@@ -141,10 +144,126 @@ describe('ExperienceDonutChart', () => {
     expect(await screen.findByText('Roles unavailable')).toBeInTheDocument();
   });
 
-  it('shows a no-data message when nothing matches', async () => {
+  it('says there are no applicants yet when nothing has been submitted', async () => {
     mockApi({ breakdown: [], total: 0, notReported: 0 });
     renderChart();
 
-    expect(await screen.findByText('No Data Available')).toBeInTheDocument();
+    expect(await screen.findByText('No applicants yet.')).toBeInTheDocument();
+  });
+
+  it('suggests widening the filters when they match nobody', async () => {
+    renderChart();
+    await experienceRows();
+    mockApi({ breakdown: [], total: 0, notReported: 0 });
+
+    fireEvent.change(screen.getByPlaceholderText('Start date'), {
+      target: { value: '2025-01-01' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Apply' }));
+
+    expect(
+      await screen.findByText(
+        'No applicants match these filters. Try a wider date range or fewer roles.',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('explains an empty chart when every applicant left years blank', async () => {
+    mockApi({ breakdown: [], total: 0, notReported: 3 });
+    renderChart();
+
+    expect(
+      await screen.findByText('None of the 3 applicants here reported years of experience.'),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/more applicants? didn't report/)).not.toBeInTheDocument();
+  });
+
+  it('announces a failed request', async () => {
+    axios.get.mockImplementation(url =>
+      url.endsWith('/experience-roles')
+        ? Promise.resolve({ data: [] })
+        : Promise.reject({
+            response: { data: { error: 'startDate must be on or before endDate.' } },
+          }),
+    );
+    renderChart();
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'startDate must be on or before endDate.',
+    );
+  });
+
+  it('shows the newest filter results even if an older request answers last', async () => {
+    let answerFirst;
+    axios.get.mockImplementation((url, config) => {
+      if (url.endsWith('/experience-roles')) return Promise.resolve({ data: [] });
+      if (!config.params.startDate) {
+        // The initial load is slow and answers after the filtered request
+        return new Promise(resolve => {
+          answerFirst = () => resolve({ data: breakdownResponse });
+        });
+      }
+      return Promise.resolve({
+        data: {
+          total: 1,
+          notReported: 0,
+          breakdown: [
+            { experience: '0-1 years', count: 1, percentage: 100 },
+            { experience: '1-3 years', count: 0, percentage: 0 },
+            { experience: '3-5 years', count: 0, percentage: 0 },
+            { experience: '5+ years', count: 0, percentage: 0 },
+          ],
+        },
+      });
+    });
+    renderChart();
+
+    fireEvent.change(screen.getByPlaceholderText('Start date'), {
+      target: { value: '2026-09-01' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Apply' }));
+    expect((await experienceRows())[0]).toBe('0-1 years1 applicant100.0%');
+
+    answerFirst();
+    await new Promise(r => setTimeout(r, 0));
+    expect((await experienceRows())[0]).toBe('0-1 years1 applicant100.0%');
+  });
+
+  it('tells the admin when roles are loading or there are none yet', async () => {
+    let answerRoles;
+    axios.get.mockImplementation(url =>
+      url.endsWith('/experience-roles')
+        ? new Promise(resolve => {
+            answerRoles = () => resolve({ data: [] });
+          })
+        : Promise.resolve({ data: breakdownResponse }),
+    );
+    renderChart();
+
+    expect(screen.getByText('Loading roles…')).toBeInTheDocument();
+    answerRoles();
+    expect(await screen.findByText('No roles yet')).toBeInTheDocument();
+  });
+});
+
+describe('renderSegmentLabel', () => {
+  const props = { cx: 100, cy: 100, midAngle: 45, innerRadius: 40, outerRadius: 60, value: 1 };
+  const labelTexts = labelProps => {
+    const { container } = render(<svg>{renderSegmentLabel(labelProps)}</svg>);
+    return within(container)
+      .queryAllByText(/./)
+      .map(node => node.textContent);
+  };
+
+  it('shows the count inside and the percentage outside a normal segment', () => {
+    expect(labelTexts({ ...props, value: 12, percent: 0.316 })).toEqual(['12', '31.6%']);
+  });
+
+  it('drops the inside count on a sliver too thin to hold it', () => {
+    expect(labelTexts({ ...props, percent: 0.03 })).toEqual(['3.0%']);
+  });
+
+  it('drops both labels on a tiny sliver so neighbours do not overlap', () => {
+    expect(labelTexts({ ...props, percent: 0.015 })).toEqual([]);
   });
 });

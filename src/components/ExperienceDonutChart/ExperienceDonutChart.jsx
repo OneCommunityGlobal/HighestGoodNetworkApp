@@ -27,6 +27,8 @@ const pluralizeApplicants = count => `applicant${count === 1 ? '' : 's'}`;
 
 // Phones need a smaller donut so the percentage labels outside it are not cut off
 const NARROW_QUERY = '(max-width: 640px)';
+// Wider than tall on desktop so the group cards sit close under the donut
+const WIDE_CHART_ASPECT = 1.8;
 function useIsNarrow() {
   const [isNarrow, setIsNarrow] = useState(
     () => typeof window !== 'undefined' && Boolean(window.matchMedia?.(NARROW_QUERY).matches),
@@ -41,10 +43,13 @@ function useIsNarrow() {
   return isNarrow;
 }
 
-// Count inside each segment, percentage outside on a leader line (category names are in the list below)
+// Count inside each segment, percentage outside on a leader line (category names are in the list below).
+// Slivers drop the count (it won't fit) and tiny ones drop both, so neighbouring labels don't overlap.
 const RADIAN = Math.PI / 180;
-function renderSegmentLabel({ cx, cy, midAngle, innerRadius, outerRadius, value, percent }) {
-  if (!value) return null;
+const MIN_PERCENT_FOR_COUNT = 0.05;
+const MIN_PERCENT_FOR_LABELS = 0.02;
+export function renderSegmentLabel({ cx, cy, midAngle, innerRadius, outerRadius, value, percent }) {
+  if (!value || percent < MIN_PERCENT_FOR_LABELS) return null;
   const sin = Math.sin(-midAngle * RADIAN);
   const cos = Math.cos(-midAngle * RADIAN);
   const inside = innerRadius + (outerRadius - innerRadius) / 2;
@@ -52,15 +57,17 @@ function renderSegmentLabel({ cx, cy, midAngle, innerRadius, outerRadius, value,
   const outsideX = cx + outside * cos;
   return (
     <g>
-      <text
-        x={cx + inside * cos}
-        y={cy + inside * sin}
-        className={styles['segment-count']}
-        textAnchor="middle"
-        dominantBaseline="central"
-      >
-        {value}
-      </text>
+      {percent >= MIN_PERCENT_FOR_COUNT && (
+        <text
+          x={cx + inside * cos}
+          y={cy + inside * sin}
+          className={styles['segment-count']}
+          textAnchor="middle"
+          dominantBaseline="central"
+        >
+          {value}
+        </text>
+      )}
       <text
         x={outsideX + (cos >= 0 ? 4 : -4)}
         y={cy + outside * sin}
@@ -72,6 +79,13 @@ function renderSegmentLabel({ cx, cy, midAngle, innerRadius, outerRadius, value,
       </text>
     </g>
   );
+}
+
+// Leader lines follow the same rule as the percentage, so empty or tiny groups get no stray tick
+function renderSegmentLabelLine({ points, stroke, value, percent }) {
+  if (!value || percent < MIN_PERCENT_FOR_LABELS || !points?.length) return null;
+  const [from, to] = points;
+  return <path d={`M${from.x},${from.y}L${to.x},${to.y}`} stroke={stroke} fill="none" />;
 }
 
 function Spinner() {
@@ -176,7 +190,7 @@ export default function ExperienceDonutChart() {
   const [total, setTotal] = useState(0);
   const [notReported, setNotReported] = useState(0);
   const [roleOptions, setRoleOptions] = useState([]);
-  const [rolesUnavailable, setRolesUnavailable] = useState(false);
+  const [rolesStatus, setRolesStatus] = useState('loading'); // loading | ready | unavailable
   const isNarrow = useIsNarrow();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -194,7 +208,7 @@ export default function ExperienceDonutChart() {
     [appliedFilters],
   );
 
-  const fetchData = async () => {
+  const fetchData = async signal => {
     setLoading(true);
     setError(null);
     setActiveIndex(null);
@@ -217,7 +231,10 @@ export default function ExperienceDonutChart() {
       const { data } = await axios.get(`${API_BASE}/experience-breakdown`, {
         headers: { Authorization: token },
         params,
+        signal,
       });
+      // A newer filter was applied while this request was in flight
+      if (signal?.aborted) return;
 
       const breakdown = data?.breakdown || [];
       setNotReported(data?.notReported || 0);
@@ -242,6 +259,7 @@ export default function ExperienceDonutChart() {
       setChartData(formattedData);
       setTotal(totalCount); // Added state update for chart center total
     } catch (err) {
+      if (signal?.aborted) return;
       setError(
         err.response?.data?.error ||
           err.response?.data?.message ||
@@ -252,7 +270,7 @@ export default function ExperienceDonutChart() {
       setTotal(0);
       setNotReported(0);
     } finally {
-      setLoading(false);
+      if (!signal?.aborted) setLoading(false);
     }
   };
 
@@ -279,26 +297,50 @@ export default function ExperienceDonutChart() {
   };
 
   useEffect(() => {
-    fetchData();
+    const controller = new AbortController();
+    fetchData(controller.signal);
+    return () => controller.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appliedFilters]);
 
   // Role filter options are the job titles people actually applied for
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!token) return;
+    if (!token) return undefined;
+    const controller = new AbortController();
     axios
-      .get(`${API_BASE}/experience-roles`, { headers: { Authorization: token } })
-      .then(({ data }) =>
+      .get(`${API_BASE}/experience-roles`, {
+        headers: { Authorization: token },
+        signal: controller.signal,
+      })
+      .then(({ data }) => {
         setRoleOptions(
           (Array.isArray(data) ? data : []).map(role => ({ value: role, label: role })),
-        ),
-      )
+        );
+        setRolesStatus('ready');
+      })
       .catch(() => {
+        if (controller.signal.aborted) return;
         setRoleOptions([]);
-        setRolesUnavailable(true);
+        setRolesStatus('unavailable');
       });
+    return () => controller.abort();
   }, []);
+
+  let rolesPlaceholder = 'Select roles';
+  if (rolesStatus === 'loading') rolesPlaceholder = 'Loading roles…';
+  else if (rolesStatus === 'unavailable') rolesPlaceholder = 'Roles unavailable';
+  else if (roleOptions.length === 0) rolesPlaceholder = 'No roles yet';
+
+  let emptyMessage = 'No applicants yet.';
+  if (notReported > 0) {
+    emptyMessage = `None of the ${notReported} ${pluralizeApplicants(
+      notReported,
+    )} here reported years of experience.`;
+  } else if (hasFilters) {
+    emptyMessage = 'No applicants match these filters. Try a wider date range or fewer roles.';
+  }
+  const hasChart = Boolean(chartData) && total > 0;
 
   return (
     <div
@@ -382,7 +424,7 @@ export default function ExperienceDonutChart() {
                 options={roleOptions}
                 value={selectedRoles}
                 onChange={handleRoleChange}
-                placeholder={rolesUnavailable ? 'Roles unavailable' : 'Select roles'}
+                placeholder={rolesPlaceholder}
                 className={styles['experience-role-multi-select']}
                 classNamePrefix="experience-role-multi-select"
                 isDisabled={roleOptions.length === 0}
@@ -418,20 +460,21 @@ export default function ExperienceDonutChart() {
           <div className={styles['chart-area']}>
             {loading && <Spinner />}
 
-            {!loading && !error && chartData && total > 0 && (
+            {!loading && !error && hasChart && (
               <>
-                <div className={styles['chart-canvas']}>
-                  <ResponsiveContainer width="100%" aspect={1}>
+                {/* Screen readers get the same numbers, with group names, from the list below */}
+                <div className={styles['chart-canvas']} aria-hidden="true">
+                  <ResponsiveContainer width="100%" aspect={isNarrow ? 1 : WIDE_CHART_ASPECT}>
                     <PieChart>
                       <Pie
                         data={chartData}
                         cx="50%"
                         cy="50%"
                         dataKey="value"
-                        innerRadius={isNarrow ? '38%' : '48%'}
-                        outerRadius={isNarrow ? '56%' : '70%'}
+                        innerRadius={isNarrow ? '38%' : '58%'}
+                        outerRadius={isNarrow ? '56%' : '84%'}
                         label={renderSegmentLabel}
-                        labelLine
+                        labelLine={renderSegmentLabelLine}
                         stroke={darkMode ? '#1c2441' : '#fff'}
                         strokeWidth={3}
                         onMouseEnter={(_, i) => setActiveIndex(i)}
@@ -467,19 +510,23 @@ export default function ExperienceDonutChart() {
               </>
             )}
 
-            {!loading && !error && (!chartData || total === 0) && (
-              <p className={styles['no-data-message']}>No Data Available</p>
+            {!loading && !error && !hasChart && (
+              <p className={styles['no-data-message']}>{emptyMessage}</p>
             )}
 
-            {!loading && !error && notReported > 0 && (
+            {!loading && !error && hasChart && notReported > 0 && (
               <p className={styles['not-reported-note']}>
-                {`${notReported} ${pluralizeApplicants(
+                {`${notReported} more ${pluralizeApplicants(
                   notReported,
-                )} didn't report years of experience.`}
+                )} didn't report years of experience and aren't counted above.`}
               </p>
             )}
 
-            {!loading && error && <p className={styles['error-message']}>{error}</p>}
+            {!loading && error && (
+              <p className={styles['error-message']} role="alert">
+                {error}
+              </p>
+            )}
           </div>
         </section>
       </div>
