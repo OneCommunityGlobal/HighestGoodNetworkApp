@@ -5,7 +5,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import Select, { components } from 'react-select';
 import DatePicker from 'react-datepicker';
 import clsx from 'clsx';
-import { format } from 'date-fns';
+import { endOfDay, startOfDay } from 'date-fns';
 import 'react-datepicker/dist/react-datepicker.css';
 import styles from './ExperienceDonutChart.module.css';
 
@@ -176,6 +176,7 @@ export default function ExperienceDonutChart() {
   const [total, setTotal] = useState(0);
   const [notReported, setNotReported] = useState(0);
   const [roleOptions, setRoleOptions] = useState([]);
+  const [rolesUnavailable, setRolesUnavailable] = useState(false);
   const isNarrow = useIsNarrow();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -203,12 +204,14 @@ export default function ExperienceDonutChart() {
       if (!token) throw new Error('No token found. Please log in.');
 
       const params = {};
-      // The API takes calendar days; either end of the range may be left open
-      if (appliedFilters.startDate)
-        params.startDate = format(appliedFilters.startDate, 'yyyy-MM-dd');
-      if (appliedFilters.endDate) params.endDate = format(appliedFilters.endDate, 'yyyy-MM-dd');
+      // Send the viewer's local day bounds as instants; either end of the range may be left open
+      if (appliedFilters.startDate) {
+        params.startDate = startOfDay(appliedFilters.startDate).toISOString();
+      }
+      if (appliedFilters.endDate) params.endDate = endOfDay(appliedFilters.endDate).toISOString();
+      // A list (roles[]=...) keeps job titles that contain commas intact
       if (appliedFilters.roles && appliedFilters.roles.length > 0) {
-        params.roles = appliedFilters.roles.join(',');
+        params.roles = appliedFilters.roles;
       }
 
       const { data } = await axios.get(`${API_BASE}/experience-breakdown`, {
@@ -291,7 +294,10 @@ export default function ExperienceDonutChart() {
           (Array.isArray(data) ? data : []).map(role => ({ value: role, label: role })),
         ),
       )
-      .catch(() => setRoleOptions([]));
+      .catch(() => {
+        setRoleOptions([]);
+        setRolesUnavailable(true);
+      });
   }, []);
 
   return (
@@ -376,7 +382,7 @@ export default function ExperienceDonutChart() {
                 options={roleOptions}
                 value={selectedRoles}
                 onChange={handleRoleChange}
-                placeholder="Select roles"
+                placeholder={rolesUnavailable ? 'Roles unavailable' : 'Select roles'}
                 className={styles['experience-role-multi-select']}
                 classNamePrefix="experience-role-multi-select"
                 isDisabled={roleOptions.length === 0}

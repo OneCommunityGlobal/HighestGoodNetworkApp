@@ -91,7 +91,7 @@ describe('ExperienceDonutChart', () => {
     expect(screen.queryByText('DevOps Engineer')).not.toBeInTheDocument();
   });
 
-  it('sends the chosen calendar days as YYYY-MM-DD when filters are applied', async () => {
+  it("sends the viewer's local start and end of the chosen days when filters are applied", async () => {
     renderChart();
     await experienceRows();
 
@@ -105,9 +105,40 @@ describe('ExperienceDonutChart', () => {
 
     await waitFor(() => expect(breakdownCalls()).toHaveLength(2));
     expect(breakdownCalls()[1][1].params).toEqual({
-      startDate: '2026-09-01',
-      endDate: '2026-09-30',
+      startDate: new Date(2026, 8, 1, 0, 0, 0, 0).toISOString(),
+      endDate: new Date(2026, 8, 30, 23, 59, 59, 999).toISOString(),
     });
+  });
+
+  it('sends selected roles as a list so titles with commas survive', async () => {
+    mockApi();
+    axios.get.mockImplementation(url =>
+      Promise.resolve({
+        data: url.endsWith('/experience-roles')
+          ? ['Software Engineer, Frontend', 'UX Designer']
+          : breakdownResponse,
+      }),
+    );
+    renderChart();
+    await experienceRows();
+
+    fireEvent.keyDown(screen.getByLabelText('Roles'), { key: 'ArrowDown' });
+    fireEvent.click(await screen.findByText('Software Engineer, Frontend'));
+    fireEvent.click(screen.getByRole('button', { name: 'Apply' }));
+
+    await waitFor(() => expect(breakdownCalls()).toHaveLength(2));
+    expect(breakdownCalls()[1][1].params).toEqual({ roles: ['Software Engineer, Frontend'] });
+  });
+
+  it('says so when the role list cannot be loaded', async () => {
+    axios.get.mockImplementation(url =>
+      url.endsWith('/experience-roles')
+        ? Promise.reject(new Error('Network Error'))
+        : Promise.resolve({ data: breakdownResponse }),
+    );
+    renderChart();
+
+    expect(await screen.findByText('Roles unavailable')).toBeInTheDocument();
   });
 
   it('shows a no-data message when nothing matches', async () => {
