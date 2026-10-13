@@ -5,6 +5,7 @@ import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { MemoryRouter } from 'react-router-dom';
 import moment from 'moment';
+import momentTz from 'moment-timezone';
 import FormattedReport from '../FormattedReport';
 import '@testing-library/jest-dom/extend-expect';
 
@@ -234,15 +235,19 @@ describe('FormattedReport minimal test', () => {
 
 describe('FormattedReport requested week off notice', () => {
   // A request covering the current week, keyed by user id like the reducer state.
+  // Dates are built in Pacific time, like the report, so the test does not depend
+  // on the machine's timezone (CI runs in UTC).
   const timeOffRequests = {
     [dummySummary._id]: [
       {
         _id: 'req1',
         reason: 'Family trip',
-        startingDate: moment()
+        startingDate: momentTz
+          .tz('America/Los_Angeles')
           .startOf('week')
           .toISOString(),
-        endingDate: moment()
+        endingDate: momentTz
+          .tz('America/Los_Angeles')
           .endOf('week')
           .toISOString(),
       },
