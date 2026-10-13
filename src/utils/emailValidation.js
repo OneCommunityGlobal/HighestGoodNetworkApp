@@ -83,16 +83,20 @@ function toAsciiTld(domain) {
   }
 }
 
+// Fix a non-existent ending first ("gmial.con" -> "gmial.com"), then look for a provider typo
+// in the result ("gmial.com" -> "gmail.com").
 function suggestDomain(domain) {
   if (POPULAR_DOMAINS.includes(domain)) return null;
-  const provider = closest(domain, POPULAR_DOMAINS, maxEditsFor(domain));
+  let candidate = domain;
+  if (!IANA_TLDS.has(toAsciiTld(domain))) {
+    const dot = domain.lastIndexOf('.');
+    const fixedTld = closest(domain.slice(dot + 1), COMMON_TLDS, 1);
+    if (fixedTld) candidate = `${domain.slice(0, dot + 1)}${fixedTld}`;
+  }
+  if (POPULAR_DOMAINS.includes(candidate)) return candidate;
+  const provider = closest(candidate, POPULAR_DOMAINS, maxEditsFor(candidate));
   if (provider) return provider;
-
-  const dot = domain.lastIndexOf('.');
-  const tld = domain.slice(dot + 1);
-  if (IANA_TLDS.has(toAsciiTld(domain))) return null;
-  const fixedTld = closest(tld, COMMON_TLDS, 1);
-  return fixedTld ? `${domain.slice(0, dot + 1)}${fixedTld}` : null;
+  return candidate === domain ? null : candidate;
 }
 
 /**
@@ -112,7 +116,11 @@ export function checkEmail(rawEmail) {
   const domain = email.slice(at + 1);
   const lowerDomain = domain.toLowerCase();
 
-  if (!EMAIL_FORMAT.test(email)) {
+  if (!EMAIL_FORMAT.test(email) || lowerDomain.endsWith('.')) {
+    // "name@gmail.com." only has a stray trailing dot
+    if (lowerDomain.endsWith('.') && EMAIL_FORMAT.test(email.slice(0, -1))) {
+      return { error: 'Please enter a valid email address.', suggestion: email.slice(0, -1) };
+    }
     // "name@gmail" is missing its ending; offer the provider's full domain
     const provider =
       at > 0 && lowerDomain && !lowerDomain.includes('.')

@@ -16,6 +16,8 @@ describe('checkEmail', () => {
     ['ada@company.con', '.con', 'ada@company.com'],
     ['ada@school.ogr', '.ogr', 'ada@school.org'],
     ['ada@company.qwzx', '.qwzx', null],
+    ['ada@gmial.con', '.con', 'ada@gmail.com'],
+    ['ada@hotmial.cmo', '.cmo', 'ada@hotmail.com'],
     ['ada@gmail.CON', '.CON', 'ada@gmail.com'],
   ])('blocks %s (%s) and suggests %s', (email, ending, suggestion) => {
     expect(checkEmail(email)).toEqual({ error: badEnding(ending), suggestion });
@@ -62,6 +64,7 @@ describe('checkEmail', () => {
     ['ada@hotmail', 'ada@hotmail.com'],
     ['ada@company', null],
     ['ada', null],
+    ['ada@gmail.com.', 'ada@gmail.com'],
     ['ada @gmail.com', null],
   ])('flags malformed %s with suggestion %s', (email, suggestion) => {
     expect(checkEmail(email)).toEqual({
