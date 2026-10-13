@@ -152,6 +152,32 @@ function getFormIdFromNavigation(location) {
   return '';
 }
 
+/** Default questionnaire when a job listing has no dedicated form. */
+function findDefaultSoftwareForm(formsArr) {
+  if (!formsArr?.length) return null;
+  const preferredTitles = [
+    'Software Developer',
+    'Software Engineer',
+    'APPLIED THROUGH SITE - SEEKING SOFTWARE POSITION',
+  ];
+  for (const title of preferredTitles) {
+    const exact = formsArr.find(
+      f =>
+        String(f.title || '')
+          .trim()
+          .toLowerCase() === title.toLowerCase(),
+    );
+    if (exact) return exact;
+  }
+  return (
+    findFormForJobTitle(formsArr, 'Software Developer') ||
+    findFormForJobTitle(formsArr, 'Software Engineer') ||
+    formsArr.find(f => f.questions?.length) ||
+    formsArr[0] ||
+    null
+  );
+}
+
 function pickInitialForm(formsArr, navState, positionSlug) {
   if (!formsArr?.length) return null;
 
@@ -166,9 +192,14 @@ function pickInitialForm(formsArr, navState, positionSlug) {
   }
 
   if (navState?.jobTitle) {
-    // Do NOT fall back to an unrelated form (e.g. software questionnaire for
-    // "Office Coordinator") — that confuses applicants and shows wrong requirements.
-    return findFormForJobTitle(formsArr, navState.jobTitle);
+    const matched = findFormForJobTitle(formsArr, navState.jobTitle);
+    if (matched) return matched;
+    // No dedicated form for this job listing — use the default software questionnaire.
+    return findDefaultSoftwareForm(formsArr);
+  }
+
+  if (positionSlug) {
+    return findDefaultSoftwareForm(formsArr);
   }
 
   return null;
@@ -185,12 +216,18 @@ function resolveNavigationJobTitle(jobDataFromRedirect, location, positionSlug) 
   );
 }
 
-function notifyInitialFormSelection(navTitle, formMatch) {
+function notifyInitialFormSelection(navTitle, formMatch, chosen) {
   if (!navTitle || formMatch) return;
-  toast.warn(
-    `No application form is linked to "${navTitle}" yet. The position is selected — pick another role, or ask an admin to create a form for this job.`,
-    { autoClose: false, closeOnClick: false, toastId: 'job-title-mismatch-warning' },
-  );
+  if (chosen) {
+    toast.warn(
+      `No form is linked to "${navTitle}". Showing the default software engineer application ("${chosen.title}") — pick another role from the dropdown if this is not the right questionnaire.`,
+      { autoClose: false, closeOnClick: false, toastId: 'job-title-mismatch-warning' },
+    );
+    return;
+  }
+  toast.warn('No application form is available. Please contact support or try again later.', {
+    toastId: 'job-title-mismatch-no-form',
+  });
 }
 
 /** Case-insensitive match against position dropdown options. */
@@ -300,7 +337,7 @@ function buildInitialSelection({
   const slugMatch = positionSlug ? findFormByPositionSlug(formsArr, positionSlug) : null;
   const formMatch = slugMatch || (navTitle ? findFormForJobTitle(formsArr, navTitle) : null);
   const chosen = pickInitialForm(formsArr, navState, positionSlug);
-  notifyInitialFormSelection(navTitle, formMatch);
+  notifyInitialFormSelection(navTitle, formMatch, chosen);
 
   const bannerTitle = navTitle || slugMatch?.title || chosen?.title || '';
   const baseOptions = positions.length ? positions : formsArr.map(f => f.title).filter(Boolean);
@@ -1086,7 +1123,9 @@ function JobApplicationForm() {
   useEffect(() => {
     if (!selectedJob) return;
     const form =
-      forms.find(f => f.title === selectedJob) || findFormForJobTitle(forms, selectedJob);
+      forms.find(f => f.title === selectedJob) ||
+      findFormForJobTitle(forms, selectedJob) ||
+      findDefaultSoftwareForm(forms);
     if (!form) return;
     setFilteredForm(form);
     const qs = getVisibleQuestionsForForm(form);
@@ -1137,15 +1176,18 @@ function JobApplicationForm() {
     let form = forms.find(f => f.title?.toLowerCase() === lookupTitle.toLowerCase());
     if (!form) form = findFormForJobTitle(forms, lookupTitle);
     if (!form && lookupTitle !== raw) form = findFormForJobTitle(forms, raw);
+    const usedDefaultSoftware = !form;
+    if (!form) form = findDefaultSoftwareForm(forms);
 
     if (positionMatch || form) {
       const selected = positionMatch || form.title;
       setSelectedJob(selected);
       setBannerJobTitle(selected);
       setJobTitleInput(selected);
-      if (!form) {
-        toast.info(
-          `No application form is linked to "${selected}" yet. You can still pick another position from the dropdown.`,
+      if (usedDefaultSoftware && form) {
+        toast.warn(
+          `No form is linked to "${selected}". Showing the default software engineer application ("${form.title}") — pick another role from the dropdown if this is not the right questionnaire.`,
+          { autoClose: false, closeOnClick: false, toastId: 'job-title-mismatch-warning' },
         );
       }
     } else {
