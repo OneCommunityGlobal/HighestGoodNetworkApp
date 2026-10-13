@@ -369,7 +369,7 @@ describe('Collaboration', () => {
 
     expect(mockPush).toHaveBeenCalledWith(
       expect.objectContaining({
-        pathname: '/job-application',
+        pathname: '/apply/frontend-engineer',
         search: '?jobTitle=Frontend%20Engineer',
         state: expect.objectContaining({
           jobId: 'job-1',

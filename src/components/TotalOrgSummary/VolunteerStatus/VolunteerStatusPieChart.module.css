@@ -56,7 +56,8 @@
   font-size: clamp(1.2rem, 7.5cqw, 1.6rem);
 }
 
-.comparisonText {
+.comparisonText,
+.volunteerStatusCenter > p {
   font-weight: bold;
   font-size: clamp(0.7rem, 4cqw, 0.85rem);
   margin-top: 2px;

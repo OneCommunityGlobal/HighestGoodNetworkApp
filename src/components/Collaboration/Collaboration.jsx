@@ -7,6 +7,7 @@ import { ApiEndpoint } from '~/utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
 import WhatWeDoSection from '../WhatWeDo/WhatWeDo';
 import FAQSection from './FAQSection';
+import { buildApplyPath } from './JobApplicationForm/jobApplicationPublicApi';
 
 function getColumnsFromMQ() {
   if (typeof globalThis.matchMedia !== 'function') return 1;
@@ -23,6 +24,31 @@ function clampPage(page, totalPages) {
   if (page < 1) return 1;
   if (page > totalPages) return totalPages;
   return page;
+}
+
+const PLACEHOLDER_LINK_HOSTS = new Set(['example.com', 'jobs.example.com']);
+
+/** True when jobDetailsLink is a real external details URL (not placeholder / fake app paths). */
+function isUsableJobDetailsLink(link) {
+  if (typeof link !== 'string' || !link.trim()) return false;
+  try {
+    const url = new URL(link.trim());
+    if (PLACEHOLDER_LINK_HOSTS.has(url.hostname.toLowerCase())) return false;
+    // Bad seed data: jobs store localhost:/jobDetailsLink/:id — that route does not exist.
+    if (/\/jobDetailsLink(\/|$)/i.test(url.pathname)) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Resolve a safe job details URL, falling back to the internal apply page
+ * when jobDetailsLink is missing, placeholder, or a non-existent app path. */
+function getSafeJobDetailsLink(summary) {
+  const link = summary?.jobDetailsLink;
+  if (isUsableJobDetailsLink(link)) return link.trim();
+  if (summary?.title) return buildApplyPath(summary.title);
+  return '/job-application';
 }
 
 /** Keep first listing per title+category (API may return duplicate job records). */
@@ -333,10 +359,11 @@ function Collaboration() {
 
   const navigateToJobApplication = (ad, jobTitle, jobCategory) => {
     try {
+      const pathname = buildApplyPath(jobTitle);
       if (history && typeof history.push === 'function') {
         const search = jobTitle ? `?jobTitle=${encodeURIComponent(jobTitle)}` : '';
         history.push({
-          pathname: '/job-application',
+          pathname,
           search,
           state: {
             jobId: ad._id,
@@ -344,10 +371,11 @@ function Collaboration() {
             jobDescription: ad.description || '',
             requirements: Array.isArray(ad.requirements) ? ad.requirements : [],
             category: jobCategory,
+            jobDetailsLink: ad.jobDetailsLink || '',
           },
         });
       } else {
-        globalThis.location.href = '/job-application';
+        globalThis.location.href = pathname;
       }
     } catch {
       toast.error('Error opening job application');
@@ -532,23 +560,31 @@ function Collaboration() {
             <h1>Summaries</h1>
 
             {pageItems.length > 0 ? (
-              pageItems.map(summary => (
-                <div
-                  key={summary._id || summary.jobDetailsLink || summary.title}
-                  className={styles.summariesItem}
-                >
-                  <h3>
-                    <a href={summary.jobDetailsLink} target="_blank" rel="noreferrer">
-                      {summary.title}
-                    </a>
-                  </h3>
-                  <p>{summary.description}</p>
-                  <p className={styles.date}>
-                    Date Posted:{' '}
-                    {summary.datePosted ? new Date(summary.datePosted).toLocaleDateString() : '—'}
-                  </p>
-                </div>
-              ))
+              pageItems.map(summary => {
+                const jobDetailsLink = getSafeJobDetailsLink(summary);
+                const isExternalLink = /^https?:\/\//i.test(jobDetailsLink);
+
+                return (
+                  <div
+                    key={summary._id || summary.jobDetailsLink || summary.title}
+                    className={styles.summariesItem}
+                  >
+                    <h3>
+                      <a
+                        href={jobDetailsLink}
+                        {...(isExternalLink ? { target: '_blank', rel: 'noreferrer' } : {})}
+                      >
+                        {summary.title}
+                      </a>
+                    </h3>
+                    <p>{summary.description}</p>
+                    <p className={styles.date}>
+                      Date Posted:{' '}
+                      {summary.datePosted ? new Date(summary.datePosted).toLocaleDateString() : '—'}
+                    </p>
+                  </div>
+                );
+              })
             ) : (
               <p>No summaries found.</p>
             )}
