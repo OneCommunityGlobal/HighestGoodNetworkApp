@@ -874,6 +874,7 @@
     overflow: visible;
     position: static;
     background: none;
+    max-width: 800px; /* Limit width to prevent excessive stretching on narrow navigation */
   }
 
   .rightSection {
@@ -891,10 +892,12 @@
   }
 
   .menuContainer {
-    width: 100%;
+    width: auto;
+    max-width: 800px;
     order: 2 !important;
     flex-flow: row wrap !important;
     gap: 1rem;
+    justify-content: flex-end; /* Right-align nav items */
   }
 
   .hideInMobile {
