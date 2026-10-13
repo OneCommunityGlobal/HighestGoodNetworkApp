@@ -88,6 +88,23 @@ function renderSegmentLabelLine({ points, stroke, value, percent }) {
   return <path d={`M${from.x},${from.y}L${to.x},${to.y}`} stroke={stroke} fill="none" />;
 }
 
+function rolesPlaceholderFor(status, optionCount) {
+  if (status === 'loading') return 'Loading roles…';
+  if (status === 'unavailable') return 'Roles unavailable';
+  return optionCount === 0 ? 'No roles yet' : 'Select roles';
+}
+
+function emptyMessageFor(notReported, hasFilters) {
+  if (notReported > 0) {
+    return `None of the ${notReported} ${pluralizeApplicants(
+      notReported,
+    )} here reported years of experience.`;
+  }
+  if (hasFilters)
+    return 'No applicants match these filters. Try a wider date range or fewer roles.';
+  return 'No applicants yet.';
+}
+
 function Spinner() {
   return (
     <div className={styles['spinner-container']} role="status" aria-live="polite" aria-busy="true">
@@ -298,7 +315,8 @@ export default function ExperienceDonutChart() {
 
   useEffect(() => {
     const controller = new AbortController();
-    fetchData(controller.signal);
+    // fetchData handles its own errors and loading state
+    void fetchData(controller.signal);
     return () => controller.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appliedFilters]);
@@ -327,19 +345,8 @@ export default function ExperienceDonutChart() {
     return () => controller.abort();
   }, []);
 
-  let rolesPlaceholder = 'Select roles';
-  if (rolesStatus === 'loading') rolesPlaceholder = 'Loading roles…';
-  else if (rolesStatus === 'unavailable') rolesPlaceholder = 'Roles unavailable';
-  else if (roleOptions.length === 0) rolesPlaceholder = 'No roles yet';
-
-  let emptyMessage = 'No applicants yet.';
-  if (notReported > 0) {
-    emptyMessage = `None of the ${notReported} ${pluralizeApplicants(
-      notReported,
-    )} here reported years of experience.`;
-  } else if (hasFilters) {
-    emptyMessage = 'No applicants match these filters. Try a wider date range or fewer roles.';
-  }
+  const rolesPlaceholder = rolesPlaceholderFor(rolesStatus, roleOptions.length);
+  const emptyMessage = emptyMessageFor(notReported, hasFilters);
   const hasChart = Boolean(chartData) && total > 0;
 
   return (
