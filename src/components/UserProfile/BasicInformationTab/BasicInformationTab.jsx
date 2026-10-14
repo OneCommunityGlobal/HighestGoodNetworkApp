@@ -21,6 +21,7 @@ import hasPermission from '~/utils/permissions';
 import { ENDPOINTS } from '~/utils/URL';
 import TimeZoneDropDown from '../TimeZoneDropDown';
 import styles from './BasicInformationTab.module.css';
+import phoneInputStyles from '../phoneInputDark.module.css';
 import RoleChangePermissionsModal from '~/components/UserProfile/RoleChangePermissionsModal';
 
 
@@ -364,6 +365,7 @@ export const Phone = props => {
               style={{ position: 'relative', width: '100%' }}
             >
               <PhoneInput
+                containerClass={darkMode ? phoneInputStyles.phoneInputDark : ''}
                 buttonClass={`${darkMode ? 'bg-darkmode-liblack' : ''}`}
                 inputClass={`phone-input-style ${
                   darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''

@@ -765,3 +765,10 @@
 :global(body.dark-mode) .weekTabsDark :global(.nav-link.active *) {
   color: #fff !important;
 }
+
+/* Dark mode forces text white, which was unreadable on the light-blue info alert */
+.emptyTabAlertDark.emptyTabAlertDark {
+  background-color: #2f4157;
+  border-color: #3a506b;
+  color: #fff;
+}

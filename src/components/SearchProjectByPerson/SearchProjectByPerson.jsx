@@ -61,7 +61,7 @@ export default function SearchProjectByPerson({
       </form>
 
       {showSuggestions && suggestions?.length > 0 && (
-        <ul className={`suggestions-list ${darkMode ? styles.suggestionsListDark : ''}`}>
+        <ul className="suggestions-list">
           {suggestions.map(suggestion => (
             <li key={suggestion._id} className="suggestion-item">
               <button

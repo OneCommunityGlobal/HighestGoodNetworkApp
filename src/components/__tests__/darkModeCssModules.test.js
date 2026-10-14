@@ -30,6 +30,7 @@ const PAIRS = [
   ],
   ['components/TeamMemberTasks/TeamMemberTask.jsx', 'components/TeamMemberTasks/style.module.css'],
   ['components/TeamMemberTasks/TeamMemberTasks.jsx', 'components/TeamMemberTasks/style.module.css'],
+  ['components/Warnings/modals/WarningTrackerModal.jsx', 'components/Warnings/Warnings.module.css'],
   ...Array.from({ length: 8 }, (_, i) => [
     `components/TSAForm/pages/TSAFormPage${i + 1}.jsx`,
     'components/TSAForm/TSAForm.module.css',

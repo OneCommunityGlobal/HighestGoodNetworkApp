@@ -2363,7 +2363,9 @@ const WeeklySummariesReport = props => {
                     ) : (
                       <Row>
                         <Col>
-                          <Alert color="info">No data available for this tab.</Alert>
+                          <Alert color="info" className={darkMode ? styles.emptyTabAlertDark : ''}>
+                            No data available for this tab.
+                          </Alert>
                         </Col>
                       </Row>
                     )}
