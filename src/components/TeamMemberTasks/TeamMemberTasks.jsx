@@ -693,19 +693,19 @@ const TeamMemberTasks = React.memo(props => {
                         ].join(' ')}
                       >
                         <FontAwesomeIcon
-                          style={{ color: darkMode ? 'lightgray' : '' }}
+                          className={darkMode ? styles.hoursCommittedDark : ''}
                           icon={faClock}
                           title="Weekly Committed Hours"
                         />
                         /
                         <FontAwesomeIcon
-                          style={{ color: 'green' }}
+                          className={darkMode ? styles.hoursCompletedDark : styles.hoursCompleted}
                           icon={faClock}
                           title="Total Hours Completed this Week"
                         />
                         /
                         <FontAwesomeIcon
-                          style={{ color: 'red' }}
+                          className={darkMode ? styles.hoursRemainingDark : styles.hoursRemaining}
                           icon={faClock}
                           title="Total Remaining Hours"
                         />
@@ -715,20 +715,11 @@ const TeamMemberTasks = React.memo(props => {
                             onClick={handleShowTrackers}
                             className={[
                               styles.m1,
-                              styles.headerControlButton,
-                              showTrackers ? styles.headerControlButtonActive : '',
-                              darkMode ? styles.headerControlButtonDark : '',
+                              styles.trackerToggleBtn,
+                              showTrackers ? styles.trackerToggleBtnActive : '',
+                              darkMode ? styles.trackerToggleBtnDark : '',
                               darkMode ? styles.boxShadowDark : styles.boxShadowLight,
                             ].join(' ')}
-                            style={{
-                              marginTop: '6px',
-                              padding: '2px 8px',
-                              fontSize: '12px',
-                              borderRadius: '4px',
-                              border: '1px solid #17a2b8',
-                              cursor: 'pointer',
-                              whiteSpace: 'nowrap',
-                            }}
                           >
                             {showTrackers ? 'Hide Trackers' : 'Show Trackers'}
                           </button>
@@ -737,20 +728,11 @@ const TeamMemberTasks = React.memo(props => {
                             onClick={handleHideTasks}
                             className={[
                               styles.m1,
-                              styles.headerControlButton,
-                              !showTasks ? styles.headerControlButtonActive : '',
-                              darkMode ? styles.headerControlButtonDark : '',
+                              styles.trackerToggleBtn,
+                              !showTasks ? styles.trackerToggleBtnActive : '',
+                              darkMode ? styles.trackerToggleBtnDark : '',
                               darkMode ? styles.boxShadowDark : styles.boxShadowLight,
                             ].join(' ')}
-                            style={{
-                              marginTop: '6px',
-                              padding: '2px 8px',
-                              fontSize: '12px',
-                              borderRadius: '4px',
-                              border: '1px solid #17a2b8',
-                              cursor: 'pointer',
-                              whiteSpace: 'nowrap',
-                            }}
                           >
                             {showTasks ? 'Hide Tasks' : 'Show Tasks'}
                           </button>

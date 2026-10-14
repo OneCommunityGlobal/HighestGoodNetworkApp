@@ -672,6 +672,7 @@ function TotalOrgSummary(props) {
                     : null
                 }
                 totalHoursWorked={volunteerStats?.totalHoursWorked}
+                mentorNumberStats={volunteerStats?.mentorNumberStats}
                 comparisonType={selectedComparison}
               />
             </Col>
@@ -738,6 +739,7 @@ function TotalOrgSummary(props) {
                   volunteerNumberStats={volunteerStats?.volunteerNumberStats}
                   mentorNumberStats={volunteerStats?.mentorNumberStats}
                   comparisonType={selectedComparison}
+                  darkMode={darkMode}
                 />
               </div>
             </Col>
@@ -773,14 +775,12 @@ function TotalOrgSummary(props) {
                       }
                       totalHoursData={volunteerStats?.totalHoursWorked}
                       title="Actual Hours Worked"
-                      legendTitle="Actual Hours Worked"
                     />
                     <VolunteerHoursDistribution
                       isLoading={isLoading}
                       darkMode={darkMode}
                       hoursData={volunteerStats?.volunteerCommittedHoursStats}
                       title="Weekly Committed Hours"
-                      legendTitle="Weekly Committed Hours"
                       centerLabelLines={['TOTAL', 'VOLUNTEERS']}
                       useBucketCounts
                     />
