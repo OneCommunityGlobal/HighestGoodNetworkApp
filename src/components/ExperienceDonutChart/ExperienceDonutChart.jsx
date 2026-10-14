@@ -5,6 +5,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import Select, { components } from 'react-select';
 import DatePicker from 'react-datepicker';
 import clsx from 'clsx';
+import { endOfDay, startOfDay } from 'date-fns';
 import 'react-datepicker/dist/react-datepicker.css';
 import styles from './ExperienceDonutChart.module.css';
 
@@ -20,19 +21,88 @@ const SEGMENT_COLORS = [
 
 const EXPERIENCE_LABELS = ['0-1 years', '1-3 years', '3-5 years', '5+ years'];
 
-const AVAILABLE_ROLES = [
-  { value: 'Frontend Developer', label: 'Frontend Developer' },
-  { value: 'DevOps Engineer', label: 'DevOps Engineer' },
-  { value: 'Project Manager', label: 'Project Manager' },
-  { value: 'Junior Developer', label: 'Junior Developer' },
-  { value: 'Full Stack Developer', label: 'Full Stack Developer' },
-];
+const API_BASE = `${process.env.REACT_APP_APIENDPOINT}/applicant-analytics`;
 
-// ✅ Crypto-based RNG (safer than Math.random)
-function secureRandomInt(min, max) {
-  const array = new Uint32Array(1);
-  crypto.getRandomValues(array);
-  return min + (array[0] % (max - min + 1));
+const pluralizeApplicants = count => `applicant${count === 1 ? '' : 's'}`;
+
+// Phones need a smaller donut so the percentage labels outside it are not cut off
+const NARROW_QUERY = '(max-width: 640px)';
+// Wider than tall on desktop so the group cards sit close under the donut
+const WIDE_CHART_ASPECT = 1.8;
+function useIsNarrow() {
+  const [isNarrow, setIsNarrow] = useState(
+    () => typeof window !== 'undefined' && Boolean(window.matchMedia?.(NARROW_QUERY).matches),
+  );
+  useEffect(() => {
+    const query = window.matchMedia?.(NARROW_QUERY);
+    if (!query) return undefined;
+    const onChange = e => setIsNarrow(e.matches);
+    query.addEventListener('change', onChange);
+    return () => query.removeEventListener('change', onChange);
+  }, []);
+  return isNarrow;
+}
+
+// Count inside each segment, percentage outside on a leader line (category names are in the list below).
+// Slivers drop the count (it won't fit) and tiny ones drop both, so neighbouring labels don't overlap.
+const RADIAN = Math.PI / 180;
+const MIN_PERCENT_FOR_COUNT = 0.05;
+const MIN_PERCENT_FOR_LABELS = 0.02;
+export function renderSegmentLabel({ cx, cy, midAngle, innerRadius, outerRadius, value, percent }) {
+  if (!value || percent < MIN_PERCENT_FOR_LABELS) return null;
+  const sin = Math.sin(-midAngle * RADIAN);
+  const cos = Math.cos(-midAngle * RADIAN);
+  const inside = innerRadius + (outerRadius - innerRadius) / 2;
+  const outside = outerRadius + 22;
+  const outsideX = cx + outside * cos;
+  return (
+    <g>
+      {percent >= MIN_PERCENT_FOR_COUNT && (
+        <text
+          x={cx + inside * cos}
+          y={cy + inside * sin}
+          className={styles['segment-count']}
+          textAnchor="middle"
+          dominantBaseline="central"
+        >
+          {value}
+        </text>
+      )}
+      <text
+        x={outsideX + (cos >= 0 ? 4 : -4)}
+        y={cy + outside * sin}
+        className={styles['segment-percent']}
+        textAnchor={cos >= 0 ? 'start' : 'end'}
+        dominantBaseline="central"
+      >
+        {`${(percent * 100).toFixed(1)}%`}
+      </text>
+    </g>
+  );
+}
+
+// Leader lines follow the same rule as the percentage, so empty or tiny groups get no stray tick
+function renderSegmentLabelLine({ points, stroke, value, percent }) {
+  if (!value || percent < MIN_PERCENT_FOR_LABELS || !points?.length) return null;
+  const [from, to] = points;
+  return <path d={`M${from.x},${from.y}L${to.x},${to.y}`} stroke={stroke} fill="none" />;
+}
+
+function rolesPlaceholderFor(status, optionCount) {
+  if (status === 'loading') return 'Loading roles…';
+  if (status === 'unavailable') return 'Roles unavailable';
+  return optionCount === 0 ? 'No roles yet' : 'Select roles';
+}
+
+function emptyMessageFor(notReported, hasFilters) {
+  if (notReported > 0) {
+    return `None of the ${notReported} ${pluralizeApplicants(
+      notReported,
+    )} here reported years of experience.`;
+  }
+  if (hasFilters)
+    return 'No applicants match these filters. Try a wider date range or fewer roles.';
+  return 'No applicants yet.';
 }
 
 function Spinner() {
@@ -48,11 +118,11 @@ function DetailsPanel({ chartData, total, activeIndex }) {
   if (!chartData || total === 0) return null;
 
   return (
-    <div className={styles['chart-details']}>
+    <ul className={styles['chart-details']} aria-label="Applicants by experience">
       {chartData.map((d, idx) => {
         const pct = total > 0 ? ((d.value / total) * 100).toFixed(1) : 0;
         return (
-          <div
+          <li
             key={d.name}
             className={`${styles['detail-item']} ${activeIndex === idx ? styles.active : ''}`}
           >
@@ -65,15 +135,15 @@ function DetailsPanel({ chartData, total, activeIndex }) {
                 <span className={styles['detail-count']}>{d.value.toLocaleString()}</span>
                 <span className={styles['detail-applicant-label']}>
                   {' '}
-                  applicant{d.value > 0 && 's'}
+                  {pluralizeApplicants(d.value)}
                 </span>
               </div>
               <span className={styles['detail-pct']}>{pct}%</span>
             </div>
-          </div>
+          </li>
         );
       })}
-    </div>
+    </ul>
   );
 }
 
@@ -135,6 +205,10 @@ export default function ExperienceDonutChart() {
 
   const [chartData, setChartData] = useState(null);
   const [total, setTotal] = useState(0);
+  const [notReported, setNotReported] = useState(0);
+  const [roleOptions, setRoleOptions] = useState([]);
+  const [rolesStatus, setRolesStatus] = useState('loading'); // loading | ready | unavailable
+  const isNarrow = useIsNarrow();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -151,7 +225,7 @@ export default function ExperienceDonutChart() {
     [appliedFilters],
   );
 
-  const fetchData = async () => {
+  const fetchData = async signal => {
     setLoading(true);
     setError(null);
     setActiveIndex(null);
@@ -160,35 +234,36 @@ export default function ExperienceDonutChart() {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No token found. Please log in.');
 
-      // Fixed API endpoint path to include /applicant-analytics
-      const url = `${process.env.REACT_APP_APIENDPOINT}/applicant-analytics/experience-breakdown`;
       const params = {};
-
-      // Replaced undefined filter variables with correctly scoped appliedFilters
-      if (appliedFilters.startDate && appliedFilters.endDate) {
-        params.startDate = appliedFilters.startDate;
-        params.endDate = appliedFilters.endDate;
+      // Send the viewer's local day bounds as instants; either end of the range may be left open
+      if (appliedFilters.startDate) {
+        params.startDate = startOfDay(appliedFilters.startDate).toISOString();
       }
+      if (appliedFilters.endDate) params.endDate = endOfDay(appliedFilters.endDate).toISOString();
+      // A list (roles[]=...) keeps job titles that contain commas intact
       if (appliedFilters.roles && appliedFilters.roles.length > 0) {
-        params.roles = appliedFilters.roles.join(',');
+        params.roles = appliedFilters.roles;
       }
 
-      const response = await axios.get(url, {
+      const { data } = await axios.get(`${API_BASE}/experience-breakdown`, {
         headers: { Authorization: token },
         params,
+        signal,
       });
+      // A newer filter was applied while this request was in flight
+      if (signal?.aborted) return;
 
-      const { data } = response;
+      const breakdown = data?.breakdown || [];
+      setNotReported(data?.notReported || 0);
 
-      if (!data || data.length === 0) {
+      if (breakdown.length === 0) {
         setChartData(null);
         setTotal(0);
         return;
       }
 
-      // Re-formatted chart data as an array of objects for Recharts compatibility
       const formattedData = EXPERIENCE_LABELS.map((label, index) => {
-        const found = data.find(d => d.experience === label);
+        const found = breakdown.find(d => d.experience === label);
         return {
           name: label,
           value: found ? found.count : 0,
@@ -201,11 +276,18 @@ export default function ExperienceDonutChart() {
       setChartData(formattedData);
       setTotal(totalCount); // Added state update for chart center total
     } catch (err) {
-      setError(err.response?.data?.message || err.message || 'Error fetching data.');
+      if (signal?.aborted) return;
+      setError(
+        err.response?.data?.error ||
+          err.response?.data?.message ||
+          err.message ||
+          'Error fetching data.',
+      );
       setChartData(null);
       setTotal(0);
+      setNotReported(0);
     } finally {
-      setLoading(false);
+      if (!signal?.aborted) setLoading(false);
     }
   };
 
@@ -232,9 +314,40 @@ export default function ExperienceDonutChart() {
   };
 
   useEffect(() => {
-    fetchData();
+    const controller = new AbortController();
+    // fetchData handles its own errors and loading state
+    void fetchData(controller.signal);
+    return () => controller.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appliedFilters]);
+
+  // Role filter options are the job titles people actually applied for
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return undefined;
+    const controller = new AbortController();
+    axios
+      .get(`${API_BASE}/experience-roles`, {
+        headers: { Authorization: token },
+        signal: controller.signal,
+      })
+      .then(({ data }) => {
+        setRoleOptions(
+          (Array.isArray(data) ? data : []).map(role => ({ value: role, label: role })),
+        );
+        setRolesStatus('ready');
+      })
+      .catch(() => {
+        if (controller.signal.aborted) return;
+        setRoleOptions([]);
+        setRolesStatus('unavailable');
+      });
+    return () => controller.abort();
+  }, []);
+
+  const rolesPlaceholder = rolesPlaceholderFor(rolesStatus, roleOptions.length);
+  const emptyMessage = emptyMessageFor(notReported, hasFilters);
+  const hasChart = Boolean(chartData) && total > 0;
 
   return (
     <div
@@ -243,7 +356,7 @@ export default function ExperienceDonutChart() {
     >
       <div className={styles['experience-chart-container']}>
         <div className={styles['chart-header']}>
-          <h2 className={styles['chart-title']}>Applicants by Experience</h2>
+          <h2 className={styles['chart-title']}>Breakdown of Applicants by Experience</h2>
         </div>
 
         <section className={styles['filter-section']}>
@@ -253,6 +366,7 @@ export default function ExperienceDonutChart() {
                 Start Date
               </label>
               <DatePicker
+                id="startDate"
                 selected={dateRange?.start ? new Date(dateRange.start) : null}
                 onChange={date => {
                   const newEnd =
@@ -284,6 +398,7 @@ export default function ExperienceDonutChart() {
                 End Date
               </label>
               <DatePicker
+                id="endDate"
                 selected={dateRange?.end ? new Date(dateRange.end) : null}
                 onChange={date => {
                   setDateRange({
@@ -311,14 +426,15 @@ export default function ExperienceDonutChart() {
                 Roles
               </label>
               <Select
+                inputId="roles"
                 isMulti
-                options={AVAILABLE_ROLES}
+                options={roleOptions}
                 value={selectedRoles}
                 onChange={handleRoleChange}
-                placeholder="Select roles"
+                placeholder={rolesPlaceholder}
                 className={styles['experience-role-multi-select']}
                 classNamePrefix="experience-role-multi-select"
-                isDisabled={AVAILABLE_ROLES.length === 0}
+                isDisabled={roleOptions.length === 0}
                 closeMenuOnSelect={false}
                 hideSelectedOptions={false}
                 menuPlacement="auto"
@@ -351,18 +467,21 @@ export default function ExperienceDonutChart() {
           <div className={styles['chart-area']}>
             {loading && <Spinner />}
 
-            {!loading && !error && chartData && total > 0 && (
+            {!loading && !error && hasChart && (
               <>
-                <div className={styles['chart-canvas']}>
-                  <ResponsiveContainer width="100%" aspect={1}>
+                {/* Screen readers get the same numbers, with group names, from the list below */}
+                <div className={styles['chart-canvas']} aria-hidden="true">
+                  <ResponsiveContainer width="100%" aspect={isNarrow ? 1 : WIDE_CHART_ASPECT}>
                     <PieChart>
                       <Pie
                         data={chartData}
                         cx="50%"
                         cy="50%"
                         dataKey="value"
-                        innerRadius="55%"
-                        outerRadius="82%"
+                        innerRadius={isNarrow ? '38%' : '58%'}
+                        outerRadius={isNarrow ? '56%' : '84%'}
+                        label={renderSegmentLabel}
+                        labelLine={renderSegmentLabelLine}
                         stroke={darkMode ? '#1c2441' : '#fff'}
                         strokeWidth={3}
                         onMouseEnter={(_, i) => setActiveIndex(i)}
@@ -398,9 +517,23 @@ export default function ExperienceDonutChart() {
               </>
             )}
 
-            {!loading && !error && (!chartData || total === 0) && <p>No Data Available 😢</p>}
+            {!loading && !error && !hasChart && (
+              <p className={styles['no-data-message']}>{emptyMessage}</p>
+            )}
 
-            {!loading && error && <p className={styles['error-message']}>{error}</p>}
+            {!loading && !error && hasChart && notReported > 0 && (
+              <p className={styles['not-reported-note']}>
+                {`${notReported} more ${pluralizeApplicants(
+                  notReported,
+                )} didn't report years of experience and aren't counted above.`}
+              </p>
+            )}
+
+            {!loading && error && (
+              <p className={styles['error-message']} role="alert">
+                {error}
+              </p>
+            )}
           </div>
         </section>
       </div>
