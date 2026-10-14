@@ -1542,68 +1542,66 @@ const IntegratedEmailSender = ({
             </Button>
           </div>
           {emailMode !== EMAIL_MODES.WEEKLY_UPDATE && (
-            <>
-              <div
-                className="action-buttons"
-                style={{
-                  display: 'flex',
-                  gap: '0.75rem',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                }}
+            <div
+              className="action-buttons"
+              style={{
+                display: 'flex',
+                gap: '0.75rem',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+              }}
+            >
+              <Button
+                color="primary"
+                size="sm"
+                onClick={handleSendEmail}
+                disabled={
+                  previewLoading ||
+                  isSending ||
+                  isRetrying ||
+                  (useTemplate &&
+                    selectedTemplate &&
+                    Object.keys(validationErrors).some(key =>
+                      selectedTemplate?.variables?.some(
+                        v => v?.name === key && !!validationErrors[key],
+                      ),
+                    )) ||
+                  (!useTemplate && !customContent) ||
+                  (useTemplate && !selectedTemplate)
+                }
               >
-                <Button
-                  color="primary"
-                  size="sm"
-                  onClick={handleSendEmail}
-                  disabled={
-                    previewLoading ||
-                    isSending ||
-                    isRetrying ||
-                    (useTemplate &&
-                      selectedTemplate &&
-                      Object.keys(validationErrors).some(key =>
-                        selectedTemplate?.variables?.some(
-                          v => v?.name === key && !!validationErrors[key],
-                        ),
-                      )) ||
-                    (!useTemplate && !customContent) ||
-                    (useTemplate && !selectedTemplate)
-                  }
-                >
-                  {previewLoading ? (
-                    <>
-                      <FaSpinner className="fa-spin me-1" />
-                      Loading Preview...
-                    </>
-                  ) : (
-                    <>
-                      <FaEye className="me-1" />
-                      Preview & Send
-                    </>
-                  )}
+                {previewLoading ? (
+                  <>
+                    <FaSpinner className="fa-spin me-1" />
+                    Loading Preview...
+                  </>
+                ) : (
+                  <>
+                    <FaEye className="me-1" />
+                    Preview & Send
+                  </>
+                )}
+              </Button>
+
+              {onClose && (
+                <Button color="secondary" size="sm" onClick={onClose}>
+                  <FaTimes className="me-1" />
+                  Close
                 </Button>
+              )}
 
-                {onClose && (
-                  <Button color="secondary" size="sm" onClick={onClose}>
-                    <FaTimes className="me-1" />
-                    Close
-                  </Button>
-                )}
-
-                {hasDraft() && (
-                  <Button
-                    color="outline-danger"
-                    size="sm"
-                    onClick={handleClearDraft}
-                    title="Clear saved draft"
-                  >
-                    <FaTimes className="me-1" />
-                    Clear Draft
-                  </Button>
-                )}
-              </div>
-            </>
+              {hasDraft() && (
+                <Button
+                  color="outline-danger"
+                  size="sm"
+                  onClick={handleClearDraft}
+                  title="Clear saved draft"
+                >
+                  <FaTimes className="me-1" />
+                  Clear Draft
+                </Button>
+              )}
+            </div>
           )}
         </div>
       </div>
