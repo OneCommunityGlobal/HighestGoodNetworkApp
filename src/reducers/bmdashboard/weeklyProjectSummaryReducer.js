@@ -70,8 +70,9 @@ export const weeklyProjectSummaryReducer = (state = initialState, action) => {
         projectStatusLoading: false,
         projectStatusData: action.payload,
         projectStatusError: null,
-        projectStatusActiveRequestId: null,
-        projectStatusActiveRequestKey: null,
+        projectStatusActiveRequestId: action.meta?.requestId || state.projectStatusActiveRequestId,
+        projectStatusActiveRequestKey:
+          action.meta?.requestKey || state.projectStatusActiveRequestKey,
         projectStatusDataRequestKey: action.meta?.requestKey || null,
         projectStatusErrorRequestKey: null,
       };
@@ -86,8 +87,9 @@ export const weeklyProjectSummaryReducer = (state = initialState, action) => {
         projectStatusLoading: false,
         projectStatusData: null,
         projectStatusError: action.payload,
-        projectStatusActiveRequestId: null,
-        projectStatusActiveRequestKey: null,
+        projectStatusActiveRequestId: action.meta?.requestId || state.projectStatusActiveRequestId,
+        projectStatusActiveRequestKey:
+          action.meta?.requestKey || state.projectStatusActiveRequestKey,
         projectStatusDataRequestKey: null,
         projectStatusErrorRequestKey: action.meta?.requestKey || null,
       };
