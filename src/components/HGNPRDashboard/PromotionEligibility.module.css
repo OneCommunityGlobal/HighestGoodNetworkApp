@@ -101,7 +101,7 @@
   background-color: #121212;
 }
 
-.promo_table-container.dark .promo_table tr:hover {
+.promo_table_container.dark .promo_table tr:hover {
   background-color: #555;
 }
 
@@ -130,7 +130,7 @@
 }
 
 .promo_table_container.dark .review_btn,
-.promo-table_container.dark .process_promo_btn {
+.promo_table_container.dark .process_promo_btn {
   background-color: #3b82f6;
   color: white;
 }
