@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Table } from 'reactstrap';
 import { connect } from 'react-redux';
 import axios from 'axios';
+import './ResolvedTasks.module.css';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import { ENDPOINTS } from '~/utils/URL';
@@ -71,7 +72,7 @@ const ResolvedTasks = props => {
                       {item.taskId ? (
                         <Link
                           to={`/wbs/tasks/${item.taskId._id}`}
-                          className={darkMode ? 'text-info' : ''}
+                          className={darkMode ? styles.resolvedTaskLinkDark : ''}
                         >
                           {item.taskId.taskName}
                         </Link>

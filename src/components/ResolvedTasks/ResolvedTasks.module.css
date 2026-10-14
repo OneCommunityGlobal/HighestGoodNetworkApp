@@ -1,0 +1,10 @@
+.resolvedTaskLinkDark {
+  color: #66bfff;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.resolvedTaskLinkDark:hover {
+  color: #9dd7ff;
+  text-decoration: underline;
+}
