@@ -3,7 +3,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import { loadSavedGradings, mergeSavedGradings, saveAddedPR } from './prGradingPersistence';
+import {
+  loadSavedGradings,
+  mergeSavedGradings,
+  saveAddedPR,
+  saveGradeChange,
+} from './prGradingPersistence';
 import styles from './PRGradingScreen.module.css';
 
 const hasDuplicatePR = (gradedPrs, value) => {
@@ -28,6 +33,8 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
   const [isFinalized, setIsFinalized] = useState(false);
   const [isLoadingSaved, setIsLoadingSaved] = useState(true);
   const [isSavingPR, setIsSavingPR] = useState(false);
+  const [isSavingGrade, setIsSavingGrade] = useState(false);
+  const [gradeError, setGradeError] = useState('');
   const [loadError, setLoadError] = useState('');
 
   useEffect(() => {
@@ -156,25 +163,45 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
   /* ---------------- MODAL ---------------- */
 
   const handlePRNumberClick = reviewerId => {
-    if (isFinalized) return;
+    if (isFinalized || isLoadingSaved || loadError) return;
+    setGradeError('');
     setShowGradingModal(reviewerId);
   };
 
-  const handleGradeChange = (reviewerId, prId, newGrade) => {
-    if (isFinalized) return;
-    setReviewerData(prev =>
-      prev.map(r =>
-        r.id === reviewerId
-          ? {
-              ...r,
-              gradedPrs: r.gradedPrs.map(pr => (pr.id === prId ? { ...pr, grade: newGrade } : pr)),
-            }
-          : r,
-      ),
-    );
+  const handleGradeChange = async (reviewerId, prId, newGrade) => {
+    if (isFinalized || isLoadingSaved || isSavingGrade || loadError) return;
+    const reviewer = reviewerData.find(item => item.id === reviewerId);
+    const pr = reviewer?.gradedPrs.find(item => item.id === prId);
+    if (!pr || pr.grade === newGrade) return;
+
+    setIsSavingGrade(true);
+    setGradeError('');
+    try {
+      await saveGradeChange(teamData, reviewer, pr.prNumbers, newGrade);
+      setReviewerData(prev =>
+        prev.map(r =>
+          r.id === reviewerId
+            ? {
+                ...r,
+                gradedPrs: r.gradedPrs.map(item =>
+                  item.id === prId ? { ...item, grade: newGrade } : item,
+                ),
+              }
+            : r,
+        ),
+      );
+    } catch {
+      setGradeError('Could not save this grade. Please try again.');
+    } finally {
+      setIsSavingGrade(false);
+    }
   };
 
-  const handleCloseGradingModal = () => setShowGradingModal(null);
+  const handleCloseGradingModal = () => {
+    if (isSavingGrade) return;
+    setShowGradingModal(null);
+    setGradeError('');
+  };
   const handleFinalize = () => setIsFinalized(true);
 
   /* ---------------- RENDER ---------------- */
@@ -364,6 +391,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
               <button
                 className={styles['pr-grading-screen-modal-close']}
                 onClick={handleCloseGradingModal}
+                disabled={isSavingGrade}
               >
                 ×
               </button>
@@ -389,7 +417,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                         <td>
                           <input
                             type="checkbox"
-                            disabled={isFinalized}
+                            disabled={isFinalized || isSavingGrade}
                             checked={pr.grade === 'Exceptional'}
                             onChange={() =>
                               handleGradeChange(showGradingModal, pr.id, 'Exceptional')
@@ -399,7 +427,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                         <td>
                           <input
                             type="checkbox"
-                            disabled={isFinalized}
+                            disabled={isFinalized || isSavingGrade}
                             checked={pr.grade === 'Okay'}
                             onChange={() => handleGradeChange(showGradingModal, pr.id, 'Okay')}
                           />
@@ -407,7 +435,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                         <td>
                           <input
                             type="checkbox"
-                            disabled={isFinalized}
+                            disabled={isFinalized || isSavingGrade}
                             checked={pr.grade === 'Unsatisfactory'}
                             onChange={() =>
                               handleGradeChange(showGradingModal, pr.id, 'Unsatisfactory')
@@ -417,10 +445,12 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                         <td>
                           <input
                             type="checkbox"
-                            disabled={isFinalized}
-                            checked={pr.grade === 'Cannot find image'}
+                            disabled={isFinalized || isSavingGrade}
+                            checked={
+                              pr.grade === 'No Correct Image' || pr.grade === 'Cannot find image'
+                            }
                             onChange={() =>
-                              handleGradeChange(showGradingModal, pr.id, 'Cannot find image')
+                              handleGradeChange(showGradingModal, pr.id, 'No Correct Image')
                             }
                           />
                         </td>
@@ -429,8 +459,18 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                 </tbody>
               </table>
 
+              {gradeError && (
+                <p role="alert" className={`${styles['pr-grading-screen-error-message']} ${dm}`}>
+                  {gradeError}
+                </p>
+              )}
+
               <div className={`${styles['pr-grading-screen-modal-footer']} ${dm}`}>
-                <Button variant="primary" onClick={handleCloseGradingModal}>
+                <Button
+                  variant="primary"
+                  onClick={handleCloseGradingModal}
+                  disabled={isSavingGrade}
+                >
                   Done
                 </Button>
               </div>

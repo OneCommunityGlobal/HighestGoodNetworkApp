@@ -1,7 +1,12 @@
 import axios from 'axios';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ENDPOINTS } from '../../utils/URL';
-import { loadSavedGradings, mergeSavedGradings, saveAddedPR } from './prGradingPersistence';
+import {
+  loadSavedGradings,
+  mergeSavedGradings,
+  saveAddedPR,
+  saveGradeChange,
+} from './prGradingPersistence';
 
 vi.mock('axios');
 
@@ -18,7 +23,11 @@ describe('PR grading persistence', () => {
 
     await expect(loadSavedGradings(teamData)).resolves.toHaveLength(1);
     expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.WEEKLY_GRADING, {
-      params: { team: 'pr-grading-screen:91NePRT', date: '2025-05-18' },
+      params: {
+        team: 'pr-grading-screen:91NePRT',
+        date: '2025-05-18',
+        weekStart: '2025-05-18',
+      },
     });
   });
 
@@ -33,6 +42,7 @@ describe('PR grading persistence', () => {
 
     expect(axios.post).toHaveBeenCalledWith(ENDPOINTS.WEEKLY_GRADING_SAVE, {
       teamCode: 'pr-grading-screen:91NePRT',
+      teamName: 'pr-grading-screen:91NePRT',
       date: '2025-05-18',
       gradings: [
         {
@@ -40,6 +50,30 @@ describe('PR grading persistence', () => {
           prsNeeded: 3,
           prsReviewed: 2,
           gradedPrs: [{ prNumbers: '5678 + 9999', grade: 'Okay' }],
+        },
+      ],
+    });
+  });
+
+  it('saves only the changed grade without increasing the reviewed count', async () => {
+    const reviewer = {
+      reviewer: 'Alice',
+      prsNeeded: 3,
+      gradedPrs: [{ prNumbers: '1234', grade: 'Okay' }],
+    };
+
+    await saveGradeChange(teamData, reviewer, '1234', 'Exceptional');
+
+    expect(axios.post).toHaveBeenCalledWith(ENDPOINTS.WEEKLY_GRADING_SAVE, {
+      teamCode: 'pr-grading-screen:91NePRT',
+      teamName: 'pr-grading-screen:91NePRT',
+      date: '2025-05-18',
+      gradings: [
+        {
+          reviewer: 'Alice',
+          prsNeeded: 3,
+          prsReviewed: 1,
+          gradedPrs: [{ prNumbers: '1234', grade: 'Exceptional' }],
         },
       ],
     });
@@ -70,6 +104,27 @@ describe('PR grading persistence', () => {
         { id: 'pr1', prNumbers: '1234' },
         { id: 'saved2', prNumbers: '5678 + 9999' },
       ],
+    });
+  });
+
+  it('uses the saved grade for a built-in PR after reloading', () => {
+    const reviewers = [
+      {
+        id: '1',
+        reviewer: 'Alice',
+        gradedPrs: [{ id: 'pr1', prNumbers: '1234 + 5678', grade: 'Okay' }],
+      },
+    ];
+    const saved = [
+      {
+        reviewer: 'Alice',
+        gradedPrs: [{ prNumbers: '1234+5678', grade: 'Exceptional' }],
+      },
+    ];
+
+    expect(mergeSavedGradings(reviewers, saved)[0]).toMatchObject({
+      prsReviewed: 1,
+      gradedPrs: [{ id: 'pr1', prNumbers: '1234 + 5678', grade: 'Exceptional' }],
     });
   });
 });

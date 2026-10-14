@@ -122,4 +122,75 @@ describe('Weekly PR grading duplicate entries', () => {
     expect(within(aliceRow).getByRole('spinbutton')).toHaveValue(1);
     expect(within(aliceRow).queryByText('9981')).not.toBeInTheDocument();
   });
+
+  it('saves a changed grade and restores it after remounting', async () => {
+    axios.get.mockResolvedValueOnce({ data: [] }).mockResolvedValueOnce({
+      data: [
+        {
+          reviewer: 'Alice',
+          gradedPrs: [{ prNumbers: '1234 + 5678', grade: 'Exceptional' }],
+        },
+      ],
+    });
+    const { unmount } = render(<PRGradingScreen teamData={teamData} reviewers={reviewers} />);
+    await waitFor(() =>
+      expect(
+        within(screen.getByRole('row', { name: /Alice/ })).getByText('+ Add new'),
+      ).toBeEnabled(),
+    );
+    fireEvent.click(within(screen.getByRole('row', { name: /Alice/ })).getByText('1234 + 5678'));
+    fireEvent.click(screen.getAllByRole('checkbox')[0]);
+
+    await waitFor(() => expect(axios.post).toHaveBeenCalledTimes(1));
+    expect(axios.post.mock.calls[0][1].gradings[0].gradedPrs).toEqual([
+      { prNumbers: '1234 + 5678', grade: 'Exceptional' },
+    ]);
+    await waitFor(() => expect(screen.getAllByRole('checkbox')[0]).toBeChecked());
+    unmount();
+
+    render(<PRGradingScreen teamData={teamData} reviewers={reviewers} />);
+    await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(2));
+    fireEvent.click(within(screen.getByRole('row', { name: /Alice/ })).getByText('1234 + 5678'));
+    await waitFor(() => expect(screen.getAllByRole('checkbox')[0]).toBeChecked());
+    expect(within(screen.getByRole('row', { name: /Alice/ })).getByRole('spinbutton')).toHaveValue(
+      1,
+    );
+  });
+
+  it('keeps the previous grade and shows an error if saving fails', async () => {
+    axios.post.mockRejectedValueOnce(new Error('Network error'));
+    render(<PRGradingScreen teamData={teamData} reviewers={reviewers} />);
+    await waitFor(() =>
+      expect(
+        within(screen.getByRole('row', { name: /Alice/ })).getByText('+ Add new'),
+      ).toBeEnabled(),
+    );
+    fireEvent.click(within(screen.getByRole('row', { name: /Alice/ })).getByText('1234 + 5678'));
+    fireEvent.click(screen.getAllByRole('checkbox')[0]);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Could not save this grade');
+    expect(axios.post.mock.calls[0][1].gradings[0].gradedPrs).toEqual([
+      { prNumbers: '1234 + 5678', grade: 'Exceptional' },
+    ]);
+    expect(screen.getAllByRole('checkbox')[0]).not.toBeChecked();
+    expect(screen.getAllByRole('checkbox')[1]).toBeChecked();
+  });
+
+  it('sends the backend-supported value for Cannot find image', async () => {
+    render(<PRGradingScreen teamData={teamData} reviewers={reviewers} />);
+    await waitFor(() =>
+      expect(
+        within(screen.getByRole('row', { name: /Alice/ })).getByText('+ Add new'),
+      ).toBeEnabled(),
+    );
+    fireEvent.click(within(screen.getByRole('row', { name: /Alice/ })).getByText('1234 + 5678'));
+    fireEvent.click(screen.getAllByRole('checkbox')[3]);
+
+    await waitFor(() =>
+      expect(axios.post.mock.calls[0][1].gradings[0].gradedPrs).toEqual([
+        { prNumbers: '1234 + 5678', grade: 'No Correct Image' },
+      ]),
+    );
+    await waitFor(() => expect(screen.getAllByRole('checkbox')[3]).toBeChecked());
+  });
 });
