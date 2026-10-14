@@ -11,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import moment from 'moment-timezone';
 import { isJobApplicationFileUploadQuestion } from './jobApplicationQuestionUtils';
+import { checkEmail } from '../../../utils/emailValidation';
 import {
   ensurePositionOption,
   findFormByPositionSlug,
@@ -593,15 +594,7 @@ function validateName(name, label = 'Name') {
 }
 
 function validateEmail(email) {
-  const trimmed = String(email || '').trim();
-
-  if (!trimmed) return 'Email is required.';
-
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-    return 'Please enter a valid email address.';
-  }
-
-  return '';
+  return checkEmail(email).error;
 }
 
 function validatePhone(phone) {
@@ -944,6 +937,7 @@ function JobApplicationForm() {
   const [questionFiles, setQuestionFiles] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const resumeInputRef = useRef(null);
+  const emailInputRef = useRef(null);
   const questionFileInputRefs = useRef({});
   /** Shown in the page title — the role the user clicked, not only the matched DB form name. */
   const [bannerJobTitle, setBannerJobTitle] = useState('');
@@ -955,6 +949,7 @@ function JobApplicationForm() {
   /** Owner/Admin: optional manual toggles on top of auto-calculated requirement flags. */
   const [requirementPreviewOverrides, setRequirementPreviewOverrides] = useState({});
   const [fieldErrors, setFieldErrors] = useState({});
+  const [emailSuggestion, setEmailSuggestion] = useState(null);
   const locationTimezone = [applicantLocation.trim(), timeZone.trim()].filter(Boolean).join(' | ');
 
   const darkMode = useSelector(state => state.theme?.darkMode);
@@ -1425,6 +1420,32 @@ function JobApplicationForm() {
     setAnswers(initialAnswersForQuestions(visibleQuestions));
     setRequirementPreviewOverrides({});
     setFieldErrors({});
+    setEmailSuggestion(null);
+  };
+
+  // Check the email when the applicant leaves the field (other fields still validate on submit)
+  const handleEmailBlur = () => {
+    if (!applicantEmail.trim()) return;
+    const { error, suggestion } = checkEmail(applicantEmail);
+    setEmailSuggestion(suggestion);
+    setFieldErrors(prev => {
+      const next = { ...prev };
+      if (error) next.applicantEmail = error;
+      else delete next.applicantEmail;
+      return next;
+    });
+  };
+
+  const applyEmailSuggestion = () => {
+    setApplicantEmail(emailSuggestion);
+    setEmailSuggestion(null);
+    // The suggestion button unmounts, so return focus to the field rather than the page.
+    emailInputRef.current?.focus();
+    setFieldErrors(prev => {
+      const next = { ...prev };
+      delete next.applicantEmail;
+      return next;
+    });
   };
 
   const handleSubmit = async e => {
@@ -1436,6 +1457,7 @@ function JobApplicationForm() {
     }
 
     const { missing, profileErrors } = validateBeforeSubmit();
+    setEmailSuggestion(checkEmail(applicantEmail).suggestion);
 
     setFieldErrors(prev => {
       const next = { ...prev };
@@ -1743,6 +1765,8 @@ function JobApplicationForm() {
 
                   <input
                     id="jaf-applicant-email"
+                    ref={emailInputRef}
+                    maxLength={254}
                     type="email"
                     placeholder="Email"
                     className={`${styles.inputField} ${
@@ -1751,6 +1775,7 @@ function JobApplicationForm() {
                     value={applicantEmail}
                     onChange={e => {
                       setApplicantEmail(e.target.value);
+                      setEmailSuggestion(null);
 
                       if (fieldErrors.applicantEmail) {
                         setFieldErrors(prev => {
@@ -1760,15 +1785,45 @@ function JobApplicationForm() {
                         });
                       }
                     }}
+                    onBlur={handleEmailBlur}
                     required
                     aria-required="true"
                     aria-invalid={Boolean(fieldErrors.applicantEmail)}
+                    aria-describedby={
+                      [
+                        fieldErrors.applicantEmail && 'jaf-applicant-email-error',
+                        emailSuggestion && 'jaf-applicant-email-suggestion',
+                      ]
+                        .filter(Boolean)
+                        .join(' ') || undefined
+                    }
                     autoComplete="email"
                   />
 
                   {fieldErrors.applicantEmail && (
-                    <p className={styles.fieldError} role="alert">
+                    <p id="jaf-applicant-email-error" className={styles.fieldError} role="alert">
                       {fieldErrors.applicantEmail}
+                    </p>
+                  )}
+
+                  {emailSuggestion && (
+                    <p
+                      id="jaf-applicant-email-suggestion"
+                      className={styles.fieldHint}
+                      aria-live="polite"
+                    >
+                      <span>
+                        Did you mean <strong>{emailSuggestion}</strong>?
+                      </span>
+                      {/* Same small action button as the resume "Remove" */}
+                      <button
+                        type="button"
+                        className={styles.clearFileBtn}
+                        onClick={applyEmailSuggestion}
+                        aria-label={`Use this email: ${emailSuggestion}`}
+                      >
+                        Use this
+                      </button>
                     </p>
                   )}
                 </div>
