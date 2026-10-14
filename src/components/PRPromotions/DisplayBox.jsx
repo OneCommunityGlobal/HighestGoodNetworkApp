@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+import { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -46,45 +47,43 @@ export default function DisplayBox({ onClose, darkMode = false }) {
   const [isConfirming, setIsConfirming] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
 
-  useEffect(() => {
-    const handleEscape = event => {
-      if (event.key === 'Escape' && !isConfirming) {
-        onClose();
-      }
-    };
-
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isConfirming, onClose]);
+  const masterCheckboxRef = useRef(null);
 
   const allChecked =
     promotions.length > 0 && checkedItems.length > 0 && checkedItems.every(Boolean);
   const someChecked = checkedItems.some(Boolean);
   const confirmDisabled = isConfirming || !someChecked;
 
+  useEffect(() => {
+    if (masterCheckboxRef.current) {
+      masterCheckboxRef.current.indeterminate = someChecked && !allChecked;
+    }
+  }, [someChecked, allChecked]);
+
+  useEffect(() => {
+    const handleKeyDown = event => {
+      if (event.key === 'Escape' && !isConfirming) {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isConfirming, onClose]);
+
   const handleCheckedBoxChange = index => {
-    setCheckedItems(prev => {
-      const updated = [...prev];
-      updated[index] = !updated[index];
-      return updated;
-    });
+    setCheckedItems(currentItems =>
+      currentItems.map((checked, itemIndex) => (itemIndex === index ? !checked : checked)),
+    );
   };
 
-  const handleSelectAll = () => {
-    setCheckedItems(new Array(promotions.length).fill(!allChecked));
-  };
+  const handleSelectAll = event => {
+    const shouldSelectAll = event.target.checked;
 
-  const handleRowClick = (index, event) => {
-    if (event.target.closest('input[type="checkbox"]')) {
-      return;
-    }
-    handleCheckedBoxChange(index);
-  };
-
-  const handleOverlayClick = event => {
-    if (event.target === event.currentTarget && !isConfirming) {
-      onClose();
-    }
+    setCheckedItems(currentItems => currentItems.map(() => shouldSelectAll));
   };
 
   const handleConfirm = async () => {
@@ -121,22 +120,29 @@ export default function DisplayBox({ onClose, darkMode = false }) {
     }
   };
 
+  const handleOverlayMouseDown = event => {
+    if (event.target === event.currentTarget && !isConfirming) {
+      onClose();
+    }
+  };
+
+  const tableClassName = [styles.popupTable, darkMode ? styles.popupTableDark : '']
+    .filter(Boolean)
+    .join(' ');
+
   const getBadgeClassName = index =>
-    `${styles.prCountBadge} ${styles[`color${index % VIBGYOR_COLOR_COUNT}`] || ''}`.trim();
+    [styles.prCountBadge, styles[`color-${index % VIBGYOR_COLOR_COUNT}`]].filter(Boolean).join(' ');
 
   return (
-    // Overlay click closes the dialog; Escape is handled on document keydown.
-    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
-    <div className={styles.overlay} onClick={handleOverlayClick}>
-      <div
+    <div className={styles.overlay} onMouseDown={handleOverlayMouseDown}>
+      <dialog
+        open
         className={`${styles.popup} ${darkMode ? styles.popupDark : ''}`}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="promotion-confirm-title"
+        aria-labelledby="promotion-dialog-heading"
         aria-busy={isConfirming}
       >
         <h2
-          id="promotion-confirm-title"
+          id="promotion-dialog-heading"
           className={`${styles.popupHeading} ${darkMode ? styles.popupHeadingDark : ''}`}
         >
           Are you sure you want to promote these PR reviewers?
@@ -148,72 +154,73 @@ export default function DisplayBox({ onClose, darkMode = false }) {
           </p>
         )}
 
-        <div className={styles.tableWrapper}>
-          <table className={styles.popupTable}>
-            <thead>
+        <table className={tableClassName}>
+          <thead>
+            <tr>
+              <th>
+                <input
+                  ref={masterCheckboxRef}
+                  className={styles.checkbox}
+                  type="checkbox"
+                  checked={allChecked}
+                  onChange={handleSelectAll}
+                  disabled={promotions.length === 0 || isConfirming}
+                  aria-label="Select all reviewers"
+                />
+              </th>
+
+              <th>PR Reviewer</th>
+              <th>Team Code</th>
+              <th>Team Leader Name</th>
+              <th>Weekly PRs</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {promotions.length === 0 && (
               <tr>
-                <th>
-                  <input
-                    type="checkbox"
-                    className={styles.checkbox}
-                    checked={allChecked}
-                    onChange={handleSelectAll}
-                    disabled={promotions.length === 0}
-                    aria-label="Select all reviewers"
-                  />
-                </th>
-                <th>PR Reviewer</th>
-                <th>Team Code</th>
-                <th>Team Leader Name</th>
-                <th>Weekly PRs</th>
+                <td colSpan="5" className={styles.messageCell}>
+                  No PR reviewers left to promote.
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {promotions.length === 0 && (
-                <tr>
-                  <td colSpan="5" className={styles.messageCell}>
-                    No PR reviewers left to promote.
-                  </td>
-                </tr>
-              )}
-              {promotions.map((promotion, index) => (
-                <tr
-                  key={promotion.id || `${promotion.prReviewer}-${promotion.teamCode}-${index}`}
-                  onClick={event => handleRowClick(index, event)}
-                >
-                  <td>
-                    <input
-                      type="checkbox"
-                      className={styles.checkbox}
-                      checked={Boolean(checkedItems[index])}
-                      onChange={() => handleCheckedBoxChange(index)}
-                      aria-label={`Select reviewer ${promotion.prReviewer}`}
-                    />
-                  </td>
-                  <td>{promotion.prReviewer}</td>
-                  <td>{promotion.teamCode}</td>
-                  <td>{promotion.teamLeaderName}</td>
-                  <td>
-                    <div
-                      className={styles.prBadgeRow}
-                      aria-label={`Weekly PRs for ${promotion.prReviewer}`}
-                    >
-                      {promotion.weeklyPRs.map((pr, prIndex) => (
-                        <span
-                          key={`${promotion.id || promotion.prReviewer}-${pr.week}-${prIndex}`}
-                          className={getBadgeClassName(prIndex)}
-                          title={`Week ${pr.week}: ${pr.prCount} PRs`}
-                        >
-                          {pr.prCount}
-                        </span>
-                      ))}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            )}
+            {promotions.map((promotion, index) => (
+              <tr key={promotion.id || `${promotion.prReviewer}-${promotion.teamCode}-${index}`}>
+                <td>
+                  <input
+                    className={styles.checkbox}
+                    type="checkbox"
+                    checked={Boolean(checkedItems[index])}
+                    onChange={() => handleCheckedBoxChange(index)}
+                    disabled={isConfirming}
+                    aria-label={`Select reviewer ${promotion.prReviewer}`}
+                  />
+                </td>
+
+                <td>{promotion.prReviewer}</td>
+                <td>{promotion.teamCode}</td>
+                <td>{promotion.teamLeaderName}</td>
+
+                <td>
+                  <div
+                    className={styles.prBadgeRow}
+                    aria-label={`Weekly PRs for ${promotion.prReviewer}`}
+                  >
+                    {promotion.weeklyPRs.map((pr, prIndex) => (
+                      <span
+                        key={`${promotion.id || promotion.prReviewer}-${pr.week}-${prIndex}`}
+                        className={getBadgeClassName(prIndex)}
+                        title={`Week ${pr.week}: ${pr.prCount} PRs`}
+                      >
+                        {pr.prCount}
+                      </span>
+                    ))}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
         <div className={styles.buttonRow}>
           <button
@@ -234,7 +241,7 @@ export default function DisplayBox({ onClose, darkMode = false }) {
             {isConfirming ? 'Confirming...' : 'Confirm'}
           </button>
         </div>
-      </div>
+      </dialog>
     </div>
   );
 }
