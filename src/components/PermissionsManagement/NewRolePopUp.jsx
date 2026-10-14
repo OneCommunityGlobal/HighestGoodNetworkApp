@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { Alert, Button, Form, FormGroup, Input, Label } from 'reactstrap';
 import { toast } from 'react-toastify';
-import { connect } from 'react-redux';
-import { useDispatch } from 'react-redux';
-import { boxStyle, boxStyleDark } from 'styles';
+import { connect, useDispatch } from 'react-redux';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { getAllRoles } from '../../actions/role';
 import PermissionList from './PermissionList';
 

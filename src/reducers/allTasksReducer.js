@@ -1,4 +1,4 @@
-import { fetchTeamMembersTaskSuccess } from 'components/TeamMemberTasks/actions';
+import { fetchTeamMembersTaskSuccess } from '~/components/TeamMemberTasks/actions';
 import * as types from '../constants/task';
 
 const allTasksInital = {
@@ -23,48 +23,78 @@ const filterAndSort = (tasks, level) => {
 
 const sortByNum = tasks => {
   const appendTasks = tasks.map(task => {
-    /** Based on my observation, previous addTask functionality is not working properly,
-     * the created new task does not change its parent task property 'hasChild' from default false to true,
-     * so below are the temporary fix to create a 'hasChildren' property to represent the actual 'hasChild' value
-     * this should be fixed by future PR. --- PR#934
-     */
     const hasChildren = tasks.some(item => item?.mother === task._id);
-
-    /** task.num from response data has different form for different level:
-     *    level 1: x
-     *    level 2: x.x
-     *    level 3: x.x.x
-     *  below is trying to make sure the num property in state is in the same form of x.x.x.x,
-     * */
     const numOfNums = task.num.split('.').length;
     const num = task.num.concat('.0'.repeat(4 - numOfNums));
-
     return { ...task, num, hasChildren };
   });
-
   return filterAndSort(appendTasks, 4);
 };
 
 // eslint-disable-next-line default-param-last
-export const taskReducer = (allTasks = allTasksInital, action) => {
+export const taskReducer = (rawState = allTasksInital, action) => {
+  const allTasks = { ...allTasksInital, ...rawState };
   switch (action.type) {
-    case types.FETCH_TASKS_START: {
+    case types.FETCH_TASKS_START:
       return { ...allTasks, fetched: false, fetching: true, error: 'none' };
-    }
 
-    case types.FETCH_TASKS_ERROR: {
+    case types.FETCH_TASKS_ERROR:
       return { ...allTasks, fetched: true, fetching: false, error: action.err };
-    }
 
     case types.RECEIVE_TASKS: {
+      // Clear when level < 0
+      if (typeof action.level === 'number' && action.level < 0) {
+        return {
+          ...allTasks,
+          fetchedData: [],
+          taskItems: [],
+          fetched: true,
+          fetching: false,
+          error: 'none',
+        };
+      }
+      // Nested insertion (mother)
+      if (action.mother != null) {
+        const existing = allTasks.taskItems.slice();
+        const allNums = existing.map(t => t.num).concat(action.taskItems.map(t => t.num));
+        const maxDepth = allNums.reduce((m, n) => Math.max(m, n.split('.').length), 0);
+        const kids = action.taskItems
+          .slice()
+          .sort((a, b) => a.num.localeCompare(b.num, undefined, { numeric: true }))
+          .map(child => {
+            const missing = maxDepth + 1 - child.num.split('.').length;
+            return {
+              ...child,
+              num: child.num + '.0'.repeat(missing),
+              hasChildren: false,
+            };
+          });
+        const updatedRoots = existing.map(t =>
+          t.taskId === action.mother ? { ...t, hasChildren: true } : t,
+        );
+        const idx = updatedRoots.findIndex(t => t.taskId === action.mother);
+        const newList = [
+          ...updatedRoots.slice(0, idx + 1),
+          ...kids,
+          ...updatedRoots.slice(idx + 1),
+        ];
+        return {
+          ...allTasks,
+          taskItems: newList,
+          fetched: true,
+          fetching: false,
+          error: 'none',
+        };
+      }
+      // Top-level flatten + numeric sort
       const updatedFetchedData = [...allTasks.fetchedData];
-      updatedFetchedData[action.level] = action.taskItems;
-
-      const newTaskItems = updatedFetchedData.flat();
+      updatedFetchedData[action.level] = action.taskItems || [];
+      const flat = updatedFetchedData.flat();
+      flat.sort((a, b) => a.num.localeCompare(b.num, undefined, { numeric: true }));
       return {
         ...allTasks,
         fetchedData: updatedFetchedData,
-        taskItems: sortByNum(newTaskItems),
+        taskItems: flat,
         fetched: true,
         fetching: false,
         error: 'none',
@@ -109,7 +139,7 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
       };
     }
 
-    case types.EMPTY_TASK_ITEMS: {
+    case types.EMPTY_TASK_ITEMS:
       return {
         ...allTasks,
         taskItems: [],
@@ -118,7 +148,6 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
         fetching: false,
         error: 'none',
       };
-    }
 
     case types.UPDATE_TASK: {
       const updatedTasks = allTasks.taskItems.map(task =>
@@ -136,25 +165,23 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
 
     case types.COPY_TASK: {
       const copiedTask = allTasks.taskItems.find(task => task._id === action.taskId);
-      copiedTask.resources = copiedTask?.resources?.map(resource => {
-        const { completedTask, ...otherDetails } = resource;
-        // Exclude the "completedTask" status to ensure tasks created by pasting are displayed.
-        return otherDetails;
-      });
+      if (copiedTask) {
+        copiedTask.resources = copiedTask.resources?.map(resource => {
+          const { completedTask, ...otherDetails } = resource;
+          return otherDetails;
+        });
+      }
       return { ...allTasks, copiedTask };
     }
 
-    case types.ADD_NEW_TASK_ERROR: {
+    case types.ADD_NEW_TASK_ERROR:
       return { ...allTasks, error: action.err };
-    }
 
-    case fetchTeamMembersTaskSuccess.type: {
-      return { ...allTasks, ...action.tasks }; // Placeholder for backend integration
-    }
+    case fetchTeamMembersTaskSuccess.type:
+      return { ...allTasks, ...action.tasks };
 
-    default: {
+    default:
       return allTasks;
-    }
   }
 };
 

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import {
   Table,
-  Button as ReactStrapButton,
   DropdownToggle,
   Modal,
   ModalHeader,
@@ -14,10 +13,9 @@ import {
   UncontrolledTooltip,
 } from 'reactstrap';
 import { useSelector } from 'react-redux';
-import BadgeImage from 'components/Badge/BadgeImage';
+import BadgeImage from '~/components/Badge/BadgeImage';
 import { boxStyle, boxStyleDark } from '../../styles';
-import '../Badge/BadgeReport.css';
-import './BadgeSummaryViz.css';
+import styles from './BadgeSummaryViz.module.css';
 
 function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -58,20 +56,19 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
       <Button
         onClick={toggle}
         style={darkMode ? boxStyleDark : boxStyle}
-        className={`${dashboard && 'btn--dark-sea-green float-right'}`}
       >
         {dashboard ? 'Badge Report' : 'Show Badges'}
       </Button>
-      <Modal size="lg" isOpen={isOpen} toggle={toggle} className={darkMode ? 'text-light' : ''}>
-        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Badge Summary</ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+      <Modal size="lg" isOpen={isOpen} toggle={toggle}>
+        <ModalHeader className={styles.modalHeader}>Badge Summary</ModalHeader>
+        <ModalBody className={styles.modalBody}>
           <div>
             {/* --- DESKTOP VERSION OF MODAL --- */}
-            <div className="desktop">
+            <div className={`${styles.desktop} ${styles.table}`}>
               <div style={{ overflowY: 'scroll', height: '75vh' }}>
-                <Table className={darkMode ? 'text-light dark-mode' : ''}>
+                <Table>
                   <thead style={{ zIndex: '10' }}>
-                    <tr style={{ zIndex: '10' }} className={darkMode ? 'bg-space-cadet' : ''}>
+                    <tr style={{ zIndex: '10' }} className={styles.tableHeaderRow}>
                       <th style={{ width: '93px' }}>Badge</th>
                       <th>Name</th>
                       <th style={{ width: '110px' }}>Modified</th>
@@ -85,8 +82,8 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
                       sortedBadges.map(
                         (value, index) =>
                           value && (
-                            <tr key={value.badge._id}>
-                              <td className="badge_image_sm">
+                            <tr key={value.badge._id} className={styles.tableRow}>
+                              <td className={styles.badgeImageSm}>
                                 {' '}
                                 <BadgeImage
                                   personalBestMaxHrs={personalBestMaxHrs}
@@ -105,7 +102,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
                               </td>
                               <td style={{ display: 'flex', alignItems: 'center' }}>
                                 {' '}
-                                <UncontrolledDropdown className="me-2" direction="down">
+                                <UncontrolledDropdown className={styles.me2} direction="down">
                                   <DropdownToggle
                                     caret
                                     color="primary"
@@ -113,7 +110,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
                                   >
                                     Dates
                                   </DropdownToggle>
-                                  <DropdownMenu>
+                                  <DropdownMenu className={styles.badgeDropdown}>
                                     {value.earnedDate.map((date, valIndex) => (
                                       // eslint-disable-next-line react/no-array-index-key
                                       <DropdownItem key={`date-${value._id}-${valIndex}`}>
@@ -127,14 +124,14 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
                                   <>
                                     <span
                                       id="mismatchExplainationTooltip"
-                                      style={{ paddingLeft: '3px' }}
+                                      className={styles.tooltipTarget}
                                     >
                                       {'  '} *
                                     </span>
                                     <UncontrolledTooltip
                                       placement="bottom"
                                       target="mismatchExplainationTooltip"
-                                      style={{ maxWidth: '300px' }}
+                                      className={styles.tooltipBody}
                                     >
                                       This record contains a mismatch in the badge count and
                                       associated dates. It indicates that a badge has been deleted.
@@ -150,7 +147,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
                       )
                     ) : (
                       <tr>
-                        <td colSpan={5} style={{ textAlign: 'center' }}>{`${
+                        <td colSpan={5} className={styles.emptyState}>{`${
                           dashboard || authId === userId ? 'You have' : 'This person has'
                         } no badges.`}</td>
                       </tr>
@@ -160,11 +157,11 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
               </div>
             </div>
             {/* --- TABLET VERSION OF MODAL --- */}
-            <div className="tablet">
+            <div className={`${styles.tablet} ${styles.table}`}>
               <div style={{ overflow: 'auto', height: '68vh' }}>
-                <Table className={darkMode ? 'text-light dark-mode' : ''}>
+                <Table>
                   <thead style={{ zIndex: '10' }}>
-                    <tr style={{ zIndex: '10' }} className={darkMode ? 'bg-space-cadet' : ''}>
+                    <tr style={{ zIndex: '10' }} className={styles.tableHeaderRow}>
                       <th style={{ width: '25%' }}>Badge</th>
                       <th style={{ width: '25%' }}>Name</th>
                       <th style={{ width: '25%' }}>Modified</th>
@@ -178,7 +175,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
                         (value, index) =>
                           value && (
                             <tr key={value._id}>
-                              <td className="badge_image_sm">
+                              <td className={styles.badgeImageSm}>
                                 {' '}
                                 <BadgeImage
                                   personalBestMaxHrs={personalBestMaxHrs}
@@ -201,7 +198,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
                       )
                     ) : (
                       <tr>
-                        <td colSpan={4} style={{ textAlign: 'center' }}>{`${
+                        <td colSpan={4} className={styles.emptyState}>{`${
                           dashboard || authId === userId ? 'You have' : 'This person has'
                         } no badges.`}</td>
                       </tr>
@@ -212,14 +209,14 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
             </div>
           </div>
         </ModalBody>
-        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <div className="badge_summary_viz_footer">
-            <ReactStrapButton
-              className="btn--dark-sea-green badge_summary_viz_button"
+        <ModalFooter className={styles.modalFooter}>
+          <div className={styles.badgeSummaryVizFooter}>
+            <Button
               onClick={toggle}
+              
             >
               Close
-            </ReactStrapButton>
+            </Button>
           </div>
         </ModalFooter>
       </Modal>

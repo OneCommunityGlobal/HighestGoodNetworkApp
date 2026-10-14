@@ -1,0 +1,137 @@
+/**
+ * Shared look-and-feel for /form and /formviewer.
+ * Supports both light mode and true dark mode.
+ */
+
+.pageShell {
+  padding-bottom: 1rem;
+}
+
+.questionCard {
+  position: relative;
+}
+
+.viewerCard {
+  margin: 0.5rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border: 1px solid #007bff;
+  border-radius: 0.25rem;
+}
+
+.questionLabelBar {
+  margin-bottom: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background-color: #17a2b8;
+  border-radius: 0.125rem;
+}
+
+.questionLabelBar label {
+  color: #fff;
+  margin-bottom: 0;
+}
+
+.viewerDescription {
+  margin-bottom: 0.5rem;
+  color: #212529;
+}
+
+.richTextHost {
+  margin-top: 0.25rem;
+}
+
+:global(body.dark-mode) .pageShell,
+:global(body.bm-dashboard-dark) .pageShell {
+  background-color: #1b2a41 !important;
+  color: #e9eef5 !important;
+}
+
+:global(body.dark-mode) .pageShell :global(h1),
+:global(body.bm-dashboard-dark) .pageShell :global(h1),
+:global(body.dark-mode) .pageShell :global(.form-check-label),
+:global(body.bm-dashboard-dark) .pageShell :global(.form-check-label) {
+  color: #e9eef5 !important;
+}
+
+:global(body.dark-mode) .pageShell :global(label),
+:global(body.bm-dashboard-dark) .pageShell :global(label) {
+  color: #dbe4f0 !important;
+}
+
+:global(body.dark-mode) .pageShell .questionLabelBar label,
+:global(body.bm-dashboard-dark) .pageShell .questionLabelBar label {
+  color: #fff !important;
+}
+
+/* Rows inside question cards stay light */
+:global(body.dark-mode) .questionCard :global(.row),
+:global(body.bm-dashboard-dark) .questionCard :global(.row),
+:global(body.dark-mode) .viewerCard :global(.row),
+:global(body.bm-dashboard-dark) .viewerCard :global(.row) {
+  background-color: transparent !important;
+}
+
+:global(body.dark-mode) .questionCard,
+:global(body.bm-dashboard-dark) .questionCard {
+  background-color: #243a52 !important;
+  color: #e9eef5 !important;
+  border-color: #3e5d7c !important;
+}
+
+:global(body.dark-mode) .viewerCard,
+:global(body.bm-dashboard-dark) .viewerCard {
+  background-color: #243a52 !important;
+  color: #e9eef5 !important;
+  border-color: #3e5d7c !important;
+}
+
+:global(body.dark-mode) .pageShell :global(.form-control),
+:global(body.dark-mode) .pageShell :global(textarea.form-control),
+:global(body.bm-dashboard-dark) .pageShell :global(.form-control),
+:global(body.bm-dashboard-dark) .pageShell :global(textarea.form-control) {
+  background-color: #1f3044 !important;
+  color: #e9eef5 !important;
+  border-color: #3e5d7c !important;
+}
+
+:global(body.dark-mode) .pageShell :global(.form-control:focus),
+:global(body.dark-mode) .pageShell :global(textarea.form-control:focus),
+:global(body.bm-dashboard-dark) .pageShell :global(.form-control:focus),
+:global(body.bm-dashboard-dark) .pageShell :global(textarea.form-control:focus) {
+  background-color: #1f3044 !important;
+  color: #fff !important;
+  border-color: #6fb0e8 !important;
+  box-shadow: 0 0 0 0.2rem rgb(111 176 232 / 25%) !important;
+}
+
+:global(body.dark-mode) .pageShell :global(.form-control::placeholder),
+:global(body.dark-mode) .pageShell :global(textarea.form-control::placeholder),
+:global(body.bm-dashboard-dark) .pageShell :global(.form-control::placeholder),
+:global(body.bm-dashboard-dark) .pageShell :global(textarea.form-control::placeholder) {
+  color: #9fb1c7 !important;
+}
+
+:global(body.dark-mode) .pageShell :global(.form-control:disabled),
+:global(body.dark-mode) .pageShell :global(textarea.form-control:disabled),
+:global(body.bm-dashboard-dark) .pageShell :global(.form-control:disabled),
+:global(body.bm-dashboard-dark) .pageShell :global(textarea.form-control:disabled) {
+  background-color: #2a3f58 !important;
+  color: #a9bad0 !important;
+}
+
+:global(body.dark-mode) .pageShell :global(select.form-select),
+:global(body.dark-mode) .pageShell :global(select.custom-select),
+:global(body.dark-mode) .pageShell :global(select.form-control),
+:global(body.bm-dashboard-dark) .pageShell :global(select.form-select),
+:global(body.bm-dashboard-dark) .pageShell :global(select.custom-select),
+:global(body.bm-dashboard-dark) .pageShell :global(select.form-control) {
+  background-color: #1f3044 !important;
+  color: #e9eef5 !important;
+  border: 1px solid #3e5d7c !important;
+  background-image: none !important;
+}
+
+:global(body.dark-mode) .pageShell .viewerDescription,
+:global(body.bm-dashboard-dark) .pageShell .viewerDescription {
+  color: #dbe4f0 !important;
+}

@@ -1,25 +1,62 @@
-import { useEffect } from 'react';
-import * as d3 from 'd3/dist/d3.min';
-import './TotalReportBarGraph.css';
+import { useEffect, useRef } from 'react';
+import * as d3 from 'd3';
+import styles from './TotalReportBarGraph.module.css';
+import { useSelector } from 'react-redux';
 
-function TotalReportBarGraph({ barData, range }) {
-  const svgId = `svg-container-${range}`;
+function TotalReportBarGraph({
+  barData,
+  range,
+  idSuffix = '',
+  fallbackLabel = '',
+}) {
+  const svgId = `svg-container-${range}${idSuffix}`;
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const containerRef = useRef(null);
+  const isComparisonChart = idSuffix.includes('compare');
+  const barColor = isComparisonChart
+    ? darkMode
+      ? '#f59e0b'
+      : '#d97706'
+    : darkMode
+      ? '#4a90e2'
+      : '#5b6ee1';
+  const aboveBarLabelColor = darkMode ? '#f8fafc' : '#1f2937';
+  const insideLabelMinHeight = 34;
 
-  const drawChart = (data) => {
-    data.sort((a, b) => (a.label > b.label ? 1 : -1));
+  const getReadableLabel = label => {
+    const text = label === null || label === undefined ? '' : String(label);
+    if (!text || text.includes('NaN') || text === 'Invalid Date') {
+      return fallbackLabel || 'Selected date range';
+    }
+    return text;
+  };
 
-    const svgWidth = 500;
-    const svgHeight = 450;             
+  const drawChart = (data, darkmode) => {
+    const normalizedData = data
+      .map(item => ({
+        ...item,
+        label: getReadableLabel(item.label),
+        value: Number.isNaN(Number(item.value)) ? 0 : Number(item.value),
+      }))
+      .sort((a, b) => (a.label > b.label ? 1 : -1));
+
+    const container = containerRef.current;
+    const { width: containerWidth } = container.getBoundingClientRect();
+    const containerHeight = Math.max(containerWidth * 0.75, 320);
+
     const margin = { top: 10, right: 8, bottom: 100, left: 20 };
-    const width = svgWidth - margin.left - margin.right;
-    const height = svgHeight - margin.top - margin.bottom;
+    const width = containerWidth - margin.left - margin.right;
+    const height = containerHeight - margin.top - margin.bottom;
 
-    const maxValue = Math.max(...data.map(d => d.value));
+    const maxValue = Math.max(...normalizedData.map(d => d.value), 1);
 
     const svg = d3
+      // eslint-disable-next-line testing-library/no-node-access
       .select(`#${svgId}`)
-      .attr('width', svgWidth)
-      .attr('height', svgHeight);
+      .attr('viewBox', `0 0 ${containerWidth} ${containerHeight}`) // Make SVG responsive
+      .attr('preserveAspectRatio', 'xMidYMid meet') // Preserve aspect ratio
+      .attr('width', '100%')
+      .attr('height', '100%');
 
     svg.selectAll('*').remove();
 
@@ -29,7 +66,7 @@ function TotalReportBarGraph({ barData, range }) {
 
     const xScale = d3
       .scaleBand()
-      .domain(data.map(d => d.label))
+      .domain(normalizedData.map(d => d.label))
       .range([0, width])
       .padding(0.4);
 
@@ -38,44 +75,32 @@ function TotalReportBarGraph({ barData, range }) {
       .domain([0, maxValue])
       .range([height, 0]);
 
-    const colorScale = d3
-      .scaleLinear()
-      .domain([0, maxValue])
-      .range(['darksalmon', 'darkslateblue']);
-
-    data.forEach(d => {
+    normalizedData.forEach(d => {
       const x = xScale(d.label);
       const barHeight = height - yScale(d.value);
       const y = yScale(d.value);
+      const labelFitsInside = barHeight >= insideLabelMinHeight;
 
-     
       chart
         .append('rect')
         .attr('x', x)
         .attr('y', y)
         .attr('width', xScale.bandwidth())
         .attr('height', barHeight)
-        .attr('fill', colorScale(d.value));
-
-    
-      const yText =
-        barHeight >= 30
-          ? y + barHeight / 2
-          : 
-            y - 10;
+        .attr('fill', barColor);
 
       chart
         .append('text')
         .attr('x', x + xScale.bandwidth() / 2)
-        .attr('y', yText)
+        .attr('y', labelFitsInside ? y + barHeight / 2 : Math.max(y - 8, 14))
         .attr('text-anchor', 'middle')
-        .style('fill', 'white')
-        .style('font-size', '20px')
+        .attr('dominant-baseline', labelFitsInside ? 'middle' : 'baseline')
+        .style('fill', labelFitsInside ? 'white' : aboveBarLabelColor)
+        .style('font-size', '24px')
         .style('font-weight', 'bold')
-        .text(Number.isNaN(d.value) ? '' : d.value);
+        .text(d.value > 0 ? d.value : '');
     });
 
-   
     chart
       .append('g')
       .attr('transform', `translate(0, ${height})`)
@@ -84,18 +109,19 @@ function TotalReportBarGraph({ barData, range }) {
       .attr('dy', '1em')
       .style('text-anchor', 'middle')
       .style('font-size', '14px')
-      .style('fill', 'black');
+      .style('fill', 'black')
+      .style('fill', darkmode ? 'white' : 'black');
   };
 
   useEffect(() => {
     if (barData && barData.length) {
-      drawChart(barData);
+      drawChart(barData, darkMode);
     }
-  }, [barData]);
+  }, [barData, darkMode]);
 
   return (
-    <div className="svg-container">
-      <svg id={svgId} className="svg-chart" />
+    <div ref={containerRef} className={styles.svgContainer}>
+      <svg id={svgId} className={styles.svgChart} />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import './TeamChart.css';
+import styles from './TeamChart.module.css';
 
 function TeamRow({ rowData }) {
   const { type, data } = rowData;
@@ -41,9 +41,9 @@ function TeamChart({ teamData, darkMode }) {
     });
   });
 
-  const theadClass = darkMode ? 'thead-dark' : 'thead-light';
+  const theadClass = darkMode ? styles.theadDark : styles.theadLight;
   return (
-    <table>
+    <table className={styles.teamChart}>
       <thead className={theadClass}>
         <tr>
           <th>Name</th>

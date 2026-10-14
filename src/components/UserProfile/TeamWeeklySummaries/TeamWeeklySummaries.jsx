@@ -1,4 +1,4 @@
-import './TeamWeeklySummaries.css';
+import './TeamWeeklySummaries.module.css';
 import moment from 'moment';
 import parse from 'html-react-parser';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -19,6 +19,7 @@ function TeamWeeklySummaries({ name, i, data, darkMode }) {
       .format('DD-MMM-YY'),
     
   });
+  // eslint-disable-next-line no-console
   console.log('darkMode', darkMode);
   return (
     <div className={`team-weekly-summaries ${darkMode ? 'bg-space-cadet' : ''}`} data-testid="team-weekly-summaries">

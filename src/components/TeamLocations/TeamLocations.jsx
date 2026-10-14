@@ -1,16 +1,16 @@
 import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, forwardRef, Suspense } from 'react';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
-import MarkerClusterGroup from 'react-leaflet-cluster';
+import MarkerClusterGroup from './TestSafeMarkerCluster';
 import { Button, Container, Spinner } from 'reactstrap';
-import './TeamLocations.css';
+import './TeamLocations.module.css';
 
-import { SEARCH } from 'languages/en/ui';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { boxStyle, boxStyleDark } from 'styles';
-import { ApiEndpoint, ENDPOINTS } from '../../utils/URL';
+import { SEARCH } from '~/languages/en/ui';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { ApiEndpoint, ENDPOINTS } from '~/utils/URL';
 import AddOrEditPopup from './AddOrEditPopup';
 import ListUsersPopUp from './ListUsersPopUp';
 import MarkerPopup from './MarkerPopup';
@@ -26,7 +26,7 @@ function getUserName(profile) {
   return userName;
 }
 
-function TeamLocations() {
+const TeamLocations = forwardRef(() => {
   const [userProfiles, setUserProfiles] = useState([]);
   const [manuallyAddedProfiles, setManuallyAddedProfiles] = useState([]);
   const [addNewIsOpen, setAddNewIsOpen] = useState(false);
@@ -40,7 +40,7 @@ function TeamLocations() {
   const [markerPopupVisible, setMarkerPopupVisible] = useState(false);
   const role = useSelector(state => state.auth.user.role);
   const darkMode = useSelector(state => state.theme.darkMode);
-  const [loading, setLoading] = useState(true); // State variable for loading spinner
+  const [loading, setLoading] = useState(true);
 
   const isAbleToEdit = role === 'Owner';
   const mapRef = useRef(null);
@@ -49,18 +49,19 @@ function TeamLocations() {
   const randomLocationOffset = c => {
     const randomOffset = (Math.random() - 0.5) * 2 * 0.05;
     const newLongitude = Number(c) + randomOffset;
-
     const modifiedLongitude = Number(newLongitude.toFixed(7));
     return modifiedLongitude;
   };
 
   const handleFlyTo = (latitude, longitude) => {
-    mapRef?.current.flyTo([latitude, longitude], 13, {
+    // Fix: Added optional chaining (?.) to prevent crashes if mapRef.current is not yet initialized
+    mapRef?.current?.flyTo([latitude, longitude], 13, {
       animate: true,
       duration: 3.0,
     });
   };
 
+  // Fix: Consolidated into a single useEffect to fetch user profiles and prevent duplicate execution conflicts
   useEffect(() => {
     async function getUserProfiles() {
       try {
@@ -83,13 +84,13 @@ function TeamLocations() {
           },
         }));
         setMapMarkers(allMapMarkersOffset);
-        setLoading(false); // Set loading to false after data is loaded
+        setLoading(false);
       } catch (error) {
         toast.error(error.message);
-        setLoading(false); // Set loading to false if there's an error
+        setLoading(false);
       }
     }
-    getUserProfiles();
+    void getUserProfiles();
   }, []);
 
   useEffect(() => {
@@ -98,15 +99,6 @@ function TeamLocations() {
       handleFlyTo(coords.lat, coords.lng);
     }
   }, [currentUser]);
-
-  // We don't need the back to top button on this page
-  useEffect(() => {
-    const backToTopButton = document.querySelector('.top');
-    backToTopButton.style.display = 'none';
-    return () => {
-      backToTopButton.style.display = 'block';
-    };
-  }, []);
 
   const searchHandler = e => {
     setSearchText(e.target.value);
@@ -144,44 +136,13 @@ function TeamLocations() {
     }
   };
 
-  useEffect(() => {
-    async function getUserProfiles() {
-      try {
-        const locations = (await axios.get(ENDPOINTS.ALL_MAP_LOCATIONS())).data;
-        const users = locations.users.map(item => ({ ...item, type: 'user' })) || [];
-        const mUsers = locations.mUsers.map(item => ({ ...item, type: 'm_user' })) || [];
-
-        setUserProfiles(users);
-        setManuallyAddedProfiles(mUsers);
-        const allMapMarkers = [...users, ...mUsers];
-        const allMapMarkersOffset = allMapMarkers.map(ele => ({
-          ...ele,
-          location: {
-            ...ele.location,
-            coords: {
-              ...ele.location.coords,
-              lat: randomLocationOffset(ele.location.coords.lat),
-              lng: randomLocationOffset(ele.location.coords.lng),
-            },
-          },
-        }));
-        setMapMarkers(allMapMarkersOffset);
-        setLoading(false); // Set loading to false after data is loaded
-      } catch (error) {
-        toast.error(error.message);
-        setLoading(false); // Set loading to false if there's an error
-      }
-    }
-    getUserProfiles();
-  }, []);
-
   const toggleTableVisibility = () => {
     if (tableVisible) {
       setCurrentUser(null);
       setTableVisible(false);
       setMarkerPopupVisible(false);
 
-      if (mapRef.current.getZoom() >= 13) {
+      if (mapRef.current?.getZoom() >= 13) {
         setPopupsOpen(true);
       }
     } else {
@@ -189,9 +150,6 @@ function TeamLocations() {
       setPopupsOpen(false);
     }
   };
-
-  // Get an array of all users' non-null countries (some locations may not be associated with a country)
-  // Get the number of unique countries
 
   const countries = mapMarkers.map(user => user.location.country);
   const totalUniqueCountries = [...new Set(countries)].length;
@@ -211,12 +169,6 @@ function TeamLocations() {
   if (searchText) {
     dropdown = true;
   }
-  useEffect(() => {
-    const coords = currentUser?.location.coords;
-    if (coords) {
-      handleFlyTo(coords.lat, coords.lng);
-    }
-  }, [currentUser]);
 
   const markerPopups = filteredMapMarkers.map(profile => {
     const userName = getUserName(profile);
@@ -267,7 +219,10 @@ function TeamLocations() {
       )}
       <div className="py-2 d-flex justify-content-between flex-column flex-md-row">
         <div className="text-and-table-icon-container">
-          <h5>Total Countries: {totalUniqueCountries}</h5>
+          <h5>
+            Total Countries:
+            {totalUniqueCountries}
+          </h5>
           <button
             type="button"
             id="toggle-table-button"
@@ -319,9 +274,11 @@ function TeamLocations() {
                             return (
                               <tr key={profile._id}>
                                 <td>{userName}</td>
-                                <td>{`${profile.location.city ? `${profile.location.city},` : ''} ${
-                                  profile.location.country
-                                }`}</td>
+                                <td>
+                                  {`${profile.location.city ? `${profile.location.city},` : ''} ${
+                                    profile.location.country
+                                  }`}
+                                </td>
                                 <td>
                                   <div
                                     style={{
@@ -399,8 +356,6 @@ function TeamLocations() {
         </div>
         {loading ? (
           <div
-            animation="border"
-            size="md"
             className="d-flex justify-content-center align-items-center"
             style={{ minHeight: '50vh' }}
           >
@@ -433,28 +388,32 @@ function TeamLocations() {
               maxZoom={15}
             />
 
-            <MarkerClusterGroup disableClusteringAtZoom={13} spiderfyOnMaxZoom chunkedLoading>
-              {tableVisible && currentUser ? (
-                <MarkerPopup
-                  key={currentUser._id}
-                  profile={currentUser}
-                  userName={getUserName(currentUser)}
-                  isAbleToEdit={isAbleToEdit}
-                  editHandler={editHandler}
-                  removeLocation={removeLocation}
-                  isOpen={markerPopupVisible}
-                  darkMode={darkMode}
-                />
-              ) : (
-                markerPopups
-              )}
-            </MarkerClusterGroup>
+            {/* Local Suspense keeps the lazy cluster group from suspending the whole route,
+                which would detach/reattach MapContainer's ref and re-init the Leaflet map */}
+            <Suspense fallback={null}>
+              <MarkerClusterGroup disableClusteringAtZoom={13} spiderfyOnMaxZoom chunkedLoading>
+                {tableVisible && currentUser ? (
+                  <MarkerPopup
+                    key={currentUser._id}
+                    profile={currentUser}
+                    userName={getUserName(currentUser)}
+                    isAbleToEdit={isAbleToEdit}
+                    editHandler={editHandler}
+                    removeLocation={removeLocation}
+                    isOpen={markerPopupVisible}
+                    darkMode={darkMode}
+                  />
+                ) : (
+                  markerPopups
+                )}
+              </MarkerClusterGroup>
+            </Suspense>
           </MapContainer>
         )}
       </div>
     </Container>
   );
-}
+});
 
 function EventComponent({ setPopupsOpen, currentUser, setMarkerPopupVisible }) {
   const map = useMapEvents({
@@ -477,4 +436,5 @@ function EventComponent({ setPopupsOpen, currentUser, setMarkerPopupVisible }) {
   return null;
 }
 
+TeamLocations.displayName = 'TeamLocations';
 export default TeamLocations;

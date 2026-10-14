@@ -1,0 +1,53 @@
+/* stylelint-disable  */
+@import url('./UserProfileModal.module.css');
+
+@media (width <= 1024px) {
+  .link-fields {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.invalid-help-context,
+.warning-help-context {
+  /* Preserve error red in dark mode so validation text remains readable. */
+  color: red;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  margin-bottom: auto;
+  padding-left: 0.4rem;
+}
+
+.custom-label {
+  display: flex;
+  padding: 0.6em 0.4em;
+  margin: 2px;
+  width: 80%;
+  font-weight: 500;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.25rem;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.modal-label-dark.modal-label-dark {
+  color: black !important;
+} 
+
+:global(body.bm-dashboard-dark) .edit-links-modal-header {
+  filter: none !important;
+  color: #fff !important;
+} 
+
+body.bm-dashboard-dark .edit-links-modal-header input,
+body.bm-dashboard-dark .edit-links-modal-header select,
+body.bm-dashboard-dark .edit-links-modal-header textarea {
+  color: #000 !important;
+  background-color: #fff !important;
+}
+body.bm-dashboard-dark .edit-links-modal-header .modal-title {
+  color: #fff !important;
+}

@@ -1,5 +1,5 @@
 import httpService from './httpService';
-import { ENDPOINTS, ApiEndpoint } from '../utils/URL';
+import { ENDPOINTS, ApiEndpoint } from '~/utils/URL';
 
 const ApiUri = `${ApiEndpoint}/team`;
 

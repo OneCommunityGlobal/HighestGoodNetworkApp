@@ -2,16 +2,14 @@
 /* eslint-disable no-nested-ternary */
 import { useState, useContext, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { connect } from 'react-redux';
-import { boxStyle, boxStyleDark } from 'styles';
-import { useSelector } from 'react-redux';
-// eslint-disable-next-line import/no-cycle
-import { ModalContext } from 'context/ModalContext';
-// eslint-disable-next-line import/no-cycle
+import { connect, useSelector } from 'react-redux';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { ModalContext } from '~/context/ModalContext';
 import PermissionList from './PermissionList';
 import hasPermission from '../../utils/permissions';
-import './UserRoleTab.css';
+import styles from './UserRoleTab.module.css';
 
+import { permissions } from '../../utils/constants';
 function PermissionListItem(props) {
   const {
     rolePermissions,
@@ -25,6 +23,7 @@ function PermissionListItem(props) {
     setPermissions,
     setRemovedDefaultPermissions,
     removedDefaultPermissions,
+    editPermission,
   } = props;
   const isCategory = !!subperms;
   const [infoRoleModal, setinfoRoleModal] = useState(false);
@@ -33,6 +32,27 @@ function PermissionListItem(props) {
   const hasThisPermission =
     rolePermissions.includes(permission) ||
     (immutablePermissions.includes(permission) && !removedDefaultPermissions?.includes(permission));
+
+  // Get current user permissions for specific restriction check
+  const currentUserPermissions = useSelector(
+    state => state.auth?.user?.permissions?.frontPermissions || [],
+  );
+  const currentUserRole = useSelector(state => state.auth?.user?.role || '');
+
+  // Only restrict the specific Blue Square Email Management permissio
+  const isRestrictedPermission = permission === permissions.resendBlueSquareAndSummaryEmails;
+  const userHasRestrictedPermission = currentUserPermissions.includes(
+    permissions.resendBlueSquareAndSummaryEmails,
+  );
+  const userHasRoleWithRestrictedPermission = currentUserRole === 'Owner';
+  const shouldDisableForRestriction =
+    editable &&
+    isRestrictedPermission &&
+    !userHasRestrictedPermission &&
+    !userHasRoleWithRestrictedPermission;
+
+  const canEditPermissions = props.hasPermission(editPermission || permissions.putRole);
+
   const { updateModalStatus } = useContext(ModalContext);
 
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -55,6 +75,11 @@ function PermissionListItem(props) {
     setinfoRoleModal(!infoRoleModal);
   };
   const togglePermission = permissionKey => {
+    // Block specific restricted permission if user doesn't have it
+    if (shouldDisableForRestriction) {
+      return;
+    }
+
     // Default perms can only be managed (Add/Delete) by users with "putUserProfilePermissions" perm.
     if (immutablePermissions.includes(permissionKey)) {
       if (!removedDefaultPermissions?.includes(permissionKey)) {
@@ -156,7 +181,7 @@ function PermissionListItem(props) {
 
   return (
     <>
-      <li className="user-role-tab__permissions" key={permission} data-testid={permission}>
+      <li className={styles.userRoleTabPermissions} key={permission} data-testid={permission}>
         <p
           style={{
             color: isCategory
@@ -173,11 +198,11 @@ function PermissionListItem(props) {
             fontSize: isCategory && '20px',
             textIndent: `${50 * depth}px`,
           }}
-          className="permission-label"
+          className={styles.permissionLabel}
         >
           {label}
         </p>
-        <div className="icon-button-container">
+        <div className={styles.iconButtonContainer}>
           <div className="infos">
             <i
               data-toggle="tooltip"
@@ -185,9 +210,7 @@ function PermissionListItem(props) {
               title="Click for more information"
               aria-hidden="true"
               className="fa fa-info-circle"
-              onClick={() => {
-                handleModalOpen(description);
-              }}
+              onClick={handleModalOpen}
               style={{ color: darkMode ? 'white' : 'black' }}
             />
           </div>
@@ -195,7 +218,7 @@ function PermissionListItem(props) {
             <></>
           ) : isCategory ? (
             <Button
-              className="icon-button"
+              className={styles.iconButton}
               color={
                 howManySubpermsInRole === 'All'
                   ? 'danger'
@@ -210,25 +233,31 @@ function PermissionListItem(props) {
                 props.onChange();
                 updateModalStatus(true);
               }}
-              disabled={!props.hasPermission('putRole')}
+              disabled={!canEditPermissions}
               style={darkMode ? boxStyleDark : boxStyle}
             >
               {howManySubpermsInRole === 'All' ? 'Delete' : 'Add'}
             </Button>
           ) : (
             <Button
-              className="icon-button"
+              className={styles.iconButton}
               color={hasThisPermission ? 'danger' : 'success'}
               onClick={() => {
                 togglePermission(permission);
                 updateModalStatus(true);
               }}
               disabled={
-                !props.hasPermission('putRole') ||
+                !canEditPermissions ||
                 (immutablePermissions.includes(permission) &&
-                  !props.hasPermission('putUserProfilePermissions'))
+                  !props.hasPermission(permissions.putUserProfilePermissions)) ||
+                shouldDisableForRestriction
               }
               style={darkMode ? boxStyleDark : boxStyle}
+              title={
+                shouldDisableForRestriction
+                  ? 'You must have the Blue Square Email Management permission to assign it to others'
+                  : ''
+              }
             >
               {hasThisPermission ? 'Delete' : 'Add'}
             </Button>
@@ -237,7 +266,7 @@ function PermissionListItem(props) {
       </li>
       {isCategory ? (
         <li
-          className="user-role-tab__permissionList"
+          className={styles.userRoleTabPermissionList}
           style={{
             display: 'flex',
             flexDirection: 'column',
@@ -248,6 +277,7 @@ function PermissionListItem(props) {
             permissionsList={subperms}
             immutablePermissions={immutablePermissions}
             editable={editable}
+            editPermission={editPermission}
             setPermissions={setPermissions}
             // eslint-disable-next-line react/destructuring-assignment
             onChange={props.onChange}

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Info } from 'lucide-react';
 import { format, startOfDay, isAfter, isBefore, isEqual } from 'date-fns';
-import './PaidLaborCost.css';
+import './PaidLaborCost.module.css';
 
 function PaidLaborCostDatePicker({
   startDate,
@@ -155,7 +155,8 @@ function PaidLaborCostDatePicker({
     <div ref={wrapperRef} className={`paid-labor-cost-custom-date-range-picker ${className}`}>
       {/* Input + Info */}
       <div className="paid-labor-cost-input-wrapper">
-        <div
+        <button
+          type="button"
           className="paid-labor-cost-date-range-input"
           onClick={e => {
             e.stopPropagation();
@@ -164,7 +165,7 @@ function PaidLaborCostDatePicker({
         >
           <div className="paid-labor-cost-date-range-text">{formatDisplayDate()}</div>
           <div className="paid-labor-cost-date-range-icon">📅</div>
-        </div>
+        </button>
         <div
           className="paid-labor-cost-info-wrapper"
           onMouseEnter={() => setShowInfo(true)}
@@ -197,6 +198,7 @@ function PaidLaborCostDatePicker({
       {isOpen && (
         <div
           className="paid-labor-cost-date-range-calendar"
+          role="presentation"
           onMouseLeave={handleMouseLeave}
           onClick={e => e.stopPropagation()}
         >
@@ -232,7 +234,8 @@ function PaidLaborCostDatePicker({
               const disabled = isDisabled(date);
 
               return (
-                <div
+                <button
+                  type="button"
                   key={uuidv4()}
                   className={[
                     'paid-labor-cost-day',
@@ -246,9 +249,10 @@ function PaidLaborCostDatePicker({
                     .join(' ')}
                   onClick={() => handleDateClick(date)}
                   onMouseEnter={() => handleMouseEnter(date)}
+                  disabled={disabled}
                 >
                   {date.getDate()}
-                </div>
+                </button>
               );
             })}
           </div>

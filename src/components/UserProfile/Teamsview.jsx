@@ -52,6 +52,7 @@ Teamtabledata.propTypes = {
   edit: PropTypes.bool.isRequired,
   handleTeam: PropTypes.func.isRequired,
 };
+// eslint-disable-next-line react/display-name
 const Teams = React.memo(props => {
   const [addNewTeamModal, setAddNewTeamModal] = useState(false);
   const [remainedTeams, setRemainedTeams] = useState([]);

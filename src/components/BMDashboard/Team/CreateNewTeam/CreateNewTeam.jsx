@@ -1,0 +1,604 @@
+import { useState, useEffect } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+import { Form, FormGroup, Label, Input, Button, Badge, Tooltip } from 'reactstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
+import Joi from 'joi';
+import { toast } from 'react-toastify';
+import { boxStyle } from '../../../../styles';
+import styles from './CreateNewTeam.module.css';
+import { getUserProfileBasicInfo } from '../../../../actions/userManagement';
+import { postNewTeam, addTeamMember } from '../../../../actions/allTeamsAction';
+import { ENDPOINTS } from '../../../../utils/URL';
+
+const initialFormState = {
+  teamName: '',
+  additionalInformation: '',
+  teamMembers: [],
+  tasks: [],
+};
+
+export default function CreateNewTeam() {
+  const history = useHistory();
+  const location = useLocation();
+  const [formData, setFormData] = useState(initialFormState);
+  const [errors, setErrors] = useState({});
+  const dispatch = useDispatch();
+  const userProfilesBasicInfo = useSelector(
+    state => state.allUserProfilesBasicInfo?.userProfilesBasicInfo,
+  );
+  const [selectedMember, setSelectedMember] = useState('');
+  const [members, setMembers] = useState([]);
+  const [assignedMembers, setAssignedMembers] = useState([]);
+  const [assignedTasks, setAssignedTasks] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [taskErrorMessage, setTaskErrorMessage] = useState('');
+  const [selectedMembersForBulk, setSelectedMembersForBulk] = useState([]);
+  const [selectedTasksForBulk, setSelectedTasksForBulk] = useState([]);
+
+  const [teamNameTooltipOpen, setTeamNameTooltipOpen] = useState(false);
+  const [membersTooltipOpen, setMembersTooltipOpen] = useState(false);
+  const [tasksTooltipOpen, setTasksTooltipOpen] = useState(false);
+
+  const [touchedFields, setTouchedFields] = useState({
+    teamName: false,
+    assignedMembers: false,
+    additionalInformation: false,
+    assignedTasks: false,
+  });
+
+  useEffect(() => {
+    dispatch(getUserProfileBasicInfo({ source: 'CreateNewTeam' }));
+  }, [dispatch]);
+
+  useEffect(() => {
+    // Restore saved draft when returning from WBS task selection
+    const saved = sessionStorage.getItem('createTeamDraft');
+    if (saved) {
+      try {
+        const draft = JSON.parse(saved);
+        setFormData(draft.formData || initialFormState);
+        setAssignedMembers(draft.assignedMembers || []);
+        setAssignedTasks(draft.assignedTasks || []);
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to parse saved team draft:', e);
+      }
+      sessionStorage.removeItem('createTeamDraft');
+    }
+    // Add task selected from WBS page, then clear the location state so it
+    // doesn't re-apply on subsequent visits / refreshes
+    if (location.state?.selectedTask) {
+      const task = location.state.selectedTask;
+      setAssignedTasks(prev => (prev.some(t => t.id === task.id) ? prev : [...prev, task]));
+      history.replace(location.pathname, {});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (Array.isArray(userProfilesBasicInfo)) {
+      setMembers(userProfilesBasicInfo);
+    }
+  }, [userProfilesBasicInfo]);
+
+  const validationObj = {
+    additionalInformation: Joi.string()
+      .max(500)
+      .allow(''),
+    teamName: Joi.string()
+      .required()
+      .max(35),
+  };
+
+  const schema = Joi.object(validationObj).unknown();
+
+  const validate = (data, membersList) => {
+    const result = schema.validate(data, { abortEarly: false });
+    const errorMessages = {};
+    if (result.error) {
+      result.error.details.forEach(detail => {
+        if (detail.path[0] === 'teamName') {
+          if (detail.type === 'any.empty' || detail.type === 'any.required') {
+            errorMessages.teamName = 'Team name is required.';
+          } else if (detail.type === 'string.max') {
+            errorMessages.teamName = 'Team name must be 35 characters or fewer.';
+          } else {
+            errorMessages[detail.path[0]] = detail.message;
+          }
+        } else {
+          errorMessages[detail.path[0]] = detail.message;
+        }
+      });
+    }
+    const currentMembers = membersList === undefined ? assignedMembers : membersList;
+    if (currentMembers.length === 0) {
+      errorMessages.assignedMembers = 'You must assign at least one member.';
+    } else {
+      delete errorMessages.assignedMembers;
+    }
+    if (assignedTasks.length === 0) {
+      errorMessages.assignedTasks = 'You must assign at least one task.';
+    } else {
+      delete errorMessages.assignedTasks;
+    }
+    return Object.keys(errorMessages).length > 0 ? errorMessages : null;
+  };
+
+  const isFormValid =
+    formData.teamName.trim().length > 0 &&
+    formData.teamName.length <= 35 &&
+    assignedMembers.length > 0 &&
+    assignedTasks.length > 0;
+
+  useEffect(() => {
+    // Only trigger validation if the form is touched (fields are interacted with)
+    if (Object.values(touchedFields).includes(true)) {
+      const validationErrors = validate({ ...formData, teamMembers: assignedMembers });
+      setErrors(validationErrors || {});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [assignedMembers, assignedTasks, touchedFields]);
+
+  const handleInputChange = (name, value) => {
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value,
+    }));
+
+    // const validationErrors = validate(formData);
+    // setErrors(validationErrors || {});
+  };
+
+  const handleTeamNameBlur = () => {
+    setTouchedFields(prevState => ({ ...prevState, teamName: true }));
+    const validationErrors = validate(formData); // Trigger validation when field loses focus
+    setErrors(validationErrors || {});
+  };
+
+  const handleSubmit = async event => {
+    event.preventDefault();
+    setTouchedFields({
+      teamName: true,
+      assignedMembers: true,
+      additionalInformation: true,
+      assignedTasks: true,
+    });
+    const validationErrors = validate(formData);
+    setErrors(validationErrors || {});
+    if (validationErrors) {
+      return;
+    }
+
+    try {
+      const res = await dispatch(postNewTeam(formData.teamName, true));
+      if (res?.status !== 200) {
+        const errMsg = res?.data?.error || res?.message || 'Failed to create team.';
+        toast.error(errMsg);
+        return;
+      }
+
+      const newTeamId = res.data._id;
+
+      // Assign each selected member to the newly created team
+      await Promise.all(assignedMembers.map(userId => dispatch(addTeamMember(newTeamId, userId))));
+
+      // Add assigned members as resources on each assigned task
+      if (assignedTasks.length > 0 && assignedMembers.length > 0) {
+        const memberResources = assignedMembers.map(userId => {
+          const user = members.find(u => u._id === userId);
+          return {
+            userID: userId,
+            name: user ? `${user.firstName} ${user.lastName}` : userId,
+            profilePic: user?.profilePic || '',
+          };
+        });
+        await Promise.all(
+          assignedTasks.map(async task => {
+            const taskRes = await axios.get(ENDPOINTS.GET_TASK(task.id));
+            const existingResources = taskRes.data?.resources || [];
+            const existingIds = new Set(existingResources.map(r => r.userID));
+            const newResources = [
+              ...existingResources,
+              ...memberResources.filter(r => !existingIds.has(r.userID)),
+            ];
+            await axios.put(ENDPOINTS.TASK_UPDATE(task.id), {
+              ...taskRes.data,
+              resources: newResources,
+              isAssigned: newResources.length > 0,
+            });
+          }),
+        );
+      }
+
+      toast.success(`Team "${formData.teamName}" created successfully!`);
+      // Reset form after successful submission, stay on same page
+      setFormData(initialFormState);
+      setAssignedMembers([]);
+      setAssignedTasks([]);
+      setErrors({});
+      setSelectedMember('');
+      setSelectedMembersForBulk([]);
+      setSelectedTasksForBulk([]);
+      setTaskErrorMessage('');
+      setErrorMessage('');
+      setTouchedFields({
+        teamName: false,
+        assignedMembers: false,
+        additionalInformation: false,
+        assignedTasks: false,
+      });
+    } catch (err) {
+      const errMsg =
+        err?.response?.data?.error ||
+        err?.message ||
+        'An unexpected error occurred. Please try again.';
+      toast.error(errMsg);
+    }
+  };
+
+  const handleCancelClick = () => {
+    setSelectedMember('');
+    setAssignedMembers([]);
+    setAssignedTasks([]);
+    setFormData(initialFormState);
+    setErrors({});
+    setSelectedMembersForBulk([]);
+    setSelectedTasksForBulk([]);
+    setTaskErrorMessage('');
+    setErrorMessage('');
+    setTouchedFields({
+      teamName: false,
+      assignedMembers: false,
+      additionalInformation: false,
+      assignedTasks: false,
+    });
+  };
+
+  const handleMemberChange = e => {
+    setSelectedMember(e.target.value);
+    setErrorMessage('');
+  };
+
+  const handleAddMember = () => {
+    if (!selectedMember) {
+      setErrorMessage('Please select a member!');
+      return;
+    }
+    if (assignedMembers.includes(selectedMember)) {
+      setErrorMessage('This member is already assigned!');
+      return;
+    }
+    setAssignedMembers(prevMembers => {
+      const updatedMembers = [...prevMembers, selectedMember];
+      const validationErrors = validate(
+        { ...formData, teamMembers: updatedMembers },
+        updatedMembers,
+      );
+      setErrors(validationErrors || {});
+      setErrorMessage('');
+      return updatedMembers;
+    });
+    setSelectedMember('');
+  };
+
+  const handleRemoveMember = member => {
+    setAssignedMembers(assignedMembers.filter(m => m !== member));
+    setSelectedMembersForBulk(prev => prev.filter(m => m !== member));
+  };
+
+  const handleBulkRemoveMembers = () => {
+    if (selectedMembersForBulk.length === 0) return;
+    setAssignedMembers(prev => prev.filter(m => !selectedMembersForBulk.includes(m)));
+    setSelectedMembersForBulk([]);
+  };
+
+  const handleToggleMemberForBulk = member => {
+    setSelectedMembersForBulk(prev =>
+      prev.includes(member) ? prev.filter(m => m !== member) : [...prev, member],
+    );
+  };
+
+  const handleOpenTaskModal = () => {
+    setTaskErrorMessage('');
+    sessionStorage.setItem(
+      'createTeamDraft',
+      JSON.stringify({ formData, assignedMembers, assignedTasks }),
+    );
+    history.push('/projects', { taskSelectionMode: true, returnPath: '/bmdashboard/AddNewTeam' });
+  };
+
+  const handleRemoveTask = task => {
+    setAssignedTasks(assignedTasks.filter(t => t.id !== task.id));
+    setSelectedTasksForBulk(prev => prev.filter(taskId => taskId !== task.id));
+  };
+
+  const handleBulkRemoveTasks = () => {
+    if (selectedTasksForBulk.length === 0) return;
+    setAssignedTasks(prev => prev.filter(task => !selectedTasksForBulk.includes(task.id)));
+    setSelectedTasksForBulk([]);
+  };
+
+  const handleToggleTaskForBulk = task => {
+    setSelectedTasksForBulk(prev =>
+      prev.includes(task.id) ? prev.filter(taskId => taskId !== task.id) : [...prev, task.id],
+    );
+  };
+
+  return (
+    <main className={`${styles.addTeamContainer}`}>
+      <header className={`${styles.addTeamHeader}`}>
+        <h2>Create New Team</h2>
+      </header>
+
+      <Form className={`${styles.addTeamForm}`} onSubmit={handleSubmit}>
+        {/* Team Details */}
+        <div className={styles.formSection}>
+          <h5 className={styles.sectionTitle}>Team Details</h5>
+          <FormGroup>
+            <Label for="team-name">
+              Team Name<span className={styles.fieldRequired}>*</span>
+              <span id="teamNameTooltip" className={styles.tooltipIcon}>
+                ?
+              </span>
+            </Label>
+            <Tooltip
+              isOpen={teamNameTooltipOpen}
+              target="teamNameTooltip"
+              toggle={() => setTeamNameTooltipOpen(!teamNameTooltipOpen)}
+            >
+              Enter a unique name for your team (max 35 characters).
+            </Tooltip>
+            <Input
+              id="team-name"
+              type="text"
+              name="teamName"
+              placeholder="Enter team name"
+              value={formData.teamName}
+              onChange={event => handleInputChange('teamName', event.target.value)}
+              onBlur={handleTeamNameBlur}
+            />
+            <small className={styles.helperText}>Max 35 characters</small>
+            {touchedFields.teamName && errors.teamName && (
+              <div className={styles.teamFormError}>{errors.teamName}</div>
+            )}
+          </FormGroup>
+        </div>
+
+        {/* Members */}
+        <div className={styles.formSection}>
+          <h5 className={styles.sectionTitle}>Members</h5>
+          <FormGroup>
+            <Label for="members-select">
+              Add Members<span className={styles.fieldRequired}>*</span>
+              <span id="membersTooltip" className={styles.tooltipIcon}>
+                ?
+              </span>
+            </Label>
+            <Tooltip
+              isOpen={membersTooltipOpen}
+              target="membersTooltip"
+              toggle={() => setMembersTooltipOpen(!membersTooltipOpen)}
+            >
+              At least one member is required. Select from dropdown and click Add.
+            </Tooltip>
+            <div className={styles.selectContainer}>
+              <Input
+                id="members-select"
+                type="select"
+                value={selectedMember}
+                onChange={handleMemberChange}
+              >
+                <option value="">Select a Member</option>
+                {Array.isArray(members) &&
+                  members.map(user => (
+                    <option key={user._id} value={user._id}>
+                      {user.firstName} {user.lastName}
+                    </option>
+                  ))}
+              </Input>
+              <Button onClick={handleAddMember} type="button" className={styles.addBtn}>
+                Add
+              </Button>
+            </div>
+            {touchedFields.assignedMembers && errors.assignedMembers && (
+              <div className={styles.teamFormError}>{errors.assignedMembers}</div>
+            )}
+            {errorMessage && <div className={styles.teamFormError}>{errorMessage}</div>}
+          </FormGroup>
+          {assignedMembers.length > 0 && (
+            <div className={styles.assignedBlock}>
+              <div className={styles.assignedHeader}>
+                <span className={styles.assignedLabel}>
+                  Assigned Members ({assignedMembers.length})
+                </span>
+                {assignedMembers.length > 1 && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    className={styles.bulkRemoveBtn}
+                    onClick={handleBulkRemoveMembers}
+                    disabled={selectedMembersForBulk.length === 0}
+                  >
+                    Remove Selected ({selectedMembersForBulk.length})
+                  </Button>
+                )}
+              </div>
+              <div className={styles.badgeContainer}>
+                {assignedMembers.map(member => {
+                  const isSelected = selectedMembersForBulk.includes(member);
+                  const memberInfo = members.find(u => u._id === member);
+                  const memberName = memberInfo
+                    ? `${memberInfo.firstName} ${memberInfo.lastName}`
+                    : member;
+                  return (
+                    <Badge
+                      key={member}
+                      pill
+                      color="info"
+                      className={`${styles.assignedBadge} ${
+                        isSelected ? styles.badgeSelected : ''
+                      }`}
+                      onClick={() =>
+                        assignedMembers.length > 1 && handleToggleMemberForBulk(member)
+                      }
+                      style={{ cursor: assignedMembers.length > 1 ? 'pointer' : 'default' }}
+                    >
+                      {memberName}
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        className={styles.badgeRemove}
+                        onClick={e => {
+                          e.stopPropagation();
+                          handleRemoveMember(member);
+                        }}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.stopPropagation();
+                            handleRemoveMember(member);
+                          }
+                        }}
+                        aria-label={`Remove member ${member}`}
+                      >
+                        &times;
+                      </span>
+                    </Badge>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Tasks */}
+        <div className={styles.formSection}>
+          <h5 className={styles.sectionTitle}>Tasks</h5>
+          <FormGroup>
+            <Label for="tasks-select">
+              Add Main Tasks<span className={styles.fieldRequired}>*</span>{' '}
+              <span id="tasksTooltip" className={styles.tooltipIcon}>
+                ?
+              </span>
+            </Label>
+            <Tooltip
+              isOpen={tasksTooltipOpen}
+              target="tasksTooltip"
+              toggle={() => setTasksTooltipOpen(!tasksTooltipOpen)}
+            >
+              At least one task is required. Click &#34;Select Task&#34; to assign tasks to the
+              team.
+            </Tooltip>
+            <div className={styles.selectContainer}>
+              <Input
+                id="tasks-select"
+                type="text"
+                value="Select a Task"
+                className={styles.taskSelectInput}
+                readOnly
+              />
+              <Button onClick={handleOpenTaskModal} type="button" className={styles.addBtn}>
+                Select Task
+              </Button>
+            </div>
+            {touchedFields.assignedTasks && errors.assignedTasks && (
+              <div className={styles.teamFormError}>{errors.assignedTasks}</div>
+            )}
+            {taskErrorMessage && <div className={styles.teamFormError}>{taskErrorMessage}</div>}
+          </FormGroup>
+          {assignedTasks.length > 0 && (
+            <div className={styles.assignedBlock}>
+              <div className={styles.assignedHeader}>
+                <span className={styles.assignedLabel}>
+                  Assigned Tasks ({assignedTasks.length})
+                </span>
+                {assignedTasks.length > 1 && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    className={styles.bulkRemoveBtn}
+                    onClick={handleBulkRemoveTasks}
+                    disabled={selectedTasksForBulk.length === 0}
+                  >
+                    Remove Selected ({selectedTasksForBulk.length})
+                  </Button>
+                )}
+              </div>
+              <div className={styles.badgeContainer}>
+                {assignedTasks.map(task => {
+                  const isSelected = selectedTasksForBulk.includes(task.id);
+                  return (
+                    <Badge
+                      key={task.id}
+                      pill
+                      color="info"
+                      className={`${styles.assignedBadge} ${
+                        isSelected ? styles.badgeSelected : ''
+                      }`}
+                      onClick={() => assignedTasks.length > 1 && handleToggleTaskForBulk(task)}
+                      style={{ cursor: assignedTasks.length > 1 ? 'pointer' : 'default' }}
+                    >
+                      {task.projectName} / {task.wbsName} / {task.name}
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        className={styles.badgeRemove}
+                        onClick={e => {
+                          e.stopPropagation();
+                          handleRemoveTask(task);
+                        }}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.stopPropagation();
+                            handleRemoveTask(task);
+                          }
+                        }}
+                        aria-label={`Remove task ${task.name}`}
+                      >
+                        &times;
+                      </span>
+                    </Badge>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Additional Information */}
+        <div className={styles.formSection}>
+          <h5 className={styles.sectionTitle}>Additional Information</h5>
+          <FormGroup>
+            <Input
+              type="textarea"
+              rows="3"
+              name="additional-info"
+              id="additional-info"
+              placeholder="Specify additional info about team if necessary"
+              value={formData.additionalInformation}
+              onChange={event => handleInputChange('additionalInformation', event.target.value)}
+            />
+            {errors.additionalInformation && (
+              <div className={styles.teamFormError}>{errors.additionalInformation}</div>
+            )}
+          </FormGroup>
+        </div>
+
+        <div className={styles.addTeamButtons}>
+          <Button
+            id="cancel-button"
+            outline
+            style={boxStyle}
+            onClick={handleCancelClick}
+            type="button"
+          >
+            Cancel
+          </Button>
+          <Button id="submit-button" style={boxStyle} type="submit" disabled={!isFormValid}>
+            Submit
+          </Button>
+        </div>
+      </Form>
+    </main>
+  );
+}

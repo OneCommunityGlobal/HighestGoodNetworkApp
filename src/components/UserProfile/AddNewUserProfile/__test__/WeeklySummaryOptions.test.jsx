@@ -36,7 +36,7 @@ describe('WeeklySummaryOptions Component', () => {
       theme: { darkMode: false },
     });
 
-    const handleUserProfile = jest.fn();
+    const handleUserProfile = vi.fn();
 
     render(
       <Provider store={store}>
@@ -93,7 +93,7 @@ describe('WeeklySummaryOptions Component', () => {
       theme: { darkMode: false },
     });
 
-    const handleUserProfile = jest.fn();
+    const handleUserProfile = vi.fn();
 
     render(
       <Provider store={store}>

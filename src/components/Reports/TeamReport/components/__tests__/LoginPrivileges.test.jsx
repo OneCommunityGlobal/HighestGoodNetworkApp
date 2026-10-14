@@ -26,7 +26,7 @@ describe('LoginPrivileges Component', () => {
   });
 
   test('test_handle_input_change_called', () => {
-    const handleInputChange = jest.fn();
+    const handleInputChange = vi.fn();
     render(<LoginPrivileges selectedInput="isManager" handleInputChange={handleInputChange} />);
 
     const adminRadio = screen.getByLabelText('Admin');

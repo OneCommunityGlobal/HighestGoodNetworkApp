@@ -1,92 +1,190 @@
-import React from 'react';
-import { useState } from 'react';
-import { Dropdown, Input } from 'reactstrap';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useMemo, useState } from 'react';
+import PropTypes from 'prop-types';
+import { Input } from 'reactstrap';
 
-const AssignTeamField = React.memo(props => {
-  const [isOpen, toggle] = React.useState(false);
-  const [searchText, setSearchText] = useState(() => {
-    if (props.editMode) {
-      return (props.value == undefined ? "" : props.value.teamName)
-    } else {
-      return props.searchText
-    }
-  })
- 
-  const darkMode = useSelector(state => state.theme.darkMode);
- 
-  React.useEffect(() => {
-    if (props.selectedTeam && props.selectedTeam.teamName !== searchText) {
-      props.onSelectTeam(undefined);
-      props.undoTeamAssigned();
-    }
+export default function AssignTeamField({
+  teamsData = [],
+  value = null,
+  onChange,
+  disabled = false,
+  inputId = 'team-assignment',
+  placeholder = '',
+  darkMode = false,
+}) {
+  // Only active teams should be available for assignment.
+  const activeTeams = useMemo(
+    () =>
+      (Array.isArray(teamsData) ? teamsData : [])
+        .filter(Boolean)
+        .filter(team => team.isActive === true),
+    [teamsData]
+  );
 
-    if (searchText === '') {
-      props.cleanTeamAssigned();
-    }
-  }, [searchText]);
+  const nameFromValue = value => {
+  if (!value) return '';
 
-  const sTeam = props.teamsData.allTeams.find(team => team.teamName === '2021 Test new');
-  if (sTeam) {
-    // console.log('sTeam', sTeam);
+  if (typeof value === 'string') {
+    const found = (Array.isArray(teamsData) ? teamsData : []).find(
+      team => team?._id === value
+    );
+
+    return found ? found.teamName || '' : '';
   }
 
+  if (typeof value === 'object') {
+    return value.teamName || '';
+  }
+
+  return '';
+};
+
+  const [text, setText] = useState(nameFromValue(value));
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  useEffect(() => {
+    setText(nameFromValue(value));
+  }, [value, activeTeams]);
+
+  const suggestions = useMemo(() => {
+    const search = text.trim().toLowerCase();
+
+    if (!search) {
+      return activeTeams;
+    }
+
+    return activeTeams.filter(team =>
+      (team.teamName || '').toLowerCase().includes(search)
+    );
+  }, [text, activeTeams]);
+
+  const handleChange = e => {
+    const next = e.target.value;
+
+    setText(next);
+    setShowSuggestions(true);
+
+    const found = activeTeams.find(
+      team =>
+        (team.teamName || '').trim().toLowerCase() ===
+        next.trim().toLowerCase()
+    );
+
+    const payload = found
+      ? {
+          _id: found._id,
+          teamName: found.teamName || '',
+        }
+      : {
+          _id: '',
+          teamName: next,
+        };
+
+    if (typeof onChange === 'function') {
+      onChange(payload);
+    }
+  };
+
+  const handleSelect = team => {
+    const selectedTeam = {
+      _id: team._id,
+      teamName: team.teamName || '',
+    };
+
+    setText(selectedTeam.teamName);
+    setShowSuggestions(false);
+
+    if (typeof onChange === 'function') {
+      onChange(selectedTeam);
+    }
+  };
+
+  const handleFocus = () => {
+    if (!disabled) {
+      setShowSuggestions(true);
+    }
+  };
+
   return (
-    <Dropdown
-      isOpen={isOpen}
-      toggle={() => {
-        toggle(!isOpen);
-      }}
-      style={{ width: '100%', marginRight: '5px' }}
-    >
+    <div style={{ position: 'relative' }}>
       <Input
+        id={inputId}
         type="text"
-        value={searchText}
-        onFocus={() => {
-          toggle(true);
-        }}
-        onChange={e => {
-          setSearchText(e.target.value);
-          toggle(true);
-        }}
+        value={text}
+        placeholder={placeholder}
+        disabled={disabled}
+        onChange={handleChange}
+        onFocus={handleFocus}
+        autoComplete="off"
+        onBlur={() => setShowSuggestions(false)}
       />
 
-      {props.teamsData && props.teamsData.allTeams.length > 0 ? (
+      {showSuggestions && !disabled && suggestions.length > 0 && (
         <div
-          tabIndex="-1"
-          role="menu"
-          aria-hidden="false"
-          className={`dropdown-menu${isOpen ? ' show' : ''} ${
-            darkMode ? 'bg-darkmode-liblack text-light' : ''
-          }`}
-          style={{ marginTop: '0px', width: '100%' }}
+          style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            right: 0,
+            zIndex: 1050,
+            backgroundColor: darkMode ? '#335b6c' : '#fff',
+            color: darkMode ? '#fff' : '#212529',
+            border: darkMode ? '1px solid #555' : '1px solid #ced4da',
+            maxHeight: '200px',
+            overflowY: 'auto',
+          }}
         >
-          {props.teamsData.allTeams
-            .filter(team => {
-              if (team.teamName.toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
-                return team;
-              }
-            })
-            .slice(0, 10)
-            .map((item, index) => (
-              <div
-                key={index}
-                className="team-auto-complete"
-                onClick={() => {
-                  setSearchText(item.teamName);
-                  toggle(false);
-                  props.onDropDownSelect(item);
-                }}
-              >
-                {item.teamName}
-              </div>
-            ))}
-        </div>
-      ) : (
-        <></>
-      )}
-    </Dropdown>
-  );
-});
+        {suggestions.map(team => (
+         // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+         <div
+          key={team._id}
+          // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+          tabIndex={0}
+          onMouseDown={e => {
+            e.preventDefault();
+            handleSelect(team);
+          }}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleSelect(team);
+            }
+          }}
+          style={{
+                padding: '8px 12px',
+                cursor: 'pointer',
+                color: darkMode ? 'white' : '#212529',
+              }}
+         >
+       {team.teamName}
+       </div>
 
-export default AssignTeamField;
+      ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+AssignTeamField.propTypes = {
+  teamsData: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string,
+      teamName: PropTypes.string,
+      isActive: PropTypes.bool,
+    })
+  ),
+  value: PropTypes.oneOfType([
+    PropTypes.oneOf([null]),
+    PropTypes.string,
+    PropTypes.shape({
+      _id: PropTypes.string,
+      teamName: PropTypes.string,
+    }),
+  ]),
+  onChange: PropTypes.func,
+  disabled: PropTypes.bool,
+  inputId: PropTypes.string,
+  placeholder: PropTypes.string,
+  darkMode: PropTypes.bool,
+};
+
