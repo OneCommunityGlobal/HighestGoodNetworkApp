@@ -1,20 +1,21 @@
 /**
  * Single source of truth for "is this person qualified for a bio".
  *
- * The rule below is the one that ran unchanged from 2023-07-15 (14078de29) until
- * 2026-05-12, when 24e1c6ba2 swapped tenure (`daysInTeam`) for weekly summary output
- * (`weeklySummariesCount`). Those measure different things — someone can be six months
- * in the team with three summaries — so the tenure rule is restored here.
+ * Business rule (confirmed by Jae, 2026-10-13): a team member qualifies for the yellow
+ * bio-announcement strip once they have
+ *   1. a minimum of 80 tangible hours logged, and
+ *   2. a minimum of 8 Total Valid Weekly Summaries (`weeklySummariesCount`),
+ * and their bio has not been posted yet.
  *
- * `daysInTeam` is computed server-side in HGNRest (`reporthelper.weeklySummaries`) as a
- * $dateDiff in days from the user's createdDate, and survives `formatSummaries`.
+ * Tenure (`daysInTeam`) is not part of the rule: someone 60+ days in with only three
+ * valid summaries must not qualify.
  *
  * Keep every consumer on this function: the yellow highlight bar and the Bio Status
  * filter must agree, or a user shows a bar while being absent from the filter list.
  */
 
 export const BIO_MIN_TANGIBLE_HOURS = 80;
-export const BIO_MIN_DAYS_IN_TEAM = 60;
+export const BIO_MIN_VALID_SUMMARIES = 8;
 
 /**
  * @param {object} summary A weekly summaries report row.
@@ -23,9 +24,13 @@ export const BIO_MIN_DAYS_IN_TEAM = 60;
 export const isQualifiedForBio = summary => {
   if (!summary) return false;
 
+  // weeklySummariesCount can arrive as a string from the report payload.
+  const tangibleHrs = Number(summary.totalTangibleHrs);
+  const validSummaries = Number(summary.weeklySummariesCount);
+
   return (
-    summary.totalTangibleHrs > BIO_MIN_TANGIBLE_HOURS &&
-    summary.daysInTeam > BIO_MIN_DAYS_IN_TEAM &&
+    tangibleHrs >= BIO_MIN_TANGIBLE_HOURS &&
+    validSummaries >= BIO_MIN_VALID_SUMMARIES &&
     summary.bioPosted !== 'posted'
   );
 };
