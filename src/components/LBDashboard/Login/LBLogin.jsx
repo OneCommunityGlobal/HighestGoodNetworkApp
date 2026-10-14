@@ -35,13 +35,13 @@ function LBLogin(props) {
 
   useEffect(() => {
     if (auth.user.access && auth.user.access.canAccessCPPortal) {
-      history.push(prevLocation.pathname);
+      history.replace(prevLocation.pathname, { fromLBLogin: true });
     }
   }, [auth.user.access, history, prevLocation.pathname]);
 
   useEffect(() => {
     if (hasAccess) {
-      history.push(prevLocation.pathname);
+      history.replace(prevLocation.pathname, { fromLBLogin: true });
     }
   }, [hasAccess, history, prevLocation.pathname]);
 
