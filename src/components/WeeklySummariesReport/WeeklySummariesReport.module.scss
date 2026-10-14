@@ -162,9 +162,10 @@
   padding-left: 6px;
 }
 
-// "Requested Week Off" notice beside the team code, and its click-to-show reason.
-// Same colors in light and dark mode. The colors use !important because the dark
-// report card forces white text on everything inside it.
+/* "Requested Week Off" notice beside the team code, and its click-to-show reason.
+   Same colors in light and dark mode. In dark mode the global `body.dark-mode *` rule
+   (public/index.css) forces white text on every element with !important, so the
+   notice, its button and icon repeat their colors under that selector to win. */
 .weekOffBadge {
   position: relative;
   display: inline-flex;
@@ -173,16 +174,18 @@
   border-radius: 4px;
   font-size: 0.75rem;
   white-space: nowrap;
-  background-color: #f8d7da !important;
-  color: #000 !important;
+  background-color: #f8d7da;
+  color: #000;
 }
 
 .weekOffInfoButton {
-  margin-left: 0;
+  /* A flex container drops the trailing space after the text, so the gap
+     before the icon comes from this margin. */
+  margin-left: 4px;
   padding: 0;
   border: 0;
   background: none;
-  color: #000 !important;
+  color: #000;
   line-height: 1;
   cursor: pointer;
 
@@ -193,21 +196,43 @@
   }
 }
 
+/* Opens to the right of the notice, level with it, so it does not cover the
+   name and Bio lines above; on narrow screens it opens below instead. */
 .weekOffReason {
   position: absolute;
-  bottom: calc(100% + 6px);
-  left: 0;
+  top: 0;
+  left: calc(100% + 6px);
   z-index: 10;
-  min-width: 160px;
-  max-width: 280px;
+  min-width: 220px;
+  max-width: 320px;
   padding: 6px 8px;
   border-radius: 4px;
   font-size: 0.8rem;
   white-space: normal;
   overflow-wrap: anywhere;
-  background-color: #222 !important;
-  color: #fff !important;
+  background-color: #222;
+  color: #fff;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+@media screen and (width <= 576px) {
+  .weekOffReason {
+    top: calc(100% + 6px);
+    left: 0;
+  }
+}
+
+:global(body.dark-mode),
+:global(body.bm-dashboard-dark) {
+  .weekOffBadge,
+  .weekOffInfoButton,
+  .weekOffInfoButton i {
+    color: #000 !important;
+  }
+
+  .weekOffReason {
+    color: #fff !important;
+  }
 }
 
 .teamcodeWrapper {
