@@ -124,7 +124,7 @@ const PRGradingView = ({
                       </tr>
                     ) : (
                       filteredReviewers.map(reviewer => {
-                        const isPromoted = promotedReviewerIds.includes(reviewer.id);
+                        const isPromoted = promotedReviewerIds.has(reviewer.id);
 
                         return (
                           <React.Fragment key={reviewer.id}>
@@ -398,7 +398,18 @@ PRGradingView.propTypes = {
   availableRoles: PropTypes.arrayOf(PropTypes.string).isRequired,
   onClearSearch: PropTypes.func.isRequired,
   filteredReviewers: PropTypes.arrayOf(PropTypes.object).isRequired,
-  promotedReviewerIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  promotedReviewerIds: (props, propName) => {
+    const val = props[propName];
+    // Accept Set or array-like objects with a has or includes method
+    if (
+      val &&
+      typeof val === 'object' &&
+      (typeof val.has === 'function' || typeof val.includes === 'function')
+    ) {
+      return null;
+    }
+    return new Error(`Invalid prop ${propName}: expected Set or Array, got ${typeof val}`);
+  },
   onPromoteClick: PropTypes.func.isRequired,
   activeInput: PropTypes.string,
   inputValue: PropTypes.string.isRequired,
