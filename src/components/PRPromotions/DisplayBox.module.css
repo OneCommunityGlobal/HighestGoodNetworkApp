@@ -48,6 +48,7 @@
 }
 
 .statusMessage {
+  display: block;
   margin: 0 0 12px;
   color: #1d4ed8;
   font-size: 14px;

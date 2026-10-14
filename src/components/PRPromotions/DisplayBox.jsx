@@ -90,7 +90,7 @@ export default function DisplayBox({ onClose, darkMode = false }) {
 
       try {
         await loadPendingPromotions();
-      } catch (error) {
+      } catch {
         if (!cancelled) {
           applyPendingRows([]);
           const message = 'Failed to load pending promotions.';
@@ -104,7 +104,7 @@ export default function DisplayBox({ onClose, darkMode = false }) {
       }
     };
 
-    load();
+    void load();
 
     return () => {
       cancelled = true;
@@ -169,7 +169,7 @@ export default function DisplayBox({ onClose, darkMode = false }) {
       if (nextPromotions.length === 0) {
         onClose();
       }
-    } catch (error) {
+    } catch {
       const message = 'Failed to process promotions.';
       setStatusMessage(message);
       toast.error(message);
@@ -210,11 +210,7 @@ export default function DisplayBox({ onClose, darkMode = false }) {
           Are you sure you want to promote these PR reviewers?
         </h2>
 
-        {statusMessage && (
-          <p className={styles.statusMessage} role="status">
-            {statusMessage}
-          </p>
-        )}
+        {statusMessage && <output className={styles.statusMessage}>{statusMessage}</output>}
 
         <table className={tableClassName}>
           <thead>
