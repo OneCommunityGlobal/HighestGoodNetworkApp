@@ -3,6 +3,7 @@ import '@testing-library/jest-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import PRGradingModal from '../PRGradingModal';
+import { teamData, makeReviewers, makeBulkResponse } from '../../../utils/gradingTestUtils';
 
 const showModalMock = vi.fn(function() {
   this.setAttribute('open', '');
@@ -58,50 +59,6 @@ vi.mock('../../../actions/promotionActions', () => ({
   importPREntries: importPREntriesMock,
   updatePRsNeeded: updatePRsNeededMock,
 }));
-
-const teamData = {
-  teamName: 'Team One',
-  dateRange: {
-    start: '2026-10-01',
-    end: '2026-10-07',
-  },
-};
-
-const makeReviewers = () => [
-  {
-    id: 'r1',
-    reviewerName: 'Ada Lovelace',
-    role: 'Reviewer',
-    prsNeeded: 5,
-    history: [],
-    gradedPrs: [
-      {
-        id: 'pr1',
-        _id: 'pr1',
-        prNumber: '1070',
-        rating: 'Good',
-      },
-    ],
-  },
-];
-
-const makeBulkResponse = (reviewers = makeReviewers()) => ({
-  reviewers: Object.fromEntries(
-    reviewers.map(reviewer => [
-      reviewer.id,
-      {
-        weeks: [
-          {
-            prs: (reviewer.gradedPrs || []).map(pr => ({
-              ...pr,
-              _id: pr._id || pr.id,
-            })),
-          },
-        ],
-      },
-    ]),
-  ),
-});
 
 const renderParent = (props = {}) => {
   const defaultProps = {
@@ -197,6 +154,7 @@ describe('PRGradingModal', () => {
         name: 'Review for This Week',
       }),
     ).not.toBeInTheDocument();
+
     expect(showModalMock).not.toHaveBeenCalled();
   });
 

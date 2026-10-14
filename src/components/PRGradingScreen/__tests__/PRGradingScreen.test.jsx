@@ -1,9 +1,9 @@
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-
 import PRGradingScreen from '../PRGradingScreen';
 import GRADE_OPTIONS from '../gradeOptions';
+import { teamData, makeReviewers, makeBulkResponse } from '../../../utils/gradingTestUtils';
 
 const showModalMock = vi.fn(function() {
   this.setAttribute('open', '');
@@ -60,50 +60,6 @@ vi.mock('../../../actions/promotionActions', () => ({
   updatePRsNeeded: updatePRsNeededMock,
 }));
 
-const teamData = {
-  teamName: 'Team One',
-  dateRange: {
-    start: '2026-10-01',
-    end: '2026-10-07',
-  },
-};
-
-const makeReviewers = () => [
-  {
-    id: 'r1',
-    reviewerName: 'Ada Lovelace',
-    role: 'Reviewer',
-    prsNeeded: 5,
-    history: [],
-    gradedPrs: [
-      {
-        id: 'pr1',
-        _id: 'pr1',
-        prNumber: '1070',
-        rating: 'Good',
-      },
-    ],
-  },
-];
-
-const makeBulkResponse = (reviewers = makeReviewers()) => ({
-  reviewers: Object.fromEntries(
-    reviewers.map(reviewer => [
-      reviewer.id,
-      {
-        weeks: [
-          {
-            prs: (reviewer.gradedPrs || []).map(pr => ({
-              ...pr,
-              _id: pr._id || pr.id,
-            })),
-          },
-        ],
-      },
-    ]),
-  ),
-});
-
 const renderScreen = (reviewers = makeReviewers()) => {
   fetchPREntriesBulkMock.mockResolvedValue(makeBulkResponse(reviewers));
 
@@ -134,6 +90,7 @@ const openModal = async () => {
 
   return modal;
 };
+
 describe('PRGradingScreen', () => {
   beforeEach(() => {
     vi.clearAllMocks();
