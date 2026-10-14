@@ -1,17 +1,24 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { postPromotionEligibility } from '../../actions/promotionActions';
-import {
-  getPendingPromotionReviewers,
-  setPendingPromotionReviewers,
-} from './pendingPromotionReviewers';
+import { getPromotionPending, postPromotionEligibility } from '../../actions/promotionActions';
 import styles from './DisplayBox.module.css';
 
 const VIBGYOR_COLOR_COUNT = 7;
 const MONGO_ID_PATTERN = /^[a-fA-F0-9]{24}$/;
+
+function buildRequestor(user) {
+  if (!user?.userid) {
+    return null;
+  }
+
+  return {
+    requestorId: user.userid,
+    role: user.role,
+  };
+}
 
 function normalizeId(value) {
   if (value == null || value === '') {
@@ -34,16 +41,19 @@ function normalizeId(value) {
 function getPromotableIds(promotions, checkedItems) {
   return promotions
     .filter((_, index) => checkedItems[index])
-    .map(promotion => normalizeId(promotion.id))
+    .map(promotion => normalizeId(promotion.reviewerId))
     .filter(id => id && MONGO_ID_PATTERN.test(id));
 }
 
+function getWeeklyPrCount(pr) {
+  return pr?.count ?? pr?.prCount ?? 0;
+}
+
 export default function DisplayBox({ onClose, darkMode = false }) {
-  const requestor = useSelector(state => state.auth?.user);
-  const [promotions, setPromotions] = useState(getPendingPromotionReviewers);
-  const [checkedItems, setCheckedItems] = useState(() =>
-    getPendingPromotionReviewers().map(() => true),
-  );
+  const authUser = useSelector(state => state.auth?.user);
+  const [promotions, setPromotions] = useState([]);
+  const [checkedItems, setCheckedItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isConfirming, setIsConfirming] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
 
@@ -52,7 +62,54 @@ export default function DisplayBox({ onClose, darkMode = false }) {
   const allChecked =
     promotions.length > 0 && checkedItems.length > 0 && checkedItems.every(Boolean);
   const someChecked = checkedItems.some(Boolean);
-  const confirmDisabled = isConfirming || !someChecked;
+  const confirmDisabled = isLoading || isConfirming || !someChecked;
+
+  const applyPendingRows = useCallback(rows => {
+    const nextPromotions = Array.isArray(rows) ? rows : [];
+    setPromotions(nextPromotions);
+    setCheckedItems(nextPromotions.map(() => true));
+  }, []);
+
+  const loadPendingPromotions = useCallback(async () => {
+    const requestor = buildRequestor(authUser);
+    if (!requestor) {
+      throw new Error('Missing requestor');
+    }
+
+    const rows = await getPromotionPending(requestor);
+    applyPendingRows(rows);
+    return Array.isArray(rows) ? rows : [];
+  }, [applyPendingRows, authUser]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      setIsLoading(true);
+      setStatusMessage('');
+
+      try {
+        await loadPendingPromotions();
+      } catch (error) {
+        if (!cancelled) {
+          applyPendingRows([]);
+          const message = 'Failed to load pending promotions.';
+          setStatusMessage(message);
+          toast.error(message);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [applyPendingRows, loadPendingPromotions]);
 
   useEffect(() => {
     if (masterCheckboxRef.current) {
@@ -89,26 +146,27 @@ export default function DisplayBox({ onClose, darkMode = false }) {
   const handleConfirm = async () => {
     const selectedCount = checkedItems.filter(Boolean).length;
     const selectedIds = getPromotableIds(promotions, checkedItems);
+    const requestor = buildRequestor(authUser);
+
+    if (selectedIds.length === 0) {
+      const message = 'No valid reviewers selected for promotion.';
+      setStatusMessage(message);
+      toast.error(message);
+      return;
+    }
 
     setIsConfirming(true);
     setStatusMessage('');
 
     try {
-      if (selectedIds.length > 0) {
-        await postPromotionEligibility(selectedIds, requestor?.userid);
-      }
-
-      const remaining = promotions.filter((_, index) => !checkedItems[index]);
-      setPendingPromotionReviewers(remaining);
-      const nextPromotions = getPendingPromotionReviewers();
-      setPromotions(nextPromotions);
-      setCheckedItems(nextPromotions.map(() => true));
+      await postPromotionEligibility(selectedIds, requestor);
+      const nextPromotions = await loadPendingPromotions();
 
       const message = `Successfully promoted ${selectedCount} reviewer(s).`;
       setStatusMessage(message);
       toast.success(message);
 
-      if (remaining.length === 0) {
+      if (nextPromotions.length === 0) {
         onClose();
       }
     } catch (error) {
@@ -133,13 +191,17 @@ export default function DisplayBox({ onClose, darkMode = false }) {
   const getBadgeClassName = index =>
     [styles.prCountBadge, styles[`color-${index % VIBGYOR_COLOR_COUNT}`]].filter(Boolean).join(' ');
 
+  const emptyMessage = isLoading
+    ? 'Loading pending promotions...'
+    : 'No PR reviewers left to promote.';
+
   return (
     <div className={styles.overlay} onMouseDown={handleOverlayMouseDown}>
       <dialog
         open
         className={`${styles.popup} ${darkMode ? styles.popupDark : ''}`}
         aria-labelledby="promotion-dialog-heading"
-        aria-busy={isConfirming}
+        aria-busy={isLoading || isConfirming}
       >
         <h2
           id="promotion-dialog-heading"
@@ -164,7 +226,7 @@ export default function DisplayBox({ onClose, darkMode = false }) {
                   type="checkbox"
                   checked={allChecked}
                   onChange={handleSelectAll}
-                  disabled={promotions.length === 0 || isConfirming}
+                  disabled={promotions.length === 0 || isLoading || isConfirming}
                   aria-label="Select all reviewers"
                 />
               </th>
@@ -180,19 +242,24 @@ export default function DisplayBox({ onClose, darkMode = false }) {
             {promotions.length === 0 && (
               <tr>
                 <td colSpan="5" className={styles.messageCell}>
-                  No PR reviewers left to promote.
+                  {emptyMessage}
                 </td>
               </tr>
             )}
             {promotions.map((promotion, index) => (
-              <tr key={promotion.id || `${promotion.prReviewer}-${promotion.teamCode}-${index}`}>
+              <tr
+                key={
+                  normalizeId(promotion.reviewerId) ||
+                  `${promotion.prReviewer}-${promotion.teamCode}-${index}`
+                }
+              >
                 <td>
                   <input
                     className={styles.checkbox}
                     type="checkbox"
                     checked={Boolean(checkedItems[index])}
                     onChange={() => handleCheckedBoxChange(index)}
-                    disabled={isConfirming}
+                    disabled={isLoading || isConfirming}
                     aria-label={`Select reviewer ${promotion.prReviewer}`}
                   />
                 </td>
@@ -206,15 +273,20 @@ export default function DisplayBox({ onClose, darkMode = false }) {
                     className={styles.prBadgeRow}
                     aria-label={`Weekly PRs for ${promotion.prReviewer}`}
                   >
-                    {promotion.weeklyPRs.map((pr, prIndex) => (
-                      <span
-                        key={`${promotion.id || promotion.prReviewer}-${pr.week}-${prIndex}`}
-                        className={getBadgeClassName(prIndex)}
-                        title={`Week ${pr.week}: ${pr.prCount} PRs`}
-                      >
-                        {pr.prCount}
-                      </span>
-                    ))}
+                    {(promotion.weeklyPRs || []).map((pr, prIndex) => {
+                      const prCount = getWeeklyPrCount(pr);
+                      return (
+                        <span
+                          key={`${normalizeId(promotion.reviewerId) || promotion.prReviewer}-${
+                            pr.week
+                          }-${prIndex}`}
+                          className={getBadgeClassName(prIndex)}
+                          title={`Week ${pr.week}: ${prCount} PRs`}
+                        >
+                          {prCount}
+                        </span>
+                      );
+                    })}
                   </div>
                 </td>
               </tr>

@@ -694,6 +694,7 @@ export const ENDPOINTS = {
 
   // pr dashboard endpoints
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
+  PROMOTION_PENDING: `${APIEndpoint}/promotion-pending`,
   PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
 
   // LinkedIn autoposter endpoints

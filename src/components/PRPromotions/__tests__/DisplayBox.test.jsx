@@ -5,10 +5,10 @@ import configureMockStore from 'redux-mock-store';
 import { vi } from 'vitest';
 import { toast } from 'react-toastify';
 import DisplayBox from '../DisplayBox';
-import { postPromotionEligibility } from '../../../actions/promotionActions';
-import { resetPendingPromotionReviewers } from '../pendingPromotionReviewers';
+import { getPromotionPending, postPromotionEligibility } from '../../../actions/promotionActions';
 
 vi.mock('../../../actions/promotionActions', () => ({
+  getPromotionPending: vi.fn(),
   postPromotionEligibility: vi.fn(),
 }));
 
@@ -22,10 +22,34 @@ vi.mock('react-toastify', () => ({
 
 const mockStore = configureMockStore([]);
 
+const SAMPLE_PENDING = [
+  {
+    reviewerId: '637af0c0fb9bbc1e308cff01',
+    prReviewer: 'Akshay Jayaram',
+    teamCode: 'ABC12',
+    teamLeaderName: 'Chris Martinez',
+    weeklyPRs: [
+      { week: '2026-W31', count: 7 },
+      { week: '2026-W32', count: 7 },
+    ],
+  },
+  {
+    reviewerId: '637af0c0fb9bbc1e308cff02',
+    prReviewer: 'Ghazi1212',
+    teamCode: '456',
+    teamLeaderName: 'Sam Patel',
+    weeklyPRs: [
+      { week: '2026-W31', count: 2 },
+      { week: '2026-W32', count: 10 },
+      { week: '2026-W33', count: 11 },
+    ],
+  },
+];
+
 function renderDisplayBox(darkMode = false) {
   const onClose = vi.fn();
   const store = mockStore({
-    auth: { user: { userid: 'admin1', role: 'Administrator' } },
+    auth: { user: { userid: 'aaaaaaaaaaaaaaaaaaaaaaaa', role: 'Administrator' } },
     theme: { darkMode },
   });
 
@@ -41,34 +65,33 @@ function renderDisplayBox(darkMode = false) {
 describe('DisplayBox promotion confirmation modal', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    resetPendingPromotionReviewers();
+    getPromotionPending.mockResolvedValue(SAMPLE_PENDING);
     postPromotionEligibility.mockResolvedValue({ message: 'Members promoted successfully.' });
   });
 
-  it('selects every reviewer checkbox by default', () => {
+  it('loads pending reviewers and selects every checkbox by default', async () => {
     renderDisplayBox();
 
-    expect(screen.getByText('Akshay - Jayaram')).toBeInTheDocument();
+    expect(await screen.findByText('Akshay Jayaram')).toBeInTheDocument();
+    expect(screen.getByText('Ghazi1212')).toBeInTheDocument();
+
     const checkboxes = screen.getAllByRole('checkbox');
-    expect(checkboxes).toHaveLength(6);
+    expect(checkboxes).toHaveLength(3);
     checkboxes.forEach(checkbox => {
       expect(checkbox).toBeChecked();
     });
-  });
 
-  it('shows the reviewers who are about to be promoted', () => {
-    renderDisplayBox();
-
-    expect(screen.getByText('Akshay - Jayaram')).toBeInTheDocument();
-    expect(screen.getByText('Ghazi1212')).toBeInTheDocument();
-    expect(screen.getByText('Diya Test 1')).toBeInTheDocument();
-    expect(screen.getByText('Ramya Test Volunteer')).toBeInTheDocument();
-    expect(screen.getByText('Yuhang Xu')).toBeInTheDocument();
+    expect(getPromotionPending).toHaveBeenCalledWith({
+      requestorId: 'aaaaaaaaaaaaaaaaaaaaaaaa',
+      role: 'Administrator',
+    });
     expect(screen.getByRole('button', { name: 'Confirm' })).toBeEnabled();
   });
 
-  it('uses Team Leader Name and Weekly PRs column titles', () => {
+  it('uses Team Leader Name and Weekly PRs column titles', async () => {
     renderDisplayBox();
+
+    await screen.findByText('Akshay Jayaram');
 
     expect(screen.getByText('Team Leader Name')).toBeInTheDocument();
     expect(screen.queryByText('Team Reviewer Name')).not.toBeInTheDocument();
@@ -76,61 +99,95 @@ describe('DisplayBox promotion confirmation modal', () => {
     expect(screen.queryByText('Weekly PR Counts')).not.toBeInTheDocument();
   });
 
-  it('shows team leader names instead of quotes and weekly PR counts in circles', () => {
+  it('shows team leader names and weekly PR counts in circles', async () => {
     renderDisplayBox();
+
+    await screen.findByText('Akshay Jayaram');
 
     expect(screen.getByText('Chris Martinez')).toBeInTheDocument();
     expect(screen.getByText('Sam Patel')).toBeInTheDocument();
-    expect(screen.queryByText('""')).not.toBeInTheDocument();
-    expect(screen.queryByText('Unavailable')).not.toBeInTheDocument();
 
-    const firstReviewerRow = screen.getByRole('row', { name: /Akshay - Jayaram/i });
-    expect(within(firstReviewerRow).getByText('2')).toBeInTheDocument();
-    expect(within(firstReviewerRow).getByText('10')).toBeInTheDocument();
-    expect(within(firstReviewerRow).getByText('11')).toBeInTheDocument();
+    const firstReviewerRow = screen.getByRole('row', { name: /Akshay Jayaram/i });
+    expect(within(firstReviewerRow).getAllByText('7')).toHaveLength(2);
   });
 
-  it('lets the user uncheck a reviewer and disables Confirm when none are selected', async () => {
+  it('disables Confirm while loading and when none are selected', async () => {
+    let resolvePending;
+    getPromotionPending.mockReturnValue(
+      new Promise(resolve => {
+        resolvePending = resolve;
+      }),
+    );
+
     renderDisplayBox();
 
-    const confirmButton = screen.getByRole('button', { name: 'Confirm' });
-    expect(confirmButton).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Confirm' })).toBeDisabled();
+    expect(screen.getByText('Loading pending promotions...')).toBeInTheDocument();
+
+    resolvePending(SAMPLE_PENDING);
+
+    await screen.findByText('Akshay Jayaram');
+    expect(screen.getByRole('button', { name: 'Confirm' })).toBeEnabled();
 
     await userEvent.click(screen.getByLabelText('Select all reviewers'));
-    expect(confirmButton).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Confirm' })).toBeDisabled();
   });
 
   it('closes without promoting when Cancel is clicked', async () => {
     const { onClose } = renderDisplayBox();
 
+    await screen.findByText('Akshay Jayaram');
     await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
     expect(onClose).toHaveBeenCalledTimes(1);
     expect(postPromotionEligibility).not.toHaveBeenCalled();
   });
 
-  it('removes confirmed reviewers from the pending list', async () => {
+  it('promotes selected reviewers then refetches the pending list', async () => {
     const { onClose } = renderDisplayBox();
 
-    await userEvent.click(screen.getByLabelText('Select reviewer Akshay - Jayaram'));
+    await screen.findByText('Akshay Jayaram');
+
+    // Uncheck Akshay so only Ghazi is promoted; refetch returns Akshay still pending.
+    getPromotionPending.mockResolvedValueOnce([SAMPLE_PENDING[0]]);
+
+    await userEvent.click(screen.getByLabelText('Select reviewer Akshay Jayaram'));
     await userEvent.click(screen.getByRole('button', { name: 'Confirm' }));
+
+    await waitFor(() => {
+      expect(postPromotionEligibility).toHaveBeenCalledWith(['637af0c0fb9bbc1e308cff02'], {
+        requestorId: 'aaaaaaaaaaaaaaaaaaaaaaaa',
+        role: 'Administrator',
+      });
+    });
 
     await waitFor(() => {
       expect(toast.success).toHaveBeenCalled();
     });
 
-    expect(screen.getByText('Akshay - Jayaram')).toBeInTheDocument();
+    expect(screen.getByText('Akshay Jayaram')).toBeInTheDocument();
     expect(screen.queryByText('Ghazi1212')).not.toBeInTheDocument();
-    expect(screen.queryByText('Diya Test 1')).not.toBeInTheDocument();
-    expect(screen.queryByText('Ramya Test Volunteer')).not.toBeInTheDocument();
-    expect(screen.queryByText('Yuhang Xu')).not.toBeInTheDocument();
-    expect(postPromotionEligibility).not.toHaveBeenCalled();
     expect(onClose).not.toHaveBeenCalled();
+    expect(getPromotionPending).toHaveBeenCalledTimes(2);
   });
 
   it('closes when every remaining reviewer is promoted', async () => {
     const { onClose } = renderDisplayBox();
 
+    await screen.findByText('Akshay Jayaram');
+    getPromotionPending.mockResolvedValueOnce([]);
+
     await userEvent.click(screen.getByRole('button', { name: 'Confirm' }));
+
+    await waitFor(() => {
+      expect(postPromotionEligibility).toHaveBeenCalledWith(
+        ['637af0c0fb9bbc1e308cff01', '637af0c0fb9bbc1e308cff02'],
+        {
+          requestorId: 'aaaaaaaaaaaaaaaaaaaaaaaa',
+          role: 'Administrator',
+        },
+      );
+    });
 
     await waitFor(() => {
       expect(onClose).toHaveBeenCalledTimes(1);
@@ -139,21 +196,16 @@ describe('DisplayBox promotion confirmation modal', () => {
     expect(toast.success).toHaveBeenCalled();
   });
 
-  it('keeps promoted reviewers off the list after a remount', async () => {
-    const { unmount } = renderDisplayBox();
+  it('shows an error toast when loading pending promotions fails', async () => {
+    getPromotionPending.mockRejectedValueOnce(new Error('network'));
 
-    await userEvent.click(screen.getByLabelText('Select reviewer Akshay - Jayaram'));
-    await userEvent.click(screen.getByRole('button', { name: 'Confirm' }));
-
-    await waitFor(() => {
-      expect(toast.success).toHaveBeenCalled();
-    });
-
-    unmount();
     renderDisplayBox();
 
-    expect(screen.getByText('Akshay - Jayaram')).toBeInTheDocument();
-    expect(screen.queryByText('Ghazi1212')).not.toBeInTheDocument();
-    expect(screen.queryByText('Diya Test 1')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith('Failed to load pending promotions.');
+    });
+
+    expect(screen.getByText('No PR reviewers left to promote.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Confirm' })).toBeDisabled();
   });
 });
