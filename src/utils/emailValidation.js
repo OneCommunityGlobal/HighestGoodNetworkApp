@@ -1,7 +1,7 @@
 import { IANA_TLDS } from './ianaTlds';
 
-const EMAIL_FORMAT = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_EMAIL_LENGTH = 254;
+const WHITESPACE = /\s/;
 // Zero-width and word-joiner characters ride along with copy-paste and are invisible on screen
 const HIDDEN_CHARACTERS = /[\u200B-\u200D\u2060\uFEFF]/;
 const INVALID_EMAIL = 'Please enter a valid email address.';
@@ -129,10 +129,42 @@ function suggestDomain(domain) {
   return fixedTld ? `${domain.slice(0, dot + 1)}${fixedTld}` : null;
 }
 
+// Same rule as /^[^\s@]+@[^\s@]+\.[^\s@]+$/ (exactly one @, a non-empty local part, and a
+// dot inside the domain with characters on both sides), checked without a backtracking regex.
+function hasEmailFormat(value) {
+  if (WHITESPACE.test(value)) return false;
+  const parts = value.split('@');
+  if (parts.length !== 2 || !parts[0]) return false;
+  const domain = parts[1];
+  const dot = domain.indexOf('.', 1);
+  return dot > 0 && dot < domain.length - 1;
+}
+
+function stripTrailingDots(value) {
+  let end = value.length;
+  while (end > 0 && value[end - 1] === '.') end -= 1;
+  return value.slice(0, end);
+}
+
 // A suggestion is only offered if it would pass the check itself.
 function validSuggestion(local, domain) {
   const suggestion = `${local}@${domain}`;
-  return EMAIL_FORMAT.test(suggestion) && hasRealTld(domain) ? suggestion : null;
+  return hasEmailFormat(suggestion) && hasRealTld(domain) ? suggestion : null;
+}
+
+// A malformed address can still have an obvious intended form worth offering
+function suggestForMalformed(local, lowerDomain, at) {
+  if (at <= 0) return null;
+  // "name@gmail.com." only has stray trailing dots
+  const undotted = stripTrailingDots(lowerDomain);
+  if (undotted !== lowerDomain && hasEmailFormat(`${local}@${undotted}`)) {
+    const fixed = hasRealTld(undotted) ? undotted : suggestDomain(undotted);
+    return fixed ? validSuggestion(local, fixed) : null;
+  }
+  // "name@gmail" is missing its ending; offer the provider's full domain
+  if (!lowerDomain || lowerDomain.includes('.')) return null;
+  const provider = POPULAR_DOMAINS.find(d => d.split('.')[0] === lowerDomain);
+  return provider ? `${local}@${provider}` : null;
 }
 
 /**
@@ -154,19 +186,8 @@ export function checkEmail(rawEmail) {
   const domain = email.slice(at + 1);
   const lowerDomain = domain.toLowerCase();
 
-  if (!EMAIL_FORMAT.test(email) || lowerDomain.endsWith('.')) {
-    // "name@gmail.com." only has stray trailing dots
-    const undotted = lowerDomain.replace(/\.+$/, '');
-    if (undotted !== lowerDomain && at > 0 && EMAIL_FORMAT.test(`${local}@${undotted}`)) {
-      const fixed = hasRealTld(undotted) ? undotted : suggestDomain(undotted);
-      return { error: INVALID_EMAIL, suggestion: fixed ? validSuggestion(local, fixed) : null };
-    }
-    // "name@gmail" is missing its ending; offer the provider's full domain
-    const provider =
-      at > 0 && lowerDomain && !lowerDomain.includes('.')
-        ? POPULAR_DOMAINS.find(d => d.split('.')[0] === lowerDomain)
-        : null;
-    return { error: INVALID_EMAIL, suggestion: provider ? `${local}@${provider}` : null };
+  if (!hasEmailFormat(email) || lowerDomain.endsWith('.')) {
+    return { error: INVALID_EMAIL, suggestion: suggestForMalformed(local, lowerDomain, at) };
   }
 
   const suggestedDomain = suggestDomain(lowerDomain);
