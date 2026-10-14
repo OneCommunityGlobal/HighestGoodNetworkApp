@@ -218,7 +218,7 @@ function UserProfile(props) {
     dispatch(getAllUserTeams());
     dispatch(getAllTimeOffRequests());
     dispatch(getAllTeamCode());
-    fetchSpecialWarnings(controller.signal);
+    void fetchSpecialWarnings(controller.signal);
 
     return () => {
       controller.abort();
@@ -864,16 +864,15 @@ setUpdatedTasks(prev => {
   const fetchSpecialWarnings = async signal => {
     const userId = props?.match?.params?.userId;
     try {
-      dispatch(getSpecialWarnings(userId, signal)).then(res => {
-        if (signal?.aborted) return;
+      const res = await dispatch(getSpecialWarnings(userId, signal));
+      if (signal?.aborted) return;
 
-        if (res.error) {
-          // eslint-disable-next-line no-console
-          console.error('Error fetching special warnings:', res.error);
-          return;
-        }
-        setSpecialWarnings(res);
-      });
+      if (res.error) {
+        // eslint-disable-next-line no-console
+        console.error('Error fetching special warnings:', res.error);
+        return;
+      }
+      setSpecialWarnings(res);
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('Error in fetchSpecialWarnings:', err);
@@ -1053,8 +1052,8 @@ setUpdatedTasks(prev => {
     const controller = new AbortController();
 
     setShowLoading(true);
-    loadUserProfile(controller.signal);
-    loadUserTasks(controller.signal);
+    void loadUserProfile(controller.signal);
+    void loadUserTasks(controller.signal);
 
     return () => {
       controller.abort();
@@ -1082,7 +1081,10 @@ setUpdatedTasks(prev => {
       }
     };
 
-    refreshProfile();
+    void refreshProfile().catch(error => {
+      // eslint-disable-next-line no-console
+      console.error('Error refreshing user profile:', error);
+    });
 
     return () => {
       controller.abort();
@@ -1467,7 +1469,7 @@ setUpdatedTasks(prev => {
             setUserProfile={setUserProfile}
             userProfile={userProfile}
             userTeams={teams || []}
-            teamsData={props?.allTeams?.allTeamsData || []}
+            teamsData={props?.allTeams?.allTeams || []}
             projectsData={props?.allProjects?.projects || []}
             titleOnSet={titleOnSet}
             setTitleOnSet={setTitleOnSet}
@@ -2460,7 +2462,7 @@ UserProfile.propTypes = {
 
  const mapStateToProps = state => ({
    allProjects: state.allProjects || state.projects || {},   // <- gives you .projects array
-   allTeams: state.allTeams || {},
+   allTeams: state.allTeamsData || {},
    auth: state.auth,
    role: state.role || {},
  });
