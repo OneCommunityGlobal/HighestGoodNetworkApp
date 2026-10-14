@@ -247,6 +247,7 @@ function ReviewsInsight() {
             qualityData={qualityData}
             isDataViewActive={dataViewActive}
             orderedTeamIds={orderedTeamIds}
+            teamData={teamData}
           />
         </div>
       )}
