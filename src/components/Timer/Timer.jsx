@@ -121,6 +121,7 @@ function Timer({ authUser, darkMode, isPopout }) {
   const [weekEndModal, setWeekEndModal] = useState(false);
   const isWSOpenRef = useRef(0);
   const pendingStopRef = useRef(null);
+  const stopRequestSequenceRef = useRef(0);
   const timeIsOverAudioRef = useRef(null);
   const forcedPausedAudioRef = useRef(null);
   const audioUnlockedRef = useRef(false);
@@ -148,9 +149,8 @@ function Timer({ authUser, darkMode, isPopout }) {
           pendingStopRef.current.resolve(false);
         }
 
-        const requestId = `stop-${Date.now()}-${Math.random()
-          .toString(36)
-          .slice(2)}`;
+        stopRequestSequenceRef.current += 1;
+        const requestId = `stop-${Date.now()}-${stopRequestSequenceRef.current}`;
         const timeoutId = setTimeout(() => {
           if (pendingStopRef.current?.requestId === requestId) {
             pendingStopRef.current = null;
