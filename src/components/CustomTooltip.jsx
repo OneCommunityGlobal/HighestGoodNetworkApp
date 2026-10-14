@@ -71,7 +71,7 @@ function CustomTooltip({ active, payload, label, tooltipType, darkMode = false }
 
   const renderChange = () => {
     if (change === undefined) return null;
-    const changeColor = change < 0 ? 'red' : isDarkMode ? 'lightgreen' : 'green';
+    const changeColor = Number.parseFloat(change) < 0 ? 'red' : isDarkMode ? 'lightgreen' : 'green';
     return <div style={{ color: changeColor, fontWeight: 'bold' }}>Change: {change}</div>;
   };
 
