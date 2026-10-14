@@ -9,7 +9,7 @@
 .announcementModal :global(.modal-content) {
   border-radius: 0.75rem;
   border: none;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 15%);
 }
 
 .announcementModal:global(.dark-mode) :global(.modal-content) {
@@ -81,7 +81,7 @@
 .titleInput:focus,
 .audienceSelect:focus {
   border-color: #007bff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.15);
+  box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 15%);
   outline: none;
 }
 
@@ -119,7 +119,7 @@
 
 .bodyTextarea:focus {
   border-color: #007bff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.15);
+  box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 15%);
   outline: none;
 }
 
@@ -252,14 +252,14 @@
   background-color: #0056b3;
   border-color: #0056b3;
   color: white;
-  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+  box-shadow: 0 2px 4px rgb(0 123 255 / 20%);
 }
 
 .saveButton:hover:not(:disabled) {
   background-color: #004085;
   border-color: #004085;
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+  box-shadow: 0 4px 8px rgb(0 123 255 / 30%);
 }
 
 .saveButton:disabled {
@@ -290,7 +290,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .announcementModal :global(.modal-dialog) {
     margin: 1rem;
     max-width: calc(100vw - 2rem);
@@ -316,7 +316,7 @@
   }
 }
 
-@media (max-width: 576px) {
+@media (width <= 576px) {
   .announcementModal :global(.modal-dialog) {
     margin: 0.5rem;
     max-width: calc(100vw - 1rem);
