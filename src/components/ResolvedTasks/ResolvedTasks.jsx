@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Table } from 'reactstrap';
 import { connect } from 'react-redux';
 import axios from 'axios';
-import './ResolvedTasks.module.css';
+import styles from './ResolvedTasks.module.css';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import { ENDPOINTS } from '~/utils/URL';
