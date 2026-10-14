@@ -645,16 +645,17 @@ const PRGradingScreen = ({ teamData, reviewers, currentUser }) => {
         <dialog
           ref={gradingDialogRef}
           className={`${styles['pr-grading-screen-modal']} ${dm}`}
-          aria-labelledby="pr-grading-modal-title"
+          aria-labelledby="grade-prs-dialog-title"
           onCancel={event => {
             event.preventDefault();
+            event.stopPropagation();
             handleCloseGradingModal();
           }}
           onClose={() => setShowGradingModal(null)}
         >
           <div className={`${styles['pr-grading-screen-modal-header']} ${dm}`}>
             <div>
-              <h4 id="pr-grading-modal-title">Grade PRs</h4>
+              <h4 id="grade-prs-dialog-title">Grade PRs</h4>
 
               <span
                 className={styles['pr-grading-screen-rating-tooltip']}
