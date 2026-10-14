@@ -123,6 +123,27 @@ function FormattedReport({
     );
   }
   const loggedInUserEmail = auth?.user?.email ? auth.user.email : '';
+  const activeTeamCodes = [
+    ...new Set(
+      summaries
+        .filter(summary => {
+          if (
+            !summary ||
+            !Array.isArray(summary.totalSeconds) ||
+            !Array.isArray(summary.promisedHoursByWeek)
+          ) {
+            return false;
+          }
+
+          const displayIdx = weekIndexFromEndDate(summary.endDate);
+          const isFinalWeek = displayIdx !== null && displayIdx === weekIndex;
+
+          return !summary.endDate || isFinalWeek;
+        })
+        .map(summary => (typeof summary.teamCode === 'string' ? summary.teamCode.trim() : ''))
+        .filter(Boolean),
+    ),
+  ].sort((a, b) => a.localeCompare(b));
 
   return (
     <>
@@ -147,6 +168,7 @@ function FormattedReport({
               key={summary._id}
               summary={summary}
               weekIndex={weekIndex}
+              activeTeamCodes={activeTeamCodes}
               bioCanEdit={bioCanEdit}
               canEditSummaryCount={isEditCount}
               allRoleInfo={allRoleInfo}
@@ -265,6 +287,7 @@ function getTextColorForHoursLogged(hoursLogged, promisedHours, darkMode) {
 function ReportDetails({
   summary,
   weekIndex,
+  activeTeamCodes,
   bioCanEdit,
   canEditSummaryCount,
   allRoleInfo,
@@ -356,6 +379,7 @@ function ReportDetails({
                 canEditTeamCode={canEditTeamCode && !cantEditJaeRelatedRecord}
                 summary={summary}
                 handleTeamCodeChange={handleTeamCodeChange}
+                activeTeamCodes={activeTeamCodes}
                 darkMode={darkMode}
               />
             </ListGroupItem>
@@ -467,10 +491,15 @@ function WeeklySummaryMessage({ summary, weekIndex, darkMode }) {
           <FontAwesomeIcon
             icon={faCopy}
             className={styles.copyIcon}
-            onClick={() => {
+            onClick={async () => {
               const parsedSummary = summaryText.replace(/<\/?[^>]+>|&nbsp;/g, '');
-              navigator.clipboard.writeText(parsedSummary);
-              toast.success('Summary Copied!');
+
+              try {
+                await navigator.clipboard.writeText(parsedSummary);
+                toast.success('Summary Copied!');
+              } catch {
+                toast.error('Failed to copy summary.');
+              }
             }}
           />
         </div>
@@ -495,19 +524,28 @@ function WeeklySummaryMessage({ summary, weekIndex, darkMode }) {
   );
 }
 
-function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode }) {
+function TeamCodeRow({
+  canEditTeamCode,
+  summary,
+  handleTeamCodeChange,
+  activeTeamCodes,
+  darkMode,
+}) {
   const [teamCode, setTeamCode] = useState(summary.teamCode);
   const [savedTeamCode, setSavedTeamCode] = useState(summary.teamCode);
   const [hasError, setHasError] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const fullCodeRegex = /^.{5,7}$/;
   const dispatch = useDispatch();
-
+  const filteredTeamCodes = activeTeamCodes.filter(code =>
+    code.toLowerCase().includes((teamCode || '').toLowerCase()),
+  );
   const handleOnChange = async (userProfileSummary, newStatus) => {
     const url = ENDPOINTS.USERS_ALLTEAMCODE_CHANGE;
 
     try {
       await axios.patch(url, { userIds: [userProfileSummary._id], replaceCode: newStatus });
-      handleTeamCodeChange(userProfileSummary.teamCode, newStatus, {
+      handleTeamCodeChange(userProfileSummary._id, newStatus, {
         [userProfileSummary._id]: true,
       }); // Update the team code dynamically
     } catch (err) {
@@ -525,7 +563,7 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode 
       setHasError(false);
       setTeamCode(value);
       setSavedTeamCode(value);
-      handleOnChange(summary, value);
+      void handleOnChange(summary, value);
     } else {
       setTeamCode(savedTeamCode);
       setHasError(true);
@@ -541,23 +579,60 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode 
       <div className={styles.teamcodeWrapper}>
         {canEditTeamCode ? (
           <div style={{ paddingRight: '5px', position: 'relative' }}>
-            <Input
-              id="codeInput"
-              value={teamCode}
-              onChange={e => setTeamCode(e.target.value)}
-              onBlur={e => {
-                handleCodeChange(e);
-              }}
-              onKeyDown={e => {
-                if (e.key === 'Enter') {
-                  e.currentTarget.blur(); // triggers onBlur
-                }
-              }}
-              placeholder="X-XXX"
-              className={`${styles.weeklySummariesCodeInput} ${
-                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-              }`}
-            />
+            <div className={styles.teamCodeInputWrapper}>
+              <Input
+                id="codeInput"
+                autoComplete="off"
+                value={teamCode}
+                onFocus={() => setShowSuggestions(true)}
+                onChange={e => {
+                  setTeamCode(e.target.value);
+                  setShowSuggestions(true);
+                }}
+                onBlur={e => {
+                  handleCodeChange(e);
+                  setShowSuggestions(false);
+                }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    e.currentTarget.blur();
+                  }
+
+                  if (e.key === 'Escape') {
+                    setShowSuggestions(false);
+                  }
+                }}
+                placeholder="X-XXX"
+                className={`${styles.weeklySummariesCodeInput} ${
+                  darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                }`}
+              />
+
+              {showSuggestions && filteredTeamCodes.length > 0 && (
+                <div
+                  className={`${styles.teamCodeSuggestions} ${
+                    darkMode ? styles.teamCodeSuggestionsDark : ''
+                  }`}
+                >
+                  {filteredTeamCodes.map(code => (
+                    <button
+                      key={code}
+                      type="button"
+                      className={`${styles.teamCodeSuggestionItem} ${
+                        darkMode ? styles.teamCodeSuggestionItemDark : ''
+                      }`}
+                      onMouseDown={e => {
+                        e.preventDefault();
+                        setTeamCode(code);
+                        setShowSuggestions(false);
+                      }}
+                    >
+                      {code}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         ) : (
           <div style={{ paddingRight: '5px' }}>
@@ -633,7 +708,7 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
 
   const handleWeeklySummaryCountChange = e => {
     setWeeklySummariesCount(e.target.value);
-    handleOnChange(summary, e.target.value);
+    void handleOnChange(summary, e.target.value);
   };
 
   return (
@@ -1128,6 +1203,7 @@ FormattedReport.defaultProps = {
 };
 
 ReportDetails.propTypes = {
+  activeTeamCodes: PropTypes.arrayOf(PropTypes.string).isRequired,
   summary: PropTypes.shape({
     _id: PropTypes.string,
     email: PropTypes.string,
