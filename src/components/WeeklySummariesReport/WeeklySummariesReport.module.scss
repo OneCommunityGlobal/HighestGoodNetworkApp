@@ -151,6 +151,17 @@
   width: 150px !important;
 }
 
+.teamCodeInput {
+  width: 90px !important;
+  height: 28px;
+  padding: 2px 6px;
+}
+
+.summaryCountInputWrapper {
+  flex: 0 0 auto;
+  padding-left: 6px;
+}
+
 .teamcodeWrapper {
     display: flex;
     white-space: wrap;
