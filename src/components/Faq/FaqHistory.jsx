@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { getFAQHistory } from './api';
 
 function FaqHistory() {
@@ -8,6 +9,14 @@ function FaqHistory() {
   // console.log('FAQ ID:', id);
   const [faq, setFaq] = useState(null);
   const [loading, setLoading] = useState(true);
+  const darkMode = useSelector(state => state.theme?.darkMode);
+  const borderColor = darkMode ? '#4b5563' : '#ddd';
+  const textColor = darkMode ? '#f3f4f6' : '#111827';
+  const cardBackground = darkMode ? '#1f2937' : '#f9f9f9';
+  const panelBackground = darkMode ? '#1f2937' : '#fff';
+  const blueText = darkMode ? '#93c5fd' : '#007bff';
+  const greenText = darkMode ? '#86efac' : '#28a745';
+  const redText = darkMode ? '#fca5a5' : '#dc3545';
 
   useEffect(() => {
     let isMounted = true;
@@ -36,20 +45,27 @@ function FaqHistory() {
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px', textAlign: 'center' }}>
-      <h2 style={{ marginBottom: '20px', borderBottom: 'px solid #ddd', paddingBottom: '10px' }}>
+      <h2
+        style={{
+          marginBottom: '20px',
+          borderBottom: `1px solid ${borderColor}`,
+          paddingBottom: '10px',
+        }}
+      >
         FAQ History
       </h2>
 
       <div
         style={{
           padding: '15px',
-          border: '1px solid #ddd',
+          border: `1px solid ${borderColor}`,
           borderRadius: '5px',
-          backgroundColor: '#f9f9f9',
+          backgroundColor: cardBackground,
+          color: textColor,
           marginBottom: '20px',
         }}
       >
-        <h3 style={{ color: '#007bff' }}>Current Question:</h3>
+        <h3 style={{ color: blueText }}>Current Question:</h3>
         <p>
           <strong>Question:</strong> {faq.question}
         </p>
@@ -61,13 +77,14 @@ function FaqHistory() {
       <div
         style={{
           padding: '15px',
-          border: '1px solid #ddd',
+          border: `1px solid ${borderColor}`,
           borderRadius: '5px',
-          backgroundColor: '#fff',
+          backgroundColor: panelBackground,
+          color: textColor,
           marginBottom: '20px',
         }}
       >
-        <h4 style={{ color: '#28a745' }}>Created By:</h4>
+        <h4 style={{ color: greenText }}>Created By:</h4>
         <p>
           <strong>User:</strong> {faq.createdBy ? faq.createdBy : 'Unknown'}
         </p>
@@ -76,7 +93,9 @@ function FaqHistory() {
         </p>
       </div>
 
-      <h4 style={{ borderBottom: '2px', paddingBottom: '5px' }}>Change History:</h4>
+      <h4 style={{ borderBottom: `2px solid ${borderColor}`, paddingBottom: '5px' }}>
+        Change History:
+      </h4>
       {faq.changeHistory && faq.changeHistory.length > 0 ? (
         <ul style={{ listStyle: 'none', padding: 0 }}>
           {faq.changeHistory.map(change => (
@@ -85,9 +104,10 @@ function FaqHistory() {
               style={{
                 marginBottom: '15px',
                 padding: '15px',
-                border: '1px solid #ddd',
+                border: `1px solid ${borderColor}`,
                 borderRadius: '5px',
-                backgroundColor: '#fff',
+                backgroundColor: panelBackground,
+                color: textColor,
               }}
             >
               <p>
@@ -96,16 +116,16 @@ function FaqHistory() {
               <p>
                 <strong>Updated At:</strong> {new Date(change.updatedAt).toLocaleString()}
               </p>
-              <p style={{ color: '#dc3545' }}>
+              <p style={{ color: redText }}>
                 <strong>Previous Question:</strong> {change.previousQuestion}
               </p>
-              <p style={{ color: '#dc3545' }}>
+              <p style={{ color: redText }}>
                 <strong>Previous Answer:</strong> {change.previousAnswer}
               </p>
-              <p style={{ color: '#007bff' }}>
+              <p style={{ color: blueText }}>
                 <strong>Updated Question:</strong> {change.updatedQuestion}
               </p>
-              <p style={{ color: '#007bff' }}>
+              <p style={{ color: blueText }}>
                 <strong>Updated Answer:</strong> {change.updatedAnswer}
               </p>
             </li>
