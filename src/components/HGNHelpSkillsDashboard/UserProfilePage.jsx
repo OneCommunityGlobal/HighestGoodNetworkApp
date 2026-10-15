@@ -333,22 +333,38 @@ function SkillsTabbedSection({ skillsData }) {
 }
 
 // Main UserProfilePage
+
 const normalizeSkillInfo = skillInfo => {
-  const toSkills = section =>
-    Object.entries(section || {})
-      .filter(([, score]) => !Number.isNaN(Number(score)))
-      .map(([name, score]) => ({
+  const toSkills = (section, fields = Object.keys(section || {})) =>
+    fields
+      .filter(name => {
+        const score = section?.[name];
+        return (
+          score !== '' && score !== null && score !== undefined && !Number.isNaN(Number(score))
+        );
+      })
+      .map(name => ({
         id: name,
         name,
-        score: Number(score),
+        score: Number(section[name]),
         question: name,
       }));
 
+  const backend = skillInfo?.backend || {};
+
+  const devOpsFields = ['Deployment', 'VersionControl', 'EnvironmentSetup'];
+  const softwarePracticeFields = ['CodeReview', 'AdvancedCoding', 'AgileDevelopment'];
+
+  const categorizedFields = new Set([...devOpsFields, ...softwarePracticeFields]);
+
   return {
     Frontend: toSkills(skillInfo?.frontend),
-    Backend: toSkills(skillInfo?.backend),
-    DevOps: [],
-    SWPractices: [],
+    Backend: toSkills(
+      backend,
+      Object.keys(backend).filter(name => !categorizedFields.has(name)),
+    ),
+    DevOps: toSkills(backend, devOpsFields),
+    SWPractices: toSkills(backend, softwarePracticeFields),
   };
 };
 
