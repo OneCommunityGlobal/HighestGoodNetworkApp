@@ -1,7 +1,9 @@
-:global(.btn--dark-sea-green) {
-  background-color: #c9d6c6 !important;
-  border-color: #285739 !important;
-  color: #285739 !important;
+/* stylelint-disable-next-line no-duplicate-selectors -- class repeated to
+   outrank Bootstrap's .btn/.btn-secondary without !important */
+:global(.btn--dark-sea-green.btn--dark-sea-green) {
+  background-color: #c9d6c6;
+  border-color: #285739;
+  color: #285739;
 }
 
 :global(.badge_image_sm) > img {
