@@ -111,6 +111,18 @@ describe('FaqHistory', () => {
     });
   });
 
+  it('draws the lines under the headings in the theme colour', async () => {
+    getFAQHistory.mockResolvedValue({ data: faqWithHistory });
+    openPage(true);
+
+    expect(await screen.findByRole('heading', { name: 'FAQ History' })).toHaveStyle({
+      borderBottom: '1px solid #4b5563',
+    });
+    expect(screen.getByRole('heading', { name: 'Change History:' })).toHaveStyle({
+      borderBottom: '2px solid #4b5563',
+    });
+  });
+
   it('keeps the original colours in light mode', async () => {
     getFAQHistory.mockResolvedValue({ data: faqWithHistory });
     openPage(false);

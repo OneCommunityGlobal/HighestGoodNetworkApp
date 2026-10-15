@@ -199,6 +199,20 @@ describe('FaqSearch', () => {
     expect(questionButton).toHaveStyle({ backgroundColor: '#1f2937', color: '#f3f4f6' });
   });
 
+  it('uses dark colours on an opened answer', async () => {
+    await openPage(true);
+    fireEvent.click(screen.getByRole('button', { name: 'How do I volunteer?' }));
+
+    const answerBox = screen.getByText(
+      (_, element) =>
+        element?.tagName === 'DIV' && element.textContent.startsWith('Fill in the form.'),
+    );
+    expect(answerBox).toHaveStyle({ backgroundColor: '#1f2937', color: '#f3f4f6' });
+    expect(screen.getByRole('link', { name: 'Visit here to learn more' })).toHaveStyle({
+      color: '#93c5fd',
+    });
+  });
+
   it('keeps the light colours in light mode', async () => {
     const input = await openPage(false);
 
