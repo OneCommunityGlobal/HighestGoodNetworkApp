@@ -562,11 +562,8 @@
   font-weight: 500;
 }
 
-/* .statusCard also receives an inline backgroundColor from the JSX (the pastel
-   status color), which CSS specificity can never beat, so background keeps
-   !important here; color and border-color have no competing inline style. */
 .darkMode .statusCard {
-  background: var(--card-bg) !important;
+  background: var(--card-bg);
   color: var(--text-color);
   border-color: rgb(255 255 255 / 10%);
 }

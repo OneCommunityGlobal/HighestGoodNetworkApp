@@ -82,6 +82,20 @@ const getSelectStyles = darkMode => {
         ...baseStyles,
         color: '#aaaaaa',
       }),
+      clearIndicator: baseStyles => ({
+        ...baseStyles,
+        color: '#e0e0e0',
+        ':hover': {
+          color: '#fff',
+        },
+      }),
+      dropdownIndicator: baseStyles => ({
+        ...baseStyles,
+        color: '#e0e0e0',
+        ':hover': {
+          color: '#fff',
+        },
+      }),
     };
   }
 

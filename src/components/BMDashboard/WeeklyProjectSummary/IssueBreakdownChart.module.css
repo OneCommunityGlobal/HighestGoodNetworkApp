@@ -624,18 +624,6 @@
   font-size: 12px;
 }
 
-/* Clear (×) and dropdown arrow icons in dark mode - react-select renders
-   these via inline style, so a stylesheet rule needs !important to win. */
-:global(.darkMode .injurySelect__clear-indicator),
-:global(.darkMode .injurySelect__dropdown-indicator) {
-  color: #e0e0e0 !important;
-}
-
-:global(.darkMode .injurySelect__clear-indicator:hover),
-:global(.darkMode .injurySelect__dropdown-indicator:hover) {
-  color: #fff !important;
-}
-
 :global(.filter label) {
   margin-bottom: 4px;
 }

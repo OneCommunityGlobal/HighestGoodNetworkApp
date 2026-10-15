@@ -198,7 +198,7 @@ function WeeklyProjectSummary() {
                 <div
                   key={uniqueId}
                   className={`${styles.weeklyProjectSummaryCard} ${styles.statusCard}`}
-                  style={{ backgroundColor: button.bgColor }}
+                  style={darkMode ? undefined : { backgroundColor: button.bgColor }}
                 >
                   <div className={`${styles.weeklyCardTitle}`}>{button.title}</div>
                   <div
