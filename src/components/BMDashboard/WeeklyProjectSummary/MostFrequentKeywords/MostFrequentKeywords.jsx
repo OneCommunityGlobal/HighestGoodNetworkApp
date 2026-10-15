@@ -406,7 +406,7 @@ function MFKChartArea({ isLoading, error, tags, selectedOption, svgRef, containe
         <div className={mfkStyles.mfkEmpty}>{selectedOption ? 'No data' : 'Select source'}</div>
       )}
       {!isLoading && !error && tags.length > 0 && (
-        <svg ref={svgRef} style={{ width: '100%', height: '100%' }} />
+        <svg ref={svgRef} aria-hidden="true" style={{ width: '100%', height: '100%' }} />
       )}
     </div>
   );
