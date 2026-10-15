@@ -12,7 +12,9 @@ function FaqSearch() {
   const [notFound, setNotFound] = useState(false);
   const [logging, setLogging] = useState(false);
   const [expandedFAQ, setExpandedFAQ] = useState(null);
+  // Remembers what is in the search box right now (without redrawing the page)
   const latestQueryRef = useRef('');
+  // Dark mode colours (same as the Unanswered FAQs page), light colours unchanged
   const darkMode = useSelector(state => state.theme?.darkMode);
   const borderColor = darkMode ? '#4b5563' : '#ddd';
   const textColor = darkMode ? '#f3f4f6' : '#111827';
@@ -42,11 +44,13 @@ function FaqSearch() {
     };
   }, []);
 
+  // Build the search delay once, so typing sends one request after a pause instead of one per letter
   const fetchSuggestions = useMemo(
     () =>
       debounce(async query => {
         try {
           const response = await searchFAQs(query);
+          // Ignore a late reply if the search box has changed since this search was sent
           if (latestQueryRef.current !== query) return;
           setSuggestions(response.data);
           setNotFound(response.data.length === 0);
@@ -58,16 +62,19 @@ function FaqSearch() {
     [],
   );
 
+  // Cancel a waiting search when the page is closed
   useEffect(() => () => fetchSuggestions.cancel(), [fetchSuggestions]);
 
   const handleSearchChange = e => {
     const query = e.target.value;
     setSearchQuery(query);
+    // Remove spaces at both ends, so a search of only spaces counts as empty and shows all FAQs
     const trimmedQuery = query.trim();
     latestQueryRef.current = trimmedQuery;
     if (trimmedQuery.length >= 1) {
       fetchSuggestions(trimmedQuery);
     } else {
+      // Box is empty: cancel any waiting search and show the full list again
       fetchSuggestions.cancel();
       setSuggestions(allFAQs);
       setNotFound(false);

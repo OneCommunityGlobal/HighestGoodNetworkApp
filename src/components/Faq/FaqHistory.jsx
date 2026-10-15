@@ -9,6 +9,7 @@ function FaqHistory() {
   // console.log('FAQ ID:', id);
   const [faq, setFaq] = useState(null);
   const [loading, setLoading] = useState(true);
+  // Dark mode colours (same as the Unanswered FAQs page), light colours unchanged
   const darkMode = useSelector(state => state.theme?.darkMode);
   const borderColor = darkMode ? '#4b5563' : '#ddd';
   const textColor = darkMode ? '#f3f4f6' : '#111827';
@@ -48,6 +49,7 @@ function FaqHistory() {
       <h2
         style={{
           marginBottom: '20px',
+          // Thin line under the title; colour follows dark mode
           borderBottom: `1px solid ${borderColor}`,
           paddingBottom: '10px',
         }}
@@ -93,6 +95,7 @@ function FaqHistory() {
         </p>
       </div>
 
+      {/* Line under the heading; colour follows dark mode */}
       <h4 style={{ borderBottom: `2px solid ${borderColor}`, paddingBottom: '5px' }}>
         Change History:
       </h4>
