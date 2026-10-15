@@ -17,17 +17,18 @@ function logError(context, error) {
   }
 }
 
+// Replaced deprecated defaultProps with ES6 default parameters to prevent React deprecation warnings
 function UserStateModal({
   isOpen,
   onClose,
   userId,
-  userName,
+  userName = '',
   catalog,
   selected,
   onSelectionChange,
   darkMode,
-  canManage,
-  onOpenManage,
+  canManage = false,
+  onOpenManage = () => {},
 }) {
   const boxStyling = darkMode ? boxStyleDark : boxStyle;
   const fontColor = darkMode ? 'text-light' : '';
@@ -208,10 +209,12 @@ UserStateModal.propTypes = {
   onOpenManage: PropTypes.func,
 };
 
-UserStateModal.defaultProps = {
-  userName: '',
-  canManage: false,
-  onOpenManage: () => {},
-};
+// UserStateModal.defaultProps = {
+//   userName: '',
+//   canManage: false,
+//   onOpenManage: () => {},
+// };
+
+// UserStateModal.defaultProps has been removed in favor of function default parameters above.
 
 export default UserStateModal;

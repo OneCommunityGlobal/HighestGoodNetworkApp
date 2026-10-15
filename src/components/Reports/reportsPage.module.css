@@ -140,6 +140,7 @@
 
 .report-filter-panel {
   --report-filter-label-width: 88px;
+
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
