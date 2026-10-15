@@ -72,6 +72,8 @@
 .contactIcon {
   width: 18px;
   height: 18px;
+  color: #616161;
+  flex-shrink: 0;
 }
 
 .scoreSkillsWrapper {
@@ -149,6 +151,10 @@
 }
 
 .darkMode .contactLine {
+  color: #ccc;
+}
+
+.darkMode .contactIcon {
   color: #ccc;
 }
 
