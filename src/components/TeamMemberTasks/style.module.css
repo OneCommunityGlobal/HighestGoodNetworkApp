@@ -5,6 +5,7 @@
   2. Red deadline badge visibility fix
   3. Header <-> body alignment, dark mode header, small-device layout
   4. Full task names (wrap instead of truncating)
+  5. Tasks column minimum width (no letter-by-letter wrapping)
 */
 
 /* stylelint-disable  */
@@ -97,10 +98,11 @@
   min-height: 32px; /* was height: 32px — lets "Ready for Review" wrap to two lines */
 }
 
+/* Slimmer Status column so Tasks gets the room */
 .status-align {
-  width: 120px;
+  width: 100px;
   min-width: 100px;
-  max-width: 130px;
+  max-width: 120px;
   padding-left: 6px !important;
   padding-right: 0 !important;
   text-align: center;
@@ -125,6 +127,15 @@
   table-layout: fixed;
   width: 100%;
   border-collapse: collapse;
+}
+
+/*
+  Nested Tasks / Progress / Status tables must size by content so that
+  min-width on the Tasks cell is honoured (min-width is ignored on cells
+  under table-layout: fixed). Higher specificity than `.task_table-container table`.
+*/
+.task_table-container .team-member-tasks-subtable {
+  table-layout: auto;
 }
 
 .team-member-tasks-bell {
@@ -178,10 +189,11 @@
   justify-content: center;
 }
 
+/* Slimmer Progress column so Tasks gets the room */
 .team-task-progress {
-  width: 130px;
-  min-width: 130px;
-  max-width: 160px;
+  width: 110px;
+  min-width: 110px;
+  max-width: 130px;
   padding-right: 0 !important;
   padding-left: 0 !important;
   text-align: center;
@@ -205,10 +217,11 @@
   color: black;
 }
 
+/* Tasks column: real minimum width, shared by header <th> and body <td> */
 .task-align {
   width: auto;
+  min-width: 160px; /* sensible floor for the Tasks column */
   flex: 1 1 auto;
-  min-width: 0;
   height: auto !important;
   vertical-align: middle !important;
 }
@@ -615,9 +628,14 @@
   gap: 7px;
 }
 
+/*
+  Break-anywhere is the LAST resort. `overflow-wrap: anywhere` shrinks the
+  min-content width to one character, which is what made names wrap letter
+  by letter. `break-word` only breaks when a single word cannot fit.
+*/
 .taskTitle {
   white-space: normal !important;
-  overflow-wrap: anywhere !important; /* long unbroken words wrap instead of overflowing */
+  overflow-wrap: break-word !important;
   word-break: normal !important;
   hyphens: auto;
 }
@@ -627,9 +645,9 @@
   flex: 0 1 auto;
   max-width: 100%;
   min-width: 0;
-  white-space: normal;
-  word-break: normal;
-  overflow-wrap: anywhere;
+  white-space: normal !important;
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
   hyphens: auto;
 }
 
@@ -789,6 +807,10 @@
     display: none;
   }
 
+  .task-colgroup {
+    display: none;
+  }
+
   .team-member-tasks h1 {
     color: black;
     font-size: 20px;
@@ -843,6 +865,12 @@
   .expand-time-off-detail-button {
     margin-right: 0;
     margin-bottom: 0;
+  }
+
+  /* rows are block-stacked here, so drop the desktop min-width */
+  .task-align {
+    min-width: 0;
+    width: 100%;
   }
 }
 
@@ -1080,7 +1108,7 @@
 }
 
 /* ============================================================
-   NEW: Header <-> body alignment
+   Header <-> body alignment
    ============================================================ */
 .header-left-cell {
   padding-left: 0 !important;
@@ -1126,7 +1154,7 @@
 }
 
 /* ============================================================
-   NEW: Dark mode
+   Dark mode
    ============================================================ */
 .darkContainer h1 {
   color: #f8f9fa !important;
@@ -1165,7 +1193,7 @@
 }
 
 /* ============================================================
-   NEW: Small devices
+   Small devices
    ============================================================ */
 @media (width <= 768px) {
   .task_table-container {
