@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import {
   Button,
@@ -25,34 +25,50 @@ import {
 import { clearSelected } from '~/actions/badgeManagement';
 import { boxStyle, boxStyleDark } from '~/styles';
 import hasPermission from '../../utils/permissions';
-import BadgeReport from '../Badge/BadgeReport';
+import { permissions } from '../../utils/constants';
+import BadgeReport from '../Badge/BadgeReport/BadgeReport';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 import AssignBadgePopup from './AssignBadgePopup';
+import '../Badge/Badge.css';
 import styles from './Badge.module.css';
 import FeaturedBadges from './FeaturedBadges';
+import { sortBadgeRecords } from '../Badge/badgeListUtils';
 
-import { permissions } from '../../utils/constants';
-export const Badges = (props) => {
-  const {auth, darkMode, displayUserId, authUser} = props;
+export const Badges = props => {
+  const { auth, darkMode, displayUserId, authUser } = props;
 
   const [isOpen, setOpen] = useState(false);
-  const [isModalOpen, setModalOpen] = useState(false);
   const [isAssignOpen, setAssignOpen] = useState(false);
 
-  const canAssignBadges = props.hasPermission(permissions.assignBadges) || props.hasPermission(permissions.assignBadgeOthers);
+  const canAssignBadges =
+    props.hasPermission(permissions.assignBadges) ||
+    props.hasPermission(permissions.assignBadgeOthers);
+
   const canUpdateBadges = props.hasPermission(permissions.updateBadges);
-  
-  const [sortedBadges, setSortedBadges] = useState([]);
+  const sortedBadges = useMemo(() => sortBadgeRecords(props.userProfile.badgeCollection), [
+    props.userProfile.badgeCollection,
+  ]);
+  const [isSavingBadges, setIsSavingBadges] = useState(false);
+  const savingBadgesRef = useRef(false);
+  const onSavingChange = saving => {
+    savingBadgesRef.current = saving;
+    setIsSavingBadges(saving);
+  };
   const [isBadgeOpen, setIsBadgeOpen] = useState(false);
 
   // Added restriction: Jae's badges only editable by Jae or Owner
-  const isRecordBelongsToJaeAndUneditable = props.isRecordBelongsToJaeAndUneditable && props.role !== 'Owner';
+  const isRecordBelongsToJaeAndUneditable =
+    props.isRecordBelongsToJaeAndUneditable && props.role !== 'Owner';
   // const canAssignBadges = props.hasPermission(permissions.assignBadges);
   const canModifyBadgeAmount = props.hasPermission(permissions.modifyBadgeAmount);
 
-  const toggle = () => setOpen(!isOpen);
-  
-  const toggleBadge = () => {setIsBadgeOpen(!isBadgeOpen)};
+  const toggle = () => {
+    if (!savingBadgesRef.current) setOpen(open => !open);
+  };
+
+  const toggleBadge = () => {
+    setIsBadgeOpen(!isBadgeOpen);
+  };
 
   // xiaohan: connect to see all badges
   const assignToggle = () => {
@@ -65,36 +81,8 @@ export const Badges = (props) => {
     }
   }, [isOpen, isAssignOpen]);
 
-  useEffect(() => {
-    try {
-      if (props.userProfile.badgeCollection && props.userProfile.badgeCollection.length) {
-        const sortBadges = [...props.userProfile.badgeCollection]
-          .filter(badge => badge && badge.badge) // Filter out any null or undefined badges
-          .sort((a, b) => {
-            const rankingA = a.badge?.ranking ?? Infinity;
-            const rankingB = b.badge?.ranking ?? Infinity;
-            const nameA = a.badge?.badgeName ?? '';
-            const nameB = b.badge?.badgeName ?? '';
-  
-            if (rankingA === 0) return 1;
-            if (rankingB === 0) return -1;
-            if (rankingA > rankingB) return 1;
-            if (rankingA < rankingB) return -1;
-            return nameA.localeCompare(nameB);
-          });
-        setSortedBadges(sortBadges);
-      } else {
-        setSortedBadges([]);
-      }
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error("Error sorting badges:", error);
-      setSortedBadges([]);
-    }
-  }, [props.userProfile.badgeCollection]);
-
   // Determines what congratulatory text should displayed.
-  const badgesEarned = props.userProfile.badgeCollection.reduce((acc, badge) => {
+  const badgesEarned = sortedBadges.reduce((acc, badge) => {
     if (!badge || !badge.badge) return acc;
     if (badge.badge.badgeName === 'Personal Max' || badge.badge.type === 'Personal Max') {
       return acc + 1;
@@ -103,22 +91,28 @@ export const Badges = (props) => {
   }, 0);
 
   const subject = props.isUserSelf ? 'You have' : 'This person has';
-  const verb = badgesEarned ? `earned ${badgesEarned}`  : 'no';
+  const verb = badgesEarned ? `earned ${badgesEarned}` : 'no';
   const object = badgesEarned == 1 ? 'badge' : 'badges';
   let congratulatoryText = `${subject} ${verb} ${object}`;
   congratulatoryText = badgesEarned
-  ? `Bravo! ${subject} <a href="#" onclick="handleClick()">${verb} ${object}</a>!`
-  : `${subject} ${verb} ${object}.`;
+    ? `Bravo! ${subject} <a href="#" onclick="handleClick()">${verb} ${object}</a>!`
+    : `${subject} ${verb} ${object}.`;
 
   return (
     <>
       <Card id="badgeCard" className={`badgeCard ${darkMode ? 'bg-space-cadet' : ''}`}>
         <CardHeader>
-          <div className={styles['badge-header']} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '5px'}}>
-
-            <span>
-              Featured Badges
-            </span>
+          <div
+            className={styles['badge-header']}
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '5px',
+            }}
+          >
+            <span>Featured Badges</span>
             <span className={styles['badge-header-title']}>
               <EditableInfoModal
                 areaName="FeaturedBadgesInfoPoint"
@@ -130,16 +124,37 @@ export const Badges = (props) => {
               />
             </span>
 
-            <div className='d-flex'>
-              {(props.canEdit || canUpdateBadges || canModifyBadgeAmount) && (
+            <div className="d-flex">
+              {(props.canEdit ||
+                canUpdateBadges ||
+                canModifyBadgeAmount ||
+                props.hasPermission(permissions.assignBadges)) && (
                 <>
-                  <Button className={styles['btn--dark-sea-green']} onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
+                  <Button
+                    className={styles['btn--dark-sea-green']}
+                    onClick={toggle}
+                    style={darkMode ? boxStyleDark : boxStyle}
+                  >
                     Select Featured
                   </Button>
-                  <Modal size="lg" isOpen={isOpen} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
-                    <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>Full View of Badge History</ModalHeader>
+                  <Modal
+                    size="lg"
+                    isOpen={isOpen}
+                    keyboard={!isSavingBadges}
+                    backdrop={isSavingBadges ? 'static' : true}
+                    toggle={toggle}
+                    className={darkMode ? 'text-light dark-mode' : ''}
+                  >
+                    <ModalHeader
+                      toggle={isSavingBadges ? undefined : toggle}
+                      className={darkMode ? 'bg-space-cadet' : ''}
+                    >
+                      Full View of Badge History
+                    </ModalHeader>
                     <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                       <BadgeReport
+                        canEdit={props.canEdit}
+                        onSavingChange={onSavingChange}
                         badges={props.userProfile.badgeCollection}
                         userId={props.userProfile._id}
                         role={props.role}
@@ -167,8 +182,15 @@ export const Badges = (props) => {
                   >
                     Assign Badges
                   </Button>
-                  <Modal size="lg" isOpen={isAssignOpen} toggle={assignToggle} className={darkMode ? 'text-light dark-mode' : ''}>
-                    <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={assignToggle}>Assign Badges</ModalHeader>
+                  <Modal
+                    size="lg"
+                    isOpen={isAssignOpen}
+                    toggle={assignToggle}
+                    className={darkMode ? 'text-light dark-mode' : ''}
+                  >
+                    <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={assignToggle}>
+                      Assign Badges
+                    </ModalHeader>
                     <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                       <AssignBadgePopup
                         allBadgeData={props.allBadgeData}
@@ -186,10 +208,10 @@ export const Badges = (props) => {
           </div>
         </CardHeader>
         <CardBody style={{ overflow: 'auto' }}>
-          {props.userProfile.badgeCollection.length > 0 ?
-            <FeaturedBadges personalBestMaxHrs={props.userProfile.personalBestMaxHrs} badges={props.userProfile.badgeCollection} /> :
-            ''
-          }
+          <FeaturedBadges
+            personalBestMaxHrs={props.userProfile.personalBestMaxHrs}
+            badges={props.userProfile.badgeCollection}
+          />
         </CardBody>
         <CardFooter style={{ display: 'flex', alignItems: 'center' }}>
           <span
@@ -199,18 +221,21 @@ export const Badges = (props) => {
               color: darkMode ? '#fff' : '#285739',
             }}
           >
-          <div>
-            {badgesEarned ? (
-              <div>
-                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                Bravo! {subject} earned <a href="#" onClick={toggleBadge} >{badgesEarned}</a> {object}!
-              </div>
-            ) : (
-              <div>
-                {subject} {verb} {object}.
-              </div>
-            )}
-          </div>
+            <div>
+              {badgesEarned ? (
+                <div>
+                  Bravo! {subject} earned {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                  <a href="#" onClick={toggleBadge}>
+                    {badgesEarned}
+                  </a>{' '}
+                  {object}!
+                </div>
+              ) : (
+                <div>
+                  {subject} {verb} {object}.
+                </div>
+              )}
+            </div>
           </span>
           <span className="ml-2">
             <EditableInfoModal
@@ -224,7 +249,12 @@ export const Badges = (props) => {
           </span>
         </CardFooter>
       </Card>
-      <Modal size="lg" isOpen={isBadgeOpen} toggle={toggleBadge} className={darkMode ? 'text-light' : ''}>
+      <Modal
+        size="lg"
+        isOpen={isBadgeOpen}
+        toggle={toggleBadge}
+        className={darkMode ? 'text-light' : ''}
+      >
         <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Badge Summary</ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div>
@@ -241,146 +271,177 @@ export const Badges = (props) => {
                       <th style={{ width: '90px' }}>Count</th>
                     </tr>
                   </thead>
-                    <tbody>
-                    {props.userProfile.badgeCollection && props.userProfile.badgeCollection.length>0 ? (
+                  <tbody>
+                    {sortedBadges.length > 0 ? (
                       sortedBadges &&
-                      sortedBadges.map(value => value && value.badge &&(
-                        <tr key={value.badge._id}>
-                          <td className="badge_image_sm">
-                            {' '}
-                            <img
-                              src={value.badge.imageUrl}
-                              id={`popover_${value.badge._id}`}
-                              alt="badge"
-                            />
-                          </td>
-                          <UncontrolledPopover
-                            trigger="hover"
-                            target={`popover_${value.badge._id}`}
-                          >
-                            <Card className="text-center">
-                              <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
-                              <CardBody>
-                                <CardTitle
-                                  style={{
-                                    fontWeight: 'bold',
-                                    fontSize: 18,
-                                    color: '#285739',
-                                    marginBottom: 15,
-                                  }}
-                                >
-                                  {value.badge?.badgeName}
-                                </CardTitle>
-                                <CardText>{value.badge?.description}</CardText>
-                              </CardBody>
-                            </Card>
-                          </UncontrolledPopover>
-                          <td>{value.badge.badgeName}</td>
-                          <td>
-                            {typeof value.lastModified === 'string'
-                              ? value.lastModified.substring(0, 10)
-                              : value.lastModified.toLocaleString().substring(0, 10)}
-                          </td>
-                          <td style={{ display: 'flex', alignItems: 'center' }}>
-                            <>
-                              {' '}
-                              <UncontrolledDropdown className="me-2" direction="down">
-                                <DropdownToggle caret color="primary" style={darkMode ? boxStyleDark : boxStyle}>
-                                  Dates
-                                </DropdownToggle>
-                                <DropdownMenu>
-                                  {value.earnedDate.map((date, index) => (
-                                    // eslint-disable-next-line react/no-array-index-key
-                                    <DropdownItem key={`date-${value._id}-${index}`}>
-                                      {date}
-                                    </DropdownItem>
-                                  ))}
-                                </DropdownMenu>
-                              </UncontrolledDropdown>
-                              {value?.hasBadgeDeletionImpact && value?.hasBadgeDeletionImpact === true ?
-                              (<>
-                                <span id="mismatchExplainationTooltip" style={{paddingLeft: '3px'}}>
-                                  {'  '} *
-                                </span>
-                                <UncontrolledTooltip
-                                  placement="bottom"
-                                  target="mismatchExplainationTooltip"
-                                  style={{ maxWidth: '300px' }}
-                                >
-                                  This record contains a mismatch in the badge count and associated dates. It indicates that a badge has been deleted. 
-                                  Despite the deletion, we retain the earned date to ensure a record of the badge earned for historical purposes.
-                                </UncontrolledTooltip>
-                              </>)
-                              : null
-                              } 
-                            </>
-                          </td>
-                          <td>{value.count}</td>
-                        </tr>
-                      ))
+                      sortedBadges.map(
+                        value =>
+                          value &&
+                          value.badge && (
+                            <tr key={value.badge._id}>
+                              <td className="badge_image_sm">
+                                {' '}
+                                <img
+                                  src={value.badge.imageUrl}
+                                  id={`popover_${value.badge._id}`}
+                                  alt="badge"
+                                />
+                              </td>
+                              <UncontrolledPopover
+                                trigger="hover"
+                                target={`popover_${value.badge._id}`}
+                              >
+                                <Card className="text-center">
+                                  <CardImg
+                                    className="badge_image_lg"
+                                    src={value?.badge?.imageUrl}
+                                  />
+                                  <CardBody>
+                                    <CardTitle
+                                      style={{
+                                        fontWeight: 'bold',
+                                        fontSize: 18,
+                                        color: '#285739',
+                                        marginBottom: 15,
+                                      }}
+                                    >
+                                      {value.badge?.badgeName}
+                                    </CardTitle>
+                                    <CardText>{value.badge?.description}</CardText>
+                                  </CardBody>
+                                </Card>
+                              </UncontrolledPopover>
+                              <td>{value.badge.badgeName}</td>
+                              <td>
+                                {!value.lastModified ||
+                                Number.isNaN(new Date(value.lastModified).getTime())
+                                  ? '—'
+                                  : typeof value.lastModified === 'string'
+                                  ? value.lastModified.substring(0, 10)
+                                  : value.lastModified.toLocaleString().substring(0, 10)}
+                              </td>
+                              <td style={{ display: 'flex', alignItems: 'center' }}>
+                                <>
+                                  {' '}
+                                  <UncontrolledDropdown className="me-2" direction="down">
+                                    <DropdownToggle
+                                      caret
+                                      color="primary"
+                                      style={darkMode ? boxStyleDark : boxStyle}
+                                    >
+                                      Dates
+                                    </DropdownToggle>
+                                    <DropdownMenu>
+                                      {(Array.isArray(value.earnedDate)
+                                        ? value.earnedDate
+                                        : []
+                                      ).map((date, index) => (
+                                        // eslint-disable-next-line react/no-array-index-key
+                                        <DropdownItem key={`date-${value._id}-${index}`}>
+                                          {date}
+                                        </DropdownItem>
+                                      ))}
+                                    </DropdownMenu>
+                                  </UncontrolledDropdown>
+                                  {value?.hasBadgeDeletionImpact &&
+                                  value?.hasBadgeDeletionImpact === true ? (
+                                    <>
+                                      <span
+                                        id="mismatchExplainationTooltip"
+                                        style={{ paddingLeft: '3px' }}
+                                      >
+                                        {'  '} *
+                                      </span>
+                                      <UncontrolledTooltip
+                                        placement="bottom"
+                                        target="mismatchExplainationTooltip"
+                                        style={{ maxWidth: '300px' }}
+                                      >
+                                        This record contains a mismatch in the badge count and
+                                        associated dates. It indicates that a badge has been
+                                        deleted. Despite the deletion, we retain the earned date to
+                                        ensure a record of the badge earned for historical purposes.
+                                      </UncontrolledTooltip>
+                                    </>
+                                  ) : null}
+                                </>
+                              </td>
+                              <td>{value.count}</td>
+                            </tr>
+                          ),
+                      )
                     ) : (
                       <tr>
                         <td colSpan={5} style={{ textAlign: 'center' }}>{`${
                           authUser.userid === displayUserId ? 'You have' : 'This person has'
                         } no badges .`}</td>
                       </tr>
-                    )} 
-                  </tbody> 
+                    )}
+                  </tbody>
                 </Table>
               </div>
             </div>
             {/* --- TABLET VERSION OF MODAL --- */}
             <div className="tablet">
               <div style={{ overflow: 'auto', height: '68vh' }}>
-                <Table  className={darkMode ? 'text-light dark-mode' : ''}>
+                <Table className={darkMode ? 'text-light dark-mode' : ''}>
                   <thead style={{ zIndex: '10' }}>
-                    <tr style={{ zIndex: '10' }}  className={darkMode ? 'bg-space-cadet' : ''}>
+                    <tr style={{ zIndex: '10' }} className={darkMode ? 'bg-space-cadet' : ''}>
                       <th style={{ width: '25%' }}>Badge</th>
                       <th style={{ width: '25%' }}>Name</th>
                       <th style={{ width: '25%' }}>Modified</th>
                       <th style={{ width: '25%', zIndex: '10' }}>Count</th>
                     </tr>
                   </thead>
-                   <tbody>
-                    {props.userProfile.badgeCollection && props.userProfile.badgeCollection.length ? (
+                  <tbody>
+                    {sortedBadges.length ? (
                       sortedBadges &&
-                      sortedBadges.map(value => value &&(
-                        <tr key={value._id}>
-                          <td className="badge_image_sm">
-                            {' '}
-                            <img
-                              src={value?.badge.imageUrl}
-                              id={`popover_${value._id}`}
-                              alt="badge"
-                            />
-                          </td>
-                          <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
-                            <Card className="text-center">
-                              <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
-                              <CardBody>
-                                <CardTitle
-                                  style={{
-                                    fontWeight: 'bold',
-                                    fontSize: 18,
-                                    color: '#285739',
-                                    marginBottom: 15,
-                                  }}
-                                >
-                                  {value?.badge?.badgeName}
-                                </CardTitle>
-                                <CardText>{value?.badge?.description}</CardText>
-                              </CardBody>
-                            </Card>
-                          </UncontrolledPopover>
-                          <td>{value?.badge?.badgeName}</td>
-                          <td>
-                            {typeof value.lastModified === 'string'
-                              ? value.lastModified.substring(0, 10)
-                              : value.lastModified.toLocaleString().substring(0, 10)}
-                          </td>
-                          <td>{value?.count}</td>
-                        </tr>
-                      ))
+                      sortedBadges.map(
+                        value =>
+                          value && (
+                            <tr key={value._id}>
+                              <td className="badge_image_sm">
+                                {' '}
+                                <img
+                                  src={value?.badge.imageUrl}
+                                  id={`popover_${value._id}`}
+                                  alt="badge"
+                                />
+                              </td>
+                              <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
+                                <Card className="text-center">
+                                  <CardImg
+                                    className="badge_image_lg"
+                                    src={value?.badge?.imageUrl}
+                                  />
+                                  <CardBody>
+                                    <CardTitle
+                                      style={{
+                                        fontWeight: 'bold',
+                                        fontSize: 18,
+                                        color: '#285739',
+                                        marginBottom: 15,
+                                      }}
+                                    >
+                                      {value?.badge?.badgeName}
+                                    </CardTitle>
+                                    <CardText>{value?.badge?.description}</CardText>
+                                  </CardBody>
+                                </Card>
+                              </UncontrolledPopover>
+                              <td>{value?.badge?.badgeName}</td>
+                              <td>
+                                {!value.lastModified ||
+                                Number.isNaN(new Date(value.lastModified).getTime())
+                                  ? '—'
+                                  : typeof value.lastModified === 'string'
+                                  ? value.lastModified.substring(0, 10)
+                                  : value.lastModified.toLocaleString().substring(0, 10)}
+                              </td>
+                              <td>{value?.count}</td>
+                            </tr>
+                          ),
+                      )
                     ) : (
                       <tr>
                         <td colSpan={4} style={{ textAlign: 'center' }}>{`${
@@ -388,10 +449,10 @@ export const Badges = (props) => {
                         } no badges.`}</td>
                       </tr>
                     )}
-                  </tbody> 
+                  </tbody>
                 </Table>
               </div>
-            </div> 
+            </div>
           </div>
         </ModalBody>
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -450,12 +511,12 @@ export const Badges = (props) => {
 
 const mapDispatchToProps = dispatch => ({
   clearSelected: () => dispatch(clearSelected()),
-  hasPermission: (permission) => dispatch(hasPermission(permission)),
+  hasPermission: permission => dispatch(hasPermission(permission)),
 });
 
 const mapStateToProps = state => ({
   allBadgeData: state?.badge?.allBadgeData,
-  auth: state.auth, 
+  auth: state.auth,
   //darkMode: state.theme.darkMode,
   authUser: state.auth.user,
 });
