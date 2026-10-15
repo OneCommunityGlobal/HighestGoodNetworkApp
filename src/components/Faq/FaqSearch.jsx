@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { debounce } from 'lodash';
 import { Button } from 'reactstrap';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
@@ -35,16 +35,22 @@ function FaqSearch() {
     };
   }, []);
 
-  const fetchSuggestions = debounce(async query => {
-    try {
-      const response = await searchFAQs(query);
-      setSuggestions(response.data);
-      setNotFound(response.data.length === 0);
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Error fetching FAQ suggestions:', error);
-    }
-  }, 300);
+  const fetchSuggestions = useMemo(
+    () =>
+      debounce(async query => {
+        try {
+          const response = await searchFAQs(query);
+          setSuggestions(response.data);
+          setNotFound(response.data.length === 0);
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.error('Error fetching FAQ suggestions:', error);
+        }
+      }, 300),
+    [],
+  );
+
+  useEffect(() => () => fetchSuggestions.cancel(), [fetchSuggestions]);
 
   const handleSearchChange = e => {
     const query = e.target.value;
