@@ -213,11 +213,10 @@ function buildPDFStyles(darkMode) {
       background-color: ${darkMode ? '#1C2541' : '#fff'} !important;
       border: 1px solid ${darkMode ? '#3a3a3a' : '#e0e0e0'} !important;
       border-radius: 10px !important;
-      box-shadow: ${
-        darkMode
-          ? '0 2px 12px 0 rgba(255,255,255,0.18), 0 1.5px 8px 0 rgba(255,255,255,0.10)'
-          : '0 2px 4px rgba(0, 0, 0, 0.08)'
-      } !important;
+      box-shadow: ${darkMode
+      ? '0 2px 12px 0 rgba(255,255,255,0.18), 0 1.5px 8px 0 rgba(255,255,255,0.10)'
+      : '0 2px 4px rgba(0, 0, 0, 0.08)'
+    } !important;
       overflow: hidden !important;
     }
     img, svg { max-width: 100% !important; height: auto !important; page-break-inside: avoid !important; }
@@ -246,9 +245,8 @@ function buildPDFStyles(darkMode) {
       border-color: ${darkMode ? '#64748b' : '#e0e0e0'} !important;
       opacity: 1 !important;
     }
-    ${
-      darkMode
-        ? `
+    ${darkMode
+      ? `
       .componentContainer h1, .componentContainer h2, .componentContainer h3,
       .componentContainer h4, .componentContainer h5, .componentContainer h6,
       .componentContainer p, .componentContainer .totalOrgChartTitle,
@@ -260,7 +258,7 @@ function buildPDFStyles(darkMode) {
       .componentContainer [data-pdf-title] p, .componentContainer [data-pdf-title] {
         color: #fff !important; text-shadow: 0 1px 4px #000, 0 0 2px #000 !important;
       }`
-        : ''
+      : ''
     }
   `;
   return styleElem;
@@ -478,22 +476,15 @@ function TotalOrgSummary(props) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  /*
-    BUG FIX: fromDate/toDate now correctly represent the CURRENT week (see
-    calculateStartDate/calculateEndDate above). Since the default label here
-    is 'Previous Week', the initial currentFromDate/currentToDate must be
-    computed via getPreviousWeekDates(fromDate, toDate) - matching what the
-    "Previous Week" dropdown option itself computes - rather than reusing
-    fromDate/toDate directly, which would (after the fix above) describe the
-    CURRENT week instead and mismatch the 'Previous Week' label on first
-    render.
+
+  /* BUG FIX:
+  fromDate/toDate are already the previous week (computed above via getPreviousWeekDates() above).
+  Use them directly as the initial date range to match the 'Previous Week' default label.
   */
-  const [currentFromDate, setCurrentFromDate] = useState(
-    () => getPreviousWeekDates(fromDate, toDate).start,
-  );
-  const [currentToDate, setCurrentToDate] = useState(
-    () => getPreviousWeekDates(fromDate, toDate).end,
-  );
+
+  const [currentFromDate, setCurrentFromDate] = useState(fromDate);
+  const [currentToDate, setCurrentToDate] = useState(toDate);
+
   const rootRef = useRef(null);
   const cacheRef = useRef({});
 
