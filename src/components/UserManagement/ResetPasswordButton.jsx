@@ -83,7 +83,8 @@ class ResetPasswordButton extends React.PureComponent {
           )}
           <Button
             outline={!this.props.darkMode}
-            color="primary"
+            // a global `.dark-mode .btn-primary` rule forces blue with !important, so dark mode uses success
+            color={this.props.darkMode ? 'success' : 'primary'}
             className={`${styles.userManagementCellControl} btn  btn-outline-success mr-1${this.props.isSmallButton ? ' btn-sm' : ''}`}
             style={
               this.props.darkMode
