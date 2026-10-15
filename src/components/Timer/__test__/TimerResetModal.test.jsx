@@ -2,7 +2,6 @@
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
-import css from '../Timer.module.css';
 
 const websocketMocks = vi.hoisted(() => ({
   sendJsonMessage: vi.fn(),
@@ -34,6 +33,7 @@ describe('Timer reset confirmation modal', () => {
 
   afterEach(() => {
     websocketMocks.sendJsonMessage.mockClear();
+    document.body.classList.remove('dark-mode', 'bm-dashboard-dark', 'no-global-theme');
   });
 
   const openResetModal = darkMode => {
@@ -42,13 +42,14 @@ describe('Timer reset confirmation modal', () => {
     return screen.getByText('Reset Time').closest('.modal');
   };
 
-  it('uses the scoped charcoal theme in dark mode and resets the timer', async () => {
+  it('uses the global dark-mode modal theme and resets the timer', async () => {
+    document.body.classList.add('dark-mode');
     const modal = openResetModal(true);
     const modalDialog = modal.querySelector('.modal-dialog');
 
     await waitFor(() => expect(modal).toHaveClass('show'));
-    expect(modalDialog).toHaveClass(css.resetConfirmationModal, 'text-light');
-    expect(modalDialog.querySelector('.bg-yinmn-blue')).toBeNull();
+    expect(modalDialog).toHaveClass('text-light');
+    expect(modalDialog.querySelector('.bg-space-cadet, .bg-yinmn-blue')).toBeNull();
     expect(screen.getByText('Are you sure you want to reset your time?')).toBeVisible();
     expect(screen.getByLabelText('Close')).toBeVisible();
 
@@ -63,7 +64,7 @@ describe('Timer reset confirmation modal', () => {
     const modalDialog = modal.querySelector('.modal-dialog');
 
     await waitFor(() => expect(modal).toHaveClass('show'));
-    expect(modalDialog).not.toHaveClass(css.resetConfirmationModal, 'text-light');
-    expect(modalDialog.querySelector('.bg-yinmn-blue')).toBeNull();
+    expect(modalDialog).not.toHaveClass('text-light');
+    expect(modalDialog.querySelector('.bg-space-cadet, .bg-yinmn-blue')).toBeNull();
   });
 });

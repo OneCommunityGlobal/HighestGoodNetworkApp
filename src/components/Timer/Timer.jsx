@@ -783,7 +783,7 @@ function Timer({ authUser, darkMode, isPopout }) {
       toggle={() => setConfirmationResetModal(!confirmationResetModal)}
       centered
       size="md"
-      className={cs(fontColor, darkMode ? css.resetConfirmationModal : '')}
+      className={fontColor}
     >
       <ModalHeader toggle={() => setConfirmationResetModal(false)}>Reset Time</ModalHeader>
       <ModalBody>Are you sure you want to reset your time?</ModalBody>
