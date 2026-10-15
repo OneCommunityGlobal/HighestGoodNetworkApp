@@ -167,7 +167,9 @@
 }
 
 @media screen and (width <= 544px) {
-  :global(.responsive-font-size) {
-    font-size: 0.75rem !important;
+  /* stylelint-disable-next-line no-duplicate-selectors -- class repeated to
+     outrank other same-specificity .responsive-font-size rules without !important */
+  :global(.responsive-font-size.responsive-font-size) {
+    font-size: 0.75rem;
   }
 }
