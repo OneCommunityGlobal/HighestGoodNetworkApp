@@ -8,8 +8,6 @@ import styles from './MostFrequentKeywords.module.css';
 import Select, { components as selectComponents } from 'react-select';
 import PropTypes from 'prop-types';
 
-const calculateDistance = (x1, y1, x2, y2) => Math.hypot(x1 - x2, y1 - y2);
-
 function deduplicateByTag(sorted, maxItems) {
   const latestItems = [];
   const usedTags = new Set();
@@ -42,6 +40,20 @@ function checkDateInRange(itemDate, startDate, endDate) {
     return itemDate <= end;
   }
   return true;
+}
+
+// Split a label into at most two balanced lines (multi-word labels only).
+function wrapLabel(text) {
+  const words = text.trim().split(/\s+/);
+  if (words.length === 1) return [text];
+  let best = null;
+  for (let i = 1; i < words.length; i++) {
+    const a = words.slice(0, i).join(' ');
+    const b = words.slice(i).join(' ');
+    const longest = Math.max(a.length, b.length);
+    if (!best || longest < best.longest) best = { longest, lines: [a, b] };
+  }
+  return best.lines;
 }
 
 const formatCalendarMonth = date =>
@@ -288,31 +300,6 @@ const TEST_DATASETS = {
   },
 };
 
-function generateProjectSpecificData(projectName) {
-  if (projectName.toLowerCase().includes('duplicable city center')) {
-    return [
-      { tag: 'Modular Design', count: 85, date: '2025-03-15' },
-      { tag: 'Prefabrication', count: 78, date: '2025-04-22' },
-      { tag: 'Replicable Units', count: 72, date: '2025-05-10' },
-      { tag: 'Standard Parts', count: 64, date: '2025-06-18' },
-      { tag: 'Urban Planning', count: 81, date: '2025-08-30' },
-      { tag: 'Smart City Tech', count: 69, date: '2025-10-05' },
-      { tag: 'Energy Efficiency', count: 76, date: '2026-01-19' },
-      { tag: 'Mixed Use', count: 68, date: '2026-05-08' },
-    ];
-  }
-  return [
-    { tag: 'Site Planning', count: 72, date: '2024-03-15' },
-    { tag: 'Foundation', count: 65, date: '2024-06-22' },
-    { tag: 'Framing', count: 58, date: '2024-09-10' },
-    { tag: 'Electrical', count: 62, date: '2025-01-18' },
-    { tag: 'Plumbing', count: 54, date: '2025-04-25' },
-    { tag: 'HVAC', count: 67, date: '2025-07-30' },
-    { tag: 'Finishing', count: 59, date: '2025-11-14' },
-    { tag: 'Landscaping', count: 51, date: '2026-02-05' },
-  ];
-}
-
 function MFKDatePickers({
   darkMode,
   isMobile,
@@ -444,60 +431,6 @@ const DropdownIndicator = props => (
   </selectComponents.DropdownIndicator>
 );
 
-// Pick the most recent unique-tag items, capped at maxItems.
-function getLatestData(data, isMobile) {
-  if (!data || data.length === 0) return [];
-
-  const sorted = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
-  const maxItems = isMobile ? 6 : 8;
-
-  if (sorted.length < maxItems) return sorted;
-
-  const latestItems = [];
-  const usedTags = new Set();
-
-  for (const item of sorted) {
-    if (!usedTags.has(item.tag)) {
-      latestItems.push(item);
-      usedTags.add(item.tag);
-      if (latestItems.length >= maxItems) break;
-    }
-  }
-
-  return latestItems;
-}
-
-// Items without a real date are always included; otherwise check the bounds.
-function isWithinDateRange(item, startDate, endDate) {
-  if (!item.date) return true;
-
-  const itemDate = new Date(item.date);
-  itemDate.setHours(0, 0, 0, 0);
-
-  if (startDate) {
-    const start = new Date(startDate);
-    start.setHours(0, 0, 0, 0);
-    if (itemDate < start) return false;
-  }
-
-  if (endDate) {
-    const end = new Date(endDate);
-    end.setHours(23, 59, 59, 999);
-    if (itemDate > end) return false;
-  }
-
-  return true;
-}
-
-// Truncate text with "..." so it fits within maxWidth at the given font size.
-// Uses the same ~0.6em average char width estimate as calculateFontSize.
-function truncateToFit(text, fontSize, maxWidth, charWidthRatio = 0.6) {
-  const maxChars = Math.floor(maxWidth / (fontSize * charWidthRatio));
-  if (text.length <= maxChars) return text;
-  if (maxChars <= 3) return '...';
-  return `${text.slice(0, maxChars - 3).trimEnd()}...`;
-}
-
 function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
   const svgRef = useRef();
   const containerRef = useRef();
@@ -536,7 +469,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
     }
   };
 
-  const fetchProjectData = async (projectId, projectName) => {
+  const fetchProjectData = async projectId => {
     try {
       setIsLoading(true);
       setError('');
@@ -673,13 +606,15 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
     };
   }, [dimensions, isMobile]);
 
+  // Top keywords by count (ties broken by most recent), one entry per tag.
   const getLatestData = useCallback(
     data => {
       if (!data || data.length === 0) return [];
-      const sorted = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
       const maxItems = isMobile ? 6 : 8;
-      if (sorted.length >= maxItems) return deduplicateByTag(sorted, maxItems);
-      return sorted;
+      const sorted = [...data].sort(
+        (a, b) => b.count - a.count || new Date(b.date) - new Date(a.date),
+      );
+      return deduplicateByTag(sorted, maxItems); // keeps the highest-count entry per tag
     },
     [isMobile],
   );
@@ -689,7 +624,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
       if (!tagsToFilter || tagsToFilter.length === 0) return [];
 
       if (!startDate && !endDate) {
-        return getLatestData(tagsToFilter, isMobile);
+        return getLatestData(tagsToFilter);
       }
 
       const filtered = tagsToFilter.filter(item => {
@@ -706,7 +641,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
 
       return result;
     },
-    [startDate, endDate, isMobile],
+    [startDate, endDate, isMobile, getLatestData],
   );
 
   useEffect(() => {
@@ -738,7 +673,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
     fetchProjects();
   }, []);
 
-  // SIMPLE: Bubble size based ONLY on frequency, not text length
+  // Base bubble size based ONLY on frequency, not text length
   const getBubbleSize = useCallback(
     (count, allCounts) => {
       const sizes = getResponsiveSizes();
@@ -755,26 +690,33 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
     [getResponsiveSizes],
   );
 
-  // ===== FIX #1: CALCULATE DYNAMIC FONT SIZE BASED ON TEXT LENGTH =====
-  // Calculate font size that fits the text width in the bubble
-  const calculateFontSize = useCallback(
-    (textLength, bubbleRadius) => {
+  // Decide lines, font size and bubble radius so the full label always fits.
+  const getLabelLayout = useCallback(
+    (tag, baseR) => {
       const sizes = getResponsiveSizes();
+      const cw = isMobile ? 0.55 : 0.6; // avg char width / font size
+      const lines = wrapLabel(tag);
+      const longest = Math.max(...lines.map(l => l.length));
+      const countFs = sizes.countFontSize;
 
-      // Bubble width is approximately bubbleRadius * 2, minus padding
-      const availableWidth = bubbleRadius * 1.8; // Leave 10% padding on each side
+      let fontSize = Math.max(8, Math.min(sizes.maxFontSize, 11));
+      const neededR = fs =>
+        Math.max(
+          (longest * fs * cw) / 1.7, // width: text must fit inside ~1.7r
+          ((lines.length * fs * 1.2 + countFs * 1.3) / 2 + 3) / 0.6, // height: ry = 0.6r
+        );
 
-      // Estimate: each character takes roughly 0.6 * fontSize pixels
-      const charWidthRatio = isMobile ? 0.55 : 0.6;
+      let r = Math.max(baseR, neededR(fontSize));
 
-      // Calculate font size that fits all characters
-      const calculatedSize = availableWidth / (textLength * charWidthRatio);
-
-      // Clamp between min and max
-      const minSize = isMobile ? 7 : 8;
-      const maxSize = sizes.maxFontSize;
-
-      return Math.max(minSize, Math.min(maxSize, calculatedSize));
+      // Safety cap so one long word can't produce a giant bubble: shrink font instead.
+      const rMax = sizes.maxBubbleSize * 1.35;
+      if (r > rMax) {
+        r = rMax;
+        const byWidth = (r * 1.7) / (longest * cw);
+        const byHeight = ((0.6 * r - 3) * 2 - countFs * 1.3) / (lines.length * 1.2);
+        fontSize = Math.max(7, Math.min(fontSize, byWidth, byHeight));
+      }
+      return { lines, fontSize, r };
     },
     [getResponsiveSizes, isMobile],
   );
@@ -788,8 +730,9 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
       const counts = tags.map(t => t.count);
       const centerSize = sizes.centerSize;
 
-      // Calculate bubble radii
-      const radii = tags.map((_, i) => getBubbleSize(counts[i], counts));
+      // Calculate bubble layouts (radius grows to fit the full label)
+      const layouts = tags.map((t, i) => getLabelLayout(t.tag, getBubbleSize(counts[i], counts)));
+      const radii = layouts.map(l => l.r);
       const maxBubbleRadius = Math.max(...radii, sizes.minBubbleSize);
       const horizontalPadding = sizes.padding + maxBubbleRadius + 8;
       const topPadding = sizes.padding + maxBubbleRadius * 0.75 + 12;
@@ -860,13 +803,15 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
           tag: tags[i].tag,
           count: tags[i].count,
           fullTag: tags[i].tag,
+          lines: layouts[i].lines,
+          fontSize: layouts[i].fontSize,
         });
       }
 
       // COLLISION DETECTION: Iteratively adjust overlapping bubbles
       let hasCollision = true;
       let iterations = 0;
-      const maxIterations = 10;
+      const maxIterations = 30;
 
       while (hasCollision && iterations < maxIterations) {
         hasCollision = false;
@@ -915,11 +860,32 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
             }
           }
         }
+
+        // Keep every bubble (an ellipse, rx = r, ry = 0.6r) clear of the center circle.
+        positions.forEach(p => {
+          const dx = p.x - centerX;
+          const dy = p.y - centerY;
+          const phi = Math.atan2(dy, dx);
+          const rx = p.r;
+          const ry = p.r * 0.6;
+          const extent = (rx * ry) / Math.hypot(ry * Math.cos(phi), rx * Math.sin(phi));
+          const minD = centerSize + extent + 10;
+          if (Math.hypot(dx, dy) < minD) {
+            hasCollision = true;
+            p.x = centerX + Math.cos(phi) * minD;
+            p.y = centerY + Math.sin(phi) * minD;
+          }
+        });
       }
+
+      // Pushing moves bubbles, so recompute angles for the connector lines.
+      positions.forEach(p => {
+        p.angle = Math.atan2(p.y - centerY, p.x - centerX);
+      });
 
       return positions;
     },
-    [getBubbleSize, getResponsiveSizes, isMobile],
+    [getBubbleSize, getResponsiveSizes, getLabelLayout, isMobile],
   );
 
   const getNodeColor = index => {
@@ -1045,38 +1011,39 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
       .style('pointer-events', 'none');
   };
 
-  // ===== FIX #2: UPDATE TEXT CREATION TO USE DYNAMIC FONT SIZE =====
-  // Function to create text elements
-  const createTextElements = (svg, x, y, tag, count, r, sizes, colors) => {
+  // Function to create text elements: full label wrapped to at most two lines, never truncated
+  const createTextElements = (svg, pos, sizes, colors) => {
+    const { x, y, lines, fontSize, count } = pos;
     const textGroup = svg
       .append('g')
       .attr('transform', `translate(${x}, ${y})`)
       .style('pointer-events', 'none');
 
-    const tagFontSize = calculateFontSize(tag.length, r);
-    const countFontSize = sizes.countFontSize;
+    const countFs = sizes.countFontSize;
+    const lh = fontSize * 1.2;
+    const total = lines.length * lh + countFs * 1.3;
+    const top = -total / 2;
 
-    // Usable width inside the ellipse (rx = r), with a little side padding
-    const maxTextWidth = r * 1.7;
-    const displayTag = truncateToFit(tag, tagFontSize, maxTextWidth, isMobile ? 0.55 : 0.6);
+    lines.forEach((line, i) => {
+      textGroup
+        .append('text')
+        .attr('x', 0)
+        .attr('y', top + lh * (i + 0.5))
+        .attr('text-anchor', 'middle')
+        .attr('dominant-baseline', 'middle')
+        .attr('font-size', fontSize)
+        .attr('font-weight', '600')
+        .attr('fill', colors.text)
+        .text(line);
+    });
 
     textGroup
       .append('text')
       .attr('x', 0)
-      .attr('y', -tagFontSize * 0.3)
+      .attr('y', top + lines.length * lh + countFs * 0.65)
       .attr('text-anchor', 'middle')
-      .attr('font-size', tagFontSize)
-      .attr('font-weight', '600')
-      .attr('fill', colors.text)
       .attr('dominant-baseline', 'middle')
-      .text(displayTag);
-
-    textGroup
-      .append('text')
-      .attr('x', 0)
-      .attr('y', r * 0.4)
-      .attr('text-anchor', 'middle')
-      .attr('font-size', countFontSize)
+      .attr('font-size', countFs)
       .attr('font-weight', '500')
       .attr('fill', colors.text)
       .style('opacity', 0.9)
@@ -1114,7 +1081,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
 
   // Function to render a single bubble
   const renderSingleBubble = (svg, pos, i, sizes) => {
-    const { x, y, r, tag, count, fullTag } = pos;
+    const { x, y, r, count, fullTag } = pos;
     const colors = getNodeColor(i);
 
     const nodeGroup = svg
@@ -1130,7 +1097,7 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
     createVisibleBubble(nodeGroup, colors, r);
 
     // Create text elements
-    createTextElements(svg, x, y, tag, count, r, sizes, colors);
+    createTextElements(svg, pos, sizes, colors);
   };
 
   // Function to render all bubbles
@@ -1207,7 +1174,10 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
 
   // Function to draw center circle
   const drawCenterCircle = (svg, centerX, centerY, sizes) => {
-    const centerGroup = svg.append('g').attr('transform', `translate(${centerX}, ${centerY})`);
+    const centerGroup = svg
+      .append('g')
+      .attr('transform', `translate(${centerX}, ${centerY})`)
+      .style('pointer-events', 'none');
 
     centerGroup
       .append('circle')
@@ -1222,14 +1192,13 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
           : 'drop-shadow(0 2px 3px rgba(0,0,0,0.1))',
       );
 
-    const centerFontSize = sizes.centerFontSize;
-    //const lineHeight = centerFontSize * 1.3;
+    // Size "Top Words" (9 chars) from the circle so it never touches the edge
+    const centerFontSize = Math.min(sizes.centerFontSize, (sizes.centerSize * 1.7) / (9 * 0.6));
 
-    // Single text: "Top Words" - positioned at top of circle to avoid overlap
     centerGroup
       .append('text')
       .attr('x', 0)
-      .attr('y', -centerFontSize * 0.8)
+      .attr('y', 0)
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'middle')
       .attr('fill', darkMode ? '#f1f5f9' : '#1e293b')
@@ -1280,9 +1249,6 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
       Math.min(height * (isMobile ? 0.37 : 0.35), height - (sizes.centerSize + 96)),
     );
 
-    // Draw center circle
-    drawCenterCircle(svg, centerX, centerY, sizes);
-
     // Get positions
     const positions = getPositions(tags, width, height, centerX, centerY);
 
@@ -1291,6 +1257,9 @@ function MostFrequentKeywords({ darkMode: propDarkMode } = {}) {
 
     // Draw bubbles
     renderBubbles(svg, positions, sizes);
+
+    // Draw center circle last so nothing can ever cover it
+    drawCenterCircle(svg, centerX, centerY, sizes);
 
     // Draw tooltip
     renderTooltip(svg, tooltip, sizes, width, height);
