@@ -146,9 +146,9 @@
 }
 
 .darkDateInput {
-  background-color: #253342 !important;
-  color: #fff !important;
-  border-color: #2d4059 !important;
+  background-color: #253342;
+  color: #fff;
+  border-color: #2d4059;
   color-scheme: dark;
 }
 
@@ -157,7 +157,7 @@
 }
 
 .darkDateInput::placeholder {
-  color: #94a3b8 !important;
+  color: #94a3b8;
 }
 
 .datePickerWrapper :global(.react-datepicker-wrapper) {
@@ -243,14 +243,14 @@
   min-height: 30px;
 }
 
-.varianceOver { color: #e74c3c !important; }
-.darkSummaryContainer .varianceOver { color: #ff5252 !important; }
+.varianceOver { color: #e74c3c; }
+.darkSummaryContainer .varianceOver { color: #ff5252; }
 
-.varianceUnder { color: #2ecc71 !important; }
-.darkSummaryContainer .varianceUnder { color: #4ade80 !important; }
+.varianceUnder { color: #2ecc71; }
+.darkSummaryContainer .varianceUnder { color: #4ade80; }
 
-.varianceNeutral { color: #666 !important; }
-.darkSummaryContainer .varianceNeutral { color: #fff !important; }
+.varianceNeutral { color: #666; }
+.darkSummaryContainer .varianceNeutral { color: #fff; }
 
 :global(.paid-labor-cost-calendar.react-datepicker) {
   background-color: #fff !important;

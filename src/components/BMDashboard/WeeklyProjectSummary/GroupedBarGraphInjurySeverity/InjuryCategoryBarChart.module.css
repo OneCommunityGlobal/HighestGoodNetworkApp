@@ -246,7 +246,7 @@
 }
 
 .darkMode .injury-chart-label {
-  color: #e0e0e0 !important;
+  color: #e0e0e0;
 }
 
 .darkMode .injury-chart-filters {
@@ -403,11 +403,11 @@
 }
 
 .darkMode .error {
-  color: #ff6b6b !important;
+  color: #ff6b6b;
 }
 
 .darkMode .empty {
-  color: #a0a0a0 !important;
+  color: #a0a0a0;
 }
 /* Recharts default tick text selector (X axis) */
 :global(.darkMode .recharts-xAxis .recharts-cartesian-axis-tick-value) {
@@ -432,20 +432,20 @@
 }
 
 .tooltipSeriesRow {
-  color: var(--tooltip-series-color) !important;
+  color: var(--tooltip-series-color);
   margin: 8px 0 0;
 }
 
 .tooltipSeriesRow * {
-  color: inherit !important;
+  color: inherit;
 }
 
 :global(.darkMode) .tooltipSeriesRow {
-  color: var(--tooltip-series-color) !important;
+  color: var(--tooltip-series-color);
 }
 
 :global(.darkMode) .tooltipSeriesRow * {
-  color: inherit !important;
+  color: inherit;
 }
 
 /* ================= DARK MODE CALENDAR POPUP ================= */
