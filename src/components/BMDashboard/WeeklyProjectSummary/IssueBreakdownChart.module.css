@@ -624,30 +624,16 @@
   font-size: 12px;
 }
 
-/* Selected value text — DARK MODE (keep text black) */
-:global(.darkMode .injurySelect__single-value) {
-  color: #000 !important;
-}
-
-:global(.darkMode .injurySelect__multi-value__label) {
-  color: #000 !important;
-}
-
-/* Ensure input text while typing is also black */
-:global(.darkMode .injurySelect__input-container),
-:global(.darkMode .injurySelect__input) {
-  color: #000 !important;
-}
-
-/* Ensure clear (×) and dropdown arrow are black in dark mode */
+/* Clear (×) and dropdown arrow icons in dark mode - react-select renders
+   these via inline style, so a stylesheet rule needs !important to win. */
 :global(.darkMode .injurySelect__clear-indicator),
 :global(.darkMode .injurySelect__dropdown-indicator) {
-  color: #000 !important;
+  color: #e0e0e0 !important;
 }
 
 :global(.darkMode .injurySelect__clear-indicator:hover),
 :global(.darkMode .injurySelect__dropdown-indicator:hover) {
-  color: #000 !important;
+  color: #fff !important;
 }
 
 :global(.filter label) {
