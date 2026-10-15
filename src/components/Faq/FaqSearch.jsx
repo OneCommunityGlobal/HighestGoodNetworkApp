@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { debounce } from 'lodash';
+import { useSelector } from 'react-redux';
 import { Button } from 'reactstrap';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { getAllFAQs, searchFAQs, logUnansweredQuestion } from './api';
@@ -11,6 +12,11 @@ function FaqSearch() {
   const [notFound, setNotFound] = useState(false);
   const [logging, setLogging] = useState(false);
   const [expandedFAQ, setExpandedFAQ] = useState(null);
+  const darkMode = useSelector(state => state.theme?.darkMode);
+  const borderColor = darkMode ? '#4b5563' : '#ddd';
+  const textColor = darkMode ? '#f3f4f6' : '#111827';
+  const cardBackground = darkMode ? '#1f2937' : '#f9f9f9';
+  const expandedBackground = darkMode ? '#374151' : '#e0e0e0';
 
   useEffect(() => {
     let isMounted = true;
@@ -98,7 +104,9 @@ function FaqSearch() {
           padding: '10px',
           marginBottom: '20px',
           borderRadius: '5px',
-          border: '1px solid #ccc',
+          border: `1px solid ${borderColor}`,
+          backgroundColor: darkMode ? '#1f2937' : '#fff',
+          color: textColor,
         }}
       />
 
@@ -111,10 +119,11 @@ function FaqSearch() {
                 onClick={() => toggleFAQ(faq._id)}
                 style={{
                   padding: '10px',
-                  border: '1px solid #ddd',
+                  border: `1px solid ${borderColor}`,
                   borderRadius: '5px',
                   cursor: 'pointer',
-                  backgroundColor: expandedFAQ === faq._id ? '#e0e0e0' : '#f9f9f9',
+                  backgroundColor: expandedFAQ === faq._id ? expandedBackground : cardBackground,
+                  color: textColor,
                   transition: 'background-color 0.3s',
                   display: 'flex',
                   justifyContent: 'space-between',
@@ -132,10 +141,11 @@ function FaqSearch() {
                 <div
                   style={{
                     padding: '10px',
-                    border: '1px solid #ddd',
+                    border: `1px solid ${borderColor}`,
                     borderRadius: '5px',
                     marginTop: '5px',
-                    backgroundColor: '#fff',
+                    backgroundColor: darkMode ? '#1f2937' : '#fff',
+                    color: textColor,
                   }}
                 >
                   <p>{faq.answer}</p>
@@ -144,7 +154,10 @@ function FaqSearch() {
                       href="https://onecommunityglobal.org/collaboration/"
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ color: '#007bff', textDecoration: 'underline' }}
+                      style={{
+                        color: darkMode ? '#93c5fd' : '#007bff',
+                        textDecoration: 'underline',
+                      }}
                     >
                       Visit here to learn more
                     </a>
