@@ -256,14 +256,6 @@
   background: #1e293b;
 }
 
-/* Recharts sets width/height on .recharts-wrapper via an inline style attribute
-   (see ResponsiveContainer/generateCategoricalChart source), which CSS specificity
-   can never beat — only !important can override an inline style. */
-.weeklyProjectSummaryCard :global(.recharts-wrapper) {
-  width: 100% !important;
-  height: 100% !important;
-}
-
 .weeklyProjectSummaryCard :global(.recharts-surface) {
   overflow: visible;
 }
