@@ -17,7 +17,6 @@
   width: 95%;
   margin: auto;
   padding: 20px;
-  background: var(--bg-color);
   color: var(--text-color);
 }
 
@@ -538,14 +537,17 @@
   transition: color 0.3s ease;
 }
 
+/* The status oval's background is always the color-coded pastel from
+   projectStatusButtons, so its value text must stay dark for contrast
+   in both themes. */
 .weeklyStatusValue {
-  color: #000;
+  color: #000 !important;
   font-size: 40px;
   font-weight: 600;
   transition: color 0.3s ease;
 }
 
-.weekly-status-change {
+.weeklyStatusChange {
   transition: color 0.3s ease;
   font-size: 14px;
   font-weight: 500;
@@ -557,9 +559,13 @@
   border-color: rgb(255 255 255 / 10%) !important;
 }
 
-.darkMode .weeklyCardTitle,
-.darkMode .weeklyStatusValue,
-.darkMode .weekly-status-change {
+.darkMode .weeklyCardTitle {
+  color: var(--text-color) !important;
+}
+
+/* The change text sits on the card background, which does switch with the
+   theme, so give it a dark-safe color instead of the light-mode inline one. */
+.darkMode .weeklyStatusChange {
   color: var(--text-color) !important;
 }
 
@@ -736,9 +742,9 @@
   .darkMode .weeklySummaryShareBtn {
     background: #e8a71c !important;
     color: #000 !important; /* readable in dark mode */
-  /* Tools and Equipment Tracking - 2 column layout on tablet */
   }
-  
+
+  /* Tools and Equipment Tracking - 2 column layout on tablet */
   .weeklyProjectSummaryDashboardCategoryContent {
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
