@@ -446,6 +446,40 @@
   font-size: 0.85rem;
 }
 
+.termsAgreement {
+  margin-top: 1rem;
+}
+
+.termsLabel {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.termsLabel input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  margin-top: 3px;
+  accent-color: #006b32;
+}
+
+.termsLabel a {
+  color: #006b32;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.termsHint {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+}
+
+.darkMode .termsLabel input[type='checkbox'] {
+  accent-color: #7ec8ff;
+}
+
 .submitButton {
   background-color: #006b32;
   color: #fff;
@@ -1217,4 +1251,19 @@
   height: auto !important;
   min-height: 0 !important;
   overflow: visible !important;
+}
+
+.darkMode .termsLabel a {
+  color: #7ec8ff;
+}
+
+.termsLabel input:focus-visible,
+.termsLabel a:focus-visible {
+  outline: 2px solid currentcolor;
+  outline-offset: 3px;
+}
+
+.darkMode .termsLabel input:focus-visible,
+.darkMode .termsLabel a:focus-visible {
+  outline-color: #7ec8ff;
 }
