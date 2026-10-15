@@ -170,6 +170,7 @@ function InfoForm() {
             pattern=".{2,}"
             title="Name must be at least 2 characters long"
             placeholder="Your First and Last Name"
+            disabled={!!newVolunteer.name}
           />
           {showError && (
             <span className={`${styles.errorMessage}`}>
@@ -189,7 +190,7 @@ function InfoForm() {
             onChange={e => setNewVolunteer({ ...newVolunteer, email: e.target.value })}
             required
             placeholder="Your Email"
-            disabled={!!(user.email !== undefined || user.email !== null)}
+            disabled={!!user.email}
           />
         </div>
         <div className={`${styles.formInputs}`}>
