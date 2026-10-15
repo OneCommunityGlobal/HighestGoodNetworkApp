@@ -5,17 +5,20 @@ import { configureStore } from '@reduxjs/toolkit';
 import FaqSearch from '../FaqSearch';
 import { getAllFAQs, searchFAQs, logUnansweredQuestion } from '../api';
 
+// Replace the real server calls with fakes that each test controls
 vi.mock('../api', () => ({
   getAllFAQs: vi.fn(),
   searchFAQs: vi.fn(),
   logUnansweredQuestion: vi.fn(),
 }));
 
+// Two sample FAQs used as the full list
 const allFaqs = [
   { _id: '1', question: 'How do I volunteer?', answer: 'Fill in the form.' },
   { _id: '2', question: 'Is there a time commitment?', answer: '10 hours a week.' },
 ];
 
+// A tiny store with only the dark-mode switch the page reads
 const buildStore = darkMode =>
   configureStore({
     reducer: {
@@ -34,6 +37,7 @@ const openPage = async (darkMode = false) => {
   return screen.getByPlaceholderText('Search FAQs');
 };
 
+// Puts a value into the search box in one step, like one keystroke
 const type = (input, value) => fireEvent.change(input, { target: { value } });
 
 describe('FaqSearch', () => {
@@ -43,6 +47,7 @@ describe('FaqSearch', () => {
     searchFAQs.mockResolvedValue({ data: [] });
   });
 
+  // Put the real clock back after tests that used a fake one
   afterEach(() => {
     vi.useRealTimers();
   });
@@ -56,6 +61,7 @@ describe('FaqSearch', () => {
 
   it('sends one search request after typing stops, not one per letter', async () => {
     const input = await openPage();
+    // Control the clock, so the test can jump past the 300 ms wait
     vi.useFakeTimers();
 
     type(input, 'v');
@@ -130,6 +136,7 @@ describe('FaqSearch', () => {
   });
 
   it('ignores a late search reply that arrives after the box was cleared', async () => {
+    // A slow server: the reply only arrives when the test calls answerSearch
     let answerSearch;
     searchFAQs.mockReturnValue(
       new Promise(resolve => {
@@ -171,6 +178,7 @@ describe('FaqSearch', () => {
   });
 
   it('offers to log a question when nothing is found, and shows the reply', async () => {
+    // Catch the browser alert instead of showing it
     const alertSpy = vi.spyOn(globalThis, 'alert').mockImplementation(() => {});
     logUnansweredQuestion.mockResolvedValue({ data: { message: 'Question logged successfully' } });
     const input = await openPage();

@@ -6,10 +6,12 @@ import { MemoryRouter, Route } from 'react-router-dom';
 import FaqHistory from '../FaqHistory';
 import { getFAQHistory } from '../api';
 
+// Replace the real server call with a fake that each test controls
 vi.mock('../api', () => ({
   getFAQHistory: vi.fn(),
 }));
 
+// A sample FAQ with one recorded change
 const faqWithHistory = {
   question: 'How do I volunteer?',
   answer: 'Fill in the form.',
@@ -31,6 +33,7 @@ const faqWithHistory = {
 const elementStartingWith = (tag, words) => (_, element) =>
   element?.tagName === tag && element.textContent.startsWith(words);
 
+// A tiny store with only the dark-mode switch the page reads
 const buildStore = darkMode =>
   configureStore({
     reducer: {
@@ -38,6 +41,7 @@ const buildStore = darkMode =>
     },
   });
 
+// Opens the history page at /faqs/abc123/history, as the router would
 const openPage = (darkMode = false) =>
   render(
     <Provider store={buildStore(darkMode)}>
