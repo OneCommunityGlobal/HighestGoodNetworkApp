@@ -129,6 +129,31 @@ describe('FaqSearch', () => {
     expect(searchFAQs).not.toHaveBeenCalled();
   });
 
+  it('ignores a late search reply that arrives after the box was cleared', async () => {
+    let answerSearch;
+    searchFAQs.mockReturnValue(
+      new Promise(resolve => {
+        answerSearch = resolve;
+      }),
+    );
+    const input = await openPage();
+    vi.useFakeTimers();
+
+    type(input, 'how');
+    await act(async () => {
+      vi.advanceTimersByTime(300);
+    });
+    expect(searchFAQs).toHaveBeenCalledWith('how');
+
+    type(input, '');
+    await act(async () => {
+      answerSearch({ data: [allFaqs[0]] });
+    });
+
+    expect(screen.getByText('How do I volunteer?')).toBeInTheDocument();
+    expect(screen.getByText('Is there a time commitment?')).toBeInTheDocument();
+  });
+
   it('shows the search results and opens an answer when a question is clicked', async () => {
     searchFAQs.mockResolvedValue({ data: [allFaqs[0]] });
     const input = await openPage();

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { debounce } from 'lodash';
 import { useSelector } from 'react-redux';
 import { Button } from 'reactstrap';
@@ -12,6 +12,7 @@ function FaqSearch() {
   const [notFound, setNotFound] = useState(false);
   const [logging, setLogging] = useState(false);
   const [expandedFAQ, setExpandedFAQ] = useState(null);
+  const latestQueryRef = useRef('');
   const darkMode = useSelector(state => state.theme?.darkMode);
   const borderColor = darkMode ? '#4b5563' : '#ddd';
   const textColor = darkMode ? '#f3f4f6' : '#111827';
@@ -46,6 +47,7 @@ function FaqSearch() {
       debounce(async query => {
         try {
           const response = await searchFAQs(query);
+          if (latestQueryRef.current !== query) return;
           setSuggestions(response.data);
           setNotFound(response.data.length === 0);
         } catch (error) {
@@ -62,6 +64,7 @@ function FaqSearch() {
     const query = e.target.value;
     setSearchQuery(query);
     const trimmedQuery = query.trim();
+    latestQueryRef.current = trimmedQuery;
     if (trimmedQuery.length >= 1) {
       fetchSuggestions(trimmedQuery);
     } else {
