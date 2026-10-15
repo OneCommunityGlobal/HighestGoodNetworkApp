@@ -55,10 +55,11 @@ function FaqSearch() {
   const handleSearchChange = e => {
     const query = e.target.value;
     setSearchQuery(query);
-
-    if (query.length >= 1) {
-      fetchSuggestions(query);
+    const trimmedQuery = query.trim();
+    if (trimmedQuery.length >= 1) {
+      fetchSuggestions(trimmedQuery);
     } else {
+      fetchSuggestions.cancel();
       setSuggestions(allFAQs);
       setNotFound(false);
     }
