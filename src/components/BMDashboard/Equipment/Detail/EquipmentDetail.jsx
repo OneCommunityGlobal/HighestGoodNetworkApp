@@ -232,14 +232,22 @@ function EquipmentDetail() {
     latestPurchaseRecord?.supplier?.phoneNumber;
   const description = equipment?.itemType?.description || equipment?.description;
   const currentStatus = latestUpdateRecord?.condition;
-  const lastUsedPerson = formatPersonName(latestUpdateRecord?.createdBy);
-  const lastUsedTask = latestUpdateRecord?.task || latestUpdateRecord?.usedFor;
-  const replacementRequested =
-    typeof latestUpdateRecord?.replacementRequired === 'boolean'
-      ? latestUpdateRecord.replacementRequired
-        ? 'Yes'
-        : 'No'
-      : latestUpdateRecord?.replacementRequired;
+  // The update form saves lastUsedBy / lastUsedFor / replacementRequired.
+  // Older records (saved before these fields were persisted) fall back to
+  // the creator / legacy field names.
+  const lastUsedPerson =
+    latestUpdateRecord?.lastUsedBy || formatPersonName(latestUpdateRecord?.createdBy);
+  const lastUsedTask =
+    latestUpdateRecord?.lastUsedFor || latestUpdateRecord?.task || latestUpdateRecord?.usedFor;
+  const formatReplacement = value => {
+    if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+    if (typeof value !== 'string' || !value.trim()) return undefined;
+    const normalized = value.trim().toLowerCase();
+    if (normalized === 'yes') return 'Yes';
+    if (normalized === 'no') return 'No';
+    return value;
+  };
+  const replacementRequested = formatReplacement(latestUpdateRecord?.replacementRequired);
 
   const validate = () => {
     const errors = {};
