@@ -1,5 +1,15 @@
-import { describe, expect, it } from 'vitest';
-import { buildWeeklyPRGradingCsv, getWeeklyPRGradingFilename } from './csvExport';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import {
+  buildWeeklyPRGradingCsv,
+  downloadWeeklyPRGradingCsv,
+  getWeeklyPRGradingFilename,
+} from './csvExport';
+
+afterEach(() => {
+  vi.useRealTimers();
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
+});
 
 describe('weekly PR grading CSV export', () => {
   it('exports reviewer totals, PR numbers, and notes with CSV-safe escaping', () => {
@@ -28,5 +38,20 @@ describe('weekly PR grading CSV export', () => {
     expect(getWeeklyPRGradingFilename({ start: 'Sep 21, 2026', end: 'Sep 27, 2026' })).toBe(
       'weekly-pr-grading-sep-21-2026-to-sep-27-2026.csv',
     );
+  });
+
+  it('releases the temporary download URL after the click, not in the same tick', () => {
+    vi.useFakeTimers();
+    const createObjectURL = vi.fn(() => 'blob:weekly-grading');
+    const revokeObjectURL = vi.fn();
+    vi.stubGlobal('URL', { createObjectURL, revokeObjectURL });
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+
+    downloadWeeklyPRGradingCsv([], { start: '5/18/2025', end: '5/25/2025' });
+
+    expect(click).toHaveBeenCalledOnce();
+    expect(revokeObjectURL).not.toHaveBeenCalled();
+    vi.runAllTimers();
+    expect(revokeObjectURL).toHaveBeenCalledWith('blob:weekly-grading');
   });
 });
