@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import PRGradingScreen from './PRGradingScreen';
 import { downloadWeeklyPRGradingCsv } from './csvExport';
@@ -26,6 +26,11 @@ describe('weekly PR grading Export to CSV button', () => {
 
   it('exports only reviewers matching the current search and role filters', () => {
     render(<PRGradingScreen teamData={teamData} reviewers={reviewers} />);
+
+    const headerActions = within(screen.getByRole('group', { name: 'Grading actions' }));
+    expect(headerActions.getByRole('button', { name: 'Export to CSV' })).toBeInTheDocument();
+    expect(headerActions.getByRole('button', { name: 'Done' })).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /Promote/ })).toHaveLength(reviewers.length);
 
     fireEvent.change(screen.getByPlaceholderText('Search reviewers by name...'), {
       target: { value: 'al' },
