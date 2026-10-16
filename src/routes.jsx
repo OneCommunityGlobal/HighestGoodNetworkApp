@@ -85,6 +85,7 @@ import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOvervi
 import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
 import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
 import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
+import Activity from './components/CommunityPortal/Activities/activityId/Activity';
 import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
 import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
 import EventList from './components/CommunityPortal/Event/EventList/EventList';
@@ -671,7 +672,6 @@ export default (
           allowedRoles={[UserRole.Owner]}
         />
         <ProtectedRoute path="/materials/utilization" component={MaterialUtilizationChart} />
-        <ProtectedRoute path="/job-application" exact component={JobApplicationForm} />
         <ProtectedRoute path="/popularity" component={PopularityTimelineChart} fallback />
         <ProtectedRoute
           path="/popularity-enhanced"
@@ -906,6 +906,11 @@ export default (
           component={UserProfile}
         />
         <CPProtectedRoute
+          path="/communityportal/activity/:activityid/faq"
+          exact
+          render={() => <Activity initialTab="FAQs" />}
+        />
+        <CPProtectedRoute
           path="/communityportal/ActivityAttendance"
           exact
           component={ActivityAttendance}
@@ -1129,6 +1134,11 @@ export default (
         <Route path="/forgotpassword" component={ForgotPassword} />
         <Route path="/subscribe" component={SubscribePage} />
         <Route path="/unsubscribe" component={UnsubscribePage} />
+        {/* Public apply portal — must stay ahead of /collaboration (non-exact). */}
+        <Route path="/collaboration/apply/:positionSlug" exact component={JobApplicationForm} />
+        <Route path="/apply/:positionSlug" exact component={JobApplicationForm} />
+        <Route path="/job-application/:positionSlug" exact component={JobApplicationForm} />
+        <Route path="/job-application" exact component={JobApplicationForm} />
         <Route path="/collaboration" component={Collaboration} />
         <ProtectedRoute path="/kitchenandinventory/orders" component={OrdersPage} />
         <Route path="/suggestedjobslist" component={SuggestedJobsList} />
