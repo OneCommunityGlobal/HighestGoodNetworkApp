@@ -1,4 +1,11 @@
-const CSV_HEADERS = ['Reviewer Name', 'PR Reviewed Count', 'PRs Needed', 'PR Numbers', 'Notes'];
+const CSV_HEADERS = [
+  'Reviewer Name',
+  'PR Reviewed Count',
+  'PRs Needed',
+  'PR Numbers',
+  'Grades',
+  'Notes',
+];
 
 const protectSpreadsheetValue = value => {
   const text = String(value ?? '');
@@ -23,6 +30,7 @@ export const buildWeeklyPRGradingCsv = reviewers => {
     reviewer.gradedPrs.length,
     reviewer.prsNeeded ?? '',
     reviewer.gradedPrs.map(pr => pr.prNumbers).join('; '),
+    reviewer.gradedPrs.map(pr => pr.grade ?? '').join('; '),
     getNotes(reviewer),
   ]);
 

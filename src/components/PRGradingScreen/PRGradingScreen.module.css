@@ -1163,7 +1163,8 @@
 }
 
 .pr-grading-inline-header-cell.dark-mode {
-  color: #bbb;
+  background-color: #2d4059;
+  color: #fff;
   border-bottom-color: rgb(255 255 255 / 10%);
 }
 

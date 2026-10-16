@@ -35,7 +35,7 @@ const PRGradingView = ({
   gradingReviewer,
   onGradeChange,
 }) => {
-  const dm = darkMode ? 'dark-mode' : '';
+  const dm = darkMode ? styles['dark-mode'] : '';
 
   return (
     <Container fluid className={`${styles['pr-grading-screen-container']} ${dm}`}>

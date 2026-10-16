@@ -12,7 +12,7 @@ afterEach(() => {
 });
 
 describe('weekly PR grading CSV export', () => {
-  it('exports reviewer totals, PR numbers, and notes with CSV-safe escaping', () => {
+  it('exports reviewer totals, PR numbers, aligned grades, and notes with CSV-safe escaping', () => {
     const csv = buildWeeklyPRGradingCsv([
       {
         reviewer: 'Doe, Jane',
@@ -30,8 +30,29 @@ describe('weekly PR grading CSV export', () => {
       },
     ]);
 
-    expect(csv).toContain('"Doe, Jane","2","3","123; 456 + 789","Reviewed ""carefully"""');
-    expect(csv).toContain('"\'=HYPERLINK(""bad"")","1","1","321","Follow up"');
+    expect(csv).toContain(
+      '"Reviewer Name","PR Reviewed Count","PRs Needed","PR Numbers","Grades","Notes"',
+    );
+    expect(csv).toContain(
+      '"Doe, Jane","2","3","123; 456 + 789","Okay; Exceptional","Reviewed ""carefully"""',
+    );
+    expect(csv).toContain('"\'=HYPERLINK(""bad"")","1","1","321","Okay","Follow up"');
+  });
+
+  it('keeps a blank grade position aligned with its PR number', () => {
+    const csv = buildWeeklyPRGradingCsv([
+      {
+        reviewer: 'Abi',
+        prsNeeded: 3,
+        gradedPrs: [
+          { prNumbers: '1000', grade: 'Exceptional' },
+          { prNumbers: '2000' },
+          { prNumbers: '3000', grade: 'Unsatisfactory' },
+        ],
+      },
+    ]);
+
+    expect(csv).toContain('"1000; 2000; 3000","Exceptional; ; Unsatisfactory"');
   });
 
   it('creates a clear filename from the visible week date range', () => {
