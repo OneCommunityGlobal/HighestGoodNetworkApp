@@ -677,7 +677,7 @@ export default (
         <ProtectedRoute path="/popularity" component={PopularityTimelineChart} fallback />
         <ProtectedRoute
           path="/popularity-enhanced"
-          component={EnhancedPopularityTimelineChart} 
+          component={EnhancedPopularityTimelineChart}
           fallback
         />
         <ProtectedRoute path="/analytics/months-pledged" component={MonthsPledgedChart} fallback />
