@@ -127,6 +127,7 @@ import LBBidOverview from './components/LBDashboard/BiddingOverview/BiddingOverv
 import BiddingHomepage from './components/LBDashboard/BiddingHomepage/BiddingHomepage';
 import WishList from './components/LBDashboard/WishList/WishList';
 import WishListItem from './components/LBDashboard/WishList/ItemOverview';
+const ListingForm = lazy(() => import('./components/ListingForm'));
 
 // Most Wasted Materials
 import MostWastedMaterials from './components/MostWastedMaterials/MostWastedMaterials.jsx';
@@ -375,7 +376,7 @@ export default (
         </>
       )}
     />
-
+    <LBProtectedRoute path="/lbdashboard/createlisting" exact component={ListingForm} />
     <LBProtectedRoute path="/lbdashboard/home" component={LBHome} />
     {/* ----- LB Dashboard Routing Ends----- */}
 
