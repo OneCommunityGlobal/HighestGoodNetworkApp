@@ -233,7 +233,7 @@ export class EditableInfoModal extends Component {
     if (saveResult === 200 || saveResult === 201) {
       await this.handleSaveSuccess();
       // ✅ Refresh collections so UI is always in sync
-      this.props.getInfoCollections();
+      this.props.getInfoCollections(true);
     } else {
       this.handleSaveError();
     }
@@ -243,7 +243,7 @@ export class EditableInfoModal extends Component {
     const { infoId } = this.handleChangeInInfos();
     await this.props.deleteInfoCollectionById(infoId);
     // Refresh collections after delete
-    this.props.getInfoCollections();
+    this.props.getInfoCollections(true);
   };
 
   handleClose = () => {
@@ -270,9 +270,9 @@ export class EditableInfoModal extends Component {
             data-toggle="tooltip"
             data-placement="right"
             title="Click for information about this"
-            style={{ fontSize: fontSize, cursor: 'pointer', color: '#00CCFF', marginRight: '8px' }}
+            style={{ fontSize: fontSize }}
             aria-hidden="true"
-            className="fa fa-info-circle"
+            className={`fa fa-info-circle ${styles.infoIcon}`}
             onClick={() => this.setState({ editableModalOpen: true })}
           />
 
@@ -322,6 +322,7 @@ export class EditableInfoModal extends Component {
                         Who can view this information?
                       </div>
                       <Select
+                        className={`${styles.visibility} ${darkMode ? styles.darkMode: ''}`}
                         options={options}
                         onChange={this.handleSelectChange}
                         value={options.find(option => option.value === this.state.visibility)}
@@ -390,7 +391,7 @@ const mapStateToProps = ({ infoCollections }) => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  getInfoCollections: () => dispatch(getInfoCollections()),
+  getInfoCollections: retrieveInfos => dispatch(getInfoCollections(retrieveInfos)),
   updateInfoCollection: (infoId, updatedInfo) => dispatch(updateInfoCollection(infoId, updatedInfo)),
   addInfoCollection: newInfo => dispatch(addInfoCollection(newInfo)),
   deleteInfoCollectionById: infoId => dispatch(deleteInfoCollectionById(infoId)),

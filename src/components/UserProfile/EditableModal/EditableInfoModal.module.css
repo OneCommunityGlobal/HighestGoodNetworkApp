@@ -34,3 +34,12 @@
   color: #fff !important;
 }
 
+.infoIcon {
+  cursor: pointer;
+  color: #0CF;
+  margin-right: 8px;
+}
+
+.visibility.darkMode > * {
+  background-color: #1b2a41;
+}

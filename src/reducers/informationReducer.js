@@ -3,6 +3,7 @@ import * as actions from '../constants/information';
 const initialState = {
   infos: [],
   loading: false,
+  loaded: false,
   fetchError: null,
 };
 
@@ -13,6 +14,7 @@ export const infoCollectionsReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: true,
+        loaded: false,
         fetchError: null,
       };
 
@@ -20,6 +22,7 @@ export const infoCollectionsReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
+        loaded: true,
         infos: action.payload.infoCollectionsData,
       };
 

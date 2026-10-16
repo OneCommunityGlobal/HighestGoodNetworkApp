@@ -62,6 +62,7 @@ function WarningTrackerModal({
   const [infoCollections, setInfoCollections] = useState({});
   const [infoCollectionToUpdate, setInfoCollectionToUpdate] = useState(null);
   const [infoCollectionToDelete, setInfoCollectionToDelete] = useState(null);
+  const [retrieveInfoCollections, setRetrieveInfoCollections] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const dispatch = useDispatch();
@@ -88,13 +89,16 @@ function WarningTrackerModal({
       setWarningDescriptions(res);
       setOriginalWarningDescriptions(res);
     });
-    dispatch(getInfoCollections()).then(res => {
-      if (res.error) {
-        setError(res.error);
-        return;
-      }
-      setInfoCollections(res);
-    });
+    if (retrieveInfoCollections) {
+      dispatch(getInfoCollections(true)).then(res => {
+        if (res.error) {
+          setError(res.error);
+          return;
+        }
+        setRetrieveInfoCollections(false);
+        setInfoCollections(res);
+      });
+    }
   };
   useEffect(() => {
     fetchWarningDescriptions();
@@ -216,7 +220,11 @@ function WarningTrackerModal({
   const handleDeleteWarningDescription = warningId => {
     if (infoCollectionToDelete) {
       dispatch(deleteInfoCollectionById(infoCollectionToDelete._id)).then(res => {
-        if (res.error) return;
+        if (res.error) {
+          setError(res.error);
+          return;
+        }
+        setRetrieveInfoCollections(true);
       });
     }
     dispatch(deleteWarningDescription(warningId)).then(res => {
@@ -266,6 +274,7 @@ function WarningTrackerModal({
             fetchWarningDescriptions();
             return;
           }
+          setRetrieveInfoCollections(true);
         });
       }
       dispatch(editWarningDescription(editedWarning)).then(res => {
