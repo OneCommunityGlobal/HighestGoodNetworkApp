@@ -1,6 +1,6 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-use-before-define */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { connect , useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
@@ -19,13 +19,44 @@ import styles from './projects.module.css';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
+import { permissions } from '../../utils/constants';
 
 // Stable reference for the empty case. Returning a fresh [] from a selector
 // gives a new identity on every render, which retriggers effects that depend
 // on it.
 const EMPTY_PROJECT_LIST = [];
 
-import { permissions } from '../../utils/constants';
+const compareProjectNames = (a, b) =>
+  a.projectName.localeCompare(b.projectName, undefined, { sensitivity: 'base' });
+
+const compareInventoryEdits = (a, b) => {
+  const dateA = Date.parse(a.inventoryModifiedDatetime);
+  const dateB = Date.parse(b.inventoryModifiedDatetime);
+  const validA = Number.isFinite(dateA);
+  const validB = Number.isFinite(dateB);
+
+  // Unknown dates stay last; equal dates use a deterministic name/ID order.
+  if (validA !== validB) return validA ? -1 : 1;
+  if (validA && dateA !== dateB) return dateB - dateA;
+  return compareProjectNames(a, b) || a._id.localeCompare(b._id);
+};
+
+const compareProjects = (a, b, { column, direction }, activeMemberCounts) => {
+  if (direction === 'DEFAULT') return 0;
+  const multiplier = direction === 'DESC' ? -1 : 1;
+
+  switch (column) {
+    case 'PROJECTS':
+      return multiplier * compareProjectNames(a, b);
+    case 'MEMBERS':
+      return multiplier * ((activeMemberCounts?.[a._id] || 0) - (activeMemberCounts?.[b._id] || 0));
+    case 'INVENTORY':
+      return compareInventoryEdits(a, b);
+    default:
+      return 0;
+  }
+};
+
 const Projects = function(props) {
   const { role } = props.state.userProfile;
   const { darkMode } = props.state.theme;
@@ -64,8 +95,7 @@ const Projects = function(props) {
     active: false,
     category: '',
   });
-  const [projectList, setProjectList] = useState(null);
-  const [allProjects, setAllProjects] = useState(null);
+  const [personSearchResult, setPersonSearchResult] = useState(null);
   const [searchName, setSearchName] = useState('');
   const [isChangingStatus, setIsChangingStatus] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
@@ -101,9 +131,42 @@ const Projects = function(props) {
     return debouncedValue;
   };
 
-  const debouncedSearchName = useDebounce(searchName, 300);
+  const searchQuery = searchName.trim();
+  const debouncedSearchName = useDebounce(searchQuery, 300);
+  const activeMemberCounts = props.state.projectMembers?.activeMemberCounts;
+  const { getProjectsByUsersName: searchProjectsByPerson } = props;
+  const personSearchLoading = searchMode === 'person' && Boolean(searchQuery) && (
+    searchQuery !== debouncedSearchName || personSearchResult?.query !== searchQuery
+  );
+
+  useEffect(() => {
+    let current = true;
+    setPersonSearchResult(null);
+    if (searchMode !== 'person' || !searchQuery || searchQuery !== debouncedSearchName) {
+      return () => { current = false; };
+    }
+
+    const fetchPersonProjects = async () => {
+      const result = await searchProjectsByPerson(searchQuery);
+      const ids = Array.isArray(result) ? result.filter(id => typeof id === 'string') : [];
+      if (current) setPersonSearchResult({ query: searchQuery, ids: new Set(ids) });
+    };
+    fetchPersonProjects().catch(() => {
+      // The search action handles notifications; resolve loading with no matches.
+      if (current) setPersonSearchResult({ query: searchQuery, ids: new Set() });
+    });
+    return () => { current = false; };
+  }, [searchQuery, debouncedSearchName, searchMode, searchProjectsByPerson]);
 
   const canPostProject = props.hasPermission(permissions.postProject);
+  const canDeleteProject = props.hasPermission(permissions.deleteProject);
+  const tableColumnCount = canDeleteProject ? 8 : 7;
+  const hasSearchOrFilters = Boolean(searchName || categorySelectedForSort || showStatus);
+  const clearSearchAndFilters = () => {
+    setSearchName('');
+    setCategorySelectedForSort('');
+    setShowStatus('');
+  };
 
   const onClickArchiveBtn = projectData => {
     setProjectTarget(projectData);
@@ -167,22 +230,23 @@ const Projects = function(props) {
     return 'DEFAULT';
   };
 
+  const onInventorySortChange = option => {
+    if (option === 'EDITED' || option === 'DEFAULT') {
+      setSorter({ column: 'INVENTORY', direction: option === 'EDITED' ? 'DESC' : 'DEFAULT' });
+    }
+  };
+
   const handleSort = column => {
     setSorter(prev => {
       if (prev.column === column) {
         return { column, direction: getNextSortDirection(prev.direction) };
       }
-      return { column, direction: 'ASC' };
+      return { column, direction: getNextSortDirection('DEFAULT') };
     });
   };
 
   const onUpdateProject = async updatedProject => {
     await props.modifyProject(updatedProject);
-    // Optimistically update the state
-    const updatedProjectsList = projectList.map(project =>
-      project._id === updatedProject._id ? updatedProject : project,
-    );
-    setProjectList(updatedProjectsList);
     /* refresh the page after updating the project */
     await props.fetchAllProjects();
   };
@@ -209,80 +273,45 @@ const Projects = function(props) {
     onCloseModal();
   };
 
-  const generateProjectList = (categorySelectedForSort, showStatus, isShowingArchived) => {
-    const activeMemberCounts = props.state.projectMembers?.activeMemberCounts || {};
-    const sourceProjects = isShowingArchived ? archivedReduxProjects : allReduxProjects;
-    const filteredProjects = sourceProjects
-      .filter(project => {
-        if (categorySelectedForSort && showStatus){
-          return project.category === categorySelectedForSort && project.isActive === showStatus;
-        } else if (categorySelectedForSort) {
-          return project.category === categorySelectedForSort;
-        } else if (showStatus === 'Active') {
-          return project.isActive === true;
-        } else if (showStatus === 'Inactive') {
-          return project.isActive === false;
-        } else {
-          return true;
-        }
-      });
-
-    const sortedProjects = [...filteredProjects].sort((a, b) => {
-      const { column, direction } = sorter;
-
-      if (column === "PROJECTS") {
-        if (direction === "ASC") {
-          return a.projectName.localeCompare(b.projectName, undefined, { sensitivity: 'base' });
-        } else if (direction === "DESC") {
-          return b.projectName.localeCompare(a.projectName, undefined, { sensitivity: 'base' });
-        } else {
-          return 0; // Default: recently added, retain original order
-        }
-      }
-
-      if (column === "MEMBERS") {
-        if (direction === "ASC") {
-          const countA = activeMemberCounts[a._id] || 0;
-          const countB = activeMemberCounts[b._id] || 0;
-          return countA - countB;
-        } else if (direction === "DESC") {
-          const countA = activeMemberCounts[a._id] || 0;
-          const countB = activeMemberCounts[b._id] || 0;
-          return countB - countA;
-        } else {
-          return 0; // Default: keep same order as PROJECT sorting
-        }
-      }
-
-      if (column === "INVENTORY") {
-        const dateA = new Date(a.inventoryModifiedDatetime);
-        const dateB = new Date(b.inventoryModifiedDatetime);
-        if (direction === "ASC") return dateA - dateB;
-        if (direction === "DESC") return dateB - dateA;
-        return 0;
-      }
-
-      return 0;
+  const sortedProjects = useMemo(() => {
+    const sourceProjects = showArchived ? archivedReduxProjects : allReduxProjects;
+    const selectedStatus = { Active: true, Inactive: false }[showStatus];
+    const statusRestricted = showStatus === 'Active' || showStatus === 'Inactive';
+    const filteredProjects = sourceProjects.filter(project => {
+      const categoryMatches =
+        !categorySelectedForSort || project.category === categorySelectedForSort;
+      const statusMatches = !statusRestricted || project.isActive === selectedStatus;
+      const query = searchQuery ? debouncedSearchName : '';
+      const searchMatches = !searchQuery || (searchMode === 'project'
+        ? project.projectName?.toLowerCase().includes(query.toLowerCase())
+        : !personSearchLoading && personSearchResult?.ids.has(project._id));
+      return categoryMatches && statusMatches && searchMatches;
     });
 
-    const renderedProjects = sortedProjects.map((project, index) => (
-      <Project
-        key={`${project._id}-${project.isActive}`}
-        index={index}
-        projectData={project}
-        activeMemberCounts={activeMemberCounts[project._id] || 0}
-        onUpdateProject={onUpdateProject}
-        onClickArchiveBtn={onClickArchiveBtn}
-        onClickProjectStatusBtn={onClickProjectStatusBtn}
-        darkMode={darkMode}
-        taskSelectionMode={taskSelectionMode}
-        taskSelectionReturnPath={taskSelectionReturnPath}
-      />
-    ));
+    return [...filteredProjects].sort((a, b) => compareProjects(a, b, sorter, activeMemberCounts));
+  }, [allReduxProjects, archivedReduxProjects, showArchived, categorySelectedForSort,
+    showStatus, searchQuery, debouncedSearchName, searchMode, personSearchLoading,
+    personSearchResult, sorter, activeMemberCounts]);
 
-    setProjectList(renderedProjects);
-    setAllProjects(renderedProjects);
-  };
+  const sourceProjects = showArchived ? archivedReduxProjects : allReduxProjects;
+  const emptyMessage = sourceProjects.length === 0
+    ? (showArchived ? 'No archived projects available.' : 'No projects available.')
+    : 'No projects match your search and filters.';
+
+  const projectList = sortedProjects.map((project, index) => (
+    <Project
+      key={`${project._id}-${project.isActive}`}
+      index={index}
+      projectData={project}
+      activeMemberCounts={activeMemberCounts?.[project._id] || 0}
+      onUpdateProject={onUpdateProject}
+      onClickArchiveBtn={onClickArchiveBtn}
+      onClickProjectStatusBtn={onClickProjectStatusBtn}
+      darkMode={darkMode}
+      taskSelectionMode={taskSelectionMode}
+      taskSelectionReturnPath={taskSelectionReturnPath}
+    />
+  ));
 
 
   useEffect(() => {
@@ -297,7 +326,6 @@ const Projects = function(props) {
   }, []);
 
   useEffect(() => {
-    generateProjectList(categorySelectedForSort, showStatus, showArchived);
     if (status !== 200) {
       setModalData({
         showModal: true,
@@ -307,75 +335,7 @@ const Projects = function(props) {
         hasInactiveBtn: false,
       });
     }
-  }, [categorySelectedForSort, showStatus, sorter, allReduxProjects, archivedReduxProjects, props.state.theme.darkMode, props.state.projectMembers?.activeMemberCounts, showArchived]);
-
-  useEffect(() => {
-  const fetchProjects = async () => {
-    if (!debouncedSearchName) {
-      setProjectList(allProjects);
-      return;
-    }
-
-    // Search the same collection that is currently rendered. Archived projects
-    // live in their own reducer key, so searching allReduxProjects here would
-    // incorrectly return active projects while the archived view is open.
-    const visibleProjects = showArchived ? archivedReduxProjects : allReduxProjects;
-
-    // Mode 1: Search by user
-    if (searchMode === 'person') {
-      const userProjects = await props.getProjectsByUsersName(debouncedSearchName);
-
-      const filteredProjects = visibleProjects.filter(p =>
-        userProjects.includes(p._id)
-      );
-
-      const mapped = filteredProjects.map((project, index) => (
-        <Project
-          key={`${project._id}-${project.isActive}`}
-          index={index}
-          projectData={project}
-          onUpdateProject={onUpdateProject}
-          onClickArchiveBtn={onClickArchiveBtn}
-          onClickProjectStatusBtn={onClickProjectStatusBtn}
-          darkMode={darkMode}
-          taskSelectionMode={taskSelectionMode}
-          taskSelectionReturnPath={taskSelectionReturnPath}
-        />
-      ));
-
-      setProjectList(mapped);
-    } else if (searchMode === 'project') {
-      const filteredProjects = visibleProjects.filter(p =>
-        p.projectName?.toLowerCase().includes(debouncedSearchName.toLowerCase())
-      );
-
-      const mapped = filteredProjects.map((project, index) => (
-        <Project
-          key={`${project._id}-${project.isActive}`}
-          index={index}
-          projectData={project}
-          onUpdateProject={onUpdateProject}
-          onClickArchiveBtn={onClickArchiveBtn}
-          onClickProjectStatusBtn={onClickProjectStatusBtn}
-          darkMode={darkMode}
-          taskSelectionMode={taskSelectionMode}
-          taskSelectionReturnPath={taskSelectionReturnPath}
-        />
-      ));
-
-      setProjectList(mapped);
-    }
-  };
-
-  fetchProjects();
-}, [
-  debouncedSearchName,
-  searchMode,
-  allProjects,
-  allReduxProjects,
-  archivedReduxProjects,
-  showArchived,
-]);
+  }, [status, error]);
 
   const handleSearchName = searchNameInput => {
     setSearchName(searchNameInput);
@@ -413,6 +373,7 @@ const Projects = function(props) {
         </div>
         <div className="d-flex flex-wrap mb-3" style={{ gap: '10px' }}>
           <SearchProjectByPerson
+            value={searchName}
             onSearch={handleSearchName}
             searchMode={searchMode}
             handleFetchArchivedProjects={handleFetchArchivedProjects}
@@ -453,6 +414,11 @@ const Projects = function(props) {
         >
           {showArchived ? 'Hide Archived' : 'Show Archived'}
         </button>
+        {hasSearchOrFilters && (
+          <button type="button" className={`btn ${darkMode ? 'btn-outline-light' : 'btn-outline-secondary'}`} onClick={clearSearchAndFilters}>
+            Clear search and filters
+          </button>
+        )}
         </div>
         <div className="table-responsive-sm w-100">
         <table
@@ -461,16 +427,34 @@ const Projects = function(props) {
         >
           <thead className={styles.projectsTableHead}>
             <ProjectTableHeader
+              canDeleteProject={canDeleteProject}
               onChange={onChangeCategory}
               selectedValue={categorySelectedForSort}
               showStatus={showStatus}
               selectStatus={onSelectStatus}
               sorted={sorter}
               handleSort={handleSort}
+              onInventorySortChange={onInventorySortChange}
               darkMode={darkMode}
             />
           </thead>
-          <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>{projectList}</tbody>
+          <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
+            {personSearchLoading ? (
+              <tr>
+                <td colSpan={tableColumnCount}>
+                  <div role="status" aria-label="Searching projects">
+                    <Loading align="center" darkMode={darkMode} />
+                  </div>
+                </td>
+              </tr>
+            ) : fetching || !fetched || status !== 200 ? null : sortedProjects.length === 0 ? (
+              <tr>
+                <td colSpan={tableColumnCount} className="text-center py-4">
+                  <div role="status">{emptyMessage}</div>
+                </td>
+              </tr>
+            ) : projectList}
+          </tbody>
         </table>
         </div>
       </div>
