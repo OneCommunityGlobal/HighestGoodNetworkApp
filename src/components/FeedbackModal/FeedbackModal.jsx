@@ -19,7 +19,7 @@ import StarRating from './StarRating';
 
 const getFullName = user => `${user.firstName} ${user.lastName}`;
 
-const isValidMemberName = (member, allUsers) =>
+const isInvalidMemberName = (member, allUsers) =>
   member.name.trim() !== '' &&
   !allUsers.some(u => getFullName(u).toLowerCase() === member.name.trim().toLowerCase());
 
@@ -59,6 +59,7 @@ function FeedbackModal() {
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('Error checking help request:', error);
+        toast.error('Unable to check for pending feedback. Please refresh and try again.');
         setIsOpen(false);
       }
     };
@@ -97,8 +98,8 @@ function FeedbackModal() {
     // Validate that all filled member names are valid users from the list
     const allUsers = [...activeUsers, ...inactiveUsers];
 
-    const invalidActive = ratedMembers.some(m => isValidMemberName(m, allUsers));
-    const invalidInactive = inactiveRatedMembers.some(m => isValidMemberName(m, allUsers));
+    const invalidActive = ratedMembers.some(m => isInvalidMemberName(m, allUsers));
+    const invalidInactive = inactiveRatedMembers.some(m => isInvalidMemberName(m, allUsers));
 
     if (invalidActive || invalidInactive) {
       toast.warn('Please select valid members from the dropdown only.');
